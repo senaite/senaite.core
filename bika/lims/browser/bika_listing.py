@@ -209,7 +209,7 @@ class WorkflowAction:
             dest = self.context.absolute_url() + q
 
         return len(transitioned), dest
-    
+
     def workflow_action_activate(self):
         # WF Action to activate objects through their listing view
         objects = WorkflowAction._get_selected_items(self)
@@ -224,20 +224,20 @@ class WorkflowAction:
             try:
                 doActionFor(obj,'activate')
                 transitioned += 1
-            except WorkflowException:
+            except WorkflowException as e:
                 messages.append( _("The item %s couldn't be transitioned" % obj.Title()))
-                pass
+                logger.warning("The item %s couldn't be transitioned: %s" % (obj.Title(), str(e)))
+
         if len(messages) > 0:
-            self.context.plone_utils.addPortalMessage(messages, 'info')
+            self.context.plone_utils.addPortalMessage(". ".join(messages), 'warn')
         self.request.response.redirect(dest)
         return transitioned, dest
-            
+
     def workflow_action_deactivate(self):
         # WF Action to deactivate objects through their listing view
         objects = WorkflowAction._get_selected_items(self)
         dest = self.context.absolute_url()
         transitioned = 0
-        message = ""
         messages = []
         if not objects:
             message = _("Nothing selected")
@@ -246,15 +246,16 @@ class WorkflowAction:
         for obj in objects.values():
             try:
                 doActionFor(obj,'deactivate')
-            except  WorkflowException:
+                transitioned += 1
+            except WorkflowException as e:
                 messages.append( _("The item %s couldn't be transitioned" % obj.Title()))
-                pass
+                logger.warning("The item %s couldn't be transitioned: %s" % (obj.Title(), str(e)))
+
         if len(messages) > 0:
-            self.context.plone_utils.addPortalMessage(messages, 'info')
+            self.context.plone_utils.addPortalMessage(". ".join(messages), 'warn')
         self.request.response.redirect(dest)
         return transitioned, dest
 
-            
 
 class BikaListingView(BrowserView):
     """
