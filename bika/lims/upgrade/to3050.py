@@ -24,6 +24,8 @@ def upgrade(tool):
         for analysis in ar.getAnalyses(full_objects=True):
             spec = getattr(analysis, 'specification', False)
             if spec:
+                spec['keyword'] = analysis.getService().getKeyword()
+                spec['uid'] = analysis.UID()
                 specs.append(spec)
 
         # mix in the analysis spec values
