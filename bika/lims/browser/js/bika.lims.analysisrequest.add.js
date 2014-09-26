@@ -330,6 +330,7 @@ function AnalysisRequestAddView() {
             });
         }
     }
+
     function modify_Specification_field_filter(column) {
         // when a SampleType is selected I will allow only specs to be selected
         // which 1- (have the same Sample Types)
@@ -346,6 +347,32 @@ function AnalysisRequestAddView() {
         $(e).attr("search_query", query_str);
     }
 
+	function set_Specification_from_SampleType(column) {
+		st_title = $("#ar_" + column + "_SampleType").val();
+		st_uid = $("#ar_" + column + "_SampleType_uid").val();
+		if (st_uid == undefined || st_uid == null || st_uid == "") {
+			return;
+		}
+		spec_element = $("#ar_" + column + "_Specification");
+		spec_uid_element = $("#ar_" + column + "_Specification_uid");
+		var request_data = {
+			catalog_name: "bika_setup_catalog",
+			portal_type: "AnalysisSpec",
+			getSampleTypeTitle: st_title,
+			include_fields: ["Title", "UID"]
+		};
+		window.bika.lims.jsonapi_read(request_data, function (data) {
+			if (data.objects.length > 0) {
+				var spec = data.objects[0];
+				// set spec values for this column
+				$(spec_element).val(spec.Title);
+				$(spec_uid_element).val(spec.UID);
+				set_spec_hidden_value(column);
+				reset_spec_fields(column);
+				set_spec_field_values(column);
+			}
+		});
+	}
 
     function ar_set_tabindexes() {
         // Sets the tab index to the elements. Tab flow top to bottom instead of left
@@ -396,7 +423,7 @@ function AnalysisRequestAddView() {
         }
     }
 
-    // The columnar referencewidgets that we reconfigure use this as their
+	// The columnar referencewidgets that we reconfigure use this as their
     // select handler.
     function ar_referencewidget_select_handler(event, ui){
         /*jshint validthis:true */
@@ -462,16 +489,21 @@ function AnalysisRequestAddView() {
             var sp_parent_node = $(sp_element).parent();
             $(sp_element).remove();
             $(sp_parent_node).append(new_sp_element);
-            sp_element = $("#ar_"+column+"_SamplePoint");
-            // cut kwargs into the base_query
-//            var sp_base_query = $(sp_element).attr("base_query");
-//            sp_base_query = $.parseJSON(sp_base_query);
-//            sp_base_query = $.toJSON(sp_base_query);
             var sp_search_query = {"getSampleTypeTitle": encodeURIComponent(ui.item[$(this).attr("ui_item")])};
             sp_search_query = $.toJSON(sp_search_query);
             sp_element.attr("search_query", sp_search_query);
             ar_referencewidget_lookups(sp_element);
-        }
+            // Template gets removed, as it no longer matches the SampleType.
+			unsetTemplate(column);
+			// Discover if we have a Specification linked to the SampleType
+			set_Specification_from_SampleType(column);
+			// Fix filter for Specs to exclude Spec with non matching sample type
+			modify_Specification_field_filter(column);
+			// Fix the spec values to reflect the new specification ranges
+			set_spec_hidden_value(column);
+			set_spec_field_values(column);
+			calculate_parts(column);
+		}
         if(fieldName == "SamplePoint"){
             // selecting a Samplepoint - jiggle the SampleType element.
             var st_element = $("#ar_"+column+"_SampleType");
@@ -554,15 +586,6 @@ function AnalysisRequestAddView() {
                     }
                 }
             );
-        }
-
-        // Selected a SampleType
-        if(fieldName == "SampleType"){
-            unsetTemplate(column);
-            set_spec_hidden_value(column);
-			set_spec_field_values(column);
-            modify_Specification_field_filter(column);
-            calculate_parts(column);
         }
 
         // Selected a Specification
@@ -1286,9 +1309,9 @@ function AnalysisRequestAddView() {
                         // set part number indicators
                         for(i=0;i<service_uids.length;i++){
                             service_uid = service_uids[i];
-                            var partnr = parts_by_service_uid[service_uid].part_nr;
+                            var partnr = parseInt(parts_by_service_uid[service_uid].part_nr, 10);
                             e = $(".partnr_"+service_uid).filter("[column='"+column+"']");
-                            $(e).empty().append(partnr+1);
+                            $(e).empty().append(partnr);
                         }
                         recalc_prices(column);
                     }
@@ -1418,7 +1441,12 @@ function AnalysisRequestAddView() {
 
 	function fill_column(data) {
 		// fields which should not be completed from the source AR
-		var skip_fields = ['Sample', 'Sample_uid'];
+		var skip_fields = ['Sample',
+						   'Sample_uid',
+						   'SamplingDate',
+						   'DateSampled',
+						   'Sampler',
+		]
 		// if the jsonapi read data did not include any objects, abort
 		// obviously, shouldn't happen
 		if ((!data.success) || data.objects.length < 1) {
