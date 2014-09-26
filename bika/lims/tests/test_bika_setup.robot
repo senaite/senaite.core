@@ -2,7 +2,6 @@
 
 Library          Selenium2Library  timeout=5  implicit_wait=0.2
 Library          String
-Library          DebugLibrary
 Resource         keywords.txt
 Library          bika.lims.testing.Keywords
 Resource         plone/app/robotframework/selenium.robot
