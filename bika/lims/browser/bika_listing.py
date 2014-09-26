@@ -20,6 +20,7 @@ from bika.lims.subscribers import doActionFor
 from bika.lims.subscribers import skip
 from bika.lims.utils import isActive, getHiddenAttributesForClass
 from bika.lims.utils import to_utf8
+from bika.lims.workflow import doActionFor
 from operator import itemgetter
 from plone.app.content.browser import tableview
 from plone.app.content.browser.foldercontents import FolderContentsView, FolderContentsTable
@@ -208,7 +209,52 @@ class WorkflowAction:
             dest = self.context.absolute_url() + q
 
         return len(transitioned), dest
+    
+    def workflow_action_activate(self):
+        # WF Action to activate objects through their listing view
+        objects = WorkflowAction._get_selected_items(self)
+        dest = self.context.absolute_url()
+        if not objects:
+            message = _("Nothing selected")
+            self.context.plone_utils.addPortalMessage(message, 'info')
+            return 0, dest
+        transitioned = 0
+        messages = []
+        for obj in objects.values():
+            try:
+                doActionFor(obj,'activate')
+                transitioned += 1
+            except WorkflowException:
+                messages.append( _("The item %s couldn't be transitioned" % obj.Title()))
+                pass
+        if len(messages) > 0:
+            self.context.plone_utils.addPortalMessage(messages, 'info')
+        self.request.response.redirect(dest)
+        return transitioned, dest
+            
+    def workflow_action_deactivate(self):
+        # WF Action to deactivate objects through their listing view
+        objects = WorkflowAction._get_selected_items(self)
+        dest = self.context.absolute_url()
+        transitioned = 0
+        message = ""
+        messages = []
+        if not objects:
+            message = _("Nothing selected")
+            self.context.plone_utils.addPortalMessage(message, 'info')
+            return
+        for obj in objects.values():
+            try:
+                doActionFor(obj,'deactivate')
+            except  WorkflowException:
+                messages.append( _("The item %s couldn't be transitioned" % obj.Title()))
+                pass
+        if len(messages) > 0:
+            self.context.plone_utils.addPortalMessage(messages, 'info')
+        self.request.response.redirect(dest)
+        return transitioned, dest
 
+            
 
 class BikaListingView(BrowserView):
     """
