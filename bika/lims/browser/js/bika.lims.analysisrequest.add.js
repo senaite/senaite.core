@@ -1445,8 +1445,7 @@ function AnalysisRequestAddView() {
 						   'Sample_uid',
 						   'SamplingDate',
 						   'DateSampled',
-						   'Sampler',
-		]
+						   'Sampler']
 		// if the jsonapi read data did not include any objects, abort
 		// obviously, shouldn't happen
 		if ((!data.success) || data.objects.length < 1) {
