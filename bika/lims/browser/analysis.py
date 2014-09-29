@@ -1,7 +1,7 @@
 # coding=utf-8
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from bika.lims.utils import t, dicts_to_dict
 from bika.lims.interfaces import IAnalysis, IResultOutOfRange
 from bika.lims.interfaces import IFieldIcons
 from bika.lims.utils import to_utf8
@@ -80,11 +80,10 @@ class ResultOutOfRange(object):
             result = float(str(result))
         except ValueError:
             return None
-        # The spec should have been set to context at create time
+        # The spec is found in the parent AR's ResultsRange field.
         if not specification:
-            if hasattr(self.context, "specification") \
-                    and self.context.specification:
-                specification = self.context.specification
+            rr = dicts_to_dict(self.context.aq_parent.getResultsRange(), 'keyword')
+            specification = rr.get(self.context.getKeyword(), None)
             # No specs available, assume in range:
             if not specification:
                 return None

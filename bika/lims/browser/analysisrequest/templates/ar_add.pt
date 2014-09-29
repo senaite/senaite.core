@@ -73,6 +73,15 @@
 <!-- And the current form partition configuration is stored here -->
 <input type="hidden" id="parts" name="parts" value="{}"/>
 
+<!-- The specs for each AR. -->
+<input type="hidden" id="specs" name="specs" value="{}"
+        tal:attributes="value python:modules['json'].dumps(dict([(x, {}) for x in range(view.col_count)]))"/>
+
+<!-- The specs for each AR - this value is completed when using copy_to_new in this form.
+     The value in this field is blended with the 'Specification' found in the form. -->
+<input type="hidden" id="copy_to_new_specs" name="copy_to_new_specs" value="{}"
+        tal:attributes="value view/copy_to_new_specs"/>
+
 <!-- The system configured 'Dry Matter Service' -->
 <tal:i define="dms python:context.bika_setup.getDryMatterService()">
     <input type="hidden" id="getDryMatterService" name="getDryMatterService"
@@ -128,26 +137,6 @@
 
                    <metal:field use-macro="python:context.widget(fieldName, mode='edit')"/>
 
-                    <tal:hidden_def
-                        tal:repeat="hfield python:[f for f in context.Schema().fields() if f.widget.isVisible(context, 'add', default='invisible', field=f) == 'hidden']">
-                            <input
-                                type="hidden"
-                                tal:define="val python:hfield.getAccessor(context)();
-                                            hfieldName python:hfield.getName();"
-                                tal:attributes="
-                                    name string:${hfieldName};
-                                    id string:${hfieldName};
-                                    value val/Title|nothing"/>
-                             <input
-                                type="hidden"
-                                tal:define="val python:hfield.getAccessor(context)();
-                                            hfieldName python:hfield.getName();"
-                                tal:attributes="
-                                    name string:${hfieldName}_uid;
-                                    id string:${fieldName}_uid;
-                                    value val/UID|nothing"/>
-                    </tal:hidden_def>
-
                 </td>
             </tal:columns>
         </tal:def>
@@ -155,22 +144,19 @@
 
     <tal:hidden
         tal:repeat="field python:[f for f in context.Schema().fields() if f.widget.isVisible(context, 'add', default='invisible', field=f) == 'hidden']">
-        <tal:columns tal:repeat="column python:range(view.col_count)">
+        <tal:columns tal:repeat="column python:range(view.col_count)"
+                tal:define="val python:field.getAccessor(context)()">
             <input
                 type="hidden"
-                tal:define="
-                    val python:field.getAccessor(context)();"
                 tal:attributes="
-                    name string:ar.${column}.${field};
-                    id string:ar_${column}_${field};
+                    name string:ar.${column}.${field/getName};
+                    id string:ar_${column}_${field/getName};
                     value val/Title|nothing;"/>
              <input
                 type="hidden"
-                tal:define="
-                    val python:field.getAccessor(context)();"
                 tal:attributes="
-                    name string:ar.${column}.${field}_uid;
-                    id string:ar_${column}_${field}_uid;
+                    name string:ar.${column}.${field/getName}_uid;
+                    id string:ar_${column}_${field/getName}_uid;
                     value val/UID|nothing;"/>
         </tal:columns>
     </tal:hidden>

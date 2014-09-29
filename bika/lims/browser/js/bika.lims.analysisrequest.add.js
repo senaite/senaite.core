@@ -3,59 +3,59 @@
  */
 function AnalysisRequestAddView() {
 
-    var that = this;
+	var that = this;
 
-    that.load = function() {
+	that.load = function () {
 
-        ar_rename_elements();
-        ar_referencewidget_lookups();
-        ar_set_tabindexes();
+		ar_rename_elements();
+		ar_referencewidget_lookups();
+		ar_set_tabindexes();
 
-        $("input[type=text]").prop("autocomplete", "off")
+		$("input[type=text]").prop("autocomplete", "off")
 
-        $(".copyButton").live("click",  copyButton );
+		$(".copyButton").live("click", copyButton);
 
-        $("th[class^='analysiscategory']").click(clickAnalysisCategory);
-        expand_default_categories();
+		$("th[class^='analysiscategory']").click(clickAnalysisCategory);
+		expand_default_categories();
 
-        $("input[name^='Price']").live("change", recalc_prices);
+		$("input[name^='Price']").live("change", recalc_prices);
 
-        $("input[id*='_ReportDryMatter']").change(changeReportDryMatter);
+		$("input[id*='_ReportDryMatter']").change(changeReportDryMatter);
 
-        $(".spec_bit").live("change", function() {
-            validate_spec_field_entry(this);
-        });
+		$(".spec_bit").live("change", function () {
+			validate_spec_field_entry(this);
+		});
 
-        // AR Add/Edit ajax form submits
-        loadAjaxSubmitHandler();
+		// AR Add/Edit ajax form submits
+		loadAjaxSubmitHandler();
 
-        // these go here so that popup windows can access them in our context
-        window.recalc_prices = recalc_prices;
-        window.calculate_parts = calculate_parts;
-        window.toggleCat = toggleCat;
+		// these go here so that popup windows can access them in our context
+		window.recalc_prices = recalc_prices;
+		window.calculate_parts = calculate_parts;
+		window.toggleCat = toggleCat;
 
-        // Filter data by the selected client
-        filterByClient();
+		// Filter data by the selected client
+		filterByClient();
 
-        // the copy_to_new button passes a copy_from request parameter
+		// the copy_to_new button passes a copy_from request parameter
 		// which is a UID or comma separated list oif UIDs.
-        var copy_from = window.location.href.split("copy_from=");
-        if(copy_from.length > 1){
-            copy_from = copy_from[1].split("&")[0];
-            copy_from = copy_from.split(",");
-            for (var column = 0; column < copy_from.length; column++) {
+		var copy_from = window.location.href.split("copy_from=");
+		if (copy_from.length > 1) {
+			copy_from = copy_from[1].split("&")[0];
+			copy_from = copy_from.split(",");
+			for (var column = 0; column < copy_from.length; column++) {
 				// use this to pass column nr to the fill_column callback
-                window.bika.ar_copy_from_col = column;
+				window.bika.ar_copy_from_col = column;
 				// XXX async.
-                $.ajaxSetup({async:false});
-                window.bika.lims.jsonapi_read({
-                    catalog_name: "uid_catalog",
-                    UID: copy_from[column]
-                }, fill_column);
-                $.ajaxSetup({async:true});
-            }
-        }
-    }
+				$.ajaxSetup({async: false});
+				window.bika.lims.jsonapi_read({
+												  catalog_name: "uid_catalog",
+												  UID: copy_from[column]
+											  }, fill_column);
+				$.ajaxSetup({async: true});
+			}
+		}
+	}
 
 
     /**
@@ -174,111 +174,96 @@ function AnalysisRequestAddView() {
         return arr;
     }
 
-    function toggle_spec_fields(element) {
-        // When a service checkbox is clicked, this is used to display
-        // or remove the specification inputs.
-        if (!$("#bika_setup").attr("EnableARSpecs")) {
-            return;
-        }
-        var column = $(element).attr("column");
-        var spec_uid = $("#ar_" + column + "_Specification_uid").val();
-        var service_uid = $(element).attr("value");
-        var min_name = "ar." + column + ".min." + service_uid;
-        var max_name = "ar." + column + ".max." + service_uid;
-        var error_name = "ar." + column + ".error." + service_uid;
-        if ($(element).prop("checked") && $(element).siblings().filter("[name='" + min_name + "']").length === 0) {
-            //var to know if analysis need specification
-            var allowspec = true;
-            //Search if current analysis's service allows specification
-            var request_allowspec = {
-                catalog_name: "uid_catalog",
-                UID: service_uid
-            };
-            window.bika.lims.jsonapi_read(request_allowspec, function (result) {
-                if (result.objects && result.objects.length > 0) {
-                    var allowspec = result.objects[0].ResultOptions == null || result.objects[0].ResultOptions.length == 0;
-                    // To force the next if statments part to be syncron
-                    if ((spec_uid !== "") && allowspec) {
-                        var request_data = {
-                            catalog_name: "uid_catalog",
-                            UID: spec_uid
-                        };
-                        window.bika.lims.jsonapi_read(request_data, function (data) {
-                            var min_val = "";
-                            var max_val = "";
-                            var error_val = "";
-                            if (data.objects && data.objects.length > 0) {
-                                var rr = data.objects[0].ResultsRange;
-                                for (var i in rr) {
-                                    if (!(rr.hasOwnProperty(i))) {
-                                        continue;
-                                    }
-                                    if (rr[i].keyword == $(element).attr("keyword")) {
-                                        min_val = rr[i].min;
-                                        max_val = rr[i].max;
-                                        error_val = rr[i].error;
-                                        break;
-                                    }
-                                }
-                            }
-                            var min = $("<input class='spec_bit min' type='text' size='3' uid='" + service_uid + "' value='" + min_val + "' name='" + min_name + "' keyword='" + $(element).attr("keyword") + "' autocomplete='off' placeholder='&gt;'/>");
-                            var max = $("<input class='spec_bit max' type='text' size='3' uid='" + service_uid + "' value='" + max_val + "' name='" + max_name + "' keyword='" + $(element).attr("keyword") + "' autocomplete='off' placeholder='&lt;'/>");
-                            var error = $("<input class='spec_bit error' type='text' size='3' uid='" + service_uid + "' value='" + error_val + "' name='" + error_name + "' keyword='" + $(element).attr("keyword") + "' autocomplete='off' placeholder='%'/>");
-                            $(element).after(error).after(max).after(min);
-                        });
-                    }
-                    else if (allowspec) {
-                        var min = $("<input class='spec_bit min' type='text' size='3' uid='" + service_uid + "' value='' name='" + min_name + "' keyword='" + $(element).attr("keyword") + "' autocomplete='off' placeholder='&gt;'/>");
-                        var max = $("<input class='spec_bit max' type='text' size='3' uid='" + service_uid + "' value='' name='" + max_name + "' keyword='" + $(element).attr("keyword") + "' autocomplete='off' placeholder='&lt;'/>");
-                        var error = $("<input class='spec_bit error' type='text' size='3' uid='" + service_uid + "' value='' name='" + error_name + "' keyword='" + $(element).attr("keyword") + "' autocomplete='off' placeholder='%'/>");
-                        $(element).after(error).after(max).after(min);
-                    }
-                }
-            });
-        }
-        else {
-            $("input[name='" + min_name + "']").remove();
-            $("input[name='" + max_name + "']").remove();
-            $("input[name='" + error_name + "']").remove();
-        }
-    }
 
-    function reset_spec_field_values(column) {
-        // When a spec is selected, all existing spec fields are cleared and reset
-        if (!$("#bika_setup").attr("EnableARSpecs")) {
-            return;
-        }
-        var spec_uid = $("#ar_" + column + "_Specification_uid").val();
-        if (spec_uid !== "") {
-            var request_data = {
-                catalog_name: "uid_catalog",
-                UID: spec_uid
-            };
-            window.bika.lims.jsonapi_read(request_data, function (data) {
-                // empty all specification inputs.
-                var min_name = "[name^='ar." + column + ".min']";
-                var max_name = "[name^='ar." + column + ".max']";
-                var error_name = "[name^='ar." + column + ".error']";
-                $(min_name).val("");
-                $(max_name).val("");
-                $(error_name).val("");
-                // set specification values in all supported services.
-                if (data.objects && data.objects.length > 0) {
-                    var rr = data.objects[0].ResultsRange;
-                    for (var i in rr) {
-                        var this_min = "[name='ar." + column + ".min\\." + rr[i].uid + "']";
-                        var this_max = "[name='ar." + column + ".max\\." + rr[i].uid + "']";
-                        var this_error = "[name='ar." + column + ".error\\." + rr[i].uid + "']";
-                        if ($(this_min)) {
-                            $(this_min).val(rr[i].min);
-                            $(this_max).val(rr[i].max);
-                            $(this_error).val(rr[i].error);
-                        }
-                    }
-                }
-            });
-        }
-    }
+	function set_spec_hidden_value(arnum) {
+		// Get the spec for this column/
+		if($("#ar_" + arnum + "_Specification_uid").val() == "") {
+			return;
+		}
+		var request_data = {
+			catalog_name: 'bika_setup_catalog',
+			UID: $("#ar_" + arnum + "_Specification_uid").val()
+		};
+		window.bika.lims.jsonapi_read(request_data, function (data) {
+			if (data.success && data.objects.length > 0) {
+				// get specs from form
+				var element = $("#specs");
+				var form_rr = $.parseJSON($(element).val());
+				// Write the spec's ResultRange to #specs
+				form_rr[arnum] = data.objects[0]['ResultsRange'];
+				$(element).val($.toJSON(form_rr));
+			}
+		});
+	}
+
+	function set_spec_field_values(arnum) {
+		/*
+		 Specs are taken from the Specification element values (#specs).
+		 If a spec is defined in copy_to_new_specs, it is used instead, and the
+		 values in #specs have no effect.
+		 */
+		var copy_to_new_specs = $.parseJSON($("#copy_to_new_specs").val());
+		var specs = $.parseJSON($("#specs").val());
+		var rr = copy_to_new_specs[arnum];
+		if (rr == undefined || rr.length < 1) {
+			rr = specs[arnum];
+		}
+		// Set values for selected analyses
+		if (rr != undefined && rr.length > 0) {
+			for (var i = 0; i < rr.length; i++) {
+				var this_min = "[name='ar." + arnum + ".min." + rr[i].uid + "']";
+				var this_max = "[name='ar." + arnum + ".max." + rr[i].uid + "']";
+				var this_error = "[name='ar." + arnum + ".error." + rr[i].uid + "']";
+				if ($(this_min).length > 0) {
+					if ($(this_min).val() == "") {
+						$(this_min).val(rr[i].min);
+					}
+					if ($(this_max).val() == "") {
+						$(this_max).val(rr[i].max);
+					}
+					if ($(this_error).val() == "") {
+						$(this_error).val(rr[i].error);
+					}
+				}
+			}
+		}
+	}
+
+	function reset_spec_fields(arnum) {
+		$("[name^='ar." + arnum + ".min']").val("");
+		$("[name^='ar." + arnum + ".max']").val("");
+		$("[name^='ar." + arnum + ".error']").val("");
+	}
+
+	function toggle_spec_fields(element) {
+		// This flag disables spec inputs
+		if (!$("#bika_setup").attr("EnableARSpecs")) {
+			return;
+		}
+		// Specifications not allowed if ResultOptions used for service
+		if (element.attr("has_resultoptions") == "True") {
+			return;
+		}
+
+		var column = $(element).attr("column");
+		var service_uid = $(element).attr("value");
+		var min_name = "ar." + column + ".min." + service_uid;
+		var max_name = "ar." + column + ".max." + service_uid;
+		var error_name = "ar." + column + ".error." + service_uid;
+
+		if ($(element).prop("checked") &&
+				$(element).siblings().filter("[name='" + min_name + "']").length == 0) {
+			var min = $("<input class='spec_bit min' type='text' size='3' uid='" + service_uid + "' value='' name='" + min_name + "' keyword='" + $(element).attr("keyword") + "' autocomplete='off' placeholder='&gt;'/>");
+			var max = $("<input class='spec_bit max' type='text' size='3' uid='" + service_uid + "' value='' name='" + max_name + "' keyword='" + $(element).attr("keyword") + "' autocomplete='off' placeholder='&lt;'/>");
+			var error = $("<input class='spec_bit error' type='text' size='3' uid='" + service_uid + "' value='' name='" + error_name + "' keyword='" + $(element).attr("keyword") + "' autocomplete='off' placeholder='%'/>");
+			$(element).after(error).after(max).after(min);
+		} else {
+			$("input[name='" + min_name + "']").remove();
+			$("input[name='" + max_name + "']").remove();
+			$("input[name='" + error_name + "']").remove();
+		}
+		set_spec_field_values(column);
+	}
 
     function validate_spec_field_entry(element) {
         var column = $(element).attr("name").split(".")[1];
@@ -307,51 +292,6 @@ function AnalysisRequestAddView() {
             if(isNaN(error) || error < 0 || error > 100){
                 $(error_element).val("");
             }
-        }
-    }
-
-    function set_default_spec(column) {
-        if(!$("#bika_setup").attr("EnableARSpecs")) { return; }
-        // I use only the sampletype for looking up defaults.
-        var sampletype_title = $("#ar_"+column+"_SampleType").val();
-        var client_uid = $("#ar_"+column+"_Client_uid").val();
-        if(sampletype_title !== ""){
-            var bika_analysisspecs_uid = $("#bika_setup").attr("bika_analysisspecs_uid");
-            var request_data = {
-                catalog_name: "bika_setup_catalog",
-                portal_type: "AnalysisSpec",
-                getSampleTypeTitle: encodeURIComponent(sampletype_title),
-                getClientUID: [client_uid, bika_analysisspecs_uid]
-            };
-
-            window.bika.lims.jsonapi_read(request_data, function(data) {
-                var ob, obj;
-                if (data.objects && data.objects.length > 0) {
-                    for(ob in data.objects){
-                        if ((!data.objects.hasOwnProperty(ob))) { continue; }
-                        obj = data.objects[ob];
-                        if ((!obj.hasOwnProperty("getClientUID"))) { continue; }
-                        if(client_uid == obj.getClientUID){
-                            $("#ar_"+column+"_Specification").val(obj.title);
-                            $("#ar_"+column+"_Specification_uid").val(obj.UID);
-                            reset_spec_field_values(column);
-                            return;
-                        }
-                    }
-                    for(ob in data.objects){
-                        if ((!data.objects.hasOwnProperty(ob))) { continue; }
-                        obj = data.objects[ob];
-                        if ((!obj.hasOwnProperty("getClientUID"))) { continue; }
-                        if (obj.getClientUID != client_uid) {
-                            $("#ar_"+column+"_Specification").val(obj.title);
-                            $("#ar_"+column+"_Specification_uid").val(obj.UID);
-                            reset_spec_field_values(column);
-                            return;
-                        }
-                    }
-                }
-            });
-
         }
     }
 
@@ -390,6 +330,7 @@ function AnalysisRequestAddView() {
             });
         }
     }
+
     function modify_Specification_field_filter(column) {
         // when a SampleType is selected I will allow only specs to be selected
         // which 1- (have the same Sample Types)
@@ -406,6 +347,32 @@ function AnalysisRequestAddView() {
         $(e).attr("search_query", query_str);
     }
 
+	function set_Specification_from_SampleType(column) {
+		st_title = $("#ar_" + column + "_SampleType").val();
+		st_uid = $("#ar_" + column + "_SampleType_uid").val();
+		if (st_uid == undefined || st_uid == null || st_uid == "") {
+			return;
+		}
+		spec_element = $("#ar_" + column + "_Specification");
+		spec_uid_element = $("#ar_" + column + "_Specification_uid");
+		var request_data = {
+			catalog_name: "bika_setup_catalog",
+			portal_type: "AnalysisSpec",
+			getSampleTypeTitle: st_title,
+			include_fields: ["Title", "UID"]
+		};
+		window.bika.lims.jsonapi_read(request_data, function (data) {
+			if (data.objects.length > 0) {
+				var spec = data.objects[0];
+				// set spec values for this column
+				$(spec_element).val(spec.Title);
+				$(spec_uid_element).val(spec.UID);
+				set_spec_hidden_value(column);
+				reset_spec_fields(column);
+				set_spec_field_values(column);
+			}
+		});
+	}
 
     function ar_set_tabindexes() {
         // Sets the tab index to the elements. Tab flow top to bottom instead of left
@@ -456,7 +423,7 @@ function AnalysisRequestAddView() {
         }
     }
 
-    // The columnar referencewidgets that we reconfigure use this as their
+	// The columnar referencewidgets that we reconfigure use this as their
     // select handler.
     function ar_referencewidget_select_handler(event, ui){
         /*jshint validthis:true */
@@ -522,16 +489,21 @@ function AnalysisRequestAddView() {
             var sp_parent_node = $(sp_element).parent();
             $(sp_element).remove();
             $(sp_parent_node).append(new_sp_element);
-            sp_element = $("#ar_"+column+"_SamplePoint");
-            // cut kwargs into the base_query
-            var sp_base_query = $(sp_element).attr("base_query");
-            sp_base_query = $.parseJSON(sp_base_query);
-            sp_base_query = $.toJSON(sp_base_query);
             var sp_search_query = {"getSampleTypeTitle": encodeURIComponent(ui.item[$(this).attr("ui_item")])};
             sp_search_query = $.toJSON(sp_search_query);
             sp_element.attr("search_query", sp_search_query);
             ar_referencewidget_lookups(sp_element);
-        }
+            // Template gets removed, as it no longer matches the SampleType.
+			unsetTemplate(column);
+			// Discover if we have a Specification linked to the SampleType
+			set_Specification_from_SampleType(column);
+			// Fix filter for Specs to exclude Spec with non matching sample type
+			modify_Specification_field_filter(column);
+			// Fix the spec values to reflect the new specification ranges
+			set_spec_hidden_value(column);
+			set_spec_field_values(column);
+			calculate_parts(column);
+		}
         if(fieldName == "SamplePoint"){
             // selecting a Samplepoint - jiggle the SampleType element.
             var st_element = $("#ar_"+column+"_SampleType");
@@ -547,9 +519,9 @@ function AnalysisRequestAddView() {
             $(st_parent_node).append(new_st_element);
             st_element = $("#ar_"+column+"_SampleType");
             // cut kwargs into the base_query
-            var st_base_query = $(st_element).attr("base_query");
-            st_base_query = $.parseJSON(st_base_query);
-            st_base_query = $.toJSON(st_base_query);
+//            var st_base_query = $(st_element).attr("base_query");
+//            st_base_query = $.parseJSON(st_base_query);
+//            st_base_query = $.toJSON(st_base_query);
             var st_search_query = {"getSamplePointTitle": ui.item[$(this).attr("ui_item")]};
             st_search_query = $.toJSON(st_search_query);
             st_element.attr("search_query", st_search_query);
@@ -561,12 +533,17 @@ function AnalysisRequestAddView() {
             unsetTemplate(column);
             setAnalysisProfile(column, $(this).val());
             calculate_parts(column);
+			reset_spec_fields(column);
+            set_spec_field_values(column);
         }
 
         // Selected a Template
         if(fieldName == "Template"){
             setTemplate(column, $(this).val());
-        }
+            set_spec_hidden_value(column);
+			reset_spec_fields(column);
+			set_spec_field_values(column);
+		}
 
         // Selected a sample to create a secondary AR.
         if(fieldName == "Sample"){
@@ -611,18 +588,12 @@ function AnalysisRequestAddView() {
             );
         }
 
-        // Selected a SampleType
-        if(fieldName == "SampleType"){
-            unsetTemplate(column);
-            set_default_spec(column);
-            modify_Specification_field_filter(column);
-            calculate_parts(column);
-        }
-
         // Selected a Specification
         if(fieldName == "Specification"){
-            reset_spec_field_values(column);
-        }
+            set_spec_hidden_value(column);
+			reset_spec_fields(column);
+			set_spec_field_values(column);
+		}
 
         // Triggers 'selected' event (as reference widget)
         $(this).trigger("selected", ui.item.UID);
@@ -847,11 +818,15 @@ function AnalysisRequestAddView() {
                     if(fieldName == "SampleType"){
                         unsetTemplate(col);
                         calculate_parts(col);
-                    }
+						set_spec_hidden_value(col);
+						set_spec_field_values(col);
+					}
 
                     if(fieldName == "Specification"){
-                        reset_spec_field_values(col);
-                    }
+                        set_spec_hidden_value(col);
+						reset_spec_fields(column);
+						set_spec_field_values(col);
+					}
 
                 }
             }
@@ -883,7 +858,7 @@ function AnalysisRequestAddView() {
                         var cb = $("input[value="+service_uid+"]").filter("[column='"+column+"']");
                         $(cb).prop("checked",true);
                         toggle_spec_fields(cb);
-                    }
+					}
                 }
                 recalc_prices(column);
             } else {
@@ -913,7 +888,7 @@ function AnalysisRequestAddView() {
                         var service_uid = selectedservices[i];
                         var e = $("input[value=" + service_uid + "]").filter("[column='" + column + "']");
                         toggle_spec_fields(e);
-                    }
+					}
                 }
             });
         }
@@ -1016,7 +991,7 @@ function AnalysisRequestAddView() {
                     var e = $("input[column='"+key.col+"']").filter("#"+service_uid);
                     $(e).prop("checked",true);
                     toggle_spec_fields(e);
-                }
+				}
             } else {
                 // otherwise, toggleCat will take care of everything for us
                 $.ajaxSetup({async:false});
@@ -1123,7 +1098,7 @@ function AnalysisRequestAddView() {
                                 cb = $("input[column='"+column+"']").filter("#"+service_uid);
                                 $(cb).prop("checked", false);
                                 toggle_spec_fields($(cb));
-                                $(".partnr_"+service_uid).filter("[column='"+column+"']").empty();
+								$(".partnr_"+service_uid).filter("[column='"+column+"']").empty();
                                 if ($(cb).val() == $("#getDryMatterService").val()) {
                                     $("#ar_"+column+"_ReportDryMatter").prop("checked",false);
                                 }
@@ -1146,7 +1121,7 @@ function AnalysisRequestAddView() {
                                             cb = $("input[column='"+column+"']").filter("#"+service_uid);
                                             $(cb).prop("checked", false);
                                             toggle_spec_fields($(cb));
-                                            $(".partnr_"+service_uid).filter("[column='"+column+"']").empty();
+											$(".partnr_"+service_uid).filter("[column='"+column+"']").empty();
                                             if ($(cb).val() == $("#getDryMatterService").val()) {
                                                 $("#ar_"+column+"_ReportDryMatter").prop("checked",false);
                                             }
@@ -1157,7 +1132,7 @@ function AnalysisRequestAddView() {
                                     No:function(){
                                         $(element).prop("checked",true);
                                         toggle_spec_fields($(element));
-                                        $(this).dialog("close");
+										$(this).dialog("close");
                                         $("#messagebox").remove();
                                     }
                                 }
@@ -1233,7 +1208,7 @@ function AnalysisRequestAddView() {
             $("#ar_"+column+"_SamplePoint").val(template.SamplePoint);
             $("#ar_"+column+"_SamplePoint_uid").val(template.SamplePointUID);
             $("#ar_"+column+"_reportdrymatter").prop("checked", template.reportdrymatter);
-            set_default_spec(column);
+
             // lookup AnalysisProfile
             if(template.AnalysisProfile) {
                 request_data = {
@@ -1334,9 +1309,9 @@ function AnalysisRequestAddView() {
                         // set part number indicators
                         for(i=0;i<service_uids.length;i++){
                             service_uid = service_uids[i];
-                            var partnr = parts_by_service_uid[service_uid].part_nr;
+                            var partnr = parseInt(parts_by_service_uid[service_uid].part_nr, 10);
                             e = $(".partnr_"+service_uid).filter("[column='"+column+"']");
-                            $(e).empty().append(partnr+1);
+                            $(e).empty().append(partnr);
                         }
                         recalc_prices(column);
                     }
@@ -1384,7 +1359,6 @@ function AnalysisRequestAddView() {
                             var service_uid = services[i].UID;
                             var e = $("input[column='"+column+"']").filter("#"+service_uid);
                             $(e).prop("checked", true);
-                            toggle_spec_fields($(e));
                         }
                         recalc_prices(column);
                     } else {
@@ -1425,7 +1399,7 @@ function AnalysisRequestAddView() {
         calcdependencies([element]);
         recalc_prices();
         calculate_parts(column);
-        toggle_spec_fields(element);
+		toggle_spec_fields(element);
 
     }
 
@@ -1467,17 +1441,22 @@ function AnalysisRequestAddView() {
 
 	function fill_column(data) {
 		// fields which should not be completed from the source AR
-		var skip_fields = ['Sample', 'Sample_uid'];
+		var skip_fields = ['Sample',
+						   'Sample_uid',
+						   'SamplingDate',
+						   'DateSampled',
+						   'Sampler']
 		// if the jsonapi read data did not include any objects, abort
-		if (data.objects.length < 1) {
-			// obviously, shouldn't happen
+		// obviously, shouldn't happen
+		if ((!data.success) || data.objects.length < 1) {
 			return;
 		}
 		var obj = data.objects[0];
 		// this is the column containing the elements we will write into
 		var col = window.bika.ar_copy_from_col;
 		// set field values from data into respective elements.  data does include
-		// *_uid entries for reference field values
+		// *_uid entries for reference field values, so the corrosponding *_uid
+		// hidden elements are written here
 		for (var fieldname in obj) {
 			if (!obj.hasOwnProperty(fieldname)) { continue; }
 			if (skip_fields.indexOf(fieldname) > -1) { continue; }
@@ -1487,10 +1466,12 @@ function AnalysisRequestAddView() {
 				$(el).val(fieldvalue);
 			}
 		}
+
 		var services = {};
 		var specs = {};
 		var poc_name, cat_uid, service_uid, service_uids;
 		var i, key;
+
 		for (i = obj.Analyses.length - 1; i >= 0; i--) {
 			var analysis = obj.Analyses[i];
 			cat_uid = analysis.CategoryUID;
@@ -1500,7 +1481,6 @@ function AnalysisRequestAddView() {
 				services[key] = [];
 			}
 			services[key].push(service_uid);
-			specs[service_uid] = analysis.specification;
 		}
 		for (key in services) {
 			if (!services.hasOwnProperty(key)) {
@@ -1510,15 +1490,6 @@ function AnalysisRequestAddView() {
 			cat_uid = key.split("__")[1];
 			service_uids = services[key];
 			window.toggleCat(poc_name, cat_uid, col, service_uids, true);
-			for (i = 0; i < service_uids.length; i++) {
-				service_uid = service_uids[i];
-				var spec = specs[service_uid];
-				if (spec) {
-					$("[name^='ar." + col + ".min." + service_uid + "']").val(spec.min);
-					$("[name^='ar." + col + ".max." + service_uid + "']").val(spec.max);
-					$("[name^='ar." + col + ".error." + service_uid + "']").val(spec.error);
-				}
-			}
 		}
 	}
 

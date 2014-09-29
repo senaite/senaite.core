@@ -117,11 +117,9 @@ class JSONReadExtender(object):
             if not method:
                 method = service.getMethod()
             service = analysis.getService()
-            hs = hasattr(analysis, "specification")
             analysis_data = {
                 "Uncertainty": service.getUncertainty(analysis.getResult()),
                 "Method": method.Title() if method else '',
-                "specification": analysis.specification if hs else {},
                 "Unit": service.getUnit(),
             }
             # Place all schema fields ino the result.
