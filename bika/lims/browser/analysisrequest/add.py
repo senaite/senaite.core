@@ -79,6 +79,16 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
                 ps.append(service.UID())
         return json.dumps(ps)
 
+    def get_fields_with_visibility(self, visibility):
+        schema = self.context.Schema()
+        fields = []
+        for field in schema.fields():
+            isVisible = field.widget.isVisible
+            v = isVisible(self.context, 'add', default='invisible', field=field)
+            if v == visibility:
+                fields.append(field)
+        return fields
+
 
 class SecondaryARSampleInfo(BrowserView):
     """Return fieldnames and pre-digested values for Sample fields which

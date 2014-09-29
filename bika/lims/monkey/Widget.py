@@ -38,10 +38,10 @@ def isVisible(self, instance, mode='view', default=None, field=None):
     keys.reverse()
     for key in keys:
         for adapter in adapters[key]:
-            # oldstate = state
+            oldstate = state
             state = adapter[1](instance, mode, field, state)
             # if state != oldstate:
             #     adapter_name = adapter[1].__repr__().split(" ")[0].split(".")[-1]
-            #     print "%s: %s modified by %s.  was: %s, now: %s   (%s)"%(adapter[1].sort, field.getName() if field else field, adapter_name, oldstate, state, mode)
+            #     print "%-25s %-25s adapter:%s"%(field.getName(), "%s->%s"%(oldstate, state), adapter_name)
 
     return state

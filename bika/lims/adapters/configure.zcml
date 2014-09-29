@@ -5,25 +5,17 @@
     i18n_domain="bika">
 
     <adapter
-      factory=".widgetvisibility.MainClientFieldWidgetVisibility"
+      factory=".widgetvisibility.ClientFieldWidgetVisibility"
       provides="bika.lims.interfaces.IATWidgetVisibility"
       for="bika.lims.interfaces.IAnalysisRequest"
-      name="MainClientFieldWV"
+      name="ClientFieldWV"
     />
-
 
     <adapter
       factory=".widgetvisibility.BatchARAdd_BatchFieldWidgetVisibility"
       provides="bika.lims.interfaces.IATWidgetVisibility"
       for="bika.lims.interfaces.IAnalysisRequest"
       name="BatchBatchFieldWV"
-    />
-
-    <adapter
-      factory=".widgetvisibility.BatchClientFieldWidgetVisibility"
-      provides="bika.lims.interfaces.IATWidgetVisibility"
-      for="bika.lims.interfaces.IAnalysisRequest"
-      name="BatchClientFieldWV"
     />
 
     <adapter

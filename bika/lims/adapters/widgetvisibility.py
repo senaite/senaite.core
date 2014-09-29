@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-from bika.lims.interfaces import IAnalysisRequestsFolder
+from bika.lims.interfaces import IAnalysisRequestsFolder, IBatch, IClient
 from bika.lims.interfaces import IATWidgetVisibility
 from bika.lims.utils import getHiddenAttributesForClass
 from Products.CMFCore.utils import getToolByName
@@ -87,8 +87,10 @@ class SamplingWorkflowWidgetVisibility(object):
         return state
 
 
-class BatchClientFieldWidgetVisibility(object):
-    """This will force the 'Client' field to 'visible' when in Batch context
+class ClientFieldWidgetVisibility(object):
+    """The Client field is editable by default in ar_add.  This adapter
+    will force the Client field to be hidden when it should not be set
+    by the user.
     """
     implements(IATWidgetVisibility)
 
@@ -97,10 +99,19 @@ class BatchClientFieldWidgetVisibility(object):
         self.sort = 10
 
     def __call__(self, context, mode, field, default):
-        state = default if default else 'visible'
+        state = default if default else 'hidden'
         fieldName = field.getName()
-        if fieldName == 'Client' and context.aq_parent.portal_type == 'Batch':
-            return 'edit'
+        if fieldName != 'Client':
+            return state
+        parent = self.context.aq_parent
+
+        if IBatch.providedBy(parent):
+            if parent.getClient():
+                return 'hidden'
+
+        if IClient.providedBy(parent):
+            return 'hidden'
+
         return state
 
 class BatchARAdd_BatchFieldWidgetVisibility(object):
@@ -119,28 +130,6 @@ class BatchARAdd_BatchFieldWidgetVisibility(object):
         if fieldName == 'Batch' and context.aq_parent.portal_type == 'Batch':
             return 'hidden'
         return state
-
-class MainClientFieldWidgetVisibility(object):
-    """This will force the 'Client' field to 'hidden' when in /analysisrequests
-    context.
-
-    This context is possible now since hitting copy-to-new in /analysisrequests
-    will load the AR-add form.
-    """
-    implements(IATWidgetVisibility)
-
-    def __init__(self, context):
-        self.context = context
-        self.sort = 10
-
-    def __call__(self, context, mode, field, default):
-        state = default if default else 'visible'
-        fieldName = field.getName()
-        if fieldName == 'Client' and mode == 'add' \
-                and IAnalysisRequestsFolder.providedBy(context.aq_parent):
-            return 'edit'
-        return state
-
 
 class OptionalFieldsWidgetVisibility(object):
     """Remove 'hidden attributes' (fields in registry bika.lims.hiddenattributes).
