@@ -134,8 +134,13 @@ class AnalysesView(BikaListingView):
                                            expand_all_categories=True)
 
     def get_analysis_spec(self, analysis):
-        rr = dicts_to_dict(analysis.aq_parent.getResultsRange(), 'keyword')
-        return rr.get(analysis.getKeyword(), None)
+        if hasattr(analysis.aq_parent, 'getResultsRange'):
+            rr = dicts_to_dict(analysis.aq_parent.getResultsRange(), 'uid')
+            return rr.get(analysis.getKeyword(), None)
+        if hasattr(analysis.aq_parent, 'getReferenceResults'):
+            rr = dicts_to_dict(analysis.aq_parent.getReferenceResults(), 'uid')
+            return rr.get(analysis.UID(), None)
+        return {'min':'', 'max':'', 'error':''}
 
     def ResultOutOfRange(self, analysis):
         """ Template wants to know, is this analysis out of range?
