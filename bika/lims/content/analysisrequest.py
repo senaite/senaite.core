@@ -3,6 +3,7 @@
 import logging
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
+from Products.ATExtensions.field import RecordsField
 from plone.indexer import indexer
 from Products.Archetypes import atapi
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -27,7 +28,7 @@ from bika.lims.workflow import doActionFor
 from decimal import Decimal
 from zope.interface import implements
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t, getUsers
+from bika.lims.utils import t, getUsers, dicts_to_dict
 
 from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
 
@@ -186,11 +187,11 @@ schema = BikaSchema.copy() + Schema((
             description = "You must assign this request to a client",
             size=20,
             render_own_label=True,
-            visible={'edit': 'visible',
+            visible={'edit': 'hiddden',
                      'view': 'visible',
                      'add': 'hidden',
                      'header_table': 'visible',
-                     'sample_registered': {'view': 'invisible', 'edit': 'invisible', 'add': 'hidden'},
+                     'sample_registered': {'view': 'invisible', 'edit': 'hidden', 'add': 'hidden'},
                      'to_be_sampled':     {'view': 'invisible', 'edit': 'invisible'},
                      'sampled':           {'view': 'invisible', 'edit': 'invisible'},
                      'to_be_preserved':   {'view': 'invisible', 'edit': 'invisible'},
@@ -545,6 +546,13 @@ schema = BikaSchema.copy() + Schema((
             ],
             showOn=True,
         ),
+    ),
+    # see setResultsRange below.
+    RecordsField('ResultsRange',
+         required=0,
+         type='analysisspec',
+         subfields=('keyword', 'min', 'max', 'error', 'hidemin', 'hidemax', 'rangecomment'),
+         widget=ComputedWidget(visible=False),
     ),
     ReferenceField(
         'PublicationSpecification',
@@ -1720,6 +1728,51 @@ class AnalysisRequest(BaseFolder):
             for analysis_key in analysis_keys:
                 result.append(analyses[analysis_key])
         return result
+
+    def setResultsRange(self, value=None):
+        """Sets the spec values for this AR.
+        1 - Client specs where (spec.Title) matches (ar.SampleType.Title)
+        2 - Lab specs where (spec.Title) matches (ar.SampleType.Title)
+        3 - Take override values from instance.Specification
+        4 - Take override values from the form (passed here as parameter 'value').
+
+        The underlying field value is a list of dictionaries.
+
+        The value parameter may be a list of dictionaries, or a dictionary (of
+        dictionaries).  In the last case, the keys are irrelevant, but in both
+        cases the specs must contain, at minimum, the "keyword", "min", "max",
+        and "error" fields.
+
+        Value will be stored in ResultsRange field as list of dictionaries
+        """
+        rr = {}
+        sample = self.getSample()
+        if not sample:
+            # portal_factory
+            return []
+        stt = self.getSample().getSampleType().Title()
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        # 1 or 2: rr = Client specs where (spec.Title) matches (ar.SampleType.Title)
+        for folder in self.aq_parent, self.bika_setup.bika_analysisspecs:
+            proxies = bsc(portal_type='AnalysisSpec',
+                          getSampleTypeTitle=stt,
+                          ClientUID=folder.UID())
+            if proxies:
+                rr = dicts_to_dict(proxies[0].getObject().getResultsRange(), 'keyword')
+                break
+        # 3: rr += override values from instance.Specification
+        ar_spec = self.getSpecification()
+        if ar_spec:
+            ar_spec_rr = ar_spec.getResultsRange()
+            rr.update(dicts_to_dict(ar_spec_rr, 'keyword'))
+        # 4: rr += override values from the form (value=dict key=service_uid)
+        if value:
+            if type(value) in (list, tuple):
+                value = dicts_to_dict(value, "keyword")
+            elif type(value) == dict:
+                value = dicts_to_dict(value.values(), "keyword")
+            rr.update(value)
+        return self.Schema()['ResultsRange'].set(self, rr.values())
 
     # Then a string of fields which are defined on the AR, but need to be set
     # and read from the sample

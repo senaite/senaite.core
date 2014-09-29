@@ -98,9 +98,6 @@ Schema((
 ))
 schema['description'].widget.visible = True
 schema['title'].required = True
-schema['title'].widget.description = \
-    "To include this spec as the default for a sample type, set the " \
-    "title here to the name of the sample type."
 
 class AnalysisSpec(BaseFolder, HistoryAwareMixin):
     implements(IAnalysisSpec)

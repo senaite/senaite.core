@@ -97,6 +97,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
     def workflow_action_save_analyses_button(self):
         form = self.request.form
         workflow = getToolByName(self.context, 'portal_workflow')
+        bsc = self.context.bika_setup_catalog
         action, came_from = WorkflowAction._get_form_workflow_action(self)
         # AR Manage Analyses: save Analyses
         ar = self.context
@@ -113,15 +114,22 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         specs = {}
         if form.get("min", None):
             for service_uid in Analyses:
+                service = bsc(UID=service_uid)[0].getObject()
+                keyword = service.getKeyword()
                 specs[service_uid] = {
                     "min": form["min"][0][service_uid],
                     "max": form["max"][0][service_uid],
-                    "error": form["error"][0][service_uid]
+                    "error": form["error"][0][service_uid],
+                    "keyword": keyword,
+                    "uid": service_uid,
                 }
         else:
             for service_uid in Analyses:
-                specs[service_uid] = {"min": "", "max": "", "error": ""}
-        new = ar.setAnalyses(Analyses, prices=prices, specs=specs)
+                service = bsc(UID=service_uid)[0].getObject()
+                keyword = service.getKeyword()
+                specs[service_uid] = {"min": "", "max": "", "error": "",
+                                      "keyword": keyword, "uid": service_uid}
+        new = ar.setAnalyses(Analyses, prices=prices, specs=specs.values())
         # link analyses and partitions
         # If Bika Setup > Analyses > 'Display individual sample
         # partitions' is checked, no Partitions available.

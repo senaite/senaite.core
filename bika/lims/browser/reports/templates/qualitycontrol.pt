@@ -43,7 +43,7 @@
           </span>
                     </p>
 
-                    <p tal:condition="not: view/isSamplePointHidden">
+                    <p tal:condition="not: view/isSamplePointHidden|nothing">
                         <a href="#"
                            id="resultspersamplepoint_selector"
                                 i18n:translate="">Results per sample point</a>

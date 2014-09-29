@@ -2,25 +2,15 @@ import tempfile
 
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from bika.lims.interfaces import IResultOutOfRange
+from bika.lims.utils import t, dicts_to_dict
 from bika.lims.browser import BrowserView
 from bika.lims.browser.reports.selection_macros import SelectionMacrosView
 from gpw import plot
 from plone.app.layout.globals.interfaces import IViewView
+from zope.component import getAdapters
 from zope.interface import implements
 import os
-
-
-def ResultOutOfRange(analysis):
-    spec = {}
-    if hasattr(analysis, "specification") and analysis.specification:
-        spec = analysis.specification
-    r = ResultOutOfRange(analysis)
-    return r.isOutOfRange(analysis.getResult(),
-                          spec.get("min", ""),
-                          spec.get("max", ""),
-                          spec.get("error", ""))
-
 
 class Report(BrowserView):
     implements(IViewView)
@@ -33,6 +23,23 @@ class Report(BrowserView):
         super(Report, self).__init__(context, request)
         self.report = report
         self.selection_macros = SelectionMacrosView(self.context, self.request)
+
+    def get_analysis_spec(self, analysis):
+        rr = dicts_to_dict(analysis.aq_parent.getResultsRange(), 'keyword')
+        return rr.get(analysis.getKeyword(), None)
+
+    def ResultOutOfRange(self, analysis):
+        """ Template wants to know, is this analysis out of range?
+        We scan IResultOutOfRange adapters, and return True if any IAnalysis
+        adapters trigger a result.
+        """
+        adapters = getAdapters((analysis, ), IResultOutOfRange)
+        spec = self.get_analysis_spec(analysis)
+        for name, adapter in adapters:
+            if not spec:
+                return False
+            if adapter(specification=spec):
+                return True
 
     def __call__(self):
 
@@ -121,7 +128,7 @@ class Report(BrowserView):
             service = analysis.getService()
             keyword = service.getKeyword()
             service_title = "%s (%s)" % (service.Title(), keyword)
-            result_in_range = ResultOutOfRange(analysis)
+            result_in_range = self.ResultOutOfRange(analysis)
 
             if service_title not in analyses.keys():
                 analyses[service_title] = []
