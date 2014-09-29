@@ -4,7 +4,7 @@ from bika.lims.idserver import renameAfterCreation
 from bika.lims.jsonapi import set_fields_from_request
 from bika.lims.jsonapi import resolve_request_lookup
 from bika.lims.permissions import AccessJSONAPI
-from bika.lims.utils import tmpID
+from bika.lims.utils import tmpID, dicts_to_dict
 from bika.lims.workflow import doActionFor
 from plone.jsonapi.core import router
 from plone.jsonapi.core.interfaces import IRouteProvider
@@ -15,8 +15,8 @@ from zExceptions import BadRequest
 from zope import event
 from zope import interface
 
+import json
 import transaction
-
 
 class Create(object):
     interface.implements(IRouteProvider)
@@ -101,9 +101,7 @@ class Create(object):
         ... "Services:list=portal_type:AnalysisService|title:Copper",
         ... "Services:list=portal_type:AnalysisService|title:Magnesium",
         ... "SamplingDate=2013-09-29",
-        ... "AR_Specification=portal_type:AnalysisSpec|title:Apple Pulp",
-        ... "Analysis_Specification:list=Cu:5:10:10",
-        ... "Analysis_Specification:list=Mg:6:11:11"
+        ... "Specification=portal_type:AnalysisSpec|title:Apple Pulp",
         ... ]))
         >>> browser.contents
         '{..."success": true...}'
@@ -206,7 +204,7 @@ class Create(object):
 
         return ret
 
-    def get_specs_from_request(self):
+    def get_specs_from_request(self, dicts_to_dict_rr=None):
         """Specifications for analyses are given on the request in *Spec
 
         >>> portal = layer['portal']
@@ -217,7 +215,6 @@ class Create(object):
         >>> browser = layer['getBrowser'](portal, loggedIn=True, username=SITE_OWNER_NAME, password=SITE_OWNER_PASSWORD)
         >>> browser.open(portal_url+"/@@API/create", "&".join([
         ... "obj_type=AnalysisRequest",
-        ... "thing=Fish",
         ... "Client=portal_type:Client|id:client-1",
         ... "SampleType=portal_type:SampleType|title:Apple Pulp",
         ... "Contact=portal_type:Contact|getFullname:Rita Mohale",
@@ -225,46 +222,34 @@ class Create(object):
         ... "Services:list=portal_type:AnalysisService|title:Copper",
         ... "Services:list=portal_type:AnalysisService|title:Magnesium",
         ... "SamplingDate=2013-09-29",
-        ... "AR_Specification=portal_type:AnalysisSpec|title:Apple Pulp",
-        ... "Analysis_Specification:list=Cu:5:10:10",
-        ... "Analysis_Specification:list=Mg:6:11:11"
+        ... "Specification=portal_type:AnalysisSpec|title:Apple Pulp",
+        ... 'ResultsRange=[{"keyword":"Cu","min":5,"max":10,"error":10},{"keyword":"Mg","min":6,"max":11,"error":11}]',
         ... ]))
         >>> browser.contents
-        '{...The following request fields were not used: ...thing...}'
+        '{..."success": true...}'
 
         """
 
+        # valid output for ResultsRange goes here.
+        specs = []
+
         context = self.context
         request = self.request
-        brains = resolve_request_lookup(context, request, "AR_Specification")
-        kwspecs = brains[0].getObject().getResultsRangeDict() if brains else {}
-        Analysis_Specification = self.request.get("Analysis_Specification", "")
-        self.used("AR_Specification")
-        self.used("Analysis_Specification")
-        if not kwspecs and not Analysis_Specification:
-            return {}
-
-        specs = {}
+        brains = resolve_request_lookup(context, request, "Specification")
+        spec_rr = brains[0].getObject().getResultsRange() if brains else {}
+        spec_rr = dicts_to_dict(spec_rr, 'keyword')
+        #
         bsc = getToolByName(context, "bika_setup_catalog")
-        for k, v in kwspecs.items():
-            uid = bsc(portal_type="AnalysisService", getKeyword=k)[0].UID
-            specs[uid] = v
+        req_rr = request.get('ResultsRange', "[]")
+        try:
+            req_rr = json.loads(req_rr)
+        except:
+            raise BadRequest("Invalid value for ResultsRange (%s)"%req_rr)
+        req_rr = dicts_to_dict(req_rr, 'keyword')
+        #
+        spec_rr.update(req_rr)
 
-        if Analysis_Specification:
-            for string in Analysis_Specification:
-                keyword, Min, Max, error = string.split(":")
-                brains = bsc(
-                    portal_type="AnalysisService",
-                    getKeyword=keyword
-                )
-                if not brains:
-                    raise BadRequest("Service not found: %s" % keyword)
-                specs[brains[0].UID] = {
-                    "min": Min,
-                    "max": Max,
-                    "error": error,
-                }
-        return specs
+        return spec_rr.values()
 
     def require(self, fieldname, allow_blank=False):
         """fieldname is required"""
@@ -301,7 +286,7 @@ class Create(object):
         - Sample_id: Create a secondary AR with an existing sample.  If
           unspecified, a new sample is created.
 
-        - AR_Specification: a lookup to set Analysis specs default values
+        - Specification: a lookup to set Analysis specs default values
           for all analyses
 
         - Analysis_Specification: specs (or overrides) per analysis, using
