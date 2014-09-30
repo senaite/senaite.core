@@ -115,7 +115,6 @@ class ARAnalysesField(ObjectField):
                     s_in_rr = True
             if not s_in_rr:
                 rr.append(s)
-        instance.setResultsRange(rr)
 
         new_analyses = []
         proxies = bsc(UID=service_uids)
@@ -133,7 +132,7 @@ class ARAnalysesField(ObjectField):
 
             # override defaults from service->InterimFields
             service_interims = service.getInterimFields()
-            sif = dict([[x['keyword'], x.get('value', '')]
+            sif = dict([(x['keyword'], x.get('value', ''))
                         for x in service_interims])
             for i, i_f in enumerate(interim_fields):
                 if i_f['keyword'] in sif:
@@ -155,9 +154,15 @@ class ARAnalysesField(ObjectField):
                     interim_fields
                 )
                 new_analyses.append(analysis)
+            for i, r in enumerate(rr):
+                if r['keyword'] == analysis.getService().getKeyword():
+                    r['uid'] = analysis.UID()
 
             # XXX Price?
             # analysis.setPrice(price)
+
+        # We add rr to the AR after we create all the analyses
+        instance.setResultsRange(rr)
 
         # delete analyses
         delete_ids = []

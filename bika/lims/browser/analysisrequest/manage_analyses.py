@@ -101,10 +101,21 @@ class AnalysisRequestAnalysesView(BikaListingView):
         self.parts = p.contents_table()
 
     def getResultsRange(self):
-        return json.dumps(dicts_to_dict(self.context.getResultsRange(), 'uid'))
+        """Return the AR Specs sorted by Service UID, so that the JS can
+        work easily with the values.
+        """
+        bsc = self.bika_setup_catalog
+        rr_dict_by_service_uid = {}
+        rr = self.context.getResultsRange()
+        for r in rr:
+            keyword = r['keyword']
+            service_uid = bsc(portal_type='AnalysisService',
+                              getKeyword=keyword)[0].UID
+            rr_dict_by_service_uid[service_uid] = r
+        return json.dumps(rr_dict_by_service_uid)
 
     def get_spec_from_ar(self, ar, keyword):
-        empty = {"min": "", "max": "", "error": ""}
+        empty = {'min': '', 'max': '', 'error': '', 'keyword':keyword}
         spec = ar.getResultsRange()
         if spec:
             return dicts_to_dict(spec, 'keyword').get(keyword, empty)

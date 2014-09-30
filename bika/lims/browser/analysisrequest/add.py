@@ -276,6 +276,7 @@ class ajaxAnalysisRequestSubmit():
                 if min_element_name in form:
                     if service_keyword not in specs:
                         specs[service_keyword] = {}
+                    specs[service_keyword]["keyword"] = service_keyword
                     specs[service_keyword]["min"] = form[min_element_name]
                     specs[service_keyword]["max"] = form[max_element_name]
                     specs[service_keyword]["error"] = form[error_element_name]
