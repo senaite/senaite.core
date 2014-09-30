@@ -432,6 +432,7 @@ class WorksheetAnalysesView(AnalysesView):
         items = AnalysesView.folderitems(self)
         layout = self.context.getLayout()
         highest_position = 0
+        new_items = []
         for x, item in enumerate(items):
             obj = item['obj']
             pos = [slot['position'] for slot in layout if
@@ -462,6 +463,9 @@ class WorksheetAnalysesView(AnalysesView):
             items[x]['Order'] = ''
             instrument = obj.getInstrument()
             #items[x]['Instrument'] = instrument and instrument.Title() or ''
+
+            new_items.append(item)
+        items = new_items
 
         # insert placeholder row items in the gaps
         # This is done badly to compensate for possible bad data (dbw#104)
@@ -511,7 +515,10 @@ class WorksheetAnalysesView(AnalysesView):
                 items.append(item)
 
         items = sorted(items, key = itemgetter('Service'))
-        items = sorted(items, key = itemgetter('Pos'))
+        try:
+            items = sorted(items, key = itemgetter('Pos'))
+        except:
+            pass
 
         slot_items = {} # pos:[item_nrs]
         for x in range(len(items)):
