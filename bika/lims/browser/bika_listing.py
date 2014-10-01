@@ -76,6 +76,8 @@ class WorkflowAction:
         form = self.request.form
         came_from = "workflow_action"
         action = form.get(came_from, '')
+        if type(action) in (list, tuple):
+            action = action[0]
         if not action:
             came_from = "workflow_action_button"
             action = form.get('workflow_action_id', '')
