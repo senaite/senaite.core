@@ -50,8 +50,7 @@ Import Classic AR File with errors
     Wait until page contains    Imports
     ${PATH_TO_TEST} =           run keyword   resource_filename
     Import Classic ARImport     ${PATH_TO_TEST}/files/ARImportClassicErrors.csv
-    sleep                       5s
-    Page Should Contain         Remarks
+    Wait until page contains    Remarks
     Page Should Contain         Client ID should be
     Page Should Contain         Contact invalid
     Page Should Contain         Sample type WrongType invalid
@@ -88,7 +87,6 @@ Import Profile AR File with errors
     Wait until page contains    Imports
     ${PATH_TO_TEST} =           run keyword   resource_filename
     Import Profile ARImport     ${PATH_TO_TEST}/files/ARImportProfileErrors.csv
-    sleep                       5s
     Page Should Contain         Remarks
     Page Should Contain         Client ID should be
     Page Should Contain         Contact invalid
@@ -99,7 +97,6 @@ Import Profile AR File with errors
 Submit Valid AR Import
     Open Workflow Menu
     Click Link                  link=Submit ARImport
-    Sleep                       10s
     Wait until page contains    View
     Page Should Contain         Submitted
 
@@ -128,7 +125,9 @@ Import ARImport File
 
     Choose File                 css=${input_identifier}  ${file}
     Wait until page contains    Import Analysis Request Data
+    Set Selenium Timeout        30
     Click Button                Import
+    Set Selenium Timeout        5
 
 HangOn
     Import library  Dialogs

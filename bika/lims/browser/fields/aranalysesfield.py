@@ -107,6 +107,7 @@ class ARAnalysesField(ObjectField):
         #    may be undefined.  in this case, specs= will contain the entire
         #    AR spec.
         rr = instance.getResultsRange()
+        specs = specs if specs else []
         for s in specs:
             s_in_rr = False
             for i, r in enumerate(rr):
