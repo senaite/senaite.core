@@ -328,17 +328,15 @@ class ReferenceSample(BaseFolder):
                  )
         duetime = starttime + max_days
 
-        analysis.edit(
-            ReferenceAnalysisID = analysis.id,
-            ReferenceType = reference_type,
-            Service = service,
-            Unit = service.getUnit(),
-            Calculation = calculation,
-            InterimFields = interim_fields,
-            ServiceUID = service.UID(),
-            MaxTimeAllowed = maxtime,
-            DueDate = duetime,
-        )
+        analysis.setReferenceAnalysisID = analysis.id
+        analysis.ReferenceType = reference_type
+        analysis.Service = service_uid
+        analysis.Unit = service.getUnit()
+        analysis.Calculation = calculation
+        analysis.InterimFields = interim_fields
+        analysis.ServiceUID = service.UID()
+        analysis.MaxTimeAllowed = maxtime
+        analysis.DueDate = duetime
 
         analysis.processForm()
         return analysis.UID()
