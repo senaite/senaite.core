@@ -150,7 +150,6 @@ class JSONReadExtender(object):
         self.include_fields = get_include_fields(request)
         if not self.include_fields or "Analyses" in self.include_fields:
             data['Analyses'] = self.ar_analysis_values()
-        return data
 
 class mailto_link_from_contacts:
 
