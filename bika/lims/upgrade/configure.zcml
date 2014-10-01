@@ -498,4 +498,12 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Adding getRawSamplePoint to filter SampleTypes by SamplePoints easly"
+        description=""
+        source="3050"
+        destination="3051"
+        handler="bika.lims.upgrade.to3051.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
 </configure>

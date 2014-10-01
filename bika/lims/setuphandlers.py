@@ -549,6 +549,7 @@ class BikaGenerator:
         addIndex(bac, 'getResultCaptureDate', 'DateIndex')
         addIndex(bac, 'getSampleTypeUID', 'FieldIndex')
         addIndex(bac, 'getSamplePointUID', 'FieldIndex')
+        addIndex(bac, 'getRawSamplePoints', 'FieldIndex')
         addIndex(bac, 'getRetested', 'FieldIndex')
         addIndex(bac, 'getReferenceAnalysesGroupID', 'FieldIndex')
 

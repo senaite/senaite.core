@@ -1,6 +1,6 @@
 next
 ----
-
+LIMS-1416: If a sample point has a default sample type the field is not pulled automatically during AR template creation
 LIMS-1374: Auto label printing does not happen for an AR drop-down receive
 LIMS-1395: front page issue tracker url
 LIMS-1402: If no date is chosen, it will never expire." not been accomplished.
