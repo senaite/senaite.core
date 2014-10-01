@@ -12,6 +12,7 @@ from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import PMF, bikaMessageFactory as _
+from bika.lims.idserver import renameAfterCreation
 from bika.lims.utils import t
 from bika.lims.browser.fields import ReferenceResultsField
 from bika.lims.browser.widgets import DateTimeWidget as bika_DateTimeWidget
@@ -315,31 +316,28 @@ class ReferenceSample(BaseFolder):
         service = rc.lookupObject(service_uid)
 
         analysis = _createObjectByType("ReferenceAnalysis", self, tmpID())
+        analysis.unmarkCreationFlag()
+
         calculation = service.getCalculation()
         interim_fields = calculation and calculation.getInterimFields() or []
-        maxtime = service.getMaxTimeAllowed() and service.getMaxTimeAllowed() \
-            or {'days':0, 'hours':0, 'minutes':0}
-        starttime = DateTime()
-        max_days = float(maxtime.get('days', 0)) + \
-                 (
-                     (float(maxtime.get('hours', 0)) * 3600 + \
-                      float(maxtime.get('minutes', 0)) * 60)
-                     / 86400
-                 )
-        duetime = starttime + max_days
+        renameAfterCreation(analysis)
 
-        analysis.setReferenceAnalysisID = analysis.id
-        analysis.ReferenceType = reference_type
-        analysis.Service = service_uid
-        analysis.Unit = service.getUnit()
-        analysis.Calculation = calculation
-        analysis.InterimFields = interim_fields
-        analysis.ServiceUID = service.UID()
-        analysis.MaxTimeAllowed = maxtime
-        analysis.DueDate = duetime
+        # maxtime = service.getMaxTimeAllowed() and service.getMaxTimeAllowed() \
+        #     or {'days':0, 'hours':0, 'minutes':0}
+        # starttime = DateTime()
+        # max_days = float(maxtime.get('days', 0)) + \
+        #          (
+        #              (float(maxtime.get('hours', 0)) * 3600 + \
+        #               float(maxtime.get('minutes', 0)) * 60)
+        #              / 86400
+        #          )
+        # duetime = starttime + max_days
 
-        analysis.processForm()
+        analysis.setReferenceType(reference_type)
+        analysis.setService(service_uid)
+        analysis.setInterimFields(interim_fields)
         return analysis.UID()
+
 
     security.declarePublic('getServices')
     def getServices(self):
