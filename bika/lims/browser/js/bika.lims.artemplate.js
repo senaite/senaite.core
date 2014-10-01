@@ -8,6 +8,7 @@ function ARTemplateEditView() {
 
     var that = this;
     var samplepoint = $('#archetypes-fieldname-SamplePoint #SamplePoint');
+    var sampletype = $('#archetypes-fieldname-SampleType #SampleType');
 
     /**
      * Entry-point method for AnalysisServiceEditView
@@ -19,6 +20,7 @@ function ARTemplateEditView() {
 
         // Display only the sample points contained by the same parent
         filterSamplePointsCombo();
+	filterSampleType();
     }
 
     /***
@@ -54,7 +56,16 @@ function ARTemplateEditView() {
             referencewidget_lookups([$(samplepoint)]);
         });
     }
-
+    //Filter the Sample Type by Sample Point default Sample Type
+    function filterSampleType() {
+	//$(samplepoint).on("bind", function() {
+	$(samplepoint).bind("selected", function() {
+	    var samplepointuid = $(samplepoint).attr('uid');
+	    console.log($.toJSON({"getRawSamplePoints": samplepointuid}));
+	    $(sampletype).attr("search_query", $.toJSON({"getRawSamplePoints": samplepointuid}));
+	    referencewidget_lookups([$(sampletype)]);
+	});
+    }
     function clickSaveButton(event){
         var selected_analyses = $('[name^="uids\\:list"]').filter(':checked');
         if(selected_analyses.length < 1){
