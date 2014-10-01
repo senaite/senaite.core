@@ -522,7 +522,7 @@ function AnalysisRequestAddView() {
 //            var st_base_query = $(st_element).attr("base_query");
 //            st_base_query = $.parseJSON(st_base_query);
 //            st_base_query = $.toJSON(st_base_query);
-            var st_search_query = {"getSamplePointTitle": ui.item[$(this).attr("ui_item")]};
+            var st_search_query = {"getRawSamplePoints": $(this).attr("uid")};
             st_search_query = $.toJSON(st_search_query);
             st_element.attr("search_query", st_search_query);
             ar_referencewidget_lookups(st_element);
