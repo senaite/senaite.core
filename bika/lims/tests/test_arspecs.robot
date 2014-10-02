@@ -138,9 +138,9 @@ when selecting a Spec it should be set on the AR.
     go to                               ${PLONEURL}/clients/client-1/BAR-0001-R01/base_view
 
     #spec as an edit field:
-    # Page should contain element         xpath=.//*[contains(@id, 'Specification')]/span[@value='Barley']
+    Textfield Value Should Be           Specification     Barley
     #spec as a view field:
-    Page should contain element         xpath=.//a[@href='http://localhost:55001/plone/bika_setup/bika_analysisspecs/analysisspec-9']
+    # Page should contain element         xpath=.//a[@href='http://localhost:55001/plone/bika_setup/bika_analysisspecs/analysisspec-9']
 
 *** Keywords ***
 

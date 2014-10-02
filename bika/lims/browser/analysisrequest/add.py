@@ -114,12 +114,14 @@ class SecondaryARSampleInfo(BrowserView):
             return []
         sample = proxies[0].getObject()
         sample_schema = sample.Schema()
-        fields = [f for f in sample.viewableFields(sample)
-                  if f.widget.isVisible(sample, 'secondary') == 'disabled']
+        sample_fields = dict([(f.getName(), f) for f in sample_schema.fields()])
+        ar_schema = self.context.Schema()
+        ar_fields = [f.getName() for f in ar_schema.fields()
+                     if f.widget.isVisible(self.context, 'secondary') == 'disabled']
         ret = []
-        for field in fields:
-            if field in sample_schema:
-                fieldvalue = field.getAccessor(sample)
+        for fieldname in ar_fields:
+            if fieldname in sample_fields:
+                fieldvalue = sample_fields[fieldname].getAccessor(sample)()
                 if fieldvalue is None:
                     fieldvalue = ''
                 if hasattr(fieldvalue, 'Title'):
@@ -128,7 +130,7 @@ class SecondaryARSampleInfo(BrowserView):
                     fieldvalue = fieldvalue.strftime(self.date_format_short)
             else:
                 fieldvalue = ''
-            ret.append([field, fieldvalue])
+            ret.append([fieldname, fieldvalue])
         return json.dumps(ret)
 
 
