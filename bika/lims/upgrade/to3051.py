@@ -16,5 +16,7 @@ def upgrade(tool):
     if 'getRawSampleTypes' not in bsc.indexes():
         bsc.addIndex('getRawSampleTypes', 'KeywordIndex')
 
-    bsc.clearFindAndRebuild()
+    logger.info("Reindex added indexes in bika_setup_catalog")
+    bsc.manage_reindexIndex(ids=['getRawSamplePoints', ])
+
     return True
