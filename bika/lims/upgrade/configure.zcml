@@ -499,7 +499,7 @@
         profile="bika.lims:default"/>
 
 <genericsetup:upgradeStep
-        title="Adding getRawSamplePoint to filter SampleTypes by SamplePoints easly"
+        title="Adding getRawSamplePoints/Types to filter Sample easly"
         description=""
         source="3050"
         destination="3051"
