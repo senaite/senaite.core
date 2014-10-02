@@ -477,22 +477,22 @@ function AnalysisRequestAddView() {
         set_cc_contacts(column);
       }
         if(fieldName == "SampleType"){
-            // selecting a Sampletype - jiggle the SamplePoint element.
-            var sp_element = $("#ar_"+column+"_SamplePoint");
-            sp_element
-                .removeClass( "cg-autocomplete-input" )
-                .removeAttr( "autocomplete" )
-                .removeAttr( "role" )
-                .removeAttr( "aria-autocomplete" )
-                .removeAttr( "aria-haspopup" );
-            var new_sp_element = $(sp_element[0]).clone();
-            var sp_parent_node = $(sp_element).parent();
-            $(sp_element).remove();
-            $(sp_parent_node).append(new_sp_element);
-            var sp_search_query = {"getSampleTypeTitle": encodeURIComponent(ui.item[$(this).attr("ui_item")])};
-            sp_search_query = $.toJSON(sp_search_query);
-            sp_element.attr("search_query", sp_search_query);
-            ar_referencewidget_lookups(sp_element);
+            //// selecting a Sampletype - jiggle the SamplePoint element.
+            //var sp_element = $("#ar_"+column+"_SamplePoint");
+            //sp_element
+            //    .removeClass( "cg-autocomplete-input" )
+            //    .removeAttr( "autocomplete" )
+            //    .removeAttr( "role" )
+            //    .removeAttr( "aria-autocomplete" )
+            //    .removeAttr( "aria-haspopup" );
+            //var new_sp_element = $(sp_element[0]).clone();
+            //var sp_parent_node = $(sp_element).parent();
+            //$(sp_element).remove();
+            //$(sp_parent_node).append(new_sp_element);
+            //var sp_search_query = {"getSampleTypeTitle": [encodeURIComponent(ui.item[$(this).attr("ui_item")]), ""]};
+            //sp_search_query = $.toJSON(sp_search_query);
+            //sp_element.attr("search_query", sp_search_query);
+            //ar_referencewidget_lookups(sp_element);
             // Template gets removed, as it no longer matches the SampleType.
 			unsetTemplate(column);
 			// Discover if we have a Specification linked to the SampleType
