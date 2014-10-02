@@ -2,6 +2,7 @@ from bika.lims.adapters.referencewidgetvocabulary import DefaultReferenceWidgetV
 from bika.lims.jsonapi import get_include_fields
 from bika.lims.jsonapi import load_brain_metadata
 from bika.lims.jsonapi import load_field_values
+from bika.lims.utils import dicts_to_dict
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.interfaces import IFieldIcons
 from bika.lims.interfaces import IJSONReadExtender
@@ -150,6 +151,8 @@ class JSONReadExtender(object):
         self.include_fields = get_include_fields(request)
         if not self.include_fields or "Analyses" in self.include_fields:
             data['Analyses'] = self.ar_analysis_values()
+        if "ResultsRange" in data:
+            data['ResultsRange'] = dicts_to_dict(data['ResultsRange'], 'keyword')
 
 class mailto_link_from_contacts:
 
