@@ -13,13 +13,14 @@ $(document).ready(function(){
         $(this).parent().remove();
     });
 
-    // handle custom event "unselected" from jquery.ui.combogrid
-    $(".ArchetypesReferenceWidget").live("unselected", function(){
+    $(".ArchetypesReferenceWidget").bind("selected blur change", function(){
         var e = $(this).children("input.referencewidget");
-        fieldName = $(e).attr("name").split(":")[0];
-        $(e).attr("uid", "");
-        $("input[name^='"+fieldName+"_uid']").val("");
-        $("div[name='"+fieldName+"-listing']").empty();
+        if (e.val() == '') {
+            fieldName = $(e).attr("name").split(":")[0];
+            $(e).attr("uid", "");
+            $("input[name^='"+fieldName+"_uid']").val("");
+            $("div[name='"+fieldName+"-listing']").empty();
+        }
     });
 
 });
