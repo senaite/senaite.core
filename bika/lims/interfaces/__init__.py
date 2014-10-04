@@ -60,6 +60,11 @@ class IAnalysis(Interface):
 
     """Analysis"""
 
+class IRoutineAnalysis(Interface):
+    """This adapter distinguishes normal analyses from Duplicates, References,
+    Rejections, etc.
+    """
+
 
 class IAnalysisSpec(Interface):
 
