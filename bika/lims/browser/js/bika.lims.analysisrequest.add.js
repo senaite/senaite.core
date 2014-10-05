@@ -114,34 +114,10 @@ function AnalysisRequestAddView() {
 
     /**
      * Show only the data (contacts, templates, etc.) for the selected
-     * client
+     * client.   This is the initial filter, but the filters are re-applied
+	 * each time a Client field is modified.
      */
     function filterByClient() {
-        // Show only the contacts and CC from the selected Client
-        $("[id$='_Client']").bind("change", function() {
-            var col = this.id.split("_")[1];
-            var element = $("#ar_" + col + "_Contact");
-            var clientuid = $(this).attr("uid");
-            applyComboFilter(element, "getParentUID", clientuid);
-            element = $("#ar_" + col + "_CCContact");
-            applyComboFilter(element, "getParentUID", clientuid);
-            // Filter sample points by client
-            element = $("#ar_" + col + "_SamplePoint");
-            applyComboFilter(element, "getClientUID",
-                             [clientuid, $("#bika_setup").attr("bika_samplepoints_uid")]);
-            // Filter template by client
-            element = $("#ar_" + col + "_Template");
-            applyComboFilter(element, "getClientUID",
-                             [clientuid, $("#bika_setup").attr("bika_artemplates_uid")]);
-            // Filter Analysis Profile by client
-            element = $("#ar_" + col + "_Profile");
-            applyComboFilter(element, "getClientUID",
-                             [clientuid, $("#bika_setup").attr("bika_analysisprofiles_uid")]);
-            // Filter Analysis Spec by client
-            element = $("#ar_" + col + "_Specification");
-            applyComboFilter(element, "getClientUID",
-                             [clientuid, $("#bika_setup").attr("bika_analysisspecs_uid")]);
-        });
         // Iterate all the columns to filtrate by client
         for (var col = 0; col < parseInt($("#col_count").val(), 10); col++) {
             var element = $("#ar_" + col + "_Contact");
@@ -419,7 +395,7 @@ function AnalysisRequestAddView() {
         }
     }
 
-	// The columnar referencewidgets that we reconfigure use this as their
+    // The columnar referencewidgets that we reconfigure use this as their
     // select handler.
     function ar_referencewidget_select_handler(event, ui){
         /*jshint validthis:true */
@@ -431,12 +407,12 @@ function AnalysisRequestAddView() {
         var skip;
 
         var uid_element = $("#ar_"+column+"_"+fieldName+"_uid");
-      var listing_div = $("#ar_"+column+"_"+fieldName+"-listing");
-      if(listing_div.length > 0) {
+        var listing_div = $("#ar_"+column+"_"+fieldName+"-listing");
+        if(listing_div.length > 0) {
           // Add selection to textfield value
           var existing_uids = $(uid_element).val().split(",");
-                destroy(existing_uids,"");
-                destroy(existing_uids,"[]");
+          destroy(existing_uids,"");
+          destroy(existing_uids,"[]");
           var selected_value = ui.item[$(this).attr("ui_item")];
           var selected_uid = ui.item.UID;
           if (existing_uids.indexOf(selected_uid) == -1) {
@@ -456,22 +432,49 @@ function AnalysisRequestAddView() {
           }
           $(uid_element).removeAttr("skip_referencewidget_lookup");
           $(this).next("input").focus();
-      } else {
-          // Set value in activated element (must exist in colModel!)
-          $(this).val(ui.item[$(this).attr("ui_item")]);
-          $(this).attr("uid", ui.item.UID);
-          $(uid_element).val(ui.item.UID);
-          skip = $(uid_element).attr("skip_referencewidget_lookup");
-          if (skip !== true){
-              $(this).trigger("selected", ui.item.UID);
-          }
-          $(uid_element).removeAttr("skip_referencewidget_lookup");
-          $(this).next("input").focus();
-      }
+        } else {
+            // Set value in activated element (must exist in colModel!)
+            $(this).val(ui.item[$(this).attr("ui_item")]);
+            $(this).attr("uid", ui.item.UID);
+            $(uid_element).val(ui.item.UID);
+            skip = $(uid_element).attr("skip_referencewidget_lookup");
+            if (skip !== true){
+                $(this).trigger("selected", ui.item.UID);
+            }
+            $(uid_element).removeAttr("skip_referencewidget_lookup");
+            $(this).next("input").focus();
+        }
 
-      if(fieldName == "Contact"){
-        set_cc_contacts(column);
-      }
+		if (fieldName == "Client") {
+			var element = $("#ar_" + column + "_Contact");
+			var clientuid = $(this).attr("uid");
+			applyComboFilter(element, "getParentUID", clientuid);
+			element = $("#ar_" + column + "_CCContact");
+			applyComboFilter(element, "getParentUID", clientuid);
+			// Filter sample points by client
+			element = $("#ar_" + column + "_SamplePoint");
+			applyComboFilter(element, "getClientUID",
+							 [clientuid,
+							  $("#bika_setup").attr("bika_samplepoints_uid")]);
+			// Filter template by client
+			element = $("#ar_" + column + "_Template");
+			applyComboFilter(element, "getClientUID",
+							 [clientuid,
+							  $("#bika_setup").attr("bika_artemplates_uid")]);
+			// Filter Analysis Profile by client
+			element = $("#ar_" + column + "_Profile");
+			applyComboFilter(element, "getClientUID",
+							 [clientuid,
+							  $("#bika_setup").attr("bika_analysisprofiles_uid")]);
+			// Filter Analysis Spec by client
+			element = $("#ar_" + column + "_Specification");
+			applyComboFilter(element, "getClientUID",
+							 [clientuid,
+							  $("#bika_setup").attr("bika_analysisspecs_uid")]);
+		}
+        if(fieldName == "Contact"){
+          set_cc_contacts(column);
+        }
         if(fieldName == "SampleType"){
             //// selecting a Sampletype - jiggle the SamplePoint element.
             //var sp_element = $("#ar_"+column+"_SamplePoint");
