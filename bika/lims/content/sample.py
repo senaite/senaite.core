@@ -37,8 +37,8 @@ schema = BikaSchema.copy() + Schema((
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
         widget=StringWidget(
-            label = "Sample ID",
-            description="The ID assigned to the client's sample by the lab",
+            label=_("Sample ID"),
+            description=_("The ID assigned to the client's sample by the lab"),
             visible={'edit': 'invisible',
                      'view': 'invisible'},
             render_own_label=True,
@@ -50,7 +50,7 @@ schema = BikaSchema.copy() + Schema((
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
         widget=StringWidget(
-            label = "Client Reference",
+            label=_("Client Reference"),
             visible={'edit': 'visible',
                      'view': 'visible',
                      'header_table': 'visible',
@@ -72,7 +72,7 @@ schema = BikaSchema.copy() + Schema((
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
         widget=StringWidget(
-            label = "Client SID",
+            label=_("Client SID"),
             visible={'edit': 'visible',
                      'view': 'visible',
                      'header_table': 'visible',
@@ -98,7 +98,7 @@ schema = BikaSchema.copy() + Schema((
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
         widget=ReferenceWidget(
-            label = "Linked Sample",
+            label=_("Linked Sample"),
         ),
     ),
     ReferenceField('SampleType',
@@ -111,7 +111,7 @@ schema = BikaSchema.copy() + Schema((
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
         widget=ReferenceWidget(
-            label = "Sample Type",
+            label=_("Sample Type"),
             render_own_label=True,
             visible={'edit': 'visible',
                      'view': 'visible',
@@ -146,7 +146,7 @@ schema = BikaSchema.copy() + Schema((
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
         widget=ReferenceWidget(
-            label = "Sample Point",
+            label=_("Sample Point"),
             render_own_label=True,
             visible={'edit': 'visible',
                      'view': 'visible',
@@ -180,8 +180,8 @@ schema = BikaSchema.copy() + Schema((
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
         widget=ReferenceWidget(
-            label = "Storage Location",
-            description = "Location where sample is kept",
+            label=_("Storage Location"),
+            description=_("Location where sample is kept"),
             size=20,
             render_own_label=True,
             visible={'edit': 'visible',
@@ -209,7 +209,7 @@ schema = BikaSchema.copy() + Schema((
         read_permission=permissions.View,
         write_permission=SampleSample,
         widget = DateTimeWidget(
-            label = "Date Sampled",
+            label=_("Date Sampled"),
             size=20,
             visible={'edit': 'visible',
                      'view': 'visible',
@@ -233,7 +233,7 @@ schema = BikaSchema.copy() + Schema((
         vocabulary='getSamplers',
         widget=BikaSelectionWidget(
             format='select',
-            label = "Sampler",
+            label=_("Sampler"),
             visible={'edit': 'visible',
                      'view': 'visible',
                      'header_table': 'visible',
@@ -254,7 +254,7 @@ schema = BikaSchema.copy() + Schema((
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
         widget = DateTimeWidget(
-            label = "Sampling Date",
+            label=_("Sampling Date"),
             visible={'edit': 'visible',
                      'view': 'visible',
                      'header_table': 'visible',
@@ -279,7 +279,7 @@ schema = BikaSchema.copy() + Schema((
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
         widget=ReferenceWidget(
-            label = "Sampling Deviation",
+            label=_("Sampling Deviation"),
             render_own_label=True,
             visible={'edit': 'visible',
                      'view': 'visible',
@@ -307,7 +307,7 @@ schema = BikaSchema.copy() + Schema((
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
         widget=ReferenceWidget(
-            label = "Sample Condition",
+            label=_("Sample Condition"),
             render_own_label=True,
             visible={'edit': 'visible',
                      'view': 'visible',
@@ -331,7 +331,7 @@ schema = BikaSchema.copy() + Schema((
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
         widget = DateTimeWidget(
-            label = "Date Received",
+            label=_("Date Received"),
             visible={'edit': 'visible',
                      'view': 'visible',
                      'header_table': 'visible',
@@ -371,7 +371,7 @@ schema = BikaSchema.copy() + Schema((
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
         widget = BooleanWidget(
-            label = "Composite",
+            label=_("Composite"),
             visible={'edit': 'visible',
                      'view': 'visible',
                      'header_table': 'visible',
@@ -392,7 +392,7 @@ schema = BikaSchema.copy() + Schema((
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
         widget = DateTimeWidget(
-            label = "Date Expired",
+            label=_("Date Expired"),
             visible={'edit': 'visible',
                      'view': 'visible',
                      'header_table': 'visible',
@@ -431,7 +431,7 @@ schema = BikaSchema.copy() + Schema((
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
         widget = DateTimeWidget(
-            label = "Date Disposed",
+            label=_("Date Disposed"),
             visible={'edit': 'visible',
                      'view': 'visible',
                      'header_table': 'visible',
@@ -453,7 +453,7 @@ schema = BikaSchema.copy() + Schema((
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
         widget=BooleanWidget(
-            label = "Ad-Hoc",
+            label=_("Ad-Hoc"),
             visible={'edit': 'visible',
                      'view': 'visible',
                      'header_table': 'visible',
@@ -479,7 +479,7 @@ schema = BikaSchema.copy() + Schema((
         write_permission=permissions.ModifyPortalContent,
         widget=TextAreaWidget(
             macro="bika_widgets/remarks",
-            label = "Remarks",
+            label=_("Remarks"),
             append_only=True,
         ),
     ),

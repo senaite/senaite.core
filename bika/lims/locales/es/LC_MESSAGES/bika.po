@@ -17,7 +17,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
 "POT-Creation-Date: 2012-01-01 23:11+0000\n"
-"PO-Revision-Date: 2014-07-24 15:14+0000\n"
+"PO-Revision-Date: 2014-07-29 10:32+0000\n"
 "Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/projects/p/bika-lims/language/es/)\n"
 "MIME-Version: 1.0\n"
@@ -33,6 +33,11 @@ msgstr ""
 # File: bika.lims/bika/lims/browser/templates/login_details.pt, line: 18
 msgid "${contact_fullname} can log into the LIMS by using ${contact_username} as username. Contacts must change their own passwords. If a password is forgotten a contact can request a new password from the login form."
 msgstr "${contact_fullname} puede acceder al LIMS utilizando el nombre de usuario ${contact_username}. Se recomienda que los contactos modifiquen su contraseña. Si el usuario pierde su contraseña, siempre podrá solicitar una nueva en el formulario de acceso."
+
+#
+# File: ../../../bika/lims/browser/analysisrequest/workflow.py, line: 211
+msgid "${items} are missing Preserver or Date Preserved"
+msgstr ""
 
 # File: bika.lims/bika/lims/browser/client.py, line: 133
 msgid "${items} are waiting for preservation."
@@ -54,6 +59,11 @@ msgstr "${items} fueron creados satisfactoriamente."
 # File: bika.lims/bika/lims/browser/client.py, line: 197
 msgid "${items}: partitions are waiting to be received."
 msgstr "${items}: particiones a la espera de ser recepcionadas."
+
+#
+# File: ../../../bika/lims/browser/analysisrequest/workflow.py, line: 215
+msgid "${item} is missing Preserver or Preservation Date"
+msgstr ""
 
 # File: bika.lims/bika/lims/browser/client.py, line: 141
 msgid "${item} is waiting for preservation."
@@ -279,6 +289,11 @@ msgstr "Logotipo de la acreditación"
 # File: bika.lims/bika/lims/content/laboratory.py, line: 67
 msgid "Accreditation Reference"
 msgstr "Referencia de la acreditación"
+
+#
+# File: ../../../bika/lims/content/laboratory.py, line: 87
+msgid "Accreditation page header"
+msgstr ""
 
 # File: bika.lims/bika/lims/browser/analysisrequest/manage_analyses.py, line:
 # 200
@@ -939,13 +954,6 @@ msgstr "Promedio anticipado"
 msgid "Average late"
 msgstr "Promedio de retraso"
 
-# File: bika.lims/bika/lims/browser/templates/sample_sticker_large.pt, line:
-# 144
-# File: bika.lims/bika/lims/browser/templates/sample_sticker_small.pt, line:
-# 90
-msgid "Back to list"
-msgstr "Volver al listado"
-
 # File: bika.lims/bika/lims/content/organisation.py, line: 91
 msgid "Bank branch"
 msgstr "Oficina bancaria"
@@ -980,10 +988,6 @@ msgstr "ID Lote"
 # File: bika.lims/bika/lims/controlpanel/bika_batchlabels.py, line: 24
 msgid "Batch Labels"
 msgstr "Etiquetas del Lote"
-
-# File: bika.lims/bika/lims/content/batch.py, line: 108
-msgid "Batch labels"
-msgstr "Etiquetas del lote"
 
 # File: bika.lims/bika/lims/browser/batchfolder.py, line: 27
 msgid "Batches"
@@ -1248,9 +1252,15 @@ msgstr "Clásico"
 msgid "Click on Analysis Categories (against shaded background) to see Analysis Services in each category. Enter minimum and maximum values to indicate a valid results range. Any result outside this range will raise an alert. The % Error field allows for an % uncertainty to be considered when evaluating results against minimum and maximum values. A result out of range but still in range if the % error is taken into consideration, will raise a less severe alert."
 msgstr "Haga clic sobre las cabeceras de categorías de análisis (con fondo gris) para ver los servicios de análisis que contienen cada una de ellas. Introducid los valores mínimo y máximo para indicar el rango válido de los resultados. Si el resultado se encuentra fuera de este rango, el sistema lanzará una alerta. El campo % Error le permite indicar el porcentaje de incertidumbre que tiene que tener en cuenta el sistema en la evaluación de los resultados con el rango indicado. Si un resultado fuera de rango pasa a ser válido cuando el sistema tiene en cuenta el porcentaje de incertidumbre, el sistema lo notificará con una alerta menos severa."
 
-# File: bika.lims/bika/lims/content/analysisspec.py, line: 79
-msgid "Click on Analysis Categories (against shaded background) to see Analysis Services in each category. Enter minimum and maximum values to indicate a valid results range. Any result outside this range will raise an alert. The % Error field allows for an % uncertainty to be considered when evaluating results against minimum and maximum values. A result out of range but still in range if the % error is taken into consideration, will raise a less severe alert. If the result is below '< Min' the result will be shown as '< [min]'. The same applies for results above '> Max'"
-msgstr "Para visualizar los servicios de análisis, haga clic sobre las cabeceras de las categorías de análisis, en fondo gris. Los valores mínimo y máximo indican el rango de resultados válido. El sistema mostrará una alerta automáticamente durante la introducción de resultados si el valor indicado está fuera de rango. El campo '% Error' indica el porcentaje de incertidumbre que utilizará el sistema para evaluar si un resultado fuera de rango es aceptable debido al margen de error en los flancos del rango. Si se da ese caso, el sistema mostrará una alerta menos severa. Si el resultado introducido está por debajo del valor indicado para el campo '< Min', para ese resultado se mostrará el texto '< [valor]'. El mismo criterio aplica para los resultados que estén por encima del valor del campo '> Max'."
+#
+# File: ../../../bika/lims/content/referencedefinition.py, line: 28
+msgid "Click on Analysis Categories (against shaded backgroundto see Analysis Services in each category. Enter minimum and maximum values to indicate a valid results range. Any result outside this range will raise an alert. The % Error field allows for an % uncertainty to be considered when evaluating results against minimum and maximum values. A result out of range but still in range if the % error is taken into consideration, will raise a less severe alert."
+msgstr ""
+
+#
+# File: ../../../bika/lims/content/analysisspec.py, line: 79
+msgid "Click on Analysis Categories (against shaded backgroundto see Analysis Services in each category. Enter minimum and maximum values to indicate a valid results range. Any result outside this range will raise an alert. The % Error field allows for an % uncertainty to be considered when evaluating results against minimum and maximum values. A result out of range but still in range if the % error is taken into consideration, will raise a less severe alert. If the result is below '< Min' the result will be shown as '< [min]'. The same applies for results above '> Max'"
+msgstr ""
 
 # File: bika.lims/bika/lims/browser/templates/analysisservice_popup.pt, line:
 # 110
@@ -1775,7 +1785,7 @@ msgid "Default containers: ${container_list}"
 msgstr "Recipientes por defecto: ${container_list}"
 
 #
-# File: ../../../bika/lims/content/bikasetup.py, line: 156
+# File: ../../../bika/lims/content/bikasetup.py, line: 166
 # File: ../../../bika/lims/content/client.py, line: 98
 msgid "Default decimal mark"
 msgstr ""
@@ -1902,6 +1912,11 @@ msgstr "Enviado"
 msgid "Display Value"
 msgstr "Valor a mostrar"
 
+#
+# File: ../../../bika/lims/content/bikasetup.py, line: 107
+msgid "Display an alert on new releases of Bika LIMS"
+msgstr ""
+
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 228
 msgid "Display individual sample partitions "
 msgstr "Mostrar particiones de muestras de forma individualizada"
@@ -1909,6 +1924,11 @@ msgstr "Mostrar particiones de muestras de forma individualizada"
 # File: bika.lims/bika/lims/browser/sample.py, line: 72
 msgid "Disposal Date"
 msgstr "Fecha de eliminación"
+
+#
+# File: ../../../bika/lims/content/instrument.py, line: 87
+msgid "Dispose until next calibration test"
+msgstr ""
 
 # File: bika.lims/bika/lims/browser/referencesample.py, line: 351
 # File: bika.lims/bika/lims/browser/sample.py, line: 570
@@ -1967,7 +1987,7 @@ msgstr "Análisis de materia seca"
 # 175
 # File: bika.lims/bika/lims/browser/sample.py, line: 499
 msgid "Due"
-msgstr "Vencidos"
+msgstr "Pendientes"
 
 # File: bika.lims/bika/lims/browser/analyses.py, line: 105
 # File: bika.lims/bika/lims/browser/late_analyses.py, line: 47
@@ -2107,6 +2127,11 @@ msgstr "Introducir la longitud del punto de muestreo en grados (de 0 a 90), minu
 msgid "Enter the details of each of the analysis services you want to copy."
 msgstr "Introducir los detalles de cada uno de los servicios de análisis a copiar."
 
+#
+# File: ../../../bika/lims/content/laboratory.py, line: 88
+msgid "Enter the details of your lab's service accreditations here.  The following fields are available:  lab_is_accredited, lab_name, lab_country, confidence, accreditation_body_name, accreditation_standard, accreditation_reference<br/>"
+msgstr ""
+
 # File:
 # bika.lims/bika/lims/browser/reports/templates/administration_usershistory.pt,
 # line: 76
@@ -2151,7 +2176,7 @@ msgid "Exponential format precision"
 msgstr ""
 
 #
-# File: ../../../bika/lims/content/bikasetup.py, line: 280
+# File: ../../../bika/lims/content/bikasetup.py, line: 292
 msgid "Exponential format threshold"
 msgstr ""
 
@@ -2260,6 +2285,12 @@ msgstr "Muestra con fecha de asignación futura"
 msgid "Generate report"
 msgstr "Generar reporte"
 
+#
+# File: ../../../bika/lims/browser/templates/sample_sticker_large.pt, line: 144
+# File: ../../../bika/lims/browser/templates/sample_sticker_small.pt, line: 90
+msgid "Go back"
+msgstr ""
+
 # File: bika.lims/bika/lims/content/person.py, line: 19
 msgid "Greeting title eg. Mr, Mrs, Dr"
 msgstr "Título de cortesía, como p.ej. Sr., Sra. o Dr."
@@ -2321,9 +2352,15 @@ msgstr "Servidor de IDs no disponible"
 msgid "If 'Allow instrument entry of results' is selected, the method from the default instrument will be used. Otherwise, only the methods selected above will be displayed."
 msgstr "Si la casilla 'Permitir entrada de resultados desde instrumento' está marcada, se utilizará por defecto el método del instrumento seleccionado. En caso contrario, solo se mostrarán los métodos seleccionados manualmente."
 
-# File: bika.lims/bika/lims/content/samplepoint.py, line: 48
-msgid "If a sample is taken periodically at this sample point,  enter frequency here, e.g. weekly"
-msgstr "Si es necesaria la recogida periódica de muestras de este punto de muestreo, introducir la frecuencia en este campo. Por ejemplo, semanalmente"
+#
+# File: ../../../bika/lims/content/samplepoint.py, line: 46
+msgid "If a sample is taken periodically at this sample point, enter frequency here, e.g. weekly"
+msgstr ""
+
+#
+# File: ../../../bika/lims/content/instrument.py, line: 88
+msgid "If checked, the instrument will not be available until the next valid calibration test being performed. This checkbox will be automatically unchecked too."
+msgstr ""
 
 # File: bika.lims/bika/lims/content/batch.py, line: 191
 msgid "If no Title value is entered, the Batch ID will be used."
@@ -3133,6 +3170,11 @@ msgstr "No disponible"
 msgid "Not defined"
 msgstr "Sin definir"
 
+#
+# File: ../../../bika/lims/browser/analysisrequest/analysisrequests.py, line: 128
+msgid "Number of Analyses"
+msgstr ""
+
 # File: bika.lims/bika/lims/browser/reports/productivity_analysesperclient.py,
 # line: 47
 msgid "Number of Analysis requests and analyses"
@@ -3422,7 +3464,7 @@ msgid "Precision as number of decimals"
 msgstr "Precisión en el número de decimales"
 
 #
-# File: ../../../bika/lims/content/bikasetup.py, line: 157
+# File: ../../../bika/lims/content/bikasetup.py, line: 167
 msgid "Preferred decimal mark for reports."
 msgstr ""
 
@@ -3974,7 +4016,7 @@ msgid "Result out of range"
 msgstr "El resultado está fuera de rango"
 
 #
-# File: ../../../bika/lims/content/bikasetup.py, line: 281
+# File: ../../../bika/lims/content/bikasetup.py, line: 293
 msgid "Result values with at least this number of significant digits are displayed in scientific notation using the letter 'e' to indicate the exponent.  The precision can be configured in individual Analysis Services."
 msgstr ""
 
@@ -5014,10 +5056,6 @@ msgstr "Por muestrear"
 msgid "To be verified"
 msgstr "Pendiente de verificación"
 
-# File: bika.lims/bika/lims/content/analysisspec.py, line: 102
-msgid "To include this spec as the default for a sample type, set the title here to the name of the sample type."
-msgstr "Si desea que esta especificación sea utilizada por defecto para un determinado tipo de muestra, introduzca el nombre del tipo de muestra deseada como título de la especificación."
-
 # File: bika.lims/bika/lims/browser/analysisrequest/templates/ar_add.pt, line:
 # 293
 # File: bika.lims/bika/lims/browser/invoicebatch.py, line: 30
@@ -5101,7 +5139,7 @@ msgid "Unable to load instruments: ${invalid_list}"
 msgstr "No se han podido cargar los equipos: ${invalid_list}"
 
 #
-# File: ../../../bika/lims/browser/analysisrequest/publish.py, line: 112
+# File: ../../../bika/lims/browser/analysisrequest/publish.py, line: 127
 msgid "Unable to load the template"
 msgstr ""
 

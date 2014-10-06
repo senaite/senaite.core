@@ -17,26 +17,26 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'SupplyOrderItemLabProduct',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
-            label = "Product",
+            label=_("Product"),
         )
     ),
     IntegerField('Quantity',
         required = 1,
         default = '0',
         widget = IntegerWidget(
-            label = "Quantity",
+            label=_("Quantity"),
         )
     ),
     FixedPointField('Price',
         required = 1,
         widget = DecimalWidget(
-            label = "Unit price",
+            label=_("Unit price"),
         )
     ),
     FixedPointField('VAT',
         required = 1,
         widget = DecimalWidget(
-            label = "VAT",
+            label=_("VAT"),
         ),
     ),
 ),

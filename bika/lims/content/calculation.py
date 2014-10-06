@@ -26,14 +26,15 @@ schema = BikaSchema.copy() + Schema((
     InterimFieldsField('InterimFields',
         schemata='Calculation',
         widget=BikaRecordsWidget(
-            label = "Calculation Interim Fields",
-            description="Define interim fields such as vessel mass, dilution factors, " + \
-                           "should your calculation require them. The field title specified " + \
-                           "here will be used as column headers and field descriptors where " + \
-                           "the interim fields are displayed. If 'Apply wide' is enabled " + \
-                           "the field ill be shown in a selection box on the top of the " + \
-                           "worksheet, allowing to apply a specific value to all the " + \
-                           "corresponding fields on the sheet.",
+            label=_("Calculation Interim Fields"),
+            description=_(
+                "Define interim fields such as vessel mass, dilution factors, "
+                "should your calculation require them. The field title specified "
+                "here will be used as column headers and field descriptors where "
+                "the interim fields are displayed. If 'Apply wide' is enabled "
+                "the field ill be shown in a selection box on the top of the "
+                "worksheet, allowing to apply a specific value to all the "
+                "corresponding fields on the sheet."),
         )
     ),
     HistoryAwareReferenceField('DependentServices',
@@ -47,7 +48,7 @@ schema = BikaSchema.copy() + Schema((
         widget=ReferenceWidget(
             checkbox_bound=0,
             visible=False,
-            label = "Dependent Analyses",
+            label=_("Dependent Analyses"),
         ),
     ),
     TextField('Formula',
@@ -56,7 +57,7 @@ schema = BikaSchema.copy() + Schema((
         default_content_type='text/plain',
         allowable_content_types=('text/plain',),
         widget = TextAreaWidget(
-            label = "Calculation Formula",
+            label=_("Calculation Formula"),
             description=_(
                 "calculation_formula_description",
                 "<p>The formula you type here will be dynamically calculated "

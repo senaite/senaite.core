@@ -24,32 +24,33 @@ schema = BikaSchema.copy() + Schema((
             'max':'referencevalues_validator',
             'error':'referencevalues_validator'},
         widget = ReferenceResultsWidget(
-            label = "Reference Values",
-            description = "Click on Analysis Categories (against shaded background" + \
-                            "to see Analysis Services in each category. Enter minimum " + \
-                            "and maximum values to indicate a valid results range. " + \
-                            "Any result outside this range will raise an alert. " + \
-                            "The % Error field allows for an % uncertainty to be " + \
-                            "considered when evaluating results against minimum and " + \
-                            "maximum values. A result out of range but still in range " + \
-                            "if the % error is taken into consideration, will raise a " + \
-                            "less severe alert.",
+            label=_("Reference Values"),
+            description =_(
+                "Click on Analysis Categories (against shaded background"
+                "to see Analysis Services in each category. Enter minimum "
+                "and maximum values to indicate a valid results range. "
+                "Any result outside this range will raise an alert. "
+                "The % Error field allows for an % uncertainty to be "
+                "considered when evaluating results against minimum and "
+                "maximum values. A result out of range but still in range "
+                "if the % error is taken into consideration, will raise a "
+                "less severe alert."),
         ),
     ),
     BooleanField('Blank',
         schemata = 'Description',
         default = False,
         widget = BooleanWidget(
-            label = "Blank",
-            description = "Reference sample values are zero or 'blank'",
+            label=_("Blank"),
+            description=_("Reference sample values are zero or 'blank'"),
         ),
     ),
     BooleanField('Hazardous',
         schemata = 'Description',
         default = False,
         widget = BooleanWidget(
-            label = "Hazardous",
-            description = "Samples of this type should be treated as hazardous",
+            label=_("Hazardous"),
+            description=_("Samples of this type should be treated as hazardous"),
         ),
     ),
 ))

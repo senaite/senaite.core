@@ -19,10 +19,10 @@ import sys
 schema = BikaSchema.copy() + Schema((
     StringField('ProfileKey',
         widget = StringWidget(
-            label = "Profile Keyword",
-            description = "The profile's keyword is used to uniquely identify " + \
+            label = _("Profile Keyword"),
+            description = _("The profile's keyword is used to uniquely identify " + \
                           "it in import files. It has to be unique, and it may " + \
-                          "not be the same as any Calculation Interim field ID.",
+                          "not be the same as any Calculation Interim field ID."),
         ),
     ),
     ReferenceField('Service',
@@ -32,8 +32,8 @@ schema = BikaSchema.copy() + Schema((
         allowed_types = ('AnalysisService',),
         relationship = 'AnalysisProfileAnalysisService',
         widget = AnalysisProfileAnalysesWidget(
-            label = "Profile Analyses",
-            description = "The analyses included in this profile, grouped per category",
+            label = _("Profile Analyses"),
+            description = _("The analyses included in this profile, grouped per category"),
         )
     ),
     TextField('Remarks',
@@ -43,7 +43,7 @@ schema = BikaSchema.copy() + Schema((
         default_output_type="text/plain",
         widget = TextAreaWidget(
             macro = "bika_widgets/remarks",
-            label = "Remarks",
+            label = _("Remarks"),
             append_only = True,
         ),
     ),

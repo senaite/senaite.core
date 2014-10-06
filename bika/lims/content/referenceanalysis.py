@@ -26,7 +26,7 @@ schema = BikaSchema.copy() + Schema((
         vocabulary=STD_TYPES,
         widget=SelectionWidget(
             format='select',
-            label = "Reference Type",
+            label=_("Reference Type"),
         ),
     ),
     HistoryAwareReferenceField('Service',
@@ -35,17 +35,17 @@ schema = BikaSchema.copy() + Schema((
         relationship='ReferenceAnalysisAnalysisService',
         referenceClass=HoldingReference,
         widget=ReferenceWidget(
-            label = "Analysis Service",
+            label=_("Analysis Service"),
         )
     ),
     InterimFieldsField('InterimFields',
         widget=BikaRecordsWidget(
-            label = "Calculation Interim Fields",
+            label=_("Calculation Interim Fields"),
         )
     ),
     StringField('Result',
         widget=StringWidget(
-            label = "Result",
+            label=_("Result"),
         )
     ),
     DateTimeField('ResultCaptureDate',
@@ -83,7 +83,7 @@ schema = BikaSchema.copy() + Schema((
     BooleanField('Retested',
         default = False,
         widget = BooleanWidget(
-            label = "Retested",
+            label=_("Retested"),
         ),
     ),
     ComputedField('ReferenceSampleUID',
@@ -106,7 +106,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     StringField('ReferenceAnalysesGroupID',
         widget = StringWidget(
-            label = "ReferenceAnalysesGroupID",
+            label=_("ReferenceAnalysesGroupID"),
             visible=False,
         ),
     ),

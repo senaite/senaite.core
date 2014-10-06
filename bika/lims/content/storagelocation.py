@@ -20,66 +20,66 @@ import sys
 schema = BikaSchema.copy() + Schema((
     StringField('SiteTitle',
         widget=StringWidget(
-            label = "Site Title",
-            description = "Title of the site",
+            label=_("Site Title"),
+            description=_("Title of the site"),
         ),
     ),
     StringField('SiteCode',
         widget=StringWidget(
-            label = "Site Code",
-            description = "Code for the site",
+            label=_("Site Code"),
+            description=_("Code for the site"),
         ),
     ),
     StringField('SiteDescription',
         widget=StringWidget(
-            label = "Site Description",
-            description = "Description of the site",
+            label=_("Site Description"),
+            description=_("Description of the site"),
         ),
     ),
     StringField('LocationTitle',
         widget=StringWidget(
-            label = "Location Title",
-            description = "Title of location",
+            label=_("Location Title"),
+            description=_("Title of location"),
         ),
     ),
     StringField('LocationCode',
         widget=StringWidget(
-            label = "Location Code",
-            description = "Code for the location",
+            label=_("Location Code"),
+            description=_("Code for the location"),
         ),
     ),
     StringField('LocationDescription',
         widget=StringWidget(
-            label = "Location Description",
-            description = "Description of the location",
+            label=_("Location Description"),
+            description=_("Description of the location"),
         ),
     ),
     StringField('LocationType',
         widget=StringWidget(
-            label = "Location Type",
-            description = "Type of location",
+            label=_("Location Type"),
+            description=_("Type of location"),
         ),
     ),
     StringField('ShelfTitle',
         widget=StringWidget(
-            label = "Shelf Title",
-            description = "Title of the shelf",
+            label=_("Shelf Title"),
+            description=_("Title of the shelf"),
         ),
     ),
     StringField('ShelfCode',
         widget=StringWidget(
-            label = "Shelf Code",
-            description = "Code the the shelf",
+            label=_("Shelf Code"),
+            description=_("Code the the shelf"),
         ),
     ),
     StringField('ShelfDescription',
         widget=StringWidget(
-            label = "Shelf Description",
-            description = "Description of the shelf",
+            label=_("Shelf Description"),
+            description=_("Description of the shelf"),
         ),
     ),
 ))
-schema['title'].widget.label = 'Address'
+schema['title'].widget.label=_('Address'),
 schema['description'].widget.visible = True
 
 class StorageLocation(BaseContent, HistoryAwareMixin):

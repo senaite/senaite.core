@@ -401,12 +401,9 @@ msgstr ""
 msgid "Batch Label"
 msgstr ""
 #
+# File: ../profiles/default/controlpanel.xml, line: -1
 # File: ../profiles/default/types/BatchLabels.xml, line: -1
 msgid "Batch Labels"
-msgstr ""
-#
-# File: ../profiles/default/controlpanel.xml, line: -1
-msgid "Batch labels"
 msgstr ""
 #
 # File: ../profiles/default/types/BatchFolder.xml, line: -1

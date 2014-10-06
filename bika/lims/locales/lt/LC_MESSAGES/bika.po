@@ -2,15 +2,16 @@
 # Translators:
 # aleksandras <aleksandras.savilionis@gmail.com>, 2014
 # aleksandras <aleksandras.savilionis@gmail.com>, 2014
-# audrius <audrius@avr.lt>, 2013
-# audrius <audrius@avr.lt>, 2013-2014
-# audrius <audrius@avr.lt>, 2013
+# Audrius Zajančkauskas <audrius@avr.lt>, 2013
+# Audrius Zajančkauskas <audrius@avr.lt>, 2013-2014
+# Audrius Zajančkauskas <audrius@avr.lt>, 2014
+# Audrius Zajančkauskas <audrius@avr.lt>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
 "POT-Creation-Date: 2012-01-01 23:11+0000\n"
-"PO-Revision-Date: 2014-07-06 18:39+0000\n"
-"Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
+"PO-Revision-Date: 2014-09-19 05:30+0000\n"
+"Last-Translator: Audrius Zajančkauskas <audrius@avr.lt>\n"
 "Language-Team: Lithuanian (http://www.transifex.com/projects/p/bika-lims/language/lt/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -24,51 +25,61 @@ msgstr ""
 
 # File: bika.lims/bika/lims/browser/templates/login_details.pt, line: 18
 msgid "${contact_fullname} can log into the LIMS by using ${contact_username} as username. Contacts must change their own passwords. If a password is forgotten a contact can request a new password from the login form."
+msgstr "${contact_fullname} gali prisijungti prie LIMS naudodamas ${contact_username} vartotojo vardą. Naudotojas privalo pasikeisti slaptažodį. Jeigu pamiršote slaptažodį, jį galima pakeisti prisijungimo lange."
+
+#
+# File: ../../../bika/lims/browser/analysisrequest/workflow.py, line: 211
+msgid "${items} are missing Preserver or Date Preserved"
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/client.py, line: 133
 msgid "${items} are waiting for preservation."
-msgstr ""
+msgstr "${items} laukia išsaugojimo."
 
 # File: bika.lims/bika/lims/browser/analysisrequest/workflow.py, line: 189
 # File: bika.lims/bika/lims/browser/client.py, line: 136
 msgid "${items} are waiting to be received."
-msgstr ""
+msgstr "${items} laukia kol bus atsiųstas."
 
 # File: bika.lims/bika/lims/browser/analysisrequest/workflow.py, line: 478
 msgid "${items} invalidated."
-msgstr ""
+msgstr "${items} atmesta."
 
 # File: bika.lims/bika/lims/controlpanel/bika_analysisservices.py, line: 109
 msgid "${items} were successfully created."
-msgstr ""
+msgstr "${items} sėkmingai sukurtos."
 
 # File: bika.lims/bika/lims/browser/client.py, line: 197
 msgid "${items}: partitions are waiting to be received."
+msgstr "${items}: dalys laukiamos kol bus gautos."
+
+#
+# File: ../../../bika/lims/browser/analysisrequest/workflow.py, line: 215
+msgid "${item} is missing Preserver or Preservation Date"
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/client.py, line: 141
 msgid "${item} is waiting for preservation."
-msgstr ""
+msgstr "${item} laukiama išsaugojimo."
 
 # File: bika.lims/bika/lims/browser/analysisrequest/workflow.py, line: 193
 # File: bika.lims/bika/lims/browser/client.py, line: 144
 msgid "${item} is waiting to be received."
-msgstr ""
+msgstr "${item} laukiama kols bus atsiųsta."
 
 # File: bika.lims/bika/lims/controlpanel/bika_analysisservices.py, line: 113
 msgid "${item} was successfully created."
-msgstr ""
+msgstr "${item} sėkmingai sukurtas."
 
 # File: bika.lims/bika/lims/browser/client.py, line: 200
 msgid "${item}: ${part} is waiting to be received."
-msgstr ""
+msgstr "${item}: ${part} laukiama kols bus atsiųsta."
 
 # File:
 # bika.lims/bika/lims/browser/reports/templates/productivity_samplereceivedvsreported.pt,
 # line: 36
 msgid "%"
-msgstr ""
+msgstr "%"
 
 # File: bika.lims/bika/lims/content/analysisspec.py, line: 72
 msgid "% Error"
@@ -81,7 +92,7 @@ msgstr "Paklaida %"
 # bika.lims/bika/lims/browser/reports/templates/productivity_analysesperformedpertotal.pt,
 # line: 99
 msgid "% Performed"
-msgstr ""
+msgstr "% Įvykdytas"
 
 # File:
 # bika.lims/bika/lims/browser/reports/templates/productivity_analysesperdepartment.pt,
@@ -90,7 +101,7 @@ msgstr ""
 # bika.lims/bika/lims/browser/reports/templates/productivity_analysesperformedpertotal.pt,
 # line: 101
 msgid "% Published"
-msgstr ""
+msgstr "% Paskelbtas"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 291
 msgid "'Classic' indicates importing analysis requests per sample and analysis service selection. With 'Profiles', analysis profile keywords are used to select multiple analysis services together"
@@ -111,7 +122,7 @@ msgstr "(Dubliuoti)"
 
 # File: bika.lims/bika/lims/content/referencesample.py, line: 186
 msgid "(Hazardous)"
-msgstr ""
+msgstr "(Pavojingas)"
 
 # File: bika.lims/bika/lims/browser/templates/login_details.pt, line: 51
 msgid "(Required)"
@@ -127,17 +138,17 @@ msgstr "±"
 # bika.lims/bika/lims/browser/analysisrequest/templates/analysisrequests.pt,
 # line: 35
 msgid "1"
-msgstr ""
+msgstr "1"
 
 # File:
 # bika.lims/bika/lims/browser/analysisrequest/templates/analysisrequests.pt,
 # line: 44
 msgid "10"
-msgstr ""
+msgstr "10"
 
 # File: bika.lims/bika/lims/content/arpriority.py, line: 28
 msgid "16x16 pixel icon used for the this priority in listings."
-msgstr ""
+msgstr "16x16 taškų ikonėlė panaudota pirmumui eilėje nurodyti."
 
 # File:
 # bika.lims/bika/lims/browser/analysisrequest/templates/analysisrequests.pt,
@@ -149,65 +160,65 @@ msgstr ""
 # bika.lims/bika/lims/browser/analysisrequest/templates/analysisrequests.pt,
 # line: 37
 msgid "3"
-msgstr ""
+msgstr "3"
 
 # File: bika.lims/bika/lims/content/arpriority.py, line: 34
 msgid "32x32 pixel icon used for the this priority in object views."
-msgstr ""
+msgstr "32x32 taškų ikonėlė panaudota pirmumui eilėje nurodyti."
 
 # File:
 # bika.lims/bika/lims/browser/analysisrequest/templates/analysisrequests.pt,
 # line: 38
 msgid "4"
-msgstr ""
+msgstr "4"
 
 # File:
 # bika.lims/bika/lims/browser/analysisrequest/templates/analysisrequests.pt,
 # line: 39
 msgid "5"
-msgstr ""
+msgstr "5"
 
 # File:
 # bika.lims/bika/lims/browser/analysisrequest/templates/analysisrequests.pt,
 # line: 40
 msgid "6"
-msgstr ""
+msgstr "6"
 
 # File:
 # bika.lims/bika/lims/browser/analysisrequest/templates/analysisrequests.pt,
 # line: 41
 msgid "7"
-msgstr ""
+msgstr "7"
 
 # File:
 # bika.lims/bika/lims/browser/analysisrequest/templates/analysisrequests.pt,
 # line: 42
 msgid "8"
-msgstr ""
+msgstr "8"
 
 # File:
 # bika.lims/bika/lims/browser/analysisrequest/templates/analysisrequests.pt,
 # line: 43
 msgid "9"
-msgstr ""
+msgstr "9"
 
 # File: bika.lims/bika/lims/browser/widgets/analysisspecificationwidget.py,
 # line: 44
 # File: bika.lims/bika/lims/content/analysisspec.py, line: 73
 msgid "< Min"
-msgstr ""
+msgstr "< Min"
 
 msgid "<p>${service} requires the following services to be selected:</p><br/><p>${deps}</p><br/><p>Do you want to apply these selections now?</p>"
-msgstr ""
+msgstr "<p>${service} servisas privalo būti parinktas:</p><br/><p>${deps}</p><br/><p>Ar taikyti šį jūsų pasirinkimą?</p>"
 
 msgid "<p>The following services depend on ${service}, and will be unselected if you continue:</p><br/><p>${deps}</p><br/><p>Do you want to remove these selections now?</p>"
-msgstr ""
+msgstr "<p>Pasirinktas servisas priklauso nuo ${service}, ir bus atmestas jeigu tęsite:</p><br/><p>${deps}</p><br/><p>Ar norite panaikinti pažymėjimus?</p>"
 
 # File: bika.lims/bika/lims/browser/widgets/analysisspecificationwidget.py,
 # line: 45
 # File: bika.lims/bika/lims/content/analysisspec.py, line: 74
 msgid "> Max"
-msgstr ""
+msgstr "> Max"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 301
 msgid "AR Attachment Option"
@@ -229,15 +240,15 @@ msgstr "Tyrimo Užužsakymo įvesties nustatos"
 # File: bika.lims/bika/lims/content/srtemplate.py, line: 36
 # File: bika.lims/bika/lims/controlpanel/bika_artemplates.py, line: 34
 msgid "AR Templates"
-msgstr ""
+msgstr "TU Šablonas"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/view.py, line: 403
 msgid "AR for retested results"
-msgstr ""
+msgstr "TU pakartotinai ištirti rezultatus"
 
 # File: bika.lims/bika/lims/browser/publish.py, line: 548
 msgid "ARs: ${ars}"
-msgstr ""
+msgstr "TU' ai: ${ars}"
 
 # File: bika.lims/bika/lims/content/organisation.py, line: 73
 msgid "Account Name"
@@ -266,11 +277,16 @@ msgstr "Akreditacijos įstaigos URL"
 
 # File: bika.lims/bika/lims/content/laboratory.py, line: 74
 msgid "Accreditation Logo"
-msgstr ""
+msgstr "Akreditacijos ženkliukas"
 
 # File: bika.lims/bika/lims/content/laboratory.py, line: 67
 msgid "Accreditation Reference"
 msgstr "Akreditacijos pagrindas"
+
+#
+# File: ../../../bika/lims/content/laboratory.py, line: 87
+msgid "Accreditation page header"
+msgstr ""
 
 # File: bika.lims/bika/lims/browser/analysisrequest/manage_analyses.py, line:
 # 200
@@ -307,7 +323,7 @@ msgstr "Aktyvus"
 # File: bika.lims/bika/lims/browser/sample.py, line: 450
 # File: bika.lims/bika/lims/content/analysisrequest.py, line: 557
 msgid "Ad-Hoc"
-msgstr ""
+msgstr "Šiuo atveju."
 
 # File: bika.lims/bika/lims/browser/batchfolder.py, line: 94
 # File: bika.lims/bika/lims/browser/client.py, line: 302
@@ -337,7 +353,7 @@ msgstr ""
 
 # worksheet.js
 msgid "Add Remark"
-msgstr ""
+msgstr "Pateikti pastabą"
 
 # File: bika.lims/bika/lims/controlpanel/bika_artemplates.py, line: 36
 # File: bika.lims/bika/lims/controlpanel/bika_srtemplates.py, line: 37
@@ -867,7 +883,7 @@ msgstr "Prisegtuko tipai"
 # File: bika.lims/bika/lims/browser/widgets/analysisspecificationwidget.py,
 # line: 111
 msgid "Attachment not permitted"
-msgstr ""
+msgstr "Prisegtukai draudžiami"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/manage_analyses.py, line:
 # 214
@@ -876,13 +892,13 @@ msgstr ""
 # File: bika.lims/bika/lims/browser/widgets/analysisspecificationwidget.py,
 # line: 106
 msgid "Attachment required"
-msgstr ""
+msgstr "Privaloma pateikti prisegtuką"
 
 # File:
 # bika.lims/bika/lims/browser/reports/productivity_analysesattachments.py,
 # line: 63
 msgid "Attachment type"
-msgstr ""
+msgstr "Prisegtuko tipas"
 
 # File: bika.lims/bika/lims/browser/analyses.py, line: 98
 # File: bika.lims/bika/lims/browser/client.py, line: 648
@@ -894,17 +910,17 @@ msgstr "Prisegtukai"
 # File: bika.lims/bika/lims/browser/templates/worksheet_manage_results.pt,
 # line: 91
 msgid "Autofill"
-msgstr ""
+msgstr "Automatins duomenų užpildymas"
 
 # File:
 # bika.lims/bika/lims/exportimport/instruments/agilent/masshunter/quantitative.py,
 # line: 475
 msgid "Autoimport"
-msgstr ""
+msgstr "Automatinis duomenų importas"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 336
 msgid "Automatic label printing"
-msgstr ""
+msgstr "Automatinis etikečių spusdinimas"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 66
 msgid "Automatic log-off"
@@ -931,13 +947,6 @@ msgstr ""
 msgid "Average late"
 msgstr ""
 
-# File: bika.lims/bika/lims/browser/templates/sample_sticker_large.pt, line:
-# 144
-# File: bika.lims/bika/lims/browser/templates/sample_sticker_small.pt, line:
-# 90
-msgid "Back to list"
-msgstr ""
-
 # File: bika.lims/bika/lims/content/organisation.py, line: 91
 msgid "Bank branch"
 msgstr "Banko skyrius"
@@ -949,7 +958,7 @@ msgstr "Banko vardas"
 # File: bika.lims/bika/lims/browser/templates/instrument_referenceanalyses.pt,
 # line: 217
 msgid "Basis"
-msgstr ""
+msgstr "Pagrindas"
 
 # File: bika.lims/bika/lims/browser/batch/batchbook.py, line: 44
 # File:
@@ -957,7 +966,7 @@ msgstr ""
 # line: 92
 # File: bika.lims/bika/lims/content/analysisrequest.py, line: 191
 msgid "Batch"
-msgstr ""
+msgstr "Grupė, partija"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 69
@@ -965,21 +974,17 @@ msgstr ""
 # File: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt,
 # line: 110
 msgid "Batch ID"
-msgstr ""
+msgstr "Grupės ID"
 
 # File: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt,
 # line: 164
 # File: bika.lims/bika/lims/controlpanel/bika_batchlabels.py, line: 24
 msgid "Batch Labels"
-msgstr ""
-
-# File: bika.lims/bika/lims/content/batch.py, line: 108
-msgid "Batch labels"
-msgstr ""
+msgstr "Grupės etiketė"
 
 # File: bika.lims/bika/lims/browser/batchfolder.py, line: 27
 msgid "Batches"
-msgstr ""
+msgstr "Grupės"
 
 # File: bika.lims/bika/lims/browser/fields/coordinatefield.py, line: 24
 msgid "Bearing"
@@ -988,15 +993,15 @@ msgstr "Azimutas"
 # File: bika.lims/bika/lims/browser/reports/selection_macros/__init__.py,
 # line: 159
 msgid "Before ${start_date}"
-msgstr ""
+msgstr "Prieš  ${start_date}"
 
 # File: bika.lims/bika/lims/content/arpriority.py, line: 33
 msgid "Big Icon"
-msgstr ""
+msgstr "Didelė piktograma"
 
 # File: bika.lims/bika/lims/monkey/controlpanel.py, line: 12
 msgid "Bika LIMS Configuration"
-msgstr ""
+msgstr "Bika LIMS nustatymai"
 
 # File: bika.lims/bika/lims/config.py, line: 90
 # File: bika.lims/bika/lims/content/organisation.py, line: 61
@@ -1021,11 +1026,11 @@ msgstr "Šaka"
 # File: bika.lims/bika/lims/content/client.py, line: 36
 # File: bika.lims/bika/lims/content/pricelist.py, line: 31
 msgid "Bulk discount applies"
-msgstr ""
+msgstr "Viso užsakymo nuolaida"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 564
 msgid "Bulk price (excluding VAT)"
-msgstr ""
+msgstr "Užsakymo kaina (be PVM)"
 
 # File: bika.lims/bika/lims/browser/client.py, line: 758
 # File: bika.lims/bika/lims/browser/supplier.py, line: 182
@@ -1034,7 +1039,7 @@ msgstr "Darbo telefonas"
 
 # File: bika.lims/bika/lims/browser/reports/__init__.py, line: 128
 msgid "By"
-msgstr ""
+msgstr "Prie"
 
 # File: bika.lims/bika/lims/content/arimport.py, line: 123
 msgid "CC Contact ID"
@@ -1097,7 +1102,7 @@ msgstr "Skaičiavimai"
 
 # File: bika.lims/bika/lims/content/instrumentscheduledtask.py, line: 84
 msgid "Calibration"
-msgstr ""
+msgstr "Kalibravimas"
 
 # File: bika.lims/bika/lims/browser/templates/instrument_certifications.pt,
 # line: 40
@@ -1240,8 +1245,14 @@ msgstr "Klasikinis"
 msgid "Click on Analysis Categories (against shaded background) to see Analysis Services in each category. Enter minimum and maximum values to indicate a valid results range. Any result outside this range will raise an alert. The % Error field allows for an % uncertainty to be considered when evaluating results against minimum and maximum values. A result out of range but still in range if the % error is taken into consideration, will raise a less severe alert."
 msgstr ""
 
-# File: bika.lims/bika/lims/content/analysisspec.py, line: 79
-msgid "Click on Analysis Categories (against shaded background) to see Analysis Services in each category. Enter minimum and maximum values to indicate a valid results range. Any result outside this range will raise an alert. The % Error field allows for an % uncertainty to be considered when evaluating results against minimum and maximum values. A result out of range but still in range if the % error is taken into consideration, will raise a less severe alert. If the result is below '< Min' the result will be shown as '< [min]'. The same applies for results above '> Max'"
+#
+# File: ../../../bika/lims/content/referencedefinition.py, line: 28
+msgid "Click on Analysis Categories (against shaded backgroundto see Analysis Services in each category. Enter minimum and maximum values to indicate a valid results range. Any result outside this range will raise an alert. The % Error field allows for an % uncertainty to be considered when evaluating results against minimum and maximum values. A result out of range but still in range if the % error is taken into consideration, will raise a less severe alert."
+msgstr ""
+
+#
+# File: ../../../bika/lims/content/analysisspec.py, line: 79
+msgid "Click on Analysis Categories (against shaded backgroundto see Analysis Services in each category. Enter minimum and maximum values to indicate a valid results range. Any result outside this range will raise an alert. The % Error field allows for an % uncertainty to be considered when evaluating results against minimum and maximum values. A result out of range but still in range if the % error is taken into consideration, will raise a less severe alert. If the result is below '< Min' the result will be shown as '< [min]'. The same applies for results above '> Max'"
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/templates/analysisservice_popup.pt, line:
@@ -1713,7 +1724,7 @@ msgid "Decimal mark to use in the reports from this Client."
 msgstr ""
 
 msgid "Default"
-msgstr ""
+msgstr "Numatyta"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 256
 # File: bika.lims/bika/lims/content/client.py, line: 89
@@ -1767,7 +1778,7 @@ msgid "Default containers: ${container_list}"
 msgstr ""
 
 #
-# File: ../../../bika/lims/content/bikasetup.py, line: 156
+# File: ../../../bika/lims/content/bikasetup.py, line: 166
 # File: ../../../bika/lims/content/client.py, line: 98
 msgid "Default decimal mark"
 msgstr ""
@@ -1894,12 +1905,22 @@ msgstr ""
 msgid "Display Value"
 msgstr ""
 
+#
+# File: ../../../bika/lims/content/bikasetup.py, line: 107
+msgid "Display an alert on new releases of Bika LIMS"
+msgstr ""
+
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 228
 msgid "Display individual sample partitions "
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/sample.py, line: 72
 msgid "Disposal Date"
+msgstr ""
+
+#
+# File: ../../../bika/lims/content/instrument.py, line: 87
+msgid "Dispose until next calibration test"
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/referencesample.py, line: 351
@@ -2099,6 +2120,11 @@ msgstr ""
 msgid "Enter the details of each of the analysis services you want to copy."
 msgstr ""
 
+#
+# File: ../../../bika/lims/content/laboratory.py, line: 88
+msgid "Enter the details of your lab's service accreditations here.  The following fields are available:  lab_is_accredited, lab_name, lab_country, confidence, accreditation_body_name, accreditation_standard, accreditation_reference<br/>"
+msgstr ""
+
 # File:
 # bika.lims/bika/lims/browser/reports/templates/administration_usershistory.pt,
 # line: 76
@@ -2143,7 +2169,7 @@ msgid "Exponential format precision"
 msgstr ""
 
 #
-# File: ../../../bika/lims/content/bikasetup.py, line: 280
+# File: ../../../bika/lims/content/bikasetup.py, line: 292
 msgid "Exponential format threshold"
 msgstr ""
 
@@ -2152,7 +2178,7 @@ msgstr ""
 # File: in, line: -1
 # File: configure.zcml, line: -1
 msgid "Extension profile for the Bika LIMS"
-msgstr ""
+msgstr "Bika LIMS išplėstasis profilis "
 
 # File: bika.lims/bika/lims/browser/clientfolder.py, line: 40
 # File: bika.lims/bika/lims/browser/mailtemplates/analysisrequest_results.pt,
@@ -2252,6 +2278,12 @@ msgstr ""
 msgid "Generate report"
 msgstr ""
 
+#
+# File: ../../../bika/lims/browser/templates/sample_sticker_large.pt, line: 144
+# File: ../../../bika/lims/browser/templates/sample_sticker_small.pt, line: 90
+msgid "Go back"
+msgstr ""
+
 # File: bika.lims/bika/lims/content/person.py, line: 19
 msgid "Greeting title eg. Mr, Mrs, Dr"
 msgstr ""
@@ -2313,8 +2345,14 @@ msgstr ""
 msgid "If 'Allow instrument entry of results' is selected, the method from the default instrument will be used. Otherwise, only the methods selected above will be displayed."
 msgstr ""
 
-# File: bika.lims/bika/lims/content/samplepoint.py, line: 48
-msgid "If a sample is taken periodically at this sample point,  enter frequency here, e.g. weekly"
+#
+# File: ../../../bika/lims/content/samplepoint.py, line: 46
+msgid "If a sample is taken periodically at this sample point, enter frequency here, e.g. weekly"
+msgstr ""
+
+#
+# File: ../../../bika/lims/content/instrument.py, line: 88
+msgid "If checked, the instrument will not be available until the next valid calibration test being performed. This checkbox will be automatically unchecked too."
 msgstr ""
 
 # File: bika.lims/bika/lims/content/batch.py, line: 191
@@ -2402,7 +2440,7 @@ msgid "Indicates whether file attachments, e.g. microscope images, are required 
 msgstr ""
 
 msgid "Info"
-msgstr ""
+msgstr "Informacija"
 
 # File: bika.lims/bika/lims/content/batch.py, line: 149
 msgid "Inherit From"
@@ -2506,7 +2544,7 @@ msgid "Invalid AR retested"
 msgstr ""
 
 msgid "Invalid instruments are not shown: ${invalid_list}"
-msgstr ""
+msgstr "Netinkamas instrumentas nėra rodomas: ${invalid_list}"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/invoice.py, line: 25
 msgid "Invoice"
@@ -2793,10 +2831,10 @@ msgid "Manual entry of results"
 msgstr ""
 
 msgid "Manual entry of results for method ${methodname} is not allowed"
-msgstr ""
+msgstr "Rankinis rezultatų įvedimas šiam ${methodname} metodui nėra galimas."
 
 msgid "Manual entry of results for method {methodname} is not allowed and no valid instruments found: ${invalid_list}"
-msgstr ""
+msgstr "ankinis rezultatų įvedimas šiam ${methodname} metodui nėra galimas bei rastas netinkamas instrumentas: ${invalid_list}"
 
 # File: bika.lims/bika/lims/browser/supplier.py, line: 49
 # File: bika.lims/bika/lims/browser/templates/referencesample_sticker.pt,
@@ -3098,7 +3136,7 @@ msgid "No valid file or format"
 msgstr ""
 
 msgid "No valid instruments found: ${invalid_list}"
-msgstr ""
+msgstr "Surastas netinkamas instrumentas : ${invalid_list}"
 
 # File: bika.lims/bika/lims/browser/analyses.py, line: 216
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 871
@@ -3123,6 +3161,11 @@ msgstr ""
 # File: bika.lims/bika/lims/browser/templates/worksheet_manage_results.pt,
 # line: 77
 msgid "Not defined"
+msgstr ""
+
+#
+# File: ../../../bika/lims/browser/analysisrequest/analysisrequests.py, line: 128
+msgid "Number of Analyses"
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/reports/productivity_analysesperclient.py,
@@ -3203,7 +3246,7 @@ msgid "Only lab managers can create and manage worksheets"
 msgstr ""
 
 msgid "Only the analyses for which the selected instrument is allowed will be added automatically."
-msgstr ""
+msgstr "Tik instrumentui priskirti tyrimai bus automatiškai įtraukti."
 
 # File: bika.lims/bika/lims/browser/templates/worksheet_manage_results.pt,
 # line: 132
@@ -3273,7 +3316,7 @@ msgid "PDF"
 msgstr ""
 
 msgid "Parent"
-msgstr ""
+msgstr "Pirminis elementas"
 
 # File: bika.lims/bika/lims/browser/analyses.py, line: 61
 # File: bika.lims/bika/lims/browser/analysisrequest/manage_analyses.py, line:
@@ -3414,7 +3457,7 @@ msgid "Precision as number of decimals"
 msgstr ""
 
 #
-# File: ../../../bika/lims/content/bikasetup.py, line: 157
+# File: ../../../bika/lims/content/bikasetup.py, line: 167
 msgid "Preferred decimal mark for reports."
 msgstr ""
 
@@ -3966,7 +4009,7 @@ msgid "Result out of range"
 msgstr ""
 
 #
-# File: ../../../bika/lims/content/bikasetup.py, line: 281
+# File: ../../../bika/lims/content/bikasetup.py, line: 293
 msgid "Result values with at least this number of significant digits are displayed in scientific notation using the letter 'e' to indicate the exponent.  The precision can be configured in individual Analysis Services."
 msgstr ""
 
@@ -4420,7 +4463,7 @@ msgstr ""
 
 # ../browser/js/analysisrequest.js
 msgid "Service dependencies"
-msgstr ""
+msgstr "Paslaugų priklausomybės"
 
 # File: bika.lims/bika/lims/browser/templates/analysisservice_popup.pt, line:
 # 59
@@ -4509,7 +4552,7 @@ msgstr ""
 
 # ../browser/js/attachments.js
 msgid "Slot"
-msgstr ""
+msgstr "Anga/Lizdas"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 47
 msgid "Small"
@@ -4957,7 +5000,7 @@ msgstr ""
 
 # ../browser/js/client.js
 msgid "This will remove all existing client analysis specifications and create copies of all lab specifications. Are you sure you want to do this?"
-msgstr ""
+msgstr "Tai panaikins visas klientų nurodytas tyrimų specifikacijas bei sukurs labaratorijų specifikacijų kopiją. Ar norite tai atlikti?"
 
 # File: bika.lims/bika/lims/browser/worksheet.py, line: 993
 msgid "This worksheet has been created to replace the rejected worksheet at ${ws_id}"
@@ -5004,10 +5047,6 @@ msgstr ""
 # File: bika.lims/bika/lims/browser/worksheetfolder.py, line: 220
 # File: bika.lims/bika/lims/skins/bika/portlet_to_be_verified.pt, line: 31
 msgid "To be verified"
-msgstr ""
-
-# File: bika.lims/bika/lims/content/analysisspec.py, line: 102
-msgid "To include this spec as the default for a sample type, set the title here to the name of the sample type."
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/analysisrequest/templates/ar_add.pt, line:
@@ -5087,13 +5126,13 @@ msgid "Type of location"
 msgstr ""
 
 msgid "Unable to apply the selected instrument"
-msgstr ""
+msgstr "Negaliu panaudoti pasirinkto instrumento"
 
 msgid "Unable to load instruments: ${invalid_list}"
-msgstr ""
+msgstr "Negaliu pasiekti instrumento: ${invalid_list}"
 
 #
-# File: ../../../bika/lims/browser/analysisrequest/publish.py, line: 112
+# File: ../../../bika/lims/browser/analysisrequest/publish.py, line: 127
 msgid "Unable to load the template"
 msgstr ""
 

@@ -42,7 +42,7 @@ schema = BikaSchema.copy() + Schema((
                 required=1,
                 searchable=True,
                 widget=StringWidget(
-                    label = "Order Number",
+                    label=_("Order Number"),
                     ),
                 ),
     ReferenceField('Invoice',
@@ -56,7 +56,7 @@ schema = BikaSchema.copy() + Schema((
       required=1,
       default_method='current_date',
       widget=DateTimeWidget(
-        label = "Order Date",
+        label=_("Order Date"),
         size=12,
         render_own_label=True,
         visible={
@@ -69,7 +69,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     DateTimeField('DateDispatched',
                   widget=DateTimeWidget(
-                      label = "Date Dispatched",
+                      label=_("Date Dispatched"),
                       ),
                   ),
     TextField('Remarks',
@@ -79,7 +79,7 @@ schema = BikaSchema.copy() + Schema((
         default_output_type="text/plain",
         widget = TextAreaWidget(
             macro="bika_widgets/remarks",
-            label = "Remarks",
+            label=_("Remarks"),
             append_only=True,
         ),
     ),

@@ -31,22 +31,22 @@ schema = BikaSchema.copy() + Schema((
     BooleanField('Internal',
         default=False,
         widget=BooleanWidget(
-            label = "Internal Certificate",
-            description = "Select if is an in-house calibration certificate"
+            label=_("Internal Certificate"),
+            description=_("Select if is an in-house calibration certificate")
         )
     ),
 
     StringField('Agency',
         widget = StringWidget(
-            label = "Agency",
-            description = "Organization responsible of granting the calibration certificate"
+            label=_("Agency"),
+            description=_("Organization responsible of granting the calibration certificate")
         ),
     ),
 
     DateTimeField('Date',
         widget = DateTimeWidget(
-            label = "Date",
-            description = "Date when the calibration certificate was granted",
+            label=_("Date"),
+            description=_("Date when the calibration certificate was granted"),
         ),
     ),
 
@@ -55,8 +55,8 @@ schema = BikaSchema.copy() + Schema((
         with_date = 1,
         required = 1,
         widget = DateTimeWidget(
-            label = "From",
-            description = "Date from which the calibration certificate is valid",
+            label=_("From"),
+            description=_("Date from which the calibration certificate is valid"),
         ),
     ),
 
@@ -65,15 +65,15 @@ schema = BikaSchema.copy() + Schema((
         with_date = 1,
         required = 1,
         widget = DateTimeWidget(
-            label = "To",
-            description = "Date until the certificate is valid",
+            label=_("To"),
+            description=_("Date until the certificate is valid"),
         ),
     ),
 
     FileField('Document',
         widget = FileWidget(
-            label = "Certificate Document",
-            description = "Load the certificate document here",
+            label=_("Certificate Document"),
+            description=_("Load the certificate document here"),
         )
     ),
 
@@ -85,7 +85,7 @@ schema = BikaSchema.copy() + Schema((
         mode="rw",
         widget=TextAreaWidget(
             macro="bika_widgets/remarks",
-            label = "Remarks",
+            label=_("Remarks"),
             append_only=True,
         ),
     ),
