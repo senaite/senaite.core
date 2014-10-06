@@ -1234,6 +1234,7 @@ schema['title'].widget.visible = {
     'view': 'invisible',
 }
 
+schema.moveField('Client', before='Contact')
 
 class AnalysisRequest(BaseFolder):
     implements(IAnalysisRequest)
