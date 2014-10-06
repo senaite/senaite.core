@@ -31,7 +31,7 @@ class AccreditationView(AnalysisServicesView):
                               'inactive_state': 'active'}
         self.context_actions = {}
         self.icon = self.portal_url + "/++resource++bika.lims.images/accredited_big.png"
-        self.title = _("Accreditation")
+        self.title = self.context.translate(_("Accreditation"))
 
         lab = context.bika_setup.laboratory
         accredited = lab.getLaboratoryAccredited()

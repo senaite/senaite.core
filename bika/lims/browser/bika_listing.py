@@ -49,7 +49,13 @@ except:
 
 class WorkflowAction:
     """ Workflow actions taken in any Bika contextAnalysisRequest context
-        This function is called to do the worflow actions
+
+        This function provides the default behaviour for workflow actions invoked
+        from bika_listing tables.
+
+        Some actions (eg, AR copy_to_new) can be invoked from multiple contexts.
+        In that case, I will begin to register their handlers here.
+        XXX WorkflowAction handlers should be simple adapters.
     """
     def __init__(self, context, request):
         self.destination_url = ""
@@ -70,6 +76,8 @@ class WorkflowAction:
         form = self.request.form
         came_from = "workflow_action"
         action = form.get(came_from, '')
+        if type(action) in (list, tuple):
+            action = action[0]
         if not action:
             came_from = "workflow_action_button"
             action = form.get('workflow_action_id', '')
@@ -98,6 +106,49 @@ class WorkflowAction:
             selected_items[uid] = item
         return selected_items
 
+    def workflow_action_default(self, action, came_from):
+        if came_from == 'workflow_action':
+            # jsonapi, I believe, ends up here.
+            items = [self.context, ]
+        else:
+            # normal bika_listing.
+            items = self._get_selected_items().values()
+
+        if items:
+            trans, dest = self.submitTransition(action, came_from, items)
+            if trans:
+                message = PMF('Changes saved.')
+                self.context.plone_utils.addPortalMessage(message, 'info')
+            if dest:
+                self.request.response.redirect(dest)
+                return
+        else:
+            message = _('No items selected')
+            self.context.plone_utils.addPortalMessage(message, 'warn')
+        self.request.response.redirect(self.destination_url)
+        return
+
+    def workflow_action_copy_to_new(self):
+        """Invoke the ar_add form in the current context, passing the UIDs of
+        the source ARs as request parameters.
+        """
+        objects = WorkflowAction._get_selected_items(self)
+        if not objects:
+            message = self.context.translate(
+                _("No analyses have been selected"))
+            self.context.plone_utils.addPortalMessage(message, 'info')
+            self.destination_url = self.context.absolute_url() + \
+                                   "/batchbook"
+            self.request.response.redirect(self.destination_url)
+            return
+
+        url = self.context.absolute_url() + "/portal_factory/" + \
+              "AnalysisRequest/Request new analyses/ar_add" + \
+              "?col_count={0}".format(len(objects)) + \
+              "&copy_from={0}".format(",".join(objects.keys()))
+        self.request.response.redirect(url)
+        return
+
     def __call__(self):
         form = self.request.form
         plone.protect.CheckAuthenticator(form)
@@ -106,26 +157,23 @@ class WorkflowAction:
                                    self.context.absolute_url())
 
         action, came_from = self._get_form_workflow_action()
+
         if action:
-            items = self._get_selected_items().values() \
-                if came_from != 'workflow_action' \
-                else [self.context, ]
-
-            if items:
-                trans, dest = self.submitTransition(action, came_from, items)
-                if trans:
-                    message = PMF('Changes saved.')
-                    self.context.plone_utils.addPortalMessage(message, 'info')
-                if dest:
-                    self.request.response.redirect(dest)
-                    return
+            # Call out to the workflow action method
+            # Use default bika_listing.py/WorkflowAction for other transitions
+            method_name = 'workflow_action_' + action
+            method = getattr(self, method_name, False)
+            if method and not callable(method):
+                raise Exception("Shouldn't Happen: %s.%s not callable." %
+                                (self, method_name))
+            if method:
+                method()
             else:
-                message = _('No items selected')
-                self.context.plone_utils.addPortalMessage(message, 'warn')
-
-        # Do nothing
-        self.request.response.redirect(self.destination_url)
-        return
+                self.workflow_action_default(action, came_from)
+        else:
+            # Do nothing
+            self.request.response.redirect(self.destination_url)
+            return
 
     def submitTransition(self, action, came_from, items):
         """ Performs the action's transition for the specified items
@@ -771,6 +819,15 @@ class BikaListingView(BrowserView):
         else:
             actions = transitions.values()
 
+        new_actions = []
+        # remove any invalid items with a warning
+        for a,action in enumerate(actions):
+            if isinstance(action, dict) \
+                    and 'id' in action:
+                new_actions.append(action)
+            else:
+                logger.warning("bad action in custom_actions: %s. (complete list: %s)."%(action,actions))
+
         # and these are removed
         if 'hide_transitions' in review_state:
             actions = [a for a in actions
@@ -786,11 +843,12 @@ class BikaListingView(BrowserView):
         # on the BikaListingView, add these actions to the list.
         if 'custom_actions' in review_state:
             for action in review_state['custom_actions']:
-                actions.append(action)
+                if isinstance(action, dict) \
+                        and 'id' in action:
+                    actions.append(action)
 
         for a,action in enumerate(actions):
-            actions[a]['title'] = \
-                t(PMF(actions[a]['id'] + "_transition_title"))
+            actions[a]['title'] = t(PMF(actions[a]['id'] + "_transition_title"))
         return actions
 
     def getPriorityIcon(self):

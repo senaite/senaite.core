@@ -58,6 +58,31 @@
     permission="zope.Public"
     layer="bika.lims.interfaces.IBikaLIMS"
   />
+  <browser:page
+    for="*"
+    name="js_err"
+    class="bika.lims.utils.js_err"
+    permission="zope.Public"
+    layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
+  <!-- Product version retrieval -->
+  <browser:page
+    for="*"
+    name="get_product_version"
+    class="bika.lims.browser.ajaxGetProductVersion"
+    permission="zope.Public"
+    layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
+  <!-- New releases config -->
+  <browser:page
+    for="*"
+    name="hide_new_releasesinfo"
+    class="bika.lims.browser.ajaxHideNewReleasesInfo"
+    permission="zope.Public"
+    layer="bika.lims.interfaces.IBikaLIMS"
+  />
 
     <subscriber
       for="*

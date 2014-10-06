@@ -12,8 +12,8 @@ schema = BikaSchema.copy() + Schema((
     ExtStringField(
         'SortKey',
         widget=StringWidget(
-            label=_('Sort Key'),
-            description=_('Subgroups are sorted with this key in group views')
+            label=_("Sort Key"),
+            description=_("Subgroups are sorted with this key in group views")
         )
     ),
 ))

@@ -426,4 +426,84 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Graph-related javascripts grouping"
+        description="Remove js and css from templates"
+        source="3042"
+        destination="3043"
+        handler="bika.lims.upgrade.to3043.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="JS structure and naming changes"
+        description=""
+        source="3043"
+        destination="3044"
+        handler="bika.lims.upgrade.to3044.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Fix workflow variable review_history permission guard"
+        description=""
+        source="3044"
+        destination="3045"
+        handler="bika.lims.upgrade.to3045.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Add missing bika.lims.sandbox.ar_analyses.js"
+        description=""
+        source="3045"
+        destination="3046"
+        handler="bika.lims.upgrade.to3046.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="JS changes"
+        description=""
+        source="3046"
+        destination="3047"
+        handler="bika.lims.upgrade.to3047.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Bika LIMS javascripts refactoring"
+        description=""
+        source="3047"
+        destination="3048"
+        handler="bika.lims.upgrade.to3048.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Adding the possibility to sample instruments by type"
+        description=""
+        source="3048"
+        destination="3049"
+        handler="bika.lims.upgrade.to3049.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Convert analysis specifications to values in AR.ResultsRange"
+        description=""
+        source="3049"
+        destination="3050"
+        handler="bika.lims.upgrade.to3050.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Adding getRawSamplePoints/Types to filter Sample easly"
+        description=""
+        source="3050"
+        destination="3051"
+        handler="bika.lims.upgrade.to3051.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
 </configure>

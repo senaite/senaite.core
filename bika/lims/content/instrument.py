@@ -30,7 +30,7 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         required=1,
         widget=SelectionWidget(
             format='select',
-            label=_('Instrument type'),
+            label=_("Instrument type"),
         ),
     ),
 
@@ -41,7 +41,7 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         required=1,
         widget=SelectionWidget(
             format='select',
-            label=_('Manufacturer'),
+            label=_("Manufacturer"),
         ),
     ),
 
@@ -52,21 +52,21 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         required=1,
         widget=SelectionWidget(
             format='select',
-            label=_('Supplier'),
+            label=_("Supplier"),
         ),
     ),
 
     StringField('Model',
         widget = StringWidget(
-            label = _("Model"),
-            description = _("The instrument's model number"),
+            label=_("Model"),
+            description=_("The instrument's model number"),
         )
     ),
 
     StringField('SerialNo',
         widget = StringWidget(
-            label = _("Serial No"),
-            description = _("The serial number that uniquely identifies the instrument"),
+            label=_("Serial No"),
+            description=_("The serial number that uniquely identifies the instrument"),
         )
     ),
 
@@ -77,7 +77,18 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         required=0,
         widget=SelectionWidget(
             format='select',
-            label=_('Method'),
+            label=_("Method"),
+        ),
+    ),
+
+    BooleanField('DisposeUntilNextCalibrationTest',
+        default = False,
+        widget = BooleanWidget(
+            label=_("Dispose until next calibration test"),
+            description = _("If checked, the instrument will not be "
+                            "available until the next valid calibration "
+                            "test being performed. This checkbox will "
+                            "be automatically unchecked too."),
         ),
     ),
 
@@ -88,8 +99,8 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         allowed_content_types= ('text/plain', ),
         default_output_type="text/plain",
         widget = TextAreaWidget(
-            label = _("In-lab calibration procedure"),
-            description = _("Instructions for in-lab regular calibration routines intended for analysts"),
+            label=_("In-lab calibration procedure"),
+            description=_("Instructions for in-lab regular calibration routines intended for analysts"),
         ),
     ),
     TextField('PreventiveMaintenanceProcedure',
@@ -98,8 +109,8 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         allowed_content_types= ('text/plain', ),
         default_output_type="text/plain",
         widget = TextAreaWidget(
-            label = _("Preventive maintenance procedure"),
-            description = _("Instructions for regular preventive and maintenance routines intended for analysts"),
+            label=_("Preventive maintenance procedure"),
+            description=_("Instructions for regular preventive and maintenance routines intended for analysts"),
         ),
     ),
 
@@ -108,8 +119,8 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         vocabulary = "getDataInterfacesList",
         widget = ReferenceWidget(
             checkbox_bound = 0,
-            label = _("Data Interface"),
-            description = _("Select an Import/Export interface for this instrument."),
+            label=_("Data Interface"),
+            description=_("Select an Import/Export interface for this instrument."),
             visible = False,
         ),
     ),
@@ -122,9 +133,8 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         subfield_labels = {'OptionValue': _('Key'),
                            'OptionText': _('Value'),},
         widget = RecordsWidget(
-            label = _("Data Interface Options"),
-            description = _("Use this field to pass arbitrary parameters to the export/import "
-                            "modules."),
+            label=_("Data Interface Options"),
+            description=_("Use this field to pass arbitrary parameters to the export/import modules."),
             visible = False,
         ),
     ),
@@ -159,6 +169,13 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         widget = ComputedWidget(
             visible = False,
         ),
+    ),
+    #Needed since InstrumentType is sorted by its own object, not by its name.
+    ComputedField('InstrumentTypeName',
+        expression = 'here.getInstrumentType().Title() if here.getInstrumentType() else ""',
+        widget = ComputedWidget(
+            visible=False,
+         ),
     ),
 
 ))
@@ -281,7 +298,9 @@ class Instrument(ATFolder):
         """ Returns if the current instrument is not out-of-date regards
             to its certificates and if the latest QC succeed
         """
-        return False if self.isOutOfDate() else self.isQCValid()
+        return self.isOutOfDate() == False \
+                and self.isQCValid() == True \
+                and self.getDisposeUntilNextCalibrationTest() == False
 
     def getLatestReferenceAnalyses(self):
         """ Returns a list with the latest Reference analyses performed
@@ -509,6 +528,11 @@ class Instrument(ATFolder):
 
         # Initialize LatestReferenceAnalyses cache
         self.cleanReferenceAnalysesCache()
+
+        # Set DisposeUntilNextCalibrationTest to False
+        if (len(addedanalyses) > 0):
+            self.getField('DisposeUntilNextCalibrationTest').set(self, False)
+
         return addedanalyses
 
     def getAnalysesToRetract(self, allanalyses=True, outofdate=False):

@@ -12,6 +12,7 @@ from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import PMF, bikaMessageFactory as _
+from bika.lims.idserver import renameAfterCreation
 from bika.lims.utils import t
 from bika.lims.browser.fields import ReferenceResultsField
 from bika.lims.browser.widgets import DateTimeWidget as bika_DateTimeWidget
@@ -34,23 +35,23 @@ schema = BikaSchema.copy() + Schema((
         vocabulary = "getReferenceDefinitions",
         widget = ReferenceWidget(
             checkbox_bound = 0,
-            label = _("Reference Definition"),
+            label=_("Reference Definition"),
         ),
     ),
     BooleanField('Blank',
         schemata = 'Description',
         default = False,
         widget = BooleanWidget(
-            label = _("Blank"),
-            description = _("Reference sample values are zero or 'blank'"),
+            label=_("Blank"),
+            description=_("Reference sample values are zero or 'blank'"),
         ),
     ),
     BooleanField('Hazardous',
         schemata = 'Description',
         default = False,
         widget = BooleanWidget(
-            label = _("Hazardous"),
-            description = _("Samples of this type should be treated as hazardous"),
+            label=_("Hazardous"),
+            description=_("Samples of this type should be treated as hazardous"),
         ),
     ),
     ReferenceField('ReferenceManufacturer',
@@ -61,19 +62,19 @@ schema = BikaSchema.copy() + Schema((
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
             checkbox_bound = 0,
-            label = _("Manufacturer"),
+            label=_("Manufacturer"),
         ),
     ),
     StringField('CatalogueNumber',
         schemata = 'Description',
         widget = StringWidget(
-            label = _("Catalogue Number"),
+            label=_("Catalogue Number"),
         ),
     ),
     StringField('LotNumber',
         schemata = 'Description',
         widget = StringWidget(
-            label = _("Lot Number"),
+            label=_("Lot Number"),
         ),
     ),
     TextField('Remarks',
@@ -84,47 +85,47 @@ schema = BikaSchema.copy() + Schema((
         default_output_type="text/plain",
         widget = TextAreaWidget(
             macro = "bika_widgets/remarks",
-            label = _('Remarks'),
+            label=_("Remarks"),
             append_only = True,
         ),
     ),
     DateTimeField('DateSampled',
         schemata = 'Dates',
         widget = bika_DateTimeWidget(
-            label = _("Date Sampled"),
+            label=_("Date Sampled"),
         ),
     ),
     DateTimeField('DateReceived',
         schemata = 'Dates',
         default_method = 'current_date',
         widget = bika_DateTimeWidget(
-            label = _("Date Received"),
+            label=_("Date Received"),
         ),
     ),
     DateTimeField('DateOpened',
         schemata = 'Dates',
         widget = bika_DateTimeWidget(
-            label = _("Date Opened"),
+            label=_("Date Opened"),
         ),
     ),
     DateTimeField('ExpiryDate',
         schemata = 'Dates',
         required = 1,
         widget = bika_DateTimeWidget(
-            label = _("Expiry Date"),
+            label=_("Expiry Date"),
         ),
     ),
     DateTimeField('DateExpired',
         schemata = 'Dates',
         widget = bika_DateTimeWidget(
-            label = _("Date Expired"),
+            label=_("Date Expired"),
             visible = {'edit':'hidden'},
         ),
     ),
     DateTimeField('DateDisposed',
         schemata = 'Dates',
         widget = bika_DateTimeWidget(
-            label = _("Date Disposed"),
+            label=_("Date Disposed"),
             visible = {'edit':'hidden'},
         ),
     ),
@@ -137,7 +138,7 @@ schema = BikaSchema.copy() + Schema((
                     'max':'referencevalues_validator',
                     'error':'referencevalues_validator'},
         widget = ReferenceResultsWidget(
-            label = _("Expected Values"),
+            label=_("Expected Values"),
         ),
     ),
     ComputedField('SupplierUID',
@@ -315,33 +316,28 @@ class ReferenceSample(BaseFolder):
         service = rc.lookupObject(service_uid)
 
         analysis = _createObjectByType("ReferenceAnalysis", self, tmpID())
+        analysis.unmarkCreationFlag()
+
         calculation = service.getCalculation()
         interim_fields = calculation and calculation.getInterimFields() or []
-        maxtime = service.getMaxTimeAllowed() and service.getMaxTimeAllowed() \
-            or {'days':0, 'hours':0, 'minutes':0}
-        starttime = DateTime()
-        max_days = float(maxtime.get('days', 0)) + \
-                 (
-                     (float(maxtime.get('hours', 0)) * 3600 + \
-                      float(maxtime.get('minutes', 0)) * 60)
-                     / 86400
-                 )
-        duetime = starttime + max_days
+        renameAfterCreation(analysis)
 
-        analysis.edit(
-            ReferenceAnalysisID = analysis.id,
-            ReferenceType = reference_type,
-            Service = service,
-            Unit = service.getUnit(),
-            Calculation = calculation,
-            InterimFields = interim_fields,
-            ServiceUID = service.UID(),
-            MaxTimeAllowed = maxtime,
-            DueDate = duetime,
-        )
+        # maxtime = service.getMaxTimeAllowed() and service.getMaxTimeAllowed() \
+        #     or {'days':0, 'hours':0, 'minutes':0}
+        # starttime = DateTime()
+        # max_days = float(maxtime.get('days', 0)) + \
+        #          (
+        #              (float(maxtime.get('hours', 0)) * 3600 + \
+        #               float(maxtime.get('minutes', 0)) * 60)
+        #              / 86400
+        #          )
+        # duetime = starttime + max_days
 
-        analysis.processForm()
+        analysis.setReferenceType(reference_type)
+        analysis.setService(service_uid)
+        analysis.setInterimFields(interim_fields)
         return analysis.UID()
+
 
     security.declarePublic('getServices')
     def getServices(self):

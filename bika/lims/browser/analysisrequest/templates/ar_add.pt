@@ -35,7 +35,6 @@
         currency python:context.bika_setup.getCurrency();
         checkPermission nocall: context/portal_membership/checkPermission;
         tabindex view/tabindex;
-        widget_visibility view/getWidgetVisibility;
         partitionable view/partitioned_services;
         ShowPrices python:context.bika_setup.getShowPrices();">
 
@@ -74,6 +73,15 @@
 <!-- And the current form partition configuration is stored here -->
 <input type="hidden" id="parts" name="parts" value="{}"/>
 
+<!-- The specs for each AR. -->
+<input type="hidden" id="specs" name="specs" value="{}"
+        tal:attributes="value python:modules['json'].dumps(dict([(x, {}) for x in range(view.col_count)]))"/>
+
+<!-- The specs for each AR - this value is completed when using copy_to_new in this form.
+     The value in this field is blended with the 'Specification' found in the form. -->
+<input type="hidden" id="copy_to_new_specs" name="copy_to_new_specs" value="{}"
+        tal:attributes="value view/copy_to_new_specs"/>
+
 <!-- The system configured 'Dry Matter Service' -->
 <tal:i define="dms python:context.bika_setup.getDryMatterService()">
     <input type="hidden" id="getDryMatterService" name="getDryMatterService"
@@ -93,10 +101,10 @@
     cellpadding="0" cellspacing="0">
 <thead>
 
-    <!-- All edit fields with fields with add=visible -->
-    <tr tal:repeat="fieldName python:widget_visibility.get('add', {}).get('visible', [])">
+    <!-- 'add=edit' fields -->
+    <tr tal:repeat="field python:view.get_fields_with_visibility('edit')">
         <tal:def define="
-            field python:context.Schema()[fieldName];
+            fieldName python:field.getName();
             field_macro here/widgets/field/macros/edit;
             accessor python:field.getAccessor(context);
             widget python:field.widget;
@@ -104,18 +112,16 @@
             mode string:edit;">
             <th colspan="2" style="white-space:nowrap">
                 <label class="formQuestion">
-                <span tal:replace="python:widget.Label(here)"
-                      i18n:translate="" />
+                <span tal:replace="python:view.context.translate(widget.Label(here))"/>
                 <span class="fieldRequired"
                       tal:condition="field/required"
                       title="Required"
                       i18n:attributes="title title_required;">&nbsp;</span>
                  <em style="display:block"
                        class="discreet"
-                     tal:define="description python:widget.Description(here)"
+                     tal:define="description python:view.context.translate(widget.Description(here))"
                      tal:content="structure description"
-                     tal:attributes="id string:${fieldName}_help"
-                     i18n:translate="">Help </em>
+                     tal:attributes="id string:${fieldName}_help">Help </em>
                 </label>
 
            </th>
@@ -131,50 +137,27 @@
 
                    <metal:field use-macro="python:context.widget(fieldName, mode='edit')"/>
 
-                    <tal:hidden_def
-                        tal:repeat="hiddenfieldName python:widget_visibility.get('add', {}).get('hidden', [])"
-                        tal:define="index repeat/fieldName/index">
-                            <input
-                                type="hidden"
-                                tal:define="val python:context.Schema()[hiddenfieldName].getAccessor(context)();"
-                                tal:attributes="
-                                    name string:${hiddenfieldName};
-                                    id string:${hiddenfieldName};
-                                    value val/Title|nothing;"/>
-                             <input
-                                type="hidden"
-                                tal:define="val python:context.Schema()[hiddenfieldName].getAccessor(context)();"
-                                tal:attributes="
-                                    name string:${hiddenfieldName}_uid;
-                                    id string:${hiddenfieldName}_uid;
-                                    value val/UID|nothing;"/>
-                    </tal:hidden_def>
-
                 </td>
             </tal:columns>
         </tal:def>
     </tr>
 
-    <tal:hidden repeat="hiddenfieldName python:widget_visibility.get('add', {}).get('hidden', [])">
-        <tal:columns tal:repeat="column python:range(view.col_count)">
+    <tal:hidden
+        tal:repeat="field python:view.get_fields_with_visibility('hidden')">
+        <tal:columns tal:repeat="column python:range(view.col_count)"
+                tal:define="val python:field.getAccessor(context)()">
             <input
                 type="hidden"
-                tal:define="
-                    field python:context.Schema()[hiddenfieldName];
-                    val python:field.getAccessor(context)();"
                 tal:attributes="
-                    name string:ar.${column}.${hiddenfieldName};
-                    id string:ar_${column}_${hiddenfieldName};
+                    name string:ar.${column}.${field/getName}:record;
+                    id string:ar_${column}_${field/getName};
                     value val/Title|nothing;"/>
              <input
                 type="hidden"
-                tal:define="
-                    field python:context.Schema()[hiddenfieldName];
-                    val python:field.getAccessor(context)();"
                 tal:attributes="
-                    name string:ar.${column}.${hiddenfieldName}_uid;
-                    id string:ar_${column}_${hiddenfieldName}_uid;
-                    value val/UID|nothing;"/>
+                    name string:ar.${column}.${field/getName}_uid:record;
+                    id string:ar_${column}_${field/getName}_uid;
+                    value val/UID|nothing;">
         </tal:columns>
     </tal:hidden>
 
@@ -266,10 +249,6 @@
                 input_name string:ar.${column}.subtotal">
             <input class="price noborder" size="10" disabled="disabled" value="0.00"
                 tal:attributes="id string:${input_id}_display;"/>
-            <input type="hidden"
-                tal:attributes="
-                    id input_id;
-                    name string:${input_name}:record:ignore_empty;"/>
             </td>
         </tal:block>
     </tr>

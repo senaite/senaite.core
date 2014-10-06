@@ -21,12 +21,12 @@ schema = BikaSchema.copy() + Schema((
         vocabulary=PRESERVATION_CATEGORIES,
         widget=SelectionWidget(
             format='flex',
-            label=_('Preservation Category'),
+            label=_("Preservation Category"),
         ),
     ),
     DurationField('RetentionPeriod',
         widget=DurationWidget(
-            label=_('Retention Period'),
+            label=_("Retention Period"),
             description=_(
                 'Once preserved, the sample must be disposed of within this '
                 'time period.  If not specified, the sample type retention '

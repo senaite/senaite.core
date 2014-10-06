@@ -27,8 +27,10 @@ from bika.lims.browser.widgets import DurationWidget
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IAnalysis
-from bika.lims.utils import changeWorkflowState
+from bika.lims.interfaces import IAnalysis, IDuplicateAnalysis, IReferenceAnalysis, \
+    IRoutineAnalysis
+from bika.lims.interfaces import IReferenceSample
+from bika.lims.utils import changeWorkflowState, formatDecimalMark
 from bika.lims.workflow import skip
 from bika.lims.workflow import doActionFor
 from decimal import Decimal
@@ -49,7 +51,7 @@ schema = BikaSchema.copy() + Schema((
         relationship='AnalysisAnalysisService',
         referenceClass=HoldingReference,
         widget=ReferenceWidget(
-            label=_("Analysis Service"),
+            label = _("Analysis Service"),
         )
     ),
     HistoryAwareReferenceField('Calculation',
@@ -65,7 +67,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     InterimFieldsField('InterimFields',
         widget = BikaRecordsWidget(
-            label=_("Calculation Interim Fields"),
+            label = _("Calculation Interim Fields"),
         )
     ),
     StringField('Result',
@@ -82,29 +84,29 @@ schema = BikaSchema.copy() + Schema((
     ),
     DurationField('MaxTimeAllowed',
         widget = DurationWidget(
-            label=_("Maximum turn-around time"),
+            label = _("Maximum turn-around time"),
             description=_("Maximum time allowed for completion of the analysis. "
                             "A late analysis alert is raised when this period elapses"),
         ),
     ),
     DateTimeField('DateAnalysisPublished',
         widget = DateTimeWidget(
-            label=_("Date Published"),
+            label = _("Date Published"),
         ),
     ),
     DateTimeField('DueDate',
         widget = DateTimeWidget(
-            label=_("Due Date"),
+            label = _("Due Date"),
         ),
     ),
     IntegerField('Duration',
         widget = IntegerWidget(
-            label=_("Duration"),
+            label = _("Duration"),
         )
     ),
     IntegerField('Earliness',
         widget = IntegerWidget(
-            label=_("Earliness"),
+            label = _("Earliness"),
         )
     ),
     BooleanField('ReportDryMatter',
@@ -281,6 +283,12 @@ class Analysis(BaseContent):
         self.getField('Result').set(self, value, **kw)
 
     def getSample(self):
+        # ReferenceSample cannot provide a 'getSample'
+        if IReferenceAnalysis.providedBy(self):
+            return None
+        if IDuplicateAnalysis.providedBy(self) \
+                or self.portal_type == 'RejectAnalysis':
+            return self.getAnalysis().aq_parent.getSample()
         return self.aq_parent.getSample()
 
     def getAnalysisSpecs(self, specification=None):
@@ -290,7 +298,13 @@ class Analysis(BaseContent):
             lab specification.
             If no specification available for this analysis, returns None
         """
-        sampletype = self.getSample().getSampleType()
+        sample = self.getSample()
+
+        # No specifications available for ReferenceSamples
+        if IReferenceSample.providedBy(sample):
+            return None
+
+        sampletype = sample.getSampleType()
         sampletype_uid = sampletype and sampletype.UID() or ''
         bsc = getToolByName(self, 'bika_setup_catalog')
 
@@ -408,40 +422,6 @@ class Analysis(BaseContent):
 
         self.setResult(result)
         return True
-
-    def get_default_specification(self):
-        bsc = getToolByName(self, "bika_setup_catalog")
-        spec = None
-        sampletype = self.getSample().getSampleType()
-        keyword = self.getKeyword()
-        client_folder_uid = self.aq_parent.aq_parent.UID()
-        client_specs = bsc(
-            portal_type="AnalysisSpec",
-            getSampleTypeUID=sampletype.UID(),
-            getClientUID=client_folder_uid
-        )
-        for client_spec in client_specs:
-            rr = client_spec.getObject().getResultsRange()
-            kw_list = [r for r in rr if r['keyword'] == keyword]
-            if kw_list:
-                    spec = kw_list[0]
-            break
-        if not spec:
-            lab_folder_uid = self.bika_setup.bika_analysisspecs.UID()
-            lab_specs = bsc(
-                portal_type="AnalysisSpec",
-                getSampleTypeUID=sampletype.UID(),
-                getClientUID=lab_folder_uid
-            )
-            for lab_spec in lab_specs:
-                rr = lab_spec.getObject().getResultsRange()
-                kw_list = [r for r in rr if r['keyword'] == keyword]
-                if kw_list:
-                    spec = kw_list[0]
-                    break
-        if not spec:
-            return {"min": "", "max": "", "error": ""}
-        return spec
 
     def getPriority(self):
         """ get priority from AR
@@ -576,7 +556,7 @@ class Analysis(BaseContent):
             if self.getInstrument else self.getDefaultInstrument()
         return instr.getMethod() if instr else None
 
-    def getFormattedResult(self, specs=None):
+    def getFormattedResult(self, specs=None, decimalmark='.'):
         """Formatted result:
         1. Print ResultText of matching ResultOptions
         2. If the result is not floatable, return it without being formatted
@@ -629,14 +609,14 @@ class Analysis(BaseContent):
 
         # 3.1. If result is below min and hidemin enabled, return '<min'
         if belowmin:
-            return '< %s' % hidemin
+            return formatDecimalMark('< %s' % hidemin, decimalmark)
 
         # 3.2. If result is above max and hidemax enabled, return '>max'
         if abovemax:
-            return '> %s' % hidemax
+            return formatDecimalMark('> %s' % hidemax, decimalmark)
 
         # Render numerical value
-        return format_numeric_result(self, result)
+        return formatDecimalMark(format_numeric_result(self, result), decimalmark)
 
     def getAnalyst(self):
         """ Returns the identifier of the assigned analyst. If there is
@@ -899,9 +879,6 @@ class Analysis(BaseContent):
             Instrument=self.getInstrument(),
             SamplePartition=self.getSamplePartition())
         analysis.unmarkCreationFlag()
-
-        # We must bring the specification across manually.
-        analysis.specification = self.specification
 
         # zope.event.notify(ObjectInitializedEvent(analysis))
         changeWorkflowState(analysis,

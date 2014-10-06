@@ -22,13 +22,13 @@ schema = BikaSchema.copy() + Schema((
         widget = TextAreaWidget(
             label = _("Method Instructions",
                       "Instructions"),
-            description = _("Technical description and instructions intended for analysts"),
+            description=_("Technical description and instructions intended for analysts"),
         ),
     ),
     FileField('MethodDocument',  # XXX Multiple Method documents please
         widget = FileWidget(
-            label = _("Method Document"),
-            description = _("Load documents describing the method here"),
+            label=_("Method Document"),
+            description=_("Load documents describing the method here"),
         )
     ),
 
@@ -38,11 +38,11 @@ schema = BikaSchema.copy() + Schema((
         vocabulary='getInstrumentsDisplayList',
         widget=MultiSelectionWidget(
             modes = ('edit'),
-            label = _("Instruments"),
-            description = _("The selected instruments have support for "
-                            "this method. "
-                            "Use the Instrument edit view to assign "
-                            "the method to a specific instrument"),
+            label=_("Instruments"),
+            description =_(
+                "The selected instruments have support for this method. "
+                "Use the Instrument edit view to assign "
+                "the method to a specific instrument"),
         ),
     ),
 
@@ -63,8 +63,7 @@ schema = BikaSchema.copy() + Schema((
         default=False,
         widget=BooleanWidget(
             label=_("Manual entry of results"),
-            description=_("The results for the Analysis Services that "
-                          "use this method can be set manually"),
+            description=_("The results for the Analysis Services that use this method can be set manually"),
             modes = ('edit'),
         )
     ),
@@ -74,8 +73,7 @@ schema = BikaSchema.copy() + Schema((
         expression = "context.isManualEntryOfResults()",
         widget = BooleanWidget(
             label=_("Manual entry of results"),
-            description=_("The results for the Analysis Services that "
-                          "use this method can be set manually"),
+            description=_("The results for the Analysis Services that use this method can be set manually"),
             modes = ('view'),
         ),
     ),
@@ -91,12 +89,12 @@ schema = BikaSchema.copy() + Schema((
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
             checkbox_bound = 0,
-            label = _("Calculation"),
-            description = _("If required, select a calculation for the "
-                            "The analysis services linked to this "
-                            "method. Calculations can be configured "
-                            "under the calculations item in the LIMS "
-                            "set-up"),
+            label=_("Calculation"),
+            description =_("If required, select a calculation for the "
+                           "The analysis services linked to this "
+                           "method. Calculations can be configured "
+                           "under the calculations item in the LIMS "
+                           "set-up"),
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
         )

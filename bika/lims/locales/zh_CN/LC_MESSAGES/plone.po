@@ -1,12 +1,13 @@
 #
 # Translators:
+# Bisheng <doun@163.com>, 2014
 # Tao Li <wintersun_li@yahoo.com>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
 "POT-Creation-Date: 2012-10-20 09:21+0000\n"
-"PO-Revision-Date: 2014-06-19 07:27+0000\n"
-"Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
+"PO-Revision-Date: 2014-08-16 02:09+0000\n"
+"Last-Translator: Bisheng <doun@163.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/projects/p/bika-lims/language/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -23,11 +24,11 @@ msgstr "AR Imports"
 
 # File: bika.lims/bika/lims/profiles/default/types/ARPriorities.xml, line: -1
 msgid "AR Priorities"
-msgstr ""
+msgstr "分析优先级"
 
 # File: bika.lims/bika/lims/profiles/default/types/ARTemplate.xml, line: -1
 msgid "AR Template"
-msgstr ""
+msgstr "分析模板"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/ARTemplates.xml, line: -1
@@ -37,7 +38,7 @@ msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/ARReport.xml, line: -1
 msgid "ARReport"
-msgstr ""
+msgstr "分析报告"
 
 # File: bika.lims/bika/lims/profiles/default/types/Worksheet.xml, line: -1
 msgid "Add Analyses"
@@ -57,7 +58,7 @@ msgstr "加复制"
 
 # File: bika.lims/bika/lims/profiles/default/types/ReportFolder.xml, line: -1
 msgid "Administration"
-msgstr ""
+msgstr "管理"
 
 # File: bika.lims/bika/lims/profiles/default/types/ReferenceSample.xml, line:
 # -1
@@ -95,7 +96,7 @@ msgstr ""
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
 # -1
 msgid "Analysis Request"
-msgstr ""
+msgstr "分析请求"
 
 # File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisRequestsFolder.xml,
@@ -158,10 +159,6 @@ msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/BatchLabels.xml, line: -1
 msgid "Batch Labels"
-msgstr ""
-
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-msgid "Batch labels"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/BatchFolder.xml, line: -1
@@ -456,8 +453,8 @@ msgstr ""
 msgid "Reference Values"
 msgstr ""
 
-#
-# File: bika.lims/bika/lims/profiles/default/types/RejectAnalysis.xml, line: -1
+# File: bika.lims/bika/lims/profiles/default/types/RejectAnalysis.xml, line:
+# -1
 msgid "Reject Analysis"
 msgstr ""
 
@@ -548,7 +545,7 @@ msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/SamplesFolder.xml, line: -1
 msgid "SamplesFolder"
-msgstr ""
+msgstr "样品"
 
 # File: bika.lims/bika/lims/profiles/default/types/SamplingDeviation.xml,
 # line: -1

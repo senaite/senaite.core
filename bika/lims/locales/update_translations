@@ -1,0 +1,192 @@
+#!/usr/bin/env python
+"""
+
+You must set the I18NDUDE environment variable.
+
+You must run this script from within the locales folder.
+
+You am ready to release, and I want to compile and synchronize the bika and 
+plone domains in the bika.lims package.
+
+You have completed the "tx pull -a -f" command.
+
+You know that if you mess up here, you will erase translator's hard work.
+
+"""
+
+
+
+from commands import getoutput
+from glob import glob
+from os.path import join as j, exists
+import json
+import os
+import sys
+import subprocess as subp
+
+try:
+    i18ndude = os.environ["I18NDUDE"]
+except KeyError:
+    print 'first try "export I18NDUDE=/path/to/instance/bin/i18ndude"'
+    exit(1)
+
+def call(cmd_str, prn_cmd=True, prn_out=True, pause=False, success_codes=[0,], trap_stdout=True):
+    if prn_cmd:
+        print(">>> " + cmd_str)
+    if pause:
+        raw_input()
+    cmd = cmd_str.split()
+    if trap_stdout:
+        proc = subp.Popen(cmd, stdout=subp.PIPE)
+    else:
+        proc = subp.Popen(cmd)
+    out = proc.communicate()[0]
+    rc = proc.returncode
+    if rc not in success_codes:
+        raise Exception("Failure, return code %s"%rc)
+    if trap_stdout:
+        lines = out.rstrip().split('\n')
+        l = [line for line in lines if line]
+        if l and prn_out:
+            print("\n".join(l))
+        return (rc, "\n".join(lines))
+    else:
+        return (rc, "")
+
+def which(executable):
+    """
+    Finds executable in PATH environment variable
+    """
+    for dirname in os.environ['PATH'].split(os.path.pathsep):
+        trypath = os.path.join(dirname, executable)
+        if os.path.isfile(trypath) and os.access(trypath, os.X_OK):
+            return trypath
+
+def build_messages_from_po(po_file):
+
+    def compress(strings):
+        put = ""
+        for s in strings:
+            if s.startswith("msgid"): s = s[6:]
+            if s.startswith("msgstr"): s = s[7:]
+            s = s.strip().strip('"')
+            put += s
+        return put
+
+    _getting = ""
+    catalog = {}
+    lines = [l.strip() for l in open(po_file).read().splitlines()]
+    line_nr = 0
+    for line in lines:
+        line_nr += 1
+        if line.startswith("#"):
+            continue
+        if line.startswith("msgid"):
+            msgid = [line.replace("msgid", ""),]
+            _getting = "msgid"
+            continue
+        elif line.startswith("msgstr"):
+            msgstr = [line.replace("msgstr", ""),]
+            _getting = "msgstr"
+            continue
+        elif line.startswith('"'):
+            if _getting == "msgid":
+                msgid.append(line)
+            elif _getting == "msgstr":
+                msgstr.append(line)
+            else:
+                raise Exception("line type not known, line %s" % line_nr)
+        elif line == "":
+            msgid = compress(msgid)
+            msgstr = compress(msgstr)
+            catalog[msgid] = msgstr
+        else:
+            raise Exception("line %s is weird." % line_nr)
+    return catalog
+
+def build_po_from_messages(messages):
+    puts = []
+    for msgid, msgstr in messages.items():
+        bit = "msgid \"%s\"\n" % msgid
+        bit += "msgstr \"%s\"\n" % msgstr
+        puts.append(bit)
+    return "\n".join(puts)
+
+msgfmt = which("msgfmt")
+msgcat = which("msgcat")
+
+### Transifex - pull ALL
+tx = which('tx')
+if not tx:
+    raise Exception("tx command not found in path")
+call("tx pull -a -f", trap_stdout=False)
+
+########## bika domain
+
+# Re-scan source for new strings (into *-i18ndude.pot)
+print "scan for messages"
+scan_path = "../../.."
+call(i18ndude + " rebuild-pot --pot i18ndude.pot --exclude 'build' --create bika " + scan_path)
+
+# Forced overrides for this domain
+print "apply manual overrides"
+lines = call(msgcat +  " --strict --use-first bika-manual.pot i18ndude.pot", prn_out=False)[1]
+open("bika.pot", "w").write(lines)
+os.remove("i18ndude.pot")
+
+def print_changes(old, new):
+    # show what was added and removed
+    # added = dict([(k, v) for k, v in new.items() if k not in old.keys()])
+    removed = dict([(k, v) for k, v in old.items() if v and k not in new.keys()])
+    # if added:
+    #     print("Added to %s\n---------" % po)
+    #     for k, v in added.items():
+    #         print '    msgid "%s"'%k
+    #         print '    msgstr "%s"'%v
+    if removed:
+        print("\n*** Translated entries REMOVED from %s ***\n"%po)
+        for k, v in removed.items():
+            if v:
+                print('    msgid "%s"'%k)
+                print('    msgstr "%s"\n'%v)
+
+# sync
+print "sync pot->po"
+for lang in glob(j("./", "*")):
+    if exists(j("./", lang, "LC_MESSAGES")):
+        po = j(lang, "LC_MESSAGES", "bika.po")
+        old = build_messages_from_po(po)
+        call(i18ndude + " sync --pot bika.pot " + po, prn_cmd=False)
+        new = build_messages_from_po(po)
+        print_changes(old, new)
+
+########## plone domain
+
+# Re-scan source for new strings (into *-i18ndude.pot)
+print "plone: scan for messages"
+scan_path = "../profiles"
+call(i18ndude + " rebuild-pot --pot i18ndude.pot --exclude 'build' --create plone " + scan_path)
+
+# Remove redundant (already translated) entries
+print "plone: filter out existing from plone.app.locales"
+# XXX silly path, but with 'normal' src folder, it will work
+plone_pot = "../../../../../parts/omelette/plone/app/locales/locales/plone.pot"
+lines = call(i18ndude + " filter i18ndude.pot "+plone_pot, prn_out=False)[1]
+open("tmp.pot", "w").write(lines)
+os.remove("i18ndude.pot")
+
+# Forced overrides for this domain
+print "plone: apply manual overrides"
+lines = call(msgcat +  " --strict --use-first plone-manual.pot tmp.pot", prn_out=False)[1]
+open("plone.pot", "w").write(lines)
+os.remove("tmp.pot")
+
+# sync
+print "plone: sync pot->po"
+for lang in glob(j("./", "*")):
+    if exists(j("./", lang, "LC_MESSAGES")):
+        po = j(lang, "LC_MESSAGES", "plone.po")
+        old = build_messages_from_po(po)
+        call(i18ndude + " sync --pot plone.pot " + po, prn_cmd=False)
+        new = build_messages_from_po(po)
+        print_changes(old, new)

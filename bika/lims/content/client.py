@@ -26,21 +26,21 @@ schema = Organisation.schema.copy() + atapi.Schema((
         searchable = True,
         validators = ('uniquefieldvalidator', 'standard_id_validator'),
         widget = atapi.StringWidget(
-            label = _("Client ID"),
+            label=_("Client ID"),
         ),
     ),
     atapi.BooleanField('BulkDiscount',
         default = False,
         write_permission = ManageClients,
         widget = atapi.BooleanWidget(
-            label = _("Bulk discount applies"),
+            label=_("Bulk discount applies"),
         ),
     ),
     atapi.BooleanField('MemberDiscountApplies',
         default = False,
         write_permission = ManageClients,
         widget = atapi.BooleanWidget(
-            label = _("Member discount applies"),
+            label=_("Member discount applies"),
         ),
     ),
     atapi.LinesField('EmailSubject',
@@ -48,8 +48,8 @@ schema = Organisation.schema.copy() + atapi.Schema((
         default = ['ar', ],
         vocabulary = EMAIL_SUBJECT_OPTIONS,
         widget = atapi.MultiSelectionWidget(
-            description = _('Items to be included in email subject lines'),
-            label = _("Email subject line"),
+            description=_("Items to be included in email subject lines"),
+            label=_("Email subject line"),
         ),
     ),
     atapi.ReferenceField('DefaultCategories',
@@ -62,8 +62,8 @@ schema = Organisation.schema.copy() + atapi.Schema((
         relationship = 'ClientDefaultCategories',
         widget = atapi.ReferenceWidget(
             checkbox_bound = 0,
-            label = _("Default categories"),
-            description = _("Always expand the selected categories in client views"),
+            label=_("Default categories"),
+            description=_("Always expand the selected categories in client views"),
         ),
     ),
     atapi.ReferenceField('RestrictedCategories',
@@ -77,8 +77,8 @@ schema = Organisation.schema.copy() + atapi.Schema((
         relationship = 'ClientRestrictedCategories',
         widget = atapi.ReferenceWidget(
             checkbox_bound = 0,
-            label = _("Restrict categories"),
-            description = _("Show only selected categories in client views"),
+            label=_("Restrict categories"),
+            description=_("Show only selected categories in client views"),
         ),
     ),
     atapi.StringField('DefaultARSpecs',
@@ -86,30 +86,29 @@ schema = Organisation.schema.copy() + atapi.Schema((
         default = 'ar_specs',
         vocabulary = DEFAULT_AR_SPECS,
         widget = atapi.SelectionWidget(
-            label = _("Default AR Specifications"),
-            description = _("DefaultARSpecs_description"),
+            label=_("Default AR Specifications"),
+            description=_("DefaultARSpecs_description"),
             format='select',
+        )
+    ),
+    atapi.BooleanField('DefaultDecimalMark',
+        schemata = "Preferences",
+        default = True,
+        widget = atapi.BooleanWidget(
+            label=_("Default decimal mark"),
+            description=_("The decimal mark selected in Bika Setup will be used."),
         )
     ),
     atapi.StringField('DecimalMark',
         schemata = "Preferences",
-        default = "dot",
-        vocabulary = ["comma","dot"],
+        vocabulary=DECIMAL_MARKS,
+        default = ".",
         widget = atapi.SelectionWidget(
-            label = _("Select Decimal Mark"),
-            description = _("Select your prefered decimal mark from the dropdown list."),
+            label=_("Custom decimal mark"),
+            description=_("Decimal mark to use in the reports from this Client."),
             format = 'select',
         )
     ),
-    atapi.BooleanField('AllowDecimalMark',
-        schemata = "Preferences",
-        default = False,
-        widget = atapi.BooleanWidget(
-            label = _("Avoid Client's Decimal Mark Selection"),
-            description = _("If it is checked, the client cannot choose their"
-                            "specific decimal mark."),
-        )
-    )
 ))
 
 schema['AccountNumber'].write_permission = ManageClients
@@ -180,6 +179,17 @@ class Client(Organisation):
         else:
             contacts = self.objectValues('Contact')
         return contacts;
+
+    def getDecimalMark(self):
+        """ Return the decimal mark to be used on reports for this
+            client. If the client has DefaultDecimalMark selected, the
+            Default value from Bika Setup will be returned. Otherwise,
+            will return the value of DecimalMark.
+        """
+        if self.getDefaultDecimalMark() == False:
+            return self.Schema()['DecimalMark'].get(self)
+        return self.bika_setup.getDecimalMark()
+
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 

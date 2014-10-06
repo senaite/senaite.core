@@ -34,7 +34,7 @@ def upgrade(tool):
     portal = aq_parent(aq_inner(tool))
     bac = getToolByName(portal, 'bika_analysis_catalog')
     addIndexAndColumn(bac, 'getResultCaptureDate', 'DateIndex')
-    bac.clearFindAndRebuild()
+    bac.manage_reindexIndex(ids=['getResultCaptureDate',])
 
 
 def addIndexAndColumn(catalog, index, indextype):

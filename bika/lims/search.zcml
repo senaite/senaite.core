@@ -9,7 +9,7 @@
     class=".search.SearchView"
     permission="zope2.View"
     for="*"
-    layer="bika.lims.interfaces.IBikaLIMSLayer"
+    layer="bika.lims.interfaces.IBikaLIMS"
     />
 
   <browser:page
@@ -17,7 +17,7 @@
     class=".search.UpdatedSearchView"
     permission="zope2.View"
     for="Products.CMFCore.interfaces.IFolderish"
-    layer="bika.lims.interfaces.IBikaLIMSLayer"
+    layer="bika.lims.interfaces.IBikaLIMS"
     />
 
 </configure>

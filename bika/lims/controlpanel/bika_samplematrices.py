@@ -29,7 +29,7 @@ class SampleMatricesView(BikaListingView):
             'url': 'createObject?type_name=SampleMatrix',
             'icon': '++resource++bika.lims.images/add.png'
         }}
-        self.title = _("Sample Matrices")
+        self.title = self.context.translate(_("Sample Matrices"))
         self.icon = self.portal_url + "/++resource++bika.lims.images/samplematrix_big.png"
         self.description = ""
         self.show_sort_column = False

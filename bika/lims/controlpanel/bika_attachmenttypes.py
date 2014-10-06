@@ -26,7 +26,7 @@ class AttachmentTypesView(BikaListingView):
                                 {'url':'createObject?type_name=AttachmentType',
                                  'icon': '++resource++bika.lims.images/add.png'}}
         self.icon = self.portal_url + "/++resource++bika.lims.images/attachment_big.png"
-        self.title = _("Attachment Types")
+        self.title = self.context.translate(_("Attachment Types"))
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True

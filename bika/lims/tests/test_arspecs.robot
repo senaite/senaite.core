@@ -2,7 +2,6 @@
 
 Library          Selenium2Library  timeout=5  implicit_wait=0.2
 Library          String
-Library          DebugLibrary
 Resource         keywords.txt
 Library          bika.lims.testing.Keywords
 Resource         plone/app/robotframework/selenium.robot
@@ -34,13 +33,14 @@ Test AR specs UI and alerts
 
     # select Barley, there is a Lab spec
     Select from dropdown                ar_0_SampleType         Barley
+    sleep          3
     Textfield Value Should Be           css=input[class*='min'][keyword='Mg']           5       #  lab default : 5
     Textfield Value Should Be           css=input[class*='max'][keyword='Mg']           11      #  lab default : 11
     Textfield Value Should Be           css=input[class*='error'][keyword='Mg']         10      #  lab default :  10
 
     # select Apple pulp, there is a Client spec
     Select from dropdown                ar_0_SampleType         Apple Pulp
-    sleep        1
+    sleep          3
     # when selecting a sampletype the spec is always set if a default is found
     Textfield Value Should Be           ar_0_Specification      Apple Pulp
     # That default spec gets automatically selected
@@ -119,6 +119,7 @@ when selecting a Spec it should be set on the AR.
     Select from dropdown                ar_0_Contact            Rita
     SelectDate                          ar_0_SamplingDate       1
     Select from dropdown                ar_0_SampleType         Barley
+    sleep        3
     Textfield Value Should Be           css=input[class*='min'][keyword='Mg']           5       #  lab default : 5
     Textfield Value Should Be           css=input[class*='max'][keyword='Mg']           11      #  lab default : 11
     Textfield Value Should Be           css=input[class*='error'][keyword='Mg']         10      #  lab default :  10
@@ -137,9 +138,9 @@ when selecting a Spec it should be set on the AR.
     go to                               ${PLONEURL}/clients/client-1/BAR-0001-R01/base_view
 
     #spec as an edit field:
-    # Page should contain element         xpath=.//*[contains(@id, 'Specification')]/span[@value='Barley']
+    Textfield Value Should Be           Specification     Barley
     #spec as a view field:
-    Page should contain element         xpath=.//a[@href='http://localhost:55001/plone/bika_setup/bika_analysisspecs/analysisspec-9']
+    # Page should contain element         xpath=.//a[@href='http://localhost:55001/plone/bika_setup/bika_analysisspecs/analysisspec-9']
 
 *** Keywords ***
 

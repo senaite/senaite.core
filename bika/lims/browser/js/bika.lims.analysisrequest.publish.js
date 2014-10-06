@@ -3,18 +3,41 @@
  */
 function AnalysisRequestPublishView() {
 
-    window.jarn.i18n.loadCatalog("bika");
-    var _ = window.jarn.i18n.MessageFactory("bika");
-
     var that = this;
 
     var report_format    = $('#ar_publish_container #sel_format');
     var report_container = $('#ar_publish_container #report');
 
+    var referrer_cookie_name = '_arpv';
+
     /**
      * Entry-point method for AnalysisRequestPublishView
      */
     that.load = function() {
+
+        // Store referrer in cookie in case it is lost due to a page reload
+        var backurl = document.referrer;
+        if (backurl) {
+            var d = new Date();
+            d.setTime(d.getTime() + (1*24*60*60*1000));
+            document.cookie = referrer_cookie_name + '=' + document.referrer + '; expires=' + d.toGMTString() + '; path=/';
+        } else {
+            var cookies = document.cookie.split(';');
+            for(var i=0; i<cookies.length; i++) {
+                var cookie = cookies[i];
+                while (cookie.charAt(0)==' ') {
+                    cookie = cookie.substring(1);
+                }
+                if (cookie.indexOf(referrer_cookie_name) != -1) {
+                    backurl = cookie.substring(referrer_cookie_name.length+1, cookie.length);
+                    break;
+                }
+            }
+            // Fallback to portal_url instead of staying inside publish.
+            if (!backurl) {
+                backurl = portal_url;
+            }
+        }
 
         // Smooth scroll to content
         $('#ar_publish_container #ar_publish_summary a[href^="#"]').click(function(e) {
@@ -22,6 +45,27 @@ function AnalysisRequestPublishView() {
             var anchor = $(this).attr('href');
             var offset = $(anchor).first().offset().top - 20;
             $('html,body').animate({scrollTop: offset},'slow');
+        });
+
+        $('#sel_format').change(function(e) {
+            var url = window.location.href;
+            var seltpl = $(this).val();
+            $('#report').animate({opacity:0.4}, 'slow');
+            $.ajax({
+                url: url,
+                type: 'POST',
+                async: false,
+                data: { "template":seltpl}
+            })
+            .always(function(data) {
+                var htmldata = data;
+                cssdata = $(htmldata).find('#report-style').html();
+                $('#report-style').html(cssdata);
+                htmldata = $(htmldata).find('#report').html();
+                $('#report').html(htmldata);
+                $('#report').animate({opacity:1}, 'slow');
+                load_barcodes();
+            });
         });
 
         $('#qcvisible').click(function(e) {
@@ -64,17 +108,28 @@ function AnalysisRequestPublishView() {
                 })
                 .always(function(){
                     if (!--count) {
-                        location.href=document.referrer;
+                        location.href=backurl;
                     }
                 });
             });
         });
 
         $('#cancel_button').click(function(e) {
-            location.href=document.referrer;
+            location.href=backurl;
         });
 
         load_barcodes();
+
+        var invalidbackurl = window.portal_url + '/++resource++bika.lims.images/report_invalid_back.png';
+        $('.ar-invalid').css('background', "url('"+invalidbackurl+"') repeat scroll #ffffff");
+
+        var provisbackurl = window.portal_url + '/++resource++bika.lims.images/report_provisional_back.png';
+        $('.ar-provisional').css('background', "url('"+provisbackurl+"') repeat scroll #ffffff");
+
+        $('#sel_format_info').click(function(e) {
+            e.preventDefault();
+            $('#sel_format_info_pane').toggle();
+        });
 
     }
 

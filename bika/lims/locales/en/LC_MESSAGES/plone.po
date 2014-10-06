@@ -105,9 +105,6 @@ msgstr ""
 msgid "Batch Labels"
 msgstr ""
 
-msgid "Batch labels"
-msgstr ""
-
 msgid "Batches"
 msgstr ""
 

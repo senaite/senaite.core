@@ -42,8 +42,8 @@ schema = BikaSchema.copy() + Schema((
         with_date = 1,
         required = 1,
         widget = DateTimeWidget(
-            label = _("From"),
-            description = _("Date from which the instrument is under maintenance"),
+            label=_("From"),
+            description=_("Date from which the instrument is under maintenance"),
             show_hm = True,
         ),
     ),
@@ -52,16 +52,16 @@ schema = BikaSchema.copy() + Schema((
         with_time = 1,
         with_date = 1,
         widget = DateTimeWidget(
-            label = _("To"),
-            description = _("Date until the instrument will not be available"),
+            label=_("To"),
+            description=_("Date until the instrument will not be available"),
             show_hm = True,
         ),
     ),
 
     StringField('Maintainer',
         widget = StringWidget(
-            label = _("Maintainer"),
-            description = _("The analyst or agent responsible of the maintenance"),
+            label=_("Maintainer"),
+            description=_("The analyst or agent responsible of the maintenance"),
         )
     ),
 
@@ -70,8 +70,8 @@ schema = BikaSchema.copy() + Schema((
         allowed_content_types= ('text/plain', ),
         default_output_type="text/plain",
         widget = TextAreaWidget(
-            label = _("Considerations"),
-            description = _("Remarks to take into account for maintenance process"),
+            label=_("Considerations"),
+            description=_("Remarks to take into account for maintenance process"),
         ),
     ),
 
@@ -80,8 +80,8 @@ schema = BikaSchema.copy() + Schema((
         allowed_content_types= ('text/plain', ),
         default_output_type="text/plain",
         widget = TextAreaWidget(
-            label = _("Work Performed"),
-            description = _("Description of the actions made during the maintenance process"),
+            label=_("Work Performed"),
+            description=_("Description of the actions made during the maintenance process"),
         ),
     ),
 
@@ -90,22 +90,22 @@ schema = BikaSchema.copy() + Schema((
         allowed_content_types= ('text/plain', ),
         default_output_type="text/plain",
         widget = TextAreaWidget(
-            label = _("Remarks"),
+            label=_("Remarks"),
         ),
     ),
 
     FixedPointField('Cost',
         default = '0.00',
         widget = DecimalWidget(
-            label = _("Price"),
+            label=_("Price"),
         ),
     ),
 
     BooleanField('Closed',
         default = '0',
         widget = BooleanWidget(
-            label = _("Closed"),
-            description = _("Set the maintenance task as closed.")
+            label=_("Closed"),
+            description=_("Set the maintenance task as closed.")
         ),
     ),
 ))

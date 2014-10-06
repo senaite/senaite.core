@@ -31,28 +31,11 @@ class AnalysisRequestsView(_ARV, _ARAV):
         self.context_actions = {}
         mtool = getToolByName(self.context, 'portal_membership')
         if mtool.checkPermission(AddAnalysisRequest, self.portal):
-            # Client contact required (if client is associated)
-            client = self.context.getClient()
-            if hasattr(client, 'getContacts') and client.getContacts():
-                self.context_actions[self.context.translate(_('Add new'))] = {
-                    'url': self.context.absolute_url() + \
-                        "/portal_factory/"
-                        "AnalysisRequest/Request new analyses/ar_add?col_count=1",
-                    'icon': '++resource++bika.lims.images/add.png'}
-            # else:
-                # addPortalMessage = self.context.plone_utils.addPortalMessage
-                # msg = _("Client contact required before request may be submitted")
-                # addPortalMessage(self.context.translate(msg))
-
-            # This is permitted from the global permission above, AddAnalysisRequest.
-            review_states = []
-            for review_state in self.review_states:
-                review_state['custom_actions'].extend(
-                    [{'id': 'copy_to_new',
-                      'title': _('Copy to new'),
-                      'url': 'workflow_action?action=copy_to_new'}, ])
-                review_states.append(review_state)
-            self.review_states = review_states
+            self.context_actions[self.context.translate(_('Add new'))] = {
+                'url': self.context.absolute_url() + \
+                    "/portal_factory/"
+                    "AnalysisRequest/Request new analyses/ar_add?col_count=1",
+                'icon': '++resource++bika.lims.images/add.png'}
 
         return super(AnalysisRequestsView, self).__call__()
 

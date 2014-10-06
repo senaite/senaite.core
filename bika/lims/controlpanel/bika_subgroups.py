@@ -30,7 +30,7 @@ class SubGroupsView(BikaListingView):
         }
         self.icon = self.portal_url + \
             "/++resource++bika.lims.images/batch_big.png"
-        self.title = _("Sub-groups")
+        self.title = self.context.translate(_("Sub-groups"))
         self.description = ""
         self.show_sort_column = False
         self.show_select_row = False

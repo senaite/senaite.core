@@ -27,7 +27,7 @@ class InstrumentsView(BikaListingView):
         self.context_actions = {_('Add'):
                                 {'url': 'createObject?type_name=Instrument',
                                  'icon': '++resource++bika.lims.images/add.png'}}
-        self.title = _("Instruments")
+        self.title = self.context.translate(_("Instruments"))
         self.icon = self.portal_url + "/++resource++bika.lims.images/instrument_big.png"
         self.description = ""
         self.show_sort_column = False
@@ -39,8 +39,9 @@ class InstrumentsView(BikaListingView):
             'Title': {'title': _('Instrument'),
                       'index': 'sortable_title'},
             'Type': {'title': _('Type'),
-                     'index': 'getType',
-                     'toggle': True},
+                     'index': 'getInstrumentTypeName',
+                     'toggle': True,
+                     'sortable': True},
             'Brand': {'title': _('Brand'),
                       'toggle': True},
             'Model': {'title': _('Model'),

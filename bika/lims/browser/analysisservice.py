@@ -1,6 +1,7 @@
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
+from bika.lims.jsonapi import load_field_values
 from bika.lims.utils import t
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.browser.log import LogView
@@ -172,8 +173,14 @@ class ajaxGetServiceInterimFields:
 
 
 class JSONReadExtender(object):
-    """- Adds the 'ServiceDependencies' key, this is a list of dictionaries,
-    one per service
+    """- Adds fields to Analysis Service:
+
+    ServiceDependencies - services our calculation depends on
+    ServiceDependants - services who's calculation depend on us
+    MethodInstruments - A dictionary of instruments:
+        keys: Method UID
+        values: list of instrument UIDs
+
     """
 
     implements(IJSONReadExtender)
@@ -196,6 +203,7 @@ class JSONReadExtender(object):
     def __call__(self, request, data):
         data["ServiceDependencies"] = []
         data["ServiceDependants"] = []
+        data["MethodInstruments"] = {}
 
         calc = self.context.getCalculation()
         if calc:
@@ -211,3 +219,10 @@ class JSONReadExtender(object):
                     in calc.getCalculationDependants()
                     if service.UID() != self.context.UID()]
                 data["ServiceDependants"].extend(services)
+
+        for method in self.context.getAvailableMethods():
+            for instrument in method.getInstruments():
+                if method.UID() not in data["MethodInstruments"]:
+                    data["MethodInstruments"][method.UID()] = []
+                data["MethodInstruments"][method.UID()].append(
+                    load_field_values(instrument, include_fields=[]))

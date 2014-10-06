@@ -101,7 +101,7 @@ class WorksheetFolderListingView(BikaListingView):
         request.set('disable_border', 1)
 
         self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
-        self.title = _("Worksheets")
+        self.title = self.context.translate(_("Worksheets"))
         self.description = ""
 
         pm = getToolByName(context, "portal_membership")
@@ -393,6 +393,11 @@ class WorksheetFolderListingView(BikaListingView):
             # set Sample Types
             pos_parent = {}
             for slot in layout:
+                # compensate for bad data caused by a stupid bug.
+                if type(slot['position']) in (list, tuple):
+                    slot['position'] = slot['position'][0]
+                if slot['position'] == 'new':
+                    continue
                 if slot['position'] in pos_parent:
                     continue
                 pos_parent[slot['position']] = rc.lookupObject(slot['container_uid'])

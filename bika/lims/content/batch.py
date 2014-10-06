@@ -104,8 +104,9 @@ schema = BikaFolderSchema.copy() + Schema((
     LinesField(
         'BatchLabels',
         vocabulary="BatchLabelVocabulary",
+        accessor="getLabelNames",
         widget=MultiSelectionWidget(
-            label=_("Batch labels"),
+            label=_("Batch Labels"),
             format="checkbox",
         )
     ),
@@ -192,10 +193,10 @@ schema['title'].widget.description = _("If no Title value is entered, the Batch 
 schema['description'].required = False
 schema['description'].widget.visible = True
 
-schema.moveField('Client', before='description')
 schema.moveField('ClientBatchID', before='description')
 schema.moveField('BatchID', before='description')
 schema.moveField('title', before='description')
+schema.moveField('Client', after='title')
 
 
 class Batch(ATFolder):
@@ -305,6 +306,12 @@ class Batch(ATFolder):
         canstatus = getCurrentState(self, StateFlow.cancellation)
         return revstatus == BatchState.open \
             and canstatus == CancellationState.active
+
+    def getLabelNames(self):
+        uc = getToolByName(self, 'uid_catalog')
+        uids = [uid for uid in self.Schema().getField('BatchLabels').get(self)]
+        labels = [label.getObject().title for label in uc(UID=uids)]
+        return labels
 
     def workflow_guard_open(self):
         """ Permitted if current review_state is 'closed' or 'cancelled'

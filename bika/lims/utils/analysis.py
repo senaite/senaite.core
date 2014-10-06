@@ -43,7 +43,7 @@ def format_numeric_result(analysis, result):
     service = analysis.getService()
     # Possibly render in exponential notation
     threshold = analysis.bika_setup.getExponentialFormatThreshold()
-    _sig = str(result).split(".")
+    _sig = str("%f"%(result)).split(".")
     sig_digits = _sig[0].lstrip("0") + _sig[1].rstrip("0")
     if len(sig_digits) >= threshold:
         exp_precision = service.getExponentialFormatPrecision()

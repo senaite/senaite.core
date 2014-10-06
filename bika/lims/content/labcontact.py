@@ -21,14 +21,15 @@ schema = Person.schema.copy() + Schema((
         default = 'email',
         schemata = 'Publication preference',
         widget = MultiSelectionWidget(
-            label = _("Publication preference"),
+            label=_("Publication preference"),
         ),
     ),
     ImageField('Signature',
         widget = ImageWidget(
-            label = _("Signature"),
-            description = _("Upload a scanned signature to be used on printed analysis "
-                            "results reports. Ideal size is 250 pixels wide by 150 high"),
+            label=_("Signature"),
+            description = _(
+                "Upload a scanned signature to be used on printed analysis "
+                "results reports. Ideal size is 250 pixels wide by 150 high"),
         ),
     ),
     ReferenceField('Department',
@@ -40,8 +41,8 @@ schema = Person.schema.copy() + Schema((
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
             checkbox_bound = 0,
-            label = _("Department"),
-            description = _("The laboratory department"),
+            label=_("Department"),
+            description=_("The laboratory department"),
         ),
     ),
     ComputedField('DepartmentTitle',

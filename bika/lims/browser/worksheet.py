@@ -109,7 +109,8 @@ class WorksheetWorkflowAction(WorkflowAction):
         elif action == 'verify':
             # default bika_listing.py/WorkflowAction, but then go to view screen.
             self.destination_url = self.context.absolute_url()
-            WorkflowAction.__call__(self)
+            return self.workflow_action_default(action='verify',
+                                                came_from='edit')
         else:
             # default bika_listing.py/WorkflowAction for other transitions
             WorkflowAction.__call__(self)
@@ -177,6 +178,8 @@ class WorksheetWorkflowAction(WorkflowAction):
                         analysis.setInstrument(instruments[uid])
                         instrument = analysis.getInstrument()
                         instrument.addAnalysis(analysis)
+                        if analysis.portal_type == 'ReferenceAnalysis':
+                            instrument.setDisposeUntilNextCalibrationTest(False)
 
             # Need to save the method?
             if uid in methods and analysis_active:
@@ -429,10 +432,19 @@ class WorksheetAnalysesView(AnalysesView):
         items = AnalysesView.folderitems(self)
         layout = self.context.getLayout()
         highest_position = 0
+        new_items = []
         for x, item in enumerate(items):
             obj = item['obj']
-            pos = [int(slot['position']) for slot in layout if
+            pos = [slot['position'] for slot in layout if
                    slot['analysis_uid'] == obj.UID()][0]
+
+            # compensate for possible bad data (dbw#104)
+            if type(pos) in (list, tuple):
+                pos = pos[0]
+                if pos == 'new':
+                    continue
+            pos = int(pos)
+
             highest_position = max(highest_position, pos)
             items[x]['Pos'] = pos
             items[x]['colspan'] = {'Pos':1}
@@ -452,9 +464,22 @@ class WorksheetAnalysesView(AnalysesView):
             instrument = obj.getInstrument()
             #items[x]['Instrument'] = instrument and instrument.Title() or ''
 
+            new_items.append(item)
+        items = new_items
+
         # insert placeholder row items in the gaps
+        # This is done badly to compensate for possible bad data (dbw#104)
         empties = []
-        used = [int(slot['position']) for slot in layout]
+        used = []
+        for slot in layout:
+            position = slot['position']
+            if type(position) in (list, tuple):
+                position = position[0]
+                if position == 'new':
+                    continue
+            position = int(position)
+            used.append(position)
+
         for pos in range(1, highest_position + 1):
             if pos not in used:
                 empties.append(pos)
@@ -490,7 +515,10 @@ class WorksheetAnalysesView(AnalysesView):
                 items.append(item)
 
         items = sorted(items, key = itemgetter('Service'))
-        items = sorted(items, key = itemgetter('Pos'))
+        try:
+            items = sorted(items, key = itemgetter('Pos'))
+        except:
+            pass
 
         slot_items = {} # pos:[item_nrs]
         for x in range(len(items)):
@@ -553,7 +581,7 @@ class WorksheetAnalysesView(AnalysesView):
 
             pos_text += "<td class='pos_top_icons' rowspan='3'>"
             if obj.portal_type == 'DuplicateAnalysis':
-                pos_text += "<img title='%s' src='%s/++resource++bika.lims.images/duplicate.png'/>" % (_("Duplicate"), self.context.absolute_url())
+                pos_text += "<img title='%s' src='%s/++resource++bika.lims.images/duplicate.png'/>" % (_("Duplicate").encode('utf-8'), self.context.absolute_url())
                 pos_text += "<br/>"
             elif obj.portal_type == 'ReferenceAnalysis' and obj.ReferenceType == 'b':
                 pos_text += "<a href='%s'><img title='%s' src='++resource++bika.lims.images/blank.png'></a>" % (parent.absolute_url(), parent.Title())
@@ -803,7 +831,7 @@ class AddAnalysesView(BikaListingView):
     def __init__(self, context, request):
         BikaListingView.__init__(self, context, request)
         self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
-        self.title = _("Add Analyses")
+        self.title = self.context.translate(_("Add Analyses"))
         self.description = ""
         self.catalog = "bika_analysis_catalog"
         self.context_actions = {}
@@ -1003,9 +1031,10 @@ class AddBlankView(BrowserView):
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
         self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
-        self.title = _("Add Blank Reference")
-        self.description = _("Select services in the left column to locate "
-                             "reference samples. Select a reference by clicking it. ")
+        self.title = self.context.translate(_("Add Blank Reference"))
+        self.description = self.context.translate(_(
+                             "Select services in the left column to locate "
+                             "reference samples. Select a reference by clicking it. "))
 
     def __call__(self):
         if not(getSecurityManager().checkPermission(EditWorksheet, self.context)):
@@ -1060,9 +1089,10 @@ class AddControlView(BrowserView):
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
         self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
-        self.title = _("Add Control Reference")
-        self.description = _("Select services in the left column to locate "
-                             "reference samples. Select a reference by clicking it. ")
+        self.title = self.context.translate(_("Add Control Reference"))
+        self.description = self.context.translate(_(
+                             "Select services in the left column to locate "
+                             "reference samples. Select a reference by clicking it. "))
     def __call__(self):
         if not(getSecurityManager().checkPermission(EditWorksheet, self.context)):
             self.request.response.redirect(self.context.absolute_url())
@@ -1078,7 +1108,9 @@ class AddControlView(BrowserView):
         if 'submitted' in form:
             rc = getToolByName(self.context, REFERENCE_CATALOG)
             # parse request
-            service_uids = form['selected_service_uids'].split(",")
+            service_uids = form['selected_service_uids']
+            if type(form['selected_service_uids']) not in (list, tuple):
+                service_uids = str(form['selected_service_uids']).split(",")
             position = form['position']
             reference_uid = form['reference_uid']
             reference = rc.lookupObject(reference_uid)
@@ -1116,8 +1148,8 @@ class AddDuplicateView(BrowserView):
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
         self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
-        self.title = _("Add Duplicate")
-        self.description = _("Select a destinaton position and the AR to duplicate.")
+        self.title = self.context.translate(_("Add Duplicate"))
+        self.description = self.context.translate(_("Select a destinaton position and the AR to duplicate."))
 
     def __call__(self):
         if not(getSecurityManager().checkPermission(EditWorksheet, self.context)):

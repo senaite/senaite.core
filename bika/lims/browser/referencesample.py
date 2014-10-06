@@ -50,7 +50,7 @@ class ReferenceAnalysesViewView(BrowserView):
     def __init__(self, context, request):
         super(ReferenceAnalysesViewView, self).__init__(context, request)
         self.icon = self.portal_url + "/++resource++bika.lims.images/referencesample_big.png"
-        self.title = _("Reference Analyses")
+        self.title = self.context.translate(_("Reference Analyses"))
         self.description = ""
         self._analysesview = None
 
@@ -206,8 +206,9 @@ class ReferenceResultsView(BikaListingView):
     def __init__(self, context, request):
         super(ReferenceResultsView, self).__init__(context, request)
         bsc = getToolByName(context, 'bika_setup_catalog')
-        self.title = _("Reference Values")
-        self.description = _("Click on Analysis Categories (against shaded background) "
+        self.title = self.context.translate(_("Reference Values"))
+        self.description = self.context.translate(_(
+                             "Click on Analysis Categories (against shaded background) "
                              "to see Analysis Services in each category. Enter minimum "
                              "and maximum values to indicate a valid results range. "
                              "Any result outside this range will raise an alert. "
@@ -215,7 +216,7 @@ class ReferenceResultsView(BikaListingView):
                              "considered when evaluating results against minimum and "
                              "maximum values. A result out of range but still in range "
                              "if the % error is taken into consideration, will raise a "
-                             "less severe alert.")
+                             "less severe alert."))
         self.contentFilter = {}
         self.context_actions = {}
         self.show_sort_column = False
@@ -281,8 +282,8 @@ class ReferenceSamplesView(BikaListingView):
         super(ReferenceSamplesView, self).__init__(context, request)
         portal = getToolByName(context, 'portal_url').getPortalObject()
         self.icon = self.portal_url + "/++resource++bika.lims.images/referencesample_big.png"
-        self.title = _("Reference Samples")
-        self.description = _("All reference samples in the system are displayed here.")
+        self.title = self.context.translate(_("Reference Samples"))
+        self.description = self.context.translate(_("All reference samples in the system are displayed here."))
         self.catalog = 'bika_catalog'
         self.contentFilter = {'portal_type': 'ReferenceSample',
                               'sort_on':'id',

@@ -8,7 +8,6 @@ from AccessControl import getSecurityManager
 from Acquisition import aq_parent, aq_inner
 from bika.lims import PMF, logger, bikaMessageFactory as _
 from bika.lims.adapters.referencewidgetvocabulary import DefaultReferenceWidgetVocabulary
-from bika.lims.adapters.widgetvisibility import WidgetVisibility as _WV
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analysisrequest import AnalysisRequestsView
 from bika.lims.browser.analysisrequest import AnalysisRequestWorkflowAction
@@ -285,18 +284,6 @@ class ClientAnalysisRequestsView(AnalysisRequestsView):
                         "AnalysisRequest/Request new analyses/ar_add",
                         'icon': '++resource++bika.lims.images/add.png'}
 
-            # in client context we can use a permission check for this transition
-            # in multi-client listings, we must rather check against user roles.
-            if mtool.checkPermission(ModifyPortalContent, self.context):
-                review_states = []
-                for review_state in self.review_states:
-                    review_state['custom_actions'].extend(
-                        [{'id': 'copy_to_new',
-                          'title': _('Copy to new'),
-                          'url': 'workflow_action?action=copy_to_new'}, ])
-                    review_states.append(review_state)
-                self.review_states = review_states
-
         return super(ClientAnalysisRequestsView, self).__call__()
 
 class ClientBatchAnalysisRequestsView(ClientAnalysisRequestsView):
@@ -336,7 +323,7 @@ class ClientAnalysisProfilesView(BikaListingView):
         self.form_id = "analysisprofiles"
 
         self.icon = self.portal_url + "/++resource++bika.lims.images/analysisprofile_big.png"
-        self.title = _("Analysis Profiles")
+        self.title = self.context.translate(_("Analysis Profiles"))
         self.description = ""
 
         self.columns = {
@@ -403,7 +390,7 @@ class ClientARTemplatesView(BikaListingView):
         self.pagesize = 50
         self.form_id = "artemplates"
         self.icon = self.portal_url + "/++resource++bika.lims.images/artemplate_big.png"
-        self.title = _("AR Templates")
+        self.title = self.context.translate(_("AR Templates"))
         self.description = ""
 
         self.columns = {
@@ -469,7 +456,7 @@ class ClientSamplePointsView(BikaListingView):
         self.pagesize = 50
         self.form_id = "SamplePoints"
         self.icon = self.portal_url + "/++resource++bika.lims.images/samplepoint_big.png"
-        self.title = _("Sample Points")
+        self.title = self.context.translate(_("Sample Points"))
         self.description = ""
 
         self.columns = {
@@ -539,7 +526,7 @@ class ClientAnalysisSpecsView(BikaListingView):
         self.form_id = "analysisspecs"
 
         self.icon = self.portal_url + "/++resource++bika.lims.images/analysisspec_big.png"
-        self.title = _("Analysis Specifications")
+        self.title = self.context.translate(_("Analysis Specifications"))
 
         self.columns = {
             'Title': {'title': _('Title'),
@@ -639,7 +626,7 @@ class ClientAttachmentsView(BikaListingView):
         self.form_id = "attachments"
 
         self.icon = self.portal_url + "/++resource++bika.lims.images/attachment_big.png"
-        self.title = _("Attachments")
+        self.title = self.context.translate(_("Attachments"))
         self.description = ""
 
         self.columns = {
@@ -741,7 +728,7 @@ class ClientContactsView(BikaListingView):
         self.form_id = "contacts"
 
         self.icon = self.portal_url + "/++resource++bika.lims.images/client_contact_big.png"
-        self.title = _("Contacts")
+        self.title = self.context.translate(_("Contacts"))
         self.description = ""
 
         self.columns = {

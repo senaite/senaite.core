@@ -12,7 +12,7 @@
 
     Take a look to the documentation for more information about
     available data and fields.
-    http://github.com/bikalabs/Bika-LIMS/wiki/blablablabal
+    https://github.com/bikalabs/Bika-LIMS/wiki/Creating-new-report-templates
 
 -->
 <tal:report tal:define="analysisrequest python:view.getAnalysisRequest();
@@ -55,9 +55,9 @@
     <div id="accreditation-logo"
         tal:condition="python:laboratory['accredited']==True">
         <img tal:condition="laboratory/accreditation_logo"
-             tal:attributes="src string:${portal/absolute_url}/accreditation_logo"/>
-        <img tal:condition="laboratory/accreditation_logo"
-             tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/AccreditationBodyLogo.png"/>
+             tal:attributes="src laboratory/accreditation_logo/absolute_url"/>
+        <img tal:condition="not:laboratory/accreditation_logo"
+             tal:attributes="src string:${portal/url}/++resource++bika.lims.images/AccreditationBodyLogo.png"/>
     </div>
 </div>
 
@@ -67,10 +67,10 @@
         <tr>
             <td id="client-info">
                 <table>
-                    <tr><td id="client-contact" tal:content="contact/fullname"></td></tr>
+                    <tr tal:condition="python:contact.get('fullname','') != ''"><td id="client-contact" tal:content="contact/fullname"></td></tr>
                     <tr><td id="client-name" tal:content="client/name"></td></tr>
                     <tr><td id="client-address" tal:content="structure client/address"></td></tr>
-                    <tr>
+                    <tr tal:condition="python:contact.get('email','') != ''">
                         <td id="client-email">
                             <a tal:content="contact/email"
                                tal:attributes="url python:'mailto:%s' % contact['email'];"></a>
@@ -109,16 +109,15 @@
 
 <!-- Alert section (invalidated ar, etc.) -->
 <div id="section-alert" tal:condition="analysisrequest/invalid">
-    <span class='emphasize' i18n:translate="">This Analysis Request has been invalidated due to erroneously published results</span><br/>
-    <tal:invalidreport tal:condition="analysisrequest/child_analysisrequest">
-       <a tal:attributes="href analysisrequest/url;"
-          tal:content="analysisrequest/id"></a>&nbsp;
-       <span i18n:translate="">has been replaced by</span>&nbsp;
-       <a tal:attributes="href analysisrequest/child_analysisrequest/id"
-          tal:content="analysisrequest/child_analysisrequest/id"></a>
+    <h1 i18n:translate="">This Analysis Request has been invalidated due to erroneously published results</h1>
+    <tal:invalidreport tal:define="child python:analysisrequest['obj'].getChildAnalysisRequest()"
+                       tal:condition="child">
+       <span i18n:translate="">This Analysis request has been replaced by</span>&nbsp;
+       <a tal:attributes="href child/absolute_url"
+          tal:content="child/id"></a>
     </tal:invalidreport>
 </div>
-<div id="section-alert" tal:condition="analysisrequest/prepublish">
+<div id="section-alert" tal:condition="python:analysisrequest['prepublish']==True and analysisrequest['invalid']==False">
     <h1 i18n:translate="">Provisional report</h1>
 </div>
 <!-- Summary section -->
@@ -233,7 +232,7 @@
                 </td>
                 <td class="specs">
                     <span tal:condition="analysis/uncertainty"
-                          tal:replace="string:[&plusmn; ${analysis/uncertainty}] "></span>
+                          tal:replace="string:[&plusmn; ${analysis/formatted_uncertainty}] "></span>
                     <span tal:replace="python:'(RT) ' if analysis['retested'] else ''"></span>
                     <span tal:replace="analysis/formatted_specs">50 - 60</span>
                 </td>
@@ -415,7 +414,7 @@
     <div i18n:translate="">This document shall not be reproduced except in full, without the written approval of <tal:block replace="laboratory/title" i18n:name="name_lab"/></div>
     <div tal:define="confidence_level laboratory/confidence"
          tal:condition="confidence_level" i18n:translate="">Test results are at a <tal:block replace="confidence_level" i18n:name="lab_confidence"/>% confidence level</div>
-    <div tal:condition="python:'email' in contact['pubpref']" i18n:translate="">Methods of analysis available by clicking on the 'Request' link</div>
+    <div tal:condition="python:contact.get('pubpref','') != '' and 'email' in contact['pubpref']" i18n:translate="">Methods of analysis available by clicking on the 'Request' link</div>
 </div>
 
 <div class="footer" tal:content="structure analysisrequest/footer"></div>

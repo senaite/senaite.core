@@ -1,9 +1,13 @@
-from bika.lims.vocabularies import CatalogVocabulary
+from archetypes.schemaextender.interfaces import ISchemaModifier, \
+    IOrderableSchemaExtender
 from bika.lims.browser import BrowserView
+from bika.lims.interfaces import IBatch, IAnalysisRequest
 from bika.lims.permissions import *
+from bika.lims.vocabularies import CatalogVocabulary
 from operator import itemgetter
-from zope.interface import implements
 from Products.CMFPlone.utils import safe_unicode
+from zope.component import adapts
+from zope.interface import implements
 
 import json
 import plone

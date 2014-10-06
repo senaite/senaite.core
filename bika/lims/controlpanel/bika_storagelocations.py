@@ -32,7 +32,7 @@ class StorageLocationsView(BikaListingView):
         self.context_actions = {_('Add'):
                             {'url': 'createObject?type_name=StorageLocation',
                              'icon': '++resource++bika.lims.images/add.png'}}
-        self.title = _("Storage Locations")
+        self.title = self.context.translate(_("Storage Locations"))
         self.icon = self.portal_url + "/++resource++bika.lims.images/storagelocation_big.png"
         self.description = ""
         self.show_sort_column = False

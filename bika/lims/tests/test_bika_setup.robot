@@ -2,7 +2,6 @@
 
 Library          Selenium2Library  timeout=5  implicit_wait=0.2
 Library          String
-Library          DebugLibrary
 Resource         keywords.txt
 Library          bika.lims.testing.Keywords
 Resource         plone/app/robotframework/selenium.robot
@@ -536,7 +535,6 @@ Repetitive Bika Setup stuff
     Click link                          Analysis
     Wait Until Page Contains Element    Precision
     Input Text                          Precision                                    3
-    Input Text                          ExponentialFormatThreshold                   5
     Select Checkbox                     ReportDryMatter
     select from list                    AttachmentOption                             Permitted
     Input Text                          MaxTimeAllowed.days:record:ignore_empty      3

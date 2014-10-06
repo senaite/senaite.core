@@ -18,7 +18,7 @@ schema = Organisation.schema.copy() + ManagedSchema((
         default_output_type = "text/html",
         widget = TextAreaWidget(
             macro = "bika_widgets/remarks",
-            label = _('Remarks'),
+            label=_("Remarks"),
             append_only = True,
         ),
     ),

@@ -75,7 +75,7 @@ class LoadSetupData(BrowserView):
                 self.dataset_project = form['projectname']
                 tmp = tempfile.mktemp()
                 file_content = form['file'].read()
-                open(tmp, 'workbook').write(file_content)
+                open(tmp, 'w').write(file_content)
                 workbook = load_workbook(filename=tmp)  # , use_iterators=True)
                 self.dataset_name = 'uploaded'
 

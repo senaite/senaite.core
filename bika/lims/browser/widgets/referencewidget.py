@@ -105,7 +105,7 @@ class ReferenceWidget(StringWidget):
         allowed_types = getattr(field, 'allowed_types', None)
         allowed_types_method = getattr(field, 'allowed_types_method', None)
         if allowed_types_method:
-            meth = getattr(content_instance, allowed_types_method)
+            meth = getattr(context, allowed_types_method)
             allowed_types = meth(field)
         # If field has no allowed_types defined, use widget's portal_type prop
         base_query['portal_type'] = allowed_types \

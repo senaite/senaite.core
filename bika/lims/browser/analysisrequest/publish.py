@@ -1,5 +1,6 @@
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import to_utf8
+from smtplib import SMTPServerDisconnected, SMTPRecipientsRefused
+from bika.lims import bikaMessageFactory as _, t
+from bika.lims.utils import to_utf8, formatDecimalMark
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.config import POINTS_OF_CAPTURE
@@ -16,6 +17,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.utils import safe_unicode, _createObjectByType
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from plone.resource.utils import iterDirectoriesOfType, queryResourceDirectory
 from zope.component import getAdapters
 import glob, os, sys, traceback
 import App
@@ -68,6 +70,14 @@ class AnalysisRequestPublishView(BrowserView):
         out = []
         for template in templates:
             out.append({'id': template, 'title': template[:-3]})
+        for templates_resource in iterDirectoriesOfType('reports'):
+            prefix = templates_resource.__name__
+            templates = [tpl for tpl in templates_resource.listDirectory() if tpl.endswith('.pt')]
+            for template in templates:
+                out.append({
+                    'id': '{}:{}'.format(prefix, template),
+                    'title': '{} ({})'.format(template[:-3], prefix),
+                })
         return out
 
     def getAnalysisRequests(self):
@@ -101,8 +111,13 @@ class AnalysisRequestPublishView(BrowserView):
             the next ar to be processed. Uses the selected template
             specified in the request ('template' parameter)
         """
+        templates_dir = 'templates/reports'
         embedt = self.request.get('template', self._DEFAULT_TEMPLATE)
-        embed = ViewPageTemplateFile("templates/reports/%s" % embedt);
+        if embedt.find(':') >= 0:
+            prefix, template = embedt.split(':')
+            templates_dir = queryResourceDirectory('reports', prefix).directory
+            embedt = template
+        embed = ViewPageTemplateFile(os.path.join(templates_dir, embedt))
         reptemplate = ""
         try:
             reptemplate = embed(self)
@@ -120,22 +135,29 @@ class AnalysisRequestPublishView(BrowserView):
             for the current template, returns empty string
         """
         template = self.request.get('template', self._DEFAULT_TEMPLATE)
-        this_dir = os.path.dirname(os.path.abspath(__file__))
-        templates_dir = os.path.join(this_dir, 'templates/reports/')
-        path = '%s/%s.css' % (templates_dir, template[:-3])
         content = ''
-        with open(path, 'r') as content_file:
-            content = content_file.read()
-        return content;
+        if template.find(':') >= 0:
+            prefix, template = template.split(':')
+            resource = queryResourceDirectory('reports', prefix)
+            css = '{}.css'.format(template[:-3])
+            if css in resource.listDirectory():
+                content = resource.readFile(css)
+        else:
+            this_dir = os.path.dirname(os.path.abspath(__file__))
+            templates_dir = os.path.join(this_dir, 'templates/reports/')
+            path = '%s/%s.css' % (templates_dir, template[:-3])
+            with open(path, 'r') as content_file:
+                content = content_file.read()
+        return content
 
     def isQCAnalysesVisible(self):
         """ Returns if the QC Analyses must be displayed
         """
         return self.request.get('qcvisible', '0').lower() in ['true', '1']
 
-    def _ar_data(self, ar):
+    def _ar_data(self, ar, excludearuids=[]):
         """ Creates an ar dict, accessible from the view and from each
-            specific template
+            specific template.
         """
         data = {'obj': ar,
                 'id': ar.getRequestID(),
@@ -165,10 +187,13 @@ class AnalysisRequestPublishView(BrowserView):
                 'parent_analysisrequest': None}
 
         # Sub-objects
-        if ar.getParentAnalysisRequest():
-            data['parent_analysisrequest'] = self._artodict(ar.getParentAnalysisRequest())
-        if ar.getChildAnalysisRequest():
-            data['child_analysisrequest'] = self._artodict(ar.getChildAnalysisRequest())
+        excludearuids.append(ar.UID())
+        puid = ar.getRawParentAnalysisRequest()
+        if puid and puid not in excludearuids:
+            data['parent_analysisrequest'] = self._ar_data(ar.getParentAnalysisRequest(), excludearuids)
+        cuid = ar.getRawChildAnalysisRequest()
+        if cuid and cuid not in excludearuids:
+            data['child_analysisrequest'] = self._ar_data(ar.getChildAnalysisRequest(), excludearuids)
 
         wf = getToolByName(ar, 'portal_workflow')
         allowed_states = ['verified', 'published']
@@ -235,7 +260,7 @@ class AnalysisRequestPublishView(BrowserView):
                     'client_batchid': to_utf8(batch.getClientBatchID()),
                     'remarks': to_utf8(batch.getRemarks())}
 
-            uids = batch.getBatchLabels()
+            uids = batch.Schema()['BatchLabels'].getAccessor(batch)()
             uc = getToolByName(self.context, 'uid_catalog')
             data['labels'] = [to_utf8(p.getObject().Title()) for p in uc(UID=uids)]
 
@@ -365,13 +390,14 @@ class AnalysisRequestPublishView(BrowserView):
 
     def _analyses_data(self, ar, analysis_states=['verified', 'published']):
         analyses = []
+        dm = ar.aq_parent.getDecimalMark()
         batch = ar.getBatch()
         workflow = getToolByName(self.context, 'portal_workflow')
         for an in ar.getAnalyses(full_objects=True,
                                  review_state=analysis_states):
 
             # Build the analysis-specific dict
-            andict = self._analysis_data(an)
+            andict = self._analysis_data(an, dm)
 
             # Are there previous results for the same AS and batch?
             andict['previous'] = []
@@ -395,7 +421,7 @@ class AnalysisRequestPublishView(BrowserView):
         analyses.sort(lambda x, y: cmp(x.get('title').lower(), y.get('title').lower()))
         return analyses
 
-    def _analysis_data(self, analysis):
+    def _analysis_data(self, analysis, decimalmark=None):
         keyword = analysis.getKeyword()
         service = analysis.getService()
         andict = {'obj': analysis,
@@ -411,6 +437,7 @@ class AnalysisRequestPublishView(BrowserView):
                   'request_id': analysis.aq_parent.getId(),
                   'formatted_result': '',
                   'uncertainty': analysis.getUncertainty(),
+                  'formatted_uncertainty': '',
                   'retested': analysis.getRetested(),
                   'remarks': to_utf8(analysis.getRemarks()),
                   'resultdm': to_utf8(analysis.getResultDM()),
@@ -453,14 +480,17 @@ class AnalysisRequestPublishView(BrowserView):
                     if specs else {}
 
         andict['specs'] = specs
-        andict['formatted_result'] = analysis.getFormattedResult(specs)
+        andict['formatted_result'] = analysis.getFormattedResult(specs, decimalmark)
 
+        fs = ''
         if specs.get('min', None) and specs.get('max', None):
-            andict['formatted_specs'] = '%s - %s' % (specs['min'], specs['max'])
+            fs = '%s - %s' % (specs['min'], specs['max'])
         elif specs.get('min', None):
-            andict['formatted_specs'] = '> %s' % specs['min']
+            fs = '> %s' % specs['min']
         elif specs.get('max', None):
-            andict['formatted_specs'] = '< %s' % specs['max']
+            fs = '< %s' % specs['max']
+        andict['formatted_specs'] = formatDecimalMark(fs, decimalmark)
+        andict['formatted_uncertainty'] = formatDecimalMark(str(analysis.getUncertainty()), decimalmark)
 
         # Out of range?
         if specs:
@@ -766,33 +796,29 @@ class AnalysisRequestPublishView(BrowserView):
                     css.append(sample.getClientSampleID())
             else:
                 blanks_found = True
-        tot_line = ''
+        line_items = []
         if ais:
             ais.sort()
-            ar_line = _('ARs: %s') % ', '.join(ais)
-            tot_line = ar_line
+            li = t(_('ARs: ${ars}', mapping={'ars': ', '.join(ais)}))
+            line_items.append(li)
         if cos:
             cos.sort()
-            cos_line = _('Orders: %s') % ', '.join(cos)
-            if tot_line:
-                tot_line += ' '
-            tot_line += cos_line
+            li = t(_('Orders: ${orders}', mapping={'orders': ', '.join(cos)}))
+            line_items.append(li)
         if crs:
             crs.sort()
-            crs_line = _('Refs: %s') % ', '.join(crs)
-            if tot_line:
-                tot_line += ' '
-            tot_line += crs_line
+            li = t(_('Refs: ${references}', mapping={'references':', '.join(crs)}))
+            line_items.append(li)
         if css:
             css.sort()
-            css_line = _('Samples: %s') % ', '.join(css)
-            if tot_line:
-                tot_line += ' '
-            tot_line += css_line
+            li = t(_('Samples: ${samples}', mapping={'samples': ', '.join(css)}))
+            line_items.append(li)
+        tot_line = ' '.join(line_items)
         if tot_line:
-            subject = _('Analysis results for %s') % tot_line
+            subject = t(_('Analysis results for ${subject_parts}',
+                          mapping={'subject_parts':tot_line}))
             if blanks_found:
-                subject += (' ' + _('and others'))
+                subject += (' ' + t(_('and others')))
         else:
-            subject = _('Analysis results')
+            subject = t(_('Analysis results'))
         return subject, tot_line

@@ -4,7 +4,7 @@
 }
 
 body {
-    width: 210mm;
+    width: 170mm;
 }
 
 h1 {
@@ -71,14 +71,15 @@ table#section-info td#lab-info {
     width:80mm;
 }
 #section-alert {
-    padding:20px 20px 10px 20px;
+    padding:20px;
     border:1px solid #CDCDCD;
-    background-color:#efefef;
+    background-color:#ffffff;
     margin:0px;
 }
 #section-alert h1 {
     font-size:1em;
     margin-top:0px;
+    margin-bottom:0;
     padding-bottom:0;
     border:none;
     color:#d40000;
@@ -90,7 +91,7 @@ table#section-info td#lab-info {
 }
 
 #section-summary tr td {
-    padding-right:225px;
+    padding-right:205px;
     border-left-width: 0px;
     border-bottom:1px solid #ccc;
 }
@@ -203,6 +204,16 @@ table#section-info td#lab-info {
 }
 .barcode {
     float: right;
+}
+
+div#section-info td {
+    vertical-align: top;
+}
+div#section-info td a {
+    text-decoration: none;
+}
+div#section-info table {
+    width: 100%;
 }
 
 @media print {

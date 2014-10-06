@@ -12,32 +12,32 @@ from zope.interface import implements
 schema = BikaSchema.copy() + Schema((
     IntegerField('sortKey',
         widget=IntegerWidget(
-            label=_("Sort Key"),
-            description=_("Numeric value indicating the sort order of objects that are prioritised"),
+            label = _("Sort Key"),
+            description = _("Numeric value indicating the sort order of objects that are prioritised"),
         ),
     ),
     IntegerField('pricePremium',
         widget=IntegerWidget(
-            label=_("Price Premium Percentage"),
-            description=_("The percentage used to calculate the price for analyses done at this priority"),
+            label = _("Price Premium Percentage"),
+            description = _("The percentage used to calculate the price for analyses done at this priority"),
         ),
     ),
     ImageField('smallIcon',
         widget=ImageWidget(
-            label=_("Small Icon"),
-            description=_("16x16 pixel icon used for the this priority in listings.")
+            label = _("Small Icon"),
+            description = _("16x16 pixel icon used for the this priority in listings."),
         ),
     ),
     ImageField('bigIcon',
         widget=ImageWidget(
-            label=_("Big Icon"),
-            description=_("32x32 pixel icon used for the this priority in object views.")
+            label = _("Big Icon"),
+            description = _("32x32 pixel icon used for the this priority in object views."),
         ),
     ),
     BooleanField('isDefault',
         widget=BooleanWidget(
-            label=_("Default Priority?"),
-            description=_("Check this box if this is the default priority")
+            label = _("Default Priority?"),
+            description = _("Check this box if this is the default priority"),
         ),
     ),
 ))

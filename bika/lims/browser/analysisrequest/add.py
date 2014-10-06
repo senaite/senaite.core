@@ -7,7 +7,7 @@ from bika.lims.browser.analysisrequest import AnalysisRequestViewView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
 from bika.lims.interfaces import IAnalysisRequestAddView
-from bika.lims.utils import getHiddenAttributesForClass
+from bika.lims.utils import getHiddenAttributesForClass, dicts_to_dict
 from bika.lims.utils import t
 from bika.lims.utils import tmpID
 from bika.lims.utils.analysisrequest import create_analysisrequest
@@ -44,26 +44,30 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         self.request.set('disable_border', 1)
         return self.template()
 
+    def copy_to_new_specs(self):
+        specs = {}
+        copy_from = self.request.get('copy_from', "")
+        if not copy_from:
+            return {}
+        uids =  copy_from.split(",")
+
+        n = 0
+        for uid in uids:
+            proxies = self.bika_catalog(UID=uid)
+            rr = proxies[0].getObject().getResultsRange()
+            new_rr = []
+            for i, r in enumerate(rr):
+                s_uid = self.bika_setup_catalog(portal_type='AnalysisService',
+                                              getKeyword=r['keyword'])[0].UID
+                r['uid'] = s_uid
+                new_rr.append(r)
+            specs[n] = new_rr
+            n += 1
+        return json.dumps(specs)
+
     def getContacts(self):
         adapter = getAdapter(self.context.aq_parent, name='getContacts')
         return adapter()
-
-    def getWidgetVisibility(self):
-        adapter = getAdapter(self.context, name='getWidgetVisibility')
-        ret = adapter()
-        ordered_ret = {}
-        # respect schemaextender's re-ordering of fields, and
-        # remove hidden attributes.
-        hiddenattributes = getHiddenAttributesForClass('AnalysisRequest')
-        schema_fields = [f.getName() for f in self.context.Schema().fields()]
-        for mode, state_field_lists in ret.items():
-            ordered_ret[mode] = {}
-            for statename, state_fields in state_field_lists.items():
-                ordered_ret[mode][statename] = \
-                    [field for field in schema_fields
-                     if field in state_fields
-                     and field not in hiddenattributes]
-        return ordered_ret
 
     def partitioned_services(self):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
@@ -75,10 +79,24 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
                 ps.append(service.UID())
         return json.dumps(ps)
 
+    def get_fields_with_visibility(self, visibility):
+        schema = self.context.Schema()
+        fields = []
+        for field in schema.fields():
+            isVisible = field.widget.isVisible
+            v = isVisible(self.context, 'add', default='invisible', field=field)
+            if v == visibility:
+                fields.append(field)
+        return fields
+
 
 class SecondaryARSampleInfo(BrowserView):
     """Return fieldnames and pre-digested values for Sample fields which
-    javascript must disable/display while adding secondary ARs
+    javascript must disable/display while adding secondary ARs.
+
+    This relies on the schema field's widget.isVisible setting, and
+    will allow an extra visibility setting:   "disabled".
+
     """
 
     def __init__(self, context, request):
@@ -87,20 +105,23 @@ class SecondaryARSampleInfo(BrowserView):
         self.request = request
 
     def __call__(self):
-        uid = self.request.get('Sample_uid')
+        uid = self.request.get('Sample_uid', False)
+        if not uid:
+            return []
         uc = getToolByName(self.context, "uid_catalog")
-        sample = uc(UID=uid)[0].getObject()
+        proxies = uc(UID=uid)
+        if not proxies:
+            return []
+        sample = proxies[0].getObject()
         sample_schema = sample.Schema()
-        adapter = getAdapter(self.context, name='getWidgetVisibility')
-        wv = adapter()
-        fieldnames = wv.get('secondary', {}).get('invisible', [])
+        sample_fields = dict([(f.getName(), f) for f in sample_schema.fields()])
+        ar_schema = self.context.Schema()
+        ar_fields = [f.getName() for f in ar_schema.fields()
+                     if f.widget.isVisible(self.context, 'secondary') == 'disabled']
         ret = []
-        hiddenattributes = getHiddenAttributesForClass('AnalysisRequest')
-        for fieldname in fieldnames:
-            if fieldname in sample_schema:
-                if fieldname in hiddenattributes:
-                    continue
-                fieldvalue = sample_schema[fieldname].getAccessor(sample)()
+        for fieldname in ar_fields:
+            if fieldname in sample_fields:
+                fieldvalue = sample_fields[fieldname].getAccessor(sample)()
                 if fieldvalue is None:
                     fieldvalue = ''
                 if hasattr(fieldvalue, 'Title'):
@@ -186,11 +207,7 @@ class ajaxAnalysisRequestSubmit():
         for column in columns:
             formkey = "ar.%s" % column
             ar = form[formkey]
-            # Secondary ARs don't have sample fields present in the form data
-            # if 'Sample_uid' in ar and ar['Sample_uid']:
-            # adapter = getAdapter(self.context, name='getWidgetVisibility')
-            #     wv = adapter().get('secondary', {}).get('invisible', [])
-            #     required_fields = [x for x in required_fields if x not in wv]
+
             # check that required fields have values
             for field in required_fields:
                 # This one is still special.
@@ -207,6 +224,7 @@ class ajaxAnalysisRequestSubmit():
         # Return errors if there are any
         if errors:
             return json.dumps({'errors': errors})
+
         # Get the prices from the form data
         prices = form.get('Prices', None)
         # Initialize the Anlysis Request collection
@@ -231,30 +249,40 @@ class ajaxAnalysisRequestSubmit():
                 # Analyses, we handle that specially.
                 if k == 'Analyses':
                     continue
-                if "%s_uid" % k in values:
-                    v = values["%s_uid" % k]
-                    if v and "," in v:
-                        v = v.split(",")
-                    resolved_values[k] = values["%s_uid" % k]
-                else:
-                    resolved_values[k] = values[k]
+                # Insert the reference *_uid values instead of titles.
+                if "_uid" in k:
+                    v = values[k]
+                    v = v.split(",") if v and "," in v else v
+                    fname = k.replace("_uid", "")
+                    resolved_values[fname] = v
+                    continue
+                # we want to write the UIDs and ignore the title values
+                if k+"_uid" in values:
+                    continue
+                resolved_values[k] = values[k]
             # Get the analyses from the form data
             analyses = values["Analyses"]
-            # Gather the specifications from the form data
-            # no defaults are applied here - the defaults should already be
-            # present in the form data
-            specifications = {}
-            for analysis in analyses:
-                for service_uid in analyses:
-                    min_element_name = "ar.%s.min.%s"%(column, service_uid)
-                    max_element_name = "ar.%s.max.%s"%(column, service_uid)
-                    error_element_name = "ar.%s.error.%s"%(column, service_uid)
-                    if min_element_name in form:
-                        specifications[service_uid] = {
-                            "min": form[min_element_name],
-                            "max": form[max_element_name],
-                            "error": form[error_element_name]
-                        }
+
+            # Gather the specifications from the form
+            specs = json.loads(form['copy_to_new_specs']).get(str(column), {})
+            if not specs:
+                specs = json.loads(form['specs']).get(str(column), {})
+            if specs:
+                specs = dicts_to_dict(specs, 'keyword')
+            # Modify the spec with all manually entered values
+            for service_uid in analyses:
+                min_element_name = "ar.%s.min.%s" % (column, service_uid)
+                max_element_name = "ar.%s.max.%s" % (column, service_uid)
+                error_element_name = "ar.%s.error.%s" % (column, service_uid)
+                service_keyword = bsc(UID=service_uid)[0].getKeyword
+                if min_element_name in form:
+                    if service_keyword not in specs:
+                        specs[service_keyword] = {}
+                    specs[service_keyword]["keyword"] = service_keyword
+                    specs[service_keyword]["min"] = form[min_element_name]
+                    specs[service_keyword]["max"] = form[max_element_name]
+                    specs[service_keyword]["error"] = form[error_element_name]
+
             # Selecting a template sets the hidden 'parts' field to template values.
             # Selecting a profile will allow ar_add.js to fill in the parts field.
             # The result is the same once we are here.
@@ -282,10 +310,10 @@ class ajaxAnalysisRequestSubmit():
                 client,
                 self.request,
                 resolved_values,
-                analyses,
-                partitions,
-                specifications,
-                prices
+                analyses=analyses,
+                partitions=partitions,
+                specifications=specs.values(),
+                prices=prices
             )
             # Add the created analysis request to the list
             ARs.append(ar.getId())

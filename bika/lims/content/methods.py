@@ -26,7 +26,7 @@ class MethodsView(BikaListingView):
         self.contentFilter = {'portal_type': 'Method',
                               'sort_on': 'sortable_title'}
         self.context_actions = {}
-        self.title = _("Methods")
+        self.title = self.context.translate(_("Methods"))
         self.icon = self.portal_url + "/++resource++bika.lims.images/method_big.png"
         self.description = ""
         self.show_sort_column = False

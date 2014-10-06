@@ -1,4 +1,5 @@
 from AccessControl import getSecurityManager
+from Products.CMFCore.permissions import ModifyPortalContent
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
@@ -13,6 +14,8 @@ from zope.interface import implements
 
 
 class AnalysisRequestsView(BikaListingView):
+    """Base for all lists of ARs
+    """
     implements(IViewView)
 
     def __init__(self, context, request):
@@ -43,7 +46,7 @@ class AnalysisRequestsView(BikaListingView):
         self.form_id = "analysisrequests"
 
         self.icon = self.portal_url + "/++resource++bika.lims.images/analysisrequest_big.png"
-        self.title = _("Analysis Requests")
+        self.title = self.context.translate(_("Analysis Requests"))
         self.description = ""
 
         SamplingWorkflowEnabled = self.context.bika_setup.getSamplingWorkflowEnabled()
@@ -122,6 +125,10 @@ class AnalysisRequestsView(BikaListingView):
             'getProfileTitle': {'title': _('Profile'),
                                 'index': 'getProfileTitle',
                                 'toggle': False},
+            'getAnalysesNum': {'title': _('Number of Analyses'),
+                               'index': 'getAnalysesNum',
+                               'sortable': True,
+                               'toggle': False},
             'getTemplateTitle': {'title': _('Template'),
                                  'index': 'getTemplateTitle',
                                  'toggle': False},
@@ -168,6 +175,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getDatePreserved',
                         'getPreserver',
                         'getDateReceived',
+                        'getAnalysesNum',
                         'state_title']},
             {'id': 'sample_due',
              'title': _('Due'),
@@ -205,6 +213,7 @@ class AnalysisRequestsView(BikaListingView):
                         'SamplingDeviation',
                         'Priority',
                         'AdHoc',
+                        'getAnalysesNum',
                         'state_title']},
            {'id': 'sample_received',
              'title': _('Received'),
@@ -238,6 +247,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getSampler',
                         'getDatePreserved',
                         'getPreserver',
+                        'getAnalysesNum',
                         'getDateReceived']},
             {'id': 'to_be_verified',
              'title': _('To be verified'),
@@ -273,6 +283,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getSampler',
                         'getDatePreserved',
                         'getPreserver',
+                        'getAnalysesNum',
                         'getDateReceived']},
             {'id': 'verified',
              'title': _('Verified'),
@@ -304,6 +315,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getSampler',
                         'getDatePreserved',
                         'getPreserver',
+                        'getAnalysesNum',
                         'getDateReceived']},
             {'id': 'published',
              'title': _('Published'),
@@ -336,6 +348,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getDatePreserved',
                         'getPreserver',
                         'getDateReceived',
+                        'getAnalysesNum',
                         'getDatePublished']},
             {'id': 'cancelled',
              'title': _('Cancelled'),
@@ -373,6 +386,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getPreserver',
                         'getDateReceived',
                         'getDatePublished',
+                        'getAnalysesNum',
                         'state_title']},
             {'id': 'invalid',
              'title': _('Invalid'),
@@ -405,6 +419,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getDatePreserved',
                         'getPreserver',
                         'getDateReceived',
+                        'getAnalysesNum',
                         'getDatePublished']},
             {'id': 'assigned',
              'title': "<img title='%s'\
@@ -448,6 +463,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getDatePreserved',
                         'getPreserver',
                         'getDateReceived',
+                        'getAnalysesNum',
                         'state_title']},
             {'id': 'unassigned',
              'title': "<img title='%s'\
@@ -493,6 +509,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getDatePreserved',
                         'getPreserver',
                         'getDateReceived',
+                        'getAnalysesNum',
                         'state_title']},
             ]
 
@@ -529,6 +546,11 @@ class AnalysisRequestsView(BikaListingView):
             items[x]['getSample'] = sample
             items[x]['replace']['getSample'] = \
                 "<a href='%s'>%s</a>" % (sample.absolute_url(), sample.Title())
+
+            if obj.getAnalysesNum():
+                items[x]['getAnalysesNum'] = str(obj.getAnalysesNum()[0]) + '/' + str(obj.getAnalysesNum()[1])
+            else:
+                items[x]['getAnalysesNum'] = ''
 
             batch = obj.getBatch()
             if batch:
@@ -688,3 +710,25 @@ class AnalysisRequestsView(BikaListingView):
         self.review_states = new_states
 
         return items
+
+    @property
+    def copy_to_new_allowed(self):
+        mtool = getToolByName(self.context, 'portal_membership')
+        if mtool.checkPermission(ManageAnalysisRequests, self.context) \
+            or mtool.checkPermission(ModifyPortalContent, self.context):
+            return True
+        return False
+
+    def __call__(self):
+        # Only "BIKA: ManageAnalysisRequests" may see the copy to new button.
+        # elsewhere it is hacked in where required.
+        if self.copy_to_new_allowed:
+            review_states = []
+            for review_state in self.review_states:
+                review_state.get('custom_actions', []).extend(
+                    [{'id': 'copy_to_new',
+                      'title': _('Copy to new'),
+                      'url': 'workflow_action?action=copy_to_new'}, ])
+                review_states.append(review_state)
+            self.review_states = review_states
+        return super(AnalysisRequestsView, self).__call__()

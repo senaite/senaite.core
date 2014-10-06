@@ -549,6 +549,8 @@ class BikaGenerator:
         addIndex(bac, 'getResultCaptureDate', 'DateIndex')
         addIndex(bac, 'getSampleTypeUID', 'FieldIndex')
         addIndex(bac, 'getSamplePointUID', 'FieldIndex')
+        addIndex(bac, 'getRawSamplePoints', 'KeywordsIndex')
+        addIndex(bac, 'getRawSampleTypes', 'KeywordIndex')
         addIndex(bac, 'getRetested', 'FieldIndex')
         addIndex(bac, 'getReferenceAnalysesGroupID', 'FieldIndex')
 
@@ -751,7 +753,8 @@ class BikaGenerator:
 
         addIndex(bsc, 'getAccredited', 'FieldIndex')
         addIndex(bsc, 'getAnalyst', 'FieldIndex')
-        addIndex(bsc, 'getType', 'FieldIndex')
+        addIndex(bsc, 'getInstrumentType', 'FieldIndex')
+        addIndex(bsc, 'getInstrumentTypeName', 'FieldIndex')
         addIndex(bsc, 'getBlank', 'FieldIndex')
         addIndex(bsc, 'getCalculationTitle', 'FieldIndex')
         addIndex(bsc, 'getCalculationUID', 'FieldIndex')
@@ -805,7 +808,8 @@ class BikaGenerator:
         addColumn(bsc, 'cancellation_state')
 
         addColumn(bsc, 'getAccredited')
-        addColumn(bsc, 'getType')
+        addColumn(bsc, 'getInstrumentType')
+        addColumn(bsc, 'getInstrumentTypeName')
         addColumn(bsc, 'getBlank')
         addColumn(bsc, 'getCalculationTitle')
         addColumn(bsc, 'getCalculationUID')

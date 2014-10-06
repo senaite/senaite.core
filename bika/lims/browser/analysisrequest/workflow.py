@@ -97,6 +97,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
     def workflow_action_save_analyses_button(self):
         form = self.request.form
         workflow = getToolByName(self.context, 'portal_workflow')
+        bsc = self.context.bika_setup_catalog
         action, came_from = WorkflowAction._get_form_workflow_action(self)
         # AR Manage Analyses: save Analyses
         ar = self.context
@@ -113,15 +114,22 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         specs = {}
         if form.get("min", None):
             for service_uid in Analyses:
+                service = bsc(UID=service_uid)[0].getObject()
+                keyword = service.getKeyword()
                 specs[service_uid] = {
                     "min": form["min"][0][service_uid],
                     "max": form["max"][0][service_uid],
-                    "error": form["error"][0][service_uid]
+                    "error": form["error"][0][service_uid],
+                    "keyword": keyword,
+                    "uid": service_uid,
                 }
         else:
             for service_uid in Analyses:
-                specs[service_uid] = {"min": "", "max": "", "error": ""}
-        new = ar.setAnalyses(Analyses, prices=prices, specs=specs)
+                service = bsc(UID=service_uid)[0].getObject()
+                keyword = service.getKeyword()
+                specs[service_uid] = {"min": "", "max": "", "error": "",
+                                      "keyword": keyword, "uid": service_uid}
+        new = ar.setAnalyses(Analyses, prices=prices, specs=specs.values())
         # link analyses and partitions
         # If Bika Setup > Analyses > 'Display individual sample
         # partitions' is checked, no Partitions available.
@@ -162,6 +170,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         # action button submits here.
         objects = WorkflowAction._get_selected_items(self)
         transitioned = []
+        incomplete = []
         for obj_uid, obj in objects.items():
             part = obj
             # can't transition inactive items
@@ -181,6 +190,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             if Preserver and DatePreserved:
                 workflow.doActionFor(part, action)
                 transitioned.append(part.id)
+            else:
+                incomplete.append(part.id)
             part.reindexObject()
             part.aq_parent.reindexObject()
         message = None
@@ -195,18 +206,36 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         if not message:
             message = _('No changes made.')
             self.context.plone_utils.addPortalMessage(message, 'info')
+
+        if len(incomplete) > 1:
+            message = _('${items} are missing Preserver or Date Preserved',
+                        mapping={'items': safe_unicode(', '.join(incomplete))})
+            self.context.plone_utils.addPortalMessage(message, 'error')
+        elif len(incomplete) == 1:
+            message = _('${item} is missing Preserver or Preservation Date',
+                        mapping={'item': safe_unicode(', '.join(incomplete))})
+            self.context.plone_utils.addPortalMessage(message, 'error')
+
         self.destination_url = self.request.get_header("referer",
                                self.context.absolute_url())
         self.request.response.redirect(self.destination_url)
 
     def workflow_action_receive(self):
-        # default bika_listing.py/WorkflowAction, but then
-        # print automatic labels.
-        if 'receive' in self.context.bika_setup.getAutoPrintLabels():
+        action, came_from = WorkflowAction._get_form_workflow_action(self)
+        items = [self.context,] if came_from == 'workflow_action' \
+                else self._get_selected_items().values()
+        trans, dest = self.submitTransition(action, came_from, items)
+        if trans and 'receive' in self.context.bika_setup.getAutoPrintLabels():
+            transitioned = [item.id for item in items]
             size = self.context.bika_setup.getAutoLabelSize()
-            q = "/sticker?size=%s&items=%s" % (size, self.context.getId())
-            self.destination_url = self.context.absolute_url() + q
-        WorkflowAction.__call__(self)
+            q = "/sticker?size=%s&items=" % size
+            q += ",".join(transitioned)
+            self.request.response.redirect(self.context.absolute_url() + q)
+        elif trans:
+            message = PMF('Changes saved.')
+            self.context.plone_utils.addPortalMessage(message, 'info')
+            self.destination_url = self.context.absolute_url()
+            self.request.response.redirect(self.destination_url)
 
     def workflow_action_submit(self):
         form = self.request.form
@@ -367,7 +396,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
     def workflow_action_verify(self):
         # default bika_listing.py/WorkflowAction, but then go to view screen.
         self.destination_url = self.context.absolute_url()
-        WorkflowAction.__call__(self)
+        return self.workflow_action_default(action='verify', came_from='edit')
 
     def workflow_action_retract_ar(self):
         workflow = getToolByName(self.context, 'portal_workflow')

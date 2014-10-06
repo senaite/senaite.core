@@ -20,9 +20,9 @@ schema = BikaSchema.copy() + Schema((
     StringField('ProfileKey',
         widget = StringWidget(
             label = _("Profile Keyword"),
-            description = _("The profile's keyword is used to uniquely identify "
-                            "it in import files. It has to be unique, and it may "
-                            "not be the same as any Calculation Interim field ID."),
+            description = _("The profile's keyword is used to uniquely identify " + \
+                          "it in import files. It has to be unique, and it may " + \
+                          "not be the same as any Calculation Interim field ID."),
         ),
     ),
     ReferenceField('Service',
@@ -43,7 +43,7 @@ schema = BikaSchema.copy() + Schema((
         default_output_type="text/plain",
         widget = TextAreaWidget(
             macro = "bika_widgets/remarks",
-            label = _('Remarks'),
+            label = _("Remarks"),
             append_only = True,
         ),
     ),

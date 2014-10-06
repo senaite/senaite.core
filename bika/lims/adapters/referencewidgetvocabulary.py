@@ -28,7 +28,12 @@ class DefaultReferenceWidgetVocabulary(object):
         # first with all queries
         contentFilter = dict((k, v) for k, v in base_query.items())
         contentFilter.update(search_query)
-        brains = catalog(contentFilter)
+        try:
+            brains = catalog(contentFilter)
+        except:
+            from bika.lims import logger
+            logger.info(contentFilter)
+            raise
         if brains and searchTerm:
             _brains = []
             if len(searchFields) == 0 \

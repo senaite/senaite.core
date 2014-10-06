@@ -2,12 +2,13 @@
 # Translators:
 # Inus Scheepers <inus@animatica.co.za>, 2012
 # Lemoene Smit <>, 2012
+# lemoene Smit <lemoene@bikalabs.com>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
 "POT-Creation-Date: 2012-10-20 09:21+0000\n"
-"PO-Revision-Date: 2014-06-19 07:27+0000\n"
-"Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
+"PO-Revision-Date: 2014-08-04 14:46+0000\n"
+"Last-Translator: lemoene Smit <lemoene@bikalabs.com>\n"
 "Language-Team: Afrikaans (http://www.transifex.com/projects/p/bika-lims/language/af/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -24,7 +25,7 @@ msgstr "AR Imports"
 
 # File: bika.lims/bika/lims/profiles/default/types/ARPriorities.xml, line: -1
 msgid "AR Priorities"
-msgstr ""
+msgstr "OV Prioriteite"
 
 # File: bika.lims/bika/lims/profiles/default/types/ARTemplate.xml, line: -1
 msgid "AR Template"
@@ -38,7 +39,7 @@ msgstr "OV Template"
 
 # File: bika.lims/bika/lims/profiles/default/types/ARReport.xml, line: -1
 msgid "ARReport"
-msgstr ""
+msgstr "OVVerslag"
 
 # File: bika.lims/bika/lims/profiles/default/types/Worksheet.xml, line: -1
 msgid "Add Analyses"
@@ -147,28 +148,24 @@ msgstr "Aanhangsels"
 
 # File: bika.lims/bika/lims/profiles/default/types/Batch.xml, line: -1
 msgid "Batch"
-msgstr ""
+msgstr "Groep"
 
 # File: bika.lims/bika/lims/profiles/default/types/Batch.xml, line: -1
 msgid "Batch Book"
-msgstr ""
+msgstr "Groep boek"
 
 # File: bika.lims/bika/lims/profiles/default/types/BatchLabel.xml, line: -1
 msgid "Batch Label"
-msgstr ""
+msgstr "Groep etiket"
 
 # File: bika.lims/bika/lims/profiles/default/types/BatchLabels.xml, line: -1
 msgid "Batch Labels"
-msgstr ""
-
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-msgid "Batch labels"
-msgstr ""
+msgstr "Groep etikette"
 
 # File: bika.lims/bika/lims/profiles/default/types/BatchFolder.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 msgid "Batches"
-msgstr ""
+msgstr "Groepe"
 
 # File: bika.lims/bika/lims/profiles/default/types/BikaSetup.xml, line: -1
 msgid "Bika Setup"
@@ -185,11 +182,11 @@ msgstr "Berekeninge"
 
 # File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
 msgid "Calibrations"
-msgstr ""
+msgstr "Kalibrasies"
 
 # File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
 msgid "Certificates"
-msgstr ""
+msgstr "Sertifikate"
 
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 msgid "Client"
@@ -260,13 +257,13 @@ msgstr "Instrument"
 # File: bika.lims/bika/lims/profiles/default/types/InstrumentType.xml, line:
 # -1
 msgid "Instrument Type"
-msgstr ""
+msgstr "Instrument tipe"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/InstrumentTypes.xml, line:
 # -1
 msgid "Instrument Types"
-msgstr ""
+msgstr "Instrument tipes"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/InstrumentType.xml, line:
@@ -277,7 +274,7 @@ msgstr "Instrumente"
 
 # File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
 msgid "Internal Calibration Tests"
-msgstr ""
+msgstr "Interne Kalibrasie toetse"
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
 # -1
@@ -350,12 +347,12 @@ msgstr "Hanteer uitslae"
 
 # File: bika.lims/bika/lims/profiles/default/types/Manufacturer.xml, line: -1
 msgid "Manufacturer"
-msgstr ""
+msgstr "Vervaardiger"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Manufacturers.xml, line: -1
 msgid "Manufacturers"
-msgstr ""
+msgstr "Vervaardigers"
 
 # File: bika.lims/bika/lims/profiles/default/types/Method.xml, line: -1
 msgid "Method"
@@ -397,7 +394,7 @@ msgstr "Pryse"
 # File: bika.lims/bika/lims/profiles/default/types/Invoice.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/SupplyOrder.xml, line: -1
 msgid "Print"
-msgstr ""
+msgstr "Druk"
 
 # File: bika.lims/bika/lims/profiles/default/types/Pricelist.xml, line: -1
 msgid "Print pricelist"
@@ -410,7 +407,7 @@ msgstr "Produktiwiteit"
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
 # -1
 msgid "Published results"
-msgstr ""
+msgstr "Gepubliseerde resultate"
 
 # File: bika.lims/bika/lims/profiles/default/types/ReportFolder.xml, line: -1
 msgid "Quality Control"
@@ -418,7 +415,7 @@ msgstr "Kwaliteitsbeheer"
 
 # File: bika.lims/bika/lims/profiles/default/types/QueryFolder.xml, line: -1
 msgid "Queries"
-msgstr ""
+msgstr "Navrae"
 
 # File: bika.lims/bika/lims/profiles/default/types/Query.xml, line: -1
 msgid "Query"
@@ -455,12 +452,12 @@ msgstr "Verwysingsmonsters"
 # File: bika.lims/bika/lims/profiles/default/types/ReferenceSample.xml, line:
 # -1
 msgid "Reference Values"
-msgstr ""
+msgstr "Verwysing Waardes"
 
-#
-# File: bika.lims/bika/lims/profiles/default/types/RejectAnalysis.xml, line: -1
+# File: bika.lims/bika/lims/profiles/default/types/RejectAnalysis.xml, line:
+# -1
 msgid "Reject Analysis"
-msgstr ""
+msgstr "Verwerp ontleding"
 
 # File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Report.xml, line: -1
@@ -478,12 +475,12 @@ msgstr "Uitslae nie versoek"
 
 # File: bika.lims/bika/lims/profiles/default/types/SRTemplate.xml, line: -1
 msgid "SR Template"
-msgstr ""
+msgstr "MR Templaat"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/SRTemplates.xml, line: -1
 msgid "SR Templates"
-msgstr ""
+msgstr "MR Template"
 
 # File: bika.lims/bika/lims/profiles/default/types/Sample.xml, line: -1
 msgid "Sample"
@@ -492,13 +489,13 @@ msgstr "Monster"
 # File: bika.lims/bika/lims/profiles/default/types/SampleCondition.xml, line:
 # -1
 msgid "Sample Condition"
-msgstr ""
+msgstr "Monster toestand"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/SampleConditions.xml, line:
 # -1
 msgid "Sample Conditions"
-msgstr ""
+msgstr "Monster Toestand"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/SampleMatrices.xml, line:
@@ -539,7 +536,7 @@ msgstr "Monstertipes"
 
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 msgid "SamplePoints"
-msgstr ""
+msgstr "MonsterPunte"
 
 # File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Batch.xml, line: -1
@@ -563,11 +560,11 @@ msgid "Sampling Deviations"
 msgstr "Monsterafwykings"
 
 msgid "Sampling Round Templates"
-msgstr ""
+msgstr "Monster rondte templaat"
 
 # File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
 msgid "Schedule"
-msgstr ""
+msgstr "Skedule"
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
 # -1
@@ -585,26 +582,26 @@ msgstr "Plakker"
 # File: bika.lims/bika/lims/profiles/default/types/StorageLocation.xml, line:
 # -1
 msgid "Storage Location"
-msgstr ""
+msgstr "Stoorplek"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/StorageLocations.xml, line:
 # -1
 msgid "Storage Locations"
-msgstr ""
+msgstr "Stoorplekke"
 
 # File: bika.lims/bika/lims/profiles/default/types/SubGroup.xml, line: -1
 msgid "Sub-group"
-msgstr ""
+msgstr "Subgroep"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/SubGroups.xml, line: -1
 msgid "Sub-groups"
-msgstr ""
+msgstr "Subgroepe"
 
 # File: bika.lims/bika/lims/profiles/default/types/Supplier.xml, line: -1
 msgid "Supplier"
-msgstr ""
+msgstr "Verskaffer"
 
 # File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
@@ -619,11 +616,11 @@ msgstr "Verskaffersbestelling"
 # File: bika.lims/bika/lims/profiles/default/types/SupplyOrderFolder.xml,
 # line: -1
 msgid "Supply Orders"
-msgstr ""
+msgstr "Bestellings"
 
 # File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
 msgid "Validations"
-msgstr ""
+msgstr "Validasies"
 
 # File: bika.lims/bika/lims/profiles/default/types/Worksheet.xml, line: -1
 msgid "Worksheet"

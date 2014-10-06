@@ -20,17 +20,18 @@ schema = Person.schema.copy() + Schema((
         vocabulary = PUBLICATION_PREFS,
         schemata = 'Publication preference',
         widget = MultiSelectionWidget(
-            label = _("Publication preference"),
+            label=_("Publication preference"),
         ),
     ),
     BooleanField('AttachmentsPermitted',
         default = False,
         schemata = 'Publication preference',
         widget = BooleanWidget(
-            label = _("Results attachments permitted"),
-            description = _("File attachments to results, e.g. microscope "
-                            "photos, will be included in emails to recipients "
-                            "if this option is enabled")
+            label=_("Results attachments permitted"),
+            description = _(
+                "File attachments to results, e.g. microscope "
+                "photos, will be included in emails to recipients "
+                "if this option is enabled")
         ),
     ),
     ReferenceField('CCContact',
@@ -41,7 +42,7 @@ schema = Person.schema.copy() + Schema((
         relationship = 'ContactContact',
         widget = ReferenceWidget(
             checkbox_bound = 0,
-            label = _("Contacts to CC"),
+            label=_("Contacts to CC"),
         ),
     ),
 ))
