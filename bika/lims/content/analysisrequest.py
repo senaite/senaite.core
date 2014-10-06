@@ -3,6 +3,7 @@
 import logging
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
+from Products.ATExtensions.field import RecordsField
 from plone.indexer import indexer
 from Products.Archetypes import atapi
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -27,7 +28,7 @@ from bika.lims.workflow import doActionFor
 from decimal import Decimal
 from zope.interface import implements
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t, getUsers
+from bika.lims.utils import t, getUsers, dicts_to_dict
 
 from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
 
@@ -88,6 +89,7 @@ schema = BikaSchema.copy() + Schema((
                      'sample_registered': {'view': 'invisible', 'edit': 'invisible', 'add': 'hidden'},
                      'to_be_sampled':     {'view': 'invisible', 'edit': 'invisible'},
                      'sampled':           {'view': 'invisible', 'edit': 'invisible'},
+                     'sample_prep':       {'view': 'invisible', 'edit': 'invisible'},
                      'to_be_preserved':   {'view': 'invisible', 'edit': 'invisible'},
                      'sample_received':   {'view': 'invisible', 'edit': 'invisible'},
                      'attachment_due':    {'view': 'invisible', 'edit': 'invisible'},
@@ -184,6 +186,33 @@ schema = BikaSchema.copy() + Schema((
                      ],
         ),
     ),
+    StringField(
+        'CCEmails',
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=EditARContact,
+        acqure=True,
+        widget=StringWidget(
+            label=_('CC Emails'),
+            visible={'edit': 'visible',
+                     'view': 'visible',
+                     'add': 'edit',
+                     'header_table': 'prominent',
+                     'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
+                     'to_be_sampled':     {'view': 'visible', 'edit': 'visible'},
+                     'sampled':           {'view': 'visible', 'edit': 'visible'},
+                     'to_be_preserved':   {'view': 'visible', 'edit': 'visible'},
+                     'sample_received':   {'view': 'visible', 'edit': 'visible'},
+                     'attachment_due':    {'view': 'visible', 'edit': 'visible'},
+                     'to_be_verified':    {'view': 'visible', 'edit': 'visible'},
+                     'verified':          {'view': 'visible', 'edit': 'invisible'},
+                     'published':         {'view': 'visible', 'edit': 'invisible'},
+                     'invalid':           {'view': 'visible', 'edit': 'invisible'},
+                     },
+            render_own_label=True,
+            size=20,
+        ),
+    ),
     ReferenceField(
         'InvoiceContact',
         multiValued=False,
@@ -223,33 +252,6 @@ schema = BikaSchema.copy() + Schema((
                       {'columnName': 'Fullname', 'width': '50', 'label': _('Name')},
                       {'columnName': 'EmailAddress', 'width': '50', 'label': _('Email Address')},
                      ],
-        ),
-    ),
-    StringField(
-        'CCEmails',
-        mode="rw",
-        read_permission=permissions.View,
-        write_permission=EditARContact,
-        acqure=True,
-        widget=StringWidget(
-            label=_('CC Emails'),
-            visible={'edit': 'visible',
-                     'view': 'visible',
-                     'add': 'edit',
-                     'header_table': 'prominent',
-                     'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
-                     'to_be_sampled':     {'view': 'visible', 'edit': 'visible'},
-                     'sampled':           {'view': 'visible', 'edit': 'visible'},
-                     'to_be_preserved':   {'view': 'visible', 'edit': 'visible'},
-                     'sample_received':   {'view': 'visible', 'edit': 'visible'},
-                     'attachment_due':    {'view': 'visible', 'edit': 'visible'},
-                     'to_be_verified':    {'view': 'visible', 'edit': 'visible'},
-                     'verified':          {'view': 'visible', 'edit': 'invisible'},
-                     'published':         {'view': 'visible', 'edit': 'invisible'},
-                     'invalid':           {'view': 'visible', 'edit': 'invisible'},
-                     },
-            render_own_label=True,
-            size=20,
         ),
     ),
     ReferenceField(
@@ -446,7 +448,6 @@ schema = BikaSchema.copy() + Schema((
                      'view': 'visible',
                      'add': 'edit',
                      'header_table': 'visible',
-                     'secondary': 'disabled',
                      'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
                      'to_be_sampled':     {'view': 'visible', 'edit': 'invisible'},
                      'sampled':           {'view': 'visible', 'edit': 'invisible'},
@@ -510,16 +511,16 @@ schema = BikaSchema.copy() + Schema((
                      'header_table': 'prominent',
                      'sample_registered': {'view': 'invisible', 'edit': 'invisible'},
                      'to_be_sampled':     {'view': 'invisible', 'edit': 'visible'},
-                     'sampled':           {'view': 'invisible', 'edit': 'invisible'},
-                     'to_be_preserved':   {'view': 'invisible', 'edit': 'invisible'},
-                     'sample_due':        {'view': 'invisible', 'edit': 'invisible'},
-                     'sample_prep':       {'view': 'invisible', 'edit': 'invisible'},
-                     'sample_received':   {'view': 'invisible', 'edit': 'invisible'},
-                     'attachment_due':    {'view': 'invisible', 'edit': 'invisible'},
-                     'to_be_verified':    {'view': 'invisible', 'edit': 'invisible'},
-                     'verified':          {'view': 'invisible', 'edit': 'invisible'},
-                     'published':         {'view': 'invisible', 'edit': 'invisible'},
-                     'invalid':           {'view': 'invisible', 'edit': 'invisible'},
+                     'sampled':           {'view': 'visible', 'edit': 'invisible'},
+                     'sample_prep':       {'view': 'visible', 'edit': 'invisible'},
+                     'to_be_preserved':   {'view': 'visible', 'edit': 'invisible'},
+                     'sample_due':        {'view': 'visible', 'edit': 'invisible'},
+                     'sample_received':   {'view': 'visible', 'edit': 'invisible'},
+                     'attachment_due':    {'view': 'visible', 'edit': 'invisible'},
+                     'to_be_verified':    {'view': 'visible', 'edit': 'invisible'},
+                     'verified':          {'view': 'visible', 'edit': 'invisible'},
+                     'published':         {'view': 'visible', 'edit': 'invisible'},
+                     'invalid':           {'view': 'visible', 'edit': 'invisible'},
                      },
             render_own_label=True,
         ),
@@ -572,6 +573,7 @@ schema = BikaSchema.copy() + Schema((
             visible={'edit': 'visible',
                      'view': 'visible',
                      'add': 'edit',
+                     'secondary': 'disabled',
                      'header_table': 'visible',
                      'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
                      'to_be_sampled':     {'view': 'visible', 'edit': 'invisible'},
@@ -672,6 +674,13 @@ schema = BikaSchema.copy() + Schema((
             ],
             showOn=True,
         ),
+    ),
+    # see setResultsRange below.
+    RecordsField('ResultsRange',
+         required=0,
+         type='analysisspec',
+         subfields=('keyword', 'min', 'max', 'error', 'hidemin', 'hidemax', 'rangecomment'),
+         widget=ComputedWidget(visible=False),
     ),
     ReferenceField(
         'PublicationSpecification',
@@ -889,6 +898,7 @@ schema = BikaSchema.copy() + Schema((
             visible={'edit': 'visible',
                      'view': 'visible',
                      'add': 'edit',
+                     'secondary': 'disabled',
                      'header_table': 'visible',
                      'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
                      'to_be_sampled':     {'view': 'visible', 'edit': 'visible'},
@@ -1018,6 +1028,7 @@ schema = BikaSchema.copy() + Schema((
             visible={'edit': 'visible',
                      'view': 'visible',
                      'add': 'edit',
+                     'secondary': 'disabled',
                      'header_table': 'visible',
                      'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
                      'to_be_sampled':     {'view': 'visible', 'edit': 'invisible'},
@@ -1110,7 +1121,6 @@ schema = BikaSchema.copy() + Schema((
             visible={'edit': 'visible',
                      'view': 'visible',
                      'add': 'edit',
-                     'secondary': 'visible',
                      'header_table': 'visible',
                      'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
                      'to_be_sampled':     {'view': 'visible', 'edit': 'visible'},
@@ -1140,7 +1150,6 @@ schema = BikaSchema.copy() + Schema((
             visible={'edit': 'visible',
                      'view': 'visible',
                      'add': 'edit',
-                     'secondary': 'visible',
                      'header_table': 'visible',
                      'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
                      'to_be_sampled':     {'view': 'visible', 'edit': 'visible'},
@@ -1237,6 +1246,7 @@ schema = BikaSchema.copy() + Schema((
             visible={'edit': 'visible',
                      'view': 'visible',
                      'add': 'invisible',
+                     'secondary': 'invisible',
                      'header_table': 'visible',
                      'sample_registered': {'view': 'invisible', 'edit': 'invisible', 'add': 'invisible'},
                      'to_be_sampled':     {'view': 'invisible', 'edit': 'invisible'},
@@ -1419,7 +1429,6 @@ schema = BikaSchema.copy() + Schema((
             visible={'edit': 'visible',
                      'view': 'visible',
                      'add': 'edit',
-                     'secondary': 'disabled',
                      'header_table': 'visible',
                      'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
                      'to_be_sampled':     {'view': 'visible', 'edit': 'visible'},
@@ -1465,6 +1474,7 @@ schema['title'].widget.visible = {
     'view': 'invisible',
 }
 
+schema.moveField('Client', before='Contact')
 
 class AnalysisRequest(BaseFolder):
     implements(IAnalysisRequest)
@@ -1958,6 +1968,51 @@ class AnalysisRequest(BaseFolder):
             for analysis_key in analysis_keys:
                 result.append(analyses[analysis_key])
         return result
+
+    def setResultsRange(self, value=None):
+        """Sets the spec values for this AR.
+        1 - Client specs where (spec.Title) matches (ar.SampleType.Title)
+        2 - Lab specs where (spec.Title) matches (ar.SampleType.Title)
+        3 - Take override values from instance.Specification
+        4 - Take override values from the form (passed here as parameter 'value').
+
+        The underlying field value is a list of dictionaries.
+
+        The value parameter may be a list of dictionaries, or a dictionary (of
+        dictionaries).  In the last case, the keys are irrelevant, but in both
+        cases the specs must contain, at minimum, the "keyword", "min", "max",
+        and "error" fields.
+
+        Value will be stored in ResultsRange field as list of dictionaries
+        """
+        rr = {}
+        sample = self.getSample()
+        if not sample:
+            # portal_factory
+            return []
+        stt = self.getSample().getSampleType().Title()
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        # 1 or 2: rr = Client specs where (spec.Title) matches (ar.SampleType.Title)
+        for folder in self.aq_parent, self.bika_setup.bika_analysisspecs:
+            proxies = bsc(portal_type='AnalysisSpec',
+                          getSampleTypeTitle=stt,
+                          ClientUID=folder.UID())
+            if proxies:
+                rr = dicts_to_dict(proxies[0].getObject().getResultsRange(), 'keyword')
+                break
+        # 3: rr += override values from instance.Specification
+        ar_spec = self.getSpecification()
+        if ar_spec:
+            ar_spec_rr = ar_spec.getResultsRange()
+            rr.update(dicts_to_dict(ar_spec_rr, 'keyword'))
+        # 4: rr += override values from the form (value=dict key=service_uid)
+        if value:
+            if type(value) in (list, tuple):
+                value = dicts_to_dict(value, "keyword")
+            elif type(value) == dict:
+                value = dicts_to_dict(value.values(), "keyword")
+            rr.update(value)
+        return self.Schema()['ResultsRange'].set(self, rr.values())
 
     # Then a string of fields which are defined on the AR, but need to be set
     # and read from the sample

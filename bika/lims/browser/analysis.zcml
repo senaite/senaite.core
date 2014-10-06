@@ -11,7 +11,7 @@
     />
 
     <adapter
-      for="bika.lims.interfaces.IAnalysis"
+      for="bika.lims.interfaces.IRoutineAnalysis"
       provides="bika.lims.interfaces.IResultOutOfRange"
       factory="bika.lims.browser.analysis.ResultOutOfRange"
     />

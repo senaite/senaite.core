@@ -3,52 +3,54 @@
  */
 function AnalysisRequestAnalysesView() {
 
-    var that = this;
+	var that = this;
 
-    /**
-     * Entry-point method for AnalysisRequestAnalysesView
-     */
-    that.load = function() {
+	/**
+	 * Entry-point method for AnalysisRequestAnalysesView
+	 */
+	that.load = function () {
 
-        $("[name^='min\\.'], [name^='max\\.'], [name^='error\\.']").live("change", function(){
-            validate_spec_field_entry(this);
-        });
+		$("[name^='min\\.'], [name^='max\\.'], [name^='error\\.']").live(
+				"change",
+				function () {
+					validate_spec_field_entry(this);
+				});
 
-        ////////////////////////////////////////
-        // disable checkboxes for eg verified analyses.
-        $.each($("[name='uids:list']"), function(x,cb){
-            var service_uid = $(cb).val();
-            var row_data = $.parseJSON($("#"+service_uid+"_row_data").val());
-            if (row_data != undefined && row_data.disabled === true){
-                // disabled fields must be shadowed by hidden fields,
-                // or they don't appear in the submitted form.
-                $(cb).prop("disabled", true);
-                var cbname = $(cb).attr("name");
-                var cbid = $(cb).attr("id");
-                $(cb).removeAttr("name").removeAttr("id");
-                $(cb).after("<input type='hidden' name='"+cbname+"' value='"+service_uid+"' id='"+cbid+"'/>");
+		////////////////////////////////////////
+		// disable checkboxes for eg verified analyses.
+		$.each($("[name='uids:list']"), function (x, cb) {
+			var service_uid = $(cb).val();
+			var row_data = $.parseJSON($("#" + service_uid + "_row_data").val());
+			if (row_data != undefined && row_data.disabled === true) {
+				// disabled fields must be shadowed by hidden fields,
+				// or they don't appear in the submitted form.
+				$(cb).prop("disabled", true);
+				var cbname = $(cb).attr("name");
+				var cbid = $(cb).attr("id");
+				$(cb).removeAttr("name").removeAttr("id");
+				$(cb).after("<input type='hidden' name='" + cbname + "' value='" + service_uid + "' id='" + cbid + "'/>");
 
-                var el = $("[name='Price."+service_uid+":records']");
-                var elname = $(el).attr("name");
-                var elval = $(el).val();
-                $(el).after("<input type='hidden' name='"+elname+"' value='"+elval+"'/>");
-                $(el).prop("disabled", true);
+				var el = $("[name='Price." + service_uid + ":records']");
+				var elname = $(el).attr("name");
+				var elval = $(el).val();
+				$(el).after("<input type='hidden' name='" + elname + "' value='" + elval + "'/>");
+				$(el).prop("disabled", true);
 
-                el = $("[name='Partition."+service_uid+":records']");
-                elname = $(el).attr("name");
-                elval = $(el).val();
-                $(el).after("<input type='hidden' name='"+elname+"' value='"+elval+"'/>");
-                $(el).prop("disabled", true);
+				el = $("[name='Partition." + service_uid + ":records']");
+				elname = $(el).attr("name");
+				elval = $(el).val();
+				$(el).after("<input type='hidden' name='" + elname + "' value='" + elval + "'/>");
+				$(el).prop("disabled", true);
 
-                var specfields = ["min", "max", "error"];
-                for(var i in specfields) {
-                    var element = $("[name='"+specfields[i]+"."+service_uid+":records']");
-                    var new_element = "" +
-                        "<input type='hidden' field='"+specfields[i]+"' value='"+element.val()+"' " +
-                        "name='"+specfields[i]+"."+service_uid+":records' uid='"+service_uid+"'>";
-                    $(element).replaceWith(new_element);
-                }
-            }
+				var specfields = ["min", "max", "error"];
+				for (var i in specfields) {
+					var element = $("[name='" + specfields[i] + "." + service_uid + ":records']");
+					var new_element = "" +
+							"<input type='hidden' field='" + specfields[i] + "' value='" + element.val() + "' " +
+							"name='" + specfields[i] + "." + service_uid + ":records' uid='" + service_uid + "'>";
+					$(element).replaceWith(new_element);
+				}
+			}
         });
 
         ////////////////////////////////////////
@@ -127,17 +129,19 @@ function AnalysisRequestAnalysesView() {
             $(element).replaceWith(new_element);
         }
 
-        // spec fields
-        var specfields = ["min", "max", "error"];
-        for(var i in specfields) {
-            element = $("[name='"+specfields[i]+"."+service_uid+":records']");
-            new_element = "" +
-                "<input class='listing_string_entry numeric' type='text' size='5' " +
-                "field='"+specfields[i]+"' value='"+$(element).val()+"' " +
-                "name='"+specfields[i]+"."+service_uid+":records' " +
-                "uid='"+service_uid+"' autocomplete='off' style='font-size: 100%'>";
-            $(element).replaceWith(new_element);
-        }
+		// spec fields
+		var rr = $.parseJSON($("#ResultsRange").val());
+		var specfields = ["min", "max", "error"];
+		for (var i in specfields) {
+			var field = specfields[i];
+			var val = rr[service_uid][field];
+			element = $("[name='" + field + "." + service_uid + ":records']");
+			new_element = "<input class='listing_string_entry numeric' type='text' size='5' " +
+					"field='" + field + "' value='" + val + "' " +
+					"name='" + field + "." + service_uid + ":records' " +
+					"uid='" + service_uid + "' autocomplete='off' style='font-size: 100%'>";
+			$(element).replaceWith(new_element);
+		}
 
     }
 

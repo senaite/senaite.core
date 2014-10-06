@@ -26,5 +26,8 @@ def upgrade(tool):
 
     setup = portal.portal_setup
 
-    bsc.clearFindAndRebuild()
+    logger.info("Reindex added indexes in bika_setup_catalog")
+    bsc.manage_reindexIndex(
+        ids=['getInstrumentType', 'getInstrumentTypeName', ])
+
     return True

@@ -2,7 +2,6 @@
 
 Library          Selenium2Library  timeout=5  implicit_wait=0.2
 Library          String
-Library      DebugLibrary
 Resource         keywords.txt
 Library          bika.lims.testing.Keywords
 Resource         plone/app/robotframework/selenium.robot
@@ -187,12 +186,14 @@ Add Reference Analyses
     Go to                       ${PLONEURL}/worksheets/WS-001/add_control
     unselect checkbox           css=input[item_title="Calcium"]
     Wait Until Page Contains    Trace Metals 9
+    sleep    1
     Click Element               xpath=//span[@id='worksheet_add_references']//tbody//tr[2]
     Wait Until Page Contains Element  submit_transition
 
     #Add worksheet blank
     Go to                       ${PLONEURL}/worksheets/WS-001/add_blank
     Wait Until Page Contains    Distilled
+    sleep    1
     Click Element               xpath=//span[@id='worksheet_add_references']//tbody//tr[1]
     Wait Until Page Contains Element  submit_transition
 
@@ -202,6 +203,7 @@ Add Reference Analyses
     Click Element               xpath=//span[@id='worksheet_add_duplicate_ars']//tbody//tr[1]
     Wait Until Page Contains Element  submit_transition
 
+    sleep    1
     Xpath Should Match X Times     //tr[@keyword="Ca"]   4
     Xpath Should Match X Times     //tr[@keyword="Mg"]   5
 

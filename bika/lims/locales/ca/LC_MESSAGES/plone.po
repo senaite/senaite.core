@@ -163,10 +163,6 @@ msgstr "Etiqueta de lot"
 msgid "Batch Labels"
 msgstr "Etiquetes per a lots"
 
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-msgid "Batch labels"
-msgstr "Etiquetes per a lots"
-
 # File: bika.lims/bika/lims/profiles/default/types/BatchFolder.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 msgid "Batches"

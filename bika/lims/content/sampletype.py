@@ -24,16 +24,17 @@ schema = BikaSchema.copy() + Schema((
         required = 1,
         default_method = 'getDefaultLifetime',
         widget = DurationWidget(
-            label = "Retention Period",
-            description = "The period for which un-preserved samples of this type can be kept before " + \
-                            "they expire and cannot be analysed any further",
+            label=_("Retention Period"),
+            description =_(
+                "The period for which un-preserved samples of this type can be kept before "
+                "they expire and cannot be analysed any further"),
         )
     ),
     BooleanField('Hazardous',
         default = False,
         widget = BooleanWidget(
-            label = "Hazardous",
-            description = "Samples of this type should be treated as hazardous",
+            label=_("Hazardous"),
+            description=_("Samples of this type should be treated as hazardous"),
         ),
     ),
     ReferenceField('SampleMatrix',
@@ -44,20 +45,20 @@ schema = BikaSchema.copy() + Schema((
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
             checkbox_bound = 0,
-            label = "Sample Matrix",
+            label=_("Sample Matrix"),
         ),
     ),
     StringField('Prefix',
         required = True,
         widget = StringWidget(
-            label = "Sample Type Prefix",
+            label=_("Sample Type Prefix"),
         ),
     ),
     StringField('MinimumVolume',
         required = 1,
         widget = StringWidget(
-            label = "Minimum Volume",
-            description = "The minimum sample volume required for analysis eg. '10 ml' or '1 kg'.",
+            label=_("Minimum Volume"),
+            description=_("The minimum sample volume required for analysis eg. '10 ml' or '1 kg'."),
         ),
     ),
     ReferenceField('ContainerType',
@@ -67,11 +68,12 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'SampleTypeContainerType',
         widget = ReferenceWidget(
             checkbox_bound = 0,
-            label = "Default Container Type",
-            description = "The default container type. New sample partitions " + \
-                            "are automatically assigned a container of this " + \
-                            "type, unless it has been specified in more details " + \
-                            "per analysis service",
+            label=_("Default Container Type"),
+            description =_(
+                "The default container type. New sample partitions "
+                "are automatically assigned a container of this "
+                "type, unless it has been specified in more details "
+                "per analysis service"),
         ),
     ),
     ReferenceField('SamplePoints',
@@ -82,10 +84,10 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'SampleTypeSamplePoint',
         widget = ReferenceWidget(
             checkbox_bound = 0,
-            label = "Sample Points",
-            description = "The list of sample points from which this sample " + \
-                            "type can be collected.  If no sample points are " + \
-                            "selected, then all sample points are available.",
+            label=_("Sample Points"),
+            description =_("The list of sample points from which this sample "
+                           "type can be collected.  If no sample points are "
+                           "selected, then all sample points are available."),
         ),
     ),
     ComputedField(

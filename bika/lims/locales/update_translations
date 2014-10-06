@@ -154,11 +154,9 @@ def print_changes(old, new):
 print "sync pot->po"
 for lang in glob(j("./", "*")):
     if exists(j("./", lang, "LC_MESSAGES")):
-        mo = j(lang, "LC_MESSAGES", "bika.mo")
         po = j(lang, "LC_MESSAGES", "bika.po")
         old = build_messages_from_po(po)
         call(i18ndude + " sync --pot bika.pot " + po, prn_cmd=False)
-        call(msgfmt + " -f -o " + mo + " " + po, prn_cmd=False)
         new = build_messages_from_po(po)
         print_changes(old, new)
 
@@ -187,10 +185,8 @@ os.remove("tmp.pot")
 print "plone: sync pot->po"
 for lang in glob(j("./", "*")):
     if exists(j("./", lang, "LC_MESSAGES")):
-        mo = j(lang, "LC_MESSAGES", "plone.mo")
         po = j(lang, "LC_MESSAGES", "plone.po")
         old = build_messages_from_po(po)
         call(i18ndude + " sync --pot plone.pot " + po, prn_cmd=False)
-        call(msgfmt + " -f -o " + mo + " " + po, prn_cmd=False)
         new = build_messages_from_po(po)
         print_changes(old, new)

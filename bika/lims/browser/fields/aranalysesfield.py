@@ -2,7 +2,7 @@ from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.permissions import ViewRetractedAnalyses
-from bika.lims.utils import t
+from bika.lims.utils import t, dicts_to_dict
 from bika.lims.utils.analysis import create_analysis
 from decimal import Decimal
 from Products.Archetypes.public import *
@@ -71,21 +71,29 @@ class ARAnalysesField(ObjectField):
 
     security.declarePrivate('set')
 
-    def set(self, instance, service_uids, prices=None, specs={}, **kwargs):
-        """ service_uids are the services selected on the AR Add/Edit form.
+    def set(self, instance, service_uids, prices=None, specs=None, **kwargs):
+        """Set the 'Analyses' field value, by creating and removing Analysis
+        objects from the AR.
 
-        prices is a service_uid keyed dictionary containing the prices entered
-            on the form.
+        service_uids is a list:
+            The UIDs of all services which should exist in the AR.  If a service
+            is not included here, the corrosponding Analysis will be removed.
 
-        specs is a uid keyed dict with values of
-            {min:, max:, error:}
+        prices is a dictionary:
+            key = AnalysisService UID
+            value = price
+
+        specs is a dictionary:
+            key = AnalysisService UID
+            value = dictionary: defined in ResultsRange field definition
         """
         if not service_uids:
             return
 
         assert type(service_uids) in (list, tuple)
 
-        workflow = instance.portal_workflow
+        bsc = getToolByName(instance, 'bika_setup_catalog')
+        workflow = getToolByName(instance, 'portal_workflow')
 
         # one can only edit Analyses up to a certain state.
         ar_state = workflow.getInfoFor(instance, 'review_state', '')
@@ -94,14 +102,26 @@ class ARAnalysesField(ObjectField):
                             'sample_due', 'sample_prep', 'sample_received',
                             'attachment_due', 'to_be_verified')
 
-        bsc = getToolByName(instance, 'bika_setup_catalog')
-        services = bsc(UID=service_uids)
+        # -  Modify existing AR specs with new form values for selected analyses.
+        # -  new analysis requests are also using this function, so ResultsRange
+        #    may be undefined.  in this case, specs= will contain the entire
+        #    AR spec.
+        rr = instance.getResultsRange()
+        specs = specs if specs else []
+        for s in specs:
+            s_in_rr = False
+            for i, r in enumerate(rr):
+                if s['keyword'] == r['keyword']:
+                    rr[i].update(s)
+                    s_in_rr = True
+            if not s_in_rr:
+                rr.append(s)
 
         new_analyses = []
-
-        for service in services:
-            service_uid = service.UID
-            service = service.getObject()
+        proxies = bsc(UID=service_uids)
+        for proxy in proxies:
+            service = proxy.getObject()
+            service_uid = service.UID()
             keyword = service.getKeyword()
             price = prices[service_uid] if prices and service_uid in prices \
                 else service.getPrice()
@@ -113,7 +133,7 @@ class ARAnalysesField(ObjectField):
 
             # override defaults from service->InterimFields
             service_interims = service.getInterimFields()
-            sif = dict([[x['keyword'], x.get('value', '')]
+            sif = dict([(x['keyword'], x.get('value', ''))
                         for x in service_interims])
             for i, i_f in enumerate(interim_fields):
                 if i_f['keyword'] in sif:
@@ -135,19 +155,15 @@ class ARAnalysesField(ObjectField):
                     interim_fields
                 )
                 new_analyses.append(analysis)
-            # Note: subscriber might retract and/or unassign the AR
-
-            spec = specs[service_uid] if specs and service_uid in specs \
-                else None
-            # If no specification came to us from the form, then we will
-            # see if there is a spec for this SampleType & AnalysisService
-            if not spec:
-                spec = analysis.get_default_specification()
-            analysis.specification = spec
+            for i, r in enumerate(rr):
+                if r['keyword'] == analysis.getService().getKeyword():
+                    r['uid'] = analysis.UID()
 
             # XXX Price?
             # analysis.setPrice(price)
 
+        # We add rr to the AR after we create all the analyses
+        instance.setResultsRange(rr)
 
         # delete analyses
         delete_ids = []

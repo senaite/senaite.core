@@ -12,6 +12,7 @@ from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import PMF, bikaMessageFactory as _
+from bika.lims.idserver import renameAfterCreation
 from bika.lims.utils import t
 from bika.lims.browser.fields import ReferenceResultsField
 from bika.lims.browser.widgets import DateTimeWidget as bika_DateTimeWidget
@@ -34,23 +35,23 @@ schema = BikaSchema.copy() + Schema((
         vocabulary = "getReferenceDefinitions",
         widget = ReferenceWidget(
             checkbox_bound = 0,
-            label = "Reference Definition",
+            label=_("Reference Definition"),
         ),
     ),
     BooleanField('Blank',
         schemata = 'Description',
         default = False,
         widget = BooleanWidget(
-            label = "Blank",
-            description = "Reference sample values are zero or 'blank'",
+            label=_("Blank"),
+            description=_("Reference sample values are zero or 'blank'"),
         ),
     ),
     BooleanField('Hazardous',
         schemata = 'Description',
         default = False,
         widget = BooleanWidget(
-            label = "Hazardous",
-            description = "Samples of this type should be treated as hazardous",
+            label=_("Hazardous"),
+            description=_("Samples of this type should be treated as hazardous"),
         ),
     ),
     ReferenceField('ReferenceManufacturer',
@@ -61,19 +62,19 @@ schema = BikaSchema.copy() + Schema((
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
             checkbox_bound = 0,
-            label = "Manufacturer",
+            label=_("Manufacturer"),
         ),
     ),
     StringField('CatalogueNumber',
         schemata = 'Description',
         widget = StringWidget(
-            label = "Catalogue Number",
+            label=_("Catalogue Number"),
         ),
     ),
     StringField('LotNumber',
         schemata = 'Description',
         widget = StringWidget(
-            label = "Lot Number",
+            label=_("Lot Number"),
         ),
     ),
     TextField('Remarks',
@@ -84,47 +85,47 @@ schema = BikaSchema.copy() + Schema((
         default_output_type="text/plain",
         widget = TextAreaWidget(
             macro = "bika_widgets/remarks",
-            label = "Remarks",
+            label=_("Remarks"),
             append_only = True,
         ),
     ),
     DateTimeField('DateSampled',
         schemata = 'Dates',
         widget = bika_DateTimeWidget(
-            label = "Date Sampled",
+            label=_("Date Sampled"),
         ),
     ),
     DateTimeField('DateReceived',
         schemata = 'Dates',
         default_method = 'current_date',
         widget = bika_DateTimeWidget(
-            label = "Date Received",
+            label=_("Date Received"),
         ),
     ),
     DateTimeField('DateOpened',
         schemata = 'Dates',
         widget = bika_DateTimeWidget(
-            label = "Date Opened",
+            label=_("Date Opened"),
         ),
     ),
     DateTimeField('ExpiryDate',
         schemata = 'Dates',
         required = 1,
         widget = bika_DateTimeWidget(
-            label = "Expiry Date",
+            label=_("Expiry Date"),
         ),
     ),
     DateTimeField('DateExpired',
         schemata = 'Dates',
         widget = bika_DateTimeWidget(
-            label = "Date Expired",
+            label=_("Date Expired"),
             visible = {'edit':'hidden'},
         ),
     ),
     DateTimeField('DateDisposed',
         schemata = 'Dates',
         widget = bika_DateTimeWidget(
-            label = "Date Disposed",
+            label=_("Date Disposed"),
             visible = {'edit':'hidden'},
         ),
     ),
@@ -137,7 +138,7 @@ schema = BikaSchema.copy() + Schema((
                     'max':'referencevalues_validator',
                     'error':'referencevalues_validator'},
         widget = ReferenceResultsWidget(
-            label = "Expected Values",
+            label=_("Expected Values"),
         ),
     ),
     ComputedField('SupplierUID',
@@ -315,10 +316,13 @@ class ReferenceSample(BaseFolder):
         service = rc.lookupObject(service_uid)
 
         analysis = _createObjectByType("ReferenceAnalysis", self, tmpID())
+        analysis.unmarkCreationFlag()
+
         calculation = service.getCalculation()
         interim_fields = calculation and calculation.getInterimFields() or []
-        maxtime = service.getMaxTimeAllowed() and service.getMaxTimeAllowed() \
-            or {'days':0, 'hours':0, 'minutes':0}
+
+        maxtime = service.getMaxTimeAllowed()
+        maxtime = maxtime if maxtime else {'days':0, 'hours':0, 'minutes':0}
         starttime = DateTime()
         max_days = float(maxtime.get('days', 0)) + \
                  (
@@ -338,8 +342,11 @@ class ReferenceSample(BaseFolder):
         analysis.MaxTimeAllowed = maxtime
         analysis.DueDate = duetime
 
-        analysis.processForm()
+        #analysis.processForm()
+        renameAfterCreation(analysis)
+
         return analysis.UID()
+
 
     security.declarePublic('getServices')
     def getServices(self):

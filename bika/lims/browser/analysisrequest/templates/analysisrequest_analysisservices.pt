@@ -113,8 +113,9 @@
                             cat categoryUID;
 							value serviceUID;
 							title serviceTitle;
+                            has_resultoptions python:len(service_obj.getResultOptions()) > 0;
                             keyword python:service_obj.getKeyword();
-							checked python:(selected.find(serviceUID)>-1 or request.get(input_name, [])) and 'checked' or None;"/>
+							checked python:(selected.find(serviceUID)>-1 or request.get(input_name, [])) and 'checked' or None"/>
 					<input
 						tal:condition="python: disable != arnum"
 						class="cb"
@@ -127,8 +128,9 @@
                             cat categoryUID;
 							value serviceUID;
 							title serviceTitle;
+                            has_resultoptions python:len(service_obj.getResultOptions()) > 0;
                             keyword python:service_obj.getKeyword();
-							checked python:(selected.find(serviceUID)>-1 or request.get(input_name, [])) and 'checked' or None;"/>
+							checked python:(selected.find(serviceUID)>-1 or request.get(input_name, [])) and 'checked' or None"/>
 					<em class="discreet"
                         tal:attributes="
                             class python:'partnr_'+serviceUID;

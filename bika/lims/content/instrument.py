@@ -30,7 +30,7 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         required=1,
         widget=SelectionWidget(
             format='select',
-            label = "Instrument type",
+            label=_("Instrument type"),
         ),
     ),
 
@@ -41,7 +41,7 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         required=1,
         widget=SelectionWidget(
             format='select',
-            label = "Manufacturer",
+            label=_("Manufacturer"),
         ),
     ),
 
@@ -52,21 +52,21 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         required=1,
         widget=SelectionWidget(
             format='select',
-            label = "Supplier",
+            label=_("Supplier"),
         ),
     ),
 
     StringField('Model',
         widget = StringWidget(
-            label = "Model",
-            description = "The instrument's model number",
+            label=_("Model"),
+            description=_("The instrument's model number"),
         )
     ),
 
     StringField('SerialNo',
         widget = StringWidget(
-            label = "Serial No",
-            description = "The serial number that uniquely identifies the instrument",
+            label=_("Serial No"),
+            description=_("The serial number that uniquely identifies the instrument"),
         )
     ),
 
@@ -77,18 +77,18 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         required=0,
         widget=SelectionWidget(
             format='select',
-            label = "Method",
+            label=_("Method"),
         ),
     ),
 
     BooleanField('DisposeUntilNextCalibrationTest',
         default = False,
         widget = BooleanWidget(
-            label = "Dispose until next calibration test",
-            description = "If checked, the instrument will not be " + \
-                            "available until the next valid calibration " + \
-                            "test being performed. This checkbox will " + \
-                            "be automatically unchecked too.",
+            label=_("Dispose until next calibration test"),
+            description = _("If checked, the instrument will not be "
+                            "available until the next valid calibration "
+                            "test being performed. This checkbox will "
+                            "be automatically unchecked too."),
         ),
     ),
 
@@ -99,8 +99,8 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         allowed_content_types= ('text/plain', ),
         default_output_type="text/plain",
         widget = TextAreaWidget(
-            label = "In-lab calibration procedure",
-            description = "Instructions for in-lab regular calibration routines intended for analysts",
+            label=_("In-lab calibration procedure"),
+            description=_("Instructions for in-lab regular calibration routines intended for analysts"),
         ),
     ),
     TextField('PreventiveMaintenanceProcedure',
@@ -109,8 +109,8 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         allowed_content_types= ('text/plain', ),
         default_output_type="text/plain",
         widget = TextAreaWidget(
-            label = "Preventive maintenance procedure",
-            description = "Instructions for regular preventive and maintenance routines intended for analysts",
+            label=_("Preventive maintenance procedure"),
+            description=_("Instructions for regular preventive and maintenance routines intended for analysts"),
         ),
     ),
 
@@ -119,8 +119,8 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         vocabulary = "getDataInterfacesList",
         widget = ReferenceWidget(
             checkbox_bound = 0,
-            label = "Data Interface",
-            description = "Select an Import/Export interface for this instrument.",
+            label=_("Data Interface"),
+            description=_("Select an Import/Export interface for this instrument."),
             visible = False,
         ),
     ),
@@ -133,8 +133,8 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         subfield_labels = {'OptionValue': _('Key'),
                            'OptionText': _('Value'),},
         widget = RecordsWidget(
-            label = "Data Interface Options",
-            description = "Use this field to pass arbitrary parameters to the export/import modules.",
+            label=_("Data Interface Options"),
+            description=_("Use this field to pass arbitrary parameters to the export/import modules."),
             visible = False,
         ),
     ),

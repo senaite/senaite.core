@@ -100,7 +100,7 @@
     <tal:rows 
         tal:repeat="arnum python:range(view.ar_count)">
     <tr tal:attributes="arnum arnum;
-                        ar_add_arnum_widget string:1">
+                        ar_add_ar_widget string:1">
         <td tal:content="repeat/arnum/number">
         </td>
         <tal:loop repeat="fieldname fieldnames">

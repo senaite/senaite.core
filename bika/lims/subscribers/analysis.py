@@ -1,6 +1,7 @@
 from AccessControl import getSecurityManager
 from Acquisition import aq_inner
 from bika.lims import logger
+from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.subscribers import doActionFor
 from bika.lims.subscribers import skip
 from bika.lims.utils import changeWorkflowState
@@ -11,6 +12,8 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
 import transaction
 import zope.event
+from zope.interface import alsoProvides
+
 
 def ObjectInitializedEventHandler(instance, event):
 
@@ -19,6 +22,9 @@ def ObjectInitializedEventHandler(instance, event):
     # DuplicateAnalysis doesn't have analysis_workflow.
     if instance.portal_type == "DuplicateAnalysis":
         return
+
+    if instance.portal_type == 'Analysis':
+        alsoProvides(instance, IRoutineAnalysis)
 
     workflow = getToolByName(instance, 'portal_workflow')
 

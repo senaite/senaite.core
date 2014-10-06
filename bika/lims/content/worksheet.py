@@ -70,7 +70,7 @@ schema = BikaSchema.copy() + Schema((
         default_output_type="text/plain",
         widget = TextAreaWidget(
             macro="bika_widgets/remarks",
-            label = "Remarks",
+            label=_("Remarks"),
             append_only=True,
         ),
     ),

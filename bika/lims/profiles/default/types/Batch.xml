@@ -21,13 +21,13 @@
  <property name="default_view_fallback">False</property>
 
  <alias from="(Default)" to="analysisrequests"/>
- <alias from="view" to="base_edit"/>
+ <alias from="view" to="analysisrequests"/>
  <alias from="edit" to="base_edit"/>
 
  <action title="Edit"
          action_id="edit"
          category="object"
-         condition_expr="python:here.isOpen()"
+         condition_expr=""
          icon_expr=""
          link_target=""
          url_expr="string:${object_url}/base_edit"
@@ -43,10 +43,10 @@
          condition_expr=""
          icon_expr=""
          link_target=""
-         url_expr="string:${object_url}/base_view"
+         url_expr="string:${object_url}/analysisrequests"
          i18n:attributes="title"
          i18n:domain="plone"
-         visible="True">
+         visible="False">
   <permission value="View"/>
  </action>
 

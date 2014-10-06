@@ -8,6 +8,7 @@ function ARTemplateEditView() {
 
     var that = this;
     var samplepoint = $('#archetypes-fieldname-SamplePoint #SamplePoint');
+    var sampletype = $('#archetypes-fieldname-SampleType #SampleType');
 
     /**
      * Entry-point method for AnalysisServiceEditView
@@ -18,7 +19,9 @@ function ARTemplateEditView() {
         $(".portaltype-artemplate input[name$='save']").click(clickSaveButton);
 
         // Display only the sample points contained by the same parent
-        filterSamplePointsCombo();
+        filterSamplePointsByClientCombo();
+        filterSampleTypesBySamplePointsCombo();
+	filterSamplePointsBySampleTypesCombo();
     }
 
     /***
@@ -26,7 +29,7 @@ function ARTemplateEditView() {
      * Display only the Sample Points from the same parent (Client or
      * BikaSetup) as the current Template.
      */
-    function filterSamplePointsCombo() {
+    function filterSamplePointsByClientCombo() {
         var request_data = {};
         if (document.location.href.search('/clients/') > 0) {
             // The parent object for this template is a Client.
@@ -54,6 +57,25 @@ function ARTemplateEditView() {
             referencewidget_lookups([$(samplepoint)]);
         });
     }
+
+    //Filter the Sample Type by Sample Point
+    function filterSampleTypesBySamplePointsCombo() {
+        $(samplepoint).bind("selected blur change", function() {
+            var samplepointuid = $(samplepoint).val() ? $(samplepoint).attr('uid'): '';
+            $(sampletype).attr("search_query", $.toJSON({"getRawSamplePoints": samplepointuid}));
+            referencewidget_lookups([$(sampletype)]);
+        });
+    }
+
+    //Filter the Sample Point by Sample Type
+    function filterSamplePointsBySampleTypesCombo() {
+        $(sampletype).bind("selected blur change", function() {
+            var sampletypeid = $(sampletype).val() ? $(sampletype).attr('uid'): '';
+            $(samplepoint).attr("search_query", $.toJSON({"getRawSampleTypes": sampletypeid}));
+            referencewidget_lookups([$(samplepoint)]);
+        });
+    }
+
 
     function clickSaveButton(event){
         var selected_analyses = $('[name^="uids\\:list"]').filter(':checked');

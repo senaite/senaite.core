@@ -1,7 +1,7 @@
 # coding=utf-8
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from bika.lims.utils import t, dicts_to_dict
 from bika.lims.interfaces import IAnalysis, IResultOutOfRange
 from bika.lims.interfaces import IFieldIcons
 from bika.lims.utils import to_utf8
@@ -61,13 +61,6 @@ class ResultOutOfRange(object):
         self.context = context
 
     def __call__(self, result=None, specification=None):
-        # Other types of analysis depend on Analysis base class, and therefore
-        # also provide IAnalysis.  We allow them to register their own adapters
-        # for range checking, and manually ignore them here.
-        ignore = ('ReferenceAnalysis', 'DuplicateAnalysis')
-        if self.context.portal_type in ignore:
-            return None
-        # Retracted analyses don't qualify
         workflow = getToolByName(self.context, 'portal_workflow')
         astate = workflow.getInfoFor(self.context, 'review_state')
         if astate == 'retracted':
@@ -80,11 +73,10 @@ class ResultOutOfRange(object):
             result = float(str(result))
         except ValueError:
             return None
-        # The spec should have been set to context at create time
+        # The spec is found in the parent AR's ResultsRange field.
         if not specification:
-            if hasattr(self.context, "specification") \
-                    and self.context.specification:
-                specification = self.context.specification
+            rr = dicts_to_dict(self.context.aq_parent.getResultsRange(), 'keyword')
+            specification = rr.get(self.context.getKeyword(), None)
             # No specs available, assume in range:
             if not specification:
                 return None

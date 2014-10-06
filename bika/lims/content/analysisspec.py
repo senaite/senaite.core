@@ -38,7 +38,7 @@ schema = Schema((
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
             checkbox_bound = 0,
-            label = "Sample Type",
+            label = _("Sample Type"),
         ),
     ),
     ComputedField('SampleTypeTitle',
@@ -75,8 +75,8 @@ Schema((
                            'rangecomment': _('Range Comment')},
         widget = AnalysisSpecificationWidget(
             checkbox_bound = 0,
-            label = "Specifications",
-            description = "Click on Analysis Categories (against shaded background" \
+            label = _("Specifications"),
+            description = _("Click on Analysis Categories (against shaded background" \
                             "to see Analysis Services in each category. Enter minimum " \
                             "and maximum values to indicate a valid results range. " \
                             "Any result outside this range will raise an alert. " \
@@ -86,7 +86,7 @@ Schema((
                             "if the % error is taken into consideration, will raise a " \
                             "less severe alert. If the result is below '< Min' " \
                             "the result will be shown as '< [min]'. The same " \
-                            "applies for results above '> Max'",
+                            "applies for results above '> Max'"),
         ),
     ),
     ComputedField('ClientUID',
@@ -98,9 +98,6 @@ Schema((
 ))
 schema['description'].widget.visible = True
 schema['title'].required = True
-schema['title'].widget.description = \
-    "To include this spec as the default for a sample type, set the " \
-    "title here to the name of the sample type."
 
 class AnalysisSpec(BaseFolder, HistoryAwareMixin):
     implements(IAnalysisSpec)

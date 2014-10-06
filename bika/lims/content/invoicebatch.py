@@ -21,14 +21,14 @@ schema = BikaSchema.copy() + Schema((
         required=1,
         default_method='current_date',
         widget=CalendarWidget(
-            label = "Start Date",
+            label=_("Start Date"),
         ),
     ),
     DateTimeField('BatchEndDate',
         required=1,
         default_method='current_date',
         widget=CalendarWidget(
-            label = "End Date",
+            label=_("End Date"),
         ),
     ),
 ),

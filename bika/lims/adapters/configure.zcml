@@ -11,6 +11,12 @@
       name="DefaultAquireFieldDefaults"
     />
 
+    <adapter
+      factory=".widgetvisibility.ClientFieldWidgetVisibility"
+      provides="bika.lims.interfaces.IATWidgetVisibility"
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="ClientFieldWV"
+    />
 
     <adapter
       factory=".widgetvisibility.BatchARAdd_BatchFieldWidgetVisibility"
@@ -25,7 +31,7 @@
       for="bika.lims.interfaces.IAnalysisRequest"
       name="BatchARAddFieldsWidgetVisibility"
     />
-    
+
     <adapter
       factory=".widgetvisibility.OptionalFieldsWidgetVisibility"
       provides="bika.lims.interfaces.IATWidgetVisibility"

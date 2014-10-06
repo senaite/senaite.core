@@ -489,4 +489,21 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Convert analysis specifications to values in AR.ResultsRange"
+        description=""
+        source="3049"
+        destination="3050"
+        handler="bika.lims.upgrade.to3050.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Adding getRawSamplePoints/Types to filter Sample easly"
+        description=""
+        source="3050"
+        destination="3051"
+        handler="bika.lims.upgrade.to3051.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
 </configure>

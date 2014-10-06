@@ -432,10 +432,19 @@ class WorksheetAnalysesView(AnalysesView):
         items = AnalysesView.folderitems(self)
         layout = self.context.getLayout()
         highest_position = 0
+        new_items = []
         for x, item in enumerate(items):
             obj = item['obj']
-            pos = [int(slot['position']) for slot in layout if
+            pos = [slot['position'] for slot in layout if
                    slot['analysis_uid'] == obj.UID()][0]
+
+            # compensate for possible bad data (dbw#104)
+            if type(pos) in (list, tuple):
+                pos = pos[0]
+                if pos == 'new':
+                    continue
+            pos = int(pos)
+
             highest_position = max(highest_position, pos)
             items[x]['Pos'] = pos
             items[x]['colspan'] = {'Pos':1}
@@ -455,9 +464,22 @@ class WorksheetAnalysesView(AnalysesView):
             instrument = obj.getInstrument()
             #items[x]['Instrument'] = instrument and instrument.Title() or ''
 
+            new_items.append(item)
+        items = new_items
+
         # insert placeholder row items in the gaps
+        # This is done badly to compensate for possible bad data (dbw#104)
         empties = []
-        used = [int(slot['position']) for slot in layout]
+        used = []
+        for slot in layout:
+            position = slot['position']
+            if type(position) in (list, tuple):
+                position = position[0]
+                if position == 'new':
+                    continue
+            position = int(position)
+            used.append(position)
+
         for pos in range(1, highest_position + 1):
             if pos not in used:
                 empties.append(pos)
@@ -493,7 +515,10 @@ class WorksheetAnalysesView(AnalysesView):
                 items.append(item)
 
         items = sorted(items, key = itemgetter('Service'))
-        items = sorted(items, key = itemgetter('Pos'))
+        try:
+            items = sorted(items, key = itemgetter('Pos'))
+        except:
+            pass
 
         slot_items = {} # pos:[item_nrs]
         for x in range(len(items)):
@@ -1083,7 +1108,9 @@ class AddControlView(BrowserView):
         if 'submitted' in form:
             rc = getToolByName(self.context, REFERENCE_CATALOG)
             # parse request
-            service_uids = form['selected_service_uids'].split(",")
+            service_uids = form['selected_service_uids']
+            if type(form['selected_service_uids']) not in (list, tuple):
+                service_uids = str(form['selected_service_uids']).split(",")
             position = form['position']
             reference_uid = form['reference_uid']
             reference = rc.lookupObject(reference_uid)

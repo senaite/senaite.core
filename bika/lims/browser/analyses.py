@@ -2,7 +2,7 @@
 from AccessControl import getSecurityManager
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from bika.lims.utils import t, dicts_to_dict
 from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import QCANALYSIS_TYPES
@@ -133,43 +133,16 @@ class AnalysesView(BikaListingView):
                                            show_categories=context.bika_setup.getCategoriseAnalysisServices(),
                                            expand_all_categories=True)
 
-    def get_active_spec_object(self):
-        # AR spec attribute or none
-        ar = self.context
-        if hasattr(ar, 'getSpecification'):
-            return ar.getSpecification()
-        else:
-            return None
-
-    def get_active_spec_title(self):
-        obj = self.get_active_spec_object()
-        if obj:
-            return obj.Title()
-
-        return ""
-
-    def get_active_spec_dict(self, analysis):
-        if analysis.portal_type == 'ReferenceAnalysis':
-            # The analysis is a Control or Blank. We might use the
-            # reference results instead other specs
-            rr = analysis.aq_parent.getResultsRangeDict()
-            uid = analysis.getServiceUID()
-            if uid in rr:
-                return rr[uid]
-
-        if hasattr(analysis, "specification") and analysis.specification:
-            return analysis.specification
-
-        obj = self.get_active_spec_object()
-        if obj:
-            rr = obj.getResultsRangeDict()
-            keyword = analysis.getKeyword()
-            uid = analysis.getServiceUID()
-            if keyword in rr:
-                return rr[keyword]
-            elif uid in rr:
-                return rr[uid]
-        return None
+    def get_analysis_spec(self, analysis):
+        keyword = analysis.getService().getKeyword()
+        uid = analysis.UID()
+        if hasattr(analysis.aq_parent, 'getResultsRange'):
+            rr = dicts_to_dict(analysis.aq_parent.getResultsRange(), 'keyword')
+            return rr.get(analysis.getKeyword(), None)
+        if hasattr(analysis.aq_parent, 'getReferenceResults'):
+            rr = dicts_to_dict(analysis.aq_parent.getReferenceResults(), 'uid')
+            return rr.get(analysis.UID(), None)
+        return {'keyword':keyword, 'uid':uid, 'min':'', 'max':'', 'error':''}
 
     def ResultOutOfRange(self, analysis):
         """ Template wants to know, is this analysis out of range?
@@ -177,7 +150,7 @@ class AnalysesView(BikaListingView):
         adapters trigger a result.
         """
         adapters = getAdapters((analysis, ), IResultOutOfRange)
-        spec = self.get_active_spec_dict(analysis)
+        spec = self.get_analysis_spec(analysis)
         for name, adapter in adapters:
             if not spec:
                 return False
@@ -644,7 +617,7 @@ class AnalysesView(BikaListingView):
                     'src="%s/++resource++bika.lims.images/to_follow.png"/>' % \
                     (self.portal_url)
             # Everyone can see valid-ranges
-            spec = self.get_active_spec_dict(obj)
+            spec = self.get_analysis_spec(obj)
             if spec:
                 min_val = spec.get('min', '')
                 min_str = ">{0}".format(min_val) if min_val else ''

@@ -58,7 +58,7 @@ class Update(object):
 
         >>> browser = layer['getBrowser'](portal, loggedIn=True, username=SITE_OWNER_NAME, password=SITE_OWNER_PASSWORD)
         >>> browser.open(portal_url+"/@@API/read?", "&".join([
-        ... "Title=Happy Hills",
+        ... "id=client-1",
         ... "include_fields=PostalAddress",
         ... ]))
         >>> browser.contents
@@ -80,7 +80,7 @@ class Update(object):
         >>> browser = layer['getBrowser'](portal, loggedIn=True, username=SITE_OWNER_NAME, password=SITE_OWNER_PASSWORD)
         >>> browser.open(portal_url+"/@@API/update?", "&".join([
         ... "obj_path=/clients/client-1",
-        ... "DefaultCategories=\"\"",
+        ... 'DefaultCategories=',
         ... ]))
         >>> browser.contents
         '{..."success": true...}'
