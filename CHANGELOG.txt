@@ -1,24 +1,42 @@
-next
-----
-LIMS-1416: If a sample point has a default sample type the field is not pulled automatically during AR template creation
-LIMS-1374: Auto label printing does not happen for an AR drop-down receive
-LIMS-1395: front page issue tracker url
-LIMS-1402: If no date is chosen, it will never expire." not been accomplished.
-LIMS-1377: Error when trying to publish after updating branch hotfix/next or develop
-LIMS-1360: Number of analyses in ARs folder view
+3.1.5 (2014-10-06)
+------------------
+
+LIMS-1082: Report Barcode. Was images for pdf/print reports etc
+LIMS-1159: reapply fix for samplepoint visibility
+LIMS-1325: WSTemplate loading incompatible reference analyses
+LIMS-1333: Batch label replace with standard Plone keyword widget
 LIMS-1335: Reference Definitions don't sort alphabetically on WS Template lay-outs
 LIMS-1345: Analysis profiles don't sort
 LIMS-1347: Analysis/AR background colour to be different to for Receive and To be Sampled
-LIMS-1333: Batch label replace with standard Plone keyword widget
-LIMS-1082: Report Barcode. Was images for pdf/print reports etc.
+LIMS-1360: Number of analyses in ARs folder view
+LIMS-1374: Auto label printing does not happen for an AR drop-down receive
+LIMS-1377: Error when trying to publish after updating branch hotfix/next or develop
+LIMS-1378: Add AR/Sample default fields to Batch
+LIMS-1395: front page issue tracker url
+LIMS-1402: If no date is chosen, it will never expire." not been accomplished
+LIMS-1416: If a sample point has a default sample type the field is not pulled automatically during AR template creation
+LIMS-1425: Verify Workflow (bika_listing) recursion
 
+- added 'getusers' method to JSON API
+- Added 'remove' method to JSON API
+- Added AR 'Copy to new' action in more contexts
+- Added basic handling of custom Sample Preparation Workflows
 - Added decimal mark configuration for result reports
+- Added help info regards to new templates creation
+- Added IAcquireFieldDefaults - acquire field defaults through acquisition
+- Added IATWidgetVisibility - runtime show/hide of AT edit/view widgets
 - Added watermark on invalid reports
 - Added watermark on provisional reports
-- Added help info regards to new templates creation
-- Bika LIMS javascripts refactoring and optimization
 - Alert panel when upgrades are available
-
+- All relevant specification ranges are persisted when copying ARs or adding analyses
+- Allow comma entry in numbers for e.g. German users
+- Bika LIMS javascripts refactoring and optimization
+- Fix ZeroDivisionError in variation calculation for DuplicateAnalysis
+- Fixed spreadsheet load errors in Windows.
+- Fixed template rendering errors in Windows
+- JSONAPI update: always use field mutator if available
+- JSONAPI: Added 'remove' and 'getusers' methods.
+- Refactored ARSpecs, and added ResultsRange field to the AR
 
 3.1.4.1 (2014-07-24)
 --------------------
