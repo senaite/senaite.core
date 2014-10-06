@@ -36,10 +36,13 @@
         checkPermission nocall: context/portal_membership/checkPermission;
         tabindex view/tabindex;
         partitionable view/partitioned_services;
-        ShowPrices python:context.bika_setup.getShowPrices();">
+        ShowPrices python:context.bika_setup.getShowPrices();
+        prominentfields python:view.get_fields_with_visibility('prominent', mode='header_table');
+        prominentfieldnames python:[f.getName() for f in prominentfields];
+        hiddenprominentfields python:view.get_fields_with_visibility('hiddenprominent', mode='header_table');
+        hiddenprominentfieldnames python:[f.getName() for f in hiddenprominentfields]">
 
-
-<form id="analysisrequest_edit_form"
+    <form id="analysisrequest_edit_form"
     name="analysisrequest_edit_form"
     method="POST">
 

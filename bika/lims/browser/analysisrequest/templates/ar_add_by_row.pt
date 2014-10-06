@@ -31,7 +31,7 @@
 
     <thead 
         tal:define="
-          fieldnames python:widget_visibility.get('add-by-row', {}).get('visible', []);
+          fieldnames python:view.get_fields_with_visibility('visible', mode='add-by-row');
           fieldnames python: [f for f in fieldnames if f not in prominentfieldnames];
           fieldnames python: [f for f in fieldnames if f not in hiddenprominentfieldnames]">
     <tr class="tableHeaderRowByRow">
@@ -100,7 +100,7 @@
     <tal:rows 
         tal:repeat="arnum python:range(view.ar_count)">
     <tr tal:attributes="arnum arnum;
-                        ar_add_ar_widget string:1">
+                        ar_add_arnum_widget string:1">
         <td tal:content="repeat/arnum/number">
         </td>
         <tal:loop repeat="fieldname fieldnames">

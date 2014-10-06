@@ -82,12 +82,13 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
                 ps.append(service.UID())
         return json.dumps(ps)
 
-    def get_fields_with_visibility(self, visibility):
+    def get_fields_with_visibility(self, visibility, mode=None):
+        mode = mode if mode else 'add'
         schema = self.context.Schema()
         fields = []
         for field in schema.fields():
             isVisible = field.widget.isVisible
-            v = isVisible(self.context, 'add', default='invisible', field=field)
+            v = isVisible(self.context, mode, default='invisible', field=field)
             if v == visibility:
                 fields.append(field)
         return fields
@@ -248,6 +249,7 @@ class ajaxAnalysisRequestSubmit():
         # this flag triggers the status message
         new_profile = None
         # The actual submission
+        # fieldname == same as arnum == same as column ...
         for fieldname in fieldnames:
             # Get partitions from the form data
             if form_parts:
@@ -279,16 +281,16 @@ class ajaxAnalysisRequestSubmit():
             analyses = values["Analyses"]
 
             # Gather the specifications from the form
-            specs = json.loads(form['copy_to_new_specs']).get(str(column), {})
+            specs = json.loads(form['copy_to_new_specs']).get(str(fieldname), {})
             if not specs:
-                specs = json.loads(form['specs']).get(str(column), {})
+                specs = json.loads(form['specs']).get(str(fieldname), {})
             if specs:
                 specs = dicts_to_dict(specs, 'keyword')
             # Modify the spec with all manually entered values
             for service_uid in analyses:
-                min_element_name = "ar.%s.min.%s" % (column, service_uid)
-                max_element_name = "ar.%s.max.%s" % (column, service_uid)
-                error_element_name = "ar.%s.error.%s" % (column, service_uid)
+                min_element_name = "ar.%s.min.%s" % (fieldname, service_uid)
+                max_element_name = "ar.%s.max.%s" % (fieldname, service_uid)
+                error_element_name = "ar.%s.error.%s" % (fieldname, service_uid)
                 service_keyword = bsc(UID=service_uid)[0].getKeyword
                 if min_element_name in form:
                     if service_keyword not in specs:
