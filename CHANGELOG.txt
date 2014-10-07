@@ -1,6 +1,6 @@
 3.1.5 (2014-10-06)
 ------------------
-
+LIMS-1430: Create an AR from batch allows you to introduce a non existent Client and Contacts don't work properly
 LIMS-1082: Report Barcode. Was images for pdf/print reports etc
 LIMS-1159: reapply fix for samplepoint visibility
 LIMS-1325: WSTemplate loading incompatible reference analyses
