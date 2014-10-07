@@ -22,7 +22,8 @@ $(document).ready(function(){
             $("div[name='"+fieldName+"-listing']").empty();
         }
     });
-
+    save_UID_check();
+    check_UID_check();
 });
 
 }(jQuery));
@@ -123,4 +124,30 @@ function referencewidget_lookups(elements){
         $(element).addClass("has_combogrid_widget");
         $(element).attr("search_query", "{}");
     }
+}
+
+function save_UID_check(){
+    //Save the selected uid's item to avoid introduce non-listed values inside the widget.
+    $(".ArchetypesReferenceWidget").bind("selected", function(){
+        var uid = $(this).children("input.referencewidget").attr("uid");
+        $(this).children("input.referencewidget").attr("uid_check",uid);
+    });
+}
+
+function check_UID_check(){
+    //Remove the necessary values to submit if the introduced data is not correct.
+    $(".ArchetypesReferenceWidget").children("input.referencewidget").bind("blur", function(){
+        var chk = $(this).attr("uid_check");
+        var value = $(this).val();
+
+        if ((chk == undefined || chk == false) && (value != "")){
+            $(this).attr('uid',"");
+            $(this).attr('value','');
+        }
+        else if ($(this).attr("value") && (chk != undefined || chk != false)){
+            console.log($(this).attr("value"));
+            $(this).attr('uid',"");
+            $(this).attr('value','');
+        }
+    });
 }
