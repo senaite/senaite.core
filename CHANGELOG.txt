@@ -1,3 +1,9 @@
+next
+------------------
+
+LIMS-1430: Create an AR from batch allows you to introduce a non existent Client and Contacts don't work properly
+
+
 3.1.5 (2014-10-06)
 ------------------
 
