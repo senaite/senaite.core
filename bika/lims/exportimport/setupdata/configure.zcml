@@ -87,6 +87,12 @@
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
 
     <adapter
+      name="Identifier_Types"
+      factory="bika.lims.exportimport.setupdata.Identifier_Types"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
       name="Instrument_Types"
       factory="bika.lims.exportimport.setupdata.Instrument_Types"
       provides="bika.lims.interfaces.ISetupDataImporter"

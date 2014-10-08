@@ -62,6 +62,7 @@ def initialize(context):
     from content.containertype import ContainerType
     from content.department import Department
     from content.duplicateanalysis import DuplicateAnalysis
+    from content.identifiertype import IdentifierType
     from content.instrument import Instrument
     from content.instrumentcalibration import InstrumentCalibration
     from content.instrumentcertification import InstrumentCertification
@@ -124,6 +125,7 @@ def initialize(context):
     from controlpanel.bika_containers import Containers
     from controlpanel.bika_containertypes import ContainerTypes
     from controlpanel.bika_departments import Departments
+    from controlpanel.bika_identifiertypes import IdentifierTypes
     from controlpanel.bika_instruments import Instruments
     from controlpanel.bika_instrumenttypes import InstrumentTypes
     from controlpanel.bika_labcontacts import LabContacts

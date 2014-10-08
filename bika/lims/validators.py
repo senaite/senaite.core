@@ -10,6 +10,37 @@ from zope.interface import implements
 import re
 
 
+class IdentifierValidator:
+    """
+    """
+
+    implements(IValidator)
+    name = "identifiervalidator"
+
+    def __call__(self, value, *args, **kwargs):
+        instance = kwargs['instance']
+        bsc = getToolByName(instance, "bika_setup_catalog")
+        translate = getToolByName(instance, 'translation_service').translate
+        request = instance.REQUEST
+        form = request.get('form', {})
+        fieldname = kwargs['field'].getName()
+        form_value = form.get(fieldname, False)
+        if form_value == False:
+            # not required...
+            return True
+        if value == instance.get(fieldname):
+            # no change.
+            return True
+
+        ## some actual validation should go here.
+        ## I'm leaving this stub registered, but no extra validation,
+        ## until someone asks me to do so.
+
+        return True
+
+validation.register(IdentifierValidator())
+
+
 class UniqueFieldValidator:
 
     """ Verifies that a field value is unique for items

@@ -39,6 +39,8 @@
  <object name="Department" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Departments" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="DuplicateAnalysis" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="IdentifierType" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="IdentifierTypes" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Instrument" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Instruments" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="InstrumentCalibration" meta_type="Factory-based Type Information with dynamic views"/>

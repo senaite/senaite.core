@@ -163,6 +163,12 @@
    <bound-workflow workflow_id="bika_duplicateanalysis_workflow"/>
   </type>
 
+  <type type_id="IdentifierType">
+      <bound-workflow workflow_id="bika_one_state_workflow"/>
+      <bound-workflow workflow_id="bika_inactive_workflow"/>
+  </type>
+  <type type_id="IdentifierTypes"/>
+
   <type type_id="Instruments"/>
   <type type_id="Instrument">
    <bound-workflow workflow_id="bika_one_state_workflow"/>

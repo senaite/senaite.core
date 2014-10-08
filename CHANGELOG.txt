@@ -1,6 +1,7 @@
 3.1.6 (unreleased)
 
 LIMS-1386: Audit log should also save(show) time for a better tracking
+LIMS-1391: IdentifierTypes (from bika.health) for alternate object ID lookups
 LIMS-1426: Batch AR list: The instructions for ARs from the batch list aren't working.
 LIMS-907: (Re-)publishing ex cases does not work
 
