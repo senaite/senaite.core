@@ -1,4 +1,5 @@
 <div metal:define-macro="ar_add_by_row">
+    <script type="text/javascript" src="++resource++bika.lims.js/bika.lims.analysisrequest.add_by_row.js"></script>
     <tal:headers repeat="fieldname prominentfieldnames">
         <div class="clientInfoByRow" tal:define="
                             field python:context.Schema()[fieldname];
@@ -29,7 +30,7 @@
     </tal:headers>
     <br />
 
-    <thead 
+    <thead class="analysisrequest_add_by_row"
         tal:define="
           fieldnames python:view.get_fields_with_visibility('visible', mode='add-by-row');
           fieldnames python: [f for f in fieldnames if f not in prominentfieldnames];

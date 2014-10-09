@@ -1,5 +1,6 @@
 <div metal:define-macro="ar_add_by_col">
-<thead >
+<script type="text/javascript" src="++resource++bika.lims.js/bika.lims.analysisrequest.add_by_col.js"></script>
+<thead class="analysisrequest_add_by_col">
     <!-- All edit fields with fields with add=visible -->
     <tr tal:repeat="field python:view.get_fields_with_visibility('edit')">
         <tal:def define="
