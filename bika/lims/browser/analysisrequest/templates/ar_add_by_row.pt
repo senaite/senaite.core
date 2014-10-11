@@ -29,6 +29,7 @@
         </div>
     </tal:headers>
     <br />
+    <br />
 
     <thead class="analysisrequest_add_by_row"
         tal:define="

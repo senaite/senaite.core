@@ -7,27 +7,19 @@ function AnalysisRequestAddByRow() {
 
 	that.load = function () {
 
-        ar_rename_elements();
-        ar_referencewidget_lookups();
-        ar_set_tabindexes();
-        ar_add_analyses_overlays();
+		ar_rename_elements();
+		ar_referencewidget_lookups();
+		ar_set_tabindexes();
+		ar_add_analyses_overlays();
 
-		$("input[type=text]").prop("autocomplete", "off")
-
-        $(".copyButton").live("click",  copyButton );
-        $("#submit_analyses_button").live("click", analysesOverlaySubmitted);
-
-        $("th[class^='analysiscategory']").click(clickAnalysisCategory);
-        expand_default_categories();
-        $("input[name^='Price']").live("change", recalc_prices );
-
+		$(".copyButton").live("click", copyButton);
 		$("input[id*='_ReportDryMatter']").change(changeReportDryMatter);
-
-        $("input[id*='_save_profile']").click(saveProfile);
-
-        $(".spec_bit").live("change", function() {
-            validate_spec_field_entry(this);
-        });
+		$("input[name^='Price']").live("change", recalc_prices);
+		$("th[class^='analysiscategory']").live('click', clickAnalysisCategory);
+		expand_default_categories();
+		$(".spec_bit").live("change", validate_spec_field_entry);
+		$("input[id*='_save_profile']").live('click', saveProfile);
+		$("#submit_analyses_button").live("click", analysesOverlaySubmitted);
 
 		// AR Add/Edit ajax form submits
 		loadAjaxSubmitHandler();
@@ -39,26 +31,61 @@ function AnalysisRequestAddByRow() {
 
 		// the copy_to_new button passes a copy_from request parameter
 		// which is a UID or comma separated list oif UIDs.
-        var copy_from = window.location.href.split("copy_from=");
-        if(copy_from.length > 1){
-            copy_from = copy_from[1].split("&")[0];
-            copy_from = copy_from.split(",");
-            for (var arnum = 0; arnum < copy_from.length; arnum++) {
-                window.bika.ar_copy_from_col = arnum;
+		var copy_from = window.location.href.split("copy_from=");
+		if (copy_from.length > 1) {
+			copy_from = copy_from[1].split("&")[0];
+			copy_from = copy_from.split(",");
+			for (var arnum = 0; arnum < copy_from.length; arnum++) {
+				window.bika.ar_copy_from_col = arnum;
 				// XXX async.
-                $.ajaxSetup({async:false});
-                window.bika.lims.jsonapi_read({
-                    catalog_name: "uid_catalog",
-                    UID: copy_from[arnum]
-                }, fill_column);
-                $.ajaxSetup({async:true});
-            }
-        }
+				$.ajaxSetup({async: false});
+				window.bika.lims.jsonapi_read({
+												  catalog_name: "uid_catalog",
+												  UID: copy_from[arnum]
+											  }, fill_column);
+				$.ajaxSetup({async: true});
+			}
+		}
 
 		filterByClient();
 	}
 
+	function applyComboFilter(element, filterkey, filtervalue) {
+		// If the element is not visible it is probably not worth creating a dropdown query.
+		if (!$(element).is(':visible')) {
+			return;
+		}
+		var base_query = $.parseJSON($(element).attr("base_query"));
+		base_query[filterkey] = filtervalue;
+		$(element).attr("base_query", $.toJSON(base_query));
+		var options = $.parseJSON($(element).attr("combogrid_options"));
+		options.url = window.location.href.split("/ar_add")[0] + "/" + options.url;
+		options.url = options.url + "?_authenticator=" + $("input[name='_authenticator']").val();
+		options.url = options.url + "&catalog_name=" + $(element).attr("catalog_name");
+		options.url = options.url + "&base_query=" + $.toJSON(base_query);
+		options.url = options.url + "&search_query=" + $(element).attr("search_query");
+		options.url = options.url + "&colModel=" + $.toJSON($.parseJSON($(element).attr("combogrid_options")).colModel);
+		options.url = options.url + "&search_fields=" + $.toJSON($.parseJSON($(element).attr("combogrid_options")).search_fields);
+		options.url = options.url + "&discard_empty=" + $.toJSON($.parseJSON($(element).attr("combogrid_options")).discard_empty);
+		options.force_all = "false";
+		$(element).combogrid(options);
+		$(element).addClass("has_combogrid_widget");
+		$(element).attr("search_query", "{}");
+	}
 
+	function clickAnalysisCategory() {
+		/*jshint validthis:true */
+		// cat is a category uid, and no arnum is required here.
+		toggleCat($(this).attr("poc"), $(this).attr("cat"), $('#arnum').val());
+		if ($(this).hasClass("expanded")) {
+			$(this).addClass("collapsed");
+			$(this).removeClass("expanded");
+		}
+		else {
+			$(this).removeClass("collapsed");
+			$(this).addClass("expanded");
+		}
+	}
     /**
      *  AR Add/Edit ajax form submits
      */
@@ -187,16 +214,6 @@ function AnalysisRequestAddByRow() {
     function destroy(arr, val) {
         for (var i = 0; i < arr.length; i++) if (arr[i] === val) arr.splice(i, 1);
         return arr;
-    }
-
-    function getRelTag() {
-        //Return the tag that identifies the position of the
-        var layout = $("input[id='layout']").val();
-        var rel_tag = 'tr';
-        if (layout == 'columns') {
-            rel_tag = 'td';
-        };
-        return rel_tag;
     }
 
     function clearHiddenPopupFields(analyses) {
@@ -419,20 +436,19 @@ function AnalysisRequestAddByRow() {
     // un-set the readonly attribute on the fields (so that we can search).
     function ar_rename_elements(){
         var i, e, elements, arnum;
-        var rel_tag = getRelTag();
-        elements = $(rel_tag+"[ar_add_ar_widget]").find("input[type!='hidden']").not("[disabled]");
+        elements = $("tr[ar_add_ar_widget]").find("input[type!='hidden']").not("[disabled]");
         for (i = elements.length - 1; i >= 0; i--) {
             e = elements[i];
-            arnum = $($(e).parents(rel_tag)).attr("arnum");
+            arnum = $($(e).parents("tr")).attr("arnum");
             // not :ignore_empty, widgets each get submitted to their own form handlers
             $(e).attr("name", "ar."+arnum+"."+$(e).attr("name")+":record");
             $(e).attr("id", "ar_"+arnum+"_"+e.id);
             $(e).removeAttr("required");
         };
-        elements = $(rel_tag+"[ar_add_ar_widget]").find("input[type='hidden']");
+        elements = $("tr[ar_add_ar_widget]").find("input[type='hidden']");
         for (i = elements.length - 1; i >= 0; i--) {
             e = elements[i];
-            arnum = $($(e).parents(rel_tag)).attr("arnum");
+            arnum = $($(e).parents("tr")).attr("arnum");
             $(e).attr("id", "ar_"+arnum+"_"+e.id);
             // not :ignore_empty, widgets each get submitted to their own form handlers
             $(e).attr("name", "ar."+arnum+"."+$(e).attr("name")+":record");
@@ -441,16 +457,16 @@ function AnalysisRequestAddByRow() {
         for (i = elements.length - 1; i >= 0; i--) {
             e = elements[i];
             var eid = e.id.split("-listing")[0];
-            arnum = $($(e).parents(rel_tag)).attr("arnum");
+            arnum = $($(e).parents("tr")).attr("arnum");
             $(e).attr("id", "ar_"+arnum+"_"+eid+"-listing");
             // not :ignore_empty, widgets each get submitted to their own form handlers
             $(e).attr("name", "ar."+arnum+"."+eid+"-listing");
             $(e).attr("fieldName", "ar."+arnum+"."+eid);
         };
-        elements = $(rel_tag+"[ar_add_ar_widget]").find("select");
+        elements = $("tr[ar_add_ar_widget]").find("select");
         for (i = elements.length - 1; i >= 0; i--) {
             e = elements[i];
-            arnum = $($(e).parents(rel_tag)).attr("arnum");
+            arnum = $($(e).parents("tr")).attr("arnum");
             $(e).attr("id", "ar_"+arnum+"_"+e.id);
             // not :ignore_empty, widgets each get submitted to their own form handlers
             $(e).attr("name", "ar."+arnum+"."+$(e).attr("name")+":record");
@@ -464,8 +480,6 @@ function AnalysisRequestAddByRow() {
         event.preventDefault();
 
         // Set form values in activated element (must exist in colModel!)
-        // This next bit works with both row layout (#fieldName*) and
-        // column layout (#ar_X_fieldName*)
         var fieldName = $(this).attr("name");
         var parts = fieldName.split(".");
         var arnum = "";
@@ -517,46 +531,15 @@ function AnalysisRequestAddByRow() {
         }
 
         if (fieldName == "Client") {
-            var layout = $("input[id='layout']").val();
-            if (layout == 'columns') {
-				var element = $("#ar_" + arnum + "_Contact");
+			$("[id$='_Client']").bind("change", function() {
+				var element = $("#ar_Contact");
 				var clientuid = $(this).attr("uid");
 				applyComboFilter(element, "getParentUID", clientuid);
-				element = $("#ar_" + arnum + "_CCContact");
+				element = $("#ar_CCContact");
 				applyComboFilter(element, "getParentUID", clientuid);
-				// Filter sample points by client
-				element = $("#ar_" + arnum + "_SamplePoint");
-				applyComboFilter(element, "getClientUID",
-							 [clientuid,
-							  $("#bika_setup").attr("bika_samplepoints_uid")]);
-				// Filter template by client
-				element = $("#ar_" + arnum + "_Template");
-				applyComboFilter(element, "getClientUID",
-							 [clientuid,
-							  $("#bika_setup").attr("bika_artemplates_uid")]);
-				// Filter Analysis Profile by client
-				element = $("#ar_" + arnum + "_Profile");
-				applyComboFilter(element, "getClientUID",
-							 [clientuid,
-							  $("#bika_setup").attr("bika_analysisprofiles_uid")]);
-				// Filter Analysis Spec by client
-				element = $("#ar_" + arnum + "_Specification");
-				applyComboFilter(element, "getClientUID",
-							 [clientuid,
-							  $("#bika_setup").attr("bika_analysisspecs_uid")]);
-            } else {
-                //layout == rows
-                // Show only the contacts and CC from the selected Client
-                $("[id$='_Client']").bind("change", function() {
-                    var element = $("#ar_Contact");
-                    var clientuid = $(this).attr("uid");
-                    applyComboFilter(element, "getParentUID", clientuid);
-                    element = $("#ar_CCContact");
-                    applyComboFilter(element, "getParentUID", clientuid);
-                    element = $("#InvoiceContact");
-                    applyComboFilter(element, "getParentUID", clientuid);
-                });
-    		}
+				element = $("#InvoiceContact");
+				applyComboFilter(element, "getParentUID", clientuid);
+			});
     	}
         
         if(fieldName == "Contact"){
@@ -733,7 +716,6 @@ function AnalysisRequestAddByRow() {
 
     function recalc_prices(arnum){
         var include;
-        var layout = $("input[id='layout']").val();
         if(arnum){
             // recalculate just this arnum
             var subtotal = 0.00;
@@ -750,11 +732,7 @@ function AnalysisRequestAddByRow() {
                 } else {
                     disabled = false;
                 }
-                if (layout == 'rows') {
-                    include = (!(disabled) && $(this).prop("checked") && $(this).hasClass('overlay_field'));
-                } else {
-                    include = (!(disabled) && $(this).prop("checked") && $(this).prop('type') != 'hidden');
-                }
+				include = (!(disabled) && $(this).prop("checked") && $(this).hasClass('overlay_field'));
                 if (include) {
                     var serviceUID = this.id;
                     var form_price = parseFloat($("#"+serviceUID+"_price").val());
@@ -778,12 +756,6 @@ function AnalysisRequestAddByRow() {
             $("#ar_"+arnum+"_vat_display").val(vat.toFixed(2));
             $("#ar_"+arnum+"_total").val(total.toFixed(2));
             $("#ar_"+arnum+"_total_display").val(total.toFixed(2));
-        } else {
-            if (layout == 'columns') {
-                for (var arnum=0; arnum<parseInt($("#ar_count").val(), 10); arnum++) {
-                    recalc_prices(String(arnum));
-                }
-            }
         }
     }
 
@@ -793,8 +765,7 @@ function AnalysisRequestAddByRow() {
         var uid = $(dm).val();
         var cat = $(dm).attr("cat");
         var poc = $(dm).attr("poc");
-        var rel_tag = getRelTag();
-        var arnum = $(this).parents(rel_tag).attr("arnum");
+        var arnum = $(this).parents("tr").attr("arnum");
         if ($(this).prop("checked")){
             // only play with service checkboxes when enabling dry matter
             unsetAnalysisProfile(arnum);
@@ -811,15 +782,10 @@ function AnalysisRequestAddByRow() {
 
     function saveProfile(){
         /*jshint validthis:true */
-        var layout = $("input[id='layout']").val();
         jarn.i18n.loadCatalog('bika');
         var _ = window.jarn.i18n.MessageFactory("bika");
         var arnum = this.id.split("_")[1];
-        if (layout == 'rows') {
-            var analyses = $("#ar_"+arnum+"_Analyses").parent().find('.overlay_field').filter(".cb");
-        } else {
-            var analyses = $(".cb").filter('[arnum="'+arnum+'"]').filter(':checked');
-        }
+		var analyses = $("#ar_"+arnum+"_Analyses").parent().find('.overlay_field').filter(".cb");
         if (analyses.length == 0) {
             alert(_('Please select analyses to be save'));
             return;
@@ -1002,7 +968,6 @@ function AnalysisRequestAddByRow() {
         // selectedservices and arnum are optional.
         // disable is used for field analyses - secondary ARs should not be able
         // to select these
-        var layout = $("input[id='layout']").val();
         force_expand = force_expand || false;
         disable = disable || -1;
         if(!arnum && arnum !== 0) { arnum = ""; };
@@ -1033,9 +998,7 @@ function AnalysisRequestAddByRow() {
             $(tbody).removeClass("collapsed").addClass("expanded");
             //$(th).removeClass("collapsed").addClass("expanded");
             var ar_count = $("#ar_count").attr("value");
-            if (layout == 'rows') {
-                ar_count = 1;
-            };
+			ar_count = 1;
             var options = {
                 "selectedservices": selectedservices.join(","),
                 "categoryUID": category_uid,
@@ -1048,13 +1011,8 @@ function AnalysisRequestAddByRow() {
             var url = window.location.href.split("/ar_add")[0] + "/analysisrequest_analysisservices";
             $(tbody).load(url, options, function(){
                 // analysis service checkboxes
-                if (layout == 'columns') {
-                    $("input[name*='Analyses']").unbind();
-                    $("input[name*='Analyses']").bind("change", service_checkbox_change);
-                } else {
-                    $("input[name*='cb']").unbind();
-                    $("input[class='cb']").bind("change", service_checkbox_change);
-                };
+				$("input[name*='cb']").unbind();
+				$("input[class='cb']").bind("change", service_checkbox_change);
                 if(selectedservices!=[]){
                     recalc_prices(arnum);
                     //console.log('toggleCat sevices:'+selectedservices);
@@ -1388,7 +1346,6 @@ function AnalysisRequestAddByRow() {
             $("#ar_"+arnum+"_SamplePoint").val(template.SamplePoint);
             $("#ar_"+arnum+"_SamplePoint_uid").val(template.SamplePointUID);
             $("#ar_"+arnum+"_reportdrymatter").prop("checked", template.reportdrymatter);
-            set_default_spec(arnum);
             // lookup AnalysisProfile
             if(template.AnalysisProfile) {
                 request_data = {

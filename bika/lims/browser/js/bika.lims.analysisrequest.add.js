@@ -7,6 +7,8 @@ function AnalysisRequestAddView() {
 
 	that.load = function () {
 
+		$("input[type=text]").prop("autocomplete", "off");
+
 	}
 
 }
