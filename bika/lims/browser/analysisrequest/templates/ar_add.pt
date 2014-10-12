@@ -43,8 +43,8 @@
         hiddenprominentfieldnames python:[f.getName() for f in hiddenprominentfields]">
 
     <form id="analysisrequest_edit_form"
-    name="analysisrequest_edit_form"
-    method="POST">
+        name="analysisrequest_edit_form"
+        method="POST">
 
     <input type="hidden" name="submitted" value="1"/>
     <span tal:replace="structure context/@@authenticator/authenticator"/>
@@ -96,17 +96,12 @@
                tal:attributes="
                 poc python: dms.getPointOfCapture();
                 cat python: dms.getCategoryUID();
-                value python: dms.UID();"/>
+                value python: dms.UID()"/>
     </tal:i>
 
-<input type="hidden"
-    id="PhysicalPath"
-    tal:attributes="here python:'/'.join(context.getPhysicalPath()[:-3])"/>
-
-<table summary="Add analysis requests"
-    class="listing analysisrequest add nosort"
-    cellpadding="0" cellspacing="0">
-<thead>
+    <input type="hidden"
+        id="PhysicalPath"
+        tal:attributes="here python:'/'.join(context.getPhysicalPath()[:-3])"/>
 
     <!-- All edit fields with fields with add=visible -->
     <tal:rows tal:condition="python: view.layout=='rows'">
@@ -117,13 +112,11 @@
         <metal:rows use-macro='view/ar_add_by_col_template/macros/ar_add_by_col'/>
     </tal:cols>
 
-    </table>
-
-        <input class="context button allowMultiSubmit"
-        type="submit"
-        name="save_button"
-        i18n:attributes="value"
-        value="Save"/>
+    <input class="context button allowMultiSubmit"
+    type="submit"
+    name="save_button"
+    i18n:attributes="value"
+    value="Save"/>
 
     <br/>&nbsp;
 

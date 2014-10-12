@@ -150,14 +150,6 @@
 
     <browser:page
       for="*"
-      name="analysisrequest_analysisservices"
-      class="bika.lims.browser.analysisrequest.add.ajaxExpandCategory"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="*"
       name="analysisrequest_submit"
       class="bika.lims.browser.analysisrequest.add.ajaxAnalysisRequestSubmit"
       permission="zope.Public"

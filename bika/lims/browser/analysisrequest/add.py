@@ -6,6 +6,7 @@ from bika.lims.browser import BrowserView
 from bika.lims.browser.analysisrequest import AnalysisRequestViewView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
+from bika.lims.controlpanel.bika_analysisservices import AnalysisServicesView as ASV
 from bika.lims.interfaces import IAnalysisRequestAddView
 from bika.lims.utils import getHiddenAttributesForClass, dicts_to_dict
 from bika.lims.utils import t
@@ -19,6 +20,85 @@ from Products.CMFPlone.utils import _createObjectByType, safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import getAdapter
 from zope.interface import implements
+
+
+class AnalysisServicesView(ASV):
+
+    def _get_selected_items(self, full_objects = True, form_key=None):
+        """ return a list of selected form objects
+            full_objects defaults to True
+        """
+        form = self.request.form.get(form_key, {}) if form_key else self.request.form
+        uc = getToolByName(self.context, 'uid_catalog')
+
+        selected_items = {}
+        for uid in form.get('uids', []):
+            try:
+                item = uc(UID = uid)[0].getObject()
+            except:
+                # ignore selected item if object no longer exists
+                continue
+            selected_items[uid] = item
+        return selected_items.values()
+
+    def __init__(self, context, request, ar_count=None):
+        super(AnalysisServicesView, self).__init__(context, request)
+
+        self.ar_count = ar_count if ar_count else 4
+
+        remove_columns = ['Category', 'Instrument', 'Unit', 'Calculation',
+                          'Keyword']
+
+        # Customise form for AR Add contexst
+        self.pagesize = 0
+        self.table_only = True
+        self.review_states = [x for x in self.review_states
+                              if x['id'] == 'default']
+        self.review_states[0]['custom_actions'] = []
+        self.review_states[0]['transitions'] = []
+        # select all should be tuned so that only visible items are selected
+        # then it would work with filters/collapsed categories
+        self.show_select_all_checkbox = False
+        for col_name in remove_columns:
+            if col_name in self.review_states[0]['columns']:
+                self.review_states[0]['columns'].remove(col_name)
+
+        self.columns['Min'] = {'title': _('Min')}
+        self.columns['Max'] = {'title': _('Max')}
+        self.columns['Error'] = {'title': _('Error %')}
+        self.review_states[0]['columns'].extend(
+            ['Min', 'Max', 'Error'])
+
+        for arnum in range(self.ar_count):
+            self.columns['ar.%s'%arnum] = {'title': _('AR ${ar_number}',
+                                                mapping={'ar_number': arnum}),
+                                     'sortable': False,
+                                     'type': 'boolean'
+                                     }
+            self.review_states[0]['columns'].append('ar.%s' %arnum)
+
+        # XXX. This list is not sortable, and it should be, but that is buggy.
+        for k,v in self.columns.items():
+            self.columns[k]['sortable'] = False
+
+    def folderitems(self):
+        items = super(AnalysisServicesView, self).folderitems()
+
+        for x, item in enumerate(items):
+            items[x]['Min'] = ''
+            items[x]['Max'] = ''
+            items[x]['Error'] = ''
+            items[x]['allow_edit'] = ['Price', 'Min', 'Max', 'Error']
+            for arnum in range(self.ar_count):
+                selected = self._get_selected_items(form_key='ar.%s'%arnum)
+                if item in selected:
+                    items[x]['ar.%s'%arnum] = True
+                else:
+                    items[x]['ar.%s'%arnum] = False
+                # all AR selectors are always editable:
+                items[x]['allow_edit'].append('ar.%s'%arnum)
+
+        return items
 
 
 class AnalysisRequestAddView(AnalysisRequestViewView):
@@ -93,6 +173,14 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
                 fields.append(field)
         return fields
 
+    def services_widget_content(self, ar_count=None):
+        """Return a table displaying services to be selected for inclusion
+        in a new AR.  Used in add_by_row view popup, and add_by_col add view.
+        """
+        if not ar_count: ar_count = self.ar_count
+        s = AnalysisServicesView(self.context, self.request, ar_count=ar_count)
+        return s.contents_table()
+
 
 class SecondaryARSampleInfo(BrowserView):
     """Return fieldnames and pre-digested values for Sample fields which
@@ -136,40 +224,6 @@ class SecondaryARSampleInfo(BrowserView):
                 fieldvalue = ''
             ret.append([fieldname, fieldvalue])
         return json.dumps(ret)
-
-
-class ajaxExpandCategory(BikaListingView):
-    """ ajax requests pull this view for insertion when category header
-    rows are clicked/expanded. """
-    template = ViewPageTemplateFile(
-        "templates/analysisrequest_analysisservices.pt")
-
-    def __call__(self):
-        plone.protect.CheckAuthenticator(self.request.form)
-        plone.protect.PostOnly(self.request.form)
-        if hasattr(self.context, 'getRequestID'):
-            self.came_from = "edit"
-        return self.template()
-
-    def bulk_discount_applies(self):
-        client = None
-        if self.context.portal_type == 'AnalysisRequest':
-            client = self.context.aq_parent
-        elif self.context.portal_type == 'Batch':
-            client = self.context.getClient()
-        elif self.context.portal_type == 'Client':
-            client = self.context
-        return client.getBulkDiscount() if client is not None else False
-
-    def Services(self, poc, CategoryUID):
-        """ return a list of services brains """
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
-        services = bsc(portal_type="AnalysisService",
-                       sort_on='sortable_title',
-                       inactive_state='active',
-                       getPointOfCapture=poc,
-                       getCategoryUID=CategoryUID)
-        return services
 
 
 class ajaxAnalysisRequestSubmit():

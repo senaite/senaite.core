@@ -7,16 +7,15 @@ function AnalysisRequestAddByCol() {
 
 	that.load = function () {
 
-		ar_rename_elements();
-		ar_referencewidget_lookups();
-		ar_set_tabindexes();
-
-		$(".copyButton").live("click", copyButton);
+		$("img[class*='copyButton']").live("click", copyButton);
 		$("input[id*='_ReportDryMatter']").change(changeReportDryMatter);
 		$("input[name^='Price']").live("change", recalc_prices);
 		$("th[class^='analysiscategory']").live('click', clickAnalysisCategory);
+
 		expand_default_categories();
+
 		$(".spec_bit").live("change", validate_spec_field_entry);
+
 		$("input[id*='_save_profile']").live('click', saveProfile);
 
 		// AR Add/Edit ajax form submits
@@ -833,42 +832,6 @@ function AnalysisRequestAddByCol() {
 
 	}
 
-	function copy_service(copybutton) {
-		var e = $("input[arnum='0']").filter("#" + copybutton.id);
-		var kw = $(e).attr("keyword");
-		var service_uid = $(e).prop("value");
-		// get arnum 0 values
-		var first_val = $(e).prop("checked");
-		var first_min = $("[name='ar.0.min." + service_uid + "']").prop("value");
-		var first_max = $("[name='ar.0.max." + service_uid + "']").prop("value");
-		var first_error = $("[name='ar.0.error." + service_uid + "']").prop("value");
-
-		var ar_count = parseInt($("#ar_count").val(), 10);
-		var affected_elements = [];
-		// 0 is the first arnum; we only want to change cols 1 onward.
-		for (var arnum = 1; arnum < ar_count; arnum++) {
-			unsetTemplate(arnum);
-			unsetAnalysisProfile(arnum);
-			var other_elem = $("input[arnum='" + arnum + "']").filter("#" + copybutton.id);
-			if ((!other_elem.prop("disabled")) && (other_elem.prop("checked") != first_val)) {
-				other_elem.prop("checked", first_val ? true : false);
-				toggle_spec_fields(other_elem);
-				affected_elements.push(other_elem);
-			}
-			if (first_val) {
-				$(".spec_bit.min[arnum='" + arnum + "']").filter("[keyword='" + kw + "']")
-						.prop("value", first_min);
-				$(".spec_bit.max[arnum='" + arnum + "']").filter("[keyword='" + kw + "']")
-						.prop("value", first_max);
-				$(".spec_bit.error[arnum='" + arnum + "']").filter("[keyword='" + kw + "']")
-						.prop("value", first_error);
-			}
-			calculate_parts(arnum);
-		}
-		calcdependencies(affected_elements, true);
-		recalc_prices();
-	}
-
 	function copy_analyses(copybutton) {
 		var first_elem = $("#ar_0_Analyses");
 		var hidden_elements = $(first_elem).parent().find('.overlay_field');
@@ -913,21 +876,17 @@ function AnalysisRequestAddByCol() {
 	}
 
 	function copyButton() {
-		/*jshint validthis:true */
+		// Copy things that can be copied between ARs:
 		var fieldName = $(this).attr("name");
 		var ar_count = parseInt($("#ar_count").val(), 10);
 
-		if ($(this).attr("name") == "analyses") {
-			copy_analyses(this);
-		}
-		else if ($(this).parent().attr("class") == "service") {
-			copy_service(this);
-		}
-
-		else if ($("input[name^='ar\\.0\\." + fieldName + "']").attr("type") == "checkbox") {
+		// checkbox input fields
+		if ($("input[name^='ar\\.0\\." + fieldName + "']").attr("type") == "checkbox") {
 			copy_checkbox(this);
 		}
 
+		// text input fields
+		// select fields
 		// Anything else
 
 		else {
