@@ -1,6 +1,7 @@
 next
 ------------------
 
+LIMS-1459: Error when checking instrument validity in manage_results
 LIMS-1430: Create an AR from batch allows you to introduce a non existent Client and Contacts don't work properly
 
 
