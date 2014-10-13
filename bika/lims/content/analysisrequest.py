@@ -1390,8 +1390,8 @@ class AnalysisRequest(BaseFolder):
             mngr_dept = managers[manager_id]['departments']
             if mngr_dept:
                 mngr_dept += ', '
-            mngr_dept += department.Title()
-            managers[manager_id]['departments'] = safe_unicode(mngr_dept)
+            mngr_dept += safe_unicode(department.Title())
+            managers[manager_id]['departments'] = mngr_dept
         mngr_keys = managers.keys()
         mngr_info = {}
         mngr_info['ids'] = mngr_keys
