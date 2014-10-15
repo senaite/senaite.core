@@ -56,7 +56,8 @@ function AnalysisRequestAddView() {
 			var eid = element.id.split("-listing")[0]
 			arnum = $($(element).parents("td")).attr("arnum")
 			name = $(element).attr("name")
-			$(element).attr("id", "ar_" + arnum + "_" + eid + "-listing")
+			// '.' format for both:
+			$(element).attr("id", "ar." + arnum + "." + eid + "-listing")
 			$(element).attr("name", "ar." + arnum + "." + eid + "-listing")
 			$(element).attr("fieldName", "ar." + arnum + "." + eid)
 		}
