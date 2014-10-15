@@ -6,7 +6,8 @@ from bika.lims.browser import BrowserView
 from bika.lims.browser.analysisrequest import AnalysisRequestViewView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
-from bika.lims.controlpanel.bika_analysisservices import AnalysisServicesView as ASV
+from bika.lims.controlpanel.bika_analysisservices import \
+    AnalysisServicesView as ASV
 from bika.lims.interfaces import IAnalysisRequestAddView
 from bika.lims.utils import getHiddenAttributesForClass, dicts_to_dict
 from bika.lims.utils import t
@@ -53,16 +54,22 @@ class AnalysisServicesView(ASV):
         self.review_states[0]['custom_actions'] = []
         self.review_states[0]['transitions'] = []
 
+        bs = context.bika_setup
+
         # Configure column layout
-        to_remove = [
-            'Category', 'Instrument', 'Unit', 'Calculation', 'Keyword']
+        to_remove = ['Category', 'Instrument', 'Unit', 'Calculation', 'Keyword']
+        if not bs.getShowPrices():
+            to_remove.append('Price')
         for col_name in to_remove:
             if col_name in self.review_states[0]['columns']:
                 self.review_states[0]['columns'].remove(col_name)
-        self.columns.update({'Min': {'title': _('Min')},
-                             'Max': {'title': _('Max')},
-                             'Error': {'title': _('Error %')}})
-        self.review_states[0]['columns'].extend(['Min', 'Max', 'Error'])
+        if bs.getEnableARSpecs():
+            self.columns.update(
+                {'Min': {'title': _('Min')},
+                 'Max': {'title': _('Max')},
+                 'Error': {'title': _('Error %')}})
+            self.review_states[0]['columns'].extend(
+                ['Min', 'Max', 'Error'])
 
         # Add columns for each AR
         for arnum in range(self.ar_count):
@@ -78,13 +85,16 @@ class AnalysisServicesView(ASV):
             self.columns[k]['sortable'] = False
 
     def folderitems(self):
+        bs = self.context.bika_setup
         items = super(AnalysisServicesView, self).folderitems()
-
         for x, item in enumerate(items):
-            items[x]['Min'] = ''
-            items[x]['Max'] = ''
-            items[x]['Error'] = ''
-            items[x]['allow_edit'] = ['Price', 'Min', 'Max', 'Error']
+            if bs.getShowPrices():
+                items[x]['allow_edit'] = ['Price']
+            if bs.getEnableARSpecs():
+                items[x]['allow_edit'].extend(['Min', 'Max', 'Error'])
+                items[x]['Min'] = ''
+                items[x]['Max'] = ''
+                items[x]['Error'] = ''
             for arnum in range(self.ar_count):
                 selected = self._get_selected_items(form_key='ar.%s' % arnum)
                 if item in selected:
@@ -128,7 +138,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         copy_from = self.request.get('copy_from', "")
         if not copy_from:
             return {}
-        uids =  copy_from.split(",")
+        uids = copy_from.split(",")
 
         n = 0
         for uid in uids:
@@ -137,7 +147,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
             new_rr = []
             for i, r in enumerate(rr):
                 s_uid = self.bika_setup_catalog(portal_type='AnalysisService',
-                                              getKeyword=r['keyword'])[0].UID
+                                                getKeyword=r['keyword'])[0].UID
                 r['uid'] = s_uid
                 new_rr.append(r)
             specs[n] = new_rr
@@ -173,7 +183,8 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         """Return a table displaying services to be selected for inclusion
         in a new AR.  Used in add_by_row view popup, and add_by_col add view.
         """
-        if not ar_count: ar_count = self.ar_count
+        if not ar_count:
+            ar_count = self.ar_count
         s = AnalysisServicesView(self.context, self.request, ar_count=ar_count)
         return s.contents_table()
 
@@ -205,7 +216,8 @@ class SecondaryARSampleInfo(BrowserView):
         sample_fields = dict([(f.getName(), f) for f in sample_schema.fields()])
         ar_schema = self.context.Schema()
         ar_fields = [f.getName() for f in ar_schema.fields()
-                     if f.widget.isVisible(self.context, 'secondary') == 'disabled']
+                     if f.widget.isVisible(self.context,
+                                           'secondary') == 'disabled']
         ret = []
         for fieldname in ar_fields:
             if fieldname in sample_fields:
@@ -242,10 +254,10 @@ class ajaxAnalysisRequestSubmit():
 
         form_parts = json.loads(self.request.form['parts'])
 
-        #Get header values out, get values, exclude from any loops below
+        # Get header values out, get values, exclude from any loops below
         headerfieldnames = ['Client', 'Client_uid', 'Contact', 'Contact_uid',
-                            'CCContact', 'CCContact_uid', 'CCEmails', 
-                            'Batch', 'Batch_uid', 
+                            'CCContact', 'CCContact_uid', 'CCEmails',
+                            'Batch', 'Batch_uid',
                             'InvoiceContact', 'InvoiceContact_uid']
         headers = {}
         for field in form.keys():
@@ -262,8 +274,9 @@ class ajaxAnalysisRequestSubmit():
                 fieldnames.append(arnum)
 
         if len(fieldnames) == 0:
-            ajax_form_error(errors, message=t(_("No analyses have been selected")))
-            return json.dumps({'errors':errors})
+            ajax_form_error(errors,
+                            message=t(_("No analyses have been selected")))
+            return json.dumps({'errors': errors})
 
         # Now some basic validation
         required_fields = [field.getName() for field
@@ -285,7 +298,7 @@ class ajaxAnalysisRequestSubmit():
                     'SampleType'
                 ]:
                     continue
-                if not ar.get(field, '') and not headers.get(field,''):
+                if not ar.get(field, '') and not headers.get(field, ''):
                     ajax_form_error(errors, field, fieldname)
         # Return errors if there are any
         if errors:
@@ -324,14 +337,15 @@ class ajaxAnalysisRequestSubmit():
                     resolved_values[fname] = v
                     continue
                 # we want to write the UIDs and ignore the title values
-                if k+"_uid" in values:
+                if k + "_uid" in values:
                     continue
                 resolved_values[k] = values[k]
             # Get the analyses from the form data
             analyses = values["Analyses"]
 
             # Gather the specifications from the form
-            specs = json.loads(form['copy_to_new_specs']).get(str(fieldname), {})
+            specs = json.loads(form['copy_to_new_specs']).get(str(fieldname),
+                {})
             if not specs:
                 specs = json.loads(form['specs']).get(str(fieldname), {})
             if specs:
@@ -355,11 +369,11 @@ class ajaxAnalysisRequestSubmit():
             # The result is the same once we are here.
             if not partitions:
                 partitions = [{
-                    'services': [],
-                    'container': None,
-                    'preservation': '',
-                    'separate': False
-                }]
+                                  'services': [],
+                                  'container': None,
+                                  'preservation': '',
+                                  'separate': False
+                              }]
             # Apply DefaultContainerType to partitions without a container
             default_container_type = resolved_values.get(
                 'DefaultContainerType', None
@@ -385,13 +399,13 @@ class ajaxAnalysisRequestSubmit():
                 specifications=specs.values(),
                 prices=prices
             )
-            #Add Headers
+            # Add Headers
             for fieldname in headers.keys():
                 if headers[fieldname] != '' and not fieldname.endswith('_uid'):
-                    if headers.get(fieldname+'_uid'):
+                    if headers.get(fieldname + '_uid'):
                         field = ar.Schema()[fieldname];
                         mutator = field.getMutator(ar)
-                        uid = headers[fieldname+'_uid']
+                        uid = headers[fieldname + '_uid']
                         obj = uc(UID=uid)[0].getObject()
                         mutator(obj)
                     else:
