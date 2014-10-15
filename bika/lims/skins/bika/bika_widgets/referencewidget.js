@@ -13,15 +13,14 @@ $(document).ready(function(){
         $(this).parent().remove();
     });
 
-    $(".ArchetypesReferenceWidget").bind("selected blur change", function(){
-        var e = $(this).children("input.referencewidget");
-        if (e.val() == '') {
-            fieldName = $(e).attr("name").split(":")[0];
-            $(e).attr("uid", "");
-            $("input[name^='"+fieldName+"_uid']").val("");
-            $("div[name='"+fieldName+"-listing']").empty();
-        }
-    });
+		$(".ArchetypesReferenceWidget").bind("change", function(){
+			var e = $(this).children("input.referencewidget");
+			if (e.val() == '') {
+				fieldName = $(e).attr("name").split(":")[0];
+				$(e).attr("uid", "");
+				$("input[name^='"+fieldName+"_uid']").val("");
+			}
+		});
 
 });
 
