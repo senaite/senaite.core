@@ -127,27 +127,44 @@ function referencewidget_lookups(elements){
 }
 
 function save_UID_check(){
-    //Save the selected uid's item to avoid introduce non-listed values inside the widget.
+    //Save the selected uid's item to avoid introduce non-listed
+    //values inside the widget.
     $(".ArchetypesReferenceWidget").bind("selected", function(){
         var uid = $(this).children("input.referencewidget").attr("uid");
+        var val = $(this).children("input.referencewidget").val();
         $(this).children("input.referencewidget").attr("uid_check",uid);
+        $(this).children("input.referencewidget").attr("val_check",val);
     });
 }
 
 function check_UID_check(){
-    //Remove the necessary values to submit if the introduced data is not correct.
+    //Remove the necessary values to submit if the introduced data is
+    //not correct.
     $(".ArchetypesReferenceWidget").children("input.referencewidget").bind("blur", function(){
         var chk = $(this).attr("uid_check");
+        var val_chk = $(this).attr("val_check");
         var value = $(this).val();
-
-        if ((chk == undefined || chk == false) && (value != "")){
-            $(this).attr('uid',"");
+        //When is the first time you click on
+        if ((chk == undefined || chk == false) && (value != "") && $(this).attr("uid")){
+            $(this).attr("uid_check", $(this).attr("uid"));
+            $(this).attr("val_check",value);
+        }
+        //Write a non existent selection
+        else if ((chk == undefined || chk == false) && (value != "")){
+            $(this).attr('uid','');
             $(this).attr('value','');
         }
-        else if ($(this).attr("value") && (chk != undefined || chk != false)){
-            console.log($(this).attr("value"));
-            $(this).attr('uid',"");
-            $(this).attr('value','');
+        //UID is diferent from the checkUID, preventive option, maybe
+        //never will be accomplished
+        else if ($(this).attr("value") && (chk != undefined || chk != false) && (chk != $(this).attr("uid"))){
+            $(this).attr('uid',chk);
+            $(this).attr('value',val_chk);
+        }
+        //Modified the value by hand and wrong, it restores the
+        //previous option.
+        else if ((val_chk != value) && value != ''){
+            $(this).attr('uid',chk);
+            $(this).attr('value',val_chk);
         }
     });
 }
