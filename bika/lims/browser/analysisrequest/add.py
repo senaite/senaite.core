@@ -23,19 +23,19 @@ from zope.interface import implements
 
 
 class AnalysisServicesView(ASV):
-
-    def _get_selected_items(self, full_objects = True, form_key=None):
+    def _get_selected_items(self, full_objects=True, form_key=None):
         """ return a list of selected form objects
             full_objects defaults to True
         """
-        form = self.request.form.get(form_key, {}) if form_key else self.request.form
+        form = self.request.form.get(form_key,
+            {}) if form_key else self.request.form
         uc = getToolByName(self.context, 'uid_catalog')
 
         selected_items = {}
         for uid in form.get('uids', []):
             try:
-                item = uc(UID = uid)[0].getObject()
-            except:
+                item = uc(UID=uid)[0].getObject()
+            except IndexError:
                 # ignore selected item if object no longer exists
                 continue
             selected_items[uid] = item
@@ -43,42 +43,38 @@ class AnalysisServicesView(ASV):
 
     def __init__(self, context, request, ar_count=None):
         super(AnalysisServicesView, self).__init__(context, request)
-
         self.ar_count = ar_count if ar_count else 4
-
-        remove_columns = ['Category', 'Instrument', 'Unit', 'Calculation',
-                          'Keyword']
 
         # Customise form for AR Add contexst
         self.pagesize = 0
         self.table_only = True
-        self.review_states = [x for x in self.review_states
-                              if x['id'] == 'default']
+        self.review_states = [
+            x for x in self.review_states if x['id'] == 'default']
         self.review_states[0]['custom_actions'] = []
         self.review_states[0]['transitions'] = []
-        # select all should be tuned so that only visible items are selected
-        # then it would work with filters/collapsed categories
-        self.show_select_all_checkbox = False
-        for col_name in remove_columns:
+
+        # Configure column layout
+        to_remove = [
+            'Category', 'Instrument', 'Unit', 'Calculation', 'Keyword']
+        for col_name in to_remove:
             if col_name in self.review_states[0]['columns']:
                 self.review_states[0]['columns'].remove(col_name)
+        self.columns.update({'Min': {'title': _('Min')},
+                             'Max': {'title': _('Max')},
+                             'Error': {'title': _('Error %')}})
+        self.review_states[0]['columns'].extend(['Min', 'Max', 'Error'])
 
-        self.columns['Min'] = {'title': _('Min')}
-        self.columns['Max'] = {'title': _('Max')}
-        self.columns['Error'] = {'title': _('Error %')}
-        self.review_states[0]['columns'].extend(
-            ['Min', 'Max', 'Error'])
-
+        # Add columns for each AR
         for arnum in range(self.ar_count):
-            self.columns['ar.%s'%arnum] = {'title': _('AR ${ar_number}',
-                                                mapping={'ar_number': arnum}),
-                                     'sortable': False,
-                                     'type': 'boolean'
-                                     }
-            self.review_states[0]['columns'].append('ar.%s' %arnum)
+            self.columns['ar.%s' % arnum] = {
+                'title': _('AR ${ar_number}', mapping={'ar_number': arnum}),
+                'sortable': False,
+                'type': 'boolean'
+            }
+            self.review_states[0]['columns'].append('ar.%s' % arnum)
 
-        # XXX. This list is not sortable, and it should be, but that is buggy.
-        for k,v in self.columns.items():
+        # XXX. Removing sortable from services - it causes bugs in ar_add.
+        for k, v in self.columns.items():
             self.columns[k]['sortable'] = False
 
     def folderitems(self):
@@ -90,13 +86,13 @@ class AnalysisServicesView(ASV):
             items[x]['Error'] = ''
             items[x]['allow_edit'] = ['Price', 'Min', 'Max', 'Error']
             for arnum in range(self.ar_count):
-                selected = self._get_selected_items(form_key='ar.%s'%arnum)
+                selected = self._get_selected_items(form_key='ar.%s' % arnum)
                 if item in selected:
-                    items[x]['ar.%s'%arnum] = True
+                    items[x]['ar.%s' % arnum] = True
                 else:
-                    items[x]['ar.%s'%arnum] = False
-                # all AR selectors are always editable:
-                items[x]['allow_edit'].append('ar.%s'%arnum)
+                    items[x]['ar.%s' % arnum] = False
+                # always editable
+                items[x]['allow_edit'].append('ar.%s' % arnum)
 
         return items
 
