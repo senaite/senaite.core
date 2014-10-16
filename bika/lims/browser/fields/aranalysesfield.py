@@ -116,6 +116,7 @@ class ARAnalysesField(ObjectField):
                     s_in_rr = True
             if not s_in_rr:
                 rr.append(s)
+        instance.setResultsRange(rr)
 
         new_analyses = []
         proxies = bsc(UID=service_uids)
