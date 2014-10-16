@@ -413,20 +413,7 @@ ClientReference = StringField(
                  },
     ),
 )
-ContainerTemperature = StringField(
-    'ContainerTemperature',
-    widget=StringWidget(
-        label=_('Container Temperature'),
-        description = _("The temperature of the sample container on arrival"),
-    )
-)
-ContainerCondition = StringField(
-    'ContainerCondition',
-    widget=StringWidget(
-        label=_('Container Condition'),
-        description = _("The physical condition of the sample container on arrival"),
-    )
-)
+
 BatchLabels = LinesField(
     'BatchLabels',
     vocabulary="BatchLabelVocabulary",
@@ -756,8 +743,6 @@ schema = BikaFolderSchema.copy() + Schema((
     SamplePoint,
     ClientBatchComment,
     BatchLabels,
-    ContainerTemperature,
-    ContainerCondition,
     InheritedObjects,
     InheritedObjectsUI,
     Remarks,
