@@ -18,5 +18,6 @@ def upgrade(tool):
 
     logger.info("Reindex added indexes in bika_setup_catalog")
     bsc.manage_reindexIndex(ids=['getRawSamplePoints', ])
+    bsc.manage_reindexIndex(ids=['getRawSampleTypes', ])
 
     return True
