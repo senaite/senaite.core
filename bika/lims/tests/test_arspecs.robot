@@ -15,84 +15,114 @@ Suite Teardown   Close All Browsers
 
 *** Test Cases ***
 
-Test AR specs UI and alerts
+Test AnalysisRequest Specifications
     Log in                              test_labmanager  test_labmanager
 
-    # enable ar spec fields
-    go to                               ${PLONEURL}/bika_setup/edit
-    click link                          Analyses
-    select checkbox                     EnableARSpecs
+    # First enable visibility of AR Specification fields
+    Go To                               ${PLONEURL}/bika_setup/edit
+    Click Link                          Analyses
+    Select Checkbox                     EnableARSpecs
+    Click Button                        Save
 
-    # add ar
-    go to                               ${PLONEURL}/clients/client-1/analysisrequests
-    click link                          Add
-    wait until page contains            Request new analyses
-    Select from dropdown                ar_0_Profile            Trace
-    Select from dropdown                ar_0_Contact            Rita
+    # Load the AR Add form, and set some basic things.
+    Go To                               ${PLONEURL}/clients/client-1/analysisrequests
+    Click Link                          Add
+    Wait Until Page Contains            Request new analyses
+    Select From Dropdown                ar_0_Profile            Trace Metals
+    Select From Dropdown                ar_0_Contact            Rita
     SelectDate                          ar_0_SamplingDate       1
 
-    # select Barley, there is a Lab spec
+    # select Barley, and check that the Lab spec is applied
     Select from dropdown                ar_0_SampleType         Barley
-    sleep          3
-    Textfield Value Should Be           css=input[class*='min'][keyword='Mg']           5       #  lab default : 5
-    Textfield Value Should Be           css=input[class*='max'][keyword='Mg']           11      #  lab default : 11
-    Textfield Value Should Be           css=input[class*='error'][keyword='Mg']         10      #  lab default :  10
+    sleep                               3
+    Textfield Value Should Be           ar_0_Specification      Barley
+    Textfield Value Should Be           css=input[class*='min'][keyword='Mg']           5
+    Textfield Value Should Be           css=input[class*='max'][keyword='Mg']           11
+    Textfield Value Should Be           css=input[class*='error'][keyword='Mg']         10
 
-    # select Apple pulp, there is a Client spec
+    # select Apple pulp, and check that the Client spec is applied
     Select from dropdown                ar_0_SampleType         Apple Pulp
-    sleep          3
-    # when selecting a sampletype the spec is always set if a default is found
+    sleep                               3
     Textfield Value Should Be           ar_0_Specification      Apple Pulp
-    # That default spec gets automatically selected
-    Text field value should be          ar_0_Specification      Apple Pulp
-    # The value for Ca in the client spec is Ca=min:11 max:15 error:10%
-    Textfield Value Should Be           css=input[class*='min'][keyword='Ca']           11      #  lab default : 9
-    Textfield Value Should Be           css=input[class*='max'][keyword='Ca']           15      #  lab default : 11
-    Textfield Value Should Be           css=input[class*='error'][keyword='Ca']         9       #  lab default :  10
-    # these override the defaults
-    Input text                          css=input[class*='min'][keyword='Ca']           1
-    Input text                          css=input[class*='max'][keyword='Ca']           5
-    Input text                          css=input[class*='error'][keyword='Ca']         10
-    # And others will be blank.
-    Input text                          css=input[class*='min'][keyword='Ca']           1
-    Input text                          css=input[class*='max'][keyword='Ca']           5
-    Input text                          css=input[class*='error'][keyword='Ca']         10
+    Textfield Value Should Be           css=input[class*='min'][keyword='Ca']           11
+    Textfield Value Should Be           css=input[class*='max'][keyword='Ca']           15
+    Textfield Value Should Be           css=input[class*='error'][keyword='Ca']         9    #  lab default is 10
 
-    # Save AR, and recive sample
+    # Set AR overrides for Zinc.
+    Input text                          css=input[class*='min'][keyword='Zn']           22
+    Input text                          css=input[class*='max'][keyword='Zn']           33
+    Input text                          css=input[class*='error'][keyword='Zn']         44
+
+    # Save AR (AP-0001-R01) and recive it.
     Set Selenium Timeout                30
     Click Button                        Save
     Wait until page contains            created
-    Set Selenium Timeout                10
+    Set Selenium Timeout                5
     Select Checkbox                     css=[item_title='AP-0001-R01']
     Click element                       css=[transition='receive']
     Wait until page contains            saved
 
+    # Now click the AR, and make sure we have result entry fields.
     Click link                          css=[href*='AP-0001-R01']
-    wait until page contains element    css=[selector='Result_Ca']
+    wait until page contains element    css=[selector='Result_Zn']
 
-    # Check the client spec values
-    Input text                          css=[selector='Result_Ca']      7
-    Press Key                           css=[selector='Result_Ca']      \t
-    Page Should contain element         css=[title='Result out of range (min 1, max 5)']
-    Input text                          css=[selector='Result_Ca']      4
-    Press Key                           css=[selector='Result_Ca']      \t
+    # Fill in valid form values
+    Input text                          css=[selector='Result_Ca']      11
+    Input text                          css=[selector='Result_Cu']      14
+    Input text                          css=[selector='Result_Fe']      15
+    Input text                          css=[selector='Result_Mg']      1
+    Input text                          css=[selector='Result_Mn']      17
+    Input text                          css=[selector='Result_Na']      21
+    Input text                          css=[selector='Result_T']       1
+    # Check that the overrides from the AR add form were applied:
+    Input text                          css=[selector='Result_Zn']      1
+    Press Key                           css=[selector='Result_Zn']      \t
+    Page Should contain element         css=[title='Result out of range (min 22, max 33)']
+    Input text                          css=[selector='Result_Zn']      22
+    Press Key                           css=[selector='Result_Zn']      \t
     Page Should not contain element     css=[title*='Result out of range']
-
-    # Check the lab spec values
-    Input text                          css=[selector='Result_Cu']      15
-    Press Key                           css=[selector='Result_Cu']      \t
-    Page Should not contain element     css=[title*='Result out of range']
-    Input text                          css=[selector='Result_Cu']      1
-    Press Key                           css=[selector='Result_Cu']      \t
-    # I enter the out-of-range value last, and send it through
-    # verify and publish
-    Page Should contain element         css=[title='Result out of range (min 14, max 18)']
-    Input text                          css=[selector='Result_Fe']      10
-    Input text                          css=[selector='Result_Mg']      10
-    Input text                          css=[selector='Result_Mn']      10
-    Input text                          css=[selector='Result_Na']      10
-    Input text                          css=[selector='Result_Zn']      10
+    # submit AR for verification.
     Click element                       css=[transition='submit']
+
+    # Now copy this AR to new (open the AR add form with values prefilled):
+    Go To                               ${PLONEURL}/clients/client-1/analysisrequests
+    Select Checkbox                     css=[selector='client-1_AP-0001-R01']
+    Click element                       css=[transition='copy_to_new']
+
+    # The add form should have our existing specs applied:
+    Wait until page contains element    css=[keyword='Zn'].min
+    Textfield Value Should Be           css=[keyword='Zn'].min      22
+    Textfield Value Should Be           css=[keyword='Zn'].max      33
+    Textfield Value Should Be           css=[keyword='Zn'].error    44
+
+    # We will now de-select Zinc, and create the AR.
+    Unselect Checkbox                   css=[type='checkbox'][keyword='Zn']
+    SelectDate                          ar_0_SamplingDate       1
+    Set Selenium Timeout                30
+    Click Button                        Save
+    Wait until page contains            created
+    Set Selenium Timeout                5
+
+    # Now copy the new AR without the Zinc analysis:
+    Go To                               ${PLONEURL}/clients/client-1/analysisrequests
+    Select Checkbox                     css=[selector='client-1_AP-0002-R01']
+    Click element                       css=[transition='copy_to_new']
+
+    # Then select the Zinc analysis, the custom values should be applied.
+    Select Checkbox                     css=[type='checkbox'][keyword='Zn']
+    Textfield Value Should Be           css=[keyword='Zn'].min      22
+    Textfield Value Should Be           css=[keyword='Zn'].max      33
+    Textfield Value Should Be           css=[keyword='Zn'].error    44
+
+    # OK forget that AR add form, let's go back to AP-0002-R01: the zinc-less AR.
+    Go To                               ${PLONEURL}/clients/client-1/AP-0002-R01
+
+    # Manage Analyses should also detect existing values:
+    Click Link                          Manage Analyses
+    Select Checkbox                     css=[alt="Select Zinc"]
+    Page should contain element         css=[field='min'][value='22']
+    Page should contain element         css=[field='max'][value='33']
+    Page should contain element         css=[field='error'][value='44']
 
     Log Out
     Log in                              test_labmanager1  test_labmanager1
