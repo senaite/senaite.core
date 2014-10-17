@@ -96,8 +96,8 @@ Create Primary AR
     Select Date                 ar_0_SamplingDate           @{time}[2]
     Set Selenium Timeout        30
     Click Button                Save
-    Set Selenium Timeout        10
     Wait until page contains    created
+    Set Selenium Timeout        10
     ${ar_id} =                  Get text      //dl[contains(@class, 'portalMessage')][2]/dd
     ${ar_id} =                  Set Variable  ${ar_id.split()[2]}
     Go to                       http://localhost:55001/plone/clients/client-1/analysisrequests
@@ -120,8 +120,8 @@ Create Secondary AR
     select from dropdown        ar_0_Sample
     Set Selenium Timeout        30
     Click Button                Save
-    Set Selenium Timeout        2
     Wait until page contains    created
+    Set Selenium Timeout        2
     ${ar_id} =                  Get text      //dl[contains(@class, 'portalMessage')][2]/dd
     ${ar_id} =                  Set Variable  ${ar_id.split()[2]}
     [return]                    ${ar_id}
