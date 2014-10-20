@@ -10,7 +10,7 @@ function AnalysisRequestAddView() {
 		$('input[type=text]').prop('autocomplete', 'off')
 
 		state_init()
-		configure_at_widgets(after_configure_at_widgets)
+		configure_at_widgets()  // includes filter_all_by_client
 
 		state_onchange_reference()
 		state_onchange_selectwidget()
@@ -45,7 +45,7 @@ function AnalysisRequestAddView() {
 		bika.lims.ar_add.analysisrequests[arnum][fieldname] = value
 	}
 
-	function configure_at_widgets(after_callback) {
+	function configure_at_widgets() {
 		// Multiple AT widgets may be rendered for each field.
 		// rename them here, so their IDs and names do not conflict.
 		var i, element, elements, arnum, name
@@ -90,11 +90,17 @@ function AnalysisRequestAddView() {
 			$(element).attr("id", "ar_" + arnum + "_" + element.id)
 			$(element).attr("name", "ar." + arnum + "." + name)
 		}
-		after_callback()
-	}
-
-	function after_configure_at_widgets() {
-		filter_all_by_client()
+		/**
+		 * Show only the data (contacts, templates, etc.) for the selected
+		 * client.   This is the initial filter, but the filters are re-applied
+		 * each time a Client field is modified.
+		 */
+		setTimeout(function () {
+			var nr_ars = parseInt($("#ar_count").val(), 10)
+			for (arnum = 0; arnum < nr_ars; arnum++) {
+				filter_by_client(arnum)
+			}
+		}, 250)
 	}
 
 	function filter_combogrid(element, filterkey, filtervalue) {
@@ -124,42 +130,27 @@ function AnalysisRequestAddView() {
 	function filter_by_client(arnum) {
 		var element = $("#ar_" + arnum + "_Contact")
 		var clientuid = $("#ar_" + arnum + "_Client_uid").val()
-		filter_combogrid(element, "getParentUID", clientuid)
+		filter_combogrid(element[0], "getParentUID", clientuid)
 		element = $("#ar_" + arnum + "_CCContact")
-		filter_combogrid(element, "getParentUID", clientuid)
+		filter_combogrid(element[0], "getParentUID", clientuid)
 		element = $("#ar_" + arnum + "_InvoiceContact")
-		filter_combogrid(element, "getParentUID", clientuid)
+		filter_combogrid(element[0], "getParentUID", clientuid)
 		// Filter sample points by client
 		element = $("#ar_" + arnum + "_SamplePoint")
-		filter_combogrid(element, "getClientUID", [
+		filter_combogrid(element[0], "getClientUID", [
 			clientuid, $("#bika_setup").attr("bika_samplepoints_uid")])
 		// Filter template by client
 		element = $("#ar_" + arnum + "_Template")
-		filter_combogrid(element, "getClientUID", [
+		filter_combogrid(element[0], "getClientUID", [
 			clientuid, $("#bika_setup").attr("bika_artemplates_uid")])
 		// Filter Analysis Profile by client
 		element = $("#ar_" + arnum + "_Profile")
-		filter_combogrid(element, "getClientUID", [
+		filter_combogrid(element[0], "getClientUID", [
 			clientuid, $("#bika_setup").attr("bika_analysisprofiles_uid")])
 		// Filter Analysis Spec by client
 		element = $("#ar_" + arnum + "_Specification")
-		filter_combogrid(element, "getClientUID", [
+		filter_combogrid(element[0], "getClientUID", [
 			clientuid, $("#bika_setup").attr("bika_analysisspecs_uid")])
-	}
-
-	function filter_all_by_client() {
-		/**
-		 * Show only the data (contacts, templates, etc.) for the selected
-		 * client.   This is the initial filter, but the filters are re-applied
-		 * each time a Client field is modified.
-		 */
-		setTimeout(function () {
-			var arnum
-			for (arnum = 0; arnum < parseInt($("#ar_count").val(),
-											 10); arnum++) {
-				filter_by_client(arnum)
-			}
-		}, 300)
 	}
 
 	function analysis_unset_all(arnum) {
@@ -353,7 +344,6 @@ function AnalysisRequestAddView() {
 					}
 
 					if (fieldName == "Specification") {
-						specification_reset_widget_values(arnum)
 						specification_set()
 					}
 
@@ -388,7 +378,6 @@ function AnalysisRequestAddView() {
 				// set spec values for this arnum
 				$(spec_element).val(spec.Title);
 				$(spec_uid_element).val(spec.UID);
-				specification_reset_widget_values(arnum);
 				specification_set(arnum);
 			}
 		});
@@ -463,12 +452,6 @@ function AnalysisRequestAddView() {
 		});
 	}
 
-	function specification_reset_widget_values(arnum) {
-		$("[name^='ar." + arnum + ".min']").val("");
-		$("[name^='ar." + arnum + ".max']").val("");
-		$("[name^='ar." + arnum + ".error']").val("");
-	}
-
 	function validate_spec_field_entry(element) {
 		var arnum = $(element).attr("name").split(".")[1];
 		var uid = $(element).attr("uid");
@@ -506,7 +489,6 @@ function AnalysisRequestAddView() {
 	function specification_selected() {
 		// Selected a Specification
 		$("[id*='_Specification']").live('selected', function () {
-			specification_reset_widget_values(arnum)
 			specification_set()
 		})
 	}
@@ -614,7 +596,7 @@ function AnalysisRequestAddView() {
 									var poc = key.split("__")[0];
 									var cat = key.split("__")[1];
 									var th = $("th[cat='" + cat + "']")
-									if($(th).hasClass("collapsed"))
+									if ($(th).hasClass("collapsed"))
 										$(th).click()
 									for (i in services) {
 										var service = services[i];
@@ -626,6 +608,27 @@ function AnalysisRequestAddView() {
 								calculate_parts(arnum);
 							});
 				});
+	}
+
+	function profile_set_from_template(template) {
+		var arnum = $(this).parents('td').attr('arnum')
+		// lookup AnalysisProfile
+		if (template['AnalysisProfile']) {
+			var request_data = {
+				portal_type: "AnalysisProfile",
+				title: template['AnalysisProfile'],
+				include_fields: ["UID"]
+			};
+			window.bika.lims.jsonapi_read(request_data, function (data) {
+				$("#ar_" + arnum + "_Profile").val(template['AnalysisProfile']);
+				$("#ar_" + arnum + "_Profile_uid").val(data['objects'][0]['UID']);
+			});
+		}
+		else {
+			$("#ar_" + arnum + "_Profile").val("");
+			$("#ar_" + arnum + "_Profile_uid").val("");
+		}
+
 	}
 
 	function analysis_set(arnum, service_uid) {
@@ -686,48 +689,32 @@ function AnalysisRequestAddView() {
 			var template = data.objects[0];
 			var request_data, x, i;
 			// set our template fields
-			$("#ar_" + arnum + "_SampleType").val(template.SampleType);
-			$("#ar_" + arnum + "_SampleType_uid").val(template.SampleTypeUID);
+			$("#ar_" + arnum + "_SampleType").val(template['SampleType']);
+			$("#ar_" + arnum + "_SampleType_uid").val(template['SampleTypeUID']);
+			$("#ar_" + arnum + "_SamplePoint").val(template['SamplePoint']);
+			$("#ar_" + arnum + "_SamplePoint_uid").val(template['SamplePointUID']);
+			$("#ar_" + arnum + "_reportdrymatter")
+					.prop("checked", template['reportdrymatter']);
 			specification_set_from_sampletype(arnum)
-			$("#ar_" + arnum + "_SamplePoint").val(template.SamplePoint);
-			$("#ar_" + arnum + "_SamplePoint_uid").val(template.SamplePointUID);
-			$("#ar_" + arnum + "_reportdrymatter").prop("checked",
-														template.reportdrymatter);
-			set_default_spec(arnum);
-			// lookup AnalysisProfile
-			if (template.AnalysisProfile) {
-				request_data = {
-					portal_type: "AnalysisProfile",
-					title: template.AnalysisProfile,
-					include_fields: ["UID"]
-				};
-				window.bika.lims.jsonapi_read(request_data, function (data) {
-					$("#ar_" + arnum + "_Profile").val(template.AnalysisProfile);
-					$("#ar_" + arnum + "_Profile_uid").val(data.objects[0].UID);
-				});
-			}
-			else {
-				$("#ar_" + arnum + "_Profile").val("");
-				$("#ar_" + arnum + "_Profile_uid").val("");
-			}
+			profile_set_from_template(template)
 
 			// scurrel the parts into hashes for easier lookup
 			var parts_by_part_id = {};
 			var parts_by_service_uid = {};
-			for (x in template.Partitions) {
-				if (!template.Partitions.hasOwnProperty(x)) {
+			for (x in template['Partitions']) {
+				if (!template['Partitions'].hasOwnProperty(x)) {
 					continue;
 				}
-				var P = template.Partitions[x];
+				var P = template['Partitions'][x];
 				P.part_nr = parseInt(P.part_id.split("-")[1], 10);
 				P.services = [];
 				parts_by_part_id[P.part_id] = P;
 			}
-			for (x in template.Analyses) {
-				if (!template.Analyses.hasOwnProperty(x)) {
+			for (x in template['Analyses']) {
+				if (!template['Analyses'].hasOwnProperty(x)) {
 					continue;
 				}
-				i = template.Analyses[x];
+				i = template['Analyses'][x];
 				parts_by_part_id[i.partition].services.push(i.service_uid);
 				parts_by_service_uid[i.service_uid] = parts_by_part_id[i.partition];
 			}
@@ -750,11 +737,11 @@ function AnalysisRequestAddView() {
 				include_fields: ["PointOfCapture", "CategoryUID", "UID",
 								 "Title", "Keyword", "Price", 'VAT']
 			};
-			for (x in template.Analyses) {
-				if (!template.Analyses.hasOwnProperty(x)) {
+			for (x in template['Analyses']) {
+				if (!template['Analyses'].hasOwnProperty(x)) {
 					continue;
 				}
-				request_data.UID.push(template.Analyses[x].service_uid);
+				request_data.UID.push(template['Analyses'][x]['service_uid']);
 			}
 			// save services in hash for easier lookup this
 			window.bika.lims.jsonapi_read(request_data, function (data) {
@@ -784,7 +771,6 @@ function AnalysisRequestAddView() {
 				var total = 0.00;
 				var spec_uid = $("#ar_" + arnum + "_Specification_uid").val();
 				var an_parent = $(analyses).parent();
-				clearHiddenPopupFields(an_parent);
 				var titles = [];
 				for (var p in poc_cat_services) {
 					if (!poc_cat_services.hasOwnProperty(p)) {
@@ -826,9 +812,9 @@ function AnalysisRequestAddView() {
 	}
 
 	function template_selected() {
-		$("[id*='_ARTemplate']").live('selected', function () {
+		$("[id*='_Template']").live('selected', function () {
+			var arnum = $(this).parents('td').attr('arnum')
 			template_set(arnum, $(this).val())
-			specification_reset_widget_values(arnum)
 			specification_set(arnum)
 		})
 	}
@@ -1075,6 +1061,7 @@ function AnalysisRequestAddView() {
 								  }) + "</div>");
 						$("#messagebox").dialog(
 								{
+
 									width: 450,
 									resizable: false,
 									closeOnEscape: false,
@@ -1091,8 +1078,7 @@ function AnalysisRequestAddView() {
 											$(this).dialog("close");
 											$("#messagebox").remove();
 										},
-										no:
-												function () {
+										no: function () {
 											service_uid = $(element).attr("value");
 											check_service(service_uid);
 											$(element).prop("checked",

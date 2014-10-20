@@ -156,14 +156,22 @@
 
     <!-- Analyses -->
     <div style="text-align:left;padding-bottom:10px;">
-        <input class="context button allowMultiSubmit"
-           type="submit"
-           name="save_button"
-            i18n:attributes="value"
-           value="Save"/>
+        <input i18n:attributes="value"
+                class="context button allowMultiSubmit"
+                type="submit"
+                name="save_button"
+                value="Save"/>
     </div>
 
-    <span tal:content="structure view/services_widget_content"></span>
+    <span tal:define="services python:view.services_widget_content('field')">
+        <h3 tal:condition="services" i18n:translate="">Field Analyses</h3>
+        <span tal:replace="structure services"></span>
+    </span>
+
+    <span tal:define="services python:view.services_widget_content('lab')">
+        <h3 tal:condition="services" i18n:translate="">Lab Analyses</h3>
+        <span tal:replace="structure services"></span>
+    </span>
 
 </div>
 

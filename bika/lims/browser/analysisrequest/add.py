@@ -42,11 +42,17 @@ class AnalysisServicesView(ASV):
             selected_items[uid] = item
         return selected_items.values()
 
-    def __init__(self, context, request, ar_count=None):
+    def __init__(self, context, request, poc, ar_count=None):
         super(AnalysisServicesView, self).__init__(context, request)
         self.ar_count = ar_count if ar_count else 4
 
-        # Customise form for AR Add contexst
+        self.ar_add_items = []
+
+        # Customise form for AR Add context
+        self.poc = poc
+        self.form_id = "services_" + poc
+        self.contentFilter['getPointOfCapture'] = poc
+
         self.pagesize = 0
         self.table_only = True
         self.review_states = [
@@ -54,16 +60,14 @@ class AnalysisServicesView(ASV):
         self.review_states[0]['custom_actions'] = []
         self.review_states[0]['transitions'] = []
 
-        bs = context.bika_setup
-
         # Configure column layout
         to_remove = ['Category', 'Instrument', 'Unit', 'Calculation', 'Keyword']
-        if not bs.getShowPrices():
+        if not context.bika_setup.getShowPrices():
             to_remove.append('Price')
         for col_name in to_remove:
             if col_name in self.review_states[0]['columns']:
                 self.review_states[0]['columns'].remove(col_name)
-        if bs.getEnableARSpecs():
+        if context.bika_setup.getEnableARSpecs():
             self.columns.update(
                 {'Min': {'title': _('Min')},
                  'Max': {'title': _('Max')},
@@ -84,27 +88,35 @@ class AnalysisServicesView(ASV):
         for k, v in self.columns.items():
             self.columns[k]['sortable'] = False
 
-    def folderitems(self):
-        bs = self.context.bika_setup
-        items = super(AnalysisServicesView, self).folderitems()
-        for x, item in enumerate(items):
-            if bs.getShowPrices():
-                items[x]['allow_edit'] = ['Price']
-            if bs.getEnableARSpecs():
-                items[x]['allow_edit'].extend(['Min', 'Max', 'Error'])
-                items[x]['Min'] = ''
-                items[x]['Max'] = ''
-                items[x]['Error'] = ''
-            for arnum in range(self.ar_count):
-                selected = self._get_selected_items(form_key='ar.%s' % arnum)
-                if item in selected:
-                    items[x]['ar.%s' % arnum] = True
-                else:
-                    items[x]['ar.%s' % arnum] = False
-                # always editable
-                items[x]['allow_edit'].append('ar.%s' % arnum)
+        # results cached in ar_add_items
+        self.folderitems()
 
-        return items
+    def folderitems(self):
+        # This folderitems acts slightly differently from others, in that it
+        # saves it's results in an attribute, and prevents itself from being
+        # run multiple times.  This is necessary so that AR Add can check
+        # the item count before choosing to render the table at all.
+        if not self.ar_add_items:
+            bs = self.context.bika_setup
+            items = super(AnalysisServicesView, self).folderitems()
+            for x, item in enumerate(items):
+                if bs.getShowPrices():
+                    items[x]['allow_edit'] = ['Price']
+                if bs.getEnableARSpecs():
+                    items[x]['allow_edit'].extend(['Min', 'Max', 'Error'])
+                    items[x]['Min'] = ''
+                    items[x]['Max'] = ''
+                    items[x]['Error'] = ''
+                for arnum in range(self.ar_count):
+                    selected = self._get_selected_items(form_key='ar.%s' % arnum)
+                    if item in selected:
+                        items[x]['ar.%s' % arnum] = True
+                    else:
+                        items[x]['ar.%s' % arnum] = False
+                    # always editable
+                    items[x]['allow_edit'].append('ar.%s' % arnum)
+            self.ar_add_items = items
+        return self.ar_add_items
 
 
 class AnalysisRequestAddView(AnalysisRequestViewView):
@@ -126,7 +138,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         self.ar_count = self.request.get('ar_count', 4)
         try:
             self.ar_count = int(self.ar_count)
-        except:
+        except ValueError:
             self.ar_count = 4
 
     def __call__(self):
@@ -179,13 +191,17 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
                 fields.append(field)
         return fields
 
-    def services_widget_content(self, ar_count=None):
+    def services_widget_content(self, poc, ar_count=None):
         """Return a table displaying services to be selected for inclusion
         in a new AR.  Used in add_by_row view popup, and add_by_col add view.
         """
         if not ar_count:
             ar_count = self.ar_count
-        s = AnalysisServicesView(self.context, self.request, ar_count=ar_count)
+        s = AnalysisServicesView(self.context, self.request,
+                                 poc, ar_count=ar_count)
+        s.folderitems()
+        if not s.ar_add_items:
+            return ""
         return s.contents_table()
 
 
