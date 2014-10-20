@@ -10,7 +10,7 @@ function AnalysisRequestAddView() {
 		$('input[type=text]').prop('autocomplete', 'off')
 
 		state_init()
-		configure_at_widgets()  // includes filter_all_by_client
+		configure_at_widgets()
 
 		state_onchange_reference()
 		state_onchange_selectwidget()
@@ -110,7 +110,7 @@ function AnalysisRequestAddView() {
 		}
 
 		var base_query = $.parseJSON($(element).attr("base_query"))
-		base_query[filterkey] = encodeURIComponent(filtervalue)
+		base_query[filterkey] = filtervalue
 		$(element).attr("base_query", $.toJSON(base_query))
 		var options = $.parseJSON($(element).attr("combogrid_options"))
 		options.url = window.location.href.split("/ar_add")[0] + "/" + options.url
@@ -128,39 +128,43 @@ function AnalysisRequestAddView() {
 	}
 
 	function filter_by_client(arnum) {
-		var element = $("#ar_" + arnum + "_Contact")
+		var bs = $("#bika_setup")
 		var clientuid = $("#ar_" + arnum + "_Client_uid").val()
-		filter_combogrid(element[0], "getParentUID", clientuid)
-		element = $("#ar_" + arnum + "_CCContact")
-		filter_combogrid(element[0], "getParentUID", clientuid)
-		element = $("#ar_" + arnum + "_InvoiceContact")
-		filter_combogrid(element[0], "getParentUID", clientuid)
-		// Filter sample points by client
-		element = $("#ar_" + arnum + "_SamplePoint")
-		filter_combogrid(element[0], "getClientUID", [
-			clientuid, $("#bika_setup").attr("bika_samplepoints_uid")])
-		// Filter template by client
-		element = $("#ar_" + arnum + "_Template")
-		filter_combogrid(element[0], "getClientUID", [
-			clientuid, $("#bika_setup").attr("bika_artemplates_uid")])
-		// Filter Analysis Profile by client
-		element = $("#ar_" + arnum + "_Profile")
-		filter_combogrid(element[0], "getClientUID", [
-			clientuid, $("#bika_setup").attr("bika_analysisprofiles_uid")])
-		// Filter Analysis Spec by client
-		element = $("#ar_" + arnum + "_Specification")
-		filter_combogrid(element[0], "getClientUID", [
-			clientuid, $("#bika_setup").attr("bika_analysisspecs_uid")])
+		filter_combogrid(
+				$("#ar_" + arnum + "_Contact")[0],
+				"getParentUID", clientuid)
+		filter_combogrid(
+				$("#ar_" + arnum + "_CCContact")[0],
+				"getParentUID", clientuid)
+		filter_combogrid(
+				$("#ar_" + arnum + "_InvoiceContact")[0],
+				"getParentUID", clientuid)
+		filter_combogrid(
+				$("#ar_" + arnum + "_SamplePoint")[0],
+				"getClientUID",
+				[clientuid, $(bs).attr("bika_samplepoints_uid")])
+		filter_combogrid(
+				$("#ar_" + arnum + "_Template")[0],
+				"getClientUID",
+				[clientuid, $(bs).attr("bika_artemplates_uid")])
+		filter_combogrid(
+				$("#ar_" + arnum + "_Profile")[0], "getClientUID",
+				[clientuid, $(bs).attr("bika_analysisprofiles_uid")])
+		filter_combogrid(
+				$("#ar_" + arnum + "_Specification")[0],
+				"getClientUID",
+				[clientuid, $(bs).attr("bika_analysisspecs_uid")])
 	}
 
 	function analysis_unset_all(arnum) {
 		$.each($('td.ar\\.' + arnum).find("[type='checkbox']"),
 			   function (i, element) {
 				   if ($(this).prop("checked")) {
-					   $(this).prop("checked", false);
-					   $(element).next(".after").find(".partition").remove();
+					   $(this).prop("checked", false)
+					   $(element).next(".after").find(".partition").remove()
 				   }
-			   });
+			   }
+		)
 	}
 
 	///////////////////////////
@@ -175,7 +179,7 @@ function AnalysisRequestAddView() {
 				var fieldname = $(this).attr('fieldname')
 				if (!fieldname) fieldname = this.id
 				var td = $(this).parents('td')
-				var id = 'ar_' + arnum + '_' + fieldname;
+				var id = 'ar_' + arnum + '_' + fieldname
 				var value = $(td).find('input[id="' + id + '"]').val()
 				var uid = $(td).find('[id*="' + id + '_uid"]').val()
 				state_set(arnum, fieldname, value)
@@ -192,7 +196,7 @@ function AnalysisRequestAddView() {
 				var fieldname = $(this).attr('fieldname')
 				if (!fieldname) fieldname = this.id
 				var td = $(this).parents('td')
-				var instr = '#ar_' + arnum + '_' + fieldname;
+				var instr = '#ar_' + arnum + '_' + fieldname
 				var value = $(td).find(instr).val()
 				state_set(arnum, fieldname, value)
 			})
@@ -207,7 +211,7 @@ function AnalysisRequestAddView() {
 				var arnum = $(this).parents('td').attr('arnum')
 				var fieldname = $(this).attr('fieldname')
 				if (!fieldname) fieldname = this.id
-				var instr = 'input[id="ar_' + arnum + '_' + fieldname + '"]';
+				var instr = 'input[id="ar_' + arnum + '_' + fieldname + '"]'
 				var value = $(td).find(instr).val()
 				state_set(arnum, fieldname, value)
 			})
@@ -224,7 +228,7 @@ function AnalysisRequestAddView() {
 					   var arnum = $(this).parents('td').attr('arnum')
 					   var fieldname = $(this).attr('fieldname')
 					   if (!fieldname) fieldname = this.id
-					   var instr = 'input[id="ar_' + arnum + '_' + fieldname + '"]';
+					   var instr = 'input[id="ar_' + arnum + '_' + fieldname + '"]'
 					   var value = $(td).find(instr).val()
 					   state_set(arnum, fieldname, value)
 				   })
@@ -359,89 +363,90 @@ function AnalysisRequestAddView() {
 
 	function specification_set_from_sampletype(arnum) {
 		// When setting SampleType, we may automatically set the Specification.
-		st_uid = $("#ar_" + arnum + "_SampleType_uid").val();
-		st_title = $("#ar_" + arnum + "_SampleType").val();
+		var st_uid = $("#ar_" + arnum + "_SampleType_uid").val()
+		var st_title = $("#ar_" + arnum + "_SampleType").val()
 		if (!st_uid) {
-			return;
+			return
 		}
-		spec_element = $("#ar_" + arnum + "_Specification");
-		spec_uid_element = $("#ar_" + arnum + "_Specification_uid");
+		var spec_element = $("#ar_" + arnum + "_Specification")
+		var spec_uid_element = $("#ar_" + arnum + "_Specification_uid")
 		var request_data = {
 			catalog_name: "bika_setup_catalog",
 			portal_type: "AnalysisSpec",
 			getSampleTypeTitle: st_title,
 			include_fields: ["Title", "UID"]
-		};
+		}
 		window.bika.lims.jsonapi_read(request_data, function (data) {
 			if (data.objects.length > 0) {
-				var spec = data.objects[0];
+				var spec = data.objects[0]
 				// set spec values for this arnum
-				$(spec_element).val(spec.Title);
-				$(spec_uid_element).val(spec.UID);
-				specification_set(arnum);
+				$(spec_element).val(spec['Title'])
+				$(spec_uid_element).val(spec['UID'])
+				state_set(arnum, 'Specification', spec['UID'])
+				specification_set(arnum)
 			}
-		});
+		})
 	}
 
 	function filter_spec_by_sampletype(arnum) {
 		// when a SampleType is selected I will allow only specs to be selected
 		// which 1- (have the same Sample Types)
 		// 2- (have no sample type at all)
-		var sampletype_title = $("#ar_" + arnum + "_SampleType").val();
-		var e = $("#ar_" + arnum + "_Specification");
-		var query_str = $(e).attr("search_query");
-		var query_obj = $.parseJSON(query_str);
+		var sampletype_title = $("#ar_" + arnum + "_SampleType").val()
+		var e = $("#ar_" + arnum + "_Specification")
+		var query_str = $(e).attr("search_query")
+		var query_obj = $.parseJSON(query_str)
 		if (query_obj.hasOwnProperty("getSampleTypeTitle")) {
-			delete query_obj.getSampleTypeTitle;
+			delete query_obj.getSampleTypeTitle
 		}
 		query_obj.getSampleTypeTitle = [encodeURIComponent(sampletype_title),
-										""];
-		query_str = $.toJSON(query_obj);
-		$(e).attr("search_query", query_str);
+										""]
+		query_str = $.toJSON(query_obj)
+		$(e).attr("search_query", query_str)
 	}
 
 	function specification_set(arnum) {
 		// Get the spec for this ar, and check if the hidden #spec input must be updated.
-		var spec_uid = $("#ar_" + arnum + "_Specification_uid").val();
+		var spec_uid = $("#ar_" + arnum + "_Specification_uid").val()
 		if (spec_uid == "" || spec_uid == undefined || spec_uid == null) {
-			return;
+			return
 		}
 		var request_data = {
 			catalog_name: 'bika_setup_catalog',
 			UID: spec_uid
-		};
+		}
 		window.bika.lims.jsonapi_read(request_data, function (data) {
 			if (data.success && data.objects.length > 0) {
 				// Update the #specs value.
-				var element = $("#specs");
-				var form_rr = $.parseJSON($(element).val());
-				form_rr[arnum] = data.objects[0]['ResultsRange'];
-				$(element).val($.toJSON(form_rr));
+				var element = $("#specs")
+				var form_rr = $.parseJSON($(element).val())
+				form_rr[arnum] = data.objects[0]['ResultsRange']
+				$(element).val($.toJSON(form_rr))
 
 				/* Specs are taken from the Specification element values (#specs).
 				 If a spec is defined in copy_to_new_specs, it is used instead, and the
 				 values in #specs have no effect. */
-				var copy_to_new_specs = $.parseJSON($("#copy_to_new_specs").val());
-				var specs = $.parseJSON($("#specs").val());
-				var rr = copy_to_new_specs[arnum];
+				var copy_to_new_specs = $.parseJSON($("#copy_to_new_specs").val())
+				var specs = $.parseJSON($("#specs").val())
+				var rr = copy_to_new_specs[arnum]
 				if (rr == undefined || rr.length < 1) {
-					rr = specs[arnum];
+					rr = specs[arnum]
 				}
 				// Set values for selected analyses
 				if (rr != undefined && rr.length > 0) {
 					for (var i = 0; i < rr.length; i++) {
-						var this_min = "[name='ar." + arnum + ".min." + rr[i].uid + "']";
-						var this_max = "[name='ar." + arnum + ".max." + rr[i].uid + "']";
-						var this_error = "[name='ar." + arnum + ".error." + rr[i].uid + "']";
+						var this_min = "[name='ar." + arnum + ".min." + rr[i].uid + "']"
+						var this_max = "[name='ar." + arnum + ".max." + rr[i].uid + "']"
+						var this_error = "[name='ar." + arnum + ".error." + rr[i].uid + "']"
 						if ($(this_min).length > 0) {
 							if ($(this_min).val() == "") {
-								$(this_min).val(rr[i].min);
+								$(this_min).val(rr[i].min)
 							}
 							if ($(this_max).val() == "") {
-								$(this_max).val(rr[i].max);
+								$(this_max).val(rr[i].max)
 							}
 							if ($(this_error).val() == "") {
-								$(this_error).val(rr[i].error);
+								$(this_error).val(rr[i].error)
 							}
 						}
 					}
@@ -449,39 +454,39 @@ function AnalysisRequestAddView() {
 
 
 			}
-		});
+		})
 	}
 
 	function validate_spec_field_entry(element) {
-		var arnum = $(element).attr("name").split(".")[1];
-		var uid = $(element).attr("uid");
-		$("[name^='ar\\." + arnum + "\\.Specification']").val("");
-		$("[name^='ar\\." + arnum + "\\.Specification_uid']").val("");
-		var min_element = $("[name='ar." + arnum + ".min." + uid + "']");
-		var max_element = $("[name='ar." + arnum + ".max." + uid + "']");
-		var error_element = $("[name='ar." + arnum + ".error." + uid + "']");
-		var min = parseFloat($(min_element).val(), 10);
-		var max = parseFloat($(max_element).val(), 10);
-		var error = parseFloat($(error_element).val(), 10);
+		var arnum = $(element).attr("name").split(".")[1]
+		var uid = $(element).attr("uid")
+		$("[name^='ar\\." + arnum + "\\.Specification']").val("")
+		$("[name^='ar\\." + arnum + "\\.Specification_uid']").val("")
+		var min_element = $("[name='ar." + arnum + ".min." + uid + "']")
+		var max_element = $("[name='ar." + arnum + ".max." + uid + "']")
+		var error_element = $("[name='ar." + arnum + ".error." + uid + "']")
+		var min = parseFloat($(min_element).val(), 10)
+		var max = parseFloat($(max_element).val(), 10)
+		var error = parseFloat($(error_element).val(), 10)
 		if ($(element).hasClass("min")) {
 			if (isNaN(min)) {
-				$(min_element).val("");
+				$(min_element).val("")
 			}
 			else if ((!isNaN(max)) && min > max) {
-				$(max_element).val("");
+				$(max_element).val("")
 			}
 		}
 		else if ($(element).hasClass("max")) {
 			if (isNaN(max)) {
-				$(max_element).val("");
+				$(max_element).val("")
 			}
 			else if ((!isNaN(min)) && max < min) {
-				$(min_element).val("");
+				$(min_element).val("")
 			}
 		}
 		else if ($(element).hasClass("error")) {
 			if (isNaN(error) || error < 0 || error > 100) {
-				$(error_element).val("");
+				$(error_element).val("")
 			}
 		}
 	}
@@ -553,7 +558,7 @@ function AnalysisRequestAddView() {
 
 	function profile_unset(arnum) {
 		if ($("#ar_" + arnum + "_Profile").val() !== "") {
-			$("#ar_" + arnum + "_Profile").val("");
+			$("#ar_" + arnum + "_Profile").val("")
 		}
 	}
 
@@ -575,39 +580,39 @@ function AnalysisRequestAddView() {
 												 "VAT"]
 							},
 							function (data) {
-								analysis_unset_all(arnum);
+								analysis_unset_all(arnum)
 								unset_ReportDryMatter(arnum)
-								var service_objects = data.objects;
+								var service_objects = data.objects
 
 								// just a silly thing for lookups:
 								// categorised_services : key is "pointofcapture_category"
-								if (service_objects.length === 0) return;
-								var categorised_services = {};
+								if (service_objects.length === 0) return
+								var categorised_services = {}
 								for (var i in service_objects) {
 									var key = service_objects[i].PointOfCapture + "__" +
-											service_objects[i].Category;
+											service_objects[i].Category
 									if (categorised_services[key] === undefined)
-										categorised_services[key] = [];
-									categorised_services[key].push(service_objects[i]);
+										categorised_services[key] = []
+									categorised_services[key].push(service_objects[i])
 								}
 
 								for (var key in categorised_services) {
-									var services = categorised_services[key];
-									var poc = key.split("__")[0];
-									var cat = key.split("__")[1];
+									var services = categorised_services[key]
+									var poc = key.split("__")[0]
+									var cat = key.split("__")[1]
 									var th = $("th[cat='" + cat + "']")
 									if ($(th).hasClass("collapsed"))
 										$(th).click()
 									for (i in services) {
-										var service = services[i];
-										var service_uid = services[i].UID;
+										var service = services[i]
+										var service_uid = services[i].UID
 										analysis_set(arnum, service_uid)
 									}
-									recalc_prices(arnum);
+									recalc_prices(arnum)
 								}
-								calculate_parts(arnum);
-							});
-				});
+								calculate_parts(arnum)
+							})
+				})
 	}
 
 	function profile_set_from_template(template) {
@@ -618,58 +623,58 @@ function AnalysisRequestAddView() {
 				portal_type: "AnalysisProfile",
 				title: template['AnalysisProfile'],
 				include_fields: ["UID"]
-			};
+			}
 			window.bika.lims.jsonapi_read(request_data, function (data) {
-				$("#ar_" + arnum + "_Profile").val(template['AnalysisProfile']);
-				$("#ar_" + arnum + "_Profile_uid").val(data['objects'][0]['UID']);
-			});
+				$("#ar_" + arnum + "_Profile").val(template['AnalysisProfile'])
+				$("#ar_" + arnum + "_Profile_uid").val(data['objects'][0]['UID'])
+			})
 		}
 		else {
-			$("#ar_" + arnum + "_Profile").val("");
-			$("#ar_" + arnum + "_Profile_uid").val("");
+			$("#ar_" + arnum + "_Profile").val("")
+			$("#ar_" + arnum + "_Profile_uid").val("")
 		}
 
 	}
 
 	function analysis_set(arnum, service_uid) {
 		var arnum = $(this).parents('td').attr('arnum')
-		profile_unset(arnum);
-		template_unset(arnum);
+		profile_unset(arnum)
+		template_unset(arnum)
 
 		// Unselecting Dry Matter Service unsets 'Report Dry Matter'
 		if ($(this).val() == $("#getDryMatterService").val() && !$(this).prop("checked")) {
-			$("#ar_" + arnum + "_ReportDryMatter").prop("checked", false);
+			$("#ar_" + arnum + "_ReportDryMatter").prop("checked", false)
 		}
 
 		// unselecting service: remove part number.
 		if (!$(this).prop("checked")) {
-			$(".partnr_" + this.id).filter("[arnum='" + arnum + "']").empty();
+			$(".partnr_" + this.id).filter("[arnum='" + arnum + "']").empty()
 		}
 
-		calcdependencies([$(this)]);
-		var layout = $("input[id='layout']").val();
+		calcdependencies([$(this)])
+		var layout = $("input[id='layout']").val()
 		if (layout == 'columns') {
-			recalc_prices();
+			recalc_prices()
 		}
 		else {
-			recalc_prices(arnum);
+			recalc_prices(arnum)
 		}
-		calculate_parts(arnum);
-		toggle_spec_fields($(this));
+		calculate_parts(arnum)
+		toggle_spec_fields($(this))
 	}
 
 	function unset_ReportDryMatter(arnum) {
-		$("#ar_" + arnum + "_ReportDryMatter").prop("checked", false);
+		$("#ar_" + arnum + "_ReportDryMatter").prop("checked", false)
 	}
 
 	function template_unset(arnum) {
 		if ($("#ar_" + arnum + "_Template").val() !== "") {
-			$("#ar_" + arnum + "_Template").val("");
+			$("#ar_" + arnum + "_Template").val("")
 		}
 	}
 
 	function template_set(arnum, template_title) {
-		analysis_unset_all(arnum);
+		analysis_unset_all(arnum)
 		var request_data = {
 			portal_type: "ARTemplate",
 			title: template_title,
@@ -684,131 +689,88 @@ function AnalysisRequestAddView() {
 				"Analyses",
 				"Prices",
 			]
-		};
+		}
 		window.bika.lims.jsonapi_read(request_data, function (data) {
-			var template = data.objects[0];
-			var request_data, x, i;
+			var template = data.objects[0]
+			var request_data, x, i
+
 			// set our template fields
-			$("#ar_" + arnum + "_SampleType").val(template['SampleType']);
-			$("#ar_" + arnum + "_SampleType_uid").val(template['SampleTypeUID']);
-			$("#ar_" + arnum + "_SamplePoint").val(template['SamplePoint']);
-			$("#ar_" + arnum + "_SamplePoint_uid").val(template['SamplePointUID']);
+			$("#ar_" + arnum + "_SampleType").val(template['SampleType'])
+			$("#ar_" + arnum + "_SampleType_uid").val(template['SampleTypeUID'])
+			state_set(arnum, 'SampleType', template['SampleTypeUID'])
+			$("#ar_" + arnum + "_SamplePoint").val(template['SamplePoint'])
+			$("#ar_" + arnum + "_SamplePoint_uid").val(template['SamplePointUID'])
+			state_set(arnum, 'SamplePoint', template['SamplePointUID'])
 			$("#ar_" + arnum + "_reportdrymatter")
-					.prop("checked", template['reportdrymatter']);
+					.prop("checked", template['reportdrymatter'])
 			specification_set_from_sampletype(arnum)
 			profile_set_from_template(template)
 
-			// scurrel the parts into hashes for easier lookup
-			var parts_by_part_id = {};
-			var parts_by_service_uid = {};
+			// save parts (with service UIDS as values) for easier lookup
+			var parts_by_part_id = {}
+			var parts_by_service_uid = {}
 			for (x in template['Partitions']) {
-				if (!template['Partitions'].hasOwnProperty(x)) {
-					continue;
-				}
-				var P = template['Partitions'][x];
-				P.part_nr = parseInt(P.part_id.split("-")[1], 10);
-				P.services = [];
-				parts_by_part_id[P.part_id] = P;
+				var P = template['Partitions'][x]
+				P['part_nr'] = parseInt(P['part_id'].split("-")[1], 10)
+				P['services'] = []
+				parts_by_part_id[P['part_id']] = P
 			}
 			for (x in template['Analyses']) {
-				if (!template['Analyses'].hasOwnProperty(x)) {
-					continue;
-				}
-				i = template['Analyses'][x];
-				parts_by_part_id[i.partition].services.push(i.service_uid);
-				parts_by_service_uid[i.service_uid] = parts_by_part_id[i.partition];
+				i = template['Analyses'][x]
+				parts_by_part_id[i['partition']].services.push(i.service_uid)
+				parts_by_service_uid[i['service_uid']] = parts_by_part_id[i.partition]
 			}
-			// this one goes through with the form submit
-			var parts = [];
+
+			// compose 'parts' data for the form state.
+			var parts = []
 			for (x in parts_by_part_id) {
-				if (!parts_by_part_id.hasOwnProperty(x)) {
-					continue;
-				}
-				parts.push(parts_by_part_id[x]);
+				if (!parts_by_part_id.hasOwnProperty(x)) continue
+				parts.push(parts_by_part_id[x])
 			}
-			var formparts = $.parseJSON($("#parts").val());
-			formparts[arnum] = parts;
-			$("#parts").val($.toJSON(formparts));
+			state_set(arnum, 'parts', parts)
 
 			// lookup the services specified in the template
 			request_data = {
 				portal_type: "AnalysisService",
-				UID: [],
-				include_fields: ["PointOfCapture", "CategoryUID", "UID",
-								 "Title", "Keyword", "Price", 'VAT']
-			};
-			for (x in template['Analyses']) {
-				if (!template['Analyses'].hasOwnProperty(x)) {
-					continue;
-				}
-				request_data.UID.push(template['Analyses'][x]['service_uid']);
+				include_fields: ["PointOfCapture", "CategoryTitle", "UID",
+								 "Title", "Keyword", "Price", 'VAT'],
+				UID: []
 			}
-			// save services in hash for easier lookup this
+			for (x in template['Analyses']) {
+				if (!template['Analyses'].hasOwnProperty(x)) continue
+				request_data.UID.push(template['Analyses'][x]['service_uid'])
+			}
 			window.bika.lims.jsonapi_read(request_data, function (data) {
-				var e;
-				var poc_cat_services = {};
-				for (var x in data.objects) {
-					if (!data.objects.hasOwnProperty(x)) {
-						continue;
-					}
-					var service = data.objects[x];
-					var poc_title = service.PointOfCapture;
-					if (!(poc_title in poc_cat_services)) {
-						poc_cat_services[poc_title] = {};
-					}
-					if (!(service.CategoryUID in poc_cat_services[poc_title])) {
-						poc_cat_services[poc_title][service.CategoryUID] = [];
-					}
-					poc_cat_services[poc_title][service.CategoryUID].push([service.UID,
-																		   service.Title,
-																		   service.Keyword,
-																		   service.Price,
-																		   service.VAT]);
-					// poc_cat_services[poc_title][service.CategoryUID].push(service.UID);
-				}
-				// expand categories, select, and enable controls for template services
-				var analyses = $("#ar_" + arnum + "_Analyses");
-				var total = 0.00;
-				var spec_uid = $("#ar_" + arnum + "_Specification_uid").val();
-				var an_parent = $(analyses).parent();
-				var titles = [];
-				for (var p in poc_cat_services) {
-					if (!poc_cat_services.hasOwnProperty(p)) {
-						continue;
-					}
-					var poc = poc_cat_services[p];
-					for (var cat_uid in poc) {
-						if (!poc.hasOwnProperty(cat_uid)) {
-							continue;
-						}
-						var services = poc[cat_uid];
-						var tbody = $("tbody[id='" + p + "_" + cat_uid + "']");
-						var service;
-						// expand category
-						if (!($(tbody).hasClass("expanded"))) {
-							$.ajaxSetup({async: false});
-							toggleCat(p, cat_uid, arnum);
-							$.ajaxSetup({async: true});
-						}
-						$(tbody).toggle(true);
-						for (i = 0; i < services.length; i++) {
-							service = services[i];
-							// select checkboxes
-							e = $("input[arnum='" + arnum + "']").filter("#" + service[0]);
-							$(e).prop("checked", true);
-						}
-					}
-					// set part number indicators
-					for (i = 0; i < services.length; i++) {
-						service = services[i];
-						var partnr = parts_by_service_uid[service[0]].part_nr;
-						e = $(".partnr_" + service[0]).filter("[arnum='" + arnum + "']");
-						$(e).empty().append(partnr + 1);
-					}
-				}
+				var service_uids = []
+				$.each(data['objects'], function (i, o) {
+					var poc = o['PointOfCapture']
+					$('#services_' + poc + ' [cat="' + o['CategoryTitle'] + '"].collapsed').click()
+					$('#' + o['UID'] + '-ar\\.' + arnum).attr("checked", true)
+				})
+				state_set(arnum, 'Analyses', service_uids)
 			})
+
+			partition_indicators_set(arnum)
+//			prices_update(arnum)
+
 		})
-		recalc_prices(arnum);
+	}
+
+	function partition_indicators_clear(arnum) {
+		$('[id*="-ar.' + arnum + '"]').filter("[type='checkbox']").empty()
+	}
+
+	function partition_indicators_set(arnum) {
+		partition_indicators_clear()
+		var parts = bika.lims.ar_add.analysisrequests[arnum]['parts']
+		for (var pi=0; pi<parts.length; pi++){
+			var part = parts[pi];
+			var services = part['services']
+			for (var si=0; si<services.length; si++){
+				var service_uid = services[si];
+				$('#' + service_uid + '-ar\\.' + arnum).next().empty().append(part['part_nr'])
+			}
+		}
 	}
 
 	function template_selected() {
@@ -820,6 +782,7 @@ function AnalysisRequestAddView() {
 	}
 
 	function sample_selected() {
+		var arnum = $(this).parents('td').attr('arnum')
 		// Selected a sample to create a secondary AR.
 		$("[id*='_Sample']").live('selected', function () {
 			// var e = $("input[name^='ar\\."+arnum+"\\."+fieldName+"']")
@@ -877,139 +840,139 @@ function AnalysisRequestAddView() {
 		// if the jsonapi read data did not include any objects, abort
 		// obviously, shouldn't happen
 		if ((!data.success) || data.objects.length < 1) {
-			return;
+			return
 		}
-		var obj = data.objects[0];
+		var obj = data.objects[0]
 		// this is the column containing the elements we will write into
-		var col = window.bika.ar_copy_from_col;
+		var col = window.bika.ar_copy_from_col
 		// set field values from data into respective elements.  data does include
 		// *_uid entries for reference field values, so the corrosponding *_uid
 		// hidden elements are written here
 		for (var fieldname in obj) {
 			if (!obj.hasOwnProperty(fieldname)) {
-				continue;
+				continue
 			}
 			if (skip_fields.indexOf(fieldname) > -1) {
-				continue;
+				continue
 			}
-			var fieldvalue = obj[fieldname];
-			var el = $("#ar_" + col + "_" + fieldname);
+			var fieldvalue = obj[fieldname]
+			var el = $("#ar_" + col + "_" + fieldname)
 			if (el.length > 0) {
-				$(el).val(fieldvalue);
+				$(el).val(fieldvalue)
 			}
 		}
 
-		var services = {};
-		var specs = {};
-		var poc_name, cat_uid, service_uid, service_uids;
-		var i, key;
+		var services = {}
+		var specs = {}
+		var poc_name, cat_uid, service_uid, service_uids
+		var i, key
 
 		for (i = obj.Analyses.length - 1; i >= 0; i--) {
-			var analysis = obj.Analyses[i];
-			cat_uid = analysis.CategoryUID;
-			service_uid = analysis.ServiceUID;
-			key = analysis.PointOfCapture + "__" + analysis.CategoryUID;
+			var analysis = obj.Analyses[i]
+			cat_uid = analysis.CategoryUID
+			service_uid = analysis.ServiceUID
+			key = analysis.PointOfCapture + "__" + analysis.CategoryUID
 			if (!(key in services)) {
-				services[key] = [];
+				services[key] = []
 			}
-			services[key].push(service_uid);
+			services[key].push(service_uid)
 		}
 		for (key in services) {
 			if (!services.hasOwnProperty(key)) {
-				continue;
+				continue
 			}
-			poc_name = key.split("__")[0];
-			cat_uid = key.split("__")[1];
-			service_uids = services[key];
-			window.toggleCat(poc_name, cat_uid, col, service_uids, true);
+			poc_name = key.split("__")[0]
+			cat_uid = key.split("__")[1]
+			service_uids = services[key]
+			window.toggleCat(poc_name, cat_uid, col, service_uids, true)
 		}
 	}
 
 	function service_checkbox_change() {
 		/*jshint validthis:true */
-		var arnum = $(this).attr("arnum");
-		var element = $(this);
-		profile_unset(arnum);
-		template_unset(arnum);
+		var arnum = $(this).attr("arnum")
+		var element = $(this)
+		profile_unset(arnum)
+		template_unset(arnum)
 
 		// Unselecting Dry Matter Service unsets 'Report Dry Matter'
 		if ($(this).val() == $("#getDryMatterService").val() && !$(this).prop("checked")) {
-			$("#ar_" + arnum + "_ReportDryMatter").prop("checked", false);
+			$("#ar_" + arnum + "_ReportDryMatter").prop("checked", false)
 		}
 
 		// unselecting service: remove part number.
 		if (!$(this).prop("checked")) {
-			$(".partnr_" + this.id).filter("[arnum='" + arnum + "']").empty();
+			$(".partnr_" + this.id).filter("[arnum='" + arnum + "']").empty()
 		}
 
-		calcdependencies([element]);
-		recalc_prices();
-		calculate_parts(arnum);
+		calcdependencies([element])
+		recalc_prices()
+		calculate_parts(arnum)
 	}
 
 
 	function add_Yes(dlg, element, dep_services) {
 		for (var i = 0; i < dep_services.length; i++) {
-			var service_uid = dep_services[i].Service_uid;
+			var service_uid = dep_services[i].Service_uid
 			if (!$("#list_cb_" + service_uid).prop("checked")) {
-				check_service(service_uid);
-				$("#list_cb_" + service_uid).prop("checked", true);
+				check_service(service_uid)
+				$("#list_cb_" + service_uid).prop("checked", true)
 			}
 		}
-		$(dlg).dialog("close");
-		$("#messagebox").remove();
+		$(dlg).dialog("close")
+		$("#messagebox").remove()
 	}
 
 	function add_No(dlg, element) {
 		if ($(element).prop("checked")) {
-			uncheck_service($(element).attr("value"));
-			$(element).prop("checked", false);
+			uncheck_service($(element).attr("value"))
+			$(element).prop("checked", false)
 		}
-		$(dlg).dialog("close");
-		$("#messagebox").remove();
+		$(dlg).dialog("close")
+		$("#messagebox").remove()
 	}
 
 	function calcdependencies(elements, auto_yes) {
-		auto_yes = auto_yes || false;
-		jarn.i18n.loadCatalog('bika');
-		var _ = window.jarn.i18n.MessageFactory("bika");
+		auto_yes = auto_yes || false
+		jarn.i18n.loadCatalog('bika')
+		var _ = window.jarn.i18n.MessageFactory("bika")
 
-		var dep;
-		var i, cb;
+		var dep
+		var i, cb
 
-		var lims = window.bika.lims;
+		var lims = window.bika.lims
 
 		for (var elements_i = 0; elements_i < elements.length; elements_i++) {
 			var dep_services = [];  // actionable services
-			var dep_titles = [];
-			var element = elements[elements_i];
-			var service_uid = $(element).attr("value");
+			var dep_titles = []
+			var element = elements[elements_i]
+			var service_uid = $(element).attr("value")
 			// selecting a service; discover dependencies
 			if ($(element).prop("checked")) {
-				var Dependencies = lims.AnalysisService.Dependencies(service_uid);
+				var Dependencies = lims.AnalysisService.Dependencies(service_uid)
 				for (i = 0; i < Dependencies.length; i++) {
-					dep = Dependencies[i];
+					dep = Dependencies[i]
 					if ($("#list_cb_" + dep.Service_uid).prop("checked")) {
 						continue; // skip if checked already
 					}
-					dep_services.push(dep);
-					dep_titles.push(dep.Service);
+					dep_services.push(dep)
+					dep_titles.push(dep.Service)
 				}
 				if (dep_services.length > 0) {
 					if (auto_yes) {
-						add_Yes(this, element, dep_services);
+						add_Yes(this, element, dep_services)
 					}
 					else {
-						var html = "<div id='messagebox' style='display:none' title='" + _("Service dependencies") + "'>";
+						var html = "<div id='messagebox' style='display:none' title='" + _("Service dependencies") + "'>"
 						html = html + _(
 								"<p>${service} requires the following services to be selected:</p>" +
 								"<br/><p>${deps}</p><br/><p>Do you want to apply these selections now?</p>",
 								{
 									service: $(element).attr("title"),
 									deps: dep_titles.join("<br/>")
-								});
-						html = html + "</div>";
-						$("body").append(html);
+								})
+						html = html + "</div>"
+						$("body").append(html)
 						$("#messagebox").dialog(
 								{
 									width: 450,
@@ -1019,36 +982,36 @@ function AnalysisRequestAddView() {
 										yes: function () {
 											add_Yes(this,
 													element,
-													dep_services);
+													dep_services)
 										},
 										no: function () {
 											add_No(this,
-												   element);
+												   element)
 										}
 									}
-								});
+								})
 					}
 				}
 			}
 			// unselecting a service; discover back dependencies
 			else {
-				var Dependants = lims.AnalysisService.Dependants(service_uid);
+				var Dependants = lims.AnalysisService.Dependants(service_uid)
 				for (i = 0; i < Dependants.length; i++) {
-					dep = Dependants[i];
-					cb = $("#list_cb_" + dep.Service_uid);
+					dep = Dependants[i]
+					cb = $("#list_cb_" + dep.Service_uid)
 					if (cb.prop("checked")) {
-						dep_titles.push(dep.Service);
-						dep_services.push(dep);
+						dep_titles.push(dep.Service)
+						dep_services.push(dep)
 					}
 				}
 				if (dep_services.length > 0) {
 					if (auto_yes) {
 						for (i = 0; i < dep_services.length; i += 1) {
-							dep = dep_services[i];
-							service_uid = dep.Service_uid;
-							cb = $("#list_cb_" + dep.Service_uid);
-							uncheck_service(dep.Service_uid);
-							$(cb).prop("checked", false);
+							dep = dep_services[i]
+							service_uid = dep.Service_uid
+							cb = $("#list_cb_" + dep.Service_uid)
+							uncheck_service(dep.Service_uid)
+							$(cb).prop("checked", false)
 						}
 					}
 					else {
@@ -1058,7 +1021,7 @@ function AnalysisRequestAddView() {
 								  {
 									  service: $(element).attr("title"),
 									  deps: dep_titles.join("<br/>")
-								  }) + "</div>");
+								  }) + "</div>")
 						$("#messagebox").dialog(
 								{
 
@@ -1068,26 +1031,26 @@ function AnalysisRequestAddView() {
 									buttons: {
 										yes: function () {
 											for (i = 0; i < dep_services.length; i += 1) {
-												dep = dep_services[i];
-												service_uid = dep.Service_uid;
-												cb = $("#list_cb_" + dep.Service_uid);
+												dep = dep_services[i]
+												service_uid = dep.Service_uid
+												cb = $("#list_cb_" + dep.Service_uid)
 												$(cb).prop("checked",
-														   false);
-												uncheck_service(dep.Service_uid);
+														   false)
+												uncheck_service(dep.Service_uid)
 											}
-											$(this).dialog("close");
-											$("#messagebox").remove();
+											$(this).dialog("close")
+											$("#messagebox").remove()
 										},
 										no: function () {
-											service_uid = $(element).attr("value");
-											check_service(service_uid);
+											service_uid = $(element).attr("value")
+											check_service(service_uid)
 											$(element).prop("checked",
-															true);
-											$("#messagebox").remove();
-											$(this).dialog("close");
+															true)
+											$("#messagebox").remove()
+											$(this).dialog("close")
 										}
 									}
-								});
+								})
 					}
 				}
 			}

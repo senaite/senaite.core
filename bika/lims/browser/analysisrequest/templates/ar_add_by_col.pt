@@ -163,12 +163,12 @@
                 value="Save"/>
     </div>
 
-    <span tal:define="services python:view.services_widget_content('field')">
+    <span id="services_field" tal:define="services python:view.services_widget_content('field')">
         <h3 tal:condition="services" i18n:translate="">Field Analyses</h3>
         <span tal:replace="structure services"></span>
     </span>
 
-    <span tal:define="services python:view.services_widget_content('lab')">
+    <span id="services_lab" tal:define="services python:view.services_widget_content('lab')">
         <h3 tal:condition="services" i18n:translate="">Lab Analyses</h3>
         <span tal:replace="structure services"></span>
     </span>
