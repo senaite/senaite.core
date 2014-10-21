@@ -97,8 +97,10 @@ function BatchView() {
 			$("#CCContact").val('');
 			$("#CCContact_uid").val('');
 			$("#CCContact-listing > .reference_multi_item").remove();
+			$("#InvoiceContact").val('');
 			applyComboFilter($("#Contact"), "getParentUID", $("#Client_uid").val());
 			applyComboFilter($("#CCContact"), "getParentUID", $("#Client_uid").val());
+			applyComboFilter($("#InvoiceContact"), "getParentUID", $("#Client_uid").val());
 		}
 		$("#Client").bind("selected", client_field_modified);
 		$("#Client").bind("unselected", client_field_modified);
@@ -107,6 +109,7 @@ function BatchView() {
 		setTimeout(function() {
 			applyComboFilter($("#Contact"), "getParentUID", $("#Client_uid").val());
 			applyComboFilter($("#CCContact"), "getParentUID", $("#Client_uid").val());
+			applyComboFilter($("#InvoiceContact"), "getParentUID", $("#Client_uid").val());
 		}, 250)
 
 		$("#Analysts").change(function (event) {

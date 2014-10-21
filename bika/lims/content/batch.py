@@ -154,6 +154,33 @@ CCEmails = StringField(
         label=_("CC Emails")
     )
 )
+
+InvoiceContact = ReferenceField(
+    'InvoiceContact',
+    required=0,
+    vocabulary_display_path_bound=sys.maxsize,
+    allowed_types=('Contact',),
+    relationship='BatchInvoiceContact',
+    mode="rw",
+    read_permission=permissions.View,
+    write_permission=permissions.ModifyPortalContent,
+    widget=ReferenceWidget(
+        label=_("Invoice Contact"),
+        size=20,
+        helper_js=("bika_widgets/referencewidget.js",),
+        visible={'edit': 'visible',
+                 'view': 'visible',
+                 },
+        base_query={'inactive_state': 'active'},
+        showOn=True,
+        popup_width='400px',
+        colModel=[{'columnName': 'UID', 'hidden': True},
+                  {'columnName': 'Fullname', 'width': '50', 'label': _('Name')},
+                  {'columnName': 'EmailAddress', 'width': '50', 'label': _('Email Address')},
+                 ],
+    ),
+)
+
 Analysts = LinesField(
     'Analysts',
     multiValued=True,
@@ -386,20 +413,7 @@ ClientReference = StringField(
                  },
     ),
 )
-ContainerTemperature = StringField(
-    'ContainerTemperature',
-    widget=StringWidget(
-        label=_('Container Temperature'),
-        description = _("The temperature of the sample container on arrival"),
-    )
-)
-ContainerCondition = StringField(
-    'ContainerCondition',
-    widget=StringWidget(
-        label=_('Container Condition'),
-        description = _("The physical condition of the sample container on arrival"),
-    )
-)
+
 BatchLabels = LinesField(
     'BatchLabels',
     vocabulary="BatchLabelVocabulary",
@@ -723,13 +737,12 @@ schema = BikaFolderSchema.copy() + Schema((
     Contact,
     CCContact,
     CCEmails,
+    InvoiceContact,
     Analysts,
     LeadAnalyst,
     SamplePoint,
     ClientBatchComment,
     BatchLabels,
-    ContainerTemperature,
-    ContainerCondition,
     InheritedObjects,
     InheritedObjectsUI,
     Remarks,
