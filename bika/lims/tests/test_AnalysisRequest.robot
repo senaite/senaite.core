@@ -27,6 +27,8 @@ Check Javascript
     Check the AR Add javascript
 
 Analysis Request with no samping or preservation workflow
+    Log in                              test_labmanager         test_labmanager
+    Wait until page contains            You are now logged in
     Go to                     ${PLONEURL}/clients/client-1
     Click Link                Add
     ${ar_id}=                 Complete ar_add form with template Bore
@@ -55,12 +57,6 @@ Create two different ARs from the same sample.
     In a client context, only allow selecting samples from that client.
 
 *** Keywords ***
-
-Start browser
-    Open browser                        ${PLONEURL}/login_form
-    Log in                              test_labmanager         test_labmanager
-    Wait until page contains            You are now logged in
-    Set selenium speed                  ${SELENIUM_SPEED}
 
 Check the AR Add By Row javascript
    # check that the Contact CC auto-fills correctly when a contact is selected

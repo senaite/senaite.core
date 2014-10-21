@@ -1,15 +1,15 @@
 *** Settings ***
 
-Library	    Selenium2Library  timeout=5  implicit_wait=0.5
-Library	    String
-Resource	keywords.txt
-Library	    bika.lims.testing.Keywords
-Resource	plone/app/robotframework/selenium.robot
-Resource	plone/app/robotframework/saucelabs.robot
-Variables	plone/app/testing/interfaces.py
-Variables	bika/lims/tests/variables.py
-Suite Setup	    Start browser
-Suite Teardown	Close All Browsers
+Library     Selenium2Library  timeout=5  implicit_wait=0.5
+Library     String
+Resource    keywords.txt
+Library     bika.lims.testing.Keywords
+Resource    plone/app/robotframework/selenium.robot
+Resource    plone/app/robotframework/saucelabs.robot
+Variables   plone/app/testing/interfaces.py
+Variables   bika/lims/tests/variables.py
+Suite Setup     Start browser
+Suite Teardown  Close All Browsers
 
 *** Variables ***
 
@@ -17,6 +17,8 @@ Suite Teardown	Close All Browsers
 
 Reject worksheet with regular, blank, control and duplicate analyses
 
+    Log in                            test_labmanager         test_labmanager
+    Wait until page contains          You are now logged in
     Create reference sample from   Distilled Water (Blank)
     Create reference sample from   Trace Metals 10
     ${ar_id}=                         Add an AR
@@ -30,10 +32,10 @@ Reject worksheet with regular, blank, control and duplicate analyses
     Click link                        Add Blank Reference
     Click element                     css=#worksheet_add_references .bika-listing-table tbody.item-listing-tbody tr
     Wait until page contains          Add Blank Reference
-	Click link                        Add Control Reference
-	Click element                     css=#worksheet_add_references .bika-listing-table tbody.item-listing-tbody tr
+    Click link                        Add Control Reference
+    Click element                     css=#worksheet_add_references .bika-listing-table tbody.item-listing-tbody tr
     Wait until page contains          Add Blank Reference
-	Click link                        Add Duplicate
+    Click link                        Add Duplicate
     Click element                     css=#worksheet_add_duplicate_ars .bika-listing-table tbody.item-listing-tbody tr
     Wait until page contains          Add Blank Reference
     Input text                        xpath=//input[@selector='Result_Ca']           21
@@ -53,12 +55,6 @@ Reject worksheet with regular, blank, control and duplicate analyses
     Xpath Should Match X Times        //td[contains(@class, 'state-assigned') and contains(@class, 'state_title')]     4
 
 *** Keywords ***
-
-Start browser
-    Open browser                      ${PLONEURL}/login_form
-    Log in                            test_labmanager         test_labmanager
-    Wait until page contains          You are now logged in
-    Set selenium speed                ${SELENIUM_SPEED}
 
 Add an AR
     Go to                             ${PLONEURL}/clients/client-1/portal_factory/AnalysisRequest/Request%20new%20analyses/ar_add
