@@ -8,6 +8,14 @@ Documentation    Generally useful keywords for Bika tests.
 
 *** Keywords ***
 
+Start browser
+    #Descomment to chose FireFox (IceWeasel), the defaul browser
+    #Open browser        ${PLONEURL}
+    #Descomment to chose you an specific browser, chrome in this case
+    Open browser        ${PLONEURL}  browser=chrome
+
+    Set selenium speed  ${SELENIUM_SPEED}
+
 Log in
     [Arguments]  ${userid}  ${password}
 

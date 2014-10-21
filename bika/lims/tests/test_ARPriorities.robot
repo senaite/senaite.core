@@ -23,10 +23,6 @@ Test AR Priorities
 
 *** Keywords ***
 
-Start browser
-    Open browser                http://localhost:55001/plone/login
-    Set selenium speed          ${SELENIUM_SPEED}
-
 Create New Priority
     Go to                       http://localhost:55001/plone/bika_setup/bika_arpriorities
     Wait until page contains    Priorities

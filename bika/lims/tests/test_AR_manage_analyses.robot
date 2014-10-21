@@ -86,10 +86,6 @@ Test Manage Analyses
 
 *** Keywords ***
 
-Start browser
-    Open browser                      ${PLONEURL}
-    Set selenium speed                ${SELENIUM_SPEED}
-
 ${ar_id} is ${state_id}
     Go to                             ${PLONEURL}/clients/client-1/${ar_id}
     Page should contain element       css=span.state-${state_id}

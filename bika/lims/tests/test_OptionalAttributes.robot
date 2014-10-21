@@ -23,13 +23,9 @@ Create AR with hidden attributes
     ${ar_id}=          Create Primary AR
     Check hidden fields on AR view ${ar_id}
     Check hidden fields on AR invoice ${ar_id}
-    
+
 
 *** Keywords ***
-
-Start browser
-    Open browser                        ${PLONEURL}/login_form
-    Set selenium speed                  ${SELENIUM_SPEED}
 
 Hide Attributes
     Log in                      admin    secret
