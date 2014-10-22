@@ -67,13 +67,6 @@ class AnalysisServicesView(ASV):
         for col_name in to_remove:
             if col_name in self.review_states[0]['columns']:
                 self.review_states[0]['columns'].remove(col_name)
-        if context.bika_setup.getEnableARSpecs():
-            self.columns.update(
-                {'Min': {'title': _('Min')},
-                 'Max': {'title': _('Max')},
-                 'Error': {'title': _('Error %')}})
-            self.review_states[0]['columns'].extend(
-                ['Min', 'Max', 'Error'])
 
         # Add columns for each AR
         for arnum in range(self.ar_count):
@@ -102,11 +95,6 @@ class AnalysisServicesView(ASV):
             for x, item in enumerate(items):
                 if bs.getShowPrices():
                     items[x]['allow_edit'] = ['Price']
-                if bs.getEnableARSpecs():
-                    items[x]['allow_edit'].extend(['Min', 'Max', 'Error'])
-                    items[x]['Min'] = ''
-                    items[x]['Max'] = ''
-                    items[x]['Error'] = ''
                 for arnum in range(self.ar_count):
                     selected = self._get_selected_items(form_key='ar.%s' % arnum)
                     if item in selected:
