@@ -360,10 +360,10 @@ class BikaListingView(BrowserView):
             return ''
 
         ## review_state_selector - value can be specified in request
-        self.selected_state = self.request.get("%s_review_state" % form_id,
+        selected_state = self.request.get("%s_review_state" % form_id,
                                           'default')
         # get review_state id=selected_state
-        states = [r for r in self.review_states if r['id'] == self.selected_state]
+        states = [r for r in self.review_states if r['id'] == selected_state]
         self.review_state = states and states[0] or self.review_states[0]
         # set selected review_state ('default'?) to request
         self.request['review_state'] = self.review_state['id']
@@ -371,7 +371,6 @@ class BikaListingView(BrowserView):
         # contentFilter is expected in every self.review_state.
         for k, v in self.review_state['contentFilter'].items():
             self.contentFilter[k] = v
-        import pdb;pdb.set_trace()
         # sort on
         self.sort_on = self.request.get(form_id + '_sort_on', None)
         # manual_sort_on: only sort the current batch of items
@@ -798,11 +797,11 @@ class BikaListingView(BrowserView):
 
 
         # check POST for a specified review_state selection
-        self.selected_state = self.request.get("%s_review_state"%self.form_id,
+        selected_state = self.request.get("%s_review_state"%self.form_id,
                                           'default')
         # get review_state id=selected_state
         states = [r for r in self.review_states
-                  if r['id'] == self.selected_state]
+                  if r['id'] == selected_state]
         self.review_state = states and states[0] \
             or self.review_states[0]
 
