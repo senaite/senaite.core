@@ -54,6 +54,10 @@ Test Worksheets
 
 *** Keywords ***
 
+Start browser
+    Open browser  ${PLONEURL}/login_form
+    Set selenium speed  ${SELENIUM_SPEED}
+
 Create AnalysisRequests
     [Documentation]     Add and receive some ARs.
     ...                 H2O-0001-R01  Bore

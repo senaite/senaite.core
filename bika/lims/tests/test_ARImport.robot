@@ -33,6 +33,10 @@ Test AR Importing dependencies
 
 *** Keywords ***
 
+Start browser
+    Open browser                http://localhost:55001/plone/login
+    Set selenium speed          ${SELENIUM_SPEED}
+
 Import Classic AR File with invalid filename
     Go to                       http://localhost:55001/plone/clients/client-1
     Wait until page contains    Imports

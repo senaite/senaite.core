@@ -86,6 +86,10 @@ AnalysisRequest views
 
 *** Keywords ***
 
+Start browser
+    Open browser               ${PLONEURL}/login_form
+    Set selenium speed         ${SELENIUM_SPEED}
+
 Enable ShowPartitions
     Go to                      ${PLONEURL}/bika_setup
     Click link                 Analyses

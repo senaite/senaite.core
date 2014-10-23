@@ -18,13 +18,6 @@ Suite Teardown   Close All Browsers
 
 Repetitive Bika Setup stuff
 
-    Log in                      test_labmanager  test_labmanager
-    go to                       ${PLONEURL}/bika_setup/edit
-    Click link  Analyses
-    Select Checkbox  SamplingWorkflowEnabled
-    Click Button  Save
-    Wait Until Page Contains  Changes saved.
-
 # Update Laboratory Information
     Go to  ${PLONEURL}/bika_setup/laboratory/base_edit
     Input Text        Name            Laboratory Name
@@ -816,3 +809,12 @@ Repetitive Bika Setup stuff
 
 *** Keywords ***
 
+Start browser
+    Open browser                http://localhost:55001/plone
+    Set selenium speed          ${SELENIUM_SPEED}
+    Log in                      test_labmanager  test_labmanager
+    go to                       ${PLONEURL}/bika_setup/edit
+    Click link  Analyses
+    Select Checkbox  SamplingWorkflowEnabled
+    Click Button  Save
+    Wait Until Page Contains  Changes saved.
