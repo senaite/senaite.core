@@ -21,7 +21,6 @@ Check the AR Add javascript
    # check that the Contact CC auto-fills correctly when a contact is selected
     Log out
     Log in                    test_labmanager1    test_labmanager1
-    Wait until page contains  You are now logged in
     Go to                     ${PLONEURL}/clients/client-1
     Wait until page contains  Happy
     Click Link                Add
@@ -103,7 +102,7 @@ Create Primary AR
     Go to                       http://localhost:55001/plone/clients/client-1/analysisrequests
     Wait until page contains    ${ar_id}
     Select checkbox             xpath=//input[@item_title="${ar_id}"]
-    Click button                xpath=//input[@value="Receive sample"]
+    Click button                xpath=//input[@id="receive_transition"]
     Wait until page contains    saved
     [return]                    ${ar_id}
 
