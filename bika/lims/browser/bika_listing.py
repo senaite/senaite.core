@@ -536,7 +536,9 @@ class BikaListingView(BrowserView):
         # override from self attributes
         for x in "pagenumber", "pagesize", "review_state", "sort_order", "sort_on":
             if str(getattr(self, x, None)) != 'None':
-                if x == "review_state":
+                # I don't understand why on AR listing, getattr(self,x) 
+                # is a dict, but this line will resolve LIMS-1420
+                if x == "review_state" and type(getattr(self, x))==dict:
                     query['%s_%s'%(self.form_id, x)] = getattr(self, x)['id']
                 else:
                     query['%s_%s'%(self.form_id, x)] = getattr(self, x)
