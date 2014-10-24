@@ -1,6 +1,8 @@
 next
 ------------------
-
+LIMS-1420: Status filter is not kept after moving to next page
+LIMS-1442: Sample Type is not filtred by Sample Point
+LIMS-1448: Reports: when you click on "Analysis turnaround time" displays others
 LIMS-1440: Error when trying to publish with analysis from different categories
 LIMS-1459: Error when checking instrument validity in manage_results
 LIMS-1430: Create an AR from batch allows you to introduce a non existent Client and Contacts don't work properly
