@@ -70,11 +70,13 @@ class AnalysisServicesView(ASV):
 
         # Add columns for each AR
         for arnum in range(self.ar_count):
-            self.columns['ar.%s' % arnum] = {
+            column = {
                 'title': _('AR ${ar_number}', mapping={'ar_number': arnum}),
                 'sortable': False,
-                'type': 'boolean'
+                'type': 'boolean',
             }
+
+            self.columns['ar.%s' % arnum] = column
             self.review_states[0]['columns'].append('ar.%s' % arnum)
 
         # XXX. Removing sortable from services - it causes bugs in ar_add.
@@ -96,13 +98,21 @@ class AnalysisServicesView(ASV):
                 if bs.getShowPrices():
                     items[x]['allow_edit'] = ['Price']
                 for arnum in range(self.ar_count):
-                    selected = self._get_selected_items(form_key='ar.%s' % arnum)
-                    if item in selected:
-                        items[x]['ar.%s' % arnum] = True
-                    else:
-                        items[x]['ar.%s' % arnum] = False
-                    # always editable
-                    items[x]['allow_edit'].append('ar.%s' % arnum)
+                    key = 'ar.%s' % arnum
+                    # checked or not:
+                    selected = self._get_selected_items(form_key=key)
+                    items[x][key] = item in selected
+                    # always editable:
+                    items[x]['allow_edit'].append(key)
+                    # fields and controls after each checkbox
+                    items[x]['after'][key] = ''
+                    if self.context.bika_setup.getEnableARSpecs():
+                        items[x]['after'][key] += '''
+                            <input class="min" size="3" placeholder="&gt;min"/>
+                            <input class="max" size="3" placeholder="&lt;max"/>
+                            <input class="error" size="3" placeholder="err%"/>
+                        '''
+                    items[x]['after'][key] += '<span class="partnr"></span>'
             self.ar_add_items = items
         return self.ar_add_items
 

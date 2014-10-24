@@ -10,7 +10,7 @@ function AnalysisRequestAddView() {
 		$('input[type=text]').prop('autocomplete', 'off')
 
 		state_init()
-		configure_at_widgets()
+		form_init()
 
 		state_onchange_reference()
 		state_onchange_selectwidget()
@@ -23,6 +23,7 @@ function AnalysisRequestAddView() {
 		samplepoint_selected()
 		sampletype_selected()
 		specification_selected()
+		specification_field_entry()
 		profile_selected()
 		template_selected()
 		sample_selected()
@@ -33,18 +34,18 @@ function AnalysisRequestAddView() {
 
 	function state_init() {
 		bika.lims.ar_add = {}
-		bika.lims.ar_add.analysisrequests = {}
+		bika.lims.ar_add.state = {}
 		for (var arnum = 0; arnum < $('input[id="ar_count"]').val(); arnum++) {
-			bika.lims.ar_add.analysisrequests[arnum] = {}
+			bika.lims.ar_add.state[arnum] = {}
 		}
 	}
 
 	function state_set(arnum, fieldname, value) {
 		// Use this function to set state.
-		bika.lims.ar_add.analysisrequests[arnum][fieldname] = value
+		bika.lims.ar_add.state[arnum][fieldname] = value
 	}
 
-	function configure_at_widgets() {
+	function form_init() {
 		// Multiple AT widgets may be rendered for each field.
 		// rename them here, so their IDs and names do not conflict.
 		var i, element, elements, arnum, name
@@ -89,17 +90,17 @@ function AnalysisRequestAddView() {
 			$(element).attr("id", "ar_" + arnum + "_" + element.id)
 			$(element).attr("name", "ar." + arnum + "." + name)
 		}
-		/**
-		 * Show only the data (contacts, templates, etc.) for the selected
-		 * client.   This is the initial filter, but the filters are re-applied
-		 * each time a Client field is modified.
-		 */
+
+		// Show only the data (contacts, templates, etc.) for the selected
+		// client.   This is the initial filter, but the filters are re-applied
+		// each time a Client field is modified.
 		setTimeout(function () {
 			var nr_ars = parseInt($("#ar_count").val(), 10)
 			for (arnum = 0; arnum < nr_ars; arnum++) {
 				filter_by_client(arnum)
 			}
 		}, 250)
+
 	}
 
 	function filter_combogrid(element, filterkey, filtervalue) {
@@ -159,7 +160,7 @@ function AnalysisRequestAddView() {
 		var analyses = $('td.ar\\.' + arnum).find("[type='checkbox']")
 		for (var i = 0; i < analyses.length; i++) {
 			$(analyses[i]).prop("checked", false)
-			$(analyses[i]).next(".after").empty()
+			$(analyses[i]).next(".after").children(".partnr").empty()
 		}
 	}
 
@@ -365,8 +366,9 @@ function AnalysisRequestAddView() {
 
 	function specification_set(arnum) {
 		var d = $.Deferred()
-		// Get the spec for this ar, and check if the hidden #spec input must be updated.
-		var spec_uid = $("#ar_" + arnum + "_Specification_uid").val()
+		var state = bika.lims.ar_add.state[arnum]
+		// Try to get the values for the selected spec, possibly update state.
+		var spec_uid = state['Specification_uid']
 		if (!spec_uid) {
 			d.resolve()
 			return d.promise()
@@ -377,38 +379,22 @@ function AnalysisRequestAddView() {
 		}
 		window.bika.lims.jsonapi_read(request_data, function (data) {
 			if (data.success && data.objects.length > 0) {
-				// Update the #specs value.
-				var element = $("#specs")
-				var form_rr = $.parseJSON($(element).val())
-				form_rr[arnum] = data.objects[0]['ResultsRange']
-				$(element).val($.toJSON(form_rr))
-
-				/* Specs are taken from the Specification element values (#specs).
-				 If a spec is defined in copy_to_new_specs, it is used instead, and the
-				 values in #specs have no effect. */
-				var copy_to_new_specs = $.parseJSON($("#copy_to_new_specs").val())
-				var specs = $.parseJSON($("#specs").val())
-				var rr = copy_to_new_specs[arnum]
-				if (rr == undefined || rr.length < 1) {
-					rr = specs[arnum]
-				}
-				// Set values for selected analyses
-				if (rr != undefined && rr.length > 0) {
-					debugger;
+				var rr = data.objects[0]['ResultsRange']
+				if (rr && rr.length > 0) {
+					var hash = convert_rr_to_hash(rr)
+					state_set(arnum, 'ResultsRange', hash)
 					for (var i = 0; i < rr.length; i++) {
-						var this_min = "[name='ar." + arnum + ".min." + rr[i].uid + "']"
-						var this_max = "[name='ar." + arnum + ".max." + rr[i].uid + "']"
-						var this_error = "[name='ar." + arnum + ".error." + rr[i].uid + "']"
-						if ($(this_min).length > 0) {
-							if ($(this_min).val() == "") {
-								$(this_min).val(rr[i].min)
-							}
-							if ($(this_max).val() == "") {
-								$(this_max).val(rr[i].max)
-							}
-							if ($(this_error).val() == "") {
-								$(this_error).val(rr[i].error)
-							}
+						var this_min = $('#' + rr[i]['uid'] + '-ar\\.' + arnum).next(".after").children(".min")
+						var this_max = $('#' + rr[i]['uid'] + '-ar\\.' + arnum).next(".after").children(".max")
+						var this_error = $('#' + rr[i]['uid'] + '-ar\\.' + arnum).next(".after").children(".error")
+						if ($(this_min).val() == "") {
+							$(this_min).val(rr[i].min)
+						}
+						if ($(this_max).val() == "") {
+							$(this_max).val(rr[i].max)
+						}
+						if ($(this_error).val() == "") {
+							$(this_error).val(rr[i].error)
 						}
 					}
 				}
@@ -442,20 +428,47 @@ function AnalysisRequestAddView() {
 				$(spec_uid_element).val(spec['UID'])
 				state_set(arnum, 'Specification', spec['Title'])
 				state_set(arnum, 'Specification_uid', spec['UID'])
-				specification_set(arnum)
+				specification_set(arnum, true)
 				partition_indicators_set(arnum)
 			}
 		})
 	}
 
-	function validate_spec_field_entry(element) {
+	function rr_to_hash(rr, key) {
+		// Convert list of dict as returned by Plone, to a hash, by key
+		var hash = {}
+		for(var i=0; i<rr.length; i++){
+
+		}
+	}
+
+	function hash_to_rr(rr) {
+		// Convert dict back to list of dict, which is the 'correct' format
+		var lod = {}
+
+	}
+
+	function specification_field_entry() {
+		var arnum = $(element).attr("name").split(".")[1]
+		state = bika.lims.ar_add.state[arnum]
+		$('.min, .max, .error').live('change', function () {
+			var rr = rr_to_hash(state['ResultsRange'])
+			var new_rr
+			// The field which was changed, is saved, now.
+			state_set(arnum, )
+			// Now the other fields are validated, and possible cleared.
+			specification_field_validate()
+		})
+	}
+
+	function specification_field_validate(element) {
 		var arnum = $(element).attr("name").split(".")[1]
 		var uid = $(element).attr("uid")
 		$("[name^='ar\\." + arnum + "\\.Specification']").val("")
 		$("[name^='ar\\." + arnum + "\\.Specification_uid']").val("")
-		var min_element = $("[name='ar." + arnum + ".min." + uid + "']")
-		var max_element = $("[name='ar." + arnum + ".max." + uid + "']")
-		var error_element = $("[name='ar." + arnum + ".error." + uid + "']")
+		var min_element = $('#' + uid + '-ar\\.' + arnum).next(".after").children(".min")
+		var max_element = $('#' + uid + '-ar\\.' + arnum).next(".after").children(".max")
+		var error_element = $('#' + uid + '-ar\\.' + arnum).next(".after").children(".error")
 		var min = parseFloat($(min_element).val(), 10)
 		var max = parseFloat($(max_element).val(), 10)
 		var error = parseFloat($(error_element).val(), 10)
@@ -510,7 +523,7 @@ function AnalysisRequestAddView() {
 			//   st_base_query = $.parseJSON(st_base_query)
 			//   st_base_query = $.toJSON(st_base_query)
 			// 			var st_search_query = {"getRawSamplePoints": $(this).attr("uid")}
-			st_search_query = $.toJSON(st_search_query)
+			var st_search_query = $.toJSON(st_search_query)
 			st_element.attr("search_query", st_search_query)
 			ar_referencewidget_lookups(st_element)
 		})
@@ -533,7 +546,7 @@ function AnalysisRequestAddView() {
 		$("[id*='_Profile']").live('selected', function () {
 			var arnum = $(this).parents('td').attr('arnum')
 			profile_set(arnum, $(this).val())
-				.done(partition_indicators_set(arnum))
+				.then(partition_indicators_set(arnum))
 		})
 	}
 
@@ -547,7 +560,6 @@ function AnalysisRequestAddView() {
 		bika.lims.jsonapi_read(request_data, function (data) {
 			var profile = data['objects'][0]
 			analysis_unset_all(arnum)
-			ReportDryMatter_unset(arnum)
 			var service_uids = []
 			for (var i = 0; i < profile['service_data'].length; i++) {
 				var service = profile['service_data'][i]
@@ -560,10 +572,6 @@ function AnalysisRequestAddView() {
 			d.resolve()
 		})
 		return d.promise()
-	}
-
-	function ReportDryMatter_unset(arnum) {
-		$("#ar_" + arnum + "_ReportDryMatter").prop("checked", false)
 	}
 
 	function template_set(arnum, template_title) {
@@ -632,7 +640,7 @@ function AnalysisRequestAddView() {
 			state_set(arnum, 'parts', parts)
 
 			var service_uids = []
-			for (si = 0; si < template['service_data'].length; si++) {
+			for (var si = 0; si < template['service_data'].length; si++) {
 				var service = template['service_data'][si]
 				service_uids.push(service['UID'])
 				var poc = service['PointOfCapture']
@@ -657,7 +665,7 @@ function AnalysisRequestAddView() {
 	function partition_indicators_calculate(arnum) {
 		var d = $.Deferred()
 		// Configures the state partition data
-		var state = bika.lims.ar_add.analysisrequests[arnum]
+		var state = bika.lims.ar_add.state[arnum]
 
 		// Template columns are not calculated - they are set manually.
 		if ($("#ar_" + arnum + "_Template").val() !== "") {
@@ -708,21 +716,23 @@ function AnalysisRequestAddView() {
 
 	function partition_indicators_set(arnum, calculate) {
 		// set calculate=false to prevent calculateion (eg, setting template)
-		$('[id*="-ar.' + arnum + '"]').filter("[type='checkbox']").next(".after").empty()
-		if (calculate == undefined) partition_indicators_calculate(arnum)
-			.done(function () {
-					  var parts = bika.lims.ar_add.analysisrequests[arnum]['parts']
-					  if (!parts) return
-					  for (var pi = 0; pi < parts.length; pi++) {
-						  part_nr = pi + 1;
-						  var part = parts[pi];
-						  var services = part['services']
-						  for (var si = 0; si < services.length; si++) {
-							  var service_uid = services[si];
-							  $('#' + service_uid + '-ar\\.' + arnum).next(".after").empty().append(part_nr)
+		$('[id*="-ar.' + arnum + '"]').filter("[type='checkbox']").next(".after").children(".partnr").empty()
+		if (calculate == undefined) {
+			partition_indicators_calculate(arnum)
+				.done(function () {
+						  var parts = bika.lims.ar_add.state[arnum]['parts']
+						  if (!parts) return
+						  for (var pi = 0; pi < parts.length; pi++) {
+							  var part_nr = pi + 1;
+							  var part = parts[pi];
+							  var services = part['services']
+							  for (var si = 0; si < services.length; si++) {
+								  var service_uid = services[si];
+								  $('#' + service_uid + '-ar\\.' + arnum).next(".after").children(".partnr").empty().append(part_nr)
+							  }
 						  }
-					  }
-				  })
+					  })
+		}
 	}
 
 	function sample_selected() {
@@ -730,7 +740,7 @@ function AnalysisRequestAddView() {
 		// Selected a sample to create a secondary AR.
 		$("[id*='_Sample']").live('selected', function () {
 			// var e = $("input[name^='ar\\."+arnum+"\\."+fieldName+"']")
-			// var Sample = $("input[name^='ar\\."+arnum+"\\."+fieldName+"']").val()
+			// var Sample = $("input9[name^='ar\\."+arnum+"\\."+fieldName+"']").val()
 			// var Sample_uid = $("input[name^='ar\\."+arnum+"\\."+fieldName+"_uid']").val()
 			// Install the handler which will undo the changes I am about to make
 			$(this).blur(function () {
@@ -786,7 +796,7 @@ function AnalysisRequestAddView() {
 
 		// unselecting service: remove part number.
 		if (!$(this).prop("checked")) {
-			$(this).next(".after").empty()
+			$(this).next(".after").children(".partnr").empty()
 		}
 
 		calcdependencies([this])
