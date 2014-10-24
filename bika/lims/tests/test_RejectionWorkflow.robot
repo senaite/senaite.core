@@ -1,15 +1,15 @@
 *** Settings ***
 
-Library	    Selenium2Library  timeout=5  implicit_wait=0.5
-Library	    String
-Resource	keywords.txt
-Library	    bika.lims.testing.Keywords
-Resource	plone/app/robotframework/selenium.robot
-Resource	plone/app/robotframework/saucelabs.robot
-Variables	plone/app/testing/interfaces.py
-Variables	bika/lims/tests/variables.py
-Suite Setup	    Start browser
-Suite Teardown	Close All Browsers
+Library     Selenium2Library  timeout=5  implicit_wait=0.5
+Library     String
+Resource    keywords.txt
+Library     bika.lims.testing.Keywords
+Resource    plone/app/robotframework/selenium.robot
+Resource    plone/app/robotframework/saucelabs.robot
+Variables   plone/app/testing/interfaces.py
+Variables   bika/lims/tests/variables.py
+Suite Setup     Start browser
+Suite Teardown  Close All Browsers
 
 *** Variables ***
 
@@ -28,12 +28,13 @@ Reject worksheet with regular, blank, control and duplicate analyses
     Click button                      xpath=//input[@value="Assign"]
     Wait until page contains          Add Blank Reference
     Click link                        Add Blank Reference
+    Wait until page contains element  css=#worksheet_add_references .bika-listing-table
     Click element                     css=#worksheet_add_references .bika-listing-table tbody.item-listing-tbody tr
     Wait until page contains          Add Blank Reference
-	Click link                        Add Control Reference
-	Click element                     css=#worksheet_add_references .bika-listing-table tbody.item-listing-tbody tr
+    Click link                        Add Control Reference
+    Click element                     css=#worksheet_add_references .bika-listing-table tbody.item-listing-tbody tr
     Wait until page contains          Add Blank Reference
-	Click link                        Add Duplicate
+    Click link                        Add Duplicate
     Click element                     css=#worksheet_add_duplicate_ars .bika-listing-table tbody.item-listing-tbody tr
     Wait until page contains          Add Blank Reference
     Input text                        xpath=//input[@selector='Result_Ca']           21
@@ -82,7 +83,7 @@ Receive ${ar_id}
     Go to                             ${PLONEURL}/clients/client-1/analysisrequests
     Wait until page contains          ${ar_id}
     Select checkbox                   xpath=//input[@item_title="${ar_id}"]
-    Click button                      xpath=//input[@value="Receive sample"]
+    Click button                      xpath=//input[@id="receive_transition"]
     Wait until page contains          saved
 
 Create reference sample from
