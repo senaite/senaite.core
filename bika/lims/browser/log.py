@@ -96,7 +96,7 @@ class LogView(BikaListingView):
                 'allow_edit': [],
                 'required': [],
                 'Version': isVersionable and self.context.get('version_id', '') or '0',
-                'Date': self.ulocalized_time(entry.get('time')),
+                'Date': self.ulocalized_time(entry.get('time'),long_format=True),
                 'sortable_date': entry.get('time'),
                 'User': entry.get('actor'),
                 'Action': entry.get('action') and entry.get('action') or 'Create',
