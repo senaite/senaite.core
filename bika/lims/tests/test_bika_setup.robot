@@ -57,7 +57,7 @@ Repetitive Bika Setup stuff
     Input Text  title          New Template
     Input Text  description    Temporary test object
     Input Text  SamplePoint   Borehole 12
-    Input Text  SampleType    Water
+    Select from dropdown  SampleType    Water
     Select Checkbox  ReportDryMatter
     Click link  css=#fieldsetlegend-sample-partitions
     wait until page contains element    Partitions-Container-0
