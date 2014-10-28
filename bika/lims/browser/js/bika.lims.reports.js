@@ -14,7 +14,7 @@ function ReportFolderView() {
             $(".criteria").toggle(false);
             event.preventDefault();
             var div_id = $(this).attr("id").split("_selector")[0];
-            $("[id^='"+div_id+"']").toggle(true);
+            $("[id='"+div_id+"']").toggle(true);
         });
 
         // AJAX: Set ReferenceSamples dropdown when Supplier is selected
