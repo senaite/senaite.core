@@ -131,6 +131,3 @@ Client contact should not be able to see or access other clients
 
 *** Keywords ***
 
-Start browser
-    Open browser        ${PLONEURL}/login_form
-    Set selenium speed  ${SELENIUM_SPEED}
