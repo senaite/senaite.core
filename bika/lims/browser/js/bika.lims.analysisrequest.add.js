@@ -156,6 +156,25 @@ function AnalysisRequestAddView() {
 			[clientuid, $(bs).attr("bika_analysisspecs_uid")])
 	}
 
+
+	function hashes_to_hash(hashlist, key) {
+		// Convert list of hashes to a hash, by one of their keys.
+		// The key must exist in all hashes in the list.
+		var ret = {}
+		for (var i = 0; i < hashlist.length; i++)
+			ret[hashlist[i][key]] = hashlist[i]
+		return ret
+	}
+
+	function hash_to_hashes(hash) {
+		// Convert dict back to list of dict, which is the 'correct' format
+		var ret = []
+		for (var i = 0; i < hash.length; i++)
+			ret.push(hash[i])
+		return ret
+	}
+
+
 	function analysis_unset_all(arnum) {
 		var analyses = $('td.ar\\.' + arnum).find("[type='checkbox']")
 		for (var i = 0; i < analyses.length; i++) {
@@ -335,11 +354,11 @@ function AnalysisRequestAddView() {
 					if (fieldName == "SampleType") {
 						$("#ar_" + arnum + "_Template").val("")
 						partition_indicators_set(arnum)
-						specification_set(arnum)
+						specification_refetch(arnum)
 					}
 
 					if (fieldName == "Specification") {
-						specification_set()
+						specification_refetch(arnum)
 					}
 
 				}
@@ -364,7 +383,7 @@ function AnalysisRequestAddView() {
 		$(e).attr("search_query", query_str)
 	}
 
-	function specification_set(arnum) {
+	function specification_refetch(arnum) {
 		var d = $.Deferred()
 		var state = bika.lims.ar_add.state[arnum]
 		// Try to get the values for the selected spec, possibly update state.
@@ -381,21 +400,14 @@ function AnalysisRequestAddView() {
 			if (data.success && data.objects.length > 0) {
 				var rr = data.objects[0]['ResultsRange']
 				if (rr && rr.length > 0) {
-					var hash = convert_rr_to_hash(rr)
-					state_set(arnum, 'ResultsRange', hash)
+					state_set(arnum, 'ResultsRange', rr)
 					for (var i = 0; i < rr.length; i++) {
 						var this_min = $('#' + rr[i]['uid'] + '-ar\\.' + arnum).next(".after").children(".min")
 						var this_max = $('#' + rr[i]['uid'] + '-ar\\.' + arnum).next(".after").children(".max")
 						var this_error = $('#' + rr[i]['uid'] + '-ar\\.' + arnum).next(".after").children(".error")
-						if ($(this_min).val() == "") {
-							$(this_min).val(rr[i].min)
-						}
-						if ($(this_max).val() == "") {
-							$(this_max).val(rr[i].max)
-						}
-						if ($(this_error).val() == "") {
-							$(this_error).val(rr[i].error)
-						}
+						$(this_min).val(rr[i].min)
+						$(this_max).val(rr[i].max)
+						$(this_error).val(rr[i].error)
 					}
 				}
 			}
@@ -428,77 +440,63 @@ function AnalysisRequestAddView() {
 				$(spec_uid_element).val(spec['UID'])
 				state_set(arnum, 'Specification', spec['Title'])
 				state_set(arnum, 'Specification_uid', spec['UID'])
-				specification_set(arnum, true)
+				specification_refetch(arnum)
 				partition_indicators_set(arnum)
 			}
 		})
 	}
 
-	function rr_to_hash(rr, key) {
-		// Convert list of dict as returned by Plone, to a hash, by key
-		var hash = {}
-		for(var i=0; i<rr.length; i++){
-
-		}
-	}
-
-	function hash_to_rr(rr) {
-		// Convert dict back to list of dict, which is the 'correct' format
-		var lod = {}
-
-	}
-
 	function specification_field_entry() {
-		var arnum = $(element).attr("name").split(".")[1]
-		state = bika.lims.ar_add.state[arnum]
 		$('.min, .max, .error').live('change', function () {
-			var rr = rr_to_hash(state['ResultsRange'])
-			var new_rr
-			// The field which was changed, is saved, now.
-			state_set(arnum, )
-			// Now the other fields are validated, and possible cleared.
-			specification_field_validate()
-		})
-	}
+			var td = $(this).parents('td')
+			var arnum = $(this).attr('arnum')
+			var uid = $(this).attr('uid')
+			var keyword = $(this).attr('keyword')
+			var min_element = $(td).find(".min")
+			var max_element = $(td).find(".max")
+			var error_element = $(td).find(".error")
+			var min = parseInt(min_element.val(), 10)
+			var max = parseInt(max_element.val(), 10)
+			var error = parseInt(error_element.val(), 10)
 
-	function specification_field_validate(element) {
-		var arnum = $(element).attr("name").split(".")[1]
-		var uid = $(element).attr("uid")
-		$("[name^='ar\\." + arnum + "\\.Specification']").val("")
-		$("[name^='ar\\." + arnum + "\\.Specification_uid']").val("")
-		var min_element = $('#' + uid + '-ar\\.' + arnum).next(".after").children(".min")
-		var max_element = $('#' + uid + '-ar\\.' + arnum).next(".after").children(".max")
-		var error_element = $('#' + uid + '-ar\\.' + arnum).next(".after").children(".error")
-		var min = parseFloat($(min_element).val(), 10)
-		var max = parseFloat($(max_element).val(), 10)
-		var error = parseFloat($(error_element).val(), 10)
-		if ($(element).hasClass("min")) {
-			if (isNaN(min)) {
-				$(min_element).val("")
+			// Now the fields will be validated. We set values to "" to
+			// indicate errors and to keep the values within constraints.
+			if ($(this).hasClass("min")) {
+				if (isNaN(min))
+					$(min_element).val("")
+				else if ((!isNaN(max)) && min > max)
+					$(max_element).val("")
 			}
-			else if ((!isNaN(max)) && min > max) {
-				$(max_element).val("")
+			else if ($(this).hasClass("max")) {
+				if (isNaN(max))
+					$(max_element).val("")
+				else if ((!isNaN(min)) && max < min)
+					$(min_element).val("")
 			}
-		}
-		else if ($(element).hasClass("max")) {
-			if (isNaN(max)) {
-				$(max_element).val("")
+			else if ($(this).hasClass("error")) {
+				if (isNaN(error) || error < 0 || error > 100)
+					$(error_element).val("")
 			}
-			else if ((!isNaN(min)) && max < min) {
-				$(min_element).val("")
+
+			var state = bika.lims.ar_add.state[arnum]
+			var hash = hashes_to_hash(state['ResultsRange'], 'uid')
+			hash[uid] = {
+				'min': min_element.val(),
+				'max': max_element.val(),
+				'error': error_element.val(),
+				'uid': uid,
+			    'keyword': keyword
 			}
-		}
-		else if ($(element).hasClass("error")) {
-			if (isNaN(error) || error < 0 || error > 100) {
-				$(error_element).val("")
-			}
-		}
+			var hashes = hash_to_hashes(hash)
+			state_set(arnum, 'ResultsRange', hashes)
+		})
 	}
 
 	function specification_selected() {
 		// Selected a Specification
 		$("[id*='_Specification']").live('selected', function () {
-			specification_set()
+			var arnum = $(this).parents('td').attr('arnum')
+			specification_refetch(arnum)
 		})
 	}
 
@@ -551,8 +549,8 @@ function AnalysisRequestAddView() {
 	}
 
 	function profile_set(arnum, profile_title) {
+        template_unset()
 		var d = $.Deferred()
-		$("#ar_" + arnum + "_Template").val("")
 		var request_data = {
 			portal_type: "AnalysisProfile",
 			title: profile_title
@@ -566,12 +564,20 @@ function AnalysisRequestAddView() {
 				service_uids.push(service['UID'])
 				var poc = service['PointOfCapture']
 				$('#services_' + poc + ' [cat="' + service['CategoryTitle'] + '"].collapsed').click()
-				$('#' + service['UID'] + '-ar\\.' + arnum).attr("checked", true)
+				$('#' + service['UID'] + '-ar\\.' + arnum).attr("checked",
+																true)
 			}
 			state_set(arnum, 'Analyses', service_uids)
 			d.resolve()
 		})
 		return d.promise()
+	}
+
+	function template_unset(arnum) {
+		$("#ar_" + arnum + "_Template").val("")
+		$("#ar_" + arnum + "_Template_uid").val("")
+		state_set(arnum, "Template", undefined)
+		state_set(arnum, "Template_uid", undefined)
 	}
 
 	function template_set(arnum, template_title) {
@@ -581,8 +587,10 @@ function AnalysisRequestAddView() {
 			portal_type: "ARTemplate",
 			title: template_title,
 			include_fields: [
-				"SampleType", "SampleTypeUID", "SamplePoint", "SamplePointUID",
-				"ReportDryMatter", "AnalysisProfile", "Partitions", "Analyses",
+				"SampleType", "SampleTypeUID", "SamplePoint",
+				"SamplePointUID",
+				"ReportDryMatter", "AnalysisProfile", "Partitions",
+				"Analyses",
 				"Prices"]
 		}
 		window.bika.lims.jsonapi_read(request_data, function (data) {
@@ -607,7 +615,8 @@ function AnalysisRequestAddView() {
 				$("#ar_" + arnum + "_Profile").val(template['AnalysisProfile'])
 				$("#ar_" + arnum + "_Profile_uid").val(template['AnalysisProfile_uid'])
 				state_set(arnum, 'Profile', template['AnalysisProfile'])
-				state_set(arnum, 'Profile_uid', template['AnalysisProfile_uid'])
+				state_set(arnum, 'Profile_uid',
+						  template['AnalysisProfile_uid'])
 			}
 			else {
 				$("#ar_" + arnum + "_Profile").val("")
@@ -645,7 +654,8 @@ function AnalysisRequestAddView() {
 				service_uids.push(service['UID'])
 				var poc = service['PointOfCapture']
 				$('#services_' + poc + ' [cat="' + service['CategoryTitle'] + '"].collapsed').click()
-				$('#' + service['UID'] + '-ar\\.' + arnum).attr("checked", true)
+				$('#' + service['UID'] + '-ar\\.' + arnum).attr("checked",
+																true)
 			}
 			state_set(arnum, 'Analyses', service_uids)
 			partition_indicators_set(arnum, false)
@@ -658,7 +668,8 @@ function AnalysisRequestAddView() {
 	function template_selected() {
 		$("[id*='_Template']").live('selected', function () {
 			var arnum = $(this).parents('td').attr('arnum')
-			template_set(arnum, $(this).val()).then(specification_set(arnum))
+			template_set(arnum,
+						 $(this).val()).then(specification_refetch(arnum))
 		})
 	}
 
@@ -747,13 +758,15 @@ function AnalysisRequestAddView() {
 				if ($(this).val() === "") {
 					// clear and un-disable everything
 					var disabled_elements = $("[ar_add_ar_widget] [id*='ar_" + arnum + "']:disabled")
-					$.each(disabled_elements, function (x, disabled_element) {
-						$(disabled_element).prop("disabled", false)
-						if ($(disabled_element).attr("type") == "checkbox")
-							$(disabled_element).prop("checked", false)
-						else
-							$(disabled_element).val("")
-					})
+					$.each(disabled_elements,
+						   function (x, disabled_element) {
+							   $(disabled_element).prop("disabled", false)
+							   if ($(disabled_element).attr("type") == "checkbox")
+								   $(disabled_element).prop("checked",
+															false)
+							   else
+								   $(disabled_element).val("")
+						   })
 				}
 			})
 			// Then populate and disable sample fields
@@ -770,7 +783,8 @@ function AnalysisRequestAddView() {
 							  var uid_element = $("#ar_" + arnum + "_" + fieldname + "_uid")
 							  $(uid_element).val("")
 							  var sample_element = $("#ar_" + arnum + "_" + fieldname)
-							  $(sample_element).val("").prop("disabled", true)
+							  $(sample_element).val("").prop("disabled",
+															 true)
 							  if ($(sample_element).attr("type") == "checkbox" && fieldvalue) {
 								  $(sample_element).prop("checked", true)
 							  }

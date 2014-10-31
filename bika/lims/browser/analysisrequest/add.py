@@ -79,7 +79,8 @@ class AnalysisServicesView(ASV):
             self.columns['ar.%s' % arnum] = column
             self.review_states[0]['columns'].append('ar.%s' % arnum)
 
-        # XXX. Removing sortable from services - it causes bugs in ar_add.
+        # Removing sortable from services - it fails to respect table_only,
+        # and re-renders main-template inside the container!
         for k, v in self.columns.items():
             self.columns[k]['sortable'] = False
 
@@ -97,6 +98,7 @@ class AnalysisServicesView(ASV):
             for x, item in enumerate(items):
                 if bs.getShowPrices():
                     items[x]['allow_edit'] = ['Price']
+                kw = items[x]['obj'].getKeyword()
                 for arnum in range(self.ar_count):
                     key = 'ar.%s' % arnum
                     # checked or not:
@@ -108,10 +110,10 @@ class AnalysisServicesView(ASV):
                     items[x]['after'][key] = ''
                     if self.context.bika_setup.getEnableARSpecs():
                         items[x]['after'][key] += '''
-                            <input class="min" size="3" placeholder="&gt;min"/>
-                            <input class="max" size="3" placeholder="&lt;max"/>
-                            <input class="error" size="3" placeholder="err%"/>
-                        '''
+                            <input class="min" size="3" placeholder="&gt;min" arnum="%s" keyword="%s"/>
+                            <input class="max" size="3" placeholder="&lt;max" arnum="%s" keyword="%s"/>
+                            <input class="error" size="3" placeholder="err%%" arnum="%s" keyword="%s"/>
+                        ''' % (arnum, kw, arnum, kw, arnum, kw)
                     items[x]['after'][key] += '<span class="partnr"></span>'
             self.ar_add_items = items
         return self.ar_add_items
