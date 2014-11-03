@@ -321,28 +321,9 @@ class ReferenceSample(BaseFolder):
         calculation = service.getCalculation()
         interim_fields = calculation and calculation.getInterimFields() or []
 
-        maxtime = service.getMaxTimeAllowed()
-        maxtime = maxtime if maxtime else {'days':0, 'hours':0, 'minutes':0}
-        starttime = DateTime()
-        max_days = float(maxtime.get('days', 0)) + \
-                 (
-                     (float(maxtime.get('hours', 0)) * 3600 + \
-                      float(maxtime.get('minutes', 0)) * 60)
-                     / 86400
-                 )
-        duetime = starttime + max_days
+        analysis.setReferenceType(reference_type)
+        analysis.setService(service)
 
-        analysis.setReferenceAnalysisID = analysis.id
-        analysis.ReferenceType = reference_type
-        analysis.Service = service_uid
-        analysis.Unit = service.getUnit()
-        analysis.Calculation = calculation
-        analysis.InterimFields = interim_fields
-        analysis.ServiceUID = service.UID()
-        analysis.MaxTimeAllowed = maxtime
-        analysis.DueDate = duetime
-
-        #analysis.processForm()
         renameAfterCreation(analysis)
 
         return analysis.UID()

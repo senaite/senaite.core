@@ -280,7 +280,7 @@
                     <option value='' selected></option>
                         <tal:item tal:repeat="item attach_services">
                         <tal:nodups
-                            tal:condition="python:not item.UID() == last_uid">
+                            tal:condition="python: hasattr(item, 'UID') and not item.UID() == last_uid">
                             <option
                             tal:define="global last_uid item/UID"
                             tal:attributes="value item/UID;"

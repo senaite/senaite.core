@@ -1388,7 +1388,6 @@ function AnalysisRequestAddView() {
             $("#ar_"+arnum+"_SamplePoint").val(template.SamplePoint);
             $("#ar_"+arnum+"_SamplePoint_uid").val(template.SamplePointUID);
             $("#ar_"+arnum+"_reportdrymatter").prop("checked", template.reportdrymatter);
-            set_default_spec(arnum);
             // lookup AnalysisProfile
             if(template.AnalysisProfile) {
                 request_data = {

@@ -309,8 +309,12 @@ class AnalysesView(BikaListingView):
                 and not checkPermission(ViewRetractedAnalyses, self.context):
                 continue
 
-            result = obj.getResult()
             service = obj.getService()
+            # Compensate for broken data introduced by LIMS-1435
+            if not service:
+                continue
+
+            result = obj.getResult()
             calculation = service.getCalculation()
             unit = service.getUnit()
             keyword = service.getKeyword()

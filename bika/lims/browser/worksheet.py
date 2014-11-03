@@ -449,6 +449,9 @@ class WorksheetAnalysesView(AnalysesView):
             items[x]['Pos'] = pos
             items[x]['colspan'] = {'Pos':1}
             service = obj.getService()
+            # Compensate for broken data introduced by LIMS-1435
+            if not service:
+                continue
             method = service.getMethod()
             items[x]['Service'] = service.Title()
             items[x]['Priority'] = ''
@@ -1304,7 +1307,11 @@ class WorksheetServicesView(BikaListingView):
     def folderitems(self):
         ws_services = []
         for analysis in self.context.getAnalyses():
-            service_uid = analysis.getService().UID()
+            service = analysis.getService()
+            # Compensate for broken data introduced by LIMS-1435
+            if not service:
+                continue
+            service_uid = service.UID()
             if service_uid not in ws_services:
                 ws_services.append(service_uid)
         self.categories = []

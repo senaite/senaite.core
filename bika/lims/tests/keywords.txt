@@ -10,9 +10,9 @@ Documentation    Generally useful keywords for Bika tests.
 
 Start browser
     #Descomment to chose FireFox (IceWeasel), the defaul browser
-    #Open browser        ${PLONEURL}
+    Open browser        ${PLONEURL}
     #Descomment to chose you an specific browser, chrome in this case
-    Open browser        ${PLONEURL}  browser=chrome
+    #Open browser        ${PLONEURL}  browser=chrome
 
     Set selenium speed  ${SELENIUM_SPEED}
 

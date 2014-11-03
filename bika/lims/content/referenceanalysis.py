@@ -172,11 +172,13 @@ class ReferenceAnalysis(BaseContent):
         """
         # TODO : Remove when analysis - instrument being assigned directly
         if not self.getInstrument():
-            instr = self.getService().getInstrument() \
-                    if self.getService().getInstrumentEntryOfResults() \
-                    else None
-            if instr:
-                self.setInstrument(instr)
+            service = self.getService()
+            if service:
+                instr = self.getService().getInstrument() \
+                        if self.getService().getInstrumentEntryOfResults() \
+                        else None
+                if instr:
+                    self.setInstrument(instr)
         # ---8<--------
 
         return self.getInstrument().isValid() \
