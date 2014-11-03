@@ -1,10 +1,12 @@
 # coding=utf-8
 from Products.CMFCore.utils import getToolByName
+from bika.lims.jsonapi import get_include_fields
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t, dicts_to_dict
-from bika.lims.interfaces import IAnalysis, IResultOutOfRange
+from bika.lims.interfaces import IAnalysis, IResultOutOfRange, IJSONReadExtender
 from bika.lims.interfaces import IFieldIcons
 from bika.lims.utils import to_utf8
+from bika.lims.utils import dicts_to_dict
 from zope.component import adapts, getAdapters
 from zope.interface import implements
 
@@ -165,5 +167,29 @@ class ResultOutOfRange(object):
         if self.isOutOfShoulderRange(result, Min, Max, error):
             return True, True
         return True, False
+    
+class JSONReadExtender(object):
+
+    """- Adds the specification from Analysis Request to Analysis in JSON response
+    """
+
+    implements(IJSONReadExtender)
+    adapts(IAnalysis)
+
+    def __init__(self, context):
+        self.context = context
+
+    def analysis_specification(self):
+        ar = self.context.aq_parent
+        rr = dicts_to_dict(ar.getResultsRange(),'keyword')
+        
+        return rr[self.context.getService().getKeyword()]
+
+    def __call__(self, request, data):
+        self.request = request
+        self.include_fields = get_include_fields(request)
+        if not self.include_fields or "specification" in self.include_fields:
+            data['specification'] = self.analysis_specification()
+        return data
 
 
