@@ -1,5 +1,6 @@
 next
 ------------------
+LIMS-1444: In AR published report accredited analysis services are not marked as accredited
 LIMS-1443: In published reports the publishing date is not shown in the pdf
 LIMS-1420: Status filter is not kept after moving to next page
 LIMS-1442: Sample Type is not filtred by Sample Point
