@@ -17,15 +17,15 @@ Suite Teardown   Close All Browsers
 
 
 Add an ARTemplate with Analysis Dependencies
-    #Test if alert is shown when selecting an analysis which has 
+    #Test if alert is shown when selecting an analysis which has
     #a dependency in another analysis when creating a Profile and Template.
     Create ARTemplate with Analysis Dependences
-    
+
 
 *** Keywords ***
 
 Start browser
-    Open browser                        ${PLONEURL}/login_form  browser=chrome
+    Open browser                        ${PLONEURL}/login_form
     Log in                              test_labmanager         test_labmanager
     Wait until page contains            You are now logged in
     Set selenium speed                  ${SELENIUM_SPEED}
@@ -47,7 +47,7 @@ Create ARTemplate with Analysis Dependences
     Go to                       ${PLONEURL}/bika_setup/bika_artemplates
     Wait until page contains element    css=body.portaltype-artemplates
     Click Link                  Add Template
-    Wait until page contains    Add AR Template 
+    Wait until page contains    Add AR Template
     Input Text                  title      test1
     Click Link                  fieldsetlegend-analyses
     Wait until page contains element    css=body.template-base_edit
@@ -55,4 +55,4 @@ Create ARTemplate with Analysis Dependences
     Element Should Be Visible     messagebox
     Click Button                  //button[@type='button'][1]
     Click Button                  Save
-    Wait until page contains    Changes saved.    
+    Wait until page contains    Changes saved.
