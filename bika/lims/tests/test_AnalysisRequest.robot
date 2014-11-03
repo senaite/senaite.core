@@ -99,7 +99,7 @@ Create Primary AR
     Set Selenium Timeout        10
     ${ar_id} =                  Get text      //dl[contains(@class, 'portalMessage')][2]/dd
     ${ar_id} =                  Set Variable  ${ar_id.split()[2]}
-    Go to                       http://localhost:55001/plone/clients/client-1/analysisrequests
+    Go to                       ${PLONEURL}/clients/client-1/analysisrequests
     Wait until page contains    ${ar_id}
     Select checkbox             xpath=//input[@item_title="${ar_id}"]
     Click button                xpath=//input[@id="receive_transition"]
