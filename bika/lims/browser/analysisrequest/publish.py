@@ -172,7 +172,7 @@ class AnalysisRequestPublishView(BrowserView):
                 'remarks': ar.getRemarks(),
                 'member_discount': ar.getMemberDiscount(),
                 'date_sampled': self.ulocalized_time(ar.getDateSampled(), long_format=1),
-                'date_published': self.ulocalized_time(ar.getDatePublished(), long_format=1),
+                'date_published': self.ulocalized_time(DateTime(), long_format=1),
                 'invoiced': ar.getInvoiced(),
                 'late': ar.getLate(),
                 'subtotal': ar.getSubtotal(),
