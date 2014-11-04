@@ -95,6 +95,15 @@ Client = ReferenceField('Client',
                  ],
   ),
 )
+
+ClientUID = ComputedField('ClientUID',
+    expression = "context.getClient().UID() if context.getClient() else ''",
+    widget = ComputedWidget(
+        visible = False,
+    )
+)
+
+
 Contact = ReferenceField(
     'Contact',
     required=0,
@@ -732,6 +741,7 @@ schema = BikaFolderSchema.copy() + Schema((
     #title
     #description
     Client,
+    ClientUID,
     ClientBatchID,
     ClientProjectName,
     Contact,
