@@ -120,7 +120,7 @@ class BatchARAddFieldsWidgetVisibility(object):
 
 
 
-class ClientFieldWidgetVisibility(object):
+class ARClientFieldWidgetVisibility(object):
     """The Client field is editable by default in ar_add.  This adapter
     will force the Client field to be hidden when it should not be set
     by the user.
@@ -143,6 +143,28 @@ class ClientFieldWidgetVisibility(object):
                 return 'hidden'
 
         if IClient.providedBy(parent):
+            return 'hidden'
+
+        return state
+    
+class BatchClientFieldWidgetVisibility(object):
+    """The Client field is not visible when adding a batch from Client context.
+    """
+    implements(IATWidgetVisibility)
+
+    def __init__(self, context):
+        self.context = context
+        self.sort = 10
+
+    def __call__(self, context, mode, field, default):
+        import pdb
+        pdb.set_trace()
+        state = default if default else 'hidden'
+        fieldName = field.getName()
+        if fieldName != 'Client':
+            return state
+        
+        if IClient.providedBy(self.context.aq_parent):
             return 'hidden'
 
         return state
