@@ -245,7 +245,7 @@ class ClientBatchesView(BatchFolderContentsView):
 
     def __call__(self):
          self.context_actions[_('Add')] = \
-                 {'url': '../../batches/createObject?type_name=Batch',
+                 {'url': self.context.absolute_url() +'/createObject?type_name=Batch',
                   'icon': self.portal.absolute_url() + '/++resource++bika.lims.images/add.png'}
          return BatchFolderContentsView.__call__(self)
 

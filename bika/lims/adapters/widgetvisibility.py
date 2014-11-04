@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-from bika.lims.interfaces import IAnalysisRequestsFolder, IBatch, IClient
+from bika.lims.interfaces import IAnalysisRequestsFolder, IBatch, IClient, IClientFolder
 from bika.lims.interfaces import IATWidgetVisibility
 from bika.lims.utils import getHiddenAttributesForClass
 from Products.CMFCore.utils import getToolByName
@@ -147,27 +147,6 @@ class ARClientFieldWidgetVisibility(object):
 
         return state
     
-class BatchClientFieldWidgetVisibility(object):
-    """The Client field is not visible when adding a batch from Client context.
-    """
-    implements(IATWidgetVisibility)
-
-    def __init__(self, context):
-        self.context = context
-        self.sort = 10
-
-    def __call__(self, context, mode, field, default):
-        import pdb
-        pdb.set_trace()
-        state = default if default else 'hidden'
-        fieldName = field.getName()
-        if fieldName != 'Client':
-            return state
-        
-        if IClient.providedBy(self.context.aq_parent):
-            return 'hidden'
-
-        return state
 
 class BatchARAdd_BatchFieldWidgetVisibility(object):
     """This will force the 'Batch' field to 'hidden' in ar_add when the parent
