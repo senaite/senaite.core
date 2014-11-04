@@ -7,8 +7,6 @@ from zope.component import getAdapters
 _marker = []
 
 def isVisible(self, instance, mode='view', default=None, field=None):
-    import pdb
-    pdb.set_trace()
     """decide if a field is visible in a given mode -> 'state'.
     see Products.Archetypes.Widget.TypesWidget#isVisible for details about the
     default behaviour.
