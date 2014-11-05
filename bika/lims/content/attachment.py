@@ -14,14 +14,17 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from zope.interface import implements
 
+from bika.lims.browser.widgets import ReferenceWidget as BikaReferenceWidget
+
 schema = BikaSchema.copy() + Schema((
-    ComputedField('RequestID',
-        expression = 'here.getRequestID()',
-        widget = ComputedWidget(
-            visible = True,
-        ),
-    ),
+#     ComputedField('RequestID',
+#         expression = 'here.getRequestID()',
+#         widget = ComputedWidget(
+#             visible = True,
+#         ),
+#     ),
     FileField('AttachmentFile',
+        required = 1,
         widget = FileWidget(
             label=_("Attachment"),
         ),
@@ -30,21 +33,21 @@ schema = BikaSchema.copy() + Schema((
         required = 0,
         allowed_types = ('AttachmentType',),
         relationship = 'AttachmentAttachmentType',
-        widget = ReferenceWidget(
+        widget = BikaReferenceWidget(
             label=_("Attachment Type"),
+            catalog_name = "bika_setup_catalog",
+            base_query={'inactive_state': 'active'},
+            showOn=True,
+            popup_width='300px',
+            colModel=[{'columnName': 'UID', 'hidden': True},
+                      {'columnName': 'Title', 'width': '100', 'label': _('Title')},
+                     ],
         ),
     ),
     StringField('AttachmentKeys',
         searchable = True,
         widget = StringWidget(
             label=_("Attachment Keys"),
-        ),
-    ),
-    DateTimeField('DateLoaded',
-        required = 1,
-        default_method = 'current_date',
-        widget = DateTimeWidget(
-            label=_("Date Loaded"),
         ),
     ),
     ComputedField('AttachmentTypeUID',
@@ -54,7 +57,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ComputedField('ClientUID',
-        expression = 'here.aq_parent.UID()',
+        expression = 'context.get_client_uid',
         widget = ComputedWidget(
             visible = False,
         ),
@@ -63,9 +66,10 @@ schema = BikaSchema.copy() + Schema((
 )
 
 schema['id'].required = False
+schema['title'].widget.visible = False
 schema['title'].required = False
 
-class Attachment(BaseFolder):
+class Attachment(BaseContent):
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -77,7 +81,17 @@ class Attachment(BaseFolder):
 
     def Title(self):
         """ Return the Id """
-        return safe_unicode(self.getId()).encode('utf-8')
+        try:
+            file = self.getAttachmentFile()
+            if not file:
+                return ''
+        except:
+            return ''
+        
+        fn = file.getFilename()
+        if fn:
+            return safe_unicode(fn).encode('utf-8')
+        return ''
 
     def getTextTitle(self):
         """ Return the request and possibly analayis title as title """
@@ -90,6 +104,14 @@ class Attachment(BaseFolder):
                 return requestid
         else:
             return None
+
+    def get_client_uid(self):
+        if IAnalysisRequest.providedBy(self):
+            return self.aq_parent.UID()
+        elif IBatch.providedBy(self):
+            client = self.aq_parent.getClient()
+            if client:
+                return client.UID()
 
     def getRequest(self):
         """ Return the AR to which this is linked """
@@ -149,11 +171,5 @@ class Attachment(BaseFolder):
                 parent = tool.lookupObject(reference.sourceUID)
         workflow = getToolByName(self, 'portal_workflow')
         return workflow.getInfoFor(parent, 'review_state', '')
-
-    security.declarePublic('current_date')
-    def current_date(self):
-        """ return current date """
-        return DateTime()
-
 
 atapi.registerType(Attachment, PROJECTNAME)

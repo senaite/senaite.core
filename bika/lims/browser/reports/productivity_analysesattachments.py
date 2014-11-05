@@ -49,7 +49,7 @@ class Report(BrowserView):
 
         date_query = formatDateQuery(self.context, 'Loaded')
         if date_query:
-            query['getDateLoaded'] = date_query
+            query['created'] = date_query
             loaded = formatDateParms(self.context, 'Loaded')
             parms.append(
                 {'title': _('Loaded'),
@@ -81,7 +81,7 @@ class Report(BrowserView):
             if filesize > 1024:
                 filesize = filesize / 1024
                 sizeunit = "Mb"
-            dateloaded = attachment.getDateLoaded()
+            dateloaded = attachment.created()
             dataline = []
             dataitem = {'value': attachment.getTextTitle()}
             dataline.append(dataitem)

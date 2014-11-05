@@ -36,6 +36,14 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <browser:page
+      for="bika.lims.interfaces.IBatch"
+      name="attachments"
+      class="bika.lims.browser.batch.attachments.AttachmentsView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+    
     <!-- Workflow action button clicked -->
     <browser:page
       for="bika.lims.interfaces.IBatch"

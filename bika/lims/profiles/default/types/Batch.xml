@@ -16,6 +16,7 @@
  <property name="filter_content_types">True</property>
  <property name="allowed_content_types">
   <element value="AnalysisRequest"/>
+  <element value="Attachment"/>
  </property>
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>
@@ -83,6 +84,18 @@
          icon_expr="string:${portal_url}/++resource++bika.lims.images/batchbook.png"
          link_target=""
          url_expr="string:${object_url}/batchbook"
+         i18n:attributes="title"
+         visible="True">
+  <permission value="View"/>
+ </action>
+ 
+  <action title="Attachments"
+         action_id="attachments"
+         category="object"
+         condition_expr=""
+         icon_expr="string:${portal_url}/++resource++bika.lims.images/attachments.png"
+         link_target=""
+         url_expr="string:${object_url}/attachments"
          i18n:attributes="title"
          visible="True">
   <permission value="View"/>

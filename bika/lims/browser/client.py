@@ -678,7 +678,7 @@ class ClientAttachmentsView(BikaListingView):
             items[x]['AttachmentType'] = obj.getAttachmentType().Title()
             items[x]['ContentType'] = self.lookupMime(file.getContentType())
             items[x]['FileSize'] = '%sKb' % (file.get_size() / 1024)
-            items[x]['DateLoaded'] = obj.getDateLoaded()
+            items[x]['DateLoaded'] = obj.created()
 
             items[x]['replace']['getTextTitle'] = "<a href='%s'>%s</a>" % \
                  (obj_url, items[x]['getTextTitle'])
