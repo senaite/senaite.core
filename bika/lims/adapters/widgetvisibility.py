@@ -109,7 +109,7 @@ class BatchARAddFieldsWidgetVisibility(object):
         if mode == 'add':
             # Client cannot be edited in ar_add if set on Batch.
             if fieldName == 'Client' and context.aq_parent.portal_type == 'Batch':
-                if context.aq_parent.schema['Client'].get(context.aq_parent):
+                if IClient.providedBy(context.aq_parent.aq_parent):
                     return 'hidden'
                 else:
                     return 'edit'
@@ -137,7 +137,7 @@ class ARClientFieldWidgetVisibility(object):
         if fieldName != 'Client':
             return state
         parent = self.context.aq_parent
-
+        
         if IBatch.providedBy(parent):
             if parent.getClient():
                 return 'hidden'

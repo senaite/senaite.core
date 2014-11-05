@@ -190,7 +190,6 @@ class Client(Organisation):
             return self.Schema()['DecimalMark'].get(self)
         return self.bika_setup.getDecimalMark()
 
-
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 
 atapi.registerType(Client, PROJECTNAME)
