@@ -146,7 +146,25 @@ class ARClientFieldWidgetVisibility(object):
             return 'hidden'
 
         return state
-    
+
+class ClientBatchesFieldWidgetVisibility(object):
+    """hides clients related fields in non client batches
+    """
+    implements(IATWidgetVisibility)
+
+    def __init__(self, context):
+        self.context = context
+        self.sort = 10
+
+    def __call__(self, context, mode, field, default):
+        state = default if default else 'hidden'
+        fieldName = field.getName()
+        if not self.context.getClient():
+            if fieldName in ['ClientBatchID',
+                             'ClientProjectName', 
+                             'ClientBatchComment']:
+                return 'invisible'
+        return state
 
 class BatchARAdd_BatchFieldWidgetVisibility(object):
     """This will force the 'Batch' field to 'hidden' in ar_add when the parent
