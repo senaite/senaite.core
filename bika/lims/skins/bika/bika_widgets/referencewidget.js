@@ -87,6 +87,11 @@ function referencewidget_lookups(elements){
 					var new_item = "<div class='reference_multi_item' uid='"+selected_uid+"'>"+del_btn+selected_value+"</div>";
 					$(listing_div).append($(new_item));
 				}
+
+				// skip_referencewidget_lookup: a little cheat
+				// it prevents this widget from falling over itself,
+				// by allowing other JS to request that the "selected" action
+				// is not triggered.
 				skip = $(element).attr("skip_referencewidget_lookup");
 				if (skip !== true){
 					$(this).trigger("selected", ui.item.UID);
