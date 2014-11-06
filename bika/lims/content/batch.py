@@ -3,7 +3,7 @@ from bika.lims import bikaMessageFactory as _, EditARContact
 from bika.lims.utils import t, getUsers
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaFolderSchema
-from bika.lims.interfaces import IBatch
+from bika.lims.interfaces import IBatch, IClient
 from bika.lims.workflow import skip, BatchState, StateFlow, getCurrentState,\
     CancellationState
 from bika.lims.browser.widgets import DateTimeWidget
@@ -79,22 +79,13 @@ BatchDate = DateTimeField(
         label=_('Date'),
     ),
 )
-Client = ReferenceField('Client',
-    required=0,
-    allowed_types=('Client',),
-    relationship='BatchClient',
-    widget=ReferenceWidget(
-        label=_("Client"),
-        size=30,
-        visible=True,
-        base_query={'inactive_state': 'active'},
-        showOn=True,
-        colModel=[{'columnName': 'UID', 'hidden': True},
-                  {'columnName': 'ClientID', 'width': '20', 'label': _('Client ID')},
-                  {'columnName': 'Title', 'width': '80', 'label': _('Title')}
-                 ],
-  ),
+
+Client = ComputedField(
+    "Client",
+    expression="context.aq_parent if context.aq_parent.portal_type == 'Client' else ''",
+    widget=ComputedWidget(visible = False)
 )
+
 Contact = ReferenceField(
     'Contact',
     required=0,
@@ -807,8 +798,8 @@ class Batch(ATFolder):
         return getCatalog(self)
 
     def getClientTitle(self):
-        client = self.getClient()
-        if client:
+        client = self.aq_parent
+        if IClient.providedBy (client):
             return client.Title()
         return ""
 
@@ -962,7 +953,9 @@ class Batch(ATFolder):
         bsc = getToolByName(self, 'bika_setup_catalog')
         proxies = bsc(portal_type="Method", inactive_review_state='active')
         return DisplayList([(p.UID, p.title) for p in proxies])
-
+    
+    def getParentUID(self):
+        return self.aq_parent.UID()
 
 registerType(Batch, PROJECTNAME)
 

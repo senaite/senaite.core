@@ -12,10 +12,17 @@
     />
 
     <adapter
-      factory=".widgetvisibility.ClientFieldWidgetVisibility"
+      factory=".widgetvisibility.ARClientFieldWidgetVisibility"
       provides="bika.lims.interfaces.IATWidgetVisibility"
       for="bika.lims.interfaces.IAnalysisRequest"
-      name="ClientFieldWV"
+      name="ARClientFieldWV"
+    />
+    
+    <adapter
+      factory=".widgetvisibility.ClientBatchesFieldWidgetVisibility"
+      provides="bika.lims.interfaces.IATWidgetVisibility"
+      for="bika.lims.interfaces.IBatch"
+      name="CBClientFieldWV"
     />
 
     <adapter
