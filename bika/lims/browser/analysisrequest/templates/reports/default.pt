@@ -218,6 +218,10 @@
                             analysis_css_retested python:'retested' if analysis['retested'] else '';">
             <tr tal:attributes="class python:'actual %s %s %s' % (analysis_css_result, analysis_css_accredited, analysis_css_retested);">
                 <td class="analysis">
+                    <img tal:attributes='src python:portal["url"]+"/++resource++bika.lims.images/accredited.png";'
+                        tal:condition='analysis/accredited'
+                        alt="accredited"
+                        class="accredited-ico"/>
                     <span tal:content="analysis/title">Total 25-OHD</span>
                 </td>
                 <td tal:condition="hasprevresults" class="prev">

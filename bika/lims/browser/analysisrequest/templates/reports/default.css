@@ -216,6 +216,11 @@ div#section-info table {
     width: 100%;
 }
 
+img.accredited-ico {
+    vertical-align:bottom;
+    padding-right:5px;
+}
+
 @media print {
     * {
         font: 9pt Arial, Verdana, serif;

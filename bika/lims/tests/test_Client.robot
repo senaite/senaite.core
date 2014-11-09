@@ -115,7 +115,7 @@ Add AR Template
     #the second SP with the second ST
     Go to       ${PLONEURL}/clients/client-1/samplepoints
     Click link      Add
-    Wait Until Page Contains Element  title    
+    Wait Until Page Contains Element  title
 
     Input Text                  title                   SP1
     Input Text                  description             My first test
@@ -140,7 +140,7 @@ Add AR Template
 *** Keywords ***
 
 Start browser
-    Open browser        ${PLONEURL}/login_form  browser=chrome
+    Open browser        ${PLONEURL}/login_form
     Set selenium speed  ${SELENIUM_SPEED}
 
 New client

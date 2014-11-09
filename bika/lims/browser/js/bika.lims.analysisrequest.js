@@ -14,6 +14,7 @@ function AnalysisRequestView() {
         $("#workflow-transition-publish").click(workflow_transition_publish);
         $("#workflow-transition-republish").click(workflow_transition_republish);
         $("#workflow-transition-receive").click(workflow_transition_receive);
+        $("#workflow-transition-retract_ar").click(workflow_transition_retract_ar);
 
     }
 
@@ -66,6 +67,19 @@ function AnalysisRequestView() {
         var spec_uid = $("#PublicationSpecification_uid").val();
         requestdata.PublicationSpecification = spec_uid;
         requestdata.workflow_action = "republish";
+        var requeststring = $.param(requestdata);
+        var href = window.location.href.split("?")[0]
+            .replace("/base_view", "")
+            .replace("/manage_results", "")
+            .replace("/workflow_action", "")
+            .replace("/view", "") + "/workflow_action?" + requeststring;
+        window.location.href = href;
+    }
+
+    function workflow_transition_retract_ar(event) {
+        event.preventDefault();
+        var requestdata = {};
+        requestdata.workflow_action = "retract_ar";
         var requeststring = $.param(requestdata);
         var href = window.location.href.split("?")[0]
             .replace("/base_view", "")
