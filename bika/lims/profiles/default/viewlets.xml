@@ -5,45 +5,12 @@
 
 <object>
 
-  <!-- Viewlets keep the same ordering than the default skin ('Plone Default'
-       out of the box).
-       You can specify skinname="*" if you want changes apply for all skins.
-       Using "True"" for the 'make-default' parameter will make the 'skinname'
-       value set as default skinname. Means the name of the skin that would be
-       used in case the viewlets ordering was not specified for the currently
-       used skin.
-       The 'based-on' attribute lets you inherit the viewlets ordering from an
-       existing skin.
-       -->
-  <order manager="plone.portalfooter" skinname="bika"
-         based-on="Plone Default">
-    <!-- The definition of a viewlet accepts these parameters:
-         - name: quite self explanatory, the name of the viewlet.
-         - insert-before: name of the viewlet before which it must be added or
-           moved.
-         - insert-after: name of the viewlet after which it must be added
-           or moved.
-         - remove: supported but rarely needed, removes the viewlet from the
-           ordering list (doesn't mean that it hides the viewlet).
-         Note: insert-before and -after accept the value "*" which means
-         "all".
-         -->
-<!-- EXAMPLE (UNCOMMENT TO MAKE AVAILABLE):
-    <viewlet name="bika.someviewlet"
-             insert-before="*" />
--->
-  </order>
+    <order manager="plone.portalheader" skinname="bika" based-on="Plone Default">
+        <viewlet name="bika.lims.checknewversions" insert-after="plone.global_sections"/>
+    </order>
 
-  <order manager="plone.portalfooter" skinname="bika"
-         based-on="Plone Default">
-    <viewlet name="bika.lims.authenticator" insert-before="plone.colophon" />
-  </order>
-
-
-  <hidden manager="plone.portalheader" skinname="bika">
-<!-- EXAMPLE (UNCOMMENT TO MAKE AVAILABLE):
-    <viewlet name="plone.global_sections" />
--->
-  </hidden>
+    <order manager="plone.portalfooter" skinname="bika" based-on="Plone Default">
+        <viewlet name="bika.lims.authenticator" insert-before="plone.colophon"/>
+    </order>
 
 </object>

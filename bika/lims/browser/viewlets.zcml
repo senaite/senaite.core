@@ -5,6 +5,17 @@
     xmlns:monkey="http://namespaces.plone.org/monkey"
     i18n_domain="bika">
 
+    <!-- Show new version and upgrade alert viewlet -->
+    <browser:viewlet
+        for="*"
+        name="bika.lims.checknewversions"
+        class="bika.lims.browser.viewlets.NewVersionsViewlet"
+        manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+        template="templates/new_version.pt"
+        permission="zope2.View"
+        layer="bika.lims.interfaces.IBikaLIMS"
+        />
+
     <!-- Hide BreadCrumbs for root views -->
     <browser:viewlet
         for="Products.CMFPlone.interfaces.IPloneSiteRoot"

@@ -1,0 +1,41 @@
+<div tal:omit-tag="" i18n:domain="bika">
+
+    <div class="visualClear"><!-- --></div>
+
+    <div id='portal-alert'>
+        <div class='portal-alert-item' tal:condition="python:view.has_new_version if hasattr(view, 'has_new_version') else False">
+
+            <p i18n:translate="new_version_available_title" class="title">
+                New Bika LIMS release available
+            </p>
+
+            <p i18n:translate="new_version_available_description">
+                Version <span i18n:name="new_version" tal:content="view/new_version"/>
+                was released on <span i18n:name="new_date" tal:content="view/new_date"/>,
+                and your current version is <span i18n:name="current_version" tal:content="view/current_version"/>.
+                <a i18n:name="click_here" tal:attributes="href python:view.context.absolute_url() + '/bika_setup/edit'">Click here</a>
+                to disable notifications about new releases.
+            </p>
+
+        </div>
+
+        <div class='portal-alert-item'
+                tal:condition="python:view.has_upgrade_step if hasattr(view, 'has_upgrade_step') else False">
+
+            <p i18n:translate="upgrade_available_title" class="title">
+                Upgrade step available
+            </p>
+
+            <p i18n:translate="upgrade_available_description">
+                Your current database profile version is <span i18n:name="installed_version" tal:content="view/info/installedVersion"/>,
+                and the version installed on disk is <span i18n:name="new_version" tal:content="view/info/newVersion"/>.
+                Please remember to <a href="http://docs.plone.org/manage/deploying/backup.html" i18n:name="backup_instructions_link">
+                make a backup</a>, and then
+                <a i18n:name="click_here" tal:attributes="href python: view.context.absolute_url() + '/prefs_install_products_form'">Click here</a>
+                to perform the upgrade.
+            </p>
+
+        </div>
+    </div>
+
+</div>
