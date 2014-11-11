@@ -241,24 +241,20 @@ class ClientBatchesView(BatchFolderContentsView):
     def __init__(self, context, request):
         super(ClientBatchesView, self).__init__(context, request)
         self.view_url = self.context.absolute_url() + "/batches"
+        self.contentFilter['getParentUID'] = self.context.UID()
+        
+        review_states = []
+        for review_state in self.review_states:
+            review_state['columns'].remove('Client')
+            review_states.append(review_state)
+        self.review_states = review_states
 
     def __call__(self):
-        # self.context_actions[_('Add')] = \
-        #         {'url': '../../batches/createObject?type_name=Batch',
-        #          'icon': self.portal.absolute_url() + '/++resource++bika.lims.images/add.png'}
-        return BatchFolderContentsView.__call__(self)
+         self.context_actions[_('Add')] = \
+                 {'url': self.context.absolute_url() +'/createObject?type_name=Batch',
+                  'icon': self.portal.absolute_url() + '/++resource++bika.lims.images/add.png'}
+         return BatchFolderContentsView.__call__(self)
 
-    def contentsMethod(self, contentFilter):
-        bc = getToolByName(self.context, "bika_catalog")
-        state = [x for x in self.review_states if x['id'] == self.review_state][0]
-        batches = {}
-        for ar in bc(portal_type = 'AnalysisRequest',
-                     getClientUID = self.context.UID()):
-            ar = ar.getObject()
-            batch = ar.getBatch()
-            if batch is not None:
-                batches[batch.UID()] = batch
-        return batches.values()
 
 class ClientAnalysisRequestsView(AnalysisRequestsView):
     def __init__(self, context, request):

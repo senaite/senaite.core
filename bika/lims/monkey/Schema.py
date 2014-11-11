@@ -1,6 +1,7 @@
 from Products.Archetypes.interfaces import IFieldDefaultProvider
 from Products.Archetypes.mimetype_utils import getDefaultContentType
 from Products.Archetypes.utils import shasattr, mapply
+from Products.CMFCore.utils import getToolByName
 from bika.lims.interfaces import IAcquireFieldDefaults
 
 from zope import component
@@ -8,14 +9,15 @@ from zope.component import getAdapters
 
 _marker = []
 
+
 def setDefaults(self, instance):
     """Only call during object initialization. Sets fields to
     schema defaults
     """
-    ## TODO think about layout/vs dyn defaults
+    # # TODO think about layout/vs dyn defaults
     for field in self.values():
 
-        ### bika addition: we fire adapters for IAcquireFieldDefaults.
+        # ## bika addition: we fire adapters for IAcquireFieldDefaults.
         # If IAcquireFieldDefaults returns None, this signifies "ignore" return.
         # First adapter found with non-None result, wins.
         value = None
@@ -37,11 +39,13 @@ def setDefaults(self, instance):
         ### From here, the rest of the body of the original function:
         ### Products.Archetypes.Schema.BasicSchema#setDefaults
 
-        if field.getName().lower() == 'id': continue
+        if field.getName().lower() == 'id':
+            continue
         # The original version skipped all reference fields.  I obviously do
         # find some use in defining their defaults anyway, so if our adapter
         # reflects a value for a reference field, I will allow it.
-        if field.type == "reference" and not value: continue
+        if field.type == "reference" and not value:
+            continue
 
         default = value if value else field.getDefault(instance)
 
@@ -64,3 +68,21 @@ def setDefaults(self, instance):
             kw['mimetype'] = default_content_type
 
         mapply(mutator, *args, **kw)
+
+
+def editableFields(self, instance, visible_only=False):
+    """Returns a list of editable fields for the given instance
+    I hacked this to include the field when querying isVisible.
+    This gives us a chance to change the visibility values on the fly.
+    """
+    ret = []
+    portal = getToolByName(instance, 'portal_url').getPortalObject()
+    for field in self.fields():
+        if field.writeable(instance, debug=False) and (
+                    not visible_only or
+                        field.widget.isVisible(instance, 'edit', 'visible',
+                                               field) != 'invisible') and \
+                field.widget.testCondition(instance.aq_parent, portal,
+                                           instance):
+            ret.append(field)
+    return ret

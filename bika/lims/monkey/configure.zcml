@@ -50,4 +50,11 @@
       replacement=".Schema.setDefaults"
       />
 
+  <monkey:patch
+      description="Fix the invocation of isVisible to include the field"
+      class="Products.Archetypes.Schema.Schemata"
+      original="editableFields"
+      replacement=".Schema.editableFields"
+      />
+
 </configure>

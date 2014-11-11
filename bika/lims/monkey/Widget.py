@@ -40,8 +40,8 @@ def isVisible(self, instance, mode='view', default=None, field=None):
         for adapter in adapters[key]:
             oldstate = state
             state = adapter[1](instance, mode, field, state)
-            # if state != oldstate:
-            #     adapter_name = adapter[1].__repr__().split(" ")[0].split(".")[-1]
-            #     print "%-25s %-25s adapter:%s"%(field.getName(), "%s->%s"%(oldstate, state), adapter_name)
+            if state != oldstate:
+                 adapter_name = adapter[1].__repr__().split(" ")[0].split(".")[-1]
+                 print "%-25s %-25s adapter:%s"%(field.getName(), "%s->%s"%(oldstate, state), adapter_name)
 
     return state

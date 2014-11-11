@@ -15,7 +15,7 @@ Suite Teardown   Close All Browsers
 
 *** Test Cases ***
 
-Test Batch-AR
+Test AR created inside batches
     Log in  test_labmanager  test_labmanager
 
     Add Batch
@@ -33,42 +33,40 @@ Test Batch-AR
 
 Test batch inherited ARs
     Log in                              test_labmanager         test_labmanager
-
     ## Add batch
     Go to                               ${PLONEURL}/batches
     Click Link                          Add
     Wait until page contains            Add Batch
     Input Text                          title                   First Batch
-    select from dropdown                Client                  Happy
+    # ar context:
+    Page should not contain element     Client
     Input Text                          description             contains ARs.
     Click Button                        Save
-
     go to                               ${PLONEURL}/batches/B-001/analysisrequests
-    select from list                    ar_count           6
+    input text                          ar_count           1
     click link                          Add new
     wait until page contains            Request new analyses
+    Select from dropdown                ar_0_Client             Happy
+    ##Click element                       css=.ClientCopyButton
     Select from dropdown                ar_0_Contact            Rita
-    Click element                       css=.ContactCopyButton
+    ##Click element                       css=.ContactCopyButton
     SelectDate                          ar_0_SamplingDate       1
-    Click element                       css=.SamplingDateCopyButton
+    ##Click element                       css=.SamplingDateCopyButton
     Select from dropdown                ar_0_SampleType         Water
-    Click element                       css=.SampleTypeCopyButton
+    ##Click element                       css=.SampleTypeCopyButton
     Click element                       css=#cat_lab_Metals
-    Select checkbox                     xpath=//input[@title='Calcium'][1]
-    Click element                       xpath=//img[@name='Calcium']
+    ##Select checkbox                     xpath=//input[@title='Calcium'][1]
+    ##Click element                       xpath=//img[@name='Calcium']
     Set Selenium Timeout                30
     Click Button                        Save
     Wait until page contains            created
     Set Selenium Timeout                10
-
     ## Add second batch
     Go to                               ${PLONEURL}/batches
     Click Link                          Add
     Input Text                          title           Second Batch
-    select from dropdown                Client          Happy
     Input Text                          description     Inherit, delete, rinse, repeat
     Click Button                        Save
-
     go to                               ${PLONEURL}/batches/B-002/base_edit
     click element                       InheritedObjectsUI_more
     click element                       InheritedObjectsUI_more
@@ -80,7 +78,6 @@ Test batch inherited ARs
     select from dropdown                InheritedObjectsUI-Title-3    0004
     select from dropdown                InheritedObjectsUI-Title-4    0005
     Click button                        Save
-
     go to                               ${PLONEURL}/batches/B-002/base_edit
     Click element                       delete-row-0
     Click button                        Save
@@ -108,6 +105,28 @@ Test Batch-Attach
     click button                        Save
     Wait until page contains            Changes saved.    
     
+Test ClientBatchFields
+    Log in  test_labmanager  test_labmanager
+
+    Go to                        ${PLONEURL}/batches
+    Wait until page contains     Add
+    Click Link                   Add
+    Wait until page contains     Add Batch
+    Set Selenium Timeout         1
+    Page should not contain element  ClientBatchID
+    Page should not contain element  ClientProjectName
+    Go to                        ${PLONEURL}/clients/client-1/batches
+    Wait until page contains     Add
+    Click Link                   Add
+    Wait until page contains     Add Batch
+    Set Selenium Timeout         1
+    Page should contain element  ClientBatchID
+    Page should contain element  ClientProjectName
+    
+    # Log out
+    # Log in  test_labmanager1  test_labmanager1
+    # Verify AR  AP-0001-R01
+    
 *** Keywords ***
 
 Add Batch
@@ -116,11 +135,20 @@ Add Batch
     Click Link                   Add
     Wait until page contains     Add Batch
     Input text                   description  Just a regular batch
-    Select from dropdown         Client     Happy
     SelectDate                   BatchDate       1
     Click Button                 xpath=//input[@value="Save"]
     Wait until page contains     saved
-
+    
+Add ClientBatch
+    Go to                        http://localhost:55001/plone/clients/client-1/batches
+    Wait until page contains     Add
+    Click Link                   Add
+    Wait until page contains     Add Batch
+    Input text                   description  Just a regular batch
+    SelectDate                   BatchDate       1
+    Click Button                 xpath=//input[@value="Save"]
+    Wait until page contains     saved
+    
 Add AttachmentType
     Go to  ${PLONEURL}/bika_setup/bika_attachmenttypes
     Click link  Add
@@ -139,9 +167,10 @@ Batch state should be
 Add AR
     Go to                        http://localhost:55001/plone/batches/B-001/analysisrequests
     Wait until page contains     Add new
-    Select from list             ar_count  1
+    input text                   ar_count  1
     click Link                   Add new
     Wait until page contains     Request new analyses
+    Select from dropdown         ar_0_Client             Happy
     Select from dropdown         ar_0_Contact            Rita
     Select from dropdown         ar_0_SampleType         Apple
     Select from dropdown         ar_0_Profile            Counts

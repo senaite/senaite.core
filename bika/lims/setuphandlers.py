@@ -637,6 +637,7 @@ class BikaGenerator:
         addIndex(bc, 'getExpiryDate', 'DateIndex')
         addIndex(bc, 'getInvoiced', 'FieldIndex')
         addIndex(bc, 'getPreserver', 'FieldIndex')
+        addIndex(bc, 'getParentUID', 'FieldIndex')
         addIndex(bc, 'getProfileTitle', 'FieldIndex')
         addIndex(bc, 'getReferenceDefinitionUID', 'FieldIndex')
         addIndex(bc, 'getRequestID', 'FieldIndex')

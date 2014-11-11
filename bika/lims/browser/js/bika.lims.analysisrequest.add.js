@@ -843,7 +843,7 @@ function AnalysisRequestAddView() {
             },
             error: function(XMLHttpRequest, statusText) {
                 alert(_('Fail:'+statusText));
-            },
+            }
         });
 
     }
@@ -1063,7 +1063,6 @@ function AnalysisRequestAddView() {
                         if (service_uid.length > 0) {
                             var e = $("input[value=" + service_uid + "]").filter("[arnum='" + arnum + "']");
                             //console.log('toggleCat: ' + service_uid + ':' + arnum);
-                            //TODO Hacked this because togge_spec_fields doesn't do any longer!
                             $(e).prop('checked', 'true');
                             $(e).change();
                             //toggle_spec_fields(e);
@@ -1375,7 +1374,7 @@ function AnalysisRequestAddView() {
                 "AnalysisProfile",
                 "Partitions",
                 "Analyses",
-                "Prices",
+                "Prices"
                 ]
         };
         window.bika.lims.jsonapi_read(request_data, function(data){
@@ -1811,7 +1810,7 @@ function AnalysisRequestAddView() {
                             elem = elements[i];
                             if (elem.checked == true) {
                                 if (elem.title == '') {
-                                    //TODO: This should not be required
+                                    // This should not be required
                                     continue;
                                 }
                                 titles.push(elem.title);
@@ -1838,8 +1837,8 @@ function AnalysisRequestAddView() {
                         };
                         recalc_prices(arnum);
                         return true;
-                        },
-                    },
+                        }
+                    }
             });
         };
     }

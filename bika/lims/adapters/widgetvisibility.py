@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-from bika.lims.interfaces import IAnalysisRequestsFolder, IBatch, IClient
+from bika.lims.interfaces import IAnalysisRequestsFolder, IBatch, IClient, IClientFolder
 from bika.lims.interfaces import IATWidgetVisibility
 from bika.lims.utils import getHiddenAttributesForClass
 from Products.CMFCore.utils import getToolByName
@@ -109,7 +109,7 @@ class BatchARAddFieldsWidgetVisibility(object):
         if mode == 'add':
             # Client cannot be edited in ar_add if set on Batch.
             if fieldName == 'Client' and context.aq_parent.portal_type == 'Batch':
-                if context.aq_parent.schema['Client'].get(context.aq_parent):
+                if IClient.providedBy(context.aq_parent.aq_parent):
                     return 'hidden'
                 else:
                     return 'edit'
@@ -120,7 +120,7 @@ class BatchARAddFieldsWidgetVisibility(object):
 
 
 
-class ClientFieldWidgetVisibility(object):
+class ARClientFieldWidgetVisibility(object):
     """The Client field is editable by default in ar_add.  This adapter
     will force the Client field to be hidden when it should not be set
     by the user.
@@ -137,7 +137,7 @@ class ClientFieldWidgetVisibility(object):
         if fieldName != 'Client':
             return state
         parent = self.context.aq_parent
-
+        
         if IBatch.providedBy(parent):
             if parent.getClient():
                 return 'hidden'
@@ -145,6 +145,25 @@ class ClientFieldWidgetVisibility(object):
         if IClient.providedBy(parent):
             return 'hidden'
 
+        return state
+
+class ClientBatchesFieldWidgetVisibility(object):
+    """hides clients related fields in non client batches
+    """
+    implements(IATWidgetVisibility)
+
+    def __init__(self, context):
+        self.context = context
+        self.sort = 10
+
+    def __call__(self, context, mode, field, default):
+        state = default if default else 'hidden'
+        fieldName = field.getName()
+        if not self.context.getClient():
+            if fieldName in ['ClientBatchID',
+                             'ClientProjectName', 
+                             'ClientBatchComment']:
+                return 'invisible'
         return state
 
 class BatchARAdd_BatchFieldWidgetVisibility(object):
