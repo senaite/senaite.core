@@ -26,7 +26,7 @@ def lookup(context, portal_type, **kwargs):
 def check_for_required_columns(name, data, required):
     for column in required:
         if not data[column]:
-            message = _("{0} has no '{1}' column." % (name, column))
+            message = _("%s has no '%s' column." % (name, column))
             raise Exception(t(message))
 
 
