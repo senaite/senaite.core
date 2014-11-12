@@ -1,5 +1,6 @@
 from bika.lims import enum
 from bika.lims import PMF
+from bika.lims import logger
 from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.utils import t
 from Products.CMFCore.interfaces import IContentish
