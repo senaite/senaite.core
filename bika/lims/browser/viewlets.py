@@ -85,7 +85,11 @@ class NewVersionsViewlet(ViewletBase):
         passed since we last checked.
         """
         et = time.time()
-        sdm = self.context.session_data_manager
+        try:
+            sdm = self.context.session_data_manager
+        except AttributeError:
+            # While testing, the session data manager is not yet instantiated.
+            return False
         session = sdm.getSessionData(create=True)
         diff = et - session.get('bika.lims-version-check', et)
         if diff > 86400 or diff == 0:
