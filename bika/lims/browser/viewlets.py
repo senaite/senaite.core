@@ -103,9 +103,9 @@ class NewVersionsViewlet(ViewletBase):
         member = mtool.getAuthenticatedMember()
         roles = member.getRoles()
         allowed = 'LabManager' in roles or 'Manager' in roles
-        allowed = allowed and self.check_session()
+        allowed = allowed
 
-        if allowed \
+        if allowed and self.check_session()\
                 and self.context.bika_setup.getShowNewReleasesInfo() \
                 and self.has_new_version:
             return self.index()
