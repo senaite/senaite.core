@@ -77,15 +77,26 @@ BatchDate = DateTimeField(
     required=False,
     widget=DateTimeWidget(
         label=_('Date'),
+        description=_("Batch order date - edit if the batch was ordered earlier already"),
     ),
 )
-
-Client = ComputedField(
-    "Client",
-    expression="context.aq_parent if context.aq_parent.portal_type == 'Client' else ''",
-    widget=ComputedWidget(visible = False)
+Client = ReferenceField('Client',
+    required=0,
+    allowed_types=('Client',),
+    relationship='BatchClient',
+    widget=ReferenceWidget(
+        label=_("Client"),
+        description=_("The Client who ordered this batch"),
+        size=30,
+        visible=True,
+        base_query={'inactive_state': 'active'},
+        showOn=True,
+        colModel=[{'columnName': 'UID', 'hidden': True},
+                  {'columnName': 'ClientID', 'width': '20', 'label': _('Client ID')},
+                  {'columnName': 'Title', 'width': '80', 'label': _('Title')}
+                 ],
+  ),
 )
-
 Contact = ReferenceField(
     'Contact',
     required=0,
@@ -97,6 +108,7 @@ Contact = ReferenceField(
     write_permission=permissions.ModifyPortalContent,
     widget=ReferenceWidget(
         label=_("Contact"),
+        description=_("The Client Contact person for this batch"),
         size=20,
         helper_js=("bika_widgets/referencewidget.js",),
         visible={'edit': 'visible',
@@ -123,6 +135,9 @@ CCContact = ReferenceField(
     write_permission=permissions.ModifyPortalContent,
     widget=ReferenceWidget(
         label=_("CC Contact"),
+        description=_("These Client Contacts will be copied in email "
+                      "communication regarding this batch, e.g. receive "
+                      "emailed results"),
         size=20,
         helper_js=("bika_widgets/referencewidget.js",),
         visible={'edit': 'visible',
@@ -142,7 +157,8 @@ CCEmails = StringField(
     searchable=True,
     required=0,
     widget=LinesWidget(
-        label=_("CC Emails")
+        label=_("CC Emails"),
+        description=_("Add furher email addresses to be copied"),
     )
 )
 
@@ -157,6 +173,8 @@ InvoiceContact = ReferenceField(
     write_permission=permissions.ModifyPortalContent,
     widget=ReferenceWidget(
         label=_("Invoice Contact"),
+        description=_("The Client Contact to whom invoices for this batch "
+                      "will be sent"),
         size=20,
         helper_js=("bika_widgets/referencewidget.js",),
         visible={'edit': 'visible',
@@ -183,6 +201,7 @@ Analysts = LinesField(
     widget=MultiSelectionWidget(
         format='select',
         label=_("Analysts"),
+        description=_("The analysts that are assigned to the batch"),
         visible={'edit': 'visible',
                  'view': 'visible',
                  },
@@ -197,6 +216,8 @@ LeadAnalyst = StringField(
     widget=SelectionWidget(
         format='select',
         label=_("Lead Analyst"),
+        description=_("The analyst responsible for the analyses and QC of "
+                      "this batch"),
         visible={'edit': 'visible',
                  'view': 'visible',
                  },
@@ -207,7 +228,8 @@ ClientBatchID = StringField(
     searchable=True,
     required=0,
     widget=StringWidget(
-        label=_("Client Batch ID")
+        label=_("Client Batch ID"),
+        description=_("The client's own identification for the batch"),
     )
 )
 ClientProjectName = StringField(
@@ -215,7 +237,8 @@ ClientProjectName = StringField(
     searchable=True,
     required=0,
     widget=StringWidget(
-        label=_("Client Project Name")
+        label=_("Client Project Name"),
+        description=_("The project name the client provided for the batch"),
     )
 )
 SamplePoint = ReferenceField(
@@ -273,6 +296,7 @@ SampleMatrix = ReferenceField(
     write_permission=permissions.ModifyPortalContent,
     widget=ReferenceWidget(
         label=_("Sample Matrix"),
+        description=_("The sample matrix the sample is 'categorised' in"),
         size=20,
         visible={'edit': 'visible',
                  'view': 'visible',
@@ -292,7 +316,7 @@ Specification = ReferenceField(
     write_permission=permissions.ModifyPortalContent,
     widget=ReferenceWidget(
         label=_("Analysis Specification"),
-        description=_("Choose default AR specification values"),
+        description=_("Choose default AR specification set or standard"),
         size=20,
         visible={'edit': 'visible',
                  'view': 'visible',
@@ -324,6 +348,8 @@ Template = ReferenceField(
     write_permission=permissions.ModifyPortalContent,
     widget=ReferenceWidget(
         label=_("Template"),
+        description=_("AR Template applied - to auto select analyses, sample "
+                      "points and partitions"),
         size=20,
         visible={'edit': 'visible',
                  'view': 'visible',
@@ -344,6 +370,8 @@ Profile = ReferenceField(
     write_permission=permissions.ModifyPortalContent,
     widget=ReferenceWidget(
         label=_("Analysis Profile"),
+        description=_("Aouto select all the analyses included in the profile "
+                      "or 'panel'"),
         size=20,
         visible={'edit': 'visible',
                  'view': 'visible',
@@ -383,6 +411,7 @@ ClientOrderNumber = StringField(
     write_permission=permissions.ModifyPortalContent,
     widget=StringWidget(
         label=_('Client Order Number'),
+        description=_("The purchase order number provided by the client"),
         size=20,
         visible={'edit': 'visible',
                  'view': 'visible',
@@ -398,6 +427,8 @@ ClientReference = StringField(
     write_permission=permissions.ModifyPortalContent,
     widget=StringWidget(
         label=_('Client Reference'),
+        description=_("Further reference and identification information "
+                      "provided by the client"),
         size=20,
         visible={'edit': 'visible',
                  'view': 'visible',
@@ -411,6 +442,7 @@ BatchLabels = LinesField(
     accessor="getLabelNames",
     widget=MultiSelectionWidget(
         label=_("Batch labels"),
+        description=_("The lab's own label for the batch"),
         format="checkbox",
     )
 )
@@ -423,6 +455,9 @@ Remarks = TextField(
     widget=TextAreaWidget(
         macro="bika_widgets/remarks",
         label=_('Remarks'),
+        description=_("For lab use. Log any additional comment here. It'll be "
+                      "appended to existing remarks, including user name and "
+                      "date/time stamp "),
         append_only=True,
     )
 )
@@ -433,6 +468,7 @@ ClientBatchComment = TextField(
     default_output_type="text/plain",
     widget=TextAreaWidget(
         label=_('Client Batch Comment'),
+        description=_("Additional comment to the batch provided by the client"),
     )
 )
 InheritedObjects = ReferenceField(
@@ -457,6 +493,7 @@ Priority = ReferenceField(
     write_permission=permissions.ModifyPortalContent,
     widget=ReferenceWidget(
         label=_("Priority"),
+        description=_("Assign a priority from the levels configured for your lab"),
         size=20,
         visible={'edit': 'visible',
                  'view': 'visible',
@@ -484,6 +521,7 @@ SamplingDate = DateTimeField(
     write_permission=permissions.ModifyPortalContent,
     widget = DateTimeWidget(
         label=_("Sampling Date"),
+        description=_("The date the sample was taken or scheduled to be taken"),
         size=20,
         visible={'edit': 'visible',
                  'view': 'visible',
@@ -498,6 +536,8 @@ DateSampled = DateTimeField(
     write_permission=permissions.ModifyPortalContent,
     widget = DateTimeWidget(
         label=_("Date Sampled"),
+        description=_("The actual date sampling happened, it might differ from "
+                      "the 'Sampling date' scheduled for it"),
         size=20,
         visible={'edit': 'visible',
                  'view': 'visible',
@@ -514,6 +554,7 @@ Sampler = StringField(
     widget=SelectionWidget(
         format='select',
         label=_("Sampler"),
+        description=_("The person who took the sample"),
         visible={'edit': 'visible',
                  'view': 'visible',
                  },
@@ -529,6 +570,7 @@ PreparationWorkflow = StringField(
     widget=SelectionWidget(
         format="select",
         label=_("Preparation Workflow"),
+        description=_("Sample preparation steps"),
         visible={'edit': 'visible',
                  'view': 'visible',
                  },
@@ -590,6 +632,7 @@ SampleCount = ComputedField(
     expression="python:here.getSampleCount()",
     widget=ComputedWidget(
         label = _("Sample Count"),
+        description=_("The number of samples in the batch"),
     )
 )
 StorageLocation = ReferenceField(
@@ -617,6 +660,8 @@ ReturnSampleToClient = BooleanField(
     schemata = "AnalysisRequest and Sample Fields",
     widget=BooleanWidget(
         label=_("Return Sample To Client"),
+        description=_("Select to indicate whether the sample must "
+                      "be returned to the client"),
     )
 )
 SampleTemperature = StringField(
@@ -638,7 +683,7 @@ SampleCondition = ReferenceField(
     write_permission=permissions.ModifyPortalContent,
     widget=ReferenceWidget(
         label=_("Sample Condition"),
-        description = _("The condition of the individual samples"),
+        description = _("The condition of the individual samples on arrival"),
         visible={'edit': 'visible',
                  'view': 'visible',
                  },
@@ -658,6 +703,8 @@ SamplingDeviation = ReferenceField('SamplingDeviation',
     write_permission=permissions.ModifyPortalContent,
     widget=ReferenceWidget(
         label=_('Sampling Deviation'),
+        description=_("Select the corresponding option if non-routine "
+                      "sampling procedure was followed"),
         visible={'edit': 'visible',
                  'view': 'visible',
                  },
@@ -688,7 +735,7 @@ Instruments = ReferenceField(
         format='select',
         size=10,
         label=_("Instruments"),
-        description = _("Instruments available for analyses in this Batch"),
+        description = _("Instruments available for analyses in this batch"),
         visible={'edit': 'visible',
                  'view': 'visible',
                  },
@@ -709,7 +756,7 @@ Methods = ReferenceField(
         format='select',
         size=10,
         label=_("Methods"),
-        description = _("Methods available for analyses in this Batch"),
+        description = _("Methods available for analyses in this batch"),
         visible={'edit': 'visible',
                  'view': 'visible',
                  },
