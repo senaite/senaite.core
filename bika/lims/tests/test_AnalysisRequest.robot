@@ -108,7 +108,7 @@ AR with sampling workflow actived and preservation workflow actived
     Click Link          ${ar_id}
     Page Should Contain  to_be_sampled
     Save a Sampler and DateSampled on AR
-    Define container Vial and preservation HNO3 from Sample Partitions
+    Define container Glass Bottle 500ml and preservation HNO3 from Sample Partitions
     Execute transition sample inside ClientARView/ManageResults
     Select From List    //td[5]/span[2]/select  Lab Preserver 1
     @{time} =           Get Time        year month day hour min sec
