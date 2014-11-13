@@ -42,21 +42,15 @@ def doActionFor(instance, action_id):
     actionperformed = False
     message = ''
     workflow = getToolByName(instance, "portal_workflow")
-    if not skip(instance, action_id, peek=True):
+    ex_state = workflow.getInfoFor(instance, 'review_state')
+    if not skip(instance, action_id, peek=True) and ex_state != action_id:
         try:
-            #logger debug
-            #comefrom = workflow.getInfoFor(instance, 'review_state')
-            #logmsg = "Transitioning %s from %s to %s" \
-            #         % (instance.portal_type, comefrom, action_id)
-            #logger.error(logmsg)
             workflow.doActionFor(instance, action_id)
             actionperformed = True
         except WorkflowException as e:
-            comefrom = workflow.getInfoFor(instance, 'review_state')
             logmsg = "Error while transitioning %s from %s to %s: %s" \
-                     % (instance.portal_type, comefrom, action_id, str(e))
+                     % (instance.portal_type,  ex_state, action_id, str(e))
             logger.error(logmsg)
-            pass
     return actionperformed, message
 
 
