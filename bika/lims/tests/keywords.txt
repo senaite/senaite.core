@@ -83,6 +83,10 @@ Execute transition ${transition} on items in form_id ${form_id}
     Click Element       ${transition}_transition
     Set Selenium Timeout        10
 
+Execute transition ${transition} inside ClientARView/ManageResults
+    Click Element  css=a[title="Change the state of this item"]
+    Click Element  workflow-transition-${transition}
+
 Shleep
     [Arguments]  ${amount}=
     ...          ${comment}=
