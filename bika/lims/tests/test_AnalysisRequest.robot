@@ -97,7 +97,7 @@ AR with sampling workflow actived and preservation workflow desactived
     Go to               ${PLONEURL}/clients/client-1/${ar_id}/manage_results
     Execute transition verify inside ClientARView/ManageResults
 
-AR1 with sampling workflow actived and preservation workflow actived
+AR with sampling workflow actived and preservation workflow actived
     [Documentation]  It tests the AR workflow with the SamplingWorkflow
     ...  enabled and with preserving the sample. This is the correct
     ...  workflow, but more things should be tested, like transitions from
@@ -130,7 +130,7 @@ AR1 with sampling workflow actived and preservation workflow actived
 *** Keywords ***
 
 Start browser
-    Open browser                        ${PLONEURL}/login_form  chrome
+    Open browser                        ${PLONEURL}/login_form
     Log in                              test_labmanager         test_labmanager
     Wait until page contains            You are now logged in
     Set selenium speed                  ${SELENIUM_SPEED}
