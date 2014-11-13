@@ -329,3 +329,9 @@ Define container ${container} and preservation ${preservation} from Sample Parti
     Select From List    //span[2]/select    ${container}
     Select From List    //td[4]/span[2]/select    ${preservation}
     Click Button        save_partitions_button_transition
+
+Execute transition ${transition} inside ClientARView/ManageResults
+    Click Element  css=a[title="Change the state of this item"]
+    Click Element  workflow-transition-${transition}
+
+
