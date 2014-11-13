@@ -35,6 +35,7 @@ class BatchFolderContentsView(BikaListingView):
         self.columns = {
             'Title': {'title': _('Title')},
             'BatchID': {'title': _('Batch ID')},
+            'Client': {'title': _('Client'), 'sortable': True},
             'Description': {'title': _('Description')},
             'BatchDate': {'title': _('Date')},
             'state_title': {'title': _('State'), 'sortable': False},
@@ -49,6 +50,7 @@ class BatchFolderContentsView(BikaListingView):
              'columns': ['Title',
                          'BatchID',
                          'BatchDate',
+                         'Client',
                          'Description',
                          'state_title', ]
              },
@@ -60,6 +62,7 @@ class BatchFolderContentsView(BikaListingView):
              'columns': ['Title',
                          'BatchID',
                          'BatchDate',
+                         'Client',
                          'Description',
                          'state_title', ]
              },
@@ -69,6 +72,7 @@ class BatchFolderContentsView(BikaListingView):
              'contentFilter': {'cancellation_state': 'cancelled'},
              'columns': ['Title',
                          'BatchID',
+                         'Client',
                          'BatchDate',
                          'Description',
                          'state_title', ]
@@ -79,6 +83,7 @@ class BatchFolderContentsView(BikaListingView):
              'contentFilter':{},
              'columns': ['Title',
                          'BatchID',
+                         'Client',
                          'BatchDate',
                          'Description',
                          'state_title', ]
@@ -118,6 +123,8 @@ class BatchFolderContentsView(BikaListingView):
                 date = date()
             items[x]['BatchDate'] = date
             items[x]['replace']['BatchDate'] = self.ulocalized_time(date)
+            
+            items[x]['Client'] = obj.getClient().Title() if obj.getClient() else ''
 
         return items
 

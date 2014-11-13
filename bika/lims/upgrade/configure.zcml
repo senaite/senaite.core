@@ -506,4 +506,18 @@
         handler="bika.lims.upgrade.to3051.upgrade"
         sortkey="1"
         profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Add getParentUID Client level batches (and others)"
+        description=""
+        source="3051"
+        destination="3052"
+        handler="bika.lims.upgrade.to3052.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+
+
 </configure>
+
+
