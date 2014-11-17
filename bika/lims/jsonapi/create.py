@@ -164,7 +164,7 @@ class Create(object):
         site_path = request['PATH_INFO'].replace("/@@API/create", "")
         parent = context.restrictedTraverse(str(site_path + obj_path))
         # normal permissions still apply for this user
-        if not getSecurityManager().checkPermission("AccessJSONAPI", parent):
+        if not getSecurityManager().checkPermission(AccessJSONAPI, parent):
             msg = "You don't have the '{0}' permission on {1}".format(
                 AccessJSONAPI, parent.absolute_url())
             raise Unauthorized(msg)
