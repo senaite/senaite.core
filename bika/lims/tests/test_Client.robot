@@ -110,6 +110,7 @@ Add AR Template
     Input Text                  RetentionPeriod.minutes:record:ignore_empty    32
     Input Text                  Prefix                                         Good Sampling
     Input Text                  MinimumVolume                                  10 ml
+    Click Button  Save
 
     # Create two new Cilent SamplePoint. The first SP with the first previous SampleType,
     #the second SP with the second ST
@@ -123,6 +124,7 @@ Add AR Template
     Input Text                  SamplingFrequency.hours:record:ignore_empty    1
     Input Text                  SamplingFrequency.minutes:record:ignore_empty   2
     Select From List            SampleTypes:list                              ST1
+    Click Button  Save
 
     # Create an ARTemplate with the SampleType filtered by SamplePoint
     Go to       ${PLONEURL}/clients/client-1/artemplates
