@@ -154,6 +154,8 @@ class ClientWorkflowAction(AnalysisRequestWorkflowAction):
             objects = AnalysisRequestWorkflowAction._get_selected_items(self)
             transitioned = {}
             not_transitioned = []
+            Preserver = str()
+            DatePreserved = str()
             for obj_uid, obj in objects.items():
                 if obj.portal_type == "AnalysisRequest":
                     ar = obj
