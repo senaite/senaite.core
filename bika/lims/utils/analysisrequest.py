@@ -52,7 +52,6 @@ def create_analysisrequest(
     # Set analysis request analyses
     analyses = ar.setAnalyses(analyses, prices=prices, specs=specifications)
 
-    #skip_receive = ['to_be_sampled', 'sample_due', 'sampled', 'to_be_preserved']
     if secondary:
         # Only 'sample_due' and 'sample_recieved' samples can be selected
         # for secondary analyses
