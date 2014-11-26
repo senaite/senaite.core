@@ -399,7 +399,7 @@ class Lab_Products(WorksheetImporter):
         # Iterate through the rows
         for row in self.get_rows(3):
             # Check for required columns
-            check_for_required_columns('SRTemplate', row, [
+            check_for_required_columns('LabProduct', row, [
                 'title', 'volume', 'unit', 'price'
             ])
             # Create the SRTemplate object
