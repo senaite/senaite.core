@@ -52,21 +52,22 @@ def create_analysisrequest(
     # Set analysis request analyses
     analyses = ar.setAnalyses(analyses, prices=prices, specs=specifications)
 
-    skip_receive = ['to_be_sampled', 'sample_due', 'sampled', 'to_be_preserved']
+    #skip_receive = ['to_be_sampled', 'sample_due', 'sampled', 'to_be_preserved']
     if secondary:
         # Only 'sample_due' and 'sample_recieved' samples can be selected
         # for secondary analyses
-        doActionFor(ar, 'sampled')
+        doActionFor(ar, 'sample')
         doActionFor(ar, 'sample_due')
         sample_state = workflow.getInfoFor(sample, 'review_state')
-        if sample_state not in skip_receive:
+        if sample_state == 'sample_received':
             doActionFor(ar, 'receive')
 
-    for analysis in ar.getAnalyses(full_objects=1):
-        doActionFor(analysis, 'sample_due')
-        analysis_state = workflow.getInfoFor(analysis, 'review_state')
-        if analysis_state not in skip_receive:
-            doActionFor(analysis, 'receive')
+        for analysis in ar.getAnalyses(full_objects=1):
+            doActionFor(analysis, 'sample')
+            doActionFor(analysis, 'sample_due')
+            analysis_transition_ids = [t['id'] for t in workflow.getTransitionsFor(analysis)]
+            if 'receive' in analysis_transition_ids and sample_state == 'sample_received':
+                doActionFor(analysis, 'receive')
 
     if not secondary:
         # Create sample partitions
