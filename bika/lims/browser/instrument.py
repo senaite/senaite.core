@@ -653,6 +653,29 @@ class InstrumentQCFailuresViewlet(ViewletBase):
                 next-test:   [{uid: <uid>,
                               title: <title>,
                               link: <absolute_path>},]
+
+        >>> portal = layer['portal']
+        >>> portal_url = portal.absolute_url()
+        >>> from plone.app.testing import SITE_OWNER_NAME
+        >>> from plone.app.testing import SITE_OWNER_PASSWORD
+        >>> from DateTime import DateTime
+        >>> from transaction import commit
+
+        Expire the Blott Titrator's certificate:
+
+        >>> bsc = portal.bika_setup_catalog
+        >>> blott = bsc(portal_type='Instrument', Title='Blott Titrator')[0].getObject()
+        >>> cert = blott.objectValues('InstrumentCertification')[0]
+        >>> cert.setValidTo(DateTime('2014/11/27'))
+        >>> commit()
+
+        Then be sure that the viewlet is displayed:
+
+        >>> browser = layer['getBrowser'](portal, loggedIn=True, username=SITE_OWNER_NAME, password=SITE_OWNER_PASSWORD)
+        >>> browser.open(portal_url)
+        >>> browser.contents
+        '...instruments are out-of-date...'
+
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
         insts = bsc(portal_type='Instrument', inactive_state='active')
