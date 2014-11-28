@@ -7,6 +7,7 @@ from bika.lims.subscribers import doActionFor, skip
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
+from plone.app.layout.viewlets import ViewletBase
 from zope.interface import implements
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import QCANALYSIS_TYPES
@@ -623,45 +624,96 @@ class ajaxGetInstrumentMethod(BrowserView):
         return json.dumps(methoddict)
 
 
-class ajaxGetInstrumentsAlerts(BrowserView):
-    """ Returns a json dict with instrument alerts
-        with the following structure:
-        {'out-of-date': [{uid: <instr_uid>,
-                          title: <instr_title>,
-                          url: <instr_absolute_path>},]
-         'qc-fail': [{uid: <instr_uid>,
-                      title: <instr_title>,
-                      url: <instr_absolute_path>},]
-        }
+class InstrumentQCFailuresViewlet(ViewletBase):
+    """ Print a viewlet showing failed instruments
     """
-    def __call__(self):
-        out = {'out-of-date':[],
-               'qc-fail':[],
-               'next-test':[]}
-        try:
-            plone.protect.CheckAuthenticator(self.request)
-        except Forbidden:
-            return json.dumps(out)
 
+    index = ViewPageTemplateFile("templates/instrument_qc_failures_viewlet.pt")
+
+    def __init__(self, context, request, view, manager=None):
+        super(InstrumentQCFailuresViewlet, self).__init__(context, request, view, manager=manager)
+        self.nr_failed = 0
+        self.failed = {'out-of-date': [],
+                       'qc-fail': [],
+                       'next-test': []}
+
+    def get_failed_instruments(self):
+        """ Find all active instruments who have failed QC tests
+            Find instruments whose certificate is out of date
+            Find instruments which are disposed until next calibration test
+
+            Return a dictionary with the following structure:
+
+                out-of-date: [{uid: <uid>,
+                              title: <title>,
+                              link: <absolute_path>},]
+                qc-fail:     [{uid: <uid>,
+                              title: <title>,
+                              link: <absolute_path>},]
+                next-test:   [{uid: <uid>,
+                              title: <title>,
+                              link: <absolute_path>},]
+
+        >>> portal = layer['portal']
+        >>> portal_url = portal.absolute_url()
+        >>> from plone.app.testing import SITE_OWNER_NAME
+        >>> from plone.app.testing import SITE_OWNER_PASSWORD
+        >>> from DateTime import DateTime
+        >>> from transaction import commit
+
+        Expire the Blott Titrator's certificate:
+
+        >>> bsc = portal.bika_setup_catalog
+        >>> blott = bsc(portal_type='Instrument', Title='Blott Titrator')[0].getObject()
+        >>> cert = blott.objectValues('InstrumentCertification')[0]
+        >>> cert.setValidTo(DateTime('2014/11/27'))
+        >>> commit()
+
+        Then be sure that the viewlet is displayed:
+
+        >>> browser = layer['getBrowser'](portal, loggedIn=True, username=SITE_OWNER_NAME, password=SITE_OWNER_PASSWORD)
+        >>> browser.open(portal_url)
+        >>> browser.contents
+        '...instruments are out-of-date...'
+
+        """
         bsc = getToolByName(self, 'bika_setup_catalog')
-        insts = bsc(portal_type='Instrument')
+        insts = bsc(portal_type='Instrument', inactive_state='active')
         for i in insts:
             i = i.getObject()
-            if self.portal_workflow.getInfoFor(i,'inactive_state') != 'active':
-                continue
+            instr = {
+                'uid': i.UID(),
+                'title': i.Title(),
+            }
             if i.isOutOfDate():
-                instr = {'uid': i.UID(),
-                         'title': i.Title(),
-                         'url': i.absolute_url_path()}
-                out['out-of-date'].append(instr)
+                instr['link'] = '<a href="%s/certifications">%s</a>' % (
+                    i.absolute_url(), i.Title()
+                )
+                self.nr_failed += 1
+                self.failed['out-of-date'].append(instr)
             elif not i.isQCValid():
-                instr = {'uid': i.UID(),
-                         'title': i.Title(),
-                         'url': i.absolute_url_path()}
-                out['qc-fail'].append(instr)
+                instr['link'] = '<a href="%s/referenceanalyses">%s</a>' % (
+                    i.absolute_url(), i.Title()
+                )
+                self.nr_failed += 1
+                self.failed['qc-fail'].append(instr)
             elif i.getDisposeUntilNextCalibrationTest():
-                instr = {'uid': i.UID(),
-                         'title': i.Title(),
-                         'url': i.absolute_url_path()}
-                out['next-test'].append(instr)
-        return json.dumps(out)
+                instr['link'] = '<a href="%s/referenceanalyses">%s</a>' % (
+                    i.absolute_url(), i.Title()
+                )
+                self.nr_failed += 1
+                self.failed['next-test'].append(instr)
+
+    def render(self):
+
+        mtool = getToolByName(self.context, 'portal_membership')
+        member = mtool.getAuthenticatedMember()
+        roles = member.getRoles()
+        allowed = 'LabManager' in roles or 'Manager' in roles
+
+        self.get_failed_instruments()
+
+        if allowed and self.nr_failed:
+            return self.index()
+        else:
+            return ""
