@@ -99,8 +99,8 @@ class PublishView(BrowserView):
                 sample = ar.getSample()
                 result = analysis.getResult()
                 try:
-                    precision = service.getPrecision() and service.getPrecision() or "2"
                     result = float(result)
+                    precision = service.getPrecision(result) and service.getPrecision(result) or "2"
                     formatted_result = str("%." + precision + "f") % result
                 except:
                     precision = "2"

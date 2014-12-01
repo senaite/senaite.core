@@ -49,7 +49,7 @@ def format_numeric_result(analysis, result):
         exp_precision = service.getExponentialFormatPrecision()
         return str("%%.%se" % exp_precision) % result
     # If the result is floatable, render fixed point to the correct precision
-    precision = service.getPrecision()
+    precision = service.getPrecision(result)
     if not precision:
         precision = ''
     return str("%%.%sf" % precision) % result

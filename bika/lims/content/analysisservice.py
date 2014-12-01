@@ -33,6 +33,7 @@ from magnitude import mg, MagnitudeError
 from zope import i18n
 from zope.interface import implements
 import transaction
+import math
 
 
 def getContainers(instance,
@@ -678,6 +679,32 @@ schema = BikaSchema.copy() + Schema((
                          "followed by 10.01 - 20.00, 20.01 - 30 .00 etc."),
                  ),
     ),
+    # Calculate the precision from Uncertainty value
+    # Behavior controlled by javascript
+    # - If checked, Precision and ExponentialFormatPrecision are not displayed.
+    #   The precision will be calculated according to the uncertainty.
+    # - If checked, Precision and ExponentialFormatPrecision will be displayed.
+    # See browser/js/bika.lims.analysisservice.edit.js
+    BooleanField('PrecisionFromUncertainty',
+                 schemata="Uncertainties",
+                 default=False,
+                 widget=BooleanWidget(
+                     label = _("Calculate Precision from Uncertainties"),
+                     description=_("Precision as the number of significant "
+                                   "digits according to the uncertainty. "
+                                   "The decimal position will be given by "
+                                   "the first number different from zero in "
+                                   "the uncertainty, at that position the "
+                                   "system will round up the uncertainty "
+                                   "and results. "
+                                   "For example, fr a result 5.243 and "
+                                   "an uncertainty of 0.22, the system "
+                                   "will display correctly as 5.2+-0.2. "
+                                   "If no uncertainty range set for the "
+                                   "result, the system will use the "
+                                   "fixed precision set."),
+                 ),
+    ),
     RecordsField('ResultOptions',
                  schemata="Result Options",
                  type='resultsoptions',
@@ -1004,17 +1031,54 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
             for d in uncertainties:
                 if float(d['intercept_min']) <= result <= float(
                         d['intercept_max']):
+                    unc = 0
                     if str(d['errorvalue']).strip().endswith('%'):
                         try:
                             percvalue = float(d['errorvalue'].replace('%', ''))
                         except ValueError:
                             return None
-                        return result / 100 * percvalue
+                        unc = result / 100 * percvalue
                     else:
-                        return float(d['errorvalue'])
+                        unc = float(d['errorvalue'])
+
+                    if self.getPrecisionFromUncertainty() == True:
+                        # https://jira.bikalabs.com/browse/LIMS-1334
+                        # The decimal position should be given by the
+                        # first number different from zero in the
+                        # uncertainty, at that position the system
+                        # should round up the uncertainty.
+                        if unc == 0:
+                            return 0
+                        prec = int(abs(math.floor(math.log10(abs(unc)))))
+                        return float(str("%." + str(prec) + "f") % unc)
+                    return unc
             return None
         else:
             return None
+
+    def getPrecision(self, result=None):
+        """ Returns the precision for the Analysis Service. If the
+            option Calculate Precision according to Uncertainty is not
+            set, the method will return the precision value set in the
+            Schema. Otherwise, will calculate the precision value
+            according to the Uncertainty and the result.
+            If Calculate Preciosion to Uncertainty is set but no result
+            provided neither uncertainty values are set, returns the
+            fixed precision
+        """
+        if self.getPrecisionFromUncertainty() == False:
+            return self.Schema().getField('Precision').get(self)
+        else:
+            uncertainty = self.getUncertainty(result);
+            if uncertainty is None:
+                return self.Schema().getField('Precision').get(self);
+
+            # Calculate precision according to uncertainty
+            # https://jira.bikalabs.com/browse/LIMS-1334
+            if uncertainty == 0:
+                return 0
+            return int(abs(math.floor(math.log10(abs(uncertainty)))))
+        return None
 
     security.declarePublic('getContainers')
 

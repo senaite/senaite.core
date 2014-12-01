@@ -315,7 +315,7 @@ class ReferenceAnalysis(BaseContent):
             return formatDecimalMark('> %s' % hidemax, decimalmark)
 
         # 3. If the result is floatable, render it to the correct precision
-        precision = service.getPrecision()
+        precision = service.getPrecision(result)
         if not precision:
             precision = ''
         return formatDecimalMark(str("%%.%sf" % precision) % result, decimalmark)
