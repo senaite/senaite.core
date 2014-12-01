@@ -8,7 +8,7 @@ from foss.winescan import auto
 from foss.winescan import ft120
 from thermoscientific.gallery import Ts9861x
 from panalytical.omnia import axios_xrf
-from alere.pima import beads
+from alere.pima import beads, cd4
 
 __all__ = ['generic.xml',
            'agilent.masshunter.quantitative',
@@ -17,7 +17,8 @@ __all__ = ['generic.xml',
            'foss.winescan.ft120',
            'thermoscientific.gallery.Ts9861x',
            'panalytical.omnia.axios_xrf',
-           'alere.pima.beads']
+           'alere.pima.beads',
+           'alere.pima.cd4']
 
 
 def getExim(exim_id):
