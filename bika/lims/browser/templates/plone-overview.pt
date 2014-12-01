@@ -1,0 +1,143 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      lang="en"
+      i18n:domain="plone">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+
+  <title>Plone</title>
+
+  <link rel="stylesheet" type="text/css"
+        href="/++resource++plone-admin-ui.css"
+        tal:attributes="href string:${context/absolute_url}/++resource++plone-admin-ui.css" />
+
+</head>
+
+
+<body tal:define="sites view/sites">
+<div id="box">
+    <img src="/++resource++plone-logo.png" width="215" height="56"
+         tal:attributes="src string:${context/absolute_url}/++resource++plone-logo.png"
+         alt="Plone Logo"/>
+    <div id="text">
+        <h1 i18n:translate="">
+            Plone is up and running.
+        </h1>
+        <ul>
+            <tal:block tal:condition="sites">
+                <tal:one tal:condition="python:len(sites) == 1">
+                    <li tal:repeat="site sites">
+                        <span class="prominent">
+                            <img tal:attributes="src string:${site/absolute_url}/logoIcon.png"
+                                 height="16" width="16"/>
+                            <a href="#"
+                               tal:attributes="href site/absolute_url"
+                               title="Go to your instance"
+                               i18n:attributes="title;"
+                               i18n:translate="">View your Plone site</a>
+                        </span>
+                        <div class="upgrade-warning"
+                             tal:condition="python:view.outdated(site)">
+                            <span i18n:translate="">
+                            This site configuration is outdated and needs to be
+                            upgraded:</span>
+                            <form action=""
+                                  style="display: inline;"
+                                  method="get"
+                                  tal:attributes="action python:view.upgrade_url(site)">
+                            <input tal:condition="not:view/can_manage"
+                                   type="hidden" name="came_from"
+                                   tal:attributes="value python:view.upgrade_url(site, can_manage=True)"/>
+                            <input type="submit"
+                                   value="Upgrade&hellip;"
+                                   i18n:attributes="value label_upgrade_hellip" />
+                            </form>
+                            </div>
+                    </li>
+                </tal:one>
+                <tal:many tal:condition="python:len(sites) &gt; 1">
+                <li>
+                    <span id="multiple-sites" i18n:translate="">
+                        You have multiple Plone sites:
+                    </span>
+                    <ul>
+                        <li tal:repeat="site sites">
+                            <span class="prominent">
+                                <img tal:attributes="src string:${site/absolute_url}/logoIcon.png"
+                                     height="16" width="16"/>
+                                <a href="#"
+                                   tal:attributes="href site/absolute_url;
+                                                   title site/Title;"
+                                   tal:content="site/Title">
+                                    Site title
+                                </a>
+                                <span class="discreet"
+                                      tal:content="string:(${site/getId})"/>
+                            </span>
+                            <div class="upgrade-warning"
+                                 tal:condition="python:view.outdated(site)">
+                                <span i18n:translate="">
+                                    This site configuration is outdated and
+                                    needs to be upgraded:
+                                </span>
+                                 <form action=""
+                                       style="display: inline;"
+                                       method="get"
+                                       tal:attributes="action python:view.upgrade_url(site)">
+                                 <input tal:condition="not:view/can_manage"
+                                        type="hidden" name="came_from"
+                                        tal:attributes="value python:view.upgrade_url(site, can_manage=True)"/>
+                                 <input type="submit"
+                                        value="Upgrade&hellip;"
+                                        i18n:attributes="value label_upgrade_hellip" />
+                                 </form>
+
+                            </div>
+                        </li>
+                    </ul>
+                </li>
+                </tal:many>
+            </tal:block>
+            <li tal:condition="not:sites">
+                <span i18n:translate="">
+                    Your Plone site has not been added yet:
+                </span>
+                <form id="add-plone-site"
+                      method="get"
+                      action="#"
+                      tal:attributes="action string:${context/absolute_url}/@@plone-addsite">
+                    <input type="hidden" name="site_id" value="Plone" />
+                    <input type="submit"
+                           i18n:attributes="value;"
+                           value="Create a new Plone site" />
+                </form>
+            </li>
+            <li>
+                <a href="#"
+                   tal:attributes="href string:${context/absolute_url}/manage_main"
+                   title="Go to the ZMI"
+                   i18n:attributes="title;"
+                   i18n:translate="label_zmi_link">Zope Management Interface</a>
+                <span i18n:translate="label_zmi_link_description">
+                    &#151; low-level technical configuration.
+                </span>
+            </li>
+            <li>
+                <span i18n:translate="label_plone_org_description">
+                    For documentation, add-ons, support, community, visit
+                </span>
+                <a href="http://plone.org"
+                   title="Plone Community Home"
+                   target="_new"
+                   i18n:attributes="title label_plone_org_title;">plone.org</a>.
+            </li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>
