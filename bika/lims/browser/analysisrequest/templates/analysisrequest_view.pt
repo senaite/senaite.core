@@ -49,7 +49,7 @@
     delete_attachments python:(add_attachments and not user.allowed(context, ['Client'])) or update_attachments;">
 
     <input type="hidden" name="bika_setup"
-            tal:attributes="bika_samplepoints python context.bika_setup.bika_samplepoints.UID()">
+            tal:attributes="bika_samplepoints python: context.bika_setup.bika_samplepoints.UID()">
 
     <div
         tal:condition="python:update_attachments or add_attachments"
