@@ -371,8 +371,6 @@ TestSampleState
     ${VALUE}  Get Value  ${locator}
     Should Be Equal  ${VALUE}  ${expectedState}  ${sample} Workflow States incorrect: Expected: ${expectedState} -
     # Log  Testing Sample State for ${sample}: ${expectedState} -:- ${VALUE}  WARN
-<<<<<<< HEAD
-=======
 
 Enable Sampling Workflow
     Go to               ${PLONEURL}/bika_setup/edit
@@ -392,4 +390,3 @@ Define container ${container} and preservation ${preservation} from Sample Parti
     Select From List    //span[2]/select    ${container}
     Select From List    //td[4]/span[2]/select    ${preservation}
     Click Button        save_partitions_button_transition
->>>>>>> 5e6209a... Robotests for LIMS-1500
