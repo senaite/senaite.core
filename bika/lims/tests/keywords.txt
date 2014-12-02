@@ -83,11 +83,24 @@ SelectNextMonthDate
     Click Link           ${Date}
     sleep                0.5
 
+Execute transition ${transition} on item ${ar_id} in ARList
+    [Documentation]  Tranistion the specific ar from an AR List.
+    Select checkbox     xpath=//input[@item_title="${ar_id}"]
+    Set Selenium Timeout        30
+    Click Element       ${transition}_transition
+    Set Selenium Timeout        10
+
 Execute transition ${transition} on items in form_id ${form_id}
+    [Documentation]  Tranistion all items in the form_id
     Select checkbox     xpath=//input[@id='${form_id}_select_all']
     Set Selenium Timeout        30
     Click Element       ${transition}_transition
     Set Selenium Timeout        10
+
+Execute transition ${transition} inside ClientARView/ManageResults
+    [Documentation]  Tranistion the element using the right label
+    Click Element  css=a[title="Change the state of this item"]
+    Click Element  workflow-transition-${transition}
 
 Shleep
     [Arguments]  ${amount}=

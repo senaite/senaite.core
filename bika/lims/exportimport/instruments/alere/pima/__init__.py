@@ -70,9 +70,9 @@ class AlerePimaSLKParser(InstrumentCSVResultsFileParser):
                     rawdict[self._columns[i]] = None
 
             rawdict['Remarks'] = rawdict['ErrorMessage']
-            rawdict['DefaultResults'] = self._columns['X6']
+            rawdict['DefaultResult'] = self._columns['X6']
+            #I don't know which is the analysis service keyword...
             self._addRawResult(rawdict['Sample'],{rawdict['Assay ID']:rawdict})
-
 
     def getAttachmentFileType(self):
         #This method must be override for other file types.
