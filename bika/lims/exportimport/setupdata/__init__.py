@@ -1159,7 +1159,7 @@ class Analysis_Services(WorksheetImporter):
     def write_bucket(self, bucket):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         for service_uid, uncertainties in bucket.items():
-            obj = bsc(UID=service_uid)
+            obj = bsc(UID=service_uid)[0]
             _uncert = list(obj.getUncertainties())
             _uncert.extend(uncertainties)
             obj.setUncertainties(_uncert)
