@@ -290,13 +290,6 @@ class AnalysisRequestViewView(BrowserView):
             return parent.getDefaultCategories()
         return []
 
-    def DefaultCategories(self):
-        """ Used in AR add context, to return list of UIDs for
-        automatically-expanded categories.
-        """
-        cats = self.getDefaultCategories()
-        return [cat.UID() for cat in cats]
-
     def getDefaultSpec(self):
         """ Returns 'lab' or 'client' to set the initial value of the
             specification radios

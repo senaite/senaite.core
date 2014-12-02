@@ -257,6 +257,7 @@ class BikaListingView(BrowserView):
     review_state = 'default'
     show_categories = False
     expand_all_categories = False
+    auto_expand_categories = []
     field_icons = {}
     show_table_footer = True
 
@@ -341,6 +342,9 @@ class BikaListingView(BrowserView):
 
         if 'expand_all_categories' in kwargs:
             self.expand_all_categories = kwargs['expand_all_categories']
+
+        if 'auto_expand_categories' in kwargs:
+            self.auto_expand_categories = kwargs['auto_expand_categories']
 
         self.portal = getToolByName(context, 'portal_url').getPortalObject()
         self.portal_url = self.portal.absolute_url()
