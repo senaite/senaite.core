@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 import sys
 
 from AccessControl import ClassSecurityInfo
@@ -213,15 +215,6 @@ schema = BikaSchema.copy() + Schema((
                      label = _("Precision as number of decimals"),
                      description=_(
                          "Define the number of decimals to be used for this result."),
-                 ),
-    ),
-    IntegerField('ExponentialFormatPrecision',
-                 schemata="Analysis",
-                 default = 7,
-                 widget=IntegerWidget(
-                     label = _("Exponential format precision"),
-                     description=_(
-                         "Define the precision when converting values to exponent notation."),
                  ),
     ),
     IntegerField('ExponentialFormatPrecision',
@@ -1041,20 +1034,24 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
                     else:
                         unc = float(d['errorvalue'])
 
-                    if self.getPrecisionFromUncertainty() == True:
+                    return unc
+
+                    #if self.getPrecisionFromUncertainty() == True:
                         # https://jira.bikalabs.com/browse/LIMS-1334
                         # The decimal position should be given by the
                         # first number different from zero in the
                         # uncertainty, at that position the system
                         # should round up the uncertainty.
-                        if unc == 0:
-                            return 0
-                        prec = int(abs(math.floor(math.log10(abs(unc)))))
-                        return float(str("%." + str(prec) + "f") % unc)
-                    return unc
+                    #    if unc == 0:
+                    #        return 0
+                    #    return unc;
+                    #    prec = int(abs(math.floor(math.log10(abs(unc)))))
+                    #    return float(str("%." + str(prec) + "f") % unc)
+                    #return unc
             return None
         else:
             return None
+
 
     def getPrecision(self, result=None):
         """ Returns the precision for the Analysis Service. If the
@@ -1064,7 +1061,15 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
             according to the Uncertainty and the result.
             If Calculate Preciosion to Uncertainty is set but no result
             provided neither uncertainty values are set, returns the
-            fixed precision
+            fixed precision.
+
+            Examples:
+            Uncertainty     Returns
+            0               1
+            0.22            1
+            1.34            0
+            0.0021          3
+            0.013           2
         """
         if self.getPrecisionFromUncertainty() == False:
             return self.Schema().getField('Precision').get(self)
@@ -1076,9 +1081,36 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
             # Calculate precision according to uncertainty
             # https://jira.bikalabs.com/browse/LIMS-1334
             if uncertainty == 0:
-                return 0
+                return 1
             return int(abs(math.floor(math.log10(abs(uncertainty)))))
         return None
+
+
+    def getExponentialFormatPrecision(self, result=None):
+        """ Returns the precision for the Analysis Service. If the
+            option Calculate Precision according to Uncertainty is not
+            set, the method will return the precision value set in the
+            Schema. Otherwise, will calculate the precision value
+            according to the Uncertainty and the result.
+            If Calculate Preciosion to Uncertainty is set but no result
+            provided neither uncertainty values are set, returns the
+            fixed precision
+        """
+        if not result or self.getPrecisionFromUncertainty() == False:
+            return self.Schema().getField('ExponentialFormatPrecision').get(self)
+        else:
+            uncertainty = self.getUncertainty(result)
+            if uncertainty is None:
+                return self.Schema().getField('ExponentialFormatPrecision').get(self);
+
+            try:
+                result = float(result)
+            except ValueError:
+                # if analysis result is not a number, then we assume in range
+                return self.Schema().getField('ExponentialFormatPrecision').get(self)
+
+            return int(math.floor(math.log10(abs(result))))
+
 
     security.declarePublic('getContainers')
 

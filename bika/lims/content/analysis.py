@@ -615,7 +615,7 @@ class Analysis(BaseContent):
         if abovemax:
             return formatDecimalMark('> %s' % hidemax, decimalmark)
 
-        # Render numerical value
+        # Render numerical values
         return formatDecimalMark(format_numeric_result(self, result), decimalmark)
 
     def getAnalyst(self):
