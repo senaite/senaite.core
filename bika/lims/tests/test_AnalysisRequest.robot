@@ -371,3 +371,22 @@ TestSampleState
     ${VALUE}  Get Value  ${locator}
     Should Be Equal  ${VALUE}  ${expectedState}  ${sample} Workflow States incorrect: Expected: ${expectedState} -
     # Log  Testing Sample State for ${sample}: ${expectedState} -:- ${VALUE}  WARN
+
+Enable Sampling Workflow
+    Go to               ${PLONEURL}/bika_setup/edit
+    Click Link          id=fieldsetlegend-analyses
+    Select Checkbox     id=SamplingWorkflowEnabled
+    Click Button        Save
+    Wait until page contains    Changes saved.
+
+Save a Sampler and DateSampled on AR
+    @{time} =           Get Time    year month day hour min sec
+    Select Date         DateSampled    @{time}[2]
+    Select From List    Sampler  Lab Sampler 1
+    Click Button        Save
+    Page Should Contain  Changes saved.
+
+Define container ${container} and preservation ${preservation} from Sample Partitions
+    Select From List    //span[2]/select    ${container}
+    Select From List    //td[4]/span[2]/select    ${preservation}
+    Click Button        save_partitions_button_transition

@@ -412,7 +412,7 @@ class AxiosXrfCSVParser(InstrumentCSVResultsFileParser):
         rawdict = {}
         # Split by ","
         splitted = self.splitLine(line.strip(";"))
-        # Look to know if the firts value is an enumerate field
+        # Look to know if the first value is an enumerate field
         try:
             int(splitted[0])
             rawdict["num"] = splitted[0]
