@@ -75,6 +75,58 @@ Create two different ARs from the same sample.
     Create Secondary AR
     In a client context, only allow selecting samples from that client.
 
+AR with sampling workflow actived and preservation workflow desactived
+    [Documentation]  It tests the AR workflow with the SamplingWorkflow
+    ...  enabled, but without preserving the sample. This is the correct
+    ...  workflow, but more things should be tested, like transitions from
+    ...  button (both, SamplePartition and Analysis), etc
+
+    Enable Sampling Workflow
+    ${ar_id}=           Create Simple AR
+    Click Link          ${ar_id}
+    Page Should Contain  to_be_sampled
+    Save a Sampler and DateSampled on AR
+    Execute transition sample inside ClientARView/ManageResults
+    Execute transition receive inside ClientARView/ManageResults
+    Log out
+    Log in              test_analyst    test_analyst
+    Go to               ${PLONEURL}/clients/client-1/${ar_id}/manage_results
+    Submit results with out of range tests
+    Log out
+    Log in              test_labmanager    test_labmanager
+    Go to               ${PLONEURL}/clients/client-1/${ar_id}/manage_results
+    Execute transition verify inside ClientARView/ManageResults
+
+AR with sampling workflow actived and preservation workflow actived
+    [Documentation]  It tests the AR workflow with the SamplingWorkflow
+    ...  enabled and with preserving the sample. This is the correct
+    ...  workflow, but more things should be tested, like transitions from
+    ...  button (both, SamplePartition and Analysis), etc
+
+    Enable Sampling Workflow
+    ${ar_id}=           Create Simple AR
+    Click Link          ${ar_id}
+    Page Should Contain  to_be_sampled
+    Save a Sampler and DateSampled on AR
+    Define container Glass Bottle 500ml and preservation HNO3 from Sample Partitions
+    Execute transition sample inside ClientARView/ManageResults
+    Select From List    //td[5]/span[2]/select  Lab Preserver 1
+    @{time} =           Get Time        year month day hour min sec
+    Select Date         //td[6]/input    @{time}[2]
+    Select Checkbox     //td/input
+    Click Button        id=preserve_transition
+    Page Should Contain      is waiting to be received.
+    Execute transition receive inside ClientARView/ManageResults
+    Log out
+    Log in              test_analyst    test_analyst
+    Go to               ${PLONEURL}/clients/client-1/${ar_id}/manage_results
+    Submit results with out of range tests
+    Log out
+    Log in              test_labmanager    test_labmanager
+    Go to               ${PLONEURL}/clients/client-1/${ar_id}/manage_results
+    Execute transition verify inside ClientARView/ManageResults
+
+
 *** Keywords ***
 
 Start browser
@@ -125,6 +177,23 @@ Create Secondary AR
     ${ar_id} =                  Set Variable  ${ar_id.split()[2]}
     [return]                    ${ar_id}
 
+Create Simple AR
+    Go to    ${PLONEURL}/clients/client-1
+    Wait until page contains element    css=body.portaltype-client
+    Click Link    Add
+    Wait until page contains    Request new analyses
+    Select from dropdown    ar_0_Contact    Rita
+    Select from dropdown    ar_0_SampleType    Barley
+    @{time} =    Get Time    year month day hour min sec
+    Select Date    ar_0_SamplingDate    @{time}[2]
+    Click Element  cat_lab_Metals
+    Select Checkbox  //input[@title='Calcium']
+    Click Button    Save
+    Wait until page contains    created
+    Set Selenium Timeout    2
+    ${ar_id} =    Get text    //dl[contains(@class, 'portalMessage')][2]/dd
+    ${ar_id} =    Set Variable    ${ar_id.split()[2]}
+    [Return]    ${ar_id}
 
 In a client context, only allow selecting samples from that client.
     Log in                      test_labmanager  test_labmanager
@@ -241,3 +310,22 @@ TestSampleState
     ${VALUE}  Get Value  ${locator}
     Should Be Equal  ${VALUE}  ${expectedState}  ${sample} Workflow States incorrect: Expected: ${expectedState} -
     # Log  Testing Sample State for ${sample}: ${expectedState} -:- ${VALUE}  WARN
+
+Enable Sampling Workflow
+    Go to               ${PLONEURL}/bika_setup/edit
+    Click Link          id=fieldsetlegend-analyses
+    Select Checkbox     id=SamplingWorkflowEnabled
+    Click Button        Save
+    Wait until page contains    Changes saved.
+
+Save a Sampler and DateSampled on AR
+    @{time} =           Get Time    year month day hour min sec
+    Select Date         DateSampled    @{time}[2]
+    Select From List    Sampler  Lab Sampler 1
+    Click Button        Save
+    Page Should Contain  Changes saved.
+
+Define container ${container} and preservation ${preservation} from Sample Partitions
+    Select From List    //span[2]/select    ${container}
+    Select From List    //td[4]/span[2]/select    ${preservation}
+    Click Button        save_partitions_button_transition
