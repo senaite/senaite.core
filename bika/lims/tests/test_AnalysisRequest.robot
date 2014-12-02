@@ -17,6 +17,13 @@ ${ar_factory_url}  portal_factory/AnalysisRequest/Request%20new%20analyses/ar_ad
 
 *** Test Cases ***
 
+Check that the editable SamplePoint widget in AnalysisRequestView shows both Client and Lab items
+    ${ar_id}=          Create Primary AR
+    go to              ${PLONEURL}/clients/client-1/${ar_id}
+    wait until page contains     css=#SamplePoint
+    select from dropdown         css=#SamplePoint     Apple    1
+    select from dropdown         css=#SamplePoint     Apple    2
+
 Check the AR Add javascript
    # check that the Contact CC auto-fills correctly when a contact is selected
     Log out

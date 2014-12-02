@@ -48,7 +48,7 @@
     add_attachments python:context.portal_membership.checkPermission('BIKA: Add Attachment', context);
     delete_attachments python:(add_attachments and not user.allowed(context, ['Client'])) or update_attachments;">
 
-    <input type="hidden" name="bika_setup"
+    <input type="hidden" id="bika_setup"
             tal:attributes="bika_samplepoints python: context.bika_setup.bika_samplepoints.UID()">
 
     <div
