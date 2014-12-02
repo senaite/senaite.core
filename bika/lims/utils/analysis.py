@@ -33,13 +33,63 @@ def create_analysis(context, service, keyword, interim_fields):
 
 
 def format_uncertainty(analysis, result, decimalmark='.'):
-    """ Returns the precision formatted in accordance with the
-        uncertainties and scientific notation.
+    """
+    Returns the formatted uncertainty according to the analysis, result
+    and decimal mark specified following these rules:
+
+    If the "Calculate precision from uncertainties" is enabled in
+    the Analysis service, and
+    
+    a) If the the non-decimal number of digits of the result is above
+       the service's ExponentialFormatPrecision, the uncertainty will
+       be formatted in scientific notation. The uncertainty exponential
+       value used will be the same as the one used for the result. The
+       uncertainty will be rounded according to the same precision as
+       the result.
+
+       Example:
+       Given an Analysis with an uncertainty of 37 for a range of
+       results between 30000 and 40000, with an
+       ExponentialFormatPrecision equal to 4 and a result of 32092,
+       this method will return 0.004E+04
+
+    b) If the number of digits of the integer part of the result is
+       below the ExponentialFormatPrecision, the uncertainty will be
+       formatted as decimal notation and the uncertainty will be
+       rounded one position after reaching the last 0 (precision
+       calculated according to the uncertainty value).
+       
+       Example:
+       Given an Analysis with an uncertainty of 0.22 for a range of
+       results between 1 and 10 with an ExponentialFormatPrecision
+       equal to 4 and a result of 5.234, this method will return 0.2
+
+    If the "Calculate precision from Uncertainties" is disabled in the
+    analysis service, the same rules described above applies, but the
+    precision used for rounding the uncertainty is not calculated from
+    the uncertainty neither the result. The fixed length precision is
+    used instead.
+
+    For further details, visit
+    https://jira.bikalabs.com/browse/LIMS-1334
+
+    If the result is not floatable or no uncertainty defined, returns
+    an empty string.
+
+    The default decimal mark '.' will be replaced by the decimalmark
+    specified.
+
+    :param analysis: the analysis from which the uncertainty, precision
+                     and other additional info have to be retrieved
+    :param result: result of the analysis. Used to retrieve and/or
+                   calculate the precision and/or uncertainty
+    :param decimalmark: decimal mark to use. By default '.'
+    :return: the formatted uncertainty
     """
     try:
         result = float(result)
     except ValueError:
-        return result
+        return ""
 
     service = analysis.getService()
     uncertainty = service.getUncertainty(result)
@@ -79,9 +129,52 @@ def format_uncertainty(analysis, result, decimalmark='.'):
 
 def format_numeric_result(analysis, result, decimalmark='.'):
     """
-    Print the formatted number part of a results value.  This is responsible
-    for deciding the precision, and notation of numeric values.  If a non-numeric
-    result value is given, the value will be returned unchanged
+    Returns the formatted number part of a results value.  This is
+    responsible for deciding the precision, and notation of numeric
+    values in accordance to the uncertainty. If a non-numeric
+    result value is given, the value will be returned unchanged.
+
+    The following rules apply:
+
+    If the "Calculate precision from uncertainties" is enabled in
+    the Analysis service, and
+    
+    a) If the non-decimal number of digits of the result is above
+       the service's ExponentialFormatPrecision, the result will
+       be formatted in scientific notation.
+
+       Example:
+       Given an Analysis with an uncertainty of 37 for a range of
+       results between 30000 and 40000, with an
+       ExponentialFormatPrecision equal to 4 and a result of 32092,
+       this method will return 3.2092E+04
+
+    b) If the number of digits of the integer part of the result is
+       below the ExponentialFormatPrecision, the result will be
+       formatted as decimal notation and the resulta will be rounded
+       in accordance to the precision (calculated from the uncertainty)
+       
+       Example:
+       Given an Analysis with an uncertainty of 0.22 for a range of
+       results between 1 and 10 with an ExponentialFormatPrecision
+       equal to 4 and a result of 5.234, this method will return 5.2
+
+    If the "Calculate precision from Uncertainties" is disabled in the
+    analysis service, the same rules described above applies, but the
+    precision used for rounding the result is not calculated from
+    the uncertainty. The fixed length precision is used instead.
+
+    For further details, visit
+    https://jira.bikalabs.com/browse/LIMS-1334
+
+    The default decimal mark '.' will be replaced by the decimalmark
+    specified.
+
+    :param analysis: the analysis from which the uncertainty, precision
+                     and other additional info have to be retrieved
+    :param result: result to be formatted.
+    :param decimalmark: decimal mark to use. By default '.'
+    :return: the formatted result
     """
     try:
         result = float(result)

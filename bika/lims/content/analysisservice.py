@@ -1006,9 +1006,12 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
+
     def getUncertainty(self, result=None):
-        """ Return the uncertainty value, if the result falls within specified
-            ranges for this service. """
+        """
+        Return the uncertainty value, if the result falls within
+        specified ranges for this service.
+        """
 
         if result is None:
             return None
@@ -1035,41 +1038,37 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
                         unc = float(d['errorvalue'])
 
                     return unc
-
-                    #if self.getPrecisionFromUncertainty() == True:
-                        # https://jira.bikalabs.com/browse/LIMS-1334
-                        # The decimal position should be given by the
-                        # first number different from zero in the
-                        # uncertainty, at that position the system
-                        # should round up the uncertainty.
-                    #    if unc == 0:
-                    #        return 0
-                    #    return unc;
-                    #    prec = int(abs(math.floor(math.log10(abs(unc)))))
-                    #    return float(str("%." + str(prec) + "f") % unc)
-                    #return unc
-            return None
-        else:
-            return None
+        return None
 
 
     def getPrecision(self, result=None):
-        """ Returns the precision for the Analysis Service. If the
-            option Calculate Precision according to Uncertainty is not
-            set, the method will return the precision value set in the
-            Schema. Otherwise, will calculate the precision value
-            according to the Uncertainty and the result.
-            If Calculate Preciosion to Uncertainty is set but no result
-            provided neither uncertainty values are set, returns the
-            fixed precision.
+        """
+        Returns the precision for the Analysis Service. If the
+        option Calculate Precision according to Uncertainty is not
+        set, the method will return the precision value set in the
+        Schema. Otherwise, will calculate the precision value
+        according to the Uncertainty and the result.
+        If Calculate Preciosion to Uncertainty is set but no result
+        provided neither uncertainty values are set, returns the
+        fixed precision.
 
-            Examples:
-            Uncertainty     Returns
-            0               1
-            0.22            1
-            1.34            0
-            0.0021          3
-            0.013           2
+        Examples:
+        Uncertainty     Returns
+        0               1
+        0.22            1
+        1.34            0
+        0.0021          3
+        0.013           2
+
+        For further details, visit
+        https://jira.bikalabs.com/browse/LIMS-1334
+
+        :param result: if provided and "Calculate Precision according
+                       to the Uncertainty" is set, the result will be
+                       used to retrieve the uncertainty from which the
+                       precision must be calculated. Otherwise, the
+                       fixed-precision will be used.
+        :return: the precision
         """
         if self.getPrecisionFromUncertainty() == False:
             return self.Schema().getField('Precision').get(self)
@@ -1087,14 +1086,41 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
 
 
     def getExponentialFormatPrecision(self, result=None):
-        """ Returns the precision for the Analysis Service. If the
-            option Calculate Precision according to Uncertainty is not
-            set, the method will return the precision value set in the
-            Schema. Otherwise, will calculate the precision value
-            according to the Uncertainty and the result.
-            If Calculate Preciosion to Uncertainty is set but no result
-            provided neither uncertainty values are set, returns the
-            fixed precision
+        """
+        Returns the precision for the Analysis Service and result
+        provided. Results with a precision value above this exponential
+        format precision should be formatted as scientific notation.
+
+        If the Calculate Precision according to Uncertainty is not set,
+        the method will return the exponential precision value set in
+        the Schema. Otherwise, will calculate the precision value
+        according to the Uncertainty and the result.
+        
+        If Calculate Precision from the Uncertainty is set but no
+        result provided neither uncertainty values are set, returns the
+        fixed exponential precision.
+
+        Will return positive values if the result is below 0 and will
+        return 0 or positive values if the result is above 0.
+
+        Given an analysis service with fixed exponential format
+        precision of 4:
+        Result      Uncertainty     Returns
+        5.234           0.22           0
+        13.5            1.34           1
+        0.0077          0.008         -3
+        32092           0.81           4
+        456021          423            5
+
+        For further details, visit
+        https://jira.bikalabs.com/browse/LIMS-1334
+
+        :param result: if provided and "Calculate Precision according
+                       to the Uncertainty" is set, the result will be
+                       used to retrieve the uncertainty from which the
+                       precision must be calculated. Otherwise, the
+                       fixed-precision will be used.
+        :return: the precision
         """
         if not result or self.getPrecisionFromUncertainty() == False:
             return self.Schema().getField('ExponentialFormatPrecision').get(self)
