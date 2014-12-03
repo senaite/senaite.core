@@ -102,7 +102,7 @@ Test Analysis Uncertainty Precision
 *** Keywords ***
 
 Start browser
-    Open browser  ${PLONEURL}/login_form  chrome
+    Open browser  ${PLONEURL}/login_form
     Set selenium speed  ${SELENIUM_SPEED}
 
 Create AnalysisRequests
