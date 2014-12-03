@@ -119,7 +119,6 @@ def format_uncertainty(analysis, result, decimalmark='.'):
     threshold = service.getExponentialFormatPrecision()
     # Current result precision is above the threshold?
     sig_digits = get_significant_digits(result)
-    #sig_digits = service.getExponentialFormatPrecision(result)
     negative = sig_digits < 0
     sig_digits = abs(sig_digits)
     sci = sig_digits >= threshold and sig_digits > 0
@@ -200,13 +199,11 @@ def format_numeric_result(analysis, result, decimalmark='.'):
         return result
 
     service = analysis.getService()
-    import pdb;pdb.set_trace()
     # Scientific notation?
     # Get the default precision for scientific notation
     threshold = service.getExponentialFormatPrecision()
     # Current result precision is above the threshold?
     sig_digits = abs(get_significant_digits(result))
-    #sig_digits = abs(service.getExponentialFormatPrecision(result))
     sci = sig_digits >= threshold
 
     formatted = ''
