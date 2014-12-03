@@ -1,6 +1,6 @@
 from smtplib import SMTPServerDisconnected, SMTPRecipientsRefused
 from bika.lims import bikaMessageFactory as _, t
-from bika.lims.utils import to_utf8, formatDecimalMark
+from bika.lims.utils import to_utf8, formatDecimalMark, format_supsub
 from bika.lims.utils.analysis import format_uncertainty
 from bika.lims import logger
 from bika.lims.browser import BrowserView
@@ -434,6 +434,7 @@ class AnalysisRequestPublishView(BrowserView):
                   'category': to_utf8(service.getCategoryTitle()),
                   'result': analysis.getResult(),
                   'unit': to_utf8(service.getUnit()),
+                  'formatted_unit': format_supsub(to_utf8(service.getUnit())),
                   'capture_date': analysis.getResultCaptureDate(),
                   'request_id': analysis.aq_parent.getId(),
                   'formatted_result': '',

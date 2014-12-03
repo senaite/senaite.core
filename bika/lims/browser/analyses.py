@@ -2,7 +2,7 @@
 from AccessControl import getSecurityManager
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t, dicts_to_dict
+from bika.lims.utils import t, dicts_to_dict, format_supsub
 from bika.lims.utils.analysis import format_uncertainty
 from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
@@ -333,7 +333,7 @@ class AnalysesView(BikaListingView):
             items[i]['service_uid'] = service.UID()
             items[i]['Service'] = service.Title()
             items[i]['Keyword'] = keyword
-            items[i]['Unit'] = unit and unit or ''
+            items[i]['Unit'] = format_supsub(unit) if unit else ''
             items[i]['Result'] = ''
             items[i]['formatted_result'] = ''
             items[i]['interim_fields'] = interim_fields
