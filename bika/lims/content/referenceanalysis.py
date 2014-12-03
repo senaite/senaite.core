@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """ReferenceAnalysis
 """
 from AccessControl import ClassSecurityInfo
@@ -265,7 +267,7 @@ class ReferenceAnalysis(BaseContent):
         else:
             return ''
 
-    def getFormattedResult(self, specs=None, decimalmark='.'):
+    def getFormattedResult(self, specs=None, decimalmark='.', sciformat=1):
         """Formatted result:
         1. If the result is not floatable, return it without being formatted
         2. If the analysis specs has hidemin or hidemax enabled and the
@@ -277,6 +279,12 @@ class ReferenceAnalysis(BaseContent):
              'error': <error>,
              'hidemin': <hidemin_val>,
              'hidemax': <hidemax_val>}
+        :param sciformat: 1. The sci notation has to be formatted as aE^+b
+                          2. The sci notation has to be formatted as a·10^b
+                          3. As 2, but with super html entity for exp
+                          4. The sci notation has to be formatted as a·10^b
+                          5. As 4, but with super html entity for exp
+                          By default 1
         """
         result = self.getResult()
         service = self.getService()
@@ -316,7 +324,7 @@ class ReferenceAnalysis(BaseContent):
             return formatDecimalMark('> %s' % hidemax, decimalmark)
 
         # 3. If the result is floatable, render it to the correct precision
-        return formatDecimalMark(format_numeric_result(self, result), decimalmark)
+        return formatDecimalMark(format_numeric_result(self, result, sciformat), decimalmark)
 
     def workflow_script_submit(self):
         if skip(self, "submit"):

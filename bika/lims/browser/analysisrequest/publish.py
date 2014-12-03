@@ -480,7 +480,8 @@ class AnalysisRequestPublishView(BrowserView):
                     if specs else {}
 
         andict['specs'] = specs
-        andict['formatted_result'] = analysis.getFormattedResult(specs, decimalmark)
+        scinot = self.context.bika_setup.getScientificNotationResults()
+        andict['formatted_result'] = analysis.getFormattedResult(specs=specs, sciformat=int(scinot), decimalmark=decimalmark)
 
         fs = ''
         if specs.get('min', None) and specs.get('max', None):
@@ -489,7 +490,7 @@ class AnalysisRequestPublishView(BrowserView):
             fs = '> %s' % specs['min']
         elif specs.get('max', None):
             fs = '< %s' % specs['max']
-        andict['formatted_specs'] = formatDecimalMark(fs, decimalmark)
+        andict['formatted_specs'] = formatDecimalMark(fs, decimalmark)        
         andict['formatted_uncertainty'] = formatDecimalMark(str(analysis.getUncertainty()), decimalmark)
 
         # Out of range?

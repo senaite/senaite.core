@@ -406,11 +406,11 @@ Table cells for each column from in review_state's column list.
             <tal:comment replace="nothing"><!-- view --></tal:comment>
             <span
                 tal:condition="python:not allow_edit and column == 'Result'"
-                tal:content="python:item['formatted_result'] if item['formatted_result'] is not None else item[column]"
+                tal:content="structure python:item['formatted_result'] if item['formatted_result'] is not None else item[column]"
                 tal:attributes="class item/state_class"/>
             <span
                 tal:condition="python:not allow_edit and column != 'Result'"
-                tal:content="python:item[column] if item[column] is not None else ''"
+                tal:content="structure python:item[column] if item[column] is not None else ''"
                 tal:attributes="class item/state_class"/>
             <input
                 type="hidden"
