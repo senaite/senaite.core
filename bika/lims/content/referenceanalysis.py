@@ -3,6 +3,7 @@
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t, formatDecimalMark
+from bika.lims.utils.analysis import format_numeric_result
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
@@ -315,10 +316,7 @@ class ReferenceAnalysis(BaseContent):
             return formatDecimalMark('> %s' % hidemax, decimalmark)
 
         # 3. If the result is floatable, render it to the correct precision
-        precision = service.getPrecision()
-        if not precision:
-            precision = ''
-        return formatDecimalMark(str("%%.%sf" % precision) % result, decimalmark)
+        return formatDecimalMark(format_numeric_result(self, result), decimalmark)
 
     def workflow_script_submit(self):
         if skip(self, "submit"):
