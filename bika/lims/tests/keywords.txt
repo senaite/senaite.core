@@ -10,18 +10,11 @@ Documentation    Generally useful keywords for Bika tests.
 
 Log in
     [Arguments]  ${userid}  ${password}
-
     Go to                          http://localhost:55001/plone/login_form
-
-    # cheeky but I want, so sneaked in here
     Maximize Browser Window
-
-    # This is obvious, don't waste time testing the Plone's login form
-    #Page should contain element     __ac_name
-    #Page should contain element     __ac_password
-    #Page should contain button      Log in
-
+    sleep   0.1
     Input text                      __ac_name      ${userid}
+    sleep   0.1
     Input text                      __ac_password  ${password}
     Click Button  Log in
 
@@ -35,11 +28,15 @@ Select from dropdown
     [Arguments]        ${locator}
     ...                ${search_text}=
     ...                ${item_number}=1
-    sleep    1
-    Input text         ${locator}  ${search_text}
-    sleep    1
-    Click Element      xpath=//div[contains(@class,'cg-colItem')][${item_number}]
-    sleep    0.5
+    wait until page contains element    ${locator}
+    Input text                          ${locator}   \
+    Press Key                           ${locator}   \\9
+    sleep           0.3
+    Input text                          ${locator}  ${search_text}
+    wait until page contains element    xpath=//div[contains(@class,'cg-colItem')][${item_number}]
+    sleep           0.5
+    Click Element                       xpath=//div[contains(@class,'cg-colItem')][${item_number}]
+    sleep           0.5
 
 
 SelectDate
@@ -77,11 +74,24 @@ SelectNextMonthDate
     sleep                1
     Click Link           ${Date}
 
+Execute transition ${transition} on item ${ar_id} in ARList
+    [Documentation]  Tranistion the specific ar from an AR List.
+    Select checkbox     xpath=//input[@item_title="${ar_id}"]
+    Set Selenium Timeout        30
+    Click Element       ${transition}_transition
+    Set Selenium Timeout        10
+
 Execute transition ${transition} on items in form_id ${form_id}
+    [Documentation]  Tranistion all items in the form_id
     Select checkbox     xpath=//input[@id='${form_id}_select_all']
     Set Selenium Timeout        30
     Click Element       ${transition}_transition
     Set Selenium Timeout        10
+
+Execute transition ${transition} inside ClientARView/ManageResults
+    [Documentation]  Tranistion the element using the right label
+    Click Element  css=a[title="Change the state of this item"]
+    Click Element  workflow-transition-${transition}
 
 Shleep
     [Arguments]  ${amount}=
