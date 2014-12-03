@@ -225,14 +225,14 @@
                     <span tal:content="analysis/title">Total 25-OHD</span>
                 </td>
                 <td tal:condition="hasprevresults" class="prev">
-                    <span tal:content="analysis/previous_results">1,2,3</span>
+                    <span tal:content="structure analysis/previous_results">1,2,3</span>
                 </td>
                 <td>
-                    <span class="result" tal:content="analysis/formatted_result">23</span>
+                    <span class="result" tal:content="structure analysis/formatted_result">23</span>
                     <span class="units" tal:content="analysis/unit|nothing"></span>
                 </td>
                 <td class="dryresult" tal:condition="python: reportdrymatter and analysis/resultdm">
-                    <span tal:content="string:${analysis/resultdm}  ${analysis/unit|nothing}">23</span>
+                    <span tal:content="structure string:${analysis/resultdm}  ${analysis/unit|nothing}">23</span>
                 </td>
                 <td class="specs">
                     <span tal:condition="analysis/uncertainty"
@@ -295,11 +295,11 @@
                     <span tal:content="analysis/title">Total 25-OHD</span>
                 </td>
                 <td>
-                    <span class="result" tal:content="analysis/formatted_result">23</span>
+                    <span class="result" tal:content="structure analysis/formatted_result">23</span>
                     <span class="units" tal:content="analysis/unit|nothing"></span>
                 </td>
                 <td class="dryresult" tal:condition="python: reportdrymatter and analysis/resultdm">
-                    <span tal:content="string:${analysis/resultdm}  ${analysis/unit|nothing}">23</span>
+                    <span tal:content="structure string:${analysis/resultdm}  ${analysis/unit|nothing}">23</span>
                 </td>
                 <td class="specs">
                     <span tal:condition="analysis/uncertainty"

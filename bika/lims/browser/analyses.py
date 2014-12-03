@@ -607,7 +607,7 @@ class AnalysesView(BikaListingView):
             if can_view_result:
                 items[i]['Result'] = result
                 scinot = self.context.bika_setup.getScientificNotationResults()
-                dmk = self.context.bika_setup.getDecimalMark()
+                dmk = self.context.bika_setup.getResultsDecimalMark()
                 items[i]['formatted_result'] = obj.getFormattedResult(sciformat=int(scinot),decimalmark=dmk)
                 items[i]['Uncertainty'] = format_uncertainty(obj, result)
 
