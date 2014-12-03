@@ -10,18 +10,11 @@ Documentation    Generally useful keywords for Bika tests.
 
 Log in
     [Arguments]  ${userid}  ${password}
-
     Go to                          http://localhost:55001/plone/login_form
-
-    # cheeky but I want, so sneaked in here
     Maximize Browser Window
-
-    # This is obvious, don't waste time testing the Plone's login form
-    #Page should contain element     __ac_name
-    #Page should contain element     __ac_password
-    #Page should contain button      Log in
-
+    sleep   0.1
     Input text                      __ac_name      ${userid}
+    sleep   0.1
     Input text                      __ac_password  ${password}
     Click Button  Log in
 
@@ -36,9 +29,13 @@ Select from dropdown
     ...                ${search_text}=
     ...                ${item_number}=1
     wait until page contains element    ${locator}
-    Input text                  ${locator}  ${search_text}
-    wait until page contains    xpath=//div[contains(@class,'cg-colItem')][${item_number}]
-    Click Element               xpath=//div[contains(@class,'cg-colItem')][${item_number}]
+    Input text                          ${locator}   \
+    Press Key                           ${locator}   \\9
+    sleep           0.3
+    Input text                          ${locator}  ${search_text}
+    wait until page contains element    xpath=//div[contains(@class,'cg-colItem')][${item_number}]
+    sleep           0.5
+    Click Element                       xpath=//div[contains(@class,'cg-colItem')][${item_number}]
     sleep           0.5
 
 
