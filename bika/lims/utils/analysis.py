@@ -46,6 +46,8 @@ def get_significant_digits(numeric_value):
         numeric_value = float(numeric_value)
     except ValueError:
         return None
+    if numeric_value == 0:
+        return 0
     return int(math.floor(math.log10(abs(numeric_value))))
 
 
@@ -269,5 +271,6 @@ def format_numeric_result(analysis, result, decimalmark='.', sciformat=1):
         prec = service.getPrecision(result)
         prec = prec if prec else ''
         formatted = str("%%.%sf" % prec) % result
+        formatted = str(int(float(formatted))) if float(formatted).is_integer() else formatted
 
     return formatDecimalMark(formatted, decimalmark)
