@@ -49,7 +49,7 @@ def get_significant_digits(numeric_value):
     return int(math.floor(math.log10(abs(numeric_value))))
 
 
-def format_uncertainty(analysis, result, decimalmark='.'):
+def format_uncertainty(analysis, result, decimalmark='.', sciformat=1):
     """
     Returns the formatted uncertainty according to the analysis, result
     and decimal mark specified following these rules:
@@ -101,6 +101,12 @@ def format_uncertainty(analysis, result, decimalmark='.'):
     :param result: result of the analysis. Used to retrieve and/or
                    calculate the precision and/or uncertainty
     :param decimalmark: decimal mark to use. By default '.'
+    :param sciformat: 1. The sci notation has to be formatted as aE^+b
+                  2. The sci notation has to be formatted as ax10^b
+                  3. As 2, but with super html entity for exp
+                  4. The sci notation has to be formatted as a·10^b
+                  5. As 4, but with super html entity for exp
+                  By default 1
     :return: the formatted uncertainty
     """
     try:
@@ -120,6 +126,7 @@ def format_uncertainty(analysis, result, decimalmark='.'):
     # Current result precision is above the threshold?
     sig_digits = get_significant_digits(result)
     negative = sig_digits < 0
+    sign = '-' if negative else ''
     sig_digits = abs(sig_digits)
     sci = sig_digits >= threshold and sig_digits > 0
 
@@ -127,14 +134,31 @@ def format_uncertainty(analysis, result, decimalmark='.'):
     if sci:
         # Scientific notation
         # 3.2014E+4
-        sign = '-' if negative else '+'
         if negative == True:
             res = float(uncertainty)*(10**sig_digits)
         else:
             res = float(uncertainty)/(10**sig_digits)
-            res = str("%%.%sf" % (sig_digits-1)) % res
-        sig_digits = "%02d" % sig_digits
-        formatted = "%s%s%s%s" % (res,"e",sign,sig_digits)
+            res = float(str("%%.%sf" % (sig_digits-1)) % res)
+        res = int(res) if res.is_integer() else res
+
+        if sciformat in [2,3,4,5]:
+            if sciformat == 2:
+                # ax10^b or ax10^-b
+                formatted = "%s%s%s%s" % (res,"x10^",sign,sig_digits)
+            elif sciformat == 3:
+                # ax10<super>b</super> or ax10<super>-b</super>
+                formatted = "%s%s%s%s%s" % (res,"x10<sup>",sign,sig_digits,"</sup>")
+            elif sciformat == 4:
+                # ax10^b or ax10^-b
+                formatted = "%s%s%s%s" % (res,"·10^",sign,sig_digits)
+            elif sciformat == 5:
+                # ax10<super>b</super> or ax10<super>-b</super>
+                formatted = "%s%s%s%s%s" % (res,"·10<sup>",sign,sig_digits,"</sup>")
+        else:
+            # Default format: aE^+b
+            sig_digits = "%02d" % sig_digits
+            formatted = "%s%s%s%s" % (res,"e",sign,sig_digits)
+            #formatted = str("%%.%se" % sig_digits) % uncertainty
     else:
         # Decimal notation
         prec = service.getPrecision(result)

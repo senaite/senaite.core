@@ -1,5 +1,6 @@
 next
 ------------------
+LIMS-1457: Exponential notation in published AR pdf should be formatted like a×10^b instead of ae^+b
 LIMS-1334: Calculate result precision from Uncertainty value
 LIMS-1446: After retracting a published AR the Sample gets cancelled
 LIMS-1444: In AR published report accredited analysis services are not marked as accredited

@@ -1,6 +1,7 @@
 from smtplib import SMTPServerDisconnected, SMTPRecipientsRefused
 from bika.lims import bikaMessageFactory as _, t
 from bika.lims.utils import to_utf8, formatDecimalMark
+from bika.lims.utils.analysis import format_uncertainty
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.config import POINTS_OF_CAPTURE
@@ -491,7 +492,7 @@ class AnalysisRequestPublishView(BrowserView):
         elif specs.get('max', None):
             fs = '< %s' % specs['max']
         andict['formatted_specs'] = formatDecimalMark(fs, decimalmark)
-        andict['formatted_uncertainty'] = formatDecimalMark(str(analysis.getUncertainty()), decimalmark)
+        andict['formatted_uncertainty'] = format_uncertainty(analysis, analysis.getResult(), decimalmark=decimalmark, sciformat=int(scinot))
 
         # Out of range?
         if specs:
