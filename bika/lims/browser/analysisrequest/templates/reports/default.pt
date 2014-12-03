@@ -225,18 +225,18 @@
                     <span tal:content="analysis/title">Total 25-OHD</span>
                 </td>
                 <td tal:condition="hasprevresults" class="prev">
-                    <span tal:content="analysis/previous_results">1,2,3</span>
+                    <span tal:content="structure analysis/previous_results">1,2,3</span>
                 </td>
                 <td>
-                    <span class="result" tal:content="analysis/formatted_result">23</span>
+                    <span class="result" tal:content="structure analysis/formatted_result">23</span>
                     <span class="units" tal:content="analysis/unit|nothing"></span>
                 </td>
                 <td class="dryresult" tal:condition="python: reportdrymatter and analysis/resultdm">
-                    <span tal:content="string:${analysis/resultdm}  ${analysis/unit|nothing}">23</span>
+                    <span tal:content="structure string:${analysis/resultdm}  ${analysis/unit|nothing}">23</span>
                 </td>
                 <td class="specs">
                     <span tal:condition="analysis/uncertainty"
-                          tal:replace="string:[&plusmn; ${analysis/formatted_uncertainty}] "></span>
+                          tal:replace="structure string:[&plusmn; ${analysis/formatted_uncertainty}] "></span>
                     <span tal:replace="python:'(RT) ' if analysis['retested'] else ''"></span>
                     <span tal:replace="analysis/formatted_specs">50 - 60</span>
                 </td>
@@ -295,15 +295,15 @@
                     <span tal:content="analysis/title">Total 25-OHD</span>
                 </td>
                 <td>
-                    <span class="result" tal:content="analysis/formatted_result">23</span>
+                    <span class="result" tal:content="structure analysis/formatted_result">23</span>
                     <span class="units" tal:content="analysis/unit|nothing"></span>
                 </td>
                 <td class="dryresult" tal:condition="python: reportdrymatter and analysis/resultdm">
-                    <span tal:content="string:${analysis/resultdm}  ${analysis/unit|nothing}">23</span>
+                    <span tal:content="structure string:${analysis/resultdm}  ${analysis/unit|nothing}">23</span>
                 </td>
                 <td class="specs">
                     <span tal:condition="analysis/uncertainty"
-                          tal:replace="string:[&plusmn; ${analysis/uncertainty}] "></span>
+                          tal:replace="structure string:[&plusmn; ${analysis/uncertainty}] "></span>
                     <span tal:replace="python:'(RT) ' if analysis['retested'] else ''"></span>
                     <span tal:replace="analysis/formatted_specs">50 - 60</span>
                 </td>

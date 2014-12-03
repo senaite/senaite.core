@@ -606,8 +606,10 @@ class AnalysesView(BikaListingView):
             # permission, otherwise just put an icon in Result column.
             if can_view_result:
                 items[i]['Result'] = result
-                items[i]['formatted_result'] = obj.getFormattedResult()
-                items[i]['Uncertainty'] = format_uncertainty(obj, result)
+                scinot = self.context.bika_setup.getScientificNotationResults()
+                dmk = self.context.bika_setup.getResultsDecimalMark()
+                items[i]['formatted_result'] = obj.getFormattedResult(sciformat=int(scinot),decimalmark=dmk)
+                items[i]['Uncertainty'] = format_uncertainty(obj, result, decimalmark=dmk, sciformat=int(scinot))
 
             else:
                 items[i]['Specification'] = ""

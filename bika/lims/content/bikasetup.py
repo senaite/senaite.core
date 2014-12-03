@@ -168,6 +168,16 @@ schema = BikaFolderSchema.copy() + Schema((
             format = 'select',
         )
     ),
+    StringField('ScientificNotationReport',
+        schemata = "Results Reports",
+        default = '1',
+        vocabulary = SCINOTATION_OPTIONS,
+        widget = SelectionWidget(
+            label=_("Default scientific notation format for reports"),
+            description =_("Preferred scientific notation format for reports"),
+            format='select',
+        )
+    ),
     IntegerField('MinimumResults',
         schemata = "Results Reports",
         required = 1,
@@ -365,6 +375,26 @@ schema = BikaFolderSchema.copy() + Schema((
                 "The number of days before a sample expires and cannot be analysed "
                 "any more. This setting can be overwritten per individual sample type "
                 "in the sample types setup"),
+        )
+    ),
+    StringField('ResultsDecimalMark',
+        schemata = "Analyses",
+        vocabulary=DECIMAL_MARKS,
+        default = ".",
+        widget = SelectionWidget(
+            label=_("Default decimal mark"),
+            description=_("Preferred decimal mark for results"),
+            format = 'select',
+        )
+    ),
+    StringField('ScientificNotationResults',
+        schemata = "Analyses",
+        default = '1',
+        vocabulary = SCINOTATION_OPTIONS,
+        widget = SelectionWidget(
+            label=_("Default scientific notation format for results"),
+            description =_("Preferred scientific notation format for results"),
+            format='select',
         )
     ),
     StringField('AutoPrintLabels',
