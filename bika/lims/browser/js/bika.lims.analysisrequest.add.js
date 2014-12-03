@@ -338,7 +338,7 @@ function AnalysisRequestAddView() {
 		// clear the CC widget
 		$("input[name*='" + fieldName + "']").val('').attr('uid', '')
 		$('input[name="' + fieldName + '_uid"]').val('')
-		$("#ar_" + arnum + "_CCContact-listing").empty()
+		$("#ar\\." + arnum + "\\.CCContact-listing").empty()
 		if (contact_uid !== "") {
 			var request_data = {portal_type: "Contact", UID: contact_uid}
 			window.bika.lims.jsonapi_read(request_data, function (data) {
