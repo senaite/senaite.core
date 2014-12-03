@@ -691,10 +691,10 @@ schema = BikaSchema.copy() + Schema((
                                    "the uncertainty, at that position the "
                                    "system will round up the uncertainty "
                                    "and results. "
-                                   "For example, fr a result 5.243 and "
+                                   "For example, with a result of 5.243 and "
                                    "an uncertainty of 0.22, the system "
                                    "will display correctly as 5.2+-0.2. "
-                                   "If no uncertainty range set for the "
+                                   "If no uncertainty range is set for the "
                                    "result, the system will use the "
                                    "fixed precision set."),
                  ),
