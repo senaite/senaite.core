@@ -35,11 +35,11 @@ Select from dropdown
     [Arguments]        ${locator}
     ...                ${search_text}=
     ...                ${item_number}=1
-    sleep    1
-    Input text         ${locator}  ${search_text}
-    sleep    1
-    Click Element      xpath=//div[contains(@class,'cg-colItem')][${item_number}]
-    sleep    0.5
+    wait until page contains element    ${locator}
+    Input text                  ${locator}  ${search_text}
+    wait until page contains    xpath=//div[contains(@class,'cg-colItem')][${item_number}]
+    Click Element               xpath=//div[contains(@class,'cg-colItem')][${item_number}]
+    sleep           0.5
 
 
 SelectDate
