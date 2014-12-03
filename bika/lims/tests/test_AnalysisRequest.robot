@@ -20,14 +20,16 @@ ${ar_factory_url}  portal_factory/AnalysisRequest/Request%20new%20analyses/ar_ad
 Check that the editable SamplePoint widget in AnalysisRequestView shows both Client and Lab items
     ${ar_id}=          Create Primary AR
     go to              ${PLONEURL}/clients/client-1/${ar_id}
-    wait until page contains     css=#SamplePoint
-    select from dropdown         css=#SamplePoint     Apple    1
-    select from dropdown         css=#SamplePoint     Apple    2
+    wait until page contains     Manage Analyses
+    Input text                   css=#SamplePoint     \
+    sleep   1
+    Press Key                    css=#SamplePoint     \\9
+    sleep   1
+    select from dropdown         css=#SamplePoint     Lab       1
+    select from dropdown         css=#SamplePoint     Client    2
 
 Check the AR Add javascript
    # check that the Contact CC auto-fills correctly when a contact is selected
-    Log out
-    Log in                    test_labmanager1    test_labmanager1
     Go to                     ${PLONEURL}/clients/client-1
     Wait until page contains  Happy
     Click Link                Add
@@ -97,6 +99,7 @@ Create Primary AR
     Wait until page contains element    css=body.portaltype-client
     Click Link                  Add
     Wait until page contains    Request new analyses
+    wait until page contains element    ar_0_Contact
     Select from dropdown        ar_0_Contact                Rita
     Select from dropdown        ar_0_Template               Bore
     Select Date                 ar_0_SamplingDate           @{time}[2]
