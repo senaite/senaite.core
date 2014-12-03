@@ -23,6 +23,7 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.utils import to_utf8 as _c
 from bika.lims.utils import to_unicode as _u
+from bika.lims.utils.analysis import get_significant_digits
 from bika.lims.browser.widgets import *
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
 from bika.lims.browser.widgets.referencewidget import ReferenceWidget
@@ -1081,7 +1082,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
             # https://jira.bikalabs.com/browse/LIMS-1334
             if uncertainty == 0:
                 return 1
-            return int(abs(math.floor(math.log10(abs(uncertainty)))))
+            return abs(get_significant_digits(uncertainty))
         return None
 
 
@@ -1135,7 +1136,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
                 # if analysis result is not a number, then we assume in range
                 return self.Schema().getField('ExponentialFormatPrecision').get(self)
 
-            return int(math.floor(math.log10(abs(result))))
+            return get_significant_digits(uncertainty)
 
 
     security.declarePublic('getContainers')

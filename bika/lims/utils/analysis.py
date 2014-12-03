@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import math
 import zope.event
 from bika.lims.utils import formatDecimalMark
 from Products.Archetypes.event import ObjectInitializedEvent
@@ -30,6 +31,22 @@ def create_analysis(context, service, keyword, interim_fields):
         pass
     # Return the newly created analysis
     return analysis
+
+
+def get_significant_digits(numeric_value):
+    """
+    Returns the precision for a given floatable value.
+    If value is None or not floatable, returns None.
+    Will return positive values if the result is below 0 and will
+    return 0 or positive values if the result is above 0.
+    :param numeric_value: the value to get the precision from
+    :return: the numeric_value's precision
+    """
+    try:
+        numeric_value = float(numeric_value)
+    except ValueError:
+        return None
+    return int(math.floor(math.log10(abs(numeric_value))))
 
 
 def format_uncertainty(analysis, result, decimalmark='.'):
@@ -101,7 +118,8 @@ def format_uncertainty(analysis, result, decimalmark='.'):
     # Get the default precision for scientific notation
     threshold = service.getExponentialFormatPrecision()
     # Current result precision is above the threshold?
-    sig_digits = service.getExponentialFormatPrecision(result)
+    sig_digits = get_significant_digits(result)
+    #sig_digits = service.getExponentialFormatPrecision(result)
     negative = sig_digits < 0
     sig_digits = abs(sig_digits)
     sci = sig_digits >= threshold and sig_digits > 0
@@ -182,12 +200,13 @@ def format_numeric_result(analysis, result, decimalmark='.'):
         return result
 
     service = analysis.getService()
-
+    import pdb;pdb.set_trace()
     # Scientific notation?
     # Get the default precision for scientific notation
     threshold = service.getExponentialFormatPrecision()
     # Current result precision is above the threshold?
-    sig_digits = abs(service.getExponentialFormatPrecision(result))
+    sig_digits = abs(get_significant_digits(result))
+    #sig_digits = abs(service.getExponentialFormatPrecision(result))
     sci = sig_digits >= threshold
 
     formatted = ''
