@@ -183,21 +183,23 @@ Colum Headers
 
     <tbody class="item-listing-tbody"
         tal:condition="view/items"
-        tal:define="selected_cats python: view.bika_listing.selected_cats(view.batch)">
+        tal:define="selected_cats python: view.bika_listing.selected_cats(view.batch);
+                restricted_cats python:view.bika_listing.restricted_cats(view.batch)">
 
-<tal:comment replace="nothing">*************** TR
+    <tal:comment replace="nothing">*************** TR
 Table data rows start here
 ********************************</tal:comment>
 <tal:cats
-    tal:repeat="cat python: view.bika_listing.categories+['None', ] if view.bika_listing.categories else ['None', ]"
-    tal:define="restricted_categories view/bika_listing/restricted_categories;
-        default_cats view/bika_listing/auto_expand_categories">
-    <tr tal:condition="python: view.bika_listing.show_categories and cat != 'None' and cat not in restricted_categories">
+    tal:repeat="cat python: view.bika_listing.categories+['None', ] if view.bika_listing.categories else ['None', ]">
+
+    <tal:show_this_category
+            tal:condition="python: cat not in restricted_cats">
+    <tr tal:condition="python: view.bika_listing.show_categories and cat != 'None'">
         <th
             style="text-align:left;"
             tal:attributes="colspan nr_cols;
                             cat cat;
-                            class python:(cat in selected_cats or cat in default_cats) and 'cat_header expanded' or 'cat_header collapsed'"
+                            class python:(cat in selected_cats) and 'cat_header expanded' or 'cat_header collapsed'"
             tal:content="structure cat">
         </th>
     </tr>
@@ -632,6 +634,7 @@ Table cells for each column from in review_state's column list.
     </tal:remarks_condition>
 
     </tal:items>
+    </tal:show_this_category>
 </tal:cats>
 </tbody>
 

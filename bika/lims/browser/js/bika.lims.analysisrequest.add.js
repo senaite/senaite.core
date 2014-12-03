@@ -1,10 +1,8 @@
 /**
- * Controller class for AnalysisRequestAddView
+ * Controller class for AnalysisRequestAddView - column layout.
  *
- * Some functions in this file are named according to their function or to
  * the context in which they are called.
  *
- *  - *_click *_change etc
  *    Execute code when corresponding event is triggered.  This is not always
  *    the function that is bound to this event.
  *
@@ -246,13 +244,11 @@ function AnalysisRequestAddView() {
 		 * The checkboxes used to select analyses are handled separately.
 		 */
 		var e = $('[ar_add_ar_widget] input[type="checkbox"]')
-		debugger;
 		$(e).live('change', function () {
-			var td = $(this).parents('td')
 			var arnum = $(this).parents('td').attr('arnum')
 			var fieldname = $(this).attr('fieldname')
-			var instr = 'input[id="ar_' + arnum + '_' + fieldname + '"]'
-			var value = $(td).find(instr).val()
+			var input = 'input[id="ar_' + arnum + '_' + fieldname + '"]'
+			var value = $(this).parents('td').find(input).val()
 			state_set(arnum, fieldname, value)
 		})
 	}
@@ -685,7 +681,7 @@ function AnalysisRequestAddView() {
 		 *  This will clear selected analyses in this AR column, and it will
 		 *  also clear the AR Template field.
 		 */
-		template_unset()
+		template_unset(arnum)
 		var d = $.Deferred()
 		var request_data = {
 			portal_type: "AnalysisProfile",
@@ -711,8 +707,8 @@ function AnalysisRequestAddView() {
 	function template_unset(arnum) {
 		$("#ar_" + arnum + "_Template").val("")
 		$("#ar_" + arnum + "_Template_uid").val("")
-		state_set(arnum, "Template", undefined)
-		state_set(arnum, "Template_uid", undefined)
+		state_set(arnum, "Template", "")
+		state_set(arnum, "Template_uid", "")
 	}
 
 	function template_set(arnum, template_title) {

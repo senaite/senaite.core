@@ -15,7 +15,6 @@ function AnalysisRequestAddByRow() {
 		//$("input[id*='_ReportDryMatter']").change(changeReportDryMatter);
 		//$("input[name^='Price']").live("change", recalc_prices);
 		//$("th[class^='analysiscategory']").live('click', clickAnalysisCategory);
-		//expand_default_categories();
 		//$(".spec_bit").live("change", validate_spec_field_entry);
 		//$("input[id*='_save_profile']").live('click', saveProfile);
 		//$("#submit_analyses_button").live("click", analysesOverlaySubmitted);
@@ -1689,10 +1688,6 @@ function AnalysisRequestAddByRow() {
 //			window.toggleCat(poc_name, cat_uid, col, service_uids, true);
 //		}
 //	}
-//
-//    function expand_default_categories() {
-//        $("th.prefill").click();
-//    }
 //
 //    function ar_add_create_hidden_analysis(
 //            analysis_parent, elem_id, arnum, poc, cat, min, max, err, price, vat) {

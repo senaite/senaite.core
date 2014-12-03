@@ -257,8 +257,6 @@ class BikaListingView(BrowserView):
     review_state = 'default'
     show_categories = False
     expand_all_categories = False
-    auto_expand_categories = []
-    restricted_categories = []
     field_icons = {}
     show_table_footer = True
 
@@ -343,12 +341,6 @@ class BikaListingView(BrowserView):
 
         if 'expand_all_categories' in kwargs:
             self.expand_all_categories = kwargs['expand_all_categories']
-
-        if 'auto_expand_categories' in kwargs:
-            self.auto_expand_categories = kwargs['auto_expand_categories']
-
-        if 'restricted_categories' in kwargs:
-            self.restricted_categories = kwargs['restricted_categories']
 
         self.portal = getToolByName(context, 'portal_url').getPortalObject()
         self.portal_url = self.portal.absolute_url()
@@ -579,17 +571,35 @@ class BikaListingView(BrowserView):
             return self.template()
 
     def selected_cats(self, items):
-        """return a list of categories containing 'selected'=True items
+        """Return a list of categories that will be expanded by default when
+        the page is reloaded.
+
+        In this default method, categories which contain selected
+        items are always expanded.
+
+        :param items: A list of items returned from self.folderitems().
+        :return: a list of strings, self.categories contains the complete list.
         """
         cats = []
         for item in items:
             cat = item.get('category', 'None')
             if item.get('selected', False) \
-                or self.expand_all_categories \
-                or not self.show_categories:
+                    or self.expand_all_categories \
+                    or not self.show_categories:
                 if cat not in cats:
                     cats.append(cat)
         return cats
+
+    def restricted_cats(self, items):
+        """Return a list of categories that will not be displayed.
+
+        The items will still be present, and account for a part of the page
+        batch total.
+
+        :param items: A list of items returned from self.folderitems().
+        :return: a list of AnalysisCategory instances.
+        """
+        return []
 
     def isItemAllowed(self, obj):
         """ return if the item can be added to the items list.

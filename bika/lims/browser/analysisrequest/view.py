@@ -257,38 +257,26 @@ class AnalysisRequestViewView(BrowserView):
                         service.UID()])
         return res
 
-    def getRestrictedCategories(self):
-        # we are in portal_factory AR context right now
-        parent = self.context.aq_parent
-        if hasattr(parent, "getRestrictedCategories"):
-            return parent.getRestrictedCategories()
-        return []
-
-    def Categories(self):
-        """ Dictionary keys: poc
-            Dictionary values: (Category UID,category Title)
-        """
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
-        cats = {}
-        restricted = [u.UID() for u in self.getRestrictedCategories()]
-        for service in bsc(portal_type="AnalysisService",
-                           inactive_state='active'):
-            cat = (service.getCategoryUID, service.getCategoryTitle)
-            if restricted and cat[0] not in restricted:
-                continue
-            poc = service.getPointOfCapture
-            if poc not in cats:
-                cats[poc] = []
-            if cat not in cats[poc]:
-                cats[poc].append(cat)
-        return cats
-
-    def getDefaultCategories(self):
-        # we are in portal_factory AR context right now
-        parent = self.context.aq_parent
-        if hasattr(parent, "getDefaultCategories"):
-            return parent.getDefaultCategories()
-        return []
+    # def Categories(self):
+    #     """ Dictionary keys: poc
+    #         Dictionary values: (Category UID,category Title)
+    #     """
+    #     bsc = getToolByName(self.context, 'bika_setup_catalog')
+    #     client = self.context.getClient()
+    #     restricted = client.getRestrictedCategories() if client else []
+    #     cats = {}
+    #     for service in bsc(portal_type="AnalysisService",
+    #                        inactive_state='active'):
+    #         cat = (service.getCategoryUID, service.getCategoryTitle)
+    #         import pdb, sys; pdb.Pdb(stdout=sys.__stdout__).set_trace()
+    #         if restricted and cat[1] not in restricted:
+    #             continue
+    #         poc = service.getPointOfCapture
+    #         if poc not in cats:
+    #             cats[poc] = []
+    #         if cat not in cats[poc]:
+    #             cats[poc].append(cat)
+    #     return cats
 
     def getDefaultSpec(self):
         """ Returns 'lab' or 'client' to set the initial value of the

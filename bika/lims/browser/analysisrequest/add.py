@@ -87,6 +87,30 @@ class AnalysisServicesView(ASV):
         # results cached in ar_add_items
         self.folderitems()
 
+    def selected_cats(self, items):
+        """This AnalysisServicesView extends the default selected_cats,
+        in order to include auto_expand categories as defined by
+        client.getDefaultCategories()
+
+        :param items: The original selected_cats calculates visibility
+            by looking at items in the current listing batch.
+        """
+        cats = super(AnalysisServicesView, self).selected_cats(items)
+        client = self.context.getClient()
+        if client:
+            cats.extend([c.Title() for c in client.getDefaultCategories()])
+        return cats
+
+    def restricted_cats(self, items):
+        """This AnalysisServicesView extends the default restricted_cats,
+        in order to include those listed in client.getRestrictedCategories
+        """
+        cats = super(AnalysisServicesView, self).restricted_cats(items)
+        client = self.context.getClient()
+        if client:
+            cats.extend([c.Title() for c in client.getRestrictedCategories()])
+        return cats
+
     def folderitems(self):
         # This folderitems acts slightly differently from others, in that it
         # saves it's results in an attribute, and prevents itself from being
@@ -192,14 +216,23 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         return fields
 
     def services_widget_content(self, poc, ar_count=None):
+
         """Return a table displaying services to be selected for inclusion
         in a new AR.  Used in add_by_row view popup, and add_by_col add view.
+
+        :param poc: string: Analysis Point-of-capture, eg 'field', 'lab'
+        :param ar_count: number of AR columns to generate columns for.
+        :return: string: rendered HTML content of bika_listing_table.pt.
+            If no items are found, returns "".
         """
+
         if not ar_count:
             ar_count = self.ar_count
+
         s = AnalysisServicesView(self.context, self.request,
                                  poc, ar_count=ar_count)
         s.folderitems()
+
         if not s.ar_add_items:
             return ""
         return s.contents_table()
