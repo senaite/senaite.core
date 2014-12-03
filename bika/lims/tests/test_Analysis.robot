@@ -99,6 +99,8 @@ Test Analysis Uncertainty Precision
 
     Submit results and test
 
+    Check result formatting options
+
 *** Keywords ***
 
 Start browser
@@ -230,3 +232,38 @@ Submit results and test
     Page should contain   0.0042e+05
     Page should contain   0.00018e+06 
     Page should contain   0.2e-05
+
+Check result formatting options
+    Go to   ${PLONEURL}/bika_setup
+    Click link  Analyses
+    Wait Until Page Contains Element    ScientificNotationResults
+    Select from dropdown    ScientificNotationResults   ax10^b / ax10^-b
+    Select from dropdown    ResultsDecimalMark   Comma (,)
+    Click Button  Save
+    Wait Until Page Contains    Changes saved.
+    
+    Go to   ${PLONEURL}/worksheets/WS-001    
+    
+    # Formatted results
+    Page should contain   5,2
+    Page should contain   14
+    Page should contain   0,008
+    Page should contain   0,12
+    Page should contain   0,00101
+    Page should contain   3,1
+    Page should contain   3,2092x10^4
+    Page should contain   4,56021x10^5
+    Page should contain   1,293945x10^6
+    Page should contain   1,23000e-05
+
+    # Uncertainties
+    Page should contain   0,2
+    Page should contain   1
+    Page should contain   0,002
+    Page should contain   0,01
+    Page should contain   0,00001
+    Page should contain   0,8
+    Page should contain   0,004x10^4
+    Page should contain   0,0042x10^5
+    Page should contain   0,00018x10^6 
+    Page should contain   0,2x10^-5
