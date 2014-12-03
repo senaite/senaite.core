@@ -3,6 +3,7 @@ from AccessControl import getSecurityManager
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t, dicts_to_dict
+from bika.lims.utils.analysis import format_uncertainty
 from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import QCANALYSIS_TYPES
@@ -605,8 +606,10 @@ class AnalysesView(BikaListingView):
             # permission, otherwise just put an icon in Result column.
             if can_view_result:
                 items[i]['Result'] = result
-                items[i]['formatted_result'] = obj.getFormattedResult()
-                items[i]['Uncertainty'] = obj.getUncertainty(result)
+                scinot = self.context.bika_setup.getScientificNotationResults()
+                dmk = self.context.bika_setup.getResultsDecimalMark()
+                items[i]['formatted_result'] = obj.getFormattedResult(sciformat=int(scinot),decimalmark=dmk)
+                items[i]['Uncertainty'] = format_uncertainty(obj, result, decimalmark=dmk, sciformat=int(scinot))
 
             else:
                 items[i]['Specification'] = ""

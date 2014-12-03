@@ -13,20 +13,34 @@ Suite Teardown   Close All Browsers
 
 *** Variables ***
 
-${ar_factory_url}  portal_factory/AnalysisRequest/Request%20new%20analyses/ar_add
+${ar_factory_url}  portal_factory/AnalysisRequest/xxx/ar_add
 
 *** Test Cases ***
 
 Check that the editable SamplePoint widget in AnalysisRequestView shows both Client and Lab items
-    ${ar_id}=          Create Primary AR
-    go to              ${PLONEURL}/clients/client-1/${ar_id}
+    # Create a new Client/SamplePoint
+    go to                        ${PLONEURL}/clients/client-1/portal_factory/SamplePoint/xxx/edit
+    input text                   title                             Pringle Bay Beach
+    click button                 Save
+    wait until page contains     saved
+
+    ${ar_id}=                    Create AR in client-1 with contact Rita
+    go to                        ${PLONEURL}/clients/client-1/${ar_id}
     wait until page contains     Manage Analyses
-    Input text                   css=#SamplePoint     \
-    sleep   1
-    Press Key                    css=#SamplePoint     \\9
-    sleep   1
-    select from dropdown         css=#SamplePoint     Lab       1
-    select from dropdown         css=#SamplePoint     Client    2
+    select from dropdown         css=#SamplePoint       Mil        1
+    Textfield value should be    css=#SamplePoint       Mill
+    select from dropdown         css=#SamplePoint       Pringle    1
+    Textfield value should be    css=#SamplePoint       Pringle Bay Beach
+    # can't be accessed in ar_add by any other client:
+    go to                              ${PLONEURL}/clients/client-2/${ar_factory_url}
+    wait until page contains element   css=#ar_0_SamplePoint
+    Run Keyword And Expect Error   *   select from dropdown            css=#ar_0_SamplePoint     Pringle
+    # or in the main AR header_table.
+    ${ar_id}=                          Create AR in client-2 with contact Johanna
+    go to                              ${PLONEURL}/clients/client-2/${ar_id}
+    wait until page contains           Manage Analyses
+    Run Keyword And Expect Error   *   select from dropdown            css=#SamplePoint     Pringle
+
 
 Check the AR Add javascript
    # check that the Contact CC auto-fills correctly when a contact is selected
@@ -73,14 +87,15 @@ Analysis Request with no sampling or preservation workflow
     ${ar_id} state should be sample_received
     Go to                     ${PLONEURL}/clients/client-1/${ar_id}/base_view
     Execute transition verify on items in form_id lab_analyses
-    Log out
-    Log in                    test_labmanager1    test_labmanager1
-    # There is no "retract" transition on verified analyses - but there should/will be.
-    # Go to                     ${PLONEURL}/clients/client-1/${ar_id}/base_view
-    # Execute transition retract on items in form_id lab_analyses
+#    Log out
+#    Log in                    test_labmanager1    test_labmanager1
+# There is no "retract" transition on verified analyses - but there should/will be.
+# Go to                     ${PLONEURL}/clients/client-1/${ar_id}/base_view
+# Execute transition retract on items in form_id lab_analyses
+
 
 Create two different ARs from the same sample.
-    Create Primary AR
+    Create AR in client-1 with contact Rita
     Create Secondary AR
     In a client context, only allow selecting samples from that client.
 
@@ -144,47 +159,30 @@ Start browser
     Wait until page contains            You are now logged in
     Set selenium speed                  ${SELENIUM_SPEED}
 
-Create Primary AR
-    Log in                      test_labmanager  test_labmanager
+Create AR in ${client_id} with contact ${contact}
     @{time} =                   Get Time        year month day hour min sec
-    Go to                       ${PLONEURL}/clients/client-1
+
+    Go to                       ${PLONEURL}/clients/${client_id}
     Wait until page contains element    css=body.portaltype-client
     Click Link                  Add
     Wait until page contains    Request new analyses
+
     wait until page contains element    ar_0_Contact
-    Select from dropdown        ar_0_Contact                Rita
+    Select from dropdown        ar_0_Contact                ${contact}
     Select from dropdown        ar_0_Template               Bore
     Select Date                 ar_0_SamplingDate           @{time}[2]
+    sleep                       1
     Set Selenium Timeout        30
     Click Button                Save
     Wait until page contains    created
     Set Selenium Timeout        10
     ${ar_id} =                  Get text      //dl[contains(@class, 'portalMessage')][2]/dd
     ${ar_id} =                  Set Variable  ${ar_id.split()[2]}
-    Go to                       ${PLONEURL}/clients/client-1/analysisrequests
+    Go to                       ${PLONEURL}/clients/${client_id}/analysisrequests
     Wait until page contains    ${ar_id}
     Select checkbox             xpath=//input[@item_title="${ar_id}"]
     Click button                xpath=//input[@id="receive_transition"]
     Wait until page contains    saved
-    [return]                    ${ar_id}
-
-
-Create Secondary AR
-    Log in                      test_labmanager  test_labmanager
-    @{time} =                   Get Time        year month day hour min sec
-    Go to                       ${PLONEURL}/clients/client-1
-    Wait until page contains element    css=body.portaltype-client
-    Click Link                  Add
-    Wait until page contains    Request new analyses
-    Select from dropdown        ar_0_Contact                Rita
-    Select from dropdown        ar_0_Template               Bruma
-    select from dropdown        ar_0_Sample
-    Set Selenium Timeout        30
-    Click Button                Save
-    Wait until page contains    created
-    Set Selenium Timeout        2
-    ${ar_id} =                  Get text      //dl[contains(@class, 'portalMessage')][2]/dd
-    ${ar_id} =                  Set Variable  ${ar_id.split()[2]}
     [return]                    ${ar_id}
 
 Create Simple AR
@@ -205,6 +203,24 @@ Create Simple AR
     ${ar_id} =    Set Variable    ${ar_id.split()[2]}
     [Return]    ${ar_id}
 
+Create Secondary AR
+    Log in                      test_labmanager  test_labmanager
+    @{time} =                   Get Time        year month day hour min sec
+    Go to                       ${PLONEURL}/clients/client-1
+    Wait until page contains element    css=body.portaltype-client
+    Click Link                  Add
+    Wait until page contains    Request new analyses
+    Select from dropdown        ar_0_Contact                Rita
+    Select from dropdown        ar_0_Template               Bruma
+    select from dropdown        ar_0_Sample        H2O
+    Set Selenium Timeout        30
+    Click Button                Save
+    Wait until page contains    created
+    Set Selenium Timeout        2
+    ${ar_id} =                  Get text      //dl[contains(@class, 'portalMessage')][2]/dd
+    ${ar_id} =                  Set Variable  ${ar_id.split()[2]}
+    [return]                    ${ar_id}
+
 In a client context, only allow selecting samples from that client.
     Log in                      test_labmanager  test_labmanager
     @{time} =                   Get Time        year month day hour min sec
@@ -214,9 +230,7 @@ In a client context, only allow selecting samples from that client.
     Wait until page contains    Request new analyses
     Select from dropdown        ar_0_Contact               Johanna
     Select from dropdown        ar_0_Template              Bore    1
-    Run keyword and expect error
-    ...   ValueError: Element locator 'xpath=//div[contains(@class,'cg-colItem')][1]' did not match any elements.
-    ...   Select from dropdown        ar_0_Sample
+    Run keyword and expect error  *    Select from dropdown        ar_0_Sample
 
 
 Complete ar_add form with template ${template}
