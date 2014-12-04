@@ -1,5 +1,6 @@
 next
 ------------------
+LIMS-1498: Published Results not Showing for Logged Clients
 LIMS-1445: Scientific names should be written in italics in published reports
 LIMS-1389: Units in results publishing should allow super(sub)script format, for example in cm2 or m3
 LIMS-1500: Alere Pima's Instrument Interfice

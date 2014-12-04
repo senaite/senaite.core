@@ -89,7 +89,8 @@ Execute transition ${transition} on items in form_id ${form_id}
     Set Selenium Timeout        10
 
 Execute transition ${transition} inside ClientARView/ManageResults
-    [Documentation]  Tranistion the element using the right label
+    [Documentation]  Tranistion the element using the right-up label
+    ...              tranistion could be-> sample, receive, verify, publish
     Click Element  css=a[title="Change the state of this item"]
     Click Element  workflow-transition-${transition}
 
@@ -98,6 +99,31 @@ Shleep
     ...          ${comment}=
     Log  Sleeping ${amount}: ${comment}  WARN
     sleep  ${amount}
+
+Simple AR Creation
+    [Documentation]  Create a simple AR
+    [Arguments]  ${Client}
+    ...          ${Contact}
+    ...          ${SampleType}
+    ...          ${ASCategory}
+    ...          ${ASTitle}
+    @{time} =                   Get Time        year month day hour min sec
+    go to                       ${PLONEURL}/clients/
+    click link                  ${Client}
+    Wait until page contains element    css=body.portaltype-client
+    click link                  link=Add
+    Select from dropdown        ar_0_Contact                ${Contact}
+    SelectDate                  ar_0_SamplingDate           @{time}[2]
+    Select from dropdown        ar_0_SampleType             ${SampleType}
+    Set Selenium Timeout        30
+    click element               xpath=.//th[@id="cat_lab_${ASCategory}"]
+    Select checkbox             xpath=//input[@title='${ASTitle}']
+    Click Button                Save
+    Wait until page contains    created
+    ${ar_id} =                  Get text      //dl[contains(@class, 'portalMessage')][2]/dd
+    ${ar_id} =                  Set Variable  ${ar_id.split()[2]}
+    [Return]                    ${ar_id}
+
 
 Wait For Ajax
     Wait for Condition   return window.jQuery.active == 0;
