@@ -429,6 +429,7 @@ class AnalysisRequestPublishView(BrowserView):
                   'id': analysis.id,
                   'title': analysis.Title(),
                   'keyword': keyword,
+                  'scientific_name': service.getScientificName(),
                   'accredited': service.getAccredited(),
                   'point_of_capture': to_utf8(POINTS_OF_CAPTURE.getValue(service.getPointOfCapture())),
                   'category': to_utf8(service.getCategoryTitle()),
