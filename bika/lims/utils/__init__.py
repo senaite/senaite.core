@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from time import time
 from AccessControl import ModuleSecurityInfo, allow_module
 from bika.lims import logger
@@ -449,3 +451,66 @@ def dicts_to_dict(dictionaries, key_subfieldname):
     for d in dictionaries:
         result[d[key_subfieldname]] = d
     return result
+
+def format_supsub(text):
+    """
+    Mainly used for Analysis Service's unit. Transform the text adding
+    sub and super html scripts:
+    For super-scripts, use ^ char
+    For sub-scripts, use _ char
+    The expression "cm^2" will be translated to "cm²" and the
+    expression "b_(n-1)" will be translated to "b n-1".
+    The expression "n_(fibras)/cm^3" will be translated as
+    "n fibras / cm³"
+    :param text: text to be formatted
+    """
+    out = []
+    subsup = []
+    clauses = []
+    insubsup = True
+    for c in text:
+        if c == '(':
+            if insubsup == False:
+                out.append(c)
+                clauses.append(')')
+            else:
+                clauses.append('')
+
+        elif c == ')':
+            if len(clauses) > 0:
+                out.append(clauses.pop())
+                if len(subsup) > 0:
+                    out.append(subsup.pop())
+
+        elif c == '^':
+            subsup.append('</sup>')
+            out.append('<sup>')
+            insubsup = True
+            continue
+
+        elif c == '_':
+            subsup.append('</sub>')
+            out.append('<sub>')
+            insubsup = True
+            continue
+
+        elif c == ' ':
+            if insubsup == True:
+                out.append(subsup.pop())
+            else:
+                out.append(c)
+        elif c in ['+','-']:
+            if len(clauses) == 0 and len(subsup) > 0:
+                out.append(subsup.pop())
+            out.append(c)
+        else:
+            out.append(c)
+
+        insubsup = False
+
+    while True:
+        if len(subsup) == 0:
+            break;
+        out.append(subsup.pop())
+
+    return ''.join(out)
