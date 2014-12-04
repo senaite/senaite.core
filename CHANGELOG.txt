@@ -1,10 +1,20 @@
 next
 ------------------
+LIMS-1445: Scientific names should be written in italics in published reports
 LIMS-1389: Units in results publishing should allow super(sub)script format, for example in cm2 or m3
 LIMS-1500: Alere Pima's Instrument Interfice
 LIMS-1457: Exponential notation in published AR pdf should be formatted like a×10^b instead of ae^+b
 LIMS-1334: Calculate result precision from Uncertainty value
 LIMS-1446: After retracting a published AR the Sample gets cancelled
+LIMS-1390: More workflow for Batches
+LIMS-1378: Bulking up Batches
+LIMS-1479: new-version and upgrade-steps should be python viewlets
+LIMS-1362: File attachment uploads to Batches
+LIMS-1404: New Batch attributes (and their integration with existing ones on Batch views)
+LIMS-1467: Sample Point Lookup doesn't work on AR modify
+LIMS-1363: Batches per Client
+LIMS-1405: New Sample and AR attributes
+LIMS-1085: Allow Clients to add Attachments to ARs
 LIMS-1444: In AR published report accredited analysis services are not marked as accredited
 LIMS-1443: In published reports the publishing date is not shown in the pdf
 LIMS-1420: Status filter is not kept after moving to next page
