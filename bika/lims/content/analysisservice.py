@@ -201,6 +201,16 @@ schema = BikaSchema.copy() + Schema((
                         "HTML formatting is allowed.")
                 ),
     ),
+    BooleanField('ScientificName',
+                 schemata="Description",
+                 default=False,
+                 widget=BooleanWidget(
+                     label = _("Scientific name"),
+                     description = _(
+                        "If enabled, the name of the analysis will be "
+                        "written in italics."),
+                 ),
+    ),
     StringField('Unit',
                 schemata="Description",
                 widget=StringWidget(

@@ -222,7 +222,8 @@
                         tal:condition='analysis/accredited'
                         alt="accredited"
                         class="accredited-ico"/>
-                    <span tal:content="analysis/title">Total 25-OHD</span>
+                    <span tal:content="analysis/title" tal:condition="python: analysis['scientific_name'] == False">Total 25-OHD</span>
+                    <span tal:condition="analysis/scientific_name"><em tal:content="analysis/title"></em></span>
                 </td>
                 <td tal:condition="hasprevresults" class="prev">
                     <span tal:content="structure analysis/previous_results">1,2,3</span>
@@ -292,7 +293,8 @@
                                       analysis_css_retested python:'retested' if analysis['retested'] else '';">
             <tr tal:attributes="class python:'%s %s %s' % (analysis_css_result, analysis_css_accredited, analysis_css_retested);">
                 <td class="analysis">
-                    <span tal:content="analysis/title">Total 25-OHD</span>
+                    <span tal:content="analysis/title" tal:condition="python: analysis['scientific_name'] == False">Total 25-OHD</span>
+                    <span tal:condition="analysis/scientific_name"><em tal:content="analysis/title"></em></span>
                 </td>
                 <td>
                     <span class="result" tal:content="structure analysis/formatted_result">23</span>
