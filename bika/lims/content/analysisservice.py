@@ -24,7 +24,8 @@ from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.utils import to_utf8 as _c
 from bika.lims.utils import to_unicode as _u
 from bika.lims.utils.analysis import get_significant_digits
-from bika.lims.browser.widgets import *
+from bika.lims.browser.widgets.durationwidget import DurationWidget
+from bika.lims.browser.widgets.partitionsetupwidget import PartitionSetupWidget
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
 from bika.lims.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.browser.fields import *
