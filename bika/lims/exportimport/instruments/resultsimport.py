@@ -59,6 +59,12 @@ class InstrumentResultsFileParser(Logger):
             Analysis ID. The values are a dictionary in which the keys are
             analysis service keywords and the values, another dictionary with
             the key,value results.
+
+            Reserved keys:
+                DefaultResult
+                DateTime
+                Remarks
+
             The column 'DefaultResult' must be provided, because is used to map
             to the column from which the default result must be retrieved.
 
@@ -82,6 +88,9 @@ class InstrumentResultsFileParser(Logger):
                        'Final Conc':    '0.9145',
                        'Exp Conc':      '1.9531',
                        'Accuracy':      '98.19' }
+
+                'DateTime': {'DefaultResult': 'Result',
+                             'Result': '%Y%m%d %H:%M:%S' }
                 }
         """
         if override == True or resid not in self._rawresults.keys():
@@ -127,6 +136,12 @@ class InstrumentResultsFileParser(Logger):
             Each dict key is the results row ID (usually AR ID or Worksheet's
             Reference Sample ID). Each item is another dictionary, in which the
             key is a the AS Keyword.
+
+            Reserved keys:
+                DefaultResult
+                DateTime
+                Remarks
+
             Inside the AS dict, the column 'DefaultResult' must be
             provided, that maps to the column from which the default
             result must be retrieved.
@@ -152,7 +167,11 @@ class InstrumentResultsFileParser(Logger):
                        'Resp Ratio':    '0.0212',
                        'Final Conc':    '0.9145',
                        'Exp Conc':      '1.9531',
-                       'Accuracy':      '98.19' }]
+                       'Accuracy':      '98.19' },
+
+                'DateTime': {'DefaultResult': 'Result',
+                             'Result': '%Y%m%d %H:%M:%S' }
+                }]
 
             in which:
             - 'DU13162-001-R1' is the Analysis Request ID,
