@@ -1,5 +1,6 @@
 *** Settings ***
 
+Library          BuiltIn
 Library          Selenium2Library  timeout=5  implicit_wait=0.2
 Library          String
 Resource         keywords.txt
@@ -17,10 +18,33 @@ ${ar_factory_url}  portal_factory/AnalysisRequest/xxx/ar_add
 
 *** Test Cases ***
 
-Test selection of AR Template
+Check that automatic expanded and restricted categories expand and restrict
+    # Check that automatic expanded and restricted categories expand and restrict
+    # set preferences to Restrict='Microbiology' and Default='Metals'
+    Go to                              ${PLONEURL}/clients/client-1/edit/#fieldsetlegend-preferences
+    select from list                   RestrictedCategories:list   Microbiology
+    select from list                   DefaultCategories:list      Metals
+    click button                       Save
+    wait until page contains           saved
+    # Bring up the AR Add form
     Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
-    wait for page to contain           xxx
+    wait until page contains           xxx
+    # Check that Microbiology category is RESTRICTED
+    page should not contain element    css=th[cat=Microbiology]
+    # Check that Metals category is EXPANDED
+    wait until page contains element   css=th[cat=Metals].expanded
 
+Contact is selected
+    # Bring up the AR Add form
+    Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
+    wait until page contains           xxx
+    # when Contact is selected, CC Contacts are selected
+    select from dropdown               ar_0_Contact         Rita
+    xpath should match x times         xpath=.//[contains(@class, .reference_multi_item)]   1
+
+AR Template selected
+    Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
+    wait until page contains           xxx
     # when Template is selected
     select from dropdown               ar_0_Template                Bruma
     # Check that Metals category is EXPANDED
@@ -28,7 +52,6 @@ Test selection of AR Template
     # check field values are filled correctly
     textfield value should be          ar_0_SampleType              Water
     textfield value should be          ar_0_SamplePoint             Bruma Lake
-    textfield value should be          ar_0_AnalysisSpecification   Water
     textfield value should be          ar_0_AnalysisSpecification   Water
     # 7 analysis services should be selected
     xpath should match x times         xpath=.//input[@type='checkbox' and @checked]     7
@@ -38,36 +61,79 @@ Test selection of AR Template
 
     # XXX Check that prices are correctly calculated
 
-
-Test selection of AR Profile
+AR Profile selected
     Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
-    wait for page to contain           xxx
+    wait until page contains           xxx
 
     # when Template is selected
-    select from dropdown               ar_0_Profile                Hardness
+    select from dropdown               ar_0_SampleType        Apple
+    select from dropdown               ar_0_Profile           Hardness
     # Check that Metals and Water Chemistry are EXPANDED
     wait until page contains element   css=th[cat=Metals].expanded
     wait until page contains element   css=th[cat=Water Chemistry].expanded
     # 3 analysis services should be selected
-    xpath should match x times         xpath=.//input[@type='checkbox' and @checked]     7
+    xpath should match x times         xpath=.//input[@type='checkbox' and @checked]     3
 
     # XXX Check that prices are correctly calculated
 
-#when Sample Type selected:
-#    Check that specification is ${spec_title}
-#    Check that specification ${spec_title} is applied
-#    Check that ST<-->SP restrictions are in place
-#    Check that the State variable has been completely configured.
-#
-#when Sample Point selected:
-#    Check that ST<-->SP restrictions are in place
-#    Check that the State variable has been completely configured.
-#
-#when Specification is selected:
-#    Check that specification is ${spec_title}
-#    Check that specification ${spec_title} is applied
-#    Check that the State variable has been completely configured.
-#
+Test Specification
+    Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
+    wait until page contains           xxx
+    # setting spec directly should modify fields
+    select from dropdown               ar_1_Profile           Hardness
+    select from dropdown               ar_1_SampleType        Apple
+    textfield value should be          ar_1_AnalysisSpecification   Apple Pulp
+    xpath should match x times         xpath=.//input[@type='text' and .="9"]            6
+    # setting SampleType must set the spec
+    select from dropdown               ar_0_Profile           Hardness
+    select from dropdown               ar_0_SampleType        Apple
+    textfield value should be          ar_0_AnalysisSpecification   Apple Pulp
+    xpath should match x times         xpath=.//input[@type='text' and .="9"]            3
+
+
+Check that ST<-->SP restrictions are in place
+    Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
+    wait until page contains           xxx
+    # selecting samplepoint Borehole 12: only "Water" sampletype should
+    # be available.
+    select from dropdown               ar_0_SamplePoint           Borehole
+    run keyword and expect error   *   select from dropdown       ar_0_SampleType    Barley
+    select from dropdown               ar_0_SampleType            Water
+    select from dropdown               ar_1_SampleType            Water
+    run keyword and expect error   *   select from dropdown       ar_1_SamplePoint    Mill
+    select from dropdown               ar_1_SamplePoint           Bruma
+
+Test prices
+    # HAPPY HILLS - Bulk discount N, member discount Y
+    Go to                              ${PLONEURL}/clients/client-1/portal_factory/AnalysisRequest/xx0/ar_add
+    wait until page contains           xx0
+    select from dropdown               ar_0_Template          Hardness
+    select from dropdown               ar_1_Profile           Hardness
+    select checkbox         ccc
+
+    # Klaymore - Bulk discount Y, member discount N
+    Go to                              ${PLONEURL}/clients/client-1/portal_factory/AnalysisRequest/xx1/ar_add
+    wait until page contains           xx1
+
+    # Myrtle - Bulk discount N, member discount N
+    Go to                              ${PLONEURL}/clients/client-1/portal_factory/AnalysisRequest/xx2/ar_add
+    wait until page contains           xx2
+
+    # Ruff - Bulk discount Y, member discount Y
+    Go to                              ${PLONEURL}/clients/client-1/portal_factory/AnalysisRequest/xx3/ar_add
+    wait until page contains           xx3
+
+
+
+
+# select-all checkbox select's  all
+
+#when Copy-Across is selected:
+#    Make sure that it works for reference fields and their _uid counterparts
+#    All fields tested here, must have their tests run against the copy-across machine.
+#        - This must be done for all four test columns.
+#        - Check the state_variable completely
+
 #when Report as Dry Matter:
 #    Check that DryMatterService is selected.
 #    Check that prices are correctly calculated
@@ -95,46 +161,11 @@ Test selection of AR Profile
 #    or SampleType selected
 #    or DefaultContainerType selected.
 #
-#when Copy-Across is selected:
-#    Make sure that it works for reference fields and their _uid counterparts
-#    All fields tested here, must have their tests run against the copy-across machine.
-#        - This must be done for all four test columns.
-#        - Check the state_variable completely
-#
 #when selecting Sample:
 #    Check that the secondary sample fields are filled in correctly.
 #    Submit and check that the AR is correctly created.
 #
 
-#Set COMPLETE list of fields for ONE AR.
-#    Check that the State variable has been completely configured.
-#
-
-
-Check that automatic expanded and restricted categories expand and restrict
-    # Check that automatic expanded and restricted categories expand and restrict
-    # set preferences to Restrict='Microbiology' and Default='Metals'
-    Go to                              ${PLONEURL}/clients/client-1/edit/#fieldsetlegend-preferences
-    select from list                   RestrictedCategories:list   Microbiology
-    select from list                   DefaultCategories:list      Metals
-    click button                       Save
-    wait until page contains           saved
-    # Bring up the AR Add form
-    Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
-    wait for page to contain           xxx
-    # Check that Microbiology category is RESTRICTED
-    page should not contain element    css=th[cat=Microbiology]
-    # Check that Metals category is EXPANDED
-    wait until page contains element   css=th[cat=Metals].expanded
-
-Contact is selected
-    # Bring up the AR Add form
-    Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
-    wait for page to contain           xxx
-
-    # when Contact is selected, CC Contacts are selected
-    select from dropdown               ar_0_Contact         Rita
-    wait until page contains element   css=#ar.0.CCContact-listing > .reference_multi_item
 
 
 
@@ -144,6 +175,12 @@ Start browser
     Open browser                http://localhost:55001/plone/login
     Log in                      test_labmanager    test_labmanager
     Set selenium speed          ${SELENIUM_SPEED}
+
+Prices in column ${col_nr} should be: ${discount} ${subtotal} ${vat} ${total}
+    element text should be      xpath=.//input[@id=ar_${col_nr}_discount]    ${discount}
+    element text should be      xpath=.//input[@id=ar_${col_nr}_subtotal]    ${subtotal}
+    element text should be      xpath=.//input[@id=ar_${col_nr}_vat]         ${vat}
+    element text should be      xpath=.//input[@id=ar_${col_nr}_total]       ${total}
 
 #Create AR
 #    Log in                      test_labmanager  test_labmanager

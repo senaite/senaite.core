@@ -103,15 +103,16 @@ window.bika.lims.controllers =  {
 	// Common and utilities for AR Add forms
 	".portaltype-analysisrequest.template-ar_add": ['AnalysisRequestAddView'],
 
-	// bika.lims.analysisrequest.add_by_row.js is linked from ar_add_by_row.pt
+	// the file "bika.lims.analysisrequest.add_by_row.js itself is included
+	// from ar_add_by_row.pt
 	".analysisrequest_add_by_row": ['AnalysisRequestAddByRow'],
 
-	// bika.lims.analysisrequest.add_by_col.js is linked from ar_add_by_col.pt
+	// the file "bika.lims.analysisrequest.add_by_col.js itself is included
+	// from ar_add_by_row.pt
 	".analysisrequest_add_by_col": ['AnalysisRequestAddByCol'],
 
 	"#ar_publish_container":
         ['AnalysisRequestPublishView'],
-
 
     // Analysis Request Imports
     ".portaltype-arimport.template-arimport_view":

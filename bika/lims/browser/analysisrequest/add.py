@@ -139,6 +139,9 @@ class AnalysisServicesView(ASV):
                             <input class="error" size="3" placeholder="err%%" arnum="%s" keyword="%s"/>
                         ''' % (arnum, kw, arnum, kw, arnum, kw)
                     items[x]['after'][key] += '<span class="partnr"></span>'
+                    # place a clue for the JS to recognize that these are
+                    # AnalysisServices being selected here (service_selector):
+                    items[x]['table_row_class'] = 'service_selector'
             self.ar_add_items = items
         return self.ar_add_items
 
