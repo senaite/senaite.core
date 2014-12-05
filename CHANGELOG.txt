@@ -1,5 +1,6 @@
 next
 ------------------
+LIMS-1470: AS Setup. File attachment field tag is missing
 LIMS-1486: Typos in instrument messages
 LIMS-1498: Published Results not Showing for Logged Clients
 LIMS-1445: Scientific names should be written in italics in published reports
