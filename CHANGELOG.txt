@@ -1,5 +1,6 @@
 next
 ------------------
+LIMS-1422: Results doesn't display yes/no once verified but 1 or 0
 LIMS-1486: Typos in instrument messages
 LIMS-1498: Published Results not Showing for Logged Clients
 LIMS-1445: Scientific names should be written in italics in published reports
