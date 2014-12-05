@@ -1,5 +1,6 @@
 next
 ------------------
+LIMS-1441: An error message related to partitions unit is shown when selecting analysis during AR creation
 LIMS-1470: AS Setup. File attachment field tag is missing
 LIMS-1422: Results doesn't display yes/no once verified but 1 or 0
 LIMS-1486: Typos in instrument messages
