@@ -683,7 +683,7 @@ function AnalysisRequestAddByCol() {
 				service_uids.push(service['UID'])
 				var poc = service['PointOfCapture']
 				$('#services_' + poc + ' [cat="' + service['CategoryTitle'] + '"].collapsed').click()
-				$('#' + service['UID'] + '-ar\\.' + arnum).attr("checked", true)
+				$('#' + service['UID'] + '-ar\\.' + arnum).prop("checked", true)
 			}
 			state_set(arnum, 'Analyses', service_uids)
 			d.resolve()
@@ -772,7 +772,7 @@ function AnalysisRequestAddByCol() {
 				service_uids.push(service['UID'])
 				var poc = service['PointOfCapture']
 				$('#services_' + poc + ' [cat="' + service['CategoryTitle'] + '"].collapsed').click()
-				$('#' + service['UID'] + '-ar\\.' + arnum).attr("checked", true)
+				$('#' + service['UID'] + '-ar\\.' + arnum).prop("checked", true)
 				$('#' + service['UID'] + '-ar\\.' + arnum).change()
 			}
 			partition_indicators_set(arnum, false)
@@ -845,7 +845,11 @@ function AnalysisRequestAddByCol() {
 
 	function partition_indicators_set(arnum, calculate) {
 		// set calculate=false to prevent calculateion (eg, setting template)
-		$('[id*="-ar.' + arnum + '"]').filter("[type='checkbox']").next(".after").children(".partnr").empty()
+		$('[id*="-ar.' + arnum + '"]')
+			.filter("[type='checkbox']")
+			.next(".after")
+			.children(".partnr")
+			.empty()
 		if (calculate == undefined) {
 			partition_indicators_calculate(arnum)
 				.done(function () {
@@ -856,8 +860,16 @@ function AnalysisRequestAddByCol() {
 							  var part = parts[pi];
 							  var services = part['services']
 							  for (var si = 0; si < services.length; si++) {
-								  var service_uid = services[si];
-								  $('#' + service_uid + '-ar\\.' + arnum).next(".after").children(".partnr").empty().append(part_nr)
+								  var uid = services[si];
+								  var cb = $("input[id*=ar\\." + arnum + "]")
+									           .filter("[uid=" + uid + "]")
+								  if ($(cb).prop("checked")) {
+									  $('#' + uid + '-ar\\.' + arnum)
+										  .next(".after")
+										  .children(".partnr")
+										  .empty()
+										  .append(part_nr)
+								  }
 							  }
 						  }
 					  })
@@ -915,51 +927,75 @@ function AnalysisRequestAddByCol() {
 		})
 	}
 
-	function service_checkbox_selected(){
-		/* This function configures handlers for changing of service
-		checkboxes.
-		*/
-		$(".service_selector input[type='checkbox']").live('change', function () {
-			var arnum = $(this).parents('td').attr('arnum')
-		    //If the name is "uids:list" then it is a select-all checkbox.
-			if ($(this).attr('name') == 'uids:list'){
-                debugger
-			}
-			else {
-				// single-selection in one column
-				debugger;
-
-				//Otherwise, we are dealing with a normal single-service checkbox.
-				//1. un/select the select-all checkbox as required
-				//2.
-			}
-		})
-
+	function service_checkbox_selected() {
+		/*
+		 * configures handlers for changing of service checkboxes.
+		 */
+		$(".service_selector input[type='checkbox']")
+			.live('change', function () {
+					  var arnum = this.id.split("ar.")[1]
+					  var checkboxes = $(this).parents("tr").find("input[type=checkbox]")
+					  // select-all
+					  if ($(this).attr('name') == 'uids:list') {
+						  var uid = $(this).attr("value");
+						  var checked = $(this).prop("checked")
+						  for (var i = 1; i < checkboxes.length; i++) {
+							  arnum = i - 1;
+							  if (checked) {
+								  check_service(arnum, uid)
+							  }
+							  else {
+								  uncheck_service(arnum, uid)
+							  }
+						  }
+					  }
+					  // regular analysis
+					  else {
+						  var uid = $(this).attr("uid");
+						  var all_checked = true
+						  for (var i = 1; i < checkboxes.length; i++) {
+							  if (!$(checkboxes[i]).prop("checked")) {
+								  all_checked = false
+								  break
+							  }
+						  }
+						  service_checkbox_change(arnum, uid)
+					  }
+					  $(checkboxes[0]).prop("checked", all_checked)
+				  })
 	}
 
-	function service_checkbox_select_all_change(arnum) {
-        debugger;
-	}
-
-	function service_checkbox_change(arnum, service_uid) {
-		debugger;
-		var arnum = $(this).attr("arnum")
-		$("#ar_" + arnum + "_Profile").val("")
-		$("#ar_" + arnum + "_Template").val("")
+	function service_checkbox_change(arnum, uid) {
+		var cb = $("input[id*=ar\\." + arnum + "]")
+			.filter("[uid=" + uid + "]")
 
 		// Unselecting Dry Matter Service unsets 'Report Dry Matter'
-		if ($(this).val() == $("#getDryMatterService").val() && !$(this).prop("checked")) {
+		if ($(cb).val() == $("#getDryMatterService").val() && !$(cb).prop("checked")) {
 			$("#ar_" + arnum + "_ReportDryMatter").prop("checked", false)
 		}
 
 		// unselecting service: remove part number.
-		if (!$(this).prop("checked")) {
-			$(this).next(".after").children(".partnr").empty()
+		if (!$(cb).prop("checked")) {
+			$(cb).next(".after").children(".partnr").empty()
 		}
 
-		calcdependencies([this])
-		recalc_prices()
-		calculate_parts(arnum)
+		calcdependencies([cb])
+		partition_indicators_calculate(arnum)
+//		recalc_prices()
+	}
+
+	function check_service(arnum, uid) {
+		$("input[id*=ar\\." + arnum + "]")
+			.filter("[uid=" + uid + "]")
+			.prop("checked", true)
+		service_checkbox_change(arnum, uid)
+	}
+
+	function uncheck_service(arnum, uid) {
+		$("input[id*=ar\\." + arnum + "]")
+			.filter("[uid=" + uid + "]")
+			.prop("checked", false)
+		service_checkbox_change(arnum, uid)
 	}
 
 	function add_Yes(dlg, element, dep_services) {
