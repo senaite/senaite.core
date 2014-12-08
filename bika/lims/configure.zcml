@@ -72,4 +72,9 @@
       handler="bika.lims.workflow.AfterTransitionEventHandler"
     />
 
+  <browser:resource
+      file="skins/bika/logo.png"
+      name="bika-lims-logo.png"
+      />
+
 </configure>
