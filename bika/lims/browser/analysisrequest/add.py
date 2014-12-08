@@ -51,7 +51,7 @@ class AnalysisServicesView(ASV):
         # Customise form for AR Add context
         self.form_id = "services"
 
-        self.filter_indexes = ["id", "Title", "SearchableText"]
+        self.filter_indexes = ["id", "Title", "SearchableText", "getKeyword"]
 
         self.pagesize = 0
         self.table_only = True
