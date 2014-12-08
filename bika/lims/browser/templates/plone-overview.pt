@@ -10,7 +10,7 @@
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
-  <title>Plone</title>
+  <title>Bika LIMS - Professional Open Source LIMS</title>
 
   <link rel="stylesheet" type="text/css"
         href="/++resource++plone-admin-ui.css"
@@ -21,12 +21,12 @@
 
 <body tal:define="sites view/sites">
 <div id="box">
-    <img src="/++resource++plone-logo.png" width="215" height="56"
-         tal:attributes="src string:${context/absolute_url}/++resource++plone-logo.png"
-         alt="Plone Logo"/>
+    <img src="/++resource++plone-logo.png" width="213" height="54"
+         tal:attributes="src string:${context/absolute_url}/++resource++bika-lims-logo.png"
+         alt="Bika LIMS Logo"/>
     <div id="text">
-        <h1 i18n:translate="">
-            Plone is up and running.
+        <h1 i18n:translate="" i18n:domain="bika">
+            Professional Open Source LIMS
         </h1>
         <ul>
             <tal:block tal:condition="sites">
@@ -37,9 +37,9 @@
                                  height="16" width="16"/>
                             <a href="#"
                                tal:attributes="href site/absolute_url"
-                               title="Go to your instance"
+                               title="Go to your installation"
                                i18n:attributes="title;"
-                               i18n:translate="">View your Plone site</a>
+                               i18n:translate="">View your Bika LIMS installation</a>
                         </span>
                         <div class="upgrade-warning"
                              tal:condition="python:view.outdated(site)">
@@ -63,7 +63,7 @@
                 <tal:many tal:condition="python:len(sites) &gt; 1">
                 <li>
                     <span id="multiple-sites" i18n:translate="">
-                        You have multiple Plone sites:
+                        You have multiple installations of Bika LIMS:
                     </span>
                     <ul>
                         <li tal:repeat="site sites">
@@ -105,7 +105,7 @@
             </tal:block>
             <li tal:condition="not:sites">
                 <span i18n:translate="">
-                    Your Plone site has not been added yet:
+                    Bika LIMS has not been installed yet:
                 </span>
                 <form id="add-plone-site"
                       method="get"
@@ -114,7 +114,7 @@
                     <input type="hidden" name="site_id" value="Plone" />
                     <input type="submit"
                            i18n:attributes="value;"
-                           value="Create a new Plone site" />
+                           value="Install Bika LIMS" />
                 </form>
             </li>
             <li>
@@ -131,10 +131,10 @@
                 <span i18n:translate="label_plone_org_description">
                     For documentation, add-ons, support, community, visit
                 </span>
-                <a href="http://plone.org"
-                   title="Plone Community Home"
+                <a href="http://www.bikalabs.com"
+                   title="Bika Lab Systems"
                    target="_new"
-                   i18n:attributes="title label_plone_org_title;">plone.org</a>.
+                   i18n:attributes="title label_plone_org_title;">http://www.bikalabs.com</a>.
             </li>
         </ul>
     </div>
