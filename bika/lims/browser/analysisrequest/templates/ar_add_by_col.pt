@@ -137,6 +137,7 @@
                     </td>
                 </tal:block>
             </tr>
+<!--
             <tr>
                 <th colspan="3" style="background-color: #FFF">
                 </th>
@@ -151,6 +152,7 @@
                     </td>
                 </tal:block>
             </tr>
+-->
         </tfoot>
     </table>
 
