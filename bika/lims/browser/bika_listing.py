@@ -486,6 +486,7 @@ class BikaListingView(BrowserView):
                 ##logger.info("Or: %s=%s"%(index, value))
                 if idx.meta_type in('ZCTextIndex', 'FieldIndex'):
                     self.Or.append(MatchRegexp(index, value))
+                    self.expand_all_categories = True
                     # https://github.com/bikalabs/Bika-LIMS/issues/1069
                     vals = value.split('-')
                     if len(vals) > 2:
@@ -493,6 +494,7 @@ class BikaListingView(BrowserView):
                         for i in range(1, len(vals)):
                             valroot = '%s-%s' % (valroot, vals[i])
                             self.Or.append(MatchRegexp(index, valroot+'-*'))
+                            self.expand_all_categories = True
                 elif idx.meta_type == 'DateIndex':
                     if type(value) in (list, tuple):
                         value = value[0]
@@ -502,13 +504,16 @@ class BikaListingView(BrowserView):
                         except:
                             logger.info("Error (And, DateIndex='%s', term='%s')"%(index,value))
                         self.Or.append(Between(index, lohi[0], lohi[1]))
+                        self.expand_all_categories = True
                     else:
                         try:
                             self.Or.append(Eq(index, DateTime(value)))
+                            self.expand_all_categories = True
                         except:
                             logger.info("Error (Or, DateIndex='%s', term='%s')"%(index,value))
                 else:
                     self.Or.append(Generic(index, value))
+                    self.expand_all_categories = True
             self.Or.append(MatchRegexp('review_state', value))
 
         # get toggle_cols cookie value
