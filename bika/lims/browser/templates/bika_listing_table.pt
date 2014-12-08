@@ -99,7 +99,7 @@ XXX This should use form_id </tal:comment>
 
     <thead>
 
-    <tr style="border:none !important;" tal:condition="python:len(view.bika_listing.review_states) > 1">
+    <tr style="border:none !important;" tal:condition="python:(len(view.bika_listing.review_states) > 1) or (hasattr(view.bika_listing, 'filter_indexes') and view.bika_listing.filter_indexes)">
 <tal:comment replace="nothing">***************
 Workflow review state selector
 ********************************</tal:comment>
@@ -107,7 +107,8 @@ Workflow review state selector
         <table width="100%" cellpadding="0" cellspacing="0" class="noborder nomargin">
         <tr class="noborder"
             tal:condition="python:len(view.bika_listing.review_states) > 1">
-            <td class="review_state_selector noborder" style="whitespace:nowrap">
+            <td class="review_state_selector noborder" style="whitespace:nowrap"
+                    tal:condition="python:(len(view.bika_listing.review_states) > 1)">
                 <tal:review_states repeat="state view/bika_listing/review_states">
                 <a
                     tal:define="state_id state/id"

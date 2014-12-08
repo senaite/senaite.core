@@ -42,21 +42,41 @@ class AnalysisServicesView(ASV):
             selected_items[uid] = item
         return selected_items.values()
 
-    def __init__(self, context, request, poc, ar_count=None):
+    def __init__(self, context, request, ar_count=None):
         super(AnalysisServicesView, self).__init__(context, request)
         self.ar_count = ar_count if ar_count else 4
 
         self.ar_add_items = []
 
         # Customise form for AR Add context
-        self.poc = poc
-        self.form_id = "services_" + poc
-        self.contentFilter['getPointOfCapture'] = poc
+        self.form_id = "services"
+
+        self.filter_indexes = ["id", "Title", "SearchableText"]
 
         self.pagesize = 0
         self.table_only = True
+
+        default = [x for x in self.review_states if x['id'] == 'default'][0]
+        columns = default['columns']
+
         self.review_states = [
-            x for x in self.review_states if x['id'] == 'default']
+            {'id': 'default',
+             'title': _('Lab Analyses'),
+             'contentFilter': {'getPointOfCapture': 'lab'},
+             'columns': columns,
+            },
+            {'id': 'field',
+             'title': _('Field Analyses'),
+             'contentFilter': {'getPointOfCapture': 'field'},
+             'columns': columns,
+            },
+            {'id': 'all',
+             'title': _('All'),
+             'contentFilter': {},
+             'columns': columns,
+            },
+        ]
+
         self.review_states[0]['custom_actions'] = []
         self.review_states[0]['transitions'] = []
 
@@ -141,7 +161,8 @@ class AnalysisServicesView(ASV):
                     items[x]['after'][key] += '<span class="partnr"></span>'
                     # place a clue for the JS to recognize that these are
                     # AnalysisServices being selected here (service_selector):
-                    items[x]['table_row_class'] = 'service_selector'
+                    poc = items[x]['obj'].getPointOfCapture()
+                    items[x]['table_row_class'] = 'service_selector ' + poc
             self.ar_add_items = items
         return self.ar_add_items
 
@@ -165,7 +186,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         self.ar_count = self.request.get('ar_count', 4)
         try:
             self.ar_count = int(self.ar_count)
-        except ValueError:
+        except:
             self.ar_count = 4
 
     def __call__(self):
@@ -218,12 +239,11 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
                 fields.append(field)
         return fields
 
-    def services_widget_content(self, poc, ar_count=None):
+    def services_widget_content(self, ar_count=None):
 
         """Return a table displaying services to be selected for inclusion
         in a new AR.  Used in add_by_row view popup, and add_by_col add view.
 
-        :param poc: string: Analysis Point-of-capture, eg 'field', 'lab'
         :param ar_count: number of AR columns to generate columns for.
         :return: string: rendered HTML content of bika_listing_table.pt.
             If no items are found, returns "".
@@ -232,8 +252,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         if not ar_count:
             ar_count = self.ar_count
 
-        s = AnalysisServicesView(self.context, self.request,
-                                 poc, ar_count=ar_count)
+        s = AnalysisServicesView(self.context, self.request, ar_count=ar_count)
         s.folderitems()
 
         if not s.ar_add_items:
