@@ -376,6 +376,7 @@ class Create(object):
             if '%s%s' % (part_prefix, _i + 1) in sample.objectIds():
                 parts[_i]['object'] = sample['%s%s' % (part_prefix, _i + 1)]
                 parts_and_services['%s%s' % (part_prefix, _i + 1)] = p['services']
+                part = parts[_i]['object']
             else:
                 part = _createObjectByType("SamplePartition", sample, tmpID())
                 parts[_i]['object'] = part
