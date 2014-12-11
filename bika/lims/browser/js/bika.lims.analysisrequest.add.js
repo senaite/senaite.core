@@ -823,7 +823,7 @@ function AnalysisRequestAddView() {
 
 					if(fieldName == "Specification"){
 						set_specs(col);
-						reset_spec_fields(column);
+						reset_spec_fields(col);
 					}
 
 				}
