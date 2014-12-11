@@ -1243,7 +1243,11 @@ class Analysis_Specifications(WorksheetImporter):
         bsc = getToolByName(self.context, "bika_setup_catalog")
         # collect up all values into the bucket
         for row in self.get_rows(3):
-            title = row["Title"]
+            title = row.get("Title", False)
+            if not title:
+                title = row.get("title", False)
+                if not title:
+                    continue
             parent = row["Client_title"] if row["Client_title"] else "lab"
             st = row["SampleType_title"] if row["SampleType_title"] else ""
             service = self.resolve_service(row)
