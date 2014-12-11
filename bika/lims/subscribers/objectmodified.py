@@ -43,3 +43,8 @@ def ObjectModifiedEventHandler(obj, event):
         mp = obj.manage_permission
         mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Owner', 'Analyst', 'Sampler', 'Preserver'], 0)
         mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
+    elif obj.portal_type == 'AnalysisCategory':
+        for analysis in obj.getBackReferences('AnalysisServiceAnalysisCategory'):
+            analysis.reindexObject(idxs=["getCategoryTitle()", "getCategoryUID()", ])
+
+
