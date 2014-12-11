@@ -23,6 +23,10 @@ class JSONReadExtender(object):
             service_uid = item['service_uid']
             service = bsc(UID=service_uid)[0].getObject()
             this_service = {'UID': service.UID(),
+                            'Title': service.Title(),
+                            'Keyword': service.getKeyword(),
+                            'Price': service.getPrice(),
+                            'VAT': service.getVAT(),
                             'PointOfCapture': service.getPointOfCapture(),
                             'CategoryTitle': service.getCategory().Title()}
             service_data.append(this_service)

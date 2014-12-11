@@ -20,7 +20,8 @@ from bika.lims.permissions import *
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.browser.fields import HistoryAwareReferenceField
-from bika.lims.browser.widgets import DateTimeWidget, DecimalWidget
+from bika.lims.browser.widgets import DateTimeWidget, DecimalWidget, \
+    RecordsWidget
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.browser.widgets import SelectionWidget
 from bika.lims.workflow import skip, isBasicTransitionAllowed

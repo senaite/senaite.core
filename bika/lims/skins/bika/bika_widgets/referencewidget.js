@@ -94,7 +94,8 @@ function referencewidget_lookups(elements){
 				// is not triggered.
 				skip = $(element).attr("skip_referencewidget_lookup");
 				if (skip !== true){
-					$(this).trigger("selected", ui.item.UID);
+					// Pass the entire selected item through to the selected handler
+					$(this).trigger("selected", ui.item);
 				}
 				$(element).removeAttr("skip_referencewidget_lookup");
 				$(this).next("input").focus();
@@ -105,7 +106,8 @@ function referencewidget_lookups(elements){
 				$("input[name='"+fieldName+"_uid']").val(ui.item.UID);
 				skip = $(element).attr("skip_referencewidget_lookup");
 				if (skip !== true){
-					$(this).trigger("selected", ui.item.UID);
+					// Pass the entire selected item through to the selected handler
+					$(this).trigger("selected", ui.item);
 				}
 				$(element).removeAttr("skip_referencewidget_lookup");
 				$(this).next("input").focus();

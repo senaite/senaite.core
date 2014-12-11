@@ -20,7 +20,12 @@ class JSONReadExtender(object):
         service_data = []
         for service in self.context.getService():
             this_service = {'UID': service.UID(),
+                            'Title': service.Title(),
+                            'Keyword': service.getKeyword(),
+                            'Price': service.getPrice(),
+                            'VAT': service.getVAT(),
                             'PointOfCapture': service.getPointOfCapture(),
                             'CategoryTitle': service.getCategory().Title()}
             service_data.append(this_service)
         data['service_data'] = service_data
+

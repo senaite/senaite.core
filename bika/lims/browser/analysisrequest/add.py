@@ -140,6 +140,8 @@ class AnalysisServicesView(ASV):
             bs = self.context.bika_setup
             items = super(AnalysisServicesView, self).folderitems()
             for x, item in enumerate(items):
+                if 'obj' not in items[x]:
+                    continue
                 if bs.getShowPrices():
                     items[x]['allow_edit'] = ['Price']
                 kw = items[x]['obj'].getKeyword()
@@ -154,15 +156,16 @@ class AnalysisServicesView(ASV):
                     items[x]['after'][key] = ''
                     if self.context.bika_setup.getEnableARSpecs():
                         items[x]['after'][key] += '''
-                            <input class="min" size="3" placeholder="&gt;min" arnum="%s" keyword="%s"/>
-                            <input class="max" size="3" placeholder="&lt;max" arnum="%s" keyword="%s"/>
-                            <input class="error" size="3" placeholder="err%%" arnum="%s" keyword="%s"/>
-                        ''' % (arnum, kw, arnum, kw, arnum, kw)
+                            <input class="min" size="3" placeholder="&gt;min"/>
+                            <input class="max" size="3" placeholder="&lt;max"/>
+                            <input class="error" size="3" placeholder="err%%"/>
+                        '''
                     items[x]['after'][key] += '<span class="partnr"></span>'
                     # place a clue for the JS to recognize that these are
-                    # AnalysisServices being selected here (service_selector):
+                    # AnalysisServices being selected here (service_selector
+                    # bika_listing):
                     poc = items[x]['obj'].getPointOfCapture()
-                    items[x]['table_row_class'] = 'service_selector ' + poc
+                    items[x]['table_row_class'] = 'service_selector bika_listing ' + poc
             self.ar_add_items = items
         return self.ar_add_items
 
@@ -183,9 +186,8 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         self.DryMatterService = self.context.bika_setup.getDryMatterService()
         request.set('disable_plone.rightcolumn', 1)
         self.layout = self.request.get('layout', 'columns')
-        self.ar_count = self.request.get('ar_count', 4)
         try:
-            self.ar_count = int(self.ar_count)
+            self.ar_count = int(self.request['ar_count'])
         except:
             self.ar_count = 4
 

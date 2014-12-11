@@ -1,6 +1,10 @@
 <div metal:define-macro="ar_add_by_col"
      style="padding-bottom:10px;">
     <script type="text/javascript" src="++resource++bika.lims.js/bika.lims.analysisrequest.add_by_col.js"></script>
+    <script type="text/javascript"
+            tal:attributes="src python:portal.absolute_url() + '/bika_widgets/referencewidget.js'"></script>
+    <link rel="stylesheet" type="text/css" media="all" href=""
+            tal:attributes="href string:${portal/absolute_url}/bika_widgets/referencewidget.css"/>
     <table summary="Add analysis requests"
            class="listing analysisrequest add nosort"
            cellpadding="0" cellspacing="0">
@@ -68,6 +72,79 @@
             </tal:hidden>
 
         </thead>
+
+        <!-- Analysis Services / Analyses -->
+
+        <tbody tal:condition="python:context.bika_setup.getARAddServiceSelector() == 'single-select'">
+            <tr> <td tal:attributes="colspan python:view.ar_count+3"><h3> &nbsp;</h3> </td> </tr>
+            <tr class="service_selector single-select" uid="new">
+                <tal:def define="errors python:{}">
+                    <td colspan="2" style="white-space:nowrap;text-align:left">
+                        <span class="field ArchetypesReferenceWidget">
+                            <input
+                                    type="text"
+                                    placeholder="Type to find Analysis Services"
+                                    name="singleservice"
+                                    id="singleservice"
+                                    class="blurrable firstToFocus referencewidget"
+                                    value=""
+                                    base_query='{"portal_type": "AnalysisService", "inactive_state": "active"}'
+                                    search_query='{}'
+                                    catalog_name="bika_setup_catalog"
+                                    ui_item="Title"
+                                    autocomplete="false"
+                                    combogrid_options='{"colModel": [{"columnName": "getKeyword", "align": "left", "label": "Keyword", "width": "25"},
+                                                                     {"columnName": "getCategoryTitle", "align": "left", "label": "Category", "width": "25"},
+                                                                     {"columnName": "Title", "align": "left", "label": "Title", "width": "50"},
+                                                                     {"columnName": "getPrice", "hidden": true},
+                                                                     {"columnName": "getVAT", "hidden": true},
+                                                                     {"columnName": "UID", "hidden": true}],
+                                    "search_fields": ["Title", "getKeyword", "getCategoryTitle", "SearchableText"],
+                                    "catalog_name": "bika_setup_catalog",
+                                    "url": "referencewidget_search",
+                                    "discard_empty": [],
+                                    "width": "600px",
+                                    "showOn": false,
+                                    "searchIcon": true,
+                                    "minLength": "1",
+                                    "resetButton": false,
+                                    "sord": "asc",
+                                    "sidx": "Title",
+                                    "force_all": true,
+                                    "portal_types": {}}'/>
+                        </span>
+                    </td>
+                    <td>
+                        <input type="checkbox"
+                               name="uids:list"
+                               style="vertical-align: -2px"/>
+                    </td>
+                    <tal:columns tal:repeat="arnum python:range(view.ar_count)">
+                        <td tal:attributes="arnum arnum">
+                            <span class="before">
+                                &nbsp;</span>
+                            <input type="checkbox" style="vertical-align: -2px"/>
+                            <span class="after">
+                                <tal:x condition="python:context.bika_setup.getEnableARSpecs()">
+                                    <input class="min" size="3" placeholder="&gt;min">
+                                    <input class="max" size="3" placeholder="&lt;max">
+                                    <input class="error" size="3" placeholder="err%">
+                                </tal:x>
+                                <span class="partnr"
+                                      condition="python:context.bika_setup.getShowPartitions()">
+                                    &nbsp;</span>
+                            </span>
+                            <span class="alert"
+                                  tal:attributes="field string:ar.${arnum}">
+                                &nbsp;</span>
+                        </td>
+                    </tal:columns>
+                </tal:def>
+            </tr>
+            <tr> <td tal:attributes="colspan python:view.ar_count+3"><h3> &nbsp;</h3> </td> </tr>
+        </tbody>
+
+        <!-- Prices -->
 
         <tfoot tal:condition="ShowPrices">
             <tr tal:condition="python:view.getMemberDiscountApplies() and ShowPrices">
@@ -157,17 +234,20 @@
     </table>
 
     <!-- Analyses -->
-    <div style="text-align:left;padding-bottom:10px;">
-        <input i18n:attributes="value"
-                class="context button allowMultiSubmit"
-                type="submit"
-                name="save_button"
-                value="Save"/>
-    </div>
+    <span
+            tal:condition="python:context.bika_setup.getARAddServiceSelector() == 'bika_listing'">
+        <div style="text-align:left;padding-bottom:10px;">
+            <input i18n:attributes="value"
+                    class="context button allowMultiSubmit"
+                    type="submit"
+                    name="save_button"
+                    value="Save"/>
+        </div>
 
-    <span id="services" tal:define="services python:view.services_widget_content()">
-        <!-- <h3 tal:condition="services" i18n:translate="">Field Analyses</h3> -->
-        <span tal:replace="structure services"></span>
+        <span id="services" tal:define="services python:view.services_widget_content()">
+            <!--?<h3 tal:condition="services" i18n:translate=""></h3>-->
+            <span tal:replace="structure services"></span>
+        </span>
     </span>
 
 </div>

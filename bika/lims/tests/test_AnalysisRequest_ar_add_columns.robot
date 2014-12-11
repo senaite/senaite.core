@@ -18,23 +18,9 @@ ${ar_factory_url}  portal_factory/AnalysisRequest/xxx/ar_add
 
 *** Test Cases ***
 
-Check that automatic expanded and restricted categories expand and restrict
-    # Check that automatic expanded and restricted categories expand and restrict
-    # set preferences to Restrict='Microbiology' and Default='Metals'
-    Go to                              ${PLONEURL}/clients/client-1/edit/#fieldsetlegend-preferences
-    select from list                   RestrictedCategories:list   Microbiology
-    select from list                   DefaultCategories:list      Metals
-    click button                       Save
-    wait until page contains           saved
-    # Bring up the AR Add form
-    Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
-    wait until page contains           xxx
-    # Check that Microbiology category is RESTRICTED
-    page should not contain element    css=th[cat=Microbiology]
-    # Check that Metals category is EXPANDED
-    wait until page contains element   css=th[cat=Metals].expanded
+### First, some general things that are the same for all column layouts
 
-Contact is selected
+When Contact is selected, expand CC Contacts
     # Bring up the AR Add form
     Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
     wait until page contains           xxx
@@ -42,7 +28,77 @@ Contact is selected
     select from dropdown               ar_0_Contact         Rita
     xpath should match x times         xpath=.//[contains(@class, .reference_multi_item)]   1
 
-AR Template selected
+Check that ST<-->SP restrictions are in place
+    Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
+    wait until page contains           xxx
+    # selecting samplepoint Borehole 12: only "Water" sampletype should
+    # be available.
+    select from dropdown               ar_0_SamplePoint           Borehole
+    run keyword and expect error   *   select from dropdown       ar_0_SampleType    Barley
+    select from dropdown               ar_0_SampleType            Water
+    select from dropdown               ar_1_SampleType            Water
+    run keyword and expect error   *   select from dropdown       ar_1_SamplePoint    Mill
+    select from dropdown               ar_1_SamplePoint           Bruma
+
+### Then, stuff related to the single-service selector form
+
+Single service selector - manual selection of services
+    Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
+    wait until page contains           xxx
+    # first select some checkboxes.
+    wait until page contains element   css=#singleservice
+    select checkbox                    css=input[name='uids:list']
+    xpath should match x times         xpath=.//*[@checked='checked']    5
+    # Then select a service from #singleselect
+    select from dropdown               css=#singleservice    calc
+    wait until page contains           Calcium
+    # select another
+    select from dropdown               css=#singleservice    sod
+    wait until page contains           Sodium
+    # no extra checkboxes are checked
+    xpath should match x times         xpath=.//*[@checked='checked']    5
+
+    sleep     300
+    # Try select Calcium again - it should not be permitted
+    select from dropdown               css=#singleservice    Calc
+    wait until page contains           Calcium
+
+Single service selector - AR Template selected
+    Turn on the single service selector form
+    Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
+    wait until page contains           xxx
+    # first select a random service, to be sure it is unselected again
+    select checkbox                    css=input[name='uids:list']
+    select from dropdown               css=#singleservice    cod
+    wait until page contains           COD
+    # then select a template...
+    select from dropdown               ar_0_Template                Hardness
+    Wait Until Keyword Succeeds 	   5 sec    1 sec    element text should be       ar_0_SamplePoint   Borehole 12
+    # check field values are filled correctly
+    textfield value should be          ar_0_SampleType              Water
+    textfield value should be          ar_0_AnalysisSpecification   Water
+    # 7 analysis services should be selected
+    xpath should match x times         xpath=.//input[@type='checkbox' and @checked]     2
+    xpath should match x times         xpath=.//input[@type='text' and .="9"]            2
+    xpath should match x times         xpath=.//input[@type='text' and .="11"]           2
+    xpath should match x times         xpath=.//input[@type='text' and .="10"]           2
+    # A different template
+    Wait Until Keyword Succeeds 	   5 sec    1 sec    element text should be       ar_0_SamplePoint   Bruma Lake
+    wait until page contains           Bruma Lake
+    # 7 analysis services should be selected
+    xpath should match x times         xpath=.//input[@type='checkbox' and @checked]     7
+    xpath should match x times         xpath=.//input[@type='text' and .="9"]            7
+    xpath should match x times         xpath=.//input[@type='text' and .="11"]           7
+    xpath should match x times         xpath=.//input[@type='text' and .="10"]           7
+
+## Then tests related to the bika_listing/categorized service selector form
+
+bika_listing service selector - manual selection of services
+    Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
+    wait until page contains           xxx
+
+bika_listing service selector - AR Template selected
+    Turn on the single service selector form
     Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
     wait until page contains           xxx
     # when Template is selected
@@ -59,9 +115,8 @@ AR Template selected
     xpath should match x times         xpath=.//input[@type='text' and .="11"]           7
     xpath should match x times         xpath=.//input[@type='text' and .="10"]           7
 
-    # XXX Check that prices are correctly calculated
-
-AR Profile selected
+bika_listing service selector - AR Profile selected
+    Turn on the bika listing selector form
     Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
     wait until page contains           xxx
 
@@ -74,9 +129,23 @@ AR Profile selected
     # 3 analysis services should be selected
     xpath should match x times         xpath=.//input[@type='checkbox' and @checked]     3
 
-    # XXX Check that prices are correctly calculated
+bika_listing service selector - Default and Restricted categories
+    # Check that automatic expanded and restricted categories expand and restrict
+    # set preferences to Restrict='Microbiology' and Default='Metals'
+    Go to                              ${PLONEURL}/clients/client-1/edit/#fieldsetlegend-preferences
+    select from list                   RestrictedCategories:list   Microbiology
+    select from list                   DefaultCategories:list      Metals
+    click button                       Save
+    wait until page contains           saved
+    # Bring up the AR Add form
+    Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
+    wait until page contains           xxx
+    # Check that Microbiology category is RESTRICTED
+    page should not contain element    css=th[cat=Microbiology]
+    # Check that Metals category is EXPANDED
+    wait until page contains element   css=th[cat=Metals].expanded
 
-Test Specification
+ebika_listing service selctor - Test Specifications
     Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
     wait until page contains           xxx
     # setting spec directly should modify fields
@@ -90,20 +159,7 @@ Test Specification
     textfield value should be          ar_0_AnalysisSpecification   Apple Pulp
     xpath should match x times         xpath=.//input[@type='text' and .="9"]            3
 
-
-Check that ST<-->SP restrictions are in place
-    Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
-    wait until page contains           xxx
-    # selecting samplepoint Borehole 12: only "Water" sampletype should
-    # be available.
-    select from dropdown               ar_0_SamplePoint           Borehole
-    run keyword and expect error   *   select from dropdown       ar_0_SampleType    Barley
-    select from dropdown               ar_0_SampleType            Water
-    select from dropdown               ar_1_SampleType            Water
-    run keyword and expect error   *   select from dropdown       ar_1_SamplePoint    Mill
-    select from dropdown               ar_1_SamplePoint           Bruma
-
-Test prices
+bika_listing service selector - Test prices
     # HAPPY HILLS - Bulk discount N, member discount Y
     Go to                              ${PLONEURL}/clients/client-1/portal_factory/AnalysisRequest/xx0/ar_add
     wait until page contains           xx0
@@ -122,6 +178,8 @@ Test prices
     # Ruff - Bulk discount Y, member discount Y
     Go to                              ${PLONEURL}/clients/client-1/portal_factory/AnalysisRequest/xx3/ar_add
     wait until page contains           xx3
+
+
 
 
 
@@ -181,6 +239,25 @@ Prices in column ${col_nr} should be: ${discount} ${subtotal} ${vat} ${total}
     element text should be      xpath=.//input[@id=ar_${col_nr}_subtotal]    ${subtotal}
     element text should be      xpath=.//input[@id=ar_${col_nr}_vat]         ${vat}
     element text should be      xpath=.//input[@id=ar_${col_nr}_total]       ${total}
+
+Turn on the single service selector form
+    go to                       ${PLONEURL}/bika_setup/edit
+    wait until page contains    Password lifetime
+    click link                  fieldsetlegend-analyses
+    wait until page contains    AR Add service selector
+    select from list            ARAddServiceSelector     Single service selection form
+    click button                Save
+    wait until page contains    saved.
+
+Turn on the bika listing selector form
+    go to                       ${PLONEURL}/bika_setup/edit
+    wait until page contains    Password lifetime
+    click link                  fieldsetlegend-analyses
+    wait until page contains    AR Add service selector
+    select from list            ARAddServiceSelector     Categorised service list form
+    click button                Save
+    wait until page contains    saved.
+
 
 #Create AR
 #    Log in                      test_labmanager  test_labmanager

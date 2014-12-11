@@ -28,18 +28,18 @@
 
 <div metal:fill-slot="content-core"
     tal:define="
-        portal context/@@plone_portal_state/portal;
-        plone_view context/@@plone;
-        portal_state context/@@plone_portal_state;
-        currencies python:modules['zope.i18n.locales'].locales.getLocale('en').numbers.currencies;
-        currency python:context.bika_setup.getCurrency();
-        checkPermission nocall: context/portal_membership/checkPermission;
-        tabindex view/tabindex;
-        partitionable view/partitioned_services;
-        ShowPrices python:context.bika_setup.getShowPrices();
-        prominentfields python:view.get_fields_with_visibility('prominent', mode='header_table');
-        prominentfieldnames python:[f.getName() for f in prominentfields];
-        hiddenprominentfields python:view.get_fields_with_visibility('hiddenprominent', mode='header_table');
+        portal                    context/@@plone_portal_state/portal;
+        plone_view                context/@@plone;
+        portal_state              context/@@plone_portal_state;
+        currencies                python:modules['zope.i18n.locales'].locales.getLocale('en').numbers.currencies;
+        currency                  python:context.bika_setup.getCurrency();
+        checkPermission           nocall: context/portal_membership/checkPermission;
+        ShowPrices                python: context.bika_setup.getShowPrices();
+        tabindex                  view/tabindex;
+        partitionable             view/partitioned_services;
+        prominentfields           python:view.get_fields_with_visibility('prominent', mode='header_table');
+        prominentfieldnames       python:[f.getName() for f in prominentfields];
+        hiddenprominentfields     python:view.get_fields_with_visibility('hiddenprominent', mode='header_table');
         hiddenprominentfieldnames python:[f.getName() for f in hiddenprominentfields]">
 
     <form id="analysisrequest_edit_form"
@@ -51,21 +51,21 @@
     <input type="hidden" name="came_from" tal:attributes="value view/came_from"/>
 
     <span id="bika_setup" style="display:none;"
-    tal:define="bika_setup python: context.bika_setup;"
-    tal:attributes="EnableARSpecs python: 'true' if bika_setup.getEnableARSpecs() else '';
-            bika_samplepoints_uid python: bika_setup.bika_samplepoints.UID();
-            bika_artemplates_uid python: bika_setup.bika_artemplates.UID();
-            bika_analysisprofiles_uid python: bika_setup.bika_analysisprofiles.UID();
-            bika_analysisspecs_uid python: bika_setup.bika_analysisspecs.UID();
-            bika_analysisspecs_path python:'/'.join(bika_setup.bika_analysisspecs.getPhysicalPath())">
+            tal:define="bika_setup python: context.bika_setup;"
+            tal:attributes="EnableARSpecs     python: 'true' if bika_setup.getEnableARSpecs() else '';
+                    MemberDiscount            python: bika_setup.getMemberDiscount();
+                    MemberDiscountApplies     python: view.getMemberDiscountApplies();
+                    Currency                  python: bika_setup.getCurrency();
+                    ShowPartitions            python: 'true' if bika_setup.getShowPartitions() else '';
+                    ShowPrices                python: bika_setup.getShowPrices();
+                    bika_samplepoints_uid     python: bika_setup.bika_samplepoints.UID();
+                    bika_artemplates_uid      python: bika_setup.bika_artemplates.UID();
+                    bika_analysisprofiles_uid python: bika_setup.bika_analysisprofiles.UID();
+                    bika_analysisspecs_uid    python: bika_setup.bika_analysisspecs.UID();
+                    bika_analysisspecs_path   python:'/'.join(bika_setup.bika_analysisspecs.getPhysicalPath())">
     </span>
 
-    <!-- member discount percentage if applicable -->
-    <input type="hidden" id="member_discount" name="member_discount"
-           tal:attributes="value here/bika_setup/getMemberDiscount"
-           tal:condition="view/getMemberDiscountApplies"/>
-
-    <input type="hidden" id="layout" name="layout"
+        <input type="hidden" id="layout" name="layout"
            tal:attributes="value view/layout"/>
 
     <!-- ar_count goes here for the jquery expanding services rows to know how to print themselves -->

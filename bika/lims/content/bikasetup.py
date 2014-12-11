@@ -270,6 +270,19 @@ schema = BikaFolderSchema.copy() + Schema((
                 "Analysis Request."),
         ),
     ),
+    StringField('ARAddServiceSelector',
+                schemata="Analyses",
+                vocabulary=AR_ADD_SERVICE_SELECTORS,
+                default="bika_listing",
+                widget=SelectionWidget(
+                    label=_("AR Add service selector"),
+                    description=_("The listing table is the simplest service"
+                                  "selection method, although sites with many "
+                                  "analysis services, or little categorisation, "
+                                  "may prefer the single-select widget."),
+                    format='select',
+                )
+    ),
     StringField('DefaultARSpecs',
         schemata = "Analyses",
         default = 'ar_specs',
