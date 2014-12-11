@@ -185,7 +185,8 @@ class AnalysisRequestPublishView(BrowserView):
                 'footer': to_utf8(self.context.bika_setup.getResultFooter()),
                 'prepublish': False,
                 'child_analysisrequest': None,
-                'parent_analysisrequest': None}
+                'parent_analysisrequest': None,
+                'resultsinterpretation':ar.getResultsInterpretation()}
 
         # Sub-objects
         excludearuids.append(ar.UID())
