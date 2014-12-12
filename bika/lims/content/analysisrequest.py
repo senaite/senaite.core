@@ -9,6 +9,7 @@ from Products.Archetypes import atapi
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
+from Products.Archetypes.Widget import RichWidget
 from Products.CMFCore import permissions
 from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
@@ -1218,6 +1219,43 @@ schema = BikaSchema.copy() + Schema((
             showOn=True,
         ),
     ),
+    # For comments or results interpretation
+    TextField(
+        'ResultsInterpretation',
+        searchable=True,
+        mode="rw",
+        default_content_type = 'text/html',  # Input content type for the textfield
+        default_output_type = 'text/x-html-safe',  # getResultsInterpretation returns a str with html tags
+                                                   # to conserve the txt format in the report.
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
+        widget=RichWidget (
+            description = _("Comments or results interpretation"),
+            label = _("Results Interpretation"),
+            size=10,
+            allow_file_upload=False,
+            default_mime_type='text/x-rst',
+            output_mime_type='text/x-html',
+            rows=3,
+            visible={'edit': 'visible',
+                     'view': 'visible',
+                     'add': 'invisible',
+                     'header_table': 'prominent',
+                     'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'invisible'},
+                     'to_be_sampled':     {'view': 'visible', 'edit': 'visible'},
+                     'sampled':           {'view': 'visible', 'edit': 'visible'},
+                     'to_be_preserved':   {'view': 'visible', 'edit': 'visible'},
+                     'sample_due':        {'view': 'visible', 'edit': 'visible'},
+                     'sample_received':   {'view': 'visible', 'edit': 'visible'},
+                     'attachment_due':    {'view': 'visible', 'edit': 'visible'},
+                     'to_be_verified':    {'view': 'visible', 'edit': 'visible'},
+                     'verified':          {'view': 'visible', 'edit': 'visible'},
+                     'published':         {'view': 'visible', 'edit': 'invisible'},
+                     'invalid':           {'view': 'visible', 'edit': 'invisible'},
+                     },
+                render_own_label=True,
+        ),
+    ),
 )
 )
 
@@ -1235,6 +1273,7 @@ schema['title'].widget.visible = {
 }
 
 schema.moveField('Client', before='Contact')
+schema.moveField('ResultsInterpretation', pos='bottom')
 
 class AnalysisRequest(BaseFolder):
     implements(IAnalysisRequest)

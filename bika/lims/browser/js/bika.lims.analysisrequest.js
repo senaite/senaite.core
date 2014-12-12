@@ -102,6 +102,7 @@ function AnalysisRequestViewView() {
      */
     that.load = function() {
 
+        resultsinterpretation_move_below();
         if (document.location.href.search('/clients/') >= 0
             && $("#archetypes-fieldname-SamplePoint #SamplePoint").length > 0) {
 
@@ -136,6 +137,23 @@ function AnalysisRequestViewView() {
             });
         }
 
+    }
+
+    function resultsinterpretation_move_below(){
+        //Remove non needed buttons from richwidget, timeout is needed because that widget is rendered quite late.
+        setTimeout(function() {
+            $("#archetypes-fieldname-ResultsInterpretation .fieldTextFormat").remove();
+            $("#ResultsInterpretation_image").remove();
+            $("#ResultsInterpretation_code").remove();
+        }, 2000);
+        //Move the widget to the bottom of the page
+        elem = $("#archetypes-fieldname-ResultsInterpretation").closest("td").closest("tr");
+        label = elem.children()[0];
+        box= elem.children()[1];
+        box = $(box).children();
+        $("#archetypes-fieldname-Remarks").before(box);
+        $("#archetypes-fieldname-ResultsInterpretation").before("<label id='label_resultsinterpretation'></label>");
+        $("#label_resultsinterpretation").prepend(label);
     }
 }
 
