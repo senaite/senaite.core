@@ -142,57 +142,64 @@
         </div>
       </tal:baseprofile>
 
-      <tal:extensionprofiles condition="python:extension_profiles and advanced">
-        <fieldset id="add-on-list">
-          <legend i18n:translate="">
-            Add-ons
-          </legend>
+      <!-- Advanced installation -->
+      <tal:advanced tal:condition="advanced">
+          <tal:extensionprofiles condition="python:extension_profiles">
+            <fieldset id="add-on-list">
+              <legend i18n:translate="">
+                Add-ons
+              </legend>
 
-          <div class="formHelp" i18n:translate="">
-              Select any add-ons you want to activate immediately. You can
-              also activate add-ons after the site has been created using the
-              Add-ons control panel.
-          </div>
+              <div class="formHelp" i18n:translate="">
+                  Select any add-ons you want to activate immediately. You can
+                  also activate add-ons after the site has been created using the
+                  Add-ons control panel.
+              </div>
 
-          <dl id="extension_ids">
-            <tal:addons tal:repeat="info extension_profiles">
+              <dl id="extension_ids">
+                <tal:addons tal:repeat="info extension_profiles">
+                  <tal:info tal:define="selected info/selected|nothing">
+                    <tal:normal tal:condition="python: not selected or advanced">
+                      <dt>
+                        <input type="checkbox" name="extension_ids:list" value=""
+                               tal:attributes="value info/id;
+                                               id info/id;
+                                               checked info/selected|nothing;" />
+                        <label
+                            tal:attributes="for info/id"
+                            tal:content="info/title">
+                          profile title
+                        </label>
+                      </dt>
+                      <dd tal:content="info/description">
+                        profile description
+                      </dd>
+                    </tal:normal>
+                    <tal:hidden tal:condition="python: selected and not advanced">
+                      <input type="hidden" name="extension_ids:list" value=""
+                             tal:attributes="value info/id;
+                                             checked info/selected|nothing;" />
+                    </tal:hidden>
+                  </tal:info>
+                </tal:addons>
+              </dl>
+            </fieldset>
+          </tal:extensionprofiles>
+      </tal:advanced>
+
+      <!-- Easy installation -->
+      <tal:easy tal:condition="not:advanced">
+          <tal:addons tal:repeat="info extension_profiles">
               <tal:info tal:define="selected info/selected|nothing">
-                <tal:normal tal:condition="python: not selected or advanced">
-                  <dt>
-                    <input type="checkbox" name="extension_ids:list" value=""
-                           tal:attributes="value info/id;
-                                           id info/id;
-                                           checked info/selected|nothing;" />
-                    <label
-                        tal:attributes="for info/id"
-                        tal:content="info/title">
-                      profile title
-                    </label>
-                  </dt>
-                  <dd tal:content="info/description">
-                    profile description
-                  </dd>
-                </tal:normal>
-                <tal:hidden tal:condition="python: selected and not advanced">
-                  <input type="hidden" name="extension_ids:list" value=""
-                         tal:attributes="value info/id;
-                                         checked info/selected|nothing;" />
-                </tal:hidden>
+                  <tal:hidden tal:condition="python: selected">
+                      <input type="hidden" name="extension_ids:list" value=""
+                          tal:attributes="value info/id;
+                          checked info/selected|nothing;" />
+                  </tal:hidden>
               </tal:info>
-            </tal:addons>
-          </dl>
-        </fieldset>
-      </tal:extensionprofiles>
-
-      <tal:addons tal:repeat="info extension_profiles">
-          <tal:info tal:define="selected info/selected|nothing">
-              <tal:hidden tal:condition="python: selected and not advanced">
-                  <input type="hidden" name="extension_ids:list" value=""
-                      tal:attributes="value info/id;
-                      checked info/selected|nothing;" />
-              </tal:hidden>
-          </tal:info>
-      </tal:addons>
+          </tal:addons>
+          <input type="hidden" checked="checked" name="extension_ids:list" value="bika.lims:default" />
+      </tal:easy>
 
       <div class="formControls">
         <input type="hidden" name="form.submitted:boolean" value="True" />
