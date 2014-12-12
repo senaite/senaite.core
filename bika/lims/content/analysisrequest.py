@@ -1224,13 +1224,19 @@ schema = BikaSchema.copy() + Schema((
         'ResultsInterpretation',
         searchable=True,
         mode="rw",
+        default_content_type = 'text/html',  # Input content type for the textfield
+        default_output_type = 'text/x-html-safe',  # getResultsInterpretation returns a str with html tags
+                                                   # to conserve the txt format in the report.
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
         widget=RichWidget (
             description = _("Comments or results interpretation"),
-            label = _("Comments"),
+            label = _("Results Interpretation"),
             size=10,
             allow_file_upload=False,
+            default_mime_type='text/x-rst',
+            output_mime_type='text/x-html',
+            rows=3,
             visible={'edit': 'visible',
                      'view': 'visible',
                      'add': 'invisible',

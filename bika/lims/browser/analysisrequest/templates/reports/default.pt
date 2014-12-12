@@ -261,7 +261,7 @@
 </div>
 <div id="resultsinterpretation" tal:condition="analysisrequest/resultsinterpretation">
     <h1 i18n:translate="">Result interpretation</h1>
-    <span tal:content="analysisrequest/resultsinterpretation"></span>
+    <span tal:content="structure analysisrequest/resultsinterpretation"></span>
 </div>
 <!-- QC Results section -->
 <div id="section-qcresults" tal:condition="python:hasqcanalyses and showqcanalyses">
