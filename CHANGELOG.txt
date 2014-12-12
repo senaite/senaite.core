@@ -29,6 +29,10 @@ LIMS-1440: Error when trying to publish with analysis from different categories
 LIMS-1459: Error when checking instrument validity in manage_results
 LIMS-1430: Create an AR from batch allows you to introduce a non existent Client and Contacts don't work properly
 
+- After modifying analysis Category, reindex category name and UID for all subordinate analyses
+- Setup data import improvements and fixes
+- Simplify installation with a custom Plone overview and add site
+
 
 3.1.5 (2014-10-06)
 ------------------
