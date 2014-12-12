@@ -14,7 +14,7 @@
     <browser:page
         for="OFS.interfaces.IApplication"
         name="plone-addsite"
-        class=".admin.AddPloneSite"
+        class="Products.CMFPlone.browser.admin.AddPloneSite"
         permission="zope2.ViewManagementScreens"
         template="templates/plone-addsite.pt"
         />
