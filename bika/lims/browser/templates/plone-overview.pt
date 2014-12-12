@@ -131,10 +131,10 @@
                 <span i18n:translate="label_plone_org_description">
                     For documentation, add-ons, support, community, visit
                 </span>
-                <a href="http://www.bikalabs.com"
-                   title="Bika Lab Systems"
+                <a href="http://www.bikalims.org"
+                   title="Bika Open Source LIMS"
                    target="_new"
-                   i18n:attributes="title label_plone_org_title;">http://www.bikalabs.com</a>.
+                   i18n:attributes="title label_plone_org_title;">http://www.bikalims.org</a>.
             </li>
         </ul>
     </div>
