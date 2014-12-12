@@ -151,7 +151,7 @@ class calculate_partitions(object):
                     _required_vol = part['minvol'] + minvol
                     if _containers:
                         _containers = [c for c in _containers
-                                       if mg(c.getCapacity) > _required_vol]
+                                       if mg(c.getCapacity()) > _required_vol]
                         if not _containers:
                             continue
 
