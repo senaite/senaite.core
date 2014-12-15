@@ -1,5 +1,6 @@
 next
 ------------------
+LIMS-1530: Scrambled Analysis Category order in Published Results
 LIMS-1529: Error while inserting an AR with container-based partitioning is required
 LIMS-1460: Additional field in AR for comments or results interpretation
 LIMS-1441: An error message related to partitions unit is shown when selecting analysis during AR creation
@@ -81,12 +82,18 @@ LIMS-1425: Verify Workflow (bika_listing) recursion
 
 3.1.4 release was broken, simple ARs could not be created.
 
+
+
+3.1.4.1 (2014-07-24)
+--------------------
+
+3.1.4 release was broken, simple ARs could not be created.
+
 LIMS-1339: Published reports should use "±" symbol instead of "+/-"
 LIMS-1327: Instrument from worksheet
 LIMS-1328: Instrument calibration test graphs do not work on multiple samples
 LIMS-1347: Analysis/AR background colour to be different to for Receive and To be Sampled
 LIMS-1353: Analyses don't sort in Attachment look-up
-LIMS-1359: Add Calibration Certificate is valid for one year or 2015
 
 Preview for Results reports
     - Single/Multi-AR preview
