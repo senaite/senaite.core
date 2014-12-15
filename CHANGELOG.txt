@@ -1,5 +1,6 @@
 next
 ------------------
+LIMS-1529: Error while inserting an AR with container-based partitioning is required
 LIMS-1460: Additional field in AR for comments or results interpretation
 LIMS-1441: An error message related to partitions unit is shown when selecting analysis during AR creation
 LIMS-1470: AS Setup. File attachment field tag is missing
