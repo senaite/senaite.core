@@ -49,6 +49,8 @@ class BikaTestCase(unittest.TestCase):
         sm.unregisterUtility(provided=IMailHost)
         sm.registerUtility(mailhost, provided=IMailHost)
         self.portal.email_from_address = 'test@example.com'
+        ltool = self.portal.portal_languages
+        ltool.setLanguageBindings()
 
     def beforeTearDown(self):
         self.portal.MailHost = self.portal._original_MailHost
@@ -101,6 +103,7 @@ class BikaFunctionalTestCase(Functional, BikaTestCase):
     def getBrowser(self, loggedIn=True):
         """ instantiate and return a testbrowser for convenience """
         browser = Browser(self.portal)
+        browser.addHeader('Accept-Language', 'en-US')
         browser.handleErrors = False
         if loggedIn:
             browser.open(self.portal.absolute_url())

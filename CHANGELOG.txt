@@ -1,3 +1,41 @@
+next
+------------------
+LIMS-1529: Error while inserting an AR with container-based partitioning is required
+LIMS-1460: Additional field in AR for comments or results interpretation
+LIMS-1441: An error message related to partitions unit is shown when selecting analysis during AR creation
+LIMS-1470: AS Setup. File attachment field tag is missing
+LIMS-1422: Results doesn't display yes/no once verified but 1 or 0
+LIMS-1486: Typos in instrument messages
+LIMS-1498: Published Results not Showing for Logged Clients
+LIMS-1445: Scientific names should be written in italics in published reports
+LIMS-1389: Units in results publishing should allow super(sub)script format, for example in cm2 or m3
+LIMS-1500: Alere Pima's Instrument Interfice
+LIMS-1457: Exponential notation in published AR pdf should be formatted like a×10^b instead of ae^+b
+LIMS-1334: Calculate result precision from Uncertainty value
+LIMS-1446: After retracting a published AR the Sample gets cancelled
+LIMS-1390: More workflow for Batches
+LIMS-1378: Bulking up Batches
+LIMS-1479: new-version and upgrade-steps should be python viewlets
+LIMS-1362: File attachment uploads to Batches
+LIMS-1404: New Batch attributes (and their integration with existing ones on Batch views)
+LIMS-1467: Sample Point Lookup doesn't work on AR modify
+LIMS-1363: Batches per Client
+LIMS-1405: New Sample and AR attributes
+LIMS-1085: Allow Clients to add Attachments to ARs
+LIMS-1444: In AR published report accredited analysis services are not marked as accredited
+LIMS-1443: In published reports the publishing date is not shown in the pdf
+LIMS-1420: Status filter is not kept after moving to next page
+LIMS-1442: Sample Type is not filtred by Sample Point
+LIMS-1448: Reports: when you click on "Analysis turnaround time" displays others
+LIMS-1440: Error when trying to publish with analysis from different categories
+LIMS-1459: Error when checking instrument validity in manage_results
+LIMS-1430: Create an AR from batch allows you to introduce a non existent Client and Contacts don't work properly
+
+- After modifying analysis Category, reindex category name and UID for all subordinate analyses
+- Setup data import improvements and fixes
+- Simplify installation with a custom Plone overview and add site
+
+
 3.1.5 (2014-10-06)
 ------------------
 

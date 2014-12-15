@@ -68,11 +68,9 @@ class ajaxCalculateAnalysisEntry(BrowserView):
         self.request = request
 
     def calculate(self, uid=None):
-
         analysis = self.analyses[uid]
         form_result = self.current_results[uid]
         service = analysis.getService()
-        precision = service.getPrecision()
         calculation = service.getCalculation()
         if analysis.portal_type == 'ReferenceAnalysis':
             deps = {}

@@ -34,7 +34,12 @@ h2 {
     color:#777;
     font-weight:normal;
     font-style:italic;
+}
+.units sub,
+.units sup {
+    color:#777;
     font-size:10px;
+    font-style:italic;
 }
 
 table tr td,
@@ -214,6 +219,11 @@ div#section-info td a {
 }
 div#section-info table {
     width: 100%;
+}
+
+img.accredited-ico {
+    vertical-align:bottom;
+    padding-right:5px;
 }
 
 @media print {

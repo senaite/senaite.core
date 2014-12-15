@@ -109,6 +109,6 @@ Receive AR
     Go to                        http://localhost:55001/plone/clients/client-1/analysisrequests
     Wait until page contains     ${ar_id}
     Select checkbox              xpath=//input[@item_title="${ar_id}"]
-    Click button                 xpath=//input[@value="Receive sample"]
+    Click button                 xpath=//input[@id="receive_transition"]
     Wait until page contains     saved
 

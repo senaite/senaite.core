@@ -14,6 +14,7 @@ function AnalysisRequestView() {
         $("#workflow-transition-publish").click(workflow_transition_publish);
         $("#workflow-transition-republish").click(workflow_transition_republish);
         $("#workflow-transition-receive").click(workflow_transition_receive);
+        $("#workflow-transition-retract_ar").click(workflow_transition_retract_ar);
 
     }
 
@@ -74,6 +75,19 @@ function AnalysisRequestView() {
             .replace("/view", "") + "/workflow_action?" + requeststring;
         window.location.href = href;
     }
+
+    function workflow_transition_retract_ar(event) {
+        event.preventDefault();
+        var requestdata = {};
+        requestdata.workflow_action = "retract_ar";
+        var requeststring = $.param(requestdata);
+        var href = window.location.href.split("?")[0]
+            .replace("/base_view", "")
+            .replace("/manage_results", "")
+            .replace("/workflow_action", "")
+            .replace("/view", "") + "/workflow_action?" + requeststring;
+        window.location.href = href;
+    }
 }
 
 /**
@@ -88,6 +102,7 @@ function AnalysisRequestViewView() {
      */
     that.load = function() {
 
+        resultsinterpretation_move_below();
         if (document.location.href.search('/clients/') >= 0
             && $("#archetypes-fieldname-SamplePoint #SamplePoint").length > 0) {
 
@@ -101,8 +116,9 @@ function AnalysisRequestViewView() {
                     if (data['ClientUID'] != '') {
                         var spelement = $("#archetypes-fieldname-SamplePoint #SamplePoint");
                         var base_query=$.parseJSON($(spelement).attr("base_query"));
-                                base_query["getClientUID"] = data['ClientUID'];
-                                $(spelement).attr("base_query", $.toJSON(base_query));
+                        var setup_uid = $("#bika_setup").attr("bika_samplepoints");
+                        base_query["getClientUID"] = [data['ClientUID'], setup_uid];
+                        $(spelement).attr("base_query", $.toJSON(base_query));
                         var options = $.parseJSON($(spelement).attr("combogrid_options"));
                         options.url = window.location.href.split("/ar")[0] + "/" + options.url;
                         options.url = options.url + "?_authenticator=" + $("input[name='_authenticator']").val();
@@ -121,6 +137,23 @@ function AnalysisRequestViewView() {
             });
         }
 
+    }
+
+    function resultsinterpretation_move_below(){
+        //Remove non needed buttons from richwidget, timeout is needed because that widget is rendered quite late.
+        setTimeout(function() {
+            $("#archetypes-fieldname-ResultsInterpretation .fieldTextFormat").remove();
+            $("#ResultsInterpretation_image").remove();
+            $("#ResultsInterpretation_code").remove();
+        }, 2000);
+        //Move the widget to the bottom of the page
+        elem = $("#archetypes-fieldname-ResultsInterpretation").closest("td").closest("tr");
+        label = elem.children()[0];
+        box= elem.children()[1];
+        box = $(box).children();
+        $("#archetypes-fieldname-Remarks").before(box);
+        $("#archetypes-fieldname-ResultsInterpretation").before("<label id='label_resultsinterpretation'></label>");
+        $("#label_resultsinterpretation").prepend(label);
     }
 }
 

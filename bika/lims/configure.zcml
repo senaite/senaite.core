@@ -66,28 +66,15 @@
     layer="bika.lims.interfaces.IBikaLIMS"
   />
 
-  <!-- Product version retrieval -->
-  <browser:page
-    for="*"
-    name="get_product_version"
-    class="bika.lims.browser.ajaxGetProductVersion"
-    permission="zope.Public"
-    layer="bika.lims.interfaces.IBikaLIMS"
-  />
-
-  <!-- New releases config -->
-  <browser:page
-    for="*"
-    name="hide_new_releasesinfo"
-    class="bika.lims.browser.ajaxHideNewReleasesInfo"
-    permission="zope.Public"
-    layer="bika.lims.interfaces.IBikaLIMS"
-  />
-
     <subscriber
       for="*
            Products.DCWorkflow.interfaces.IAfterTransitionEvent"
       handler="bika.lims.workflow.AfterTransitionEventHandler"
     />
+
+  <browser:resource
+      file="skins/bika/logo.png"
+      name="bika-lims-logo.png"
+      />
 
 </configure>

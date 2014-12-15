@@ -13,7 +13,7 @@ from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import PMF
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from bika.lims.utils import t, format_supsub
 from bika.lims import logger
 from bika.lims.interfaces import IFieldIcons
 from bika.lims.subscribers import doActionFor
@@ -364,14 +364,13 @@ class BikaListingView(BrowserView):
                                           'default')
         # get review_state id=selected_state
         states = [r for r in self.review_states if r['id'] == selected_state]
-        review_state = states and states[0] or self.review_states[0]
+        self.review_state = states and states[0] or self.review_states[0]
         # set selected review_state ('default'?) to request
-        self.request['review_state'] = review_state['id']
+        self.request['review_state'] = self.review_state['id']
 
-        # contentFilter is expected in every review_state.
-        for k, v in review_state['contentFilter'].items():
+        # contentFilter is expected in every self.review_state.
+        for k, v in self.review_state['contentFilter'].items():
             self.contentFilter[k] = v
-
         # sort on
         self.sort_on = self.request.get(form_id + '_sort_on', None)
         # manual_sort_on: only sort the current batch of items
@@ -507,7 +506,7 @@ class BikaListingView(BrowserView):
 
     def get_toggle_cols(self):
         states = [r for r in self.review_states if r['id'] == self.review_state]
-        review_state = states and states[0] or self.review_states[0]
+        self.review_state = states and states[0] or self.review_states[0]
         try:
             toggles = {}
             # request OR cookie OR default
@@ -521,7 +520,7 @@ class BikaListingView(BrowserView):
         cookie_key = "%s%s" % (self.context.portal_type, self.form_id)
         toggle_cols = toggles.get(cookie_key,
                                   [col for col in self.columns.keys()
-                                   if col in review_state['columns']
+                                   if col in self.review_state['columns']
                                    and ('toggle' not in self.columns[col]
                                         or self.columns[col]['toggle'] == True)])
         return toggle_cols
@@ -537,7 +536,12 @@ class BikaListingView(BrowserView):
         # override from self attributes
         for x in "pagenumber", "pagesize", "review_state", "sort_order", "sort_on":
             if str(getattr(self, x, None)) != 'None':
-                query['%s_%s'%(self.form_id, x)] = getattr(self, x)
+                # I don't understand why on AR listing, getattr(self,x) 
+                # is a dict, but this line will resolve LIMS-1420
+                if x == "review_state" and type(getattr(self, x))==dict:
+                    query['%s_%s'%(self.form_id, x)] = getattr(self, x)['id']
+                else:
+                    query['%s_%s'%(self.form_id, x)] = getattr(self, x)
         # then override with passed kwargs
         for x in kwargs.keys():
             query['%s_%s'%(self.form_id, x)] = kwargs.get(x)
@@ -729,15 +733,15 @@ class BikaListingView(BrowserView):
                 replace = {},
             )
             try:
-                review_state = workflow.getInfoFor(obj, 'review_state')
+                self.review_state = workflow.getInfoFor(obj, 'review_state')
                 state_title = workflow.getTitleForStateOnType(
-                    review_state, obj.portal_type)
+                    self.review_state, obj.portal_type)
                 state_title = t(PMF(state_title))
             except:
-                review_state = 'active'
+                self.review_state = 'active'
                 state_title = None
-            if review_state:
-                results_dict['review_state'] = review_state
+            if self.review_state:
+                results_dict['review_state'] = self.review_state
             for state_var, state in states.items():
                 if not state_title:
                     state_title = workflow.getTitleForStateOnType(
@@ -800,7 +804,7 @@ class BikaListingView(BrowserView):
         # get review_state id=selected_state
         states = [r for r in self.review_states
                   if r['id'] == selected_state]
-        review_state = states and states[0] \
+        self.review_state = states and states[0] \
             or self.review_states[0]
 
         # get all transitions for all items.
@@ -812,8 +816,8 @@ class BikaListingView(BrowserView):
                 transitions[it['id']] = it
 
         # the list is restricted to and ordered by these transitions.
-        if 'transitions' in review_state:
-            for transition_dict in review_state['transitions']:
+        if 'transitions' in self.review_state:
+            for transition_dict in self.review_state['transitions']:
                 if transition_dict['id'] in transitions:
                     actions.append(transitions[transition_dict['id']])
         else:
@@ -829,9 +833,9 @@ class BikaListingView(BrowserView):
                 logger.warning("bad action in custom_actions: %s. (complete list: %s)."%(action,actions))
 
         # and these are removed
-        if 'hide_transitions' in review_state:
+        if 'hide_transitions' in self.review_state:
             actions = [a for a in actions
-                       if a['id'] not in review_state['hide_transitions']]
+                       if a['id'] not in self.review_state['hide_transitions']]
 
         # cheat: until workflow_action is abolished, all URLs defined in
         # GS workflow setup will be ignored, and the default will apply.
@@ -839,10 +843,10 @@ class BikaListingView(BrowserView):
         for i, action in enumerate(actions):
             actions[i]['url'] = ''
 
-        # if there is a review_state['some_state']['custom_actions'] attribute
+        # if there is a self.review_state['some_state']['custom_actions'] attribute
         # on the BikaListingView, add these actions to the list.
-        if 'custom_actions' in review_state:
-            for action in review_state['custom_actions']:
+        if 'custom_actions' in self.review_state:
+            for action in self.review_state['custom_actions']:
                 if isinstance(action, dict) \
                         and 'id' in action:
                     actions.append(action)

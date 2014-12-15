@@ -21,5 +21,9 @@
       for="bika.lims.interfaces.IAnalysis"
       factory="bika.lims.adapters.priorityicons.PriorityIcons"
     />
+    
+    <adapter 
+    factory="bika.lims.browser.analysis.JSONReadExtender"
+    provides="bika.lims.interfaces.IJSONReadExtender" />
 
 </configure>

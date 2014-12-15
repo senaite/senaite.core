@@ -95,6 +95,10 @@ class BikaTestLayer(PloneSandboxLayer):
         lsd = LoadSetupData(portal, self.request)
         lsd()
 
+        # Force the test browser to show the site always in 'en'
+        ltool = portal.portal_languages
+        ltool.manage_setLanguageSettings('en', ['en'], setUseCombinedLanguageCodes=False, startNeutral=True)
+
         logout()
 
 def getBrowser(portal, loggedIn=True, username=TEST_USER_NAME, password=TEST_USER_PASSWORD):
@@ -102,6 +106,7 @@ def getBrowser(portal, loggedIn=True, username=TEST_USER_NAME, password=TEST_USE
     This is done weirdly because I could not figure out how else to
     pass the browser to the doctests"""
     browser = Browser(portal)
+    browser.addHeader('Accept-Language', 'en')
     browser.handleErrors = False
     if loggedIn:
         browser.open(portal.absolute_url())

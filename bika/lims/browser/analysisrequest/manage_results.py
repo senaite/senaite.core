@@ -1,4 +1,5 @@
 from AccessControl import getSecurityManager
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.browser.analyses import AnalysesView
@@ -77,7 +78,7 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
         for an in ans:
             valid = an.isInstrumentValid()
             if not valid:
-                inv = '%s (%s)' % (an.Title(), an.getInstrument().Title())
+                inv = '%s (%s)' % (safe_unicode(an.Title()), safe_unicode(an.getInstrument().Title()))
                 if inv not in invalid:
                     invalid.append(inv)
         if len(invalid) > 0:

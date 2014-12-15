@@ -132,14 +132,22 @@ function AnalysisRequestAnalysesView() {
 		// spec fields
 		var rr = $.parseJSON($("#ResultsRange").val());
 		var specfields = ["min", "max", "error"];
-		for (var i in specfields) {
-			var field = specfields[i];
-			var val = rr[service_uid][field];
+		var i, field, value;
+		for (i in specfields) {
+			field = specfields[i];
+			try {
+				value = rr[service_uid][field];
+			}
+			catch (e) {
+				// If the value is not defined in the AR spec, we should use a
+				// blank value; when saved the value will be stored on the AR.
+				value = '';
+			}
 			element = $("[name='" + field + "." + service_uid + ":records']");
 			new_element = "<input class='listing_string_entry numeric' type='text' size='5' " +
-					"field='" + field + "' value='" + val + "' " +
-					"name='" + field + "." + service_uid + ":records' " +
-					"uid='" + service_uid + "' autocomplete='off' style='font-size: 100%'>";
+				"field='" + field + "' value='" + value + "' " +
+				"name='" + field + "." + service_uid + ":records' " +
+				"uid='" + service_uid + "' autocomplete='off' style='font-size: 100%'>";
 			$(element).replaceWith(new_element);
 		}
 
