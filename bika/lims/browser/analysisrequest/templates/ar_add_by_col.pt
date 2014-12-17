@@ -56,7 +56,7 @@
                     tal:repeat="field python:view.get_fields_with_visibility('hidden')">
                 <tal:columns tal:repeat="arnum python:range(view.ar_count)"
                         tal:define="val python:field.getAccessor(context)()">
-                    <td tal:attributes="arnum arnum">
+                    <td hidden="true" tal:attributes="arnum arnum">
                         <input
                             type="hidden"
                             tal:attributes="

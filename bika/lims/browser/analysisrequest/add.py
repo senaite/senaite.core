@@ -165,7 +165,8 @@ class AnalysisServicesView(ASV):
                     # AnalysisServices being selected here (service_selector
                     # bika_listing):
                     poc = items[x]['obj'].getPointOfCapture()
-                    items[x]['table_row_class'] = 'service_selector bika_listing ' + poc
+                    items[x]['table_row_class'] = \
+                        'service_selector bika_listing ' + poc
             self.ar_add_items = items
         return self.ar_add_items
 
@@ -308,160 +309,90 @@ class SecondaryARSampleInfo(BrowserView):
 
 
 class ajaxAnalysisRequestSubmit():
+    """Handle data submitted from analysisrequest add forms.  As much
+    as possible, the incoming json arrays should already match the requirement
+    of the underlying AR/sample schema.
+    """
     def __init__(self, context, request):
         self.context = context
         self.request = request
+        # Errors are aggregated here, and returned together to the browser
+        self.errors = {}
 
     def __call__(self):
-
         form = self.request.form
         plone.protect.CheckAuthenticator(self.request.form)
         plone.protect.PostOnly(self.request.form)
-        came_from = 'came_from' in form and form['came_from'] or 'add'
-        wftool = getToolByName(self.context, 'portal_workflow')
         uc = getToolByName(self.context, 'uid_catalog')
         bsc = getToolByName(self.context, 'bika_setup_catalog')
-        layout = form['layout']
 
-        errors = {}
+        # Load the form data from request.state.  If anything goes wrong here,
+        # put a bullet through the whole process.
+        try:
+            states = json.loads(form['state'])
+        except Exception as e:
+            message = t(_('Badly formed state: ${errmsg}',
+                          mapping={'errmsg': e.message}))
+            ajax_form_error(self.errors, message=message)
+            return json.dumps({'errors': self.errors})
+        # Validate incoming form data
+        required = [field.getName() for field
+                    in AnalysisRequestSchema.fields()
+                    if field.required] + ['services']
 
-        form_parts = json.loads(self.request.form['parts'])
+        # in valid_states, all ars that pass validation will be stored
+        valid_states = {}
+        for arnum, state in states.items():
+            # Secondary ARs are a special case, these fields are not required
+            if state.get('Sample', ''):
+                required.remove("SamplingDate")
+                required.remove("SampleType")
+            # fields flagged as "hidden" are not considered required because
+            # they will already have default values inserted in them
+            for fieldname in required:
+                if fieldname+"_hidden" in state:
+                    required.remove(fieldname)
+            missing = [f for f in required if not state.get(f, '')]
+            # if all required fields are not present, we assume that the
+            # current AR had no data entered, and can be ignored
+            if missing == required:
+                continue
+            # If there are required fields missing, flag an error
+            if missing:
+                import pdb, sys; pdb.Pdb(stdout=sys.__stdout__).set_trace()
+                msg = t(_("${arnum}: Required fields have no values: "
+                          "${field_names}",
+                          mapping={'arnum': arnum,
+                                   'field_names': ", ".join(missing)}))
+                ajax_form_error(self.errors, arnum=arnum, message=msg)
+                continue
+            # This ar is valid!
+            valid_states[arnum] = state
 
-        # Get header values out, get values, exclude from any loops below
-        headerfieldnames = ['Client', 'Client_uid', 'Contact', 'Contact_uid',
-                            'CCContact', 'CCContact_uid', 'CCEmails',
-                            'Batch', 'Batch_uid',
-                            'InvoiceContact', 'InvoiceContact_uid']
-        headers = {}
-        for field in form.keys():
-            if field in headerfieldnames:
-                headers[field] = form[field]
+        # - Expand lists of UIDs returned by multiValued reference widgets
+        # - Transfer _uid values into their respective fields
+        for arnum in valid_states.keys():
+            for field, value in valid_states[arnum].items():
+                if field.endswith("_uid") and "," in value:
+                    valid_states[arnum][field] = value.split(",")
+                elif field.endswith("_uid"):
+                    valid_states[arnum][field] = value
 
+        if self.errors:
+            return json.dumps({'errors': self.errors})
 
-        # First make a list of non-empty fieldnames
-        fieldnames = []
-        for arnum in range(int(form['ar_count'])):
-            name = 'ar.%s' % arnum
-            ar = form.get(name, None)
-            if ar and 'Analyses' in ar.keys() and ar['Analyses'] != '':
-                fieldnames.append(arnum)
+        # Now, we will create the specified ARs.
+        for arnum, state in valid_states.items():
+            try:
+                instance = uc(UID=uid)[0].getObject()
+                return instance
+            except Exception as e:
+                msg = t(_("Cannot resolve UID: ${uid}", mapping={'uid': uid}))
+                ajax_form_error(self.errors, field=t(_('Client')),
+                                arnum=arnum, message=msg)
+                return json.dumps({'errors': self.errors})
 
-        if len(fieldnames) == 0:
-            ajax_form_error(errors,
-                            message=t(_("No analyses have been selected")))
-            return json.dumps({'errors': errors})
-
-        # Now some basic validation
-        required_fields = [field.getName() for field
-                           in AnalysisRequestSchema.fields()
-                           if field.required]
-
-        for fieldname in fieldnames:
-            formkey = "ar.%s" % fieldname
-            ar = form[formkey]
-
-            # check that required fields have values
-            for field in required_fields:
-                # This one is still special.
-                if field in ['RequestID']:
-                    continue
-                    # And these are not required if this is a secondary AR
-                if ar.get('Sample', '') != '' and field in [
-                    'SamplingDate',
-                    'SampleType'
-                ]:
-                    continue
-                if not ar.get(field, '') and not headers.get(field, ''):
-                    ajax_form_error(errors, field, fieldname)
-        # Return errors if there are any
-        if errors:
-            return json.dumps({'errors': errors})
-
-        # Get the prices from the form data
-        prices = form.get('Prices', None)
-        # Initialize the Anlysis Request collection
-        ARs = []
-        # if a new profile is created automatically,
-        # this flag triggers the status message
-        new_profile = None
-        # The actual submission
-        # fieldname == same as arnum == same as column ...
-        for fieldname in fieldnames:
-            # Get partitions from the form data
-            if form_parts:
-                partitions = form_parts[str(fieldname)]
-            else:
-                partitions = []
-            # Get the form data using the appropriate form key
-            formkey = "ar.%s" % fieldname
-            values = form[formkey].copy()
-            # resolved values is formatted as acceptable by archetypes
-            # widget machines
-            resolved_values = {}
-            for k, v in values.items():
-                # Analyses, we handle that specially.
-                if k == 'Analyses':
-                    continue
-                # Insert the reference *_uid values instead of titles.
-                if "_uid" in k:
-                    v = values[k]
-                    v = v.split(",") if v and "," in v else v
-                    fname = k.replace("_uid", "")
-                    resolved_values[fname] = v
-                    continue
-                # we want to write the UIDs and ignore the title values
-                if k + "_uid" in values:
-                    continue
-                resolved_values[k] = values[k]
-            # Get the analyses from the form data
-            analyses = values["Analyses"]
-
-            # Gather the specifications from the form
-            specs = json.loads(form['copy_to_new_specs']).get(str(fieldname),
-                {})
-            if not specs:
-                specs = json.loads(form['specs']).get(str(fieldname), {})
-            if specs:
-                specs = dicts_to_dict(specs, 'keyword')
-            # Modify the spec with all manually entered values
-            for service_uid in analyses:
-                min_element_name = "ar.%s.min.%s" % (fieldname, service_uid)
-                max_element_name = "ar.%s.max.%s" % (fieldname, service_uid)
-                error_element_name = "ar.%s.error.%s" % (fieldname, service_uid)
-                service_keyword = bsc(UID=service_uid)[0].getKeyword
-                if min_element_name in form:
-                    if service_keyword not in specs:
-                        specs[service_keyword] = {}
-                    specs[service_keyword]["keyword"] = service_keyword
-                    specs[service_keyword]["min"] = form[min_element_name]
-                    specs[service_keyword]["max"] = form[max_element_name]
-                    specs[service_keyword]["error"] = form[error_element_name]
-
-            # Selecting a template sets the hidden 'parts' field to template values.
-            # Selecting a profile will allow ar_add.js to fill in the parts field.
-            # The result is the same once we are here.
-            if not partitions:
-                partitions = [{
-                                  'services': [],
-                                  'container': None,
-                                  'preservation': '',
-                                  'separate': False
-                              }]
-            # Apply DefaultContainerType to partitions without a container
-            default_container_type = resolved_values.get(
-                'DefaultContainerType', None
-            )
-            if default_container_type:
-                container_type = bsc(UID=default_container_type)[0].getObject()
-                containers = container_type.getContainers()
-                for partition in partitions:
-                    if not partition.get("container", None):
-                        partition['container'] = containers
-            # Retrieve the catalogue reference to the client
-            if layout and layout == 'columns':
-                client = uc(UID=resolved_values['Client'])[0].getObject()
-            else:
-                client = uc(UID=headers['Client_uid'])[0].getObject()
+            import pdb, sys; pdb.Pdb(stdout=sys.__stdout__).set_trace()
             # Create the Analysis Request
             ar = create_analysisrequest(
                 client,
@@ -470,40 +401,30 @@ class ajaxAnalysisRequestSubmit():
                 analyses=analyses,
                 partitions=partitions,
                 specifications=specs.values(),
-                prices=prices
             )
-            # Add Headers
-            for fieldname in headers.keys():
-                if headers[fieldname] != '' and not fieldname.endswith('_uid'):
-                    if headers.get(fieldname + '_uid'):
-                        field = ar.Schema()[fieldname];
-                        mutator = field.getMutator(ar)
-                        uid = headers[fieldname + '_uid']
-                        obj = uc(UID=uid)[0].getObject()
-                        mutator(obj)
-                    else:
-                        ar.edit(fieldname=headers[fieldname])
 
-            # Add the created analysis request to the list
-            ARs.append(ar.getId())
-        # Display the appropriate message after creation
-        if len(ARs) > 1:
-            message = _("Analysis requests ${ARs} were successfully created.",
-                        mapping={'ARs': safe_unicode(', '.join(ARs))})
-        else:
-            message = _("Analysis request ${AR} was successfully created.",
-                        mapping={'AR': safe_unicode(ARs[0])})
-        self.context.plone_utils.addPortalMessage(message, 'info')
-        # Automatic label printing
-        # Won't print labels for Register on Secondary ARs
-        new_ars = None
-        if came_from == 'add':
-            new_ars = [ar for ar in ARs if ar[-2:] == '01']
-        if 'register' in self.context.bika_setup.getAutoPrintLabels() and new_ars:
-            return json.dumps({
-                'success': message,
-                'labels': new_ars,
-                'labelsize': self.context.bika_setup.getAutoLabelSize()
-            })
-        else:
-            return json.dumps({'success': message})
+
+
+
+
+        # # Display the appropriate message after creation
+        # if len(ARs) > 1:
+        #     message = _("Analysis requests ${ARs} were successfully created.",
+        #                 mapping={'ARs': safe_unicode(', '.join(ARs))})
+        # else:
+        #     message = _("Analysis request ${AR} was successfully created.",
+        #                 mapping={'AR': safe_unicode(ARs[0])})
+        # self.context.plone_utils.addPortalMessage(message, 'info')
+        # # Automatic label printing
+        # # Won't print labels for Register on Secondary ARs
+        # new_ars = None
+        # if came_from == 'add':
+        #     new_ars = [ar for ar in ARs if ar[-2:] == '01']
+        # if 'register' in self.context.bika_setup.getAutoPrintLabels() and new_ars:
+        #     return json.dumps({
+        #         'success': message,
+        #         'labels': new_ars,
+        #         'labelsize': self.context.bika_setup.getAutoLabelSize()
+        #     })
+        # else:
+        #     return json.dumps({'success': message})

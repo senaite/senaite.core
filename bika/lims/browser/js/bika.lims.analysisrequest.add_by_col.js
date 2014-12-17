@@ -88,25 +88,34 @@ function AnalysisRequestAddByCol() {
 
 	function set_state_from_form_values() {
 		var nr_ars = parseInt($("#ar_count").val(), 10)
+		// hidden values are flagged as such so that the handler knows they
+		// contain "default" values, and do not constitute data "entry"
+		// to avoid confusion with other hidden inputs, these have a 'hidden'
+		// attribute on the TD element.
+		$.each($('td[arnum][hidden] input[type="hidden"]'),
+			   function (i, e) {
+				   var td = $(e).parents('td')
+				   var arnum = $(td).attr('arnum')
+				   var name = $(e).attr('fieldname') ? $(e).attr('fieldname') : $(e).attr('name')
+				   var value = $(e).attr("uid") ? $(e).attr("uid") : $(e).val()
+				   state_set(arnum, name, value)
+				   state_set(arnum, name+"_hidden", true)
+			   })
+		// other field values which are handled similarly:
+		$.each($('td[arnum] input[type="text"], td[arnum] input.referencewidget'),
+			   function (i, e) {
+				   var td = $(e).parents('td')
+				   var arnum = $(td).attr('arnum')
+				   var name = $(e).attr('fieldname') ? $(e).attr('fieldname') : $(e).attr('name')
+				   var value = $(e).attr("uid") ? $(e).attr("uid") : $(e).val()
+				   state_set(arnum, name, value)
+			   })
 		// checkboxes inside ar_add_widget table.
 		$.each($('[ar_add_ar_widget] input[type="checkbox"]'),
 			   function (i, e) {
 				   var arnum = $(e).parents("[arnum]").attr('arnum')
 				   var fieldname = $(e).attr('fieldname')
 				   var value = $(e).prop('checked')
-				   state_set(arnum, fieldname, value)
-			   })
-		// ReferenceWidget values.  they have an extra hidden field, *_uid
-		$.each($('[ar_add_ar_widget] input.referencewidget'),
-			   function (i, e) {
-				   var td = $(e).parents('td')
-				   var arnum = $(e).parents("[arnum]").attr('arnum')
-				   var uid = $(td).find('[id*="' + id + '_uid"]').val()
-				   var fieldname = $(e).attr('fieldname')
-				   if (!fieldname)
-					   fieldname = e.id
-				   var id = 'ar_' + arnum + '_' + fieldname
-				   var value = $(td).find('input[id="' + id + '"]').val()
 				   state_set(arnum, fieldname, value)
 			   })
 		// select widget values
@@ -118,17 +127,6 @@ function AnalysisRequestAddByCol() {
 				   if (!fieldname)
 					   fieldname = e.id
 				   var instr = '#ar_' + arnum + '_' + fieldname
-				   var value = $(td).find(instr).val()
-				   state_set(arnum, fieldname, value)
-			   })
-		// text field values
-		$.each($('[ar_add_ar_widget] input[type="text"]'),
-			   function (i, e) {
-				   var fieldname = $(e).attr('fieldname')
-				   var td = $(e).parents('td')
-				   var arnum = $(e).parents('td').attr('arnum')
-				   if (!fieldname) fieldname = e.id
-				   var instr = 'input[id="ar_' + arnum + '_' + fieldname + '"]'
 				   var value = $(td).find(instr).val()
 				   state_set(arnum, fieldname, value)
 			   })
@@ -260,6 +258,19 @@ function AnalysisRequestAddByCol() {
 			event.preventDefault()
 			set_state_from_form_values()
 			check_state_for_errors()
+			var request_data = {
+				_authenticator: $("input[name='_authenticator']").val(),
+				state: $.toJSON(bika.lims.ar_add.state)
+			}
+			$.ajax({
+					   type: "POST",
+					   dataType: "json",
+					   url: window.location.href.split("/portal_factory")[0] + "/analysisrequest_submit",
+					   data: request_data,
+					   success: function (data) {
+						   debugger
+					   }
+				   });
 		})
 	}
 
@@ -314,32 +325,31 @@ function AnalysisRequestAddByCol() {
 		 * cases, the 'getParentUID' or 'getClientUID' index is used
 		 * to filter against Lab and Client folders.
 		 */
-		var bs = $("#bika_setup")
-		var clientuid = $("#ar_" + arnum + "_Client_uid").val()
+		var clientuid = $("td[arnum='" + arnum + "'] [fieldName='Client']").attr("uid")
 		filter_combogrid(
-			$("#ar_" + arnum + "_Contact")[0],
+			$("#ar_" + arnum + "_Contact"),
 			"getParentUID", clientuid)
 		filter_combogrid(
-			$("#ar_" + arnum + "_CCContact")[0],
+			$("#ar_" + arnum + "_CCContact"),
 			"getParentUID", clientuid)
 		filter_combogrid(
-			$("#ar_" + arnum + "_InvoiceContact")[0],
+			$("#ar_" + arnum + "_InvoiceContact"),
 			"getParentUID", clientuid)
 		filter_combogrid(
-			$("#ar_" + arnum + "_SamplePoint")[0],
+			$("#ar_" + arnum + "_SamplePoint"),
 			"getClientUID",
-			[clientuid, $(bs).attr("bika_samplepoints_uid")])
+			[clientuid, $("#bika_setup").attr("bika_samplepoints_uid")])
 		filter_combogrid(
-			$("#ar_" + arnum + "_Template")[0],
+			$("#ar_" + arnum + "_Template"),
 			"getClientUID",
-			[clientuid, $(bs).attr("bika_artemplates_uid")])
+			[clientuid, $("#bika_setup").attr("bika_artemplates_uid")])
 		filter_combogrid(
-			$("#ar_" + arnum + "_Profile")[0], "getClientUID",
-			[clientuid, $(bs).attr("bika_analysisprofiles_uid")])
+			$("#ar_" + arnum + "_Profile"), "getClientUID",
+			[clientuid, $("#bika_setup").attr("bika_analysisprofiles_uid")])
 		filter_combogrid(
-			$("#ar_" + arnum + "_Specification")[0],
+			$("#ar_" + arnum + "_Specification"),
 			"getClientUID",
-			[clientuid, $(bs).attr("bika_analysisspecs_uid")])
+			[clientuid, $("#bika_setup").attr("bika_analysisspecs_uid")])
 	}
 
 
@@ -845,6 +855,7 @@ function AnalysisRequestAddByCol() {
 		 */
 		var arnum = $(this).parents('td').attr('arnum')
 		var sp_element = $("#ar_" + arnum + "_SamplePoint")
+		var st_element = $("#ar_" + arnum + "_SampleType")
 		filter_combogrid(sp_element, "getSampleTypeTitle", $(this).val())
 		specification_set_from_sampletype(arnum)
 		partition_indicators_set(arnum)
