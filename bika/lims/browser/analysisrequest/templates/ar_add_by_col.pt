@@ -52,24 +52,21 @@
                 </tal:def>
             </tr>
 
-            <tal:hidden
+            <tr style="display:none"
                     tal:repeat="field python:view.get_fields_with_visibility('hidden')">
                 <tal:columns tal:repeat="arnum python:range(view.ar_count)"
                         tal:define="val python:field.getAccessor(context)()">
-                    <input
+                    <td tal:attributes="arnum arnum">
+                        <input
                             type="hidden"
                             tal:attributes="
-                                    name string:ar.${arnum}.${field/getName}:record;
-                            id string:ar_${arnum}_${field/getName};
-                            value val/Title|nothing;"/>
-                    <input
-                            type="hidden"
-                            tal:attributes="
-                                    name string:ar.${arnum}.${field/getName}_uid:record;
-                            id string:ar_${arnum}_${field/getName}_uid;
-                            value val/UID|nothing;">
+                                    name field/getName;
+                                    fieldName field/getName;
+                                    value val/Title|nothing;
+                                    uid val/UID|nothing;"/>
+                    </td>
                 </tal:columns>
-            </tal:hidden>
+            </tr>
 
         </thead>
 
