@@ -1,6 +1,6 @@
 id: front-page
 title: Welcome to Gaob Bika LIMS 3
-description: This site was created with Bika LIMS 3.1.5
+description: This site was created with Bika LIMS 3.1.6
 subject:
 relatedItems:
 location:
@@ -8,7 +8,7 @@ language:
 effectiveDate: 2011/01/01
 expirationDate: None
 creation_date: 2011/01/01
-modification_date: 2014/10/06
+modification_date: 2014/12/17
 creators: admin
 contributors:
 rights:
