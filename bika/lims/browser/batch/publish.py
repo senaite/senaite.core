@@ -1,5 +1,6 @@
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from bika.lims.utils import t, formatDecimalMark
+from bika.lims.utils.analysis import format_uncertainty, format_numeric_result
 from bika.lims.browser import BrowserView
 from bika.lims.permissions import *
 from bika.lims.utils import createPdf
@@ -98,13 +99,7 @@ class PublishView(BrowserView):
                 method = service.getMethod()
                 sample = ar.getSample()
                 result = analysis.getResult()
-                try:
-                    precision = service.getPrecision() and service.getPrecision() or "2"
-                    result = float(result)
-                    formatted_result = str("%." + precision + "f") % result
-                except:
-                    precision = "2"
-                    formatted_result = result
+                formatted_result = format_numeric_result(analysis, result)
                 datalines.append({_("Analysis Service"): analysis.getService().Title(),
                                   _("Method"): method and method.Title() or "",
                                   _("Result"): formatted_result,

@@ -1,5 +1,5 @@
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.i18nl10n import utranslate
+from zope.i18n import translate
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims.utils import getUsers
@@ -153,13 +153,13 @@ class SelectionMacrosView(BrowserView):
             return None
 
         if from_date and to_date:
-            parms = utranslate(_("From ${start_date} to ${end_date}",
+            parms = translate(_("From ${start_date} to ${end_date}",
                                mapping={"start":from_date, "end":to_date}))
         elif from_date:
-            parms = utranslate(_("Before ${start_date}",
+            parms = translate(_("Before ${start_date}",
                                mapping={"start":from_date}))
         elif to_date:
-            parms = utranslate(_("After ${end_date}",
+            parms = translate(_("After ${end_date}",
                                mapping={"end_date":to_date}))
 
         res = {}

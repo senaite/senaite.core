@@ -26,7 +26,7 @@ def lookup(context, portal_type, **kwargs):
 def check_for_required_columns(name, data, required):
     for column in required:
         if not data[column]:
-            message = _("{0} has no '{1}' column." % (name, column))
+            message = _("%s has no '%s' column." % (name, column))
             raise Exception(t(message))
 
 
@@ -399,7 +399,7 @@ class Lab_Products(WorksheetImporter):
         # Iterate through the rows
         for row in self.get_rows(3):
             # Check for required columns
-            check_for_required_columns('SRTemplate', row, [
+            check_for_required_columns('LabProduct', row, [
                 'title', 'volume', 'unit', 'price'
             ])
             # Create the SRTemplate object
@@ -1159,7 +1159,7 @@ class Analysis_Services(WorksheetImporter):
     def write_bucket(self, bucket):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         for service_uid, uncertainties in bucket.items():
-            obj = bsc(UID=service_uid)
+            obj = bsc(UID=service_uid)[0].getObject()
             _uncert = list(obj.getUncertainties())
             _uncert.extend(uncertainties)
             obj.setUncertainties(_uncert)
@@ -1243,7 +1243,11 @@ class Analysis_Specifications(WorksheetImporter):
         bsc = getToolByName(self.context, "bika_setup_catalog")
         # collect up all values into the bucket
         for row in self.get_rows(3):
-            title = row["Title"]
+            title = row.get("Title", False)
+            if not title:
+                title = row.get("title", False)
+                if not title:
+                    continue
             parent = row["Client_title"] if row["Client_title"] else "lab"
             st = row["SampleType_title"] if row["SampleType_title"] else ""
             service = self.resolve_service(row)
@@ -1539,6 +1543,7 @@ class Setup(WorksheetImporter):
             ARIDPadding=int(values['ARIDPadding']),
             ExternalIDServer=self.to_bool(values['ExternalIDServer']),
             IDServerURL=values['IDServerURL'],
+            ShowNewReleasesInfo=values.get('ShowNewReleasesInfo', True),
         )
 
 

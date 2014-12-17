@@ -1,6 +1,7 @@
 from smtplib import SMTPServerDisconnected, SMTPRecipientsRefused
 from bika.lims import bikaMessageFactory as _, t
-from bika.lims.utils import to_utf8, formatDecimalMark
+from bika.lims.utils import to_utf8, formatDecimalMark, format_supsub
+from bika.lims.utils.analysis import format_uncertainty
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.config import POINTS_OF_CAPTURE
@@ -172,7 +173,7 @@ class AnalysisRequestPublishView(BrowserView):
                 'remarks': ar.getRemarks(),
                 'member_discount': ar.getMemberDiscount(),
                 'date_sampled': self.ulocalized_time(ar.getDateSampled(), long_format=1),
-                'date_published': self.ulocalized_time(ar.getDatePublished(), long_format=1),
+                'date_published': self.ulocalized_time(DateTime(), long_format=1),
                 'invoiced': ar.getInvoiced(),
                 'late': ar.getLate(),
                 'subtotal': ar.getSubtotal(),
@@ -184,7 +185,8 @@ class AnalysisRequestPublishView(BrowserView):
                 'footer': to_utf8(self.context.bika_setup.getResultFooter()),
                 'prepublish': False,
                 'child_analysisrequest': None,
-                'parent_analysisrequest': None}
+                'parent_analysisrequest': None,
+                'resultsinterpretation':ar.getResultsInterpretation()}
 
         # Sub-objects
         excludearuids.append(ar.UID())
@@ -428,11 +430,13 @@ class AnalysisRequestPublishView(BrowserView):
                   'id': analysis.id,
                   'title': analysis.Title(),
                   'keyword': keyword,
+                  'scientific_name': service.getScientificName(),
                   'accredited': service.getAccredited(),
                   'point_of_capture': to_utf8(POINTS_OF_CAPTURE.getValue(service.getPointOfCapture())),
                   'category': to_utf8(service.getCategoryTitle()),
                   'result': analysis.getResult(),
                   'unit': to_utf8(service.getUnit()),
+                  'formatted_unit': format_supsub(to_utf8(service.getUnit())),
                   'capture_date': analysis.getResultCaptureDate(),
                   'request_id': analysis.aq_parent.getId(),
                   'formatted_result': '',
@@ -480,7 +484,8 @@ class AnalysisRequestPublishView(BrowserView):
                     if specs else {}
 
         andict['specs'] = specs
-        andict['formatted_result'] = analysis.getFormattedResult(specs, decimalmark)
+        scinot = self.context.bika_setup.getScientificNotationReport()
+        andict['formatted_result'] = analysis.getFormattedResult(specs=specs, sciformat=int(scinot), decimalmark=decimalmark)
 
         fs = ''
         if specs.get('min', None) and specs.get('max', None):
@@ -490,7 +495,7 @@ class AnalysisRequestPublishView(BrowserView):
         elif specs.get('max', None):
             fs = '< %s' % specs['max']
         andict['formatted_specs'] = formatDecimalMark(fs, decimalmark)
-        andict['formatted_uncertainty'] = formatDecimalMark(str(analysis.getUncertainty()), decimalmark)
+        andict['formatted_uncertainty'] = format_uncertainty(analysis, analysis.getResult(), decimalmark=decimalmark, sciformat=int(scinot))
 
         # Out of range?
         if specs:

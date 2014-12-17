@@ -34,44 +34,7 @@ Client DefaultCategories and RestrictedCategories
 
 Create Client
     Log in   test_labmanager1   test_labmanager1
-    Go to                       ${PLONEURL}/clients
-
-    Click link                  Add
-    Wait Until Page Contains Element  Name
-
-    Input Text                  Name                    Robot Test Client
-    Input Text                  ClientID                ROBOTTEST
-    Input Text                  TaxNumber               98765A
-    Input Text                  Phone                   011 3245679
-    Input Text                  Fax                     011 3245678
-    Input Text                  EmailAddress            client@example.com
-    Select Checkbox             BulkDiscount
-    Select Checkbox             MemberDiscountApplies
-
-    Click link                  Address
-    Select From List            PhysicalAddress.country:record     South Africa
-    Select From List            PhysicalAddress.state:record       Gauteng
-    Input Text                  PhysicalAddress.city               Johannesburg
-    Input Text                  PhysicalAddress.zip                9000
-    Input Text                  PhysicalAddress.address            Foo Street 20
-    Select From List            PostalAddress.selection            PhysicalAddress
-    Input Text                  PostalAddress.address              Foo Postbox 20
-    Select From List            BillingAddress.selection           PostalAddress
-
-    Click link                  Bank details
-    Input Text                  AccountType             Robot Account Type
-    Input Text                  AccountName             Robot Account Name
-    Input Text                  AccountNumber           Robot Account Number
-    Input Text                  BankName                Robot Bank Name
-    Input Text                  BankBranch              Robot Bank Branch
-
-    Click link  fieldsetlegend-preferences
-    #Select From List  EmailSubject:list
-    #Select From List  DefaultCategories:list
-    #Select From List  RestrictedCategories:list
-
-    Click Button  Save
-    Page should contain  Changes saved.
+    New client
 
 Create Client Contact
     Log in          test_labmanager1   test_labmanager1
@@ -129,8 +92,94 @@ Client contact should not be able to see or access other clients
     Go to           ${PLONEURL}/clients/client-2
     Page should contain   Insufficient Privileges
 
+Add AR Template
+    # Create a SampleType and a ClientSamplePoint with the created SampleTypes
+    # Then Add an ARTemplate with the created SamplePoint.
+    # Finally test if SampleTypes is filtered by selected ClientSamplePoint
+    Log in   test_labmanager1   test_labmanager1
+
+    # Create a new SampleType
+    Go to       ${PLONEURL}/bika_setup/bika_sampletypes
+    Click link      Add
+    Wait Until Page Contains Element  title
+
+    Input Text                  title                   ST1
+    Input Text                  description             My first test
+    Input Text                  xpath=//input[@name="RetentionPeriod.days:record:ignore_empty"]     30
+    Input Text                  RetentionPeriod.hours:record:ignore_empty    10
+    Input Text                  RetentionPeriod.minutes:record:ignore_empty    32
+    Input Text                  Prefix                                         Good Sampling
+    Input Text                  MinimumVolume                                  10 ml
+    Click Button  Save
+
+    # Create two new Cilent SamplePoint. The first SP with the first previous SampleType,
+    #the second SP with the second ST
+    Go to       ${PLONEURL}/clients/client-1/samplepoints
+    Click link      Add
+    Wait Until Page Contains Element  title
+
+    Input Text                  title                   SP1
+    Input Text                  description             My first test
+    Input Text                  SamplingFrequency.days:record:ignore_empty    12
+    Input Text                  SamplingFrequency.hours:record:ignore_empty    1
+    Input Text                  SamplingFrequency.minutes:record:ignore_empty   2
+    Select From List            SampleTypes:list                              ST1
+    Click Button  Save
+
+    # Create an ARTemplate with the SampleType filtered by SamplePoint
+    Go to       ${PLONEURL}/clients/client-1/artemplates
+    Click link      Add
+    Wait Until Page Contains Element  title
+
+    Input Text                  title                   ART1
+    Input Text                  description             My first test
+    Select from dropdown        SamplePoint             SP1
+    Select from dropdown        SampleType              ST1
+
+    Click Button  Save
+    Page should contain  No analyses have been selected
+
 *** Keywords ***
 
 Start browser
     Open browser        ${PLONEURL}/login_form
     Set selenium speed  ${SELENIUM_SPEED}
+
+New client
+    Go to                       ${PLONEURL}/clients
+    Click link                  Add
+    Wait Until Page Contains Element  Name
+
+    Input Text                  Name                    Robot Test Client
+    Input Text                  ClientID                ROBOTTEST
+    Input Text                  TaxNumber               98765A
+    Input Text                  Phone                   011 3245679
+    Input Text                  Fax                     011 3245678
+    Input Text                  EmailAddress            client@example.com
+    Select Checkbox             BulkDiscount
+    Select Checkbox             MemberDiscountApplies
+
+    Click link                  Address
+    Select From List            PhysicalAddress.country:record     South Africa
+    Select From List            PhysicalAddress.state:record       Gauteng
+    Input Text                  PhysicalAddress.city               Johannesburg
+    Input Text                  PhysicalAddress.zip                9000
+    Input Text                  PhysicalAddress.address            Foo Street 20
+    Select From List            PostalAddress.selection            PhysicalAddress
+    Input Text                  PostalAddress.address              Foo Postbox 20
+    Select From List            BillingAddress.selection           PostalAddress
+
+    Click link                  Bank details
+    Input Text                  AccountType             Robot Account Type
+    Input Text                  AccountName             Robot Account Name
+    Input Text                  AccountNumber           Robot Account Number
+    Input Text                  BankName                Robot Bank Name
+    Input Text                  BankBranch              Robot Bank Branch
+
+    Click link  fieldsetlegend-preferences
+    #Select From List  EmailSubject:list
+    #Select From List  DefaultCategories:list
+    #Select From List  RestrictedCategories:list
+
+    Click Button  Save
+    Page should contain  Changes saved.

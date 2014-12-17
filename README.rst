@@ -11,7 +11,7 @@ language of the world's first people.
 Installation
 ------------
 
-* `Installing Bika LIMS <https://github.com/bikalabs/Bika-LIMS/blob/13c8e4e/INSTALL.rst>`_
+* `Installing Bika LIMS <https://github.com/bikalabs/Bika-LIMS/blob/0c606e0/INSTALL.rst>`_
 
 Documentation
 -------------

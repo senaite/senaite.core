@@ -10,6 +10,13 @@ def mg(value):
     tokens = value.split(" ") if value else [0, '']
     val = float(tokens[0]) if isinstance(tokens[0], (int, long)) else 0
     unit = tokens[1] if len(tokens) > 1 else ''
+    # Magnitude doesn't support mL units.
+    # Since mL is commonly used instead of ml to avoid confusion with the
+    # number one, add "L" (for liter) as a 'recognizable' unit.
+    # L unit as liter is also recommended by the NIST Guide
+    # http://physics.nist.gov/Pubs/SP811/sec05.html#table6
+    # Further info: https://jira.bikalabs.com/browse/LIMS-1441
+    unit = unit[:-1]+'l' if unit.endswith('L') else unit
     return magnitude.mg(val, unit)
 
 
@@ -144,7 +151,7 @@ class calculate_partitions(object):
                     _required_vol = part['minvol'] + minvol
                     if _containers:
                         _containers = [c for c in _containers
-                                       if mg(c.getCapacity) > _required_vol]
+                                       if mg(c.getCapacity()) > _required_vol]
                         if not _containers:
                             continue
 

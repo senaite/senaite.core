@@ -200,7 +200,7 @@
     <table>
         <tal:poc tal:repeat="poc python:categanalyses.keys()">
         <h2 tal:content="poc"></h2>
-        <tal:cat tal:repeat="cat python:categanalyses.get(poc,{}).keys()">
+        <tal:cat tal:repeat="cat python:sorted(categanalyses.get(poc,{}).keys())">
         <thead>
             <tr>
                 <th class="analysis"><span tal:content="string:${cat}">Category</span></th>
@@ -218,21 +218,26 @@
                             analysis_css_retested python:'retested' if analysis['retested'] else '';">
             <tr tal:attributes="class python:'actual %s %s %s' % (analysis_css_result, analysis_css_accredited, analysis_css_retested);">
                 <td class="analysis">
-                    <span tal:content="analysis/title">Total 25-OHD</span>
+                    <img tal:attributes='src python:portal["url"]+"/++resource++bika.lims.images/accredited.png";'
+                        tal:condition='analysis/accredited'
+                        alt="accredited"
+                        class="accredited-ico"/>
+                    <span tal:content="analysis/title" tal:condition="python: analysis['scientific_name'] == False">Total 25-OHD</span>
+                    <span tal:condition="analysis/scientific_name"><em tal:content="analysis/title"></em></span>
                 </td>
                 <td tal:condition="hasprevresults" class="prev">
-                    <span tal:content="analysis/previous_results">1,2,3</span>
+                    <span tal:content="structure analysis/previous_results">1,2,3</span>
                 </td>
                 <td>
-                    <span class="result" tal:content="analysis/formatted_result">23</span>
-                    <span class="units" tal:content="analysis/unit|nothing"></span>
+                    <span class="result" tal:content="structure analysis/formatted_result">23</span>
+                    <span class="units" tal:content="structure analysis/formatted_unit|nothing"></span>
                 </td>
                 <td class="dryresult" tal:condition="python: reportdrymatter and analysis/resultdm">
-                    <span tal:content="string:${analysis/resultdm}  ${analysis/unit|nothing}">23</span>
+                    <span tal:content="structure string:${analysis/resultdm}  ${analysis/formatted_unit|nothing}">23</span>
                 </td>
                 <td class="specs">
                     <span tal:condition="analysis/uncertainty"
-                          tal:replace="string:[&plusmn; ${analysis/formatted_uncertainty}] "></span>
+                          tal:replace="structure string:[&plusmn; ${analysis/formatted_uncertainty}] "></span>
                     <span tal:replace="python:'(RT) ' if analysis['retested'] else ''"></span>
                     <span tal:replace="analysis/formatted_specs">50 - 60</span>
                 </td>
@@ -254,7 +259,10 @@
         </tal:poc>
     </table>
 </div>
-
+<div id="resultsinterpretation" tal:condition="analysisrequest/resultsinterpretation">
+    <h1 i18n:translate="">Result interpretation</h1>
+    <span tal:content="structure analysisrequest/resultsinterpretation"></span>
+</div>
 <!-- QC Results section -->
 <div id="section-qcresults" tal:condition="python:hasqcanalyses and showqcanalyses">
     <h1 i18n:translate="">QC Results</h1>
@@ -288,18 +296,19 @@
                                       analysis_css_retested python:'retested' if analysis['retested'] else '';">
             <tr tal:attributes="class python:'%s %s %s' % (analysis_css_result, analysis_css_accredited, analysis_css_retested);">
                 <td class="analysis">
-                    <span tal:content="analysis/title">Total 25-OHD</span>
+                    <span tal:content="analysis/title" tal:condition="python: analysis['scientific_name'] == False">Total 25-OHD</span>
+                    <span tal:condition="analysis/scientific_name"><em tal:content="analysis/title"></em></span>
                 </td>
                 <td>
-                    <span class="result" tal:content="analysis/formatted_result">23</span>
-                    <span class="units" tal:content="analysis/unit|nothing"></span>
+                    <span class="result" tal:content="structure analysis/formatted_result">23</span>
+                    <span class="units" tal:content="structure analysis/formatted_unit|nothing"></span>
                 </td>
                 <td class="dryresult" tal:condition="python: reportdrymatter and analysis/resultdm">
-                    <span tal:content="string:${analysis/resultdm}  ${analysis/unit|nothing}">23</span>
+                    <span tal:content="structure string:${analysis/resultdm}  ${analysis/formatted_unit|nothing}">23</span>
                 </td>
                 <td class="specs">
                     <span tal:condition="analysis/uncertainty"
-                          tal:replace="string:[&plusmn; ${analysis/uncertainty}] "></span>
+                          tal:replace="structure string:[&plusmn; ${analysis/uncertainty}] "></span>
                     <span tal:replace="python:'(RT) ' if analysis['retested'] else ''"></span>
                     <span tal:replace="analysis/formatted_specs">50 - 60</span>
                 </td>

@@ -1,0 +1,22 @@
+<configure xmlns="http://namespaces.zope.org/zope"
+           xmlns:zcml="http://namespaces.zope.org/browser"
+           xmlns:fss="http://namespaces.zope.org/browser"
+           xmlns:browser="http://namespaces.zope.org/browser"
+           xmlns:five="http://namespaces.zope.org/five">
+
+    <browser:page
+        for="OFS.interfaces.IApplication"
+        name="plone-overview"
+        class=".admin.Overview"
+        permission="zope.Public"
+        />
+
+    <browser:page
+        for="OFS.interfaces.IApplication"
+        name="plone-addsite"
+        class="Products.CMFPlone.browser.admin.AddPloneSite"
+        permission="zope2.ViewManagementScreens"
+        template="templates/plone-addsite.pt"
+        />
+
+</configure>

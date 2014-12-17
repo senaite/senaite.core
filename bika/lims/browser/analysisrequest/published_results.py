@@ -96,7 +96,8 @@ class AnalysisRequestPublishedResults(BikaListingView):
         member = pm.getAuthenticatedMember()
         roles = member.getRoles()
         if 'Manager' not in roles \
-            and 'LabManager' not in roles:
+            and 'LabManager' not in roles \
+            and 'Client' not in roles:
             return []
         for x in range(len(items)):
             if 'obj' in items[x]:

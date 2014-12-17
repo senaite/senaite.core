@@ -67,6 +67,11 @@ msgid "% Published"
 msgstr "% Published"
 
 #
+# File: bika.lims/bika/lims/exportimport/setupdata/__init__.py, line: 29
+msgid "%s has no '%s' column."
+msgstr ""
+
+#
 # File: ../../../bika/lims/content/bikasetup.py, line: 326
 msgid "'Classic' indicates importing analysis requests per sample and analysis service selection. With 'Profiles', analysis profile keywords are used to select multiple analysis services together"
 msgstr ""
@@ -651,6 +656,11 @@ msgstr "CCContact"
 msgid "CSID"
 msgstr "CSID"
 
+#
+# File: bika.lims/bika/lims/content/analysisservice.py, line: 697
+msgid "Calculate Precision from Uncertainties"
+msgstr ""
+
 msgid "Calculation"
 msgstr "Calculation"
 
@@ -861,6 +871,11 @@ msgstr ""
 
 msgid "Comments"
 msgstr "Comments"
+
+#
+# File: bika.lims/bika/lims/content/analysisrequest.py, line: 1233
+msgid "Comments or results interpretation"
+msgstr ""
 
 msgid "Composite"
 msgstr "Composite"
@@ -1119,6 +1134,16 @@ msgstr "Default preservations: ${preservation_list}"
 msgid "Default sample retention period"
 msgstr "Default sample retention period"
 
+#
+# File: bika.lims/bika/lims/content/bikasetup.py, line: 176
+msgid "Default scientific notation format for reports"
+msgstr ""
+
+#
+# File: bika.lims/bika/lims/content/bikasetup.py, line: 395
+msgid "Default scientific notation format for results"
+msgstr ""
+
 msgid "Default value"
 msgstr "Default value"
 
@@ -1135,11 +1160,6 @@ msgstr ""
 #
 # File: ../../../bika/lims/content/analysisservice.py, line: 213
 msgid "Define the number of decimals to be used for this result."
-msgstr ""
-
-#
-# File: ../../../bika/lims/content/analysisservice.py, line: 222
-msgid "Define the precision when converting values to exponent notation."
 msgstr ""
 
 #
@@ -1516,6 +1536,11 @@ msgstr "ID Server URL"
 msgid "ID Server unavailable"
 msgstr "ID Server unavailable"
 
+#
+# File: bika.lims/bika/lims/browser/templates/plone-addsite.pt, line: 54
+msgid "IMPORTANT: Don't use \"Bika\" or \"BIKA\" as the instance name, this is a reserved namespace. If you get \"Site Error\" citing \"AttributeError: adapters\", this is the most likely cause."
+msgstr ""
+
 msgid "If 'Allow instrument entry of results' is selected, the method from the default instrument will be used. Otherwise, only the methods selected above will be displayed."
 msgstr "If 'Allow instrument entry of results' is selected, the method from the default instrument will be used. Otherwise, only the methods selected above will be displayed."
 
@@ -1527,6 +1552,11 @@ msgstr ""
 #
 # File: ../../../bika/lims/content/instrument.py, line: 88
 msgid "If checked, the instrument will not be available until the next valid calibration test being performed. This checkbox will be automatically unchecked too."
+msgstr ""
+
+#
+# File: bika.lims/bika/lims/content/analysisservice.py, line: 210
+msgid "If enabled, the name of the analysis will be written in italics."
 msgstr ""
 
 msgid "If no Title value is entered, the Batch ID will be used."
@@ -1608,6 +1638,11 @@ msgstr "Inherit From"
 
 msgid "Initial revision"
 msgstr "Initial revision"
+
+#
+# File: bika.lims/bika/lims/browser/templates/plone-addsite.pt, line: 13
+msgid "Install Bika LIMS"
+msgstr ""
 
 msgid "Instructions"
 msgstr "Instructions"
@@ -2261,8 +2296,28 @@ msgid "Precision as number of decimals"
 msgstr "Precision as number of decimals"
 
 #
+# File: bika.lims/bika/lims/content/analysisservice.py, line: 698
+msgid "Precision as the number of significant digits according to the uncertainty. The decimal position will be given by the first number different from zero in the uncertainty, at that position the system will round up the uncertainty and results. For example, with a result of 5.243 and an uncertainty of 0.22, the system will display correctly as 5.2+-0.2. If no uncertainty range is set for the result, the system will use the fixed precision set."
+msgstr ""
+
+#
 # File: ../../../bika/lims/content/bikasetup.py, line: 167
 msgid "Preferred decimal mark for reports."
+msgstr ""
+
+#
+# File: bika.lims/bika/lims/content/bikasetup.py, line: 386
+msgid "Preferred decimal mark for results"
+msgstr ""
+
+#
+# File: bika.lims/bika/lims/content/bikasetup.py, line: 177
+msgid "Preferred scientific notation format for reports"
+msgstr ""
+
+#
+# File: bika.lims/bika/lims/content/bikasetup.py, line: 396
+msgid "Preferred scientific notation format for results"
 msgstr ""
 
 msgid "Prefix"
@@ -2324,6 +2379,11 @@ msgstr "Product"
 
 msgid "Productivity Reports"
 msgstr "Productivity Reports"
+
+#
+# File: bika.lims/bika/lims/browser/templates/plone-overview.pt, line: 28
+msgid "Professional Open Source LIMS"
+msgstr ""
 
 msgid "Profile"
 msgstr "Profile"
@@ -2606,6 +2666,11 @@ msgstr "Result out of range"
 msgid "Result values with at least this number of significant digits are displayed in scientific notation using the letter 'e' to indicate the exponent.  The precision can be configured in individual Analysis Services."
 msgstr ""
 
+#
+# File: bika.lims/bika/lims/content/analysisrequest.py, line: 1234
+msgid "Results Interpretation"
+msgstr ""
+
 msgid "Results attachments permitted"
 msgstr "Results attachments permitted"
 
@@ -2773,6 +2838,11 @@ msgstr "Save remarks"
 
 msgid "Scheduled task"
 msgstr "Scheduled task"
+
+#
+# File: bika.lims/bika/lims/content/analysisservice.py, line: 209
+msgid "Scientific name"
+msgstr ""
 
 msgid "Search"
 msgstr "Search"
@@ -3799,6 +3869,24 @@ msgstr ""
 msgid "heading_import_ar"
 msgstr ""
 
+#
+# File: bika.lims/bika/lims/browser/templates/instrument_qc_failures_viewlet.pt, line: 44
+#. Default: "${nr_failed} instruments disposed until new calibration tests being done:"
+msgid "instruments_qc_disposed"
+msgstr ""
+
+#
+# File: bika.lims/bika/lims/browser/templates/instrument_qc_failures_viewlet.pt, line: 28
+#. Default: "${nr_failed} instrument disabled until successful calibration:"
+msgid "instruments_qc_failed"
+msgstr ""
+
+#
+# File: bika.lims/bika/lims/browser/templates/instrument_qc_failures_viewlet.pt, line: 12
+#. Default: "${nr_failed} instrument are out-of-date:"
+msgid "instruments_qc_out_of_date"
+msgstr ""
+
 #. Default: "CC Emails - Invoice"
 msgid "label_CCEmailsInvoice"
 msgstr ""
@@ -3949,6 +4037,18 @@ msgstr "max"
 msgid "min"
 msgstr "min"
 
+#
+# File: bika.lims/bika/lims/browser/templates/new_version.pt, line: 16
+#. Default: "Version ${new_version} was released on ${new_date}, and your current version is ${current_version}. ${click_here} to disable notifications about new releases."
+msgid "new_version_available_description"
+msgstr ""
+
+#
+# File: bika.lims/bika/lims/browser/templates/new_version.pt, line: 8
+#. Default: "New Bika LIMS release available"
+msgid "new_version_available_title"
+msgstr ""
+
 msgid "repeating every"
 msgstr "repeating every"
 
@@ -3957,6 +4057,12 @@ msgstr ""
 
 #. Default: "Content listing"
 msgid "summary_content_listing"
+msgstr ""
+
+#
+# File: bika.lims/bika/lims/browser/templates/plone-addsite.pt, line: 72
+#. Default: "Bika LIMS"
+msgid "text_default_site_title"
 msgstr ""
 
 #. The variables used here are the same as used in the strftime formating.
@@ -3979,12 +4085,19 @@ msgid "until"
 msgstr "until"
 
 #
-# File: ../../../bika/lims/browser/analysisrequest/templates/analysisrequest_publish.pt, line: 43
-msgid "value"
+# File: bika.lims/bika/lims/browser/templates/new_version.pt, line: 34
+#. Default: "Your current database profile version is ${installed_version}, and the version installed on disk is ${new_version}. Please remember to ${backup_instructions_link}, and then ${click_here} to perform the upgrade."
+msgid "upgrade_available_description"
 msgstr ""
 
 #
-# File: bika.lims/bika/lims/exportimport/setupdata/__init__.py, line: 29
-msgid "{0} has no '{1}' column."
+# File: bika.lims/bika/lims/browser/templates/new_version.pt, line: 25
+#. Default: "Upgrade step available"
+msgid "upgrade_available_title"
+msgstr ""
+
+#
+# File: ../../../bika/lims/browser/analysisrequest/templates/analysisrequest_publish.pt, line: 43
+msgid "value"
 msgstr ""
 

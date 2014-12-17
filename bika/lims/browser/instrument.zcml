@@ -60,12 +60,15 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
-    <browser:page
-      for="*"
-      name="get_instruments_alerts"
-      class="bika.lims.browser.instrument.ajaxGetInstrumentsAlerts"
-      permission="cmf.ModifyPortalContent"
-      layer="bika.lims.interfaces.IBikaLIMS"
+    <!-- Show Instrument QC failures viewlet -->
+    <browser:viewlet
+        for="*"
+        name="bika.lims.instrument_qc_failures_viewlet"
+        class="bika.lims.browser.instrument.InstrumentQCFailuresViewlet"
+        manager="plone.app.layout.viewlets.interfaces.IAboveContent"
+        template="templates/instrument_qc_failures_viewlet.pt"
+        permission="zope2.View"
+        layer="bika.lims.interfaces.IBikaLIMS"
     />
 
 </configure>
