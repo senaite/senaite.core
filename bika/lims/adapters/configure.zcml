@@ -95,6 +95,9 @@
     <adapter name='bika.lims.IHaveIdentifiersExtender' factory=".identifiers.IHaveIdentifiersSchemaExtender" />
     <adapter name='bika.lims.IHaveIdentifiersModifier' factory=".identifiers.IHaveIdentifiersSchemaModifier" />
 
+    <adapter factory=".identifiers.IBikaCatalogIdentifiersIndexer" name="Identifiers" />
+    <adapter factory=".identifiers.IBikaSetupCatalogIdentifiersIndexer" name="Identifiers" />
+
   <browser:page
     for="*"
     name="js_err"
