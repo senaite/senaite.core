@@ -50,7 +50,8 @@ class ReferenceWidget(StringWidget):
         'sord': 'asc',
         'sidx': 'Title',
         'force_all': True,
-        'portal_types': {}
+        'portal_types': {},
+        'showAddButton': False
 
     })
     security = ClassSecurityInfo()
