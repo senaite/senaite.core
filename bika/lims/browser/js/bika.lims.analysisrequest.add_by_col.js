@@ -844,19 +844,20 @@ function AnalysisRequestAddByCol() {
 		/***
 		 * Sample point and Sample type can set each other.
 		 */
-		var arnum = $(this).parents('td').attr('arnum')
-		var sp_element = $("#ar_" + arnum + "_SampleType")
-		filter_combogrid(sp_element, "getSamplePointTitle", $(this).val())
+		var spe = $("#ar_" + arnum + "_SamplePoint")
+		var ste = $("#ar_" + arnum + "_SampleType")
+		// XXX Don't filter, if the filter would result in no items allowed for selection
+		filter_combogrid(spe, "getSampleTypeUID", $(ste).attr("uid"))
 	}
 
 	function sampletype_set(arnum) {
 		/***
 		 * Sample point and Sample type can set each other.
 		 */
-		var arnum = $(this).parents('td').attr('arnum')
-		var sp_element = $("#ar_" + arnum + "_SamplePoint")
-		var st_element = $("#ar_" + arnum + "_SampleType")
-		filter_combogrid(sp_element, "getSampleTypeTitle", $(this).val())
+		var spe = $("#ar_" + arnum + "_SamplePoint")
+		var ste = $("#ar_" + arnum + "_SampleType")
+		// XXX Don't filter, if the filter would result in no items allowed for selection
+		filter_combogrid(spe, "getSampleTypeUID", $(ste).attr("uid"))
 		specification_set_from_sampletype(arnum)
 		partition_indicators_set(arnum)
 	}
