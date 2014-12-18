@@ -77,6 +77,7 @@ class BikaGenerator:
                        'bika_containers',
                        'bika_containertypes',
                        'bika_preservations',
+                       'bika_identifiertypes',
                        'bika_instruments',
                        'bika_instrumenttypes',
                        'bika_analysisspecs',
@@ -601,6 +602,7 @@ class BikaGenerator:
         addIndex(bc, 'Title', 'ZCTextIndex', zc_extras)
         addIndex(bc, 'Description', 'ZCTextIndex', zc_extras)
         addIndex(bc, 'id', 'FieldIndex')
+        addIndex(bc, 'Identifier', 'KeywordIndex')
         addIndex(bc, 'getId', 'FieldIndex')
         addIndex(bc, 'Type', 'FieldIndex')
         addIndex(bc, 'portal_type', 'FieldIndex')
@@ -710,6 +712,7 @@ class BikaGenerator:
         at.setCatalogsByType('SamplePoint', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('StorageLocation', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('SamplingDeviation', ['bika_setup_catalog', ])
+        at.setCatalogsByType('IdentifierType', ['bika_setup_catalog', ])
         at.setCatalogsByType('Instrument', ['bika_setup_catalog', ])
         at.setCatalogsByType('InstrumentType', ['bika_setup_catalog', ])
         at.setCatalogsByType('Method', ['bika_setup_catalog', 'portal_catalog'])
@@ -736,6 +739,7 @@ class BikaGenerator:
         addIndex(bsc, 'SearchableText', 'ZCTextIndex', zc_extras)
         addIndex(bsc, 'Title', 'ZCTextIndex', zc_extras)
         addIndex(bsc, 'Description', 'ZCTextIndex', zc_extras)
+        addIndex(bsc, 'Identifier', 'KeywordIndex')
         addIndex(bsc, 'id', 'FieldIndex')
         addIndex(bsc, 'getId', 'FieldIndex')
         addIndex(bsc, 'Type', 'FieldIndex')

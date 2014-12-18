@@ -1557,6 +1557,18 @@ class ID_Prefixes(WorksheetImporter):
         self.context.bika_setup.setPrefixes(prefixes)
 
 
+class Identifier_Types(WorksheetImporter):
+    def Import(self):
+        folder = self.context.bika_setup.bika_identifiertypes
+        for row in self.get_rows(3):
+            obj = _createObjectByType('IdentifierType', folder, tmpID())
+            if row['title']:
+                obj.edit(title=row['title'],
+                         description=row.get('description', ''), )
+                obj.unmarkCreationFlag()
+                renameAfterCreation(obj)
+
+
 class Attachment_Types(WorksheetImporter):
 
     def Import(self):

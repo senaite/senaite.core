@@ -28,6 +28,7 @@ class AnalysisServiceCopy(BrowserView):
         'title',
         'ShortTitle',
         'Keyword',
+        'Identifiers',
     ]
     created = []
 

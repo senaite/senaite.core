@@ -201,6 +201,16 @@ class IContainers(Interface):
 class IContainerTypes(Interface):
     ""
 
+class IIdentifierTypes(Interface):
+
+    ""
+
+class IHaveIdentifiers(Interface):
+
+    """If this interface is provided by an AT object, the object will
+    automatically be given an 'Identifiers' field, which will be associated
+    with the bika_identifiertypes in site setup.
+    """
 
 class IInstrument(Interface):
     ""

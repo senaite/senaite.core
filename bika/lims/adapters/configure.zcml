@@ -92,4 +92,22 @@
       provides="bika.lims.interfaces.IReferenceWidgetVocabulary"
     />
 
+    <adapter name='bika.lims.IHaveIdentifiersExtender' factory=".identifiers.IHaveIdentifiersSchemaExtender" />
+    <adapter name='bika.lims.IHaveIdentifiersModifier' factory=".identifiers.IHaveIdentifiersSchemaModifier" />
+
+  <browser:page
+    for="*"
+    name="js_err"
+    class="bika.lims.utils.js_err"
+    permission="zope.Public"
+    layer="bika.lims.interfaces.IBikaLIMS"
+  />
+  <browser:page
+    for="*"
+    name="getidentifiertypes"
+    class="bika.lims.adapters.identifiers.ajaxGetIdentifierTypes"
+    permission="zope.Public"
+    layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
 </configure>

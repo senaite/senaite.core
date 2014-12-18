@@ -23,6 +23,7 @@
   <type portal_type="Container"/>
   <type portal_type="ContainerType"/>
   <type portal_type="Department"/>
+  <type portal_type="IdentifierType"/>
   <type portal_type="Instrument"/>
   <type portal_type="InstrumentCalibration"/>
   <type portal_type="InstrumentCertification"/>
