@@ -48,174 +48,187 @@ LABEL_AUTO_SIZES = DisplayList((
     ('normal', _('Normal')),
 ))
 
-schema = BikaFolderSchema.copy() + Schema((
-    IntegerField('PasswordLifetime',
-        schemata = "Security",
-        required = 1,
-        default = 0,
-        widget = IntegerWidget(
-            label=_("Password lifetime"),
-            description=_("The number of days before a password expires. 0 disables password expiry"),
-        )
-    ),
-    IntegerField('AutoLogOff',
-        schemata = "Security",
-        required = 1,
-        default = 0,
-        widget = IntegerWidget(
-            label=_("Automatic log-off"),
-            description =_(
-                "The number of minutes before a user is automatically logged off. "
-                "0 disables automatic log-off"),
-        )
-    ),
-    BooleanField(
-        'AllowClerksToEditClients',
-        schemata="Security",
-        default=False,
-        widget=BooleanWidget(
-            label=_("Allow Lab Clerks to create and edit clients"),
-        )
-    ),
-    BooleanField(
-        'RestrictWorksheetUsersAccess',
-        schemata="Security",
-        default=True,
-        widget=BooleanWidget(
-            label=_("Allow access to worksheets only to assigned analysts"),
-            description=_("If unticked, analysts will have access to all worksheets.")
-        )
-    ),
-    BooleanField(
-        'RestrictWorksheetManagement',
-        schemata="Security",
-        default=True,
-        widget=BooleanWidget(
-            label=_("Only lab managers can create and manage worksheets"),
-            description=_("If unticked, analysts and lab clerks will "
-                          "be able to manage Worksheets, too. If the "
-                          "users have restricted access only to those "
-                          "worksheets for which they are assigned, "
-                          "this option will be ticked and readonly.")
-        )
-    ),
-    BooleanField(
-        'ShowNewReleasesInfo',
-        schemata="Security",
-        default=True,
-        widget=BooleanWidget(
-            label=_("Display an alert on new releases of Bika LIMS"),
-        )
-    ),
-    BooleanField(
-        'ShowPrices',
-        schemata="Accounting",
-        default=True,
-        widget=BooleanWidget(
-            label=_("Include and display pricing information"),
-        )
-    ),
-    StringField('Currency',
-        schemata = "Accounting",
-        required = 1,
-        vocabulary = CURRENCIES,
-        default = 'ZAR',
-        widget = SelectionWidget(
-            label=_("Currency"),
-            description=_("Select the currency the site will use to display prices."),
-            format='select',
-        )
-    ),
-    StringField('DefaultCountry',
-        schemata = "Accounting",
-        required = 1,
-        vocabulary = 'getCountries',
-        default = '',
-        widget = SelectionWidget(
-            label=_("Country"),
-            description=_("Select the country the site will show by default"),
-            format='select',
-        )
-    ),
-    FixedPointField('MemberDiscount',
-        schemata = "Accounting",
-        default = '33.33',
-        widget = DecimalWidget(
-            label=_("Member discount %"),
-            description =_(
-                "The discount percentage entered here, is applied to the prices for clients "
-                "flagged as 'members', normally co-operative members or associates deserving "
-                "of this discount"),
-        )
-    ),
-    FixedPointField('VAT',
-        schemata = "Accounting",
-        default = '14.00',
-        widget = DecimalWidget(
-            label=_("VAT %"),
-            description=_(
-                "Enter percentage value eg. 14.0. This percentage is applied system wide "
-                "but can be overwrittem on individual items"),
-        )
-    ),
-    StringField('DecimalMark',
-        schemata = "Results Reports",
-        vocabulary=DECIMAL_MARKS,
-        default = ".",
-        widget = SelectionWidget(
-            label=_("Default decimal mark"),
-            description=_("Preferred decimal mark for reports."),
-            format = 'select',
-        )
-    ),
-    IntegerField('MinimumResults',
-        schemata = "Results Reports",
-        required = 1,
-        default = 5,
-        widget = IntegerWidget(
-            label=_("Minimum number of results for QC stats calculations"),
-            description=_(
-                "Using too few data points does not make statistical sense. "
-                "Set an acceptable minimum number of results before QC statistics "
-                "will be calculated and plotted"),
-            )
-    ),
-    BooleanField('IncludePreviousFromBatch',
-        schemata = "Results Reports",
-        default = False,
-        widget = BooleanWidget(
-            label=_("Include Previous Results From Batch"),
-            description=_(
-                "If there are previous results for a service in the "
-                "same batch of Analysis Requests, they will be displayed "
-                "in the report.")
-        )
-    ),
-    IntegerField('BatchEmail',
-        schemata = "Results Reports",
-        required = 1,
-        default = 5,
-        widget = IntegerWidget(
-            label=_("Maximum columns per results email"),
-            description=_(
-                "Set the maximum number of analysis requests per results email. "
-                "Too many columns per email are difficult to read for some clients "
-                "who prefer fewer results per email"),
-        )
-    ),
-    TextField('ResultFooter',
-        schemata = "Results Reports",
-        default_content_type = 'text/plain',
-        allowed_content_types= ('text/plain', ),
-        default_output_type="text/plain",
-        default="",
-        widget = TextAreaWidget(
-            label=_("Result Footer"),
-            description=_("This text will be appended to results reports."),
-            append_only = False,
-        ),
-    ),
-##    IntegerField('BatchFax',
+PasswordLifetime = IntegerField(
+    'PasswordLifetime',
+    schemata="Security",
+    required=1,
+    default=0,
+    widget=IntegerWidget(
+        label=_("Password lifetime"),
+        description=_(
+            "The number of days before a password expires. 0 disables password expiry"),
+    )
+)
+AutoLogOff = IntegerField(
+    'AutoLogOff',
+    schemata="Security",
+    required=1,
+    default=0,
+    widget=IntegerWidget(
+        label=_("Automatic log-off"),
+        description=_(
+            "The number of minutes before a user is automatically logged off. "
+            "0 disables automatic log-off"),
+    )
+)
+AllowClerksToEditClients = BooleanField(
+    'AllowClerksToEditClients',
+    schemata="Security",
+    default=False,
+    widget=BooleanWidget(
+        label=_("Allow Lab Clerks to create and edit clients"),
+    )
+)
+RestrictWorksheetUsersAccess = BooleanField(
+    'RestrictWorksheetUsersAccess',
+    schemata="Security",
+    default=True,
+    widget=BooleanWidget(
+        label=_("Allow access to worksheets only to assigned analysts"),
+        description=_(
+            "If unticked, analysts will have access to all worksheets.")
+    )
+)
+RestrictWorksheetManagement = BooleanField(
+    'RestrictWorksheetManagement',
+    schemata="Security",
+    default=True,
+    widget=BooleanWidget(
+        label=_("Only lab managers can create and manage worksheets"),
+        description=_("If unticked, analysts and lab clerks will "
+                      "be able to manage Worksheets, too. If the "
+                      "users have restricted access only to those "
+                      "worksheets for which they are assigned, "
+                      "this option will be ticked and readonly.")
+    )
+)
+ShowNewReleasesInfo = BooleanField(
+    'ShowNewReleasesInfo',
+    schemata="Security",
+    default=True,
+    widget=BooleanWidget(
+        label=_("Display an alert on new releases of Bika LIMS"),
+    )
+)
+ShowPrices = BooleanField(
+    'ShowPrices',
+    schemata="Accounting",
+    default=True,
+    widget=BooleanWidget(
+        label=_("Include and display pricing information"),
+    )
+)
+Currency = StringField(
+    'Currency',
+    schemata="Accounting",
+    required=1,
+    vocabulary=CURRENCIES,
+    default='ZAR',
+    widget=SelectionWidget(
+        label=_("Currency"),
+        description=_(
+            "Select the currency the site will use to display prices."),
+        format='select',
+    )
+)
+DefaultCountry = StringField(
+    'DefaultCountry',
+    schemata="Accounting",
+    required=1,
+    vocabulary='getCountries',
+    default='',
+    widget=SelectionWidget(
+        label=_("Country"),
+        description=_("Select the country the site will show by default"),
+        format='select',
+    )
+)
+MemberDiscount = FixedPointField(
+    'MemberDiscount',
+    schemata="Accounting",
+    default='33.33',
+    widget=DecimalWidget(
+        label=_("Member discount %"),
+        description=_(
+            "The discount percentage entered here, is applied to the prices for clients "
+            "flagged as 'members', normally co-operative members or associates deserving "
+            "of this discount"),
+    )
+)
+VAT = FixedPointField(
+    'VAT',
+    schemata="Accounting",
+    default='14.00',
+    widget=DecimalWidget(
+        label=_("VAT %"),
+        description=_(
+            "Enter percentage value eg. 14.0. This percentage is applied system wide "
+            "but can be overwrittem on individual items"),
+    )
+)
+DecimalMark = StringField(
+    'DecimalMark',
+    schemata="Results Reports",
+    vocabulary=DECIMAL_MARKS,
+    default=".",
+    widget=SelectionWidget(
+        label=_("Default decimal mark"),
+        description=_("Preferred decimal mark for reports."),
+        format='select',
+    )
+)
+MinimumResults = IntegerField(
+    'MinimumResults',
+    schemata="Results Reports",
+    required=1,
+    default=5,
+    widget=IntegerWidget(
+        label=_("Minimum number of results for QC stats calculations"),
+        description=_(
+            "Using too few data points does not make statistical sense. "
+            "Set an acceptable minimum number of results before QC statistics "
+            "will be calculated and plotted"),
+    )
+)
+IncludePreviousFromBatch = BooleanField(
+    'IncludePreviousFromBatch',
+    schemata="Results Reports",
+    default=False,
+    widget=BooleanWidget(
+        label=_("Include Previous Results From Batch"),
+        description=_(
+            "If there are previous results for a service in the "
+            "same batch of Analysis Requests, they will be displayed "
+            "in the report.")
+    )
+)
+BatchEmail = IntegerField(
+    'BatchEmail',
+    schemata="Results Reports",
+    required=1,
+    default=5,
+    widget=IntegerWidget(
+        label=_("Maximum columns per results email"),
+        description=_(
+            "Set the maximum number of analysis requests per results email. "
+            "Too many columns per email are difficult to read for some clients "
+            "who prefer fewer results per email"),
+    )
+)
+ResultFooter = TextField(
+    'ResultFooter',
+    schemata="Results Reports",
+    default_content_type='text/plain',
+    allowed_content_types=('text/plain', ),
+    default_output_type="text/plain",
+    default="",
+    widget=TextAreaWidget(
+        label=_("Result Footer"),
+        description=_("This text will be appended to results reports."),
+        append_only=False,
+    )
+)
+##    IntegerField( 'BatchFax',
 ##        schemata = "Results Reports",
 ##        required = 1,
 ##        default = 4,
@@ -224,8 +237,8 @@ schema = BikaFolderSchema.copy() + Schema((
 ##            description = "Too many AR columns per fax will see the font size minimised and could "
 ##                            "render faxes illegible. 4 ARs maximum per page is recommended",
 ##        )
-##    ),
-##    StringField('SMSGatewayAddress',
+##    )
+##    StringField( 'SMSGatewayAddress',
 ##        schemata = "Results Reports",
 ##        required = 0,
 ##        widget = StringWidget(
@@ -234,232 +247,304 @@ schema = BikaFolderSchema.copy() + Schema((
 ##                            "or just the domain, e.g. '@2way.co.za', the contact's mobile phone "
 ##                            "number will be prepended to",
 ##        )
-##    ),
-    BooleanField('SamplingWorkflowEnabled',
-        schemata = "Analyses",
-        default = False,
-        widget = BooleanWidget(
-            label=_("Enable the Sampling workflow"),
-            description=_("Select this to activate the sample collection workflow steps.")
-        ),
-    ),
-    BooleanField(
-        'ShowPartitions',
-        schemata = "Analyses",
-        default = True,
-        widget = BooleanWidget(
-            label=_("Display individual sample partitions "),
-            description=_("Turn this on if you want to work with sample partitions")
-        ),
-    ),
-    BooleanField('CategoriseAnalysisServices',
-        schemata = "Analyses",
-        default = False,
-        widget = BooleanWidget(
-            label=_("Categorise analysis services"),
-            description=_("Group analysis services by category in the LIMS tables, helpful when the list is long")
-        ),
-    ),
-    BooleanField('EnableARSpecs',
-        schemata = "Analyses",
-        default = True,
-        widget = BooleanWidget(
-            label=_("Enable AR Specifications"),
-            description=_(
-                "Analysis specifications which are edited directly on the "
-                "Analysis Request."),
-        ),
-    ),
-    StringField('DefaultARSpecs',
-        schemata = "Analyses",
-        default = 'ar_specs',
-        vocabulary = DEFAULT_AR_SPECS,
-        widget = SelectionWidget(
-            label=_("Default AR Specifications"),
-            description = _(
-                "Choose the default specifications used for all AR views "
-                "to display alerts and notifications.  These will also be "
-                "applied when an AR is published in permanent media, "
-                "e.g. PDF."),
-            format='select',
-        )
-    ),
-    IntegerField('ExponentialFormatThreshold',
-        schemata = "Analyses",
-        required = 1,
-        default = 7,
-        widget = IntegerWidget(
+##    )
+SamplingWorkflowEnabled = BooleanField(
+    'SamplingWorkflowEnabled',
+    schemata="Analyses",
+    default=False,
+    widget=BooleanWidget(
+        label=_("Enable the Sampling workflow"),
+        description=_(
+            "Select this to activate the sample collection workflow steps.")
+    )
+)
+ShowPartitions = BooleanField(
+    'ShowPartitions',
+    schemata="Analyses",
+    default=True,
+    widget=BooleanWidget(
+        label=_("Display individual sample partitions "),
+        description=_("Turn this on if you want to work with sample partitions")
+    )
+)
+CategoriseAnalysisServices = BooleanField(
+    'CategoriseAnalysisServices',
+    schemata="Analyses",
+    default=False,
+    widget=BooleanWidget(
+        label=_("Categorise analysis services"),
+        description=_(
+            "Group analysis services by category in the LIMS tables, helpful when the list is long")
+    )
+)
+EnableARSpecs = BooleanField(
+    'EnableARSpecs',
+    schemata="Analyses",
+    default=True,
+    widget=BooleanWidget(
+        label=_("Enable AR Specifications"),
+        description=_(
+            "Analysis specifications which are edited directly on the "
+            "Analysis Request."),
+    )
+)
+DefaultARSpecs = StringField(
+    'DefaultARSpecs',
+    schemata="Analyses",
+    default='ar_specs',
+    vocabulary=DEFAULT_AR_SPECS,
+    widget=SelectionWidget(
+        label=_("Default AR Specifications"),
+        description=_(
+            "Choose the default specifications used for all AR views "
+            "to display alerts and notifications.  These will also be "
+            "applied when an AR is published in permanent media, "
+            "e.g. PDF."),
+        format='select',
+    )
+)
+ExponentialFormatThreshold = IntegerField(
+    'ExponentialFormatThreshold',
+    schemata="Analyses",
+    required=1,
+    default=7,
+    widget=IntegerWidget(
         label=_("Exponential format threshold"),
         description=_(
             "Result values with at least this number of significant "
             "digits are displayed in scientific notation using the "
             "letter 'e' to indicate the exponent.  The precision can be "
             "configured in individual Analysis Services."),
-        )
-    ),
-    BooleanField('EnableAnalysisRemarks',
-        schemata = "Analyses",
-        default = False,
-        widget = BooleanWidget(
-            label=_("Add a remarks field to all analyses"),
-        ),
-    ),
-    ReferenceField('DryMatterService',
-        schemata = "Analyses",
-        required = 0,
-        vocabulary_display_path_bound = sys.maxint,
-        allowed_types = ('AnalysisService',),
-        relationship = 'SetupDryAnalysisService',
-        vocabulary = 'getAnalysisServices',
-        referenceClass = HoldingReference,
-        widget = ReferenceWidget(
-            label=_("Dry matter analysis"),
-            description=_("The analysis to be used for determining dry matter."),
-        )
-    ),
-    LinesField('ARImportOption',
-        schemata = "Analyses",
-        vocabulary = ARIMPORT_OPTIONS,
-        widget = MultiSelectionWidget(
-            visible = False,
-            label=_("AR Import options"),
-            description = _(
-                "'Classic' indicates importing analysis requests per sample and "
-                "analysis service selection. With 'Profiles', analysis profile keywords "
-                "are used to select multiple analysis services together"),
-        )
-    ),
-    StringField('ARAttachmentOption',
-        schemata = "Analyses",
-        default = 'p',
-        vocabulary = ATTACHMENT_OPTIONS,
-        widget = SelectionWidget(
-            label=_("AR Attachment Option"),
-            description =_(
-                "The system wide default configuration to indicate "
-                "whether file attachments are required, permitted or not "
-                "per analysis request"),
-            format='select',
-        )
-    ),
-    StringField('AnalysisAttachmentOption',
-        schemata = "Analyses",
-        default = 'p',
-        vocabulary = ATTACHMENT_OPTIONS,
-        widget = SelectionWidget(
-            label=_("Analysis Attachment Option"),
-            description =_(
-                "Same as the above, but sets the default on analysis services. "
-                "This setting can be set per individual analysis on its "
-                "own configuration"),
-            format='select',
-        )
-    ),
-    DurationField('DefaultSampleLifetime',
-        schemata = "Analyses",
-        required = 1,
-        default = {"days":30, "hours":0, "minutes":0},
-        widget = DurationWidget(
-            label=_("Default sample retention period"),
-            description =_(
-                "The number of days before a sample expires and cannot be analysed "
-                "any more. This setting can be overwritten per individual sample type "
-                "in the sample types setup"),
-        )
-    ),
-    StringField('AutoPrintLabels',
-        schemata = "Labels",
-        vocabulary = LABEL_AUTO_OPTIONS,
-        widget = SelectionWidget(
-            format = 'select',
-            label=_("Automatic label printing"),
-            description=_(
-                "Select 'Register' if you want labels to be automatically printed when "
-                "new ARs or sample records are created. Select 'Receive' to print labels "
-                "when ARs or Samples are received. Select 'None' to disable automatic printing"),
-        )
-    ),
-    StringField('AutoLabelSize',
-        schemata = "Labels",
-        vocabulary = LABEL_AUTO_SIZES,
-        widget = SelectionWidget(
-            format = 'select',
-            label=_("Label sizes"),
-            description=_("Select the which label to print when automatic label printing is enabled"),
-        )
-    ),
-    PrefixesField('Prefixes',
-        schemata = "ID Server",
-        default = [{'portal_type': 'ARImport', 'prefix': 'AI', 'padding': '4'},
-                   {'portal_type': 'AnalysisRequest', 'prefix': 'client', 'padding': '0'},
-                   {'portal_type': 'Client', 'prefix': 'client', 'padding': '0'},
-                   {'portal_type': 'Batch', 'prefix': 'batch', 'padding': '0'},
-                   {'portal_type': 'DuplicateAnalysis', 'prefix': 'DA', 'padding': '0'},
-                   {'portal_type': 'Invoice', 'prefix': 'I', 'padding': '4'},
-                   {'portal_type': 'ReferenceAnalysis', 'prefix': 'RA', 'padding': '4'},
-                   {'portal_type': 'ReferenceSample', 'prefix': 'RS', 'padding': '4'},
-                   {'portal_type': 'SupplyOrder', 'prefix': 'O', 'padding': '3'},
-                   {'portal_type': 'Worksheet', 'prefix': 'WS', 'padding': '4'},
-                   {'portal_type': 'Pricelist', 'prefix': 'PL', 'padding': '4'},
-                   ],
-#        fixedSize=8,
-        widget=RecordsWidget(
-            label=_("Prefixes"),
-            description=_(
-                "Define the prefixes for the unique sequential IDs the system issues for "
-                "objects. In the 'Padding' field, indicate with how many leading zeros the "
-                "numbers must be padded. E.g. a prefix of WS for worksheets with padding of "
-                "4, will see them numbered from WS-0001 to WS-9999. NB: Note that samples "
-                "and analysis requests are prefixed with sample type abbreviations and are "
-                "not configured in this table - their padding can be set in the specified "
-                "fields below"),
-            allowDelete=False,
-        )
-    ),
-    BooleanField('YearInPrefix',
-        schemata = "ID Server",
-        default = False,
-        widget = BooleanWidget(
-            label=_("Include year in ID prefix"),
-            description=_("Adds a two-digit year after the ID prefix")
-        ),
-    ),
-    IntegerField('SampleIDPadding',
-        schemata = "ID Server",
-        required = 1,
-        default = 4,
-        widget = IntegerWidget(
-            label=_("Sample ID Padding"),
-            description=_("The length of the zero-padding for Sample IDs"),
-        )
-    ),
-    IntegerField('ARIDPadding',
-        schemata = "ID Server",
-        required = 1,
-        default = 2,
-        widget = IntegerWidget(
-            label=_("AR ID Padding"),
-            description=_("The length of the zero-padding for the AR number in AR IDs"),
-        )
-    ),
-    BooleanField('ExternalIDServer',
-        schemata = "ID Server",
-        default = False,
-        widget = BooleanWidget(
-            label=_("Use external ID server"),
-            description = _(
-                "Check this if you want to use a separate ID server. "
-                "Prefixes are configurable separately in each Bika site")
-        ),
-    ),
-    StringField('IDServerURL',
-        schemata = "ID Server",
-        widget = StringWidget(
-            label=_("ID Server URL"),
-            description=_("The full URL: http://URL/path:port")
+    )
+)
+EnableAnalysisRemarks = BooleanField(
+    'EnableAnalysisRemarks',
+    schemata="Analyses",
+    default=False,
+    widget=BooleanWidget(
+        label=_("Add a remarks field to all analyses"),
+    )
+)
+DryMatterService = ReferenceField(
+    'DryMatterService',
+    schemata="Analyses",
+    required=0,
+    vocabulary_display_path_bound=sys.maxint,
+    allowed_types=('AnalysisService',),
+    relationship='SetupDryAnalysisService',
+    vocabulary='getAnalysisServices',
+    referenceClass=HoldingReference,
+    widget=ReferenceWidget(
+        label=_("Dry matter analysis"),
+        description=_("The analysis to be used for determining dry matter."),
+    )
+)
+ARImportOption = LinesField(
+    'ARImportOption',
+    schemata="Analyses",
+    vocabulary=ARIMPORT_OPTIONS,
+    widget=MultiSelectionWidget(
+        visible=False,
+        label=_("AR Import options"),
+        description=_(
+            "'Classic' indicates importing analysis requests per sample and "
+            "analysis service selection. With 'Profiles', analysis profile keywords "
+            "are used to select multiple analysis services together"),
+    )
+)
+ARAttachmentOption = StringField(
+    'ARAttachmentOption',
+    schemata="Analyses",
+    default='p',
+    vocabulary=ATTACHMENT_OPTIONS,
+    widget=SelectionWidget(
+        label=_("AR Attachment Option"),
+        description=_(
+            "The system wide default configuration to indicate "
+            "whether file attachments are required, permitted or not "
+            "per analysis request"),
+        format='select',
+    )
+)
+AnalysisAttachmentOption = StringField(
+    'AnalysisAttachmentOption',
+    schemata="Analyses",
+    default='p',
+    vocabulary=ATTACHMENT_OPTIONS,
+    widget=SelectionWidget(
+        label=_("Analysis Attachment Option"),
+        description=_(
+            "Same as the above, but sets the default on analysis services. "
+            "This setting can be set per individual analysis on its "
+            "own configuration"),
+        format='select',
+    )
+)
+DefaultSampleLifetime = DurationField(
+    'DefaultSampleLifetime',
+    schemata="Analyses",
+    required=1,
+    default={"days": 30, "hours": 0, "minutes": 0},
+    widget=DurationWidget(
+        label=_("Default sample retention period"),
+        description=_(
+            "The number of days before a sample expires and cannot be analysed "
+            "any more. This setting can be overwritten per individual sample type "
+            "in the sample types setup"),
+    )
+)
+AutoPrintLabels = StringField(
+    'AutoPrintLabels',
+    schemata="Labels",
+    vocabulary=LABEL_AUTO_OPTIONS,
+    widget=SelectionWidget(
+        format='select',
+        label=_("Automatic label printing"),
+        description=_(
+            "Select 'Register' if you want labels to be automatically printed when "
+            "new ARs or sample records are created. Select 'Receive' to print labels "
+            "when ARs or Samples are received. Select 'None' to disable automatic printing"),
+    )
+)
+AutoLabelSize = StringField(
+    'AutoLabelSize',
+    schemata="Labels",
+    vocabulary=LABEL_AUTO_SIZES,
+    widget=SelectionWidget(
+        format='select',
+        label=_("Label sizes"),
+        description=_(
+            "Select the which label to print when automatic label printing is enabled"),
+    )
+)
+Prefixes = PrefixesField(
+    'Prefixes',
+    schemata="ID Server",
+    default=[{'portal_type': 'ARImport', 'prefix': 'AI', 'padding': '4'},
+             {'portal_type': 'AnalysisRequest', 'prefix': 'client',
+              'padding': '0'},
+             {'portal_type': 'Client', 'prefix': 'client', 'padding': '0'},
+             {'portal_type': 'Batch', 'prefix': 'batch', 'padding': '0'},
+             {'portal_type': 'DuplicateAnalysis', 'prefix': 'DA',
+              'padding': '0'},
+             {'portal_type': 'Invoice', 'prefix': 'I', 'padding': '4'},
+             {'portal_type': 'ReferenceAnalysis', 'prefix': 'RA',
+              'padding': '4'},
+             {'portal_type': 'ReferenceSample', 'prefix': 'RS', 'padding': '4'},
+             {'portal_type': 'SupplyOrder', 'prefix': 'O', 'padding': '3'},
+             {'portal_type': 'Worksheet', 'prefix': 'WS', 'padding': '4'},
+             {'portal_type': 'Pricelist', 'prefix': 'PL', 'padding': '4'},
+    ],
+    # fixedSize=8,
+    widget=RecordsWidget(
+        label=_("Prefixes"),
+        description=_(
+            "Define the prefixes for the unique sequential IDs the system issues for "
+            "objects. In the 'Padding' field, indicate with how many leading zeros the "
+            "numbers must be padded. E.g. a prefix of WS for worksheets with padding of "
+            "4, will see them numbered from WS-0001 to WS-9999. NB: Note that samples "
+            "and analysis requests are prefixed with sample type abbreviations and are "
+            "not configured in this table - their padding can be set in the specified "
+            "fields below"),
+        allowDelete=False,
+    )
+)
+YearInPrefix = BooleanField(
+    'YearInPrefix',
+    schemata="ID Server",
+    default=False,
+    widget=BooleanWidget(
+        label=_("Include year in ID prefix"),
+        description=_("Adds a two-digit year after the ID prefix")
+    )
+)
+SampleIDPadding = IntegerField(
+    'SampleIDPadding',
+    schemata="ID Server",
+    required=1,
+    default=4,
+    widget=IntegerWidget(
+        label=_("Sample ID Padding"),
+        description=_("The length of the zero-padding for Sample IDs"),
+    )
+)
+ARIDPadding = IntegerField(
+    'ARIDPadding',
+    schemata="ID Server",
+    required=1,
+    default=2,
+    widget=IntegerWidget(
+        label=_("AR ID Padding"),
+        description=_(
+            "The length of the zero-padding for the AR number in AR IDs"),
+    )
+)
+ExternalIDServer = BooleanField(
+    'ExternalIDServer',
+    schemata="ID Server",
+    default=False,
+    widget=BooleanWidget(
+        label=_("Use external ID server"),
+        description=_(
+            "Check this if you want to use a separate ID server. "
+            "Prefixes are configurable separately in each Bika site")
+    )
+)
+IDServerURL = StringField(
+    'IDServerURL',
+    schemata="ID Server",
+    widget=StringWidget(
+        label=_("ID Server URL"),
+        description=_("The full URL: http://URL/path:port")
 
-        ),
-    ),
+    )
+)
+
+schema = BikaFolderSchema.copy() + Schema((
+    # Security
+    PasswordLifetime,
+    AutoLogOff,
+    AllowClerksToEditClients,
+    RestrictWorksheetUsersAccess,
+    RestrictWorksheetManagement,
+    ShowNewReleasesInfo,
+    # Acccounting
+    ShowPrices,
+    Currency,
+    DefaultCountry,
+    MemberDiscount,
+    VAT,
+    # Results Reports
+    #    BatchFax,
+    #    SMSGatewayAddress,
+    DecimalMark,
+    MinimumResults,
+    IncludePreviousFromBatch,
+    BatchEmail,
+    ResultFooter,
+    # Analyses
+    SamplingWorkflowEnabled,
+    ShowPartitions,
+    CategoriseAnalysisServices,
+    EnableARSpecs,
+    DefaultARSpecs,
+    ExponentialFormatThreshold,
+    EnableAnalysisRemarks,
+    DryMatterService,
+    ARImportOption,
+    ARAttachmentOption,
+    AnalysisAttachmentOption,
+    DefaultSampleLifetime,
+    # Labels
+    AutoPrintLabels,
+    AutoLabelSize,
+    # ID Server
+    Prefixes,
+    YearInPrefix,
+    SampleIDPadding,
+    ARIDPadding,
+    ExternalIDServer,
+    IDServerURL,
 ))
 
 schema['title'].validators = ()
