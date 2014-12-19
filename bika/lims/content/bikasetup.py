@@ -277,7 +277,7 @@ CategoriseAnalysisServices = BooleanField(
             "Group analysis services by category in the LIMS tables, helpful when the list is long")
     )
 )
-StringField(
+ARAddServiceSelector = StringField(
     'ARAddServiceSelector',
     schemata="Analyses",
     vocabulary=AR_ADD_SERVICE_SELECTORS,
@@ -540,6 +540,7 @@ schema = BikaFolderSchema.copy() + Schema((
     SamplingWorkflowEnabled,
     ShowPartitions,
     CategoriseAnalysisServices,
+    ARAddServiceSelector,
     EnableARSpecs,
     DefaultARSpecs,
     ExponentialFormatThreshold,
