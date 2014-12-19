@@ -90,13 +90,13 @@
                                     catalog_name="bika_setup_catalog"
                                     ui_item="Title"
                                     autocomplete="false"
-                                    combogrid_options='{"colModel": [{"columnName": "getKeyword", "align": "left", "label": "Keyword", "width": "25"},
-                                                                     {"columnName": "getCategoryTitle", "align": "left", "label": "Category", "width": "25"},
+                                    combogrid_options='{"colModel": [{"columnName": "getKeyword", "align": "left", "label": "Keyword", "width": "15"},
+                                                                     {"columnName": "Identifiers", "align": "left", "label": "Identifiers", "width": "35"},
                                                                      {"columnName": "Title", "align": "left", "label": "Title", "width": "50"},
                                                                      {"columnName": "getPrice", "hidden": true},
                                                                      {"columnName": "getVAT", "hidden": true},
                                                                      {"columnName": "UID", "hidden": true}],
-                                    "search_fields": ["Title", "getKeyword", "getCategoryTitle", "SearchableText"],
+                                    "search_fields": ["getKeyword", "Identifiers", "Title", "SearchableText"],
                                     "catalog_name": "bika_setup_catalog",
                                     "url": "referencewidget_search",
                                     "discard_empty": [],
