@@ -102,8 +102,9 @@
                                  combogrid_options python:widget.get_combogrid_options(context, fieldName)"
                  />
             <span tal:condition="widget/isAddButtonVisible">
-                <a class="add_"
-                   href=""
+                <a style="border-bottom:none !important;margin-left:.5;"
+                   class="add_button_overlay  link-overlay"
+                   tal:attributes="href widget/getAddButtonUrl"
                    rel="#overlay">
                     <img style="padding-bottom:1px;" src="++resource++bika.lims.images/add.png"/>
                 </a>

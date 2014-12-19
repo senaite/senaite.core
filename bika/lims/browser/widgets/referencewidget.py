@@ -53,7 +53,9 @@ class ReferenceWidget(StringWidget):
         'sidx': 'Title',
         'force_all': True,
         'portal_types': {},
-        'showAddButton': False
+        'showAddButton': False,
+        # The window's content-to-display URL: "/patients/portal_factory/Patient/patien/edit"
+        'addButtonUrl': "",
 
     })
     security = ClassSecurityInfo()
@@ -142,6 +144,13 @@ class ReferenceWidget(StringWidget):
         elif vis_dic < 0:
             state = 'hidden'
         return state == 'visible'
+
+    def getAddButtonUrl(self):
+        """
+        :return: URL of the window to display after click the widget's AddButton
+        """
+        src= self.portal_url()
+        return src + self.addButtonUrl
 
 registerWidget(ReferenceWidget, title='Reference Widget')
 
