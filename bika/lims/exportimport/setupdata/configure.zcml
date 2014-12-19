@@ -87,12 +87,6 @@
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
 
     <adapter
-      name="Identifier_Types"
-      factory="bika.lims.exportimport.setupdata.Identifier_Types"
-      provides="bika.lims.interfaces.ISetupDataImporter"
-      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
-
-    <adapter
       name="Instrument_Types"
       factory="bika.lims.exportimport.setupdata.Instrument_Types"
       provides="bika.lims.interfaces.ISetupDataImporter"
@@ -281,6 +275,18 @@
     <adapter
       name="Supply_Orders"
       factory="bika.lims.exportimport.setupdata.Supply_Orders"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Identifier_Types"
+      factory="bika.lims.exportimport.setupdata.Identifier_Types"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
+      name="Identifiers"
+      factory="bika.lims.exportimport.setupdata.Identifiers"
       provides="bika.lims.interfaces.ISetupDataImporter"
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
 

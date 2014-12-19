@@ -245,7 +245,6 @@ class WorksheetImporter:
 
 
 class Sub_Groups(WorksheetImporter):
-
     def Import(self):
         folder = self.context.bika_setup.bika_subgroups
         for row in self.get_rows(3):
@@ -1915,5 +1914,72 @@ class Supply_Orders(WorksheetImporter):
             create_supply_order_item(
                 obj, row['product_title'], row['product_quantity']
             )
+
+
+class Identifier_Types(WorksheetImporter):
+    def Import(self):
+        folder = self.context.bika_setup.bika_identifiertypes
+        for row in self.get_rows(3):
+            if 'title' in row and row['title']:
+                obj = _createObjectByType("IdentifierType", folder, tmpID())
+                obj.edit(title=row['title'],
+                         description=row['description'],
+                         SortKey=row['SortKey'])
+                obj.unmarkCreationFlag()
+                renameAfterCreation(obj)
+
+
+class Identifiers(WorksheetImporter):
+    def get_catalog(self, objecttype):
+        at = getToolByName(self.context, 'archetype_tool')
+        catalog_name = at.catalog_map[objecttype][0] \
+            if objecttype in at.catalog_map else 'portal_catalog'
+        catalog = getToolByName(self.context, catalog_name)
+        return catalog
+
+    def Import(self):
+        for row in self.get_rows(3):
+            # find the object referenced by ObjectType and ObjectTitle
+            objecttype = row['ObjectType']
+            objecttitle = row['ObjectTitle']
+            catalog = self.get_catalog(objecttype)
+            try:
+                brain = catalog(portal_type=objecttype,
+                                   title=safe_unicode(objecttitle))[0]
+                instance = brain.getObject()
+            except:
+                logger.info("Object not found; no identifier loaded: %s" % row)
+                continue
+            # grab the Identifier details from the row
+            idtype = row['IdentifierType']
+            ident = row['Identifier']
+            idtitle = row['Title']
+            iddescr = row['Description']
+            if not (id and idtype and idtitle):
+                logger.info("Invalid Identifier data at row %s" % row)
+                continue
+            Identifier = {
+                'IdentifierType': idtype,
+                'Identifier': ident,
+                'Title': safe_unicode(idtitle),
+                'Description': safe_unicode(iddescr)
+            }
+            # write away this identifier
+            Identifiers = instance.Schema()['Identifiers'].get(instance)
+            Identifiers.append(Identifier)
+            instance.Schema()['Identifiers'].set(instance, Identifiers)
+            # Then any synonyms
+            for syn in row['IdentifierSynonyms'].split(";"):
+                if syn:
+                    Identifier = {
+                        'IdentifierType': idtype,
+                        'Identifier': ident,
+                        'Title': safe_unicode(syn),
+                        'Description': safe_unicode(iddescr)
+                    }
+                    Identifiers = instance.Schema()['Identifiers'].get(instance)
+                    Identifiers.append(Identifier)
+                    instance.Schema()['Identifiers'].set(instance, Identifiers)
+            instance.reindexObject(["Identifiers"])
 
 
