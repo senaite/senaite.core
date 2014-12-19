@@ -134,15 +134,16 @@ class ajaxGetIdentifierTypes(BrowserView):
         brains = self.bika_setup_catalog(portal_type='IdentifierType',
                                          inactive_state='active')
         if brains and searchTerm:
-            brains = [p for p in brains if p.Title.lower(
-            ).find(searchTerm) > -1]
+            brains = [p for p in brains
+                      if p.Title.lower().find(searchTerm) > -1]
 
         for p in brains:
             rows.append({'IdentifierType': p.Title,
                          'Description': p.Description})
 
-        rows = sorted(rows, cmp=lambda x, y: cmp(x.lower(
-        ), y.lower()), key=itemgetter(sidx and sidx or 'IdentifierType'))
+        rows = sorted(rows,
+                      cmp=lambda x, y: cmp(x.lower(), y.lower()),
+                      key=itemgetter(sidx and sidx or 'IdentifierType'))
         if sord == 'desc':
             rows.reverse()
         pages = len(rows) / int(nr_rows)
@@ -150,6 +151,7 @@ class ajaxGetIdentifierTypes(BrowserView):
         ret = {'page': page,
                'total': pages,
                'records': len(rows),
-               'rows': rows[(int(page) - 1) * int(nr_rows): int(page) * int(
-                   nr_rows)]}
+               'rows': rows[(int(page) - 1) * int(nr_rows):
+                            int(page) * int(nr_rows)]
+        }
         return json.dumps(ret)
