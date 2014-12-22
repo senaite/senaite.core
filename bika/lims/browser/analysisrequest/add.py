@@ -1,24 +1,21 @@
 import json
-import plone
 
+from Products.AdvancedQuery import Eq, Or, MatchGlob
+import plone
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analysisrequest import AnalysisRequestViewView
-from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
 from bika.lims.controlpanel.bika_analysisservices import \
     AnalysisServicesView as ASV
 from bika.lims.interfaces import IAnalysisRequestAddView
-from bika.lims.utils import getHiddenAttributesForClass, dicts_to_dict
-from bika.lims.utils import t
-from bika.lims.utils import tmpID
+from bika.lims.utils import t, to_utf8
 from bika.lims.utils.analysisrequest import create_analysisrequest
 from bika.lims.utils.form import ajax_form_error
-from magnitude import mg
 from plone.app.layout.globals.interfaces import IViewView
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType, safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+import re
 from zope.component import getAdapter
 from zope.interface import implements
 
@@ -49,9 +46,9 @@ class AnalysisServicesView(ASV):
         self.ar_add_items = []
 
         # Customise form for AR Add context
-        self.form_id = "services"
+        self.form_id = 'services'
 
-        self.filter_indexes = ["id", "Title", "SearchableText", "getKeyword"]
+        self.filter_indexes = ['id', 'Title', 'SearchableText', 'getKeyword']
 
         self.pagesize = 0
         self.table_only = True
@@ -175,7 +172,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
     """ The main AR Add form
     """
     implements(IViewView, IAnalysisRequestAddView)
-    template = ViewPageTemplateFile("templates/ar_add.pt")
+    template = ViewPageTemplateFile('templates/ar_add.pt')
     ar_add_by_row_template = ViewPageTemplateFile('templates/ar_add_by_row.pt')
     ar_add_by_col_template = ViewPageTemplateFile('templates/ar_add_by_col.pt')
 
@@ -198,7 +195,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
 
     def copy_to_new_specs(self):
         specs = {}
-        copy_from = self.request.get('copy_from', "")
+        copy_from = self.request.get('copy_from', '')
         if not copy_from:
             return {}
         uids = copy_from.split(",")
@@ -259,7 +256,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         s.folderitems()
 
         if not s.ar_add_items:
-            return ""
+            return ''
         return s.contents_table()
 
 
@@ -281,7 +278,7 @@ class SecondaryARSampleInfo(BrowserView):
         uid = self.request.get('Sample_uid', False)
         if not uid:
             return []
-        uc = getToolByName(self.context, "uid_catalog")
+        uc = getToolByName(self.context, 'uid_catalog')
         proxies = uc(UID=uid)
         if not proxies:
             return []
@@ -313,6 +310,7 @@ class ajaxAnalysisRequestSubmit():
     as possible, the incoming json arrays should already match the requirement
     of the underlying AR/sample schema.
     """
+
     def __init__(self, context, request):
         self.context = context
         self.request = request
@@ -345,12 +343,12 @@ class ajaxAnalysisRequestSubmit():
         for arnum, state in states.items():
             # Secondary ARs are a special case, these fields are not required
             if state.get('Sample', ''):
-                required.remove("SamplingDate")
-                required.remove("SampleType")
-            # fields flagged as "hidden" are not considered required because
+                required.remove('SamplingDate')
+                required.remove('SampleType')
+            # fields flagged as 'hidden' are not considered required because
             # they will already have default values inserted in them
             for fieldname in required:
-                if fieldname+"_hidden" in state:
+                if fieldname + '_hidden' in state:
                     required.remove(fieldname)
             missing = [f for f in required if not state.get(f, '')]
             # if all required fields are not present, we assume that the
@@ -359,11 +357,13 @@ class ajaxAnalysisRequestSubmit():
                 continue
             # If there are required fields missing, flag an error
             if missing:
-                import pdb, sys; pdb.Pdb(stdout=sys.__stdout__).set_trace()
-                msg = t(_("${arnum}: Required fields have no values: "
-                          "${field_names}",
+                import pdb, sys;
+
+                pdb.Pdb(stdout=sys.__stdout__).set_trace()
+                msg = t(_('${arnum}: Required fields have no values: '
+                          '${field_names}',
                           mapping={'arnum': arnum,
-                                   'field_names': ", ".join(missing)}))
+                                   'field_names': ', '.join(missing)}))
                 ajax_form_error(self.errors, arnum=arnum, message=msg)
                 continue
             # This ar is valid!
@@ -373,9 +373,9 @@ class ajaxAnalysisRequestSubmit():
         # - Transfer _uid values into their respective fields
         for arnum in valid_states.keys():
             for field, value in valid_states[arnum].items():
-                if field.endswith("_uid") and "," in value:
-                    valid_states[arnum][field] = value.split(",")
-                elif field.endswith("_uid"):
+                if field.endswith('_uid') and ',' in value:
+                    valid_states[arnum][field] = value.split(',')
+                elif field.endswith('_uid'):
                     valid_states[arnum][field] = value
 
         if self.errors:
@@ -387,12 +387,14 @@ class ajaxAnalysisRequestSubmit():
                 instance = uc(UID=uid)[0].getObject()
                 return instance
             except Exception as e:
-                msg = t(_("Cannot resolve UID: ${uid}", mapping={'uid': uid}))
+                msg = t(_('Cannot resolve UID: ${uid}', mapping={'uid': uid}))
                 ajax_form_error(self.errors, field=t(_('Client')),
                                 arnum=arnum, message=msg)
                 return json.dumps({'errors': self.errors})
 
-            import pdb, sys; pdb.Pdb(stdout=sys.__stdout__).set_trace()
+            import pdb, sys;
+
+            pdb.Pdb(stdout=sys.__stdout__).set_trace()
             # Create the Analysis Request
             ar = create_analysisrequest(
                 client,
@@ -403,28 +405,80 @@ class ajaxAnalysisRequestSubmit():
                 specifications=specs.values(),
             )
 
+            # # Display the appropriate message after creation
+            # if len(ARs) > 1:
+            # message = _('Analysis requests ${ARs} were successfully created.',
+            # mapping={'ARs': safe_unicode(', '.join(ARs))})
+            # else:
+            # message = _('Analysis request ${AR} was successfully created.',
+            # mapping={'AR': safe_unicode(ARs[0])})
+            # self.context.plone_utils.addPortalMessage(message, 'info')
+            # # Automatic label printing
+            # # Won't print labels for Register on Secondary ARs
+            # new_ars = None
+            # if came_from == 'add':
+            # new_ars = [ar for ar in ARs if ar[-2:] == '01']
+            # if 'register' in self.context.bika_setup.getAutoPrintLabels() and new_ars:
+            # return json.dumps({
+            # 'success': message,
+            # 'labels': new_ars,
+            # 'labelsize': self.context.bika_setup.getAutoLabelSize()
+            # })
+            # else:
+            # return json.dumps({'success': message})
 
 
+class ajaxServiceSelectorVocabulary(object):
+    """During AR Add, if the single-service selection form is enabled,
+    this view is responsible for supplying search results to the combo-grid.
+    """
 
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
 
-        # # Display the appropriate message after creation
-        # if len(ARs) > 1:
-        #     message = _("Analysis requests ${ARs} were successfully created.",
-        #                 mapping={'ARs': safe_unicode(', '.join(ARs))})
-        # else:
-        #     message = _("Analysis request ${AR} was successfully created.",
-        #                 mapping={'AR': safe_unicode(ARs[0])})
-        # self.context.plone_utils.addPortalMessage(message, 'info')
-        # # Automatic label printing
-        # # Won't print labels for Register on Secondary ARs
-        # new_ars = None
-        # if came_from == 'add':
-        #     new_ars = [ar for ar in ARs if ar[-2:] == '01']
-        # if 'register' in self.context.bika_setup.getAutoPrintLabels() and new_ars:
-        #     return json.dumps({
-        #         'success': message,
-        #         'labels': new_ars,
-        #         'labelsize': self.context.bika_setup.getAutoLabelSize()
-        #     })
-        # else:
-        #     return json.dumps({'success': message})
+    def __call__(self):
+        plone.protect.CheckAuthenticator(self.request)
+        searchTerm = to_utf8(self.request.get('searchTerm', '')).lower()
+        sidx = self.request.get('sidx', 'sortable_title')
+        sord = self.request.get('sord', 'asc')
+        catalog = getToolByName(self.context, 'bika_setup_catalog')
+        # Creative/Crazy catalog searching for quickly finding
+        # items from different types of IDs stored in the KeywordIndex.
+        # see bika.lims/bika/lims/adapters/identifiers.py:IdentifiersIndexer
+        clean_searchTerm = re.sub('\W', '_', searchTerm).lower()
+        query = Eq('portal_type', 'AnalysisService') & Or(
+            MatchGlob('SearchableText', '*%s*' % searchTerm),
+            MatchGlob('Identifiers', '*%s*' % clean_searchTerm),
+            MatchGlob('getKeyword', '*%s*' % searchTerm)
+        )
+        brains = catalog.evalAdvancedQuery(query)
+        # Figure out the batching; we only want to access the visible items
+        page = int(self.request['page'])
+        nr_rows = int(self.request['rows'])
+        pages = len(brains) / int(nr_rows)
+        pages += divmod(len(brains), int(nr_rows))[1] and 1 or 0
+        start = (int(page) - 1) * int(nr_rows)
+        end = int(page) * int(nr_rows)
+        rows = []
+        for brain in brains[start:end]:
+            instance = brain.getObject()
+            identifiers = []
+            for identifier in instance.Schema()['Identifiers'].get(instance):
+                identifier = identifier['Identifier']
+                if identifier not in identifiers:
+                    identifiers.append(identifier)
+            item = {
+                'UID': instance.UID(),
+                'Keyword': instance.Schema()['Keyword'].get(instance),
+                'Title': instance.Schema()['title'].get(instance),
+                'Price': instance.Schema()['Price'].get(instance),
+                'VAT': instance.Schema()['VAT'].get(instance),
+                'Identifiers': '; '.join(identifiers),
+            }
+            rows.append(item)
+        ret = {'page': page,
+               'total': pages,
+               'records': len(rows),
+               'rows': rows}
+        return json.dumps(ret)

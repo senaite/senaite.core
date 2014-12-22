@@ -5,6 +5,11 @@
             tal:attributes="src python:portal.absolute_url() + '/bika_widgets/referencewidget.js'"></script>
     <link rel="stylesheet" type="text/css" media="all" href=""
             tal:attributes="href string:${portal/absolute_url}/bika_widgets/referencewidget.css"/>
+    <style media="screen" type="text/css">
+        #singleservice {
+            width:90%;
+        }
+    </style>
     <table summary="Add analysis requests"
            class="listing analysisrequest add nosort"
            cellpadding="0" cellspacing="0">
@@ -77,39 +82,11 @@
             <tr class="service_selector single-select" uid="new">
                 <tal:def define="errors python:{}">
                     <td colspan="2" style="white-space:nowrap;text-align:left">
-                        <span class="field ArchetypesReferenceWidget">
-                            <input
-                                    type="text"
-                                    placeholder="Type to find Analysis Services"
-                                    name="singleservice"
-                                    id="singleservice"
-                                    class="blurrable firstToFocus referencewidget"
-                                    value=""
-                                    base_query='{"portal_type": "AnalysisService", "inactive_state": "active"}'
-                                    search_query='{}'
-                                    catalog_name="bika_setup_catalog"
-                                    ui_item="Title"
-                                    autocomplete="false"
-                                    combogrid_options='{"colModel": [{"columnName": "getKeyword", "align": "left", "label": "Keyword", "width": "15"},
-                                                                     {"columnName": "Identifiers", "align": "left", "label": "Identifiers", "width": "35"},
-                                                                     {"columnName": "Title", "align": "left", "label": "Title", "width": "50"},
-                                                                     {"columnName": "getPrice", "hidden": true},
-                                                                     {"columnName": "getVAT", "hidden": true},
-                                                                     {"columnName": "UID", "hidden": true}],
-                                    "search_fields": ["getKeyword", "Identifiers", "Title", "SearchableText"],
-                                    "catalog_name": "bika_setup_catalog",
-                                    "url": "referencewidget_search",
-                                    "discard_empty": [],
-                                    "width": "600px",
-                                    "showOn": false,
-                                    "searchIcon": true,
-                                    "minLength": "1",
-                                    "resetButton": false,
-                                    "sord": "asc",
-                                    "sidx": "Title",
-                                    "force_all": true,
-                                    "portal_types": {}}'/>
-                        </span>
+                        <input type="text"
+                               placeholder="Type to find Analysis Services"
+                               id="singleservice"
+                               name="singleservice"
+                               value=""/>
                     </td>
                     <td>
                         <input type="checkbox"

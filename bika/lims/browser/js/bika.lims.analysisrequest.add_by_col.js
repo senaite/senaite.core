@@ -56,7 +56,11 @@ function AnalysisRequestAddByCol() {
 		specification_selected()
 		template_selected()
 		analysis_cb_click()                     // also select-all checkboxes
-		singleservice_dropdown_item_selected()  // single-service selector
+
+		/* Configure the single-service selector dropdown and handlers
+		 *
+		 */
+		singleservice_dropdown_init()
 		singleservice_deletebtn_click()
 
 		form_submit()
@@ -99,7 +103,7 @@ function AnalysisRequestAddByCol() {
 				   var name = $(e).attr('fieldname') ? $(e).attr('fieldname') : $(e).attr('name')
 				   var value = $(e).attr("uid") ? $(e).attr("uid") : $(e).val()
 				   state_set(arnum, name, value)
-				   state_set(arnum, name+"_hidden", true)
+				   state_set(arnum, name + "_hidden", true)
 			   })
 		// other field values which are handled similarly:
 		$.each($('td[arnum] input[type="text"], td[arnum] input.referencewidget'),
@@ -504,7 +508,11 @@ function AnalysisRequestAddByCol() {
 		$('input[name="' + fieldName + '_uid"]').val('')
 		$("#ar\\." + arnum + "\\.CCContact-listing").empty()
 		if (contact_uid !== "") {
-			var request_data = {portal_type: "Contact", UID: contact_uid}
+			var request_data = {
+				catalog_name: "portal_catalog",
+				portal_type: "Contact",
+				UID: contact_uid
+			}
 			window.bika.lims.jsonapi_read(request_data, function (data) {
 				if (data.objects && data.objects.length < 1) return
 				var ob = data.objects[0]
@@ -827,7 +835,7 @@ function AnalysisRequestAddByCol() {
 	}
 
 	function samplepoint_selected() {
-		$("[id*='_SamplePoint']").live('selected', function(event, item){
+		$("[id*='_SamplePoint']").live('selected', function (event, item) {
 			arnum = $(this).parents("[arnum]").attr("arnum")
 			samplepoint_set(arnum)
 		})
@@ -889,6 +897,7 @@ function AnalysisRequestAddByCol() {
 		template_unset(arnum)
 		var d = $.Deferred()
 		var request_data = {
+			catalog_name: "bika_setup_catalog",
 			portal_type: "AnalysisProfile",
 			title: profile_title
 		}
@@ -922,6 +931,7 @@ function AnalysisRequestAddByCol() {
 		var d = $.Deferred()
 		analysis_unset_all(arnum)
 		var request_data = {
+			catalog_name: "bika_setup_catalog",
 			portal_type: "ARTemplate",
 			title: template_title,
 			include_fields: [
@@ -1058,6 +1068,7 @@ function AnalysisRequestAddByCol() {
 			$("#singleservice").val(title)
 			$("#singleservice").attr('uid', uid)
 			$("#singleservice").attr('keyword', keyword)
+			$("#singleservice").attr("title", title)
 			singleservice_dropdown_item_duplicate()
 			analysis_cb_check(arnum, uid)
 		}
@@ -1199,19 +1210,55 @@ function AnalysisRequestAddByCol() {
 
 	}
 
-	function singleservice_dropdown_item_selected() {
-		/* Add new table rows when services are added with single-select form.
-		 *
-		 * :element: #singleservice: the combogrid enabled text input
-		 * :event: selected: a vocabulary item is selected.
+	function singleservice_dropdown_init() {
+		/*
+		 * Configure the single-service selector combogrid
 		 */
-		$("#singleservice").live('selected', function (event, item) {
-			// Set the 'uid' and 'keyword' attributes on #singleservice
-			// we require the _duplicate function to set them on the actual TR.
-			$("#singleservice").attr("uid", item.UID)
-			$("#singleservice").attr("keyword", item.Keyword)
-			singleservice_dropdown_item_duplicate()
-		})
+		var authenticator = $("[name='_authenticator']").val()
+		var url = window.location.href.split("/portal_factory")[0] +
+			"/service_selector?_authenticator=" + authenticator
+		var options = {
+			url: url,
+			width: "700px",
+			showOn: false,
+			searchIcon: true,
+			minLength: "2",
+			resetButton: false,
+			sord: "asc",
+			sidx: "Title",
+			colModel: [
+				{
+					"columnName": "Title",
+					"align": "left",
+					"label": "Title",
+					"width": "50"
+				},
+				{
+					"columnName": "Identifiers",
+					"align": "left",
+					"label": "Identifiers",
+					"width": "35"
+				},
+				{
+					"columnName": "Keyword",
+					"align": "left",
+					"label": "Keyword",
+					"width": "15"
+				},
+				{"columnName": "Price", "hidden": true},
+				{"columnName": "VAT", "hidden": true},
+				{"columnName": "UID", "hidden": true}
+			],
+			select: function (event, ui) {
+				// Set some attributes on #singleservice to assist the
+				// singleservice_dropdown_item_duplicate function in it's work
+				$("#singleservice").attr("uid", ui.item.UID)
+				$("#singleservice").attr("keyword", ui.item.Keyword)
+				$("#singleservice").attr("title", ui.item.Title)
+				singleservice_dropdown_item_duplicate()
+			}
+		}
+		$("#singleservice").combogrid(options)
 	}
 
 	function singleservice_dropdown_item_duplicate() {
@@ -1219,16 +1266,13 @@ function AnalysisRequestAddByCol() {
 		 * this function is reponsible for duplicating the TR.  This is
 		 * factored out so that template, profile etc, can also duplicate
 		 * rows.
-		 *
-		 * This function is also responsible for inserting hidden Pricing
-		 * information.  Pricing info is also inserted when Templates or
-		 * Profiles are selected.
 		 */
 		var tr = $("#singleservice").parents("tr")
 		// The uid and keyword attributes are set via the 'selected' handler,
 		// or manually by the template/profile completion
 		var uid = $("#singleservice").attr("uid")
 		var keyword = $("#singleservice").attr("keyword")
+		var title = $("#singleservice").attr("title")
 		// clone tr *before* anything else
 		var new_tr = $(tr).clone()
 		/* Clobber the old row first, set all it's attributes to look like
@@ -1250,7 +1294,7 @@ function AnalysisRequestAddByCol() {
 				.attr('name', 'ar.' + i + '.' + uid)
 		}
 		// select_all
-		$(tr).find("input[name='uds:list']").attr('value', uid)
+		$(tr).find("input[name='uids:list']").attr('value', uid)
 		// alert containers
 		$(tr).find('.alert').attr('uid', uid)
 		// Replace the text widget with a label, delete btn etc:
@@ -1258,8 +1302,8 @@ function AnalysisRequestAddByCol() {
 			"<a href='#' class='deletebtn'><img src='" + portal_url +
 			"/++resource++bika.lims.images/delete.png' uid='" + uid +
 			"' style='vertical-align: -3px;'/></a>&nbsp;" +
-			"<span>" + $("#singleservice").val() + "</span>")
-		$(tr).find(".ArchetypesReferenceWidget").replaceWith(service_label)
+			"<span>" + title + "</span>")
+		$(tr).find("#singleservice").replaceWith(service_label)
 		// Set spec values manually for the row xxxyz
 		// Configure and insert new row
 		$(new_tr).find("[type='checkbox']").removeAttr("checked")
@@ -1268,8 +1312,8 @@ function AnalysisRequestAddByCol() {
 		$(new_tr).find("#singleservice").attr("keyword", "")
 		$(new_tr).find("#singleservice").removeClass("has_combogrid_widget")
 		$(tr).after(new_tr)
-		referencewidget_lookups()
 		specification_apply()
+		singleservice_dropdown_init()
 	}
 
 	function singleservice_deletebtn_click() {
