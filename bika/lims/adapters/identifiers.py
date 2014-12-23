@@ -1,41 +1,37 @@
 from operator import itemgetter
 import json
 
+from Products.CMFPlone.utils import safe_unicode
+
 from archetypes.schemaextender.interfaces import IOrderableSchemaExtender, \
     ISchemaModifier
-from bika.lims import bikaMessageFactory as _, to_utf8
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
 from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.fields import ExtRecordsField
-from bika.lims.interfaces import IHaveIdentifiers, IBikaCatalog, \
-    IBikaSetupCatalog
+from bika.lims.interfaces import IHaveIdentifiers, IBikaSetupCatalog, \
+    IBikaCatalog
 from plone.indexer import indexer
+import re
 from zope.component import adapts
 import plone
 from zope.interface import implements
 
 
 @indexer(IHaveIdentifiers, IBikaCatalog)
-def IBikaCatalogIdentifiersIndexer(instance):
-    try:
-        Identifiers = instance.Schema()['Identifiers'].get(instance)
-    except:
-        return None
-    if Identifiers:
-        return [to_utf8(i['Identifier']) for i in Identifiers] + \
-               [to_utf8(i['Title']) for i in Identifiers]
-
-
 @indexer(IHaveIdentifiers, IBikaSetupCatalog)
-def IBikaSetupCatalogIdentifiersIndexer(instance):
-    try:
-        Identifiers = instance.Schema()['Identifiers'].get(instance)
-    except:
-        return None
-    if Identifiers:
-        return [to_utf8(i['Identifier']) for i in Identifiers] + \
-               [to_utf8(i['Title']) for i in Identifiers]
-
+def IdentifiersIndexer(instance):
+    """Return a list of unique Identifier strings
+    This populates the Identifiers ZCFullText index, but with some
+    replacements to prevent the word-splitter etc from taking effect.
+    """
+    identifiers = instance.Schema()['Identifiers'].get(instance)
+    ret = []
+    for identifier in [safe_unicode(i['Identifier']) for i in identifiers]:
+        clean_identifier = re.sub('\W', '_', identifier).lower()
+        if clean_identifier not in ret:
+            ret.append(clean_identifier)
+    return " ".join(ret)
 
 Identifiers = ExtRecordsField(
     'Identifiers',
@@ -94,8 +90,7 @@ class IHaveIdentifiersSchemaExtender(object):
         """
         schemata = self.context.schema['description'].schemata
         fields = schematas[schemata]
-        fields.insert(fields.index('description') + 1,
-                      'Identifiers')
+        fields.insert(fields.index('description') + 1, 'Identifiers')
         return schematas
 
     def getFields(self):
@@ -150,6 +145,7 @@ class ajaxGetIdentifierTypes(BrowserView):
         ret = {'page': page,
                'total': pages,
                'records': len(rows),
-               'rows': rows[(int(page) - 1) * int(nr_rows): int(page) * int(
-                   nr_rows)]}
+               'rows': rows[(int(page) - 1) * int(nr_rows):
+               int(page) * int(nr_rows)]
+        }
         return json.dumps(ret)
