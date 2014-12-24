@@ -79,7 +79,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 ))
-schema['title'].widget.label=_('Address'),
+schema['title'].widget.label=_('Address')
 schema['description'].widget.visible = True
 
 class StorageLocation(BaseContent, HistoryAwareMixin):
