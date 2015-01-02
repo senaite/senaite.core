@@ -160,11 +160,13 @@ class Calculation(BaseFolder, HistoryAwareMixin):
     def getCalculationDependants(self):
         """Return a flat list of services who's calculations depend on this."""
         deps = []
-        for service in self.getBackReferences('AnalysisServiceCalculation'):
-            calc = service.getCalculation()
-            if calc and calc.UID() != self.UID():
-                calc.getCalculationDependants(deps)
-            deps.append(service)
+        for rel in ["AnalysisServiceCalculation",
+                    "AnalysisServiceDeferredCalculation"]:
+            for service in self.getBackReferences(rel):
+                calc = service.getCalculation()
+                if calc and calc.UID() != self.UID():
+                    calc.getCalculationDependants(deps)
+                deps.append(service)
         return deps
 
     def workflow_script_activate(self):
