@@ -32,7 +32,7 @@ def set_container_preservation(context, container, data):
     return data.get('preservation_uid', '')
 
 
-def create_samplepartition(context, data, analyses=None):
+def create_samplepartition(context, data, analyses=[]):
     partition = _createObjectByType('SamplePartition', context, data['part_id'])
     partition.unmarkCreationFlag()
     # Determine if the sampling workflow is enabled
