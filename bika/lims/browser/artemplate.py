@@ -1,4 +1,3 @@
-from bika.lims.jsonapi import load_field_values
 from bika.lims.interfaces import IJSONReadExtender, IARTemplate
 from zope.component import adapts
 from zope.interface import implements
@@ -16,6 +15,85 @@ class JSONReadExtender(object):
     def __init__(self, context):
         self.context = context
 
+    def render_template_partitions(self):
+        """
+        Supplies a more detailed view of the Partitions for this
+        template.  It's built to mimic the partitions that are stored in the
+        ar_add form state variable, so that when a partition is chosen, there
+        is no further translation necessary.
+
+        It combines the Analyses and Partitions AT schema field values.
+
+        For some fields (separate, minvol) there is no information, when partitions
+        are specified in the AR Template.
+
+        :return a list of dictionaries like this:
+
+            container
+                     []
+            container_titles
+                     []
+            preservation
+                     []
+            preservation_titles
+                     []
+            separate
+                     false
+            minvol
+                     "0.0000 m3 "
+            services
+                     ["2fdc040e05bb42ca8b52e41761fdb795", 6 more...]
+            service_titles
+                     ["Copper", "Iron", "Magnesium", 4 more...]
+
+        """
+        Analyses = self.context.Schema()['Analyses'].get(self.context)
+        Parts = self.context.Schema()['Partitions'].get(self.context)
+        if not Parts:
+            # default value copied in from content/artemplate.py
+            Parts = [{'part_id': 'part-1',
+                      'Container': '',
+                      'Preservation': '',
+                      'container_uid': '',
+                      'preservation_uid': ''}]
+        parts = []
+        not_found = set()
+        for Part in Parts:
+            part = {
+                'part_id': Part.get("part_id", "part-1"),
+                'container_titles': Part.get("Container", ""),
+                'container': Part.get("container_uid", ""),
+                'preservation_titles': Part.get("Preservation", ""),
+                'preservation': Part.get("preservation_uid", ""),
+                'services': [],
+                'service_titles': [],
+            }
+            for analysis in Analyses:
+                uid = analysis['service_uid']
+                partiton = analysis['partition']
+                if partiton == part['part_id']:
+                    part['services'].append(uid)
+                    part['service_titles'].append(uid)
+                    not_found.discard(analysis['service_uid'])
+                else:
+                    if uid in part['services']:
+                        part['services'].remove(uid)
+                    if uid in part['service_titles']:
+                        part['service_titles'].remove(uid)
+                    not_found.add(analysis['service_uid'])
+
+            parts.append(part)
+
+        # all others go into the first part.  Mostly this will be due to
+        # partition info not being defined?
+        for uid in not_found:
+            if uid not in part['services']:
+                parts[0]['services'].append(uid)
+            if uid not in part['service_titles']:
+               parts[0]['service_titles'].append(uid)
+
+        return parts
+
     def __call__(self, request, data):
         bsc = self.context.bika_setup_catalog
         service_data = []
@@ -31,3 +109,4 @@ class JSONReadExtender(object):
                             'CategoryTitle': service.getCategory().Title()}
             service_data.append(this_service)
         data['service_data'] = service_data
+        data['Partitions'] = self.render_template_partitions()
