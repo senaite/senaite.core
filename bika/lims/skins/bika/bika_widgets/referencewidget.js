@@ -67,11 +67,11 @@ function referencewidget_lookups(elements){
 			event.preventDefault();
 			var fieldName = $(this).attr("name").replace(".", "\\.", "g");
 			var skip;
-			var uid_element = $("input[name='"+fieldName+"_uid']");
-			var listing_div = $("div#"+fieldName+"-listing");
-			if($("#"+fieldName+"-listing").length > 0) {
+			var uid_element = $(this).siblings("input[$='_uid']")
+			var listing_div = $(this).siblings("div[id$='-listing']");
+			if($(listing_div).length > 0) {
 				// Add selection to textfield value
-				var existing_uids = $("input[name='"+fieldName+"_uid']").val().split(",");
+				var existing_uids = $(uid_element).val().split(",");
 				destroy(existing_uids,"");
 				destroy(existing_uids,"[]");
 				var selected_value = ui.item[$(this).attr("ui_item")];
@@ -103,7 +103,7 @@ function referencewidget_lookups(elements){
 				// Set value in activated element (must exist in colModel!)
 				$(this).val(ui.item[$(this).attr("ui_item")]);
 				$(this).attr("uid", ui.item.UID);
-				$("input[name='"+fieldName+"_uid']").val(ui.item.UID);
+				$(uid_element).val(ui.item.UID);
 				skip = $(element).attr("skip_referencewidget_lookup");
 				if (skip !== true){
 					// Pass the entire selected item through to the selected handler
