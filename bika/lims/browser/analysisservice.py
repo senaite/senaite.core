@@ -215,7 +215,6 @@ class JSONReadExtender(object):
 
         calcs = self.context.getBackReferences('CalculationAnalysisService')
         if calcs:
-            import pdb, sys; pdb.Pdb(stdout=sys.__stdout__).set_trace()
             for calc in calcs:
                 services = [self.service_info(service) for service
                     in calc.getCalculationDependants()

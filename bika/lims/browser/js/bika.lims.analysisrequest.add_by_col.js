@@ -821,9 +821,7 @@ function AnalysisRequestAddByCol() {
 					$("#singleservice").attr("vatamount", vatamount)
 					singleservice_duplicate(uid, title, keyword, price,
 											vatamount)
-					$("tr[uid='" + uid + "'] " +
-					  "td[arnum='" + arnum + "'] " +
-					  "input[type='checkbox']").attr("checked", true)
+					analysis_cb_check(arnum, uid)
 				}
 				state_analyses_push(arnum, uid)
 			}
@@ -1119,8 +1117,8 @@ function AnalysisRequestAddByCol() {
 						  else {
 							  analysis_cb_uncheck(i, uid)
 						  }
+						  recalc_prices(i)
 					  }
-					  recalc_prices(arnum)
 					  var title = $(this).parents("[title]").attr("title")
 					  for (i = 0; i < nr_ars; i++) {
 						  deps_calc(i, [uid], true, title)
@@ -1130,7 +1128,6 @@ function AnalysisRequestAddByCol() {
 					  if (uid == "new") {
 						  $("#singleservice").focus()
 					  }
-					  recalc_prices(arnum)
 				  })
 	}
 
@@ -1254,7 +1251,7 @@ function AnalysisRequestAddByCol() {
 		}
 		else {
 			var data = window.jsonapi_cache[cacheKey]
-			bika.lims.ar_add.state[arnum_i]['Partitions'] = data['parts']
+			bika.lims.ar_add.state[arnum]['Partitions'] = data['parts']
 			d.resolve()
 		}
 		return d.promise()
@@ -1311,7 +1308,6 @@ function AnalysisRequestAddByCol() {
 		 * set skip_calculation if the state variable already contains
 		 * calculated partitions (eg, when setting template)
 		 */
-		console.log("partition indicators set")
 		if (skip_calculation) {
 			_partition_indicators_set(arnum)
 		}
@@ -1524,24 +1520,10 @@ function AnalysisRequestAddByCol() {
 						dep_element = $("tr[uid='" + Dep['Service_uid'] + "'] " +
 										"td[arnum='" + arnum + "'] " +
 										"input[type='checkbox']")
-
-						if (dep_element.length > 0) {
-							// row already exists
-							if ($(dep_element).prop("checked")) {
-								// skip if checked already
-								continue
-							}
+						if (!$(dep_element).prop("checked")) {
+							dep_titles.push(Dep['Service'])
+							dep_services.push(Dep)
 						}
-						else {
-							// create new row for all services we may need
-							singleservice_duplicate(Dep['Service_uid'],
-													Dep["Service"],
-													Dep["Keyword"],
-													Dep["Price"],
-													Dep["VAT"])
-						}
-						dep_services.push(Dep)          // actionable services
-						dep_titles.push(Dep['Service']) // pretty titles
 					}
 					// bika_listing service selector form //////////////////////
 					else {
@@ -1550,35 +1532,55 @@ function AnalysisRequestAddByCol() {
 				}
 				if (dep_services.length > 0) {
 					if (skip_confirmation) {
-						dependancies_add_yes(this, arnum, dep_services)
+						dependancies_add_yes(arnum, dep_services)
 					}
 					else {
-						dependencies_add_confirm(arnum, uid, initiator,
-												 dep_services, dep_titles
-						)
+						dependencies_add_confirm(initiator, dep_services,
+												 dep_titles)
+							.done(function (data) {
+									  dependancies_add_yes(arnum, dep_services)
+								  })
+							.fail(function (data) {
+									  dependencies_add_no(arnum, uid)
+								  })
 					}
 				}
 			}
 			// unselecting a service; discover back dependencies
+			// this means, services which employ calculations, which in turn
+			// require these other services' results in order to be calculated.
 			else {
 				var Dependants = lims.AnalysisService.Dependants(uid)
 				for (i = 0; i < Dependants.length; i++) {
-					Dep = Dependants[i]
-					dep_element = $("tr[uid='" + Dep['Service_uid'] + "'] " +
-									"td[arnum='" + arnum + "'] " +
-									"input[type='checkbox']")
-					if ($(dep_element).prop("checked")) {
-						dep_titles.push(Dep['Service'])
-						dep_services.push(Dep)
+					// single-service selector form ////////////////////////////
+					if ($("#singleservice")) {
+						Dep = Dependants[i]
+						dep_element = $("tr[uid='" + Dep['Service_uid'] + "'] " +
+										"td[arnum='" + arnum + "'] " +
+										"input[type='checkbox']")
+						if ($(dep_element).prop("checked")) {
+							dep_titles.push(Dep['Service'])
+							dep_services.push(Dep)
+						}
+					}
+					// bika_listing service selector form //////////////////////
+					else {
+						console.log("XXX")
 					}
 				}
 				if (dep_services.length > 0) {
 					if (skip_confirmation) {
-						dependants_remove_yes(this, arnum, dep_services)
+						dependants_remove_yes(arnum, dep_services)
 					}
 					else {
-						dependants_remove_confirm(arnum, uid, initiator,
-												  dep_services, dep_titles)
+						dependants_remove_confirm(initiator, dep_services,
+												  dep_titles)
+							.done(function (data) {
+									  dependants_remove_yes(arnum, dep_services)
+								  })
+							.fail(function (data) {
+									  dependants_remove_no(arnum, uid)
+								  })
 					}
 				}
 			}
@@ -1586,8 +1588,8 @@ function AnalysisRequestAddByCol() {
 		}
 	}
 
-	function dependants_remove_confirm(arnum, uid, initiator, dep_services,
-									   dep_titles) {
+	function dependants_remove_confirm(initiator, dep_services, dep_titles) {
+		var d = $.Deferred()
 		$("body").append(
 			"<div id='messagebox' style='display:none' title='" + _("Service dependencies") + "'>" +
 			_("<p>The following services depend on ${service}, and will be unselected if you continue:</p><br/><p>${deps}</p><br/><p>Do you want to remove these selections now?</p>",
@@ -1603,49 +1605,48 @@ function AnalysisRequestAddByCol() {
 				closeOnEscape: false,
 				buttons: {
 					yes: function () {
-						dependants_remove_yes(this, arnum, dep_services)
+						d.resolve()
+						$(this).dialog("close");
+						$("#messagebox").remove();
 					},
 					no: function () {
-						dependants_remove_no(this, uid)
+						d.reject()
+						$(this).dialog("close");
+						$("#messagebox").remove();
 					}
 				}
 			})
+		return d.promise()
 	}
 
-	function dependants_remove_yes(element, arnum, dep_services) {
-		for (i = 0; i < dep_services.length; i += 1) {
+	function dependants_remove_yes(arnum, dep_services) {
+		for (var i = 0; i < dep_services.length; i += 1) {
 			var Dep = dep_services[i]
 			var uid = Dep['Service_uid']
-			analysis_cb_uncheck(arnum,
-								Dep['Service_uid'])
+			analysis_cb_uncheck(arnum, uid)
 		}
-		$(element).dialog("close")
-		$("#messagebox").remove()
+		_partition_indicators_set(arnum)
 	}
 
-	function dependants_remove_no(element, uid) {
-		uid = $(element).parents("[uid]").attr("uid")
-		check_service(uid)
-		$(element).prop("checked", true)
-		$("#messagebox").remove()
-		$(thelementis).dialog("close")
+	function dependants_remove_no(arnum, uid) {
+		analysis_cb_check(arnum, uid)
+		_partition_indicators_set(arnum)
 	}
 
-	function dependencies_add_confirm(arnum, uid, initiator, dep_services,
+	function dependencies_add_confirm(initiator_title, dep_services,
 									  dep_titles) {
 		/*
 		 uid - this is the analysisservice checkbox which was selected
 		 dep_services and dep_titles are the calculated dependencies
-		 initiator is the dialog title, this could be a service but also could
-		 be "Dry Matter" or some other.
+		 initiator_title is the dialog title, this could be a service but also could
+		 be "Dry Matter" or some other name
 		 */
-		// Just have a quick look here - this code has not been fired.
-
+		var d = $.Deferred()
 		var html = "<div id='messagebox' style='display:none' title='" + _("Service dependencies") + "'>"
 		html = html + _("<p>${service} requires the following services to be selected:</p>" +
 						"<br/><p>${deps}</p><br/><p>Do you want to apply these selections now?</p>",
 						{
-							service: initiator,
+							service: initiator_title,
 							deps: dep_titles.join("<br/>")
 						})
 		html = html + "</div>"
@@ -1658,40 +1659,65 @@ function AnalysisRequestAddByCol() {
 				closeOnEscape: false,
 				buttons: {
 					yes: function () {
-						dependancies_add_yes(this, arnum, dep_services)
+						d.resolve()
+						$(this).dialog("close");
+						$("#messagebox").remove();
 					},
 					no: function () {
-						dependencies_add_no(this, arnum, uid)
+						d.reject()
+						$(this).dialog("close");
+						$("#messagebox").remove();
 					}
 				}
 			})
+		return d.promise()
 	}
 
-	function dependancies_add_yes(dlg, arnum, dep_services) {
+	function dependancies_add_yes(arnum, dep_services) {
+		/*
+		 Adding required analyses to this AR - Clicked "yes" to confirmation,
+		 or if confirmation dialog is skipped, this function is called directly.
+		 */
 		for (var i = 0; i < dep_services.length; i++) {
-			var uid = dep_services[i].Service_uid;
-			if (!$("tr[uid='" + uid + "'] td[arnum='" + arnum + "'] input[type='checkbox']" + uid).prop("checked")) {
-				analysis_cb_check(arnum, uid);
+			var Dep = dep_services[i]
+			var uid = Dep['Service_uid']
+			var dep_cb = $("tr[uid='" + uid + "'] " +
+						   "td[arnum='" + arnum + "'] " +
+						   "input[type='checkbox']")
+			if (dep_cb.length > 0) {
+				// row already exists
+				if ($(dep_cb).prop("checked")) {
+					// skip if checked already
+					continue
+				}
 			}
+			else {
+				// create new row for all services we may need
+				singleservice_duplicate(Dep['Service_uid'],
+										Dep["Service"],
+										Dep["Keyword"],
+										Dep["Price"],
+										Dep["VAT"])
+			}
+			// finally check the service
+			analysis_cb_check(arnum, uid);
 		}
 		recalc_prices(arnum)
 		_partition_indicators_set(arnum)
-		$(dlg).dialog("close");
-		$("#messagebox").remove();
 	}
 
-	function dependencies_add_no(dlg, arnum, uid) {
-		var element = $("tr[uid='" + uid + "'] tr[arnum='" + arnum + "'] input[type='checkbox']")
+	function dependencies_add_no(arnum, uid) {
+		/*
+		 Adding required analyses to this AR - clicked "no" to confirmation.
+		 This is just responsible for un-checking the service that was
+		 used to invoke this routine.
+		 */
+		var element = $("tr[uid='" + uid + "'] td[arnum='" + arnum + "'] input[type='checkbox']")
 		if ($(element).prop("checked")) {
-			console.log($element)
-			analysis_cb_uncheck(arnum, $(element).attr("value"));
-			$(element).prop("checked", false);
+			analysis_cb_uncheck(arnum, uid);
 		}
 		_partition_indicators_set(arnum)
-		$(dlg).dialog("close");
-		$("#messagebox").remove();
 	}
-
 
 }
 
