@@ -9,6 +9,16 @@
         #singleservice {
             width:90%;
         }
+        .partnr {
+            color: #555;
+            font-size: 86%;
+        }
+        .nowrap{
+            white-space: nowrap;
+        }
+        .service_selector td{
+            text-align: left !important;
+        }
     </style>
     <table summary="Add analysis requests"
            class="listing analysisrequest add nosort"
@@ -16,7 +26,7 @@
         <thead>
         <thead class="analysisrequest_add_by_col">
             <!-- All edit fields with fields with add=visible -->
-            <tr tal:repeat="field python:view.get_fields_with_visibility('edit')">
+            <tal:field tal:repeat="field python:view.get_fields_with_visibility('edit')">
                 <tal:def define="
                     fieldName python:field.getName();
                     field_macro here/widgets/field/macros/edit;
@@ -24,54 +34,54 @@
                     widget python:field.widget;
                     errors python:{};
                     mode string:edit;">
-                    <th colspan="2" style="white-space:nowrap">
-                        <label class="formQuestion">
-                            <span tal:replace="python:view.context.translate(widget.Label(here))"/>
-                        <span class="fieldRequired"
-                                tal:condition="field/required"
-                              title="Required"
-                                i18n:attributes="title title_required;">&nbsp;</span>
-                            <em style="display:block"
-                                class="discreet"
-                                    tal:define="description python:view.context.translate(widget.Description(here))"
-                                    tal:content="structure description"
-                                    tal:attributes="id string:${fieldName}_help">Help </em>
-                        </label>
+                    <tr tal:attributes="fieldName fieldName">
+                        <th colspan="2" style="white-space:nowrap">
+                            <label class="formQuestion">
+                                <span tal:replace="python:view.context.translate(widget.Label(here))"/>
+                            <span class="fieldRequired"
+                                    tal:condition="field/required"
+                                    title="Required"
+                                    i18n:attributes="title title_required;">&nbsp;</span>
+                                <em style="display:block"
+                                    class="discreet"
+                                        tal:define="description python:view.context.translate(widget.Description(here))"
+                                        tal:content="structure description"
+                                        tal:attributes="id string:${fieldName}_help">Help </em>
+                            </label>
 
-                    </th>
-                    <td>
-                        <img tal:condition="python:view.ar_count > 1"
-                                tal:attributes="name fieldName;
-                                        class string:copyButton ${fieldName}CopyButton;
-                                src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png;"/>
-                    </td>
-                    <tal:columns tal:repeat="arnum python:range(view.ar_count)">
-                        <td tal:attributes="arnum arnum;
-                                ar_add_ar_widget string:1">
-
-                            <metal:field
-                                    use-macro="python:context.widget(fieldName, mode='edit')"/>
-
+                        </th>
+                        <td>
+                            <img class="CopyButton"
+                                 tal:condition="python:view.ar_count > 1"
+                                 tal:attributes="
+                                      src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png;"/>
                         </td>
-                    </tal:columns>
+                        <tal:columns tal:repeat="arnum python:range(view.ar_count)">
+                            <td class="nowrap" tal:attributes="arnum arnum">
+                                <metal:field
+                                        use-macro="python:context.widget(fieldName, mode='edit')"/>
+                            </td>
+                        </tal:columns>
+                    </tr>
                 </tal:def>
-            </tr>
+            </tal:field>
 
-            <tr style="display:none"
-                    tal:repeat="field python:view.get_fields_with_visibility('hidden')">
-                <tal:columns tal:repeat="arnum python:range(view.ar_count)"
-                        tal:define="val python:field.getAccessor(context)()">
-                    <td hidden="true" tal:attributes="arnum arnum">
-                        <input
-                            type="hidden"
-                            tal:attributes="
-                                    name field/getName;
-                                    fieldName field/getName;
+            <tal:field
+                tal:repeat="field python:view.get_fields_with_visibility('hidden')">
+                <tal:def define="fieldName python:field.getName();">
+                    <tr style="display:none" tal:attributes="fieldName fieldName">
+                        <tal:columns tal:repeat="arnum python:range(view.ar_count)"
+                                tal:define="val python:field.getAccessor(context)()">
+                            <td hidden="true"
+                                    tal:attributes="arnum arnum; fieldName fieldName">
+                                <input type="hidden" tal:attributes="
                                     value val/Title|nothing;
                                     uid val/UID|nothing;"/>
-                    </td>
-                </tal:columns>
-            </tr>
+                            </td>
+                        </tal:columns>
+                    </tr>
+                </tal:def>
+            </tal:field>
 
         </thead>
 
@@ -94,7 +104,7 @@
                                style="vertical-align: -2px"/>
                     </td>
                     <tal:columns tal:repeat="arnum python:range(view.ar_count)">
-                        <td tal:attributes="arnum arnum">
+                        <td class="nowrap" tal:attributes="arnum arnum">
                             <span class="before">
                                 &nbsp;</span>
                             <input type="checkbox" style="vertical-align: -2px"/>
@@ -105,7 +115,7 @@
                                     <input class="error" size="3" placeholder="err%">
                                 </tal:x>
                                 <span class="partnr"
-                                      condition="python:context.bika_setup.getShowPartitions()">
+                                      tal:condition="python:context.bika_setup.getShowPartitions()">
                                     &nbsp;</span>
                             </span>
                             <span class="alert"
@@ -121,7 +131,8 @@
         <!-- Prices -->
 
         <tfoot tal:condition="ShowPrices">
-            <tr tal:condition="python:view.getMemberDiscountApplies() and ShowPrices">
+
+            <tr tal:condition="view/getMemberDiscountApplies">
                 <th class="topborder" colspan="2">
                     <b i18n:translate="">Discount</b>
                     <span class="discreet">(<tal:i content="here/bika_setup/getMemberDiscount"/>%)</span>
@@ -129,66 +140,50 @@
                 <td class="topborder noleftborder" style="text-align:center">
                     <span tal:replace="python:currencies[currency].symbol"/>
                 </td>
-                <tal:block repeat="arnum python:range(view.ar_count)">
-                    <td class="topborder" tal:define="input_id string:ar_${arnum}_discount;">
-                        <input class="price noborder" size="10" disabled="disabled" value="0.00" tal:attributes="id input_id"/>
+                <tal:columns repeat="arnum python:range(view.ar_count)">
+                    <td class="topborder" tal:attributes="arnum arnum">
+                        <input class="price discount noborder" size="10" disabled="disabled" value="0.00"/>
                     </td>
-                </tal:block>
+                </tal:columns>
             </tr>
+
             <tr>
-                <th colspan="2" class="topborder"><b i18n:translate="">Subtotal</b></th>
+                <th class="topborder" colspan="2"><b i18n:translate="">Subtotal</b></th>
                 <td class="topborder noleftborder" style="text-align:center">
                     <span tal:replace="python:currencies[currency].symbol"/>
                 </td>
-                <tal:block repeat="arnum python:range(view.ar_count)">
-                    <td class="topborder"
-                            tal:define="input_id string:ar_${arnum}_subtotal;
-                                        input_name string:ar.${arnum}.subtotal">
-                        <input class="price noborder" size="10" disabled="disabled" value="0.00"
-                                tal:attributes="id string:${input_id}_display"/>
-                        <input type="hidden"
-                                tal:attributes="
-                                        id input_id;
-                                        name string:${input_name}:record:ignore_empty"/>
+                <tal:columns repeat="arnum python:range(view.ar_count)">
+                    <td class="topborder" tal:attributes="arnum arnum">
+                        <input class="price subtotal noborder" size="10" disabled="disabled" value="0.00"/>
                     </td>
-                </tal:block>
+                </tal:columns>
             </tr>
+
             <tr>
-                <th colspan="2" class="topborder"><b i18n:translate="">VAT</b></th>
+                <th class="topborder" colspan="2"><b i18n:translate="">VAT</b></th>
                 <td class="topborder noleftborder" style="text-align:center">
                     <span tal:replace="python:currencies[currency].symbol"/>
                 </td>
-                <tal:block repeat="arnum python:range(view.ar_count)">
-                    <td class="topborder" tal:define="input_id string:ar_${arnum}_vat;
-                            input_name string:ar.${arnum}.vat">
-                        <input class="price noborder" size="10" disabled="disabled" value="0.00"
-                                tal:attributes="id string:${input_id}_display;"/>
-                        <input type="hidden"
-                                tal:attributes="
-                                        id input_id;
-                                        name string:${input_name}:record:ignore_empty;"/>
+                <tal:columns repeat="arnum python:range(view.ar_count)">
+                    <td class="topborder" tal:attributes="arnum arnum">
+                        <input class="price vat noborder" size="10" disabled="disabled" value="0.00"/>
                     </td>
-                </tal:block>
+                </tal:columns>
             </tr>
+
             <tr>
                 <th class="topborder" colspan="2"><b i18n:translate="">Total</b></th>
                 <td class="topborder noleftborder" style="text-align:center">
                     <span tal:replace="python:currencies[currency].symbol"/>
                 </td>
-                <tal:block repeat="arnum python:range(view.ar_count)">
-                    <td class="topborder" tal:define="
-                            input_id string:ar_${arnum}_total;
-                            input_name string:ar.${arnum}.total">
-                        <input class="price noborder" size="10" disabled="disabled" value="0.00"
-                                tal:attributes="id string:${input_id}_display;"/>
-                        <input type="hidden"
-                                tal:attributes="
-                                        id input_id;
-                                        name string:${input_name}:record:ignore_empty;"/>
+                <tal:columns repeat="arnum python:range(view.ar_count)">
+                    <td class="topborder" tal:attributes="arnum arnum">
+                        <input class="price total noborder" size="10" disabled="disabled" value="0.00"/>
                     </td>
-                </tal:block>
+                </tal:columns>
             </tr>
-<!--
+
+            <!--
             <tr>
                 <th colspan="3" style="background-color: #FFF">
                 </th>

@@ -1,6 +1,7 @@
 import json
 
 from Products.AdvancedQuery import Eq, Or, MatchGlob
+from Products.CMFPlone.utils import safe_unicode
 import plone
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
@@ -323,6 +324,7 @@ class ajaxAnalysisRequestSubmit():
         plone.protect.PostOnly(self.request.form)
         uc = getToolByName(self.context, 'uid_catalog')
         bsc = getToolByName(self.context, 'bika_setup_catalog')
+        portal_catalog = getToolByName(self.context, 'portal_catalog')
 
         # Load the form data from request.state.  If anything goes wrong here,
         # put a bullet through the whole process.
@@ -336,7 +338,7 @@ class ajaxAnalysisRequestSubmit():
         # Validate incoming form data
         required = [field.getName() for field
                     in AnalysisRequestSchema.fields()
-                    if field.required] + ['services']
+                    if field.required] + ["Analyses"]
 
         # in valid_states, all ars that pass validation will be stored
         valid_states = {}
@@ -357,9 +359,6 @@ class ajaxAnalysisRequestSubmit():
                 continue
             # If there are required fields missing, flag an error
             if missing:
-                import pdb, sys;
-
-                pdb.Pdb(stdout=sys.__stdout__).set_trace()
                 msg = t(_('${arnum}: Required fields have no values: '
                           '${field_names}',
                           mapping={'arnum': arnum,
@@ -382,50 +381,34 @@ class ajaxAnalysisRequestSubmit():
             return json.dumps({'errors': self.errors})
 
         # Now, we will create the specified ARs.
+        ARs = []
         for arnum, state in valid_states.items():
-            try:
-                instance = uc(UID=uid)[0].getObject()
-                return instance
-            except Exception as e:
-                msg = t(_('Cannot resolve UID: ${uid}', mapping={'uid': uid}))
-                ajax_form_error(self.errors, field=t(_('Client')),
-                                arnum=arnum, message=msg)
-                return json.dumps({'errors': self.errors})
-
-            import pdb, sys;
-
-            pdb.Pdb(stdout=sys.__stdout__).set_trace()
             # Create the Analysis Request
             ar = create_analysisrequest(
-                client,
+                portal_catalog(UID=state['Client'])[0].getObject(),
                 self.request,
-                resolved_values,
-                analyses=analyses,
-                partitions=partitions,
-                specifications=specs.values(),
+                state
             )
+            ARs.append(ar.Title())
 
-            # # Display the appropriate message after creation
-            # if len(ARs) > 1:
-            # message = _('Analysis requests ${ARs} were successfully created.',
-            # mapping={'ARs': safe_unicode(', '.join(ARs))})
-            # else:
-            # message = _('Analysis request ${AR} was successfully created.',
-            # mapping={'AR': safe_unicode(ARs[0])})
-            # self.context.plone_utils.addPortalMessage(message, 'info')
-            # # Automatic label printing
-            # # Won't print labels for Register on Secondary ARs
-            # new_ars = None
-            # if came_from == 'add':
-            # new_ars = [ar for ar in ARs if ar[-2:] == '01']
-            # if 'register' in self.context.bika_setup.getAutoPrintLabels() and new_ars:
-            # return json.dumps({
-            # 'success': message,
-            # 'labels': new_ars,
-            # 'labelsize': self.context.bika_setup.getAutoLabelSize()
-            # })
-            # else:
-            # return json.dumps({'success': message})
+        # Display the appropriate message after creation
+        if len(ARs) > 1:
+            message = _('Analysis requests ${ARs} were successfully created.',
+                        mapping={'ARs': safe_unicode(', '.join(ARs))})
+        else:
+            message = _('Analysis request ${AR} was successfully created.',
+                        mapping={'AR': safe_unicode(ARs[0])})
+        self.context.plone_utils.addPortalMessage(message, 'info')
+        # Automatic label printing won't print "register" labels for Secondary. ARs
+        new_ars = [ar for ar in ARs if ar[-2:] == '01']
+        if 'register' in self.context.bika_setup.getAutoPrintLabels() and new_ars:
+            return json.dumps({
+                'success': message,
+                'labels': new_ars,
+                'labelsize': self.context.bika_setup.getAutoLabelSize()
+            })
+        else:
+            return json.dumps({'success': message})
 
 
 class ajaxServiceSelectorVocabulary(object):

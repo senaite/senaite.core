@@ -7,15 +7,59 @@ from bika.lims.workflow import doActionFor
 from Products.CMFPlone.utils import _createObjectByType
 
 
-def create_analysisrequest(
-    context,
-    request,
-    values,
-    analyses=[],
-    partitions=None,
-    specifications=None,
-    prices=None
-):
+def create_analysisrequest(context, request, values):
+    """Create an AR.
+
+    :param context the container in which the AR will be created (Client)
+    :param request the request object
+    :param values a dictionary containing fieldname/value pairs, which
+           will be applied.  Some fields will have specific code to handle them,
+           and others will be directly written to the schema.
+    :return the new AR instance
+
+    Special keys present (or required) in the values dict, which are not present
+    in the schema:
+
+        - Partitions: data about partitions to be created, and the
+                      analyses that are to be assigned to each.
+
+        - Prices: custom prices set in the HTML form.
+
+        - ResultsRange: Specification values entered in the HTML form.
+
+    >>> portal = layer['portal']
+    >>> portal_url = portal.absolute_url()
+    >>> from plone.app.testing import SITE_OWNER_NAME
+    >>> from plone.app.testing import SITE_OWNER_PASSWORD
+    >>> from bika.lims.utils.analysisrequest import create_analysisrequest
+    >>> from zope.publisher.browser import TestRequest
+
+    Now our "values" will contain a bunch of UID references, so we must create
+    this variable by looking up UIDs for existing objects.
+    >>> client = portal.clients.objectValues()[0]
+    >>> services = [x.getObject() for x in bsc(portal:type="AnalysisService")[:5]]
+    >>> containers = [x.getObject() for x in bsc(portal:type="Container")]
+    >>> preservations = [x.getObject() for x in bsc(portal:type="Preservation")]
+    >>> values = {'Analyses':services,
+    ...           'ResultsRange': [{'uid':service, 'min':9, 'max':11, 'error':10} for service in services],
+    ...           'Partitions': [
+    ...             {u'part_id': u'part-1',
+    ...              u'container': containers[0],
+    ...              u'preservation': preservations[0],
+    ...              u'services': services[:1]},
+    ...             {u'part_id': u'part-2',
+    ...              u'container': u'containers[1]',
+    ...              u'preservation': preservations[1],
+    ...              u'services': services[1:]}
+    ...           ]
+    ...          }
+
+    >>> fake_request = TestRequest()
+    >>> ar = create_analysisrequest(client, fake_request, values)
+
+    >>> import pdb, sys; pdb.Pdb(stdout=sys.__stdout__).set_trace()
+
+    """
     # Gather neccesary tools
     workflow = getToolByName(context, 'portal_workflow')
     bc = getToolByName(context, 'bika_catalog')
@@ -50,7 +94,10 @@ def create_analysisrequest(
     workflow.doActionFor(ar, workflow_action)
 
     # Set analysis request analyses
-    analyses = ar.setAnalyses(analyses, prices=prices, specs=specifications)
+    ar.setAnalyses(values['Analyses'],
+                   prices=values.get("Prices", []),
+                   specs=values.get('ResultsRange', []))
+    analyses = ar.getAnalyses(full_objects=True)
 
     skip_receive = ['to_be_sampled', 'sample_due', 'sampled', 'to_be_preserved']
     if secondary:
@@ -62,7 +109,7 @@ def create_analysisrequest(
         if sample_state not in skip_receive:
             doActionFor(ar, 'receive')
 
-    for analysis in ar.getAnalyses(full_objects=1):
+    for analysis in analyses:
         doActionFor(analysis, 'sample_due')
         analysis_state = workflow.getInfoFor(analysis, 'review_state')
         if analysis_state not in skip_receive:
@@ -70,7 +117,8 @@ def create_analysisrequest(
 
     if not secondary:
         # Create sample partitions
-        for n, partition in enumerate(partitions):
+        partitions = []
+        for n, partition in enumerate(values['Partitions']):
             # Calculate partition id
             partition_prefix = sample.getId() + "-P"
             partition_id = '%s%s' % (partition_prefix, n + 1)
@@ -81,9 +129,16 @@ def create_analysisrequest(
             else:
                 partition['object'] = create_samplepartition(
                     sample,
-                    partition,
-                    analyses
+                    partition
                 )
+            # now assign analyses to this partition.
+            obj = partition['object']
+            for analysis in analyses:
+                if analysis.getService().UID() in partition['services']:
+                    analysis.setSamplePartition(obj)
+
+            partitions.append(partition)
+
         # If Preservation is required for some partitions,
         # and the SamplingWorkflow is disabled, we need
         # to transition to to_be_preserved manually.
