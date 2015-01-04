@@ -95,6 +95,8 @@ class BikaTestLayer(PloneSandboxLayer):
         lsd = LoadSetupData(portal, self.request)
         lsd()
 
+        portal.bika_setup.setShowNewReleasesInfo(False)
+
         logout()
 
 def getBrowser(portal, loggedIn=True, username=TEST_USER_NAME, password=TEST_USER_PASSWORD):
