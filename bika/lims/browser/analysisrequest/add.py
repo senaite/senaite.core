@@ -40,8 +40,11 @@ class AnalysisServicesView(ASV):
             selected_items[uid] = item
         return selected_items.values()
 
-    def __init__(self, context, request, ar_count=None):
+    def __init__(self, context, request, poc, ar_count=None):
         super(AnalysisServicesView, self).__init__(context, request)
+
+        self.contentFilter['getPointOfCapture'] = poc
+
         self.ar_count = ar_count if ar_count else 4
 
         self.ar_add_items = []
@@ -59,16 +62,6 @@ class AnalysisServicesView(ASV):
 
         self.review_states = [
             {'id': 'default',
-             'title': _('Lab Analyses'),
-             'contentFilter': {'getPointOfCapture': 'lab'},
-             'columns': columns,
-            },
-            {'id': 'field',
-             'title': _('Field Analyses'),
-             'contentFilter': {'getPointOfCapture': 'field'},
-             'columns': columns,
-            },
-            {'id': 'all',
              'title': _('All'),
              'contentFilter': {},
              'columns': columns,
@@ -240,7 +233,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
                 fields.append(field)
         return fields
 
-    def services_widget_content(self, ar_count=None):
+    def services_widget_content(self, poc, ar_count=None):
 
         """Return a table displaying services to be selected for inclusion
         in a new AR.  Used in add_by_row view popup, and add_by_col add view.
@@ -253,7 +246,8 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         if not ar_count:
             ar_count = self.ar_count
 
-        s = AnalysisServicesView(self.context, self.request, ar_count=ar_count)
+        s = AnalysisServicesView(self.context, self.request, poc,
+                                 ar_count=ar_count)
         s.folderitems()
 
         if not s.ar_add_items:
