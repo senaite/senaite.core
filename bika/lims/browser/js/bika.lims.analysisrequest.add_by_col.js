@@ -90,8 +90,13 @@ function AnalysisRequestAddByCol() {
 			var element = elements[i]
 			$(element).removeAttr("required")
 		}
-		// multiValued references need some attributes to be renamed
-		// so that they do not apply their selections to all columns
+		// DatePickers must have their name/id attributes munged, because
+		// they are created identically for each AR column
+		$.each($(".ArchetypesDateTimeWidget input"), function (i, e) {
+			arnum = $(e).parents("[arnum]").attr("arnum")
+			$(e).attr("id", $(e).attr("id") + "_" + arnum)
+			$(e).attr("name", $(e).attr("name") + "_" + arnum)
+		})
 
 		// clear existing values (on page reload).
 		$("#singleservice").val("")
@@ -119,7 +124,7 @@ function AnalysisRequestAddByCol() {
 		 */
 		var arnum_i = parseInt(arnum, 10)
 		if (fieldname && value !== undefined) {
-			console.log("arnum=" + arnum + ", fieldname=" + fieldname + ", value=" + value)
+			// console.log("arnum=" + arnum + ", fieldname=" + fieldname + ", value=" + value)
 			bika.lims.ar_add.state[arnum_i][fieldname] = value
 		}
 	}
@@ -154,8 +159,8 @@ function AnalysisRequestAddByCol() {
 			options.url = options.url + "&search_query=" + $.toJSON(query)
 		}
 		options.url = options.url + "&colModel=" + $.toJSON($.parseJSON($(element).attr("combogrid_options")).colModel)
-		options.url = options.url + "&search_fields=" + $.toJSON($.parseJSON($(element).attr("combogrid_options")).search_fields)
-		options.url = options.url + "&discard_empty=" + $.toJSON($.parseJSON($(element).attr("combogrid_options")).discard_empty)
+		options.url = options.url + "&search_fields=" + $.toJSON($.parseJSON($(element).attr("combogrid_options"))['search_fields'])
+		options.url = options.url + "&discard_empty=" + $.toJSON($.parseJSON($(element).attr("combogrid_options"))['discard_empty'])
 		options.force_all = "false"
 		$(element).combogrid(options)
 		$(element).addClass("has_combogrid_widget")
@@ -503,46 +508,57 @@ function AnalysisRequestAddByCol() {
 							   var min = $(td).find(".min")
 							   var max = $(td).find(".max")
 							   var error = $(td).find(".error")
-							   $(min).val(spec[uid].min)
-							   $(max).val(spec[uid].max)
-							   $(error).val(spec[uid].error)
+							   $(min).attr("value", (spec[uid].min))
+							   $(max).attr("value", (spec[uid].max))
+							   $(error).attr("value", (spec[uid].error))
 						   }
 					   })
 			}
 		}
 	}
 
-	function _spec_from_sampletype(arnum) {
+	function set_spec_from_sampletype(arnum) {
 		/* Look for Specifications with the selected SampleType.
 		 *
 		 * 1) Set the value of the Specification field
 		 * 2) Fetch the spec from the server, and set all the spec field values
 		 * 3) Set the partition indicator numbers.
 		 */
-		var ste = $("tr[fieldName='SampleType'] td[arnum='" + arnum + "'] input[type='text']")
-		var st_uid = $(ste).attr("uid")
-		var st_title = $(ste).val()
+		var st_uid = $("tr[fieldName='SampleType'] " +
+					   "td[arnum='" + arnum + "'] " +
+					   "input[type='text']").attr("uid")
 		if (!st_uid) {
 			return
 		}
 		spec_filter_on_sampletype(arnum)
-		var spec_element = $("tr[fieldName='Specification'] td[arnum='" + arnum + "'] input[type='text']")
-		var spec_uid_element = $("tr[fieldName='Specification'] td[arnum='" + arnum + "'] input[id$='_uid']")
+		var spec_element = $("tr[fieldName='Specification'] " +
+							 "td[arnum='" + arnum + "'] " +
+							 "input[type='text']")
+		var spec_uid_element = $("tr[fieldName='Specification'] " +
+								 "td[arnum='" + arnum + "'] " +
+								 "input[id$='_uid']")
 		var request_data = {
 			catalog_name: "bika_setup_catalog",
 			portal_type: "AnalysisSpec",
-			getSampleTypeTitle: st_title,
-			include_fields: ["Title", "UID"]
+			getSampleTypeUID: st_uid,
+			include_fields: ["Title", "UID", "ResultsRange"]
 		}
 		window.bika.lims.jsonapi_read(request_data, function (data) {
 			if (data.objects.length > 0) {
+				// If there is one Lab and one Client spec defined, the
+				// client spec will be objects[0]
 				var spec = data.objects[0]
 				// set spec values for this arnum
-				$(spec_element).val(spec['Title'])
-				$(spec_element).attr("uid", spec['UID'])
+				$(spec_element).val(spec["Title"])
+				$(spec_element).attr("uid", spec["UID"])
 				$(spec_uid_element).val(spec['UID'])
 				state_set(arnum, 'Specification', spec['UID'])
-				specification_refetch(arnum)
+				// set ResultsRange here!
+				var rr = data.objects[0]['ResultsRange']
+				if (rr && rr.length > 0) {
+					state_set(arnum, 'ResultsRange', rr)
+					specification_apply()
+				}
 			}
 		})
 	}
@@ -555,7 +571,7 @@ function AnalysisRequestAddByCol() {
 		 * have no sampletype set.
 		 */
 		var arnum_i = parseInt(arnum, 10)
-		var sampletype_uid = bika.lims.ar_add.state[arnum_i]['SampleType_uid']
+		var sampletype_uid = bika.lims.ar_add.state[arnum_i]['SampleType']
 		var spec_element = $("tr[fieldName='Specification'] td[arnum='" + arnum + "'] input[type='text']")
 		var query_str = $(spec_element).attr("search_query")
 		var query = $.parseJSON(query_str)
@@ -602,7 +618,7 @@ function AnalysisRequestAddByCol() {
 		var ste = $("tr[fieldName='SampleType'] td[arnum='" + arnum + "'] input[type='text']")
 		filter_combogrid(spe, "getSampleTypeTitle", $(ste).val(),
 						 'search_query')
-		_spec_from_sampletype(arnum)
+		set_spec_from_sampletype(arnum)
 		partition_indicators_set(arnum)
 	}
 
@@ -698,7 +714,7 @@ function AnalysisRequestAddByCol() {
 			state_set(arnum, 'SampleType', template['SampleTypeUID'])
 
 			// set Specification from selected SampleType
-			_spec_from_sampletype(arnum)
+			set_spec_from_sampletype(arnum)
 
 			// set SamplePoint
 			td = $("tr[fieldName='SamplePoint'] td[arnum='" + arnum + "']")
@@ -896,19 +912,21 @@ function AnalysisRequestAddByCol() {
 				var arnum = $(this).parents("[arnum]").length > 0
 					? $(this).parents("[arnum]").attr("arnum")
 					: 0
-				$("#singleservice").attr("uid", ui.item.UID)
-				$("#singleservice").attr("keyword", ui.item.Keyword)
-				$("#singleservice").attr("title", ui.item.Title)
-				singleservice_duplicate(ui.item.UID, ui.item.Title,
-										ui.item.Keyword, ui.item.Price,
-										ui.item.VAT)
+				$("#singleservice").attr("uid", ui['item']['UID'])
+				$("#singleservice").attr("keyword", ui['item']['Keyword'])
+				$("#singleservice").attr("title", ui['item']['Title'])
+				singleservice_duplicate(ui['item']['UID'],
+										ui['item']['Title'],
+										ui['item']['Keyword'],
+										ui['item']['Price'],
+										ui['item']['VAT'])
 			}
 		}
 		$("#singleservice").combogrid(options)
 	}
 
-	function singleservice_duplicate(new_uid, new_title, new_keyword, new_price,
-									 new_vatamount) {
+	function singleservice_duplicate(new_uid, new_title, new_keyword,
+									 new_price, new_vatamount) {
 		/*
 		 After selecting a service from the #singleservice combogrid,
 		 this function is reponsible for duplicating the TR.  This is
@@ -1327,9 +1345,6 @@ function AnalysisRequestAddByCol() {
 		var discount_pcnt = parseFloat($("#bika_setup").attr("MemberDiscount"))
 		var checked = $("tr[uid] td[arnum='" + arnum + "'] input[type='checkbox']:checked")
 		for (var i = 0; i < checked.length; i++) {
-			if (!checked.hasOwnProperty(i)) {
-				continue
-			}
 			var cb = checked[i]
 			var form_price = $(cb).parents("[price]").attr("price")
 			var vatamount = $(cb).parents("[vatamount]").attr("vatamount")
@@ -1346,135 +1361,14 @@ function AnalysisRequestAddByCol() {
 				total += price + ((price / 100) * vatamount)
 			}
 		}
-		$("td[arnum='" + arnum + "'] input.price.discount").html(discount_amount.toFixed(2))
-		$("td[arnum='" + arnum + "'] input.price.subtotal").html(subtotal.toFixed(2))
-		$("td[arnum='" + arnum + "'] input.price.vat").html(vat.toFixed(2))
-		$("td[arnum='" + arnum + "'] input.price.total").html(total.toFixed(2))
-	}
-
-	function set_state_from_form_values() {
-		var nr_ars = parseInt($("#ar_count").val(), 10)
-		// Values flagged as 'hidden' in the AT schema widget visibility
-		// attribute, are flagged so that we know they contain only "default"
-		// values, and do not constitute data entry. To avoid confusion with
-		// other hidden inputs, these have a 'hidden' attribute on their td.
-		$.each($('td[arnum][hidden] input[type="hidden"]'),
-			   function (i, e) {
-				   var arnum = $(e).parents("[arnum]").attr("arnum")
-				   var fieldname = $(e).parents("[fieldname]").attr("fieldname")
-				   var value = $(e).attr("uid")
-					   ? $(e).attr("uid")
-					   : $(e).val()
-				   if (fieldname) {
-					   state_set(arnum, fieldname, value)
-					   // We transfer a _hidden value to hint at the python, too
-					   state_set(arnum, fieldname + "_hidden", true)
-				   }
-			   })
-		// other field values which are handled similarly:
-		$.each($('td[arnum] input[type="text"], td[arnum] input.referencewidget'),
-			   function (i, e) {
-				   var arnum = $(e).parents("[arnum]").attr("arnum")
-				   var fieldname = $(e).parents("[fieldname]").attr("fieldname")
-				   var value = $(e).attr("uid")
-					   ? $(e).attr("uid")
-					   : $(e).val()
-				   state_set(arnum, fieldname, value)
-			   })
-		// checkboxes inside ar_add_widget table.
-		$.each($('[ar_add_ar_widget] input[type="checkbox"]'),
-			   function (i, e) {
-				   var arnum = $(e).parents("[arnum]").attr("arnum")
-				   var fieldname = $(e).parents("[fieldname]").attr("fieldname")
-				   var value = $(e).prop('checked')
-				   state_set(arnum, fieldname, value)
-			   })
-		// select widget values
-		$.each($('select'),
-			   function (i, e) {
-				   var arnum = $(e).parents("[arnum]").attr("arnum")
-				   var fieldname = $(e).parents("[fieldname]").attr("fieldname")
-				   var value = $(e).val()
-				   state_set(arnum, fieldname, value)
-			   })
-		// services
-		var uid, arnum, services
-		for (arnum = 0; arnum < nr_ars; arnum++) {
-			services = [] // list of UIDs
-			$.each($('.service_selector td[arnum="' + arnum + '"] input[type="checkbox"]').filter(":checked"),
-				   function (i, e) {
-					   uid = $(e).parents("[uid]").attr("uid")
-					   services.push(uid)
-				   })
-			state_set(arnum, "Analyses", services)
-		}
-		// ResultsRange + specifications from UI
-		var rr, specs, min, max, error
-		for (arnum = 0; arnum < nr_ars; arnum++) {
-			rr = bika.lims.ar_add.state[arnum].ResultsRange
-			if (rr != undefined) {
-				specs = hashes_to_hash(rr, 'uid')
-				$.each($('.service_selector td[arnum="' + arnum + '"] .after'),
-					   function (i, e) {
-						   uid = $(e).parents("[uid]").attr("uid")
-						   var keyword = $(e).parents("[keyword]").attr("keyword")
-						   if (uid != "new" && uid != undefined) {
-							   min = $(e).find(".min")
-							   max = $(e).find(".max")
-							   error = $(e).find(".error")
-							   if (specs[uid] == undefined) {
-								   specs[uid] = {
-									   'min': $(min).val(),
-									   'max': $(max).val(),
-									   'error': $(error).val(),
-									   'uid': uid,
-									   'keyword': keyword
-								   }
-							   }
-							   else {
-								   specs[uid].min = $(min)
-									   ? $(min).val()
-									   : specs[uid].min
-								   specs[uid].max = $(max)
-									   ? $(max).val()
-									   : specs[uid].max
-								   specs[uid].error = $(error)
-									   ? $(error).val()
-									   : specs[uid].error
-							   }
-						   }
-					   })
-				state_set(arnum, "ResultsRange", hash_to_hashes(specs))
-			}
-		}
-	}
-
-	function check_state_for_errors() {
-		console.log("ok")
-	}
-
-	function form_submit() {
-		$("[name='save_button']").click(function (event) {
-			event.preventDefault()
-			set_state_from_form_values()
-			check_state_for_errors()
-			var request_data = {
-				_authenticator: $("input[name='_authenticator']").val(),
-				state: $.toJSON(bika.lims.ar_add.state)
-			}
-			$.ajax({
-					   type: "POST",
-					   dataType: "json",
-					   url: window.location.href.split("/portal_factory")[0] + "/analysisrequest_submit",
-					   data: request_data,
-					   success: function (data) {
-					   }
-				   });
-		})
+		$("td[arnum='" + arnum + "'] span.price.discount").html(discount_amount.toFixed(2))
+		$("td[arnum='" + arnum + "'] span.price.subtotal").html(subtotal.toFixed(2))
+		$("td[arnum='" + arnum + "'] span.price.vat").html(vat.toFixed(2))
+		$("td[arnum='" + arnum + "'] span.price.total").html(total.toFixed(2))
 	}
 
 
-// dependencies
+	// dependencies ////////////////////////////////////////////////////////////
 	/*
 	 deps_calc					- the main routine for dependencies/dependants
 	 dependencies_add_confirm	- adding dependancies to the form/state: confirm
@@ -1718,6 +1612,130 @@ function AnalysisRequestAddByCol() {
 		}
 		_partition_indicators_set(arnum)
 	}
+
+	// Form submission /////////////////////////////////////////////////////////
+
+	function set_state_from_form_values() {
+		var nr_ars = parseInt($("#ar_count").val(), 10)
+		// Values flagged as 'hidden' in the AT schema widget visibility
+		// attribute, are flagged so that we know they contain only "default"
+		// values, and do not constitute data entry. To avoid confusion with
+		// other hidden inputs, these have a 'hidden' attribute on their td.
+		$.each($('td[arnum][hidden] input[type="hidden"]'),
+			   function (i, e) {
+				   var arnum = $(e).parents("[arnum]").attr("arnum")
+				   var fieldname = $(e).parents("[fieldname]").attr("fieldname")
+				   var value = $(e).attr("uid")
+					   ? $(e).attr("uid")
+					   : $(e).val()
+				   if (fieldname) {
+					   state_set(arnum, fieldname, value)
+					   // We transfer a _hidden value to hint at the python, too
+					   state_set(arnum, fieldname + "_hidden", true)
+				   }
+			   })
+		// other field values which are handled similarly:
+		$.each($('td[arnum] input[type="text"], td[arnum] input.referencewidget'),
+			   function (i, e) {
+				   var arnum = $(e).parents("[arnum]").attr("arnum")
+				   var fieldname = $(e).parents("[fieldname]").attr("fieldname")
+				   var value = $(e).attr("uid")
+					   ? $(e).attr("uid")
+					   : $(e).val()
+				   state_set(arnum, fieldname, value)
+			   })
+		// checkboxes inside ar_add_widget table.
+		$.each($('[ar_add_ar_widget] input[type="checkbox"]'),
+			   function (i, e) {
+				   var arnum = $(e).parents("[arnum]").attr("arnum")
+				   var fieldname = $(e).parents("[fieldname]").attr("fieldname")
+				   var value = $(e).prop('checked')
+				   state_set(arnum, fieldname, value)
+			   })
+		// select widget values
+		$.each($('select'),
+			   function (i, e) {
+				   var arnum = $(e).parents("[arnum]").attr("arnum")
+				   var fieldname = $(e).parents("[fieldname]").attr("fieldname")
+				   var value = $(e).val()
+				   state_set(arnum, fieldname, value)
+			   })
+		// services
+		var uid, arnum, services
+		for (arnum = 0; arnum < nr_ars; arnum++) {
+			services = [] // list of UIDs
+			$.each($('.service_selector td[arnum="' + arnum + '"] input[type="checkbox"]').filter(":checked"),
+				   function (i, e) {
+					   uid = $(e).parents("[uid]").attr("uid")
+					   services.push(uid)
+				   })
+			state_set(arnum, "Analyses", services)
+		}
+		// ResultsRange + specifications from UI
+		var rr, specs, min, max, error
+		for (arnum = 0; arnum < nr_ars; arnum++) {
+			rr = bika.lims.ar_add.state[arnum]['ResultsRange']
+			if (rr != undefined) {
+				specs = hashes_to_hash(rr, 'uid')
+				$.each($('.service_selector td[arnum="' + arnum + '"] .after'),
+					   function (i, e) {
+						   uid = $(e).parents("[uid]").attr("uid")
+						   var keyword = $(e).parents("[keyword]").attr("keyword")
+						   if (uid != "new" && uid != undefined) {
+							   min = $(e).find(".min")
+							   max = $(e).find(".max")
+							   error = $(e).find(".error")
+							   if (specs[uid] == undefined) {
+								   specs[uid] = {
+									   'min': $(min).val(),
+									   'max': $(max).val(),
+									   'error': $(error).val(),
+									   'uid': uid,
+									   'keyword': keyword
+								   }
+							   }
+							   else {
+								   specs[uid].min = $(min)
+									   ? $(min).val()
+									   : specs[uid].min
+								   specs[uid].max = $(max)
+									   ? $(max).val()
+									   : specs[uid].max
+								   specs[uid].error = $(error)
+									   ? $(error).val()
+									   : specs[uid].error
+							   }
+						   }
+					   })
+				state_set(arnum, "ResultsRange", hash_to_hashes(specs))
+			}
+		}
+	}
+
+	function check_state_for_errors() {
+		console.log("ok")
+	}
+
+	function form_submit() {
+		$("[name='save_button']").click(function (event) {
+			event.preventDefault()
+			set_state_from_form_values()
+			check_state_for_errors()
+			var request_data = {
+				_authenticator: $("input[name='_authenticator']").val(),
+				state: $.toJSON(bika.lims.ar_add.state)
+			}
+			$.ajax({
+					   type: "POST",
+					   dataType: "json",
+					   url: window.location.href.split("/portal_factory")[0] + "/analysisrequest_submit",
+					   data: request_data,
+					   success: function (data) {
+					   }
+				   });
+		})
+	}
+
 
 }
 

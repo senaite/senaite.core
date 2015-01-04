@@ -10,7 +10,9 @@ Resource         plone/app/robotframework/saucelabs.robot
 Variables        plone/app/testing/interfaces.py
 Variables        bika/lims/tests/variables.py
 Suite Setup      Start browser
-#Suite Teardown   Close All Browsers
+Suite Teardown   Close All Browsers
+
+Library          DebugLibrary
 
 *** Variables ***
 
@@ -20,187 +22,115 @@ ${ar_factory_url}  portal_factory/AnalysisRequest/xxx/ar_add
 
 ### First, some general things that are the same for all column layouts
 
-When Contact is selected, expand CC Contacts
-    # Bring up the AR Add form
+General AR Add javascript tests
     Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
     wait until page contains           xxx
-    # when Contact is selected, CC Contacts are selected
-    select from dropdown               ar_0_Contact         Rita
-    xpath should match x times         xpath=.//[contains(@class, .reference_multi_item)]   1
 
-Check that ST<-->SP restrictions are in place
+# When Contact is selected, expand CC Contacts
+
+    select from dropdown               css=tr[fieldname='Contact'] td[arnum='0'] input[type='text']       Rita
+    xpath should match x times         .//div[contains(@class, 'reference_multi_item')]   1
+    select from dropdown               css=tr[fieldname='Contact'] td[arnum='0'] input[type='text']       Neil
+    xpath should match x times         .//div[contains(@class, 'reference_multi_item')]   2
+
+# Check that ST<-->SP soft-restrictions are in place
+
+    # First: SamplePoint "Borehole 12": only "Water" sampletype should be visible by default
+    # but should still be allowed to select non-matching SampleType if we want to (Barley)
+    select from dropdown               css=tr[fieldname='SamplePoint'] td[arnum='0'] input[type='text']   Borehole
+    click element                      css=tr[fieldname='SampleType'] td[arnum='0'] input[type='text']
+    xpath should match x times         .//div[contains(@class, 'cg-menu-item')]   1
+    select from dropdown               css=tr[fieldname='SampleType'] td[arnum='0'] input[type='text']    Barley
+
+    # Second: SampleType "Water" should show only two SamplePoints when SamplePoint element is clicked
+    # but should still be allowed to select non-matching SamplePoint if we want to (Dispatch)
+    select from dropdown               css=tr[fieldname='SampleType'] td[arnum='1'] input[type='text']    Water
+    click element                      css=tr[fieldname='SamplePoint'] td[arnum='1'] input[type='text']
+    xpath should match x times         .//div[contains(@class, 'cg-menu-item')]   2
+    select from dropdown               css=tr[fieldname='SamplePoint'] td[arnum='1'] input[type='text']   Dispatch
+
+# when Report as Dry Matter is selected
+
+    select checkbox                    css=tr[fieldname='ReportDryMatter'] td[arnum='0'] input[type='checkbox']
+    log  XXX  warn
+    #Check that DryMatterService is selected.
+    #Check that prices are correctly calculated
+
+# generic copy-across: select, checkbox, plain-textfield, reference-textfield
+
+    log  XXX copy-across general   WARN
+
+# copy-across: drymatter, template, profile, contact-with-cc, cc, samplepoint<->sampletype
+
+    log  XXX copy-across specific  WARN
+
+BikaListing AR Add javascript tests
+
+    Enable bikalisting form
     Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
     wait until page contains           xxx
-    # selecting samplepoint Borehole 12: only "Water" sampletype should
-    # be available.
-    select from dropdown               ar_0_SamplePoint           Borehole
-    run keyword and expect error   *   select from dropdown       ar_0_SampleType    Barley
-    select from dropdown               ar_0_SampleType            Water
-    select from dropdown               ar_1_SampleType            Water
-    run keyword and expect error   *   select from dropdown       ar_1_SamplePoint    Mill
-    select from dropdown               ar_1_SamplePoint           Bruma
 
-### Then, stuff related to the single-service selector form
 
-Single service selector - manual selection of services
+
+SingleService AR Add javascript tests
+
+    Enable singleservice form
     Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
     wait until page contains           xxx
-    # first select some checkboxes.
-    wait until page contains element   css=#singleservice
+
+# AR Templates
+
+    # first select a random service (all columns), to be sure it is unselected
+    # again when template/profile are
     select checkbox                    css=input[name='uids:list']
-    xpath should match x times         xpath=.//*[@checked='checked']    5
-    # Then select a service from #singleselect
-    select from dropdown               css=#singleservice    calc
-    wait until page contains           Calcium
-    # select another
-    select from dropdown               css=#singleservice    sod
-    wait until page contains           Sodium
-    # no extra checkboxes are checked
-    xpath should match x times         xpath=.//*[@checked='checked']    5
-
-    sleep     300
-    # Try select Calcium again - it should not be permitted
-    select from dropdown               css=#singleservice    Calc
-    wait until page contains           Calcium
-
-Single service selector - AR Template selected
-    Turn on the single service selector form
-    Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
-    wait until page contains           xxx
-    # first select a random service, to be sure it is unselected again
-    select checkbox                    css=input[name='uids:list']
+    xpath should match x times         .//*[@checked='checked']    5
     select from dropdown               css=#singleservice    cod
     wait until page contains           COD
     # then select a template...
-    select from dropdown               ar_0_Template                Hardness
-    Wait Until Keyword Succeeds 	   5 sec    1 sec    element text should be       ar_0_SamplePoint   Borehole 12
+    select from dropdown               css=tr[fieldname='Template'] td[arnum='0'] input[type='text']        Hardness
+    Wait Until Keyword Succeeds 	   5 sec    1 sec    textfield value should be     css=tr[fieldname='SamplePoint'] td[arnum='0'] input[type='text']        Borehole 12
     # check field values are filled correctly
-    textfield value should be          ar_0_SampleType              Water
-    textfield value should be          ar_0_AnalysisSpecification   Water
-    # 7 analysis services should be selected
-    xpath should match x times         xpath=.//input[@type='checkbox' and @checked]     2
-    xpath should match x times         xpath=.//input[@type='text' and .="9"]            2
-    xpath should match x times         xpath=.//input[@type='text' and .="11"]           2
-    xpath should match x times         xpath=.//input[@type='text' and .="10"]           2
+    textfield value should be          css=tr[fieldname='SampleType'] td[arnum='0'] input[type='text']      Water
+    textfield value should be          css=tr[fieldname='Specification'] td[arnum='0'] input[type='text']   Water
+    # in column 0: 4 checkboxes checked (includes drymatter) and 4 with specs.
+    xpath should match x times         .//td[@arnum='0']//input[@type='checkbox' and @checked]     4
+    # in column 0: 4 total fields with 9/10/11 values present in them
+    xpath should match x times         .//td[@arnum='0']//input[@value="9"]                        4
+    xpath should match x times         .//td[@arnum='0']//input[@value="11"]                       4
+    xpath should match x times         .//td[@arnum='0']//input[@value="10"]                       4
+    # in column 0: there should be three partnr spans with "1" in them
+    xpath should match x times        .//td[@arnum='0']//span[@class='partnr' and text()="1"]      3
+
     # A different template
-    Wait Until Keyword Succeeds 	   5 sec    1 sec    element text should be       ar_0_SamplePoint   Bruma Lake
-    wait until page contains           Bruma Lake
-    # 7 analysis services should be selected
-    xpath should match x times         xpath=.//input[@type='checkbox' and @checked]     7
-    xpath should match x times         xpath=.//input[@type='text' and .="9"]            7
-    xpath should match x times         xpath=.//input[@type='text' and .="11"]           7
-    xpath should match x times         xpath=.//input[@type='text' and .="10"]           7
+    select from dropdown               css=tr[fieldname='Template'] td[arnum='0'] input[type='text']        Bruma
+    Wait Until Keyword Succeeds 	   5 sec    1 sec    textfield value should be     css=tr[fieldname='SamplePoint'] td[arnum='0'] input[type='text']        Bruma Lake
+    # in column 0: 7 selections, 9 with specs
+    xpath should match x times         .//td[@arnum='0']//input[@type='checkbox' and @checked]     7
+    # in column 0: 9 total fields with 9/10/11 values present in them
+    xpath should match x times         .//td[@arnum='0']//input[@value="9"]                        9
+    xpath should match x times         .//td[@arnum='0']//input[@value="11"]                       9
+    xpath should match x times         .//td[@arnum='0']//input[@value="10"]                       9
+    # in column 0: there should be three partnr spans with "1" in them
+    xpath should match x times        .//td[@arnum='0']//span[@class='partnr' and text()="1"]      7
 
-## Then tests related to the bika_listing/categorized service selector form
+# Analysis Profiles
 
-bika_listing service selector - manual selection of services
-    Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
-    wait until page contains           xxx
+    # total hardness has three services
+    select from dropdown               css=tr[fieldname='Profile'] td[arnum='1'] input[type='text']         Hardness
+    xpath should match x times         .//td[@arnum='1']/input[@type='checkbox' and @checked]      3
+    # trace metals has eight.
+    select from dropdown               css=tr[fieldname='Profile'] td[arnum='1'] input[type='text']         Trace
+    xpath should match x times         .//td[@arnum='1']/input[@type='checkbox' and @checked]      8
 
-bika_listing service selector - AR Template selected
-    Turn on the single service selector form
-    Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
-    wait until page contains           xxx
-    # when Template is selected
-    select from dropdown               ar_0_Template                Bruma
-    # Check that Metals category is EXPANDED
-    wait until page contains element   css=th[cat=Metals].expanded
-    # check field values are filled correctly
-    textfield value should be          ar_0_SampleType              Water
-    textfield value should be          ar_0_SamplePoint             Bruma Lake
-    textfield value should be          ar_0_AnalysisSpecification   Water
-    # 7 analysis services should be selected
-    xpath should match x times         xpath=.//input[@type='checkbox' and @checked]     7
-    xpath should match x times         xpath=.//input[@type='text' and .="9"]            7
-    xpath should match x times         xpath=.//input[@type='text' and .="11"]           7
-    xpath should match x times         xpath=.//input[@type='text' and .="10"]           7
+# Manually adding/removing services
 
-bika_listing service selector - AR Profile selected
-    Turn on the bika listing selector form
-    Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
-    wait until page contains           xxx
-
-    # when Template is selected
-    select from dropdown               ar_0_SampleType        Apple
-    select from dropdown               ar_0_Profile           Hardness
-    # Check that Metals and Water Chemistry are EXPANDED
-    wait until page contains element   css=th[cat=Metals].expanded
-    wait until page contains element   css=th[cat=Water Chemistry].expanded
-    # 3 analysis services should be selected
-    xpath should match x times         xpath=.//input[@type='checkbox' and @checked]     3
-
-bika_listing service selector - Default and Restricted categories
-    # Check that automatic expanded and restricted categories expand and restrict
-    # set preferences to Restrict='Microbiology' and Default='Metals'
-    Go to                              ${PLONEURL}/clients/client-1/edit/#fieldsetlegend-preferences
-    select from list                   RestrictedCategories:list   Microbiology
-    select from list                   DefaultCategories:list      Metals
-    click button                       Save
-    wait until page contains           saved
-    # Bring up the AR Add form
-    Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
-    wait until page contains           xxx
-    # Check that Microbiology category is RESTRICTED
-    page should not contain element    css=th[cat=Microbiology]
-    # Check that Metals category is EXPANDED
-    wait until page contains element   css=th[cat=Metals].expanded
-
-ebika_listing service selctor - Test Specifications
-    Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
-    wait until page contains           xxx
-    # setting spec directly should modify fields
-    select from dropdown               ar_1_Profile           Hardness
-    select from dropdown               ar_1_SampleType        Apple
-    textfield value should be          ar_1_AnalysisSpecification   Apple Pulp
-    xpath should match x times         xpath=.//input[@type='text' and .="9"]            6
-    # setting SampleType must set the spec
-    select from dropdown               ar_0_Profile           Hardness
-    select from dropdown               ar_0_SampleType        Apple
-    textfield value should be          ar_0_AnalysisSpecification   Apple Pulp
-    xpath should match x times         xpath=.//input[@type='text' and .="9"]            3
-
-bika_listing service selector - Test prices
-    # HAPPY HILLS - Bulk discount N, member discount Y
-    Go to                              ${PLONEURL}/clients/client-1/portal_factory/AnalysisRequest/xx0/ar_add
-    wait until page contains           xx0
-    select from dropdown               ar_0_Template          Hardness
-    select from dropdown               ar_1_Profile           Hardness
-    select checkbox         ccc
-
-    # Klaymore - Bulk discount Y, member discount N
-    Go to                              ${PLONEURL}/clients/client-1/portal_factory/AnalysisRequest/xx1/ar_add
-    wait until page contains           xx1
-
-    # Myrtle - Bulk discount N, member discount N
-    Go to                              ${PLONEURL}/clients/client-1/portal_factory/AnalysisRequest/xx2/ar_add
-    wait until page contains           xx2
-
-    # Ruff - Bulk discount Y, member discount Y
-    Go to                              ${PLONEURL}/clients/client-1/portal_factory/AnalysisRequest/xx3/ar_add
-    wait until page contains           xx3
+    # Should not allow duplicating service rows
+    select from dropdown               css=#singleservice    cod
+    select from dropdown               css=#singleservice    cod
+    xpath should match x times         .//tr[@keyword='COD']      1
 
 
 
-
-
-
-# select-all checkbox select's  all
-
-#when Copy-Across is selected:
-#    Make sure that it works for reference fields and their _uid counterparts
-#    All fields tested here, must have their tests run against the copy-across machine.
-#        - This must be done for all four test columns.
-#        - Check the state_variable completely
-
-#when Report as Dry Matter:
-#    Check that DryMatterService is selected.
-#    Check that prices are correctly calculated
-#    Check that the State variable has been completely configured.
-#
-#when DryMatterService is un-selected:
-#    Check that "Report as Dry Matter" option is un-checked (warning?)
-#    Check that the State variable has been completely configured.
-#
 #When analysis checkbox is "Clicked"
 #    check that the ar_spec fields are displayed if the option is enabled
 #    check that the ar_spec fields are not displayed if the option is disabled
@@ -240,7 +170,7 @@ Prices in column ${col_nr} should be: ${discount} ${subtotal} ${vat} ${total}
     element text should be      xpath=.//input[@id=ar_${col_nr}_vat]         ${vat}
     element text should be      xpath=.//input[@id=ar_${col_nr}_total]       ${total}
 
-Turn on the single service selector form
+Enable singleservice form
     go to                       ${PLONEURL}/bika_setup/edit
     wait until page contains    Password lifetime
     click link                  fieldsetlegend-analyses
@@ -249,7 +179,7 @@ Turn on the single service selector form
     click button                Save
     wait until page contains    saved.
 
-Turn on the bika listing selector form
+Enable bikalisting form
     go to                       ${PLONEURL}/bika_setup/edit
     wait until page contains    Password lifetime
     click link                  fieldsetlegend-analyses
@@ -258,170 +188,3 @@ Turn on the bika listing selector form
     click button                Save
     wait until page contains    saved.
 
-
-#Create AR
-#    Log in                      test_labmanager  test_labmanager
-#    @{time} =                   Get Time        year month day hour min sec
-#    Go to                       ${PLONEURL}/clients/client-1
-#    Wait until page contains element    css=body.portaltype-client
-#    Click Link                  Add
-#    Wait until page contains    Request new analyses
-#    Select from dropdown        ar_0_Contact                Rita
-#    Select from dropdown        ar_0_Template               Bore
-#    Select Date                 ar_0_SamplingDate           @{time}[2]
-#    Set Selenium Timeout        30
-#    Click Button                Save
-#    Set Selenium Timeout        10
-#    Wait until page contains    created
-#    ${ar_id} =                  Get text      //dl[contains(@class, 'portalMessage')][2]/dd
-#    ${ar_id} =                  Set Variable  ${ar_id.split()[2]}
-#    Go to                       http://localhost:55001/plone/clients/client-1/analysisrequests
-#    Wait until page contains    ${ar_id}
-#    Select checkbox             xpath=//input[@item_title="${ar_id}"]
-#    Click button                xpath=//input[@value="Receive sample"]
-#    Wait until page contains    saved
-#    [return]                    ${ar_id}
-#
-#Create Primary AR By Row
-#    Log in                      test_labmanager  test_labmanager
-#    @{time} =                   Get Time        year month day hour min sec
-#    Go to                       ${PLONEURL}/clients/client-1
-#    Wait until page contains element    css=body.portaltype-client
-#    Input text                  ar_count    2
-#    Select from list            layout      rows
-#    Click Link                  Add
-#    Wait until page contains    Request new analyses
-#    Select from dropdown        Contact                     Rita
-#    Select Date                 ar_0_SamplingDate           @{time}[2]
-#    Select from dropdown        ar_0_SampleType             Water
-#    Click element               ar_0_Analyses
-#    Wait until page contains    Select Analyses for AR
-#    Click element               xpath=//th[@id="cat_lab_Metals"]
-#    Select checkbox             xpath=//input[@title="Calcium"]
-#    Click Button                Submit
-#    Set Selenium Timeout        10
-#    ${Analyses} =               Get value    xpath=//input[@id="ar_0_Analyses"]
-#    Log                         ${Analyses}
-#    Should Be Equal             ${Analyses}    Calcium
-#    Click Button                Save
-#    Wait until page contains    was successfully created.
-#    ${ar_id} =                  Get text      //dl[contains(@class, 'portalMessage')][2]/dd
-#    ${ar_id} =                  Set Variable  ${ar_id.split()[2]}
-#    Go to                       http://localhost:55001/plone/clients/client-1/analysisrequests
-#    Wait until page contains    ${ar_id}
-#    Select checkbox             xpath=//input[@item_title="${ar_id}"]
-#    Click button                xpath=//input[@value="Receive sample"]
-#    Wait until page contains    saved
-#    [return]                    ${ar_id}
-#
-#Create Mulitple Primary ARs By Row With Template
-#    Log in                      test_labmanager  test_labmanager
-#    @{time} =                   Get Time        year month day hour min sec
-#    Go to                       ${PLONEURL}/clients/client-1
-#    Wait until page contains element    css=body.portaltype-client
-#    Input text                  ar_count    2
-#    Select from list            layout      rows
-#    Click Link                  Add
-#    Wait until page contains    Request new analyses
-#    Select from dropdown        Contact                     Rita
-#    Select Date                 ar_0_SamplingDate           @{time}[2]
-#    Select from dropdown        ar_0_Template               Bore
-#    Set Selenium Timeout        10
-#    ${Analyses} =               Get value    xpath=//input[@id="ar_0_Analyses"]
-#    Log                         ${Analyses}
-#    Should Be Equal             ${Analyses}    Calcium, Magnesium
-#    Click Element               //img[contains(@class, 'TemplateCopyButton')]
-#    Click Element               //img[contains(@class, 'SamplingDateCopyButton')]
-#    Click Button                Save
-#    Wait until page contains    were successfully created.
-#    ${ar_id} =                  Get text      //dl[contains(@class, 'portalMessage')][2]/dd
-#    ${ar_id_1} =                Set Variable  ${ar_id.split()[2]}
-#    ${ar_id_1} =                Set Variable  ${ar_id_1.split(',')[0]}
-#    ${ar_id_2} =                Set Variable  ${ar_id.split()[3]}
-#    ${ar_id_2} =                Set Variable  ${ar_id_2.split(',')[0]}
-#    Go to                       http://localhost:55001/plone/clients/client-1/analysisrequests
-#    Wait until page contains    ${ar_id_1}
-#    Page should contain         ${ar_id_2}
-#
-#Create Primary AR By Row With Template
-#    Log in                      test_labmanager  test_labmanager
-#    @{time} =                   Get Time        year month day hour min sec
-#    Go to                       ${PLONEURL}/clients/client-1
-#    Wait until page contains element    css=body.portaltype-client
-#    Input text                  ar_count    2
-#    Select from list            layout      rows
-#    Click Link                  Add
-#    Wait until page contains    Request new analyses
-#    Select from dropdown        Contact                     Rita
-#    Select Date                 ar_0_SamplingDate           @{time}[2]
-#    Select from dropdown        ar_0_Template               Bore
-#    Set Selenium Timeout        10
-#    ${Analyses} =               Get value    xpath=//input[@id="ar_0_Analyses"]
-#    Log                         ${Analyses}
-#    Should Be Equal             ${Analyses}    Calcium, Magnesium
-#    Click Button                Save
-#    Wait until page contains    was successfully created.
-#    ${ar_id} =                  Get text      //dl[contains(@class, 'portalMessage')][2]/dd
-#    ${ar_id} =                  Set Variable  ${ar_id.split()[2]}
-#    Go to                       http://localhost:55001/plone/clients/client-1/analysisrequests
-#    Wait until page contains    ${ar_id}
-#    Select checkbox             xpath=//input[@item_title="${ar_id}"]
-#    Click button                xpath=//input[@value="Receive sample"]
-#    Wait until page contains    saved
-#    [return]                    ${ar_id}
-#
-#
-#Create Secondary AR
-#    Log in                      test_labmanager  test_labmanager
-#    @{time} =                   Get Time        year month day hour min sec
-#    Go to                       ${PLONEURL}/clients/client-1
-#    Wait until page contains element    css=body.portaltype-client
-#    Click Link                  Add
-#    Wait until page contains    Request new analyses
-#    Select from dropdown        ar_0_Contact                Rita
-#    Select from dropdown        ar_0_Template               Bruma
-#    select from dropdown        ar_0_Sample
-#    Set Selenium Timeout        30
-#    Click Button                Save
-#    Set Selenium Timeout        2
-#    Wait until page contains    created
-#    ${ar_id} =                  Get text      //dl[contains(@class, 'portalMessage')][2]/dd
-#    ${ar_id} =                  Set Variable  ${ar_id.split()[2]}
-#    [return]                    ${ar_id}
-#
-#Complete ar_add form with template ${template}
-#    Wait until page contains    Request new analyses
-#    @{time} =                   Get Time        year month day hour min sec
-#    SelectDate                  ar_0_SamplingDate   @{time}[2]
-#    Select from dropdown        ar_0_Contact       Rita
-#    Select from dropdown        ar_0_Priority           High
-#    Select from dropdown        ar_0_Template       ${template}
-#    Sleep                       5
-#    Click Button                Save
-#    Wait until page contains    created
-#    ${ar_id} =                  Get text      //dl[contains(@class, 'portalMessage')][2]/dd
-#    ${ar_id} =                  Set Variable  ${ar_id.split()[2]}
-#    [return]                    ${ar_id}
-#
-#Complete ar_add form Without template
-#    @{time} =                  Get Time        year month day hour min sec
-#    SelectDate                 ar_0_SamplingDate   @{time}[2]
-#    Select From Dropdown       ar_0_SampleType    Water
-#    Select from dropdown       ar_0_Contact       Rita
-#    Select from dropdown       ar_0_Priority           High
-#    Click Element              xpath=//th[@id='cat_lab_Water Chemistry']
-#    Select Checkbox            xpath=//input[@title='Moisture' and @name='ar.0.Analyses:list:ignore_empty:record']
-#    Click Element              xpath=//th[@id='cat_lab_Metals']
-#    Select Checkbox            xpath=//input[@title='Calcium' and @name='ar.0.Analyses:list:ignore_empty:record']
-#    Select Checkbox            xpath=//input[@title='Phosphorus' and @name='ar.0.Analyses:list:ignore_empty:record']
-#    Click Element              xpath=//th[@id='cat_lab_Microbiology']
-#    Select Checkbox            xpath=//input[@title='Clostridia' and @name='ar.0.Analyses:list:ignore_empty:record']
-#    Select Checkbox            xpath=//input[@title='Ecoli' and @name='ar.0.Analyses:list:ignore_empty:record']
-#    Select Checkbox            xpath=//input[@title='Enterococcus' and @name='ar.0.Analyses:list:ignore_empty:record']
-#    Select Checkbox            xpath=//input[@title='Salmonella' and @name='ar.0.Analyses:list:ignore_empty:record']
-#    Set Selenium Timeout       60
-#    Click Button               Save
-#    Wait until page contains   created
-#    ${ar_id} =                 Get text      //dl[contains(@class, 'portalMessage')][2]/dd
-#    ${ar_id} =                 Set Variable  ${ar_id.split()[2]}
-#    [return]                   ${ar_id}
