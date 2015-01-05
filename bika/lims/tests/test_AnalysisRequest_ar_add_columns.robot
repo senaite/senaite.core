@@ -70,6 +70,52 @@ BikaListing AR Add javascript tests
     Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
     wait until page contains           xxx
 
+    # UNFORTUNATELY bika_listing_table is a dogs' breakfast.
+    # This means xpath selectors are fugly.  Please take care of them
+    # when they break.
+
+# Select-all checkbox stuff
+
+    click element                      xpath=.//span[@id='services_lab']//th[@cat='Water Chemistry' and contains(@class, 'collapsed')]
+    select checkbox                    css=input[name='uids:list'][item_title='COD']
+    xpath should match x times         .//*[@checked='checked']    5
+    unselect checkbox                    css=input[name='uids:list'][item_title='COD']
+    xpath should match x times         .//*[@checked='checked']    0
+
+# AR Templates
+
+    # select COD to see if it is correctly unselected later
+    select checkbox                    css=input[name='uids:list'][item_title='COD']
+    # then select a template...
+    select from dropdown               css=tr[fieldname='Template'] td[arnum='0'] input[type='text']        Hardness
+    Wait Until Keyword Succeeds 	   5 sec    1 sec    textfield value should be     css=tr[fieldname='SamplePoint'] td[arnum='0'] input[type='text']        Borehole 12
+    # check field values are filled correctly
+    textfield value should be          css=tr[fieldname='SampleType'] td[arnum='0'] input[type='text']      Water
+    textfield value should be          css=tr[fieldname='Specification'] td[arnum='0'] input[type='text']   Water
+    # in column 0: DryMatter option is selected
+    xpath should match x times         .//td[@arnum='0']//input[@type='checkbox' and @checked]     1
+    # in column 0: three service checkboxes are selected
+    xpath should match x times         .//td[contains(@clasvs, 'ar.0')]//input[@type='checkbox' and @checked]     3
+
+    debug
+
+#    xpath should match x times         .//td[contains(@class, 'ar.0')]//input[@value="9"]          4
+#    xpath should match x times         .//td[@arnum='0']//input[@value="11"]                       4
+#    xpath should match x times         .//td[@arnum='0']//input[@value="10"]                       4
+    # in column 0: there should be three partnr spans with "1" in them
+#    xpath should match x times        .//td[@arnum='0']//span[@class='partnr' and text()="1"]      3
+
+    # A different template
+    select from dropdown               css=tr[fieldname='Template'] td[arnum='0'] input[type='text']        Bruma
+    Wait Until Keyword Succeeds 	   5 sec    1 sec    textfield value should be     css=tr[fieldname='SamplePoint'] td[arnum='0'] input[type='text']        Bruma Lake
+    # in column 0: 7 selections, 9 with specs
+    xpath should match x times         .//td[@arnum='0']//input[@type='checkbox' and @checked]     7
+    # in column 0: 9 total fields with 9/10/11 values present in them
+    xpath should match x times     .//td[@arnum='0']//input[@value="9"]                        9
+    xpath should match x times         .//td[@arnum='0']//input[@value="11"]                       9
+    xpath should match x times         .//td[@arnum='0']//input[@value="10"]                       9
+    # in column 0: there should be three partnr spans with "1" in them
+    xpath should match x times        .//td[@arnum='0']//span[@class='partnr' and text()="1"]      7
 
 
 SingleService AR Add javascript tests
@@ -78,14 +124,20 @@ SingleService AR Add javascript tests
     Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
     wait until page contains           xxx
 
-# AR Templates
+# Select-all checkbox stuff
 
-    # first select a random service (all columns), to be sure it is unselected
-    # again when template/profile are
     select checkbox                    css=input[name='uids:list']
     xpath should match x times         .//*[@checked='checked']    5
+    unselect checkbox                    css=input[name='uids:list']
+    xpath should match x times         .//*[@checked='checked']    0
+
+# AR Templates
+
+    # select COD to see if it is correctly unselected later
+    select checkbox                    css=input[name='uids:list']
     select from dropdown               css=#singleservice    cod
     wait until page contains           COD
+
     # then select a template...
     select from dropdown               css=tr[fieldname='Template'] td[arnum='0'] input[type='text']        Hardness
     Wait Until Keyword Succeeds 	   5 sec    1 sec    textfield value should be     css=tr[fieldname='SamplePoint'] td[arnum='0'] input[type='text']        Borehole 12
@@ -128,6 +180,8 @@ SingleService AR Add javascript tests
     select from dropdown               css=#singleservice    cod
     select from dropdown               css=#singleservice    cod
     xpath should match x times         .//tr[@keyword='COD']      1
+
+# Submit and verify one with everything
 
 
 

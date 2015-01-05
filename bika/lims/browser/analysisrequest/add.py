@@ -50,7 +50,7 @@ class AnalysisServicesView(ASV):
         self.ar_add_items = []
 
         # Customise form for AR Add context
-        self.form_id = 'services'
+        self.form_id = 'services_%s'%poc
 
         self.filter_indexes = ['id', 'Title', 'SearchableText', 'getKeyword']
 
@@ -72,9 +72,8 @@ class AnalysisServicesView(ASV):
         self.review_states[0]['transitions'] = []
 
         # Configure column layout
-        to_remove = ['Category', 'Instrument', 'Unit', 'Calculation', 'Keyword']
-        if not context.bika_setup.getShowPrices():
-            to_remove.append('Price')
+        to_remove = ['Category', 'Instrument', 'Unit',
+                     'Calculation', 'Keyword', 'Price']
         for col_name in to_remove:
             if col_name in self.review_states[0]['columns']:
                 self.review_states[0]['columns'].remove(col_name)
@@ -133,8 +132,6 @@ class AnalysisServicesView(ASV):
             for x, item in enumerate(items):
                 if 'obj' not in items[x]:
                     continue
-                if bs.getShowPrices():
-                    items[x]['allow_edit'] = ['Price']
                 kw = items[x]['obj'].getKeyword()
                 for arnum in range(self.ar_count):
                     key = 'ar.%s' % arnum
@@ -149,7 +146,7 @@ class AnalysisServicesView(ASV):
                         items[x]['after'][key] += '''
                             <input class="min" size="3" placeholder="&gt;min"/>
                             <input class="max" size="3" placeholder="&lt;max"/>
-                            <input class="error" size="3" placeholder="err%%"/>
+                            <input class="error" size="3" placeholder="err%"/>
                         '''
                     items[x]['after'][key] += '<span class="partnr"></span>'
                     # place a clue for the JS to recognize that these are

@@ -104,7 +104,7 @@
                                style="vertical-align: -2px"/>
                     </td>
                     <tal:columns tal:repeat="arnum python:range(view.ar_count)">
-                        <td class="nowrap" tal:attributes="arnum arnum">
+                        <td class="nowrap" tal:attributes="arnum arnum;class string:ar.${arnum}">
                             <span class="before">
                                 &nbsp;</span>
                             <input type="checkbox" style="vertical-align: -2px"/>
@@ -213,11 +213,12 @@
                     value="Save"/>
         </div>
 
-        <span id="services" tal:define="services python:view.services_widget_content('field')">
+        <span id="services_field" tal:define="services python:view.services_widget_content('field')">
             <h3 tal:condition="services" i18n:translate="">Field Analyses</h3>
             <span tal:replace="structure services"></span>
         </span>
-        <span id="services" tal:define="services python:view.services_widget_content('lab')">
+
+        <span id="services_lab" tal:define="services python:view.services_widget_content('lab')">
             <h3 tal:condition="services" i18n:translate="">Lab Analyses</h3>
             <span tal:replace="structure services"></span>
         </span>

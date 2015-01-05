@@ -63,6 +63,7 @@ function AnalysisRequestAddByCol() {
 	 * state_set - should be used when setting fields in the state var
 	 * filter_combogrid - filter an existing dropdown (referencewidget)
 	 * filter_by_client - Grab the client UID and filter all applicable dropdowns
+	 * get_arnum(element) - convenience to compensate for different form layouts.
 	 */
 
 	function form_init() {
@@ -93,7 +94,7 @@ function AnalysisRequestAddByCol() {
 		// DatePickers must have their name/id attributes munged, because
 		// they are created identically for each AR column
 		$.each($(".ArchetypesDateTimeWidget input"), function (i, e) {
-			arnum = $(e).parents("[arnum]").attr("arnum")
+			arnum = get_arnum(e)
 			$(e).attr("id", $(e).attr("id") + "_" + arnum)
 			$(e).attr("name", $(e).attr("name") + "_" + arnum)
 		})
@@ -222,6 +223,24 @@ function AnalysisRequestAddByCol() {
 		return ret
 	}
 
+	function get_arnum(element) {
+		var arnum
+		// singleservice (and most widgets in the form header section)
+		arnum = $(element).parents("[arnum]").attr("arnum")
+		if (arnum) {
+			return arnum
+		}
+		// bika_listing form selector
+		var eid = $(element).attr("id")
+		if (eid) {
+			var bits = eid.split('-ar.')
+			if (bits.length > 0) {
+				return bits[1]
+			}
+		}
+		console.error("No arnum found for element " + element)
+	}
+
 	// Generic handlers for more than one field  ///////////////////////////////
 	/*
 	 checkbox_change - applies to all except analysis services
@@ -235,7 +254,7 @@ function AnalysisRequestAddByCol() {
 	 */
 
 	function checkbox_change_handler(element) {
-		var arnum = $(element).parents('[arnum]').attr('arnum')
+		var arnum = get_arnum(element)
 		var fieldName = $(element).parents('[fieldName]').attr('fieldName')
 		var value = $(element).prop("checked")
 		state_set(arnum, fieldName, value)
@@ -252,7 +271,7 @@ function AnalysisRequestAddByCol() {
 	}
 
 	function referencewidget_change_handler(element, item) {
-		var arnum = $(element).parents('[arnum]').attr('arnum')
+		var arnum = get_arnum(element)
 		var fieldName = $(element).parents('[fieldName]').attr('fieldName')
 		state_set(arnum, fieldName, item.UID)
 	}
@@ -267,7 +286,7 @@ function AnalysisRequestAddByCol() {
 	}
 
 	function select_element_change_handler(element) {
-		var arnum = $(element).parents('[arnum]').attr('arnum')
+		var arnum = get_arnum(element)
 		var fieldName = $(element).parents('[fieldName]').attr('fieldName')
 		var value = $(element).val()
 		state_set(arnum, fieldName, value)
@@ -283,7 +302,7 @@ function AnalysisRequestAddByCol() {
 	}
 
 	function textinput_change_handler(element) {
-		var arnum = $(element).parents('[arnum]').attr('arnum')
+		var arnum = get_arnum(element)
 		var fieldName = $(element).parents('[fieldName]').attr('fieldName')
 		var value = $(element).val()
 		state_set(arnum, fieldName, value)
@@ -334,7 +353,7 @@ function AnalysisRequestAddByCol() {
 		$('tr[fieldName="Client"] input[type="text"]')
 			.live('selected', function (event, item) {
 					  // filter any references that search inside the Client.
-					  var arnum = $(this).parents('[arnum]').attr('arnum')
+					  var arnum = get_arnum(this)
 					  filter_by_client(arnum)
 				  })
 	}
@@ -344,7 +363,7 @@ function AnalysisRequestAddByCol() {
 		 */
 		$('tr[fieldName="Contact"] input[type="text"]')
 			.live('selected', function (event, item) {
-					  var arnum = $(this).parents('[arnum]').attr('arnum')
+					  var arnum = get_arnum(this)
 					  cc_contacts_set(arnum)
 				  })
 	}
@@ -501,7 +520,7 @@ function AnalysisRequestAddByCol() {
 			var hashlist = bika.lims.ar_add.state[arnum]['ResultsRange']
 			if (hashlist) {
 				var spec = hashes_to_hash(hashlist, 'uid')
-				$.each($("tr.service_selector td[arnum='" + arnum + "']"),
+				$.each($("tr.service_selector td[class*='ar\\." + arnum + "']"),
 					   function (i, td) {
 						   var uid = $(td).parents("[uid]").attr("uid")
 						   if (uid && uid != "new" && uid in spec) {
@@ -586,16 +605,8 @@ function AnalysisRequestAddByCol() {
 	function samplepoint_selected() {
 		$("tr[fieldName='SamplePoint'] td[arnum] input[type='text']")
 			.live('selected', function (event, item) {
-					  var arnum = $(this).parents("[arnum]").attr("arnum")
+					  var arnum = get_arnum(this)
 					  samplepoint_set(arnum)
-				  })
-	}
-
-	function sampletype_selected() {
-		$("tr[fieldName='SampleType'] td[arnum] input[type='text']")
-			.live('selected', function (event, item) {
-					  var arnum = $(this).parents("[arnum]").attr("arnum")
-					  sampletype_set(arnum)
 				  })
 	}
 
@@ -607,6 +618,14 @@ function AnalysisRequestAddByCol() {
 		var ste = $("tr[fieldName='SampleType'] td[arnum='" + arnum + "'] input[type='text']")
 		filter_combogrid(ste, "getSamplePointTitle", $(spe).val(),
 						 'search_query')
+	}
+
+	function sampletype_selected() {
+		$("tr[fieldName='SampleType'] td[arnum] input[type='text']")
+			.live('selected', function (event, item) {
+					  var arnum = get_arnum(this)
+					  sampletype_set(arnum)
+				  })
 	}
 
 	function sampletype_set(arnum) {
@@ -790,7 +809,7 @@ function AnalysisRequestAddByCol() {
 	function drymatter_selected() {
 		$("tr[fieldName='ReportDryMatter'] td[arnum] input[type='checkbox']")
 			.live('click', function (event) {
-					  var arnum = $(this).parents("[arnum]").attr("arnum")
+					  var arnum = get_arnum(this)
 					  if ($(this).prop("checked")) {
 						  drymatter_set(arnum)
 						  partition_indicators_set(arnum)
@@ -821,11 +840,12 @@ function AnalysisRequestAddByCol() {
 						"input[type='checkbox']")
 		// set drymatter service IF checkbox is checked
 		if ($(element).attr("checked")) {
-			// bika_listing service selection form
-			if ($("#singleservice")) {
-				var checkbox = $("tr[uid='" + uid + "'] " +
-								 "td[arnum='" + arnum + "'] " +
-								 "input[type='checkbox']")
+			var checkbox = $("tr[uid='" + uid + "'] " +
+							 "td[class*='ar\\." + arnum + "'] " +
+							 "input[type='checkbox']")
+			// singleservice selection gets some added attributes.
+			// singleservice_duplicate will apply these to the TR it creates
+			if ($("#singleservice").length > 0) {
 				if ($(checkbox).length > 0) {
 					analysis_cb_check(arnum, uid)
 				}
@@ -841,9 +861,16 @@ function AnalysisRequestAddByCol() {
 				}
 				state_analyses_push(arnum, uid)
 			}
-			// bika_listing service selection form
+			// in case of bika_listing service selector, some attributes
+			// must be applied manually to each TR.  bika_listing already
+			// hacks in a lot of what we need (keyword, uid etc).
 			else {
-				console.log("XXX implement bika_listing drymatter service selections")
+				analysis_cb_check(arnum, uid)
+				debugger
+				$(checkbox).parents("tr")
+					.attr("title", title)
+					.attr("price", price)
+					.attr("vatamount", vatamount)
 			}
 			deps_calc(arnum, [uid], true, _("Dry Matter"))
 			recalc_prices(arnum)
@@ -909,9 +936,6 @@ function AnalysisRequestAddByCol() {
 			select: function (event, ui) {
 				// Set some attributes on #singleservice to assist the
 				// singleservice_duplicate function in it's work
-				var arnum = $(this).parents("[arnum]").length > 0
-					? $(this).parents("[arnum]").attr("arnum")
-					: 0
 				$("#singleservice").attr("uid", ui['item']['UID'])
 				$("#singleservice").attr("keyword", ui['item']['Keyword'])
 				$("#singleservice").attr("title", ui['item']['Title'])
@@ -1004,7 +1028,7 @@ function AnalysisRequestAddByCol() {
 			var checkboxes = $(tr).find("input[type='checkbox']").not("[name='uids:list']")
 			for (var i = 0; i < checkboxes.length; i++) {
 				var element = checkboxes[i]
-				var arnum = $(element).parents('[arnum]').attr("arnum")
+				var arnum = get_arnum(element)
 				var uid = $(element).parents('[uid]').attr("uid")
 				state_analyses_remove(arnum, uid)
 			}
@@ -1030,7 +1054,8 @@ function AnalysisRequestAddByCol() {
 			keyword = sd[i]["Keyword"]
 			price = sd[i]["Price"]
 			vatamount = sd[i]["VAT"]
-			var e = $("tr[uid='" + uid + "'] td[arnum='" + arnum + "'] input[type='checkbox']")
+			var e = $("tr[uid='" + uid + "'] td[class*='ar\\." + arnum + "'] " +
+					  "input[type='checkbox']")
 			e.length > 0
 				? analysis_cb_check(arnum, sd[i]["UID"])
 				: not_present.push(sd[i])
@@ -1062,19 +1087,21 @@ function AnalysisRequestAddByCol() {
 			var service = service_data[si]
 			service_uids.push(service['UID'])
 			var poc = service['PointOfCapture']
-			$('#services_' + poc + ' [cat="' + service['CategoryTitle'] + '"].collapsed').click()
-			$('#' + service['UID'] + '-ar\\.' + arnum).attr("checked", true)
-			$('#' + service['UID'] + '-ar\\.' + arnum).change()
+			// Expand category
+			$('span#services_' + poc + ' ' +
+			  '[cat="' + service['CategoryTitle'] + '"].collapsed').click()
+			// select service
+			analysis_cb_check(arnum, service['UID'])
 		}
 	}
 
 	function uncheck_all_services(arnum) {
 		// Remove checkboxes for all existing services in this column
-		var cblist = $("tr[uid] td[arnum='" + arnum + "'] input[type='checkbox']")
-			.filter(":checked")
+		var cblist = $("tr[uid] td[class*='ar\\." + arnum + "'] " +
+					   "input[type='checkbox']").filter(":checked")
 		for (var i = 0; i < cblist.length; i++) {
 			var e = cblist[i]
-			var arnum = $(e).parents("[arnum]").attr("arnum")
+			var arnum = get_arnum(e)
 			var uid = $(e).parents("[uid]").attr("uid")
 			analysis_cb_uncheck(arnum, uid)
 		}
@@ -1100,7 +1127,7 @@ function AnalysisRequestAddByCol() {
 		// regular analysis cb
 		$(".service_selector input[type='checkbox'][name!='uids:list']")
 			.live('click', function () {
-					  var arnum = $(this).parents("[arnum]").attr("arnum")
+					  var arnum = get_arnum(this)
 					  var uid = $(this).parents("[uid]").attr("uid")
 					  analysis_cb_after_change(arnum, uid)
 					  // Now we will manually decide if we should add or
@@ -1152,7 +1179,9 @@ function AnalysisRequestAddByCol() {
 	function analysis_cb_check(arnum, uid) {
 		/* Called to un-check an Analysis' checkbox as though it were clicked.
 		 */
-		var cb = $("tr[uid='" + uid + "'] td[arnum='" + arnum + "'] input[type='checkbox']")
+		var cb = $("tr[uid='" + uid + "'] " +
+				   "td[class*='ar\\." + arnum + "'] " +
+				   "input[type='checkbox']")
 		$(cb).attr("checked", true)
 		analysis_cb_after_change(arnum, uid)
 		state_analyses_push(arnum, uid)
@@ -1162,7 +1191,9 @@ function AnalysisRequestAddByCol() {
 	function analysis_cb_uncheck(arnum, uid) {
 		/* Called to un-check an Analysis' checkbox as though it were clicked.
 		 */
-		var cb = $("tr[uid='" + uid + "'] td[arnum='" + arnum + "'] input[type='checkbox']")
+		var cb = $("tr[uid='" + uid + "'] " +
+				   "td[class*='ar\\." + arnum + "'] " +
+				   "input[type='checkbox']")
 		$(cb).removeAttr("checked")
 		analysis_cb_after_change(arnum, uid)
 		state_analyses_remove(arnum, uid)
@@ -1172,7 +1203,9 @@ function AnalysisRequestAddByCol() {
 		/* If changed by click or by other trigger, all analysis checkboxes
 		 * must invoke this function.
 		 */
-		var cb = $("tr[uid='" + uid + "'] td[arnum='" + arnum + "'] input[type='checkbox']")
+		var cb = $("tr[uid='" + uid + "'] " +
+				   "td[class*='ar\\." + arnum + "'] " +
+				   "input[type='checkbox']")
 		var tr = $(cb).parents("tr")
 		var checked = $(cb).prop("checked")
 		var checkboxes = $(tr).find("input[type=checkbox][name!='uids:list']")
@@ -1209,165 +1242,6 @@ function AnalysisRequestAddByCol() {
 		}
 	}
 
-	// form/UI functions: not related to specific fields ///////////////////////
-	/* partnrs_calc calls the ajax url, and sets the state variable
-	 * partition_indicators_set calls partnrs_calc, and modifies the form.
-	 * partition_indicators_from_template set state partnrs from template
-	 * _partition_indicators_set actually does the form/ui work
-	 */
-
-	function partnrs_calc(arnum) {
-		/* Configure the state partition data with an ajax call
-		 * - calls to /calculate_partitions json url
-		 *
-		 */
-		var d = $.Deferred()
-		arnum = parseInt(arnum, 10)
-
-		//// Template columns are not calculated - they are set manually.
-		//// I have disabled this behaviour, to simplify the action of adding
-		//// a single extra service to a Template column.
-		//var te = $("tr[fieldName='Template'] td[arnum='" + arnum + "'] input[type='text']")
-		//if (!$(te).val()) {
-		//	d.resolve()
-		//	return d.promise()
-		//}
-
-		var st_uid = bika.lims.ar_add.state[arnum]['SampleType']
-		var service_uids = bika.lims.ar_add.state[arnum]['Analyses']
-
-		// if no sampletype or no selected analyses:  remove partition markers
-		if (!st_uid || !service_uids) {
-			d.resolve()
-			return d.promise()
-		}
-		var request_data = {
-			services: service_uids.join(","),
-			sampletype: st_uid,
-			_authenticator: $("input[name='_authenticator']").val()
-		}
-		window.jsonapi_cache = window.jsonapi_cache || {}
-		var cacheKey = $.param(request_data)
-		if (typeof window.jsonapi_cache[cacheKey] === "undefined") {
-			$.ajax({
-					   type: "POST",
-					   dataType: "json",
-					   url: window.portal_url + "/@@API/calculate_partitions",
-					   data: request_data,
-					   success: function (data) {
-						   // Check if calculation succeeded
-						   if (data.success == false) {
-							   bika.lims.log('Error while calculating partitions: ' + data.message)
-						   }
-						   else {
-							   window.jsonapi_cache[cacheKey] = data
-							   bika.lims.ar_add.state[arnum]['Partitions'] = data['parts']
-						   }
-						   d.resolve()
-					   }
-				   })
-		}
-		else {
-			var data = window.jsonapi_cache[cacheKey]
-			bika.lims.ar_add.state[arnum]['Partitions'] = data['parts']
-			d.resolve()
-		}
-		return d.promise()
-	}
-
-	function _partition_indicators_set(arnum) {
-		// partnrs_calc (or some template!) should have already set the state.
-
-		// Be aware here, that some services may not have part info, eg if a
-		// template was applied with only partial info.  This function literally
-		// uses "part-1" as a default
-
-		arnum = parseInt(arnum, 10)
-		var parts = bika.lims.ar_add.state[arnum]['Partitions']
-		if (!parts) {
-			return
-		}
-		// I'll be looping all the checkboxes currently visible in this column
-		var checkboxes = $("tr[uid] td[arnum='" + arnum + "'] " +
-						   "input[type='checkbox'][name!='uids:list']")
-		// the UIDs of services which are not found in any partition should
-		// be indicated.  anyway there should be some default applied, or
-		// selection allowed.
-		for (var n = 0; n < checkboxes.length; n++) {
-			var cb = checkboxes[n]
-			var span = $(cb).parents("[arnum]").find(".partnr")
-			var uid = $(cb).parents("[uid]").attr("uid")
-			if ($(cb).prop("checked")) {
-				// this service is selected - locate a partnr for it
-				var partnr = 1
-				for (var p = 0; p < parts.length; p++) {
-					if (parts[p]['services'].indexOf(uid) > -1) {
-						if (parts[p]["part_id"]) {
-							partnr = parts[p]["part_id"].split("-")[1]
-						}
-						else {
-							partnr = p + 1
-						}
-						break
-					}
-				}
-				// print the new partnr into the span
-				$(span).html(partnr)
-			}
-			else {
-				// this service is not selected - remove the partnr
-				$(span).html("&nbsp;")
-			}
-		}
-	}
-
-	function partition_indicators_set(arnum, skip_calculation) {
-		/* Calculate and Set partition indicators
-		 * set skip_calculation if the state variable already contains
-		 * calculated partitions (eg, when setting template)
-		 */
-		if (skip_calculation) {
-			_partition_indicators_set(arnum)
-		}
-		else {
-			partnrs_calc(arnum).done(function () {
-				_partition_indicators_set(arnum)
-			})
-		}
-	}
-
-	function recalc_prices(arnum) {
-		var price
-		var subtotal = 0.00
-		var discount_amount = 0.00
-		var vat = 0.00
-		var total = 0.00
-		var discount_pcnt = parseFloat($("#bika_setup").attr("MemberDiscount"))
-		var checked = $("tr[uid] td[arnum='" + arnum + "'] input[type='checkbox']:checked")
-		for (var i = 0; i < checked.length; i++) {
-			var cb = checked[i]
-			var form_price = $(cb).parents("[price]").attr("price")
-			var vatamount = $(cb).parents("[vatamount]").attr("vatamount")
-			if ($(cb).prop("checked") && !$(cb).prop("disabled")) {
-				if (discount_pcnt) {
-					price = form_price - ((form_price / 100) * discount_pcnt)
-				}
-				else {
-					price = form_price
-				}
-				subtotal += price
-				discount_amount += ((form_price / 100) * discount_pcnt)
-				vat += ((price / 100) * vatamount)
-				total += price + ((price / 100) * vatamount)
-			}
-		}
-		$("td[arnum='" + arnum + "'] span.price.discount").html(discount_amount.toFixed(2))
-		$("td[arnum='" + arnum + "'] span.price.subtotal").html(subtotal.toFixed(2))
-		$("td[arnum='" + arnum + "'] span.price.vat").html(vat.toFixed(2))
-		$("td[arnum='" + arnum + "'] span.price.total").html(total.toFixed(2))
-	}
-
-
 	// dependencies ////////////////////////////////////////////////////////////
 	/*
 	 deps_calc					- the main routine for dependencies/dependants
@@ -1400,7 +1274,7 @@ function AnalysisRequestAddByCol() {
 				continue
 			}
 			var element = $("tr[uid='" + uids[n] + "'] " +
-							"td[arnum='" + arnum + "'] " +
+							"td[class*='ar\\." + arnum + "'] " +
 							"input[type='checkbox']")
 			var initiator = $(element).parents("[title]").attr("title")
 
@@ -1408,20 +1282,13 @@ function AnalysisRequestAddByCol() {
 			if ($(element).prop("checked")) {
 				var Dependencies = lims.AnalysisService.Dependencies(uid)
 				for (i = 0; i < Dependencies.length; i++) {
-					// single-service selector form ////////////////////////////
-					if ($("#singleservice")) {
-						var Dep = Dependencies[i]
-						dep_element = $("tr[uid='" + Dep['Service_uid'] + "'] " +
-										"td[arnum='" + arnum + "'] " +
-										"input[type='checkbox']")
-						if (!$(dep_element).prop("checked")) {
-							dep_titles.push(Dep['Service'])
-							dep_services.push(Dep)
-						}
-					}
-					// bika_listing service selector form //////////////////////
-					else {
-						console.log("XXX")
+					var Dep = Dependencies[i]
+					dep_element = $("tr[uid='" + Dep['Service_uid'] + "'] " +
+									"td[class*='ar\\." + arnum + "'] " +
+									"input[type='checkbox']")
+					if (!$(dep_element).prop("checked")) {
+						dep_titles.push(Dep['Service'])
+						dep_services.push(Dep)
 					}
 				}
 				if (dep_services.length > 0) {
@@ -1432,7 +1299,8 @@ function AnalysisRequestAddByCol() {
 						dependencies_add_confirm(initiator, dep_services,
 												 dep_titles)
 							.done(function (data) {
-									  dependancies_add_yes(arnum, dep_services)
+									  dependancies_add_yes(arnum,
+														   dep_services)
 								  })
 							.fail(function (data) {
 									  dependencies_add_no(arnum, uid)
@@ -1446,20 +1314,13 @@ function AnalysisRequestAddByCol() {
 			else {
 				var Dependants = lims.AnalysisService.Dependants(uid)
 				for (i = 0; i < Dependants.length; i++) {
-					// single-service selector form ////////////////////////////
-					if ($("#singleservice")) {
-						Dep = Dependants[i]
-						dep_element = $("tr[uid='" + Dep['Service_uid'] + "'] " +
-										"td[arnum='" + arnum + "'] " +
-										"input[type='checkbox']")
-						if ($(dep_element).prop("checked")) {
-							dep_titles.push(Dep['Service'])
-							dep_services.push(Dep)
-						}
-					}
-					// bika_listing service selector form //////////////////////
-					else {
-						console.log("XXX")
+					Dep = Dependants[i]
+					dep_element = $("tr[uid='" + Dep['Service_uid'] + "'] " +
+									"td[class*='ar\\." + arnum + "'] " +
+									"input[type='checkbox']")
+					if ($(dep_element).prop("checked")) {
+						dep_titles.push(Dep['Service'])
+						dep_services.push(Dep)
 					}
 				}
 				if (dep_services.length > 0) {
@@ -1470,7 +1331,8 @@ function AnalysisRequestAddByCol() {
 						dependants_remove_confirm(initiator, dep_services,
 												  dep_titles)
 							.done(function (data) {
-									  dependants_remove_yes(arnum, dep_services)
+									  dependants_remove_yes(arnum,
+															dep_services)
 								  })
 							.fail(function (data) {
 									  dependants_remove_no(arnum, uid)
@@ -1482,7 +1344,8 @@ function AnalysisRequestAddByCol() {
 		}
 	}
 
-	function dependants_remove_confirm(initiator, dep_services, dep_titles) {
+	function dependants_remove_confirm(initiator, dep_services,
+									   dep_titles) {
 		var d = $.Deferred()
 		$("body").append(
 			"<div id='messagebox' style='display:none' title='" + _("Service dependencies") + "'>" +
@@ -1576,7 +1439,7 @@ function AnalysisRequestAddByCol() {
 			var Dep = dep_services[i]
 			var uid = Dep['Service_uid']
 			var dep_cb = $("tr[uid='" + uid + "'] " +
-						   "td[arnum='" + arnum + "'] " +
+						   "td[class*='ar\\." + arnum + "'] " +
 						   "input[type='checkbox']")
 			if (dep_cb.length > 0) {
 				// row already exists
@@ -1606,14 +1469,170 @@ function AnalysisRequestAddByCol() {
 		 This is just responsible for un-checking the service that was
 		 used to invoke this routine.
 		 */
-		var element = $("tr[uid='" + uid + "'] td[arnum='" + arnum + "'] input[type='checkbox']")
+		var element = $("tr[uid='" + uid + "'] td[class*='ar\\." + arnum + "'] input[type='checkbox']")
 		if ($(element).prop("checked")) {
 			analysis_cb_uncheck(arnum, uid);
 		}
 		_partition_indicators_set(arnum)
 	}
 
-	// Form submission /////////////////////////////////////////////////////////
+	// form/UI functions: not related to specific fields ///////////////////////
+	/* partnrs_calc calls the ajax url, and sets the state variable
+	 * partition_indicators_set calls partnrs_calc, and modifies the form.
+	 * partition_indicators_from_template set state partnrs from template
+	 * _partition_indicators_set actually does the form/ui work
+	 */
+
+	function partnrs_calc(arnum) {
+		/* Configure the state partition data with an ajax call
+		 * - calls to /calculate_partitions json url
+		 *
+		 */
+		var d = $.Deferred()
+		arnum = parseInt(arnum, 10)
+
+		//// Template columns are not calculated - they are set manually.
+		//// I have disabled this behaviour, to simplify the action of adding
+		//// a single extra service to a Template column.
+		//var te = $("tr[fieldName='Template'] td[arnum='" + arnum + "'] input[type='text']")
+		//if (!$(te).val()) {
+		//	d.resolve()
+		//	return d.promise()
+		//}
+
+		var st_uid = bika.lims.ar_add.state[arnum]['SampleType']
+		var service_uids = bika.lims.ar_add.state[arnum]['Analyses']
+
+		// if no sampletype or no selected analyses:  remove partition markers
+		if (!st_uid || !service_uids) {
+			d.resolve()
+			return d.promise()
+		}
+		var request_data = {
+			services: service_uids.join(","),
+			sampletype: st_uid,
+			_authenticator: $("input[name='_authenticator']").val()
+		}
+		window.jsonapi_cache = window.jsonapi_cache || {}
+		var cacheKey = $.param(request_data)
+		if (typeof window.jsonapi_cache[cacheKey] === "undefined") {
+			$.ajax({
+					   type: "POST",
+					   dataType: "json",
+					   url: window.portal_url + "/@@API/calculate_partitions",
+					   data: request_data,
+					   success: function (data) {
+						   // Check if calculation succeeded
+						   if (data.success == false) {
+							   bika.lims.log('Error while calculating partitions: ' + data.message)
+						   }
+						   else {
+							   window.jsonapi_cache[cacheKey] = data
+							   bika.lims.ar_add.state[arnum]['Partitions'] = data['parts']
+						   }
+						   d.resolve()
+					   }
+				   })
+		}
+		else {
+			var data = window.jsonapi_cache[cacheKey]
+			bika.lims.ar_add.state[arnum]['Partitions'] = data['parts']
+			d.resolve()
+		}
+		return d.promise()
+	}
+
+	function _partition_indicators_set(arnum) {
+		// partnrs_calc (or some template!) should have already set the state.
+
+		// Be aware here, that some services may not have part info, eg if a
+		// template was applied with only partial info.  This function literally
+		// uses "part-1" as a default
+
+		arnum = parseInt(arnum, 10)
+		var parts = bika.lims.ar_add.state[arnum]['Partitions']
+		if (!parts) {
+			return
+		}
+		// I'll be looping all the checkboxes currently visible in this column
+		var checkboxes = $("tr[uid] td[class*='ar\\." + arnum + "'] " +
+						   "input[type='checkbox'][name!='uids:list']")
+		// the UIDs of services which are not found in any partition should
+		// be indicated.  anyway there should be some default applied, or
+		// selection allowed.
+		for (var n = 0; n < checkboxes.length; n++) {
+			var cb = checkboxes[n]
+			var span = $(cb).parents("[class*='ar\\.']").find(".partnr")
+			var uid = $(cb).parents("[uid]").attr("uid")
+			if ($(cb).prop("checked")) {
+				// this service is selected - locate a partnr for it
+				var partnr = 1
+				for (var p = 0; p < parts.length; p++) {
+					if (parts[p]['services'].indexOf(uid) > -1) {
+						if (parts[p]["part_id"]) {
+							partnr = parts[p]["part_id"].split("-")[1]
+						}
+						else {
+							partnr = p + 1
+						}
+						break
+					}
+				}
+				// print the new partnr into the span
+				$(span).html(partnr)
+			}
+			else {
+				// this service is not selected - remove the partnr
+				$(span).html("&nbsp;")
+			}
+		}
+	}
+
+	function partition_indicators_set(arnum, skip_calculation) {
+		/* Calculate and Set partition indicators
+		 * set skip_calculation if the state variable already contains
+		 * calculated partitions (eg, when setting template)
+		 */
+		if (skip_calculation) {
+			_partition_indicators_set(arnum)
+		}
+		else {
+			partnrs_calc(arnum).done(function () {
+				_partition_indicators_set(arnum)
+			})
+		}
+	}
+
+	function recalc_prices(arnum) {
+		var price
+		var subtotal = 0.00
+		var discount_amount = 0.00
+		var vat = 0.00
+		var total = 0.00
+		var discount_pcnt = parseFloat($("#bika_setup").attr("MemberDiscount"))
+		var checked = $("tr[uid] td[class*='ar\\." + arnum + "'] input[type='checkbox']:checked")
+		for (var i = 0; i < checked.length; i++) {
+			var cb = checked[i]
+			var form_price = $(cb).parents("[price]").attr("price")
+			var vatamount = $(cb).parents("[vatamount]").attr("vatamount")
+			if ($(cb).prop("checked") && !$(cb).prop("disabled")) {
+				if (discount_pcnt) {
+					price = form_price - ((form_price / 100) * discount_pcnt)
+				}
+				else {
+					price = form_price
+				}
+				subtotal += price
+				discount_amount += ((form_price / 100) * discount_pcnt)
+				vat += ((price / 100) * vatamount)
+				total += price + ((price / 100) * vatamount)
+			}
+		}
+		$("td[arnum='" + arnum + "'] span.price.discount").html(discount_amount.toFixed(2))
+		$("td[arnum='" + arnum + "'] span.price.subtotal").html(subtotal.toFixed(2))
+		$("td[arnum='" + arnum + "'] span.price.vat").html(vat.toFixed(2))
+		$("td[arnum='" + arnum + "'] span.price.total").html(total.toFixed(2))
+	}
 
 	function set_state_from_form_values() {
 		var nr_ars = parseInt($("#ar_count").val(), 10)
@@ -1623,7 +1642,7 @@ function AnalysisRequestAddByCol() {
 		// other hidden inputs, these have a 'hidden' attribute on their td.
 		$.each($('td[arnum][hidden] input[type="hidden"]'),
 			   function (i, e) {
-				   var arnum = $(e).parents("[arnum]").attr("arnum")
+				   var arnum = get_arnum(e)
 				   var fieldname = $(e).parents("[fieldname]").attr("fieldname")
 				   var value = $(e).attr("uid")
 					   ? $(e).attr("uid")
@@ -1647,15 +1666,15 @@ function AnalysisRequestAddByCol() {
 		// checkboxes inside ar_add_widget table.
 		$.each($('[ar_add_ar_widget] input[type="checkbox"]'),
 			   function (i, e) {
-				   var arnum = $(e).parents("[arnum]").attr("arnum")
+				   var arnum = get_arnum(e)
 				   var fieldname = $(e).parents("[fieldname]").attr("fieldname")
 				   var value = $(e).prop('checked')
 				   state_set(arnum, fieldname, value)
 			   })
 		// select widget values
-		$.each($('select'),
+		$.each($('td[arnum] select'),
 			   function (i, e) {
-				   var arnum = $(e).parents("[arnum]").attr("arnum")
+				   var arnum = get_arnum(e)
 				   var fieldname = $(e).parents("[fieldname]").attr("fieldname")
 				   var value = $(e).val()
 				   state_set(arnum, fieldname, value)
@@ -1664,11 +1683,11 @@ function AnalysisRequestAddByCol() {
 		var uid, arnum, services
 		for (arnum = 0; arnum < nr_ars; arnum++) {
 			services = [] // list of UIDs
-			$.each($('.service_selector td[arnum="' + arnum + '"] input[type="checkbox"]').filter(":checked"),
-				   function (i, e) {
-					   uid = $(e).parents("[uid]").attr("uid")
-					   services.push(uid)
-				   })
+			var cblist = $('.service_selector td[class*="ar\\.' + arnum + '"] input[type="checkbox"]').filter(":checked")
+			$.each(cblist, function (i, e) {
+				uid = $(e).parents("[uid]").attr("uid")
+				services.push(uid)
+			})
 			state_set(arnum, "Analyses", services)
 		}
 		// ResultsRange + specifications from UI
@@ -1677,7 +1696,7 @@ function AnalysisRequestAddByCol() {
 			rr = bika.lims.ar_add.state[arnum]['ResultsRange']
 			if (rr != undefined) {
 				specs = hashes_to_hash(rr, 'uid')
-				$.each($('.service_selector td[arnum="' + arnum + '"] .after'),
+				$.each($(".service_selector td[class*='ar\\." + arnum + "'] .after"),
 					   function (i, e) {
 						   uid = $(e).parents("[uid]").attr("uid")
 						   var keyword = $(e).parents("[keyword]").attr("keyword")
@@ -1712,15 +1731,10 @@ function AnalysisRequestAddByCol() {
 		}
 	}
 
-	function check_state_for_errors() {
-		console.log("ok")
-	}
-
 	function form_submit() {
 		$("[name='save_button']").click(function (event) {
 			event.preventDefault()
 			set_state_from_form_values()
-			check_state_for_errors()
 			var request_data = {
 				_authenticator: $("input[name='_authenticator']").val(),
 				state: $.toJSON(bika.lims.ar_add.state)
@@ -1731,6 +1745,7 @@ function AnalysisRequestAddByCol() {
 					   url: window.location.href.split("/portal_factory")[0] + "/analysisrequest_submit",
 					   data: request_data,
 					   success: function (data) {
+						   debugger
 					   }
 				   });
 		})
