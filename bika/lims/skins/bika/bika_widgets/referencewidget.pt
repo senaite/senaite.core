@@ -104,7 +104,9 @@
             <span tal:condition="widget/isAddButtonVisible">
                 <a style="border-bottom:none !important;margin-left:.5;"
                    class="add_button_overlay  link-overlay"
-                   tal:attributes="href widget/getAddButtonUrl"
+                   tal:attributes="
+                           href widget/getAddButtonUrl;
+                           data_js_controllers widget/getAddButtonJSControllers"
                    rel="#overlay">
                     <img style="padding-bottom:1px;" src="++resource++bika.lims.images/add.png"/>
                 </a>

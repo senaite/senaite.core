@@ -152,6 +152,12 @@ class ReferenceWidget(StringWidget):
         src= self.portal_url()
         return src + self.addButtonUrl
 
+    def getAddButtonJSControllers(self):
+        """
+        :return: Array with the controllers to be loaded for the layout.
+        """
+        return self.addButton_js_controllers
+
 registerWidget(ReferenceWidget, title='Reference Widget')
 
 class ajaxReferenceWidgetSearch(BrowserView):
