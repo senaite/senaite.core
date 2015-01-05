@@ -378,7 +378,7 @@ def createPdf(htmlreport, outfile=None, css=None):
     return open(outfile, 'r').read();
 
 def attachPdf(mimemultipart, pdfreport, filename=None):
-    part = MIMEBase('application', "application/pdf")
+    part = MIMEBase('application', "pdf")
     part.add_header('Content-Disposition',
                     'attachment; filename="%s.pdf"' % (filename or tmpID()))
     part.set_payload(pdfreport)
