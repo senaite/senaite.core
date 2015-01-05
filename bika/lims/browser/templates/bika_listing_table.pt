@@ -216,9 +216,11 @@ Table data rows start here
                 cat cat;
                 class item/table_row_class;
                 id string:folder-contents-item-${item/uid};
-                uid item/uid;
-                keyword keyword;
-                as_uid suid;">
+                uid python: item['uid'] if 'uid' in item else None;
+                keyword python: keyword if keyword else None;
+                as_uid python: suid if suid else None;
+                price python: item['price'] if 'price' in item else None;
+                vatamount python: item['vatamount'] if 'vatamount' in item else None; ">
 
         <tal:comment replace="nothing">***************
         Individual items' row_data is stored on each row.
