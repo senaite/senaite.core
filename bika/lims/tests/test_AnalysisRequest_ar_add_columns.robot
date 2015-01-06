@@ -16,7 +16,7 @@ Library          DebugLibrary
 
 *** Variables ***
 
-${ar_factory_url}  portal_factory/AnalysisRequest/xxx/ar_add
+${ar_factory_url}  portal_factory/AnalysisRequest/xxx/ar_add?layout=columns&ar_count=5
 
 *** Test Cases ***
 
@@ -26,43 +26,54 @@ General AR Add javascript tests
     Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
     wait until page contains           xxx
 
-# When Contact is selected, expand CC Contacts
+### When Contact is selected, expand CC Contacts
 
-    select from dropdown               css=tr[fieldname='Contact'] td[arnum='0'] input[type='text']       Rita
+    select from dropdown               css=#Contact-0        Rita
     xpath should match x times         .//div[contains(@class, 'reference_multi_item')]   1
-    select from dropdown               css=tr[fieldname='Contact'] td[arnum='0'] input[type='text']       Neil
+    select from dropdown               css=#Contact-0        Neil
     xpath should match x times         .//div[contains(@class, 'reference_multi_item')]   2
 
-# Check that ST<-->SP soft-restrictions are in place
+### Check that ST<-->SP soft-restrictions are in place
 
     # First: SamplePoint "Borehole 12": only "Water" sampletype should be visible by default
     # but should still be allowed to select non-matching SampleType if we want to (Barley)
-    select from dropdown               css=tr[fieldname='SamplePoint'] td[arnum='0'] input[type='text']   Borehole
-    click element                      css=tr[fieldname='SampleType'] td[arnum='0'] input[type='text']
+
+    select from dropdown               css=#SamplePoint-0    Borehole
+    click element                      css=#SampleType-0
     xpath should match x times         .//div[contains(@class, 'cg-menu-item')]   1
-    select from dropdown               css=tr[fieldname='SampleType'] td[arnum='0'] input[type='text']    Barley
+    select from dropdown               css=#SampleType-0     Barley
 
     # Second: SampleType "Water" should show only two SamplePoints when SamplePoint element is clicked
     # but should still be allowed to select non-matching SamplePoint if we want to (Dispatch)
-    select from dropdown               css=tr[fieldname='SampleType'] td[arnum='1'] input[type='text']    Water
-    click element                      css=tr[fieldname='SamplePoint'] td[arnum='1'] input[type='text']
+
+    select from dropdown               css=#SampleType-1    Water
+    click element                      css=#SamplePoint-1
     xpath should match x times         .//div[contains(@class, 'cg-menu-item')]   2
-    select from dropdown               css=tr[fieldname='SamplePoint'] td[arnum='1'] input[type='text']   Dispatch
+    select from dropdown               css=#SamplePoint-1   Dispatch
 
-# when Report as Dry Matter is selected
+### copy-across:
 
-    select checkbox                    css=tr[fieldname='ReportDryMatter'] td[arnum='0'] input[type='checkbox']
-    log  XXX  warn
-    #Check that DryMatterService is selected.
-    #Check that prices are correctly calculated
+    # contact (reference, multivalued reference, and CC Contacts)
+    select from dropdown               css=#Contact-0       Rita
+    click element                      css=tr[fieldname='Contact'] img.copybutton
+    textfield value should be          css=#Contact-4       Rita Mohale
+    xpath should match x times         .//div[contains(@class, 'reference_multi_item')]    5
 
-# generic copy-across: select, checkbox, plain-textfield, reference-textfield
+    # ccemails (regular text field)
+    input text                         css=#CCEmails-0       asdf@example.com
+    click element                      css=tr[fieldname='CCEmails'] img.copybutton
+    textfield value should be          css=#CCEmails-4m
 
-    log  XXX copy-across general   WARN
+    # select element
+    select from list                   css=#PreparationWorkflow-0 select
+    click element                      css=tr[fieldname='PreparationWorkflow'] img.copybutton
+    list selection should be           css=#PreparationWorkflow-4      Simple one-step
 
-# copy-across: drymatter, template, profile, contact-with-cc, cc, samplepoint<->sampletype
+    # Checkboxes
+    select checkbox                    css=#ReportDryMatter-0
+    click element                      css=tr[fieldname='ReportDryMatter'] img.copybutton
+    checkbox should be selected        css=#ReportDryMatter-4
 
-    log  XXX copy-across specific  WARN
 
 BikaListing AR Add javascript tests
 
@@ -70,53 +81,103 @@ BikaListing AR Add javascript tests
     Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
     wait until page contains           xxx
 
-    # UNFORTUNATELY bika_listing_table is a dogs' breakfast.
-    # This means xpath selectors are fugly.  Please take care of them
-    # when they break.
-
-# Select-all checkbox stuff
+### Select-all checkbox stuff
 
     click element                      xpath=.//span[@id='services_lab']//th[@cat='Water Chemistry' and contains(@class, 'collapsed')]
     select checkbox                    css=input[name='uids:list'][item_title='COD']
-    xpath should match x times         .//*[@checked='checked']    5
-    unselect checkbox                    css=input[name='uids:list'][item_title='COD']
+    xpath should match x times         .//*[@checked='checked']    6
+    unselect checkbox                  css=input[name='uids:list'][item_title='COD']
     xpath should match x times         .//*[@checked='checked']    0
 
-# AR Templates
+### AR Templates
 
     # select COD to see if it is correctly unselected later
     select checkbox                    css=input[name='uids:list'][item_title='COD']
+
     # then select a template...
-    select from dropdown               css=tr[fieldname='Template'] td[arnum='0'] input[type='text']        Hardness
-    Wait Until Keyword Succeeds 	   5 sec    1 sec    textfield value should be     css=tr[fieldname='SamplePoint'] td[arnum='0'] input[type='text']        Borehole 12
-    # check field values are filled correctly
-    textfield value should be          css=tr[fieldname='SampleType'] td[arnum='0'] input[type='text']      Water
-    textfield value should be          css=tr[fieldname='Specification'] td[arnum='0'] input[type='text']   Water
-    # in column 0: DryMatter option is selected
-    xpath should match x times         .//td[@arnum='0']//input[@type='checkbox' and @checked]     1
-    # in column 0: three service checkboxes are selected
-    xpath should match x times         .//td[contains(@clasvs, 'ar.0')]//input[@type='checkbox' and @checked]     3
-
-    debug
-
-#    xpath should match x times         .//td[contains(@class, 'ar.0')]//input[@value="9"]          4
-#    xpath should match x times         .//td[@arnum='0']//input[@value="11"]                       4
-#    xpath should match x times         .//td[@arnum='0']//input[@value="10"]                       4
-    # in column 0: there should be three partnr spans with "1" in them
-#    xpath should match x times        .//td[@arnum='0']//span[@class='partnr' and text()="1"]      3
+    select from dropdown               css=#Template-0        Hardness
+    Wait Until Keyword Succeeds 	   5 sec    1 sec    textfield value should be     css=#SamplePoint-0        Borehole 12
+    textfield value should be          css=#SampleType-0      Water
+    textfield value should be          css=#Specification-0   Water
+    # dry matter
+    checkbox should be selected        css=#ReportDryMatter-0
+    # services
+    xpath should match x times         .//td[contains(@class, 'ar.0')]//input[@type='checkbox' and @checked]     4
+    # specifications
+    xpath should match x times         .//td[contains(@class, 'ar.0')]//input[@value="9"]          20
+    xpath should match x times         .//td[contains(@class, 'ar.0')]//input[@value="11"]         20
+    xpath should match x times         .//td[contains(@class, 'ar.0')]//input[@value="10"]         20
+    # partnrs
+    xpath should match x times        .//td[contains(@class, 'ar.0')]//span[@class='partnr' and text()="1"]      4
 
     # A different template
-    select from dropdown               css=tr[fieldname='Template'] td[arnum='0'] input[type='text']        Bruma
-    Wait Until Keyword Succeeds 	   5 sec    1 sec    textfield value should be     css=tr[fieldname='SamplePoint'] td[arnum='0'] input[type='text']        Bruma Lake
-    # in column 0: 7 selections, 9 with specs
-    xpath should match x times         .//td[@arnum='0']//input[@type='checkbox' and @checked]     7
-    # in column 0: 9 total fields with 9/10/11 values present in them
-    xpath should match x times     .//td[@arnum='0']//input[@value="9"]                        9
-    xpath should match x times         .//td[@arnum='0']//input[@value="11"]                       9
-    xpath should match x times         .//td[@arnum='0']//input[@value="10"]                       9
-    # in column 0: there should be three partnr spans with "1" in them
-    xpath should match x times        .//td[@arnum='0']//span[@class='partnr' and text()="1"]      7
+    select from dropdown               css=#Template-1        Bruma
+    Wait Until Keyword Succeeds 	   5 sec    1 sec    textfield value should be     css=#SamplePoint-1        Bruma Lake
+    # dry matter
+    checkbox should be selected        css=#ReportDryMatter-0
+    # services
+    xpath should match x times         .//td[contains(@class, 'ar.1')]//input[@type='checkbox' and @checked]     7
+    # partnrs
+    xpath should match x times         .//td[contains(@class, 'ar.1')]//span[@class='partnr' and text()="1"]      7
 
+### Price display
+
+    # one of these services is calculated at 25% VAT
+    element text should be      css=td[arnum='0'] span.discount        6.00
+    element text should be      css=td[arnum='0'] span.subtotal        34.00
+    element text should be      css=td[arnum='0'] span.vat             5.70
+    element text should be      css=td[arnum='0'] span.total           39.69
+
+    element text should be      css=td[arnum='1'] span.discount        1.50
+    element text should be      css=td[arnum='1'] span.subtotal        8.50
+    element text should be      css=td[arnum='1'] span.vat             1.19
+    element text should be      css=td[arnum='1'] span.total           9.69
+
+### Analysis Profiles
+
+    # total hardness has three services
+
+    select from dropdown               css=#Profile-2              Hardness
+    wait until page contains element   xpath=.//td[contains(@class, 'ar.2')]//input[@type='checkbox' and @checked]
+    xpath should match x times         .//td[contains(@class, 'ar.2')]//input[@type='checkbox' and @checked]        3
+
+    # trace metals has eight.
+
+    select from dropdown               css=#Profile-3              Trace
+    wait until page contains element   xpath=.//td[contains(@class, 'ar.3')]//input[@type='checkbox' and @checked]
+    xpath should match x times         .//td[contains(@class, 'ar.3')]//input[@type='checkbox' and @checked]        8
+
+### Dependencies
+
+    # selecting Dry Matter should require the 'Moisture' service
+
+    select checkbox                    css=tr[title='Dry Matter'] td[class*='ar.1'] input[type='checkbox']
+    page should contain                Do you want to apply these selections now
+    click element                      xpath=.//button[.//span[contains(text(), 'yes')]]
+    sleep                              .25
+    checkbox should be selected        css=tr[title='Moisture'] td[class*='ar.1'] input[type='checkbox']
+
+    # unselecting Moisture should remove the 'Dry Matter' service
+
+    unselect checkbox                  css=tr[title='Moisture'] td[class*='ar.1'] input[type='checkbox']
+    page should contain                Do you want to remove these selections now
+    click element                      xpath=.//button[.//span[contains(text(), 'yes')]]
+    sleep                              .25
+    checkbox should not be selected    css=tr[title='Dry Matter'] td[class*='ar.1'] input[type='checkbox']
+
+### Report as Dry Matter should select DryMatter and Moisture services
+
+    select checkbox                    css=#ReportDryMatter-4
+    checkbox should be selected        css=tr[title='Dry Matter'] td[class*='ar.4'] input[type='checkbox']
+    checkbox should be selected        css=tr[title='Moisture'] td[class*='ar.4'] input[type='checkbox']
+
+    log   BikaListing when Create Profile button is clicked     WARN
+    log   BikaListing when Sample is selected (secondary AR)     WARN
+    log   BikaListing when copy_from is specified in request     WARN
+
+
+
+### Submit and verify one with everything
 
 SingleService AR Add javascript tests
 
@@ -124,90 +185,96 @@ SingleService AR Add javascript tests
     Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
     wait until page contains           xxx
 
-# Select-all checkbox stuff
+### Select-all checkbox stuff
 
     select checkbox                    css=input[name='uids:list']
-    xpath should match x times         .//*[@checked='checked']    5
-    unselect checkbox                    css=input[name='uids:list']
+    xpath should match x times         .//*[@checked='checked']    6
+    unselect checkbox                  css=input[name='uids:list']
     xpath should match x times         .//*[@checked='checked']    0
 
-# AR Templates
+### AR Templates
 
     # select COD to see if it is correctly unselected later
     select checkbox                    css=input[name='uids:list']
     select from dropdown               css=#singleservice    cod
     wait until page contains           COD
 
-    # then select a template...
-    select from dropdown               css=tr[fieldname='Template'] td[arnum='0'] input[type='text']        Hardness
-    Wait Until Keyword Succeeds 	   5 sec    1 sec    textfield value should be     css=tr[fieldname='SamplePoint'] td[arnum='0'] input[type='text']        Borehole 12
-    # check field values are filled correctly
-    textfield value should be          css=tr[fieldname='SampleType'] td[arnum='0'] input[type='text']      Water
-    textfield value should be          css=tr[fieldname='Specification'] td[arnum='0'] input[type='text']   Water
-    # in column 0: 4 checkboxes checked (includes drymatter) and 4 with specs.
-    xpath should match x times         .//td[@arnum='0']//input[@type='checkbox' and @checked]     4
-    # in column 0: 4 total fields with 9/10/11 values present in them
-    xpath should match x times         .//td[@arnum='0']//input[@value="9"]                        4
-    xpath should match x times         .//td[@arnum='0']//input[@value="11"]                       4
-    xpath should match x times         .//td[@arnum='0']//input[@value="10"]                       4
-    # in column 0: there should be three partnr spans with "1" in them
-    xpath should match x times        .//td[@arnum='0']//span[@class='partnr' and text()="1"]      3
+    # select a template...
+    select from dropdown               css=#Template-0           Hardness
+    Wait Until Keyword Succeeds 	   5 sec    1 sec    textfield value should be     css=#SamplePoint-0        Borehole 12
+    textfield value should be          css=#SampleType-0          Water
+    textfield value should be          css=#Specification-0       Water
+    # dry matter
+    checkbox should be selected        css=#ReportDryMatter-0
+    # selected services
+    xpath should match x times         .//td[contains(@class, 'ar.0')]//input[@type='checkbox' and @checked]     4
+    # spec values
+    xpath should match x times         .//td[contains(@class, 'ar.0')]//input[@value="9"]                        5
+    xpath should match x times         .//td[contains(@class, 'ar.0')]//input[@value="11"]                       5
+    xpath should match x times         .//td[contains(@class, 'ar.0')]//input[@value="10"]                       5
+    # partnrs
+    xpath should match x times        .//td[contains(@class, 'ar.0')]//span[@class='partnr' and text()="1"]      4
 
     # A different template
-    select from dropdown               css=tr[fieldname='Template'] td[arnum='0'] input[type='text']        Bruma
-    Wait Until Keyword Succeeds 	   5 sec    1 sec    textfield value should be     css=tr[fieldname='SamplePoint'] td[arnum='0'] input[type='text']        Bruma Lake
-    # in column 0: 7 selections, 9 with specs
-    xpath should match x times         .//td[@arnum='0']//input[@type='checkbox' and @checked]     7
-    # in column 0: 9 total fields with 9/10/11 values present in them
-    xpath should match x times         .//td[@arnum='0']//input[@value="9"]                        9
-    xpath should match x times         .//td[@arnum='0']//input[@value="11"]                       9
-    xpath should match x times         .//td[@arnum='0']//input[@value="10"]                       9
-    # in column 0: there should be three partnr spans with "1" in them
-    xpath should match x times        .//td[@arnum='0']//span[@class='partnr' and text()="1"]      7
+    select from dropdown               css=#Template-0            Bruma
+    Wait Until Keyword Succeeds 	   5 sec    1 sec    textfield value should be     css=#SamplePoint-0        Bruma Lake
+    # dry matter
+    checkbox should be selected        css=#ReportDryMatter-0
+    # selected services
+    xpath should match x times         .//td[contains(@class, 'ar.0')]//input[@type='checkbox' and @checked]     7
+    # spec values
+    xpath should match x times         .//td[contains(@class, 'ar.0')]//input[@value="9"]                        10
+    xpath should match x times         .//td[contains(@class, 'ar.0')]//input[@value="11"]                       10
+    xpath should match x times         .//td[contains(@class, 'ar.0')]//input[@value="10"]                       10
+    # partnrs
+    xpath should match x times        .//td[contains(@class, 'ar.0')]//span[@class='partnr' and text()="1"]      7
 
-# Analysis Profiles
+### Price display
+
+    wait until page contains           10.50
+    wait until page contains           59.50
+    wait until page contains           9.27
+    wait until page contains           68.76
+
+### Analysis Profiles
 
     # total hardness has three services
-    select from dropdown               css=tr[fieldname='Profile'] td[arnum='1'] input[type='text']         Hardness
-    xpath should match x times         .//td[@arnum='1']/input[@type='checkbox' and @checked]      3
-    # trace metals has eight.
-    select from dropdown               css=tr[fieldname='Profile'] td[arnum='1'] input[type='text']         Trace
-    xpath should match x times         .//td[@arnum='1']/input[@type='checkbox' and @checked]      8
+    select from dropdown               css=#Profile-1         Hardness
+    xpath should match x times         .//td[contains(@class, 'ar.1')]//input[@type='checkbox' and @checked]      3
 
-# Manually adding/removing services
+    # trace metals has eight.
+    select from dropdown               css=#Profile-1         Trace
+    xpath should match x times         .//td[contains(@class, 'ar.1')]//input[@type='checkbox' and @checked]      8
+
+### Manually adding/removing services
 
     # Should not allow duplicating service rows
     select from dropdown               css=#singleservice    cod
     select from dropdown               css=#singleservice    cod
     xpath should match x times         .//tr[@keyword='COD']      1
 
-# Submit and verify one with everything
+### Dependencies
+
+    # selecting Dry Matter should require the 'Moisture' service
+    select checkbox                    css=tr[title='Dry Matter'] td[class*='ar.1'] input[type='checkbox']
+    page should contain                Do you want to apply these selections now
+    click element                      xpath=.//button[.//span[contains(text(), 'yes')]]
+    sleep                              .25
+    checkbox should be selected        css=tr[title='Moisture'] td[class*='ar.1'] input[type='checkbox']
+
+    # unselecting Moisture should remove the 'Dry Matter' service
+    unselect checkbox                  css=tr[title='Moisture'] td[class*='ar.1'] input[type='checkbox']
+    page should contain                Do you want to remove these selections now
+    click element                      xpath=.//button[.//span[contains(text(), 'yes')]]
+    sleep                              .25
+    checkbox should not be selected    css=tr[title='Dry Matter'] td[class*='ar.1'] input[type='checkbox']
 
 
+    log   SingleService when Create Profile button is clicked     WARN
+    log   SingleService when Sample is selected (secondary AR)     WARN
+    log   SingleService when copy_from is specified in request     WARN
 
-#When analysis checkbox is "Clicked"
-#    check that the ar_spec fields are displayed if the option is enabled
-#    check that the ar_spec fields are not displayed if the option is disabled
-#    Check that the State variable has been completely configured.
-#    Check that required services are recommended
-#    Check that service is un-selected if requirements are not fulfilled
-#    Check that services who require this service are warned about
-#    Check that services who require this service are unselected if this one is
-#
-#when Create Profile button is clicked:
-#    popup appears, enter the value, click save, monitor for correct response.
-#
-#test Calculate Partitions:
-#    if Container selected
-#    or Analysis selected
-#    or SampleType selected
-#    or DefaultContainerType selected.
-#
-#when selecting Sample:
-#    Check that the secondary sample fields are filled in correctly.
-#    Submit and check that the AR is correctly created.
-#
-
+### Submit and verify one with everything
 
 
 

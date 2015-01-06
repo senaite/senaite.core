@@ -36,6 +36,7 @@ function AnalysisRequestAddByCol() {
 		referencewidget_change()
 		select_element_change()
 		textinput_change()
+		copybutton_selected()
 
 		client_selected()
 		contact_selected()
@@ -51,7 +52,6 @@ function AnalysisRequestAddByCol() {
 		singleservice_deletebtn_click()
 		analysis_cb_click()
 
-		//		copybutton_click()
 		//		sample_selected()
 
 		form_submit()
@@ -91,12 +91,45 @@ function AnalysisRequestAddByCol() {
 			var element = elements[i]
 			$(element).removeAttr("required")
 		}
-		// DatePickers must have their name/id attributes munged, because
-		// they are created identically for each AR column
-		$.each($(".ArchetypesDateTimeWidget input"), function (i, e) {
-			arnum = get_arnum(e)
-			$(e).attr("id", $(e).attr("id") + "_" + arnum)
-			$(e).attr("name", $(e).attr("name") + "_" + arnum)
+		// All Archetypes generated elements are given an ID <fieldname>, and
+		// this means there are duplicated IDs in the form.  I will change
+		// their IDs to <fieldname>_<arnum> to prevent this.
+		$.each($("[id^='archetypes-fieldname']"), function (i, div) {
+			var arnum = $(div).parents("[arnum]").attr("arnum")
+			var fieldname = $(div).parents("[fieldname]").attr("fieldname")
+			var e
+			// first rename the HTML elements
+			if ($(div).hasClass('ArchetypesSelectionWidget')) {
+				e = $(div).find('select')[0]
+				$(e).attr('id', fieldname + '-' + arnum)
+				$(e).attr('name', fieldname + '-' + arnum)
+			}
+			if ($(div).hasClass('ArchetypesReferenceWidget')) {
+				e = $(div).find('[type="text"]')[0]
+				$(e).attr('id', $(e).attr('id') + '-' + arnum)
+				$(e).attr('name', $(e).attr('name') + '-' + arnum)
+				e = $(div).find('[id$="_uid"]')[0]
+				$(e).attr('id', fieldname + '-' + arnum + '_uid')
+				$(e).attr('name', fieldname + '-' + arnum + '_uid')
+				e = $(div).find('[id$="-listing"]')
+				if (e.length > 0) {
+					$(e).attr('id', fieldname + '-' + arnum + '-listing')
+				}
+			}
+			if ($(div).hasClass('ArchetypesStringWidget')) {
+				e = $(div).find('[type="text"]')[0]
+				$(e).attr('id', $(e).attr('id') + '-' + arnum)
+				$(e).attr('name', $(e).attr('name') + '-' + arnum)
+			}
+			if ($(div).hasClass('ArchetypesBooleanWidget')) {
+				e = $(div).find('[type="checkbox"]')[0]
+				$(e).attr('id', $(e).attr('id') + '-' + arnum)
+				$(e).attr('name', $(e).attr('name') + '-' + arnum + ':boolean')
+				e = $(div).find('[type="hidden"]')[0]
+				$(e).attr('name', $(e).attr('name') + '-' + arnum + ':boolean:default')
+			}
+			// then change the ID of the containing div itself
+			$(div).attr('id', 'archetypes-fieldname-' + fieldname + '-' + arnum)
 		})
 
 		// clear existing values (on page reload).
@@ -177,24 +210,24 @@ function AnalysisRequestAddByCol() {
 		 * to filter against Lab and Client folders.
 		 */
 		var element, uids
-		var uid = $($("tr[fieldName='Client'] td[arnum='" + arnum + "'] input")[0]).attr("uid")
-		element = $("tr[fieldName=Contact] td[arnum=" + arnum + "] input")[0]
+		var uid = $($("tr[fieldname='Client'] td[arnum='" + arnum + "'] input")[0]).attr("uid")
+		element = $("tr[fieldname=Contact] td[arnum=" + arnum + "] input")[0]
 		filter_combogrid(element, "getParentUID", uid)
-		element = $("tr[fieldName=CCContact] td[arnum=" + arnum + "] input")[0]
+		element = $("tr[fieldname=CCContact] td[arnum=" + arnum + "] input")[0]
 		filter_combogrid(element, "getParentUID", uid)
-		element = $("tr[fieldName=InvoiceContact] td[arnum=" + arnum + "] input")[0]
+		element = $("tr[fieldname=InvoiceContact] td[arnum=" + arnum + "] input")[0]
 		filter_combogrid(element, "getParentUID", uid)
 		uids = [uid, $("#bika_setup").attr("bika_samplepoints_uid")]
-		element = $("tr[fieldName=SamplePoint] td[arnum=" + arnum + "] input")[0]
+		element = $("tr[fieldname=SamplePoint] td[arnum=" + arnum + "] input")[0]
 		filter_combogrid(element, "getClientUID", uids)
 		uids = [uid, $("#bika_setup").attr("bika_artemplates_uid")]
-		element = $("tr[fieldName=Template] td[arnum=" + arnum + "] input")[0]
+		element = $("tr[fieldname=Template] td[arnum=" + arnum + "] input")[0]
 		filter_combogrid(element, "getClientUID", uids)
 		uids = [uid, $("#bika_setup").attr("bika_analysisprofiles_uid")]
-		element = $("tr[fieldName=Profile] td[arnum=" + arnum + "] input")[0]
+		element = $("tr[fieldname=Profile] td[arnum=" + arnum + "] input")[0]
 		filter_combogrid(element, "getClientUID", uids)
 		uids = [uid, $("#bika_setup").attr("bika_analysisspecs_uid")]
-		element = $("tr[fieldName=Specification] td[arnum=" + arnum + "] input")[0]
+		element = $("tr[fieldname=Specification] td[arnum=" + arnum + "] input")[0]
 		filter_combogrid(element, "getClientUID", uids)
 	}
 
@@ -224,18 +257,19 @@ function AnalysisRequestAddByCol() {
 	}
 
 	function get_arnum(element) {
+		// Should be able to deduce the arnum of any form element
 		var arnum
-		// singleservice (and most widgets in the form header section)
+		// Most AR schema field widgets have [arnum=<arnum>] on their parent TD
 		arnum = $(element).parents("[arnum]").attr("arnum")
 		if (arnum) {
 			return arnum
 		}
-		// bika_listing form selector
-		var eid = $(element).attr("id")
-		if (eid) {
-			var bits = eid.split('-ar.')
-			if (bits.length > 0) {
-				return bits[1]
+		// analysisservice checkboxes have an ar.<arnum> class on the parent TD
+		var td = $(element).parents("[class*='ar\\.']")
+		if (td.length > 0) {
+			var arnum = $(td).attr("class").split('ar.')[1].split()[0]
+			if (arnum) {
+				return arnum
 			}
 		}
 		console.error("No arnum found for element " + element)
@@ -255,68 +289,134 @@ function AnalysisRequestAddByCol() {
 
 	function checkbox_change_handler(element) {
 		var arnum = get_arnum(element)
-		var fieldName = $(element).parents('[fieldName]').attr('fieldName')
+		var fieldname = $(element).parents('[fieldname]').attr('fieldname')
 		var value = $(element).prop("checked")
-		state_set(arnum, fieldName, value)
+		state_set(arnum, fieldname, value)
 	}
 
 	function checkbox_change() {
 		/* Generic state-setter for AR field checkboxes
 		 * The checkboxes used to select analyses are handled separately.
 		 */
-		$('tr[fieldName] input[type="checkbox"]')
-			.live('change', function () {
+		$('tr[fieldname] input[type="checkbox"]')
+			.live('change copy', function () {
 					  checkbox_change_handler(this)
 				  })
 	}
 
 	function referencewidget_change_handler(element, item) {
 		var arnum = get_arnum(element)
-		var fieldName = $(element).parents('[fieldName]').attr('fieldName')
-		state_set(arnum, fieldName, item.UID)
+		var fieldname = $(element).parents('[fieldname]').attr('fieldname')
+		state_set(arnum, fieldname, item.UID)
 	}
 
 	function referencewidget_change() {
 		/* Generic state-setter for AR field referencewidgets
 		 */
-		$('tr[fieldName] input.referencewidget')
+		$('tr[fieldname] input.referencewidget')
 			.live('selected', function (event, item) {
+					  referencewidget_change_handler(this, item)
+				  })
+		// we must create a fake 'item' for this handler
+		$('tr[fieldname] input.referencewidget')
+			.live('copy', function (event) {
+					  var item = {UID: $(this).attr('uid')}
 					  referencewidget_change_handler(this, item)
 				  })
 	}
 
 	function select_element_change_handler(element) {
 		var arnum = get_arnum(element)
-		var fieldName = $(element).parents('[fieldName]').attr('fieldName')
+		var fieldname = $(element).parents('[fieldname]').attr('fieldname')
 		var value = $(element).val()
-		state_set(arnum, fieldName, value)
+		state_set(arnum, fieldname, value)
 	}
 
 	function select_element_change() {
 		/* Generic state-setter for SELECT inputs
 		 */
-		$('tr[fieldName] select')
-			.live('change', function (event, item) {
+		$('tr[fieldname] select')
+			.live('change copy', function (event, item) {
 					  select_element_change_handler(this)
 				  })
 	}
 
 	function textinput_change_handler(element) {
 		var arnum = get_arnum(element)
-		var fieldName = $(element).parents('[fieldName]').attr('fieldName')
+		var fieldname = $(element).parents('[fieldname]').attr('fieldname')
 		var value = $(element).val()
-		state_set(arnum, fieldName, value)
+		state_set(arnum, fieldname, value)
 	}
 
 	function textinput_change() {
 		/* Generic state-setter for SELECT inputs
 		 */
-		$('tr[fieldName] input[type="text"]')
+		$('tr[fieldname] input[type="text"]')
 			.not("#singleservice")
 			.not(".referencewidget")
-			.live('change', function () {
+			.live('change copy', function () {
 					  textinput_change_handler(this)
 				  })
+	}
+
+	function copybutton_selected() {
+		$('img.copybutton').live('click', function () {
+			var nr_ars = parseInt($('input[id="ar_count"]').val(), 10)
+			var tr = $(this).parents('tr')[0]
+			var fieldname = $(tr).attr('fieldname')
+			var td1 = $(tr).find('td[arnum="0"]')[0]
+			var e, td, html
+			// ReferenceWidget cannot be simply copied, the combogrid dropdown widgets
+			// don't cooperate.
+			if ($(td1).find('.ArchetypesReferenceWidget').length > 0) {
+				var val1 = $(td1).find('input[type="text"]').val()
+				var uid1 = $(td1).find('input[type="text"]').attr("uid")
+				for (var arnum = 1; arnum < nr_ars; arnum++) {
+					td = $(tr).find('td[arnum="' + arnum + '"]')[0]
+					e = $(td).find('input[type="text"]')
+					// First we copy the attributes of the text input:
+					$(e).val(val1)
+					$(e).attr('uid', uid1)
+					// then the hidden *_uid shadow field
+					$(td).find('input[id$="_uid"]').val(uid1)
+					$(e).trigger('copy')
+				}
+			}
+			// select element
+			else if ($(td1).find('select').length > 0) {
+				var val1 = $(td1).find('select').val()
+				for (var arnum = 1; arnum < nr_ars; arnum++) {
+					td = $(tr).find('td[arnum="' + arnum + '"]')[0]
+					e = $(td).find('select')[0]
+					$(e).val(val1)
+					$(e).trigger('copy')
+				}
+			}
+			// text input
+			else if ($(td1).find('input[type="text"]').length > 0) {
+				var val1 = $(td1).find('input').val()
+				for (var arnum = 1; arnum < nr_ars; arnum++) {
+					td = $(tr).find('td[arnum="' + arnum + '"]')[0]
+					e = $(td).find('input')[0]
+					$(e).val(val1)
+					$(e).trigger('copy')
+				}
+			}
+			// checkbox input
+			else if ($(td1).find('input[type="checkbox"]').length > 0) {
+				var val1 = $(td1).find('input[type="checkbox"]').prop('checked')
+				for (var arnum = 1; arnum < nr_ars; arnum++) {
+					td = $(tr).find('td[arnum="' + arnum + '"]')[0]
+					e = $(td).find('input[type="checkbox"]')[0]
+					if (val1) {
+						$(e).attr('checked', true)
+					} else{
+						$(e).removeAttr('checked')
+					}
+					$(e).trigger('copy')
+				}
+			}
+		})
 	}
 
 	// Specific handlers for fields requiring special actions  /////////////////
@@ -350,8 +450,8 @@ function AnalysisRequestAddByCol() {
 	function client_selected() {
 		/* Client field is visibile and a client has been selectec
 		 */
-		$('tr[fieldName="Client"] input[type="text"]')
-			.live('selected', function (event, item) {
+		$('tr[fieldname="Client"] input[type="text"]')
+			.live('selected copy', function (event, item) {
 					  // filter any references that search inside the Client.
 					  var arnum = get_arnum(this)
 					  filter_by_client(arnum)
@@ -361,8 +461,8 @@ function AnalysisRequestAddByCol() {
 	function contact_selected() {
 		/* Selected a Contact: retrieve and complete UI for CC Contacts
 		 */
-		$('tr[fieldName="Contact"] input[type="text"]')
-			.live('selected', function (event, item) {
+		$('tr[fieldname="Contact"] input[type="text"]')
+			.live('selected copy', function (event, item) {
 					  var arnum = get_arnum(this)
 					  cc_contacts_set(arnum)
 				  })
@@ -375,12 +475,12 @@ function AnalysisRequestAddByCol() {
 		 * So we need to select them in the form with some fakey html,
 		 * and set them in the state.
 		 */
-		var td = $("tr[fieldName='Contact'] td[arnum='" + arnum + "']")
+		var td = $("tr[fieldname='Contact'] td[arnum='" + arnum + "']")
 		var contact_element = $(td).find("input[type='text']")[0]
 		var contact_uid = $(contact_element).attr("uid")
 		// clear the CC selector widget and listing DIV
-		var cc_div = $("tr[fieldName='CCContact'] td[arnum='" + arnum + "'] .multiValued-listing")
-		var cc_uids = $("tr[fieldName='CCContact'] td[arnum='" + arnum + "'] input[name='CCContact_uid']")
+		var cc_div = $("tr[fieldname='CCContact'] td[arnum='" + arnum + "'] .multiValued-listing")
+		var cc_uids = $("tr[fieldname='CCContact'] td[arnum='" + arnum + "'] input[name='CCContact_uid']")
 		$(cc_div).empty()
 		if (contact_uid) {
 			var request_data = {
@@ -401,7 +501,7 @@ function AnalysisRequestAddByCol() {
 						var uid = cc_uids[i]
 						var del_btn_src = window.portal_url + "/++resource++bika.lims.images/delete.png"
 						var del_btn =
-							"<img class='deletebtn' src='" + del_btn_src + "' fieldName='CCContact' uid='" + uid + "'/>"
+							"<img class='deletebtn' src='" + del_btn_src + "' fieldname='CCContact' uid='" + uid + "'/>"
 						var new_item = "<div class='reference_multi_item' uid='" + uid + "'>" + del_btn + title + "</div>"
 						$(cc_div).append($(new_item))
 					}
@@ -416,7 +516,7 @@ function AnalysisRequestAddByCol() {
 		 *
 		 */
 		$("[id*='_Specification']")
-			.live('selected',
+			.live('selected copy',
 				  function (event, item) {
 					  var arnum = $(this).parents('td').attr('arnum')
 					  specification_refetch(arnum)
@@ -543,17 +643,17 @@ function AnalysisRequestAddByCol() {
 		 * 2) Fetch the spec from the server, and set all the spec field values
 		 * 3) Set the partition indicator numbers.
 		 */
-		var st_uid = $("tr[fieldName='SampleType'] " +
+		var st_uid = $("tr[fieldname='SampleType'] " +
 					   "td[arnum='" + arnum + "'] " +
 					   "input[type='text']").attr("uid")
 		if (!st_uid) {
 			return
 		}
 		spec_filter_on_sampletype(arnum)
-		var spec_element = $("tr[fieldName='Specification'] " +
+		var spec_element = $("tr[fieldname='Specification'] " +
 							 "td[arnum='" + arnum + "'] " +
 							 "input[type='text']")
-		var spec_uid_element = $("tr[fieldName='Specification'] " +
+		var spec_uid_element = $("tr[fieldname='Specification'] " +
 								 "td[arnum='" + arnum + "'] " +
 								 "input[id$='_uid']")
 		var request_data = {
@@ -591,7 +691,7 @@ function AnalysisRequestAddByCol() {
 		 */
 		var arnum_i = parseInt(arnum, 10)
 		var sampletype_uid = bika.lims.ar_add.state[arnum_i]['SampleType']
-		var spec_element = $("tr[fieldName='Specification'] td[arnum='" + arnum + "'] input[type='text']")
+		var spec_element = $("tr[fieldname='Specification'] td[arnum='" + arnum + "'] input[type='text']")
 		var query_str = $(spec_element).attr("search_query")
 		var query = $.parseJSON(query_str)
 		if (query.hasOwnProperty("getSampleTypeUID")) {
@@ -603,8 +703,8 @@ function AnalysisRequestAddByCol() {
 	}
 
 	function samplepoint_selected() {
-		$("tr[fieldName='SamplePoint'] td[arnum] input[type='text']")
-			.live('selected', function (event, item) {
+		$("tr[fieldname='SamplePoint'] td[arnum] input[type='text']")
+			.live('selected copy', function (event, item) {
 					  var arnum = get_arnum(this)
 					  samplepoint_set(arnum)
 				  })
@@ -614,15 +714,15 @@ function AnalysisRequestAddByCol() {
 		/***
 		 * Sample point and Sample type can set each other.
 		 */
-		var spe = $("tr[fieldName='SamplePoint'] td[arnum='" + arnum + "'] input[type='text']")
-		var ste = $("tr[fieldName='SampleType'] td[arnum='" + arnum + "'] input[type='text']")
+		var spe = $("tr[fieldname='SamplePoint'] td[arnum='" + arnum + "'] input[type='text']")
+		var ste = $("tr[fieldname='SampleType'] td[arnum='" + arnum + "'] input[type='text']")
 		filter_combogrid(ste, "getSamplePointTitle", $(spe).val(),
 						 'search_query')
 	}
 
 	function sampletype_selected() {
-		$("tr[fieldName='SampleType'] td[arnum] input[type='text']")
-			.live('selected', function (event, item) {
+		$("tr[fieldname='SampleType'] td[arnum] input[type='text']")
+			.live('selected copy', function (event, item) {
 					  var arnum = get_arnum(this)
 					  sampletype_set(arnum)
 				  })
@@ -633,8 +733,8 @@ function AnalysisRequestAddByCol() {
 		// 1. Can select SamplePoint which does not link to any SampleType
 		// 2. Can select SamplePoint linked to This SampleType.
 		// 3. Cannot select SamplePoint linked to other sample types (and not to this one)
-		var spe = $("tr[fieldName='SamplePoint'] td[arnum='" + arnum + "'] input[type='text']")
-		var ste = $("tr[fieldName='SampleType'] td[arnum='" + arnum + "'] input[type='text']")
+		var spe = $("tr[fieldname='SamplePoint'] td[arnum='" + arnum + "'] input[type='text']")
+		var ste = $("tr[fieldname='SampleType'] td[arnum='" + arnum + "'] input[type='text']")
 		filter_combogrid(spe, "getSampleTypeTitle", $(ste).val(),
 						 'search_query')
 		set_spec_from_sampletype(arnum)
@@ -646,8 +746,8 @@ function AnalysisRequestAddByCol() {
 		 * - Set the profile's analyses (existing analyses will be cleared)
 		 * - Set the partition number indicators
 		 */
-		$("tr[fieldName='Profile'] td[arnum] input[type='text']")
-			.live('selected', function (event, item) {
+		$("tr[fieldname='Profile'] td[arnum] input[type='text']")
+			.live('selected copy', function (event, item) {
 					  var arnum = $(this).parents('td').attr('arnum')
 					  profile_set(arnum, $(this).val())
 						  .then(function () {
@@ -685,14 +785,14 @@ function AnalysisRequestAddByCol() {
 	}
 
 	function profile_unset(arnum) {
-		var td = $("tr[fieldName='Profile'] td[arnum='" + arnum + "']")
+		var td = $("tr[fieldname='Profile'] td[arnum='" + arnum + "']")
 		$(td).find("input[type='text']").val("").attr("uid", "")
 		$(td).find("input[id$='_uid']").val("")
 	}
 
 	function template_selected() {
-		$("tr[fieldName='Template'] td[arnum] input[type='text']")
-			.live('selected', function (event, item) {
+		$("tr[fieldname='Template'] td[arnum] input[type='text']")
+			.live('selected copy', function (event, item) {
 					  var arnum = $(this).parents('td').attr('arnum')
 					  template_set(arnum, $(this).val())
 				  })
@@ -701,7 +801,7 @@ function AnalysisRequestAddByCol() {
 	function template_set(arnum, template_title) {
 		var d = $.Deferred()
 		uncheck_all_services(arnum)
-		var td = $("tr[fieldName='Template'] " +
+		var td = $("tr[fieldname='Template'] " +
 				   "td[arnum='" + arnum + "'] ")
 		var uid = $(td).find("input[id$='_uid']").val()
 		var request_data = {
@@ -724,7 +824,7 @@ function AnalysisRequestAddByCol() {
 			var td
 
 			// set SampleType
-			td = $("tr[fieldName='SampleType'] td[arnum='" + arnum + "']")
+			td = $("tr[fieldname='SampleType'] td[arnum='" + arnum + "']")
 			$(td).find("input[type='text']")
 				.val(template['SampleType'])
 				.attr("uid", template['SampleTypeUID'])
@@ -736,7 +836,7 @@ function AnalysisRequestAddByCol() {
 			set_spec_from_sampletype(arnum)
 
 			// set SamplePoint
-			td = $("tr[fieldName='SamplePoint'] td[arnum='" + arnum + "']")
+			td = $("tr[fieldname='SamplePoint'] td[arnum='" + arnum + "']")
 			$(td).find("input[type='text']")
 				.val(template['SamplePoint'])
 				.attr("uid", template['SamplePointUID'])
@@ -745,7 +845,7 @@ function AnalysisRequestAddByCol() {
 			state_set(arnum, 'SamplePoint', template['SamplePointUID'])
 
 			// Set the ARTemplate's AnalysisProfile
-			td = $("tr[fieldName='Profile'] td[arnum='" + arnum + "']")
+			td = $("tr[fieldname='Profile'] td[arnum='" + arnum + "']")
 			if (template['AnalysisProfile']) {
 				$(td).find("input[type='text']")
 					.val(template['AnalysisProfile'])
@@ -759,7 +859,6 @@ function AnalysisRequestAddByCol() {
 			}
 
 			// Set the services from the template into the form
-			uncheck_all_services(arnum)
 			if ($('#singleservice').length > 0) {
 				expand_services_singleservice(arnum, template['service_data'])
 			}
@@ -769,14 +868,10 @@ function AnalysisRequestAddByCol() {
 
 			// Dry Matter checkbox.  drymatter_set will calculate it's
 			// dependencies and select them, and apply specs
-			td = $("tr[fieldName='ReportDryMatter'] td[arnum='" + arnum + "']")
+			td = $("tr[fieldname='ReportDryMatter'] td[arnum='" + arnum + "']")
 			if (template['ReportDryMatter']) {
 				$(td).find("input[type='checkbox']").attr("checked", true)
 				drymatter_set(arnum, true)
-			}
-			else {
-				$(td).find("input[type='checkbox']").removeAttr("checked")
-				drymatter_unset(arnum)
 			}
 
 			// Now apply the Template's partition information to the form.
@@ -801,14 +896,14 @@ function AnalysisRequestAddByCol() {
 	}
 
 	function template_unset(arnum) {
-		var td = $("tr[fieldName='Template'] td[arnum='" + arnum + "']")
+		var td = $("tr[fieldname='Template'] td[arnum='" + arnum + "']")
 		$(td).find("input[type='text']").val("").attr("uid", "")
 		$(td).find("input[id$='_uid']").val("")
 	}
 
 	function drymatter_selected() {
-		$("tr[fieldName='ReportDryMatter'] td[arnum] input[type='checkbox']")
-			.live('click', function (event) {
+		$("tr[fieldname='ReportDryMatter'] td[arnum] input[type='checkbox']")
+			.live('click copy', function (event) {
 					  var arnum = get_arnum(this)
 					  if ($(this).prop("checked")) {
 						  drymatter_set(arnum)
@@ -835,7 +930,7 @@ function AnalysisRequestAddByCol() {
 		var title = $(dm_service).attr("title")
 		var price = $(dm_service).attr("price")
 		var vatamount = $(dm_service).attr("vatamount")
-		var element = $("tr[fieldName='ReportDryMatter'] " +
+		var element = $("tr[fieldname='ReportDryMatter'] " +
 						"td[arnum='" + arnum + "'] " +
 						"input[type='checkbox']")
 		// set drymatter service IF checkbox is checked
@@ -866,11 +961,6 @@ function AnalysisRequestAddByCol() {
 			// hacks in a lot of what we need (keyword, uid etc).
 			else {
 				analysis_cb_check(arnum, uid)
-				debugger
-				$(checkbox).parents("tr")
-					.attr("title", title)
-					.attr("price", price)
-					.attr("vatamount", vatamount)
 			}
 			deps_calc(arnum, [uid], true, _("Dry Matter"))
 			recalc_prices(arnum)
@@ -1096,6 +1186,8 @@ function AnalysisRequestAddByCol() {
 	}
 
 	function uncheck_all_services(arnum) {
+		// Can't have dry matter without any services
+		drymatter_unset(arnum)
 		// Remove checkboxes for all existing services in this column
 		var cblist = $("tr[uid] td[class*='ar\\." + arnum + "'] " +
 					   "input[type='checkbox']").filter(":checked")
@@ -1494,7 +1586,7 @@ function AnalysisRequestAddByCol() {
 		//// Template columns are not calculated - they are set manually.
 		//// I have disabled this behaviour, to simplify the action of adding
 		//// a single extra service to a Template column.
-		//var te = $("tr[fieldName='Template'] td[arnum='" + arnum + "'] input[type='text']")
+		//var te = $("tr[fieldname='Template'] td[arnum='" + arnum + "'] input[type='text']")
 		//if (!$(te).val()) {
 		//	d.resolve()
 		//	return d.promise()
@@ -1751,116 +1843,8 @@ function AnalysisRequestAddByCol() {
 		})
 	}
 
-
 }
 
-//
-//	function copybutton_click() {
-//		$(".copyButton").live("click", copyButton)
-//	}
-//
-//	function copyButton() {
-//		/* Anything that can be copied from columnn1 across all columns
-//		 *
-//		 * This function triggers a 'change' event on all elements into
-//		 * which values are copied
-//		 */
-//		var fieldName = $(this).attr("name")
-//		var ar_count = parseInt($("#ar_count").val(), 10)
-//
-//		// Checkboxes
-//		var element = $("td[arnum='0']").find("[fieldName='" + fieldName + "']")
-//		if ($(element).attr("type") == "checkbox") {
-//			var src_val = $(element).prop("checked")
-//			// arnum starts at 1 here
-//			// we don't copy into the the first row
-//			for (var arnum = 1; arnum < ar_count; arnum++) {
-//				var dst_elem = $("#ar_" + arnum + "_" + fieldName)
-//				src_val = src_val ? true : false
-//				if ((dst_elem.prop("checked") != src_val)) {
-//					if (!src_val) {
-//						dst_elem.removeAttr("checked")
-//					}
-//					else {
-//						dst_elem.attr("checked", true)
-//					}
-//					// Trigger change like we promised
-//					dst_elem.trigger("change")
-//				}
-//			}
-//		}
-//
-//		// Handle Reference fields
-//		else if ($("input[name^='ar\\.0\\." + fieldName + "']").attr("type") == "checkbox") {
-//			var src_elem = $("input[name^='ar\\.0\\." + fieldName + "']")
-//			var src_val = $(src_elem).filter("[type=text]").val()
-//			var src_uid = $("input[name^='ar\\.0\\." + fieldName + "_uid']").val()
-//			/***
-//			 * Multiple-select references have no "input" for the list of selected items.
-//			 * Instead we just copy the entire html over from the first column.
-//			 */
-//			var src_multi_html = $("div[name^='ar\\.0\\." + fieldName + "-listing']").html()
-//			// arnum starts at 1 here
-//			for (var arnum = 1; arnum < ar_count; arnum++) {
-//				// If referencefield is single-select: copy the UID
-//				var dst_uid_elem = $("#ar_" + arnum + "_" + fieldName + "_uid")
-//				if (src_uid !== undefined && src_uid !== null) {
-//					dst_uid_elem.val(src_uid)
-//				}
-//				// If referencefield is multi-selet: copy list of selected UIDs:
-//				var dst_multi_div = $("div[name^='ar\\." + arnum + "\\." + fieldName + "-listing']")
-//				if (src_multi_html !== undefined && src_multi_html !== null) {
-//					dst_multi_div.html(
-//						src_multi_html
-//							.replace(".0.", "." + arnum + ".")
-//							.replace("_0_", "_" + arnum + "_")
-//					)
-//				}
-//				var dst_elem = $("#ar_" + arnum + "_" + fieldName)
-//				if (dst_elem.prop("disabled")) break
-//				// skip_referencewidget_lookup: a little cheat.
-//				// it prevents this widget from falling over itself,
-//				// by allowing other JS to request that the "selected" action
-//				// is not triggered.
-//				$(dst_elem).attr("skip_referencewidget_lookup", true)
-//				// Now transfer the source value into the destination field:
-//				dst_elem.val(src_val)
-//
-//				// And trigger change like we promised.
-//				dst_elem.trigger("change")
-//
-//				/***
-//				 * Now a bunch of custom stuff we need to run for specific
-//				 * fields.
-//				 *
-//				 * we should handle this better if we called "selected" or
-//				 * "changed" as the case may be for Reference widgets
-//				 * if (fieldName == "Contact") {
-//				 * 		.cc_contacts_set(arnum)
-//				 * }
-//				 * if (fieldName == "Profile") {
-//				 * 	$("#ar_" + arnum + "_Template").val("")
-//				 * 	profile_set(arnum, src_val)
-//				 * 		.then(calculate_parts(arnum))
-//				 * }
-//				 * if (fieldName == "Template") {
-//				 * 	template_set(arnum, src_val)
-//				 * 		.then(partition_indicators_set(arnum, false))
-//				 * }
-//				 * if (fieldName == "SampleType") {
-//				 * 	$("#ar_" + arnum + "_Template").val("")
-//				 * 	partition_indicators_set(arnum)
-//				 * 	specification_refetch(arnum)
-//				 * }
-//				 * if (fieldName == "Specification") {
-//				 * 	specification_refetch(arnum)
-//				 * }
-//				 * console.log in all these, then delete this when they fire and
-//				 * work correctly.
-//				 */
-//			}
-//		}
-//	}
 //
 //
 //
@@ -1873,14 +1857,14 @@ function AnalysisRequestAddByCol() {
 //		var arnum = $(this).parents('td').attr('arnum')
 //		// Selected a sample to create a secondary AR.
 //		$("[id*='_Sample']").live('selected', function (event, item) {
-//			// var e = $("input[name^='ar\\."+arnum+"\\."+fieldName+"']")
-//			// var Sample = $("input9[name^='ar\\."+arnum+"\\."+fieldName+"']").val()
-//			// var Sample_uid = $("input[name^='ar\\."+arnum+"\\."+fieldName+"_uid']").val()
+//			// var e = $("input[name^='ar\\."+arnum+"\\."+fieldname+"']")
+//			// var Sample = $("input9[name^='ar\\."+arnum+"\\."+fieldname+"']").val()
+//			// var Sample_uid = $("input[name^='ar\\."+arnum+"\\."+fieldname+"_uid']").val()
 //			// Install the handler which will undo the changes I am about to make
 //			$(this).blur(function () {
 //				if ($(this).val() === "") {
 //					// clear and un-disable everything
-//					var disabled_elements = $("[arnum][fieldName] [id*='ar_" + arnum + "']:disabled")
+//					var disabled_elements = $("[arnum][fieldname] [id*='ar_" + arnum + "']:disabled")
 //					$.each(disabled_elements,
 //						   function (x, disabled_element) {
 //							   $(disabled_element).prop("disabled", false)
@@ -1900,11 +1884,11 @@ function AnalysisRequestAddByCol() {
 //					  },
 //					  function (data) {
 //						  for (var x = data.length - 1; x >= 0; x--) {
-//							  var fieldName = data[x][0]
+//							  var fieldname = data[x][0]
 //							  var fieldvalue = data[x][1]
-//							  var uid_element = $("#ar_" + arnum + "_" + fieldName + "_uid")
+//							  var uid_element = $("#ar_" + arnum + "_" + fieldname + "_uid")
 //							  $(uid_element).val("")
-//							  var sample_element = $("#ar_" + arnum + "_" + fieldName)
+//							  var sample_element = $("#ar_" + arnum + "_" + fieldname)
 //							  $(sample_element).val("").prop("disabled",
 //															 true)
 //							  if ($(sample_element).attr("type") == "checkbox" && fieldvalue) {

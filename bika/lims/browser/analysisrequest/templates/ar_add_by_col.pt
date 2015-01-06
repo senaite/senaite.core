@@ -19,6 +19,9 @@
         .service_selector td{
             text-align: left !important;
         }
+        .copybutton {
+            cursor: pointer;
+        }
     </style>
     <table summary="Add analysis requests"
            class="listing analysisrequest add nosort"
@@ -51,7 +54,7 @@
 
                         </th>
                         <td>
-                            <img class="CopyButton"
+                            <img class="copybutton"
                                  tal:condition="python:view.ar_count > 1"
                                  tal:attributes="
                                       src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png;"/>
@@ -104,7 +107,7 @@
                                style="vertical-align: -2px"/>
                     </td>
                     <tal:columns tal:repeat="arnum python:range(view.ar_count)">
-                        <td class="nowrap" tal:attributes="arnum arnum;class string:ar.${arnum}">
+                        <td class="nowrap" tal:attributes="class string:ar.${arnum}">
                             <span class="before">
                                 &nbsp;</span>
                             <input type="checkbox" style="vertical-align: -2px"/>

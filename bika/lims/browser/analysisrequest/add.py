@@ -354,7 +354,7 @@ class ajaxAnalysisRequestSubmit():
                           '${field_names}',
                           mapping={'arnum': arnum,
                                    'field_names': ', '.join(missing)}))
-                ajax_form_error(self.errors, arnum=arnum, message=msg)
+                ajax_form_error(self.errors, arnum=arnum, msg=msg)
                 continue
             # This ar is valid!
             valid_states[arnum] = state
