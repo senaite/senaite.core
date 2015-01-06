@@ -219,6 +219,7 @@ Table data rows start here
                 uid python: item['uid'] if 'uid' in item else None;
                 keyword python: keyword if keyword else None;
                 as_uid python: suid if suid else None;
+                title python: item['title'] if 'title' in item else None;
                 price python: item['price'] if 'price' in item else None;
                 vatamount python: item['vatamount'] if 'vatamount' in item else None; ">
 

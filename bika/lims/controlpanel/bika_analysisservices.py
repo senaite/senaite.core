@@ -314,6 +314,7 @@ class AnalysisServicesView(BikaListingView):
             if after_icons:
                 items[x]['after']['Title'] = after_icons
 
+            items[x]['title'] = obj.Schema()['title'].get(obj)
             items[x]['price'] = obj.Schema()['Price'].get(obj)
             items[x]['vatamount'] = obj.Schema()['VAT'].get(obj)
 
