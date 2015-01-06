@@ -15,23 +15,28 @@ def ObjectModifiedEventHandler(obj, event):
 
         for rel in ["AnalysisServiceCalculation",
                     "AnalysisServiceDeferredCalculation"]:
+            if not hasattr(obj, 'version_id'):
+                continue
             backrefs = obj.getBackReferences(rel)
             for i, target in enumerate(backrefs):
                 target = uc(UID=target.UID())[0].getObject()
-                pr.save(obj=target, comment="Calculation updated to version %s" %
-                    (obj.version_id + 1,))
+                pr.save(obj=target,
+                        comment="Calculation updated to version %s" %
+                                (obj.version_id + 1,))
                 reference_versions = getattr(target, 'reference_versions', {})
                 reference_versions[obj.UID()] = obj.version_id + 1
                 target.reference_versions = reference_versions
 
         backrefs = obj.getBackReferences('MethodCalculation')
-        for i, target in enumerate(backrefs):
-            target = uc(UID=target.UID())[0].getObject()
-            pr.save(obj=target, comment="Calculation updated to version %s" %
-                (obj.version_id + 1,))
-            reference_versions = getattr(target, 'reference_versions', {})
-            reference_versions[obj.UID()] = obj.version_id + 1
-            target.reference_versions = reference_versions
+        if hasattr(obj, 'version_id'):
+            for i, target in enumerate(backrefs):
+                target = uc(UID=target.UID())[0].getObject()
+                pr.save(obj=target,
+                        comment="Calculation updated to version %s" %
+                                (obj.version_id + 1,))
+                reference_versions = getattr(target, 'reference_versions', {})
+                reference_versions[obj.UID()] = obj.version_id + 1
+                target.reference_versions = reference_versions
 
     elif obj.portal_type == 'Client':
         mp = obj.manage_permission
