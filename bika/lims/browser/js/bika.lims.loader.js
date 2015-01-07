@@ -179,9 +179,12 @@ window.bika.lims.initview = function() {
 window.bika.lims.loadControllers = function(all, controllerKeys) {
     var controllers = window.bika.lims.controllers;
     var prev = _bika_lims_loaded_js.length;
+    if (controllerKeys.length){
+        controllerKeys = controllerKeys.split(",")
+    }
     for (var key in controllers) {
-        // Check if the key have value. Also check if this key is in the controllerKeys' array
-        // Doing that, you can load non called variables in the web page html
+        // Check if the key have value. Also check if this key exists in the controllerKeys' array
+        // Doing that, you can load non called variables in the web page
         if ($(key).length || $.inArray(key, controllerKeys) >= 0) {
             controllers[key].forEach(function(js) {
                 if (all == true || $.inArray(key, controllerKeys) >= 0 || $.inArray(js, _bika_lims_loaded_js) < 0) {
@@ -202,7 +205,6 @@ window.bika.lims.loadControllers = function(all, controllerKeys) {
             });
         }
     }
-    console.log(_bika_lims_loaded_js.length - prev);
     return _bika_lims_loaded_js.length - prev;
 
 };

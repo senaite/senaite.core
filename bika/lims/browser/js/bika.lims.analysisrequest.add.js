@@ -55,6 +55,9 @@ function AnalysisRequestAddView() {
 				$.ajaxSetup({async: true});
 			}
 		}
+		//It loads a overlay window when the add button is clicked.
+		loadAddButtonOveray();
+		closeOverlay();
 	}
 
 
@@ -396,6 +399,14 @@ function AnalysisRequestAddView() {
 			// not :ignore_empty, widgets each get submitted to their own form handlers
 			$(e).attr("name", "ar."+column+"."+eid+"-listing");
 			$(e).attr("fieldName", "ar."+column+"."+eid);
+		}
+		//Adding a unique identification to the widget's add button.
+		elements = $("a.add_button_overlay");
+		for (i = elements.length - 1; i >= 0; i--) {
+			e = elements[i];
+			column = $($(e).parents("td")).attr("column");
+			var line = $(e).parents("div").attr("data-fieldname");
+			$(e).attr("id", "ar_"+column+"_"+line+ "_"+ e.id);
 		}
 	}
 
@@ -1492,4 +1503,42 @@ function AnalysisRequestAddView() {
 	function expand_default_categories() {
 		$("th.prefill").click();
 	}
+
+    function loadAddButtonOveray() {
+        /**
+         * Add the overlay conditions for the AddButton.
+         */
+        $("a.add_button_overlay").prepOverlay(getOverlayConf());
+    }
+
+    function getOverlayConf() {
+        /**
+         * Define the overlay configuration parameters.
+         */
+        edit_overlay = {
+            subtype: 'ajax',
+            filter: 'head>*,#content>*:not(div.configlet),dl.portalMessage.error,dl.portalMessage.info',
+            formselector: 'form',
+            closeselector: '[name="form.button.cancel"]',
+            width: '70%',
+			noform:'close',
+			//urlreplace: '_preview',
+            config: {
+                onLoad: function() {
+                    // Force to reload bika.lims.initalize method with the needed overlay's health controllers.
+                    // This is done to work with specific js and widgets in the overlay.
+                    if ($("a.add_button_overlay").attr("data_js_controllers")){
+                        window.bika.lims.loadControllers(false,$("a.add_button_overlay").attr("data_js_controllers"));
+                    }
+                    // Address widget
+                    $.ajax({
+                        url: 'bika_widgets/addresswidget.js',
+                        dataType: 'script',
+                        async: false
+                    });
+                }
+            }
+        }
+        return edit_overlay;
+    }
 }

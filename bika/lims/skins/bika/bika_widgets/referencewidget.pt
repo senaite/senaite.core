@@ -103,7 +103,8 @@
                  />
             <span tal:condition="widget/isAddButtonVisible">
                 <a style="border-bottom:none !important;margin-left:.5;"
-                   class="add_button_overlay  link-overlay"
+                   id="addButtonOverlay"
+                   class="add_button_overlay"
                    tal:attributes="
                            href widget/getAddButtonUrl;
                            data_js_controllers widget/getAddButtonJSControllers"
