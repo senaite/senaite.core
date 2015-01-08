@@ -13,7 +13,7 @@
 			$(this).parent().remove();
 		});
 
-		$(".ArchetypesReferenceWidget").bind("change", function(){
+		$(".ArchetypesReferenceWidget").bind("change blur", function(){
 			var e = $(this).children("input.referencewidget");
 			if (e.val() == '') {
 				fieldName = $(e).attr("name").split(":")[0];
