@@ -107,7 +107,6 @@ def initialize(context):
     from content.suppliercontact import SupplierContact
     from content.supplyorderfolder import SupplyOrderFolder
     from content.supplyorder import SupplyOrder
-    from content.supplyorderitem import SupplyOrderItem
     from content.worksheet import Worksheet
     from content.worksheetfolder import WorksheetFolder
     from content.worksheettemplate import WorksheetTemplate

@@ -3607,7 +3607,6 @@ msgid "Priority"
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/templates/supplyorder_edit.pt, line: 34
-# File: bika.lims/bika/lims/content/supplyorderitem.py, line: 20
 msgid "Product"
 msgstr "Προϊόν"
 
@@ -3720,7 +3719,6 @@ msgid "Quality Control Reports"
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/templates/supplyorder_edit.pt, line: 40
-# File: bika.lims/bika/lims/content/supplyorderitem.py, line: 27
 msgid "Quantity"
 msgstr "Ποσότητα"
 
@@ -5233,7 +5231,6 @@ msgstr ""
 msgid "Unit"
 msgstr ""
 
-# File: bika.lims/bika/lims/content/supplyorderitem.py, line: 33
 msgid "Unit price"
 msgstr "Τιμή μονάδας"
 

@@ -11,6 +11,8 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import ISupplyOrder
 from bika.lims.utils import t
 from DateTime import DateTime
+from persistent.mapping import PersistentMapping
+from decimal import Decimal
 from Products.Archetypes import atapi
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View
@@ -100,6 +102,8 @@ schema = BikaSchema.copy() + Schema((
 
 schema['title'].required = False
 
+class SupplyOrderLineItem(PersistentMapping):
+    pass
 
 class SupplyOrder(BaseFolder):
 
@@ -110,6 +114,7 @@ class SupplyOrder(BaseFolder):
     schema = schema
 
     _at_rename_after_creation = True
+    supplyorder_lineitems = []
 
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
@@ -151,31 +156,36 @@ class SupplyOrder(BaseFolder):
 
     def getTotalQty(self):
         """ Compute total qty """
-        return sum(
-            [obj.getQuantity()
-             for obj in self.objectValues('SupplyOrderItem')])
+        if self.supplyorder_lineitems:
+            return sum(
+                [obj['Quantity'] for obj in self.supplyorder_lineitems])
+        return 0
 
     security.declareProtected(View, 'getSubtotal')
 
     def getSubtotal(self):
         """ Compute Subtotal """
-        return sum(
-            [float(obj.getTotal())
-             for obj in self.objectValues('SupplyOrderItem')])
+        if self.supplyorder_lineitems:
+            return sum(
+                [(Decimal(obj['Quantity']) * Decimal(obj['Price'])) for obj in self.supplyorder_lineitems])
+        return 0
 
     security.declareProtected(View, 'getVATAmount')
 
     def getVATAmount(self):
         """ Compute VAT """
-        return self.getTotal() - self.getSubtotal()
+        return Decimal(self.getTotal()) - Decimal(self.getSubtotal())
 
     security.declareProtected(View, 'getTotal')
 
     def getTotal(self):
         """ Compute TotalPrice """
-        return sum(
-            [float(obj.getTotalIncludingVAT())
-             for obj in self.objectValues('SupplyOrderItem')])
+        total = 0
+        for lineitem in self.supplyorder_lineitems:
+            total += Decimal(lineitem['Quantity']) * \
+                     Decimal(lineitem['Price']) *  \
+                     ((Decimal(lineitem['VAT']) /100) + 1)
+        return total
 
     def workflow_script_dispatch(self):
         """ dispatch order """
@@ -188,7 +198,7 @@ class SupplyOrder(BaseFolder):
         """ return the uids of the products referenced by order items
         """
         uids = []
-        for orderitem in self.objectValues('SupplyOrderItem'):
+        for orderitem in self.objectValues('XupplyOrderItem'):
             product = orderitem.getProduct()
             if product is not None:
                 uids.append(orderitem.getProduct().UID())
