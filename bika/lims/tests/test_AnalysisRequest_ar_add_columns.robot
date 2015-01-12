@@ -16,14 +16,15 @@ Library          DebugLibrary
 
 *** Variables ***
 
-${ar_factory_url}  portal_factory/AnalysisRequest/xxx/ar_add?layout=columns&ar_count=5
+${client1_factory_url}  ${PLONEURL}/clients/client-1/portal_factory/AnalysisRequest/xxx/ar_add?layout=columns&ar_count=5
+${client2_factory_url}  ${PLONEURL}/clients/client-2/portal_factory/AnalysisRequest/yyy/ar_add?layout=columns&ar_count=5
 
 *** Test Cases ***
 
 ### First, some general things that are the same for all column layouts
 
 General AR Add javascript tests
-    Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
+    Go to                              ${client1_factory_url}
     wait until page contains           xxx
 
 ### When Contact is selected, expand CC Contacts
@@ -74,16 +75,37 @@ General AR Add javascript tests
     click element                      css=tr[fieldname='ReportDryMatter'] img.copybutton
     checkbox should be selected        css=#ReportDryMatter-4
 
+### minimal AR to test AR creation with SamplingWorkflow.
+    # This must be done befor the client-filter test, because we must
+    # test the filtering of Samples.
+    log    minimal AR to test AR creation with SamplingWorkflow   WARN
+
+### sticker printout triggered when setup/labels='register'
+    log    sticker printout triggered when setup/labels='register'   WARN
+
+
+### Client-filter on elements must be respected.
+    Go to                              ${client2_factory_url}
+    wait until page contains           yyy
+		# Contact
+		# CCContact
+		# InvoiceContact
+		# SamplePoint
+		# Template
+		# Profile
+		# Specification
+
+
 
 BikaListing AR Add javascript tests
 
     Enable bikalisting form
-    Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
+    Go to                              ${client1_factory_url}
     wait until page contains           xxx
 
 ### Select-all checkbox stuff
 
-    click element                      xpath=.//span[@id='services_lab']//th[@cat='Water Chemistry' and contains(@class, 'collapsed')]
+    # click path
     select checkbox                    css=input[name='uids:list'][item_title='COD']
     xpath should match x times         .//*[@checked='checked']    6
     unselect checkbox                  css=input[name='uids:list'][item_title='COD']
@@ -182,7 +204,7 @@ BikaListing AR Add javascript tests
 SingleService AR Add javascript tests
 
     Enable singleservice form
-    Go to                              ${PLONEURL}/clients/client-1/${ar_factory_url}
+    Go to                              ${client1_factory_url}
     wait until page contains           xxx
 
 ### Select-all checkbox stuff

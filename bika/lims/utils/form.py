@@ -12,5 +12,5 @@ def ajax_form_error(errors, field=None, arnum=None, msg=None):
         error_key = ' %s' % field
     else:
         error_key = 'Form Error'
-    logger.info("ajax_form_error: %s, arnum=%s: %s" % (error_key, arnum, msg))
+    print "%s: %s" %(error_key, msg)
     errors[error_key] = msg
