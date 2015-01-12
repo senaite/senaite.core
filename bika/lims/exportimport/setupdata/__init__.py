@@ -1536,8 +1536,8 @@ class Setup(WorksheetImporter):
             AnalysisAttachmentOption=values[
                 'AnalysisAttachmentOption'][0].lower(),
             DefaultSampleLifetime=DSL,
-            AutoPrintLabels=values['AutoPrintLabels'].lower(),
-            AutoLabelSize=values['AutoLabelSize'].lower(),
+            AutoPrintStickers=values['AutoPrintStickers'].lower(),
+            AutoStickerTemplate=values['AutoStickerTemplate'].lower(),
             YearInPrefix=self.to_bool(values['YearInPrefix']),
             SampleIDPadding=int(values['SampleIDPadding']),
             ARIDPadding=int(values['ARIDPadding']),

@@ -61,7 +61,7 @@
          condition_expr=""
          icon_expr="string:${object_url}/++resource++bika.lims.images/sticker_large.png"
          link_target=""
-         url_expr="string:${object_url}/sticker?size=large"
+         url_expr="string:${object_url}/sticker?template=sticker_large"
          i18n:attributes="title"
          visible="True">
   <permission value="View"/>
@@ -73,7 +73,7 @@
          condition_expr=""
          icon_expr="string:${object_url}/++resource++bika.lims.images/sticker_small.png"
          link_target=""
-         url_expr="string:${object_url}/sticker?size=small"
+         url_expr="string:${object_url}/sticker?template=sticker_small"
          i18n:attributes="title"
          visible="True">
   <permission value="View"/>
