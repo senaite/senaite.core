@@ -57,7 +57,6 @@ function AnalysisRequestAddView() {
 		}
 		//It loads a overlay window when the add button is clicked.
 		loadAddButtonOveray();
-		closeOverlay();
 	}
 
 
@@ -1518,11 +1517,10 @@ function AnalysisRequestAddView() {
         edit_overlay = {
             subtype: 'ajax',
             filter: 'head>*,#content>*:not(div.configlet),dl.portalMessage.error,dl.portalMessage.info',
-            formselector: 'form',
+            formselector: 'form[id$="base-edit"]',
             closeselector: '[name="form.button.cancel"]',
             width: '70%',
 			noform:'close',
-			//urlreplace: '_preview',
             config: {
                 onLoad: function() {
                     // Force to reload bika.lims.initalize method with the needed overlay's health controllers.
@@ -1538,7 +1536,7 @@ function AnalysisRequestAddView() {
                     });
                 }
             }
-        }
+        };
         return edit_overlay;
     }
 }
