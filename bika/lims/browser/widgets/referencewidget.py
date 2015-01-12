@@ -54,8 +54,6 @@ class ReferenceWidget(StringWidget):
         'force_all': True,
         'portal_types': {},
         'showAddButton': False,
-        # The window's content-to-display URL: "/patients/portal_factory/Patient/patien/edit"
-        'addButtonUrl': "",
 
     })
     security = ClassSecurityInfo()
@@ -150,13 +148,9 @@ class ReferenceWidget(StringWidget):
         :return: URL of the window to display after click the widget's AddButton
         """
         src= self.portal_url()
-        return src + self.addButtonUrl
+        vis_dic = getattr(aq_base(self),'showAddButton')
+        return src + vis_dic.get('addButtonUrl', '')
 
-    def getAddButtonJSControllers(self):
-        """
-        :return: Array with the controllers to be loaded for the layout.
-        """
-        return self.addButton_js_controllers
 
 registerWidget(ReferenceWidget, title='Reference Widget')
 
