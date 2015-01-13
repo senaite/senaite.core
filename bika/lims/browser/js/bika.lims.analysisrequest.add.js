@@ -55,8 +55,6 @@ function AnalysisRequestAddView() {
 				$.ajaxSetup({async: true});
 			}
 		}
-		//It loads a overlay window when the add button is clicked.
-		loadAddButtonOveray();
 	}
 
 
