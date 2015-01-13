@@ -73,12 +73,12 @@ function AnalysisRequestAddView() {
 			success: function(responseText) {
 				var destination;
 				if(responseText.success !== undefined){
-					if(responseText.labels !== undefined){
+					if(responseText.stickers !== undefined){
 						destination = window.location.href
 								.split("/portal_factory")[0];
-						var ars = responseText.labels;
-						var labelsize = responseText.labelsize;
-						var q = "/sticker?size="+labelsize+"&items=";
+						var ars = responseText.stickers;
+						var template = responseText.stickertemplate;
+						var q = "/sticker?template="+template+"&items=";
 						q = q + ars.join(",");
 						window.location.replace(destination+q);
 					} else {

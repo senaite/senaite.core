@@ -14,6 +14,7 @@ from bika.lims.browser.widgets import DurationWidget
 from bika.lims.browser.fields import DurationField
 from plone.app.folder import folder
 from zope.interface import implements
+from plone.resource.utils import iterDirectoriesOfType, queryResourceDirectory
 import sys
 from bika.lims.locales import COUNTRIES
 
@@ -37,16 +38,12 @@ class PrefixesField(RecordsField):
     })
     security = ClassSecurityInfo()
 
-LABEL_AUTO_OPTIONS = DisplayList((
+STICKER_AUTO_OPTIONS = DisplayList((
     ('None', _('None')),
     ('register', _('Register')),
     ('receive', _('Receive')),
 ))
 
-LABEL_AUTO_SIZES = DisplayList((
-    ('small', _('Small')),
-    ('normal', _('Normal')),
-))
 
 schema = BikaFolderSchema.copy() + Schema((
     IntegerField('PasswordLifetime',
@@ -397,25 +394,25 @@ schema = BikaFolderSchema.copy() + Schema((
             format='select',
         )
     ),
-    StringField('AutoPrintLabels',
-        schemata = "Labels",
-        vocabulary = LABEL_AUTO_OPTIONS,
+    StringField('AutoPrintStickers',
+        schemata = "Stickers",
+        vocabulary = STICKER_AUTO_OPTIONS,
         widget = SelectionWidget(
             format = 'select',
-            label=_("Automatic label printing"),
+            label=_("Automatic sticker printing"),
             description=_(
-                "Select 'Register' if you want labels to be automatically printed when "
-                "new ARs or sample records are created. Select 'Receive' to print labels "
+                "Select 'Register' if you want stickers to be automatically printed when "
+                "new ARs or sample records are created. Select 'Receive' to print stickers "
                 "when ARs or Samples are received. Select 'None' to disable automatic printing"),
         )
     ),
-    StringField('AutoLabelSize',
-        schemata = "Labels",
-        vocabulary = LABEL_AUTO_SIZES,
+    StringField('AutoStickerTemplate',
+        schemata = "Stickers",
+        vocabulary = "getStickerTemplates",
         widget = SelectionWidget(
             format = 'select',
-            label=_("Label sizes"),
-            description=_("Select the which label to print when automatic label printing is enabled"),
+            label=_("Sticker templates"),
+            description=_("Select which sticker to print when automatic sticker printing is enabled"),
         )
     ),
     PrefixesField('Prefixes',
@@ -509,6 +506,17 @@ class BikaSetup(folder.ATFolder):
             return True
         else:
             return False
+
+    def getStickerTemplates(self):
+        """ get the sticker templates """
+        out = []
+        for stickers_resource in iterDirectoriesOfType('stickers'):
+            prefix = stickers_resource.__name__
+            stickers = [stk for stk in stickers_resource.listDirectory() if stk.endswith('.pt')]
+            for sticker in stickers:
+                name ='%s:%s' %(prefix,sticker)
+                out.append([name, name])
+        return DisplayList(out)
 
     def getARAttachmentsPermitted(self):
         """ are AR attachments permitted """
