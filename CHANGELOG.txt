@@ -1,6 +1,7 @@
 3.1.7 (unreleased)
 -----
 
+LIMS-1587: Custom sample labels
 LIMS-1517: Storage field tag untranslated?
 LIMS-1518: Storage Location table
 
