@@ -7,6 +7,8 @@ from bika.lims.permissions import *
 from bika.lims.utils import to_unicode as _u
 from bika.lims.utils import to_utf8 as _c
 from bika.lims import logger
+from Acquisition import aq_base
+from types import DictType
 from operator import itemgetter
 from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import StringWidget
@@ -50,7 +52,8 @@ class ReferenceWidget(StringWidget):
         'sord': 'asc',
         'sidx': 'Title',
         'force_all': True,
-        'portal_types': {}
+        'portal_types': {},
+        'showAddButton': False,
 
     })
     security = ClassSecurityInfo()
@@ -121,6 +124,39 @@ class ReferenceWidget(StringWidget):
         else:
             ret = value.UID() if value else value
         return ret
+
+    def isAddButtonVisible(self):
+        """
+        :return: if the Add image will be shown depending on the shownAddButton field from the schema.
+        """
+        # mode always will be edit, because the function is called from a edit template.
+        mode = 'edit'
+        # Get the default state value
+        state = self.showAddButton
+        # Get the visualisation-mode dic
+        vis_dic = getattr(aq_base(self),'showAddButton')
+        if type(vis_dic) is DictType:
+            state = vis_dic.get(mode, state)
+        elif not vis_dic:
+            state = 'invisible'
+        elif vis_dic < 0:
+            state = 'hidden'
+        return state == 'visible'
+
+    def getAddButtonUrl(self):
+        """
+        :return: URL of the window to display after click the widget's AddButton.
+        """
+        src= self.portal_url()
+        vis_dic = getattr(aq_base(self),'showAddButton')
+        return src + vis_dic.get('addButtonUrl', '')
+
+    def getAddButtonJSControllers(self):
+        """
+        :return: Array with the controllers to be loaded for the layout.
+        """
+        vis_dic = getattr(aq_base(self),'showAddButton')
+        return vis_dic.get('addButtonJSControllers', '')
 
 registerWidget(ReferenceWidget, title='Reference Widget')
 
