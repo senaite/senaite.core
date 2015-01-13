@@ -1861,9 +1861,6 @@ function AnalysisRequestAddByCol() {
 				   var value = $(e).attr("uid")
 					 ? $(e).attr("uid")
 					 : $(e).val()
-				   if (value) {
-					   debugger
-				   }
 				   state_set(arnum, fieldname, value)
 			   })
 		// checkboxes inside ar_add_widget table.
