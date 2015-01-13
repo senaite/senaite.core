@@ -15,16 +15,16 @@ VERSIONABLE_TYPES = ('AnalysisService',
                      'SampleType',
                      'AnalysisSpec',
                      'WorksheetTemplate',
-                     )
+)
 
 PUBLICATION_PREFS = DisplayList((
     ('email', _('Email')),
     ('pdf', _('PDF')),
-# https://github.com/bikalabs/Bika-LIMS/issues/713
-#    ('fax', _('Fax')),
-#    ('file', _('File')),
-#    ('print', _('Print')),
-#    ('sms', _('SMS')),
+    # https://github.com/bikalabs/Bika-LIMS/issues/713
+    # ('fax', _('Fax')),
+    #    ('file', _('File')),
+    #    ('print', _('Print')),
+    #    ('sms', _('SMS')),
 ))
 
 POINTS_OF_CAPTURE = DisplayList((
@@ -70,7 +70,7 @@ DEFAULT_AR_SPECS = DisplayList((
 ARIMPORT_OPTIONS = DisplayList((
     ('c', _('Classic')),
     ('p', _('Profiles')),
-#    ('s', _('Special')),
+    # ('s', _('Special')),
 ))
 EMAIL_SUBJECT_OPTIONS = DisplayList((
     ('ar', _('Analysis Request ID')),
@@ -82,14 +82,14 @@ EMAIL_SUBJECT_OPTIONS = DisplayList((
 GENDERS = DisplayList((
     ('male', _('Male')),
     ('female', _('Female')),
-    ))
+))
 
 ADDRESS_TYPES = DisplayList((
     ('physical', _('Physical address')),
     ('mailing', _('Mailing address')),
     ('billing', _('Billing address')),
     ('shipping', _('Shipping address')),
-    ))
+))
 
 QCANALYSIS_TYPES = DisplayList((
     ('b', _('Blank QC analyses')),
@@ -98,7 +98,7 @@ QCANALYSIS_TYPES = DisplayList((
 ))
 
 currencies = locales.getLocale('en').numbers.currencies.values()
-currencies.sort(lambda x,y:cmp(x.displayName, y.displayName))
+currencies.sort(lambda x, y: cmp(x.displayName, y.displayName))
 
 CURRENCIES = DisplayList(
     [(c.type, "%s (%s)" % (c.displayName, c.symbol))
@@ -110,4 +110,9 @@ VERIFIED_STATES = ('verified', 'published')
 DECIMAL_MARKS = DisplayList((
     ('.', _('Dot (.)')),
     (',', _('Comma (,)')),
+))
+
+AR_ADD_SERVICE_SELECTORS = DisplayList((
+    ('bika_listing', _('Categorised service list form')),
+    ('single-select', _('Single service selection form')),
 ))

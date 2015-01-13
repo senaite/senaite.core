@@ -1181,7 +1181,7 @@ class Analysis_Services(WorksheetImporter):
             department = self.get_object(bsc, 'Department', row.get('Department_title'))
             method = self.get_object(bsc, 'Method', row.get('Method'))
             instrument = self.get_object(bsc, 'Instrument', row.get('Instrument_title'))
-            calculation = self.get_object(bsc, 'Calculation', row.get('Calculation_title'))
+            deferred_calc = self.get_object(bsc, 'Calculation', row.get('Calculation_title'))
             container = self.get_object(bsc, 'Container', row.get('Container_title'))
             preservation = self.get_object(bsc, 'Preservation', row.get('Preservation_title'))
             priority = self.get_object(bsc, 'ARPriority', row.get('Priority_title'))
@@ -1194,8 +1194,8 @@ class Analysis_Services(WorksheetImporter):
                 Category=category,
                 Department=department,
                 ReportDryMatter=self.to_bool(row['ReportDryMatter']),
-                AttachmentOption=row['Attachment'][0].lower(),
-                Unit=row['Unit'] and row['Unit'] or None,
+                AttachmentOption=row['Attachment'][0].lower() if row['Attachment'] else 'p',
+                Unit=row['Unit'] if row['Unit'] else None,
                 Precision=row['Precision'] and str(row['Precision']) or '0',
                 MaxTimeAllowed=MTA,
                 Price="%02f" % Float(row['Price']),
@@ -1203,7 +1203,7 @@ class Analysis_Services(WorksheetImporter):
                 VAT="%02f" % Float(row['VAT']),
                 Method=method,
                 Instrument=instrument,
-                Calculation=calculation,
+                DeferredCalculation=deferred_calc,
                 DuplicateVariation="%02f" % Float(row['DuplicateVariation']),
                 Accredited=self.to_bool(row['Accredited']),
                 InterimFields=hasattr(self, 'service_interims') and self.service_interims.get(
@@ -1213,6 +1213,8 @@ class Analysis_Services(WorksheetImporter):
                 Preservation=preservation,
                 Priority=priority,
             )
+            if deferred_calc:
+                obj.setUseDefaultCalculation(False)
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
         self.load_result_options()

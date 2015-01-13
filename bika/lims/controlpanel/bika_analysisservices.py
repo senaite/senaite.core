@@ -147,7 +147,7 @@ class AnalysisServicesView(BikaListingView):
         self.do_cats = self.context.bika_setup.getCategoriseAnalysisServices()
         if self.do_cats:
             self.pagesize = 0  # hide batching controls
-            self.show_categories = True,
+            self.show_categories = True
             self.expand_all_categories = False
 
         self.columns = {
@@ -313,6 +313,10 @@ class AnalysisServicesView(BikaListingView):
                     _('Attachment not permitted'))
             if after_icons:
                 items[x]['after']['Title'] = after_icons
+
+            items[x]['title'] = obj.Schema()['title'].get(obj)
+            items[x]['price'] = obj.Schema()['Price'].get(obj)
+            items[x]['vatamount'] = obj.Schema()['VAT'].get(obj)
 
         self.categories.sort()
         return items

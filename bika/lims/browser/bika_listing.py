@@ -486,6 +486,7 @@ class BikaListingView(BrowserView):
                 ##logger.info("Or: %s=%s"%(index, value))
                 if idx.meta_type in('ZCTextIndex', 'FieldIndex'):
                     self.Or.append(MatchRegexp(index, value))
+                    self.expand_all_categories = True
                     # https://github.com/bikalabs/Bika-LIMS/issues/1069
                     vals = value.split('-')
                     if len(vals) > 2:
@@ -493,6 +494,7 @@ class BikaListingView(BrowserView):
                         for i in range(1, len(vals)):
                             valroot = '%s-%s' % (valroot, vals[i])
                             self.Or.append(MatchRegexp(index, valroot+'-*'))
+                            self.expand_all_categories = True
                 elif idx.meta_type == 'DateIndex':
                     if type(value) in (list, tuple):
                         value = value[0]
@@ -502,13 +504,16 @@ class BikaListingView(BrowserView):
                         except:
                             logger.info("Error (And, DateIndex='%s', term='%s')"%(index,value))
                         self.Or.append(Between(index, lohi[0], lohi[1]))
+                        self.expand_all_categories = True
                     else:
                         try:
                             self.Or.append(Eq(index, DateTime(value)))
+                            self.expand_all_categories = True
                         except:
                             logger.info("Error (Or, DateIndex='%s', term='%s')"%(index,value))
                 else:
                     self.Or.append(Generic(index, value))
+                    self.expand_all_categories = True
             self.Or.append(MatchRegexp('review_state', value))
 
         # get toggle_cols cookie value
@@ -571,17 +576,35 @@ class BikaListingView(BrowserView):
             return self.template()
 
     def selected_cats(self, items):
-        """return a list of categories containing 'selected'=True items
+        """Return a list of categories that will be expanded by default when
+        the page is reloaded.
+
+        In this default method, categories which contain selected
+        items are always expanded.
+
+        :param items: A list of items returned from self.folderitems().
+        :return: a list of strings, self.categories contains the complete list.
         """
         cats = []
         for item in items:
             cat = item.get('category', 'None')
             if item.get('selected', False) \
-                or self.expand_all_categories \
-                or not self.show_categories:
+                    or self.expand_all_categories \
+                    or not self.show_categories:
                 if cat not in cats:
                     cats.append(cat)
         return cats
+
+    def restricted_cats(self, items):
+        """Return a list of categories that will not be displayed.
+
+        The items will still be present, and account for a part of the page
+        batch total.
+
+        :param items: A list of items returned from self.folderitems().
+        :return: a list of AnalysisCategory instances.
+        """
+        return []
 
     def isItemAllowed(self, obj):
         """ return if the item can be added to the items list.

@@ -1,5 +1,6 @@
 *** Settings ***
 
+Library          BuiltIn
 Library          Selenium2Library  timeout=5  implicit_wait=0.2
 Library          String
 Resource         keywords.txt
@@ -18,13 +19,9 @@ ${ar_factory_url}  portal_factory/AnalysisRequest/Request%20new%20analyses/ar_ad
 *** Test Cases ***
 
 Add ARs by Row
-    Check the AR Add By Row javascript
     Create Primary AR By Row With Template
     Create Primary AR By Row
     Create Mulitple Primary ARs By Row With Template
-
-Check Javascript
-    Check the AR Add javascript
 
 Analysis Request with no samping or preservation workflow
     Log in                              test_labmanager         test_labmanager
@@ -57,73 +54,6 @@ Create two different ARs from the same sample.
     In a client context, only allow selecting samples from that client.
 
 *** Keywords ***
-
-Check the AR Add By Row javascript
-   # check that the Contact CC auto-fills correctly when a contact is selected
-    Log out
-    Log in                      test_labmanager1    test_labmanager1
-    Wait until page contains    You are now logged in
-    Go to                       ${PLONEURL}/clients/client-1
-    Wait until page contains    Happy
-    Select from list            layout      rows
-    Click Link                  Add
-    SelectDate                          ar_0_SamplingDate       1
-    Select From Dropdown                ar_0_SampleType         Water
-    Select from dropdown                Contact            Rita
-    Click element               ar_0_Analyses
-    Wait until page contains    Select Analyses for AR
-
-    # check that we can expand and collaps the analysis categories
-    click element                       xpath=.//th[@id="cat_lab_Microbiology"]
-    wait until page contains            Clostridia
-    click element                       xpath=.//th[@id="cat_lab_Microbiology"]
-    element should not be visible             Clostridia
-    click element                       xpath=.//th[@id="cat_lab_Microbiology"]
-    page should contain                 Clostridia
-
-    # check analysis values appear
-    click element                       xpath=.//th[@id="cat_field_Water Chemistry"]
-    wait until page contains            pH (field)
-    Select checkbox                     xpath=//input[@title="pH (field)"]
-    wait until page contains            14
-
-    Click element                       xpath=//th[@id="cat_lab_Metals"]
-    Select checkbox                     xpath=//input[@title="Calcium"]
-    Click Button                        Submit
-    Set Selenium Timeout                10
-    Click element                       ar_0_Analyses
-    Wait until page contains            Select Analyses for AR
-    wait until page contains            Temperature
-    wait until page contains            Calcium
-
-# XXX Automatic expanded categories
-# XXX Restricted categories
-# XXX preservation workflow
-# XXX copy across in all fields
-
-Check the AR Add javascript
-   # check that the Contact CC auto-fills correctly when a contact is selected
-    Log out
-    Log in                    test_labmanager1    test_labmanager1
-    Wait until page contains  You are now logged in
-    Go to                     ${PLONEURL}/clients/client-1
-    Wait until page contains  Happy
-    Click Link                Add
-    SelectDate                          ar_0_SamplingDate       1
-    Select From Dropdown                ar_0_SampleType         Water
-    Select from dropdown                ar_0_Contact            Rita
-    Xpath Should Match X Times          //div[@class='reference_multi_item']   1
-    Select from dropdown                ar_0_Contact            Neil
-    Select from dropdown                ar_0_Priority           High
-    Xpath Should Match X Times          //div[@class='reference_multi_item']   2
-
-    # check that we can expand and collaps the analysis categories
-    click element                       xpath=.//th[@id="cat_lab_Microbiology"]
-    wait until page contains            Clostridia
-    click element                       xpath=.//th[@id="cat_lab_Microbiology"]
-    element should not be visible             Clostridia
-    click element                       xpath=.//th[@id="cat_lab_Microbiology"]
-    page should contain                 Clostridia
 
 Create Primary AR
     Log in                      test_labmanager  test_labmanager

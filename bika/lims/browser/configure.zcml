@@ -4,8 +4,10 @@
     i18n_domain="bika">
 
   <include file="analysis.zcml"/>
+  <include file="analysisprofile.zcml"/>
   <include file="analysisservice.zcml"/>
   <include file="analysisspec.zcml"/>
+  <include file="artemplate.zcml"/>
   <include file="attachment.zcml"/>
   <include file="batchfolder.zcml"/>
   <include file="bika_listing.zcml"/>

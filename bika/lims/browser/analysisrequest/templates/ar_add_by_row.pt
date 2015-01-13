@@ -1,168 +1,174 @@
 <div metal:define-macro="ar_add_by_row">
-    <tal:headers repeat="fieldname prominentfieldnames">
-        <div class="clientInfoByRow" tal:define="
-                            field python:context.Schema()[fieldname];
-                            field_macro here/widgets/field/macros/edit;
-                            accessor python:field.getAccessor(context);
-                            widget python:field.widget;
-                            errors python:{};
-                            mode string:edit;">
-            <span tal:replace="python:view.context.translate(widget.Label(here))"></span>
-            <span class="fieldRequired"
-                  tal:condition="field/required"
-                  title="Required"
-                  i18n:attributes="title title_required;">&nbsp;</span>
-            <metal:field use-macro="python:context.widget(fieldname, mode=mode)"/>
-        </div>
-    </tal:headers>
-    <tal:headers repeat="fieldname hiddenprominentfieldnames">
-        <div tal:define="
-                            field python:context.Schema()[fieldname];
-                            accessor python:field.getAccessor(context);
-                            widget python:field.widget;
-                            errors python:{};
-                            mode string:edit;">
-            <div style="display:none">
+    <script type="text/javascript" src="++resource++bika.lims.js/bika.lims.analysisrequest.add_by_row.js"></script>
+    <table summary="Add analysis requests"
+           class="listing analysisrequest add nosort"
+           cellpadding="0" cellspacing="0">
+        <thead>
+        <tal:headers repeat="fieldname prominentfieldnames">
+            <div class="clientInfoByRow" tal:define="
+                                field python:context.Schema()[fieldname];
+                                field_macro here/widgets/field/macros/edit;
+                                accessor python:field.getAccessor(context);
+                                widget python:field.widget;
+                                errors python:{};
+                                mode string:edit;">
+                <span tal:replace="python:view.context.translate(widget.Label(here))"></span>
+                <span class="fieldRequired"
+                      tal:condition="field/required"
+                      title="Required"
+                      i18n:attributes="title title_required;">&nbsp;</span>
                 <metal:field use-macro="python:context.widget(fieldname, mode=mode)"/>
             </div>
-        </div>
-    </tal:headers>
-    <br />
+        </tal:headers>
+        <tal:headers repeat="fieldname hiddenprominentfieldnames">
+            <div tal:define="
+                                field python:context.Schema()[fieldname];
+                                accessor python:field.getAccessor(context);
+                                widget python:field.widget;
+                                errors python:{};
+                                mode string:edit;">
+                <div style="display:none">
+                    <metal:field use-macro="python:context.widget(fieldname, mode=mode)"/>
+                </div>
+            </div>
+        </tal:headers>
+        <br />
+        <br />
 
-    <thead 
-        tal:define="
-          fieldnames python:view.get_fields_with_visibility('visible', mode='add-by-row');
-          fieldnames python: [f for f in fieldnames if f not in prominentfieldnames];
-          fieldnames python: [f for f in fieldnames if f not in hiddenprominentfieldnames]">
-    <tr class="tableHeaderRowByRow">
-        <td></td>
-        <tal:loop repeat="fieldname fieldnames">
-            <td class="tableHeadersByRow" tal:define="
-                        field python:context.Schema()[fieldname];
-                        field_macro here/widgets/field/macros/edit;
-                        accessor python:field.getAccessor(context);
-                        widget python:field.widget;
-                        errors python:{};
-                        mode string:edit;">
-                <label class="formQuestion"
-                          tal:define="description python:view.context.translate(widget.Description(here))"
-                          tal:attributes="title description">
-                    <span tal:replace="python:view.context.translate(widget.Label(here))"/>
-                    <span class="fieldRequired"
-                          tal:condition="field/required"
-                          title="Required"
-                          i18n:attributes="title title_required;">&nbsp;</span>
-                    <em tal:condition="nothing"
-                        style="display:block"
-                        class="discreet"
-                        tal:define="description python:view.context.translate(widget.Description(here))"
-                        tal:content="structure description"
-                        tal:attributes="id string:${fieldname}_help">Help </em>
-                </label>
-            </td>
-        </tal:loop>
-        <td>
-            <label i18n:translate="" 
-                   title='Select the analyses to be performed on this Sample'>Analyses</label>
-        </td>
-        <td>
-            <label i18n:translate="price-and-tax" 
-                   title='The cost of the analyses'>Price & GST</label>
-        </td>
-        <td class="tableHeadersByRow"> 
-            <label i18n:translate="save-as-profile" 
-                   title='Save selected analyses as a new profile'>Save as Profile</label>
-        </td>
-    </tr>
-    <tr>
-        <td></td>
-        <td tal:repeat="fieldname fieldnames">
-            <img tal:condition="python:view.ar_count > 1"
-                 tal:attributes="name fieldname;
-                                 class string:copyButton ${fieldname}CopyButton copyButtonByRow;
-                                 src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png;"/>
-        </td>
-        <td>
-            <img tal:condition="python:view.ar_count > 1"
-                 tal:attributes="name string:analyses;
-                                 class string:copyButton analysesCopyButton copyButtonByRow;
-                                 src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png;"/>
-        </td>
-        <td>
-            <!-- Price -->
-        </td>
-        <td>
-            <!-- Save Profile -->
-        </td>
-    </tr>
-
-<!-- All edit fields with fields with add=visible -->
-    <tal:rows 
-        tal:repeat="arnum python:range(view.ar_count)">
-    <tr tal:attributes="arnum arnum;
-                        ar_add_arnum_widget string:1">
-        <td tal:content="repeat/arnum/number">
-        </td>
-        <tal:loop repeat="fieldname fieldnames">
-            <tal:def define="
-                    field python:context.Schema()[fieldname];
-                    field_macro here/widgets/field/macros/edit;
-                    accessor python:field.getAccessor(context);
-                    widget python:field.widget;
-                    errors python:{};
-                    mode string:edit;">
-                <td class="inputByRow">
-                    <metal:field use-macro="python:context.widget(fieldname, mode='edit')"/>
-                    <tal:hidden_def
-                            tal:define="hiddenfieldnames python:widget_visibility.get('add', {}).get('hidden', []);
-                                        "
-                            tal:repeat="hiddenfieldname hiddenfieldnames">
-                        <input
-                                type="hidden"
-                                tal:define="val python:context.Schema()[hiddenfieldname].getAccessor(context)();"
-                                tal:attributes="
-                                        name string:${hiddenfieldname};
-                                        id string:${hiddenfieldname};
-                                        value val/Title|nothing;"/>
-                        <input
-                                type="hidden"
-                                tal:define="val python:context.Schema()[hiddenfieldname].getAccessor(context)();"
-                                tal:attributes="
-                                        name string:${hiddenfieldname}_uid;
-                                        id string:${hiddenfieldname}_uid;
-                                        value val/UID|nothing;"/>
-                    </tal:hidden_def>
-
+        <thead class="analysisrequest_add_by_row"
+            tal:define="
+              fieldnames python:view.get_fields_with_visibility('visible', mode='add-by-row');
+              fieldnames python: [f for f in fieldnames if f not in prominentfieldnames];
+              fieldnames python: [f for f in fieldnames if f not in hiddenprominentfieldnames]">
+            <tr class="tableHeaderRowByRow">
+                <td></td>
+                <tal:loop repeat="fieldname fieldnames">
+                    <td class="tableHeadersByRow" tal:define="
+                                field python:context.Schema()[fieldname];
+                                field_macro here/widgets/field/macros/edit;
+                                accessor python:field.getAccessor(context);
+                                widget python:field.widget;
+                                errors python:{};
+                                mode string:edit;">
+                        <label class="formQuestion"
+                                  tal:define="description python:view.context.translate(widget.Description(here))"
+                                  tal:attributes="title description">
+                            <span tal:replace="python:view.context.translate(widget.Label(here))"/>
+                            <span class="fieldRequired"
+                                  tal:condition="field/required"
+                                  title="Required"
+                                  i18n:attributes="title title_required;">&nbsp;</span>
+                            <em tal:condition="nothing"
+                                style="display:block"
+                                class="discreet"
+                                tal:define="description python:view.context.translate(widget.Description(here))"
+                                tal:content="structure description"
+                                tal:attributes="id string:${fieldname}_help">Help </em>
+                        </label>
+                    </td>
+                </tal:loop>
+                <td>
+                    <label i18n:translate=""
+                           title='Select the analyses to be performed on this Sample'>Analyses</label>
                 </td>
-            </tal:def>
-        </tal:loop>
-        <td class="service analysesByRow">
-            <input type="text"
-                    tal:attributes="
-                            class string:ar_add_analyses;
-                            name string:Analyses;
-                            id string:Analyses;
-                            src string:${portal/absolute_url};
-                            " />
-        </td>
-        <td class="inputByRow">
-            <input type="text" readonly
-                    tal:attributes="
-                            class string:ar_add_total;
-                            name string:total;
-                            id string:total;
-                            " />
-        </td>
-        <td class="saveButtonByRow">
-            <input type="button" value="Create"
-                    tal:attributes="
-                            class string:ar_add_save_profile;
-                            name string:save_profile;
-                            id string:save_profile;
-                            " />
-        </td>
-    </tr>
+                <td>
+                    <label i18n:translate="price-and-tax"
+                           title='The cost of the analyses'>Price & GST</label>
+                </td>
+                <td class="tableHeadersByRow">
+                    <label i18n:translate="save-as-profile"
+                           title='Save selected analyses as a new profile'>Save as Profile</label>
+                </td>
+            </tr>
+            <tr>
+                <td></td>
+                <td tal:repeat="fieldname fieldnames">
+                    <img tal:condition="python:view.ar_count > 1"
+                         tal:attributes="name fieldname;
+                                         class string:copyButton ${fieldname}CopyButton copyButtonByRow;
+                                         src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png;"/>
+                </td>
+                <td>
+                    <img tal:condition="python:view.ar_count > 1"
+                         tal:attributes="name string:analyses;
+                                         class string:copyButton analysesCopyButton copyButtonByRow;
+                                         src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png;"/>
+                </td>
+                <td>
+                    <!-- Price -->
+                </td>
+                <td>
+                    <!-- Save Profile -->
+                </td>
+            </tr>
 
-    </tal:rows>
-</thead>
+            <!-- All edit fields with fields with add=visible -->
+            <tal:rows
+                tal:repeat="arnum python:range(view.ar_count)">
+                <tr tal:attributes="arnum arnum;
+                                    ar_add_arnum_widget string:1">
+                    <td tal:content="repeat/arnum/number">
+                    </td>
+                    <tal:loop repeat="fieldname fieldnames">
+                        <tal:def define="
+                                field python:context.Schema()[fieldname];
+                                field_macro here/widgets/field/macros/edit;
+                                accessor python:field.getAccessor(context);
+                                widget python:field.widget;
+                                errors python:{};
+                                mode string:edit;">
+                            <td class="inputByRow">
+                                <metal:field use-macro="python:context.widget(fieldname, mode='edit')"/>
+                                <tal:hidden_def
+                                        tal:define="hiddenfieldnames python:widget_visibility.get('add', {}).get('hidden', []);
+                                                    "
+                                        tal:repeat="hiddenfieldname hiddenfieldnames">
+                                    <input
+                                            type="hidden"
+                                            tal:define="val python:context.Schema()[hiddenfieldname].getAccessor(context)();"
+                                            tal:attributes="
+                                                    name string:${hiddenfieldname};
+                                                    id string:${hiddenfieldname};
+                                                    value val/Title|nothing;"/>
+                                    <input
+                                            type="hidden"
+                                            tal:define="val python:context.Schema()[hiddenfieldname].getAccessor(context)();"
+                                            tal:attributes="
+                                                    name string:${hiddenfieldname}_uid;
+                                                    id string:${hiddenfieldname}_uid;
+                                                    value val/UID|nothing;"/>
+                                </tal:hidden_def>
+
+                            </td>
+                        </tal:def>
+                    </tal:loop>
+                    <td class="service analysesByRow">
+                        <input type="text"
+                                tal:attributes="
+                                        class string:ar_add_analyses;
+                                        name string:Analyses;
+                                        id string:Analyses;
+                                        src string:${portal/absolute_url};
+                                        " />
+                    </td>
+                    <td class="inputByRow">
+                        <input type="text" readonly
+                                tal:attributes="
+                                        class string:ar_add_total;
+                                        name string:total;
+                                        id string:total;
+                                        " />
+                    </td>
+                    <td class="saveButtonByRow">
+                        <input type="button" value="Create"
+                                tal:attributes="
+                                        class string:ar_add_save_profile;
+                                        name string:save_profile;
+                                        id string:save_profile;
+                                        " />
+                    </td>
+                </tr>
+            </tal:rows>
+        </thead>
+    </table>
 </div>

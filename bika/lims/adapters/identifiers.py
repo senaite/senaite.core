@@ -90,7 +90,8 @@ class IHaveIdentifiersSchemaExtender(object):
         """
         schemata = self.context.schema['description'].schemata
         fields = schematas[schemata]
-        fields.insert(fields.index('description') + 1, 'Identifiers')
+        fields.insert(fields.index('description') + 1,
+                      'Identifiers')
         return schematas
 
     def getFields(self):
@@ -129,15 +130,16 @@ class ajaxGetIdentifierTypes(BrowserView):
         brains = self.bika_setup_catalog(portal_type='IdentifierType',
                                          inactive_state='active')
         if brains and searchTerm:
-            brains = [p for p in brains if p.Title.lower(
-            ).find(searchTerm) > -1]
+            brains = [p for p in brains
+                      if p.Title.lower().find(searchTerm) > -1]
 
         for p in brains:
             rows.append({'IdentifierType': p.Title,
                          'Description': p.Description})
 
-        rows = sorted(rows, cmp=lambda x, y: cmp(x.lower(
-        ), y.lower()), key=itemgetter(sidx and sidx or 'IdentifierType'))
+        rows = sorted(rows,
+                      cmp=lambda x, y: cmp(x.lower(), y.lower()),
+                      key=itemgetter(sidx and sidx or 'IdentifierType'))
         if sord == 'desc':
             rows.reverse()
         pages = len(rows) / int(nr_rows)
@@ -146,6 +148,6 @@ class ajaxGetIdentifierTypes(BrowserView):
                'total': pages,
                'records': len(rows),
                'rows': rows[(int(page) - 1) * int(nr_rows):
-               int(page) * int(nr_rows)]
+                            int(page) * int(nr_rows)]
         }
         return json.dumps(ret)

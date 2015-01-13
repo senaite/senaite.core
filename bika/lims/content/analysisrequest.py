@@ -20,7 +20,8 @@ from bika.lims.permissions import *
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisRequest
 from bika.lims.browser.fields import HistoryAwareReferenceField
-from bika.lims.browser.widgets import DateTimeWidget, DecimalWidget
+from bika.lims.browser.widgets import DateTimeWidget, DecimalWidget, \
+    RecordsWidget
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.browser.widgets import SelectionWidget
 from bika.lims.workflow import skip, isBasicTransitionAllowed
@@ -56,7 +57,6 @@ def BatchUID(instance):
 schema = BikaSchema.copy() + Schema((
     StringField(
         'RequestID',
-        required=1,
         searchable=True,
         mode="rw",
         read_permission=permissions.View,
@@ -412,7 +412,6 @@ schema = BikaSchema.copy() + Schema((
             visible={'edit': 'visible',
                      'view': 'visible',
                      'add': 'edit',
-                     'secondary': 'disabled',
                      'header_table': 'visible',
                      'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
                      'to_be_sampled':     {'view': 'visible', 'edit': 'invisible'},
@@ -478,7 +477,6 @@ schema = BikaSchema.copy() + Schema((
             size=20,
             visible={'edit': 'visible',
                      'view': 'visible',
-                     'secondary': 'disabled',
                      'header_table': 'prominent',
                      'sample_registered': {'view': 'invisible', 'edit': 'invisible'},
                      'to_be_sampled':     {'view': 'invisible', 'edit': 'visible'},
@@ -541,6 +539,7 @@ schema = BikaSchema.copy() + Schema((
             visible={'edit': 'visible',
                      'view': 'visible',
                      'add': 'edit',
+                     'secondary': 'disabled',
                      'header_table': 'visible',
                      'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
                      'to_be_sampled':     {'view': 'visible', 'edit': 'invisible'},
@@ -610,6 +609,7 @@ schema = BikaSchema.copy() + Schema((
             visible={'edit': 'visible',
                      'view': 'visible',
                      'add': 'edit',
+                     'secondary': 'disabled',
                      'header_table': 'visible',
                      'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
                      'to_be_sampled':     {'view': 'visible', 'edit': 'invisible'},
@@ -1169,7 +1169,6 @@ schema = BikaSchema.copy() + Schema((
     ),
     ARAnalysesField(
         'Analyses',
-        required=1,
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,

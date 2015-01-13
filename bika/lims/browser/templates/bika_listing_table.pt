@@ -99,7 +99,7 @@ XXX This should use form_id </tal:comment>
 
     <thead>
 
-    <tr style="border:none !important;" tal:condition="python:len(view.bika_listing.review_states) > 1">
+    <tr style="border:none !important;" tal:condition="python:(len(view.bika_listing.review_states) > 1) or (hasattr(view.bika_listing, 'filter_indexes') and view.bika_listing.filter_indexes)">
 <tal:comment replace="nothing">***************
 Workflow review state selector
 ********************************</tal:comment>
@@ -107,7 +107,8 @@ Workflow review state selector
         <table width="100%" cellpadding="0" cellspacing="0" class="noborder nomargin">
         <tr class="noborder"
             tal:condition="python:len(view.bika_listing.review_states) > 1">
-            <td class="review_state_selector noborder" style="whitespace:nowrap">
+            <td class="review_state_selector noborder" style="whitespace:nowrap"
+                    tal:condition="python:(len(view.bika_listing.review_states) > 1)">
                 <tal:review_states repeat="state view/bika_listing/review_states">
                 <a
                     tal:define="state_id state/id"
@@ -183,20 +184,23 @@ Colum Headers
 
     <tbody class="item-listing-tbody"
         tal:condition="view/items"
-        tal:define="selected_cats python: view.bika_listing.selected_cats(view.batch)">
+        tal:define="selected_cats python: view.bika_listing.selected_cats(view.batch);
+                restricted_cats python:view.bika_listing.restricted_cats(view.batch)">
 
-<tal:comment replace="nothing">*************** TR
+    <tal:comment replace="nothing">*************** TR
 Table data rows start here
 ********************************</tal:comment>
 <tal:cats
     tal:repeat="cat python: view.bika_listing.categories+['None', ] if view.bika_listing.categories else ['None', ]">
+
+    <tal:show_this_category
+            tal:condition="python: cat not in restricted_cats">
     <tr tal:condition="python: view.bika_listing.show_categories and cat != 'None'">
         <th
-            style="text-align: left;"
-            tal:attributes="
-                colspan nr_cols;
-                cat cat;
-                class python:(cat in selected_cats) and 'cat_header expanded' or 'cat_header collapsed'"
+            style="text-align:left;"
+            tal:attributes="colspan nr_cols;
+                            cat cat;
+                            class python:(cat in selected_cats) and 'cat_header expanded' or 'cat_header collapsed'"
             tal:content="structure cat">
         </th>
     </tr>
@@ -212,9 +216,12 @@ Table data rows start here
                 cat cat;
                 class item/table_row_class;
                 id string:folder-contents-item-${item/uid};
-                uid item/uid;
-                keyword keyword;
-                as_uid suid;">
+                uid python: item['uid'] if 'uid' in item else None;
+                keyword python: keyword if keyword else None;
+                as_uid python: suid if suid else None;
+                title python: item['title'] if 'title' in item else None;
+                price python: item['price'] if 'price' in item else None;
+                vatamount python: item['vatamount'] if 'vatamount' in item else None; ">
 
         <tal:comment replace="nothing">***************
         Individual items' row_data is stored on each row.
@@ -631,6 +638,7 @@ Table cells for each column from in review_state's column list.
     </tal:remarks_condition>
 
     </tal:items>
+    </tal:show_this_category>
 </tal:cats>
 </tbody>
 

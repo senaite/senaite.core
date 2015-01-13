@@ -120,12 +120,12 @@ function BatchView() {
 		});
 
 		// can only have one of Profile or Template seleted
-		$("#Template").bind("selected", function(event){
+		$("#Template").bind("selected", function(event, item){
 			$("#Profile").val("");
 			$("#Profile").attr("uid", "");
 			$("#Profile_uid").val("");
 		});
-		$("#Profile").bind("selected", function(event){
+		$("#Profile").bind("selected", function(event, item){
 			$("#Template").val("");
 			$("#Template").attr("uid", "");
 			$("#Template_uid").val("");

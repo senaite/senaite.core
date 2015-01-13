@@ -150,14 +150,6 @@
 
     <browser:page
       for="*"
-      name="analysisrequest_analysisservices"
-      class="bika.lims.browser.analysisrequest.add.ajaxExpandCategory"
-      permission="zope.Public"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="*"
       name="analysisrequest_submit"
       class="bika.lims.browser.analysisrequest.add.ajaxAnalysisRequestSubmit"
       permission="zope.Public"
@@ -169,6 +161,14 @@
       name="invoice_print"
       class="bika.lims.browser.analysisrequest.InvoicePrintView"
       permission="bika.lims.ManageInvoices"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="*"
+      name="service_selector"
+      class="bika.lims.browser.analysisrequest.add.ajaxServiceSelectorVocabulary"
+      permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

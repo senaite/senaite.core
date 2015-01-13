@@ -13,7 +13,7 @@
 			$(this).parent().remove();
 		});
 
-		$(".ArchetypesReferenceWidget").bind("change", function(){
+		$(".ArchetypesReferenceWidget").bind("change blur", function(){
 			var e = $(this).children("input.referencewidget");
 			if (e.val() == '') {
 				fieldName = $(e).attr("name").split(":")[0];
@@ -67,11 +67,11 @@ function referencewidget_lookups(elements){
 			event.preventDefault();
 			var fieldName = $(this).attr("name").replace(".", "\\.", "g");
 			var skip;
-			var uid_element = $("input[name='"+fieldName+"_uid']");
-			var listing_div = $("div#"+fieldName+"-listing");
-			if($("#"+fieldName+"-listing").length > 0) {
+			var uid_element = $(this).siblings("input[$='_uid']")
+			var listing_div = $(this).siblings("div[id$='-listing']");
+			if($(listing_div).length > 0) {
 				// Add selection to textfield value
-				var existing_uids = $("input[name='"+fieldName+"_uid']").val().split(",");
+				var existing_uids = $(uid_element).val().split(",");
 				destroy(existing_uids,"");
 				destroy(existing_uids,"[]");
 				var selected_value = ui.item[$(this).attr("ui_item")];
@@ -87,9 +87,15 @@ function referencewidget_lookups(elements){
 					var new_item = "<div class='reference_multi_item' uid='"+selected_uid+"'>"+del_btn+selected_value+"</div>";
 					$(listing_div).append($(new_item));
 				}
+
+				// skip_referencewidget_lookup: a little cheat
+				// it prevents this widget from falling over itself,
+				// by allowing other JS to request that the "selected" action
+				// is not triggered.
 				skip = $(element).attr("skip_referencewidget_lookup");
 				if (skip !== true){
-					$(this).trigger("selected", ui.item.UID);
+					// Pass the entire selected item through to the selected handler
+					$(this).trigger("selected", ui.item);
 				}
 				$(element).removeAttr("skip_referencewidget_lookup");
 				$(this).next("input").focus();
@@ -97,10 +103,11 @@ function referencewidget_lookups(elements){
 				// Set value in activated element (must exist in colModel!)
 				$(this).val(ui.item[$(this).attr("ui_item")]);
 				$(this).attr("uid", ui.item.UID);
-				$("input[name='"+fieldName+"_uid']").val(ui.item.UID);
+				$(uid_element).val(ui.item.UID);
 				skip = $(element).attr("skip_referencewidget_lookup");
 				if (skip !== true){
-					$(this).trigger("selected", ui.item.UID);
+					// Pass the entire selected item through to the selected handler
+					$(this).trigger("selected", ui.item);
 				}
 				$(element).removeAttr("skip_referencewidget_lookup");
 				$(this).next("input").focus();

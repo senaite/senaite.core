@@ -64,6 +64,24 @@ class WorkflowAwareWidgetVisibility(object):
         return state
 
 
+class ARHideDryMatter(object):
+    """This will remove the 'ReportAsDryMatter' checkbox from AR Add
+    when there is no Dry Matter service defined in site-setup
+    """
+    implements(IATWidgetVisibility)
+
+    def __init__(self, context):
+        self.context = context
+        self.sort = 100
+
+    def __call__(self, context, mode, field, default):
+        state = default if default else 'invisible'
+        fieldName = field.getName()
+        dms = context.bika_setup.getDryMatterService()
+        if fieldName == 'ReportDryMatter' and not dms:
+            return 'invisible'
+        return state
+
 class SamplingWorkflowWidgetVisibility(object):
     """This will force the 'Sampler' and 'DateSampled' widget default to 'visible'.
     We must check the attribute saved on the sample, not the bika_setup value.
