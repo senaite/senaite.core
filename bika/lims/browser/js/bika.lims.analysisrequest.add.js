@@ -397,14 +397,6 @@ function AnalysisRequestAddView() {
 			$(e).attr("name", "ar."+column+"."+eid+"-listing");
 			$(e).attr("fieldName", "ar."+column+"."+eid);
 		}
-		//Adding a unique identification to the widget's add button.
-		elements = $("a.add_button_overlay");
-		for (i = elements.length - 1; i >= 0; i--) {
-			e = elements[i];
-			column = $($(e).parents("td")).attr("column");
-			var line = $(e).parents("div").attr("data-fieldname");
-			$(e).attr("id", "ar_"+column+"_"+ e.id);
-		}
 	}
 
 	// The columnar referencewidgets that we reconfigure use this as their
