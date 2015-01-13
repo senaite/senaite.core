@@ -1534,9 +1534,20 @@ function AnalysisRequestAddView() {
                         dataType: 'script',
                         async: false
                     });
-                }
-            }
-        };
+                },
+				onBeforeClose: function() {
+					// Fill the box with the recently created object
+					var name = $('#Firstname').val() + ' ' + $("#Surname").val();
+					if ($('#Firstname').val() == undefined) {
+						name = $('#title').val();
+					}
+					var overlay_trigger = $('div.overlay').overlay().getTrigger().attr("id");
+					var trigger_id = $("[rel='#" + overlay_trigger + "']").attr('id').replace('_addButtonOverlay','');
+					if (name.length > 1) {$('#' + trigger_id).val(name).focus();}
+					return true;
+				}
+			}
+		};
         return edit_overlay;
     }
 }

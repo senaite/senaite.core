@@ -145,12 +145,19 @@ class ReferenceWidget(StringWidget):
 
     def getAddButtonUrl(self):
         """
-        :return: URL of the window to display after click the widget's AddButton
+        :return: URL of the window to display after click the widget's AddButton.
         """
         src= self.portal_url()
         vis_dic = getattr(aq_base(self),'showAddButton')
         return src + vis_dic.get('addButtonUrl', '')
 
+    def getAddButtonJSControllers(self):
+        """
+        :return: Array with the controllers to be loaded for the layout.
+        """
+        src= self.portal_url()
+        vis_dic = getattr(aq_base(self),'showAddButton')
+        return vis_dic.get('addButtonJSControllers', '')
 
 registerWidget(ReferenceWidget, title='Reference Widget')
 

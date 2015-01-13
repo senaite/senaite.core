@@ -106,7 +106,8 @@
                    id="addButtonOverlay"
                    class="add_button_overlay"
                    tal:attributes="
-                           href widget/getAddButtonUrl"
+                           href widget/getAddButtonUrl;
+                           data_js_controllers widget/getAddButtonJSControllers"
                    rel="#overlay">
                     <img style="padding-bottom:1px;" src="++resource++bika.lims.images/add.png"/>
                 </a>
