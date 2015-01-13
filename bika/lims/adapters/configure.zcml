@@ -12,12 +12,19 @@
     />
 
     <adapter
+      factory=".widgetvisibility.ARHideDryMatter"
+      provides="bika.lims.interfaces.IATWidgetVisibility"
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="ARHideDryMatter"
+    />
+    
+    <adapter
       factory=".widgetvisibility.ARClientFieldWidgetVisibility"
       provides="bika.lims.interfaces.IATWidgetVisibility"
       for="bika.lims.interfaces.IAnalysisRequest"
       name="ARClientFieldWV"
     />
-    
+
     <adapter
       factory=".widgetvisibility.ClientBatchesFieldWidgetVisibility"
       provides="bika.lims.interfaces.IATWidgetVisibility"
