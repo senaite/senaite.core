@@ -87,15 +87,16 @@ General AR Add javascript tests
 ### Client-filter on elements must be respected.
     Go to                              ${client2_factory_url}
     wait until page contains           yyy
-		# Contact
-		# CCContact
-		# InvoiceContact
-		# SamplePoint
-		# Template
-		# Profile
-		# Specification
 
+Prices are hidden when Show Prices is disabled
+    Disable Prices
+    Go to                              ${client1_factory_url}
+    wait until page contains           xxx
 
+    page should not contain element    css=span.discount
+    page should not contain element    css=span.subtotal
+    page should not contain element    css=span.vat
+    page should not contain element    css=span.total
 
 BikaListing AR Add javascript tests
 
@@ -197,8 +198,6 @@ BikaListing AR Add javascript tests
     log   BikaListing when Sample is selected (secondary AR)     WARN
     log   BikaListing when copy_from is specified in request     WARN
 
-
-
 ### Submit and verify one with everything
 
 SingleService AR Add javascript tests
@@ -298,8 +297,6 @@ SingleService AR Add javascript tests
 
 ### Submit and verify one with everything
 
-
-
 *** Keywords ***
 
 Start browser
@@ -331,3 +328,10 @@ Enable bikalisting form
     click button                Save
     wait until page contains    saved.
 
+Disable Prices
+    go to                       ${PLONEURL}/bika_setup/edit
+    wait until page contains    Password lifetime
+    click link                  fieldsetlegend-accounting
+    unselect checkbox           css=#ShowPrices
+    click button                Save
+    wait until page contains    saved.
