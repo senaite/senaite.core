@@ -155,7 +155,6 @@ class ReferenceWidget(StringWidget):
         """
         :return: Array with the controllers to be loaded for the layout.
         """
-        src= self.portal_url()
         vis_dic = getattr(aq_base(self),'showAddButton')
         return vis_dic.get('addButtonJSControllers', '')
 

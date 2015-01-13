@@ -102,6 +102,7 @@
                                  combogrid_options python:widget.get_combogrid_options(context, fieldName)"
                  />
             <span tal:condition="widget/isAddButtonVisible">
+                <!-- Condition to add quick-add-button -->
                 <a style="border-bottom:none !important;margin-left:.5;"
                    id="addButtonOverlay"
                    class="add_button_overlay"

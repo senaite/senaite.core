@@ -1520,9 +1520,15 @@ function AnalysisRequestAddView() {
             formselector: 'form[id$="base-edit"]',
             closeselector: '[name="form.button.cancel"]',
             width: '70%',
-			noform:'close',
+            noform:'close',
             config: {
                 onLoad: function() {
+                    // Manually remove remarks
+                    this.getOverlay().find("#archetypes-fieldname-Remarks").remove();
+                    // Remove menstrual status widget to avoid my suicide
+                    // with a "500 service internal error"
+                    this.getOverlay().find("#archetypes-fieldname-MenstrualStatus").remove();
+
                     // Force to reload bika.lims.initalize method with the needed overlay's health controllers.
                     // This is done to work with specific js and widgets in the overlay.
                     if ($("a.add_button_overlay").attr("data_js_controllers")){
@@ -1535,19 +1541,24 @@ function AnalysisRequestAddView() {
                         async: false
                     });
                 },
-				onBeforeClose: function() {
-					// Fill the box with the recently created object
-					var name = $('#Firstname').val() + ' ' + $("#Surname").val();
-					if ($('#Firstname').val() == undefined) {
-						name = $('#title').val();
-					}
-					var overlay_trigger = $('div.overlay').overlay().getTrigger().attr("id");
-					var trigger_id = $("[rel='#" + overlay_trigger + "']").attr('id').replace('_addButtonOverlay','');
-					if (name.length > 1) {$('#' + trigger_id).val(name).focus();}
-					return true;
-				}
-			}
-		};
+                onBeforeClose: function() {
+                    // Fill the box with the recently created object
+                    var name = $('#Firstname').val() + ' ' + $("#Surname").val();
+                    if ($('#Firstname').val() == undefined) {
+                        name = $('#title').val();
+                    }
+                    var overlay_trigger = $('div.overlay').overlay().getTrigger().attr("id");
+                    var trigger_id = $("[rel='#" + overlay_trigger + "']").attr('id').replace('_addButtonOverlay','');
+                    if (name.length > 1) {
+                        $('#' + trigger_id).val(name).focus();
+                        setTimeout(function() {
+                            $('.cg-DivItem').first().click();
+                        }, 500);
+                    }
+                    setTimeout(function() {return true; 100;});
+                }
+            }
+        };
         return edit_overlay;
     }
 }
