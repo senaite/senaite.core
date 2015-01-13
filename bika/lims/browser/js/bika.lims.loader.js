@@ -159,6 +159,8 @@ window.bika.lims.controllers =  {
 
 
 
+var _bika_lims_loaded_js = new Array();
+
 /**
  * Initializes only the js controllers needed for the current view.
  * Initializes the JS objects from the controllers dictionary for which
@@ -166,19 +168,33 @@ window.bika.lims.controllers =  {
  * loaded in the same order as defined in the controllers dict.
  */
 window.bika.lims.initview = function() {
-    var loaded = new Array();
+    return window.bika.lims.loadControllers(false, []);
+};
+/**
+ * all is a bool variable used to load all the controllers.
+ * controllerKeys is an array which contains specific controllers' keys which aren't
+ * in the current view, but you want to be loaded anyway. To deal with overlay
+ * widgets, for example.
+ */
+window.bika.lims.loadControllers = function(all, controllerKeys) {
     var controllers = window.bika.lims.controllers;
+    var prev = _bika_lims_loaded_js.length;
+    if (controllerKeys.length){
+        controllerKeys = controllerKeys.split(",")
+    }
     for (var key in controllers) {
-        if ($(key).length) {
+        // Check if the key have value. Also check if this key exists in the controllerKeys' array
+        // Doing that, you can load non called variables in the web page
+        if ($(key).length || $.inArray(key, controllerKeys) >= 0) {
             controllers[key].forEach(function(js) {
-                if ($.inArray(js, loaded) < 0) {
+                if (all == true || $.inArray(key, controllerKeys) >= 0 || $.inArray(js, _bika_lims_loaded_js) < 0) {
                     console.debug('[bika.lims.loader] Loading '+js);
                     try {
                         obj = new window[js]();
                         obj.load();
                         // Register the object for further access
                         window.bika.lims[js]=obj;
-                        loaded.push(js);
+                        _bika_lims_loaded_js.push(js);
                     } catch (e) {
                        // statements to handle any exceptions
                        var msg = '[bika.lims.loader] Unable to load '+js+": "+ e.message +"\n"+e.stack;
@@ -189,7 +205,8 @@ window.bika.lims.initview = function() {
             });
         }
     }
-    return loaded.length;
+    return _bika_lims_loaded_js.length - prev;
+
 };
 
 window.bika.lims.initialized = false;
@@ -199,7 +216,6 @@ window.bika.lims.initialized = false;
 window.bika.lims.initialize = function() {
     return window.bika.lims.initview();
 };
-
 
 window.jarn.i18n.loadCatalog("bika");
 window.jarn.i18n.loadCatalog("plone");
