@@ -923,8 +923,6 @@ function AnalysisRequestAddByCol() {
 			}
 			_partition_indicators_set(arnum)
 
-			// prices_update(arnum)
-
 			d.resolve()
 		})
 		return d.promise()
@@ -1811,12 +1809,12 @@ function AnalysisRequestAddByCol() {
 		var discount_amount = 0.00
 		var vat = 0.00
 		var total = 0.00
-		var discount_pcnt = parseFloat($("#bika_setup").attr("MemberDiscount"))
+		var discount_pcnt = parseFloat($("#bika_setup").attr("MemberDiscount"), 10)
 		var checked = $("tr[uid] td[class*='ar\\." + arnum + "'] input[type='checkbox']:checked")
 		for (var i = 0; i < checked.length; i++) {
 			var cb = checked[i]
-			var form_price = $(cb).parents("[price]").attr("price")
-			var vatamount = $(cb).parents("[vatamount]").attr("vatamount")
+			var form_price = parseFloat($(cb).parents("[price]").attr("price"), 10)
+			var vatamount = parseFloat($(cb).parents("[vatamount]").attr("vatamount"), 10)
 			if ($(cb).prop("checked") && !$(cb).prop("disabled")) {
 				if (discount_pcnt) {
 					price = form_price - ((form_price / 100) * discount_pcnt)
@@ -1987,6 +1985,7 @@ function AnalysisRequestAddByCol() {
 							window.location.replace(destination + q)
 						}
 						else {
+							var destination = window.location.href.split("/portal_factory")[0]
 							window.bika.lims.portalMessage(_("Unspecified form error"))
 							console.log(data)
 							var destination = window.location.href.split("/portal_factory")[0]
