@@ -104,9 +104,9 @@
             <span tal:condition="widget/isAddButtonVisible">
                 <!-- Condition to add quick-add-button -->
                 <a style="border-bottom:none !important;margin-left:.5;"
-                   id="addButtonOverlay"
                    class="add_button_overlay"
                    tal:attributes="
+                           id python:fieldName+'_addButtonOverlay';
                            href widget/getAddButtonUrl;
                            data_js_controllers widget/getAddButtonJSControllers"
                    rel="#overlay">

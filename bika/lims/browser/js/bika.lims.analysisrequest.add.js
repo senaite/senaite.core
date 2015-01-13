@@ -55,8 +55,6 @@ function AnalysisRequestAddView() {
 				$.ajaxSetup({async: true});
 			}
 		}
-		//It loads a overlay window when the add button is clicked.
-		loadAddButtonOveray();
 	}
 
 
@@ -405,7 +403,7 @@ function AnalysisRequestAddView() {
 			e = elements[i];
 			column = $($(e).parents("td")).attr("column");
 			var line = $(e).parents("div").attr("data-fieldname");
-			$(e).attr("id", "ar_"+column+"_"+line+ "_"+ e.id);
+			$(e).attr("id", "ar_"+column+"_"+ e.id);
 		}
 	}
 
