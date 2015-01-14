@@ -111,8 +111,6 @@
                                data_fieldid fieldName;
                                data_fieldname fieldName;
                                data_overlay_handler options/overlay_handler;
-                               data_onload_jshelper options/overlay_onLoadJSHelper;
-                               data_onbeforeclose_jshelper options/overlay_onBeforeCloseJSHelper;
                                data_returnfields options/return_fields;
                                data_jscontrollers options/js_controllers;
                                data_overlay options/overlay_options">

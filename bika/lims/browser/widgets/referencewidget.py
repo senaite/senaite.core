@@ -58,8 +58,6 @@ class ReferenceWidget(StringWidget):
             'url': '',
             'js_controllers': [],
             'return_fields': [],
-            'overlay_onLoadJSHelper': '',
-            'overlay_onBeforeCloseJSHelper': '',
             'overlay_options': {},
         },
     })
@@ -137,8 +135,6 @@ class ReferenceWidget(StringWidget):
             'visible': self.add_button.get('visible', False),
             'url': self.add_button.get('url'),
             'return_fields': json.dumps(self.add_button.get('return_fields')),
-            'overlay_onLoadJSHelper': self.add_button.get('overlay_onLoadJSHelper', ''),
-            'overlay_onBeforeCloseJSHelper': self.add_button.get('overlay_onBeforeCloseJSHelper',''),
             'js_controllers': json.dumps(self.add_button.get('js_controllers',[])),
             'overlay_handler': self.add_button.get('overlay_handler', ''),
             'overlay_options': json.dumps(self.add_button.get('overlay_options',{
