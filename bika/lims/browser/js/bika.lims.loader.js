@@ -179,9 +179,6 @@ window.bika.lims.initview = function() {
 window.bika.lims.loadControllers = function(all, controllerKeys) {
     var controllers = window.bika.lims.controllers;
     var prev = _bika_lims_loaded_js.length;
-    if (controllerKeys.length){
-        controllerKeys = controllerKeys.split(",")
-    }
     for (var key in controllers) {
         // Check if the key have value. Also check if this key exists in the controllerKeys' array
         // Doing that, you can load non called variables in the web page

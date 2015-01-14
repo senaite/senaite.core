@@ -53,8 +53,23 @@ class ReferenceWidget(StringWidget):
         'sidx': 'Title',
         'force_all': True,
         'portal_types': {},
-        'showAddButton': False,
-
+        'add_button': {
+            'visible': False,
+            'url': '',
+            'js_controllers': [],
+            'return_fields': [],
+            'overlay_onLoadJSHelper': '',
+            'overlay_onBeforeCloseJSHelper': '',
+            'overlay_options': {
+                'filter': 'head>*,#content>*:not(div.configlet),dl.portalMessage.error,dl.portalMessage.info',
+                'formselector': 'form[id$="base-edit"]',
+                'closeselector': '[name="form.button.cancel"]',
+                'width': '70%',
+                'noform': 'close',
+                'onLoadJSHelper': '',
+                'onCloseJSHelper': '',
+            },
+        },
     })
     security = ClassSecurityInfo()
 
@@ -125,38 +140,16 @@ class ReferenceWidget(StringWidget):
             ret = value.UID() if value else value
         return ret
 
-    def isAddButtonVisible(self):
-        """
-        :return: if the Add image will be shown depending on the shownAddButton field from the schema.
-        """
-        # mode always will be edit, because the function is called from a edit template.
-        mode = 'edit'
-        # Get the default state value
-        state = self.showAddButton
-        # Get the visualisation-mode dic
-        vis_dic = getattr(aq_base(self),'showAddButton')
-        if type(vis_dic) is DictType:
-            state = vis_dic.get(mode, state)
-        elif not vis_dic:
-            state = 'invisible'
-        elif vis_dic < 0:
-            state = 'hidden'
-        return state == 'visible'
-
-    def getAddButtonUrl(self):
-        """
-        :return: URL of the window to display after click the widget's AddButton.
-        """
-        src= self.portal_url()
-        vis_dic = getattr(aq_base(self),'showAddButton')
-        return src + vis_dic.get('addButtonUrl', '')
-
-    def getAddButtonJSControllers(self):
-        """
-        :return: Array with the controllers to be loaded for the layout.
-        """
-        vis_dic = getattr(aq_base(self),'showAddButton')
-        return vis_dic.get('addButtonJSControllers', '')
+    def get_addbutton_options(self):
+        return {
+            'visible': self.add_button.get('visible', False),
+            'url': self.add_button.get('url'),
+            'return_fields': json.dumps(self.add_button.get('return_fields')),
+            'overlay_onLoadJSHelper': self.add_button.get('overlay_onLoadJSHelper', ''),
+            'overlay_onBeforeCloseJSHelper': self.add_button.get('overlay_onBeforeCloseJSHelper',''),
+            'js_controllers': json.dumps(self.add_button.get('js_controllers',[])),
+            'overlay_options': json.dumps(self.add_button.get('overlay_options',{}))
+            }
 
 registerWidget(ReferenceWidget, title='Reference Widget')
 

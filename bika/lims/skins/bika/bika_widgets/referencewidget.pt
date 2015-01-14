@@ -39,7 +39,7 @@
                       class="deletebtn"
                       tal:attributes="
                         src string:${portal/absolute_url}/++resource++bika.lims.images/delete.png;
-                      	fieldName fieldName;
+                        fieldName fieldName;
                         uid value/UID"/>
                     <span tal:replace="python:str(value.Title())"/>
                   </div>
@@ -101,18 +101,22 @@
                                  ui_item widget/ui_item;
                                  combogrid_options python:widget.get_combogrid_options(context, fieldName)"
                  />
-            <span tal:condition="widget/isAddButtonVisible">
-                <!-- Condition to add quick-add-button -->
-                <a style="border-bottom:none !important;margin-left:.5;"
-                   class="add_button_overlay"
-                   tal:attributes="
-                           id python:fieldName+'_addButtonOverlay';
-                           href widget/getAddButtonUrl;
-                           data_js_controllers widget/getAddButtonJSControllers"
-                   rel="#overlay">
-                    <img style="padding-bottom:1px;" src="++resource++bika.lims.images/add.png"/>
-                </a>
-            </span>
+            <a rel='#overlay'
+               class='add-button referencewidget-add-button',
+               tal:define="options python:widget.get_addbutton_options()"
+               tal:condition="options/visible"
+               tal:attributes="name python:fieldName+'_addbutton';
+                               id   python:fieldName+'_addbutton';
+                               href string:${portal/absolute_url}/${options/url};
+                               data_fieldid fieldName;
+                               data_fieldname fieldName;
+                               data_onload_jshelper options/overlay_onLoadJSHelper;
+                               data_onbeforeclose_jshelper options/overlay_onBeforeCloseJSHelper;
+                               data_returnfields options/return_fields;
+                               data_jscontrollers options/js_controllers;
+                               data_overlay options/overlay_options">
+                    <span class='notext' i18n:translate="">Add</span>
+            </a>
           <input
                  type="hidden"
                  name=""

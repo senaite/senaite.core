@@ -24,7 +24,7 @@ $(document).ready(function(){
     });
     save_UID_check();
     check_UID_check();
-    loadAddButtonOveray();
+    load_addbutton_overlays();
 });
 
 }(jQuery));
@@ -170,61 +170,69 @@ function check_UID_check(){
     });
 }
 
-function loadAddButtonOveray() {
+function load_addbutton_overlays() {
     /**
      * Add the overlay conditions for the AddButton.
      */
-    $("a.add_button_overlay").prepOverlay(getOverlayConf());
-}
+    $('a.referencewidget-add-button').each(function(i) {
+        var options = $.parseJSON($(this).attr('data_overlay'));
+        options['subtype'] = 'ajax';
+        config = {};
 
-function getOverlayConf() {
-    /**
-     * Define the overlay configuration parameters.
-     */
-    edit_overlay = {
-        subtype: 'ajax',
-        filter: 'head>*,#content>*:not(div.configlet),dl.portalMessage.error,dl.portalMessage.info',
-        formselector: 'form[id$="base-edit"]',
-        closeselector: '[name="form.button.cancel"]',
-        width: '70%',
-        noform:'close',
-        config: {
-            onLoad: function() {
-                // Manually remove remarks
-                this.getOverlay().find("#archetypes-fieldname-Remarks").remove();
-                // Remove menstrual status widget to avoid my suicide
-                // with a "500 service internal error"
-                this.getOverlay().find("#archetypes-fieldname-MenstrualStatus").remove();
-
-                // Force to reload bika.lims.initalize method with the needed overlay's health controllers.
-                // This is done to work with specific js and widgets in the overlay.
-                if ($("a.add_button_overlay").attr("data_js_controllers")){
-                    window.bika.lims.loadControllers(false,$("a.add_button_overlay").attr("data_js_controllers"));
-                }
-                // Address widget
+        // overlay.OnLoad javascript snippet
+        config['onLoad'] = function() {
+            var triggerid = "[rel='#"+this.getTrigger().attr('id')+"']";
+            var jscontrollers = $(triggerid).attr('data_jscontrollers');
+            jscontrollers = $.parseJSON(jscontrollers);
+            if (jscontrollers.length > 0) {
+                window.bika.lims.loadControllers(false, jscontrollers);
+            }
+            var jshelper = $(triggerid).attr('data_onload_jshelper');
+            if (jshelper != '') {
+                console.debug("[Overlay] Loading "+jshelper);
                 $.ajax({
-                    url: 'bika_widgets/addresswidget.js',
+                    url: portal_url + '/' + jshelper,
                     dataType: 'script',
                     async: false
                 });
-            },
-            onBeforeClose: function() {
-                // Fill the box with the recently created object
-                var name = $('#Firstname').val() + ' ' + $("#Surname").val();
-                if ($('#Firstname').val() == undefined) {
-                    name = $('#title').val();
-                }
-                var overlay_trigger = $('div.overlay').overlay().getTrigger().attr("id");
-                var trigger_id = $("[rel='#" + overlay_trigger + "']").attr('id').replace('_addButtonOverlay','');
-                if (name.length > 1) {
-                    $('#' + trigger_id).val(name).focus();
+            }
+        }
+
+        // overlay.OnBeforeClose javascript snippet
+        config['onBeforeClose'] = function() {
+            var triggerid = "[rel='#"+this.getTrigger().attr('id')+"']";
+            var jshelper = $(triggerid).attr('data_onbeforeclose_jshelper');
+            if (jshelper != '') {
+                console.debug("[Overlay] Loading "+jshelper);
+                $.ajax({
+                    url: portal_url + '/' + jshelper,
+                    dataType: 'script',
+                    async: false
+                });
+            } else {
+                var retfields = $.parseJSON($(triggerid).attr('data_returnfields'));
+                if (retfields.length > 0) {
+                    // Default behaviour.
+                    // Set the value from the returnfields to the input
+                    // and select the first option.
+                    // This might be improved by finding a way to get the
+                    // uid of the object created/edited and assign directly
+                    // the value to the underlaying referencewidget
+                    var retvals = [];
+                    $.each(retfields, function(index, value){
+                        retvals.push($('div.overlay #'+value).val());
+                    });
+                    retvals = retvals.join(' ');
+                    $(triggerid).prev('input').val(retvals).focus();
                     setTimeout(function() {
                         $('.cg-DivItem').first().click();
                     }, 500);
                 }
-                setTimeout(function() {return true; 100;});
             }
+            return true;
         }
-    };
-    return edit_overlay;
+        options['config'] = config;
+        $(this).prepOverlay(options);
+
+    });
 }
