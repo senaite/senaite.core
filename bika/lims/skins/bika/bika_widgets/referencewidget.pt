@@ -110,6 +110,7 @@
                                href string:${portal/absolute_url}/${options/url};
                                data_fieldid fieldName;
                                data_fieldname fieldName;
+                               data_overlay_handler options/overlay_handler;
                                data_onload_jshelper options/overlay_onLoadJSHelper;
                                data_onbeforeclose_jshelper options/overlay_onBeforeCloseJSHelper;
                                data_returnfields options/return_fields;

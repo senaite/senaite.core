@@ -187,7 +187,7 @@ function load_addbutton_overlays() {
             if (jscontrollers.length > 0) {
                 window.bika.lims.loadControllers(false, jscontrollers);
             }
-            var jshelper = $(triggerid).attr('data_onload_jshelper');
+            /*var jshelper = $(triggerid).attr('data_onload_jshelper');
             if (jshelper != '') {
                 console.debug("[Overlay] Loading "+jshelper);
                 $.ajax({
@@ -195,6 +195,16 @@ function load_addbutton_overlays() {
                     dataType: 'script',
                     async: false
                 });
+            }*/
+            var handler = $(triggerid).attr('data_overlay_handler');
+            if (handler != '') {
+                var fn = window[handler];
+                if (typeof fn === "function") {
+                    obj = obj();
+                    if (typeof obj.onLoad === "function") {
+                        obj.onLoad.apply(this);
+                    }
+                }
             }
         }
 

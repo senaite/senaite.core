@@ -140,6 +140,7 @@ class ReferenceWidget(StringWidget):
             'overlay_onLoadJSHelper': self.add_button.get('overlay_onLoadJSHelper', ''),
             'overlay_onBeforeCloseJSHelper': self.add_button.get('overlay_onBeforeCloseJSHelper',''),
             'js_controllers': json.dumps(self.add_button.get('js_controllers',[])),
+            'overlay_handler': self.add_button.get('overlay_handler', ''),
             'overlay_options': json.dumps(self.add_button.get('overlay_options',{
                 'filter': 'head>*,#content>*:not(div.configlet),dl.portalMessage.error,dl.portalMessage.info',
                 'formselector': 'form[id$="base-edit"]',
