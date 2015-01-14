@@ -60,15 +60,7 @@ class ReferenceWidget(StringWidget):
             'return_fields': [],
             'overlay_onLoadJSHelper': '',
             'overlay_onBeforeCloseJSHelper': '',
-            'overlay_options': {
-                'filter': 'head>*,#content>*:not(div.configlet),dl.portalMessage.error,dl.portalMessage.info',
-                'formselector': 'form[id$="base-edit"]',
-                'closeselector': '[name="form.button.cancel"]',
-                'width': '70%',
-                'noform': 'close',
-                'onLoadJSHelper': '',
-                'onCloseJSHelper': '',
-            },
+            'overlay_options': {},
         },
     })
     security = ClassSecurityInfo()
@@ -148,7 +140,12 @@ class ReferenceWidget(StringWidget):
             'overlay_onLoadJSHelper': self.add_button.get('overlay_onLoadJSHelper', ''),
             'overlay_onBeforeCloseJSHelper': self.add_button.get('overlay_onBeforeCloseJSHelper',''),
             'js_controllers': json.dumps(self.add_button.get('js_controllers',[])),
-            'overlay_options': json.dumps(self.add_button.get('overlay_options',{}))
+            'overlay_options': json.dumps(self.add_button.get('overlay_options',{
+                'filter': 'head>*,#content>*:not(div.configlet),dl.portalMessage.error,dl.portalMessage.info',
+                'formselector': 'form[id$="base-edit"]',
+                'closeselector': '[name="form.button.cancel"]',
+                'width': '70%',
+                'noform': 'close',}))
             }
 
 registerWidget(ReferenceWidget, title='Reference Widget')
