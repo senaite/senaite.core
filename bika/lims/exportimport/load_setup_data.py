@@ -70,7 +70,16 @@ class LoadSetupData(BrowserView):
                 path = 'setupdata/%s/%s.xlsx' % \
                     (self.dataset_name, self.dataset_name)
                 filename = resource_filename(self.dataset_project, path)
-                workbook = load_workbook(filename=filename)  # , use_iterators=True)
+                try:
+                    workbook = load_workbook(filename=filename)  # , use_iterators=True)
+                except AttributeError:
+                    import sys, traceback
+
+                    print "AttributeError:", sys.exc_info()[1]
+                    print "Unreachable object. Maybe the object comes from an Add-on"
+                    print traceback.format_exc()
+                    import pdb;pdb.set_trace()
+
         elif 'setupfile' in form and 'file' in form and form['file'] and 'projectname' in form and form['projectname']:
                 self.dataset_project = form['projectname']
                 tmp = tempfile.mktemp()
