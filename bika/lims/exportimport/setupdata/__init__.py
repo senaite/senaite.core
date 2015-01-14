@@ -1536,8 +1536,8 @@ class Setup(WorksheetImporter):
             AnalysisAttachmentOption=values[
                 'AnalysisAttachmentOption'][0].lower(),
             DefaultSampleLifetime=DSL,
-            AutoPrintStickers=values['AutoPrintStickers'].lower(),
-            AutoStickerTemplate=values['AutoStickerTemplate'].lower(),
+            AutoPrintStickers=values.get('AutoPrintStickers','receive').lower(),
+            AutoStickerTemplate=values.get('AutoStickerTemplate', 'bika.lims:sticker_small.pt').lower(),
             YearInPrefix=self.to_bool(values['YearInPrefix']),
             SampleIDPadding=int(values['SampleIDPadding']),
             ARIDPadding=int(values['ARIDPadding']),

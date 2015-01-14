@@ -24,6 +24,7 @@ $(document).ready(function(){
     });
     save_UID_check();
     check_UID_check();
+    load_addbutton_overlays();
 });
 
 }(jQuery));
@@ -166,5 +167,78 @@ function check_UID_check(){
             $(this).attr('uid',chk);
             $(this).attr('value',val_chk);
         }
+    });
+}
+
+function load_addbutton_overlays() {
+    /**
+     * Add the overlay conditions for the AddButton.
+     */
+    $('a.referencewidget-add-button').each(function(i) {
+        var options = $.parseJSON($(this).attr('data_overlay'));
+        options['subtype'] = 'ajax';
+        config = {};
+
+        // overlay.OnLoad javascript snippet
+        config['onLoad'] = function() {
+            var triggerid = "[rel='#"+this.getTrigger().attr('id')+"']";
+            var jscontrollers = $(triggerid).attr('data_jscontrollers');
+            jscontrollers = $.parseJSON(jscontrollers);
+            if (jscontrollers.length > 0) {
+                window.bika.lims.loadControllers(false, jscontrollers);
+            }
+            var handler = $(triggerid).attr('data_overlay_handler');
+            if (handler != '') {
+                var fn = window[handler];
+                if (typeof fn === "function") {
+                    handler = new fn();
+                    if (typeof handler.onLoad === "function") {
+                        handler.onLoad(this);
+                    }
+                }
+            }
+        }
+
+        // overlay.OnBeforeClose javascript snippet
+        config['onBeforeClose'] = function() {
+            var triggerid = "[rel='#"+this.getTrigger().attr('id')+"']";
+            var handler = $(triggerid).attr('data_overlay_handler');
+            if (handler != '') {
+                var fn = window[handler];
+                if (typeof fn === "function") {
+                    handler = new fn();
+                    if (typeof handler.onBeforeClose === "function") {
+                        handler.onBeforeClose(this);
+                        // Done, exit
+                        return true;
+                    }
+                }
+            }
+            var retfields = $.parseJSON($(triggerid).attr('data_returnfields'));
+            if (retfields.length > 0) {
+                // Default behaviour.
+                // Set the value from the returnfields to the input
+                // and select the first option.
+                // This might be improved by finding a way to get the
+                // uid of the object created/edited and assign directly
+                // the value to the underlaying referencewidget
+                var retvals = [];
+                $.each(retfields, function(index, value){
+                    var retval = $('div.overlay #'+value).val();
+                    if (retval != '') { retvals.push(retval); }
+                });
+                if (retvals.length > 0) {
+                    retvals = retvals.join(' ');
+                    $(triggerid).prev('input').val(retvals).focus();
+                    setTimeout(function() {
+                        $('.cg-DivItem').first().click();
+                    }, 500);
+                }
+            }
+            return true;
+        }
+        options['config'] = config;
+        $(this).prepOverlay(options);
+
     });
 }

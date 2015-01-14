@@ -7,6 +7,8 @@ from bika.lims.permissions import *
 from bika.lims.utils import to_unicode as _u
 from bika.lims.utils import to_utf8 as _c
 from bika.lims import logger
+from Acquisition import aq_base
+from types import DictType
 from operator import itemgetter
 from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import StringWidget
@@ -50,8 +52,14 @@ class ReferenceWidget(StringWidget):
         'sord': 'asc',
         'sidx': 'Title',
         'force_all': True,
-        'portal_types': {}
-
+        'portal_types': {},
+        'add_button': {
+            'visible': False,
+            'url': '',
+            'js_controllers': [],
+            'return_fields': [],
+            'overlay_options': {},
+        },
     })
     security = ClassSecurityInfo()
 
@@ -121,6 +129,21 @@ class ReferenceWidget(StringWidget):
         else:
             ret = value.UID() if value else value
         return ret
+
+    def get_addbutton_options(self):
+        return {
+            'visible': self.add_button.get('visible', False),
+            'url': self.add_button.get('url'),
+            'return_fields': json.dumps(self.add_button.get('return_fields')),
+            'js_controllers': json.dumps(self.add_button.get('js_controllers',[])),
+            'overlay_handler': self.add_button.get('overlay_handler', ''),
+            'overlay_options': json.dumps(self.add_button.get('overlay_options',{
+                'filter': 'head>*,#content>*:not(div.configlet),dl.portalMessage.error,dl.portalMessage.info',
+                'formselector': 'form[id$="base-edit"]',
+                'closeselector': '[name="form.button.cancel"]',
+                'width': '70%',
+                'noform': 'close',}))
+            }
 
 registerWidget(ReferenceWidget, title='Reference Widget')
 
