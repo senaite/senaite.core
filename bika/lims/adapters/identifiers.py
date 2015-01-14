@@ -19,6 +19,19 @@ from zope.interface import implements
 
 
 @indexer(IHaveIdentifiers, IBikaCatalog)
+def IdentifiersIndexer(instance):
+    """Return a list of unique Identifier strings
+    This populates the Identifiers ZCFullText index, but with some
+    replacements to prevent the word-splitter etc from taking effect.
+    """
+    identifiers = instance.Schema()['Identifiers'].get(instance)
+    ret = []
+    for identifier in [safe_unicode(i['Identifier']) for i in identifiers]:
+        clean_identifier = re.sub('\W', '_', identifier).lower()
+        if clean_identifier not in ret:
+            ret.append(clean_identifier)
+    return " ".join(ret)
+
 @indexer(IHaveIdentifiers, IBikaSetupCatalog)
 def IdentifiersIndexer(instance):
     """Return a list of unique Identifier strings
