@@ -107,7 +107,7 @@
                tal:condition="options/visible"
                tal:attributes="name python:fieldName+'_addbutton';
                                id   python:fieldName+'_addbutton';
-                               href string:${portal/absolute_url}/${options/url};
+                               href string:${portal/absolute_url} + '/' + ${options/url};
                                data_fieldid fieldName;
                                data_fieldname fieldName;
                                data_overlay_handler options/overlay_handler;
