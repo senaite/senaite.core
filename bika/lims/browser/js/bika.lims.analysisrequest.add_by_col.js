@@ -314,6 +314,10 @@ function AnalysisRequestAddByCol() {
 		  .live('change copy', function () {
 					checkbox_change_handler(this)
 				})
+		  .each(function (i, e) {
+					// trigger copy on form load
+					$(e).trigger('copy')
+				})
 	}
 
 	function referencewidget_change_handler(element, item) {
@@ -351,6 +355,10 @@ function AnalysisRequestAddByCol() {
 		  .live('change copy', function (event, item) {
 					select_element_change_handler(this)
 				})
+		  .each(function (i, e) {
+					// trigger copy on form load
+					$(e).trigger('copy')
+				})
 	}
 
 	function textinput_change_handler(element) {
@@ -368,6 +376,12 @@ function AnalysisRequestAddByCol() {
 		  .not(".referencewidget")
 		  .live('change copy', function () {
 					textinput_change_handler(this)
+				})
+		  .each(function (i, e) {
+					if ($(e).val()) {
+						// trigger copy on form load
+						$(e).trigger('copy')
+					}
 				})
 	}
 
@@ -469,6 +483,12 @@ function AnalysisRequestAddByCol() {
 					var arnum = get_arnum(this)
 					filter_by_client(arnum)
 				})
+		  .each(function (i, e) {
+					if ($(e).val()) {
+						// trigger copy on form load
+						$(e).trigger('copy')
+					}
+				})
 	}
 
 	function contact_selected() {
@@ -479,6 +499,8 @@ function AnalysisRequestAddByCol() {
 					var arnum = get_arnum(this)
 					cc_contacts_set(arnum)
 				})
+		// We do not trigger copy event on load for Contact because doing so would
+		// clear any default value supplied for the CCContact field.
 	}
 
 	function cc_contacts_set(arnum) {
@@ -547,6 +569,12 @@ function AnalysisRequestAddByCol() {
 				function (event, item) {
 					var arnum = $(this).parents('td').attr('arnum')
 					specification_refetch(arnum)
+				})
+		  .each(function (i, e) {
+					if ($(e).val()) {
+						// trigger copy on form load
+						$(e).trigger('copy')
+					}
 				})
 	}
 
@@ -735,6 +763,12 @@ function AnalysisRequestAddByCol() {
 					var arnum = get_arnum(this)
 					samplepoint_set(arnum)
 				})
+		  .each(function (i, e) {
+					if ($(e).val()) {
+						// trigger copy on form load
+						$(e).trigger('copy')
+					}
+				})
 	}
 
 	function samplepoint_set(arnum) {
@@ -752,6 +786,12 @@ function AnalysisRequestAddByCol() {
 		  .live('selected copy', function (event, item) {
 					var arnum = get_arnum(this)
 					sampletype_set(arnum)
+				})
+		  .each(function (i, e) {
+					if ($(e).val()) {
+						// trigger copy on form load
+						$(e).trigger('copy')
+					}
 				})
 	}
 
@@ -781,6 +821,12 @@ function AnalysisRequestAddByCol() {
 								specification_apply()
 								partition_indicators_set(arnum)
 							})
+				})
+		  .each(function (i, e) {
+					if ($(e).val()) {
+						// trigger copy on form load
+						$(e).trigger('copy')
+					}
 				})
 	}
 
@@ -822,6 +868,12 @@ function AnalysisRequestAddByCol() {
 		  .live('selected copy', function (event, item) {
 					var arnum = $(this).parents('td').attr('arnum')
 					template_set(arnum)
+				})
+		  .each(function (i, e) {
+					if ($(e).val()) {
+						// trigger copy on form load
+						$(e).trigger('copy')
+					}
 				})
 	}
 
@@ -938,6 +990,10 @@ function AnalysisRequestAddByCol() {
 						drymatter_unset(arnum)
 					}
 				})
+		  .each(function (i, e) {
+					// trigger copy on form load
+					$(e).trigger('copy')
+				})
 	}
 
 	function drymatter_set(arnum) {
@@ -1004,6 +1060,12 @@ function AnalysisRequestAddByCol() {
 		  .live('selected copy', function (event, item) {
 					var arnum = get_arnum(this)
 					sample_set(arnum)
+				})
+		  .each(function (i, e) {
+					if ($(e).val()) {
+						// trigger copy on form load
+						$(e).trigger('copy')
+					}
 				})
 		$("tr[fieldname='Sample'] td[arnum] input[type='text']")
 		  .live('blur', function (event, item) {
