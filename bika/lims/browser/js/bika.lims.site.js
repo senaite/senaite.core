@@ -464,6 +464,12 @@ function SiteView() {
                 if (counter > 0) {
                     spinner.show('fast');
                 }
+                // maximum spinner timeout
+                setTimeout(function(){
+                    clearTimeout(timer);
+                    spinner.stop();
+                    spinner.hide();
+                }, 20000);
             }, 500);
         });
         function stop_spinner(){
