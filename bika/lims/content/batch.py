@@ -337,28 +337,6 @@ Specification = ReferenceField(
         showOn=True,
     ),
 )
-Template = ReferenceField(
-    'Template',
-    schemata = "AnalysisRequest and Sample Fields",
-    allowed_types=('ARTemplate',),
-    referenceClass=HoldingReference,
-    relationship='BatchARTemplate',
-    mode="rw",
-    read_permission=permissions.View,
-    write_permission=permissions.ModifyPortalContent,
-    widget=ReferenceWidget(
-        label=_("Template"),
-        description=_("AR Template applied - to auto select analyses, sample "
-                      "points and partitions"),
-        size=20,
-        visible={'edit': 'visible',
-                 'view': 'visible',
-                 },
-        catalog_name='bika_setup_catalog',
-        base_query={'inactive_state': 'active'},
-        showOn=True,
-    ),
-)
 Profile = ReferenceField(
     'Profile',
     schemata = "AnalysisRequest and Sample Fields",
@@ -796,7 +774,6 @@ schema = BikaFolderSchema.copy() + Schema((
     ClientReference,
     Methods,
     Instruments,
-    Template,
     Profile,
     SampleType,
     SampleMatrix,
