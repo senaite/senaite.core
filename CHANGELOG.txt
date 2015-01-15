@@ -1,6 +1,7 @@
 3.1.7 (unreleased)
 -----
 LIMS-1527: CC Contact on AR view (edit) offers all contacts in system
+LIMS-1536: Add button [Add], to alow quickly addings in referencewidget
 LIMS-1587: Custom sample labels
 LIMS-1517: Storage field tag untranslated?
 LIMS-1518: Storage Location table

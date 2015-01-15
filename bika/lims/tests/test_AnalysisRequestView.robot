@@ -17,16 +17,18 @@ Test CCContacts dropdown filter by client
     ...  is filtred by client.
     ${ARId}=  Simple AR Creation  Happy Hills  Rita  Barley  Metals  Calcium
     # Create a contact in an other client.
-    Create a contact  Klaymore  Von Moist  LipWig
+    Create a contact  Klaymore  Moist Von  LipWig
     # Check if you can select a Contact from another client.
     Go to             ${PLONEURL}/clients/client-1/analysisrequests
     click link        ${ARId}
     focus   CCContact
+    page should not contain  Moist Von
+    page should contain  Seemonster
 
 
 *** Keywords ***
 Start browser
-    Open browser                        ${PLONEURL}/login_form  chrome
+    Open browser                        ${PLONEURL}/login_form
     Log in                              test_labmanager         test_labmanager
     Wait until page contains            You are now logged in
     Set selenium speed                  ${SELENIUM_SPEED}

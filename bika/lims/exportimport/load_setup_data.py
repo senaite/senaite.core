@@ -6,6 +6,7 @@ from bika.lims.interfaces import ISetupDataImporter
 from openpyxl import load_workbook
 from pkg_resources import resource_filename
 from zope.component import getAdapters
+import traceback
 
 import tempfile
 import transaction
@@ -73,12 +74,9 @@ class LoadSetupData(BrowserView):
                 try:
                     workbook = load_workbook(filename=filename)  # , use_iterators=True)
                 except AttributeError:
-                    import sys, traceback
-
-                    print "AttributeError:", sys.exc_info()[1]
-                    print "Unreachable object. Maybe the object comes from an Add-on"
+                    print ""
                     print traceback.format_exc()
-                    import pdb;pdb.set_trace()
+                    print "Error while loading ", path
 
         elif 'setupfile' in form and 'file' in form and form['file'] and 'projectname' in form and form['projectname']:
                 self.dataset_project = form['projectname']
