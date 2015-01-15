@@ -808,7 +808,8 @@ class Batch(ATFolder):
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
-        self.Schema().getField('title').set(self, self.id)
+        if not self.title:
+            self.Schema().getField('title').set(self, self.id)
 
     def Title(self):
         """ Return the Batch ID if title is not defined """
