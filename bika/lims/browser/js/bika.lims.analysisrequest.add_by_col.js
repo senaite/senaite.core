@@ -96,8 +96,6 @@ function AnalysisRequestAddByCol() {
 		// All Archetypes generated elements are given an ID <fieldname>, and
 		// this means there are duplicated IDs in the form.  I will change
 		// their IDs to <fieldname>_<arnum> to prevent this.
-		// This loop is also used to blank all input elements when the page
-		// is reloaded.
 		$.each($("[id^='archetypes-fieldname']"), function (i, div) {
 			var arnum = $(div).parents("[arnum]").attr("arnum")
 			var fieldname = $(div).parents("[fieldname]").attr("fieldname")
@@ -107,14 +105,11 @@ function AnalysisRequestAddByCol() {
 				e = $(div).find('select')[0]
 				$(e).attr('id', fieldname + '-' + arnum)
 				$(e).attr('name', fieldname + '-' + arnum)
-				$(e).val('')
 			}
 			if ($(div).hasClass('ArchetypesReferenceWidget')) {
 				e = $(div).find('[type="text"]')[0]
 				$(e).attr('id', $(e).attr('id') + '-' + arnum)
 				$(e).attr('name', $(e).attr('name') + '-' + arnum)
-				$(e).val('')
-				$(e).attr('uid', '')
 				e = $(div).find('[id$="_uid"]')[0]
 				$(e).attr('id', fieldname + '-' + arnum + '_uid')
 				$(e).attr('name', fieldname + '-' + arnum + '_uid')
@@ -122,14 +117,12 @@ function AnalysisRequestAddByCol() {
 				if (e.length > 0) {
 					$(e).attr('id', fieldname + '-' + arnum + '-listing')
 				}
-				$(e).val('')
 			}
 			if ($(div).hasClass('ArchetypesStringWidget')
 			  || $(div).hasClass('ArchetypesDateTimeWidget')) {
 				e = $(div).find('[type="text"]')[0]
 				$(e).attr('id', $(e).attr('id') + '-' + arnum)
 				$(e).attr('name', $(e).attr('name') + '-' + arnum)
-				$(e).val('')
 			}
 			if ($(div).hasClass('ArchetypesBooleanWidget')) {
 				e = $(div).find('[type="checkbox"]')[0]
@@ -137,7 +130,6 @@ function AnalysisRequestAddByCol() {
 				$(e).attr('name', $(e).attr('name') + '-' + arnum + ':boolean')
 				e = $(div).find('[type="hidden"]')[0]
 				$(e).attr('name', $(e).attr('name') + '-' + arnum + ':boolean:default')
-				$(e).removeAttr('checked')
 			}
 			// then change the ID of the containing div itself
 			$(div).attr('id', 'archetypes-fieldname-' + fieldname + '-' + arnum)
