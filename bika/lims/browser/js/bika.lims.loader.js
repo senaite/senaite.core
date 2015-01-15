@@ -171,17 +171,20 @@ window.bika.lims.initview = function() {
     return window.bika.lims.loadControllers(false, []);
 };
 /**
- * all is a bool variable used to load all the controllers.
- * controllerKeys is an array which contains specific controllers' keys which aren't
+ * 'all' is a bool variable used to load all the controllers.
+ * 'controllerKeys' is an array which contains specific controllers' keys which aren't
  * in the current view, but you want to be loaded anyway. To deal with overlay
  * widgets, for example.
+ * Calling the function "loadControllers(false, [array with desied JS controllers keys from 
+ * window.bika.lims.controllers])", allows you to force bika to load/reload JS controllers defined inside the array.
  */
 window.bika.lims.loadControllers = function(all, controllerKeys) {
     var controllers = window.bika.lims.controllers;
     var prev = _bika_lims_loaded_js.length;
     for (var key in controllers) {
-        // Check if the key have value. Also check if this key exists in the controllerKeys' array
-        // Doing that, you can load non called variables in the web page
+        // Check if the key have value. Also check if this key exists in the controllerKeys array.
+        // If controllerKeys contains the key, the JS controllers defined inside window.bika.lims.controllers
+        // and indexed with that key will be reloaded/loaded (wherever you are.)
         if ($(key).length || $.inArray(key, controllerKeys) >= 0) {
             controllers[key].forEach(function(js) {
                 if (all == true || $.inArray(key, controllerKeys) >= 0 || $.inArray(js, _bika_lims_loaded_js) < 0) {
