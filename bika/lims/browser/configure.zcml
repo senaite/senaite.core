@@ -4,6 +4,9 @@
     i18n_domain="bika">
 
   <include package="plone.resource" file="meta.zcml"/>
+
+  <include file="bika-frontpage.zcml"/>
+
   <include file="analysis.zcml"/>
   <include file="analysisservice.zcml"/>
   <include file="analysisspec.zcml"/>
