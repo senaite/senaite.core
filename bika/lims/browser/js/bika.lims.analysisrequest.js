@@ -103,6 +103,7 @@ function AnalysisRequestViewView() {
     that.load = function() {
 
         resultsinterpretation_move_below();
+        filter_CCContacts();
         if (document.location.href.search('/clients/') >= 0
             && $("#archetypes-fieldname-SamplePoint #SamplePoint").length > 0) {
 
@@ -154,6 +155,51 @@ function AnalysisRequestViewView() {
         $("#archetypes-fieldname-Remarks").before(box);
         $("#archetypes-fieldname-ResultsInterpretation").before("<label id='label_resultsinterpretation'></label>");
         $("#label_resultsinterpretation").prepend(label);
+    }
+
+    function filter_CCContacts(){
+        /**
+         * Filter the CCContacts dropdown list by the current client.
+         */
+        var element = $('#CCContact');
+        var clientUID = getClientUID();
+        filter_by_client(element, "getParentUID", clientUID);
+    }
+
+    function getClientUID(){
+        /**
+         * Return the AR client's UID.
+         */
+        var clientid =  document.referrer.split("clients")[1].split("/")[1];
+        // ajax petition to obtain the current client info
+        var clientuid = "";
+        $.ajax({
+            url: window.portal_url + "/clients/" + clientid + "/getClientInfo",
+            type: 'POST',
+            async: false,
+            data: {'_authenticator': $('input[name="_authenticator"]').val()},
+            dataType: "json",
+            success: function(data, textStatus, $XHR){
+                if (data['ClientUID'] != '') {
+                    clientuid = data['ClientUID'] != '' ? data['ClientUID'] : null;
+                }
+            }
+        });
+        return clientuid;
+    }
+
+    function filter_by_client(element, filterkey, filtervalue) {
+        /**
+         * Filter the dropdown's results (called element) by current client contacts.
+         */
+        // Get the base_query data in array format
+        var base_query= $.parseJSON($(element).attr("base_query"));
+        base_query[filterkey] = filtervalue;
+        $(element).attr("base_query", $.toJSON(base_query));
+        var options = $.parseJSON($(element).attr("combogrid_options"));
+        $(element).attr("base_query", $.toJSON(base_query));
+        $(element).attr("combogrid_options", $.toJSON(options));
+        referencewidget_lookups($(element));
     }
 }
 

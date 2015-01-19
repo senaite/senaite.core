@@ -1,15 +1,16 @@
-3.1.7 (unreleased)
+3.1.7-dev (unreleased)
 -----
 
-LIMS-1536: Add button [Add], to alow quickly addings in referencewidget
-LIMS-1587: Custom sample labels
 LIMS-1517: Storage field tag untranslated?
 LIMS-1518: Storage Location table
-
+LIMS-1527: CC Contact on AR view (edit) offers all contacts in system
+LIMS-1536: Add button [Add], to alow quickly addings in referencewidget
+LIMS-1587: Better support for extension of custom sample labels
+LIMS-1622: Version Check does not correctly check cache
+LIMS-1623: Implement bika-frontpage as a BrowserView
 
 3.1.6 (2014-12-17)
 ------------------
-
 LIMS-1530: Scrambled Analysis Category order in Published Results
 LIMS-1529: Error while inserting an AR with container-based partitioning is required
 LIMS-1460: Additional field in AR for comments or results interpretation

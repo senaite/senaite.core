@@ -99,6 +99,9 @@ class NewVersionsViewlet(ViewletBase):
             return False
 
     def render(self):
+        if not self.check_session():
+            return ""
+
         self.get_versions()
         self.check_new_version()
         self.check_new_upgrade_step()
@@ -107,9 +110,8 @@ class NewVersionsViewlet(ViewletBase):
         member = mtool.getAuthenticatedMember()
         roles = member.getRoles()
         allowed = 'LabManager' in roles or 'Manager' in roles
-        allowed = allowed
 
-        if allowed and self.check_session()\
+        if allowed \
                 and self.context.bika_setup.getShowNewReleasesInfo() \
                 and self.has_new_version:
             return self.index()

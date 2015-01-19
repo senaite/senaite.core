@@ -124,6 +124,20 @@ Simple AR Creation
     ${ar_id} =                  Set Variable  ${ar_id.split()[2]}
     [Return]                    ${ar_id}
 
+Create a contact
+    [Documentation]  Function to create a contact from a client.
+    [Arguments]  ${Client}
+    ...          ${FirstName}
+    ...          ${Surname}
+    Go to             ${PLONEURL}/clients/
+    click link                  ${Client}
+    Wait until page contains element    css=body.portaltype-client
+    click link                  link=Contacts
+    click link                  link=Add
+    Input text                  Firstname  ${FirstName}
+    Input text                  Surname    ${Surname}
+    Click Button                Save
+    Wait until page contains    Changes saved
 
 Wait For Ajax
     Wait for Condition   return window.jQuery.active == 0;

@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+<object name="Plone Site"
+        meta_type="Factory-based Type Information with dynamic views"
+        i18n:domain="plone" xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+    <property name="view_methods">
+        <element value="folder_listing"/>
+        <element value="folder_summary_view"/>
+        <element value="folder_tabular_view"/>
+        <element value="bika-frontpage"/>
+    </property>
+    <property name="default_view">bika-frontpage</property>
+</object>
