@@ -1,0 +1,7 @@
+"Sample ID","Date","Time","Analyst Name","Sample Type","Analyte Name","Elem","Wavelength","Conc (Samp)","QC Recovery","Samp Units",
+"AA00228","12/11/2003","20:49:24", ,0,"Cromo (Cr)","Cr",205.56,1.298161935e-003, ,"mg/muestra",
+"AA00228","12/11/2003","20:49:24", ,0,"Cobre (Cu)","Cu",238.204,5.812499356e-003, ,"mg/muestra",
+"AA00228","12/11/2003","20:49:24", ,0,"Hierro (Fe)","Fe",257.61,1.507948761e-004, ,"mg/muestra",
+"AA00228","12/11/2003","20:49:24", ,0,"Niquel (Ni)","Ni",231.604,6.411211941e-004, ,"mg/muestra",
+"AA00228","12/11/2003","20:51:52", ,0,"Titanio (Ti)","Ti",205.56,2.107189e-002, ,"mg/muestra",
+"AA00228","12/11/2003","20:51:52", ,0,"Aluminio (Al)","Al",238.204,9.707770308e-002, ,"mg/muestra"
