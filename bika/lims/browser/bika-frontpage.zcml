@@ -1,0 +1,24 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    i18n_domain="bika">
+
+    <include package="plone.app.contentmenu" />
+
+    <browser:page
+        for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+        name="bika-frontpage"
+        class="bika.lims.browser.bika-frontpage.FrontPageView"
+        permission="zope2.View"
+        layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:menuItem
+        for="Products.CMFCore.interfaces.ISiteRoot"
+        menu="plone_displayviews"
+        title="Bika LIMS front-page"
+        action="bika-frontpage"
+        description="Bika LIMS front-page"
+    />
+
+</configure>

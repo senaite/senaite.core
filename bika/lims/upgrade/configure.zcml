@@ -516,4 +516,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Added bika-frontpage to selectable views"
+        description=""
+        source="3052"
+        destination="3053"
+        handler="bika.lims.upgrade.to3053.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>

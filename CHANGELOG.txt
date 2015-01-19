@@ -7,7 +7,7 @@ LIMS-1527: CC Contact on AR view (edit) offers all contacts in system
 LIMS-1536: Add button [Add], to alow quickly addings in referencewidget
 LIMS-1587: Better support for extension of custom sample labels
 LIMS-1622: Version Check does not correctly check cache
-
+LIMS-1623: Implement bika-frontpage as a BrowserView
 
 3.1.6 (2014-12-17)
 ------------------
