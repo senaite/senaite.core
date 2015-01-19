@@ -8,6 +8,7 @@
                 tal:content="python:analysislist.getValue(option)"/>
         </tal:options>
     </select>
+    <p></p>
 
     <!-- Input file selector -->
     <label for='filename'>File</label>&nbsp;
