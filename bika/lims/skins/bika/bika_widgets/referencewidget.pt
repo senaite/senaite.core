@@ -104,7 +104,7 @@
             <!-- AddButton definition -->
             <a rel='#overlay'
                class='add-button referencewidget-add-button',
-               tal:define="options python:widget.get_overlaybutton_options()"
+               tal:define="options python:widget.get_addbutton_options()"
                tal:condition="options/visible"
                tal:attributes="name python:fieldName+'_addbutton';
                                id   python:fieldName+'_addbutton';
@@ -120,7 +120,7 @@
             <!-- EditButton definition -->
             <a rel='#overlay'
                class='edit-button referencewidget-edit-button',
-               tal:define="options python:widget.get_overlaybutton_options()"
+               tal:define="options python:widget.get_editbutton_options()"
                tal:condition="options/visible"
                tal:attributes="name python:fieldName+'_editbutton';
                                id   python:fieldName+'_editbutton';
