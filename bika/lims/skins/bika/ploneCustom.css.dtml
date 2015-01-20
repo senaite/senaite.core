@@ -1101,4 +1101,9 @@ div.LSResult {
     padding: 4px 10px;
 }
 
+div#viewlet-above-content #portal-alert {
+    margin: 0px 0px 5px 0px;
+    border-radius: 2px;
+}
+
 </dtml-with>
