@@ -16,7 +16,6 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.i18n.locales import locales
 from zope.interface import implements
-import traceback
 
 import json
 import plone
@@ -115,8 +114,11 @@ class AnalysisRequestAnalysesView(BikaListingView):
                                   getKeyword=keyword)[0].UID
                 rr_dict_by_service_uid[service_uid] = r
             except IndexError:
-                print "Not existent ", keyword
-                print traceback.format_exc()
+                from bika.lims import logger
+                error = "Non existent '%s' keyword in the catalog. This AS has been modified, but the Results Range " \
+                        "dict has not been changed yet. The issue has not been resolved yet: " \
+                        "https://jira.bikalabs.com/browse/LIMS-1614"
+                logger.exception(error, keyword)
 
         return json.dumps(rr_dict_by_service_uid)
 
