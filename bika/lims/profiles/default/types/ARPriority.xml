@@ -9,7 +9,7 @@
  <property name="content_meta_type">ARPriority</property>
  <property name="product">bika.lims</property>
  <property name="factory">addARPriority</property>
- <property name="global_allow">True</property>
+ <property name="global_allow">False</property>
  <property name="filter_content_types">False</property>
  <property name="allowed_content_types">
  </property>
