@@ -16,6 +16,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.i18n.locales import locales
 from zope.interface import implements
+import traceback
 
 import json
 import plone
@@ -109,9 +110,14 @@ class AnalysisRequestAnalysesView(BikaListingView):
         rr = self.context.getResultsRange()
         for r in rr:
             keyword = r['keyword']
-            service_uid = bsc(portal_type='AnalysisService',
-                              getKeyword=keyword)[0].UID
-            rr_dict_by_service_uid[service_uid] = r
+            try:
+                service_uid = bsc(portal_type='AnalysisService',
+                                  getKeyword=keyword)[0].UID
+                rr_dict_by_service_uid[service_uid] = r
+            except IndexError:
+                print "Not existent ", keyword
+                print traceback.format_exc()
+
         return json.dumps(rr_dict_by_service_uid)
 
     def get_spec_from_ar(self, ar, keyword):
