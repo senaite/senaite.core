@@ -349,11 +349,28 @@ class IBikaSetupCatalog(Interface):
 
 
 class IIdServer(Interface):
-    """ Interface for ID server """
+
+    """Interface for ID server.
+     This is responsible for renaming items who invoke
+     bika.lims/bika/lims/idserver.py:renameAfterCreation
+     """
 
     def generateUniqueId(self, portal_type, batch_size=None):
-        """ Generate a new id for 'portal_type' """
+        """ Generate a new id for 'portal_type'
+        :param portal_type
+        :param batch_size=None passed along when objects think they're calling
+               the default ID generator.  Bika's default idserver script
+               also uses this
+         """
 
+    def get_external_id(self, portal_type, batch_size=None):
+        """Get an ID from an external source
+        :param portal_type
+        :param batch_size=None passed along when objects think they're calling
+               the default ID generator.  Bika's default idserver script
+               also uses this
+        :return the ID as a string.
+        """
 
 class IReferenceWidgetVocabulary(Interface):
     """Return values for reference widgets in AR contexts
