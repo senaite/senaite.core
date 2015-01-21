@@ -351,7 +351,7 @@ class IBikaSetupCatalog(Interface):
 class IIdServer(Interface):
     """ Interface for ID server """
 
-    def generate_id(self, portal_type, batch_size=None):
+    def generateUniqueId(self, portal_type, batch_size=None):
         """ Generate a new id for 'portal_type' """
 
 
