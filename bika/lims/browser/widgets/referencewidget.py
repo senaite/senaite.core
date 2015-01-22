@@ -59,6 +59,13 @@ class ReferenceWidget(StringWidget):
             'js_controllers': [],
             'return_fields': [],
             'overlay_options': {},
+            },
+        'edit_button': {
+            'visible': False,
+            'url': '',
+            'js_controllers': [],
+            'return_fields': [],
+            'overlay_options': {},
         },
     })
     security = ClassSecurityInfo()
@@ -131,6 +138,7 @@ class ReferenceWidget(StringWidget):
         return ret
 
     def get_addbutton_options(self):
+        # Return a dict with the options defined in the schema whose widget needs an add button.
         return {
             'visible': self.add_button.get('visible', False),
             'url': self.add_button.get('url'),
@@ -138,6 +146,22 @@ class ReferenceWidget(StringWidget):
             'js_controllers': json.dumps(self.add_button.get('js_controllers',[])),
             'overlay_handler': self.add_button.get('overlay_handler', ''),
             'overlay_options': json.dumps(self.add_button.get('overlay_options',{
+                'filter': 'head>*,#content>*:not(div.configlet),dl.portalMessage.error,dl.portalMessage.info',
+                'formselector': 'form[id$="base-edit"]',
+                'closeselector': '[name="form.button.cancel"]',
+                'width': '70%',
+                'noform': 'close',}))
+            }
+
+    def get_editbutton_options(self):
+        # Return a dict with the options defined in the schema whose widget needs an edit button.
+        return {
+            'visible': self.edit_button.get('visible', False),
+            'url': self.edit_button.get('url'),
+            'return_fields': json.dumps(self.edit_button.get('return_fields')),
+            'js_controllers': json.dumps(self.edit_button.get('js_controllers',[])),
+            'overlay_handler': self.edit_button.get('overlay_handler', ''),
+            'overlay_options': json.dumps(self.edit_button.get('overlay_options',{
                 'filter': 'head>*,#content>*:not(div.configlet),dl.portalMessage.error,dl.portalMessage.info',
                 'formselector': 'form[id$="base-edit"]',
                 'closeselector': '[name="form.button.cancel"]',
