@@ -173,8 +173,11 @@ function check_UID_check(){
 
 function apply_button_overlay(button) {
     /**
-     * Given an element (button), this function sets its overlay options. This options are related with
-     * open and close actions.
+     * Given an element (button), this function sets its overlay options.
+     * The overlay options to be applied are retrieved from the button's
+     * data_overlay attribute.
+     * Further info about jQuery overlay:
+     * http://jquerytools.github.io/documentation/overlay/
      */
     // Obtain overlay options from html button attributes.
     var options = $.parseJSON($(button).attr('data_overlay'));

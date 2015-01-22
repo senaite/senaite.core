@@ -132,7 +132,7 @@
                                data_returnfields options/return_fields;
                                data_jscontrollers options/js_controllers;
                                data_overlay options/overlay_options">
-                    <span i18n:translate="">Edit</span>
+                    <span class='notext' i18n:translate="">Edit</span>
             </a>
           <input
                  type="hidden"
