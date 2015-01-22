@@ -109,9 +109,17 @@ class AnalysisRequestAnalysesView(BikaListingView):
         rr = self.context.getResultsRange()
         for r in rr:
             keyword = r['keyword']
-            service_uid = bsc(portal_type='AnalysisService',
-                              getKeyword=keyword)[0].UID
-            rr_dict_by_service_uid[service_uid] = r
+            try:
+                service_uid = bsc(portal_type='AnalysisService',
+                                  getKeyword=keyword)[0].UID
+                rr_dict_by_service_uid[service_uid] = r
+            except IndexError:
+                from bika.lims import logger
+                error = "Non existent '%s' keyword in the catalog. This AS has been modified, but the Results Range " \
+                        "dict has not been changed yet. The issue has not been resolved yet: " \
+                        "https://jira.bikalabs.com/browse/LIMS-1614"
+                logger.exception(error, keyword)
+
         return json.dumps(rr_dict_by_service_uid)
 
     def get_spec_from_ar(self, ar, keyword):
