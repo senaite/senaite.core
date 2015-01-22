@@ -1000,10 +1000,15 @@ div.warnbox h3 {
 a.add-button {
     font-weight: bold;
     background: transparent url(&dtml-portal_url;/++resource++bika.lims.images/add.png) left center no-repeat;
-    height: 16px;
-    width: 16px;
+    padding: 8px 8px 8px 10px;
 }
-#content a.add-button.referencewidget-add-button.link-overlay {
+a.edit-button {
+    font-weight: bold;
+    background: transparent url(&dtml-portal_url;/++resource++bika.lims.images/edit.png) left center no-repeat;
+    padding: 8px 8px 8px 10px;
+}
+#content a.add-button.referencewidget-add-button.link-overlay,
+#content a.edit-button.referencewidget-edit-button.link-overlay {
     border-bottom: medium none !important;
 }
 h2 a.add-button {
