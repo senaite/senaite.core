@@ -52,6 +52,9 @@
                     </h2>
                     <input type="file" name="file"/>
                     <input name="setupfile" type="submit" value="Submit" i18n:attributes="value"/>
+                    <p></p>
+                    <span i18n:translate="">Tip. Attached documents would not be loaded unless they exist in a bikalims
+                        instance.</span>
                 </div>
                 <div style="float:right;width:47%;">
                     <h2 style="margin-bottom:10px;border-bottom:1px solid #888;font-size:1.6em;">
