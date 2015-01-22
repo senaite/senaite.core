@@ -4,14 +4,10 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="bika">
 
-    <!-- We can say for="*" because only aware classes call this particular
-     renameAfterCreation from bika.lims.idserver.py-->
-
     <adapter
       factory=".idserver.DefaultBikaIdServer"
       provides="bika.lims.interfaces.IIdServer"
-      for="*"
-      name="DefaultBikaIdServer"
+      for="zope.interface.Interface"
     />
 
 </configure>

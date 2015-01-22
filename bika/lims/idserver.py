@@ -18,19 +18,17 @@ class IDServerUnavailable(Exception):
     pass
 
 
-def renameAfterCreation(obj):
+def renameAfterCreation(instance):
     """This is explicitly fired for all bika types.
-    :param obj: the instance we are renaming here.
+    :param instance: the instance we are renaming here.
     :return: the new ID the instance was given.
     """
     # Can't rename without a subtransaction commit when using portal_factory
     transaction.savepoint(optimistic=True)
-    # get nearest IIdServer
-    adapter = getAdapter(obj, interface=IIdServer)
-    # Call it's generateUniqueId method
-    new_id = adapter.generateUniqueId()
-    # The id returned should be normalized already
-    obj.aq_inner.aq_parent.manage_renameObject(obj.id, new_id)
+    # get new ID from nearest adapter
+    new_id = IIdServer(instance).generateUniqueId()
+    # rename objects
+    instance.aq_inner.aq_parent.manage_renameObject(instance.id, new_id)
     return new_id
 
 

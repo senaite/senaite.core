@@ -37,6 +37,8 @@
   <include file="profiles.zcml" />
   <include file="workflow.zcml" />
 
+  <include file="idserver.zcml" />
+
   <i18n:registerTranslations directory="locales" />
 
   <cmf:registerDirectory name="skins" directory="skins" recursive="True" />
