@@ -115,9 +115,8 @@ class AnalysisRequestAnalysesView(BikaListingView):
                 rr_dict_by_service_uid[service_uid] = r
             except IndexError:
                 from bika.lims import logger
-                error = "Non existent '%s' keyword in the catalog. This AS has been modified, but the Results Range " \
-                        "dict has not been changed yet. The issue has not been resolved yet: " \
-                        "https://jira.bikalabs.com/browse/LIMS-1614"
+                error = "No Analysis Service found for Keyword '%s'. "\
+                        "Related: LIMS-1614"
                 logger.exception(error, keyword)
 
         return json.dumps(rr_dict_by_service_uid)
