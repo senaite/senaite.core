@@ -306,4 +306,22 @@ function SiteView() {
         }
         $('#portal-alert').fadeIn();
     }
+
+    that.notificationPanel = function(data) {
+    /**
+     * Render an alert inside the content panel. Used for autosave in ARView, for example.
+     */
+        $('#panel-notification').remove();
+        $('div#viewlet-above-content-title').append(
+            "<div id='panel-notification' style='display:none'>" +
+            "<div class='success-notification-item'>"
+            + data +
+            "</div></div>");
+        
+    $('#panel-notification').fadeIn("slow","linear", function(){
+        setTimeout(function() {
+            $('#panel-notification').fadeOut("slow","linear")
+        }, 3000)
+    });
+    }
 }

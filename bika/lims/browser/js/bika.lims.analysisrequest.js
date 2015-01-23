@@ -103,7 +103,10 @@ function AnalysisRequestViewView() {
     that.load = function() {
 
         resultsinterpretation_move_below();
-        filter_CCContacts();
+        //filter_CCContacts();
+        // Using the autosave features we can hide the header's save button.
+        $('form[name="header_form"] input.context[name="form.button.save"]').hide();
+        set_autosave_input();
         if (document.location.href.search('/clients/') >= 0
             && $("#archetypes-fieldname-SamplePoint #SamplePoint").length > 0) {
 
@@ -200,6 +203,109 @@ function AnalysisRequestViewView() {
         $(element).attr("base_query", $.toJSON(base_query));
         $(element).attr("combogrid_options", $.toJSON(options));
         referencewidget_lookups($(element));
+    }
+
+    function set_autosave_input() {
+        /**
+         * Set an event for every input field in the AR header. After write something in the input field and
+         * focus out it, the event automatically saves the change.
+         */
+        $("table.header_table input").not('[attr="referencewidget"').not('[type="hidden"]').each(function(i){
+            $(this).change(function () {
+                // Save input fields
+                var pointer = this;
+                build_typical_save_request(pointer);
+            });
+        });
+        $("table.header_table select").not('[type="hidden"]').each(function(i) {
+            // Save select fields
+            $(this).change(function () {
+                var pointer = this;
+                build_typical_save_request(pointer);
+            });
+        });
+        $("table.header_table input.referencewidget").not('[type="hidden"]').each(function(i) {
+            // Save referencewidget inputs.
+            $(this).bind("selected", (function() {
+                var requestdata={};
+                var pointer = this;
+                var fieldvalue, fieldname;
+                setTimeout(function() {
+                        fieldname = $(pointer).closest('div[id^="archetypes-fieldname-"]').attr('data-fieldname');
+                        fieldvalue = $(pointer).attr('uid');
+                        // To search by uid, we should follow this array template:
+                        // { SamplePoint = "uid:TheValueOfuid1|uid:TheValueOfuid2..." }
+                        // This is the way how jsonapi/__init__.py/resolve_request_lookup() works.
+                        requestdata[fieldname] = 'uid:' + fieldvalue;
+                        save_elements(requestdata);
+                    },
+                    500);
+            }));
+        });
+  /*      $("table.header_table input#CCContact.referencewidget").not('[type="hidden"]').each(function(i) {
+            // CCContact works different.
+            $(this).bind("blur paste", (function() {
+                var pointer = this;
+                var fieldvalue, fieldname;
+                setTimeout(function() {
+                        fieldname = $(pointer).closest('div[id^="archetypes-fieldname-"]').attr('data-fieldname');
+                        fieldvalue = $(pointer).val();
+                        save_element(fieldname, fieldvalue);
+                    },
+                    500);
+            }));
+        });*/
+    }
+
+    function build_typical_save_request(pointer) {
+        /**
+         * Build the array with the data to be saved for the typical data fields.
+         * @pointer is the object which has been modified and we want to save its new data.
+         */
+        // Obtain name and value
+        var fieldvalue, fieldname, requestdata={};
+        // Checkbox
+        if ( $(pointer).attr('type') == "checkbox" ) {
+            // Checkboxes name is located in its parent div, but its value is located inside the input.
+            fieldvalue = $(pointer).prop('checked');
+            fieldname = $(pointer).closest('div[id^="archetypes-fieldname-"]').attr('data-fieldname');
+        }
+        // Other input
+        else {
+            fieldvalue = $(pointer).val();
+            fieldname = $(pointer).closest('div[id^="archetypes-fieldname-"]').attr('data-fieldname');
+        }
+        requestdata[fieldname] = fieldvalue;
+        save_elements(requestdata);
+    }
+
+    function save_elements(requestdata) {
+        /**
+         * Given a dict with a fieldname and a fieldvalue, save this data via ajax petition.
+         * @requestdata should has the format  {fieldname=fieldvalue} ->  { ReportDryMatter=false}.
+         */
+        var obj_path = window.location.href.replace(window.portal_url, '');
+        // Staff for the notification
+        var element,name = $.map(requestdata, function(element,index) {return element, index});
+        name = $('[data-fieldname="' + name + '"]').closest('td').prev().html();
+        var ar = obj_path.split('/');
+        ar = ar[ar.length-1];
+        var anch =  "<a href='"+ obj_path + "'>" + ar + "</a>";
+        // Needed fot the ajax petition
+        requestdata['obj_path']= obj_path;
+        $.ajax({
+            type: "POST",
+            url: window.portal_url+"/@@API/update",
+            data: requestdata
+        })
+            .done(function() {
+                //success alert
+                window.bika.lims.SiteView.notificationPanel(name + ' on ' + anch + ' updated successfully!')
+            })
+            .fail(function(){
+                //error
+                bika.lims.SiteView.notificationPanel('An error occurred while updating ' + name + 'on'+ anch + ', save it manually please.')
+            });
     }
 }
 
