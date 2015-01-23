@@ -45,7 +45,7 @@ class DefaultBikaIdServer(object):
     def __init__(self, context):
         self.context = context
 
-    def generateUniqueId(self, portal_type=None):
+    def generateUniqueId(self):
         """ Generate pretty content IDs.
             - context is used to find portal_type; in case there is no
               prefix specified for the type, the lowercased portal_type is
@@ -53,7 +53,7 @@ class DefaultBikaIdServer(object):
               regardless of the include_year setting.
         """
 
-        portal_type = portal_type if portal_type else self.context.portal_type
+        portal_type = self.context.portal_type
 
         fn_normalize = getUtility(IFileNameNormalizer).normalize
         id_normalize = getUtility(IIDNormalizer).normalize
@@ -65,7 +65,7 @@ class DefaultBikaIdServer(object):
         if portal_type == "AnalysisRequest":
             sample = self.context.getSample()
             s_prefix = fn_normalize(sample.getSampleType().getPrefix())
-            sample_padding = self.context.bika_setup.getSampleID.Padding()
+            sample_padding = self.context.bika_setup.getSampleIDPadding()
             ar_padding = self.context.bika_setup.getARIDPadding()
             sample_id = sample.getId()
             sample_number = sample_id.split(s_prefix)[1]
