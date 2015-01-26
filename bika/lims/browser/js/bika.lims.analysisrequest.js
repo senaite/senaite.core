@@ -105,7 +105,6 @@ function AnalysisRequestViewView() {
         resultsinterpretation_move_below();
         //filter_CCContacts();
         // Using the autosave features we can hide the header's save button.
-        $('form[name="header_form"] input.context[name="form.button.save"]').hide();
         set_autosave_input();
         if (document.location.href.search('/clients/') >= 0
             && $("#archetypes-fieldname-SamplePoint #SamplePoint").length > 0) {
@@ -224,7 +223,7 @@ function AnalysisRequestViewView() {
                 build_typical_save_request(pointer);
             });
         });
-        $("table.header_table input.referencewidget").not('[type="hidden"]').each(function(i) {
+        $("table.header_table input.referencewidget").not('[type="hidden"]').not('[id="CCContact"]').each(function(i) {
             // Save referencewidget inputs.
             $(this).bind("selected", (function() {
                 var requestdata={};
@@ -242,19 +241,37 @@ function AnalysisRequestViewView() {
                     500);
             }));
         });
-  /*      $("table.header_table input#CCContact.referencewidget").not('[type="hidden"]').each(function(i) {
+        $("table.header_table input#CCContact.referencewidget").not('[type="hidden"]').each(function(i) {
             // CCContact works different.
-            $(this).bind("blur paste", (function() {
+            $(this).bind("selected", (function() {
                 var pointer = this;
-                var fieldvalue, fieldname;
+                var fieldvalue, fieldname, requestdata = {};
                 setTimeout(function() {
+                        // To search by uid, we should follow this array template:
+                        // { SamplePoint = "uid:TheValueOfuid1|uid:TheValueOfuid2..." }
+                        // This is the way how jsonapi/__init__.py/resolve_request_lookup() works.
                         fieldname = $(pointer).closest('div[id^="archetypes-fieldname-"]').attr('data-fieldname');
-                        fieldvalue = $(pointer).val();
-                        save_element(fieldname, fieldvalue);
+                        fieldvalue = parse_CCClist();
+                        requestdata[fieldname] = fieldvalue;
+                        console.log(requestdata);
+                        save_elements(requestdata);
                     },
                     500);
             }));
-        });*/
+        });
+        $('img[fieldname="CCContact"]').each(function() {
+            // If a delete cross is clicked on CCContact-listing, we should update the saved list.
+            var fieldvalue, requestdata = {}, fieldname;
+            $(this).click(function() {
+                fieldname = $(this).attr('fieldname');
+                setTimeout(function() {
+                    fieldvalue = parse_CCClist();
+                    requestdata[fieldname] = fieldvalue;
+                    console.log(requestdata);
+                    save_elements(requestdata);
+                });
+            });
+        });
     }
 
     function build_typical_save_request(pointer) {
@@ -262,7 +279,6 @@ function AnalysisRequestViewView() {
          * Build the array with the data to be saved for the typical data fields.
          * @pointer is the object which has been modified and we want to save its new data.
          */
-        // Obtain name and value
         var fieldvalue, fieldname, requestdata={};
         // Checkbox
         if ( $(pointer).attr('type') == "checkbox" ) {
@@ -304,8 +320,26 @@ function AnalysisRequestViewView() {
             })
             .fail(function(){
                 //error
-                bika.lims.SiteView.notificationPanel('An error occurred while updating ' + name + 'on'+ anch + ', save it manually please.')
+                bika.lims.SiteView.notificationPanel('An error occurred while updating ' + name + 'on'+ anch +
+                ', save it manually please.')
             });
+    }
+
+    function parse_CCClist() {
+        /**
+         * It parses the CCContact-listing, where are located the CCContacts, and build the fieldvalue list.
+         * @return: the builed field value -> "uid:TheValueOfuid1|uid:TheValueOfuid2..."
+         */
+        var fieldvalue = '';
+        $('#CCContact-listing').children('.reference_multi_item').each(function (ii) {
+            if (fieldvalue.length < 1) {
+                fieldvalue = 'uid:' + $(this).attr('uid');
+            }
+            else {
+                fieldvalue = fieldvalue + '|uid:' + $(this).attr('uid');
+            }
+        });
+        return fieldvalue;
     }
 }
 
