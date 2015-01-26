@@ -103,8 +103,7 @@ function AnalysisRequestViewView() {
     that.load = function() {
 
         resultsinterpretation_move_below();
-        //filter_CCContacts();
-        // Using the autosave features we can hide the header's save button.
+        filter_CCContacts();
         set_autosave_input();
         if (document.location.href.search('/clients/') >= 0
             && $("#archetypes-fieldname-SamplePoint #SamplePoint").length > 0) {
@@ -206,12 +205,12 @@ function AnalysisRequestViewView() {
 
     function set_autosave_input() {
         /**
-         * Set an event for every input field in the AR header. After write something in the input field and
+         * Set an event for each input field in the AR header. After write something in the input field and
          * focus out it, the event automatically saves the change.
          */
         $("table.header_table input").not('[attr="referencewidget"').not('[type="hidden"]').each(function(i){
+            // Save input fields
             $(this).change(function () {
-                // Save input fields
                 var pointer = this;
                 build_typical_save_request(pointer);
             });
@@ -276,7 +275,7 @@ function AnalysisRequestViewView() {
 
     function build_typical_save_request(pointer) {
         /**
-         * Build the array with the data to be saved for the typical data fields.
+         * Build an array with the data to be saved for the typical data fields.
          * @pointer is the object which has been modified and we want to save its new data.
          */
         var fieldvalue, fieldname, requestdata={};

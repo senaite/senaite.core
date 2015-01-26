@@ -1,6 +1,6 @@
 3.1.7-dev (unreleased)
 -----
-
+LIMS-1423: Save details when AR workflow action kicked off
 LIMS-1605: Tescan TIMA interface
 LIMS-1604: BioDrop uLite interface
 LIMS-1603: Life Technologies Qubit interface
