@@ -139,5 +139,12 @@ Create a contact
     Click Button                Save
     Wait until page contains    Changes saved
 
+Enable Sampling Workflow
+    Go to               ${PLONEURL}/bika_setup/edit
+    Click Link          id=fieldsetlegend-analyses
+    Select Checkbox     id=SamplingWorkflowEnabled
+    Click Button        Save
+    Wait until page contains    Changes saved.
+
 Wait For Ajax
     Wait for Condition   return window.jQuery.active == 0;
