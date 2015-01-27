@@ -34,33 +34,33 @@ Test autosave feature
     click link        ${ARId}
     # Testing checkboxes
     select checkbox      InvoiceExclude
-    wait until page contains  updated successfully!
+    wait until page contains  updated successfully
     Reload Page
     checkbox should be selected  InvoiceExclude
     unselect checkbox    InvoiceExclude
-    wait until page contains  updated successfully!
+    wait until page contains  updated successfully
     Reload Page
     checkbox should not be selected  InvoiceExclude
     # Testing typical Input
     input text           ClientOrderNumber  777
     #We need to focus out the input to allow save it.
     focus  Contact
-    wait until page contains  updated successfully!
+    wait until page contains  updated successfully
     Reload Page
     Textfield Should Contain  ClientOrderNumber  777
     # Testing lists
     select from list  Sampler  Lab Sampler 1
-    wait until page contains  updated successfully!
+    wait until page contains  updated successfully
     Reload Page
     element should contain  Sampler  Lab Sampler 1
     # Testing dropdown
     select from dropdown  Specification  Bran
-    wait until page contains  updated successfully!
+    wait until page contains  updated successfully
     Reload Page
     Textfield Should Contain  Specification  Bran
     # Testinc CCContact
     select from dropdown  CCContact   Neil
-    wait until page contains  updated successfully!
+    wait until page contains  updated successfully
     Reload Page
     page should contain  Neil
 
