@@ -9,7 +9,7 @@ from foss.winescan import ft120
 from thermoscientific.gallery import Ts9861x
 from panalytical.omnia import axios_xrf
 from alere.pima import beads, cd4
-#from sysmex.XS import 500i
+#from sysmex.xs import i500
 
 __all__ = ['generic.xml',
            'agilent.masshunter.quantitative',
@@ -20,7 +20,7 @@ __all__ = ['generic.xml',
            'panalytical.omnia.axios_xrf',
            'alere.pima.beads',
            'alere.pima.cd4',]
-           #'sysmex.XS.500i']
+           #'sysmex.xs.500i']
 
 
 def getExim(exim_id):
