@@ -21,7 +21,7 @@ class ThermoArenaRPRCSVParser(InstrumentCSVResultsFileParser):
     def parse_headerline(self, line):
 
         if line.startswith('Arena'):
-            self._header['Instrument'] = line.strip(',')
+            self._header['ARId'] = line.strip(',')
             return 0
 
         elif line.startswith('Results from time'):
@@ -46,6 +46,39 @@ class ThermoArenaRPRCSVParser(InstrumentCSVResultsFileParser):
 
     def parse_resultline(self, line):
         sline = line.split(',')
+        if not sline:
+            return 0
+
+        rawdict = {}
+        for idx, result in enumerate(sline):
+            if len(self._columns) <= idx:
+                self.err("Orphan value in column ${index}",
+                         mapping={"index":str(idx + 1)},
+                         numline=self._numline)
+                break
+            rawdict[self._columns[idx]] = result
+
+        acode = rawdict.get('Sample Id', '')
+        if not acode:
+            self.err("No Analysis Code defined",
+                     numline=self._numline)
+            return 0
+
+        rid = self._header.get('ARId', '')
+        if not rid:
+            self.err("No Sample ID defined",
+                     numline=self._numline)
+            return 0
+
+        errors = rawdict.get('Errors', '')
+        errors = "Errors: %s" % errors if errors else ''
+        notes = rawdict.get('Notes', '')
+        notes = "Notes: %s" % notes if notes else ''
+        rawdict['DefaultResult'] = 'Result'
+        rawdict['Remarks'] = ' '.join([errors, notes])
+        raw = {}
+        raw[acode] = rawdict
+        self._addRawResult(rid, raw, False)
         return 0
 
 
