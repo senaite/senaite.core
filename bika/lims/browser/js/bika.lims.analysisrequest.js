@@ -161,16 +161,18 @@ function AnalysisRequestViewView() {
         /**
          * Filter the CCContacts dropdown list by the current client.
          */
-        var element = $('#CCContact');
-        var clientUID = getClientUID();
-        filter_by_client(element, "getParentUID", clientUID);
+        if ($('#CCContact').length > 0) {
+            var element = $('#CCContact');
+            var clientUID = getClientUID();
+            filter_by_client(element, "getParentUID", clientUID);
+        }
     }
 
     function getClientUID(){
         /**
          * Return the AR client's UID.
          */
-        var clientid =  document.referrer.split("clients")[1].split("/")[1];
+        var clientid =  window.location.href.split("clients")[1].split("/")[1];
         // ajax petition to obtain the current client info
         var clientuid = "";
         $.ajax({
