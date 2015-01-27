@@ -1030,6 +1030,23 @@ h2 a.add-button {
     margin-right: -1.125%;
     padding: 5px 20px 20px 70px;
 }
+div#viewlet-above-content-title #panel-notification {
+    left: 0;
+    margin: 100px;
+    padding: 0 280px;
+    position: absolute;
+    z-index: 1000;
+}
+div#viewlet-above-content-title #panel-notification div.error-notification-item {
+    background: url("/Plone/++resource++bika.lims.images/warning.png") no-repeat scroll 15px center #fff680;
+    border-radius: 5px;
+    padding: 15px 30px 15px 40px;
+}
+div#viewlet-above-content-title #panel-notification div.succeed-notification-item {
+    background: url("/Plone/++resource++bika.lims.images/ok.png") no-repeat scroll 15px center #dfdfdf;
+    border-radius: 5px;
+    padding: 15px 30px 15px 40px;
+}
 #portal-alert p.title {
     color: #1F1F1F;
     font-size: 1.1em;

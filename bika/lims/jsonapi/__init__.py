@@ -117,6 +117,11 @@ def resolve_request_lookup(context, request, fieldname):
         # search all possible catalogs
         if 'portal_type' in contentFilter:
             catalogs = at.getCatalogsByType(contentFilter['portal_type'])
+        elif 'uid' in contentFilter:
+            # If a uid is found, the object could be searched for its own uid
+            uc = getToolByName(context, 'uid_catalog')
+            return uc(UID=contentFilter['uid'])
+
         else:
             catalogs = [getToolByName(context, 'portal_catalog'), ]
         for catalog in catalogs:

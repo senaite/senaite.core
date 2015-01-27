@@ -104,6 +104,7 @@ function AnalysisRequestViewView() {
 
         resultsinterpretation_move_below();
         filter_CCContacts();
+        set_autosave_input();
         if (document.location.href.search('/clients/') >= 0
             && $("#archetypes-fieldname-SamplePoint #SamplePoint").length > 0) {
 
@@ -200,6 +201,151 @@ function AnalysisRequestViewView() {
         $(element).attr("base_query", $.toJSON(base_query));
         $(element).attr("combogrid_options", $.toJSON(options));
         referencewidget_lookups($(element));
+    }
+
+    function set_autosave_input() {
+        /**
+         * Set an event for each input field in the AR header. After write something in the input field and
+         * focus out it, the event automatically saves the change.
+         */
+        $("table.header_table input").not('[attr="referencewidget"').not('[type="hidden"]').each(function(i){
+            // Save input fields
+            $(this).change(function () {
+                var pointer = this;
+                build_typical_save_request(pointer);
+            });
+        });
+        $("table.header_table select").not('[type="hidden"]').each(function(i) {
+            // Save select fields
+            $(this).change(function () {
+                var pointer = this;
+                build_typical_save_request(pointer);
+            });
+        });
+        $("table.header_table input.referencewidget").not('[type="hidden"]').not('[id="CCContact"]').each(function(i) {
+            // Save referencewidget inputs.
+            $(this).bind("selected", (function() {
+                var requestdata={};
+                var pointer = this;
+                var fieldvalue, fieldname;
+                setTimeout(function() {
+                        fieldname = $(pointer).closest('div[id^="archetypes-fieldname-"]').attr('data-fieldname');
+                        fieldvalue = $(pointer).attr('uid');
+                        // To search by uid, we should follow this array template:
+                        // { SamplePoint = "uid:TheValueOfuid1|uid:TheValueOfuid2..." }
+                        // This is the way how jsonapi/__init__.py/resolve_request_lookup() works.
+                        requestdata[fieldname] = 'uid:' + fieldvalue;
+                        save_elements(requestdata);
+                    },
+                    500);
+            }));
+        });
+        $("table.header_table input#CCContact.referencewidget").not('[type="hidden"]').each(function(i) {
+            // CCContact works different.
+            $(this).bind("selected", (function() {
+                var pointer = this;
+                var fieldvalue, fieldname, requestdata = {};
+                setTimeout(function() {
+                        // To search by uid, we should follow this array template:
+                        // { SamplePoint = "uid:TheValueOfuid1|uid:TheValueOfuid2..." }
+                        // This is the way how jsonapi/__init__.py/resolve_request_lookup() works.
+                        fieldname = $(pointer).closest('div[id^="archetypes-fieldname-"]').attr('data-fieldname');
+                        fieldvalue = parse_CCClist();
+                        requestdata[fieldname] = fieldvalue;
+                        save_elements(requestdata);
+                    },
+                    500);
+            }));
+        });
+        $('img[fieldname="CCContact"]').each(function() {
+            // If a delete cross is clicked on CCContact-listing, we should update the saved list.
+            var fieldvalue, requestdata = {}, fieldname;
+            $(this).click(function() {
+                fieldname = $(this).attr('fieldname');
+                setTimeout(function() {
+                    fieldvalue = parse_CCClist();
+                    requestdata[fieldname] = fieldvalue;
+                    save_elements(requestdata);
+                });
+            });
+        });
+    }
+
+    function build_typical_save_request(pointer) {
+        /**
+         * Build an array with the data to be saved for the typical data fields.
+         * @pointer is the object which has been modified and we want to save its new data.
+         */
+        var fieldvalue, fieldname, requestdata={};
+        // Checkbox
+        if ( $(pointer).attr('type') == "checkbox" ) {
+            // Checkboxes name is located in its parent div, but its value is located inside the input.
+            fieldvalue = $(pointer).prop('checked');
+            fieldname = $(pointer).closest('div[id^="archetypes-fieldname-"]').attr('data-fieldname');
+        }
+        // Other input
+        else {
+            fieldvalue = $(pointer).val();
+            fieldname = $(pointer).closest('div[id^="archetypes-fieldname-"]').attr('data-fieldname');
+        }
+        requestdata[fieldname] = fieldvalue;
+        save_elements(requestdata);
+    }
+
+    function save_elements(requestdata) {
+        /**
+         * Given a dict with a fieldname and a fieldvalue, save this data via ajax petition.
+         * @requestdata should has the format  {fieldname=fieldvalue} ->  { ReportDryMatter=false}.
+         */
+        var url = window.location.href.replace('/base_view', '');
+        var obj_path = url.replace(window.portal_url, '');
+        // Staff for the notification
+        var element,name = $.map(requestdata, function(element,index) {return element, index});
+        name = $.trim($('[data-fieldname="' + name + '"]').closest('td').prev().text());
+        var ar = $.trim($('.documentFirstHeading').text());
+        var anch =  "<a href='"+ url + "'>" + ar + "</a>";
+        // Needed fot the ajax petition
+        requestdata['obj_path']= obj_path;
+        $.ajax({
+            type: "POST",
+            url: window.portal_url+"/@@API/update",
+            data: requestdata
+        })
+        .done(function(data) {
+            //success alert
+            if (data != null && data['success'] == true) {
+                bika.lims.SiteView.notificationPanel(anch + ': ' + name + ' updated successfully', "succeed");
+            } else {
+                bika.lims.SiteView.notificationPanel('Error while updating ' + name + ' for '+ anch, "error");
+                var msg = '[bika.lims.analysisrequest.js] Error while updating ' + name + ' for '+ ar;
+                console.warn(msg);
+                window.bika.lims.error(msg);
+            }
+        })
+        .fail(function(){
+            //error
+            bika.lims.SiteView.notificationPanel('Error while updating ' + name + ' for '+ anch, "error");
+            var msg = '[bika.lims.analysisrequest.js] Error while updating ' + name + ' for '+ ar;
+            console.warn(msg);
+            window.bika.lims.error(msg);
+        });
+    }
+
+    function parse_CCClist() {
+        /**
+         * It parses the CCContact-listing, where are located the CCContacts, and build the fieldvalue list.
+         * @return: the builed field value -> "uid:TheValueOfuid1|uid:TheValueOfuid2..."
+         */
+        var fieldvalue = '';
+        $('#CCContact-listing').children('.reference_multi_item').each(function (ii) {
+            if (fieldvalue.length < 1) {
+                fieldvalue = 'uid:' + $(this).attr('uid');
+            }
+            else {
+                fieldvalue = fieldvalue + '|uid:' + $(this).attr('uid');
+            }
+        });
+        return fieldvalue;
     }
 }
 
