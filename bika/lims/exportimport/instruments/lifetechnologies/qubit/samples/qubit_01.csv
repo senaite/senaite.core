@@ -1,0 +1,5 @@
+Sample Id,Specimen Type,Date,Time,Reading,Unit,Concentration,Unit,Remark
+AP-0002-R01,,2010/11/02,10:33 AM,0.15,ug/ml,10.85,ng/ul,Good sample 
+AP-0003-R01,,2010/11/02,10:33 AM,0.731,ug/ml,10.85,ng/ul,Good sample 
+AP-0004-R01,,2010/11/02,10:33 AM,2.04,ug/ml,10.85,ng/ul,Good sample 
+AP-0005-R01,,2010/11/02,10:33 AM,0.0601,ug/ml,0.002,ng/ul,Poor

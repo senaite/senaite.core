@@ -7,9 +7,13 @@ from foss.fiastar import fiastar
 from foss.winescan import auto
 from foss.winescan import ft120
 from thermoscientific.gallery import Ts9861x
+from thermoscientific.arena import xt20
 from panalytical.omnia import axios_xrf
 from alere.pima import beads, cd4
 #from sysmex.xs import i500
+from lifetechnologies.qubit import qubit
+from biodrop.ulite import ulite
+from tescan.tima import tima
 
 __all__ = ['generic.xml',
            'agilent.masshunter.quantitative',
@@ -17,10 +21,16 @@ __all__ = ['generic.xml',
            'foss.winescan.auto',
            'foss.winescan.ft120',
            'thermoscientific.gallery.Ts9861x',
+           'thermoscientific.arena.xt20',
            'panalytical.omnia.axios_xrf',
            'alere.pima.beads',
-           'alere.pima.cd4',]
-           #'sysmex.xs.500i']
+           'alere.pima.cd4',
+           #'sysmex.xs.500i',
+           'alere.pima.cd4',
+           'lifetechnologies.qubit.qubit',
+           'biodrop.ulite.ulite',
+           'tescan.tima.tima',
+           ]
 
 
 def getExim(exim_id):
