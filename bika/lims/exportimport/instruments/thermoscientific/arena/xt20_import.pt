@@ -5,7 +5,7 @@
 &nbsp;&nbsp;
 <label for='thermoscientific_arena_20XT_format'>Format</label>&nbsp;
 <select name="thermoscientific_arena_20XT_format" id="thermoscientific_arena_20XT_format">
-    <option value='rpr.cvs'>PRP.CSV</option>
+    <option value='rpr.csv'>CSV (PRP)</option>
 </select>
 <p></p>
 <h3>Advanced options</h3>

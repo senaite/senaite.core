@@ -20,6 +20,7 @@ def Import(context, request):
     instrument = request.form.get('thermoscientific_arena_20XT_instrument', None)
     errors = []
     logs = []
+    warns = []
 
     parser = None
     if not hasattr(infile, 'filename'):

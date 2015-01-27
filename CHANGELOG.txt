@@ -1,6 +1,6 @@
 3.1.7-dev (unreleased)
 -----
-
+LIMS-1575: Thermo Arena 20XT
 LIMS-1624: Import default test.xlsx fails
 LIMS-1614: Error when selecting Analysis Administration Tab after receiving a sample with Sampling Workflow enabled
 LIMS-1605: Tescan TIMA interface

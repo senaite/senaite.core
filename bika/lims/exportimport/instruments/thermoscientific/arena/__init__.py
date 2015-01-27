@@ -1,6 +1,7 @@
 """ Thermo Scientific 'Arena'
 """
-
+from datetime import datetime
+from bika.lims import logger
 from bika.lims.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter, InstrumentCSVResultsFileParser
 
@@ -37,7 +38,8 @@ class ThermoArenaRPRCSVParser(InstrumentCSVResultsFileParser):
             self._columns = line.split(',')
 
         elif self._period[0]:  # Is a date
-            self._period.append(line.strip(','))
+            date = self.csvDate2BikaDate(line.strip(','))
+            self._period.append(date)
             return 0
 
         else:
@@ -58,13 +60,14 @@ class ThermoArenaRPRCSVParser(InstrumentCSVResultsFileParser):
                 break
             rawdict[self._columns[idx]] = result
 
-        acode = rawdict.get('Sample Id', '')
+        acode = rawdict.get('Test short name', '')
         if not acode:
             self.err("No Analysis Code defined",
                      numline=self._numline)
             return 0
 
-        rid = self._header.get('ARId', '')
+        rid = rawdict.get('Sample Id', '')
+        del(rawdict['Sample Id'])
         if not rid:
             self.err("No Sample ID defined",
                      numline=self._numline)
@@ -80,6 +83,16 @@ class ThermoArenaRPRCSVParser(InstrumentCSVResultsFileParser):
         raw[acode] = rawdict
         self._addRawResult(rid, raw, False)
         return 0
+
+    def csvDate2BikaDate(self,DateTime):
+        #11/03/2014 14:46:46 --> %d/%m/%Y %H:%M %p
+        try:
+            dtobj = datetime.strptime(DateTime, "%a %b %d %H:%M:%S %Y")
+            return dtobj.strftime("%Y%m%d %H:%M:%S")
+        except ValueError:
+            warn = "No date format known."
+            logger.warning(warn)
+            return DateTime
 
 
 class ThermoArenaImporter(AnalysisResultsImporter):
