@@ -1,0 +1,54 @@
+<p></p>
+
+<label for='thermoscientific_arena_20XT_file'>File</label>&nbsp;
+<input type="file" name="thermoscientific_arena_20XT_file" id="thermoscientific_arena_20XT_file"/>
+&nbsp;&nbsp;
+<label for='thermoscientific_arena_20XT_format'>Format</label>&nbsp;
+<select name="thermoscientific_arena_20XT_format" id="thermoscientific_arena_20XT_format">
+    <option value='rpr.csv'>CSV (RPR)</option>
+</select>
+<p></p>
+<h3>Advanced options</h3>
+<table cellpadding="0" cellspacing="0">
+    <tr>
+        <td><label for="thermoscientific_arena_20XT_artoapply">Analysis Requests state</label>&nbsp;</td>
+        <td>
+            <select name="thermoscientific_arena_20XT_artoapply" id="thermoscientific_arena_20XT_artoapply">
+                <option value="received">Received</option>
+                <option value="received_tobeverified">Received and to be verified</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td><label for="thermoscientific_arena_20XT_override">Results override</label></td>
+        <td>
+            <select name="thermoscientific_arena_20XT_override" id="thermoscientific_arena_20XT_override">
+                <option value="nooverride">Don't override results</option>
+                <option value="override">Override non-empty results</option>
+                <option value="overrideempty">Override non-empty results (also with empty)</option>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td style='vertical-align:top;padding-right:30px;'><label for="thermoscientific_arena_20XT_instrument">Instrument</label></td>
+        <td>
+            <select name="thermoscientific_arena_20XT_instrument" id="thermoscientific_arena_20XT_instrument"
+                    tal:define="instrlist view/getInstruments">
+                <tal:options repeat="option instrlist">
+                <option tal:attributes="value python:option;"
+                        tal:content="python:instrlist.getValue(option)"/>
+                </tal:options>
+            </select>
+            <p i18n:translate="" style='color: #3F3F3F;font-size: 0.87em;'>
+                If the system doesn't find any match (AnalysisRequest, Sample, Reference Analysis or Duplicate),
+                it will use the record's identifier to find matches with Reference Sample IDs. If a Reference
+                Sample ID is found, the system will automatically create a Calibration Test (Reference Analysis)
+                and will link it to the selected Instrument above.<br/>
+                If no instrument selected, any Calibration Test will be created for orphan IDs.
+            </p>
+        </td>
+    </tr>
+</table>
+<p></p>
+<input name="firstsubmit" type="submit" value="Submit" i18n:attributes="value"/>
+<p></p>
