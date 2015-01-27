@@ -297,13 +297,13 @@ function AnalysisRequestViewView() {
          * Given a dict with a fieldname and a fieldvalue, save this data via ajax petition.
          * @requestdata should has the format  {fieldname=fieldvalue} ->  { ReportDryMatter=false}.
          */
-        var obj_path = window.location.href.replace(window.portal_url, '');
+        var url = window.location.href.replace('/base_view', '');
+        var obj_path = url.replace(window.portal_url, '');
         // Staff for the notification
         var element,name = $.map(requestdata, function(element,index) {return element, index});
-        name = $('[data-fieldname="' + name + '"]').closest('td').prev().html();
-        var ar = obj_path.split('/');
-        ar = ar[ar.length-1];
-        var anch =  "<a href='"+ obj_path + "'>" + ar + "</a>";
+        name = $.trim($('[data-fieldname="' + name + '"]').closest('td').prev().text());
+        var ar = $.trim($('.documentFirstHeading').text());
+        var anch =  "<a href='"+ url + "'>" + ar + "</a>";
         // Needed fot the ajax petition
         requestdata['obj_path']= obj_path;
         $.ajax({
@@ -311,13 +311,23 @@ function AnalysisRequestViewView() {
             url: window.portal_url+"/@@API/update",
             data: requestdata
         })
-        .done(function() {
+        .done(function(data) {
             //success alert
-            window.bika.lims.SiteView.notificationPanel(anch + ': ' + name + ' updated successfully')
+            if (data != null && data['success'] == true) {
+                bika.lims.SiteView.notificationPanel(anch + ': ' + name + ' updated successfully', "succeed");
+            } else {
+                bika.lims.SiteView.notificationPanel('Error while updating ' + name + ' for '+ anch, "error");
+                var msg = '[bika.lims.analysisrequest.js] Error while updating ' + name + ' for '+ ar;
+                console.warn(msg);
+                window.bika.lims.error(msg);
+            }
         })
         .fail(function(){
             //error
-            bika.lims.SiteView.notificationPanel('Error while updating ' + name + ' for '+ anch)
+            bika.lims.SiteView.notificationPanel('Error while updating ' + name + ' for '+ anch, "error");
+            var msg = '[bika.lims.analysisrequest.js] Error while updating ' + name + ' for '+ ar;
+            console.warn(msg);
+            window.bika.lims.error(msg);
         });
     }
 

@@ -307,14 +307,14 @@ function SiteView() {
         $('#portal-alert').fadeIn();
     }
 
-    that.notificationPanel = function(data) {
+    that.notificationPanel = function(data, mode) {
     /**
      * Render an alert inside the content panel. Used for autosave in ARView, for example.
      */
     $('#panel-notification').remove();
         $('div#viewlet-above-content-title').append(
             "<div id='panel-notification' style='display:none'>" +
-            "<div class='success-notification-item'>"
+            "<div class='"+mode+"-notification-item'>"
             + data +
             "</div></div>");
 
