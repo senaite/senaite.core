@@ -66,7 +66,7 @@ class SysmexXSCSVParser(InstrumentCSVResultsFileParser):
             rawdict['DefaultResult'] = self.defaultresult \
                                      if self.defaultresult in self._columns \
                                      else self.err("Default Result Key " + self.defaultresult + " not found")
-            #rawdict['DateTime'] = self.csvDate2BikaDate(rawdict['Analysis Date'], rawdict['Analysis Time'])
+            rawdict['DateTime'] = self.csvDate2BikaDate(rawdict['Analysis Date'], rawdict['Analysis Time'])
             self._addRawResult(rid, {self.analysiskey: rawdict}, False)
 
         else:
@@ -80,14 +80,14 @@ class SysmexXSCSVParser(InstrumentCSVResultsFileParser):
                 else:
                     headerdict[self._columns[idx]] = result
             rid = headerdict['Sample ID No']
+            datadict['DateTime'] = self.csvDate2BikaDate(headerdict['Analysis Date'], headerdict['Analysis Time'])
             self._addRawResult(rid, datadict, False)
             self._header = headerdict
             return 0
 
-
     def csvDate2BikaDate(self, Date, Time):
         #11/03/2014 14:46:46 --> %d/%m/%Y %H:%M %p
-        dtobj = datetime.strptime(Date + Time, "%Y/%d/%m %H:%M:%S")
+        dtobj = datetime.strptime(Date + ' ' + Time, "%Y/%d/%m %H:%M:%S")
         return dtobj.strftime("%Y%m%d %H:%M:%S")
 
 
