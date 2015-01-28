@@ -1,0 +1,41 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<metal:block use-macro="context/global_defines/macros/defines" />
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      tal:attributes="lang default_language|default;
+                      xml:lang default_language|default;"
+      i18n:domain="bika"
+      tal:define="portal_state context/@@plone_portal_state;
+                  portal_url portal_state/portal_url;
+                  plone_view context/@@plone;
+                  portal portal_state/portal;">
+<head>
+    <div tal:replace="structure provider:plone.resourceregistries.scripts" />
+</head>
+<body>
+    <div id='worksheet-printview-wrapper'>
+        <div id='worksheet-printview-head'>
+            <div id='worksheet-printview-options'>
+                <label for="template" i18n:translate="">Available templates</label>
+                <select id="template" name ="template">
+                    <tal:templates tal:repeat="template python:view.getWSTemplates()">
+                        <option tal:attributes="value python:template['id']"
+                                tal:content="python:template['title']"></option>
+                    </tal:templates>
+                </select>
+            </div>
+        </div>
+        <div id='worksheet-printview'>
+        <tal:wsit tal:repeat="ws python:view.getWorksheets()">
+        <div tal:attributes="id  python:ws.id;
+                             uid python:ws.UID();"
+             tal:content="structure python:view.renderWSTemplate()"></div>
+        </tal:wsit>
+        </div>
+    </div>
+</body>
+</html>

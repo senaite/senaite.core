@@ -1,8 +1,14 @@
 # coding=utf-8
+from bika.lims import bikaMessageFactory as _, t
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.utils import to_utf8, createPdf
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from plone.resource.utils import iterDirectoriesOfType, queryResourceDirectory
+from zope.component import getAdapters
+import glob, os, sys, traceback
+import App
+import Globals
 
 class WorksheetPrintView(BrowserView):
     """ Print view for a worksheet. This view acts as a placeholder, so
@@ -11,8 +17,11 @@ class WorksheetPrintView(BrowserView):
         are shown.
     """
 
-    template = ViewPageTemplateFile("templates/worksheet_print.pt")
-    _layout = 'worksheet_print_ar_by_row.pt'
+    template = ViewPageTemplateFile("worksheet/templates/worksheet_print.pt")
+    _DEFAULT_TEMPLATE = 'ar_by_column.pt'
+    _TEMPLATES_DIR = 'worksheet/templates/print'
+    # Add-on folder to look for templates
+    _TEMPLATES_ADDON_DIR = 'worksheets'
     _current_ws_index = 0
     _worksheets = []
 
@@ -55,6 +64,50 @@ class WorksheetPrintView(BrowserView):
         else:
             return self.template()
 
+    def getWSTemplates(self):
+        """ Returns a DisplayList with the available templates found in
+            templates/worksheets
+        """
+        this_dir = os.path.dirname(os.path.abspath(__file__))
+        templates_dir = os.path.join(this_dir, self._TEMPLATES_DIR)
+        tempath = '%s/%s' % (templates_dir, '*.pt')
+        templates = [t.split('/')[-1] for t in glob.glob(tempath)]
+        out = []
+        for template in templates:
+            out.append({'id': template, 'title': template[:-3]})
+        for templates_resource in iterDirectoriesOfType(self._TEMPLATES_ADDON_DIR):
+            prefix = templates_resource.__name__
+            templates = [tpl for tpl in templates_resource.listDirectory() if tpl.endswith('.pt')]
+            for template in templates:
+                out.append({
+                    'id': '{0}:{1}'.format(prefix, template),
+                    'title': '{0} ({1})'.format(template[:-3], prefix),
+                })
+        return out
+
+
+    def renderWSTemplate(self):
+        """ Returns the current worksheet rendered with the template
+            specified in the request (param 'template').
+            Moves the iterator to the next worksheet available.
+        """
+        templates_dir = self._TEMPLATES_DIR
+        embedt = self.request.get('template', self._DEFAULT_TEMPLATE)
+        if embedt.find(':') >= 0:
+            prefix, embedt = embedt.split(':')
+            templates_dir = queryResourceDirectory(self._TEMPLATES_ADDON_DIR, prefix).directory
+        embed = ViewPageTemplateFile(os.path.join(templates_dir, embedt))
+        reptemplate = ""
+        try:
+            reptemplate = embed(self)
+        except:
+            tbex = traceback.format_exc()
+            wsid = self._worksheets[self._current_ws_index].id
+            reptemplate = "<div class='error-print'>%s - %s '%s':<pre>%s</pre></div>" % (wsid, _("Unable to load the template"), embedt, tbex)
+        if self._current_ws_index < len(self._worksheets):
+            self._current_ws_index += 1
+        return reptemplate
+
 
     def getWorksheets(self):
         """ Returns the list of worksheets to be printed
@@ -62,22 +115,51 @@ class WorksheetPrintView(BrowserView):
         return self._worksheets;
 
 
-    def nextWorksheet(self):
-        """ Returns the next worksheet from the list. Returns None when
-            the iterator reaches the end of the array. Use the call
-            beginWorksheetsIterator() to start again.
+    def getWorksheet(self):
+        """ Returns the current worksheet from the list. Returns None when
+            the iterator reaches the end of the array.
         """
         ws = None
-        if self.current_ws_index < len(self._worksheets):
+        if self._current_ws_index < len(self._worksheets):
             ws = self._worksheets[self._current_ws_index]
-            self._current_ws_index += 1
         return ws
 
-
-    def beginWorksheetsIterator(self):
-        """ Resets the ws iterator
+    def getLabData(self):
+        """ Returns a dictionary with the following keys:
+            obj, title, url, address, accredited, accreditation_body,
+            accreditation_logo, logo
         """
-        self._current_ws_index = 0
+        portal = self.context.portal_url.getPortalObject()
+        lab = self.context.bika_setup.laboratory
+        lab_address = lab.getPostalAddress() \
+                        or lab.getBillingAddress() \
+                        or lab.getPhysicalAddress()
+        if lab_address:
+            _keys = ['address', 'city', 'state', 'zip', 'country']
+            _list = ["<div>%s</div>" % lab_address.get(v) for v in _keys
+                     if lab_address.get(v)]
+            lab_address = "".join(_list)
+        else:
+            lab_address = ''
+
+        return {'obj': lab,
+                'title': to_utf8(lab.Title()),
+                'url': to_utf8(lab.getLabURL()),
+                'address': to_utf8(lab_address),
+                'accredited': lab.getLaboratoryAccredited(),
+                'accreditation_body': to_utf8(lab.getAccreditationBody()),
+                'accreditation_logo': lab.getAccreditationBodyLogo(),
+                'logo': "%s/logo_print.jpg" % portal.absolute_url()}
+
+
+    def getPortalData(self):
+        """ Returns a dictionary with the following keys:
+            obj, url
+        """
+        portal = self.context.portal_url.getPortalObject()
+        return {'obj': portal,
+                'url': portal.absolute_url()}
+
 
     def _flush_pdf():
         """ Generates a PDF using the current layout as the template and

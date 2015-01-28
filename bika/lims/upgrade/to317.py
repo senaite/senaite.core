@@ -10,4 +10,9 @@ def upgrade(tool):
     Upgrade step required for Bika LIMS 3.1.7
     """
 
+    portal = aq_parent(aq_inner(tool))
+    setup = portal.portal_setup
+
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'jsregistry')
+
     return True

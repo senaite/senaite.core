@@ -1,0 +1,49 @@
+<!--
+    Worksheet AR-by-column Template
+-->
+<tal:print tal:define="ws      python:view.getWorksheet();
+                       lab     python:view.getLabData();
+                       portal  python:view.getPortalData();">
+<style>
+#barcode-container {
+    width:100%;
+}
+.barcode {
+    float: right;
+}
+</style>
+<div id="header">
+    <div id='barcode-container'>
+        <div class='barcode'
+            data-code='code128'
+            data-showHRI='false'
+            data-barHeight='15'
+            data-addQuietZone='true'
+            tal:attributes="data-id ws/id"$>
+        </div>
+    </div>
+    <div id='lab-logo'>
+        <a tal:attributes="href lab/url">
+            <img tal:attributes="src lab/logo"/>
+        </a>
+    </div>
+    <div id="accreditation-logo"
+        tal:condition="python:lab['accredited']==True">
+        <img tal:condition="lab/accreditation_logo"
+             tal:attributes="src lab/accreditation_logo/absolute_url"/>
+        <img tal:condition="not:lab/accreditation_logo"
+             tal:attributes="src string:${portal/url}/++resource++bika.lims.images/AccreditationBodyLogo.png"/>
+    </div>
+</div>
+<div id="subheader">
+
+</div>
+<div id="content">
+
+</div>
+<div id="footer">
+
+</div>
+
+<div class="page-break"></div>
+</tal:print>

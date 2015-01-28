@@ -148,6 +148,9 @@ window.bika.lims.controllers =  {
     ".portaltype-worksheet.template-manage_results":
         ['WorksheetManageResultsView'],
 
+    "#worksheet-printview-wrapper":
+        ['WorksheetPrintView'],
+
 
     // Reports folder (not AR Reports)
     ".portaltype-reportfolder":
@@ -175,7 +178,7 @@ window.bika.lims.initview = function() {
  * 'controllerKeys' is an array which contains specific controllers' keys which aren't
  * in the current view, but you want to be loaded anyway. To deal with overlay
  * widgets, for example.
- * Calling the function "loadControllers(false, [array with desied JS controllers keys from 
+ * Calling the function "loadControllers(false, [array with desied JS controllers keys from
  * window.bika.lims.controllers])", allows you to force bika to load/reload JS controllers defined inside the array.
  */
 window.bika.lims.loadControllers = function(all, controllerKeys) {
