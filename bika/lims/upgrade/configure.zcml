@@ -525,4 +525,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Upgrade to Bika LIMS 3.1.7"
+        description=""
+        source="3053"
+        destination="317"
+        handler="bika.lims.upgrade.to317.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>
