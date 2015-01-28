@@ -1,8 +1,30 @@
     <p></p>
-    <!--  -->
+
+    <!-- Analysis service to apply the results -->
+    <label for='analysis_service'>Analysis Service</label>
+    <select name="analysis_service" id="analysis_service" tal:define="analysislist view/getAnalysisServicesDisplayList">
+        <tal:options repeat="option analysislist">
+        <option tal:attributes="value python:option;"
+                tal:content="python:analysislist.getValue(option)"/>
+        </tal:options>
+    </select>
+    <p>
+    If no Analysis Service is selected, each data column will be interpreted as a different Analysis Service.
+    In the case that an Analysis Service was selected, all the data columns would be interpreted as different
+    data from an unique Analysis Service.
+    </p>
+            <-- If analysis service is selected we have to specify the Default Result Key -->
+    <div name="default_result" style='display:none'>
+        <label for='default_result'>Default Result Key</label>
+        <input type="text" name="default_result" id="default_result">
+        Please, introduce the result key column to use as a default result.
+    </div>
+    <p></p>
+    <!-- File importer -->
     <label for=''>File</label>&nbsp;
     <input type="file" name="sysmex_xs_500i_file" id="sysmex_xs_500i_file"/>
     &nbsp;&nbsp;
+    <!-- File format selector -->
     <label for='sysmex_xs_500i_format'>Format</label>&nbsp;
     <select name="sysmex_xs_500i_format" id="sysmex_xs_500i_format">
         <option value='csv'>CSV</option>

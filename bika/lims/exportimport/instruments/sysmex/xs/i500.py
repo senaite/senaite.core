@@ -12,6 +12,10 @@ title = "Sysmex XS - 500i"
 def Import(context, request):
     """ Sysmex XS - 500i analysis results
     """
+    # I don't really know how this file works, for this reason I added an 'Analysis Service selector'.
+    # If non Analysis Service is selected, each 'data' column will be interpreted as a different Analysis Service. In
+    # the case that an Analysis Service was selected, all the data columns would be interpreted as different data from
+    # an unique Analysis Service.
     infile = request.form['sysmex_xs_500i_file']
     fileformat = request.form['sysmex_xs_500i_format']
     artoapply = request.form['sysmex_xs_500i_artoapply']
@@ -28,7 +32,17 @@ def Import(context, request):
     if not hasattr(infile, 'filename'):
         errors.append(_("No file selected"))
     if fileformat == 'csv':
-        parser = SysmexXS500iCSVParser(infile)
+        # Get the Analysis Service selected, if there is one.
+        analysis = request.form.get('analysis_service', None)
+        if analysis:
+            # Get default result key
+            defaultresult = request.form.get('default_result', None)
+            # Rise an error if default result is missing.
+            parser = SysmexXS500iCSVParser(infile, analysis, defaultresult) if defaultresult \
+                     else errors.append(t(_("You should introduce a default result key.",
+                                             mapping={"fileformat": fileformat})))
+        else:
+            parser = SysmexXS500iCSVParser(infile)
     else:
         errors.append(t(_("Unrecognized file format ${fileformat}",
                           mapping={"fileformat": fileformat})))

@@ -24,6 +24,7 @@ function InstrumentImportView() {
                     });
             }
         });
+        show_default_result_key();
 
         // Invoke import
         $("[name='firstsubmit']").live('click',  function(event){
@@ -97,4 +98,20 @@ function InstrumentImportView() {
         $('#viewlet-above-content').append(str);
     }
 
+    function show_default_result_key() {
+        /**
+         * Show/hide the input element div#default_result when an AS is (un)selected.
+         */
+        $("select#exim").change(function() {
+            console.log("heyhey");
+            setTimeout(function() {
+                $('select#analysis_service').bind("select change", function() {
+                    if ($('select#analysis_service').val() != '') {
+                        $('div#default_result').fadeIn();
+                    }
+                    else { $('div#default_result').fadeOut(); }
+                })
+            }, 800);
+        });
+    }
 }
