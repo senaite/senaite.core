@@ -13,7 +13,7 @@
     In the case that an Analysis Service was selected, all the data columns would be interpreted as different
     data from an unique Analysis Service.
     </p>
-            <-- If analysis service is selected we have to specify the Default Result Key -->
+    <!-- If analysis service is selected we have to specify the Default Result Key -->
     <div name="default_result" style='display:none'>
         <label for='default_result'>Default Result Key</label>
         <input type="text" name="default_result" id="default_result">

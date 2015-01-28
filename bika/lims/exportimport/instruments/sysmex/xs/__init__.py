@@ -32,14 +32,8 @@ class SysmexXSCSVParser(InstrumentCSVResultsFileParser):
         if sline[0] in self._excludedcolumns and not self._end_header:
             # It's the header row
             self._columns = sline
-
             self._end_header = True
             return 0
-
-        elif sline[0] in self._excludedcolumns and self._end_header:
-            # Two headers not correct
-            self.err("Unexpected header format", numline=self._numline)
-            return -1
 
         elif not sline[0] in self._excludedcolumns and self._end_header:
             # It's the data line
@@ -51,10 +45,10 @@ class SysmexXSCSVParser(InstrumentCSVResultsFileParser):
     def parse_data_line(self, sline):
         """
         Parse the data line. If an AS was selected it can distinguish between data rows and information rows.
-        :param line: a splitted data line to parser
-        :return: the number of rows to jump to parse the next line or the error code -1
+        :param sline: a split data line to parse
+        :return: the number of rows to jump and parse the next data line or return the code error -1
         """
-        # if less values are found than headers, it's an error
+        # if there are less values founded than headers, it's an error
         if len(sline) != len(self._columns):
             self.err("One data line has the wrong number of items")
             return 0
@@ -68,14 +62,16 @@ class SysmexXSCSVParser(InstrumentCSVResultsFileParser):
             if not rid:
                 self.err("No Sample ID defined",
                          numline=self._numline)
-                return 0
-            rawdict['DefaultResult'] = self.defaultresult if self.defaultresult in self._columns \
-                else self.err("Default Result Key " + self.defaultresult + " not found")
+                return -1
+            rawdict['DefaultResult'] = self.defaultresult \
+                                     if self.defaultresult in self._columns \
+                                     else self.err("Default Result Key " + self.defaultresult + " not found")
+            #rawdict['DateTime'] = self.csvDate2BikaDate(rawdict['Analysis Date'], rawdict['Analysis Time'])
             self._addRawResult(rid, {self.analysiskey: rawdict}, False)
 
         else:
-            # If non AS selected it should saves all data under the same analysed sample (Sample ID No), and ignore the
-            # less important rows from the line.
+            # If non AS is selected it should saves all data under the same analysed sample (Sample ID No), and ignore
+            # the less important rows from the line.
             headerdict = {}
             datadict = {}
             for idx, result in enumerate(sline):
