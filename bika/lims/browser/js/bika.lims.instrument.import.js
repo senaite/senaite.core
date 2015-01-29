@@ -103,7 +103,6 @@ function InstrumentImportView() {
          * Show/hide the input element div#default_result when an AS is (un)selected.
          */
         $("select#exim").change(function() {
-            console.log("heyhey");
             setTimeout(function() {
                 $('select#analysis_service').bind("select change", function() {
                     if ($('select#analysis_service').val() != '') {
