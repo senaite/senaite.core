@@ -146,7 +146,7 @@ class ARAnalysesField(ObjectField):
                 interim_fields.append(v)
 
             # create the analysis if it doesn't exist
-            if hasattr(instance, keyword):
+            if shasattr(instance, keyword):
                 analysis = instance._getOb(keyword)
             else:
                 analysis = create_analysis(
