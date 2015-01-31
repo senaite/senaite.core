@@ -3,6 +3,7 @@ from bika.lims import bikaMessageFactory as _, t
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.utils import to_utf8, createPdf
+from DateTime import DateTime
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone.resource.utils import iterDirectoriesOfType, queryResourceDirectory
 from zope.component import getAdapters
@@ -121,14 +122,11 @@ class WorksheetPrintView(BrowserView):
         """
         ws = None
         if self._current_ws_index < len(self._worksheets):
-            ws = self._worksheets[self._current_ws_index]
+            ws = self._ws_data(self._worksheets[self._current_ws_index])
         return ws
 
-    def getLabData(self):
-        """ Returns a dictionary with the following keys:
-            obj, title, url, address, accredited, accreditation_body,
-            accreditation_logo, logo
-        """
+
+    def _lab_data(self):
         portal = self.context.portal_url.getPortalObject()
         lab = self.context.bika_setup.laboratory
         lab_address = lab.getPostalAddress() \
@@ -146,19 +144,70 @@ class WorksheetPrintView(BrowserView):
                 'title': to_utf8(lab.Title()),
                 'url': to_utf8(lab.getLabURL()),
                 'address': to_utf8(lab_address),
+                'confidence': lab.getConfidence(),
                 'accredited': lab.getLaboratoryAccredited(),
                 'accreditation_body': to_utf8(lab.getAccreditationBody()),
                 'accreditation_logo': lab.getAccreditationBodyLogo(),
                 'logo': "%s/logo_print.jpg" % portal.absolute_url()}
 
 
-    def getPortalData(self):
-        """ Returns a dictionary with the following keys:
-            obj, url
+    def _ws_data(self, ws):
+        """ Creates an ws dict, accessible from the view and from each
+            specific template.
         """
+        data = {'obj': ws,
+                'id': ws.id,
+                'url': ws.absolute_url(),
+                'template_title': ws.getWorksheetTemplateTitle(),
+                'remarks': ws.getRemarks(),
+                'date_printed': self.ulocalized_time(DateTime(), long_format=1),
+                'date_created': self.ulocalized_time(ws.created(), long_format=1)}
+
+        # Sub-objects
+        # Analyses
+        # Instrument
+
+        data['createdby'] = self._createdby_data(ws)
+        data['analyst'] = self._analyst_data(ws)
+        data['printedby'] = self._printedby_data(ws)
+
         portal = self.context.portal_url.getPortalObject()
-        return {'obj': portal,
-                'url': portal.absolute_url()}
+        data['portal'] = {'obj': portal,
+                          'url': portal.absolute_url()}
+        data['laboratory'] = self._lab_data()
+        return data
+
+
+    def _createdby_data(self, ws):
+        username = ws.getOwner().getUserName()
+        return {'username': username,
+                'fullname': to_utf8(self.user_fullname(username)),
+                'email': to_utf8(self.user_email(username))}
+
+    def _analyst_data(self, ws):
+        username = ws.getAnalyst();
+        return {'username': username,
+                'fullname': to_utf8(self.user_fullname(username)),
+                'email': to_utf8(self.user_email(username))}
+
+
+    def _printedby_data(self, ws):
+        data = {}
+        member = self.context.portal_membership.getAuthenticatedMember()
+        if member:
+            username = member.getUserName()
+            data['username'] = username
+            data['fullname'] = to_utf8(self.user_fullname(username))
+            data['email'] = to_utf8(self.user_email(username))
+
+            c = [x for x in self.bika_setup_catalog(portal_type='LabContact')
+                 if x.getObject().getUsername() == username]
+            if c:
+                sf = c[0].getObject().getSignature()
+                if sf:
+                    data['signature'] = sf.absolute_url() + "/Signature"
+
+        return data
 
 
     def _flush_pdf():
