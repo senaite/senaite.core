@@ -154,11 +154,11 @@ class WorksheetPrintView(BrowserView):
         return ws
 
     def splitList(self, elements, chunksnum):
+        if len(elements) < chunksnum:
+            return [elements];
         groups=zip(*[elements[i::chunksnum] for i in range(chunksnum)])
-        if len(groups)*chunksnum == len(elements) - 1:
+        if len(groups)*chunksnum < len(elements):
             groups.extend([elements[-(len(elements)-len(groups)*chunksnum):]])
-        elif len(groups)*chunksnum < len(elements):
-            groups.extend(elements[-(len(elements)-len(groups)*chunksnum):])
         return groups
 
     def _lab_data(self):
