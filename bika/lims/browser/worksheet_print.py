@@ -169,10 +169,7 @@ class WorksheetPrintView(BrowserView):
                 'date_created': self.ulocalized_time(ws.created(), long_format=1)}
 
         # Sub-objects
-        # Analyses
-        # Instrument
-
-        data['analyses'] = self._analyses_data(ws)
+        data['ars'] = self._analyses_data(ws)
         data['createdby'] = self._createdby_data(ws)
         data['analyst'] = self._analyst_data(ws)
         data['printedby'] = self._printedby_data(ws)
@@ -216,7 +213,6 @@ class WorksheetPrintView(BrowserView):
         return data
 
     def _analyses_data(self, ws):
-        analyses = []
         ans = ws.getAnalyses()
         layout = ws.getLayout()
         an_count = len(ans)
@@ -241,28 +237,39 @@ class WorksheetPrintView(BrowserView):
 
             # This will allow to sort automatically all the analyses,
             # also if they have the same initial position.
-            andict['position'] = (pos * 100) + pos_count
-            analyses.append(andict)
+            andict['tmp_position'] = (pos * 100) + pos_count
+            andict['position'] = pos
             pos_count += 1
 
-            # Add the analysis request, client and sample info
-            if andict['request_id'] not in requestids:
-                sample = an.getSample()
-                samples[andict['request_id']] = self._sample_data(sample)
+            # Look for the analysis request, client and sample info and
+            # group the analyses per Analysis Request
+            reqid = andict['request_id']
+            if reqid not in ars:
+                arobj = an.aq_parent
+                ar = self._ar_data(arobj)
+                ar['client'] = self._client_data(arobj.aq_parent)
+                ar['sample'] = self._sample_data(an.getSample())
+                ar['analyses'] = []
+                ar['tmp_position'] = andict['tmp_position']
+                ar['position'] = andict['position']
+            else:
+                ar = ars[reqid]
+                if (andict['tmp_position'] < ar['tmp_position']):
+                    ar['tmp_position'] = andict['tmp_position'];
+                    ar['position'] = andict['position']
 
-                ar = an.aq_parent
-                ars[andict['request_id']] = self._ar_data(ar)
+            # Sort analyses by position
+            ans = ar['analyses']
+            ans.append(andict)
+            ans.sort(lambda x, y: cmp(x.get('tmp_position'), y.get('tmp_position')))
+            ar['analyses'] = ans
+            ars[reqid] = ar
 
-                client = an.aq_parent.aq_parent
-                clients[andict['request_id']] = self._client_data(client)
+        ars = [ar for ar in ars.itervalues()]
 
-            andict['sample'] = samples[andict['request_id']]
-            andict['analysisrequest'] = ars[andict['request_id']]
-            andict['client'] = clients[andict['request_id']]
-
-        # Sort analyses by position
-        analyses.sort(lambda x, y: cmp(x.get('position'), y.get('position')))
-        return analyses
+        # Sort analysis requests by position
+        ars.sort(lambda x, y: cmp(x.get('tmp_position'), y.get('tmp_position')))
+        return ars
 
     def _analysis_data(self, analysis):
         decimalmark = analysis.aq_parent.aq_parent.getDecimalMark()
