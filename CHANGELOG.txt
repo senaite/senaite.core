@@ -1,6 +1,8 @@
 3.1.7-dev (unreleased)
 -----
 LIMS-1636: Batch Sample View crash
+LIMS-1524: Invalidate email does not have variables populated
+LIMS-1572: Instrument interface: Sysmex XS-500i
 LIMS-1575: Thermo Arena 20XT
 LIMS-1423: Save details when AR workflow action kicked off
 LIMS-1624: Import default test.xlsx fails
