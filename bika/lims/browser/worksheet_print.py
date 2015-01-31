@@ -2,8 +2,13 @@
 from bika.lims import bikaMessageFactory as _, t
 from bika.lims import logger
 from bika.lims.browser import BrowserView
+from bika.lims.config import POINTS_OF_CAPTURE
+from bika.lims.interfaces import IResultOutOfRange
 from bika.lims.utils import to_utf8, createPdf
+from bika.lims.utils import formatDecimalMark, format_supsub
+from bika.lims.utils.analysis import format_uncertainty
 from DateTime import DateTime
+from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone.resource.utils import iterDirectoriesOfType, queryResourceDirectory
 from zope.component import getAdapters
@@ -167,6 +172,7 @@ class WorksheetPrintView(BrowserView):
         # Analyses
         # Instrument
 
+        data['analyses'] = self._analyses_data(ws)
         data['createdby'] = self._createdby_data(ws)
         data['analyst'] = self._analyst_data(ws)
         data['printedby'] = self._printedby_data(ws)
@@ -208,6 +214,120 @@ class WorksheetPrintView(BrowserView):
                     data['signature'] = sf.absolute_url() + "/Signature"
 
         return data
+
+    def _analyses_data(self, ws):
+        analyses = []
+        ans = ws.getAnalyses()
+        layout = ws.getLayout()
+        an_count = len(ans)
+        pos_count = 0
+        prev_pos = 0
+        for an in ans:
+            # Build the analysis-specific dict
+            andict = self._analysis_data(an)
+
+            # Analysis position
+            pos = [slot['position'] for slot in layout \
+                if slot['analysis_uid'] == an.UID()][0]
+            # compensate for possible bad data (dbw#104)
+            if type(pos) in (list, tuple) and pos[0] == 'new':
+                pos = prev_pos
+            pos = int(pos)
+            prev_pos = pos
+
+            # This will allow to sort automatically all the analyses,
+            # also if they have the same initial position.
+            andict['position'] = (pos * 100) + pos_count
+            analyses.append(andict)
+            pos_count += 1
+
+        # Sort analyses by position
+        analyses.sort(lambda x, y: cmp(x.get('position'), y.get('position')))
+
+        return analyses
+
+    def _analysis_data(self, analysis):
+        decimalmark = analysis.aq_parent.aq_parent.getDecimalMark()
+        keyword = analysis.getKeyword()
+        service = analysis.getService()
+        andict = {'obj': analysis,
+                  'id': analysis.id,
+                  'title': analysis.Title(),
+                  'keyword': keyword,
+                  'scientific_name': service.getScientificName(),
+                  'accredited': service.getAccredited(),
+                  'point_of_capture': to_utf8(POINTS_OF_CAPTURE.getValue(service.getPointOfCapture())),
+                  'category': to_utf8(service.getCategoryTitle()),
+                  'result': analysis.getResult(),
+                  'unit': to_utf8(service.getUnit()),
+                  'formatted_unit': format_supsub(to_utf8(service.getUnit())),
+                  'capture_date': analysis.getResultCaptureDate(),
+                  'request_id': analysis.aq_parent.getId(),
+                  'formatted_result': '',
+                  'uncertainty': analysis.getUncertainty(),
+                  'formatted_uncertainty': '',
+                  'retested': analysis.getRetested(),
+                  'remarks': to_utf8(analysis.getRemarks()),
+                  'resultdm': to_utf8(analysis.getResultDM()),
+                  'outofrange': False,
+                  'type': analysis.portal_type,
+                  'reftype': analysis.getReferenceType() \
+                            if hasattr(analysis, 'getReferenceType')
+                            else None,
+                  'worksheet': None,
+                  'specs': {},
+                  'formatted_specs': ''}
+
+        if analysis.portal_type == 'DuplicateAnalysis':
+            andict['reftype'] = 'd'
+
+        andict['refsample'] = analysis.getSample().id \
+                            if analysis.portal_type == 'Analysis' \
+                            else '%s - %s' % (analysis.aq_parent.id, analysis.aq_parent.Title())
+
+        # Which analysis specs must be used?
+        # Try first with those defined at AR Publish Specs level
+        if analysis.portal_type == 'ReferenceAnalysis':
+            # The analysis is a Control or Blank. We might use the
+            # reference results instead other specs
+            uid = analysis.getServiceUID()
+            specs = analysis.aq_parent.getResultsRangeDict().get(uid, {})
+
+        elif analysis.portal_type == 'DuplicateAnalysis':
+            specs = analysis.getAnalysisSpecs();
+
+        else:
+            ar = analysis.aq_parent
+            specs = ar.getPublicationSpecification()
+            if not specs or keyword not in specs.getResultsRangeDict():
+                specs = analysis.getAnalysisSpecs()
+            specs = specs.getResultsRangeDict().get(keyword, {}) \
+                    if specs else {}
+
+        andict['specs'] = specs
+        scinot = self.context.bika_setup.getScientificNotationReport()
+        andict['formatted_result'] = analysis.getFormattedResult(specs=specs, sciformat=int(scinot), decimalmark=decimalmark)
+
+        fs = ''
+        if specs.get('min', None) and specs.get('max', None):
+            fs = '%s - %s' % (specs['min'], specs['max'])
+        elif specs.get('min', None):
+            fs = '> %s' % specs['min']
+        elif specs.get('max', None):
+            fs = '< %s' % specs['max']
+        andict['formatted_specs'] = formatDecimalMark(fs, decimalmark)
+        andict['formatted_uncertainty'] = format_uncertainty(analysis, analysis.getResult(), decimalmark=decimalmark, sciformat=int(scinot))
+
+        # Out of range?
+        if specs:
+            adapters = getAdapters((analysis, ), IResultOutOfRange)
+            bsc = getToolByName(self.context, "bika_setup_catalog")
+            for name, adapter in adapters:
+                ret = adapter(specification=specs)
+                if ret and ret['out_of_range']:
+                    andict['outofrange'] = True
+                    break
+        return andict
 
 
     def _flush_pdf():
