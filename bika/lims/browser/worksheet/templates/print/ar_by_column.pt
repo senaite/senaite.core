@@ -47,7 +47,8 @@
         <span i18n:translate="">Created on</span>&nbsp;
         <span tal:content="worksheet/date_created"></span>&nbsp;
         <span i18n:translate="">by</span>&nbsp;
-        <span tal:content="worksheet/createdby/fullname">C</span>
+         <a tal:attributes="href python:('mailto:%s' % worksheet['createdby']['email'])"
+           tal:content="worksheet/createdby/fullname"></a>
     </div>
     <div>
         <span i18n:translate="">Printed on</span>&nbsp;
