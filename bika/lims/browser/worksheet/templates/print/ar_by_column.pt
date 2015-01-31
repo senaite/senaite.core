@@ -24,7 +24,7 @@
             data-showHRI='false'
             data-barHeight='15'
             data-addQuietZone='true'
-            tal:attributes="data-id worksheet/id"$>
+            tal:attributes="data-id worksheet/id">
         </div>
     </div>
     <div class='lab-logo'>
@@ -58,7 +58,9 @@
            tal:content="worksheet/analyst/fullname"></a>
     </div>
 </div>
-<div class="content">
+
+<!-- Repeat the table every 4 ARs -->
+<div class="content" tal:repeat="ars python:view.splitList(ars,4)">
     <table>
         <thead>
             <tr>

@@ -153,6 +153,13 @@ class WorksheetPrintView(BrowserView):
             ws = self._ws_data(self._worksheets[self._current_ws_index])
         return ws
 
+    def splitList(self, elements, chunksnum):
+        groups=zip(*[elements[i::chunksnum] for i in range(chunksnum)])
+        if len(groups)*chunksnum == len(elements) - 1:
+            groups.extend([elements[-(len(elements)-len(groups)*chunksnum):]])
+        elif len(groups)*chunksnum < len(elements):
+            groups.extend(elements[-(len(elements)-len(groups)*chunksnum):])
+        return groups
 
     def _lab_data(self):
         portal = self.context.portal_url.getPortalObject()

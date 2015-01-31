@@ -17,14 +17,13 @@ div.worksheet h1 {
 }
 div.subheader {
     padding: 10px 0;
-    border-bottom:1px solid #cdcdcd;
 }
 div.content {
     padding:20px 0;
     font-size:0.85em;
+    border-top:1px solid #333;
 }
 div.content table {
-    width:100%;
 }
 div.content table thead th.requestid,
 div.content table tbody th {
