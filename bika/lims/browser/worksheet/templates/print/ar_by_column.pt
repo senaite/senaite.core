@@ -14,15 +14,9 @@
 <tal:print tal:define="worksheet       python:view.getWorksheet();
                        laboratory      worksheet/laboratory;
                        portal          worksheet/portal;
-                       ars             worksheet/ars;">
-<style>
-.barcode-container {
-    width:100%;
-}
-.barcode {
-    float: right;
-}
-</style>
+                       ars             worksheet/ars;
+                       anstitles       worksheet/analyses_titles;">
+
 <div id="header">
     <div class='barcode-container'>
         <div class='barcode'
@@ -68,12 +62,65 @@
     <table>
         <thead>
             <tr>
-                <th i18n:translate="">Request ID</th>
-                <tal:ars tal:repeat="ar ars">
-                    <th tal:content="ar/id"></th>
-                </tal:ars>
+                <th i18n:translate="" class="requestid">Request ID</th>
+                <th tal:repeat="ar ars">
+                    <div class='barcode'
+                        data-code='code128'
+                        data-showHRI='false'
+                        data-barHeight='15'
+                        data-addQuietZone='true'
+                        tal:attributes="data-id ar/id"
+                        tal:condition="python:len(ars) < 5"></div>
+                    <a tal:attributes="href ar/url"
+                       tal:content="ar/id"
+                       tal:condition="python:len(ars) > 4"></a>
+                </th>
             </tr>
         </thead>
+        <tbody>
+            <tr>
+                <th i18n:translate="">Client</th>
+                <td tal:repeat="ar ars">
+                    <a tal:attributes="href ar/client/url"
+                       tal:content="ar/client/name"></a>
+                </td>
+            </tr>
+            <tr>
+                <th i18n:translate="">Sample Type</th>
+                <td tal:repeat="ar ars">
+                    <a tal:attributes="href ar/sample/sample_type/url"
+                       tal:content="ar/sample/sample_type/title"></a>
+                </td>
+            </tr>
+            <tr>
+                <th i18n:translate="">Sample</th>
+                <td tal:repeat="ar ars">
+                    <a tal:attributes="href ar/sample/url"
+                       tal:content="ar/sample/id"></a>
+                </td>
+            </tr>
+            <tr>
+                <th i18n:translate="">Sampling Date</th>
+                <td tal:repeat="ar ars"
+                    tal:content="ar/sample/sampling_date">
+                </td>
+            </tr>
+            <tr>
+                <th i18n:translate="">Date received</th>
+                <td tal:repeat="ar ars"
+                    tal:content="ar/date_received">
+                </td>
+            </tr>
+            <tr>
+                <th tal:attributes="colspan python:len(ars)+1"
+                    i8n:translate=""
+                    class="analyses">Analyses</th>
+            </tr>
+            <tr tal:repeat="antitle anstitles">
+                <th tal:content="antitle"></th>
+                <td tal:repeat="ar ars" class="result"></td>
+            </tr>
+        </tbody>
     </table>
 </div>
 <div class="footer">

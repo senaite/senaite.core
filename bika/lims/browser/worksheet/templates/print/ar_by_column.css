@@ -1,0 +1,44 @@
+.barcode-container {
+    width:100%;
+}
+.barcode {
+    float: right;
+}
+div.worksheet {
+    font-size:0.8em;
+}
+div.worksheet a {
+    color:#000;
+    text-decoration:none;
+}
+div.worksheet h1 {
+    padding-top:15px;
+    font-size:1.7em;
+}
+div.subheader {
+    padding: 10px 0;
+    border-bottom:1px solid #cdcdcd;
+}
+div.content {
+    padding:20px 0;
+    font-size:0.85em;
+}
+div.content table {
+    width:100%;
+}
+div.content table thead th.requestid,
+div.content table tbody th {
+    padding:0 5px 0 0;
+    text-align:left;
+}
+div.content table tbody td {
+    padding:4px;
+    border:1px solid #cdcdcd;
+}
+div.content table tbody td.result {
+    padding:15px;
+}
+div.content table tbody th.analyses {
+    padding:20px 0 10px 0;
+    font-size:1.2em;
+}

@@ -87,12 +87,13 @@
                 </select>
             </div>
         </div>
-
+        <style id='report-style' tal:content='structure python:view.getCSS()'></style>
         <div id='worksheet-printview'>
         <tal:wsit tal:repeat="ws python:view.getWorksheets()">
         <div tal:attributes="id  python:ws.id;
                              uid python:ws.UID();"
-             tal:content="structure python:view.renderWSTemplate()"></div>
+             tal:content="structure python:view.renderWSTemplate()"
+             class="worksheet"></div>
         </tal:wsit>
         </div>
     </div>
