@@ -222,6 +222,10 @@ class WorksheetPrintView(BrowserView):
         an_count = len(ans)
         pos_count = 0
         prev_pos = 0
+        requestids = []
+        ars = {}
+        samples = {}
+        clients = {}
         for an in ans:
             # Build the analysis-specific dict
             andict = self._analysis_data(an)
@@ -241,9 +245,23 @@ class WorksheetPrintView(BrowserView):
             analyses.append(andict)
             pos_count += 1
 
+            # Add the analysis request, client and sample info
+            if andict['request_id'] not in requestids:
+                sample = an.getSample()
+                samples[andict['request_id']] = self._sample_data(sample)
+
+                ar = an.aq_parent
+                ars[andict['request_id']] = self._ar_data(ar)
+
+                client = an.aq_parent.aq_parent
+                clients[andict['request_id']] = self._client_data(client)
+
+            andict['sample'] = samples[andict['request_id']]
+            andict['analysisrequest'] = ars[andict['request_id']]
+            andict['client'] = clients[andict['request_id']]
+
         # Sort analyses by position
         analyses.sort(lambda x, y: cmp(x.get('position'), y.get('position')))
-
         return analyses
 
     def _analysis_data(self, analysis):
@@ -328,6 +346,89 @@ class WorksheetPrintView(BrowserView):
                     andict['outofrange'] = True
                     break
         return andict
+
+    def _sample_data(self, sample):
+        data = {}
+        if sample:
+            data = {'obj': sample,
+                    'id': sample.id,
+                    'url': sample.absolute_url(),
+                    'client_sampleid': sample.getClientSampleID(),
+                    'date_sampled': sample.getDateSampled(),
+                    'sampling_date': sample.getSamplingDate(),
+                    'sampler': sample.getSampler(),
+                    'date_received': sample.getDateReceived(),
+                    'composite': sample.getComposite(),
+                    'date_expired': sample.getDateExpired(),
+                    'date_disposal': sample.getDisposalDate(),
+                    'date_disposed': sample.getDateDisposed(),
+                    'adhoc': sample.getAdHoc(),
+                    'remarks': sample.getRemarks() }
+
+            data['sample_type'] = self._sample_type(sample)
+            data['sample_point'] = self._sample_point(sample)
+        return data
+
+    def _sample_type(self, sample=None):
+        data = {}
+        sampletype = sample.getSampleType() if sample else None
+        if sampletype:
+            data = {'obj': sampletype,
+                    'id': sampletype.id,
+                    'title': sampletype.Title(),
+                    'url': sampletype.absolute_url()}
+        return data
+
+    def _sample_point(self, sample=None):
+        samplepoint = sample.getSamplePoint() if sample else None
+        data = {}
+        if samplepoint:
+            data = {'obj': samplepoint,
+                    'id': samplepoint.id,
+                    'title': samplepoint.Title(),
+                    'url': samplepoint.absolute_url()}
+        return data
+
+    def _ar_data(self, ar):
+        if not ar:
+            return {}
+
+        return {'obj': ar,
+                'id': ar.getRequestID(),
+                'client_order_num': ar.getClientOrderNumber(),
+                'client_reference': ar.getClientReference(),
+                'client_sampleid': ar.getClientSampleID(),
+                'adhoc': ar.getAdHoc(),
+                'composite': ar.getComposite(),
+                'report_drymatter': ar.getReportDryMatter(),
+                'invoice_exclude': ar.getInvoiceExclude(),
+                'date_received': self.ulocalized_time(ar.getDateReceived(), long_format=1),
+                'remarks': ar.getRemarks(),
+                'member_discount': ar.getMemberDiscount(),
+                'date_sampled': self.ulocalized_time(ar.getDateSampled(), long_format=1),
+                'date_published': self.ulocalized_time(DateTime(), long_format=1),
+                'invoiced': ar.getInvoiced(),
+                'late': ar.getLate(),
+                'subtotal': ar.getSubtotal(),
+                'vat_amount': ar.getVATAmount(),
+                'totalprice': ar.getTotalPrice(),
+                'invalid': ar.isInvalid(),
+                'url': ar.absolute_url(),
+                'remarks': to_utf8(ar.getRemarks()),
+                'footer': to_utf8(self.context.bika_setup.getResultFooter()),
+                'prepublish': False,
+                'child_analysisrequest': None,
+                'parent_analysisrequest': None,
+                'resultsinterpretation':ar.getResultsInterpretation()}
+
+    def _client_data(self, client):
+        data = {}
+        if client:
+            data['obj'] = client
+            data['id'] = client.id
+            data['url'] = client.absolute_url()
+            data['name'] = to_utf8(client.getName())
+        return data
 
 
     def _flush_pdf():

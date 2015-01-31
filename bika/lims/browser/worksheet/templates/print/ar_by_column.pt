@@ -5,10 +5,10 @@
     Example for accessing and displaying data:
 
     <p tal:content="python:worksheet['laboratory']['title']"></p>
-
     or
-
     <p tal:content="worksheet/laboratory/title"></p>
+
+    See README.txt for further details about the dict structure
 
 -->
 <tal:print tal:define="worksheet       python:view.getWorksheet();
