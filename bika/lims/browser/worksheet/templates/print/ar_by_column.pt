@@ -71,11 +71,7 @@
                         data-showHRI='false'
                         data-barHeight='15'
                         data-addQuietZone='true'
-                        tal:attributes="data-id ar/id"
-                        tal:condition="python:len(ars) < 5"></div>
-                    <a tal:attributes="href ar/url"
-                       tal:content="ar/id"
-                       tal:condition="python:len(ars) > 4"></a>
+                        tal:attributes="data-id ar/id"></div>
                 </th>
             </tr>
         </thead>
