@@ -152,10 +152,10 @@ class WorksheetFolderListingView(BikaListingView):
             'QC': {'title': _('QC'),
                    'sortable':False,
                    'toggle': False},
-            'QCTotals': {'title': _('QC Samples (QC Analyses)'),
+            'QCTotals': {'title': _('QC Samples(Analyses)'),
                    'sortable':False,
                    'toggle': False},
-            'RoutineTotals': {'title': _('Routine Samples (Routine Analyses)'),
+            'RoutineTotals': {'title': _('Routine Samples(Analyses)'),
                    'sortable':False,
                    'toggle': False},
             'CreationDate': {'title': PMF('Date Created'),
@@ -439,7 +439,7 @@ class WorksheetFolderListingView(BikaListingView):
             items[x]['QC'] = ""
             items[x]['replace']['QC'] = " ".join(blanks + controls)
             items[x]['QCTotals'] = ''
-            #import pdb;pdb.set_trace()
+
             # Get all Worksheet QC Analyses
             totalQCAnalyses = [a for a in obj.getAnalyses()
                                    if a.portal_type == 'ReferenceAnalysis'
@@ -449,9 +449,9 @@ class WorksheetFolderListingView(BikaListingView):
             for analysis in totalQCAnalyses:
                 if analysis.getSample().UID() not in totalQCSamples:
                     totalQCSamples.append(analysis.getSample().UID())
-
             # Total QC Samples (Total Routine Analyses)
             items[x]['QCTotals'] = str(len(totalQCSamples)) + '(' + str(len(totalQCAnalyses)) + ')'
+
             totalRoutineAnalyses = [a for a in obj.getAnalyses()
                                    if a not in totalQCAnalyses]
             totalRoutineSamples = []
@@ -461,6 +461,7 @@ class WorksheetFolderListingView(BikaListingView):
 
             # Total Routine Samples (Total Routine Analyses)
             items[x]['RoutineTotals'] = str(len(totalRoutineSamples)) + '(' + str(len(totalRoutineAnalyses)) + ')'
+
             if items[x]['review_state'] == 'open' \
                 and self.allow_edit \
                 and self.restrict_results == False \
