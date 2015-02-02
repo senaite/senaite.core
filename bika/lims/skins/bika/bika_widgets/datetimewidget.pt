@@ -18,7 +18,7 @@
                         id string:parent-fieldname-$fieldName-$uid">
         <span metal:define-slot="inside"
               tal:define="value accessor;
-                          value python: value and widget.ulocalized_time(value, long_format=0, context=context) or '';"
+                          value python: widget.ulocalized_time(value, context=context, request=request) if value else ''"
               tal:replace="value">Date</span>
     </span>
 </metal:view_macro>
@@ -38,7 +38,7 @@
            size="30"
            tal:attributes="name fieldName;
                            id fieldName;
-                           value python: value and widget.ulocalized_time(value, long_format=0, context=context) or '';
+                           value python: widget.ulocalized_time(value, context=context, request=request) if value else '';
                            size widget/size|nothing;
                            datepicker python:1 if not widget.show_time else 0;
                            datetimepicker python:1 if widget.show_time else 0;
