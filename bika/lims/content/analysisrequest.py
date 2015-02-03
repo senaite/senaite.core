@@ -4,7 +4,6 @@ import logging
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
 from Products.ATExtensions.field import RecordsField
-from plone.indexer import indexer
 from Products.Archetypes import atapi
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
@@ -41,18 +40,6 @@ except:
     # Plone < 4.3
     from zope.app.component.hooks import getSite
 
-
-@indexer(IAnalysisRequest)
-def Priority(instance):
-    priority = instance.getPriority()
-    if priority:
-        return priority.getSortKey()
-
-@indexer(IAnalysisRequest)
-def BatchUID(instance):
-    batch = instance.getBatch()
-    if batch:
-        return batch.UID()
 
 schema = BikaSchema.copy() + Schema((
     StringField(

@@ -27,6 +27,7 @@
   <include package=".controlpanel" />
   <include package=".exportimport" />
   <include package=".jsonapi" />
+  <include package=".indexers" />
   <include package=".locales" />
   <include package=".monkey" />
   <include package=".querystring" />

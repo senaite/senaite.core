@@ -12,7 +12,6 @@ from bika.lims.workflow import doActionFor
 from bika.lims.workflow import skip
 from DateTime import DateTime
 from operator import itemgetter
-from plone.indexer import indexer
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
@@ -21,12 +20,6 @@ from Products.ATExtensions.ateapi import RecordsField
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode, _createObjectByType
 from zope.interface import implements
-
-@indexer(IWorksheet)
-def Priority(instance):
-    priority = instance.getPriority()
-    if priority:
-        return priority.getSortKey()
 
 
 schema = BikaSchema.copy() + Schema((
