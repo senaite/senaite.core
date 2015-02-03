@@ -7,6 +7,7 @@
     i18n_domain="bika">
 
     <adapter name="Priority" factory=".analysis.Priority" />
+    <adapter name="BatchUID" factory=".analysis.BatchUID" />
 
     <adapter name="Priority" factory=".analysisrequest.Priority" />
     <adapter name="BatchUID" factory=".analysisrequest.BatchUID" />

@@ -41,6 +41,14 @@
 
     <browser:page
       for="bika.lims.interfaces.IWorksheet"
+      name="batch_selector"
+      class="bika.lims.browser.worksheet.ajaxBatchSelectorVocabulary"
+      permission="bika.lims.EditWorksheet"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IWorksheet"
       name="add_blank"
       class="bika.lims.browser.worksheet.AddBlankView"
       permission="bika.lims.EditWorksheet"
@@ -68,14 +76,6 @@
       name="export"
       class="bika.lims.browser.worksheet.ExportView"
       permission="bika.lims.EditWorksheet"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="bika.lims.interfaces.IWorksheet"
-      name="getServices"
-      class="bika.lims.browser.worksheet.ajaxGetServices"
-      permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
