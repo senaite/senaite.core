@@ -1096,4 +1096,8 @@ table#add_analyses {
     padding: 4px 10px;
 }
 
+#viewlet-above-content {
+  margin: 0px 15px 0px 15px;
+}
+
 </dtml-with>

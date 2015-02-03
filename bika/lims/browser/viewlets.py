@@ -78,7 +78,7 @@ class NewVersionsViewlet(ViewletBase):
         # - self.current_version - current bika.lims version on disk
         # - self.new_version - new version number on pypi
         # - self.new_date - date of release on pypi
-        versions = []
+        versions = {}
         qi = self.context.portal_quickinstaller
         for key in qi.keys():
             versions[key] = qi.getProductVersion(key)
