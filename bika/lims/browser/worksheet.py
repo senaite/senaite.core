@@ -992,6 +992,16 @@ class AddAnalysesView(BikaListingView):
 
         return items
 
+    def getBatch(self):
+        """return the batch (if any) value from this worksheet's getBatch.
+        If the worksheet has a batch, searches are limited to analyses which
+        belong only to that batch.
+        """
+        if hasattr(self.context, 'getBatch'):
+            batch = self.context.getBatch()
+            if batch:
+                return batch
+
     def getServices(self):
         """Initial population of the Analysis Services filter
         If a category is selected and present in the request, the list will
