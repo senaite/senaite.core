@@ -52,8 +52,11 @@ class NewVersionsViewlet(ViewletBase):
         if not allowed:
             return ""
 
-        sdm = self.context.session_data_manager
-        session = sdm.getSessionData(create=True)
+        try:
+            sdm = self.context.session_data_manager
+            session = sdm.getSessionData(create=True)
+        except AttributeError:
+            session = {}
         if 'bika-version' not in session.keys():
             session['bika-version'] = {'last-checked': 0}
 
