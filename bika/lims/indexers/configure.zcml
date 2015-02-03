@@ -15,5 +15,6 @@
     <adapter name="BatchDate" factory=".batch.BatchDate" />
 
     <adapter name="Priority" factory=".worksheet.Priority" />
+    <adapter name="BatchUID" factory=".worksheet.BatchUID" />
 
 </configure>
