@@ -498,10 +498,35 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<!-- A few extra sources for 3300 -->
 <genericsetup:upgradeStep
-        title="Adding getRawSamplePoints/Types to filter Sample easly"
+        title="v3.2 (3200) upgrade"
         description=""
         source="3050"
+        destination="3200"
+        handler="bika.lims.upgrade.to32.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+<genericsetup:upgradeStep
+        title="v3.2 (3200) upgrade"
+        description=""
+        source="3051"
+        destination="3200"
+        handler="bika.lims.upgrade.to32.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+<genericsetup:upgradeStep
+        title="v3.2 (3200) upgrade"
+        description=""
+        source="3052"
+        destination="3200"
+        handler="bika.lims.upgrade.to32.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+<genericsetup:upgradeStep
+        title="v3.2 (3200) upgrade"
+        description=""
+        source="3053"
         destination="3200"
         handler="bika.lims.upgrade.to32.upgrade"
         sortkey="1"
