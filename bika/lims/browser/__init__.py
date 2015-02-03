@@ -139,20 +139,10 @@ class BrowserView(BrowserView):
             fmt = "%I:%M %p"
         return fmt
 
-
-class ajaxGetProductVersion(BrowserView):
-    def __call__(self):
-        plone.protect.CheckAuthenticator(self.request)
-        vers = {}
-        if self.context.bika_setup.getShowNewReleasesInfo() == True:
-            pl = self.context
-            qi = pl.get('portal_quickinstaller')
-            for key in qi.keys():
-                vers[key] = qi.getProductVersion(key);
-        return json.dumps(vers)
-
-
 class ajaxHideNewReleasesInfo(BrowserView):
+    """When labmanager dismisses update box, this is called to
+    disable update checking.
+    """
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         return self.context.bika_setup.setShowNewReleasesInfo(False);

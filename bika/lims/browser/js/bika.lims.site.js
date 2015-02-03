@@ -320,71 +320,8 @@ function SiteView() {
             }
         });
 
-        if ($('input[name="_authenticator"]').length > 0) {
-            // Look for updates at pypi
-            $.ajax({
-                url: window.portal_url + "/get_product_version",
-                type: 'POST',
-                dataType: 'json',
-                data: {'_authenticator': $('input[name="_authenticator"]').val() },
-            }).done(function(data) {
-                var bv = data['bika.lims'];
-                if (bv != undefined) {
-                    // Look at pypi
-                    var pypiurl = "http://pypi.python.org/pypi/bika.lims";
-                    $.getJSON(pypiurl+'/json?callback=?', function(data) {
-                        var ver = data.info.version;
-                        var date = data.releases[ver][0].upload_time;
-                        var html = "<p class='title'>"+_("New Bika LIMS release available")+"</p><p>&nbsp;"+ver+"&nbsp;&nbsp;("+date+")<br/>";
-                        if (bv.length != ver.length || bv != ver) {
-                            // Newer version in pypi!
-                            html += _("Your current version is")+" "+bv+"</p>";
-                            html += '<p>';
-                            html += '<a class="button" href="'+pypiurl+'">'+_("Release notes")+'</a>&nbsp;&nbsp;';
-                            html += '<input id="hide-release-notifications" type="button" value="'+_("Dismiss")+'"><p>';
-                            portalAlert(html);
-
-                            $('#hide-release-notifications').click(function(e) {
-                                e.preventDefault();
-                                $.ajax({
-                                    url: window.portal_url + "/hide_new_releasesinfo",
-                                    type: 'POST',
-                                    data: {'_authenticator': $('input[name="_authenticator"]').val() },
-                                }).done(function(data) {
-                                    $('#ShowNewReleasesInfo').attr('checked', false);
-                                    $('#hide-release-notifications').closest('div.portal-alert-item').html("<p class='title'>"+_("Notifications about new releases have been disabled. You can enable this option again in Bika Setup > Security")+"</p>");
-                                });
-                            });
-                        }
-                     });
-                }
-            });
-
-            // Check if new upgrade-steps
-            $.ajax({
-                url: window.portal_url + "/prefs_install_products_form",
-                type: 'POST',
-                data: {'_authenticator': $('input[name="_authenticator"]').val() },
-            }).done(function(htmldata) {
-                if ($(htmldata).find('input[name="prefs_reinstallProducts:method"]').length > 0) {
-                    // Needs an upgrade!
-                    var html = '<form method="post" action="' + window.portal_url + '/portal_quickinstaller">';
-                    html += "<p class='title'>"+_("Upgrade step available:")+"</p>";
-                    var products = $(htmldata).find('input[name="prefs_reinstallProducts:method"]');
-                    $.each(products, function(index, product){
-                        // <input class="context" type="submit" name="prefs_reinstallProducts:method" value="bika.lims">
-                        html += "<p>";
-                        html += $(product).closest('ul.configletDetails').parent().find('label').first().html().trim()+"&nbsp;&nbsp;&nbsp;";
-                        html += _("Click to upgrade: ") + $(product).parent().html().trim()+"</span>";
-                        html += "</p>";
-
-                    });
-                    html += "</form>";
-                    portalAlert(html);
-                }
-            });
-
-            // Check instrument validity and add an alert if needed
+		if ($('input[name="_authenticator"]').length > 0) {
+			// Check instrument validity and add an alert if needed
             $.ajax({
                 url: window.portal_url + "/get_instruments_alerts",
                 type: 'POST',
