@@ -502,17 +502,8 @@
         title="Adding getRawSamplePoints/Types to filter Sample easly"
         description=""
         source="3050"
-        destination="3051"
-        handler="bika.lims.upgrade.to3051.upgrade"
-        sortkey="1"
-        profile="bika.lims:default"/>
-
-<genericsetup:upgradeStep
-        title="Add getParentUID Client level batches (and others)"
-        description=""
-        source="3052"
-        destination="3053"
-        handler="bika.lims.upgrade.to3053.upgrade"
+        destination="3200"
+        handler="bika.lims.upgrade.to32.upgrade"
         sortkey="1"
         profile="bika.lims:default"/>
 
