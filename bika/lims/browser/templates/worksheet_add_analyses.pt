@@ -101,13 +101,17 @@
 
 			</td></tr><tr><td>
 
-				<tal:block condition="python:not view.getBatch">
+				<tal:block condition="python:not view.getBatch()">
 					<label tal:attributes="for string:batchselector"
 						i18n:translate="">Batch</label>
 					<input type="text" name="batchselector"
 						placeholder="Type to search"
 						id="batchselector"/>
 					<input type="hidden" tal:attributes="name string:${form_id}_BatchUID">
+				</tal:block>
+
+				<tal:block condition="python:view.getBatch()">
+					&nbsp;
 				</tal:block>
 
 			</td><td>
