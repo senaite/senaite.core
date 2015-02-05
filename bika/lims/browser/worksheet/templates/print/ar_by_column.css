@@ -1,7 +1,7 @@
 .barcode-container {
     width:100%;
 }
-.barcode {
+div#header .barcode {
     float: right;
 }
 div.worksheet {
@@ -29,10 +29,12 @@ div.content table thead th.requestid,
 div.content table tbody th {
     padding:0 5px 0 0;
     text-align:left;
+    width:100px;
 }
 div.content table tbody td {
     padding:4px;
     border:1px solid #cdcdcd;
+    text-align:center;
 }
 div.content table tbody td.result {
     padding:15px;
@@ -40,4 +42,25 @@ div.content table tbody td.result {
 div.content table tbody th.analyses {
     padding:20px 0 10px 0;
     font-size:1.2em;
+}
+
+@media print {
+    div.worksheet {
+    }
+    div.barcode-container {
+        margin-left:-0.2in;
+    }
+    div.content table thead th {
+        text-align:center;
+    }
+    div.content table thead th.requestid {
+        text-align:left;
+    }
+    div.content table div.barcode {
+        margin: 0 -10px;
+    }
+    div.content table thead th.requestid,
+    div.content table tbody th {
+        white-space:normal;
+    }
 }

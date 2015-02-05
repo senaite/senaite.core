@@ -61,6 +61,12 @@
             html {
                 background-color:#fff;
             }
+            body {
+                font: serif;
+                font-size:10pt;
+                max-width:7.6in;
+                margin:0.4in 0.10in;
+            }
             .page-break  {
                 display: block;
                 page-break-before: always;
@@ -71,6 +77,11 @@
                 display:none;
                 visibility:hidden;
             }
+            @page {
+                size: auto;   /* auto is the initial value */
+                margin: 0mm;
+            }
+
         }
     </style>
 </head>
