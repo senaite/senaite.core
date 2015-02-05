@@ -49,3 +49,12 @@ div.content table tbody th.analyses {
     padding:20px 0 10px 0;
     font-size:1.2em;
 }
+div.content table td.requestid {
+    border:none;
+}
+
+@media print {
+    div.content table div.barcode {
+        margin: 0 0 0 -10px;
+    }
+}

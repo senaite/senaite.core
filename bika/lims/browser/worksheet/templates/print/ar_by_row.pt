@@ -91,9 +91,4 @@
         </tbody>
     </table>
 </div>
-<div class="footer">
-
-</div>
-
-<div class="page-break"></div>
 </tal:print>
