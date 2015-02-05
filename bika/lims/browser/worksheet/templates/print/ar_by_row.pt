@@ -85,7 +85,7 @@
                     </div>
                 </td>
                 <tal:results repeat="ans anst">
-                <td class="result"></td>
+                    <td tal:attributes="class python:'result' if ans in [an['title'] for an in ar['analyses']] else 'result no-result';"></td>
                 </tal:results>
             </tr>
         </tbody>

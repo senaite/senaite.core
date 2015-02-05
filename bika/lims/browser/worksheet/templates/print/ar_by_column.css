@@ -39,6 +39,9 @@ div.content table tbody td {
 div.content table tbody td.result {
     padding:15px;
 }
+div.content table tbody td.no-result {
+    background-color: #cdcdcd;
+}
 div.content table tbody th.analyses {
     padding:20px 0 10px 0;
     font-size:1.2em;

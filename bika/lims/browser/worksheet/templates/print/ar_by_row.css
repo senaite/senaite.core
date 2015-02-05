@@ -45,6 +45,9 @@ div.content table tbody td.requestid {
 div.content table tbody td.result {
     width:90px;
 }
+div.content table tbody td.no-result {
+    background-color: #cdcdcd;
+}
 div.content table tbody th.analyses {
     padding:20px 0 10px 0;
     font-size:1.2em;

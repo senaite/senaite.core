@@ -24,7 +24,7 @@ class WorksheetPrintView(BrowserView):
     """
 
     template = ViewPageTemplateFile("worksheet/templates/worksheet_print.pt")
-    _DEFAULT_TEMPLATE = 'ar_by_row.pt'
+    _DEFAULT_TEMPLATE = 'ar_by_column.pt'
     _TEMPLATES_DIR = 'worksheet/templates/print'
     # Add-on folder to look for templates
     _TEMPLATES_ADDON_DIR = 'worksheets'
@@ -507,6 +507,7 @@ class WorksheetPrintView(BrowserView):
                 'child_analysisrequest': None,
                 'parent_analysisrequest': None,
                 'resultsinterpretation':ar.getResultsInterpretation()}
+
 
     def _client_data(self, client):
         """ Returns a dict that represents the client specified
