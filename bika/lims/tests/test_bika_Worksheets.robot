@@ -5,16 +5,35 @@ Library          Selenium2Library  timeout=5  implicit_wait=0.2
 Library          String
 Resource         keywords.txt
 Library          bika.lims.testing.Keywords
+Library          DebugLibrary
 Resource         plone/app/robotframework/selenium.robot
 Resource         plone/app/robotframework/saucelabs.robot
 Variables        plone/app/testing/interfaces.py
 Variables        bika/lims/tests/variables.py
 Suite Setup      Start browser
-Suite Teardown   Close All Browsers
+#Suite Teardown   Close All Browsers
 
 *** Variables ***
 
+${client1_factory_url}  ${PLONEURL}/clients/client-1/portal_factory/AnalysisRequest/xxx/ar_add?layout=columns&ar_count=5
+
 *** Test Cases ***
+
+Worksheet add_analyses batch selector
+    @{time} =                          Get Time        year month day hour min sec
+    Log in              test_labmanager  test_labmanager
+
+    debug
+
+    # Create a batch
+    ${batch} =      createObjectByType  Batch  /batches   B1
+
+
+
+
+
+
+
 
 Test Worksheets
     [Documentation]   Worksheets
@@ -50,6 +69,7 @@ Test Worksheets
     Verify all
     Log out
     Log in   test_labmanager   test_labmanager
+
 
 
 

@@ -20,6 +20,14 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <browser:page
+      for="bika.lims.interfaces.IWorksheetFolder"
+      name="batch_selector"
+      class="bika.lims.browser.worksheet.ajaxBatchSelectorVocabulary"
+      permission="bika.lims.EditWorksheet"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
     <!-- Workflow action button clicked -->
     <browser:page
       for="bika.lims.interfaces.IWorksheetFolder"

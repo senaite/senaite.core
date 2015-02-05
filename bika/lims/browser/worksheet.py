@@ -840,12 +840,20 @@ class AddAnalysesView(BikaListingView):
         self.description = ""
         self.catalog = "bika_analysis_catalog"
         self.context_actions = {}
+
         # initial review state for first form display of the worksheet
         # add_analyses search view - first batch of analyses, latest first.
         self.contentFilter = {'portal_type': 'Analysis',
                               'review_state':'sample_received',
                               'worksheetanalysis_review_state':'unassigned',
                               'cancellation_state':'active'}
+        # Worksheets which have a value in the Batch field, are required not
+        # to show analyses from other batches.  So we set the default
+        # contentFilter here.
+        batch = self.context.getBatch()
+        if batch:
+            self.contentFilter['BatchUID'] = batch.UID()
+
         self.base_url = self.context.absolute_url()
         self.view_url = self.base_url + "/add_analyses"
         self.show_sort_column = False

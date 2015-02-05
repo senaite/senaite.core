@@ -7,6 +7,55 @@ function WorksheetFolderView() {
 
 	that.load = function () {
 
+		batchselector_dropdown_init()
+		template_selected()
+		instrument_selected()
+
+	}
+
+	function batchselector_dropdown_init() {
+		/*
+		 * Configure the batch selector combogrid
+		 */
+		var authenticator = $($("[name='_authenticator']")[0]).val()
+		var url = window.location.href.split("/add_analyses")[0] +
+		  "/batch_selector?_authenticator=" + authenticator
+		var options = {
+			url: url,
+			width: "500px",
+			showOn: false,
+			searchIcon: true,
+			minLength: "2",
+			resetButton: false,
+			sord: "asc",
+			sidx: "id",
+			colModel: [
+				{
+					"columnName": _("ID"),
+					"align": "left",
+					"label": _("ID"),
+					"width": "30"
+				},
+				{
+					"columnName": "Title",
+					"align": "left",
+					"label": _("Title"),
+					"width": "70"
+				},
+				{"columnName": "UID", "hidden": true}
+			],
+			select: function (event, ui) {
+				// set this for the search-form submit handler
+				$('#batchselector').attr('uid', ui['item']['UID'])
+				$('#batchselector').val(ui['item']['Title'])
+				$('[name="BatchUID"]').val(ui['item']['UID'])
+				return false
+			}
+		}
+		$("#batchselector").combogrid(options)
+	}
+
+	function template_selected(){
 		// selecting a template might pre-select the instrument
 		$(".template").change(function () {
 			templateinstruments = $.parseJSON($(".templateinstruments").val());
@@ -21,7 +70,9 @@ function WorksheetFolderView() {
 				}
 			}
 		});
+	}
 
+	function instrument_selected(){
 		$('div.worksheet_add_controls select.instrument').change(function () {
 			var val = $(this).val();
 			$('div.worksheet_add_controls div.alert').remove();
@@ -30,6 +81,8 @@ function WorksheetFolderView() {
 			}
 		});
 	}
+
+
 }
 
 /**

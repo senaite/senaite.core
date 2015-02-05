@@ -30,6 +30,8 @@
   position:relative;
   top:0;
   font-size:100%;
+  border:none;
+  cursor:pointer;
 }
 
 .context_action_dropdown {
