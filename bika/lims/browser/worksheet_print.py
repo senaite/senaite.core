@@ -286,7 +286,14 @@ class WorksheetPrintView(BrowserView):
         clients = {}
         for an in ans:
             # Build the analysis-specific dict
-            andict = self._analysis_data(an)
+            if an.portal_type == "DuplicateAnalysis":
+                andict = self._analysis_data(an.getAnalysis())
+                andict['id'] = an.getReferenceAnalysesGroupID();
+                andict['obj'] = an;
+                andict['type'] = "DuplicateAnalysis"
+                andict['reftype'] = 'd'
+            else:
+                andict = self._analysis_data(an)
 
             # Analysis position
             pos = [slot['position'] for slot in layout \
@@ -306,14 +313,24 @@ class WorksheetPrintView(BrowserView):
             # Look for the analysis request, client and sample info and
             # group the analyses per Analysis Request
             reqid = andict['request_id']
+            if an.portal_type in ("ReferenceAnalysis", "DuplicateAnalysis"):
+                reqid = an.getReferenceAnalysesGroupID()
+
             if reqid not in ars:
                 arobj = an.aq_parent
+                if an.portal_type == "DuplicateAnalysis":
+                    arobj = an.getAnalysis().aq_parent
+
                 ar = self._ar_data(arobj)
                 ar['client'] = self._client_data(arobj.aq_parent)
                 ar['sample'] = self._sample_data(an.getSample())
                 ar['analyses'] = []
                 ar['tmp_position'] = andict['tmp_position']
                 ar['position'] = andict['position']
+                if an.portal_type in ("ReferenceAnalysis", "DuplicateAnalysis"):
+                    ar['id'] = an.getReferenceAnalysesGroupID()
+                    ar['url'] = an.absolute_url()
+
             else:
                 ar = ars[reqid]
                 if (andict['tmp_position'] < ar['tmp_position']):
@@ -366,9 +383,6 @@ class WorksheetPrintView(BrowserView):
                   'worksheet': None,
                   'specs': {},
                   'formatted_specs': ''}
-
-        if analysis.portal_type == 'DuplicateAnalysis':
-            andict['reftype'] = 'd'
 
         andict['refsample'] = analysis.getSample().id \
                             if analysis.portal_type == 'Analysis' \
@@ -430,20 +444,16 @@ class WorksheetPrintView(BrowserView):
             data = {'obj': sample,
                     'id': sample.id,
                     'url': sample.absolute_url(),
-                    'client_sampleid': sample.getClientSampleID(),
                     'date_sampled': self.ulocalized_time(sample.getDateSampled(), long_format=0),
-                    'sampling_date': self.ulocalized_time(sample.getSamplingDate(), long_format=0),
-                    'sampler': sample.getSampler(),
                     'date_received': self.ulocalized_time(sample.getDateReceived(), long_format=0),
-                    'composite': sample.getComposite(),
-                    'date_expired': self.ulocalized_time(sample.getDateExpired(), long_format=0),
-                    'date_disposal': self.ulocalized_time(sample.getDisposalDate(), long_format=0),
-                    'date_disposed': self.ulocalized_time(sample.getDateDisposed(), long_format=0),
-                    'adhoc': sample.getAdHoc(),
-                    'remarks': sample.getRemarks() }
+                    }
 
-            data['sample_type'] = self._sample_type(sample)
-            data['sample_point'] = self._sample_point(sample)
+            if sample.portal_type == "ReferenceSample":
+                data['sample_type'] = None;
+                data['sample_point'] = None;
+            else:
+                data['sample_type'] = self._sample_type(sample)
+                data['sample_point'] = self._sample_point(sample)
         return data
 
     def _sample_type(self, sample=None):
@@ -480,33 +490,24 @@ class WorksheetPrintView(BrowserView):
         if not ar:
             return {}
 
-        return {'obj': ar,
-                'id': ar.getRequestID(),
-                'client_order_num': ar.getClientOrderNumber(),
-                'client_reference': ar.getClientReference(),
-                'client_sampleid': ar.getClientSampleID(),
-                'adhoc': ar.getAdHoc(),
-                'composite': ar.getComposite(),
-                'report_drymatter': ar.getReportDryMatter(),
-                'invoice_exclude': ar.getInvoiceExclude(),
-                'date_received': self.ulocalized_time(ar.getDateReceived(), long_format=0),
-                'remarks': ar.getRemarks(),
-                'member_discount': ar.getMemberDiscount(),
-                'date_sampled': self.ulocalized_time(ar.getDateSampled(), long_format=0),
-                'date_published': self.ulocalized_time(DateTime(), long_format=0),
-                'invoiced': ar.getInvoiced(),
-                'late': ar.getLate(),
-                'subtotal': ar.getSubtotal(),
-                'vat_amount': ar.getVATAmount(),
-                'totalprice': ar.getTotalPrice(),
-                'invalid': ar.isInvalid(),
-                'url': ar.absolute_url(),
-                'remarks': to_utf8(ar.getRemarks()),
-                'footer': to_utf8(self.context.bika_setup.getResultFooter()),
-                'prepublish': False,
-                'child_analysisrequest': None,
-                'parent_analysisrequest': None,
-                'resultsinterpretation':ar.getResultsInterpretation()}
+        if ar.portal_type == "AnalysisRequest":
+            return {'obj': ar,
+                    'id': ar.getRequestID(),
+                    'date_received': self.ulocalized_time(ar.getDateReceived(), long_format=0),
+                    'date_sampled': self.ulocalized_time(ar.getDateSampled(), long_format=0),
+                    'url': ar.absolute_url(),}
+        elif ar.portal_type == "ReferenceSample":
+            return {'obj': ar,
+                    'id': ar.id,
+                    'date_received': self.ulocalized_time(ar.getDateReceived(), long_format=0),
+                    'date_sampled': self.ulocalized_time(ar.getDateSampled(), long_format=0),
+                    'url': ar.absolute_url(),}
+        else:
+            return {'obj': ar,
+                    'id': ar.id,
+                    'date_received': "",
+                    'date_sampled': "",
+                    'url': ar.absolute_url(),}
 
 
     def _client_data(self, client):

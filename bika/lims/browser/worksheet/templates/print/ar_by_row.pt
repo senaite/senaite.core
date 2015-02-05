@@ -80,7 +80,8 @@
                     <a tal:attributes="href ar/client/url"
                        tal:content="ar/client/name"></a><br/>
                     <a tal:attributes="href ar/sample/sample_type/url"
-                       tal:content="ar/sample/sample_type/title"></a><br/>
+                       tal:content="ar/sample/sample_type/title"
+                       tal:condition="ar/sample/sample_type"></a><br/>
                     <span tal:content="ar/date_received"></span>
                     </div>
                 </td>

@@ -87,7 +87,8 @@
                 <th i18n:translate="">Sample Type</th>
                 <td tal:repeat="ar ars">
                     <a tal:attributes="href ar/sample/sample_type/url"
-                       tal:content="ar/sample/sample_type/title"></a>
+                       tal:content="ar/sample/sample_type/title"
+                       tal:condition="ar/sample/sample_type"></a>
                 </td>
             </tr>
             <tr>
@@ -100,7 +101,7 @@
             <tr>
                 <th i18n:translate="">Sampling Date</th>
                 <td tal:repeat="ar ars"
-                    tal:content="ar/sample/sampling_date">
+                    tal:content="ar/sample/date_sampled">
                 </td>
             </tr>
             <tr>
