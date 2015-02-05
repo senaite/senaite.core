@@ -153,7 +153,14 @@ class WorksheetPrintView(BrowserView):
             ws = self._ws_data(self._worksheets[self._current_ws_index])
         return ws
 
+
     def splitList(self, elements, chunksnum):
+        """ Splits a list to a n lists with chunksnum number of elements
+            each one.
+            For a list [3,4,5,6,7,8,9] with chunksunum 4, the method
+            will return the following list of groups:
+            [[3,4,5,6],[7,8,9]]
+        """
         if len(elements) < chunksnum:
             return [elements];
         groups=zip(*[elements[i::chunksnum] for i in range(chunksnum)])
@@ -161,7 +168,12 @@ class WorksheetPrintView(BrowserView):
             groups.extend([elements[-(len(elements)-len(groups)*chunksnum):]])
         return groups
 
+
     def _lab_data(self):
+        """ Returns a dictionary that represents the lab object
+            Keys: obj, title, url, address, confidence, accredited,
+                  accreditation_body, accreditation_logo, logo
+        """
         portal = self.context.portal_url.getPortalObject()
         lab = self.context.bika_setup.laboratory
         lab_address = lab.getPostalAddress() \
@@ -189,6 +201,9 @@ class WorksheetPrintView(BrowserView):
     def _ws_data(self, ws):
         """ Creates an ws dict, accessible from the view and from each
             specific template.
+            Keys: obj, id, url, template_title, remarks, date_printed,
+                ars, createdby, analyst, printedby, analyses_titles,
+                portal, laboratory
         """
         data = {'obj': ws,
                 'id': ws.id,
@@ -216,12 +231,19 @@ class WorksheetPrintView(BrowserView):
 
 
     def _createdby_data(self, ws):
+        """ Returns a dict that represents the user who created the ws
+            Keys: username, fullmame, email
+        """
         username = ws.getOwner().getUserName()
         return {'username': username,
                 'fullname': to_utf8(self.user_fullname(username)),
                 'email': to_utf8(self.user_email(username))}
 
     def _analyst_data(self, ws):
+        """ Returns a dict that represent the analyst assigned to the
+            worksheet.
+            Keys: username, fullname, email
+        """
         username = ws.getAnalyst();
         return {'username': username,
                 'fullname': to_utf8(self.user_fullname(username)),
@@ -229,6 +251,9 @@ class WorksheetPrintView(BrowserView):
 
 
     def _printedby_data(self, ws):
+        """ Returns a dict that represents the user who prints the ws
+            Keys: username, fullname, email
+        """
         data = {}
         member = self.context.portal_membership.getAuthenticatedMember()
         if member:
@@ -247,6 +272,9 @@ class WorksheetPrintView(BrowserView):
         return data
 
     def _analyses_data(self, ws):
+        """ Returns a list of dicts. Each dict represents an analysis
+            assigned to the worksheet
+        """
         ans = ws.getAnalyses()
         layout = ws.getLayout()
         an_count = len(ans)
@@ -306,6 +334,8 @@ class WorksheetPrintView(BrowserView):
         return ars
 
     def _analysis_data(self, analysis):
+        """ Returns a dict that represents the analysis
+        """
         decimalmark = analysis.aq_parent.aq_parent.getDecimalMark()
         keyword = analysis.getKeyword()
         service = analysis.getService()
@@ -389,20 +419,26 @@ class WorksheetPrintView(BrowserView):
         return andict
 
     def _sample_data(self, sample):
+        """ Returns a dict that represents the sample
+            Keys: obj, id, url, client_sampleid, date_sampled,
+                  sampling_date, sampler, date_received, composite,
+                  date_expired, date_disposal, date_disposed, adhoc,
+                  remarks
+        """
         data = {}
         if sample:
             data = {'obj': sample,
                     'id': sample.id,
                     'url': sample.absolute_url(),
                     'client_sampleid': sample.getClientSampleID(),
-                    'date_sampled': sample.getDateSampled(),
-                    'sampling_date': sample.getSamplingDate(),
+                    'date_sampled': self.ulocalized_time(sample.getDateSampled(), long_format=0),
+                    'sampling_date': self.ulocalized_time(sample.getSamplingDate(), long_format=0),
                     'sampler': sample.getSampler(),
-                    'date_received': sample.getDateReceived(),
+                    'date_received': self.ulocalized_time(sample.getDateReceived(), long_format=0),
                     'composite': sample.getComposite(),
-                    'date_expired': sample.getDateExpired(),
-                    'date_disposal': sample.getDisposalDate(),
-                    'date_disposed': sample.getDateDisposed(),
+                    'date_expired': self.ulocalized_time(sample.getDateExpired(), long_format=0),
+                    'date_disposal': self.ulocalized_time(sample.getDisposalDate(), long_format=0),
+                    'date_disposed': self.ulocalized_time(sample.getDateDisposed(), long_format=0),
                     'adhoc': sample.getAdHoc(),
                     'remarks': sample.getRemarks() }
 
@@ -411,6 +447,10 @@ class WorksheetPrintView(BrowserView):
         return data
 
     def _sample_type(self, sample=None):
+        """ Returns a dict that represents the sample type assigned to
+            the sample specified
+            Keys: obj, id, title, url
+        """
         data = {}
         sampletype = sample.getSampleType() if sample else None
         if sampletype:
@@ -421,6 +461,10 @@ class WorksheetPrintView(BrowserView):
         return data
 
     def _sample_point(self, sample=None):
+        """ Returns a dict that represents the sample point assigned to
+            the sample specified
+            Keys: obj, id, title, url
+        """
         samplepoint = sample.getSamplePoint() if sample else None
         data = {}
         if samplepoint:
@@ -431,6 +475,8 @@ class WorksheetPrintView(BrowserView):
         return data
 
     def _ar_data(self, ar):
+        """ Returns a dict that represents the analysis request
+        """
         if not ar:
             return {}
 
@@ -443,11 +489,11 @@ class WorksheetPrintView(BrowserView):
                 'composite': ar.getComposite(),
                 'report_drymatter': ar.getReportDryMatter(),
                 'invoice_exclude': ar.getInvoiceExclude(),
-                'date_received': self.ulocalized_time(ar.getDateReceived(), long_format=1),
+                'date_received': self.ulocalized_time(ar.getDateReceived(), long_format=0),
                 'remarks': ar.getRemarks(),
                 'member_discount': ar.getMemberDiscount(),
-                'date_sampled': self.ulocalized_time(ar.getDateSampled(), long_format=1),
-                'date_published': self.ulocalized_time(DateTime(), long_format=1),
+                'date_sampled': self.ulocalized_time(ar.getDateSampled(), long_format=0),
+                'date_published': self.ulocalized_time(DateTime(), long_format=0),
                 'invoiced': ar.getInvoiced(),
                 'late': ar.getLate(),
                 'subtotal': ar.getSubtotal(),
@@ -463,6 +509,9 @@ class WorksheetPrintView(BrowserView):
                 'resultsinterpretation':ar.getResultsInterpretation()}
 
     def _client_data(self, client):
+        """ Returns a dict that represents the client specified
+            Keys: obj, id, url, name
+        """
         data = {}
         if client:
             data['obj'] = client
