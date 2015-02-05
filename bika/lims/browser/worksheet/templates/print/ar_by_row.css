@@ -26,7 +26,6 @@ div.content {
 div.arinfo {
     font-size:0.9em;
     padding: 0 10px;
-    text-align:center;
     font-weight:normal;
 }
 div.content table {
@@ -54,6 +53,9 @@ div.content table tbody th.analyses {
 }
 div.content table td.requestid {
     border:none;
+}
+div.content table div.barcode {
+    float:none;
 }
 
 @media print {

@@ -59,7 +59,7 @@
     </div>
 </div>
 <!-- Repeat the table every 6 Analyses -->
-<div class="content" tal:repeat="anst python:view.splitList(anstitles,6)">
+<div class="content" tal:repeat="anst python:view.splitList(anstitles,view.getNumColumns())">
     <table>
         <thead>
             <tr>

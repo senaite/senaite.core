@@ -37,11 +37,35 @@ function WorksheetPrintView() {
         $('#template').change(function(e) {
             var url = window.location.href;
             var seltpl = $(this).val();
+            var selcols = $("#numcols").val();
             $('#worksheet-printview').animate({opacity:0.2}, 'slow');
             $.ajax({
                 url: url,
                 type: 'POST',
-                data: { "template":seltpl}
+                data: { "template":seltpl,
+                        "numcols":selcols}
+            })
+            .always(function(data) {
+                var htmldata = data;
+                var cssdata = $(htmldata).find('#report-style').html();
+                $('#report-style').html(cssdata);
+                htmldata = $(htmldata).find('#worksheet-printview').html();
+                $('#worksheet-printview').html(htmldata);
+                $('#worksheet-printview').animate({opacity:1}, 'slow');
+                load_barcodes();
+            });
+        });
+
+        $('#numcols').change(function(e) {
+            var url = window.location.href;
+            var selcols = $(this).val();
+            var seltpl = $('#template').val();
+            $('#worksheet-printview').animate({opacity:0.2}, 'slow');
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: { "template":seltpl,
+                        "numcols":selcols}
             })
             .always(function(data) {
                 var htmldata = data;

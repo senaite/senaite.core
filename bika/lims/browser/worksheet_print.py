@@ -25,11 +25,13 @@ class WorksheetPrintView(BrowserView):
 
     template = ViewPageTemplateFile("worksheet/templates/worksheet_print.pt")
     _DEFAULT_TEMPLATE = 'ar_by_column.pt'
+    _DEFAULT_NUMCOLS = 4
     _TEMPLATES_DIR = 'worksheet/templates/print'
     # Add-on folder to look for templates
     _TEMPLATES_ADDON_DIR = 'worksheets'
     _current_ws_index = 0
     _worksheets = []
+
 
     def __init__(self, context, request):
         super(WorksheetPrintView, self).__init__(context, request)
@@ -69,6 +71,7 @@ class WorksheetPrintView(BrowserView):
             return self._flush_pdf()
         else:
             return self.template()
+
 
     def getWSTemplates(self):
         """ Returns a DisplayList with the available templates found in
@@ -136,6 +139,12 @@ class WorksheetPrintView(BrowserView):
             with open(path, 'r') as content_file:
                 content = content_file.read()
         return content
+
+
+    def getNumColumns(self):
+        """ Returns the number of columns to display
+        """
+        return int(self.request.get('numcols', self._DEFAULT_NUMCOLS))
 
 
     def getWorksheets(self):

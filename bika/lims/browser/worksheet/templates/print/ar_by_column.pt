@@ -60,7 +60,7 @@
 </div>
 
 <!-- Repeat the table every 4 ARs -->
-<div class="content" tal:repeat="ars python:view.splitList(ars,4)">
+<div class="content" tal:repeat="ars python:view.splitList(ars,view.getNumColumns())">
     <table>
         <thead>
             <tr>
