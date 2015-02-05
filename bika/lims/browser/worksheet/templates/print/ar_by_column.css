@@ -32,7 +32,7 @@ div.content table tbody th {
     width:100px;
 }
 div.content table tbody td {
-    padding:4px;
+    padding:4px 0;
     border:1px solid #cdcdcd;
     text-align:center;
 }
@@ -56,11 +56,11 @@ div.content table tbody th.analyses {
     div.content table thead th.requestid {
         text-align:left;
     }
-    div.content table div.barcode {
-        margin: 0 -10px;
-    }
     div.content table thead th.requestid,
     div.content table tbody th {
         white-space:normal;
+    }
+    div.content table div.barcode {
+        margin: 0 -10px;
     }
 }

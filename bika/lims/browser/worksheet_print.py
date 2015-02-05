@@ -24,7 +24,7 @@ class WorksheetPrintView(BrowserView):
     """
 
     template = ViewPageTemplateFile("worksheet/templates/worksheet_print.pt")
-    _DEFAULT_TEMPLATE = 'ar_by_column.pt'
+    _DEFAULT_TEMPLATE = 'ar_by_row.pt'
     _TEMPLATES_DIR = 'worksheet/templates/print'
     # Add-on folder to look for templates
     _TEMPLATES_ADDON_DIR = 'worksheets'

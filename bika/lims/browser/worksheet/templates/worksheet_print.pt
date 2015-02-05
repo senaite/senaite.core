@@ -34,7 +34,36 @@
             padding:10px 20px 20px 10px;
             background-color: #dcdcdc;
             border-bottom: 20px solid #CDCDCD;
-            font-size:1.1em;
+        }
+        #worksheet-printview-head #worksheet-printview-options label {
+            padding:5px 10px 5px 10px;
+        }
+        #worksheet-printview-head #buttons {
+            text-align:right;
+            padding-left:10px;
+            padding-top:10px;
+        }
+        #worksheet-printview-head #buttons input {
+            padding:4px 15px;
+            border:none;
+            color:#fff;
+            cursor:pointer;
+        }
+        #worksheet-printview-head #buttons input:hover {
+            opacity:0.8;
+            moz-opacity:0.8;
+            filter:alpha(opacity=80);
+            -webkit-transition: opacity 250ms ease-in-out;
+            -moz-transition: opacity 250ms ease-in-out;
+            -o-transition: opacity 250ms ease-in-out;
+            -ms-transition: opacity 250ms ease-in-out;
+            transition: opacity 250ms ease-in-out;
+        }
+        #worksheet-printview-head #buttons #print_button {
+            background-color:#0B486B;
+        }
+        #worksheet-printview-head #buttons #cancel_button {
+            background-color:#666;
         }
         .page-break {
             background-color: #CDCDCD;
@@ -65,7 +94,7 @@
                 font: serif;
                 font-size:10pt;
                 max-width:7.6in;
-                margin:0.4in 0.10in;
+                margin:0;
             }
             .page-break  {
                 display: block;
@@ -78,8 +107,8 @@
                 visibility:hidden;
             }
             @page {
-                size: auto;   /* auto is the initial value */
-                margin: 0mm;
+                size: auto;
+                margin: 0.7in 0.1in 1in 0.1in;
             }
 
         }
@@ -96,6 +125,10 @@
                                 tal:content="python:template['title']"></option>
                     </tal:templates>
                 </select>
+            </div>
+            <div id='buttons'>
+                <input type="button" id='cancel_button' i18n:translate="value" value="Cancel"/>&nbsp;&nbsp;
+                <input type="button" id='print_button' i18n:translate="value" value="Print"/>
             </div>
         </div>
         <style id='report-style' tal:content='structure python:view.getCSS()'></style>

@@ -14,22 +14,9 @@ function WorksheetPrintView() {
         // Store referrer in cookie in case it is lost due to a page reload
         var backurl = document.referrer;
         if (backurl) {
-            var d = new Date();
-            d.setTime(d.getTime() + (1*24*60*60*1000));
-            document.cookie = referrer_cookie_name + '=' + document.referrer + '; expires=' + d.toGMTString() + '; path=/';
+            createCookie("ws.print.urlback", backurl);
         } else {
-            var cookies = document.cookie.split(';');
-            for(var i=0; i<cookies.length; i++) {
-                var cookie = cookies[i];
-                while (cookie.charAt(0)==' ') {
-                    cookie = cookie.substring(1);
-                }
-                if (cookie.indexOf(referrer_cookie_name) != -1) {
-                    backurl = cookie.substring(referrer_cookie_name.length+1, cookie.length);
-                    break;
-                }
-            }
-            // Fallback to portal_url instead of staying inside publish.
+            backurl = readCookie("ws.print.urlback");
             if (!backurl) {
                 backurl = portal_url;
             }
@@ -37,6 +24,35 @@ function WorksheetPrintView() {
 
         load_barcodes();
 
+        $('#print_button').click(function(e) {
+            e.preventDefault();
+            window.print();
+        });
+
+        $('#cancel_button').click(function(e) {
+            e.preventDefault();
+            location.href = backurl;
+        });
+
+        $('#template').change(function(e) {
+            var url = window.location.href;
+            var seltpl = $(this).val();
+            $('#worksheet-printview').animate({opacity:0.2}, 'slow');
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: { "template":seltpl}
+            })
+            .always(function(data) {
+                var htmldata = data;
+                var cssdata = $(htmldata).find('#report-style').html();
+                $('#report-style').html(cssdata);
+                htmldata = $(htmldata).find('#worksheet-printview').html();
+                $('#worksheet-printview').html(htmldata);
+                $('#worksheet-printview').animate({opacity:1}, 'slow');
+                load_barcodes();
+            });
+        });
     }
 
     function get(name){
