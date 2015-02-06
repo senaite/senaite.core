@@ -526,7 +526,6 @@ class AddWorksheetView(BrowserView):
             ws.setInstrument(instrument)
 
         # Set Batch
-        import pdb, sys; pdb.Pdb(stdout=sys.__stdout__).set_trace()
         if batchuid:
             batch = rc.lookupObject(batchuid)
             ws.setBatch(batch)

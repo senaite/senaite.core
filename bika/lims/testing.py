@@ -16,6 +16,7 @@ from Products.CMFPlone.setuphandlers import setupPortalContent
 from Testing.makerequest import makerequest
 from plone.app.testing import TEST_USER_NAME
 from plone.app.testing import TEST_USER_PASSWORD
+from plone.app.testing import login
 from plone.testing.z2 import Browser
 import bika.lims
 from bika.lims.jsonapi import set_fields_from_request
@@ -139,8 +140,9 @@ class Keywords(object):
         res = pkg_resources.resource_filename("bika.lims", "tests")
         return res
 
-    def createObjectByType(self, portal_type, path, id, **kwargs):
+    def createObjectByType(self, login_name, portal_type, path, id, **kwargs):
         """Create an object.
+        :param login_name: plone.app.testing needs to know who we want to be
         :param portal_type: Create object of this type
         :param path: Folder in which to place object (relative to site root)
                          with or without the leading / is fine.
@@ -162,13 +164,14 @@ class Keywords(object):
         \                   Analyst=portal_type:Contact|getFullname:Rita Mohale
         """
         portal = getSite()
+        login(portal, login_name)
         path = path[1:] if path.startswith("/") else path
-        location = portal.unrestrictedTraverse(path)
+        location = portal.unrestrictedTraverse(str(path))
         obj = _createObjectByType(portal_type, location, id, **kwargs)
         obj.unmarkCreationFlag()
         if hasattr(obj, '_renameAfterCreation'):
             id = obj._renameAfterCreation()
-            obj = location[id]
         set_fields_from_request(obj, kwargs)
-        id = obj.id
-        return id
+        transaction.commit()
+        return obj.id
+

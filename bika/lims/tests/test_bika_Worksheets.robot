@@ -11,7 +11,7 @@ Resource         plone/app/robotframework/saucelabs.robot
 Variables        plone/app/testing/interfaces.py
 Variables        bika/lims/tests/variables.py
 Suite Setup      Start browser
-#Suite Teardown   Close All Browsers
+Suite Teardown   Close All Browsers
 
 *** Variables ***
 
@@ -19,87 +19,87 @@ ${client1_factory_url}  ${PLONEURL}/clients/client-1/portal_factory/AnalysisRequ
 
 *** Test Cases ***
 
-Worksheet add_analyses batch selector
-    @{time} =                          Get Time        year month day hour min sec
-    Log in              test_labmanager  test_labmanager
+Worksheet with Batch field value, should show only analyses from these Batches.
+    Log in                             test_labmanager           test_labmanager
 
-    debug
+    Create AnalysisRequests
 
-    # Create a batch
-    ${batch} =      createObjectByType  Batch  /batches   B1
-
-
-
-
-
-
-
+    go to                              ${PLONEURL}/worksheets
+    select from list                   css=.analyst               analyst1
+    select from dropdown               css=#batchselector         001
+    Set Selenium Timeout               10
+    click element                      css=.worksheet_add
+    Set Selenium Timeout               5
+    page should contain                B-001
+    xpath should match X times         .//[@name="uids:list"]     4
 
 Test Worksheets
     [Documentation]   Worksheets
     ...  Groups analyses together for data entry, instrument interfacing,
     ...  and workflow transition cascades.
-    Log in              test_labmanager  test_labmanager
+    Log in                              test_labmanager                test_labmanager
     Create AnalysisRequests
     Create Reference Samples
     Create Worksheet
-    Go to                       ${PLONEURL}/worksheets/WS-001
-    Select from list            css=select.analyst             Lab Analyst 2
-    Select from list            css=select.instrument          Protein Analyser
-    Page should contain         Changes saved.
+    Go to                               ${PLONEURL}/worksheets/WS-001
+    Select from list                    css=select.analyst             Lab Analyst 2
+    Select from list                    css=select.instrument          Protein Analyser
+    Page should contain                 Changes saved.
     Reload Page
-    ${analyst}=                 Get selected list label        css=select.analyst
-    ${instrument}=              Get selected list label        css=select.instrument
-    Should be equal             ${analyst}         Lab Analyst 2
-    Should be equal             ${Instrument}      Protein Analyser
-    Add Analyses                H2O-0001-R01_Ca    H2O-0001-R01_Mg
+    ${analyst}=                         Get selected list label        css=select.analyst
+    ${instrument}=                      Get selected list label        css=select.instrument
+    Should be equal                     ${analyst}                     Lab Analyst 2
+    Should be equal                     ${Instrument}                  Protein Analyser
+    Add Analyses                        H2O-0001-R01_Ca                H2O-0001-R01_Mg
     Add Reference Analyses
     Unassign all
-    Add Analyses                H2O-0001-R01_Ca    H2O-0001-R01_Mg
+    Add Analyses                        H2O-0001-R01_Ca                H2O-0001-R01_Mg
     Add Reference Analyses
     Submit and Verify and Test
     Unassign all
-    Add Analyses                H2O-0002-R01_Ca    H2O-0002-R01_Mg
+    Add Analyses                        H2O-0002-R01_Ca                H2O-0002-R01_Mg
     Add Reference Analyses
     Submit results quickly
     Add Duplicate: Submit, verify, and check that alerts persist
     Test Retraction
     Log out
-    Log in   test_labmanager1   test_labmanager1
+    Log in                              test_labmanager1               test_labmanager1
     Verify all
     Log out
-    Log in   test_labmanager   test_labmanager
-
-
+    Log in                              test_labmanager                test_labmanager
 
 
 *** Keywords ***
 
 Create AnalysisRequests
-    [Documentation]     Add and receive some ARs.
-    ...                 H2O-0001-R01  Bore
-    ...                 H2O-0002-R01  Bruma
-    @{time} =                   Get Time        year month day hour min sec
-    Go to                       ${PLONEURL}/clients/client-1
-    Wait until page contains element    css=body.portaltype-client
-    Click Link                  Add
-    Wait until page contains    Request new analyses
-    Select from dropdown        ar_0_Contact                Rita
-    Select from dropdown        ar_1_Contact                Rita
-    sleep  1
-    Select from dropdown        ar_0_Template               Bore
-    Select from dropdown        ar_1_Template               Bruma
-    sleep  1
-    Select Date                 ar_0_SamplingDate           @{time}[2]
-    Select Date                 ar_1_SamplingDate           @{time}[2]
-    sleep  1
-    Set Selenium Timeout        30
-    Click Button                Save
-    Wait until page contains    created
-    Set Selenium Timeout        10
-    Select checkbox             analysisrequests_select_all
-    Click element               receive_transition
-    Wait until page contains    saved
+    [Documentation]     Add and receive some ARs in various states
+    ...                 H2O-0001-R01  template: Bore
+    ...                 H2O-0002-R01  tmeplate: Bruma
+    ...                 H2O-0003-R01  template: Bore, batch:001
+    ...                 H2O-0004-R01  template: Bore, batch:002
+
+    # Create a couple of simple batches
+    createObjectByType                  test_labmanager   Batch  /batches           tmpid
+    createObjectByType                  test_labmanager   Batch  /batches           tmpid
+
+    Go to                               ${client1_factory_url}
+    wait until page contains           xxx
+
+    SelectDate                          css=#SamplingDate-0           1
+    SelectDate                          css=#SamplingDate-1           1
+    Select from dropdown                css=#Contact-0                Rita
+    Select from dropdown                css=#Contact-1                Rita
+    Select from dropdown                css=#Batch-0                  001
+    Select from dropdown                css=#Batch-1                  002
+    Select from dropdown                css=#Template-0               Bore
+    Select from dropdown                css=#Template-1               Bruma
+    Click Button                        Save
+    Set Selenium Timeout                30
+    Wait until page contains            created
+    Set Selenium Timeout                10
+    Select checkbox                     analysisrequests_select_all
+    Click element                       receive_transition
+    Wait until page contains            saved
 
 Create Reference Samples
 
