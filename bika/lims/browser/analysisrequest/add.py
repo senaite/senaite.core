@@ -330,11 +330,11 @@ class ajaxAnalysisRequestSubmit():
         new_ars = None
         if came_from == 'add':
             new_ars = [ar for ar in ARs if ar[-2:] == '01']
-        if 'register' in self.context.bika_setup.getAutoPrintLabels() and new_ars:
+        if 'register' in self.context.bika_setup.getAutoPrintStickers() and new_ars:
             return json.dumps({
                 'success': message,
-                'labels': new_ars,
-                'labelsize': self.context.bika_setup.getAutoLabelSize()
+                'stickers': new_ars,
+                'stickertemplate': self.context.bika_setup.getAutoStickerTemplate()
             })
         else:
             return json.dumps({'success': message})

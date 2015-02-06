@@ -73,12 +73,12 @@ function AnalysisRequestAddView() {
 			success: function(responseText) {
 				var destination;
 				if(responseText.success !== undefined){
-					if(responseText.labels !== undefined){
+					if(responseText.stickers !== undefined){
 						destination = window.location.href
 								.split("/portal_factory")[0];
-						var ars = responseText.labels;
-						var labelsize = responseText.labelsize;
-						var q = "/sticker?size="+labelsize+"&items=";
+						var ars = responseText.stickers;
+						var template = responseText.stickertemplate;
+						var q = "/sticker?template="+template+"&items=";
 						q = q + ars.join(",");
 						window.location.replace(destination+q);
 					} else {
@@ -396,6 +396,14 @@ function AnalysisRequestAddView() {
 			// not :ignore_empty, widgets each get submitted to their own form handlers
 			$(e).attr("name", "ar."+column+"."+eid+"-listing");
 			$(e).attr("fieldName", "ar."+column+"."+eid);
+		}
+		//Adding a unique identification to the widget's add button.
+		elements = $("a.add_button_overlay");
+		for (i = elements.length - 1; i >= 0; i--) {
+			e = elements[i];
+			column = $($(e).parents("td")).attr("column");
+			var line = $(e).parents("div").attr("data-fieldname");
+			$(e).attr("id", "ar_"+column+"_"+ e.id);
 		}
 	}
 

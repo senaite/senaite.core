@@ -3,6 +3,7 @@ from Products.CMFCore.utils import getToolByName
 from zExceptions import BadRequest
 import json
 import Missing
+import sys, traceback
 
 
 def handle_errors(f):
@@ -57,13 +58,20 @@ def load_brain_metadata(proxy, include_fields):
 def load_field_values(instance, include_fields):
     """Load values from an AT object schema fields into a list of dictionaries
     """
-    schema = instance.Schema()
     ret = {}
+    schema = instance.Schema()
     for field in schema.fields():
         fieldname = field.getName()
         if include_fields and fieldname not in include_fields:
             continue
-        val = field.get(instance)
+        try:
+            val = field.get(instance)
+        except AttributeError:
+            # If this error is raised, make a look to the add-on content expressions used to obtain their data.
+            print "AttributeError:", sys.exc_info()[1]
+            print "Unreachable object. Maybe the object comes from an Add-on"
+            print traceback.format_exc()
+
         if val:
             if field.type == "blob":
                 continue
@@ -109,6 +117,11 @@ def resolve_request_lookup(context, request, fieldname):
         # search all possible catalogs
         if 'portal_type' in contentFilter:
             catalogs = at.getCatalogsByType(contentFilter['portal_type'])
+        elif 'uid' in contentFilter:
+            # If a uid is found, the object could be searched for its own uid
+            uc = getToolByName(context, 'uid_catalog')
+            return uc(UID=contentFilter['uid'])
+
         else:
             catalogs = [getToolByName(context, 'portal_catalog'), ]
         for catalog in catalogs:

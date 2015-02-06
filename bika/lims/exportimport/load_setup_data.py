@@ -6,6 +6,7 @@ from bika.lims.interfaces import ISetupDataImporter
 from openpyxl import load_workbook
 from pkg_resources import resource_filename
 from zope.component import getAdapters
+import traceback
 
 import tempfile
 import transaction
@@ -70,7 +71,13 @@ class LoadSetupData(BrowserView):
                 path = 'setupdata/%s/%s.xlsx' % \
                     (self.dataset_name, self.dataset_name)
                 filename = resource_filename(self.dataset_project, path)
-                workbook = load_workbook(filename=filename)  # , use_iterators=True)
+                try:
+                    workbook = load_workbook(filename=filename)  # , use_iterators=True)
+                except AttributeError:
+                    print ""
+                    print traceback.format_exc()
+                    print "Error while loading ", path
+
         elif 'setupfile' in form and 'file' in form and form['file'] and 'projectname' in form and form['projectname']:
                 self.dataset_project = form['projectname']
                 tmp = tempfile.mktemp()

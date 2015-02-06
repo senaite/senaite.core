@@ -66,7 +66,16 @@ class WorksheetImporter:
         if self.worksheet:
             logger.info("Loading {0}.{1}: {2}".format(
                 self.dataset_project, self.dataset_name, self.sheetname))
-            self.Import()
+            try:
+                self.Import()
+            except IOError:
+                # The importer must omit the files not found inside the server filesystem (bika/lims/setupdata/test/
+                # if the file is loaded from 'select existing file' or bika/lims/setupdata/uploaded if it's loaded from
+                # 'Load from file') and finishes the import without errors. https://jira.bikalabs.com/browse/LIMS-1624
+                warning = "Error while loading attached file from %s. The file will not be uploaded into the system."
+                logger.warning(warning, self.sheetname)
+                self.context.plone_utils.addPortalMessage("Error while loading some attached files. "
+                                                          "The files weren't uploaded into the system.")
         else:
             logger.info("No records found: '{0}'".format(self.sheetname))
 
@@ -1518,8 +1527,8 @@ class Setup(WorksheetImporter):
             AnalysisAttachmentOption=values[
                 'AnalysisAttachmentOption'][0].lower(),
             DefaultSampleLifetime=DSL,
-            AutoPrintLabels=values['AutoPrintLabels'].lower(),
-            AutoLabelSize=values['AutoLabelSize'].lower(),
+            AutoPrintStickers=values.get('AutoPrintStickers','receive').lower(),
+            AutoStickerTemplate=values.get('AutoStickerTemplate', 'bika.lims:sticker_small.pt').lower(),
             YearInPrefix=self.to_bool(values['YearInPrefix']),
             SampleIDPadding=int(values['SampleIDPadding']),
             ARIDPadding=int(values['ARIDPadding']),

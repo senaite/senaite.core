@@ -9,7 +9,7 @@
  <property name="content_meta_type">ARImport</property>
  <property name="product">bika.lims</property>
  <property name="factory">addARImport</property>
- <property name="global_allow">True</property>
+ <property name="global_allow">False</property>
  <property name="filter_content_types">True</property>
  <property name="allowed_content_types">
   <element value="ARImportItem"/>

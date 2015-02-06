@@ -335,13 +335,6 @@ TestSampleState
     Should Be Equal  ${VALUE}  ${expectedState}  ${sample} Workflow States incorrect: Expected: ${expectedState} -
     # Log  Testing Sample State for ${sample}: ${expectedState} -:- ${VALUE}  WARN
 
-Enable Sampling Workflow
-    Go to               ${PLONEURL}/bika_setup/edit
-    Click Link          id=fieldsetlegend-analyses
-    Select Checkbox     id=SamplingWorkflowEnabled
-    Click Button        Save
-    Wait until page contains    Changes saved.
-
 Save a Sampler and DateSampled on AR
     @{time} =           Get Time    year month day hour min sec
     Select Date         DateSampled    @{time}[2]

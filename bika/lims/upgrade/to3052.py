@@ -1,26 +1,22 @@
 from Acquisition import aq_inner
 from Acquisition import aq_parent
+from Products.CMFCore.utils import getToolByName
 from bika.lims.permissions import *
-from Products.Archetypes.BaseContent import BaseContent
-from bika.lims.upgrade import stub
-
+from bika.lims.setuphandlers import BikaGenerator
+from bika.lims import logger
 
 def upgrade(tool):
+    """  stickers
+    """
     portal = aq_parent(aq_inner(tool))
     setup = portal.portal_setup
 
     setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
+    
+    prt = portal.bika_setup.AutoPrintLabels
+    portal.bika_setup.setAutoPrintStickers(prt)
 
-    stub('bika.lims.content.supplyorderitem', 'SupplyOrderItem',
-        BaseContent)
-    for order in portal['supplyorders'].objectValues():
-        order.supplyorder_lineitems = []
-        for soli in order.objectValues():
-            item = dict(
-                Product=soli.Product,
-                Quantity=soli.Quantity,
-                Price=soli.Price,
-                VAT=soli.VAT,
-            )
-            order.supplyorder_lineitems.append(item)
+    size = portal.bika_setup.AutoLabelSize
+    portal.bika_setup.setAutoStickerTemplate('bika.lims:sticker_%s.pt' %size)
+
     return True

@@ -111,4 +111,22 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <!-- WS Print View -->
+    <browser:page
+      for="bika.lims.interfaces.IWorksheet"
+      name="print"
+      class="bika.lims.browser.worksheet_print.WorksheetPrintView"
+      permission="bika.lims.EditWorksheet"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <!-- Multiple WS print preview -->
+    <browser:page
+      for="bika.lims.interfaces.IWorksheetFolder"
+      name="print"
+      class="bika.lims.browser.worksheet_print.WorksheetPrintView"
+      permission="bika.lims.EditWorksheet"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
 </configure>

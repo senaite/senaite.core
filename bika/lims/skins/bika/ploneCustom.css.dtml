@@ -1000,10 +1000,25 @@ div.warnbox h3 {
 a.add-button {
     font-weight: bold;
     background: transparent url(&dtml-portal_url;/++resource++bika.lims.images/add.png) left center no-repeat;
+    padding: 8px 8px 8px 10px;
+}
+a.edit-button {
+    font-weight: bold;
+    background: transparent url(&dtml-portal_url;/++resource++bika.lims.images/edit.png) left center no-repeat;
+    padding: 8px 8px 8px 10px;
+}
+#content a.add-button.referencewidget-add-button.link-overlay,
+#content a.edit-button.referencewidget-edit-button.link-overlay {
+    border-bottom: medium none !important;
 }
 h2 a.add-button {
     padding: 12px 0 0 38px;
     background-position: 15px 10px;
+}
+.notext {
+    overflow: hidden;
+    visibility:hidden;
+    display:none;
 }
 #portal-alert {
     background: url(&dtml-portal_url;/++resource++bika.lims.images/warning_big.png) no-repeat scroll 20px 15px #FFF680;
@@ -1014,6 +1029,23 @@ h2 a.add-button {
     margin-left: -1.125%;
     margin-right: -1.125%;
     padding: 5px 20px 20px 70px;
+}
+div#viewlet-above-content-title #panel-notification {
+    left: 0;
+    margin: 100px;
+    padding: 0 280px;
+    position: absolute;
+    z-index: 1000;
+}
+div#viewlet-above-content-title #panel-notification div.error-notification-item {
+    background: url("/Plone/++resource++bika.lims.images/warning.png") no-repeat scroll 15px center #fff680;
+    border-radius: 5px;
+    padding: 15px 30px 15px 40px;
+}
+div#viewlet-above-content-title #panel-notification div.succeed-notification-item {
+    background: url("/Plone/++resource++bika.lims.images/ok.png") no-repeat scroll 15px center #dfdfdf;
+    border-radius: 5px;
+    padding: 15px 30px 15px 40px;
 }
 #portal-alert p.title {
     color: #1F1F1F;
@@ -1089,6 +1121,11 @@ div.LSResult {
 
 #portal-alert a.button {
     padding: 4px 10px;
+}
+
+div#viewlet-above-content #portal-alert {
+    margin: 0px 0px 5px 0px;
+    border-radius: 2px;
 }
 
 </dtml-with>
