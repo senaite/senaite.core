@@ -13,4 +13,9 @@ def upgrade(tool):
     setup = portal.portal_setup
     setup.runImportStepFromProfile('profile-bika.lims:default', 'workflow-csv')
 
+    portal = aq_parent(aq_inner(tool))
+    setup = portal.portal_setup
+
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'jsregistry')
+
     return True
