@@ -118,7 +118,7 @@
             <tr tal:repeat="antitle anstitles">
                 <th tal:content="antitle"></th>
                 <tal:results tal:repeat="ar ars">
-                    <td tal:attributes="class python:'result' if antitle in [an['title'] for an in ar['analyses']] else 'result no-result';"></td>
+                    <td tal:attributes="class python:'result' if antitle in [an['title'] for an in ar['analyses']] else 'result no-result';"><div>&nbsp;</div></td>
                 </tal:results>
             </tr>
         </tbody>
