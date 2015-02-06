@@ -31,7 +31,7 @@ Worksheet with Batch field value, should show only analyses from these Batches.
     click element                      css=.worksheet_add
     Set Selenium Timeout               5
     page should contain                B-001
-    xpath should match X times         .//[@name="uids:list"]     4
+    xpath should match X times         .//input[@name="uids:list"]     4
 
 Test Worksheets
     [Documentation]   Worksheets
@@ -83,7 +83,7 @@ Create AnalysisRequests
     createObjectByType                  test_labmanager   Batch  /batches           tmpid
 
     Go to                               ${client1_factory_url}
-    wait until page contains           xxx
+    wait until page contains            xxx
 
     SelectDate                          css=#SamplingDate-0           1
     SelectDate                          css=#SamplingDate-1           1
