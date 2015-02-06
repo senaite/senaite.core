@@ -7,11 +7,21 @@
 
 <body>
 
-<metal:title fill-slot="content-title">
+<metal:title fill-slot="content-title"
+        tal:define="portal context/@@plone_portal_state/portal;">
     <h1>
         <img tal:condition="view/icon | nothing"
             src="" tal:attributes="src view/icon"/>
         <span tal:content="context/title_or_id"/>
+        <img tal:condition="context/getHazardous"
+                title="Hazardous"
+                i18n:attributes="title"
+                tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/hazardous_big.png"/>
+
+        <img tal:condition="context/getBlank"
+                title="Blank"
+                i18n:attributes="title"
+                tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/blank_big.png"/>
     </h1>
 </metal:title>
 
@@ -19,17 +29,6 @@
     review_state python:context.portal_workflow.getInfoFor(context, 'review_state', '');
     inactive_state python:context.portal_workflow.getInfoFor(context, 'inactive_state', 'asdf');
     portal context/@@plone_portal_state/portal;">
-
-    <table width="100%">
-        <tr>
-            <td align="right">
-                <img tal:condition="context/getHazardous"
-                    title="Hazardous"
-                    i18n:attributes="title"
-                    tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/hazardous_big.png"/>
-            </td>
-        </tr>
-    </table>
 
     <table
         summary="Sample view"
@@ -44,16 +43,6 @@
         <tr>
             <th i18n:translate="">Title</th>
             <td class="left" tal:content="context/Title"/>
-        </tr>
-
-        <tr>
-            <th i18n:translate="">Hazardous</th>
-            <td class="left" tal:content="context/getHazardous"/>
-        </tr>
-
-        <tr>
-            <th i18n:translate="">Blank</th>
-            <td class="left" tal:content="context/getBlank"/>
         </tr>
 
         <tr>
