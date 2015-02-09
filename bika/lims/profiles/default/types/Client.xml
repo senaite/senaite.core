@@ -36,60 +36,6 @@
  <alias from="edit" to="base_edit"/>
  <alias from="view" to="base_view"/>
 
- <action title="View"
-         action_id="view"
-         category="object"
-         url_expr="string:${object_url}/view"
-         i18n:attributes="title"
-         i18n:domain="plone"
-         visible="False">
-    <permission value="Modify portal content"/>
- </action>
-
- <action title="Edit"
-         action_id="edit"
-         category="object"
-         url_expr="string:${object_url}/base_edit"
-         i18n:attributes="title"
-         i18n:domain="plone"
-         visible="True">
-    <permission value="BIKA: Edit Client"/>
- </action>
-
- <action title="Contacts"
-         action_id="contacts"
-         category="object"
-         icon_expr="string:${portal_url}/images/client_contact.png"
-         url_expr="string:${object_url}/contacts"
-         i18n:attributes="title"
-         visible="True">
-    <permission value="Modify portal content"/>
- </action>
-
- <action title="Samples"
-         action_id="samples"
-         category="object"
-         condition_expr=""
-         icon_expr="string:${portal_url}/images/sample.png"
-         link_target=""
-         url_expr="string:${object_url}/samples"
-         i18n:attributes="title"
-         visible="True">
-  <permission value="BIKA: Manage Samples"/>
- </action>
-
- <action title="SamplePoints"
-         action_id="samplepoints"
-         category="object"
-         condition_expr=""
-         icon_expr="string:${portal_url}/images/samplepoint.png"
-         link_target=""
-         url_expr="string:${object_url}/samplepoints"
-         i18n:attributes="title"
-         visible="True">
-  <permission value="BIKA: Manage Samples"/>
- </action>
-
  <action title="Batches"
          action_id="batches"
          category="object"
@@ -114,6 +60,18 @@
   <permission value="View"/>
  </action>
 
+ <action title="Samples"
+         action_id="samples"
+         category="object"
+         condition_expr=""
+         icon_expr="string:${portal_url}/images/sample.png"
+         link_target=""
+         url_expr="string:${object_url}/samples"
+         i18n:attributes="title"
+         visible="True">
+  <permission value="BIKA: Manage Samples"/>
+ </action>
+
  <action title="Imports"
          action_id="imports"
          category="object"
@@ -124,6 +82,18 @@
          i18n:attributes="title"
          visible="True">
   <permission value="BIKA: Manage ARImport"/>
+ </action>
+
+ <action title="SamplePoints"
+         action_id="samplepoints"
+         category="object"
+         condition_expr=""
+         icon_expr="string:${portal_url}/images/samplepoint.png"
+         link_target=""
+         url_expr="string:${object_url}/samplepoints"
+         i18n:attributes="title"
+         visible="True">
+  <permission value="BIKA: Manage Samples"/>
  </action>
 
  <action title="Analysis Profiles"
@@ -181,6 +151,36 @@
          icon_expr="string:${portal_url}/images/supplyorder.png"
          link_target=""
          url_expr="string:${object_url}/orders"
+         i18n:attributes="title"
+         visible="True">
+    <permission value="Modify portal content"/>
+ </action>
+
+ <action title="View"
+         action_id="view"
+         category="object"
+         url_expr="string:${object_url}/view"
+         i18n:attributes="title"
+         i18n:domain="plone"
+         visible="False">
+    <permission value="Modify portal content"/>
+ </action>
+
+ <action title="Edit"
+         action_id="edit"
+         category="object"
+         url_expr="string:${object_url}/base_edit"
+         i18n:attributes="title"
+         i18n:domain="plone"
+         visible="True">
+    <permission value="BIKA: Edit Client"/>
+ </action>
+
+ <action title="Contacts"
+         action_id="contacts"
+         category="object"
+         icon_expr="string:${portal_url}/images/client_contact.png"
+         url_expr="string:${object_url}/contacts"
          i18n:attributes="title"
          visible="True">
     <permission value="Modify portal content"/>
