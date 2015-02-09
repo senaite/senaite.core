@@ -2,6 +2,7 @@
 -----
 
 LIMS-1520: Allow to invalidate verified ARs
+LIMS-1539: Printable Worksheets. In both AR by row or column orientations
 LIMS-1199: Worksheet totals in WS lists
 LIMS-257: Set Blank and Warning icons in Reference Sample main view
 LIMS-1636: Batch Sample View crash

@@ -59,7 +59,7 @@
     </div>
 </div>
 <!-- Repeat the table every 6 Analyses -->
-<div class="content" tal:repeat="anst python:view.splitList(anstitles,6)">
+<div class="content" tal:repeat="anst python:view.splitList(anstitles,view.getNumColumns())">
     <table>
         <thead>
             <tr>
@@ -80,20 +80,16 @@
                     <a tal:attributes="href ar/client/url"
                        tal:content="ar/client/name"></a><br/>
                     <a tal:attributes="href ar/sample/sample_type/url"
-                       tal:content="ar/sample/sample_type/title"></a><br/>
+                       tal:content="ar/sample/sample_type/title"
+                       tal:condition="ar/sample/sample_type"></a><br/>
                     <span tal:content="ar/date_received"></span>
                     </div>
                 </td>
                 <tal:results repeat="ans anst">
-                <td class="result"></td>
+                    <td tal:attributes="class python:'result' if ans in [an['title'] for an in ar['analyses']] else 'result no-result';"><div>&nbsp;</div></td>
                 </tal:results>
             </tr>
         </tbody>
     </table>
 </div>
-<div class="footer">
-
-</div>
-
-<div class="page-break"></div>
 </tal:print>

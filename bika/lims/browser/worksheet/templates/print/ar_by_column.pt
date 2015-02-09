@@ -60,7 +60,7 @@
 </div>
 
 <!-- Repeat the table every 4 ARs -->
-<div class="content" tal:repeat="ars python:view.splitList(ars,4)">
+<div class="content" tal:repeat="ars python:view.splitList(ars,view.getNumColumns())">
     <table>
         <thead>
             <tr>
@@ -87,7 +87,8 @@
                 <th i18n:translate="">Sample Type</th>
                 <td tal:repeat="ar ars">
                     <a tal:attributes="href ar/sample/sample_type/url"
-                       tal:content="ar/sample/sample_type/title"></a>
+                       tal:content="ar/sample/sample_type/title"
+                       tal:condition="ar/sample/sample_type"></a>
                 </td>
             </tr>
             <tr>
@@ -100,7 +101,7 @@
             <tr>
                 <th i18n:translate="">Sampling Date</th>
                 <td tal:repeat="ar ars"
-                    tal:content="ar/sample/sampling_date">
+                    tal:content="ar/sample/date_sampled">
                 </td>
             </tr>
             <tr>
@@ -116,14 +117,11 @@
             </tr>
             <tr tal:repeat="antitle anstitles">
                 <th tal:content="antitle"></th>
-                <td tal:repeat="ar ars" class="result"></td>
+                <tal:results tal:repeat="ar ars">
+                    <td tal:attributes="class python:'result' if antitle in [an['title'] for an in ar['analyses']] else 'result no-result';"><div>&nbsp;</div></td>
+                </tal:results>
             </tr>
         </tbody>
     </table>
 </div>
-<div class="footer">
-
-</div>
-
-<div class="page-break"></div>
 </tal:print>

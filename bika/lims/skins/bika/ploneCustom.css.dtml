@@ -1127,5 +1127,12 @@ div#viewlet-above-content #portal-alert {
     margin: 0px 0px 5px 0px;
     border-radius: 2px;
 }
-
+a.print_button,
+#content a.print_button {
+    background: url(&dtml-portal_url;/++resource++bika.lims.images/print_16.png) 8px center no-repeat &dtml-buttonBackgroundColor;;
+    padding-left:20px;
+    border-radius: &dtml-buttonBorderRadius;;
+    border:1px solid &dtml-buttonBorderColor;;
+    padding:4px 10px 4px 30px;
+}
 </dtml-with>
