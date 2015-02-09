@@ -37,7 +37,6 @@
   <type portal_type="Manufacturer"/>
   <type portal_type="Method"/>
   <type portal_type="SupplyOrder"/>
-  <type portal_type="SupplyOrderItem"/>
   <type portal_type="Preservation"/>
   <type portal_type="Query"/>
   <type portal_type="ReferenceDefinition"/>
