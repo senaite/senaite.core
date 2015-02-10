@@ -32,6 +32,8 @@ allow_module('bika.lims.utils')
 allow_module('json')
 allow_module('pdb')
 allow_module('zope.i18n.locales')
+allow_module('zope.component')
+allow_module('plone.registry.interfaces')
 
 def initialize(context):
 

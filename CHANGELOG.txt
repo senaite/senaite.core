@@ -1,6 +1,7 @@
 3.1.7-dev (unreleased)
 -----
-
+- Added option to select landing page for clients in configuration registry (bika.lims.client_landing_page)
+LIMS-1594: Re-ordered tabs on Client home page
 LIMS-1520: Allow to invalidate verified ARs
 LIMS-1539: Printable Worksheets. In both AR by row or column orientations
 LIMS-1199: Worksheet totals in WS lists
