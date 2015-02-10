@@ -3,12 +3,15 @@
 <!-- Operation Definitions -->
 <registry xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="bika">
 
-  <record name="bika.lims.client_landing_page">
+  <record name="bika.lims.client.default_landing_page">
     <field type="plone.registry.field.Choice">
       <default>analysisrequests</default>
-      <description>Select the default landing page.  This is used when a Client user logs into the system, or when a client is selected</description>
+      <description i18n:translate="">
+        Select the default landing page.  This is used when a
+        Client user logs into the system, or when a client is
+        selected from the client folder listing.</description>
       <required>True</required>
-      <title>Client Landing Page</title>
+      <title i18n:translate="">Client Landing Page</title>
         <values>
           <element>analysisrequests</element>
           <element>batches</element>
