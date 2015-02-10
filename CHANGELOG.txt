@@ -1,5 +1,6 @@
 3.1.7-dev (unreleased)
 -----
+LIMS-1670: Fixed windows incompatibility in TAL (referencewidget.pt)
 LIMS-1594: Added option to select landing page for clients in configuration registry
 LIMS-1594: Re-ordered tabs on Client home page
 LIMS-1520: Allow to invalidate verified ARs
