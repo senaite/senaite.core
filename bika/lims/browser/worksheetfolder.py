@@ -494,7 +494,6 @@ class WorksheetFolderListingView(BikaListingView):
 
 class AddWorksheetView(BrowserView):
     """ Handler for the "Add Worksheet" button in Worksheet Folder.
-        If a template was selected, the worksheet is pre-populated here.
     """
 
     def __call__(self):
@@ -504,6 +503,7 @@ class AddWorksheetView(BrowserView):
         analyst = self.request.get('analyst', '')
         template = self.request.get('template', '')
         instrument = self.request.get('instrument', '')
+        batchuid = self.request.get('BatchUID', '')
 
         if not analyst:
             message = _("Analyst must be specified.")
@@ -518,23 +518,26 @@ class AddWorksheetView(BrowserView):
         ws = _createObjectByType("Worksheet", self.context, tmpID())
         ws.processForm()
 
-        # Set analyst and instrument
+        # Set analyst
         ws.setAnalyst(analyst)
+
+        # Set instrument
         if instrument:
             ws.setInstrument(instrument)
+
+        # Set Batch
+        if batchuid:
+            batch = rc.lookupObject(batchuid)
+            ws.setBatch(batch)
 
         # overwrite saved context UID for event subscribers
         self.request['context_uid'] = ws.UID()
 
         # if no template was specified, redirect to blank worksheet
-        if not template:
-            ws.processForm()
-            self.request.RESPONSE.redirect(ws.absolute_url() + "/add_analyses")
-            return
-
-        wst = rc.lookupObject(template)
-        ws.setWorksheetTemplate(wst)
-        ws.applyWorksheetTemplate(wst)
+        if template:
+            wst = rc.lookupObject(template)
+            ws.setWorksheetTemplate(wst)
+            ws.applyWorksheetTemplate(wst)
 
         if ws.getLayout():
             self.request.RESPONSE.redirect(ws.absolute_url() + "/manage_results")

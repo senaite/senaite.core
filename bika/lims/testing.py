@@ -1,4 +1,5 @@
 # Testing layer to provide some of the features of PloneTestCase
+from Products.CMFPlone.utils import _createObjectByType
 
 from bika.lims.exportimport.load_setup_data import LoadSetupData
 from plone.app.testing import applyProfile
@@ -15,13 +16,16 @@ from Products.CMFPlone.setuphandlers import setupPortalContent
 from Testing.makerequest import makerequest
 from plone.app.testing import TEST_USER_NAME
 from plone.app.testing import TEST_USER_PASSWORD
+from plone.app.testing import login
 from plone.testing.z2 import Browser
 import bika.lims
+from bika.lims.jsonapi import set_fields_from_request
 import collective.js.jqueryui
 import plone.app.iterate
 import Products.ATExtensions
 import Products.PloneTestCase.setup
 import transaction
+from zope.component.hooks import getSite
 
 
 class BikaTestLayer(PloneSandboxLayer):
@@ -135,3 +139,39 @@ class Keywords(object):
         import pkg_resources
         res = pkg_resources.resource_filename("bika.lims", "tests")
         return res
+
+    def createObjectByType(self, login_name, portal_type, path, id, **kwargs):
+        """Create an object.
+        :param login_name: plone.app.testing needs to know who we want to be
+        :param portal_type: Create object of this type
+        :param path: Folder in which to place object (relative to site root)
+                         with or without the leading / is fine.
+        :param id: the id to give the new object.  Bika objects should be sent
+                   through renameAfterCreation regardless, and this may
+                   change the ID.
+        :param kwargs: Other arguments passed here, are used to populate the
+                       field values.   To set references, the same syntax
+                       is used as that in jsonapi.create.
+
+        Examples of robotframework syntax for using this:
+
+        # create Worksheet:
+        createObjectByType  Worksheet  /worksheets  'ws-tmp-id'
+
+        # create Worksheet, and set Batch field using only the Title.
+        createObjectByType  Worksheet  /worksheets  'ws-tmp-id'
+        \                   Batch=portal_type:SampleType|title:Apple Pulp
+        \                   Analyst=portal_type:Contact|getFullname:Rita Mohale
+        """
+        portal = getSite()
+        login(portal, login_name)
+        path = path[1:] if path.startswith("/") else path
+        location = portal.unrestrictedTraverse(str(path))
+        obj = _createObjectByType(portal_type, location, id, **kwargs)
+        obj.unmarkCreationFlag()
+        if hasattr(obj, '_renameAfterCreation'):
+            id = obj._renameAfterCreation()
+        set_fields_from_request(obj, kwargs)
+        transaction.commit()
+        return obj.id
+

@@ -11,6 +11,12 @@ def upgrade(tool):
     portal = aq_parent(aq_inner(tool))
     siteman = portal.getSiteManager()
 
+    def addIndex(cat, *args):
+        try:
+            cat.addIndex(*args)
+        except:
+            pass
+
     ### update commonly affected tools
     setup = portal.portal_setup
     setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
@@ -33,7 +39,12 @@ def upgrade(tool):
     if IIdServer in siteman.utilities._subscribers[0]:
         del siteman.utilities._subscribers[0][IIdServer]
 
-    ###
+    ### Add 'BatchUID' index to the bika_analysis_catalog
+    # It's going to be a common search field?
+    # Used right now for adding Analyses from a Batch to a Worksheet
+    bac = getToolByName(portal, 'bika_analysis_catalog')
+    addIndex(bac, 'BatchUID', 'FieldIndex')
+    bac.manage_reindexIndex(ids=['BatchUID',])
 
     return True
 

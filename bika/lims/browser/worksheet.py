@@ -1,5 +1,7 @@
 # coding=utf-8
 from AccessControl import getSecurityManager
+from Products.AdvancedQuery import MatchGlob
+from Products.AdvancedQuery import Eq
 from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
@@ -838,18 +840,34 @@ class AddAnalysesView(BikaListingView):
         self.description = ""
         self.catalog = "bika_analysis_catalog"
         self.context_actions = {}
+
         # initial review state for first form display of the worksheet
         # add_analyses search view - first batch of analyses, latest first.
         self.contentFilter = {'portal_type': 'Analysis',
                               'review_state':'sample_received',
                               'worksheetanalysis_review_state':'unassigned',
                               'cancellation_state':'active'}
+        # Worksheets which have a value in the Batch field, are required not
+        # to show analyses from other batches.  So we set the default
+        # contentFilter here.
+        batch = self.context.getBatch()
+        if batch:
+            self.contentFilter['BatchUID'] = batch.UID()
+
         self.base_url = self.context.absolute_url()
         self.view_url = self.base_url + "/add_analyses"
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 50
+
+        # Any indexes which have UI for filtering them, using the
+        # <form_id>_<index_name> format in the request, must
+        # be specified here.
+        self.filter_indexes = ['Title',
+                               'BatchUID',
+                               'getClientUID',
+                               'getCategoryUID']
 
         self.columns = {
             'Client': {
@@ -864,6 +882,8 @@ class AddAnalysesView(BikaListingView):
             'Priority': {
                 'title': _('Priority'),
                 'index': 'Priority'},
+            'Batch': {
+                'title': _('Batch')},
             'CategoryTitle': {
                 'title': _('Category'),
                 'index':'getCategoryTitle'},
@@ -877,7 +897,6 @@ class AddAnalysesView(BikaListingView):
                 'title': _('Due Date'),
                 'index': 'getDueDate'},
         }
-        self.filter_indexes = ['Title',]
         self.review_states = [
             {'id':'default',
              'title': _('All'),
@@ -887,6 +906,7 @@ class AddAnalysesView(BikaListingView):
                         'getClientOrderNumber',
                         'getRequestID',
                         'Priority',
+                        'Batch',
                         'CategoryTitle',
                         'Title',
                         'getDateReceived',
@@ -970,6 +990,8 @@ class AddAnalysesView(BikaListingView):
                  (url, items[x]['getRequestID'])
             items[x]['Priority'] = ''
 
+            batch = obj.aq_parent.getBatch()
+            items[x]['Batch'] = batch.Title() if batch else ''
 
             items[x]['Client'] = client.Title()
             if hideclientlink == False:
@@ -978,36 +1000,102 @@ class AddAnalysesView(BikaListingView):
 
         return items
 
+    def getBatch(self):
+        """return the batch (if any) value from this worksheet's getBatch.
+        If the worksheet has a batch, searches are limited to analyses which
+        belong only to that batch.
+        """
+        if hasattr(self.context, 'getBatch'):
+            batch = self.context.getBatch()
+            if batch:
+                return batch
+
     def getServices(self):
+        """Initial population of the Analysis Services filter
+        If a category is selected and present in the request, the list will
+        be filtered to services only from that category.  Otherwise, all
+        services are returned
+        """
         bsc = getToolByName(self.context, 'bika_setup_catalog')
-        return [c.Title for c in
-                bsc(portal_type = 'AnalysisService',
-                   getCategoryUID = self.request.get('list_getCategoryUID', ''),
-                   inactive_state = 'active',
-                   sort_on = 'sortable_title')]
+        query = {'portal_type': 'AnalysisService',
+                 'inactive_state': 'active',
+                 'sort_on': 'sortable_title'}
+        if self.request.get('list_getCategoryUID', 'any') != 'any':
+            query['getCategoryUID'] = self.request.get['list_getCategoryUID']
+        return [(c.UID, c.Title) for c in bsc(**query)]
 
     def getClients(self):
+        """Initial population of the Clients filter
+        """
         pc = getToolByName(self.context, 'portal_catalog')
-        return [c.Title for c in
+        return [(c.UID, c.Title) for c in
                 pc(portal_type = 'Client',
                    inactive_state = 'active',
                    sort_on = 'sortable_title')]
 
     def getCategories(self):
+        """Initial population of the Categories filter control
+        """
         bsc = getToolByName(self.context, 'bika_setup_catalog')
-        return [c.Title for c in
+        return [(c.UID, c.Title) for c in
                 bsc(portal_type = 'AnalysisCategory',
                    inactive_state = 'active',
                    sort_on = 'sortable_title')]
 
     def getWorksheetTemplates(self):
-        """ Return WS Templates """
+        """Return WS Templates for initial population of select element
+        This returns a list not a dict as the filters above do.
+        """
         profiles = []
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         return [(c.UID, c.Title) for c in
                 bsc(portal_type = 'WorksheetTemplate',
                    inactive_state = 'active',
                    sort_on = 'sortable_title')]
+
+class ajaxBatchSelectorVocabulary(object):
+    """While adding Analyses to Worksheets, user may select a Batch
+    to search on.  This view returns items to the combogrid dropdown.
+    """
+
+    def __init__(self, context, request):
+        self.context = context
+        self.request = request
+
+    def __call__(self):
+        # plone.protect.CheckAuthenticator(self.request)
+        searchTerm = to_utf8(self.request.get('searchTerm', '')).lower()
+        sidx = self.request.get('sidx', 'sortable_title')
+        sord = self.request.get('sord', 'asc')
+        catalog = getToolByName(self.context, 'bika_catalog')
+        # Creative/Crazy catalog searching for quickly finding
+        # batches.  We will search on 'SearchableText' which contains
+        # ID and Title.
+        query = Eq('portal_type', 'Batch') & \
+            MatchGlob('SearchableText', '*%s*' % searchTerm)
+        brains = catalog.evalAdvancedQuery(query)
+        # Figure out the batching; we only want to access the visible items
+        page = int(self.request['page'])
+        nr_rows = int(self.request['rows'])
+        pages = len(brains) / int(nr_rows)
+        pages += divmod(len(brains), int(nr_rows))[1] and 1 or 0
+        start = (int(page) - 1) * int(nr_rows)
+        end = int(page) * int(nr_rows)
+        rows = []
+        for brain in brains[start:end]:
+            instance = brain.getObject()
+            identifiers = []
+            item = {
+                'UID': instance.UID(),
+                'ID': instance.Schema()['id'].get(instance),
+                'Title': instance.Schema()['title'].get(instance)
+            }
+            rows.append(item)
+        ret = {'page': page,
+               'total': pages,
+               'records': len(rows),
+               'rows': rows}
+        return json.dumps(ret)
 
 def rejected_alerts(ws):
     if hasattr(ws, 'replaced_by'):
@@ -1471,20 +1559,6 @@ class ExportView(BrowserView):
         exim = getattr(instruments, exim)
         exporter = exim.Export(self.context, self.request)
         data = exporter(self.context.getAnalyses())
-        pass
-
-class ajaxGetServices(BrowserView):
-    """ When a Category is selected in the add_analyses search screen, this
-        function returns a list of services from the selected category.
-    """
-    def __call__(self):
-        plone.protect.CheckAuthenticator(self.request)
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
-        return json.dumps([c.Title for c in
-                bsc(portal_type = 'AnalysisService',
-                   getCategoryTitle = self.request.get('getCategoryTitle', ''),
-                   inactive_state = 'active',
-                   sort_on = 'sortable_title')])
 
 class ajaxAttachAnalyses(BrowserView):
     """ In attachment add form,
