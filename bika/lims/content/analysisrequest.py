@@ -31,6 +31,7 @@ from zope.interface import implements
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t, getUsers, dicts_to_dict
 
+from bika.lims.browser.fields import DateTimeField
 from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
 
 import sys
@@ -1823,7 +1824,6 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample and value:
             sample.setSamplingDate(value)
-        self.Schema()['SamplingDate'].set(self, value)
 
     security.declarePublic('getSamplingDate')
 
@@ -1831,7 +1831,6 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getSamplingDate()
-        return self.Schema().getField('SamplingDate').get(self)
 
     security.declarePublic('setSampler')
 
