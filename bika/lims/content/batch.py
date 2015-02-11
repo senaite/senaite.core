@@ -1,4 +1,5 @@
 from AccessControl import ClassSecurityInfo
+from Products.CMFPlone.interfaces import IPloneSiteRoot
 from bika.lims import bikaMessageFactory as _, EditARContact
 from bika.lims.utils import t, getUsers
 from bika.lims.config import PROJECTNAME
@@ -78,23 +79,6 @@ BatchDate = DateTimeField(
         label=_('Date'),
         description=_("Batch order date - edit if the batch was ordered earlier already"),
     ),
-)
-Client = ReferenceField('Client',
-    required=0,
-    allowed_types=('Client',),
-    relationship='BatchClient',
-    widget=ReferenceWidget(
-        label=_("Client"),
-        description=_("The Client who ordered this batch"),
-        size=30,
-        visible=True,
-        base_query={'inactive_state': 'active'},
-        showOn=True,
-        colModel=[{'columnName': 'UID', 'hidden': True},
-                  {'columnName': 'ClientID', 'width': '20', 'label': _('Client ID')},
-                  {'columnName': 'Title', 'width': '80', 'label': _('Title')}
-                 ],
-  ),
 )
 Contact = ReferenceField(
     'Contact',
@@ -746,7 +730,6 @@ schema = BikaFolderSchema.copy() + Schema((
     BatchDate,
     #title
     #description
-    Client,
     ClientBatchID,
     ClientProjectName,
     Contact,
@@ -818,11 +801,20 @@ class Batch(ATFolder):
         from bika.lims.catalog import getCatalog
         return getCatalog(self)
 
+    def getClient(self):
+        """If our acquisition heirarchy contains a Client object,
+        then this will be returned.
+        """
+        pf = getToolByName(self, 'portal_factory')
+        parent = self.aq_parent
+        while not IPloneSiteRoot.providedBy(parent):
+            if IClient.providedBy(parent):
+                return parent
+            parent = parent.aq_parent
+
     def getClientTitle(self):
-        client = self.aq_parent
-        if IClient.providedBy (client):
-            return client.Title()
-        return ""
+        client = self.getClient()
+        return client.Title() if client else ""
 
     def getContactTitle(self):
         return ""

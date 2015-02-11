@@ -106,28 +106,6 @@ Test Batch-Attach
     click button                        Save
     Wait until page contains            Changes saved.    
     
-Test ClientBatchFields
-    Log in  test_labmanager  test_labmanager
-
-    Go to                        ${PLONEURL}/batches
-    Wait until page contains     Add
-    Click Link                   Add
-    Wait until page contains     Add Batch
-    Set Selenium Timeout         1
-    Page should not contain element  ClientBatchID
-    Page should not contain element  ClientProjectName
-    Go to                        ${PLONEURL}/clients/client-1/batches
-    Wait until page contains     Add
-    Click Link                   Add
-    Wait until page contains     Add Batch
-    Set Selenium Timeout         1
-    Page should contain element  ClientBatchID
-    Page should contain element  ClientProjectName
-    
-    # Log out
-    # Log in  test_labmanager1  test_labmanager1
-    # Verify AR  AP-0001-R01
-    
 *** Keywords ***
 
 Add Batch
