@@ -180,7 +180,11 @@ class ClientBatchesFieldWidgetVisibility(object):
         if not self.context.getClient():
             if fieldName in ['ClientBatchID',
                              'ClientProjectName', 
-                             'ClientBatchComment']:
+                             'ClientBatchComment',
+                             'Contact',
+                             'CCContact',
+                             'CCEmails',
+                             'InvoiceContact']:
                 return 'invisible'
         return state
 
