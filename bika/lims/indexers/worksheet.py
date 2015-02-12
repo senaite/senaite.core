@@ -1,4 +1,4 @@
-from bika.lims.interfaces import IWorksheet
+from bika.lims.interfaces import IWorksheet, IBatch
 from plone.indexer import indexer
 
 
@@ -11,6 +11,5 @@ def Priority(instance):
 
 @indexer(IWorksheet)
 def BatchUID(instance):
-    batch = instance.getBatch()
-    if batch:
-        return batch.UID()
+    if IBatch.providedBy(instance.aq_parent):
+        return instance.aq_parent.UID()

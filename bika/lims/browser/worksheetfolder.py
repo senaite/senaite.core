@@ -498,22 +498,24 @@ class AddWorksheetView(BrowserView):
 
     def __call__(self):
 
+        rc = getToolByName(self.context, REFERENCE_CATALOG)
+        wf = getToolByName(self.context, "portal_workflow")
+        pm = getToolByName(self.context, "portal_membership")
+
         # Validation
         form = self.request.form
         analyst = self.request.get('analyst', '')
         template = self.request.get('template', '')
         instrument = self.request.get('instrument', '')
         batchuid = self.request.get('BatchUID', '')
+        if batchuid:
+            batch = rc.lookupObject(batchuid)
 
         if not analyst:
             message = _("Analyst must be specified.")
             self.context.plone_utils.addPortalMessage(message, 'info')
             self.request.RESPONSE.redirect(self.context.absolute_url())
             return
-
-        rc = getToolByName(self.context, REFERENCE_CATALOG)
-        wf = getToolByName(self.context, "portal_workflow")
-        pm = getToolByName(self.context, "portal_membership")
 
         ws = _createObjectByType("Worksheet", self.context, tmpID())
         ws.processForm()
@@ -524,11 +526,6 @@ class AddWorksheetView(BrowserView):
         # Set instrument
         if instrument:
             ws.setInstrument(instrument)
-
-        # Set Batch
-        if batchuid:
-            batch = rc.lookupObject(batchuid)
-            ws.setBatch(batch)
 
         # overwrite saved context UID for event subscribers
         self.request['context_uid'] = ws.UID()

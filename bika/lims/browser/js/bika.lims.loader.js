@@ -139,7 +139,13 @@ window.bika.lims.controllers =  {
         ['BatchView'],
 
     // Worksheets
-    ".portaltype-worksheetfolder":
+    //".portaltype-worksheetfolder":
+    //    ['WorksheetFolderView'],
+    // Adding worksheets inside "Batch" context also requires this,
+    // so the following condition is better suited.  In future, if
+    // worksheets can be added from even more contexts, this will
+    // continue to function correctly.
+    ".worksheet_add_controls":
         ['WorksheetFolderView'],
 
     ".portaltype-worksheet.template-add_analyses":

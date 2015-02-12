@@ -17,6 +17,7 @@
  <property name="allowed_content_types">
   <element value="AnalysisRequest"/>
   <element value="Attachment"/>
+  <element value="Worksheet"/>
  </property>
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>
@@ -64,17 +65,29 @@
   <permission value="View"/>
  </action>
 
- <action title="Samples"
-         action_id="samples"
-         category="object"
-         condition_expr=""
-         icon_expr="string:${portal_url}/++resource++bika.lims.images/sample.png"
-         link_target=""
-         url_expr="string:${object_url}/samples"
-         i18n:attributes="title"
-         visible="True">
-  <permission value="View"/>
- </action>
+    <action title="Samples"
+            action_id="samples"
+            category="object"
+            condition_expr=""
+            icon_expr="string:${portal_url}/++resource++bika.lims.images/sample.png"
+            link_target=""
+            url_expr="string:${object_url}/samples"
+            i18n:attributes="title"
+            visible="True">
+     <permission value="View"/>
+    </action>
+
+    <action title="Worksheets"
+            action_id="worksheets"
+            category="object"
+            condition_expr=""
+            icon_expr="string:${portal_url}/++resource++bika.lims.images/worksheet.png"
+            link_target=""
+            url_expr="string:${object_url}/worksheets"
+            i18n:attributes="title"
+            visible="True">
+     <permission value="View"/>
+    </action>
 
 
  <action title="Batch Book"

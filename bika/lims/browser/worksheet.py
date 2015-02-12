@@ -13,7 +13,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.referencesample import ReferenceSamplesView
 from bika.lims.exportimport import instruments
-from bika.lims.interfaces import IFieldIcons
+from bika.lims.interfaces import IFieldIcons, IBatch
 from bika.lims.interfaces import IWorksheet
 from bika.lims.subscribers import doActionFor
 from bika.lims.subscribers import skip
@@ -847,12 +847,11 @@ class AddAnalysesView(BikaListingView):
                               'review_state':'sample_received',
                               'worksheetanalysis_review_state':'unassigned',
                               'cancellation_state':'active'}
-        # Worksheets which have a value in the Batch field, are required not
-        # to show analyses from other batches.  So we set the default
-        # contentFilter here.
-        batch = self.context.getBatch()
-        if batch:
-            self.contentFilter['BatchUID'] = batch.UID()
+
+        # Worksheets which live inside Batch objects may not show Analyses from
+        # other batches.  So we set the default contentFilter here.
+        if IBatch.providedBy(self.context.aq_parent):
+            self.contentFilter['BatchUID'] = self.context.aq_parent.UID()
 
         self.base_url = self.context.absolute_url()
         self.view_url = self.base_url + "/add_analyses"

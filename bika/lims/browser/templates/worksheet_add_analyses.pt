@@ -99,27 +99,24 @@
 					</tal:options>
 				</select>
 
-			</td></tr><tr><td tal:define="batch python:view.getBatch()">
+			</td></tr><tr>
 
-				<label tal:attributes="for string:batchselector"
-					i18n:translate="">Batch</label>
+                <td>
+                    <tal:block tal:condition="python:context.aq_parent.portal_type == 'WorksheetFolder'">
+                        <label tal:attributes="for string:batchselector" i18n:translate="">Batch</label>
+                        <input type="text" name="batchselector"
+                               placeholder="Type to search" id="batchselector"/>
+                        <input type="hidden" tal:attributes="name string:${form_id}_BatchUID"/>
+                    </tal:block>
+                    <tal:block tal:condition="python:context.aq_parent.portal_type == 'Batch'">
+                        <label tal:attributes="for string:batchselector" i18n:translate="">Batch</label>
+                        <span tal:content="context/aq_parent/Title"/>
+                        <input type="hidden" tal:attributes="name string:${form_id}_BatchUID;
+								value context/aq_parent/UID"/>
+                    </tal:block>
+                </td>
 
-				<tal:block condition="python: not batch">
-					<input type="text" name="batchselector"
-						placeholder="Type to search"
-						id="batchselector"/>
-					<input type="hidden"
-							tal:attributes="name string:${form_id}_BatchUID"/>
-				</tal:block>
-
-				<tal:block condition="python:batch">
-					<span tal:content="python:batch.Title()"/>
-					<input type="hidden"
-							tal:attributes="name string:${form_id}_BatchUID;
-							                value python:batch.UID()"/>
-				</tal:block>
-
-			</td><td>
+			<td>
 
 				<label tal:attributes="for string:${form_id}_Title"
 					i18n:translate="">Service</label>

@@ -22,6 +22,22 @@
 
     <browser:page
       for="bika.lims.interfaces.IBatch"
+      name="worksheets"
+      class="bika.lims.browser.batch.worksheets.WorksheetFolderListingView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IBatch"
+      name="worksheet_add"
+      class="bika.lims.browser.worksheetfolder.AddWorksheetView"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IBatch"
       name="batchbook"
       class="bika.lims.browser.batch.batchbook.BatchBookView"
       permission="zope2.View"

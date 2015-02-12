@@ -78,10 +78,19 @@
                 </span></td>
 
                 <td style="padding: 0 5px 0 5px;"><label tal:attributes="for string:batchselector" i18n:translate="">Batch</label></td>
-                <td style="width:50%"><input type="text" name="batchselector"
-                    placeholder="Type to search"
-                    id="batchselector"/>
-                <input type="hidden" name="BatchUID"/></td>
+
+                <td style="width:50%" tal:condition="python:context.portal_type == 'WorksheetFolder'">
+                    <input type="text" name="batchselector"
+                        placeholder="Type to search"
+                        id="batchselector"/>
+                    <input type="hidden" name="BatchUID"/>
+                </td>
+                <td style="width:50%" tal:condition="python:context.portal_type == 'Batch' ">
+                    <span tal:content="context/Title"/>
+                    <input type="hidden"
+                           name="BatchUID"
+                           tal:attributes="value context/UID"/>
+                </td>
 
             </tr></table>
 
