@@ -138,3 +138,6 @@ class InvoicePrintView(InvoiceView):
 
     def __call__(self):
         return InvoiceView.__call__(self)
+
+class InvoiceCreate(InvoiceView):
+    pass
