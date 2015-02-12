@@ -3,6 +3,7 @@
 Library          BuiltIn
 Library          Selenium2Library  timeout=5  implicit_wait=0.2
 Library          String
+Library          DebugLibrary
 Resource         keywords.txt
 Library          bika.lims.testing.Keywords
 Resource         plone/app/robotframework/selenium.robot
@@ -32,6 +33,37 @@ Test AR created inside batches
     # Log in  test_labmanager1  test_labmanager1
     # Verify AR  AP-0001-R01
 
+Test Worksheets created inside Batch objects
+    Log in                              test_labmanager         test_labmanager
+    ## Add batch
+    Go to                               ${PLONEURL}/batches
+    Click Link                          Add
+    Wait until page contains            Add Batch
+    Input Text                          title                   Batch With Worksheet
+    Set Selenium Timeout                10
+    Click Button                        Save
+    Wait until page contains            Changes saved.
+    ## Add AR
+    Wait until page contains            Add new
+    input text                          ar_count  1
+    click Link                          Add new
+    Wait until page contains            Request new analyses
+    Select from dropdown                css=#Client-0             Happy
+    Select from dropdown                css=#Contact-0            Rita
+    Select from dropdown                css=#SampleType-0         Apple
+    Select from dropdown                css=#Profile-0            Hardness
+    SelectDate                          css=#SamplingDate-0       1
+    Click Button                        Save
+    Wait until page contains            created
+    select checkbox                     css=input[item_title='AP-0001-R01']
+    click element                       css=#receive_transition
+    Wait until page contains            Changes saved.
+    ## Add Worksheet
+    go to                               ${PLONEURL}/batches/B-001/worksheets
+    select from list                    css=.analyst         test_analyst1
+    click element                       css=.worksheet_add
+    wait until page contains            Water Chemistry
+
 Test batch inherited ARs
     Log in                              test_labmanager         test_labmanager
     ## Add batch
@@ -47,13 +79,13 @@ Test batch inherited ARs
     input text                          ar_count           1
     click link                          Add new
     wait until page contains            Request new analyses
-    Select from dropdown                ar_0_Client             Happy
+    Select from dropdown                css=#Client-0             Happy
     ##Click element                       css=.ClientCopyButton
-    Select from dropdown                ar_0_Contact            Rita
+    Select from dropdown                css=#Contact-0            Rita
     ##Click element                       css=.ContactCopyButton
-    SelectDate                          ar_0_SamplingDate       1
+    SelectDate                          css=#SamplingDate-0       1
     ##Click element                       css=.SamplingDateCopyButton
-    Select from dropdown                ar_0_SampleType         Water
+    Select from dropdown                css=#SampleType-0         Water
     ##Click element                       css=.SampleTypeCopyButton
     Click element                       css=#cat_lab_Metals
     ##Select checkbox                     xpath=//input[@title='Calcium'][1]
@@ -149,11 +181,11 @@ Add AR
     input text                   ar_count  1
     click Link                   Add new
     Wait until page contains     Request new analyses
-    Select from dropdown         ar_0_Client             Happy
-    Select from dropdown         ar_0_Contact            Rita
-    Select from dropdown         ar_0_SampleType         Apple
-    Select from dropdown         ar_0_Profile            Counts
-    SelectDate                   ar_0_SamplingDate       1
+    Select from dropdown         css=#Client-0             Happy
+    Select from dropdown         css=#Contact-0            Rita
+    Select from dropdown         css=#SampleType-0         Apple
+    Select from dropdown         css=#Profile-0            Counts
+    SelectDate                   css=#SamplingDate-0       1
     Click Button                 Save
     Wait until page contains     created
 
