@@ -136,8 +136,21 @@ Test Batch-Attach
     select from dropdown                AttachmentType                MS
     Input Text                          AttachmentKeys                ASDFK
     click button                        Save
-    Wait until page contains            Changes saved.    
-    
+    Wait until page contains            Changes saved.
+
+Test Batch-Contact-Auto-CC
+    Log in                       test_labmanager  test_labmanager
+    Go to                        http://localhost:55001/plone/clients/client-1/batches
+    Wait until page contains     Add
+    Click Link                   Add
+    Wait until page contains     Add Batch
+    Input text                   description  Just a regular batch
+    SelectDate                   BatchDate       1
+    Select from dropdown         Contact    Rita
+    Page should contain          Seemonster
+    Click Button                 xpath=//input[@value="Save"]
+    Wait until page contains     saved
+
 *** Keywords ***
 
 Add Batch

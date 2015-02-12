@@ -119,6 +119,50 @@ function BatchView() {
 			});
 		});
 
+		$("#Contact").live("selected copy", function (event, item) {
+		cc_contacts_set()
+		});
+		function cc_contacts_set() {
+			/* Setting the CC Contacts after a Contact was set
+			 *
+			 * Contact.CCContact may contain a list of Contact references.
+			 * So we need to select them in the form with some fakey html,
+			 * and set them in the state.
+			 */
+			var contact_element = $("#Contact")
+			var contact_uid = $(contact_element).attr("uid")
+			// clear the CC selector widget and listing DIV
+			var cc_div = $("#archetypes-fieldname-CCContact .multiValued-listing")
+			var cc_uids = $("input[name='CCContact_uid']")
+			$(cc_div).empty()
+			if (contact_uid) {
+				var request_data = {
+					catalog_name: "portal_catalog",
+					UID: contact_uid
+				}
+				window.bika.lims.jsonapi_read(request_data, function (data) {
+					if (data.objects && data.objects.length > 0) {
+						var ob = data.objects[0]
+						var cc_titles = ob['CCContact']
+						var cc_uids = ob['CCContact_uid']
+						if (!cc_uids) {
+							return
+						}
+						$(cc_uids).val(cc_uids.join(","))
+						for (var i = 0; i < cc_uids.length; i++) {
+							var title = cc_titles[i]
+							var uid = cc_uids[i]
+							var del_btn_src = window.portal_url + "/++resource++bika.lims.images/delete.png"
+							var del_btn =
+							  "<img class='deletebtn' src='" + del_btn_src + "' fieldname='CCContact' uid='" + uid + "'/>"
+							var new_item = "<div class='reference_multi_item' uid='" + uid + "'>" + del_btn + title + "</div>"
+							$(cc_div).append($(new_item))
+						}
+					}
+				})
+			}
+		}
+
 		// can only have one of Profile or Template seleted
 		$("#Template").bind("selected", function(event, item){
 			$("#Profile").val("");
