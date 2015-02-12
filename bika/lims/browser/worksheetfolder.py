@@ -507,9 +507,14 @@ class AddWorksheetView(BrowserView):
         analyst = self.request.get('analyst', '')
         template = self.request.get('template', '')
         instrument = self.request.get('instrument', '')
+
+        # Worksheets can be created in Batches or in the Worksheet Folder.
+        # If the form includes BatchUID, that will be our container.
         batchuid = self.request.get('BatchUID', '')
         if batchuid:
-            batch = rc.lookupObject(batchuid)
+            container = rc.lookupObject(batchuid)
+        else:
+            container = self.context
 
         if not analyst:
             message = _("Analyst must be specified.")
@@ -517,7 +522,7 @@ class AddWorksheetView(BrowserView):
             self.request.RESPONSE.redirect(self.context.absolute_url())
             return
 
-        ws = _createObjectByType("Worksheet", self.context, tmpID())
+        ws = _createObjectByType("Worksheet", container, tmpID())
         ws.processForm()
 
         # Set analyst

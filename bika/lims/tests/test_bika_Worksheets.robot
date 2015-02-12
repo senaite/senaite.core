@@ -25,6 +25,7 @@ Worksheet with Batch field value, should show only analyses from these Batches.
     Create AnalysisRequests
 
     go to                              ${PLONEURL}/worksheets
+    wait until page contains element   css=.analyst
     select from list                   css=.analyst               analyst1
     select from dropdown               css=#batchselector         001
     Set Selenium Timeout               10
@@ -295,6 +296,7 @@ Submit results quickly
     Input Text    xpath=//tr[@keyword='Mg']//input[contains(@selector, 'Result_D')]              10.45   # duplicate
     Input Text    xpath=(//tr[@keyword='Ca']//input[contains(@selector, 'Result_SA')])[2]        0       # blank
     Input Text    xpath=(//tr[@keyword='Mg']//input[contains(@selector, 'Result_SA')])[3]        0      # blank
+    wait until page contains element   css=.analyst
     Focus                       css=.analyst
     Click Element               xpath=//input[@value='Submit for verification'][1]
     Wait Until Page Contains    Changes saved.
@@ -311,11 +313,11 @@ TestResultsRange
 
     # Log  Testing Result Range for ${locator} -:- values: ${badResult} and ${goodResult}  WARN
 
-    Input Text          ${locator}  ${badResult}
-    Focus               css=.analyst
+    Input Text          ${locator}  ${badResult} \t
+#    Focus               css=.analyst
     Expect exclamation
-    Input Text          ${locator}  ${goodResult}
-    Focus               css=.analyst
+    Input Text          ${locator}  ${goodResult} \t
+#    Focus               css=.analyst
     Expect no exclamation
 
 Expect exclamation
