@@ -144,6 +144,49 @@ class AnalysisRequestViewView(BrowserView):
         self.renderMessages()
         return self.template()
 
+    def getAttachments(self):
+        attachments = []
+        ar_atts = self.context.getAttachment()
+        analyses = self.context.getAnalyses(full_objects = True)
+        for att in ar_atts:
+            file = att.getAttachmentFile()
+            fsize = file.getSize() if file else 0
+            if fsize < 1024:
+                fsize = '%s b' % fsize
+            else:
+                fsize = '%s Kb' % (fsize / 1024)
+            attachments.append({
+                'keywords': att.getAttachmentKeys(),
+                'analysis': '',
+                'size': fsize,
+                'name': file.filename,
+                'Icon': file.getBestIcon(),
+                'type': att.getAttachmentType().Title() if att.getAttachmentType() else '',
+                'absolute_url': att.absolute_url(),
+                'UID': att.UID(),
+            })
+
+        for analysis in analyses:
+            an_atts = analysis.getAttachment()
+            for att in an_atts:
+                file = att.getAttachmentFile()
+                fsize = file.getSize() if file else 0
+                if fsize < 1024:
+                    fsize = '%s b' % fsize
+                else:
+                    fsize = '%s Kb' % (fsize / 1024)
+                attachments.append({
+                    'keywords': att.getAttachmentKeys(),
+                    'analysis': analysis.Title(),
+                    'size': fsize,
+                    'name': file.filename,
+                    'Icon': file.getBestIcon(),
+                    'type': att.getAttachmentType().Title() if att.getAttachmentType() else '',
+                    'absolute_url': att.absolute_url(),
+                    'UID': att.UID(),
+                })
+        return attachments
+
     def addMessage(self, message, msgtype='info'):
         self.messages.append({'message': message, 'msgtype': msgtype})
 

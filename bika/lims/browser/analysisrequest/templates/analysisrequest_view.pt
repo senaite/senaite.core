@@ -42,7 +42,7 @@
     inactive_state python:context.portal_workflow.getInfoFor(context, 'inactive_state', 'asdf');
     analysis_attach_allowed here/bika_setup/getAnalysisAttachmentsPermitted;
     attachments_allowed here/bika_setup/getAttachmentsPermitted;
-    attachments here/getAttachment | nothing;
+    attachments python:view.getAttachments();
     update_attachments python:context.portal_membership.checkPermission('EditResults', context) or
                               context.portal_membership.checkPermission('EditFieldResults', context);
     add_attachments python:context.portal_membership.checkPermission('BIKA: Add Attachment', context);

@@ -1622,15 +1622,13 @@ class AnalysisRequest(BaseFolder):
     def delARAttachment(self, REQUEST=None, RESPONSE=None):
         """ delete the attachment """
         tool = getToolByName(self, REFERENCE_CATALOG)
-        if 'ARAttachment' in self.REQUEST.form:
-            attachment_uid = self.REQUEST.form['ARAttachment']
+        if 'Attachment' in self.REQUEST.form:
+            attachment_uid = self.REQUEST.form['Attachment']
             attachment = tool.lookupObject(attachment_uid)
-            parent = attachment.getRequest()
-        elif 'AnalysisAttachment' in self.REQUEST.form:
-            attachment_uid = self.REQUEST.form['AnalysisAttachment']
-            attachment = tool.lookupObject(attachment_uid)
-            parent = attachment.getAnalysis()
+            parent_r = attachment.getRequest()
+            parent_a = attachment.getAnalysis()
 
+        parent = parent_a if parent_a else parent_r
         others = parent.getAttachment()
         attachments = []
         for other in others:
@@ -1641,8 +1639,7 @@ class AnalysisRequest(BaseFolder):
         ids = [attachment.getId(), ]
         BaseFolder.manage_delObjects(client, ids, REQUEST)
 
-        RESPONSE.redirect(
-            '%s/manage_results' % self.absolute_url())
+        RESPONSE.redirect(self.REQUEST.get_header('referer'))
 
     security.declarePublic('getVerifier')
 
