@@ -1559,10 +1559,13 @@ class AnalysisRequest(BaseFolder):
             invoice_batch.processForm()
 
         client_uid = self.getClientUID()
-        invoice_batch.createInvoice(client_uid, [self, ])
-
+        # Get the created invoice
+        invoice = invoice_batch.createInvoice(client_uid, [self, ])
+        # Set the created invoice in the schema
+        self.Schema()['Invoice'].set(self, invoice)
+        # Reload the page to the the new fields
         RESPONSE.redirect(
-            '%s/analysisrequest_invoice' % self.absolute_url())
+            '%s/invoice' % self.absolute_url())
 
     security.declarePublic('printInvoice')
 

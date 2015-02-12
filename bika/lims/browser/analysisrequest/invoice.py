@@ -140,4 +140,9 @@ class InvoicePrintView(InvoiceView):
         return InvoiceView.__call__(self)
 
 class InvoiceCreate(InvoiceView):
-    pass
+    """
+    It generates an invoice object with the proforma information in the AR/invoice.
+    """
+    def __call__(self):
+        context = self.context
+        context.issueInvoice(RESPONSE=self.request.response)
