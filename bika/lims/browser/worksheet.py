@@ -1409,6 +1409,9 @@ class WorksheetServicesView(BikaListingView):
                            sort_on = 'sortable_title')
         items = []
         for service in services:
+            # only return present services
+            if service.UID not in ws_services:
+                continue
             # if the service has dependencies, it can't have reference analyses
             calculation = service.getObject().getCalculation()
             if calculation and calculation.getDependentServices():

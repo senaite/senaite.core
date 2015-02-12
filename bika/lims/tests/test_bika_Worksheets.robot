@@ -197,6 +197,7 @@ Add Reference Analyses
     #Add worksheet controls
     Go to                       ${PLONEURL}/worksheets/WS-001/add_control
     Wait Until Page Contains    Trace Metals 10
+    Page Should Not Contain     Ecoli
     Click Element               xpath=//span[@id='worksheet_add_references']//tbody//tr[1]
     Wait Until Page Contains Element  submit_transition
 
