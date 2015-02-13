@@ -25,6 +25,7 @@ class InvoiceView(BrowserView):
     implements(IInvoiceView)
 
     template = ViewPageTemplateFile("templates/analysisrequest_invoice.pt")
+    print_template = ViewPageTemplateFile("templates/analysisrequest_invoice_print.pt")
     content = ViewPageTemplateFile("templates/analysisrequest_invoice_content.pt")
     title = _('Invoice')
     description = ''
@@ -148,11 +149,14 @@ class InvoiceCreate(InvoiceView):
     It generates an invoice object with the proforma information in the AR/invoice.
     """
     security = ClassSecurityInfo()
+
     def __call__(self):
         # Create the invoice object and link it to the current AR.
         self.context.issueInvoice(RESPONSE=self.request.response)
+        # Run the InvoiceView __call__ is necessary to fill out the template required fields.
+        InvoiceView.__call__(self)
         # Get the invoice template in HTML format
-        templateHTML = InvoiceView.__call__(self)
+        templateHTML = self.print_template()
         # Send emails with the invoice
         self.emailInvoice(templateHTML)
         # Reload the page to see the the new fields
@@ -189,7 +193,10 @@ class InvoiceCreate(InvoiceView):
             if (email != ''):
                 to.append(formataddr((encode_header(name), email)))
         # Build the client's address
-        import pdb;pdb.set_trace()
+        caddress = ar.aq_parent.getEmailAddress()
+        cname = ar.aq_parent.getName()
+        if (caddress != ''):
+                to.append(formataddr((encode_header(cname), caddress)))
         if len(to) > 0:
             # Send the emails
             mime_msg['To'] = ','.join(to)
