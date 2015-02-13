@@ -38,6 +38,7 @@ class DateTimeField(DTF):
         to convert it to one; otherwise, set to None. Assign all
         properties passed as kwargs to object.
         """
+        val = value
         if not value:
             val = None
         elif not isinstance(value, DateTime):

@@ -32,6 +32,7 @@ def upgrade(tool):
     setup.runImportStepFromProfile('profile-bika.lims:default', 'jsregistry')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'workflow-csv')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'plone.app.registry')
 
     # Migrations
 
