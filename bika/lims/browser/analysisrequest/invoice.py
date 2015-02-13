@@ -73,14 +73,14 @@ class InvoiceView(BrowserView):
         self.requestId = context.getRequestID()
         self.headers = [
             {'title': 'Invoice ID', 'value': self.invoiceId},
-            {'title': 'Client Reference', 
+            {'title': 'Client Reference',
                 'value': self.clientReference },
             {'title': 'Sample Type', 'value': self.sampleType},
             {'title': 'Request ID', 'value': self.requestId},
             {'title': 'Date Received', 'value': self.dateReceived},
         ]
         if not isAttributeHidden('AnalysisRequest', 'ClientOrderNumber'):
-            self.headers.append({'title': 'Client Sample Id', 
+            self.headers.append({'title': 'Client Sample Id',
                                  'value': self.clientOrderNumber})
         if not isAttributeHidden('AnalysisRequest', 'SamplePoint'):
             self.headers.append(
@@ -92,11 +92,11 @@ class InvoiceView(BrowserView):
                 self.headers.append(
                     {'title': 'datePublished', 'value': self.datePublished})
 
-		#	<tal:published tal:condition="view/datePublished">
-		#		<th i18n:translate="">Date Published</th>
-		#		<td tal:content="view/datePublished"></td>
-		#	</tal:published>
-		#</tr>
+        #   <tal:published tal:condition="view/datePublished">
+        #       <th i18n:translate="">Date Published</th>
+        #       <td tal:content="view/datePublished"></td>
+        #   </tal:published>
+        #</tr>
 
         # Retrieve required data from analyses collection
         analyses = []
@@ -176,8 +176,9 @@ class InvoiceCreate(InvoiceView):
         # Useful variables
         lab = ar.bika_setup.laboratory
         # Compose and send email.
+        subject = t(_('Invoice')) + ' ' + ar.getInvoice().getId()
         mime_msg = MIMEMultipart('related')
-        mime_msg['Subject'] = self.get_mail_subject()[0]
+        mime_msg['Subject'] = subject
         mime_msg['From'] = formataddr(
             (encode_header(lab.getName()), lab.getEmailAddress()))
         mime_msg.preamble = 'This is a multi-part MIME message.'
@@ -209,73 +210,3 @@ class InvoiceCreate(InvoiceView):
                     raise SMTPServerDisconnected(msg)
             except SMTPRecipientsRefused as msg:
                 raise WorkflowException(str(msg))
-
-    def get_mail_subject(self):
-        """ Returns the email subject in accordance with the client
-            preferences
-        """
-        ar = self.aq_parent
-        client = ar.aq_parent
-        subject_items = client.getEmailSubject()
-        ai = co = cr = cs = False
-        if 'ar' in subject_items:
-            ai = True
-        if 'co' in subject_items:
-            co = True
-        if 'cr' in subject_items:
-            cr = True
-        if 'cs' in subject_items:
-            cs = True
-        ais = []
-        cos = []
-        crs = []
-        css = []
-        blanks_found = False
-        if ai:
-            ais.append(ar.getRequestID())
-        if co:
-            if ar.getClientOrderNumber():
-                if not ar.getClientOrderNumber() in cos:
-                    cos.append(ar.getClientOrderNumber())
-            else:
-                blanks_found = True
-        if cr or cs:
-            sample = ar.getSample()
-        if cr:
-            if sample.getClientReference():
-                if not sample.getClientReference() in crs:
-                    crs.append(sample.getClientReference())
-            else:
-                blanks_found = True
-        if cs:
-            if sample.getClientSampleID():
-                if not sample.getClientSampleID() in css:
-                    css.append(sample.getClientSampleID())
-            else:
-                blanks_found = True
-        line_items = []
-        if ais:
-            ais.sort()
-            li = t(_('ARs: ${ars}', mapping={'ars': ', '.join(ais)}))
-            line_items.append(li)
-        if cos:
-            cos.sort()
-            li = t(_('Orders: ${orders}', mapping={'orders': ', '.join(cos)}))
-            line_items.append(li)
-        if crs:
-            crs.sort()
-            li = t(_('Refs: ${references}', mapping={'references':', '.join(crs)}))
-            line_items.append(li)
-        if css:
-            css.sort()
-            li = t(_('Samples: ${samples}', mapping={'samples': ', '.join(css)}))
-            line_items.append(li)
-        tot_line = ' '.join(line_items)
-        if tot_line:
-            subject = t(_('Analysis results for ${subject_parts}',
-                          mapping={'subject_parts':tot_line}))
-            if blanks_found:
-                subject += (' ' + t(_('and others')))
-        else:
-            subject = t(_('Analysis results'))
-        return subject, tot_line

@@ -1564,6 +1564,7 @@ class AnalysisRequest(BaseFolder):
         # Set the created invoice in the schema
         self.Schema()['Invoice'].set(self, invoice)
 
+    security.declarePublic('printInvoice')
     def printInvoice(self, REQUEST=None, RESPONSE=None):
         """ print invoice
         """

@@ -179,8 +179,8 @@ class InvoiceBatch(BaseFolder):
             invoice.invoice_lineitems.append(lineitem)
         invoice.reindexObject()
         return invoice
-    security.declarePublic('current_date')
 
+    security.declarePublic('current_date')
     def current_date(self):
         """ return current date """
         return DateTime()
