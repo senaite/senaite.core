@@ -106,6 +106,17 @@
      <permission value="BIKA: View Log Tab"/>
  </action>
 
+ <action title="Create Invoice"
+         action_id="Create Invoice"
+         category="document_actions"
+         condition_expr="python: context.REQUEST.get('verified','') and context.portal_workflow.getInfoFor(context,'review_state') in ['verified', 'published'] and not context.getInvoice()"
+         link_target=""
+         url_expr="string:${object_url}/invoice_create"
+         i18n:attributes="title"
+         visible="True">
+     <permission value="BIKA: Manage Invoices"/>
+ </action>
+
  <action title="Print"
          action_id="invoice_print"
          category="document_actions"
