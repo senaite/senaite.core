@@ -1,5 +1,6 @@
-﻿3.1.6 (unreleased)
+3.1.6 (unreleased)
 
+LIMS-1594: Added option to select landing page for clients in configuration registry
 LIMS-1594: Re-ordered tabs on Client home page
 LIMS-1386: Audit log should also save(show) time for a better tracking
 LIMS-1391: IdentifierTypes (from bika.health) for alternate object ID lookups
