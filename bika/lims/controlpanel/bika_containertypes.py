@@ -8,7 +8,7 @@ from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.content.bikaschema import BikaFolderSchema
-from bika.lims.interfaces import IContainerTypes
+from bika.lims.interfaces import IContainerTypes, IHaveNoByLine
 from plone.app.layout.globals.interfaces import IViewView
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
@@ -77,7 +77,7 @@ class ContainerTypesView(BikaListingView):
 
 schema = ATFolderSchema.copy()
 class ContainerTypes(ATFolder):
-    implements(IContainerTypes)
+    implements(IContainerTypes, IHaveNoByLine)
     displayContentsTab = False
     schema = schema
 

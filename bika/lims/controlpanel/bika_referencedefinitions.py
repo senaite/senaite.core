@@ -13,7 +13,7 @@ from bika.lims.utils import t
 from bika.lims.content.bikaschema import BikaFolderSchema
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
-from bika.lims.interfaces import IReferenceDefinitions
+from bika.lims.interfaces import IReferenceDefinitions, IHaveNoByLine
 from zope.interface.declarations import implements
 
 class ReferenceDefinitionsView(BikaListingView):
@@ -82,7 +82,7 @@ class ReferenceDefinitionsView(BikaListingView):
 
 schema = ATFolderSchema.copy()
 class ReferenceDefinitions(ATFolder):
-    implements(IReferenceDefinitions)
+    implements(IReferenceDefinitions, IHaveNoByLine)
     displayContentsTab = False
     schema = schema
 

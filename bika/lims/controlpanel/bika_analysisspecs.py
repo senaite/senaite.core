@@ -9,7 +9,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
-from bika.lims.interfaces import IAnalysisSpecs
+from bika.lims.interfaces import IAnalysisSpecs, IHaveNoByLine
 from zope.interface.declarations import implements
 from plone.app.layout.globals.interfaces import IViewView
 
@@ -74,7 +74,7 @@ class AnalysisSpecsView(BikaListingView):
 
 schema = ATFolderSchema.copy()
 class AnalysisSpecs(ATFolder):
-    implements(IAnalysisSpecs)
+    implements(IAnalysisSpecs, IHaveNoByLine)
     displayContentsTab = False
     schema = schema
 

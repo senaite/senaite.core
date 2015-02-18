@@ -12,7 +12,7 @@ from plone.app.layout.globals.interfaces import IViewView
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from Products.Archetypes import PloneMessageFactory as _p
-from bika.lims.interfaces import IStorageLocations
+from bika.lims.interfaces import IStorageLocations, IHaveNoByLine
 from bika.lims.content.bikaschema import BikaFolderSchema
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
@@ -84,7 +84,7 @@ class StorageLocationsView(BikaListingView):
 schema = ATFolderSchema.copy()
 
 class StorageLocations(ATFolder):
-    implements(IStorageLocations)
+    implements(IStorageLocations, IHaveNoByLine)
     displayContentsTab = False
     schema = schema
 

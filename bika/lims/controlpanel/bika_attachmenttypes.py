@@ -10,7 +10,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.content.bikaschema import BikaFolderSchema
 from plone.app.layout.globals.interfaces import IViewView
-from bika.lims.interfaces import IAttachmentTypes
+from bika.lims.interfaces import IAttachmentTypes, IHaveNoByLine
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from zope.interface.declarations import implements
@@ -60,7 +60,7 @@ class AttachmentTypesView(BikaListingView):
 
 schema = ATFolderSchema.copy()
 class AttachmentTypes(ATFolder):
-    implements(IAttachmentTypes)
+    implements(IAttachmentTypes, IHaveNoByLine)
     displayContentsTab = False
     schema = schema
 

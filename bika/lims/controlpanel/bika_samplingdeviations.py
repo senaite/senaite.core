@@ -7,7 +7,7 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import ISamplingDeviations
+from bika.lims.interfaces import ISamplingDeviations, IHaveNoByLine
 from plone.app.layout.globals.interfaces import IViewView
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
@@ -81,7 +81,7 @@ class SamplingDeviationsView(BikaListingView):
 
 schema = ATFolderSchema.copy()
 class SamplingDeviations(ATFolder):
-    implements(ISamplingDeviations)
+    implements(ISamplingDeviations, IHaveNoByLine)
     displayContentsTab = False
     schema = schema
 

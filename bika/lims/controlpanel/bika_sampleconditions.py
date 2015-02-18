@@ -3,7 +3,7 @@ from Products.Archetypes import atapi
 from Products.CMFCore.utils import getToolByName
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import ISampleConditions
+from bika.lims.interfaces import ISampleConditions, IHaveNoByLine
 from plone.app.layout.globals.interfaces import IViewView
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
@@ -77,7 +77,7 @@ class SampleConditionsView(BikaListingView):
 
 schema = ATFolderSchema.copy()
 class SampleConditions(ATFolder):
-    implements(ISampleConditions)
+    implements(ISampleConditions, IHaveNoByLine)
     displayContentsTab = False
     schema = schema
 

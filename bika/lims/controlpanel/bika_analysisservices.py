@@ -4,7 +4,7 @@ from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.idserver import renameAfterCreation
-from bika.lims.interfaces import IAnalysisServices
+from bika.lims.interfaces import IAnalysisServices, IHaveNoByLine
 from bika.lims.utils import tmpID
 from bika.lims.validators import ServiceKeywordValidator
 from plone.app.content.browser.interfaces import IFolderContentsView
@@ -326,7 +326,7 @@ schema = ATFolderSchema.copy()
 
 
 class AnalysisServices(ATFolder):
-    implements(IAnalysisServices)
+    implements(IAnalysisServices, IHaveNoByLine)
     displayContentsTab = False
     schema = schema
 

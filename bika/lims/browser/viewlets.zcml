@@ -47,9 +47,8 @@
         layer="bika.lims.interfaces.IBikaLIMS"
         />
 
-    <!-- Hide ByLine for everything -->
     <browser:viewlet
-        for="*"
+        for="bika.lims.interfaces.IHaveNoByLine"
         name="plone.belowcontenttitle.documentbyline"
         manager="plone.app.layout.viewlets.interfaces.IBelowContentTitle"
         template="templates/blank.pt"

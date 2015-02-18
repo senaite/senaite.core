@@ -12,7 +12,7 @@ from bika.lims.content.bikaschema import BikaFolderSchema
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from plone.app.layout.globals.interfaces import IViewView
-from bika.lims.interfaces import IAnalysisProfiles
+from bika.lims.interfaces import IAnalysisProfiles, IHaveNoByLine
 from zope.interface.declarations import implements
 
 class ProfilesView(BikaListingView):
@@ -78,7 +78,7 @@ class ProfilesView(BikaListingView):
 
 schema = ATFolderSchema.copy()
 class AnalysisProfiles(ATFolder):
-    implements(IAnalysisProfiles)
+    implements(IAnalysisProfiles, IHaveNoByLine)
     displayContentsTab = False
     schema = schema
 

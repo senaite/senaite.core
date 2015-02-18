@@ -8,7 +8,7 @@ from bika.lims.utils import t
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from plone.app.layout.globals.interfaces import IViewView
-from bika.lims.interfaces import ISRTemplates
+from bika.lims.interfaces import ISRTemplates, IHaveNoByLine
 from zope.interface.declarations import implements
 
 
@@ -72,7 +72,7 @@ schema = ATFolderSchema.copy()
 
 
 class SRTemplates(ATFolder):
-    implements(ISRTemplates)
+    implements(ISRTemplates, IHaveNoByLine)
     displayContentsTab = False
     schema = schema
 

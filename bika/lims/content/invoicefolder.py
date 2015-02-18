@@ -2,7 +2,8 @@ from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.config import ManageInvoices, PROJECTNAME
-from bika.lims.interfaces import IInvoiceFolder, IHaveNoBreadCrumbs
+from bika.lims.interfaces import IInvoiceFolder, IHaveNoBreadCrumbs, \
+    IHaveNoByLine
 from Products.Archetypes import atapi
 from Products.Archetypes.public import *
 from Products.ATContentTypes.content import folder
@@ -18,7 +19,7 @@ schema['title'].widget.visible = {'edit':'hidden', 'view':'invisible'}
 
 
 class InvoiceFolder(folder.ATFolder):
-    implements(IInvoiceFolder, IHaveNoBreadCrumbs)
+    implements(IInvoiceFolder, IHaveNoBreadCrumbs, IHaveNoByLine)
     displayContentsTab = False
     schema = schema
     security = ClassSecurityInfo()

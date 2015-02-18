@@ -11,7 +11,7 @@ from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims import interfaces
 from bika.lims.config import *
 from bika.lims.content.organisation import Organisation
-from bika.lims.interfaces import IClient
+from bika.lims.interfaces import IClient, IHaveNoByLine
 from bika.lims.utils import isActive
 from zope.component import getUtility
 from zope.interface import implements
@@ -119,7 +119,7 @@ schema['EmailAddress'].schemata = 'default'
 schema.moveField('ClientID', after='Name')
 
 class Client(Organisation):
-    implements(IClient)
+    implements(IClient, IHaveNoByLine)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

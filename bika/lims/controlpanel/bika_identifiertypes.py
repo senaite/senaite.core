@@ -3,7 +3,7 @@ from Products.Archetypes import atapi
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
-from bika.lims.interfaces import IIdentifierTypes
+from bika.lims.interfaces import IIdentifierTypes, IHaveNoByLine
 from plone.app.layout.globals.interfaces import IViewView
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
@@ -69,7 +69,7 @@ class IdentifierTypesView(BikaListingView):
 
 schema = ATFolderSchema.copy()
 class IdentifierTypes(ATFolder):
-    implements(IIdentifierTypes)
+    implements(IIdentifierTypes, IHaveNoByLine)
     displayContentsTab = False
     schema = schema
 

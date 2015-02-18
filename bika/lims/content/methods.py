@@ -7,7 +7,7 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import IMethods
+from bika.lims.interfaces import IMethods, IHaveNoByLine
 from plone.app.layout.globals.interfaces import IViewView
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
@@ -140,7 +140,7 @@ class MethodsView(BikaListingView):
 
 schema = ATFolderSchema.copy()
 class Methods(ATFolder):
-    implements(IMethods)
+    implements(IMethods, IHaveNoByLine)
     displayContentsTab = False
     schema = schema
 

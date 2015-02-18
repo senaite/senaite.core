@@ -11,6 +11,10 @@ class IBikaLIMS(Interface):
 class IHaveNoBreadCrumbs(Interface):
     """Items which do not display breadcrumbs"""
 
+class IHaveNoByLine(Interface):
+    """Items which do not display documentbyline.
+    """
+
 
 class IClientFolder(Interface):
     """Client folder"""

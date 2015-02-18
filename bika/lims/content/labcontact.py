@@ -12,7 +12,7 @@ from bika.lims.config import PUBLICATION_PREFS, PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from zope.interface import implements
-from bika.lims.interfaces import ILabContact
+from bika.lims.interfaces import ILabContact, IHaveNoByLine
 import sys
 
 schema = Person.schema.copy() + Schema((
@@ -62,7 +62,7 @@ class LabContact(Person):
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
-    implements(ILabContact)
+    implements(ILabContact, IHaveNoByLine)
 
     _at_rename_after_creation = True
     def _renameAfterCreation(self, check_auto_id=False):

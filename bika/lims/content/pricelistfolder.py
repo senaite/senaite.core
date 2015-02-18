@@ -1,7 +1,7 @@
 """PricelistFolder is a container for Pricelist instances.
 """
 from AccessControl import ClassSecurityInfo
-from bika.lims.interfaces import IPricelistFolder
+from bika.lims.interfaces import IPricelistFolder, IHaveNoByLine
 from plone.app.folder import folder
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims import PROJECTNAME
@@ -17,7 +17,7 @@ TitleField.widget.visible = {'edit': 'hidden', 'view': 'invisible'}
 
 
 class PricelistFolder(folder.ATFolder):
-    implements(IPricelistFolder, IHaveNoBreadCrumbs)
+    implements(IPricelistFolder, IHaveNoBreadCrumbs, IHaveNoByLine)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

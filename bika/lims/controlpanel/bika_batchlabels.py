@@ -4,7 +4,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
-from bika.lims.interfaces import IBatchLabels
+from bika.lims.interfaces import IBatchLabels, IHaveNoByLine
 from plone.app.layout.globals.interfaces import IViewView
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
@@ -63,7 +63,7 @@ class BatchLabelsView(BikaListingView):
 
 schema = ATFolderSchema.copy()
 class BatchLabels(ATFolder):
-    implements(IBatchLabels)
+    implements(IBatchLabels, IHaveNoByLine)
     displayContentsTab = False
     schema = schema
 

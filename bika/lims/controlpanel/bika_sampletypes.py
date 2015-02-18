@@ -12,7 +12,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from plone.app.layout.globals.interfaces import IViewView
 from bika.lims.content.bikaschema import BikaFolderSchema
-from bika.lims.interfaces import ISampleTypes
+from bika.lims.interfaces import ISampleTypes, IHaveNoByLine
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from zope.interface.declarations import implements
@@ -153,7 +153,7 @@ class SampleTypesView(BikaListingView):
 schema = ATFolderSchema.copy()
 
 class SampleTypes(ATFolder):
-    implements(ISampleTypes)
+    implements(ISampleTypes, IHaveNoByLine)
     displayContentsTab = False
     schema = schema
 

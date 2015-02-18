@@ -14,7 +14,7 @@ from plone.app.layout.globals.interfaces import IViewView
 from ZODB.POSException import ConflictError
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
-from bika.lims.interfaces import IWorksheetTemplates
+from bika.lims.interfaces import IWorksheetTemplates, IHaveNoByLine
 from zope.interface.declarations import implements
 import plone, json
 
@@ -84,7 +84,7 @@ class WorksheetTemplatesView(BikaListingView):
 
 schema = ATFolderSchema.copy()
 class WorksheetTemplates(ATFolder):
-    implements(IWorksheetTemplates)
+    implements(IWorksheetTemplates, IHaveNoByLine)
     displayContentsTab = False
     schema = schema
 

@@ -13,7 +13,7 @@ from plone.app.layout.globals.interfaces import IViewView
 from bika.lims.content.bikaschema import BikaFolderSchema
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
-from bika.lims.interfaces import IManufacturers
+from bika.lims.interfaces import IManufacturers, IHaveNoByLine
 from zope.interface.declarations import implements
 
 class ManufacturersView(BikaListingView):
@@ -71,7 +71,7 @@ class ManufacturersView(BikaListingView):
 
 schema = ATFolderSchema.copy()
 class Manufacturers(ATFolder):
-    implements(IManufacturers)
+    implements(IManufacturers, IHaveNoByLine)
     displayContentsTab = False
     schema = schema
 

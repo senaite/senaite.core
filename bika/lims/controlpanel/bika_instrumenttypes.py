@@ -13,7 +13,7 @@ from plone.app.layout.globals.interfaces import IViewView
 from bika.lims.content.bikaschema import BikaFolderSchema
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
-from bika.lims.interfaces import IInstrumentTypes
+from bika.lims.interfaces import IInstrumentTypes, IHaveNoByLine
 from zope.interface.declarations import implements
 
 class InstrumentTypesView(BikaListingView):
@@ -71,7 +71,7 @@ class InstrumentTypesView(BikaListingView):
 
 schema = ATFolderSchema.copy()
 class InstrumentTypes(ATFolder):
-    implements(IInstrumentTypes)
+    implements(IInstrumentTypes, IHaveNoByLine)
     displayContentsTab = False
     schema = schema
 

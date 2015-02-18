@@ -4,7 +4,8 @@ from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from bika.lims.config import PROJECTNAME
 from AccessControl import ClassSecurityInfo
-from bika.lims.interfaces import ISupplyOrderFolder, IHaveNoBreadCrumbs
+from bika.lims.interfaces import ISupplyOrderFolder, IHaveNoBreadCrumbs, \
+    IHaveNoByLine
 from plone.app.folder import folder
 from zope.interface import implements
 
@@ -12,7 +13,7 @@ schema = folder.ATFolderSchema.copy()
 
 
 class SupplyOrderFolder(folder.ATFolder):
-    implements(ISupplyOrderFolder, IHaveNoBreadCrumbs)
+    implements(ISupplyOrderFolder, IHaveNoBreadCrumbs, IHaveNoByLine)
     schema = schema
     displayContentsTab = False
     security = ClassSecurityInfo()

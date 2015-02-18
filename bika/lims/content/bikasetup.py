@@ -8,7 +8,7 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.config import *
 from bika.lims.content.bikaschema import BikaFolderSchema
-from bika.lims.interfaces import IBikaSetup
+from bika.lims.interfaces import IBikaSetup, IHaveNoByLine
 from bika.lims.interfaces import IHaveNoBreadCrumbs
 from bika.lims.browser.widgets import DurationWidget
 from bika.lims.browser.fields import DurationField
@@ -570,7 +570,7 @@ schema['title']._validationLayer()
 class BikaSetup(folder.ATFolder):
     security = ClassSecurityInfo()
     schema = schema
-    implements(IBikaSetup, IHaveNoBreadCrumbs)
+    implements(IBikaSetup, IHaveNoBreadCrumbs, IHaveNoByLine)
 
     def getAttachmentsPermitted(self):
         """ are any attachments permitted """

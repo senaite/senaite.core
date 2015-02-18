@@ -2,7 +2,7 @@ from AccessControl.SecurityInfo import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.config import PROJECTNAME
-from bika.lims.interfaces import ISubGroups
+from bika.lims.interfaces import ISubGroups, IHaveNoByLine
 from bika.lims import bikaMessageFactory as _b
 from bika.lims.browser.bika_listing import BikaListingView
 from plone.app.content.browser.interfaces import IFolderContentsView
@@ -79,7 +79,7 @@ schema = ATFolderSchema.copy()
 
 
 class SubGroups(ATFolder):
-    implements(ISubGroups)
+    implements(ISubGroups, IHaveNoByLine)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

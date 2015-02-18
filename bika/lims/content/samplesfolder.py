@@ -7,7 +7,8 @@ from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from bika.lims.config import PROJECTNAME
 from AccessControl import ClassSecurityInfo
-from bika.lims.interfaces import ISamplesFolder, IHaveNoBreadCrumbs
+from bika.lims.interfaces import ISamplesFolder, IHaveNoBreadCrumbs, \
+    IHaveNoByLine
 from plone.app.folder import folder
 from zope.interface import implements
 from bika.lims import bikaMessageFactory as _
@@ -16,7 +17,7 @@ from bika.lims.utils import t
 schema = folder.ATFolderSchema.copy()
 
 class SamplesFolder(folder.ATFolder):
-    implements(ISamplesFolder, IHaveNoBreadCrumbs)
+    implements(ISamplesFolder, IHaveNoBreadCrumbs, IHaveNoByLine)
     displayContentsTab = False
     schema = schema
     security = ClassSecurityInfo()

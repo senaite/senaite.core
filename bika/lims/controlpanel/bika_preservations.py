@@ -8,7 +8,7 @@ from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.content.bikaschema import BikaFolderSchema
-from bika.lims.interfaces import IPreservations
+from bika.lims.interfaces import IPreservations, IHaveNoByLine
 from plone.app.layout.globals.interfaces import IViewView
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
@@ -75,7 +75,7 @@ class PreservationsView(BikaListingView):
 
 schema = ATFolderSchema.copy()
 class Preservations(ATFolder):
-    implements(IPreservations)
+    implements(IPreservations, IHaveNoByLine)
     displayContentsTab = False
     schema = schema
 
