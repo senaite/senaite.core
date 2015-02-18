@@ -11,13 +11,14 @@ from Products.Archetypes.references import HoldingReference
 from Products.CMFCore import permissions
 from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.interfaces import IPloneSiteRoot
 from Products.CMFPlone.utils import safe_unicode
 from Products.CMFPlone.utils import _createObjectByType
 from bika.lims.browser.fields import ARAnalysesField
 from bika.lims.config import PROJECTNAME
 from bika.lims.permissions import *
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IAnalysisRequest
+from bika.lims.interfaces import IAnalysisRequest, IClient
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.widgets import DateTimeWidget, DecimalWidget, \
     RecordsWidget
@@ -1489,8 +1490,12 @@ class AnalysisRequest(BaseFolder):
         return safe_unicode(descr).encode('utf-8')
 
     def getClient(self):
-        if self.aq_parent.portal_type == 'Client':
-            return self.aq_parent
+        pf = getToolByName(self, 'portal_factory')
+        parent = self.aq_parent
+        while not IPloneSiteRoot.providedBy(parent):
+            if IClient.providedBy(parent):
+                return parent
+            parent = parent.aq_parent
         return self.Schema()['Client'].get(self)
 
     def getClientPath(self):
