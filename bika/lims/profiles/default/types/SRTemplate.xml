@@ -4,7 +4,7 @@
         xmlns:i18n="http://xml.zope.org/namespaces/i18n"
         i18n:domain="plone"
         purge="True">
- <property name="title" i18n:translate="">SR Template</property>
+ <property name="title" i18n:translate="">Sampling Round Template</property>
  <property name="description"></property>
  <property name="content_icon">++resource++bika.lims.images/artemplate.png</property>
  <property name="content_meta_type">SRTemplate</property>

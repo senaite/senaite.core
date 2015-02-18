@@ -3,7 +3,6 @@ from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t, getUsers
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
-from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
 from bika.lims.browser.widgets import SRTemplateARTemplatesWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -20,9 +19,9 @@ schema = BikaSchema.copy() + Schema((
     # The default sampler for the rounds
     StringField('Sampler',
         required=1,
-        mode="rw",
+        searchable=True,
         vocabulary='_getSamplersDisplayList',
-        widget=BikaSelectionWidget(
+        widget=SelectionWidget(
             format='select',
             label = _("Sampler"),
         ),
@@ -80,7 +79,8 @@ schema = BikaSchema.copy() + Schema((
     ),
 ))
 
-
+schema['description'].widget.visible = True
+schema['title'].widget.visible = True
 schema['title'].validators = ('uniquefieldvalidator',)
 # Update the validation layer after change the validator in runtime
 schema['title']._validationLayer()

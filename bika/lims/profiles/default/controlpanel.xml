@@ -7,7 +7,7 @@
  <configlet title="Bika Setup" action_id="bika_setup"
     appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/bikasetup.png"
-	url_expr="string:$portal_url/bika_setup/edit"
+    url_expr="string:$portal_url/bika_setup/edit"
     visible="True">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
@@ -15,9 +15,9 @@
  <configlet title="Laboratory Information" action_id="bika_labinfo"
     appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/laboratory.png"
-	url_expr="string:$portal_url/bika_setup/laboratory/base_edit"
+    url_expr="string:$portal_url/bika_setup/laboratory/base_edit"
     visible="True"
-	i18n:attributes="title">
+    i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
@@ -25,8 +25,8 @@
     appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/department.png"
     url_expr="string:$portal_url/bika_setup/bika_departments"
-	visible="True"
-	i18n:attributes="title">
+    visible="True"
+    i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
@@ -34,8 +34,8 @@
     appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/lab_contact.png"
     url_expr="string:$portal_url/bika_setup/bika_labcontacts"
-	visible="True"
-	i18n:attributes="title">
+    visible="True"
+    i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
@@ -44,7 +44,7 @@
     icon_expr="string:++resource++bika.lims.images/category.png"
     url_expr="string:$portal_url/bika_setup/bika_analysiscategories"
     visible="True"
-	i18n:attributes="title">
+    i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
@@ -53,7 +53,7 @@
     icon_expr="string:++resource++bika.lims.images/analysisservice.png"
     url_expr="string:$portal_url/bika_setup/bika_analysisservices"
     visible="True"
-	i18n:attributes="title">
+    i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
@@ -62,7 +62,7 @@
     icon_expr="string:++resource++bika.lims.images/analysisspec.png"
     url_expr="string:$portal_url/bika_setup/bika_analysisspecs"
     visible="True"
-	i18n:attributes="title">
+    i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
@@ -79,8 +79,8 @@
     appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/samplematrix.png"
     url_expr="string:$portal_url/bika_setup/bika_samplematrices"
-	visible="True"
-	i18n:attributes="title">
+    visible="True"
+    i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
@@ -88,8 +88,8 @@
     appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/sampletype.png"
     url_expr="string:$portal_url/bika_setup/bika_sampletypes"
-	visible="True"
-	i18n:attributes="title">
+    visible="True"
+    i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
@@ -97,8 +97,8 @@
     appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/samplepoint.png"
     url_expr="string:$portal_url/bika_setup/bika_samplepoints"
-	visible="True"
-	i18n:attributes="title">
+    visible="True"
+    i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
@@ -106,8 +106,8 @@
     appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/samplingdeviation.png"
     url_expr="string:$portal_url/bika_setup/bika_samplingdeviations"
-	visible="True"
-	i18n:attributes="title">
+    visible="True"
+    i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
@@ -116,7 +116,7 @@
     icon_expr="string:++resource++bika.lims.images/instrument.png"
     url_expr="string:$portal_url/bika_setup/bika_instruments"
     visible="True"
-	i18n:attributes="title">
+    i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
@@ -125,7 +125,7 @@
     icon_expr="string:++resource++bika.lims.images/instrumenttype.png"
     url_expr="string:$portal_url/bika_setup/bika_instrumenttypes"
     visible="True"
-	i18n:attributes="title">
+    i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
@@ -134,7 +134,7 @@
     icon_expr="string:++resource++bika.lims.images/method.png"
     url_expr="string:$portal_url/methods"
     visible="True"
-	i18n:attributes="title">
+    i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
@@ -143,7 +143,7 @@
     icon_expr="string:++resource++bika.lims.images/preservation.png"
     url_expr="string:$portal_url/bika_setup/bika_preservations"
     visible="True"
-	i18n:attributes="title">
+    i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
@@ -152,7 +152,7 @@
     icon_expr="string:++resource++bika.lims.images/attachment.png"
     url_expr="string:$portal_url/bika_setup/bika_attachmenttypes"
     visible="True"
-	i18n:attributes="title">
+    i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
@@ -161,7 +161,7 @@
     icon_expr="string:++resource++bika.lims.images/calculation.png"
     url_expr="string:$portal_url/bika_setup/bika_calculations"
     visible="True"
-	i18n:attributes="title">
+    i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
@@ -170,7 +170,7 @@
     icon_expr="string:++resource++bika.lims.images/container.png"
     url_expr="string:$portal_url/bika_setup/bika_containers"
     visible="True"
-	i18n:attributes="title">
+    i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
@@ -179,7 +179,7 @@
     icon_expr="string:++resource++bika.lims.images/container.png"
     url_expr="string:$portal_url/bika_setup/bika_containertypes"
     visible="True"
-	i18n:attributes="title">
+    i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
@@ -188,7 +188,7 @@
     icon_expr="string:++resource++bika.lims.images/analysisprofile.png"
     url_expr="string:$portal_url/bika_setup/bika_analysisprofiles"
     visible="True"
-	i18n:attributes="title">
+    i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
@@ -197,7 +197,7 @@
     icon_expr="string:++resource++bika.lims.images/artemplate.png"
     url_expr="string:$portal_url/bika_setup/bika_artemplates"
     visible="True"
-	i18n:attributes="title">
+    i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
@@ -206,7 +206,7 @@
     icon_expr="string:++resource++bika.lims.images/product.png"
     url_expr="string:$portal_url/bika_setup/bika_labproducts"
     visible="True"
-	i18n:attributes="title">
+    i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
@@ -216,7 +216,7 @@
     icon_expr="string:++resource++bika.lims.images/manufacturer.png"
     url_expr="string:$portal_url/bika_setup/bika_manufacturers"
     visible="True"
-	i18n:attributes="title">
+    i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
@@ -226,7 +226,7 @@
     icon_expr="string:++resource++bika.lims.images/supplier.png"
     url_expr="string:$portal_url/bika_setup/bika_suppliers"
     visible="True"
-	i18n:attributes="title">
+    i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
@@ -235,7 +235,7 @@
     icon_expr="string:++resource++bika.lims.images/referencedefinition.png"
     url_expr="string:$portal_url/bika_setup/bika_referencedefinitions"
     visible="True"
-	i18n:attributes="title">
+    i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
@@ -244,7 +244,7 @@
     icon_expr="string:++resource++bika.lims.images/batchlabel.png"
     url_expr="string:$portal_url/bika_setup/bika_batchlabels"
     visible="True"
-	i18n:attributes="title">
+    i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
@@ -253,7 +253,7 @@
     icon_expr="string:++resource++bika.lims.images/worksheettemplate.png"
     url_expr="string:$portal_url/bika_setup/bika_worksheettemplates"
     visible="True"
-	i18n:attributes="title">
+    i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
@@ -270,12 +270,12 @@
     appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/storagelocation.png"
     url_expr="string:$portal_url/bika_setup/bika_storagelocations"
-	visible="True"
-	i18n:attributes="title">
+    visible="True"
+    i18n:attributes="title">
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
- <configlet title="SR Templates" action_id="bika_srtemplates"
+ <configlet title="Sampling Round Templates" action_id="bika_srtemplates"
     appId="bika.lims" category="bika" condition_expr=""
     icon_expr="string:++resource++bika.lims.images/artemplate.png"
     url_expr="string:$portal_url/bika_setup/bika_srtemplates"
