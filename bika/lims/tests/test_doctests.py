@@ -10,10 +10,11 @@ OPTIONFLAGS = (doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
 DOCTESTS = [
     'bika.lims.browser.accreditation',
     'bika.lims.browser.analysisrequest.add',
+    'bika.lims.browser.worksheetfolder',
     'bika.lims.browser.bika_listing',
     'bika.lims.jsonapi.create',
     'bika.lims.jsonapi.update',
-	'bika.lims.jsonapi.remove',
+    'bika.lims.jsonapi.remove',
     'bika.lims.vocabularies',
 ]
 

@@ -15,6 +15,7 @@ from bika.lims.permissions import EditWorksheet
 from bika.lims.permissions import ManageWorksheets
 from bika.lims.utils import getUsers, tmpID
 from bika.lims.utils import to_utf8 as _c
+from bika.lims.interfaces import IWorksheetFolder
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
@@ -26,7 +27,20 @@ class WorksheetFolderWorkflowAction(WorkflowAction):
     """ Workflow actions taken in the WorksheetFolder
         This function is called to do the workflow actions
         that apply to worksheets in the WorksheetFolder
+
+        >>> portal = layer['portal']
+        >>> portal_url = portal.absolute_url()
+        >>> from plone.app.testing import SITE_OWNER_NAME
+        >>> from plone.app.testing import SITE_OWNER_PASSWORD
+
+        li id="contentview-worksheets" is used to identify a tab:
+
+        >>> browser = layer['getBrowser'](portal, loggedIn=True, username=SITE_OWNER_NAME, password=SITE_OWNER_PASSWORD)
+        >>> browser.open(portal_url+"/worksheets")
+        >>> 'li id="contentview-worksheets"' not in browser.contents
+        True
     """
+
     def __call__(self):
         form = self.request.form
         plone.protect.CheckAuthenticator(form)
@@ -98,7 +112,8 @@ class WorksheetFolderListingView(BikaListingView):
         self.pagesize = 25
         self.restrict_results = False
 
-        request.set('disable_border', 1)
+        if IWorksheetFolder.providedBy(self.context):
+            request.set('disable_border', 1)
 
         self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
         self.title = self.context.translate(_("Worksheets"))
