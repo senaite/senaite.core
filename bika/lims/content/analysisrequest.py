@@ -1561,6 +1561,7 @@ class AnalysisRequest(BaseFolder):
         client_uid = self.getClientUID()
         # Get the created invoice
         invoice = invoice_batch.createInvoice(client_uid, [self, ])
+        invoice.setAnalysisRequest(self)
         # Set the created invoice in the schema
         self.Schema()['Invoice'].set(self, invoice)
 
