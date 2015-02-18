@@ -165,10 +165,11 @@ class InvoiceCreate(InvoiceView):
 
     security.declarePublic('printInvoice')
 
-    def emailInvoice(self, templateHTML):
+    def emailInvoice(self, templateHTML, to=[]):
         """
         Send the invoice via email.
         :param templateHTML: The invoice template in HTML, ready to be send.
+        :param to: A list with the addresses to send the invoice.
         """
         ar = self.aq_parent
         # SMTP errors are silently ignored if server is in debug mode
@@ -185,7 +186,6 @@ class InvoiceCreate(InvoiceView):
         msg_txt_t = MIMEText(templateHTML, _subtype='html')
         mime_msg.attach(msg_txt_t)
 
-        to = []
         # Build the responsible's addresses
         mngrs = ar.getResponsible()
         for mngrid in mngrs['ids']:
