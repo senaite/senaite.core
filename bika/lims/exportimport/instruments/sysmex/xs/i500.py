@@ -8,21 +8,37 @@ import traceback
 
 title = "Sysmex XS - 500i"
 
+def getForm(instrument_name, request):
+    """
+    Since 500i and 1000i print the same results structure (https://jira.bikalabs.com/browse/LIMS-1571), this function
+    will be overwrote on i1000 importer to save code.
+    :param instrument_name: a string containing the instrument's name with the format: 'sysmex_xs_500i'
+    :param request: the request object
+    :return: a dictionary with the requests results.
+    """
+    d = {'infile': request.form[instrument_name + '_file'],
+         'fileformat': request.form[instrument_name + '_format'],
+         'artoapply': request.form[instrument_name + '_artoapply'],
+         'override': request.form[instrument_name + '_override'],
+         'sample': request.form.get(instrument_name + '_sample',
+                                    'requestid'),
+         'instrument': request.form.get(instrument_name + '_instrument', None)}
+    return d
 
-def Import(context, request):
+def Import(context, request, instrumentname='sysmex_xs_500i'):
     """ Sysmex XS - 500i analysis results
     """
     # I don't really know how this file works, for this reason I added an 'Analysis Service selector'.
     # If non Analysis Service is selected, each 'data' column will be interpreted as a different Analysis Service. In
     # the case that an Analysis Service was selected, all the data columns would be interpreted as different data from
     # an unique Analysis Service.
-    infile = request.form['sysmex_xs_500i_file']
-    fileformat = request.form['sysmex_xs_500i_format']
-    artoapply = request.form['sysmex_xs_500i_artoapply']
-    override = request.form['sysmex_xs_500i_override']
-    sample = request.form.get('sysmex_xs_500i_sample',
-                              'requestid')
-    instrument = request.form.get('sysmex_xs_500i_instrument', None)
+    formitems = getForm(instrumentname, request)
+    infile = formitems['infile']
+    fileformat = formitems['fileformat']
+    artoapply = formitems['artoapply']
+    override = formitems['override']
+    sample = formitems['sample']
+    instrument = formitems['instrument']
     errors = []
     logs = []
     warns = []

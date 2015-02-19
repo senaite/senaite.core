@@ -1,5 +1,6 @@
 3.1.7-dev (unreleased)
 -----
+LIMS-1571: Instrument interface: Sysmex XS-1000i
 LIMS-1574: Fixed AR and Analysis attachments
 LIMS-1670: Fixed windows incompatibility in TAL (referencewidget.pt)
 LIMS-1594: Added option to select landing page for clients in configuration registry
