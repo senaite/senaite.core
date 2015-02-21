@@ -327,4 +327,3 @@ Add raven 4.0.4 into [versions] section::
         raven = 4.0.4
 
 Run bin/buildout, and restart Plone.
-
