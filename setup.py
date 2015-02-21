@@ -10,7 +10,7 @@ def read(*rnames):
 setup(name='bika.lims',
       version=version,
       description="Bika LIMS",
-      long_description=read("docs/README.rst") + \
+      long_description=read("README.rst") + \
                        read("docs/INSTALL.rst") + \
                        read("docs/CHANGELOG.txt") + \
                        "\n\n" + \
