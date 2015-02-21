@@ -1,5 +1,10 @@
-3.1.7-dev (unreleased)
------
+3.1.7 (2015-02-26)
+------------------
+LIMS-1266: Sampling date format error
+LIMS-1365: Batch search parameters on Work sheets/Work sheets insides Batches
+LIMS-1428: After receiving a sample with Sampling Workflow enable is not possible to input results
+LIMS-1540: When accent characters are used in a "Sample Type" name, it is not possible to create a new AR
+LIMS-1617: Error with bin/test
 LIMS-1571: Instrument interface: Sysmex XS-1000i
 LIMS-1574: Fixed AR and Analysis attachments
 LIMS-1670: Fixed windows incompatibility in TAL (referencewidget.pt)
