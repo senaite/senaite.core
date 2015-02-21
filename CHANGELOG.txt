@@ -1,13 +1,91 @@
-3.1.6 (unreleased)
+3.2 (develop - unreleased)
+--------------------------
+LIMS-1675 WorkOrder tabs not showing when its WorkSheets tab is open
+LIMS-1674 AR create inside WorkOrders does not save
+LIMS-1669 Worksheet lists and creation inside Batches/WorkOrders
+LIMS-1668 Fields missing from WorkOrder create form
+LIMS-1666 CC Contacts does not auto-complete
+LIMS-1620 Apply single-service selector while adding WS Controls and Blanks
+LIMS-1613 Analysis widget on AR Create does not find on CAS# or Synonym
+LIMS-1610 Nav tree order. Fixed before
+LIMS-1606 spinner remains visible after ajax completion
+LIMS-1599 WO ID saved as its Title
+LIMS-1591 Client WO Create should not offer Client look-up
 
+
+3.1.7 (2015-02-26)
+------------------
+LIMS-1266: Sampling date format error
+LIMS-1365: Batch search parameters on Work sheets/Work sheets insides Batches
+LIMS-1428: After receiving a sample with Sampling Workflow enable is not possible to input results
+LIMS-1540: When accent characters are used in a "Sample Type" name, it is not possible to create a new AR
+LIMS-1617: Error with bin/test
+LIMS-1571: Instrument interface: Sysmex XS-1000i
+LIMS-1574: Fixed AR and Analysis attachments
+LIMS-1670: Fixed windows incompatibility in TAL (referencewidget.pt)
 LIMS-1594: Added option to select landing page for clients in configuration registry
 LIMS-1594: Re-ordered tabs on Client home page
-LIMS-1386: Audit log should also save(show) time for a better tracking
-LIMS-1391: IdentifierTypes (from bika.health) for alternate object ID lookups
-LIMS-1426: Batch AR list: The instructions for ARs from the batch list aren't working.
-LIMS-907: (Re-)publishing ex cases does not work
+LIMS-1520: Allow to invalidate verified ARs
+LIMS-1539: Printable Worksheets. In both AR by row or column orientations
+LIMS-1199: Worksheet totals in WS lists
+LIMS-257: Set Blank and Warning icons in Reference Sample main view
+LIMS-1636: Batch Sample View crash
+LIMS-1524: Invalidate email does not have variables populated
+LIMS-1572: Instrument interface: Sysmex XS-500i
+LIMS-1575: Thermo Arena 20XT
+LIMS-1423: Save details when AR workflow action kicked off
+LIMS-1624: Import default test.xlsx fails
+LIMS-1614: Error when selecting Analysis Administration Tab after receiving a sample with Sampling Workflow enabled
+LIMS-1605: Tescan TIMA interface
+LIMS-1604: BioDrop uLite interface
+LIMS-1603: Life Technologies Qubit interface
+LIMS-1517: Storage field tag untranslated?
+LIMS-1518: Storage Location table
+LIMS-1527: CC Contact on AR view (edit) offers all contacts in system
+LIMS-1536: Add button [Add], to alow quickly addings in referencewidget
+LIMS-1587: Better support for extension of custom sample labels
+LIMS-1622: Version Check does not correctly check cache
+LIMS-1623: Implement bika-frontpage as a BrowserView
 
-- Added option to select landing page for clients in configuration registry (bika.lims.client_landing_page)
+
+3.1.6 (2014-12-17)
+------------------
+LIMS-1530: Scrambled Analysis Category order in Published Results
+LIMS-1529: Error while inserting an AR with container-based partitioning is required
+LIMS-1460: Additional field in AR for comments or results interpretation
+LIMS-1441: An error message related to partitions unit is shown when selecting analysis during AR creation
+LIMS-1470: AS Setup. File attachment field tag is missing
+LIMS-1422: Results doesn't display yes/no once verified but 1 or 0
+LIMS-1486: Typos in instrument messages
+LIMS-1498: Published Results not Showing for Logged Clients
+LIMS-1445: Scientific names should be written in italics in published reports
+LIMS-1389: Units in results publishing should allow super(sub)script format, for example in cm2 or m3
+LIMS-1500: Alere Pima's Instrument Interfice
+LIMS-1457: Exponential notation in published AR pdf should be formatted like a×10^b instead of ae^+b
+LIMS-1334: Calculate result precision from Uncertainty value
+LIMS-1446: After retracting a published AR the Sample gets cancelled
+LIMS-1390: More workflow for Batches
+LIMS-1378: Bulking up Batches
+LIMS-1479: new-version and upgrade-steps should be python viewlets
+LIMS-1362: File attachment uploads to Batches
+LIMS-1404: New Batch attributes (and their integration with existing ones on Batch views)
+LIMS-1467: Sample Point Lookup doesn't work on AR modify
+LIMS-1363: Batches per Client
+LIMS-1405: New Sample and AR attributes
+LIMS-1085: Allow Clients to add Attachments to ARs
+LIMS-1444: In AR published report accredited analysis services are not marked as accredited
+LIMS-1443: In published reports the publishing date is not shown in the pdf
+LIMS-1420: Status filter is not kept after moving to next page
+LIMS-1442: Sample Type is not filtred by Sample Point
+LIMS-1448: Reports: when you click on "Analysis turnaround time" displays others
+LIMS-1440: Error when trying to publish with analysis from different categories
+LIMS-1459: Error when checking instrument validity in manage_results
+LIMS-1430: Create an AR from batch allows you to introduce a non existent Client and Contacts don't work properly
+
+- After modifying analysis Category, reindex category name and UID for all subordinate analyses
+- Setup data import improvements and fixes
+- Simplify installation with a custom Plone overview and add site
+
 
 3.1.5 (2014-10-06)
 ------------------
@@ -54,12 +132,18 @@ LIMS-1425: Verify Workflow (bika_listing) recursion
 
 3.1.4 release was broken, simple ARs could not be created.
 
+
+
+3.1.4.1 (2014-07-24)
+--------------------
+
+3.1.4 release was broken, simple ARs could not be created.
+
 LIMS-1339: Published reports should use "±" symbol instead of "+/-"
 LIMS-1327: Instrument from worksheet
 LIMS-1328: Instrument calibration test graphs do not work on multiple samples
 LIMS-1347: Analysis/AR background colour to be different to for Receive and To be Sampled
 LIMS-1353: Analyses don't sort in Attachment look-up
-LIMS-1359: Add Calibration Certificate is valid for one year or 2015
 
 Preview for Results reports
     - Single/Multi-AR preview
@@ -625,4 +709,3 @@ http://plone.org/documentation/manual/upgrade-guide
  - Added CHANGES.txt and README.txt
  - Added windows batch script for ID server
    (scripts/start-id-server.bat)
-
