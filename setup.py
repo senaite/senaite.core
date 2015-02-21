@@ -16,8 +16,8 @@ setup(name='bika.lims',
                        "\n\n" + \
                        "Authors and maintainers\n" + \
                        "-----------------------\n" + \
-                       "- Bika Lab Systems, http://bikalabs.com\n" +\n
-                       "- Naralabs, http://naralabs.com" + \n,
+                       "- Bika Lab Systems, http://bikalabs.com\n" + \
+                       "- Naralabs, http://naralabs.com",
       # Get more strings from
       # http://pypi.python.org/pypi?:action=list_classifiers
       classifiers=[
