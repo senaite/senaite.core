@@ -5,7 +5,7 @@
     &nbsp;&nbsp;
     <label for='beckmancoulter_access_model2_format'>Format</label>&nbsp;
     <select name="beckmancoulter_access_model2_format" id="beckmancoulter_access_model2_format">
-        <option value='slk'>SLK</option>
+        <option value='csv'>CSV</option>
     </select>
     <p></p>
     <h3>Advanced options</h3>
