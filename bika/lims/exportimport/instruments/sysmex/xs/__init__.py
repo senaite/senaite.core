@@ -1,9 +1,20 @@
-"""Sysmex XS 500i
+"""Sysmex XS
 """
 from datetime import datetime
 from bika.lims.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter, InstrumentCSVResultsFileParser
 
+
+
+def csvDate2BikaDate(Date, Time):
+    #11/03/2014 14:46:46 --> %d/%m/%Y %H:%M %p
+    try:
+        # For i500
+        dtobj = datetime.strptime(Date + ' ' + Time, "%Y/%d/%m %H:%M:%S")
+    except ValueError:
+        # For i1000
+        dtobj = datetime.strptime(Date + ' ' + Time, "%d/%m/%Y %H:%M:%S")
+    return dtobj.strftime("%Y%m%d %H:%M:%S")
 
 class SysmexXSCSVParser(InstrumentCSVResultsFileParser):
 
@@ -66,7 +77,7 @@ class SysmexXSCSVParser(InstrumentCSVResultsFileParser):
             rawdict['DefaultResult'] = self.defaultresult \
                                      if self.defaultresult in self._columns \
                                      else self.err("Default Result Key " + self.defaultresult + " not found")
-            rawdict['DateTime'] = self.csvDate2BikaDate(rawdict['Analysis Date'], rawdict['Analysis Time'])
+            rawdict['DateTime'] = csvDate2BikaDate(rawdict['Analysis Date'], rawdict['Analysis Time'])
             self._addRawResult(rid, {self.analysiskey: rawdict}, False)
 
         else:
@@ -80,15 +91,10 @@ class SysmexXSCSVParser(InstrumentCSVResultsFileParser):
                 else:
                     headerdict[self._columns[idx]] = result
             rid = headerdict['Sample ID No']
-            datadict['DateTime'] = self.csvDate2BikaDate(headerdict['Analysis Date'], headerdict['Analysis Time'])
+            datadict['DateTime'] = csvDate2BikaDate(headerdict['Analysis Date'], headerdict['Analysis Time'])
             self._addRawResult(rid, datadict, False)
             self._header = headerdict
             return 0
-
-    def csvDate2BikaDate(self, Date, Time):
-        #11/03/2014 14:46:46 --> %d/%m/%Y %H:%M %p
-        dtobj = datetime.strptime(Date + ' ' + Time, "%Y/%d/%m %H:%M:%S")
-        return dtobj.strftime("%Y%m%d %H:%M:%S")
 
 
 class SysmexXSImporter(AnalysisResultsImporter):
