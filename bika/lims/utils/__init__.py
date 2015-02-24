@@ -343,7 +343,7 @@ def isnumber(s):
         return False
 
 
-def createPdf(htmlreport, outfile=None, css=None):
+def createPdf(htmlreport, outfile=None, css=None, images={}):
     debug_mode = App.config.getConfiguration().debug_mode
     # XXX css must be a local file - urllib fails under robotframework tests.
     css_def = ''
@@ -362,6 +362,12 @@ def createPdf(htmlreport, outfile=None, css=None):
     if not outfile:
         outfile = Globals.INSTANCE_HOME + "/var/" + tmpID() + ".pdf"
 
+    # WeasyPrint default's URL fetcher seems that doesn't support urls
+    # like at_download/AttachmentFile (without mime, header, etc.).
+    # Need to copy them to the temp file and replace occurences in the
+    # HTML report
+    for (key, val) in images.items():
+        htmlreport = htmlreport.replace(key, val)
     from weasyprint import HTML, CSS
     import os
     if css:
