@@ -105,7 +105,10 @@ class ClientFolderContentsView(BikaListingView):
         self.contentsMethod = self.getClientList
         items = BikaListingView.folderitems(self)
         registry = getUtility(IRegistry)
-        landing_page = registry['bika.lims.client.default_landing_page']
+        if 'bika.lims.client.default_landing_page' in registry:
+            landing_page = registry['bika.lims.client.default_landing_page']
+        else:
+            landing_page = 'analysisrequests'
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
