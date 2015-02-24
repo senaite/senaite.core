@@ -21,6 +21,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone.resource.utils import iterDirectoriesOfType, queryResourceDirectory
 from zope.component import getAdapters
 import glob, os, sys, traceback
+import urllib2
 import App
 import Globals
 
@@ -30,6 +31,7 @@ class AnalysisRequestPublishView(BrowserView):
     _current_ar_index = 0
     _DEFAULT_TEMPLATE = 'default.pt'
     _publish = False
+    _images = {}
 
     def __init__(self, context, request, publish=False):
         super(AnalysisRequestPublishView, self).__init__(context, request)
@@ -569,6 +571,22 @@ class AnalysisRequestPublishView(BrowserView):
 
         return managers
 
+
+    def renderImage(self, attachment):
+        af = attachment.getAttachmentFile()
+        filename = af.filename
+        fileurl = attachment.absolute_url() + "/at_download/AttachmentFile"
+        # WeasyPrint default's URL fetcher seems that doesn't support urls
+        # like at_download/AttachmentFile (without mime, header, etc.).
+        # Need to copy the image to the temp file and replace occurences
+        # in the HTML report later
+        outfilename = Globals.INSTANCE_HOME + '/var/' + filename
+        outfile = open(outfilename, 'wb')
+        outfile.write(str(af.data))
+        outfile.close()
+        self._images[fileurl] = "file://"+outfilename
+        return attachment.absolute_url() + "/at_download/AttachmentFile"
+
     def publishFromPOST(self):
         html = self.request.form.get('html')
         style = self.request.form.get('style')
@@ -604,7 +622,7 @@ class AnalysisRequestPublishView(BrowserView):
 
         # Create the pdf report (will always be attached to the AR)
         pdf_outfile = join(out_path, out_fn + ".pdf") if out_path else None
-        pdf_report = createPdf(results_html, pdf_outfile)
+        pdf_report = createPdf(htmlreport=results_html, outfile=pdf_outfile, images=self._images)
 
         recipients = []
         contact = ar.getContact()
