@@ -101,7 +101,7 @@ Shleep
     sleep  ${amount}
 
 Simple AR Creation
-    [Documentation]  Create a simple AR
+    [Documentation]  Create a. simple AR
     [Arguments]  ${Client}
     ...          ${Contact}
     ...          ${SampleType}
@@ -148,3 +148,10 @@ Enable Sampling Workflow
 
 Wait For Ajax
     Wait for Condition   return window.jQuery.active == 0;
+
+Disable Print Page
+    [Documentation]  Disable the print page after create an AR.
+    Go to            ${PLONEURL}/bika_setup/edit
+    click element    fieldsetlegend-stickers
+    Select from list   AutoPrintStickers  None
+    Click Button                Save
