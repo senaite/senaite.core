@@ -12,7 +12,7 @@ title = "Beckman Coulter Access 2"
 def Import(context, request):
     """ Beckman Coulter Access 2 analysis results
     """
-    infile = request.form['_file']
+    infile = request.form['beckmancoulter_access_model2_file']
     fileformat = request.form['beckmancoulter_access_model2_format']
     artoapply = request.form['beckmancoulter_access_model2_artoapply']
     override = request.form['beckmancoulter_access_model2_override']
