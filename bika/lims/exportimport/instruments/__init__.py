@@ -15,6 +15,7 @@ from biodrop.ulite import ulite
 from tescan.tima import tima
 from sysmex.xs import i500, i1000
 from beckmancoulter.access import model2
+from rochecobas.taqman import model48
 
 __all__ = ['generic.xml',
            'agilent.masshunter.quantitative',
@@ -31,7 +32,8 @@ __all__ = ['generic.xml',
            'tescan.tima.tima',
            'sysmex.xs.i500',
            'sysmex.xs.i1000',
-           'beckmancoulter.access.model2'
+           'beckmancoulter.access.model2',
+           'rochecobas.taqman.model48'
            ]
 
 
