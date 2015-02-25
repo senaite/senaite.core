@@ -9,7 +9,7 @@
 ##
 
 from AccessControl import getSecurityManager
-from bika.lims import Verify, VerifyOwnResults
+from bika.lims.permissions import Verify, VerifyOwnResults
 
 workflow = context.portal_workflow
 checkPermission = context.portal_membership.checkPermission
