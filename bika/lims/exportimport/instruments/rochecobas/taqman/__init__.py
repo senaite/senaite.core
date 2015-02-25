@@ -17,7 +17,7 @@ class RocheCobasTaqmanRSFParser(InstrumentCSVResultsFileParser):
         self._end_header = False
 
     def _parseline(self, line):
-        sline = line.split(',')
+        sline = line.replace('"', '').split('\t')
         if len(sline) > 0 and not self._end_header:
             self._columns = sline
             self._end_header = True
@@ -43,23 +43,32 @@ class RocheCobasTaqmanRSFParser(InstrumentCSVResultsFileParser):
             rawdict[self._columns[idx]] = result
         # Getting key values
         resid = rawdict['Sample ID']
-        del rawdict['Sample ID']
-        testname = rawdict['Test Name']
-        del rawdict['Test Name']
+        if resid == '' and rawdict['Order Number'] != '':
+            # If Sample ID is void, we will use the OrderNumber as a reference.
+            resid = rawdict['Order Number']
+        elif resid == '' and rawdict['Order Number'] == '':
+            # If there isn't Sample ID or Order Number
+            self.err("Result identification not found.", numline=self._numline)
+            return -1
+        testname = rawdict['Test']
+        if testname == '':
+            # None test name found
+            self.err("Result test name not found.", numline=self._numline)
+            return -1
+        del rawdict['Test']
 
         # Building the new dict
         rawdict['DefaultResult'] = 'Result'
-        rawdict['Remarks'] = rawdict['Comments'].join(rawdict['Interpretation'])
-        del rawdict['Comments']
-        del rawdict['Interpretation']
-        rawdict['DateTime'] = self.csvDate2BikaDate(rawdict['Load Date/Time'])
+        rawdict['Remarks'] = ''.join([rawdict['Result'], " on Order Number.", resid]) \
+            if rawdict['Result'] == "Target Not Detected" else ''
+        rawdict['DateTime'] = self.csvDate2BikaDate(rawdict['Accepted Date/Time'])
         self._addRawResult(resid, {testname: rawdict}, False)
         return 0
 
     def csvDate2BikaDate(self, DateTime):
         # example: 11/03/2014 14:46:46 --> %d/%m/%Y %H:%M %p
         Date, Time = DateTime.split(' ')
-        dtobj = datetime.strptime(Date + ' ' + Time, "%d/%m/%Y %H:%M:%S")
+        dtobj = datetime.strptime(Date + ' ' + Time, "%Y/%m/%d %H:%M:%S")
         return dtobj.strftime("%Y%m%d %H:%M:%S")
 
 
