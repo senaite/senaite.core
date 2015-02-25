@@ -437,12 +437,9 @@ function AnalysisRequestAddView() {
 				var del_btn = "<img class='deletebtn' src='"+del_btn_src+"' fieldName='ar."+column+"."+fieldName+"' uid='"+selected_uid+"'/>";
 				var new_item = "<div class='reference_multi_item' uid='"+selected_uid+"'>"+del_btn+selected_value+"</div>";
 				$(listing_div).append($(new_item));
+				$(uid_element).attr("skip_referencewidget_lookup", true)
 			}
 			skip = $(uid_element).attr("skip_referencewidget_lookup");
-			if (skip !== true){
-				$(this).trigger("selected", ui.item.UID);
-			}
-			$(uid_element).removeAttr("skip_referencewidget_lookup");
 			$(this).next("input").focus();
 		} else {
 			// Set value in activated element (must exist in colModel!)
@@ -604,7 +601,9 @@ function AnalysisRequestAddView() {
 		}
 
 		// Triggers 'selected' event (as reference widget)
+		if (!skip){
 		$(this).trigger("selected", ui.item.UID);
+		}
 	}
 
 	function add_path_filter_to_spec_lookups(){
