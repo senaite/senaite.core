@@ -16,6 +16,15 @@ Suite Teardown   Close All Browsers
 ${ar_factory_url}  portal_factory/AnalysisRequest/xxx/ar_add
 
 *** Test Cases ***
+Check CCContacts widget basic functionality
+    Log in                      test_labmanager  test_labmanager
+    @{time} =                   Get Time        year month day hour min sec
+    Go to                       ${PLONEURL}/clients/client-1
+    Wait until page contains element    css=body.portaltype-client
+    Click Link                  Add
+    Wait until page contains    Request new analyses
+    Select from dropdown        ar_0_CCContact                Rita
+    Element Should Contain      ar_0_CCContact-listing        Rita
 
 Check that the editable SamplePoint widget in AnalysisRequestView shows both Client and Lab items
     # Create a new Client/SamplePoint
