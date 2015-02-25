@@ -13,6 +13,8 @@ Suite Teardown   Close All Browsers
 
 *** Test Cases ***
 test Attachments
+    Log in                                  test_labmanager         test_labmanager
+    Wait until page contains                You are now logged in
     Go to                                   ${PLONEURL}/clients/client-1
     Wait until page contains element        css=body.portaltype-client
     Click Link                              Add
@@ -53,10 +55,4 @@ test Attachments
 
 
 *** Keywords ***
-Start browser
-    Open browser                        ${PLONEURL}/login_form  chrome
-    Log in                              test_labmanager         test_labmanager
-    Wait until page contains            You are now logged in
-    Set selenium speed                  ${SELENIUM_SPEED}
-
 

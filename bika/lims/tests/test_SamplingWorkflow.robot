@@ -17,6 +17,8 @@ Suite Teardown   Close All Browsers
 
 Sampler login
 # /samples List should contain all to_be_sampled samples
+    Log in                            test_labmanager         test_labmanager
+    Wait until page contains          You are now logged in
     Enable Sampling Workflow
     ${ar_id}=                         Add an AR
 
@@ -40,6 +42,8 @@ Sampler login
 # sample the sample from AR View
 
 sample transition from the AR list
+    Log in                            test_labmanager         test_labmanager
+    Wait until page contains          You are now logged in
     Enable Sampling Workflow
     ${ar_id}=                         Add an AR
     Go to                             ${PLONEURL}/clients/client-1/analysisrequests
@@ -54,6 +58,8 @@ sample transition from the AR list
     page should not contain element   css=input[transition="sample"]
 
 sample transition from the Sample list
+    Log in                            test_labmanager         test_labmanager
+    Wait until page contains          You are now logged in
     Enable Sampling Workflow
     ${ar_id}=                         Add an AR
     Go to                             ${PLONEURL}/clients/client-1/samples
@@ -68,6 +74,8 @@ sample transition from the Sample list
     page should not contain element   css=input[transition="sample"]
 
 AR view with field analyses
+    Log in                            test_labmanager         test_labmanager
+    Wait until page contains          You are now logged in
     Enable Sampling Workflow
     ${ar_id}=                         Add an AR
     Go to                             ${PLONEURL}/clients/client-1/analysisrequests
@@ -94,6 +102,8 @@ AR view with field analyses
     Wait until page contains          To be verified
 
 Sample View
+    Log in                            test_labmanager         test_labmanager
+    Wait until page contains          You are now logged in
     Enable Sampling Workflow
     ${ar_id}=                         Add an AR
     Go to                             ${PLONEURL}/clients/client-1/samples
@@ -115,12 +125,6 @@ Sample View
     Page should not contain           to_be_sampled
 
 *** Keywords ***
-
-Start browser
-    Open browser                      ${PLONEURL}/login_form
-    Log in                            test_labmanager         test_labmanager
-    Wait until page contains          You are now logged in
-    Set selenium speed                ${SELENIUM_SPEED}
 
 Disable Sampling Workflow
     go to                             ${PLONEURL}/bika_setup/edit

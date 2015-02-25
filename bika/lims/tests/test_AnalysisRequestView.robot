@@ -15,6 +15,8 @@ Suite Teardown   Close All Browsers
 Test CCContacts dropdown filter by client
     [Documentation]  This test checks if the CCContacts dropdown list
     ...  is filtred by client.
+    Log in                              test_labmanager         test_labmanager
+    Wait until page contains            You are now logged in
     ${ARId}=  Simple AR Creation  Happy Hills  Rita  Barley  Metals  Calcium
     # Create a contact in an other client.
     Create a contact  Klaymore  Moist Von  LipWig
@@ -26,6 +28,8 @@ Test CCContacts dropdown filter by client
     page should contain  Seemonster
 
 Test autosave feature
+    Log in                              test_labmanager         test_labmanager
+    Wait until page contains            You are now logged in
     [Documentation]  It ckhecks the correct functionament of autosaving feature.
     # Enable sampling workflow to test all possibilities
     Enable Sampling Workflow
@@ -66,11 +70,6 @@ Test autosave feature
 
 
 *** Keywords ***
-Start browser
-    Open browser                        ${PLONEURL}/login_form
-    Log in                              test_labmanager         test_labmanager
-    Wait until page contains            You are now logged in
-    Set selenium speed                  ${SELENIUM_SPEED}
 
 Provided precondition
     Setup system under test

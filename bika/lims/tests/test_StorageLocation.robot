@@ -28,10 +28,6 @@ Test Storage Location
 
 *** Keywords ***
 
-Start browser
-    Open browser                ${PLONEURL}/login
-    Set selenium speed          ${SELENIUM_SPEED}
-
 Check Bika Setup imported correctly
     Go to                       ${PLONEURL}/bika_setup/bika_storagelocations
     Wait until page contains    Storage Locations

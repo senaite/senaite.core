@@ -19,16 +19,13 @@ Suite Teardown   Close All Browsers
 Add an ARTemplate with Analysis Dependencies
     #Test if alert is shown when selecting an analysis which has
     #a dependency in another analysis when creating a Profile and Template.
+
+    Log in                              test_labmanager         test_labmanager
+    Wait until page contains            You are now logged in
     Create ARTemplate with Analysis Dependences
 
 
 *** Keywords ***
-
-Start browser
-    Open browser                        ${PLONEURL}/login_form
-    Log in                              test_labmanager         test_labmanager
-    Wait until page contains            You are now logged in
-    Set selenium speed                  ${SELENIUM_SPEED}
 
 Add a Dependence to an Analysis Service
     #Test.xlsx set the check box "Use default calculation" from AddARTemplate/Method

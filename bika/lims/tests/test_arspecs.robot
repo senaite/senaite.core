@@ -174,6 +174,3 @@ when selecting a Spec it should be set on the AR.
 
 *** Keywords ***
 
-Start browser
-    Open browser                ${PLONEURL}/login_form
-    Set selenium speed          ${SELENIUM_SPEED}
