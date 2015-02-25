@@ -16,6 +16,8 @@ Suite Teardown   Close All Browsers
 *** Test Cases ***
 
 Test Client landing page
+    Log in                              ${SITE_OWNER_NAME}   ${SITE_OWNER_PASSWORD}
+    Wait until page contains            You are now logged in
 
     go to                               ${PLONEURL}/portal_registry
     input text                          css=input[name='q']  bika.lims.client
@@ -35,8 +37,3 @@ Test Client landing page
 
 *** Keywords ***
 
-Start browser
-    Open browser                        ${PLONEURL}/login_form  chrome
-    Log in                              ${SITE_OWNER_NAME}   ${SITE_OWNER_PASSWORD}
-    Wait until page contains            You are now logged in
-    Set selenium speed                  ${SELENIUM_SPEED}

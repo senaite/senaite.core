@@ -23,6 +23,8 @@ model2 CSV file
     [Documentation]  Firts we have to create the AS to match the
     ...              analysis in the file. Then we have to create the AR
     ...              and tranistion it. Finally qe can import the results.
+    Log in                              test_labmanager         test_labmanager
+    Wait until page contains            You are now logged in
     ${PATH_TO_TEST} =           run keyword   resource_filename
     Disable Print Page
     Create Analysis Service  ${ASId}  ${ASTitle}
@@ -33,12 +35,6 @@ model2 CSV file
     page should not contain    Serice keyword ${ASId} not found
 
 *** Keywords ***
-
-Start browser
-    Open browser                        ${PLONEURL}/login_form  chrome
-    Log in                              test_labmanager         test_labmanager
-    Wait until page contains            You are now logged in
-    Set selenium speed                  ${SELENIUM_SPEED}
 
 Create Analysis Service
    [Documentation]  Create an AS using the ID ASId

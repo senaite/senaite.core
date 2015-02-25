@@ -17,16 +17,13 @@ ${input_identifier} =  thermoscientific_arena_20XT
 *** Test Cases ***
 test 20XT RPR file
     [Documentation]  It just checks if there is any error in the importation process.
+    Log in                              test_labmanager         test_labmanager
+    Wait until page contains            You are now logged in
     ${PATH_TO_TEST} =         run keyword   resource_filename
     Import Instrument File    Thermo Scientific - Arena 20XT  ${PATH_TO_TEST}/files/ArenaRPR.csv  ${input_identifier}
 
 
 *** Keywords ***
-Start browser
-    Open browser                        ${PLONEURL}/login_form
-    Log in                              test_labmanager         test_labmanager
-    Wait until page contains            You are now logged in
-    Set selenium speed                  ${SELENIUM_SPEED}
 
 Import Instrument File
     [Documentation]  Select the instrument and file type.

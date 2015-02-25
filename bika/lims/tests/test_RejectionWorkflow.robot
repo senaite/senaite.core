@@ -16,6 +16,8 @@ Suite Teardown  Close All Browsers
 *** Test Cases ***
 
 Reject worksheet with regular, blank, control and duplicate analyses
+    Log in                            test_labmanager         test_labmanager
+    Wait until page contains          You are now logged in
 
     Create reference sample from   Distilled Water (Blank)
     Create reference sample from   Trace Metals 10
@@ -54,12 +56,6 @@ Reject worksheet with regular, blank, control and duplicate analyses
     Xpath Should Match X Times        //td[contains(@class, 'state-assigned') and contains(@class, 'state_title')]     4
 
 *** Keywords ***
-
-Start browser
-    Open browser                      ${PLONEURL}/login_form
-    Log in                            test_labmanager         test_labmanager
-    Wait until page contains          You are now logged in
-    Set selenium speed                ${SELENIUM_SPEED}
 
 Add an AR
     Go to                             ${PLONEURL}/clients/client-1/portal_factory/AnalysisRequest/Request%20new%20analyses/ar_add

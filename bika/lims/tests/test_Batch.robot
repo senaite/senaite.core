@@ -97,11 +97,6 @@ Test batch inherited ARs
 
 *** Keywords ***
 
-Start browser
-    Open browser         http://localhost:55001/plone/login
-    Maximize browser window
-    Set selenium speed   ${SELENIUM_SPEED}
-
 Add Batch
     Go to                        http://localhost:55001/plone/batches
     Wait until page contains     Add
