@@ -31,6 +31,7 @@ from zope.interface import implements
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t, getUsers, dicts_to_dict
 
+from bika.lims.browser.fields import DateTimeField
 from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
 
 import sys
@@ -1558,13 +1559,13 @@ class AnalysisRequest(BaseFolder):
             invoice_batch.processForm()
 
         client_uid = self.getClientUID()
-        invoice_batch.createInvoice(client_uid, [self, ])
-
-        RESPONSE.redirect(
-            '%s/analysisrequest_invoice' % self.absolute_url())
+        # Get the created invoice
+        invoice = invoice_batch.createInvoice(client_uid, [self, ])
+        invoice.setAnalysisRequest(self)
+        # Set the created invoice in the schema
+        self.Schema()['Invoice'].set(self, invoice)
 
     security.declarePublic('printInvoice')
-
     def printInvoice(self, REQUEST=None, RESPONSE=None):
         """ print invoice
         """
@@ -1621,15 +1622,13 @@ class AnalysisRequest(BaseFolder):
     def delARAttachment(self, REQUEST=None, RESPONSE=None):
         """ delete the attachment """
         tool = getToolByName(self, REFERENCE_CATALOG)
-        if 'ARAttachment' in self.REQUEST.form:
-            attachment_uid = self.REQUEST.form['ARAttachment']
+        if 'Attachment' in self.REQUEST.form:
+            attachment_uid = self.REQUEST.form['Attachment']
             attachment = tool.lookupObject(attachment_uid)
-            parent = attachment.getRequest()
-        elif 'AnalysisAttachment' in self.REQUEST.form:
-            attachment_uid = self.REQUEST.form['AnalysisAttachment']
-            attachment = tool.lookupObject(attachment_uid)
-            parent = attachment.getAnalysis()
+            parent_r = attachment.getRequest()
+            parent_a = attachment.getAnalysis()
 
+        parent = parent_a if parent_a else parent_r
         others = parent.getAttachment()
         attachments = []
         for other in others:
@@ -1640,8 +1639,7 @@ class AnalysisRequest(BaseFolder):
         ids = [attachment.getId(), ]
         BaseFolder.manage_delObjects(client, ids, REQUEST)
 
-        RESPONSE.redirect(
-            '%s/manage_results' % self.absolute_url())
+        RESPONSE.redirect(self.REQUEST.get_header('referer'))
 
     security.declarePublic('getVerifier')
 
@@ -1823,7 +1821,6 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample and value:
             sample.setSamplingDate(value)
-        self.Schema()['SamplingDate'].set(self, value)
 
     security.declarePublic('getSamplingDate')
 
@@ -1831,7 +1828,6 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getSamplingDate()
-        return self.Schema().getField('SamplingDate').get(self)
 
     security.declarePublic('setSampler')
 

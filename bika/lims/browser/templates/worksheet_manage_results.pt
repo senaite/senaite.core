@@ -77,7 +77,9 @@
                     <span tal:condition="python:not instrument"
                         i18n:translate="">Not defined</span>
                 </tal:instrumentlabel>
-
+            </td>
+            <td>
+                <a tal:attributes="href python:context.absolute_url()+'/print';" i18n:translate="" class="print_button">Print</a>
             </td>
         </tr>
     </table>

@@ -12,6 +12,8 @@
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone import PloneMessageFactory as _
 from bika.lims.utils import logged_in_client
+from zope.component import getUtility
+from plone.registry.interfaces import IRegistry
 REQUEST=context.REQUEST
 
 membership_tool=getToolByName(context, 'portal_membership')
@@ -41,8 +43,14 @@ elif must_change_password:
 membership_tool.loginUser(REQUEST)
 
 client = logged_in_client(context, member)
+registry = getUtility(IRegistry)
+if 'bika.lims.client.default_landing_page' in registry:
+    landing_page = registry['bika.lims.client.default_landing_page']
+else:
+    landing_page = 'analysisrequests'
+
 if client:
-    url = client.absolute_url()
+    url = client.absolute_url() + "/" + landing_page
     return context.REQUEST.response.redirect(url)
 
 groups_tool=context.portal_groups

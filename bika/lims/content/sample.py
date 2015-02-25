@@ -23,6 +23,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from zope.interface import implements
 
+from bika.lims.browser.fields import DateTimeField
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
 

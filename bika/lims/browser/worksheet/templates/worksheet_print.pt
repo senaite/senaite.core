@@ -1,0 +1,158 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<metal:block use-macro="context/global_defines/macros/defines" />
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      tal:attributes="lang default_language|default;
+                      xml:lang default_language|default;"
+      i18n:domain="bika"
+      tal:define="portal_state context/@@plone_portal_state;
+                  portal_url portal_state/portal_url;
+                  plone_view context/@@plone;
+                  portal portal_state/portal;">
+<head>
+    <div tal:replace="structure provider:plone.resourceregistries.scripts" />
+    <style>
+        html {
+                background-color:#cdcdcd;
+        }
+        html, body {
+            margin: 0;
+            padding: 0;
+        }
+        body {
+            width: 210mm;
+            padding: 10px 10px 0px 20px;
+            margin: 10px auto;
+            background-color:#fff;
+        }
+        #worksheet-printview-head {
+            margin:-10px -10px 60px -20px;
+            padding:10px 20px 20px 10px;
+            background-color: #dcdcdc;
+            border-bottom: 20px solid #CDCDCD;
+        }
+        #worksheet-printview-head #worksheet-printview-options label {
+            padding:5px 10px 5px 10px;
+        }
+        #worksheet-printview-head #buttons {
+            text-align:right;
+            padding-left:10px;
+            padding-top:10px;
+        }
+        #worksheet-printview-head #buttons input {
+            padding:4px 15px;
+            border:none;
+            color:#fff;
+            cursor:pointer;
+        }
+        #worksheet-printview-head #buttons input:hover {
+            opacity:0.8;
+            moz-opacity:0.8;
+            filter:alpha(opacity=80);
+            -webkit-transition: opacity 250ms ease-in-out;
+            -moz-transition: opacity 250ms ease-in-out;
+            -o-transition: opacity 250ms ease-in-out;
+            -ms-transition: opacity 250ms ease-in-out;
+            transition: opacity 250ms ease-in-out;
+        }
+        #worksheet-printview-head #buttons #print_button {
+            background-color:#0B486B;
+        }
+        #worksheet-printview-head #buttons #cancel_button {
+            background-color:#666;
+        }
+        .page-break {
+            background-color: #CDCDCD;
+            margin: 60px -10px 30px -20px;
+            padding-bottom: 20px;
+            padding-top: 20px;
+        }
+        .error-report {
+            margin:0 -20px;
+            padding:20px;
+            font-weight:bold;
+            color:#d40000;
+            border-bottom: 60px solid #CDCDCD;
+        }
+        .error-report pre {
+            font-family: monospace;
+            width:205mm;
+            overflow:auto;
+            background-color:#fff;
+            color:#000;
+            font-weight:normal;
+        }
+        @media print {
+            html {
+                background-color:#fff;
+            }
+            body {
+                font: serif;
+                font-size:10pt;
+                max-width:7.6in;
+                margin:0;
+            }
+            .page-break  {
+                display: block;
+                page-break-before: always;
+                margin:none;
+                border:none;
+            }
+            #worksheet-printview-head {
+                display:none;
+                visibility:hidden;
+            }
+            @page {
+                size: auto;
+                margin: 0.7in 0.1in 1in 0.1in;
+            }
+
+        }
+    </style>
+</head>
+<body>
+    <div id='worksheet-printview-wrapper'>
+        <div id='worksheet-printview-head'>
+            <div id='worksheet-printview-options'>
+                <label for="template" i18n:translate="">Available templates</label>
+                <select id="template" name ="template">
+                    <tal:templates tal:repeat="template python:view.getWSTemplates()">
+                        <option tal:attributes="value python:template['id']"
+                                tal:content="python:template['title']"></option>
+                    </tal:templates>
+                </select>
+                <label for="numcols" i18n:translate="">Num columns</label>
+                <select id="numcols" name="numcols">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4" selected>4</option>
+                    <option value="5">5</option>
+                    <option value="6">6</option>
+                    <option value="7">7</option>
+                    <option value="8">8</option>
+                    <option value="9">9</option>
+                    <option value="10">10</option>
+                </select>
+            </div>
+            <div id='buttons'>
+                <input type="button" id='cancel_button' i18n:translate="value" value="Cancel"/>&nbsp;&nbsp;
+                <input type="button" id='print_button' i18n:translate="value" value="Print"/>
+            </div>
+        </div>
+        <style id='report-style' tal:content='structure python:view.getCSS()'></style>
+        <div id='worksheet-printview'>
+        <tal:wsit tal:repeat="ws python:view.getWorksheets()">
+        <div tal:attributes="id  python:ws.id;
+                             uid python:ws.UID();"
+             tal:content="structure python:view.renderWSTemplate()"
+             class="worksheet"></div>
+        </tal:wsit>
+        </div>
+    </div>
+</body>
+</html>

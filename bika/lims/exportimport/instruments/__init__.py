@@ -13,7 +13,8 @@ from alere.pima import beads, cd4
 from lifetechnologies.qubit import qubit
 from biodrop.ulite import ulite
 from tescan.tima import tima
-from sysmex.xs import i500
+from sysmex.xs import i500, i1000
+from beckmancoulter.access import model2
 
 __all__ = ['generic.xml',
            'agilent.masshunter.quantitative',
@@ -28,7 +29,9 @@ __all__ = ['generic.xml',
            'lifetechnologies.qubit.qubit',
            'biodrop.ulite.ulite',
            'tescan.tima.tima',
-           'sysmex.xs.i500'
+           'sysmex.xs.i500',
+           'sysmex.xs.i1000',
+           'beckmancoulter.access.model2'
            ]
 
 

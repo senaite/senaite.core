@@ -3,6 +3,7 @@ from zope import event
 
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from operator import itemgetter, methodcaller
 
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView
@@ -18,6 +19,8 @@ class View(BrowserView):
 
     def __call__(self):
         context = self.context
+        portal = self.portal
+        setup = portal.bika_setup
         # Disable the add new menu item
         context.setConstrainTypesMode(1)
         context.setLocallyAllowedTypes(())
@@ -31,20 +34,27 @@ class View(BrowserView):
         # Set the title
         self.title = context.Title()
         # Collect order item data
-        items = context.objectValues('SupplyOrderItem')
+        items = context.supplyorder_lineitems
+
+        products = setup.bika_labproducts.objectValues('LabProduct')
         self.items = []
         for item in items:
-            product = item.getProduct()
+            prodid = item['Product']
+            product = setup.bika_labproducts[prodid]
+            price = float(item['Price'])
+            vat = float(item['VAT'])
+            qty = float(item['Quantity'])
             self.items.append({
                 'title': product.Title(),
                 'description': product.Description(),
                 'volume': product.getVolume(),
                 'unit': product.getUnit(),
-                'price': product.getPrice(),
-                'vat': '%s%%' % product.getVATAmount(),
-                'quantity': item.getQuantity(),
-                'totalprice': '%.2f' % item.getTotal(),
+                'price': price,
+                'vat': '%s%%' % vat,
+                'quantity': qty,
+                'totalprice': '%.2f' % (price * qty)
             })
+        self.items = sorted(self.items, key = itemgetter('title')) 
         # Render the template
         return self.template()
 
@@ -72,22 +82,19 @@ class EditView(BrowserView):
             portal_factory = getToolByName(context, 'portal_factory')
             context = portal_factory.doCreate(context, context.id)
             context.processForm()
+            # Clear the old line items
+            context.supplyorder_lineitems = []
             # Process the order item data
-            for k, v in request.form.items():
-                if k.startswith('product_') and int(v) > -1:
-                    k = k.replace('product_', '')
-                    product = setup.bika_labproducts[k]
-                    # Create a item if it doesn't yet exist
-                    if k not in context:
-                        _createObjectByType("SupplyOrderItem", context, k)
-                    # Fetch and edit the item
-                    obj = context[k]
-                    obj.edit(
-                        Product=product,
-                        Quantity=int(v),
-                        Price=product.getPrice(),
-                        VAT=product.getVAT(),
-                    )
+            for prodid, qty in request.form.items():
+                if prodid.startswith('product_') and float(qty) > 0:
+                    prodid = prodid.replace('product_', '')
+                    product = setup.bika_labproducts[prodid]
+                    context.supplyorder_lineitems.append(
+                            {'Product': prodid,
+                             'Quantity': qty,
+                             'Price': product.getPrice(),
+                             'VAT': product.getVAT()})
+
             # Redirect to the list of orders
             obj_url = context.absolute_url_path()
             request.response.redirect(obj_url)
@@ -99,12 +106,12 @@ class EditView(BrowserView):
             self.vat = '%.2f' % context.getVATAmount()
             self.total = '%.2f' % context.getTotal()
             # Prepare the products
-            items = context.objectValues('SupplyOrderItem')
+            items = context.supplyorder_lineitems
             self.products = []
+            products = sorted(products, key = methodcaller('Title'))
             for product in products:
-                item = [o for o in items if o.getProduct() == product]
-                quantity = item[0].getQuantity() if len(item) > 0 else 0
-                total = item[0].getTotal() if len(item) > 0 else '0.00'
+                item = [o for o in items if o['Product'] == product.getId()]
+                quantity = item[0]['Quantity'] if len(item) > 0 else 0
                 self.products.append({
                     'id': product.getId(),
                     'title': product.Title(),
@@ -114,7 +121,7 @@ class EditView(BrowserView):
                     'price': product.getPrice(),
                     'vat': '%s%%' % product.getVAT(),
                     'quantity': quantity,
-                    'total': total,
+                    'total': (float(product.getPrice()) * float(quantity)),
                 })
             # Render the template
             return self.template()

@@ -13,6 +13,8 @@ from plone.app.content.browser.interfaces import IFolderContentsView
 from bika.lims.browser import BrowserView
 from zope.interface import implements
 from Products.CMFCore import permissions
+from zope.component import getUtility
+from plone.registry.interfaces import IRegistry
 import plone,json
 
 
@@ -102,12 +104,17 @@ class ClientFolderContentsView(BikaListingView):
         self.filter_indexes = None
         self.contentsMethod = self.getClientList
         items = BikaListingView.folderitems(self)
+        registry = getUtility(IRegistry)
+        if 'bika.lims.client.default_landing_page' in registry:
+            landing_page = registry['bika.lims.client.default_landing_page']
+        else:
+            landing_page = 'analysisrequests'
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
 
-            items[x]['replace']['title'] = "<a href='%s'>%s</a>"%\
-                 (items[x]['url'], items[x]['title'])
+            items[x]['replace']['title'] = "<a href='%s/%s'>%s</a>"%\
+                 (items[x]['url'], landing_page.encode('ascii'), items[x]['title'])
 
             items[x]['EmailAddress'] = obj.getEmailAddress()
             items[x]['replace']['EmailAddress'] = "<a href='%s'>%s</a>"%\

@@ -40,7 +40,7 @@
 	ar_review_state python: context.portal_workflow.getInfoFor(context, 'review_state');
 	analysis_attach_allowed here/bika_setup/getAnalysisAttachmentsPermitted;
 	attachments_allowed here/bika_setup/getAttachmentsPermitted;
-	attachments here/getAttachment | nothing;
+	attachments view/getAttachments;
 	delete_attachments python:True;
 	update_attachments python:True">
 

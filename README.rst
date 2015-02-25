@@ -1,6 +1,8 @@
 Bika LIMS
 =========
 
+v3.1.7 (2015-02-26)
+
 The meaning of Gaob
 -------------------
 
@@ -17,7 +19,7 @@ Documentation
 -------------
 
 * `User Manual <http://demo.bikalabs.com/knowledge-centre/manual/bika-3-user-manual>`_
-* `GitHub Wiki <github.com/bikalabs/Bika-LIMS/wiki>`_
+* `GitHub Wiki <http://github.com/bikalabs/Bika-LIMS/wiki>`_
 
 Feedback and support
 --------------------
