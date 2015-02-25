@@ -12,24 +12,22 @@ Suite Setup      Start browser
 Suite Teardown   Close All Browsers
 
 *** Variables ***
-${input_identifier} =  beckmancoulter_access_model2
-${ASId} =  HBc-IgM
-${ASTitle} =  HBc-IgM
-${ClientSampleId} =  25256
+${input_identifier} =  rochecobas_taqman_model48
+${ASId} =  HI2CAP96
+${ASTitle} =  HI2CAP96
+${ClientSampleId} =  840557455
 
 *** Test Cases ***
 
-test model2 CSV file
+model48 RSF file
     [Documentation]  Firts we have to create the AS to match the
     ...              analysis in the file. Then we have to create the AR
     ...              and tranistion it. Finally qe can import the results.
     ${PATH_TO_TEST} =           run keyword   resource_filename
     Disable Print Page
     Create Analysis Service  ${ASId}  ${ASTitle}
-    ${ar_id}=                Create an AR  ${ASTitle}  ${ClientSampleId}
-    Execute transition receive on item ${ar_id} in ARList
 
-    Import Instrument File     Beckman Coulter Access 2  ${PATH_TO_TEST}/files/Access2.csv  ${input_identifier}
+    Import Instrument File     Roche Cobas Taqman 48  ${PATH_TO_TEST}/files/ResultData.rsf  ${input_identifier}
     page should not contain    Serice keyword ${ASId} not found
 
 *** Keywords ***
@@ -55,26 +53,6 @@ Create Analysis Service
     Click button                Save
     Wait until page contains    Changes saved.
 
-Create an AR
-   [Arguments]  ${ASTitle}
-   ...          ${ClientSampleId}
-    @{time} =                   Get Time        year month day hour min sec
-    go to                       ${PLONEURL}/clients/client-1
-    Wait until page contains element    css=body.portaltype-client
-    click link                  link=Add
-    Select from dropdown        ar_0_Contact                Rita
-    SelectDate                  ar_0_SamplingDate           @{time}[2]
-    Select from dropdown        ar_0_SampleType             Bran
-    Input text                  ar_0_ClientSampleID         ${ClientSampleId}
-    Set Selenium Timeout        30
-    click element               xpath=.//th[@id="cat_lab_Microbiology"]
-    Select checkbox             xpath=//input[@title='${ASTitle}']
-    Click Button                Save
-    Wait until page contains    created
-    ${ar_id} =                  Get text      //dl[contains(@class, 'portalMessage')][2]/dd
-    ${ar_id} =                  Set Variable  ${ar_id.split()[2]}
-    [Return]                    ${ar_id}
-
 Import Instrument File
     [Documentation]  Select the instrument and file type.
     ...              Then import the file created by the instrument.
@@ -83,7 +61,7 @@ Import Instrument File
     Click Link                  Import
     Wait until page contains    Select a data interface
     Select from list            exim  ${instrument}
-    Element Should Contain      ${input_identifier}_format  CSV
+    Element Should Contain      ${input_identifier}_format  RFS
     Import AR Results Instrument File    ${file}  ${input_identifier}_file
 
 Import AR Results Instrument File
