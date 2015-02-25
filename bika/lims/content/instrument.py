@@ -84,11 +84,9 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
     BooleanField('DisposeUntilNextCalibrationTest',
         default = False,
         widget = BooleanWidget(
-            label=_("Dispose until next calibration test"),
-            description = _("If checked, the instrument will not be "
-                            "available until the next valid calibration "
-                            "test being performed. This checkbox will "
-                            "be automatically unchecked too."),
+            label=_("De-activate until next calibration test"),
+            description=_("If checked, the instrument will be unavailable until the next valid "
+                          "calibration was performed. This checkbox will automatically be unchecked."),
         ),
     ),
 
