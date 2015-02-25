@@ -1,5 +1,7 @@
 3.1.7 (2015-02-26)
 ------------------
+
+LIMS-1520: Allow to invalidate verified ARs
 LIMS-1690: Typo. Instrument page
 LIMS-1688: After AR invalidation, ARs list throws an error
 LIMS-1569: Instrument interface: Beckman Coulter Access 2
