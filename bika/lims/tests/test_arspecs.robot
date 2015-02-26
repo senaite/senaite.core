@@ -18,7 +18,6 @@ Suite Teardown   Close All Browsers
 Test AnalysisRequest Specifications
     Log in                              test_labmanager  test_labmanager
 
-    Disable Print Page
     # First enable visibility of AR Specification fields
     Go To                               ${PLONEURL}/bika_setup/edit
     Click Link                          Analyses
@@ -136,7 +135,7 @@ Test AnalysisRequest Specifications
 
 when selecting a Spec it should be set on the AR.
     Log in                              test_labmanager  test_labmanager
-    Disable Print Page
+
     # enable ar spec fields
     go to                               ${PLONEURL}/bika_setup/edit
     click link                          Analyses
@@ -174,4 +173,3 @@ when selecting a Spec it should be set on the AR.
     # Page should contain element         xpath=.//a[@href='http://localhost:55001/plone/bika_setup/bika_analysisspecs/analysisspec-9']
 
 *** Keywords ***
-
