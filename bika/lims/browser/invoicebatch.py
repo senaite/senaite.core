@@ -61,10 +61,11 @@ class InvoiceBatchInvoicesView(BikaListingView):
     #             }
     #     return super(InvoiceBatchInvoicesView, self).__call__()
 
-    def folderitems(self):
+    def folderitems(self, full_objects=False):
         currency = currency_format(self.context, 'en')
+        self.show_all = True
         self.contentsMethod = self.getInvoices
-        items = BikaListingView.folderitems(self)
+        items = BikaListingView.folderitems(self, full_objects)
         for item in items:
             obj = item['obj']
             number_link = "<a href='%s'>%s</a>" % (

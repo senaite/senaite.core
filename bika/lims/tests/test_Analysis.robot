@@ -103,10 +103,6 @@ Test Analysis Uncertainty Precision
 
 *** Keywords ***
 
-Start browser
-    Open browser  ${PLONEURL}/login_form
-    Set selenium speed  ${SELENIUM_SPEED}
-
 Create AnalysisRequests
     [Documentation]     Add and receive 10 ARs at once.
     @{time} =                   Get Time        year month day hour min sec

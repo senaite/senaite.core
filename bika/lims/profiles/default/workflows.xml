@@ -244,7 +244,6 @@
   <type type_id="SupplyOrderFolder">
   </type>
 
-  <type type_id="SupplyOrderItem"/>
   <type type_id="Plone Site"/>
 
   <type type_id="Preservation">

@@ -23,6 +23,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from zope.interface import implements
 
+from bika.lims.browser.fields import DateTimeField
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
 
@@ -707,8 +708,6 @@ class Sample(BaseFolder, HistoryAwareMixin):
         # AnalysisRequests are also transitioned
         for ar in self.getAnalysisRequests():
             doActionFor(ar, "receive")
-        #     q = "/sticker?size=%s&items=%s" % (size, self.getId())
-        #     self.REQUEST.RESPONSE.redirect(self.absolute_url() + q)
 
     def workflow_script_preserve(self):
         """This action can happen in the Sample UI, so we transition all

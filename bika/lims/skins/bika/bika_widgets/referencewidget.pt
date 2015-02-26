@@ -39,7 +39,7 @@
                       class="deletebtn"
                       tal:attributes="
                         src string:${portal/absolute_url}/++resource++bika.lims.images/delete.png;
-                      	fieldName fieldName;
+                        fieldName fieldName;
                         uid value/UID"/>
                     <span tal:replace="python:str(value.Title())"/>
                   </div>
@@ -101,6 +101,39 @@
                                  ui_item widget/ui_item;
                                  combogrid_options python:widget.get_combogrid_options(context, fieldName)"
                  />
+            <!-- AddButton definition -->
+            <a rel='#overlay'
+               class='add-button referencewidget-add-button'
+               tal:define="options python:widget.get_addbutton_options()"
+               tal:condition="options/visible"
+               tal:attributes="name python:fieldName+'_addbutton';
+                               id   python:fieldName+'_addbutton';
+                               href string:${portal/absolute_url}/${options/url};
+                               data_fieldid fieldName;
+                               data_fieldname fieldName;
+                               data_overlay_handler options/overlay_handler;
+                               data_returnfields options/return_fields;
+                               data_jscontrollers options/js_controllers;
+                               data_overlay options/overlay_options">
+                    <span class='notext' i18n:translate="">Add</span>
+            </a>
+            <!-- EditButton definition -->
+            <a rel='#overlay'
+               class='edit-button referencewidget-edit-button'
+               tal:define="options python:widget.get_editbutton_options()"
+               tal:condition="options/visible"
+               tal:attributes="name python:fieldName+'_editbutton';
+                               id   python:fieldName+'_editbutton';
+                               href string:${portal/absolute_url}/${options/url};
+                               data_baseurl string:${portal/absolute_url}/${options/url};
+                               data_fieldid fieldName;
+                               data_fieldname fieldName;
+                               data_overlay_handler options/overlay_handler;
+                               data_returnfields options/return_fields;
+                               data_jscontrollers options/js_controllers;
+                               data_overlay options/overlay_options">
+                    <span class='notext' i18n:translate="">Edit</span>
+            </a>
           <input
                  type="hidden"
                  name=""

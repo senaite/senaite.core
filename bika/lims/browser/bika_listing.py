@@ -203,8 +203,8 @@ class WorkflowAction:
                         self.context.plone_utils.addPortalMessage(message, 'error')
         # automatic label printing
         if transitioned and action == 'receive' \
-            and 'receive' in self.portal.bika_setup.getAutoPrintLabels():
-            q = "/sticker?size=%s&items=" % (self.portal.bika_setup.getAutoLabelSize())
+            and 'receive' in self.portal.bika_setup.getAutoPrintStickers():
+            q = "/sticker?template=%s&items=" % (self.portal.bika_setup.getAutoStickerTemplate())
             # selected_items is a list of UIDs (stickers for AR_add use IDs)
             q += ",".join(transitioned)
             dest = self.context.absolute_url() + q

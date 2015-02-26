@@ -550,15 +550,15 @@ class AnalysisResultsImporter(Logger):
                 "Import finished successfully: ${nr_updated_ars} ARs, "
                 "${nr_updated_instruments} Instruments and ${nr_updated_results} "
                 "results updated",
-                mapping={"nr_updated": str(len(importedars)),
-                         "nr_updated": str(len(importedinsts)),
-                         "nr_updated": str(ancount)})
+                mapping={"nr_updated_ars": str(len(importedars)),
+                         "nr_updated_instruments": str(len(importedinsts)),
+                         "nr_updated_results": str(ancount)})
         else:
             self.log(
                 "Import finished successfully: ${nr_updated_ars} ARs and "
                 "${nr_updated_results} results updated",
-                mapping={"nr_updated": str(len(importedars)),
-                         "nr_updated": str(ancount)})
+                mapping={"nr_updated_ars": str(len(importedars)),
+                         "nr_updated_results": str(ancount)})
 
     def _getObjects(self, objid, criteria, states):
         #self.log("Criteria: %s %s") % (criteria, obji))

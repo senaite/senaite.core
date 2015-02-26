@@ -2,7 +2,7 @@
 <site>
 <!-- <property name="title">Bika LIMS</property> -->
  <property name="description"></property>
- <property name="default_page" type="string">front-page</property>
+    <property name="default_page" type="string">bika-frontpage</property>
  <property name="selectable_views" type="lines">
   <element value="folder_listing"/>
   <element value="news_listing"/>

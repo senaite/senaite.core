@@ -16,9 +16,20 @@ Suite Teardown   Close All Browsers
 ${ar_factory_url}  portal_factory/AnalysisRequest/xxx/ar_add
 
 *** Test Cases ***
+Check CCContacts widget basic functionality
+    Log in                      test_labmanager  test_labmanager
+    @{time} =                   Get Time        year month day hour min sec
+    Go to                       ${PLONEURL}/clients/client-1
+    Wait until page contains element    css=body.portaltype-client
+    Click Link                  Add
+    Wait until page contains    Request new analyses
+    Select from dropdown        ar_0_CCContact                Rita
+    Element Should Contain      ar_0_CCContact-listing        Rita
 
 Check that the editable SamplePoint widget in AnalysisRequestView shows both Client and Lab items
     # Create a new Client/SamplePoint
+    Log in                              test_labmanager         test_labmanager
+    Wait until page contains            You are now logged in
     go to                        ${PLONEURL}/clients/client-1/portal_factory/SamplePoint/xxx/edit
     input text                   title                             Pringle Bay Beach
     click button                 Save
@@ -44,6 +55,8 @@ Check that the editable SamplePoint widget in AnalysisRequestView shows both Cli
 
 Check the AR Add javascript
    # check that the Contact CC auto-fills correctly when a contact is selected
+    Log in                              test_labmanager         test_labmanager
+    Wait until page contains            You are now logged in
     Go to                     ${PLONEURL}/clients/client-1
     Wait until page contains  Happy
     Click Link                Add
@@ -71,6 +84,8 @@ Check the AR Add javascript
 
 Analysis Request with no sampling or preservation workflow
 
+    Log in                              test_labmanager         test_labmanager
+    Wait until page contains            You are now logged in
     Go to                     ${PLONEURL}/clients/client-1
     Click Link                Add
     ${ar_id}=                 Complete ar_add form with template Bore
@@ -95,6 +110,8 @@ Analysis Request with no sampling or preservation workflow
 
 
 Create two different ARs from the same sample.
+    Log in                              test_labmanager         test_labmanager
+    Wait until page contains            You are now logged in
     Create AR in client-1 with contact Rita
     Create Secondary AR
     In a client context, only allow selecting samples from that client.
@@ -104,7 +121,8 @@ AR with sampling workflow actived and preservation workflow desactived
     ...  enabled, but without preserving the sample. This is the correct
     ...  workflow, but more things should be tested, like transitions from
     ...  button (both, SamplePartition and Analysis), etc
-
+    Log in                              test_labmanager         test_labmanager
+    Wait until page contains            You are now logged in
     Enable Sampling Workflow
     ${ar_id}=           Create Simple AR
     Click Link          ${ar_id}
@@ -126,7 +144,8 @@ AR with sampling workflow actived and preservation workflow actived
     ...  enabled and with preserving the sample. This is the correct
     ...  workflow, but more things should be tested, like transitions from
     ...  button (both, SamplePartition and Analysis), etc
-
+    Log in                              test_labmanager         test_labmanager
+    Wait until page contains            You are now logged in
     Enable Sampling Workflow
     ${ar_id}=           Create Simple AR
     Click Link          ${ar_id}
@@ -152,12 +171,6 @@ AR with sampling workflow actived and preservation workflow actived
 
 
 *** Keywords ***
-
-Start browser
-    Open browser                        ${PLONEURL}/login_form
-    Log in                              test_labmanager         test_labmanager
-    Wait until page contains            You are now logged in
-    Set selenium speed                  ${SELENIUM_SPEED}
 
 Create AR in ${client_id} with contact ${contact}
     @{time} =                   Get Time        year month day hour min sec
@@ -334,13 +347,6 @@ TestSampleState
     ${VALUE}  Get Value  ${locator}
     Should Be Equal  ${VALUE}  ${expectedState}  ${sample} Workflow States incorrect: Expected: ${expectedState} -
     # Log  Testing Sample State for ${sample}: ${expectedState} -:- ${VALUE}  WARN
-
-Enable Sampling Workflow
-    Go to               ${PLONEURL}/bika_setup/edit
-    Click Link          id=fieldsetlegend-analyses
-    Select Checkbox     id=SamplingWorkflowEnabled
-    Click Button        Save
-    Wait until page contains    Changes saved.
 
 Save a Sampler and DateSampled on AR
     @{time} =           Get Time    year month day hour min sec

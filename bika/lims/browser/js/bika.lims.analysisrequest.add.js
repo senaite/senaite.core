@@ -73,12 +73,12 @@ function AnalysisRequestAddView() {
 			success: function(responseText) {
 				var destination;
 				if(responseText.success !== undefined){
-					if(responseText.labels !== undefined){
+					if(responseText.stickers !== undefined){
 						destination = window.location.href
 								.split("/portal_factory")[0];
-						var ars = responseText.labels;
-						var labelsize = responseText.labelsize;
-						var q = "/sticker?size="+labelsize+"&items=";
+						var ars = responseText.stickers;
+						var template = responseText.stickertemplate;
+						var q = "/sticker?template="+template+"&items=";
 						q = q + ars.join(",");
 						window.location.replace(destination+q);
 					} else {
@@ -197,11 +197,16 @@ function AnalysisRequestAddView() {
 				// Update the #specs value.
 				var element = $("#specs");
 				var form_rr = $.parseJSON($(element).val());
-				form_rr[column] = data.objects[0]['ResultsRange'];
+                // If The Analysis Specification doesn't have results range, the form_rr[column]
+                // should be a void dictionary
+                if (data.objects[0]['ResultsRange'].length == 0) {
+                    form_rr[column] = {};
+                }
+                else {
+                    form_rr[column] = data.objects[0]['ResultsRange'];
+                }
 				$(element).val($.toJSON(form_rr));
-
 				_set_specs(column)
-
 			}
 		});
 	}
@@ -397,6 +402,14 @@ function AnalysisRequestAddView() {
 			$(e).attr("name", "ar."+column+"."+eid+"-listing");
 			$(e).attr("fieldName", "ar."+column+"."+eid);
 		}
+		//Adding a unique identification to the widget's add button.
+		elements = $("a.add_button_overlay");
+		for (i = elements.length - 1; i >= 0; i--) {
+			e = elements[i];
+			column = $($(e).parents("td")).attr("column");
+			var line = $(e).parents("div").attr("data-fieldname");
+			$(e).attr("id", "ar_"+column+"_"+ e.id);
+		}
 	}
 
 	// The columnar referencewidgets that we reconfigure use this as their
@@ -429,12 +442,9 @@ function AnalysisRequestAddView() {
 				var del_btn = "<img class='deletebtn' src='"+del_btn_src+"' fieldName='ar."+column+"."+fieldName+"' uid='"+selected_uid+"'/>";
 				var new_item = "<div class='reference_multi_item' uid='"+selected_uid+"'>"+del_btn+selected_value+"</div>";
 				$(listing_div).append($(new_item));
+				$(uid_element).attr("skip_referencewidget_lookup", true)
 			}
 			skip = $(uid_element).attr("skip_referencewidget_lookup");
-			if (skip !== true){
-				$(this).trigger("selected", ui.item.UID);
-			}
-			$(uid_element).removeAttr("skip_referencewidget_lookup");
 			$(this).next("input").focus();
 		} else {
 			// Set value in activated element (must exist in colModel!)
@@ -596,7 +606,9 @@ function AnalysisRequestAddView() {
 		}
 
 		// Triggers 'selected' event (as reference widget)
+		if (!skip){
 		$(this).trigger("selected", ui.item.UID);
+		}
 	}
 
 	function add_path_filter_to_spec_lookups(){

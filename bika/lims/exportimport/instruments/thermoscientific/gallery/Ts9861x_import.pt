@@ -53,7 +53,7 @@
                     </tal:options>
                 </select>
                 <p i18n:translate="" style='color: #3F3F3F;font-size: 0.87em;'>
-                    If the system doesn't find any match (AnalysisRequest, Sample, Reference Analysis or Duplicate), it will use the record's identifier to find matches with Reference Sample IDs. If a Reference Sample ID is found, the system will automatically create a Calibration Test (Reference Analysis) and will link it to the seleced Instrument above.<br/>
+                    If the system doesn't find any match (AnalysisRequest, Sample, Reference Analysis or Duplicate), it will use the record's identifier to find matches with Reference Sample IDs. If a Reference Sample ID is found, the system will automatically create a Calibration Test (Reference Analysis) and will link it to the selected Instrument above.<br/>
                     If no instrument selected, any Calibration Test will be created for orphan IDs.
                 </p>
             </td>

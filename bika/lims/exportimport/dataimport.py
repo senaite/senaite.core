@@ -95,3 +95,15 @@ class ajaxGetImportTemplate(BrowserView):
                                    inactive_state = 'active')]
         items.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
         return DisplayList(list(items))
+
+    def getAnalysisServicesDisplayList(self):
+        ''' Returns a Display List with the active Analysis Services
+            available. The value is the keyword and the title is the
+            text to be displayed.
+        '''
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [('', '')] + [(o.getObject().Keyword, o.Title) for o in
+                                bsc(portal_type = 'AnalysisService',
+                                   inactive_state = 'active')]
+        items.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
+        return DisplayList(list(items))

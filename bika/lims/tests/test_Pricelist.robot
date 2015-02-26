@@ -67,7 +67,3 @@ Test Pricelist-AR
 
 *** Keywords ***
 
-Start browser
-    Open browser         http://localhost:55001/plone/login
-    Maximize browser window
-    Set selenium speed   ${SELENIUM_SPEED}

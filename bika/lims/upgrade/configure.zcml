@@ -506,4 +506,32 @@
         handler="bika.lims.upgrade.to3051.upgrade"
         sortkey="1"
         profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Stickers"
+        description=""
+        source="3051"
+        destination="3052"
+        handler="bika.lims.upgrade.to3052.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Added bika-frontpage to selectable views"
+        description=""
+        source="3052"
+        destination="3053"
+        handler="bika.lims.upgrade.to3053.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Upgrade to Bika LIMS 3.1.7"
+        description=""
+        source="3053"
+        destination="317"
+        handler="bika.lims.upgrade.to317.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
 </configure>

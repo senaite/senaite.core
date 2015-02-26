@@ -166,6 +166,7 @@ class InvoiceBatch(BaseFolder):
             if item.portal_type == 'AnalysisRequest':
                 lineitem['ItemDate'] = item.getDatePublished()
                 lineitem['OrderNumber'] = item.getRequestID()
+                lineitem['AnalysisRequest'] = item
                 description = get_invoice_item_description(item)
                 lineitem['ItemDescription'] = description
             elif item.portal_type == 'SupplyOrder':
@@ -178,9 +179,9 @@ class InvoiceBatch(BaseFolder):
             lineitem['Total'] = item.getTotal()
             invoice.invoice_lineitems.append(lineitem)
         invoice.reindexObject()
+        return invoice
 
     security.declarePublic('current_date')
-
     def current_date(self):
         """ return current date """
         return DateTime()

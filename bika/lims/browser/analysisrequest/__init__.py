@@ -27,6 +27,7 @@ from .view import AnalysisRequestViewView    # view first.
 from .add import AnalysisRequestAddView
 from .invoice import InvoicePrintView
 from .invoice import InvoiceView
+from invoice import InvoiceCreate
 from .log import AnalysisRequestLog
 from .manage_analyses import AnalysisRequestAnalysesView
 from .manage_results import AnalysisRequestManageResultsView

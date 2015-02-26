@@ -1,0 +1,95 @@
+<!--
+    Worksheet AR-by-row Template
+
+    All data is available using the worksheet dictionary.
+    Example for accessing and displaying data:
+
+    <p tal:content="python:worksheet['laboratory']['title']"></p>
+    or
+    <p tal:content="worksheet/laboratory/title"></p>
+
+    See README.txt for further details about the dict structure
+
+-->
+<tal:print tal:define="worksheet       python:view.getWorksheet();
+                       laboratory      worksheet/laboratory;
+                       portal          worksheet/portal;
+                       ars             worksheet/ars;
+                       anstitles       worksheet/analyses_titles;">
+
+<div id="header">
+    <div class='barcode-container'>
+        <div class='barcode'
+            data-code='code128'
+            data-showHRI='false'
+            data-barHeight='15'
+            data-addQuietZone='true'
+            tal:attributes="data-id worksheet/id">
+        </div>
+    </div>
+    <div class='lab-logo'>
+        <a tal:attributes="href laboratory/url">
+            <img tal:attributes="src laboratory/logo"/>
+        </a>
+    </div>
+    <h1>
+        <a tal:attributes="href worksheet/url"
+           tal:content="worksheet/id"></a>
+    </h1>
+</div>
+<div class="subheader">
+    <div>
+        <span i18n:translate="">Created on</span>&nbsp;
+        <span tal:content="worksheet/date_created"></span>&nbsp;
+        <span i18n:translate="">by</span>&nbsp;
+         <a tal:attributes="href python:('mailto:%s' % worksheet['createdby']['email'])"
+           tal:content="worksheet/createdby/fullname"></a>
+    </div>
+    <div>
+        <span i18n:translate="">Printed on</span>&nbsp;
+        <span tal:content="worksheet/date_printed"></span>&nbsp;
+        <span i18n:translate="">by</span>&nbsp;
+        <a tal:attributes="href python:('mailto:%s' % worksheet['printedby']['email'])"
+           tal:content="worksheet/printedby/fullname"></a>
+    </div>
+    <div>
+        <span i18n:translate="">Analysed by</span>:&nbsp;
+        <a tal:attributes="href python:('mailto:%s' % worksheet['analyst']['email'])"
+           tal:content="worksheet/analyst/fullname"></a>
+    </div>
+</div>
+<!-- Repeat the table every 6 Analyses -->
+<div class="content" tal:repeat="anst python:view.splitList(anstitles,view.getNumColumns())">
+    <table>
+        <thead>
+            <tr>
+                <th i18n:translate="">Request ID</th>
+                <th tal:repeat="ans anst" tal:content="ans"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr tal:repeat="ar ars">
+                <td class="requestid">
+                    <div class='barcode'
+                        data-code='code128'
+                        data-showHRI='false'
+                        data-barHeight='15'
+                        data-addQuietZone='true'
+                        tal:attributes="data-id ar/id"></div>
+                    <div class="arinfo">
+                    <a tal:attributes="href ar/client/url"
+                       tal:content="ar/client/name"></a><br/>
+                    <a tal:attributes="href ar/sample/sample_type/url"
+                       tal:content="ar/sample/sample_type/title"
+                       tal:condition="ar/sample/sample_type"></a><br/>
+                    <span tal:content="ar/date_received"></span>
+                    </div>
+                </td>
+                <tal:results repeat="ans anst">
+                    <td tal:attributes="class python:'result' if ans in [an['title'] for an in ar['analyses']] else 'result no-result';"><div>&nbsp;</div></td>
+                </tal:results>
+            </tr>
+        </tbody>
+    </table>
+</div>
+</tal:print>

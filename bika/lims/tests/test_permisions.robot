@@ -18,6 +18,8 @@ Suite Teardown   Close All Browsers
 Client Permisions on Published Results
     [Documentation]   Create an AR and then publish it. The client contacts will
     ...               be able to see the published files. Contacts from other clients NOT.
+    Log in                              test_labmanager         test_labmanager
+    Wait until page contains            You are now logged in
     ${ARId}=  Simple AR Creation  Happy Hills  Rita  Barley  Metals  Calcium
     Go to             ${PLONEURL}/clients/client-1/analysisrequests
     click link        ${ARId}
@@ -48,8 +50,3 @@ Client Permisions on Published Results
 
 *** Keywords ***
 
-Start browser
-    Open browser                        ${PLONEURL}/login_form  chrome
-    Log in                              test_labmanager         test_labmanager
-    Wait until page contains            You are now logged in
-    Set selenium speed                  ${SELENIUM_SPEED}

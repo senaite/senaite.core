@@ -27,10 +27,6 @@ Create AR with hidden attributes
 
 *** Keywords ***
 
-Start browser
-    Open browser                        ${PLONEURL}/login_form
-    Set selenium speed                  ${SELENIUM_SPEED}
-
 Hide Attributes
     Log in                      admin    secret
     Wait until page contains    You are now logged in

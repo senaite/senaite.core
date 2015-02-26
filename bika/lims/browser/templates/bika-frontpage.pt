@@ -1,0 +1,154 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+        metal:use-macro="here/main_template/macros/master"
+        i18n:domain="bika">
+
+<metal:content-title fill-slot="content-title">
+
+    <h1 class="documentFirstHeading" i18n:translate="bika-frontpage-title">
+        <img tal:attributes="src view/icon"/> Welcome to Bika LIMS
+        <span tal:replace="python:view.versions['bika.lims']" i18n:name="version"/>
+    </h1>
+
+</metal:content-title>
+
+<metal:content-description fill-slot="content-description">
+    <div class="documentDescription" i18n:translate="bika-frontpage-description">
+        The Bika LIMS workflow fits all lab disciplines, conforming to the ISO
+        17025 standard. Bika is Open Source, flexible and allows customisations
+        to your lab's specific requirements.
+    </div>
+</metal:content-description>
+
+
+<metal:content-core fill-slot="content-core">
+
+    <div style="margin-bottom:30px;margin-top:10px;border-top:1px solid #888;" class="center">
+
+        <p style="line-height:140%;font-size:1.2em;text-align:left;padding-bottom:15px;">
+
+        </p>
+
+        <img src="workflow-diagram.png"
+             alt="Bika LIMS"
+             class="image-inline"
+             title="Bika LIMS"/>
+
+    </div>
+
+    <div style="margin-bottom:30px;">
+
+        <div style="float:left;width:47%;">
+
+            <h2>The meaning of Gaob</h2>
+
+            <p>In the tradition of <i>Chief </i>Inkosi Bika LIMS 2 using a title
+                for
+                a release, this edition is code-named<i> </i>Gaob Bika LIMS 3.
+                Gaob,
+                <i>King,</i> is taken from
+                <a class="external-link" href="http://www.san.org.za/">
+                    Khoi San
+                </a> Nama, language of
+                <a class="external-link"
+                   href="http://www.independent.co.uk/news/science/worlds-most-ancient-race-traced-in-dna-study-1677113.html">
+                    the world's first people
+                </a>.
+            </p>
+
+            <h2>Documentation</h2>
+
+            <p>Work in progress:</p>
+
+            <ul>
+                <li>
+                    <a class="external-link"
+                       href="http://demo.bikalabs.com/knowledge-centre/manual/bika-3-user-manual">
+                        User Manual
+                    </a>
+                </li>
+                <li>
+                    <a class="external-link"
+                       href="http://github.com/bikalabs/Bika-LIMS/wiki">
+                        GitHub Wiki
+                    </a>
+                </li>
+            </ul>
+
+            <h2>Gaob Bika LIMS 3 installation</h2>
+
+            <p>Gaob Bika 3 installs easily. Follow the instructions in the
+                <a class="external-link"
+                   href="http://github.com/bikalabs/Bika-LIMS/wiki/Bika-LIMS-Installation">
+                    Installation Guide
+                </a> on the GitHub Wiki.
+            </p>
+
+        </div>
+        <div style="float:right;width:47%;">
+
+            <h2>Source code</h2>
+
+            <p>If you want to stay up to date with development, you can retrieve
+                the
+                source directly from the code repository for updates. It's the
+                recommended installation method for developers and users who
+                want to
+                test the latest version.</p>
+            <ul>
+                <li>
+                    <a class="external-link"
+                       href="https://github.com/bikalabs/Bika-LIMS/tree/develop">
+                        Source repository
+                    </a>
+                </li>
+            </ul>
+
+            <h2>Feedback and support</h2>
+
+            <p>Mailing Lists:</p>
+            <ul>
+                <li>
+                    <a class="external-link"
+                       href="https://groups.google.com/forum/?hl=en#%21forum/bika-design">LIMS
+                        design
+                    </a>
+                </li>
+                <li>
+                    <a class="external-link"
+                       href="http://lists.sourceforge.net/lists/listinfo/bika-users">Bika
+                        Users
+                    </a>
+                </li>
+                <li>
+                    <a class="external-link"
+                       href="http://lists.sourceforge.net/lists/listinfo/bika-developers">Bika
+                        Developers
+                    </a>
+                </li>
+            </ul>
+
+            <p>
+                <br/>
+                Issue Tracker:
+                <a class="external-link" href="https://jira.bikalabs.com">
+                    http://jira.bikalabs.com
+                </a>
+            </p>
+
+            <p>IRC:
+                <a class="chatzilla-link"
+                   href="http://webchat.freenode.net?channels=bika"
+                   id="ch-url-anchor">
+                    irc://freenode.net/#bika
+                </a>
+            </p>
+
+        </div>
+
+    </div>
+
+    <div style="clear:both"></div>
+</metal:content-core>
+
+
+</html>

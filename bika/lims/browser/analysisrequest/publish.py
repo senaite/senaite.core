@@ -76,8 +76,8 @@ class AnalysisRequestPublishView(BrowserView):
             templates = [tpl for tpl in templates_resource.listDirectory() if tpl.endswith('.pt')]
             for template in templates:
                 out.append({
-                    'id': '{}:{}'.format(prefix, template),
-                    'title': '{} ({})'.format(template[:-3], prefix),
+                    'id': '{0}:{1}'.format(prefix, template),
+                    'title': '{0} ({1})'.format(template[:-3], prefix),
                 })
         return out
 
@@ -140,7 +140,7 @@ class AnalysisRequestPublishView(BrowserView):
         if template.find(':') >= 0:
             prefix, template = template.split(':')
             resource = queryResourceDirectory('reports', prefix)
-            css = '{}.css'.format(template[:-3])
+            css = '{0}.css'.format(template[:-3])
             if css in resource.listDirectory():
                 content = resource.readFile(css)
         else:

@@ -172,7 +172,7 @@ Modify portal content,N,Y,Y,Y,N,N,N,Y,N,N,N,Y,N,N,N
 Id:,verified,,,,,,,,,,,,,,
 Title:,Verified,,,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,,,
-Transitions,publish,,,,,,,,,,,,,,
+Transitions,"publish, retract_ar",,,,,,,,,,,,,,
 Permissions,Acquire,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,Publisher,Reviewer,RegulatoryInspector,Owner,Client,Anonymous,Authenticated
 BIKA: Add Analysis,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Cancel and reinstate,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N

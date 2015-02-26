@@ -1,0 +1,90 @@
+.barcode-container {
+    width:100%;
+}
+div#header .barcode {
+    float: right;
+}
+div.worksheet {
+    font-size:0.8em;
+}
+div.worksheet a {
+    color:#000;
+    text-decoration:none;
+}
+div.worksheet h1 {
+    padding-top:15px;
+    font-size:1.7em;
+}
+div.subheader {
+    padding: 10px 0;
+}
+div.content {
+    padding:20px 0;
+    font-size:0.85em;
+    border-top:1px solid #333;
+}
+div.content table {
+}
+div.content table thead th.requestid,
+div.content table tbody th {
+    padding:0 5px 0 0;
+    text-align:left;
+    width:100px;
+}
+div.content table tbody td {
+    padding:4px 0;
+    border:1px solid #888;
+    text-align:center;
+}
+div.content table tbody td.result {
+    padding:15px;
+}
+div.content table tbody th.analyses {
+    padding:20px 0 10px 0;
+    font-size:1.2em;
+}
+div.content table tbody td.no-result {
+    padding:0;
+    border:1px solid #fff;
+}
+div.content table tbody td.no-result div {
+    position:relative;
+    overflow:hidden;
+    padding:15px;
+}
+div.content table tbody td.no-result div:before {
+    content:'';
+    display:block;
+    position:absolute;
+    top:0;
+    right:0;
+    left:0;
+    bottom:0;
+    border: 99999px #dcdcdc solid;
+    z-index: 0;
+}
+div.content table tbody td.no-result div * {
+    position: relative;
+    z-index: 1;
+}
+
+@media print {
+    div.worksheet {
+    }
+    div.barcode-container {
+        margin-left:-0.2in;
+    }
+    div.content table thead th {
+        text-align:center;
+    }
+    div.content table thead th.requestid {
+        text-align:left;
+    }
+    div.content table thead th.requestid,
+    div.content table tbody th {
+        white-space:normal;
+    }
+    div.content table div.barcode {
+        margin: 0 -10px;
+    }
+}

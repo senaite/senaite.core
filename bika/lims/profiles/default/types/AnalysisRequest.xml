@@ -106,6 +106,17 @@
      <permission value="BIKA: View Log Tab"/>
  </action>
 
+ <action title="Create Invoice"
+         action_id="Create Invoice"
+         category="document_actions"
+         condition_expr="python: context.REQUEST.get('verified','') and context.portal_workflow.getInfoFor(context,'review_state') in ['verified', 'published'] and not context.getInvoice()"
+         link_target=""
+         url_expr="string:${object_url}/invoice_create"
+         i18n:attributes="title"
+         visible="True">
+     <permission value="BIKA: Manage Invoices"/>
+ </action>
+
  <action title="Print"
          action_id="invoice_print"
          category="document_actions"
@@ -124,7 +135,7 @@
          condition_expr=""
          icon_expr="string:${object_url}/++resource++bika.lims.images/sticker_large.png"
          link_target=""
-         url_expr="string:${object_url}/sticker?size=large"
+         url_expr="string:${object_url}/sticker?template=bika.lims:sticker_large.pt"
          i18n:attributes="title"
          visible="True">
      <permission value="View"/>
@@ -136,7 +147,7 @@
          condition_expr=""
          icon_expr="string:${object_url}/++resource++bika.lims.images/sticker_small.png"
          link_target=""
-         url_expr="string:${object_url}/sticker?size=small"
+         url_expr="string:${object_url}/sticker?template=bika.lims:sticker_small.pt"
          i18n:attributes="title"
          visible="True">
      <permission value="View"/>

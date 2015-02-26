@@ -71,7 +71,6 @@
     <element value="QueryFolder"/>
     <element value="Supplier"/>
     <element value="SupplyOrder"/>
-    <element value="SupplyOrderItem"/>
     <element value="Preservation"/>
     <element value="ReferenceAnalysis"/>
     <element value="ReferenceDefinition"/>

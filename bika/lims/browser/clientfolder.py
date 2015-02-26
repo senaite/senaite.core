@@ -13,6 +13,8 @@ from plone.app.content.browser.interfaces import IFolderContentsView
 from bika.lims.browser import BrowserView
 from zope.interface import implements
 from Products.CMFCore import permissions
+from zope.component import getUtility
+from plone.registry.interfaces import IRegistry
 import plone,json
 
 
@@ -102,12 +104,17 @@ class ClientFolderContentsView(BikaListingView):
         self.filter_indexes = None
         self.contentsMethod = self.getClientList
         items = BikaListingView.folderitems(self)
+        registry = getUtility(IRegistry)
+        if 'bika.lims.client.default_landing_page' in registry:
+            landing_page = registry['bika.lims.client.default_landing_page']
+        else:
+            landing_page = 'analysisrequests'
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
 
-            items[x]['replace']['title'] = "<a href='%s'>%s</a>"%\
-                 (items[x]['url'], items[x]['title'])
+            items[x]['replace']['title'] = "<a href='%s/%s'>%s</a>"%\
+                 (items[x]['url'], landing_page.encode('ascii'), items[x]['title'])
 
             items[x]['EmailAddress'] = obj.getEmailAddress()
             items[x]['replace']['EmailAddress'] = "<a href='%s'>%s</a>"%\
@@ -124,11 +131,11 @@ class ajaxGetClients(BrowserView):
     """
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
-        searchTerm = self.request['searchTerm'].lower()
-        page = self.request['page']
-        nr_rows = self.request['rows']
-        sord = self.request['sord']
-        sidx = self.request['sidx']
+        searchTerm = self.request.get('searchTerm', '').lower()
+        page = self.request.get('page', 1)
+        nr_rows = self.request.get('rows', 20)
+        sord = self.request.get('sord', 'asc')
+        sidx = self.request.get('sidx', '')
         wf = getToolByName(self.context, 'portal_workflow')
 
         clients = (x.getObject() for x in self.portal_catalog(portal_type="Client",

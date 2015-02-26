@@ -32,6 +32,8 @@ allow_module('bika.lims.utils')
 allow_module('json')
 allow_module('pdb')
 allow_module('zope.i18n.locales')
+allow_module('zope.component')
+allow_module('plone.registry.interfaces')
 
 def initialize(context):
 
@@ -107,7 +109,6 @@ def initialize(context):
     from content.suppliercontact import SupplierContact
     from content.supplyorderfolder import SupplyOrderFolder
     from content.supplyorder import SupplyOrder
-    from content.supplyorderitem import SupplyOrderItem
     from content.worksheet import Worksheet
     from content.worksheetfolder import WorksheetFolder
     from content.worksheettemplate import WorksheetTemplate

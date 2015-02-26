@@ -30,24 +30,6 @@ def check_for_required_columns(name, data, required):
             raise Exception(t(message))
 
 
-def create_supply_order_item(context, product_title, quantity):
-    # Lookup the product
-    product = lookup(
-        context.bika_setup.bika_labproducts,
-        'LabProduct',
-        Title=product_title,
-    )
-    # Create an item in the supply order
-    obj = _createObjectByType('SupplyOrderItem', context, tmpID())
-    obj.edit(
-        Product=product,
-        Quantity=quantity,
-        Price=product.getPrice(),
-        VAT=product.getVAT(),
-    )
-    # Rename the new item
-    renameAfterCreation(obj)
-
 
 def Float(thing):
     try:
@@ -84,7 +66,16 @@ class WorksheetImporter:
         if self.worksheet:
             logger.info("Loading {0}.{1}: {2}".format(
                 self.dataset_project, self.dataset_name, self.sheetname))
-            self.Import()
+            try:
+                self.Import()
+            except IOError:
+                # The importer must omit the files not found inside the server filesystem (bika/lims/setupdata/test/
+                # if the file is loaded from 'select existing file' or bika/lims/setupdata/uploaded if it's loaded from
+                # 'Load from file') and finishes the import without errors. https://jira.bikalabs.com/browse/LIMS-1624
+                warning = "Error while loading attached file from %s. The file will not be uploaded into the system."
+                logger.warning(warning, self.sheetname)
+                self.context.plone_utils.addPortalMessage("Error while loading some attached files. "
+                                                          "The files weren't uploaded into the system.")
         else:
             logger.info("No records found: '{0}'".format(self.sheetname))
 
@@ -1536,8 +1527,8 @@ class Setup(WorksheetImporter):
             AnalysisAttachmentOption=values[
                 'AnalysisAttachmentOption'][0].lower(),
             DefaultSampleLifetime=DSL,
-            AutoPrintLabels=values['AutoPrintLabels'].lower(),
-            AutoLabelSize=values['AutoLabelSize'].lower(),
+            AutoPrintStickers=values.get('AutoPrintStickers','receive').lower(),
+            AutoStickerTemplate=values.get('AutoStickerTemplate', 'bika.lims:sticker_small.pt').lower(),
             YearInPrefix=self.to_bool(values['YearInPrefix']),
             SampleIDPadding=int(values['SampleIDPadding']),
             ARIDPadding=int(values['ARIDPadding']),
@@ -1879,34 +1870,5 @@ class AR_Priorities(WorksheetImporter):
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
 
-
-class Supply_Orders(WorksheetImporter):
-
-    def Import(self):
-        context = self.context
-        # Iterate through the rows
-        for row in self.get_rows(3):
-            # Check for required columns
-            check_for_required_columns('SupplyOrder', row, [
-                'order_date',
-                'client_title',
-                'product_title',
-                'product_quantity',
-            ])
-            # Get the folder that should contain the template
-            client_title = row['client_title']
-            folder = lookup(context, 'Client', getName=client_title)
-            # Create the SRTemplate object
-            obj = _createObjectByType('SupplyOrder', folder, tmpID())
-            # Apply the row values
-            obj.edit(
-                OrderDate=row['order_date'],
-            )
-            # Rename the new object
-            renameAfterCreation(obj)
-            # Add an item
-            create_supply_order_item(
-                obj, row['product_title'], row['product_quantity']
-            )
 
 

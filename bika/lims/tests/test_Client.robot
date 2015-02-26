@@ -141,10 +141,6 @@ Add AR Template
 
 *** Keywords ***
 
-Start browser
-    Open browser        ${PLONEURL}/login_form
-    Set selenium speed  ${SELENIUM_SPEED}
-
 New client
     Go to                       ${PLONEURL}/clients
     Click link                  Add

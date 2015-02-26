@@ -17,7 +17,7 @@ class SamplesView(_SV):
 
     def contentsMethod(self, contentFilter):
         tool = getToolByName(self.context, self.catalog)
-        state = [x for x in self.review_states if x['id'] == self.review_state][0]
+        state = [x for x in self.review_states if x['id'] == self.review_state['id']][0]
         for k, v in state['contentFilter'].items():
             self.contentFilter[k] = v
         tool_samples = tool(contentFilter)

@@ -84,11 +84,9 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
     BooleanField('DisposeUntilNextCalibrationTest',
         default = False,
         widget = BooleanWidget(
-            label=_("Dispose until next calibration test"),
-            description = _("If checked, the instrument will not be "
-                            "available until the next valid calibration "
-                            "test being performed. This checkbox will "
-                            "be automatically unchecked too."),
+            label=_("De-activate until next calibration test"),
+            description=_("If checked, the instrument will be unavailable until the next valid "
+                          "calibration was performed. This checkbox will automatically be unchecked."),
         ),
     ),
 
@@ -186,10 +184,12 @@ def getDataInterfaces(context):
     """ Return the current list of data interfaces
     """
     from bika.lims.exportimport import instruments
-    exims = [('', t(_('None')))]
+    exims = []
     for exim_id in instruments.__all__:
         exim = instruments.getExim(exim_id)
         exims.append((exim_id, exim.title))
+    exims.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
+    exims.insert(0, ('', t(_('None'))))
     return DisplayList(exims)
 
 def getMaintenanceTypes(context):

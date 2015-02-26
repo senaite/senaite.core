@@ -27,6 +27,8 @@ Import a slk Beads file
     [Documentation]  Firts we have to create the AS to match the
     ...              analysis in the file. Then we have to create the AR
     ...              and tranistion it. Finally qe can import the results.
+    Log in                              test_labmanager         test_labmanager
+    Wait until page contains            You are now logged in
     ${PATH_TO_TEST} =           run keyword   resource_filename
     Create Analysis Service  ${ASId1}  ${ASTitle1}
     ${ar_id}=                Create an AR  ${ASTitle1}  ${ClientSampleId1}
@@ -39,6 +41,8 @@ Import a slk CD4 file
     [Documentation]  Firts we have to create the AS to match the
     ...              analysis in the file. Then we have to create the AR
     ...              and tranistion it. Finally qe can import the results.
+    Log in                              test_labmanager         test_labmanager
+    Wait until page contains            You are now logged in
     ${PATH_TO_TEST} =           run keyword   resource_filename
     Create Analysis Service  ${ASId2}  ${ASTitle2}
     ${ar_id}=                Create an AR  ${ASTitle2}  ${ClientSampleId2}
@@ -49,12 +53,6 @@ Import a slk CD4 file
 
 
 *** Keywords ***
-
-Start browser
-    Open browser                        ${PLONEURL}/login_form  chrome
-    Log in                              test_labmanager         test_labmanager
-    Wait until page contains            You are now logged in
-    Set selenium speed                  ${SELENIUM_SPEED}
 
 Create Analysis Service
    [Documentation]  Create an AS using the ID ASId
