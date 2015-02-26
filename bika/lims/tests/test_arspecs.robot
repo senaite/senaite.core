@@ -173,4 +173,3 @@ when selecting a Spec it should be set on the AR.
     # Page should contain element         xpath=.//a[@href='http://localhost:55001/plone/bika_setup/bika_analysisspecs/analysisspec-9']
 
 *** Keywords ***
-
