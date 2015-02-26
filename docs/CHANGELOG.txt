@@ -1,5 +1,6 @@
 3.1.7 (2015-02-26)
 ------------------
+LIMS-1693: Error trying to save a new AR
 LIMS-1570: Instrument interface: Roche Cobas Taqman 48
 LIMS-1520: Allow to invalidate verified ARs
 LIMS-1690: Typo. Instrument page

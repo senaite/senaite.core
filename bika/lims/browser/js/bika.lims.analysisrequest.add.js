@@ -197,11 +197,16 @@ function AnalysisRequestAddView() {
 				// Update the #specs value.
 				var element = $("#specs");
 				var form_rr = $.parseJSON($(element).val());
-				form_rr[column] = data.objects[0]['ResultsRange'];
+                // If The Analysis Specification doesn't have results range, the form_rr[column]
+                // should be a void dictionary
+                if (data.objects[0]['ResultsRange'].length == 0) {
+                    form_rr[column] = {};
+                }
+                else {
+                    form_rr[column] = data.objects[0]['ResultsRange'];
+                }
 				$(element).val($.toJSON(form_rr));
-
 				_set_specs(column)
-
 			}
 		});
 	}
