@@ -19,6 +19,7 @@ ${ar_factory_url}  portal_factory/AnalysisRequest/xxx/ar_add
 
 Check that the editable SamplePoint widget in AnalysisRequestView shows both Client and Lab items
     # Create a new Client/SamplePoint
+    Disable Print Page
     go to                        ${PLONEURL}/clients/client-1/portal_factory/SamplePoint/xxx/edit
     input text                   title                             Pringle Bay Beach
     click button                 Save
@@ -44,6 +45,7 @@ Check that the editable SamplePoint widget in AnalysisRequestView shows both Cli
 
 Check the AR Add javascript
    # check that the Contact CC auto-fills correctly when a contact is selected
+    Disable Print Page
     Go to                     ${PLONEURL}/clients/client-1
     Wait until page contains  Happy
     Click Link                Add
@@ -70,7 +72,7 @@ Check the AR Add javascript
 # XXX copy across in all fields
 
 Analysis Request with no sampling or preservation workflow
-
+    Disable Print Page
     Go to                     ${PLONEURL}/clients/client-1
     Click Link                Add
     ${ar_id}=                 Complete ar_add form with template Bore
@@ -95,6 +97,7 @@ Analysis Request with no sampling or preservation workflow
 
 
 Create two different ARs from the same sample.
+    Disable Print Page
     Create AR in client-1 with contact Rita
     Create Secondary AR
     In a client context, only allow selecting samples from that client.
@@ -105,6 +108,7 @@ AR with sampling workflow actived and preservation workflow desactived
     ...  workflow, but more things should be tested, like transitions from
     ...  button (both, SamplePartition and Analysis), etc
 
+    Disable Print Page
     Enable Sampling Workflow
     ${ar_id}=           Create Simple AR
     Click Link          ${ar_id}
@@ -127,6 +131,7 @@ AR with sampling workflow actived and preservation workflow actived
     ...  workflow, but more things should be tested, like transitions from
     ...  button (both, SamplePartition and Analysis), etc
 
+    Disable Print Page
     Enable Sampling Workflow
     ${ar_id}=           Create Simple AR
     Click Link          ${ar_id}
@@ -154,7 +159,7 @@ AR with sampling workflow actived and preservation workflow actived
 *** Keywords ***
 
 Start browser
-    Open browser                        ${PLONEURL}/login_form
+    Open browser                        ${PLONEURL}/login_form  chrome
     Log in                              test_labmanager         test_labmanager
     Wait until page contains            You are now logged in
     Set selenium speed                  ${SELENIUM_SPEED}
