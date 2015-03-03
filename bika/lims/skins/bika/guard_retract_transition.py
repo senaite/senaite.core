@@ -8,7 +8,7 @@
 ##title=
 ##
 
-from bika.lims import Retract
+from bika.lims.permissions import Retract
 
 workflow = context.portal_workflow
 checkPermission = context.portal_membership.checkPermission
