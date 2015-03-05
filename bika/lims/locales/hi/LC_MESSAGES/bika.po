@@ -2404,11 +2404,11 @@ msgid "If this container is pre-preserved, then the preservation method could be
 msgstr ""
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 94
-msgid "If unticked, analysts and lab clerks will be able to manage Worksheets, too. If the users have restricted access only to those worksheets for which they are assigned, this option will be ticked and readonly."
+msgid "If unchecked, analysts and lab clerks will be able to manage Worksheets, too. If the users have restricted access only to those worksheets for which they are assigned, this option will be checked and readonly."
 msgstr ""
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 85
-msgid "If unticked, analysts will have access to all worksheets."
+msgid "If unchecked, analysts will have access to all worksheets."
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/arimports.py, line: 93

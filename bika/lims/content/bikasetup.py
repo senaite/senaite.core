@@ -80,7 +80,7 @@ schema = BikaFolderSchema.copy() + Schema((
         default=True,
         widget=BooleanWidget(
             label=_("Allow access to worksheets only to assigned analysts"),
-            description=_("If unticked, analysts will have access to all worksheets.")
+            description=_("If unchecked, analysts will have access to all worksheets.")
         )
     ),
     BooleanField(
@@ -89,11 +89,11 @@ schema = BikaFolderSchema.copy() + Schema((
         default=True,
         widget=BooleanWidget(
             label=_("Only lab managers can create and manage worksheets"),
-            description=_("If unticked, analysts and lab clerks will "
+            description=_("If unchecked, analysts and lab clerks will "
                           "be able to manage Worksheets, too. If the "
                           "users have restricted access only to those "
                           "worksheets for which they are assigned, "
-                          "this option will be ticked and readonly.")
+                          "this option will be checked and readonly.")
         )
     ),
     BooleanField(
