@@ -9,4 +9,12 @@
       provides="bika.lims.interfaces.IJSONReadExtender"
     />
 
+    <browser:page
+      for="bika.lims.interfaces.IARTemplate"
+      name="artemplate_analysesview"
+      class="bika.lims.browser.widgets.artemplateanalyseswidget.ARTemplateAnalysesView"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
 </configure>

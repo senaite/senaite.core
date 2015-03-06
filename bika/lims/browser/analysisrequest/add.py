@@ -446,7 +446,7 @@ class ajaxServiceSelectorVocabulary(object):
         catalog = getToolByName(self.context, 'bika_setup_catalog')
         # Creative/Crazy catalog searching for quickly finding
         # items from different types of IDs stored in the KeywordIndex.
-        # see bika.lims/bika/lims/adapters/identifiers.py:IdentifiersIndexer
+        # see bika.lims/bika/lims/adapters/identifiers.py:IdentifiersIndwexer
         clean_searchTerm = re.sub('\W', '_', searchTerm).lower()
         query = Eq('portal_type', 'AnalysisService') & Or(
             MatchGlob('SearchableText', '*%s*' % searchTerm),
