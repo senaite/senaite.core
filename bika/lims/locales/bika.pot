@@ -2312,13 +2312,13 @@ msgstr ""
 #
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 95
 msgid ""
-"If unticked, analysts and lab clerks will be able to manage Worksheets, too. "
+"If unchecked, analysts and lab clerks will be able to manage Worksheets, too. "
 "If the users have restricted access only to those worksheets for which they "
-"are assigned, this option will be ticked and readonly."
+"are assigned, this option will be checked and readonly."
 msgstr ""
 #
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 86
-msgid "If unticked, analysts will have access to all worksheets."
+msgid "If unchecked, analysts will have access to all worksheets."
 msgstr ""
 #
 # File: bika.lims/bika/lims/browser/arimports.py, line: 93
