@@ -1,5 +1,5 @@
-3.2 (develop - unreleased)
---------------------------
+3.2 (2015-03-07)
+----------------
 LIMS-1675 WorkOrder tabs not showing when its WorkSheets tab is open
 LIMS-1674 AR create inside WorkOrders does not save
 LIMS-1669 Worksheet lists and creation inside Batches/WorkOrders
