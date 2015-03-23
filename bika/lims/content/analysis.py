@@ -592,7 +592,7 @@ class Analysis(BaseContent):
         try:
             result = float(result)
         except:
-            return result
+            return formatDecimalMark(result, decimalmark=decimalmark)
 
         # 3. If the analysis specs has enabled hidemin or hidemax and the
         #    result is out of range, render result as '<min' or '>max'
