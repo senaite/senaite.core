@@ -319,9 +319,8 @@ class Analysis(BaseContent):
             if len(proxies) == 0:
                 # No client specs available, retrieve lab specs
                 labspecsuid = self.bika_setup.bika_analysisspecs.UID()
-                proxies = bsc(portal_type='AnalysisSpec',
-                              getSampleTypeUID=sampletype_uid,
-                              getClientUID=labspecsuid)
+                proxies = bsc(portal_type = 'AnalysisSpec',
+                          getSampleTypeUID = sampletype_uid)
         else:
             specuid = specification == "client" and self.getClientUID() or \
                     self.bika_setup.bika_analysisspecs.UID()
@@ -329,7 +328,13 @@ class Analysis(BaseContent):
                               getSampleTypeUID=sampletype_uid,
                               getClientUID=specuid)
 
-        return (proxies and len(proxies) > 0) and proxies[0].getObject() or None
+        outspecs = None
+        for spec in (p.getObject() for p in proxies):
+            if self.getKeyword() in spec.getResultsRangeDict():
+                outspecs = spec
+                break
+
+        return outspecs
 
     def calculateResult(self, override=False, cascade=False):
         """ Calculates the result for the current analysis if it depends of
