@@ -614,10 +614,12 @@ function AnalysisRequestAddView() {
 	function add_path_filter_to_spec_lookups(){
 		for (var col=0; col<parseInt($("#col_count").val(), 10); col++) {
 			var element = $("#ar_"+col+"_Specification");
-			var bq = $.parseJSON($(element).attr("base_query"));
-			bq.path = [$("#bika_setup").attr("bika_analysisspecs_path"),
-					   $("#PhysicalPath").attr("here")];
-			$(element).attr("base_query", $.toJSON(bq));
+            if (element.length > 0) {
+                var bq = $.parseJSON($(element).attr("base_query"));
+                bq.path = [$("#bika_setup").attr("bika_analysisspecs_path"),
+                    $("#PhysicalPath").attr("here")];
+                $(element).attr("base_query", $.toJSON(bq));
+            }
 		}
 	}
 
