@@ -181,10 +181,13 @@ def formatDecimalMark(value, decimalmark='.'):
         thousand mark.
     """
     rawval = value
-    if decimalmark == ',':
-        rawval = rawval.replace('.', '[comma]')
-        rawval = rawval.replace(',', '.')
-        rawval = rawval.replace('[comma]', ',')
+    try:
+        if decimalmark == ',':
+            rawval = rawval.replace('.', '[comma]')
+            rawval = rawval.replace(',', '.')
+            rawval = rawval.replace('[comma]', ',')
+    except:
+        pass
     return rawval
 
 
