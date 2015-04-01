@@ -156,6 +156,17 @@ function AnalysisRequestViewView() {
         $("#archetypes-fieldname-Remarks").before(box);
         $("#archetypes-fieldname-ResultsInterpretation").before("<label id='label_resultsinterpretation'></label>");
         $("#label_resultsinterpretation").prepend(label);
+        elem.remove();
+
+            //Move the widget to the bottom of the page
+        elem = $("#archetypes-fieldname-ResultsInterpretationDepts").closest("td").closest("tr");
+        label = elem.children()[0];
+        box= elem.children()[1];
+        box = $(box).children();
+        $("#archetypes-fieldname-Remarks").before(box);
+        $("#archetypes-fieldname-ResultsInterpretationDepts").before("<label id='label_resultsinterpretationdepts'></label>");
+        $("#label_resultsinterpretationdepts").prepend(label);
+        elem.remove();
     }
 
     function filter_CCContacts(){
