@@ -1,5 +1,6 @@
 3.1.8 (unreleased)
 ------------------
+LIMS-1628: There should be a results interpretation field per lab department
 LIMS-1696: Decimal mark conversion is not working with "<0,002" results type
 LIMS-1729: Analysis Specification Not applying to Sample when Selected
 LIMS-1507: Do not cause exception on SMTPServerDisconnect when publishing AR results.
