@@ -1163,4 +1163,11 @@ a.print_button,
 #content div.arresultsinterpretation-container div.department-area {
     padding-top:15px;
 }
+#content div.arresultsinterpretation-container .fieldTextFormat,
+#content div.arresultsinterpretation-container .mceButton.mce_image,
+#content div.arresultsinterpretation-container .mceButton.mce_code,
+#content div.arresultsinterpretation-container .mceButton.mce_save, {
+    display:none;
+}
+
 </dtml-with>

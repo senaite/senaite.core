@@ -24,7 +24,6 @@ from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.widgets import DateTimeWidget, DecimalWidget
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.browser.widgets import SelectionWidget
-from bika.lims.browser.widgets import ARResultsInterpretationWidget
 from bika.lims.workflow import skip, isBasicTransitionAllowed
 from bika.lims.workflow import doActionFor
 from decimal import Decimal
@@ -1249,7 +1248,7 @@ schema = BikaSchema.copy() + Schema((
                      'richtext'),
         subfield_labels = {'uid': _('Department'),
                            'richtext': _('Results Interpreation'),},
-        widget = ARResultsInterpretationWidget(visible=False),
+        widget = RichWidget(visible=False),
     ),
 )
 )
