@@ -248,6 +248,15 @@ class AnalysisRequestPublishView(BrowserView):
                           'url': portal.absolute_url()}
         data['laboratory'] = self._lab_data()
 
+        #results interpretation
+        ri = {}
+        if (ar.getResultsInterpretationByDepartment(None)):
+            ri[''] = ar.getResultsInterpretationByDepartment(None)
+        depts = ar.getDepartments()
+        for dept in depts:
+            ri[dept.Title()] = ar.getResultsInterpretationByDepartment(dept)
+        data['resultsinterpretationdepts'] = ri
+
         return data
 
     def _batch_data(self, ar):

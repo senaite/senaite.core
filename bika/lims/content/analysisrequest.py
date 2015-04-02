@@ -2033,10 +2033,6 @@ class AnalysisRequest(BaseFolder):
             row = {'uid': uid, 'richtext': ''};
         return row
 
-    def setResultsInterpretation(self, value):
-        import pdb;pdb.set_trace()
-        rows = self.Schema()['ResultsInterpretationDepts'].get(self)
-
     def guard_unassign_transition(self):
         """Allow or disallow transition depending on our children's states
         """
