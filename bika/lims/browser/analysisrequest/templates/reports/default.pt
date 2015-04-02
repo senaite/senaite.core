@@ -259,9 +259,17 @@
         </tal:poc>
     </table>
 </div>
-<div id="resultsinterpretation" tal:condition="analysisrequest/resultsinterpretation">
+<div id="resultsinterpretation"
+    tal:define="ri analysisrequest/resultsinterpretationdepts"
+    tal:condition="ri">
     <h1 i18n:translate="">Result interpretation</h1>
-    <span tal:content="structure analysisrequest/resultsinterpretation"></span>
+    <tal:ris repeat="rid python:ri.keys()">
+        <h2 tal:content="rid"></h2>
+        <div>
+            <div tal:content="structure python:ri.get(rid,{}).get('richtext','')"></div>
+        </div>
+        <p>&nbsp;</p>
+    </tal:ris>
 </div>
 <!-- QC Results section -->
 <div id="section-qcresults" tal:condition="python:hasqcanalyses and showqcanalyses">

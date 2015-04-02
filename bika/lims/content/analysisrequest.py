@@ -1220,7 +1220,10 @@ schema = BikaSchema.copy() + Schema((
             showOn=True,
         ),
     ),
+
     # For comments or results interpretation
+    # Old one, to be removed because of the incorporation of
+    # ResultsInterpretationDepts (due to LIMS-1628)
     TextField(
         'ResultsInterpretation',
         searchable=True,
@@ -1238,24 +1241,14 @@ schema = BikaSchema.copy() + Schema((
             default_mime_type='text/x-rst',
             output_mime_type='text/x-html',
             rows=3,
-            visible={'edit': 'visible',
-                     'view': 'visible',
-                     'add': 'invisible',
-                     'header_table': 'prominent',
-                     'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'invisible'},
-                     'to_be_sampled':     {'view': 'visible', 'edit': 'visible'},
-                     'sampled':           {'view': 'visible', 'edit': 'visible'},
-                     'to_be_preserved':   {'view': 'visible', 'edit': 'visible'},
-                     'sample_due':        {'view': 'visible', 'edit': 'visible'},
-                     'sample_received':   {'view': 'visible', 'edit': 'visible'},
-                     'attachment_due':    {'view': 'visible', 'edit': 'visible'},
-                     'to_be_verified':    {'view': 'visible', 'edit': 'visible'},
-                     'verified':          {'view': 'visible', 'edit': 'visible'},
-                     'published':         {'view': 'visible', 'edit': 'invisible'},
-                     'invalid':           {'view': 'visible', 'edit': 'invisible'},
-                     },
-                render_own_label=True,
-        ),
+            visible=False),
+    ),
+    RecordsField('ResultsInterpretationDepts',
+        subfields = ('uid',
+                     'richtext'),
+        subfield_labels = {'uid': _('Department'),
+                           'richtext': _('Results Interpreation'),},
+        widget = RichWidget(visible=False),
     ),
 )
 )
@@ -1275,6 +1268,7 @@ schema['title'].widget.visible = {
 
 schema.moveField('Client', before='Contact')
 schema.moveField('ResultsInterpretation', pos='bottom')
+schema.moveField('ResultsInterpretationDepts', pos='bottom')
 
 class AnalysisRequest(BaseFolder):
     implements(IAnalysisRequest)
@@ -2007,6 +2001,36 @@ class AnalysisRequest(BaseFolder):
 
     def getSamplers(self):
         return getUsers(self, ['LabManager', 'Sampler'])
+
+    def getDepartments(self):
+        """ Returns a set with the departments assigned to the Analyses
+            from this Analysis Request
+        """
+        ans = [an.getObject() for an in self.getAnalyses()]
+        depts = [an.getService().getDepartment() for an in ans]
+        return set(depts)
+
+    def getResultsInterpretationByDepartment(self, department=None):
+        """ Returns the results interpretation for this Analysis Request
+            and department. If department not set, returns the results
+            interpretation tagged as 'General'.
+
+            Returns a dict with the following keys:
+            {'uid': <department_uid> or 'general',
+             'richtext': <text/plain>}
+        """
+        uid = department.UID() if department else 'general'
+        rows = self.Schema()['ResultsInterpretationDepts'].get(self)
+        row = [row for row in rows if row.get('uid') == uid]
+        if len(row) > 0:
+            row = row[0]
+        elif uid=='general' \
+            and hasattr(self, 'getResultsInterpretation') \
+            and self.getResultsInterpretation():
+            row = {'uid': uid, 'richtext': self.getResultsInterpretation()}
+        else:
+            row = {'uid': uid, 'richtext': ''};
+        return row
 
     def guard_unassign_transition(self):
         """Allow or disallow transition depending on our children's states
