@@ -135,14 +135,16 @@ class AnalysesView(BikaListingView):
                                            expand_all_categories=True)
 
     def get_analysis_spec(self, analysis):
-        keyword = analysis.getService().getKeyword()
-        uid = analysis.UID()
+        if hasattr(analysis, 'getResultsRange'):
+            return analysis.getResultsRange()
         if hasattr(analysis.aq_parent, 'getResultsRange'):
             rr = dicts_to_dict(analysis.aq_parent.getResultsRange(), 'keyword')
             return rr.get(analysis.getKeyword(), None)
         if hasattr(analysis.aq_parent, 'getReferenceResults'):
             rr = dicts_to_dict(analysis.aq_parent.getReferenceResults(), 'uid')
             return rr.get(analysis.UID(), None)
+        keyword = analysis.getService().getKeyword()
+        uid = analysis.UID()
         return {'keyword':keyword, 'uid':uid, 'min':'', 'max':'', 'error':''}
 
     def ResultOutOfRange(self, analysis):
@@ -368,52 +370,18 @@ class AnalysesView(BikaListingView):
                 items[i]['st_uid'] = obj.aq_parent.UID()
                 items[i]['table_row_class'] = ' '.join([tblrowclass, 'qc-analysis']);
             else:
+                sample = None
                 if self.context.portal_type == 'AnalysisRequest':
                     sample = self.context.getSample()
-                    st_uid = sample.getSampleType().UID()
-                    items[i]['st_uid'] = st_uid
-                    if st_uid not in self.specs:
-                        proxies = bsc(portal_type = 'AnalysisSpec',
-                                      getSampleTypeUID = st_uid)
-                elif self.context.portal_type == "Worksheet":
-                    if obj.portal_type == "DuplicateAnalysis":
-                        sample = obj.getAnalysis().getSample()
-                    elif obj.portal_type == "RejectAnalysis":
+                elif self.context.portal_type == 'Worksheet':
+                    if obj.portal_type in ('DuplicateAnalysis', 'RejectAnalysis'):
                         sample = obj.getAnalysis().getSample()
                     else:
                         sample = obj.aq_parent.getSample()
-                    st_uid = sample.getSampleType().UID()
-                    items[i]['st_uid'] = st_uid
-                    if st_uid not in self.specs:
-                        proxies = bsc(portal_type = 'AnalysisSpec',
-                                      getSampleTypeUID = st_uid)
                 elif self.context.portal_type == 'Sample':
-                    st_uid = self.context.getSampleType().UID()
-                    items[i]['st_uid'] = st_uid
-                    if st_uid not in self.specs:
-                        proxies = bsc(portal_type = 'AnalysisSpec',
-                                      getSampleTypeUID = st_uid)
-                else:
-                    proxies = []
-                if st_uid not in self.specs:
-                    for spec in (p.getObject() for p in proxies):
-                        if spec.getClientUID() == obj.getClientUID():
-                            client_or_lab = 'client'
-                        elif spec.getClientUID() == self.context.bika_setup.bika_analysisspecs.UID():
-                            client_or_lab = 'lab'
-                        else:
-                            continue
-                        for keyword, results_range in \
-                            spec.getResultsRangeDict().items():
-                            # hidden form field 'specs' keyed by sampletype uid:
-                            # {st_uid: {'lab/client':{keyword:{min,max,error}}}}
-                            if st_uid in self.specs:
-                                if client_or_lab in self.specs[st_uid]:
-                                    self.specs[st_uid][client_or_lab][keyword] = results_range
-                                else:
-                                    self.specs[st_uid][client_or_lab] = {keyword: results_range}
-                            else:
-                                self.specs[st_uid] = {client_or_lab: {keyword: results_range}}
+                    sample = self
+                st_uid = sample.getSampleType().UID() if sample else ''
+                items[i]['st_uid'] = st_uid
 
             if checkPermission(ManageBika, self.context):
                 service_uid = service.UID()
