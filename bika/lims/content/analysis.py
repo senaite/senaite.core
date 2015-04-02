@@ -293,6 +293,37 @@ class Analysis(BaseContent):
             return self.getAnalysis().aq_parent.getSample()
         return self.aq_parent.getSample()
 
+    def getResultsRange(self, specification=None):
+        """ Returns the valid results range for this analysis, a
+            dictionary with the following keys: 'keyword', 'uid', 'min',
+            'max', 'error', 'hidemin', 'hidemax', 'rangecomment'
+            Allowed values for specification='ar', 'client', 'lab', None
+            If specification is None, the following is the priority to
+            get the results range: AR > Client > Lab
+            If no specification available for this analysis, returns {}
+        """
+        rr = {}
+        an = self
+        while an and an.portal_type in ('DuplicateAnalysis', 'RejectAnalysis'):
+            an = an.getAnalysis()
+
+        if specification == 'ar' or specification is None:
+            if an.aq_parent and an.aq_parent.portal_type == 'AnalysisRequest':
+                key = an.getKeyword()
+                rr = an.aq_parent.getResultsRange()
+                rr = [r for r in rr if r.get('keyword', '') == an.getKeyword()]
+                rr = rr[0] if rr and len(rr) > 0 else {}
+            if specification == 'ar' or rr:
+                rr['uid'] = self.UID()
+                return rr
+
+        specs = an.getAnalysisSpecs(specification)
+        rr = specs.getResultsRangeDict()
+        rr = rr.get(an.getKeyword(), {}) if rr else {}
+        if rr:
+            rr['uid'] = self.UID()
+        return rr
+
     def getAnalysisSpecs(self, specification=None):
         """ Retrieves the analysis specs to be applied to this analysis.
             Allowed values for specification= 'client', 'lab', None
@@ -300,6 +331,7 @@ class Analysis(BaseContent):
             lab specification.
             If no specification available for this analysis, returns None
         """
+
         sample = self.getSample()
 
         # No specifications available for ReferenceSamples
@@ -319,9 +351,8 @@ class Analysis(BaseContent):
             if len(proxies) == 0:
                 # No client specs available, retrieve lab specs
                 labspecsuid = self.bika_setup.bika_analysisspecs.UID()
-                proxies = bsc(portal_type='AnalysisSpec',
-                              getSampleTypeUID=sampletype_uid,
-                              getClientUID=labspecsuid)
+                proxies = bsc(portal_type = 'AnalysisSpec',
+                          getSampleTypeUID = sampletype_uid)
         else:
             specuid = specification == "client" and self.getClientUID() or \
                     self.bika_setup.bika_analysisspecs.UID()
@@ -329,7 +360,13 @@ class Analysis(BaseContent):
                               getSampleTypeUID=sampletype_uid,
                               getClientUID=specuid)
 
-        return (proxies and len(proxies) > 0) and proxies[0].getObject() or None
+        outspecs = None
+        for spec in (p.getObject() for p in proxies):
+            if self.getKeyword() in spec.getResultsRangeDict():
+                outspecs = spec
+                break
+
+        return outspecs
 
     def calculateResult(self, override=False, cascade=False):
         """ Calculates the result for the current analysis if it depends of
@@ -598,10 +635,7 @@ class Analysis(BaseContent):
         #    result is out of range, render result as '<min' or '>max'
         belowmin = False
         abovemax = False
-        if not specs:
-            specs = self.getAnalysisSpecs()
-            specs = specs.getResultsRangeDict() if specs is not None else {}
-            specs = specs.get(self.getKeyword(), {})
+        specs = specs if specs else self.getResultsRange()
         hidemin = specs.get('hidemin', '')
         hidemax = specs.get('hidemax', '')
         try:
