@@ -1221,7 +1221,10 @@ schema = BikaSchema.copy() + Schema((
             showOn=True,
         ),
     ),
+
     # For comments or results interpretation
+    # Old one, to be removed because of the incorporation of
+    # ResultsInterpretationDepts (due to LIMS-1628)
     TextField(
         'ResultsInterpretation',
         searchable=True,
@@ -1239,67 +1242,15 @@ schema = BikaSchema.copy() + Schema((
             default_mime_type='text/x-rst',
             output_mime_type='text/x-html',
             rows=3,
-            visible={'edit': 'visible',
-                     'view': 'visible',
-                     'add': 'invisible',
-                     'header_table': 'prominent',
-                     'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'invisible'},
-                     'to_be_sampled':     {'view': 'visible', 'edit': 'visible'},
-                     'sampled':           {'view': 'visible', 'edit': 'visible'},
-                     'to_be_preserved':   {'view': 'visible', 'edit': 'visible'},
-                     'sample_due':        {'view': 'visible', 'edit': 'visible'},
-                     'sample_received':   {'view': 'visible', 'edit': 'visible'},
-                     'attachment_due':    {'view': 'visible', 'edit': 'visible'},
-                     'to_be_verified':    {'view': 'visible', 'edit': 'visible'},
-                     'verified':          {'view': 'visible', 'edit': 'visible'},
-                     'published':         {'view': 'visible', 'edit': 'invisible'},
-                     'invalid':           {'view': 'visible', 'edit': 'invisible'},
-                     },
-                render_own_label=True,
-        ),
+            visible=False),
     ),
-
-
     RecordsField('ResultsInterpretationDepts',
-        subfields = ('department_uid',
-                     'richtext',
-                     'datetime',
-                     'userid',
-                     'historylog'),
-        subfield_labels = {'department_uid': _('Department'),
-                           'richtext': _('Results Interpreation'),
-                           'datetime': _('Date/Time'),
-                           'userid': _('User'),
-                           'historylog': _('History'),},
-        widget = ARResultsInterpretationWidget(
-            label = _("Results Interpretation"),
-            description = _("Comments or results interpretation"),
-            rows=3,
-            size=10,
-            allow_file_upload=False,
-            default_mime_type='text/x-rst',
-            output_mime_type='text/x-html',
-            visible={'edit': 'visible',
-                     'view': 'visible',
-                     'add': 'invisible',
-                     'header_table': 'prominent',
-                     'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'invisible'},
-                     'to_be_sampled':     {'view': 'visible', 'edit': 'visible'},
-                     'sampled':           {'view': 'visible', 'edit': 'visible'},
-                     'to_be_preserved':   {'view': 'visible', 'edit': 'visible'},
-                     'sample_due':        {'view': 'visible', 'edit': 'visible'},
-                     'sample_received':   {'view': 'visible', 'edit': 'visible'},
-                     'attachment_due':    {'view': 'visible', 'edit': 'visible'},
-                     'to_be_verified':    {'view': 'visible', 'edit': 'visible'},
-                     'verified':          {'view': 'visible', 'edit': 'visible'},
-                     'published':         {'view': 'visible', 'edit': 'invisible'},
-                     'invalid':           {'view': 'visible', 'edit': 'invisible'},
-                    },
-                render_own_label=True,
-        ),
+        subfields = ('uid',
+                     'richtext'),
+        subfield_labels = {'uid': _('Department'),
+                           'richtext': _('Results Interpreation'),},
+        widget = ARResultsInterpretationWidget(visible=False),
     ),
-
-
 )
 )
 
@@ -2059,6 +2010,32 @@ class AnalysisRequest(BaseFolder):
         ans = [an.getObject() for an in self.getAnalyses()]
         depts = [an.getService().getDepartment() for an in ans]
         return set(depts)
+
+    def getResultsInterpretationByDepartment(self, department=None):
+        """ Returns the results interpretation for this Analysis Request
+            and department. If department not set, returns the results
+            interpretation tagged as 'General'.
+
+            Returns a dict with the following keys:
+            {'uid': <department_uid> or 'general',
+             'richtext': <text/plain>}
+        """
+        uid = department.UID() if department else 'general'
+        rows = self.Schema()['ResultsInterpretationDepts'].get(self)
+        row = [row for row in rows if row.get('uid') == uid]
+        if len(row) > 0:
+            row = row[0]
+        elif uid=='general' \
+            and hasattr(self, 'getResultsInterpretation') \
+            and self.getResultsInterpretation():
+            row = {'uid': uid, 'richtext': self.getResultsInterpretation()}
+        else:
+            row = {'uid': uid, 'richtext': ''};
+        return row
+
+    def setResultsInterpretation(self, value):
+        import pdb;pdb.set_trace()
+        rows = self.Schema()['ResultsInterpretationDepts'].get(self)
 
     def guard_unassign_transition(self):
         """Allow or disallow transition depending on our children's states
