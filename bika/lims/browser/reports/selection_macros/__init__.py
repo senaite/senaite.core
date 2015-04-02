@@ -154,10 +154,10 @@ class SelectionMacrosView(BrowserView):
 
         if from_date and to_date:
             parms = translate(_("From ${start_date} to ${end_date}",
-                               mapping={"start":from_date, "end":to_date}))
+                               mapping={"start_date":from_date, "end_date":to_date}))
         elif from_date:
             parms = translate(_("Before ${start_date}",
-                               mapping={"start":from_date}))
+                               mapping={"start_date":from_date}))
         elif to_date:
             parms = translate(_("After ${end_date}",
                                mapping={"end_date":to_date}))
