@@ -318,7 +318,7 @@ class Analysis(BaseContent):
                 return rr
 
         specs = an.getAnalysisSpecs(specification)
-        rr = specs.getResultsRangeDict()
+        rr = specs.getResultsRangeDict() if specs else {}
         rr = rr.get(an.getKeyword(), {}) if rr else {}
         if rr:
             rr['uid'] = self.UID()
