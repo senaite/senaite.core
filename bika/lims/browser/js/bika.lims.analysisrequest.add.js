@@ -637,7 +637,7 @@ function AnalysisRequestAddView() {
 		for (var i = inputs.length - 1; i >= 0; i--) {
 			var element = inputs[i];
 			var options = $.parseJSON($(element).attr("combogrid_options"));
-			if(options === "" || options === undefined){
+			if(options === "" || options === undefined || options == null){
 				continue;
 			}
 			options.select = ar_referencewidget_select_handler;
