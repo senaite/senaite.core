@@ -26,7 +26,7 @@ class ARResultsInterpretationView(BrowserView):
         """ Returns the text saved for the selected department.
         """
         row = self.context.getResultsInterpretationByDepartment(department)
-        rt = RichTextValue(row['richtext'], 'text/plain', 'text/html')
+        rt = RichTextValue(row.get('richtext',''), 'text/plain', 'text/html')
         if mode=='output':
             return rt.output
         else:
