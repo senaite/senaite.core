@@ -379,7 +379,7 @@ class AnalysesView(BikaListingView):
                     else:
                         sample = obj.aq_parent.getSample()
                 elif self.context.portal_type == 'Sample':
-                    sample = self
+                    sample = self.context
                 st_uid = sample.getSampleType().UID() if sample else ''
                 items[i]['st_uid'] = st_uid
 
