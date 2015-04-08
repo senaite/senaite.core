@@ -105,6 +105,11 @@ class AnalysisRequestViewView(BrowserView):
                                                   {'id': 'retract'},
                                                   {'id': 'verify'}]
         self.qctable = qcview.contents_table()
+
+        # Create the ResultsInterpretation by department view
+        from resultsinterpretation import ARResultsInterpretationView
+        self.riview = ARResultsInterpretationView(ar, self.request)
+
         # If a general retracted is done, rise a waring
         if workflow.getInfoFor(ar, 'review_state') == 'sample_received':
             allstatus = list()

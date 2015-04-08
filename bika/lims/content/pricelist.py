@@ -127,14 +127,13 @@ def ObjectModifiedEventHandler(instance, event):
             itemDescription = None
             itemAccredited = False
             if instance.getType() == "LabProduct":
-                if obj.getVolume() or obj.getUnit():
-                    print_detail = " ("
+                print_detail = ""
                 if obj.getVolume():
                     print_detail = print_detail + str(obj.getVolume())
                 if obj.getUnit():
                     print_detail = print_detail + str(obj.getUnit())
-                if print_detail:
-                    print_detail = print_detail + ")"
+                if obj.getVolume() or obj.getUnit():
+                    print_detail = " (" + print_detail + ")"
                     itemTitle = obj.Title() + print_detail
                 else:
                     itemTitle = obj.Title()
