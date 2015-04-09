@@ -1,5 +1,6 @@
 3.1.8 (unreleased)
 ------------------
+LIMS-1739: Error with results interpretation field of an AR lacking deparments
 LIMS-1724: Fixed missing start and end dates on reports
 LIMS-1628: There should be a results interpretation field per lab department
 LIMS-1737: Error when adding pricelists of lab products with no volume and unit

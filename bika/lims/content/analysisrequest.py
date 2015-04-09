@@ -2007,7 +2007,7 @@ class AnalysisRequest(BaseFolder):
             from this Analysis Request
         """
         ans = [an.getObject() for an in self.getAnalyses()]
-        depts = [an.getService().getDepartment() for an in ans]
+        depts = [an.getService().getDepartment() for an in ans if an.getService().getDepartment()]
         return set(depts)
 
     def getResultsInterpretationByDepartment(self, department=None):
