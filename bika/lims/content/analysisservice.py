@@ -1044,22 +1044,18 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
                             percvalue = float(d['errorvalue'].replace('%', ''))
                         except ValueError:
                             return None
-						    if result < 0.001  
-							    # i have taken 3 places after decimal for calculation ;; can be modified for less or more digits after decimal
-						        if percvalue < 10.00 and percvalue >=5
-							        percvalue = 10.00
-									
-						    else:
-							    if percvalue <5.00
-								    percvalue = 0.00
                         unc = result / 100 * percvalue
                     else:
                         unc = float(d['errorvalue'])
 
                     return unc
         return None
+  
 
 
+     
+
+	
     def getPrecision(self, result=None):
         """
         Returns the precision for the Analysis Service. If the
