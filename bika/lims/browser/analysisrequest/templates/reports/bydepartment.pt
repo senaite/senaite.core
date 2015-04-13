@@ -263,94 +263,29 @@
         </tal:poc>
     </table>
 </div>
+
+<!-- Results interpretation section -->
 <div id="resultsinterpretation"
     tal:define="ri analysisrequest/resultsinterpretationdepts"
-    tal:condition="ri">
-    <h1 i18n:translate="">Result interpretation</h1>
-    <tal:ris repeat="rid python:ri.keys()">
-        <h2 tal:content="rid"></h2>
-        <div>
-            <div tal:content="structure python:ri.get(rid,{}).get('richtext','')"></div>
-        </div>
-        <p>&nbsp;</p>
-    </tal:ris>
+    tal:condition="python: ri and (ri.get('general') or ri.get(dept.Title()))">
+    <h1 i18n:translate="">Results interpretation</h1>
+    <tal:specific-dept condition="python: ri.get(dept.Title())">
+    <div>
+        <div tal:content="structure python:ri.get(dept.Title(),{}).get('richtext','')"></div>
+    </div>
+    <p>&nbsp;</p>
+    </tal:specific-dept>
+    <tal:generic-dept condition="python: ri.get('general')">
+    <div>
+        <div tal:content="structure python:ri.get('general',{}).get('richtext','')"></div>
+    </div>
+    <p>&nbsp;</p>
+    </tal:generic-dept>
 </div>
 
 <div class="page-break"></div>
 </tal:department>
 
-
-<!-- QC Results section -->
-<div id="section-qcresults" tal:condition="python:hasqcanalyses and showqcanalyses">
-    <h1 i18n:translate="">QC Results</h1>
-    <table>
-        <tal:qctypes repeat="qctype python:categqcanalyses.keys()">
-        <tal:qctype define="blank python:qctype=='b';
-                            control python:qctype=='c';
-                            duplicate python:qctype=='d';
-                            qctype_tblid python: 'blank-analyses' if blank else ('control-analyses' if control else 'duplicate-analysis');">
-        <h2 tal:condition="python:qctype=='b'" i18n:translate="">Blank analyses</h2>
-        <h2 tal:condition="python:qctype=='c'" i18n:translate="">Control analyses</h2>
-        <h2 tal:condition="python:qctype=='d'" i18n:translate="">Duplicate analyses</h2>
-        <tal:poc tal:repeat="poc python:categqcanalyses.get(qctype,{}).keys()">
-        <tal:cat tal:repeat="cat python:categqcanalyses.get(qctype,{}).get(poc, {}).keys()">
-        <table tal:attributes="id python:qctype_tblid">
-            <thead>
-                <tr>
-                    <th class="analysis"><span tal:content='python: cat'>Category: Vitamin D</span></th>
-                    <th class="result"><span i18n:translate="">Result</span></th>
-                    <th class="dryresult" tal:condition="analysisrequest/report_drymatter"><span i18n:translate="">Dry</span></th>
-                    <th class="specs"><span i18n:translate="">Value Range</span></th>
-                    <th class="refsample" tal:condition='python: duplicate==False'><span i18n:translate="">Reference Sample</span></th>
-                    <th class="worksheet"><span i18n:translate="">Worksheet</span></th>
-                    <th class="outofrange"></th>
-                </tr>
-            </thead>
-            <tbody>
-            <tal:analyses tal:repeat="analysis python:categqcanalyses[qctype][poc][cat]">
-            <tal:analysis tal:define="analysis_css_result python:'outofrange' if analysis['outofrange'] else '';
-                                      analysis_css_accredited python:'accredited' if analysis['accredited'] else '';
-                                      analysis_css_retested python:'retested' if analysis['retested'] else '';">
-            <tr tal:attributes="class python:'%s %s %s' % (analysis_css_result, analysis_css_accredited, analysis_css_retested);">
-                <td class="analysis">
-                    <span tal:content="analysis/title" tal:condition="python: analysis['scientific_name'] == False">Total 25-OHD</span>
-                    <span tal:condition="analysis/scientific_name"><em tal:content="analysis/title"></em></span>
-                </td>
-                <td>
-                    <span class="result" tal:content="structure analysis/formatted_result">23</span>
-                    <span class="units" tal:content="structure analysis/formatted_unit|nothing"></span>
-                </td>
-                <td class="dryresult" tal:condition="python: reportdrymatter and analysis/resultdm">
-                    <span tal:content="structure string:${analysis/resultdm}  ${analysis/formatted_unit|nothing}">23</span>
-                </td>
-                <td class="specs">
-                    <span tal:condition="analysis/uncertainty"
-                          tal:replace="structure string:[&plusmn; ${analysis/uncertainty}] "></span>
-                    <span tal:replace="python:'(RT) ' if analysis['retested'] else ''"></span>
-                    <span tal:replace="analysis/formatted_specs">50 - 60</span>
-                </td>
-                <td class="refsample" tal:content="analysis/refsample">QC13-0001 - Vit D Blank</td>
-                <td class="worksheet"><a tal:attributes="href analysis/worksheet_url" tal:content="analysis/worksheet">WS13-0001</a></td>
-                <td class="outofrange">
-                    <span tal:replace="python:'*' if analysis['outofrange']==True else ''"></span>
-                </td>
-            </tr>
-            </tal:analysis>
-            </tal:analyses>
-            </tbody>
-        </table>
-        </tal:cat>
-        </tal:poc>
-        </tal:qctype>
-        </tal:qctypes>
-    </table>
-</div>
-
-<!--  Remarks section -->
-<div id="section-remarks" tal:condition="analysisrequest/remarks">
-    <h1 i18n:translate="">Remarks</h1>
-    <p tal:content="structure analysisrequest/remarks"></p>
-</div>
 
 <!-- Attachments section -->
 <div id="section-attachments"
