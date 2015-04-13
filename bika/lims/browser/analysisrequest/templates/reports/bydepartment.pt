@@ -267,20 +267,19 @@
 <!-- Results interpretation section -->
 <div id="resultsinterpretation"
     tal:define="ri analysisrequest/resultsinterpretationdepts"
-    tal:condition="python: ri and (ri.get('general') or ri.get(dept.Title()))">
+    tal:condition="python: ri and (ri.get('') or ri.get(dept.Title()))">
     <h1 i18n:translate="">Results interpretation</h1>
     <tal:specific-dept condition="python: ri.get(dept.Title())">
     <div>
         <div tal:content="structure python:ri.get(dept.Title(),{}).get('richtext','')"></div>
     </div>
-    <p>&nbsp;</p>
     </tal:specific-dept>
-    <tal:generic-dept condition="python: ri.get('general')">
+    <tal:generic-dept condition="python: ri.get('')">
     <div>
-        <div tal:content="structure python:ri.get('general',{}).get('richtext','')"></div>
+        <div tal:content="structure python:ri.get('',{}).get('richtext','')"></div>
     </div>
-    <p>&nbsp;</p>
     </tal:generic-dept>
+    <p>&nbsp;</p>
 </div>
 
 <!-- Attachments section -->
