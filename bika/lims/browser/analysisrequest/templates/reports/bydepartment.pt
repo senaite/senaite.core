@@ -283,14 +283,10 @@
     </tal:generic-dept>
 </div>
 
-<div class="page-break"></div>
-</tal:department>
-
-
 <!-- Attachments section -->
 <div id="section-attachments"
     tal:define="ar_attachments python:(analysisrequest['obj'].getAttachment() and len(analysisrequest['obj'].getAttachment())>0) and analysisrequest['obj'].getAttachment() or None;
-                an_attachments python:[an.getAttachment() for an in analysisrequest['obj'].getAnalyses(full_objects=True) if an.getAttachment()];">
+                an_attachments python:[an.getAttachment() for an in analysisrequest['obj'].getAnalyses(full_objects=True) if (an.getAttachment() and an.getService().getDepartment() and an.getService().getDepartment().UID()==dept.UID())];">
     <h1 i18n:translate="" tal:condition="python: ar_attachments or len(an_attachments)>0">Attachments</h1>
     <h2 i18n:translate="" tal:condition="ar_attachments">Analysis request attachments</h2>
     <ul tal:condition="ar_attachments">
@@ -330,6 +326,12 @@
     </tal:anattachments>
     </table>
 </div>
+
+<div class="page-break"></div>
+</tal:department>
+
+
+
 
 <!-- Signatures section -->
 <table id="section-signatures">
