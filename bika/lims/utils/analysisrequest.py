@@ -21,7 +21,7 @@ def create_analysisrequest(
     bc = getToolByName(context, 'bika_catalog')
 
     # Create new sample or locate the existing for secondary AR
-    if values['Sample']:
+    if values.get('Sample'):
         secondary = True
         if ISample.providedBy(values['Sample']):
             sample = values['Sample']
