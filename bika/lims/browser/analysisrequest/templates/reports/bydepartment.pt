@@ -41,6 +41,9 @@
 <!-- Report header -->
 <div id="section-header">
     <div id='barcode-container'>
+        <div id='ariddept'
+            tal:define="deptidx repeat/dept/number"
+            tal:content="python: '%s/DPT-%s' % (analysisrequest['id'], deptidx)"></div>
         <div class='barcode'
             data-code='code128'
             data-showHRI='false'
