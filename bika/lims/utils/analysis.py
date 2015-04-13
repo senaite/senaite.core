@@ -58,7 +58,7 @@ def format_uncertainty(analysis, result, decimalmark='.', sciformat=1):
 
     If the "Calculate precision from uncertainties" is enabled in
     the Analysis service, and
-    
+
     a) If the the non-decimal number of digits of the result is above
        the service's ExponentialFormatPrecision, the uncertainty will
        be formatted in scientific notation. The uncertainty exponential
@@ -77,7 +77,7 @@ def format_uncertainty(analysis, result, decimalmark='.', sciformat=1):
        formatted as decimal notation and the uncertainty will be
        rounded one position after reaching the last 0 (precision
        calculated according to the uncertainty value).
-       
+
        Example:
        Given an Analysis with an uncertainty of 0.22 for a range of
        results between 1 and 10 with an ExponentialFormatPrecision
@@ -117,7 +117,7 @@ def format_uncertainty(analysis, result, decimalmark='.', sciformat=1):
         return ""
 
     service = analysis.getService()
-    uncertainty = service.getUncertainty(result)
+    uncertainty = analysis.getUncertainty(result)
 
     if uncertainty is None:
         return ""
@@ -181,7 +181,7 @@ def format_numeric_result(analysis, result, decimalmark='.', sciformat=1):
 
     If the "Calculate precision from uncertainties" is enabled in
     the Analysis service, and
-    
+
     a) If the non-decimal number of digits of the result is above
        the service's ExponentialFormatPrecision, the result will
        be formatted in scientific notation.
@@ -196,7 +196,7 @@ def format_numeric_result(analysis, result, decimalmark='.', sciformat=1):
        below the ExponentialFormatPrecision, the result will be
        formatted as decimal notation and the resulta will be rounded
        in accordance to the precision (calculated from the uncertainty)
-       
+
        Example:
        Given an Analysis with an uncertainty of 0.22 for a range of
        results between 1 and 10 with an ExponentialFormatPrecision

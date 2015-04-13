@@ -710,6 +710,22 @@ schema = BikaSchema.copy() + Schema((
                                    "fixed precision set."),
                  ),
     ),
+
+    # If checked, an additional input with the default uncertainty will
+    # be displayed in the manage results view. The value set by the user
+    # in this field will override the default uncertainty for the analysis
+    # result
+    BooleanField('AllowManualUncertainty',
+                 schemata="Uncertainties",
+                 default=False,
+                 widget=BooleanWidget(
+                    label = _("Allow manual uncertainty value input"),
+                    description = _("Allow the analyst to manually "
+                                    "replace the default uncertainty "
+                                    "value."),
+                ),
+    ),
+
     RecordsField('ResultOptions',
                  schemata="Result Options",
                  type='resultsoptions',
@@ -1107,7 +1123,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         the method will return the exponential precision value set in
         the Schema. Otherwise, will calculate the precision value
         according to the Uncertainty and the result.
-        
+
         If Calculate Precision from the Uncertainty is set but no
         result provided neither uncertainty values are set, returns the
         fixed exponential precision.

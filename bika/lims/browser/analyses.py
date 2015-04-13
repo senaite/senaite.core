@@ -341,6 +341,8 @@ class AnalysesView(BikaListingView):
             items[i]['interim_fields'] = interim_fields
             items[i]['Remarks'] = obj.getRemarks()
             items[i]['Uncertainty'] = ''
+            items[i]['allow_manual_uncertainty'] = service.getAllowManualUncertainty()
+            items[i]['formatted_uncertainty'] = ''
             items[i]['retested'] = obj.getRetested()
             items[i]['class']['retested'] = 'center'
             items[i]['result_captured'] = self.ulocalized_time(
@@ -577,7 +579,9 @@ class AnalysesView(BikaListingView):
                 scinot = self.context.bika_setup.getScientificNotationResults()
                 dmk = self.context.bika_setup.getResultsDecimalMark()
                 items[i]['formatted_result'] = obj.getFormattedResult(sciformat=int(scinot),decimalmark=dmk)
-                items[i]['Uncertainty'] = format_uncertainty(obj, result, decimalmark=dmk, sciformat=int(scinot))
+                fu = format_uncertainty(obj, result, decimalmark=dmk, sciformat=int(scinot))
+                items[i]['formatted_uncertainty'] = fu
+                items[i]['Uncertainty'] = obj.getUncertainty(result) if service.getAllowManualUncertainty() else fu
 
             else:
                 items[i]['Specification'] = ""
