@@ -326,12 +326,6 @@
     </table>
 </div>
 
-<div class="page-break"></div>
-</tal:department>
-
-
-
-
 <!-- Signatures section -->
 <table id="section-signatures">
     <td tal:define="mngr_info analysisrequest/managers;
@@ -343,7 +337,8 @@
                          email python:managers[manager]['email'];
                          phone python:managers[manager]['phone'];
                          department python:managers[manager]['departments'];
-                         signature python:managers[manager]['signature'];">
+                         signature python:managers[manager]['signature'];"
+                      condition="python: department == dept.Title()">
 
             <img tal:condition="signature"
                  tal:attributes="src string:${signature}" style="height:75px"/>
@@ -365,6 +360,11 @@
         </tal:manager>
     </td>
 </table>
+
+<div class="page-break"></div>
+</tal:department>
+
+
 
 <!-- Discreeter section -->
 <div id="section-discreeter">
