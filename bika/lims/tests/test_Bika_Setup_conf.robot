@@ -15,12 +15,19 @@ Suite Teardown   Close All Browsers
 
 *** Test Cases ***
 
-Test
+Test Separators
     Log in  test_labmanager  test_labmanager
     ${ARId}=  Simple AR Creation  Happy Hills  Rita  Barley  Metals  Calcium
+    Should Be Equal  ${ARId}   BAR-0001-R01
     # Changeing the analysis request separator
-    Go to  http://localhost:55001/plone/batches/B-001/analysisrequests
-
+    Go to  http://localhost:55001/plone/bika_setup/edit
+    Click Link  ID Server
+    # This selection part may fail if the Analysis Request line isn'tin the firts place...
+    Select From List  xpath=//select[starts-with(@id, 'Prefixes-separator-')]  _
+    Click Button  Save
+    Wait until page contains    Changes saved
+    ${ARId}=  Simple AR Creation  Happy Hills  Rita  Barley  Metals  Calcium
+    Should Be Equal  ${ARId}   BAR-0002_R01
 
 *** Keywords ***
 
