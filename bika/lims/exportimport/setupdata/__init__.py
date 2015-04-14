@@ -1550,7 +1550,8 @@ class ID_Prefixes(WorksheetImporter):
             # add new prefix to list
             prefixes.append({'portal_type': row['portal_type'],
                              'padding': row['padding'],
-                             'prefix': row['prefix']})
+                             'prefix': row['prefix'],
+                             'separator': row['separator']})
         self.context.bika_setup.setPrefixes(prefixes)
 
 

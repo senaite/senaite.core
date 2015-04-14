@@ -23,18 +23,21 @@ class PrefixesField(RecordsField):
     _properties = RecordsField._properties.copy()
     _properties.update({
         'type' : 'prefixes',
-        'subfields' : ('portal_type', 'prefix', 'padding'),
+        'subfields' : ('portal_type', 'prefix', 'separator', 'padding'),
         'subfield_labels':{'portal_type': 'Portal type',
                            'prefix': 'Prefix',
-                           'padding': 'Padding',
+                           'separator': 'Prefix Separator',
+                           'padding': 'Padding'
                            },
         'subfield_readonly':{'portal_type': False,
                              'prefix': False,
                              'padding': False,
+                             'separator': False
                             },
         'subfield_sizes':{'portal_type':32,
                           'prefix': 12,
-                          'padding':12},
+                          'padding':12,
+                          'separator': 5},
     })
     security = ClassSecurityInfo()
 
@@ -417,17 +420,17 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     PrefixesField('Prefixes',
         schemata = "ID Server",
-        default = [{'portal_type': 'ARImport', 'prefix': 'AI', 'padding': '4'},
-                   {'portal_type': 'AnalysisRequest', 'prefix': 'client', 'padding': '0'},
-                   {'portal_type': 'Client', 'prefix': 'client', 'padding': '0'},
-                   {'portal_type': 'Batch', 'prefix': 'batch', 'padding': '0'},
-                   {'portal_type': 'DuplicateAnalysis', 'prefix': 'DA', 'padding': '0'},
-                   {'portal_type': 'Invoice', 'prefix': 'I', 'padding': '4'},
-                   {'portal_type': 'ReferenceAnalysis', 'prefix': 'RA', 'padding': '4'},
-                   {'portal_type': 'ReferenceSample', 'prefix': 'RS', 'padding': '4'},
-                   {'portal_type': 'SupplyOrder', 'prefix': 'O', 'padding': '3'},
-                   {'portal_type': 'Worksheet', 'prefix': 'WS', 'padding': '4'},
-                   {'portal_type': 'Pricelist', 'prefix': 'PL', 'padding': '4'},
+        default = [{'portal_type': 'ARImport', 'prefix': 'AI', 'padding': '4', 'separator': '-'},
+                   {'portal_type': 'AnalysisRequest', 'prefix': 'client', 'padding': '0', 'separator': '-'},
+                   {'portal_type': 'Client', 'prefix': 'client', 'padding': '0', 'separator': '-'},
+                   {'portal_type': 'Batch', 'prefix': 'batch', 'padding': '0', 'separator': '-'},
+                   {'portal_type': 'DuplicateAnalysis', 'prefix': 'DA', 'padding': '0', 'separator': '-'},
+                   {'portal_type': 'Invoice', 'prefix': 'I', 'padding': '4', 'separator': '-'},
+                   {'portal_type': 'ReferenceAnalysis', 'prefix': 'RA', 'padding': '4', 'separator': '-'},
+                   {'portal_type': 'ReferenceSample', 'prefix': 'RS', 'padding': '4', 'separator': '-'},
+                   {'portal_type': 'SupplyOrder', 'prefix': 'O', 'padding': '3', 'separator': '-'},
+                   {'portal_type': 'Worksheet', 'prefix': 'WS', 'padding': '4', 'separator': '-'},
+                   {'portal_type': 'Pricelist', 'prefix': 'PL', 'padding': '4', 'separator': '-'},
                    ],
 #        fixedSize=8,
         widget=RecordsWidget(
