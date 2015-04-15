@@ -204,10 +204,10 @@
 <!-- Results section -->
 <div id="section-results">
     <h1 i18n:translate="">Results</h1>
+    <tal:poc tal:repeat="poc python:deptanalyses.get(dept.UID(),{}).keys()">
+    <h2 tal:content="poc"></h2>
+    <tal:cat tal:repeat="cat python:deptanalyses.get(dept.UID(),{}).get(poc,{}).keys()">
     <table tal:define="pockeys python: ">
-        <tal:poc tal:repeat="poc python:deptanalyses.get(dept.UID(),{}).keys()">
-        <h2 tal:content="poc"></h2>
-        <tal:cat tal:repeat="cat python:deptanalyses.get(dept.UID(),{}).get(poc,{}).keys()">
         <thead>
             <tr>
                 <th class="analysis"><span tal:content="string:${cat}">Category</span></th>
@@ -261,10 +261,17 @@
             </tr>
             </tal:analysis>
             </tal:analyses>
-            </tbody>
-        </tal:cat>
-        </tal:poc>
+        </tbody>
     </table>
+    <!-- Category comments -->
+    <div class='category_comments'
+         tal:define="category python:deptanalyses[dept.UID()][poc][cat][0]['obj'].getService().getCategory();
+                     catcomm  python:category.getComments() if hasattr(category, 'getComments') else '';"
+         tal:condition="catcomm"
+         tal:content="catcomm">
+    </div>
+    </tal:cat>
+    </tal:poc>
 </div>
 
 <!-- Results interpretation section -->

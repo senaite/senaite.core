@@ -197,10 +197,10 @@
 <!-- Results section -->
 <div id="section-results">
     <h1 i18n:translate="">Results</h1>
+    <tal:poc tal:repeat="poc python:categanalyses.keys()">
+    <h2 tal:content="poc"></h2>
+    <tal:cat tal:repeat="cat python:sorted(categanalyses.get(poc,{}).keys())">
     <table>
-        <tal:poc tal:repeat="poc python:categanalyses.keys()">
-        <h2 tal:content="poc"></h2>
-        <tal:cat tal:repeat="cat python:sorted(categanalyses.get(poc,{}).keys())">
         <thead>
             <tr>
                 <th class="analysis"><span tal:content="string:${cat}">Category</span></th>
@@ -211,6 +211,18 @@
                 <th class="outofrange"></th>
             </tr>
         </thead>
+        <tfoot>
+            <!-- Category comments -->
+            <tr>
+                <td tal:attributes="colspan python:6 if hasprevresults else 5">
+                    <div class='category_comments'
+                         tal:define="category python:categanalyses[poc][cat][0]['obj'].getService().getCategory();
+                                     catcomm  python:category.getComments() if hasattr(category, 'getComments') else '';"
+                         tal:condition="catcomm"
+                         tal:content="catcomm"></div>
+                </td>
+            </tr>
+        </tfoot>
         <tbody>
             <tal:analyses tal:repeat="analysis python:categanalyses[poc][cat]">
             <tal:analysis tal:define="analysis_css_result python:'outofrange' if analysis['outofrange'] else '';
@@ -254,10 +266,10 @@
             </tr>
             </tal:analysis>
             </tal:analyses>
-            </tbody>
-        </tal:cat>
-        </tal:poc>
+        </tbody>
     </table>
+    </tal:cat>
+    </tal:poc>
 </div>
 <div id="resultsinterpretation"
     tal:define="ri analysisrequest/resultsinterpretationdepts"

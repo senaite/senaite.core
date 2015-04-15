@@ -15,6 +15,14 @@ import sys
 import transaction
 
 schema = BikaSchema.copy() + Schema((
+    TextField('Comments',
+        default_output_type = 'text/plain',
+        allowable_content_types = ('text/plain',),
+        widget=TextAreaWidget (
+            description = _("To be displayed below each Analysis "
+                            "Category section on results reports."),
+            label = _("Comments")),
+    ),
     ReferenceField('Department',
         required=1,
         vocabulary='getDepartments',
