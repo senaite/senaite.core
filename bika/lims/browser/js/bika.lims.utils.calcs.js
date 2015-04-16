@@ -93,6 +93,7 @@ function CalculationUtils() {
                     for(i=0;i<$(data['uncertainties']).length;i++){
                         u = $(data['uncertainties'])[i];
                         $('#'+u.uid+"-uncertainty").val(u.uncertainty);
+                        $('[uid="'+u.uid+'"][field="Uncertainty"]').val(u.uncertainty);
                     }
                     // put result values in their boxes
                     for(i=0;i<$(data['results']).length;i++){

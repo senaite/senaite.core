@@ -1,5 +1,6 @@
 3.1.8 (unreleased)
 ------------------
+LIMS-1379: Allow manual uncertainty value input
 LIMS-1629: Pdf reports should split analysis results in different pages according to the lab department
 LIMS-1740: Error when trying to view any Sample
 LIMS-1739: Error with results interpretation field of an AR lacking deparments

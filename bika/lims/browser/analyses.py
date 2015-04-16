@@ -577,7 +577,19 @@ class AnalysesView(BikaListingView):
                 scinot = self.context.bika_setup.getScientificNotationResults()
                 dmk = self.context.bika_setup.getResultsDecimalMark()
                 items[i]['formatted_result'] = obj.getFormattedResult(sciformat=int(scinot),decimalmark=dmk)
-                items[i]['Uncertainty'] = format_uncertainty(obj, result, decimalmark=dmk, sciformat=int(scinot))
+
+                fu = format_uncertainty(obj, result, decimalmark=dmk, sciformat=int(scinot))
+                fu = fu if fu else ''
+                if can_edit_analysis and service.getAllowManualUncertainty() == True:
+                    unc = obj.getUncertainty(result)
+                    item['allow_edit'].append('Uncertainty')
+                    items[i]['Uncertainty'] = unc if unc else ''
+                    items[i]['before']['Uncertainty'] = '&plusmn;&nbsp;';
+                    items[i]['after']['Uncertainty'] = '<em class="discreet" style="white-space:nowrap;"> %s</em>' % items[i]['Unit'];
+                elif fu:
+                    items[i]['Uncertainty'] = fu
+                    items[i]['before']['Uncertainty'] = '&plusmn;&nbsp;';
+                    items[i]['after']['Uncertainty'] = '<em class="discreet" style="white-space:nowrap;"> %s</em>' % items[i]['Unit'];
 
             else:
                 items[i]['Specification'] = ""
