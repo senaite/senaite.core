@@ -127,6 +127,7 @@ class WorksheetWorkflowAction(WorkflowAction):
         methods = form.get('Method', [{}])[0]
         instruments = form.get('Instrument', [{}])[0]
         analysts = self.request.form.get('Analyst', [{}])[0]
+        uncertainties = self.request.form.get('Uncertainty', [{}])[0]
         selected = WorkflowAction._get_selected_items(self)
         workflow = getToolByName(self.context, 'portal_workflow')
         rc = getToolByName(self.context, REFERENCE_CATALOG)
@@ -194,6 +195,10 @@ class WorksheetWorkflowAction(WorkflowAction):
             # Need to save the analyst?
             if uid in analysts and analysis_active:
                 analysis.setAnalyst(analysts[uid]);
+
+            # Need to save the uncertainty?
+            if uid in uncertainties and analysis_active:
+                analysis.setUncertainty(uncertainties[uid])
 
             # Need to save results?
             if uid in results and results[uid] and allow_edit \
