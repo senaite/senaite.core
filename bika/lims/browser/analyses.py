@@ -341,8 +341,6 @@ class AnalysesView(BikaListingView):
             items[i]['interim_fields'] = interim_fields
             items[i]['Remarks'] = obj.getRemarks()
             items[i]['Uncertainty'] = ''
-            items[i]['allow_manual_uncertainty'] = service.getAllowManualUncertainty()
-            items[i]['formatted_uncertainty'] = ''
             items[i]['retested'] = obj.getRetested()
             items[i]['class']['retested'] = 'center'
             items[i]['result_captured'] = self.ulocalized_time(
@@ -579,9 +577,19 @@ class AnalysesView(BikaListingView):
                 scinot = self.context.bika_setup.getScientificNotationResults()
                 dmk = self.context.bika_setup.getResultsDecimalMark()
                 items[i]['formatted_result'] = obj.getFormattedResult(sciformat=int(scinot),decimalmark=dmk)
+
                 fu = format_uncertainty(obj, result, decimalmark=dmk, sciformat=int(scinot))
-                items[i]['formatted_uncertainty'] = fu
-                items[i]['Uncertainty'] = obj.getUncertainty(result) if service.getAllowManualUncertainty() else fu
+                fu = fu if fu else ''
+                if can_edit_analysis and service.getAllowManualUncertainty() == True:
+                    unc = obj.getUncertainty(result)
+                    item['allow_edit'].append('Uncertainty')
+                    items[i]['Uncertainty'] = unc if unc else ''
+                    items[i]['before']['Uncertainty'] = '&plusmn;&nbsp;';
+                    items[i]['after']['Uncertainty'] = '<em class="discreet" style="white-space:nowrap;"> %s</em>' % items[i]['Unit'];
+                elif fu:
+                    items[i]['Uncertainty'] = fu
+                    items[i]['before']['Uncertainty'] = '&plusmn;&nbsp;';
+                    items[i]['after']['Uncertainty'] = '<em class="discreet" style="white-space:nowrap;"> %s</em>' % items[i]['Unit'];
 
             else:
                 items[i]['Specification'] = ""

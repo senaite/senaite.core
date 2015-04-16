@@ -1,5 +1,6 @@
 3.1.8 (unreleased)
 ------------------
+LIMS-1379: Allow manual uncertainty value input
 LIMS-1740: Error when trying to view any Sample
 LIMS-1739: Error with results interpretation field of an AR lacking deparments
 LIMS-1738: Regression. 'NoneType' object has no attribute 'getResultsRangeDict'

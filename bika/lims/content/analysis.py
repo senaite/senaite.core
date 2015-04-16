@@ -260,7 +260,12 @@ class Analysis(BaseContent):
         serv = self.getService()
         schu = self.Schema().getField('Uncertainty').get(self)
         if schu and serv.getAllowManualUncertainty() == True:
-            return schu
+            try:
+                schu = float(schu)
+                return schu
+            except ValueError:
+                # if uncertainty is not a number, return default value
+                return self.getDefaultUncertainty(result)
         return self.getDefaultUncertainty(result)
 
     def getDependents(self):
