@@ -116,6 +116,11 @@ schema = BikaSchema.copy() + Schema((
     ComputedField('Keyword',
         expression = "context.getService() and context.getService().getKeyword() or ''",
     ),
+    FixedPointField('Uncertainty',
+        widget=DecimalWidget(
+            label = _("Uncertainty"),
+        ),
+    ),
 ),
 )
 
@@ -143,11 +148,28 @@ class ReferenceAnalysis(BaseContent):
         workflow = getToolByName(self, "portal_workflow")
         return workflow.getInfoFor(self, "review_state")
 
-    def getUncertainty(self, result=None):
-        """ Calls self.Service.getUncertainty with either the
-            provided result value or self.Result
+    def getDefaultUncertainty(self, result=None):
+        """ Calls self.Service.getUncertainty with either the provided
+            result value or self.Result
         """
         return self.getService().getUncertainty(result and result or self.getResult())
+
+    def getUncertainty(self, result=None):
+        """ Returns the uncertainty for this analysis and result.
+            Returns the value from Schema's Uncertainty field if the
+            Service has the option 'Allow manual uncertainty'. Otherwise,
+            do a callback to getDefaultUncertainty()
+        """
+        serv = self.getService()
+        schu = self.Schema().getField('Uncertainty').get(self)
+        if schu and serv.getAllowManualUncertainty() == True:
+            try:
+                schu = float(schu)
+                return schu
+            except ValueError:
+                # if uncertainty is not a number, return default value
+                return self.getDefaultUncertainty(result)
+        return self.getDefaultUncertainty(result)
 
     def getSample(self, result=None):
         """ Conform to Analysis
