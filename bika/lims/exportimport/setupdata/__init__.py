@@ -1547,10 +1547,14 @@ class ID_Prefixes(WorksheetImporter):
             # remove existing prefix from list
             prefixes = [p for p in prefixes
                         if p['portal_type'] != row['portal_type']]
+            # The spreadsheet will contain 'none' for user's visual stuff, but it means 'no separator'
+            if row['separator'] == 'none':
+                row['separator'] = ''
             # add new prefix to list
             prefixes.append({'portal_type': row['portal_type'],
                              'padding': row['padding'],
-                             'prefix': row['prefix']})
+                             'prefix': row['prefix'],
+                             'separator': row['separator']})
         self.context.bika_setup.setPrefixes(prefixes)
 
 
