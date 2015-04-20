@@ -1,10 +1,12 @@
 3.1.8 (unreleased)
 ------------------
 LIMS-1379: Allow manual uncertainty value input
+LIMS-1745: Retracted analyses in duplicates
 LIMS-1629: Pdf reports should split analysis results in different pages according to the lab department
-LIMS-1740: Error when trying to view any Sample
-LIMS-1739: Error with results interpretation field of an AR lacking deparments
+Some new ID Generator's features, as the possibility of select the separator type
 LIMS-1738: Regression. 'NoneType' object has no attribute 'getResultsRangeDict'
+LIMS-1739: Error with results interpretation field of an AR lacking departments
+LIMS-1740: Error when trying to view any Sample
 LIMS-1724: Fixed missing start and end dates on reports
 LIMS-1628: There should be a results interpretation field per lab department
 LIMS-1737: Error when adding pricelists of lab products with no volume and unit

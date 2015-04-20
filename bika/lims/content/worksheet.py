@@ -320,6 +320,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             )
             self.setAnalyses(self.getAnalyses() + [duplicate, ])
             workflow.doActionFor(duplicate, 'assign')
+            # In case there are more than one analyses for an 'analysis_uid'
+            # https://jira.bikalabs.com/browse/LIMS-1745
+            break
 
     def applyWorksheetTemplate(self, wst):
         """ Add analyses to worksheet according to wst's layout.

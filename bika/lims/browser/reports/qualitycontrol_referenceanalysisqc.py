@@ -114,7 +114,7 @@ class Report(BrowserView):
                 out_of_range_count += 1
 
             try:
-                precision = str(service.getPrecision())
+                precision = str(analysis.getPrecision())
             except:
                 precision = "2"
 
