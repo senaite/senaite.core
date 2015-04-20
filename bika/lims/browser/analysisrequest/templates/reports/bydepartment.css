@@ -17,9 +17,12 @@ h1 {
 h2 {
     font-size:1.2em;
 }
-
 .label {
     font-weight:bold;
+}
+h1 *,
+h2 * {
+    font-size:1em;
 }
 .result {
 
@@ -210,6 +213,12 @@ table#section-info td#lab-info {
 .barcode {
     float: right;
 }
+#ariddept {
+    font-size: 10px;
+    overflow: auto;
+    padding: 0 10px 5px;
+    text-align: right;
+}
 
 div#section-info td {
     vertical-align: top;
@@ -228,8 +237,8 @@ img.accredited-ico {
 .category_comments {
     color: #333;
     font-size: 11px;
-    line-height: 120%;
-    padding: 10px 0;
+    line-height: 130%;
+    padding: 10px 15px 15px;
 }
 
 @media print {
