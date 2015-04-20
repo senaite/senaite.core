@@ -163,7 +163,7 @@ def format_uncertainty(analysis, result, decimalmark='.', sciformat=1):
             #formatted = str("%%.%se" % sig_digits) % uncertainty
     else:
         # Decimal notation
-        prec = service.getPrecision(result)
+        prec = analysis.getPrecision(result)
         prec = prec if prec else ''
         formatted = str("%%.%sf" % prec) % uncertainty
 
@@ -268,7 +268,7 @@ def format_numeric_result(analysis, result, decimalmark='.', sciformat=1):
             formatted = str("%%.%se" % sig_digits) % result
     else:
         # Decimal notation
-        prec = service.getPrecision(result)
+        prec = analysis.getPrecision(result)
         prec = prec if prec else ''
         formatted = str("%%.%sf" % prec) % result
         formatted = str(int(float(formatted))) if float(formatted).is_integer() else formatted

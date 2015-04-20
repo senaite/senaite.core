@@ -348,6 +348,29 @@ class ReferenceAnalysis(BaseContent):
         # 3. If the result is floatable, render it to the correct precision
         return formatDecimalMark(format_numeric_result(self, result, sciformat), decimalmark)
 
+    def getPrecision(self, result=None):
+        """
+        Returns the precision for the Analysis.
+        - ManualUncertainty not set: returns the precision from the
+            AnalysisService.
+        - ManualUncertainty set and Calculate Precision from Uncertainty
+          is also set in Analysis Service: calculates the precision of the
+          result according to the manual uncertainty set.
+        - ManualUncertainty set and Calculatet Precision from Uncertainty
+          not set in Analysis Service: returns the result as-is.
+        Further information at AnalysisService.getPrecision()
+        """
+        serv = self.getService()
+        schu = self.Schema().getField('Uncertainty').get(self)
+        if schu and serv.getAllowManualUncertainty() == True \
+            and serv.getPrecisionFromUncertainty() == True:
+            uncertainty = self.getUncertainty(result)
+            if uncertainty == 0:
+                return 1
+            return abs(get_significant_digits(uncertainty))
+        else:
+            return serv.getPrecision(result)
+
     def workflow_script_submit(self):
         if skip(self, "submit"):
             return
