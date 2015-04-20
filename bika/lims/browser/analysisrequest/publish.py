@@ -219,6 +219,7 @@ class AnalysisRequestPublishView(BrowserView):
 
         # Categorize analyses
         data['categorized_analyses'] = {}
+        data['department_analyses'] = {}
         for an in data['analyses']:
             poc = an['point_of_capture']
             cat = an['category']
@@ -227,6 +228,19 @@ class AnalysisRequestPublishView(BrowserView):
             catlist.append(an)
             pocdict[cat] = catlist
             data['categorized_analyses'][poc] = pocdict
+
+            # Group by department too
+            anobj = an['obj']
+            dept = anobj.getService().getDepartment() if anobj.getService() else None
+            if dept:
+                dept = dept.UID()
+                dep = data['department_analyses'].get(dept, {})
+                dep_pocdict = dep.get(poc, {})
+                dep_catlist = dep_pocdict.get(cat, [])
+                dep_catlist.append(an)
+                dep_pocdict[cat] = dep_catlist
+                dep[poc] = dep_pocdict
+                data['department_analyses'][dept] = dep
 
         # Categorize qcanalyses
         data['categorized_qcanalyses'] = {}

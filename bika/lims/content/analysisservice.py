@@ -364,7 +364,6 @@ schema = BikaSchema.copy() + Schema((
     # Use getAvailableMethods() to retrieve the list with methods both
     # from selected instruments and manually entered.
     # Behavior controlled by js depending on ManualEntry/Instrument:
-    # - If InstrumentEntry checked, hide and unselect
     # - If InsrtumentEntry not checked, show
     # See browser/js/bika.lims.analysisservice.edit.js
     ReferenceField('Methods',

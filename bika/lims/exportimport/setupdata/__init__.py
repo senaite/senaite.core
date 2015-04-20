@@ -1171,8 +1171,8 @@ class Analysis_Services(WorksheetImporter):
             }
             category = self.get_object(bsc, 'AnalysisCategory', row.get('AnalysisCategory_title'))
             department = self.get_object(bsc, 'Department', row.get('Department_title'))
-            method = self.get_object(bsc, 'Method', row.get('Method'))
-            instrument = self.get_object(bsc, 'Instrument', row.get('Instrument_title'))
+            methods = self.get_object(bsc, 'Method', row.get('Methods'))
+            instruments = self.get_object(bsc, 'Instrument', row.get('Instrument_title'))
             calculation = self.get_object(bsc, 'Calculation', row.get('Calculation_title'))
             container = self.get_object(bsc, 'Container', row.get('Container_title'))
             preservation = self.get_object(bsc, 'Preservation', row.get('Preservation_title'))
@@ -1193,8 +1193,9 @@ class Analysis_Services(WorksheetImporter):
                 Price="%02f" % Float(row['Price']),
                 BulkPrice="%02f" % Float(row['BulkPrice']),
                 VAT="%02f" % Float(row['VAT']),
-                Method=method,
-                Instrument=instrument,
+                Methods=[methods],
+                InstrumentEntryOfResults=True if instruments != '' else '',
+                Instruments=[instruments] if instruments != '' else '',
                 Calculation=calculation,
                 DuplicateVariation="%02f" % Float(row['DuplicateVariation']),
                 Accredited=self.to_bool(row['Accredited']),
@@ -1546,10 +1547,14 @@ class ID_Prefixes(WorksheetImporter):
             # remove existing prefix from list
             prefixes = [p for p in prefixes
                         if p['portal_type'] != row['portal_type']]
+            # The spreadsheet will contain 'none' for user's visual stuff, but it means 'no separator'
+            if row['separator'] == 'none':
+                row['separator'] = ''
             # add new prefix to list
             prefixes.append({'portal_type': row['portal_type'],
                              'padding': row['padding'],
-                             'prefix': row['prefix']})
+                             'prefix': row['prefix'],
+                             'separator': row['separator']})
         self.context.bika_setup.setPrefixes(prefixes)
 
 
