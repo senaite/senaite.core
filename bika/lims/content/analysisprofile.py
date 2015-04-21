@@ -11,6 +11,7 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
+from Products.ATExtensions.field import RecordsField
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from zope.interface import Interface, implements
@@ -47,6 +48,16 @@ schema = BikaSchema.copy() + Schema((
             append_only = True,
         ),
     ),
+    # Custom settings for the assigned analysis services
+    # https://jira.bikalabs.com/browse/LIMS-1324
+    # Fields:
+    #   - uid: Analysis Service UID
+    #   - hidden: True/False. Hide/Display in results reports
+    RecordsField('AnalysisServicesSettings',
+         required=0,
+         subfields=('uid', 'hidden',),
+         widget=ComputedWidget(visible=False),
+    ),
 ),
 )
 schema['title'].widget.visible = True
@@ -65,5 +76,10 @@ class AnalysisProfile(BaseContent):
 
     def getClientUID(self):
         return self.aq_parent.UID();
+
+    def getAnalysisServiceSettings(self, uid):
+        sets = [s for s in self.getAnalysisServicesSettings() \
+                if s.get('uid','') == uid]
+        return sets[0] if sets else {'uid': uid}
 
 registerType(AnalysisProfile, PROJECTNAME)

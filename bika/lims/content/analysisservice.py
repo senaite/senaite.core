@@ -805,6 +805,18 @@ schema = BikaSchema.copy() + Schema((
                                 "type here."),
                         ),
     ),
+    BooleanField('Hidden',
+                 schemata="Analysis",
+                 default=False,
+                 widget=BooleanWidget(
+                     label = _("Hidden"),
+                     description = _(
+                        "If enabled, this analysis and its results "
+                        "will not be displayed by default in reports. "
+                        "This setting can be overrided in Analysis "
+                        "Profile and/or Analysis Request"),
+                 ),
+    ),
 ))
 
 schema['id'].widget.visible = False

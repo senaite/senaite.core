@@ -1250,6 +1250,16 @@ schema = BikaSchema.copy() + Schema((
                            'richtext': _('Results Interpreation'),},
         widget = RichWidget(visible=False),
     ),
+    # Custom settings for the assigned analysis services
+    # https://jira.bikalabs.com/browse/LIMS-1324
+    # Fields:
+    #   - uid: Analysis Service UID
+    #   - hidden: True/False. Hide/Display in results reports
+    RecordsField('AnalysisServicesSettings',
+         required=0,
+         subfields=('uid', 'hidden',),
+         widget=ComputedWidget(visible=False),
+    ),
 )
 )
 
@@ -2031,6 +2041,22 @@ class AnalysisRequest(BaseFolder):
         else:
             row = {'uid': uid, 'richtext': ''};
         return row
+
+    def getAnalysisServiceSettings(self, uid):
+        sets = [s for s in self.getAnalysisServicesSettings() \
+                if s.get('uid','') == uid]
+
+        # Created by using an ARTemplate?
+        if not sets and self.getTemplate():
+            adv = self.getTemplate().getAnalysisServiceSettings(uid)
+            sets = [adv] if 'hidden' in adv else []
+
+        # Created by using an AR Profile?
+        if not sets and self.getProfile():
+            adv = self.getProfile().getAnalysisServiceSettings(uid)
+            sets = [adv] if 'hidden' in adv else []
+
+        return sets[0] if sets else {'uid': uid}
 
     def guard_unassign_transition(self):
         """Allow or disallow transition depending on our children's states
