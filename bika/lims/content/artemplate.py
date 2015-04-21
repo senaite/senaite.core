@@ -171,6 +171,16 @@ schema = BikaSchema.copy() + Schema((
             description=_("Select analyses to include in this template"),
         )
     ),
+    # Custom settings for the assigned analysis services
+    # https://jira.bikalabs.com/browse/LIMS-1324
+    # Fields:
+    #   - uid: Analysis Service UID
+    #   - hidden: True/False. Hide/Display in results reports
+    RecordsField('AnalysisServicesSettings',
+         required=0,
+         subfields=('uid', 'hidden',),
+         widget=ComputedWidget(visible=False),
+    ),
 ),
 )
 
@@ -205,6 +215,11 @@ class ARTemplate(BaseContent):
         return DisplayList(items)
 
     def getClientUID(self):
-        return self.aq_parent.UID();
+        return self.aq_parent.UID()
+
+    def getAnalysisServiceSettings(self, uid):
+        sets = [s for s in self.getAnalysisServicesSettings() \
+                if s.get('uid','') == uid]
+        return sets[0] if sets else {'uid': uid}
 
 registerType(ARTemplate, PROJECTNAME)
