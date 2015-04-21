@@ -26,7 +26,7 @@
                                 tal:content="python:format['title']"></option>
                     </tal:formats>
                 </select>
-                <a href='#' id='sel_format_info'><img tal:attributes='src python:portal.absolute_url()+"/++resource++bika.lims.images/info.png";'/></a>
+                <a href='#' id='sel_format_info'><img tal:attributes='src python:portal.absolute_url()+"/++resource++bika.lims.images/info.png";'/></a><br/>
                 <input type="checkbox" name="qcvisible" id='qcvisible' value="0"><span i18n:translate="">Show QC Analyses</span><br/>
                 <input type="checkbox" name="hvisible" id='hvisible' value="0"><span i18n:translate="">Show Hidden Analyses</span>
             </div>
@@ -68,6 +68,9 @@
             }
             #ar_publish_header #options_handler label {
                 padding:5px 10px 5px 10px;
+            }
+            #ar_publish_header #options_handler input {
+                padding:5px 10px 0px;
             }
             #ar_publish_header #ar_publish_summary {
                 padding-left:10px;
