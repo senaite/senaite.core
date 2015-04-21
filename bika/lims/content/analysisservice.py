@@ -789,6 +789,18 @@ schema = BikaSchema.copy() + Schema((
                                 "type here."),
                         ),
     ),
+    BooleanField('Hidden',
+                 schemata="Analysis",
+                 default=False,
+                 widget=BooleanWidget(
+                     label = _("Hidden"),
+                     description = _(
+                        "If enabled, this analysis and its results "
+                        "will not be displayed by default in reports. "
+                        "This setting can be overrided in Analysis "
+                        "Profile and/or Analysis Request"),
+                 ),
+    ),
 ))
 
 schema['id'].widget.visible = False
@@ -1106,7 +1118,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         the method will return the exponential precision value set in
         the Schema. Otherwise, will calculate the precision value
         according to the Uncertainty and the result.
-        
+
         If Calculate Precision from the Uncertainty is set but no
         result provided neither uncertainty values are set, returns the
         fixed exponential precision.
