@@ -1,6 +1,7 @@
 3.1.8 (unreleased)
 ------------------
 
+LIMS-1324: Allow to hide analyses in results reports
 LIMS-1745: Retracted analyses in duplicates
 LIMS-1629: Pdf reports should split analysis results in different pages according to the lab department
 Some new ID Generator's features, as the possibility of select the separator type
