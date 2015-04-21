@@ -2049,14 +2049,12 @@ class AnalysisRequest(BaseFolder):
         # Created by using an ARTemplate?
         if not sets and self.getTemplate():
             adv = self.getTemplate().getAnalysisServiceSettings(uid)
-            if adv.get('hidden'):
-                sets = [adv]
+            sets = [adv] if 'hidden' in adv else []
 
         # Created by using an AR Profile?
         if not sets and self.getProfile():
             adv = self.getProfile().getAnalysisServiceSettings(uid)
-            if adv.get('hidden'):
-                sets = [adv]
+            sets = [adv] if 'hidden' in adv else []
 
         return sets[0] if sets else {'uid': uid}
 
