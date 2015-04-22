@@ -43,111 +43,171 @@ class TestHiddenAnalyses(BikaFunctionalTestCase):
         self.artemplate = artemp['artemplate-2']
 
     def tearDown(self):
-        self.services[1].setHidden(False)
-        self.services[2].setHidden(False)
+        # Restore
+        for s in self.services:
+            s.setHidden(False)
+
+        self.analysisprofile.setAnalysisServicesSettings([])
+        self.artemplate.setAnalysisServicesSettings([])
+
         logout()
         super(TestHiddenAnalyses, self).tearDown()
 
-    def test_set_hidden_field(self):
-        # analyses
+    def test_service_hidden_service(self):
+        service = self.services[1]
+        uid = service.UID()
+        self.assertFalse(service.getHidden())
+        self.assertFalse(service.Schema().getField('Hidden').get(service))
+
+        service.setHidden(False)
+        self.assertFalse(service.getHidden())
+        self.assertFalse(service.Schema().getField('Hidden').get(service))
+        service.setHidden(True)
+        self.assertTrue(service.getHidden())
+        self.assertTrue(service.Schema().getField('Hidden').get(service))
+
+        # Restore
+        service.setHidden(False)
+
+    def test_service_hidden_profile(self):
+        # Profile
+        # For Calcium (unset)
+        uid = self.services[0].UID();
         self.assertFalse(self.services[0].getHidden())
-        self.assertFalse(self.services[0].Schema().getField('Hidden').get(self.services[0]))
-        self.assertFalse('hidden' in self.analysisprofile.getAnalysisServiceSettings(self.services[0].UID()))
-        self.assertFalse(self.analysisprofile.isAnalysisServiceHidden(self.services[0].UID()))
-        self.assertFalse('hidden' in self.artemplate.getAnalysisServiceSettings(self.services[0].UID()))
-        self.assertFalse(self.artemplate.isAnalysisServiceHidden(self.services[0].UID()))
+        self.assertFalse(self.analysisprofile.isAnalysisServiceHidden(uid))
+        self.assertFalse('hidden' in self.analysisprofile.getAnalysisServiceSettings(uid))
 
+        # For Copper (False)
+        uid = self.services[1].UID()
         self.assertFalse(self.services[1].getHidden())
-        self.assertFalse(self.services[1].Schema().getField('Hidden').get(self.services[1]))
-        self.assertFalse(self.analysisprofile.getAnalysisServiceSettings(self.services[1].UID()).get('hidden'))
-        self.assertFalse(self.analysisprofile.isAnalysisServiceHidden(self.services[1].UID()))
-        self.assertFalse(self.artemplate.getAnalysisServiceSettings(self.services[1].UID()).get('hidden'))
-        self.assertFalse(self.artemplate.isAnalysisServiceHidden(self.services[1].UID()))
+        self.assertFalse(self.analysisprofile.isAnalysisServiceHidden(uid))
+        self.assertFalse('hidden' in self.analysisprofile.getAnalysisServiceSettings(uid))
 
-        self.assertTrue(self.services[2].getHidden(), True)
-        self.assertTrue(self.services[2].Schema().getField('Hidden').get(self.services[2]))
-        self.assertTrue(self.analysisprofile.getAnalysisServiceSettings(self.services[2].UID()).get('hidden'))
-        self.assertTrue(self.analysisprofile.isAnalysisServiceHidden(self.services[2].UID()))
-        self.assertTrue(self.artemplate.getAnalysisServiceSettings(self.services[2].UID()).get('hidden'))
-        self.assertTrue(self.artemplate.isAnalysisServiceHidden(self.services[2].UID()))
-
-        self.services[1].setHidden(True)
-        self.assertTrue(self.services[1].getHidden(), True)
-        self.assertTrue(self.services[1].Schema().getField('Hidden').get(self.services[1]))
-        self.assertTrue(self.analysisprofile.getAnalysisServiceSettings(self.services[1].UID()).get('hidden'))
-        self.assertTrue(self.analysisprofile.isAnalysisServiceHidden(self.services[1].UID()))
-        self.assertTrue(self.artemplate.getAnalysisServiceSettings(self.services[1].UID()).get('hidden'))
-        self.assertTrue(self.artemplate.isAnalysisServiceHidden(self.services[1].UID()))
-
-        self.services[2].setHidden(False)
-        self.assertFalse(self.services[2].getHidden())
-        self.assertFalse(self.services[2].Schema().getField('Hidden').get(self.services[2]))
-        self.assertFalse(self.analysisprofile.getAnalysisServiceSettings(self.services[2].UID()).get('hidden'))
-        self.assertFalse(self.analysisprofile.isAnalysisServiceHidden(self.services[2].UID()))
-        self.assertFalse(self.artemplate.getAnalysisServiceSettings(self.services[2].UID()).get('hidden'))
-        self.assertFalse(self.artemplate.isAnalysisServiceHidden(self.services[2].UID()))
-
-        self.services[1].setHidden(False)
-        self.assertFalse(self.services[1].getHidden())
-        self.assertFalse(self.services[1].Schema().getField('Hidden').get(self.services[1]))
-        self.assertFalse(self.analysisprofile.getAnalysisServiceSettings(self.services[1].UID()).get('hidden'))
-        self.assertFalse(self.analysisprofile.isAnalysisServiceHidden(self.services[1].UID()))
-        self.assertFalse(self.artemplate.getAnalysisServiceSettings(self.services[1].UID()).get('hidden'))
-        self.assertFalse(self.artemplate.isAnalysisServiceHidden(self.services[1].UID()))
-
-        self.services[2].setHidden(True)
+        # For Iron (True)
+        uid = self.services[2].UID()
         self.assertTrue(self.services[2].getHidden())
-        self.assertTrue(self.services[2].Schema().getField('Hidden').get(self.services[2]))
-        self.assertTrue(self.analysisprofile.getAnalysisServiceSettings(self.services[2].UID()).get('hidden'))
-        self.assertTrue(self.analysisprofile.isAnalysisServiceHidden(self.services[1].UID()))
-        self.assertTrue(self.artemplate.getAnalysisServiceSettings(self.services[2].UID()).get('hidden'))
-        self.assertTrue(self.artemplate.isAnalysisServiceHidden(self.services[2].UID()))
-
-        # profile
-        uid = self.services[0].UID()
-        sets = [{'uid': uid}]
-        self.analysisprofile.setAnalysisServicesSettings(sets)
-        self.assertFalse('hidden' in self.analysisprofile.getAnalysisServiceSettings(uid))
-        self.assertFalse(self.analysisprofile.isAnalysisServiceHidden(uid))
-        sets[0]['hidden'] = False
-        self.analysisprofile.setAnalysisServicesSettings(sets)
-        self.assertFalse(self.analysisprofile.getAnalysisServiceSettings(uid).get('hidden'))
-        self.assertFalse(self.analysisprofile.isAnalysisServiceHidden(uid))
-        sets[0]['hidden'] = True
-        self.analysisprofile.setAnalysisServicesSettings(sets)
-        self.assertTrue(self.analysisprofile.getAnalysisServiceSettings(uid).get('hidden'))
         self.assertTrue(self.analysisprofile.isAnalysisServiceHidden(uid))
-        sets = []
-        self.analysisprofile.setAnalysisServicesSettings(sets)
         self.assertFalse('hidden' in self.analysisprofile.getAnalysisServiceSettings(uid))
-        self.assertFalse(self.analysisprofile.isAnalysisServiceHidden(uid))
 
-        # template
-        uid = self.services[0].UID()
+        # Modify visibility for Calcium in profile
+        uid = self.services[0].UID();
+        sets = [{'uid': uid}]
+        self.analysisprofile.setAnalysisServicesSettings(sets)
+        self.assertFalse(self.analysisprofile.isAnalysisServiceHidden(uid))
+        self.assertFalse('hidden' in self.analysisprofile.getAnalysisServiceSettings(uid))
+        sets = [{'uid': uid, 'hidden': False}]
+        self.analysisprofile.setAnalysisServicesSettings(sets)
+        self.assertFalse(self.analysisprofile.isAnalysisServiceHidden(uid))
+        self.assertTrue('hidden' in self.analysisprofile.getAnalysisServiceSettings(uid))
+
+        sets = [{'uid': uid, 'hidden': True}]
+        self.analysisprofile.setAnalysisServicesSettings(sets)
+        self.assertTrue(self.analysisprofile.isAnalysisServiceHidden(uid))
+        self.assertTrue('hidden' in self.analysisprofile.getAnalysisServiceSettings(uid))
+
+        # Modify visibility for Cooper in profile
+        uid = self.services[1].UID();
+        sets = [{'uid': uid}]
+        self.analysisprofile.setAnalysisServicesSettings(sets)
+        self.assertFalse(self.analysisprofile.isAnalysisServiceHidden(uid))
+        self.assertFalse('hidden' in self.analysisprofile.getAnalysisServiceSettings(uid))
+        sets = [{'uid': uid, 'hidden': False}]
+        self.analysisprofile.setAnalysisServicesSettings(sets)
+        self.assertFalse(self.analysisprofile.isAnalysisServiceHidden(uid))
+        self.assertTrue('hidden' in self.analysisprofile.getAnalysisServiceSettings(uid))
+        sets = [{'uid': uid, 'hidden': True}]
+        self.analysisprofile.setAnalysisServicesSettings(sets)
+        self.assertTrue(self.analysisprofile.isAnalysisServiceHidden(uid))
+        self.assertTrue('hidden' in self.analysisprofile.getAnalysisServiceSettings(uid))
+
+        # Modify visibility for Iron in profile
+        uid = self.services[2].UID();
+        sets = [{'uid': uid}]
+        self.analysisprofile.setAnalysisServicesSettings(sets)
+        self.assertTrue(self.analysisprofile.isAnalysisServiceHidden(uid))
+        self.assertFalse('hidden' in self.analysisprofile.getAnalysisServiceSettings(uid))
+        sets = [{'uid': uid, 'hidden': False}]
+        self.analysisprofile.setAnalysisServicesSettings(sets)
+        self.assertFalse(self.analysisprofile.isAnalysisServiceHidden(uid))
+        self.assertTrue('hidden' in self.analysisprofile.getAnalysisServiceSettings(uid))
+        sets = [{'uid': uid, 'hidden': True}]
+        self.analysisprofile.setAnalysisServicesSettings(sets)
+        self.assertTrue(self.analysisprofile.isAnalysisServiceHidden(uid))
+        self.assertTrue('hidden' in self.analysisprofile.getAnalysisServiceSettings(uid))
+
+        # Restore
+        self.analysisprofile.setAnalysisServicesSettings([])
+
+    def test_service_hidden_artemplate(self):
+        # Template
+        # For Calcium (unset)
+        uid = self.services[0].UID();
+        self.assertFalse(self.services[0].getHidden())
+        self.assertFalse(self.analysisprofile.isAnalysisServiceHidden(uid))
+        self.assertFalse('hidden' in self.artemplate.getAnalysisServiceSettings(uid))
+
+        # For Copper (False)
+        uid = self.services[1].UID()
+        self.assertFalse(self.services[1].getHidden())
+        self.assertFalse(self.artemplate.isAnalysisServiceHidden(uid))
+        self.assertFalse('hidden' in self.artemplate.getAnalysisServiceSettings(uid))
+
+        # For Iron (True)
+        uid = self.services[2].UID()
+        self.assertTrue(self.services[2].getHidden())
+        self.assertTrue(self.artemplate.isAnalysisServiceHidden(uid))
+        self.assertFalse('hidden' in self.artemplate.getAnalysisServiceSettings(uid))
+
+        # Modify visibility for Calcium in template
+        uid = self.services[0].UID();
         sets = [{'uid': uid}]
         self.artemplate.setAnalysisServicesSettings(sets)
+        self.assertFalse(self.artemplate.isAnalysisServiceHidden(uid))
         self.assertFalse('hidden' in self.artemplate.getAnalysisServiceSettings(uid))
-        self.assertFalse(self.artemplate.isAnalysisServiceHidden(uid))
-        sets[0]['hidden'] = False
+        sets = [{'uid': uid, 'hidden': False}]
         self.artemplate.setAnalysisServicesSettings(sets)
-        self.assertFalse(self.artemplate.getAnalysisServiceSettings(uid).get('hidden'))
         self.assertFalse(self.artemplate.isAnalysisServiceHidden(uid))
-        sets[0]['hidden'] = True
+        self.assertTrue('hidden' in self.artemplate.getAnalysisServiceSettings(uid))
+
+        sets = [{'uid': uid, 'hidden': True}]
         self.artemplate.setAnalysisServicesSettings(sets)
-        self.assertTrue(self.artemplate.getAnalysisServiceSettings(uid).get('hidden'))
         self.assertTrue(self.artemplate.isAnalysisServiceHidden(uid))
-        sets = []
+        self.assertTrue('hidden' in self.artemplate.getAnalysisServiceSettings(uid))
+
+        # Modify visibility for Cooper in template
+        uid = self.services[1].UID();
+        sets = [{'uid': uid}]
         self.artemplate.setAnalysisServicesSettings(sets)
-        self.assertFalse('hidden' in self.artemplate.getAnalysisServiceSettings(uid))
         self.assertFalse(self.artemplate.isAnalysisServiceHidden(uid))
+        self.assertFalse('hidden' in self.artemplate.getAnalysisServiceSettings(uid))
+        sets = [{'uid': uid, 'hidden': False}]
+        self.artemplate.setAnalysisServicesSettings(sets)
+        self.assertFalse(self.artemplate.isAnalysisServiceHidden(uid))
+        self.assertTrue('hidden' in self.artemplate.getAnalysisServiceSettings(uid))
+        sets = [{'uid': uid, 'hidden': True}]
+        self.artemplate.setAnalysisServicesSettings(sets)
+        self.assertTrue(self.artemplate.isAnalysisServiceHidden(uid))
+        self.assertTrue('hidden' in self.artemplate.getAnalysisServiceSettings(uid))
 
-    def test_ar_hidden_analyses(self):
-        # Calcium - Hidden not set
-        # Copper  - Hidden set to False
-        self.services[1].setHidden(False)
-        # Iron    - Hidden set to True
-        self.services[2].setHidden(True)
+        # Modify visibility for Iron in template
+        uid = self.services[2].UID();
+        sets = [{'uid': uid}]
+        self.artemplate.setAnalysisServicesSettings(sets)
+        self.assertTrue(self.artemplate.isAnalysisServiceHidden(uid))
+        self.assertFalse('hidden' in self.artemplate.getAnalysisServiceSettings(uid))
+        sets = [{'uid': uid, 'hidden': False}]
+        self.artemplate.setAnalysisServicesSettings(sets)
+        self.assertFalse(self.artemplate.isAnalysisServiceHidden(uid))
+        self.assertTrue('hidden' in self.artemplate.getAnalysisServiceSettings(uid))
+        sets = [{'uid': uid, 'hidden': True}]
+        self.artemplate.setAnalysisServicesSettings(sets)
+        self.assertTrue(self.artemplate.isAnalysisServiceHidden(uid))
+        self.assertTrue('hidden' in self.artemplate.getAnalysisServiceSettings(uid))
 
+        # Restore
+        self.artemplate.setAnalysisServicesSettings([])
+
+    def test_service_hidden_analysisrequest(self):
         # Input results
         # Client:       Happy Hills
         # SampleType:   Apple Pulp
@@ -166,150 +226,89 @@ class TestHiddenAnalyses(BikaFunctionalTestCase):
         self.assertFalse(ar.isAnalysisServiceHidden(services[0]))
         self.assertFalse(ar.getAnalysisServiceSettings(services[1]).get('hidden'))
         self.assertFalse(ar.isAnalysisServiceHidden(services[1]))
-        self.assertTrue(ar.getAnalysisServiceSettings(services[2]).get('hidden'))
+        self.assertFalse(ar.getAnalysisServiceSettings(services[2]).get('hidden'))
         self.assertTrue(ar.isAnalysisServiceHidden(services[2]))
-        uid = services[0]
-        sets = [{'uid': uid}]
-        ar.setAnalysisServicesSettings(sets)
-        self.assertFalse('hidden' in ar.getAnalysisServiceSettings(uid))
+
+        # For Calcium (unset)
+        uid = self.services[0].UID()
+        self.assertFalse(self.services[0].getHidden())
+        self.assertFalse(self.analysisprofile.isAnalysisServiceHidden(uid))
+        self.assertFalse('hidden' in self.artemplate.getAnalysisServiceSettings(uid))
+
+        # For Copper (False)
+        uid = self.services[1].UID()
+        self.assertFalse(self.services[1].getHidden())
         self.assertFalse(ar.isAnalysisServiceHidden(uid))
-        sets[0]['hidden'] = False
-        ar.setAnalysisServicesSettings(sets)
-        self.assertFalse(ar.getAnalysisServiceSettings(uid).get('hidden'))
-        sets[0]['hidden'] = True
-        ar.setAnalysisServicesSettings(sets)
-        self.assertTrue(ar.getAnalysisServiceSettings(uid).get('hidden'))
-        sets = []
-        ar.setAnalysisServicesSettings(sets)
         self.assertFalse('hidden' in ar.getAnalysisServiceSettings(uid))
-        uid = services[1]
+
+        # For Iron (True)
+        uid = self.services[2].UID()
+        self.assertTrue(self.services[2].getHidden())
+        self.assertTrue(ar.isAnalysisServiceHidden(uid))
+        self.assertFalse('hidden' in ar.getAnalysisServiceSettings(uid))
+
+        # Modify visibility for Calcium in AR
+        uid = self.services[0].UID();
         sets = [{'uid': uid}]
         ar.setAnalysisServicesSettings(sets)
+        self.assertFalse(ar.isAnalysisServiceHidden(uid))
         self.assertFalse('hidden' in ar.getAnalysisServiceSettings(uid))
-        sets[0]['hidden'] = False
+        sets = [{'uid': uid, 'hidden': False}]
         ar.setAnalysisServicesSettings(sets)
-        self.assertFalse(ar.getAnalysisServiceSettings(uid).get('hidden'))
-        sets[0]['hidden'] = True
+        self.assertFalse(ar.isAnalysisServiceHidden(uid))
+        self.assertTrue('hidden' in ar.getAnalysisServiceSettings(uid))
+        sets = [{'uid': uid, 'hidden': True}]
         ar.setAnalysisServicesSettings(sets)
-        self.assertTrue(ar.getAnalysisServiceSettings(uid).get('hidden'))
-        sets = []
-        ar.setAnalysisServicesSettings(sets)
-        self.assertFalse('hidden' in ar.getAnalysisServiceSettings(uid))
-        uid = services[2]
-        sets = [{'uid': uid}]
-        ar.setAnalysisServicesSettings(sets)
-        self.assertTrue(ar.getAnalysisServiceSettings(uid).get('hidden'))
-        sets[0]['hidden'] = False
-        ar.setAnalysisServicesSettings(sets)
-        self.assertFalse(ar.getAnalysisServiceSettings(uid).get('hidden'))
-        sets[0]['hidden'] = True
-        ar.setAnalysisServicesSettings(sets)
-        self.assertTrue(ar.getAnalysisServiceSettings(uid).get('hidden'))
-        sets = []
-        ar.setAnalysisServicesSettings(sets)
-        self.assertFalse('hidden' in ar.getAnalysisServiceSettings(uid))
+        self.assertTrue(ar.isAnalysisServiceHidden(uid))
+        self.assertTrue('hidden' in ar.getAnalysisServiceSettings(uid))
+        ar.setAnalysisServicesSettings([])
 
         # AR with profile with no changes
         values['Profile'] = self.analysisprofile.UID()
         ar = create_analysisrequest(client, request, values, services)
         self.assertFalse('hidden' in ar.getAnalysisServiceSettings(services[0]))
         self.assertFalse(ar.getAnalysisServiceSettings(services[1]).get('hidden'))
-        self.assertTrue(ar.getAnalysisServiceSettings(services[2]).get('hidden'))
-        uid = services[0]
-        sets = [{'uid': uid}]
-        ar.setAnalysisServicesSettings(sets)
+        self.assertFalse(ar.getAnalysisServiceSettings(services[2]).get('hidden'))
+        uid = self.services[0].UID()
+        self.assertFalse(self.services[0].getHidden())
+        self.assertFalse(ar.isAnalysisServiceHidden(uid))
         self.assertFalse('hidden' in ar.getAnalysisServiceSettings(uid))
-        sets[0]['hidden'] = False
-        ar.setAnalysisServicesSettings(sets)
-        self.assertFalse(ar.getAnalysisServiceSettings(uid).get('hidden'))
-        sets[0]['hidden'] = True
-        ar.setAnalysisServicesSettings(sets)
-        self.assertTrue(ar.getAnalysisServiceSettings(uid).get('hidden'))
-        sets = []
-        ar.setAnalysisServicesSettings(sets)
+        uid = self.services[1].UID()
+        self.assertFalse(self.services[1].getHidden())
+        self.assertFalse(ar.isAnalysisServiceHidden(uid))
         self.assertFalse('hidden' in ar.getAnalysisServiceSettings(uid))
-        uid = services[1]
-        sets = [{'uid': uid}]
-        ar.setAnalysisServicesSettings(sets)
-        self.assertFalse('hidden' in ar.getAnalysisServiceSettings(uid))
-        sets[0]['hidden'] = False
-        ar.setAnalysisServicesSettings(sets)
-        self.assertFalse(ar.getAnalysisServiceSettings(uid).get('hidden'))
-        sets[0]['hidden'] = True
-        ar.setAnalysisServicesSettings(sets)
-        self.assertTrue(ar.getAnalysisServiceSettings(uid).get('hidden'))
-        sets = []
-        ar.setAnalysisServicesSettings(sets)
-        self.assertFalse('hidden' in ar.getAnalysisServiceSettings(uid))
-        uid = services[2]
-        sets = [{'uid': uid}]
-        ar.setAnalysisServicesSettings(sets)
-        self.assertTrue(ar.getAnalysisServiceSettings(uid).get('hidden'))
-        sets[0]['hidden'] = False
-        ar.setAnalysisServicesSettings(sets)
-        self.assertFalse(ar.getAnalysisServiceSettings(uid).get('hidden'))
-        sets[0]['hidden'] = True
-        ar.setAnalysisServicesSettings(sets)
-        self.assertTrue(ar.getAnalysisServiceSettings(uid).get('hidden'))
-        sets = []
-        ar.setAnalysisServicesSettings(sets)
+        uid = self.services[2].UID()
+        self.assertTrue(self.services[2].getHidden())
+        self.assertTrue(ar.isAnalysisServiceHidden(uid))
         self.assertFalse('hidden' in ar.getAnalysisServiceSettings(uid))
 
-        # AR with profile and template, without changes
-        values['Profile'] = self.analysisprofile.UID()
-        values['Template'] = self.artemplate.UID()
+        # AR with template with no changes
+        values['Template'] = self.artemplate
+        del values['Profile']
         ar = create_analysisrequest(client, request, values, services)
         self.assertFalse('hidden' in ar.getAnalysisServiceSettings(services[0]))
         self.assertFalse(ar.getAnalysisServiceSettings(services[1]).get('hidden'))
-        self.assertTrue(ar.getAnalysisServiceSettings(services[2]).get('hidden'))
-        uid = services[0]
-        sets = [{'uid': uid}]
-        ar.setAnalysisServicesSettings(sets)
+        self.assertFalse(ar.getAnalysisServiceSettings(services[2]).get('hidden'))
+        uid = self.services[0].UID()
+        self.assertFalse(self.services[0].getHidden())
+        self.assertFalse(ar.isAnalysisServiceHidden(uid))
         self.assertFalse('hidden' in ar.getAnalysisServiceSettings(uid))
-        sets[0]['hidden'] = False
-        ar.setAnalysisServicesSettings(sets)
-        self.assertFalse(ar.getAnalysisServiceSettings(uid).get('hidden'))
-        sets[0]['hidden'] = True
-        ar.setAnalysisServicesSettings(sets)
-        self.assertTrue(ar.getAnalysisServiceSettings(uid).get('hidden'))
-        sets = []
-        ar.setAnalysisServicesSettings(sets)
+        uid = self.services[1].UID()
+        self.assertFalse(self.services[1].getHidden())
+        self.assertFalse(ar.isAnalysisServiceHidden(uid))
         self.assertFalse('hidden' in ar.getAnalysisServiceSettings(uid))
-        uid = services[1]
-        sets = [{'uid': uid}]
-        ar.setAnalysisServicesSettings(sets)
-        self.assertFalse('hidden' in ar.getAnalysisServiceSettings(uid))
-        sets[0]['hidden'] = False
-        ar.setAnalysisServicesSettings(sets)
-        self.assertFalse(ar.getAnalysisServiceSettings(uid).get('hidden'))
-        sets[0]['hidden'] = True
-        ar.setAnalysisServicesSettings(sets)
-        self.assertTrue(ar.getAnalysisServiceSettings(uid).get('hidden'))
-        sets = []
-        ar.setAnalysisServicesSettings(sets)
-        self.assertFalse('hidden' in ar.getAnalysisServiceSettings(uid))
-        uid = services[2]
-        sets = [{'uid': uid}]
-        ar.setAnalysisServicesSettings(sets)
-        self.assertTrue(ar.getAnalysisServiceSettings(uid).get('hidden'))
-        sets[0]['hidden'] = False
-        ar.setAnalysisServicesSettings(sets)
-        self.assertFalse(ar.getAnalysisServiceSettings(uid).get('hidden'))
-        sets[0]['hidden'] = True
-        ar.setAnalysisServicesSettings(sets)
-        self.assertTrue(ar.getAnalysisServiceSettings(uid).get('hidden'))
-        sets = []
-        ar.setAnalysisServicesSettings(sets)
+        uid = self.services[2].UID()
+        self.assertTrue(self.services[2].getHidden())
+        self.assertTrue(ar.isAnalysisServiceHidden(uid))
         self.assertFalse('hidden' in ar.getAnalysisServiceSettings(uid))
 
         # AR with profile, with changes
         values['Profile'] = self.analysisprofile.UID()
         del values['Template']
-        matrix = [[0, 1,-1],  # AS = Not set
-                  [0, 1, 0],  # AS = False
-                  [0, 1, 1]]
-        uid = services[0]
-        for i in matrix:
+        matrix = [[2, 1,-2],  # AS = Not set
+                  [2, 1,-2],  # AS = False
+                  [2, 1,-1]]
+        for i in range(len(matrix)):
             sets = {'uid': services[i]}
             opts = [0, 1, 2]
             for j in opts:
@@ -319,25 +318,28 @@ class TestHiddenAnalyses(BikaFunctionalTestCase):
                     sets['hidden'] = True
                 else:
                     del sets['hidden']
-                self.analysisprofile.setAnalysesSettings(sets)
+                self.analysisprofile.setAnalysisServicesSettings(sets)
                 ar = create_analysisrequest(client, request, values, services)
+                res = matrix[i][j]
+                if res < 0:
+                    self.assertFalse('hidden' in ar.getAnalysisServiceSettings(services[i]))
+                else:
+                    self.assertTrue('hidden' in ar.getAnalysisServiceSettings(services[i]))
+                if abs(res) == 1:
+                    self.assertTrue(ar.isAnalysisServiceHidden(services[i]))
+                elif abs(res) == 2:
+                    self.assertFalse(ar.isAnalysisServiceHidden(services[i]))
 
-                res = matrix[j]
-                if res == 0:
-                    self.assertFalse(ar.getAnalysisServiceSettings(services[i]).get('hidden'))
-                elif res == 1:
-                    self.assertTrue(ar.getAnalysisServiceSettings(services[i]).get('hidden'))
-                elif res == -1:
-                    self.assertFalse('hidden' not in ar.getAnalysisServiceSettings(services[i]))
+        # Restore
+        self.analysisprofile.setAnalysisServicesSettings([])
 
         # AR with template, with changes
         values['Template'] = self.artemplate.UID()
         del values['Profile']
-        matrix = [[0, 1,-1],  # AS = Not set
-                  [0, 1, 0],  # AS = False
-                  [0, 1, 1]]
-        uid = services[0]
-        for i in matrix:
+        matrix = [[2, 1,-2],  # AS = Not set
+                  [2, 1,-2],  # AS = False
+                  [2, 1,-1]]
+        for i in range(len(matrix)):
             sets = {'uid': services[i]}
             opts = [0, 1, 2]
             for j in opts:
@@ -347,16 +349,20 @@ class TestHiddenAnalyses(BikaFunctionalTestCase):
                     sets['hidden'] = True
                 else:
                     del sets['hidden']
-                self.artemplate.setAnalysesSettings(sets)
+                self.artemplate.setAnalysisServicesSettings(sets)
                 ar = create_analysisrequest(client, request, values, services)
+                res = matrix[i][j]
+                if res < 0:
+                    self.assertFalse('hidden' in ar.getAnalysisServiceSettings(services[i]))
+                else:
+                    self.assertTrue('hidden' in ar.getAnalysisServiceSettings(services[i]))
+                if abs(res) == 1:
+                    self.assertTrue(ar.isAnalysisServiceHidden(services[i]))
+                elif abs(res) == 2:
+                    self.assertFalse(ar.isAnalysisServiceHidden(services[i]))
 
-                res = matrix[j]
-                if res == 0:
-                    self.assertFalse(ar.getAnalysisServiceSettings(services[i]).get('hidden'))
-                elif res == 1:
-                    self.assertTrue(ar.getAnalysisServiceSettings(services[i]).get('hidden'))
-                elif res == -1:
-                    self.assertFalse('hidden' not in ar.getAnalysisServiceSettings(services[i]))
+        # Restore
+        self.artemplate.setAnalysisServicesSettings([])
 
 def test_suite():
     suite = unittest.TestSuite()
