@@ -162,10 +162,11 @@ class AnalysisProfileAnalysesWidget(TypesWidget):
             # Hidden analyses?
             outs = []
             hiddenans = form.get('Hidden', {})
-            for uid in service_uids:
-                hidden = hiddenans.get(uid, '')
-                hidden = True if hidden == 'on' else False
-                outs.append({'uid':uid, 'hidden':hidden})
+            if service_uids:
+                for uid in service_uids:
+                    hidden = hiddenans.get(uid, '')
+                    hidden = True if hidden == 'on' else False
+                    outs.append({'uid':uid, 'hidden':hidden})
             instance.setAnalysisServicesSettings(outs)
 
         return service_uids, {}
