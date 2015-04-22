@@ -153,7 +153,6 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 analysis = ar[service.getKeyword()]
                 analysis.setSamplePartition(part)
                 analysis.reindexObject()
-        self.review_states[0]['columns'].insert(1, 'Hidden')
 
         if new:
             for analysis in new:
