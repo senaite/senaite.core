@@ -1062,8 +1062,12 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
 
                     return unc
         return None
+  
 
 
+     
+
+	
     def getPrecision(self, result=None):
         """
         Returns the precision for the Analysis Service. If the
@@ -1071,7 +1075,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         set, the method will return the precision value set in the
         Schema. Otherwise, will calculate the precision value
         according to the Uncertainty and the result.
-        If Calculate Preciosion to Uncertainty is set but no result
+        If Calculate Precision to Uncertainty is set but no result
         provided neither uncertainty values are set, returns the
         fixed precision.
 

@@ -305,12 +305,16 @@ function AnalysisRequestAddView() {
 					var title = cc_titles[i];
 					var uid = cc_uids[i];
 					var del_btn_src = window.portal_url+"/++resource++bika.lims.images/delete.png";
-					var del_btn = "<img class='ar_deletebtn' src='"+del_btn_src+"' fieldName='"+fieldName+"' uid='"+uid+"'/>";
+					var del_btn = "<img class='ar_deletebtn' src='"+del_btn_src+"' fieldName='"+fieldName+"' uid='"+uid+"' onclick='customremove("+uid+")'/>";
 					var new_item = "<div class='reference_multi_item' uid='"+uid+"'>"+del_btn+title+"</div>";
 					$("#ar_"+column+"_CCContact-listing").append($(new_item));
 				}
 			});
 		}
+	}
+	function customremove(uid) {
+	    $('div[uid="'+uid+'"]').remove();
+		$('img[uid="'+uid+'"]').remove();
 	}
 
 	function modify_Specification_field_filter(column) {
