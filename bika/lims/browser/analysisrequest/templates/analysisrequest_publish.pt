@@ -26,8 +26,9 @@
                                 tal:content="python:format['title']"></option>
                     </tal:formats>
                 </select>
-                <a href='#' id='sel_format_info'><img tal:attributes='src python:portal.absolute_url()+"/++resource++bika.lims.images/info.png";'/></a>
-                <input type="checkbox" name="qcvisible" id='qcvisible' value="0"><span i18n:translate="">Show QC Analyses</span>
+                <a href='#' id='sel_format_info'><img tal:attributes='src python:portal.absolute_url()+"/++resource++bika.lims.images/info.png";'/></a><br/>
+                <input type="checkbox" name="qcvisible" id='qcvisible' value="0"><span i18n:translate="">Show QC Analyses</span><br/>
+                <input type="checkbox" name="hvisible" id='hvisible' value="0"><span i18n:translate="">Show Hidden Analyses</span>
             </div>
             <div id="sel_format_info_pane" style="display:none">
                 <p i18n:translate="">Refer to <a target="_blank" href="https://github.com/bikalabs/Bika-LIMS/wiki/Creating-new-report-templates">Creating new report templates</a> documentation from Bika LIMS wiki to get more or add your own report templates.</p>
@@ -67,6 +68,9 @@
             }
             #ar_publish_header #options_handler label {
                 padding:5px 10px 5px 10px;
+            }
+            #ar_publish_header #options_handler input {
+                padding:5px 10px 0px;
             }
             #ar_publish_header #ar_publish_summary {
                 padding-left:10px;

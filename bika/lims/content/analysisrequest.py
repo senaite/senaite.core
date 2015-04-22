@@ -1250,6 +1250,16 @@ schema = BikaSchema.copy() + Schema((
                            'richtext': _('Results Interpreation'),},
         widget = RichWidget(visible=False),
     ),
+    # Custom settings for the assigned analysis services
+    # https://jira.bikalabs.com/browse/LIMS-1324
+    # Fields:
+    #   - uid: Analysis Service UID
+    #   - hidden: True/False. Hide/Display in results reports
+    RecordsField('AnalysisServicesSettings',
+         required=0,
+         subfields=('uid', 'hidden',),
+         widget=ComputedWidget(visible=False),
+    ),
 )
 )
 
@@ -2031,6 +2041,55 @@ class AnalysisRequest(BaseFolder):
         else:
             row = {'uid': uid, 'richtext': ''};
         return row
+
+    def getAnalysisServiceSettings(self, uid):
+        """ Returns a dictionary with the settings for the analysis
+            service that match with the uid provided.
+            If there are no settings for the analysis service and
+            analysis requests:
+            1. looks for settings in AR's ARTemplate. If found, returns
+                the settings for the AnalysisService set in the Template
+            2. If no settings found, looks in AR's ARProfile. If found,
+                returns the settings for the AnalysisService from the
+                AR Profile. Otherwise, returns a one entry dictionary
+                with only the key 'uid'
+        """
+        sets = [s for s in self.getAnalysisServicesSettings() \
+                if s.get('uid','') == uid]
+
+        # Created by using an ARTemplate?
+        if not sets and self.getTemplate():
+            adv = self.getTemplate().getAnalysisServiceSettings(uid)
+            sets = [adv] if 'hidden' in adv else []
+
+        # Created by using an AR Profile?
+        if not sets and self.getProfile():
+            adv = self.getProfile().getAnalysisServiceSettings(uid)
+            sets = [adv] if 'hidden' in adv else []
+
+        return sets[0] if sets else {'uid': uid}
+
+    def isAnalysisServiceHidden(self, uid):
+        """ Checks if the analysis service that match with the uid
+            provided must be hidden in results.
+            If no hidden assignment has been set for the analysis in
+            this request, returns the visibility set to the analysis
+            itself.
+            Raise a TypeError if the uid is empty or None
+            Raise a ValueError if there is no hidden assignment in this
+                request or no analysis service found for this uid.
+        """
+        if not uid:
+            raise TypeError('None type or empty uid')
+        sets = self.getAnalysisServiceSettings(uid)
+        if 'hidden' not in sets:
+            uc = getToolByName(self, 'uid_catalog')
+            serv = uc(UID=uid)
+            if serv and len(serv) == 1:
+                return serv[0].getObject().getRawHidden()
+            else:
+                raise ValueError('%s is not valid' % uid)
+        return sets.get('hidden', False)
 
     def guard_unassign_transition(self):
         """Allow or disallow transition depending on our children's states

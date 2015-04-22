@@ -115,7 +115,7 @@ class AnalysisRequestPublishView(BrowserView):
             specified in the request ('template' parameter)
         """
         templates_dir = 'templates/reports'
-        embedt = self.request.get('template', self._DEFAULT_TEMPLATE)
+        embedt = self.request.form.get('template', self._DEFAULT_TEMPLATE)
         if embedt.find(':') >= 0:
             prefix, template = embedt.split(':')
             templates_dir = queryResourceDirectory('reports', prefix).directory
@@ -137,7 +137,7 @@ class AnalysisRequestPublishView(BrowserView):
             return the content from 'default.css'. If no css file found
             for the current template, returns empty string
         """
-        template = self.request.get('template', self._DEFAULT_TEMPLATE)
+        template = self.request.form.get('template', self._DEFAULT_TEMPLATE)
         content = ''
         if template.find(':') >= 0:
             prefix, template = template.split(':')
@@ -156,7 +156,12 @@ class AnalysisRequestPublishView(BrowserView):
     def isQCAnalysesVisible(self):
         """ Returns if the QC Analyses must be displayed
         """
-        return self.request.get('qcvisible', '0').lower() in ['true', '1']
+        return self.request.form.get('qcvisible', '0').lower() in ['true', '1']
+
+    def isHiddenAnalysesVisible(self):
+        """ Returns true if hidden analyses are visible
+        """
+        return self.request.form.get('hvisible', '0').lower() in ['true', '1']
 
     def _ar_data(self, ar, excludearuids=[]):
         """ Creates an ar dict, accessible from the view and from each
@@ -420,8 +425,17 @@ class AnalysisRequestPublishView(BrowserView):
         dm = ar.aq_parent.getDecimalMark()
         batch = ar.getBatch()
         workflow = getToolByName(self.context, 'portal_workflow')
+        showhidden = self.isHiddenAnalysesVisible()
         for an in ar.getAnalyses(full_objects=True,
                                  review_state=analysis_states):
+
+            # Omit hidden analyses?
+            if not showhidden:
+                serv = an.getService()
+                asets = ar.getAnalysisServiceSettings(serv.UID())
+                if asets.get('hidden'):
+                    # Hide analysis
+                    continue
 
             # Build the analysis-specific dict
             andict = self._analysis_data(an, dm)
