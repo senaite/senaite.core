@@ -2058,6 +2058,10 @@ class AnalysisRequest(BaseFolder):
 
         return sets[0] if sets else {'uid': uid}
 
+    def isAnalysisServiceHidden(self, uid):
+        sets = self.getAnalysisServiceSettings(uid)
+        return sets.get('hidden', False)
+
     def guard_unassign_transition(self):
         """Allow or disallow transition depending on our children's states
         """

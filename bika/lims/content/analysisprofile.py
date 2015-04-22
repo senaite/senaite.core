@@ -82,4 +82,8 @@ class AnalysisProfile(BaseContent):
                 if s.get('uid','') == uid]
         return sets[0] if sets else {'uid': uid}
 
+    def isAnalysisServiceHidden(self, uid):
+        sets = self.getAnalysisServiceSettings(uid)
+        return sets.get('hidden', False)
+
 registerType(AnalysisProfile, PROJECTNAME)
