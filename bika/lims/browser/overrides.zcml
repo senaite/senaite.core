@@ -4,19 +4,43 @@
            xmlns:browser="http://namespaces.zope.org/browser"
            xmlns:five="http://namespaces.zope.org/five">
 
-    <browser:page
-        for="OFS.interfaces.IApplication"
-        name="plone-overview"
-        class=".admin.Overview"
-        permission="zope.Public"
+    <!-- We have to use z3c.unconfigure to override the overridden plon-addsite configuration in CMFPlone/browser/override.zcml
+     because we want to make a bika's custom installation page -->
+
+   <configure package="Products.CMFPlone.browser">
+       <include package="z3c.unconfigure" file="meta.zcml" />
+       <unconfigure>
+            <browser:page
+                for="OFS.interfaces.IApplication"
+                name="plone-addsite"
+                class=".admin.AddPloneSite"
+                permission="zope2.ViewManagementScreens"
+                template="templates/plone-addsite.pt"
+            />
+
+            <browser:page
+                for="OFS.interfaces.IApplication"
+                name="plone-overview"
+                class=".admin.Overview"
+                permission="zope.Public"
+                template="templates/plone-overview.pt"
+            />
+        </unconfigure>
+   </configure>
+        <browser:page
+            for="OFS.interfaces.IApplication"
+            name="plone-addsite"
+            class="Products.CMFPlone.browser.admin.AddPloneSite"
+            permission="zope2.ViewManagementScreens"
+            template="templates/plone-addsite.pt"
         />
 
-    <browser:page
-        for="OFS.interfaces.IApplication"
-        name="plone-addsite"
-        class="Products.CMFPlone.browser.admin.AddPloneSite"
-        permission="zope2.ViewManagementScreens"
-        template="templates/plone-addsite.pt"
+        <browser:page
+            for="OFS.interfaces.IApplication"
+            name="plone-overview"
+            class="Products.CMFPlone.browser.admin.Overview"
+            permission="zope.Public"
+            template="templates/plone-overview.pt"
         />
 
 </configure>
