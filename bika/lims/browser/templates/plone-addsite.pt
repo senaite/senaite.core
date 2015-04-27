@@ -149,9 +149,7 @@
               </legend>
 
               <div class="formHelp" i18n:translate="">
-                  Select one of the follow configurations of Bika. You can
-                  also des/activate the add-ons after the site has been created using the
-                  Add-ons control panel.
+                  Select one of the following configurations of Bika. You can  also de/activate the add-ons once the site has been created from the Plone's add-ons setup view
               </div>
 
               <dl id="extension_ids">
@@ -187,7 +185,7 @@
           </tal:extensionprofiles>
       <div class="formControls">
         <input type="hidden" name="form.submitted:boolean" value="True" />
-        <input type="submit" name="submit" value="Install Selected Bika"
+        <input type="submit" name="submit" value="Install"
                i18n:attributes="value;" i18n:domain="bika" />
       </div>
 
