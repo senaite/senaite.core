@@ -21,7 +21,7 @@
 		</metal:title>
 
 		<metal:core fill-slot="content-core">
-			<form id="supplyorder_edit" name="edit" method="post" action="" tal:define="errors python:{}">
+			<form id="supplyorder_edit" method="post" action="" tal:define="errors python:{}">
 				<table class="invoice-header">
 					<tbody>
 						<tal:field content="structure python:view.field(field=view.orderDate)" />
