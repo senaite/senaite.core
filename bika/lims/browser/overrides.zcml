@@ -4,12 +4,32 @@
            xmlns:browser="http://namespaces.zope.org/browser"
            xmlns:five="http://namespaces.zope.org/five">
 
-    <browser:page
-        for="OFS.interfaces.IApplication"
-        name="plone-overview"
-        class=".admin.Overview"
-        permission="zope.Public"
-        />
+
+    <configure package="Products.CMFPlone.browser">
+        <!--
+        We have to use z3c.unconfigure to override the overridden
+        plone-addsite configuration in CMFPlone/browser/override.zcml
+        because we want to make a bika's custom installation page
+        -->
+        <include package="z3c.unconfigure" file="meta.zcml" />
+        <unconfigure>
+            <browser:page
+                for="OFS.interfaces.IApplication"
+                name="plone-addsite"
+                class=".admin.AddPloneSite"
+                permission="zope2.ViewManagementScreens"
+                template="templates/plone-addsite.pt"
+            />
+
+            <browser:page
+                for="OFS.interfaces.IApplication"
+                name="plone-overview"
+                class=".admin.Overview"
+                permission="zope.Public"
+                template="templates/plone-overview.pt"
+            />
+        </unconfigure>
+    </configure>
 
     <browser:page
         for="OFS.interfaces.IApplication"
@@ -17,6 +37,14 @@
         class="Products.CMFPlone.browser.admin.AddPloneSite"
         permission="zope2.ViewManagementScreens"
         template="templates/plone-addsite.pt"
-        />
+    />
+
+    <browser:page
+        for="OFS.interfaces.IApplication"
+        name="plone-overview"
+        class="Products.CMFPlone.browser.admin.Overview"
+        permission="zope.Public"
+        template="templates/plone-overview.pt"
+    />
 
 </configure>
