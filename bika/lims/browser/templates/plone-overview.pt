@@ -39,7 +39,7 @@
                                tal:attributes="href site/absolute_url"
                                title="Go to your installation"
                                i18n:attributes="title;"
-                               i18n:translate="">View your Bika LIMS installation</a>
+                               i18n:translate="">View your Bika installation</a>
                         </span>
                         <div class="upgrade-warning"
                              tal:condition="python:view.outdated(site)">
@@ -105,7 +105,7 @@
             </tal:block>
             <li tal:condition="not:sites">
                 <span i18n:translate="">
-                    Bika LIMS has not been installed yet:
+                    No Bika distribution has been installed yet:
                 </span>
                 <form id="add-plone-site"
                       method="get"

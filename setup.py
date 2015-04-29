@@ -59,6 +59,7 @@ setup(name='bika.lims',
           'collective.wtf',
           'WeasyPrint==0.19.2',
           'collective.progressbar',
+          'z3c.unconfigure==1.0.1',
       ],
       extras_require={
           'test': [
