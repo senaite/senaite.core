@@ -112,6 +112,17 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             return
         Analyses = objects.keys()
         prices = form.get("Price", [None])[0]
+
+        # Hidden analyses?
+        # https://jira.bikalabs.com/browse/LIMS-1324
+        outs = []
+        hiddenans = form.get('Hidden', {})
+        for uid in Analyses:
+            hidden = hiddenans.get(uid, '')
+            hidden = True if hidden == 'on' else False
+            outs.append({'uid':uid, 'hidden':hidden})
+        ar.setAnalysisServicesSettings(outs)
+
         specs = {}
         if form.get("min", None):
             for service_uid in Analyses:
@@ -142,6 +153,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 analysis = ar[service.getKeyword()]
                 analysis.setSamplePartition(part)
                 analysis.reindexObject()
+
         if new:
             for analysis in new:
                 # if the AR has progressed past sample_received, we need to bring it back.

@@ -45,6 +45,9 @@ class AnalysisRequestAnalysesView(BikaListingView):
             'Title': {'title': _('Service'),
                       'index': 'sortable_title',
                       'sortable': False, },
+            'Hidden': {'title': _('Hidden'),
+                       'sortable': False,
+                       'type': 'boolean', },
             'Price': {'title': _('Price'),
                       'sortable': False, },
             'Priority': {'title': _('Priority'),
@@ -58,7 +61,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
             'error': {'title': _('Permitted Error %')},
         }
 
-        columns = ['Title', ]
+        columns = ['Title', 'Hidden', ]
         ShowPrices = self.context.bika_setup.getShowPrices()
         if ShowPrices:
             columns.append('Price')
@@ -249,6 +252,12 @@ class AnalysisRequestAnalysesView(BikaListingView):
                 )
             if after_icons:
                 items[x]['after']['Title'] = after_icons
+
+
+            # Display analyses for this Analysis Service in results?
+            ser = self.context.getAnalysisServiceSettings(obj.UID())
+            items[x]['allow_edit'] = ['Hidden', ]
+            items[x]['Hidden'] = ser.get('hidden', obj.getHidden())
 
         self.categories.sort()
         return items
