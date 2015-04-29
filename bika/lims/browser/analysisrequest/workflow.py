@@ -317,6 +317,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         methods = self.request.form.get('Method', [{}])[0]
         instruments = self.request.form.get('Instrument', [{}])[0]
         analysts = self.request.form.get('Analyst', [{}])[0]
+        uncertainties = self.request.form.get('Uncertainty', [{}])[0]
         # discover which items may be submitted
         submissable = []
         for uid, analysis in selected_analyses.items():
@@ -355,7 +356,11 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
 
             # Need to save the analyst?
             if uid in analysts and analysis_active:
-                analysis.setAnalyst(analysts[uid]);
+                analysis.setAnalyst(analysts[uid])
+
+            # Need to save the uncertainty?
+            if uid in uncertainties and analysis_active:
+                analysis.setUncertainty(uncertainties[uid])
 
             if uid not in results or not results[uid]:
                 continue

@@ -1,5 +1,6 @@
 3.1.8 (unreleased)
 ------------------
+LIMS-1379: Allow manual uncertainty value input
 LIMS-1324: Allow to hide analyses in results reports
 LIMS-1754: Easy install for LIMS' add-ons was not possible
 LIMS-1741: Fixed unwanted overlay when trying to save supply order

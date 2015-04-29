@@ -33,6 +33,7 @@ from bika.lims.interfaces import IAnalysis, IDuplicateAnalysis, IReferenceAnalys
     IRoutineAnalysis
 from bika.lims.interfaces import IReferenceSample
 from bika.lims.utils import changeWorkflowState, formatDecimalMark
+from bika.lims.utils.analysis import get_significant_digits
 from bika.lims.workflow import skip
 from bika.lims.workflow import doActionFor
 from decimal import Decimal
@@ -181,6 +182,11 @@ schema = BikaSchema.copy() + Schema((
     ComputedField('InstrumentValid',
         expression = 'context.isInstrumentValid()'
     ),
+    FixedPointField('Uncertainty',
+        widget=DecimalWidget(
+            label = _("Uncertainty"),
+        ),
+    ),
 ),
 )
 
@@ -240,11 +246,28 @@ class Analysis(BaseContent):
         workflow = getToolByName(self, "portal_workflow")
         return workflow.getInfoFor(self, "review_state")
 
-    def getUncertainty(self, result=None):
+    def getDefaultUncertainty(self, result=None):
         """ Calls self.Service.getUncertainty with either the provided
             result value or self.Result
         """
         return self.getService().getUncertainty(result and result or self.getResult())
+
+    def getUncertainty(self, result=None):
+        """ Returns the uncertainty for this analysis and result.
+            Returns the value from Schema's Uncertainty field if the
+            Service has the option 'Allow manual uncertainty'. Otherwise,
+            do a callback to getDefaultUncertainty()
+        """
+        serv = self.getService()
+        schu = self.Schema().getField('Uncertainty').get(self)
+        if schu and serv.getAllowManualUncertainty() == True:
+            try:
+                schu = float(schu)
+                return schu
+            except ValueError:
+                # if uncertainty is not a number, return default value
+                return self.getDefaultUncertainty(result)
+        return self.getDefaultUncertainty(result)
 
     def getDependents(self):
         """ Return a list of analyses who depend on us
@@ -659,6 +682,29 @@ class Analysis(BaseContent):
 
         # Render numerical values
         return formatDecimalMark(format_numeric_result(self, result, sciformat=sciformat), decimalmark=decimalmark)
+
+    def getPrecision(self, result=None):
+        """
+        Returns the precision for the Analysis.
+        - ManualUncertainty not set: returns the precision from the
+            AnalysisService.
+        - ManualUncertainty set and Calculate Precision from Uncertainty
+          is also set in Analysis Service: calculates the precision of the
+          result according to the manual uncertainty set.
+        - ManualUncertainty set and Calculatet Precision from Uncertainty
+          not set in Analysis Service: returns the result as-is.
+        Further information at AnalysisService.getPrecision()
+        """
+        serv = self.getService()
+        schu = self.Schema().getField('Uncertainty').get(self)
+        if schu and serv.getAllowManualUncertainty() == True \
+            and serv.getPrecisionFromUncertainty() == True:
+            uncertainty = self.getUncertainty(result)
+            if uncertainty == 0:
+                return 1
+            return abs(get_significant_digits(uncertainty))
+        else:
+            return serv.getPrecision(result)
 
     def getAnalyst(self):
         """ Returns the identifier of the assigned analyst. If there is
