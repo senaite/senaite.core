@@ -305,6 +305,9 @@ class IMethods(Interface):
 
     ""
 
+class IMethod(Interface):
+
+    ""
 
 class ILabProducts(Interface):
 
