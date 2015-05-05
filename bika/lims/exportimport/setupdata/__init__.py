@@ -571,6 +571,10 @@ class Suppliers(WorksheetImporter):
                     AccountNumber=row.get('AccountNumber', ''),
                     BankName=row.get('BankName', ''),
                     BankBranch=row.get('BankBranch', ''),
+                    SWIFTcode=row.get('SWIFTcode', ''),
+                    IBN=row.get('IBN', ''),
+                    NIB=row.get('NIB', ''),
+                    Website=row.get('Website', ''),
                 )
                 self.fill_contactfields(row, obj)
                 self.fill_addressfields(row, obj)

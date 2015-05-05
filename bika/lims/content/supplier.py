@@ -22,6 +22,43 @@ schema = Organisation.schema.copy() + ManagedSchema((
             append_only = True,
         ),
     ),
+    StringField('Website',
+        searchable=1,
+        required=0,
+        widget=StringWidget(
+            visible={'view': 'visible', 'edit': 'visible'},
+            label=_('Website.'),
+        ),
+    ),
+    StringField('NIB',
+        searchable=1,
+        schemata = 'Bank details',
+        required=0,
+        widget=StringWidget(
+            visible={'view': 'visible', 'edit': 'visible'},
+            label=_('NIB'),
+        ),
+        validators=('NIBvalidator'),
+    ),
+    StringField('IBN',
+        searchable=1,
+        schemata ='Bank details',
+        required=0,
+        widget=StringWidget(
+            visible={'view': 'visible', 'edit': 'visible'},
+            label=_('IBN'),
+        ),
+        validators=('IBANvalidator'),
+    ),
+    StringField('SWIFTcode',
+        searchable=1,
+        required=0,
+        schemata ='Bank details',
+        widget=StringWidget(
+            visible={'view': 'visible', 'edit': 'visible'},
+            label=_('SWIFT code.'),
+        ),
+    ),
 ))
 schema['AccountNumber'].write_permission = ManageSuppliers
 
