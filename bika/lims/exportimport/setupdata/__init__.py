@@ -1219,6 +1219,8 @@ class Analysis_Services(WorksheetImporter):
                 Container=container,
                 Preservation=preservation,
                 Priority=priority,
+                CommercialID=row.get('CommercialID', ''),
+                ProtocolID=row.get('ProtocolID', '')
             )
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
