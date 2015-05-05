@@ -1000,7 +1000,17 @@ class Methods(WorksheetImporter):
                 obj.edit(
                     title=row['title'],
                     description=row.get('description', ''),
-                    Instructions=row.get('Instructions', ''))
+                    Instructions=row.get('Instructions', ''),
+                    MethodID=row.get('MethodID', ''),
+                    Accredited=row.get('Accredited', True),
+                )
+                # Obtain all created methods
+                catalog = getToolByName(self.context, 'portal_catalog')
+                methods_brains = catalog.searchResults({'portal_type': 'Method'})
+                # If a the new method has the same MethodID as a created method, remove MethodID value.
+                for methods in methods_brains:
+                    if methods.getObject().get('MethodID', '') != '' and methods.getObject.get('MethodID', '') == obj['MethodID']:
+                        obj.edit(MethodID='')
 
                 if row['MethodDocument']:
                     path = resource_filename(
