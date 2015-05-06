@@ -187,12 +187,12 @@ schema = BikaSchema.copy() + Schema((
             label = _("Uncertainty"),
         ),
     ),
-    FixedPointField('LowerLimitOfDetection',
+    FixedPointField('LowerDetectionLimit',
         widget=DecimalWidget(
             label = _("Lower Limit of Detection (LDL)"),
         ),
     ),
-    FixedPointField('UpperLimitOfDetection',
+    FixedPointField('UpperDetectionLimit',
         widget=DecimalWidget(
             label = _("Upper Limit of Detection (UDL)"),
         ),
@@ -289,7 +289,11 @@ class Analysis(BaseContent):
         serv = self.getService()
         dl = self.Schema().getField('LowerDetectionLimit').get(self)
         am = serv.getAllowManualDetectionLimit()
-        return dl if (dl and am) else serv.getLowerDetectionLimit()
+        dl = dl if (dl and am) else serv.getLowerDetectionLimit()
+        try:
+            return float(dl)
+        except:
+            return 0
 
     def getUpperDetectionLimit(self):
         """ Returns the Upper Detection Limit (UDL) that applies to
@@ -301,7 +305,11 @@ class Analysis(BaseContent):
         serv = self.getService()
         dl = self.Schema().getField('UpperDetectionLimit').get(self)
         am = serv.getAllowManualDetectionLimit()
-        return dl if (dl and am) else serv.getUpperDetectionLimit()
+        dl = dl if (dl and am) else serv.getUpperDetectionLimit()
+        try:
+            return float(dl)
+        except:
+            return 0
 
     def getDetectionLimits(self):
         """ Returns a two-value array with the limits of detection
@@ -727,12 +735,12 @@ class Analysis(BaseContent):
 
         # Below Lower Detection Limit (LDL)?
         ldl = self.getLowerDetectionLimit()
-        if result < ldl
+        if result < ldl:
             return formatDecimalMark('< %s' % ldl, decimalmark)
 
         # Above Upper Detection Limit (UDL)?
         udl = self.getUpperDetectionLimit()
-        if result > udl
+        if result > udl:
             return formatDecimalMark('> %s' % udl, decimalmark)
 
         # Render numerical values
