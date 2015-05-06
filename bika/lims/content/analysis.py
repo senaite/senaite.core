@@ -311,6 +311,39 @@ class Analysis(BaseContent):
         except:
             return 0
 
+    def isBelowLowerDetectionLimit(self):
+        """ Returns True if the result is below the Lower Detection
+            Limit or if Lower Detection Limit has been manually set
+        """
+        result = self.getResult()
+        if result and str(result).strip().startswith('<'):
+            return True
+        elif result:
+            ldl = self.getLowerDetectionLimit()
+            try:
+                result = float(result)
+                return result < ldl
+            except:
+                pass
+        return False
+
+    def isAboveUpperDetectionLimit(self):
+        """ Returns True if the result is above the Upper Detection
+            Limit or if Upper Detection Limit has been manually set
+        """
+        result = self.getResult()
+        if result and str(result).strip().startswith('>'):
+            return True
+        elif result:
+            udl = self.getUpperDetectionLimit()
+            try:
+                result = float(result)
+                return result > udl
+            except:
+                pass
+        return False
+
+
     def getDetectionLimits(self):
         """ Returns a two-value array with the limits of detection
             (LDL and UDL) that applies to this analysis in particular.
