@@ -1319,7 +1319,12 @@ class Analysis_Profiles(WorksheetImporter):
                 obj = _createObjectByType("AnalysisProfile", folder, tmpID())
                 obj.edit(title=row['title'],
                          description=row.get('description', ''),
-                         ProfileKey=row['ProfileKey'])
+                         ProfileKey=row['ProfileKey'],
+                         CommercialID=row.get('CommercialID', ''),
+                         AnalysisProfilePrice="%02f" % Float(row.get('AnalysisProfilePrice', '0.0')),
+                         AnalysisProfileVAT="%02f" % Float(row.get('AnalysisProfileVAT', '0.0')),
+                         UseAnalysisProfilePrice=row.get('UseAnalysisProfilePrice', False)
+                         )
                 obj.setService(self.profile_services[row['title']])
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
