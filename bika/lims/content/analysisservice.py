@@ -239,6 +239,45 @@ schema = BikaSchema.copy() + Schema((
                          "notation.  The default is 7."),
                  ),
     ),
+    FixedPointField('LowerDetectionLimit',
+                    schemata="Analysis",
+                    default='0.00',
+                    widget=DecimalWidget(
+                        label = _("Lower Detection Limit (LDL)"),
+                        description = _("The Lower Detection Limit is "
+                                        "the lowest value to which the "
+                                        "measured parameter can be "
+                                        "measured using the specified "
+                                        "testing methodology. Results "
+                                        "entered which are less than "
+                                        "this value will be reported "
+                                        "as < LDL")
+                    ),
+    ),
+    FixedPointField('UpperDetectionLimit',
+                schemata="Analysis",
+                default='0.00',
+                widget=DecimalWidget(
+                    label = _("Upper Detection Limit (UDL)"),
+                    description = _("The Upper Detection Limit is the "
+                                    "highest value to which the "
+                                    "measured parameter can be measured "
+                                    "using the specified testing "
+                                    "methodology. Results entered "
+                                    "which are greater than this value "
+                                    "will be reported as > UDL")
+                ),
+    ),
+    BooleanField('AllowManualDetectionLimit',
+             schemata="Analysis",
+             default=False,
+             widget=BooleanWidget(
+                label = _("Allow Manual Detection Limit input"),
+                description = _("Allow the analyst to manually "
+                                "replace the default Detection Limits "
+                                "(LDL and UDL) on results entry views"),
+             ),
+    ),
     BooleanField('ReportDryMatter',
                  schemata="Analysis",
                  default=False,
@@ -1078,12 +1117,12 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
 
                     return unc
         return None
-  
 
 
-     
 
-	
+
+
+
     def getPrecision(self, result=None):
         """
         Returns the precision for the Analysis Service. If the

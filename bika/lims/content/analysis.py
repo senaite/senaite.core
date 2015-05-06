@@ -187,6 +187,16 @@ schema = BikaSchema.copy() + Schema((
             label = _("Uncertainty"),
         ),
     ),
+    FixedPointField('LowerLimitOfDetection',
+        widget=DecimalWidget(
+            label = _("Lower Limit of Detection (LDL)"),
+        ),
+    ),
+    FixedPointField('UpperLimitOfDetection',
+        widget=DecimalWidget(
+            label = _("Upper Limit of Detection (UDL)"),
+        ),
+    ),
 ),
 )
 
@@ -268,6 +278,39 @@ class Analysis(BaseContent):
                 # if uncertainty is not a number, return default value
                 return self.getDefaultUncertainty(result)
         return self.getDefaultUncertainty(result)
+
+    def getLowerDetectionLimit(self):
+        """ Returns the Lower Detection Limit (LDL) that applies to
+            this analysis in particular. If no value set or the
+            analysis service doesn't allow manual input of detection
+            limits, returns the value set by default in the Analysis
+            Service
+        """
+        serv = self.getService()
+        dl = self.Schema().getField('LowerDetectionLimit').get(self)
+        am = serv.getAllowManualDetectionLimit()
+        return dl if (dl and am) else serv.getLowerDetectionLimit()
+
+    def getUpperDetectionLimit(self):
+        """ Returns the Upper Detection Limit (UDL) that applies to
+            this analysis in particular. If no value set or the
+            analysis service doesn't allow manual input of detection
+            limits, returns the value set by default in the Analysis
+            Service
+        """
+        serv = self.getService()
+        dl = self.Schema().getField('UpperDetectionLimit').get(self)
+        am = serv.getAllowManualDetectionLimit()
+        return dl if (dl and am) else serv.getUpperDetectionLimit()
+
+    def getDetectionLimits(self):
+        """ Returns a two-value array with the limits of detection
+            (LDL and UDL) that applies to this analysis in particular.
+            If no value set or the analysis service doesn't allow
+            manual input of detection limits, returns the value set by
+            default in the Analysis Service
+        """
+        return [getLowerDetectionLimit(), getUpperDetectionLimit()]
 
     def getDependents(self):
         """ Return a list of analyses who depend on us
