@@ -1061,6 +1061,8 @@ class Analysis(BaseContent):
             ReportDryMatter=self.getReportDryMatter(),
             Analyst=self.getAnalyst(),
             Instrument=self.getInstrument(),
+            LowerDetectionLimit=str(self.getLowerDetectionLimit()),
+            UpperDetectionLimit=str(self.getUpperDetectionLimit()),
             SamplePartition=self.getSamplePartition())
         analysis.unmarkCreationFlag()
 

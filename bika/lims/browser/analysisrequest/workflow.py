@@ -318,6 +318,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         instruments = self.request.form.get('Instrument', [{}])[0]
         analysts = self.request.form.get('Analyst', [{}])[0]
         uncertainties = self.request.form.get('Uncertainty', [{}])[0]
+        dlimits = self.request.form.get('DetectionLimit', [{}])[0]
         # discover which items may be submitted
         submissable = []
         for uid, analysis in selected_analyses.items():
@@ -361,6 +362,21 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             # Need to save the uncertainty?
             if uid in uncertainties and analysis_active:
                 analysis.setUncertainty(uncertainties[uid])
+
+            # Need to save the detection limit?
+            if uid in dlimits and analysis_active and dlimits[uid]:
+                dlimit = dlimits[uid]
+                rawres = analysis.getResult()
+                try:
+                    rawres = float(rawres)
+                except:
+                    rawres = None
+                if dlimit == '<':
+                    rawres = rawres if rawres else analysis.getLowerDetectionLimit()
+                    analysis.setLowerDetectionLimit(str(rawres))
+                elif dlimit == '>':
+                    rawres = rawres if rawres else analysis.getUpperDetectionLimit()
+                    analysis.setUpperDetectionLimit(str(rawres))
 
             if uid not in results or not results[uid]:
                 continue
