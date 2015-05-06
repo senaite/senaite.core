@@ -667,7 +667,9 @@ class Analysis(BaseContent):
         2. If the result is not floatable, return it without being formatted
         3. If the analysis specs has hidemin or hidemax enabled and the
            result is out of range, render result as '<min' or '>max'
-        4. Otherwise, render numerical value
+        4. If the result is below Lower Detection Limit, show '<LDL'
+        5. If the result is above Upper Detecion Limit, show '>UDL'
+        6. Otherwise, render numerical value
         specs param is optional. A dictionary as follows:
             {'min': <min_val>,
              'max': <max_val>,
@@ -722,6 +724,16 @@ class Analysis(BaseContent):
         # 3.2. If result is above max and hidemax enabled, return '>max'
         if abovemax:
             return formatDecimalMark('> %s' % hidemax, decimalmark)
+
+        # Below Lower Detection Limit (LDL)?
+        ldl = self.getLowerDetectionLimit()
+        if result < ldl
+            return formatDecimalMark('< %s' % ldl, decimalmark)
+
+        # Above Upper Detection Limit (UDL)?
+        udl = self.getUpperDetectionLimit()
+        if result > udl
+            return formatDecimalMark('> %s' % udl, decimalmark)
 
         # Render numerical values
         return formatDecimalMark(format_numeric_result(self, result, sciformat=sciformat), decimalmark=decimalmark)
