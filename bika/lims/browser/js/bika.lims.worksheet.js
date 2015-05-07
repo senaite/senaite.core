@@ -240,6 +240,8 @@ function WorksheetManageResultsView() {
         loadWideInterimsEventHandlers();
 
         loadRemarksEventHandlers();
+
+        loadDetectionLimitsEventHandlers();
     }
 
     function portalMessage(message) {
@@ -267,6 +269,21 @@ function WorksheetManageResultsView() {
             }
         });
         $("a.add-remark").click();
+    }
+
+    function loadDetectionLimitsEventHandlers() {
+        $('select[name^="DetectionLimit."]').change(function() {
+            var defdls = $(this).closest('td').find('input[id^="DefaultDLS."]').first().val();
+            var resfld = $(this).closest('tr').find('input[name^="Result."]')[0];
+            defdls = $.parseJSON(defdls);
+            if ($(this).val() == '<') {
+                $(resfld).val(defdls['min']);
+            } else if ($(this).val() == '>') {
+                $(resfld).val(defdls['max']);
+            } else {
+                $(resfld).val('');
+            }
+        });
     }
 
     function loadWideInterimsEventHandlers() {

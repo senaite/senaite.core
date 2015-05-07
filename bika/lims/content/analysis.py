@@ -368,7 +368,7 @@ class Analysis(BaseContent):
             manual input of detection limits, returns the value set by
             default in the Analysis Service
         """
-        return [getLowerDetectionLimit(), getUpperDetectionLimit()]
+        return [self.getLowerDetectionLimit(), self.getUpperDetectionLimit()]
 
     def getDependents(self):
         """ Return a list of analyses who depend on us

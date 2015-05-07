@@ -608,13 +608,19 @@ class AnalysesView(BikaListingView):
                     isudl = obj.isAboveUpperDetectionLimit()
                     dlval=''
                     if isldl or isudl:
-                        ldl = '<' if isldl else '>'
+                        dlval = '<' if isldl else '>'
                     item['allow_edit'].append('DetectionLimit')
                     item['DetectionLimit'] = dlval
                     choices=[{'ResultValue': '<', 'ResultText': '<'},
                              {'ResultValue': '>', 'ResultText': '>'}]
                     item['choices']['DetectionLimit'] = choices
                     self.columns['DetectionLimit']['toggle'] = True
+                    srv = obj.getService()
+                    defdls = {'min':srv.getLowerDetectionLimit(),
+                              'max':srv.getUpperDetectionLimit()}
+                    defin = '<input type="hidden" id="DefaultDLS.%s" value=\'%s\'/>'
+                    defin = defin % (obj.UID(), json.dumps(defdls))
+                    item['after']['DetectionLimit'] = defin
 
             else:
                 items[i]['Specification'] = ""
