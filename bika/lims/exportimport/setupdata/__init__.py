@@ -25,7 +25,7 @@ def lookup(context, portal_type, **kwargs):
 
 def check_for_required_columns(name, data, required):
     for column in required:
-        if not data[column]:
+        if not data.get(column, None):
             message = _("%s has no '%s' column." % (name, column))
             raise Exception(t(message))
 
@@ -398,10 +398,10 @@ class Lab_Products(WorksheetImporter):
             # Apply the row values
             obj.edit(
                 title=row['title'],
-                description=row['description'],
-                Volume=row['volume'],
-                Unit=str(row['unit']),
-                Price=str(row['price']),
+                description=row.get('description', ''),
+                Volume=row.get('volume', ''),
+                Unit=str(row.get('unit', '')),
+                Price=str(row.get('price', '')),
             )
             # Rename the new object
             renameAfterCreation(obj)
