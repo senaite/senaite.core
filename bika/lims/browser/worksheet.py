@@ -128,6 +128,7 @@ class WorksheetWorkflowAction(WorkflowAction):
         instruments = form.get('Instrument', [{}])[0]
         analysts = self.request.form.get('Analyst', [{}])[0]
         uncertainties = self.request.form.get('Uncertainty', [{}])[0]
+        dlimits = self.request.form.get('DetectionLimit', [{}])[0]
         selected = WorkflowAction._get_selected_items(self)
         workflow = getToolByName(self.context, 'portal_workflow')
         rc = getToolByName(self.context, REFERENCE_CATALOG)
@@ -199,6 +200,10 @@ class WorksheetWorkflowAction(WorkflowAction):
             # Need to save the uncertainty?
             if uid in uncertainties and analysis_active:
                 analysis.setUncertainty(uncertainties[uid])
+
+            # Need to save the detection limit?
+            if analysis_active and uid in dlimits and dlimits[uid]:
+                analysis.setDetectionLimitOperand(dlimits[uid])
 
             # Need to save results?
             if uid in results and results[uid] and allow_edit \
@@ -397,6 +402,10 @@ class WorksheetAnalysesView(AnalysesView):
             'Service': {'title': _('Analysis')},
             'getPriority': {'title': _('Priority')},
             'Method': {'title': _('Method')},
+            'DetectionLimit': {
+                'title': _('DL'),
+                'sortable': False,
+                'toggle': False},
             'Result': {'title': _('Result'),
                        'input_width': '6',
                        'input_class': 'ajax_calculate numeric',
@@ -423,6 +432,7 @@ class WorksheetAnalysesView(AnalysesView):
                         'Priority',
                         'Method',
                         'Instrument',
+                        'DetectionLimit',
                         'Result',
                         'Uncertainty',
                         'DueDate',
