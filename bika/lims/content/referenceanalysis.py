@@ -13,6 +13,7 @@ from bika.lims.config import STD_TYPES, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.subscribers import skip
+from bika.lims.utils.analysis import get_significant_digits
 from DateTime import DateTime
 from plone.app.blob.field import BlobField
 from Products.Archetypes.config import REFERENCE_CATALOG
