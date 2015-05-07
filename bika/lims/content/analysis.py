@@ -5,6 +5,7 @@
 from AccessControl import getSecurityManager
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
+from bika.lims import logger
 from bika.lims.utils.analysis import format_numeric_result
 from plone.indexer import indexer
 from Products.ATContentTypes.content import schemata
@@ -187,16 +188,9 @@ schema = BikaSchema.copy() + Schema((
             label = _("Uncertainty"),
         ),
     ),
-    FixedPointField('LowerDetectionLimit',
-        widget=DecimalWidget(
-            label = _("Lower Limit of Detection (LDL)"),
-        ),
+    StringField('DetectionLimitOperand',
     ),
-    FixedPointField('UpperDetectionLimit',
-        widget=DecimalWidget(
-            label = _("Upper Limit of Detection (UDL)"),
-        ),
-    ),
+
 ),
 )
 
@@ -279,6 +273,18 @@ class Analysis(BaseContent):
                 return self.getDefaultUncertainty(result)
         return self.getDefaultUncertainty(result)
 
+    def setDetectionLimitOperand(self, value):
+        """ Sets the detection limit operand for this analysis, so
+            the result will be interpreted as a detection limit.
+            The value will only be set if the Service has 'Allow manual
+            detection limit' field set to True, otherwise, the detection
+            limit operand will be set to None.
+        """
+        srv = self.getService()
+        md = srv.getAllowManualDetectionLimit() if srv else False
+        val = value if (md and value in ('>', '<')) else None
+        self.Schema().getField('DetectionLimitOperand').set(self, val)
+
     def getLowerDetectionLimit(self):
         """ Returns the Lower Detection Limit (LDL) that applies to
             this analysis in particular. If no value set or the
@@ -286,14 +292,17 @@ class Analysis(BaseContent):
             limits, returns the value set by default in the Analysis
             Service
         """
-        serv = self.getService()
-        dl = self.Schema().getField('LowerDetectionLimit').get(self)
-        am = serv.getAllowManualDetectionLimit()
-        dl = dl if (dl and am) else serv.getLowerDetectionLimit()
-        try:
-            return float(dl)
-        except:
-            return 0
+        operand = self.getDetectionLimitOperand()
+        if operand and operand == '<':
+            result = self.getResult()
+            try:
+                return float(result)
+            except:
+                logger.warn("The result for the analysis %s is a lower "
+                            "detection limit, but not floatable: '%s'. "
+                            "Returnig AS's default LDL." %
+                            (self.id, result))
+        return self.getService().getLowerDetectionLimit()
 
     def getUpperDetectionLimit(self):
         """ Returns the Upper Detection Limit (UDL) that applies to
@@ -302,19 +311,25 @@ class Analysis(BaseContent):
             limits, returns the value set by default in the Analysis
             Service
         """
-        serv = self.getService()
-        dl = self.Schema().getField('UpperDetectionLimit').get(self)
-        am = serv.getAllowManualDetectionLimit()
-        dl = dl if (dl and am) else serv.getUpperDetectionLimit()
-        try:
-            return float(dl)
-        except:
-            return 0
+        operand = self.getDetectionLimitOperand()
+        if operand and operand == '>':
+            result = self.getResult()
+            try:
+                return float(result)
+            except:
+                logger.warn("The result for the analysis %s is a lower "
+                            "detection limit, but not floatable: '%s'. "
+                            "Returnig AS's default LDL." %
+                            (self.id, result))
+        return self.getService().getLowerDetectionLimit()
 
     def isBelowLowerDetectionLimit(self):
         """ Returns True if the result is below the Lower Detection
             Limit or if Lower Detection Limit has been manually set
         """
+        dl = self.getDetectionLimitOperand()
+        if dl and dl == '<':
+            return True
         result = self.getResult()
         if result and str(result).strip().startswith('<'):
             return True
@@ -331,6 +346,9 @@ class Analysis(BaseContent):
         """ Returns True if the result is above the Upper Detection
             Limit or if Upper Detection Limit has been manually set
         """
+        dl = self.getDetectionLimitOperand()
+        if dl and dl == '>':
+            return True
         result = self.getResult()
         if result and str(result).strip().startswith('>'):
             return True
@@ -342,7 +360,6 @@ class Analysis(BaseContent):
             except:
                 pass
         return False
-
 
     def getDetectionLimits(self):
         """ Returns a two-value array with the limits of detection
@@ -389,7 +406,32 @@ class Analysis(BaseContent):
     def setResult(self, value, **kw):
         # Always update ResultCapture date when this field is modified
         self.setResultCaptureDate(DateTime())
-        self.getField('Result').set(self, value, **kw)
+        # Only allow DL if manually enabled in AS
+        val = value
+        if val and (val.strip().startswith('>') or val.strip().startswith('<')):
+            oper = '<' if val.strip().startswith('<') else '>'
+            srv = self.getService()
+            if srv and srv.getAllowManualDetectionLimit():
+                # DL allowed, try to remove the operator and set the
+                # result as a detection limit
+                try:
+                    val = val.replace(oper, '', 1);
+                    val = str(float(val))
+                    self.Schema().getField('DetectionLimitOperand').set(self, oper)
+                except:
+                    val = value
+            else:
+                # DL not allowed, try to remove the operator, but only
+                # if the result is floatable.
+                try:
+                    val = val.replace(oper, '', 1);
+                    val = str(float(val))
+                except:
+                    val = value
+        elif not val:
+            # Reset DL
+            self.Schema().getField('DetectionLimitOperand').set(self, None)
+        self.getField('Result').set(self, val, **kw)
 
     def getSample(self):
         # ReferenceSample cannot provide a 'getSample'
@@ -704,13 +746,14 @@ class Analysis(BaseContent):
 
     def getFormattedResult(self, specs=None, decimalmark='.', sciformat=1):
         """Formatted result:
-        1. Print ResultText of matching ResultOptions
-        2. If the result is not floatable, return it without being formatted
-        3. If the analysis specs has hidemin or hidemax enabled and the
+        1. If the result is a detection limit, returns '< LDL' or '> UDL'
+        2. Print ResultText of matching ResultOptions
+        3. If the result is not floatable, return it without being formatted
+        4. If the analysis specs has hidemin or hidemax enabled and the
            result is out of range, render result as '<min' or '>max'
-        4. If the result is below Lower Detection Limit, show '<LDL'
-        5. If the result is above Upper Detecion Limit, show '>UDL'
-        6. Otherwise, render numerical value
+        5. If the result is below Lower Detection Limit, show '<LDL'
+        6. If the result is above Upper Detecion Limit, show '>UDL'
+        7. Otherwise, render numerical value
         specs param is optional. A dictionary as follows:
             {'min': <min_val>,
              'max': <max_val>,
@@ -725,22 +768,35 @@ class Analysis(BaseContent):
                           By default 1
         """
         result = self.getResult()
+
+        # 1. The result is a detection limit, return '< LDL' or '> UDL'
+        dl = self.getDetectionLimitOperand()
+        if dl:
+            try:
+                result = float(result)
+                return formatDecimalMark('%s %s' % (dl, result), decimalmark)
+            except:
+                logger.warn("The result for the analysis %s is a "
+                            "detection limit, but not floatable: %s" %
+                            (self.id, result))
+                return formatDecimalMark(result, decimalmark=decimalmark)
+
         service = self.getService()
         choices = service.getResultOptions()
 
-        # 1. Print ResultText of matching ResulOptions
+        # 2. Print ResultText of matching ResulOptions
         match = [x['ResultText'] for x in choices
                  if str(x['ResultValue']) == str(result)]
         if match:
             return match[0]
 
-        # 2. If the result is not floatable, return it without being formatted
+        # 3. If the result is not floatable, return it without being formatted
         try:
             result = float(result)
         except:
             return formatDecimalMark(result, decimalmark=decimalmark)
 
-        # 3. If the analysis specs has enabled hidemin or hidemax and the
+        # 4. If the analysis specs has enabled hidemin or hidemax and the
         #    result is out of range, render result as '<min' or '>max'
         belowmin = False
         abovemax = False
@@ -758,11 +814,11 @@ class Analysis(BaseContent):
             abovemax = False
             pass
 
-        # 3.1. If result is below min and hidemin enabled, return '<min'
+        # 4.1. If result is below min and hidemin enabled, return '<min'
         if belowmin:
             return formatDecimalMark('< %s' % hidemin, decimalmark)
 
-        # 3.2. If result is above max and hidemax enabled, return '>max'
+        # 4.2. If result is above max and hidemax enabled, return '>max'
         if abovemax:
             return formatDecimalMark('> %s' % hidemax, decimalmark)
 
@@ -1052,7 +1108,6 @@ class Analysis(BaseContent):
             Service=self.getService(),
             Calculation=self.getCalculation(),
             InterimFields=self.getInterimFields(),
-            Result=self.getResult(),
             ResultDM=self.getResultDM(),
             Retested=True,  # True
             MaxTimeAllowed=self.getMaxTimeAllowed(),
@@ -1061,9 +1116,9 @@ class Analysis(BaseContent):
             ReportDryMatter=self.getReportDryMatter(),
             Analyst=self.getAnalyst(),
             Instrument=self.getInstrument(),
-            LowerDetectionLimit=str(self.getLowerDetectionLimit()),
-            UpperDetectionLimit=str(self.getUpperDetectionLimit()),
             SamplePartition=self.getSamplePartition())
+        analysis.setDetectionLimitOperand(self.getDetectionLimitOperand())
+        analysis.setResult(self.getResult())
         analysis.unmarkCreationFlag()
 
         # zope.event.notify(ObjectInitializedEvent(analysis))
