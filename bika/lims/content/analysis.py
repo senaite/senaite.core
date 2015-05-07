@@ -321,7 +321,7 @@ class Analysis(BaseContent):
                             "detection limit, but not floatable: '%s'. "
                             "Returnig AS's default LDL." %
                             (self.id, result))
-        return self.getService().getLowerDetectionLimit()
+        return self.getService().getUpperDetectionLimit()
 
     def isBelowLowerDetectionLimit(self):
         """ Returns True if the result is below the Lower Detection
