@@ -602,6 +602,7 @@ class AnalysesView(BikaListingView):
                 # LIMS-1700. Allow manual input of Detection Limits
                 # https://jira.bikalabs.com/browse/LIMS-1700
                 if can_edit_analysis and \
+                    hasattr(obj, 'getDetectionLimitOperand') and \
                     hasattr(service, 'getAllowManualDetectionLimit') and \
                     service.getAllowManualDetectionLimit() == True:
                     isldl = obj.isBelowLowerDetectionLimit()

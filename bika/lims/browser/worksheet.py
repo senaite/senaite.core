@@ -397,6 +397,10 @@ class WorksheetAnalysesView(AnalysesView):
             'Service': {'title': _('Analysis')},
             'getPriority': {'title': _('Priority')},
             'Method': {'title': _('Method')},
+            'DetectionLimit': {
+                'title': _('DL'),
+                'sortable': False,
+                'toggle': False},
             'Result': {'title': _('Result'),
                        'input_width': '6',
                        'input_class': 'ajax_calculate numeric',
@@ -423,6 +427,7 @@ class WorksheetAnalysesView(AnalysesView):
                         'Priority',
                         'Method',
                         'Instrument',
+                        'DetectionLimit',
                         'Result',
                         'Uncertainty',
                         'DueDate',
