@@ -54,7 +54,53 @@ function CalculationUtils() {
             // collect all form results into a hash (by analysis UID)
             var results = {};
             $.each($("td:not(.state-retracted) input[field='Result'], td:not(.state-retracted) select[field='Result']"), function(i, e){
-                results[$(e).attr("uid")] = $(e).val();
+                var tr = $(e).closest('tr');
+                var result = $(e).val();
+                var andls = $.parseJSON($(tr).find('input[id^="AnalysisDLS."]').val());
+                var dlop = $(tr).find('select[name^="DetectionLimit."]')
+                if (dlop.length > 0) {
+                    // The analysis is under edition, give priority to
+                    // the current values instead of AnalysisDLS values
+                    andls.is_ldl = false;
+                    andls.is_udl = false;
+                    andls.below_ldl = false;
+                    andls.above_udl = false;
+                    if (result.lastIndexOf('<', 0) === 0) {
+                        // Trying to create a LDL directly without using the selection list
+                        var res = result.substring(1);
+                        if (parseFloat(res) != "NaN") {
+                            // Yep, a manually created LDL
+                            result = ''+parseFloat(res);
+                            andls.is_ldl = true;
+                            andls.below_ldl = true;
+                        }
+                    } else if (result.lastIndexOf('>', 0) === 0) {
+                        // Trying to create an UDL directly
+                        var res = result.substring(1);
+                        if (parseFloat(res) != "NaN") {
+                            // Yep, a manually created UDL
+                            result = ''+parseFloat(res);
+                            andls.is_udl = true;
+                            andls.above_udl = true;
+                        }
+                    } else if (parseFloat(result) != "NaN") {
+                        // The result is a Detection Limit
+                        dlop = dlop.first().val().trim();
+                        andls.is_ldl = dlop == '<';
+                        andls.is_udl = dlop == '>';
+                        andls.below_ldl = andls.is_ldl;
+                        andls.above_ldl = andls.is_udl;
+                    }
+                }
+                var mapping = {
+                                KEYWORD:        $(e).attr('objectid'),
+                                RESULT:         result,
+                                LDL:            andls.is_ldl ? result : andls.default_ldl,
+                                UDL:            andls.is_udl ? result : andls.default_udl,
+                                BELOWLDL:       andls.below_ldl,
+                                ABOVEUDL:       andls.above_udl,
+                            };
+                results[$(e).attr("uid")] = mapping;
             });
 
             options = {

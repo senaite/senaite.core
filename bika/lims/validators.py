@@ -247,7 +247,9 @@ class FormulaValidator:
                         mapping={'keyword': safe_unicode(keyword)})
                 return to_utf8(translate(msg))
 
-        # Wildcards.
+        # Wildcards
+        # LIMS-1769 Allow to use LDL and UDL in calculations
+        # https://jira.bikalabs.com/browse/LIMS-1769
         allowedwds = ['LDL', 'UDL', 'BELOWLDL', 'ABOVEUDL']
         keysandwildcards = re.compile(r"\[([^\]]+)\]").findall(value)
         keysandwildcards = [k for k in keysandwildcards if '.' in k]

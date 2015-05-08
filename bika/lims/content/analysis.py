@@ -370,6 +370,20 @@ class Analysis(BaseContent):
         """
         return [self.getLowerDetectionLimit(), self.getUpperDetectionLimit()]
 
+    def isLowerDetectionLimit(self):
+        """ Returns True if the result for this analysis represents
+            a Lower Detection Limit. Otherwise, returns False
+        """
+        return self.isBelowLowerDetectionLimit() and \
+                obj.getDetectionLimitOperand() == '<'
+
+    def isUpperDetectionLimit(self):
+        """ Returns True if the result for this analysis represents
+            an Upper Detection Limit. Otherwise, returns False
+        """
+        return self.isBelowLowerDetectionLimit() and \
+                obj.getDetectionLimitOperand() == '>'
+
     def getDependents(self):
         """ Return a list of analyses who depend on us
             to calculate their result
