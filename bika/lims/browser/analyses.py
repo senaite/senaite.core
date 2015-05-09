@@ -641,9 +641,9 @@ class AnalysesView(BikaListingView):
                         dls['above_udl'] = obj.isBelowLowerDetectionLimit()
                         dls['is_ldl'] = obj.isLowerDetectionLimit()
                         dls['is_udl'] = obj.isUpperDetectionLimit()
-                        dls['default_ldl'] = srv.getLowerDetectionLimit()
-                        dls['default_udl'] = srv.getUpperDetectionLimit()
-                        dls['manual_allowed'] = srv.getAllowManualDetectionLimit()
+                        dls['default_ldl'] = service.getLowerDetectionLimit()
+                        dls['default_udl'] = service.getUpperDetectionLimit()
+                        dls['manual_allowed'] = service.getAllowManualDetectionLimit()
                     dlsin = '<input type="hidden" id="AnalysisDLS.%s" value=\'%s\'/>'
                     dlsin = dlsin % (obj.UID(), json.dumps(dls))
                     item['after']['Result'] = dlsin

@@ -69,7 +69,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
 
     def calculate(self, uid=None):
         analysis = self.analyses[uid]
-        form_result = self.current_results[uid]
+        form_result = self.current_results[uid]['result']
         service = analysis.getService()
         calculation = service.getCalculation()
         if analysis.portal_type == 'ReferenceAnalysis':
@@ -111,18 +111,38 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                 if dependency_uid in self.ignore_uids:
                     unsatisfied = True
                     break
-                result = self.current_results.get(dependency_uid, dependency.getResult())
-                if result == '':
+
+                # LIMS-1768. Allow to use LDL and UDL in calculations.
+                # https://jira.bikalabs.com/browse/LIMS-1769
+                analysisvalues = {}
+                if dependency_uid in self.current_results:
+                    analysisvalues = self.current_results[dependency_uid]
+                else:
+                    # Retrieve the result and DLs from the analysis
+                    analysisvalues = {
+                        'keyword':  dependency.getKeyword(),
+                        'result':   dependency.getResult(),
+                        'ldl':      dependency.getLowerDetectionLimit(),
+                        'udl':      dependency.getUpperDetectionLimit(),
+                        'belowldl': dependency.isBelowLowerDetectionLimit(),
+                        'aboveudl': dependency.isAboveUpperDetectionLimit(),
+                    }
+                if analysisvalues['result']=='':
                     unsatisfied = True
-                    break
-                key = dependency.getService().getKeyword()
+                    break;
+                key = analysisvalues.get('keyword',dependency.getService().getKeyword())
 
                 # Analysis result
                 # All result mappings must be float, or they are ignored.
                 try:
-                    mapping[key] = float(self.current_results[dependency_uid])
+                    mapping[key] = float(analysisvalues.get('result'))
+                    mapping['%s.%s' % (key, 'RESULT')] = float(analysisvalues.get('result'))
+                    mapping['%s.%s' % (key, 'LDL')] = float(analysisvalues.get('ldl'))
+                    mapping['%s.%s' % (key, 'UDL')] = float(analysisvalues.get('udl'))
+                    mapping['%s.%s' % (key, 'BELOWLDL')] = int(analysisvalues.get('belowldl'))
+                    mapping['%s.%s' % (key, 'ABOVEUDL')] = int(analysisvalues.get('aboveudl'))
                 except:
-                    # If result is not floatable, then abort!
+                    # If not floatable, then abort!
                     unsatisfied = True
                     break
 
@@ -256,6 +276,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                 except ValueError:
                     abovemax = False
                     pass
+
         if belowmin is True:
             Result['formatted_result'] = '< %s' % hidemin
         elif abovemax is True:
