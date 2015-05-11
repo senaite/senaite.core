@@ -8,6 +8,7 @@ from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IResultOutOfRange
 from bika.lims.utils import to_utf8, encode_header, createPdf, attachPdf
+from bika.lims.utils import isnumber
 from DateTime import DateTime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -504,6 +505,7 @@ class AnalysisRequestPublishView(BrowserView):
                   'point_of_capture': to_utf8(POINTS_OF_CAPTURE.getValue(service.getPointOfCapture())),
                   'category': to_utf8(service.getCategoryTitle()),
                   'result': analysis.getResult(),
+                  'isnumber': isnumber(analysis.getResult()),
                   'unit': to_utf8(service.getUnit()),
                   'formatted_unit': format_supsub(to_utf8(service.getUnit())),
                   'capture_date': analysis.getResultCaptureDate(),
