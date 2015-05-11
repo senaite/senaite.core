@@ -95,6 +95,7 @@ function AnalysisRequestPublishView() {
         });
 
         load_barcodes();
+        load_pagination();
 
         var invalidbackurl = window.portal_url + '/++resource++bika.lims.images/report_invalid_back.png';
         $('.ar-invalid').css('background', "url('"+invalidbackurl+"') repeat scroll #ffffff");
@@ -129,6 +130,16 @@ function AnalysisRequestPublishView() {
         });
     }
 
+    function load_pagination() {
+        $(".paginated-report").each(function(i) {
+            var numpages = $(this).find('.page-footer').length;
+            $(this).find('.page-total-count').html(numpages);
+            $(this).find('.page-current-num').each(function(i) {
+                $(this).html(i+1);
+            });
+        });
+    }
+
     function reloadReport() {
         var url = window.location.href;
         var template = $('#sel_format').val();
@@ -152,6 +163,7 @@ function AnalysisRequestPublishView() {
             $('#report').html(htmldata);
             $('#report').fadeTo('fast', 1);
             load_barcodes();
+            load_pagination();
         });
     }
 }
