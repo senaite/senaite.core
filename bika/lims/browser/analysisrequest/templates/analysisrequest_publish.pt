@@ -147,6 +147,9 @@
                 color:#000;
                 font-weight:normal;
             }
+            .clearfix {
+                clear:both;
+            }
             @media print {
                 html {
                     background-color:#fff;

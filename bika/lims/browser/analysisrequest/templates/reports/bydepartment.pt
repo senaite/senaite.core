@@ -389,6 +389,7 @@
     <div tal:condition="python:contact.get('pubpref','') != '' and 'email' in contact['pubpref']" i18n:translate="">Methods of analysis available by clicking on the 'Request' link</div>
 </div>
 <div class="footer" tal:content="structure analysisrequest/footer"></div>
+<div class="clearfix"></div>
 <div class="page-break"></div>
 </tal:department>
 </tal:report>
