@@ -408,6 +408,7 @@
          class="manager-info">
          <tal:manager tal:define="rownum repeat/manager/number;
                          email python:managers[manager]['email'];
+                         jobtitle python:managers[manager]['job_title'];
                          phone python:managers[manager]['phone'];
                          department python:managers[manager]['departments'];
                          signature python:managers[manager]['signature'];">
@@ -416,6 +417,10 @@
                  tal:attributes="src string:${signature}" style="height:75px"/>
             <br/>
             <span class="manager-fullname" tal:content="python:managers[manager]['name']">Joe Blogs</span>
+            <br tal:condition="jobtitle">
+            <span class="manager-jobtitle"
+                tal:condition="jobtitle"
+                tal:content="jobtitle"></span>
             <br tal:condition="email"/>
             <span class="manager-email" tal:condition="email">
                 <a tal:attributes="href string:mailto:${email}"
