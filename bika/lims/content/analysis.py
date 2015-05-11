@@ -586,19 +586,22 @@ class Analysis(BaseContent):
                     # Try to calculate the dependency result
                     dependency.calculateResult(override, cascade)
                     result = dependency.getResult()
-                    if result:
-                        try:
-                            result = float(str(result))
-                            mapping[dependency.getKeyword()] = result
-                        except:
-                            return False
                 else:
                     return False
-            else:
-                # Result must be float
+            if result:
                 try:
                     result = float(str(result))
-                    mapping[dependency.getKeyword()] = result
+                    key = dependency.getKeyword()
+                    ldl = dependency.getLowerDetectionLimit()
+                    udl = dependency.getUpperDetectionLimit()
+                    bdl = dependency.isBelowLowerDetectionLimit()
+                    adl = dependency.isAboveUpperDetectionLimit()
+                    mapping[key]=result
+                    mapping['%s.%s' % (key, 'RESULT')]=ivalue
+                    mapping['%s.%s' % (key, 'LDL')]=ldl
+                    mapping['%s.%s' % (key, 'UDL')]=udl
+                    mapping['%s.%s' % (key, 'BELOWLDL')]=int(bdl)
+                    mapping['%s.%s' % (key, 'ABOVEUDL')]=int(adl)
                 except:
                     return False
 

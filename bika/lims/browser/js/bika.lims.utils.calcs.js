@@ -58,7 +58,7 @@ function CalculationUtils() {
                 var result = $(e).val();
 
                 /**
-                 * LIMS-1768. Allow to use LDL and UDL in calculations.
+                 * LIMS-1769. Allow to use LDL and UDL in calculations.
                  * https://jira.bikalabs.com/browse/LIMS-1769
                  */
                 var andls = $.parseJSON($(tr).find('input[id^="AnalysisDLS."]').val());
