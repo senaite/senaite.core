@@ -6,6 +6,7 @@ from bika.lims.utils.analysisrequest import create_analysisrequest
 from bika.lims.workflow import doActionFor
 from plone.app.testing import login, logout
 from plone.app.testing import TEST_USER_NAME
+from Products.CMFCore.utils import getToolByName
 import unittest
 
 try:
@@ -46,6 +47,296 @@ class TestLimitDetections(BikaFunctionalTestCase):
             s.setUpperDetectionLimit(str(1000))
         logout()
         super(TestLimitDetections, self).tearDown()
+
+    def test_ar_manage_results_detectionlimit_selector_manual(self):
+        cases = [
+
+            # ROUND 1 ---------------------
+            {'min'               : '10',
+             'max'               : '20',
+             'displaydl'         : False,
+             'manual'            : False,
+             'input'             : '5',
+             'expresult'         : 5.0,
+             'expformattedresult': '< 10.0',
+             'isbelowldl'        : True,
+             'isaboveudl'        : False,
+             'isldl'             : False,
+             'isudl'             : False},
+
+            {'min'               : '10',
+             'max'               : '20',
+             'displaydl'         : False,
+             'manual'            : False,
+             'input'             : '15',
+             'expresult'         : 15.0,
+             'expformattedresult': '15.0',
+             'isbelowldl'        : False,
+             'isaboveudl'        : False,
+             'isldl'             : False,
+             'isudl'             : False},
+
+            {'min'               : '10',
+             'max'               : '20',
+             'displaydl'         : False,
+             'manual'            : False,
+             'input'             : '25',
+             'expresult'         : 25.0,
+             'expformattedresult': '> 20.0',
+             'isbelowldl'        : False,
+             'isaboveudl'        : True,
+             'isldl'             : False,
+             'isudl'             : False},
+
+            {'min'               : '10',
+             'max'               : '20',
+             'displaydl'         : False,
+             'manual'            : False,
+             'input'             : '<5',
+             'expresult'         : 5.0, # '<' assignment not allowed
+             'expformattedresult': '< 10.0',
+             'isbelowldl'        : True,
+             'isaboveudl'        : False,
+             'isldl'             : False,
+             'isudl'             : False},
+
+            {'min'               : '10',
+             'max'               : '20',
+             'displaydl'         : False,
+             'manual'            : False,
+             'input'             : '<15',
+             'expresult'         : 15.0, # '<' assignment not allowed
+             'expformattedresult': '15.0',
+             'isbelowldl'        : False,
+             'isaboveudl'        : False,
+             'isldl'             : False,
+             'isudl'             : False},
+
+            {'min'               : '10',
+             'max'               : '20',
+             'displaydl'         : False,
+             'manual'            : False,
+             'input'             : '>15',
+             'expresult'         : 15.0, # '>' assignment not allowed
+             'expformattedresult': '15.0',
+             'isbelowldl'        : False,
+             'isaboveudl'        : False,
+             'isldl'             : False,
+             'isudl'             : False},
+
+            {'min'               : '10',
+             'max'               : '20',
+             'displaydl'         : False,
+             'manual'            : False,
+             'input'             : '25',
+             'expresult'         : 25.0, # '>' assignment not allowed
+             'expformattedresult': '> 20.0',
+             'isbelowldl'        : False,
+             'isaboveudl'        : True,
+             'isldl'             : False,
+             'isudl'             : False},
+
+            # ROUND 2 ---------------------
+            {'min'               : '10',
+             'max'               : '20',
+             'displaydl'         : True,
+             'manual'            : False,
+             'input'             : '5',
+             'expresult'         : 5.0,
+             'expformattedresult': '< 10.0',
+             'isbelowldl'        : True,
+             'isaboveudl'        : False,
+             'isldl'             : False,
+             'isudl'             : False},
+
+            {'min'               : '10',
+             'max'               : '20',
+             'displaydl'         : True,
+             'manual'            : False,
+             'input'             : '15',
+             'expresult'         : 15.0,
+             'expformattedresult': '15.0',
+             'isbelowldl'        : False,
+             'isaboveudl'        : False,
+             'isldl'             : False,
+             'isudl'             : False},
+
+            {'min'               : '10',
+             'max'               : '20',
+             'displaydl'         : True,
+             'manual'            : False,
+             'input'             : '25',
+             'expresult'         : 25.0,
+             'expformattedresult': '> 20.0',
+             'isbelowldl'        : False,
+             'isaboveudl'        : True,
+             'isldl'             : False,
+             'isudl'             : False},
+
+            {'min'               : '10',
+             'max'               : '20',
+             'displaydl'         : True,
+             'manual'            : False,
+             'input'             : '<5',
+             'expresult'         : 10.0, # '<' assignment allowed, but not custom
+             'expformattedresult': '< 10.0',
+             'isbelowldl'        : True,
+             'isaboveudl'        : False,
+             'isldl'             : True,
+             'isudl'             : False},
+
+            {'min'               : '10',
+             'max'               : '20',
+             'displaydl'         : True,
+             'manual'            : False,
+             'input'             : '<15',
+             'expresult'         : 10.0, # '<' assignment allowed, but not custom
+             'expformattedresult': '< 10.0',
+             'isbelowldl'        : True,
+             'isaboveudl'        : False,
+             'isldl'             : True,
+             'isudl'             : False},
+
+            {'min'               : '10',
+             'max'               : '20',
+             'displaydl'         : True,
+             'manual'            : False,
+             'input'             : '>15',
+             'expresult'         : 20.0, # '>' assignment allowed, but not custom
+             'expformattedresult': '> 20.0',
+             'isbelowldl'        : False,
+             'isaboveudl'        : True,
+             'isldl'             : False,
+             'isudl'             : True},
+
+            {'min'               : '10',
+             'max'               : '20',
+             'displaydl'         : True,
+             'manual'            : False,
+             'input'             : '>25',
+             'expresult'         : 20.0, # '>' assignment allowed, but not custom
+             'expformattedresult': '> 20.0',
+             'isbelowldl'        : False,
+             'isaboveudl'        : True,
+             'isldl'             : False,
+             'isudl'             : True},
+
+            # ROUND 3 ---------------------
+            {'min'               : '10',
+             'max'               : '20',
+             'displaydl'         : True,
+             'manual'            : True,
+             'input'             : '5',
+             'expresult'         : 5.0,
+             'expformattedresult': '< 10.0',
+             'isbelowldl'        : True,
+             'isaboveudl'        : False,
+             'isldl'             : False,
+             'isudl'             : False},
+
+            {'min'               : '10',
+             'max'               : '20',
+             'displaydl'         : True,
+             'manual'            : True,
+             'input'             : '15',
+             'expresult'         : 15.0,
+             'expformattedresult': '15.0',
+             'isbelowldl'        : False,
+             'isaboveudl'        : False,
+             'isldl'             : False,
+             'isudl'             : False},
+
+            {'min'               : '10',
+             'max'               : '20',
+             'displaydl'         : True,
+             'manual'            : True,
+             'input'             : '25',
+             'expresult'         : 25.0,
+             'expformattedresult': '> 20.0',
+             'isbelowldl'        : False,
+             'isaboveudl'        : True,
+             'isldl'             : False,
+             'isudl'             : False},
+
+            {'min'               : '10',
+             'max'               : '20',
+             'displaydl'         : True,
+             'manual'            : True,
+             'input'             : '<5',
+             'expresult'         : 5.0, # '<' assignment allowed
+             'expformattedresult': '< 5.0',
+             'isbelowldl'        : True,
+             'isaboveudl'        : False,
+             'isldl'             : True,
+             'isudl'             : False},
+
+            {'min'               : '10',
+             'max'               : '20',
+             'displaydl'         : True,
+             'manual'            : True,
+             'input'             : '<15',
+             'expresult'         : 15.0, # '<' assignment allowed
+             'expformattedresult': '< 15.0',
+             'isbelowldl'        : True,
+             'isaboveudl'        : False,
+             'isldl'             : True,
+             'isudl'             : False},
+
+            {'min'               : '10',
+             'max'               : '20',
+             'displaydl'         : True,
+             'manual'            : True,
+             'input'             : '>15',
+             'expresult'         : 15.0, # '>' assignment allowed
+             'expformattedresult': '> 15.0',
+             'isbelowldl'        : False,
+             'isaboveudl'        : True,
+             'isldl'             : False,
+             'isudl'             : True},
+
+            {'min'               : '10',
+             'max'               : '20',
+             'displaydl'         : True,
+             'manual'            : True,
+             'input'             : '>25',
+             'expresult'         : 25.0, # '>' assignment allowed
+             'expformattedresult': '> 25.0',
+             'isbelowldl'        : False,
+             'isaboveudl'        : True,
+             'isldl'             : False,
+             'isudl'             : True},
+        ]
+
+        for case in cases:
+            s = self.services[0]
+            s.setDetectionLimitSelector(case['displaydl'])
+            s.setAllowManualDetectionLimit(case['manual'])
+            s.setLowerDetectionLimit(case['min'])
+            s.setUpperDetectionLimit(case['max'])
+
+            # Input results
+            # Client:       Happy Hills
+            # SampleType:   Apple Pulp
+            # Contact:      Rita Mohale
+            # Analyses:     [Calcium, Copper]
+            client = self.portal.clients['client-1']
+            sampletype = self.portal.bika_setup.bika_sampletypes['sampletype-1']
+            values = {'Client': client.UID(),
+                      'Contact': client.getContacts()[0].UID(),
+                      'SamplingDate': '2015-01-01',
+                      'SampleType': sampletype.UID()}
+            request = {}
+            ar = create_analysisrequest(client, request, values, [s.UID()])
+            wf = getToolByName(ar, 'portal_workflow')
+            wf.doActionFor(ar, 'receive')
+
+            an = ar.getAnalyses()[0].getObject()
+            an.setResult(case['input'])
+            self.assertEqual(an.isBelowLowerDetectionLimit(), case['isbelowldl'])
+            self.assertEqual(an.isAboveUpperDetectionLimit(), case['isaboveudl'])
+            self.assertEqual(an.isLowerDetectionLimit(), case['isldl'])
+            self.assertEqual(an.isUpperDetectionLimit(), case['isudl'])
+            self.assertEqual(float(an.getResult()), case['expresult'])
 
     def test_ar_manageresults_limitdetections(self):
         # Input results
