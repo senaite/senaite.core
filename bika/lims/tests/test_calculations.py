@@ -6,6 +6,7 @@ from bika.lims.utils.analysisrequest import create_analysisrequest
 from bika.lims.workflow import doActionFor
 from plone.app.testing import login, logout
 from plone.app.testing import TEST_USER_NAME
+from Products.CMFCore.utils import getToolByName
 import unittest
 
 try:
@@ -26,20 +27,25 @@ class TestCalculations(BikaFunctionalTestCase):
         calcs = self.portal.bika_setup.bika_calculations
         self.calculation = [calcs[k] for k in calcs if calcs[k].title=='Total Hardness'][0]
 
-        # Service with calculation: Tot. Harndess (THCaCO3)
+        # Service with calculation: Tot. Hardness (THCaCO3)
         servs = self.portal.bika_setup.bika_analysisservices
         self.calcservice = [servs[k] for k in servs if servs[k].title=='Tot. Hardness (THCaCO3)'][0]
         self.calcservice.setUseDefaultCalculation(False)
         self.calcservice.setDeferredCalculation(self.calculation)
-        self.calcservice.setLowerDetectionLimit('10')
-        self.calcservice.setUpperDetectionLimit('20')
-        self.calcservice.setAllowManualDetectionLimit(True)
 
         # Analysis Services: Ca and Mg
-        self.services = self.calculation.getDependentServices()
+        self.services = [servs[k] for k in servs if servs[k].getKeyword() in ('Ca', 'Mg')]
+
+        # Allow Manual DLs
+        for s in self.services:
+            s.setLowerDetectionLimit('10')
+            s.setUpperDetectionLimit('20')
+            s.setAllowManualDetectionLimit(True)
 
         # Formulas to test
+        # Ca and Mg detection Limits: LDL: 10, UDL: 20
         self.formulas = [
+
             {'formula' : '[Ca]+[Mg]',
              'analyses': {'Ca':'10', 'Mg': '15'},
              'interims': {},
@@ -123,23 +129,28 @@ class TestCalculations(BikaFunctionalTestCase):
         # Service with calculation: Tot. Harndess (THCaCO3)
         self.calculation.setFormula('[Ca] + [Mg]')
         self.calcservice.setUseDefaultCalculation(True)
-        self.calcservice.setLowerDetectionLimit('0')
-        self.calcservice.setUpperDetectionLimit('10000')
-        self.calcservice.setAllowManualDetectionLimit(False)
+
+        # Allow Manual DLs
+        for s in self.services:
+            s.setLowerDetectionLimit('0')
+            s.setUpperDetectionLimit('10000')
+            s.setAllowManualDetectionLimit(False)
+
         super(TestCalculations, self).tearDown()
 
-    def test_ar_calculations(self):
+    def test_analysis_method_calculation(self):
         # Input results
         # Client:       Happy Hills
         # SampleType:   Apple Pulp
         # Contact:      Rita Mohale
         # Analyses:     [Calcium, Mg, Total Hardness]
+
         for f in self.formulas:
             # Set custom calculation
             self.calculation.setFormula(f['formula'])
             self.assertEqual(self.calculation.getFormula(), f['formula'])
             interims = []
-            for k,v in f['interims']:
+            for k,v in f['interims'].items():
                 interims.append({'keyword': k, 'title':k, 'value': v,
                                  'hidden': False, 'type': 'int',
                                  'unit': ''});
@@ -156,6 +167,8 @@ class TestCalculations(BikaFunctionalTestCase):
             request = {}
             services = [s.UID() for s in self.services] + [self.calcservice.UID()]
             ar = create_analysisrequest(client, request, values, services)
+            wf = getToolByName(ar, 'portal_workflow')
+            wf.doActionFor(ar, 'receive')
 
             # Set results and interims
             calcanalysis = None
@@ -164,7 +177,13 @@ class TestCalculations(BikaFunctionalTestCase):
                 key = an.getKeyword()
                 if key in f['analyses']:
                     an.setResult(f['analyses'][key])
-                    self.assertEqual(an.getResult(), f['analyses'][key])
+                    if an.isLowerDetectionLimit() \
+                        or an.isUpperDetectionLimit():
+                        operator = an.getDetectionLimitOperand()
+                        strres = f['analyses'][key].replace(operator, '')
+                        self.assertEqual(an.getResult(), str(float(strres)))
+                    else:
+                        self.assertEqual(an.getResult(), f['analyses'][key])
                 elif key == self.calcservice.getKeyword():
                     calcanalysis = an
 
@@ -185,9 +204,9 @@ class TestCalculations(BikaFunctionalTestCase):
                 an.setInterimFields(intermap)
                 self.assertEqual(an.getInterimFields(), intermap)
 
-            # Let's go.. check result
+            # Let's go.. calculate and check result
             calcanalysis.calculateResult(True, True)
-            self.assertEqual(calcanalysis.getResult(), f['exresult'])
+            self.assertEqual(float(calcanalysis.getResult()), float(f['exresult']))
 
 def test_suite():
     suite = unittest.TestSuite()
