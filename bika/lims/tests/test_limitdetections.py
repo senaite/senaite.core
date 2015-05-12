@@ -32,6 +32,7 @@ class TestLimitDetections(BikaFunctionalTestCase):
                     {'min': '0.0',  'max': '20.0',   'manual': True}]
         idx = 0
         for s in self.services:
+            s.setDetectionLimitSelector(self.lds[idx]['manual'])
             s.setAllowManualDetectionLimit(self.lds[idx]['manual'])
             s.setLowerDetectionLimit(self.lds[idx]['min'])
             s.setUpperDetectionLimit(self.lds[idx]['max'])
@@ -39,6 +40,7 @@ class TestLimitDetections(BikaFunctionalTestCase):
 
     def tearDown(self):
         for s in self.services:
+            s.setDetectionLimitSelector(False)
             s.setAllowManualDetectionLimit(False)
             s.setLowerDetectionLimit(str(0))
             s.setUpperDetectionLimit(str(1000))
