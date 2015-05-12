@@ -276,13 +276,8 @@ class Analysis(BaseContent):
     def setDetectionLimitOperand(self, value):
         """ Sets the detection limit operand for this analysis, so
             the result will be interpreted as a detection limit.
-            The value will only be set if the Service has 'Allow manual
-            detection limit' field set to True, otherwise, the detection
-            limit operand will be set to None.
         """
-        srv = self.getService()
-        md = srv.getAllowManualDetectionLimit() if srv else False
-        val = value if (md and value in ('>', '<')) else None
+        val = value if value in ('>', '<') else None
         self.Schema().getField('DetectionLimitOperand').set(self, val)
 
     def getLowerDetectionLimit(self):

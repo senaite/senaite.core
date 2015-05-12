@@ -1169,5 +1169,22 @@ a.print_button,
 #content div.arresultsinterpretation-container .mceButton.mce_save, {
     display:none;
 }
-
+.bika-listing-table td.interim input[type="text"]:-moz-read-only,
+.bika-listing-table td.Result input[type="text"]:-moz-read-only {
+    color: #555;
+    cursor: not-allowed;
+}
+.bika-listing-table td.interim input[type="text"]:-moz-read-only:focus,
+.bika-listing-table td.Result input[type="text"]:-moz-read-only:focus{
+    background-color: transparent;
+}
+.bika-listing-table td.interim input[type="text"]:read-only,
+.bika-listing-table td.Result input[type="text"]:read-onl {
+    color: #555;
+    cursor: not-allowed;
+}
+.bika-listing-table td.interim input[type="text"]:read-only:focus,
+.bika-listing-table td.Result input[type="text"]:read-only:focus {
+    background-color: transparent;
+}
 </dtml-with>

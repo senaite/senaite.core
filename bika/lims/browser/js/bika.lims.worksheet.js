@@ -276,14 +276,19 @@ function WorksheetManageResultsView() {
             var defdls = $(this).closest('td').find('input[id^="DefaultDLS."]').first().val();
             var resfld = $(this).closest('tr').find('input[name^="Result."]')[0];
             defdls = $.parseJSON(defdls);
+            $(resfld).prop('readonly', !defdls.manual);
             if ($(this).val() == '<') {
                 $(resfld).val(defdls['min']);
             } else if ($(this).val() == '>') {
                 $(resfld).val(defdls['max']);
             } else {
                 $(resfld).val('');
+                $(resfld).prop('readonly',false);
             }
+            // Maybe the result is used in calculations...
+            $(resfld).change();
         });
+        $('select[name^="DetectionLimit."]').change();
     }
 
     function loadWideInterimsEventHandlers() {
