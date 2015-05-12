@@ -276,8 +276,17 @@ class Analysis(BaseContent):
     def setDetectionLimitOperand(self, value):
         """ Sets the detection limit operand for this analysis, so
             the result will be interpreted as a detection limit.
+            The value will only be set if the Service has
+            'DetectionLimitSelector' field set to True, otherwise,
+            the detection limit operand will be set to None.
+            See LIMS-1775 for further information about the relation
+            amongst 'DetectionLimitSelector' and
+            'AllowManualDetectionLimit'.
+            https://jira.bikalabs.com/browse/LIMS-1775
         """
-        val = value if value in ('>', '<') else None
+        srv = self.getService()
+        md = srv.getDetectionLimitSelector() if srv else False
+        val = value if (md and value in ('>', '<')) else None
         self.Schema().getField('DetectionLimitOperand').set(self, val)
 
     def getLowerDetectionLimit(self):
