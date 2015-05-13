@@ -808,7 +808,7 @@ class Analysis(BaseContent):
         dl = self.getDetectionLimitOperand()
         if dl:
             try:
-                result = float(result)
+                result = format_numeric_result(self, result, sciformat=sciformat)
                 return formatDecimalMark('%s %s' % (dl, result), decimalmark)
             except:
                 logger.warn("The result for the analysis %s is a "
@@ -860,12 +860,12 @@ class Analysis(BaseContent):
         # Below Lower Detection Limit (LDL)?
         ldl = self.getLowerDetectionLimit()
         if result < ldl:
-            return formatDecimalMark('< %s' % ldl, decimalmark)
+            return formatDecimalMark('< %s' % format_numeric_result(self, ldl, sciformat=sciformat), decimalmark)
 
         # Above Upper Detection Limit (UDL)?
         udl = self.getUpperDetectionLimit()
         if result > udl:
-            return formatDecimalMark('> %s' % udl, decimalmark)
+            return formatDecimalMark('> %s' % format_numeric_result(self, udl, sciformat=sciformat), decimalmark)
 
         # Render numerical values
         return formatDecimalMark(format_numeric_result(self, result, sciformat=sciformat), decimalmark=decimalmark)
