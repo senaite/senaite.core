@@ -46,7 +46,6 @@
     Container    python:part.getContainer() and part.getContainer().Title() or '';
     SamplingDate python:sample.getSamplingDate() and sample.getSamplingDate().Date();
     DateSampled  python:sample.getDateSampled() and sample.getDateSampled().Date();
-    barcode_str  python:part.getId();
     analyses     python:part.getBackReferences('AnalysisSamplePartition');
     field_analyses  python:[analysis for analysis in analyses if analysis.getService().getPointOfCapture()=='field'];
     show_partitions python:context.bika_setup.getShowPartitions();
@@ -59,13 +58,13 @@
              tal:attributes="src string:${portal_url}/++resource++bika.lims.images/hazardous.png"/>
     </td>
     <td class='barcode' colspan="2">
-        <div tal:attributes="id string:barcode_${barcode_str}"></div>
+        <div tal:attributes="id string:barcode_${smart_id}"></div>
     </td>
 </tr>
 
 <script
     type='text/javascript'
-    tal:content="python:'$(\'#barcode_%s\').barcode(\'%s\', \'code128\', {\'barHeight\':12, addQuietZone:true, showHRI: false })'%(barcode_str,barcode_str)">
+    tal:content="python:'$(\'#barcode_%s\').barcode(\'%s\', \'code128\', {\'barHeight\':12, addQuietZone:true, showHRI: false })'%(smart_id,smart_id)">
 </script>
 
 <tr>
