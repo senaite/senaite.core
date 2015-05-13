@@ -48,8 +48,9 @@
     DateSampled  python:sample.getDateSampled() and sample.getDateSampled().Date();
     barcode_str  python:part.getId();
     analyses     python:part.getBackReferences('AnalysisSamplePartition');
-    field_analyses python:[analysis for analysis in analyses if analysis.getService().getPointOfCapture()=='field'];
-    smart_id     python:part.getId();
+    field_analyses  python:[analysis for analysis in analyses if analysis.getService().getPointOfCapture()=='field'];
+    show_partitions python:context.bika_setup.getShowPartitions();
+    smart_id        python:part.getId() if show_partitions else sample.getId();
     ">
 <tr>
     <td>

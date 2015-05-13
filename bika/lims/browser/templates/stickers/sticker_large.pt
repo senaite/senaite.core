@@ -47,7 +47,6 @@
     Hazardous    python:sample.getSampleType().getHazardous();
     SampleType   python:sample.getSampleType().Title();
     Sampler      python:sample.getSampler();
-    SampleID     python:sample.getId();
     SampleType   python:sample.getSampleType().Title();
     SamplePoint  python:sample.getSamplePoint() and sample.getSamplePoint().Title() or '';
     Preservation python:part.getPreservation() and part.getPreservation().Title() or '';
@@ -59,8 +58,9 @@
     AdHoc        python:sample.getAdHoc();
     barcode_str  python:part.getId();
     analyses     python:part.getBackReferences('AnalysisSamplePartition');
-    field_analyses python:[analysis for analysis in analyses if analysis.getService().getPointOfCapture()=='field'];
-    smart_id     python:part.getId();
+    field_analyses  python:[analysis for analysis in analyses if analysis.getService().getPointOfCapture()=='field'];
+    show_partitions python:context.bika_setup.getShowPartitions();
+    smart_id     python:part.getId() if show_partitions else sample.getId();
     ">
 <thead>
 
