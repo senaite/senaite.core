@@ -2,6 +2,7 @@
 ------------------
 LIMS-1474: Disposed date is not shown in Sample View
 LIMS-1779: Results report new fields and improvements
+LIMS-1775: Allow to select LDL or UDL defaults in results with readonly mode
 LIMS-1769: Allow to use LDL and UDL in calculations.
 LIMS-1700: Lower and Upper Detection Limits (LDL/UDL). Allow manual input
 LIMS-1379: Allow manual uncertainty value input

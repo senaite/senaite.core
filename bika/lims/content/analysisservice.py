@@ -268,6 +268,44 @@ schema = BikaSchema.copy() + Schema((
                                     "will be reported as > UDL")
                 ),
     ),
+    # LIMS-1775 Allow to select LDL or UDL defaults in results with readonly mode
+    # https://jira.bikalabs.com/browse/LIMS-1775
+    # Some behavior controlled with javascript: If checked, the field
+    # "AllowManualDetectionLimit" will be displayed.
+    # See browser/js/bika.lims.analysisservice.edit.js
+    #
+    # Use cases:
+    # a) If "DetectionLimitSelector" is enabled and
+    # "AllowManualDetectionLimit" is enabled too, then:
+    # the analyst will be able to select an '>', '<' operand from the
+    # selection list and also set the LD manually.
+    #
+    # b) If "DetectionLimitSelector" is enabled and
+    # "AllowManualDetectionLimit" is unchecked, the analyst will be
+    # able to select an operator from the selection list, but not set
+    # the LD manually: the default LD will be displayed in the result
+    # field as usuall, but in read-only mode.
+    #
+    # c) If "DetectionLimitSelector" is disabled, no LD selector will be
+    # displayed in the results table.
+    BooleanField('DetectionLimitSelector',
+        schemata="Analysis",
+        default=False,
+        widget=BooleanWidget(
+            label = _("Display a Detection Limit selector"),
+            description = _("If checked, a selection list will be "
+                            "displayed next to the analysis' result "
+                            "field in results entry views. By using "
+                            "this selector, the analyst will be able "
+                            "to set the value as a Detection Limit "
+                            "(LDL or UDL) instead of a regular result"),
+        ),
+    ),
+    # Behavior controlled with javascript: Only visible when the
+    # "DetectionLimitSelector" is checked
+    # See browser/js/bika.lims.analysisservice.edit.js
+    # Check inline comment for "DetecionLimitSelector" field for
+    # further information.
     BooleanField('AllowManualDetectionLimit',
              schemata="Analysis",
              default=False,

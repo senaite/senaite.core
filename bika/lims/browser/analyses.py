@@ -600,11 +600,13 @@ class AnalysesView(BikaListingView):
                     items[i]['after']['Uncertainty'] = '<em class="discreet" style="white-space:nowrap;"> %s</em>' % items[i]['Unit'];
 
                 # LIMS-1700. Allow manual input of Detection Limits
+                # LIMS-1775. Allow to select LDL or UDL defaults in results with readonly mode
                 # https://jira.bikalabs.com/browse/LIMS-1700
+                # https://jira.bikalabs.com/browse/LIMS-1775
                 if can_edit_analysis and \
                     hasattr(obj, 'getDetectionLimitOperand') and \
-                    hasattr(service, 'getAllowManualDetectionLimit') and \
-                    service.getAllowManualDetectionLimit() == True:
+                    hasattr(service, 'getDetectionLimitSelector') and \
+                    service.getDetectionLimitSelector() == True:
                     isldl = obj.isBelowLowerDetectionLimit()
                     isudl = obj.isAboveUpperDetectionLimit()
                     dlval=''
@@ -618,7 +620,8 @@ class AnalysesView(BikaListingView):
                     self.columns['DetectionLimit']['toggle'] = True
                     srv = obj.getService()
                     defdls = {'min':srv.getLowerDetectionLimit(),
-                              'max':srv.getUpperDetectionLimit()}
+                              'max':srv.getUpperDetectionLimit(),
+                              'manual':srv.getAllowManualDetectionLimit()}
                     defin = '<input type="hidden" id="DefaultDLS.%s" value=\'%s\'/>'
                     defin = defin % (obj.UID(), json.dumps(defdls))
                     item['after']['DetectionLimit'] = defin
@@ -635,7 +638,8 @@ class AnalysesView(BikaListingView):
                            'above_udl': False,
                            'is_ldl': False,
                            'is_udl': False,
-                           'manual_allowed': False}
+                           'manual_allowed': False,
+                           'dlselect_allowed': False}
                     if hasattr(obj, 'getDetectionLimits'):
                         dls['below_ldl'] = obj.isBelowLowerDetectionLimit()
                         dls['above_udl'] = obj.isBelowLowerDetectionLimit()
@@ -644,6 +648,7 @@ class AnalysesView(BikaListingView):
                         dls['default_ldl'] = service.getLowerDetectionLimit()
                         dls['default_udl'] = service.getUpperDetectionLimit()
                         dls['manual_allowed'] = service.getAllowManualDetectionLimit()
+                        dls['dlselect_allowed'] = service.getDetectionLimitSelector()
                     dlsin = '<input type="hidden" id="AnalysisDLS.%s" value=\'%s\'/>'
                     dlsin = dlsin % (obj.UID(), json.dumps(dls))
                     item['after']['Result'] = dlsin

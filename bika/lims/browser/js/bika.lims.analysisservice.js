@@ -24,11 +24,26 @@ function AnalysisServiceEditView() {
     var acalc_sel  = $('#archetypes-fieldname-DeferredCalculation #DeferredCalculation');
     var interim_fd = $("#archetypes-fieldname-InterimFields");
     var interim_rw = $("#archetypes-fieldname-InterimFields tr.records_row_InterimFields");
+    var ldsel_chk  = $('#archetypes-fieldname-DetectionLimitSelector #DetectionLimitSelector');
+    var ldman_fd   = $('#archetypes-fieldname-AllowManualDetectionLimit');
+    var ldman_chk  = $('#archetypes-fieldname-AllowManualDetectionLimit #AllowManualDetectionLimit');
 
     /**
      * Entry-point method for AnalysisServiceEditView
      */
     that.load = function() {
+
+        // LIMS-1775 Allow to select LDL or UDL defaults in results with readonly mode
+        // https://jira.bikalabs.com/browse/LIMS-1775
+        $(ldsel_chk).change(function() {
+            if ($(this).is(':checked')) {
+                $(ldman_fd).show();
+            } else {
+                $(ldman_fd).hide();
+                $(ldman_chk).prop('checked', false);
+            }
+        });
+        $(ldsel_chk).change();
 
         // service defaults
         // update defalt Containers
