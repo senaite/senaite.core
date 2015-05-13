@@ -40,6 +40,7 @@ class TestCalculations(BikaFunctionalTestCase):
         for s in self.services:
             s.setLowerDetectionLimit('10')
             s.setUpperDetectionLimit('20')
+            s.setDetectionLimitSelector(True)
             s.setAllowManualDetectionLimit(True)
 
         # Formulas to test
