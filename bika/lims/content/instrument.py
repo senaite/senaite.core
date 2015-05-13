@@ -176,7 +176,78 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
          ),
     ),
 
+    StringField('AssetNumber',
+        widget = StringWidget(
+            label=_("Asset Number"),
+            description=_("The instrument's ID in the lab's asset register"),
+        )
+    ),
+
+    StringField('Location',
+        schemata = 'Additional info.',
+        widget = StringWidget(
+            label=_("Location"),
+            description=_("The room and location where the instrument is installed"),
+        )
+    ),
+
+    ImageField('Photo',
+        schemata='Additional info.',
+        widget=ImageWidget(
+            label=_("Photo image file"),
+            description=_("Photo of the instrument"),
+        ),
+    ),
+
+    DateTimeField('InstallationDate',
+    schemata = 'Additional info.',
+    widget = DateTimeWidget(
+        label=_("InstallationDate"),
+        description=_("The date the instrument was installed"),
+        )
+    ),
+
+    FileField('InstallationCertificate',
+    schemata = 'Additional info.',
+    widget = FileWidget(
+        label=_("Installation Certificate"),
+        description=_("Installation certificate upload"),
+        )
+    ),
+
+    StringField('UserManualID',
+    schemata = 'Manual',
+    widget = StringWidget(
+        label=_("User Manual ID"),
+        )
+    ),
+
+    FileField('UserManualFile',
+    schemata = 'Manual',
+    widget = FileWidget(
+        label=_("User manual"),
+        description=_("User manual upload "),
+        )
+    ),
+
+    StringField('UserManualVersion',
+    schemata = 'Manual',
+    widget = StringWidget(
+        label=_("User Manual Version"),
+        )
+    ),
+
+    StringField('UserManualLocation',
+    schemata = 'Manual',
+    widget = StringWidget(
+        label=_("User Manual Location"),
+        description=_("Location where the manual set is shelved"),
+        )
+    ),
 ))
+
+schema.moveField('AssetNumber', before='description')
+
 schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 
