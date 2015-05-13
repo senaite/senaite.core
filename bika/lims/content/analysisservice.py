@@ -856,6 +856,23 @@ schema = BikaSchema.copy() + Schema((
                         "Profile and/or Analysis Request"),
                  ),
     ),
+    StringField('CommercialID',
+        searchable=1,
+        required=0,
+        widget=StringWidget(
+            label=_("Commercial ID"),
+            description=_("The service's commercial ID for accounting purposes")
+        ),
+    ),
+    StringField('ProtocolID',
+        searchable=1,
+        schemata = 'Insurance',
+        required=0,
+        widget=StringWidget(
+            label=_("Protocol ID"),
+            description=_("The service's analytical protocol ID")
+        ),
+    ),
 ))
 
 schema['id'].widget.visible = False

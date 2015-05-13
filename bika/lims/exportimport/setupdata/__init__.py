@@ -25,7 +25,7 @@ def lookup(context, portal_type, **kwargs):
 
 def check_for_required_columns(name, data, required):
     for column in required:
-        if not data[column]:
+        if not data.get(column, None):
             message = _("%s has no '%s' column." % (name, column))
             raise Exception(t(message))
 
@@ -398,10 +398,10 @@ class Lab_Products(WorksheetImporter):
             # Apply the row values
             obj.edit(
                 title=row['title'],
-                description=row['description'],
-                Volume=row['volume'],
-                Unit=str(row['unit']),
-                Price=str(row['price']),
+                description=row.get('description', ''),
+                Volume=row.get('volume', ''),
+                Unit=str(row.get('unit', '')),
+                Price=str(row.get('price', '')),
             )
             # Rename the new object
             renameAfterCreation(obj)
@@ -571,6 +571,10 @@ class Suppliers(WorksheetImporter):
                     AccountNumber=row.get('AccountNumber', ''),
                     BankName=row.get('BankName', ''),
                     BankBranch=row.get('BankBranch', ''),
+                    SWIFTcode=row.get('SWIFTcode', ''),
+                    IBN=row.get('IBN', ''),
+                    NIB=row.get('NIB', ''),
+                    Website=row.get('Website', ''),
                 )
                 self.fill_contactfields(row, obj)
                 self.fill_addressfields(row, obj)
@@ -1000,7 +1004,17 @@ class Methods(WorksheetImporter):
                 obj.edit(
                     title=row['title'],
                     description=row.get('description', ''),
-                    Instructions=row.get('Instructions', ''))
+                    Instructions=row.get('Instructions', ''),
+                    MethodID=row.get('MethodID', ''),
+                    Accredited=row.get('Accredited', True),
+                )
+                # Obtain all created methods
+                catalog = getToolByName(self.context, 'portal_catalog')
+                methods_brains = catalog.searchResults({'portal_type': 'Method'})
+                # If a the new method has the same MethodID as a created method, remove MethodID value.
+                for methods in methods_brains:
+                    if methods.getObject().get('MethodID', '') != '' and methods.getObject.get('MethodID', '') == obj['MethodID']:
+                        obj.edit(MethodID='')
 
                 if row['MethodDocument']:
                     path = resource_filename(
@@ -1205,6 +1219,8 @@ class Analysis_Services(WorksheetImporter):
                 Container=container,
                 Preservation=preservation,
                 Priority=priority,
+                CommercialID=row.get('CommercialID', ''),
+                ProtocolID=row.get('ProtocolID', '')
             )
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
@@ -1303,7 +1319,12 @@ class Analysis_Profiles(WorksheetImporter):
                 obj = _createObjectByType("AnalysisProfile", folder, tmpID())
                 obj.edit(title=row['title'],
                          description=row.get('description', ''),
-                         ProfileKey=row['ProfileKey'])
+                         ProfileKey=row['ProfileKey'],
+                         CommercialID=row.get('CommercialID', ''),
+                         AnalysisProfilePrice="%02f" % Float(row.get('AnalysisProfilePrice', '0.0')),
+                         AnalysisProfileVAT="%02f" % Float(row.get('AnalysisProfileVAT', '0.0')),
+                         UseAnalysisProfilePrice=row.get('UseAnalysisProfilePrice', False)
+                         )
                 obj.setService(self.profile_services[row['title']])
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
