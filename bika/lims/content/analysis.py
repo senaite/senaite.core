@@ -370,6 +370,20 @@ class Analysis(BaseContent):
         """
         return [self.getLowerDetectionLimit(), self.getUpperDetectionLimit()]
 
+    def isLowerDetectionLimit(self):
+        """ Returns True if the result for this analysis represents
+            a Lower Detection Limit. Otherwise, returns False
+        """
+        return self.isBelowLowerDetectionLimit() and \
+                self.getDetectionLimitOperand() == '<'
+
+    def isUpperDetectionLimit(self):
+        """ Returns True if the result for this analysis represents
+            an Upper Detection Limit. Otherwise, returns False
+        """
+        return self.isAboveUpperDetectionLimit() and \
+                self.getDetectionLimitOperand() == '>'
+
     def getDependents(self):
         """ Return a list of analyses who depend on us
             to calculate their result
@@ -521,46 +535,33 @@ class Analysis(BaseContent):
         """ Calculates the result for the current analysis if it depends of
             other analysis/interim fields. Otherwise, do nothing
         """
-
         if self.getResult() and override == False:
             return False
 
-        calculation = self.getService().getCalculation()
-        if not calculation:
+        serv = self.getService()
+        calc = self.getCalculation() if self.getCalculation() \
+                                     else serv.getCalculation()
+        if not calc:
             return False
 
         mapping = {}
 
+        # Interims' priority order (from low to high):
+        # Calculation < Analysis Service < Analysis
+        interims = calc.getInterimFields() + \
+                   serv.getInterimFields() + \
+                   self.getInterimFields()
+
         # Add interims to mapping
-        for interimdata in self.getInterimFields():
-            for i in interimdata:
-                try:
-                    ivalue = float(i['value'])
-                    mapping[i['keyword']] = ivalue
-                except:
-                    # Interim not float, abort
-                    return False
-
-        # Add calculation's hidden interim fields to mapping
-        for field in calculation.getInterimFields():
-            if field['keyword'] not in mapping.keys():
-                if field.get('hidden', False):
-                    try:
-                        ivalue = float(field['value'])
-                        mapping[field['keyword']] = ivalue
-                    except:
-                        return False
-
-        # Add Analysis Service interim defaults to mapping
-        service = self.getService()
-        for field in service.getInterimFields():
-            if field['keyword'] not in mapping.keys():
-                if field.get('hidden', False):
-                    try:
-                        ivalue = float(field['value'])
-                        mapping[field['keyword']] = ivalue
-                    except:
-                        return False
+        for i in interims:
+            if 'keyword' not in i:
+                continue;
+            try:
+                ivalue = float(i['value'])
+                mapping[i['keyword']] = ivalue
+            except:
+                # Interim not float, abort
+                return False
 
         # Add dependencies results to mapping
         dependencies = self.getDependencies()
@@ -572,24 +573,27 @@ class Analysis(BaseContent):
                     # Try to calculate the dependency result
                     dependency.calculateResult(override, cascade)
                     result = dependency.getResult()
-                    if result:
-                        try:
-                            result = float(str(result))
-                            mapping[dependency.getKeyword()] = result
-                        except:
-                            return False
                 else:
                     return False
-            else:
-                # Result must be float
+            if result:
                 try:
                     result = float(str(result))
-                    mapping[dependency.getKeyword()] = result
+                    key = dependency.getKeyword()
+                    ldl = dependency.getLowerDetectionLimit()
+                    udl = dependency.getUpperDetectionLimit()
+                    bdl = dependency.isBelowLowerDetectionLimit()
+                    adl = dependency.isAboveUpperDetectionLimit()
+                    mapping[key]=result
+                    mapping['%s.%s' % (key, 'RESULT')]=result
+                    mapping['%s.%s' % (key, 'LDL')]=ldl
+                    mapping['%s.%s' % (key, 'UDL')]=udl
+                    mapping['%s.%s' % (key, 'BELOWLDL')]=int(bdl)
+                    mapping['%s.%s' % (key, 'ABOVEUDL')]=int(adl)
                 except:
                     return False
 
         # Calculate
-        formula = calculation.getMinifiedFormula()
+        formula = calc.getMinifiedFormula()
         formula = formula.replace('[', '%(').replace(']', ')f')
         try:
             formula = eval("'%s'%%mapping" % formula,
@@ -608,7 +612,7 @@ class Analysis(BaseContent):
             self.setResult("NA")
             return True
 
-        self.setResult(result)
+        self.setResult(str(result))
         return True
 
     def getPriority(self):

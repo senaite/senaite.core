@@ -1076,7 +1076,7 @@ class Calculations(WorksheetImporter):
             calc_interims = self.interim_fields.get(calc_title, [])
             formula = row['Formula']
             # scan formula for dep services
-            keywords = re.compile(r"\[([^\]]+)\]").findall(formula)
+            keywords = re.compile(r"\[([^\.^\]]+)\]").findall(formula)
             # remove interims from deps
             interim_keys = [k['keyword'] for k in calc_interims]
             dep_keywords = [k for k in keywords if k not in interim_keys]

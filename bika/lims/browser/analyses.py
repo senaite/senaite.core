@@ -623,6 +623,31 @@ class AnalysesView(BikaListingView):
                     defin = defin % (obj.UID(), json.dumps(defdls))
                     item['after']['DetectionLimit'] = defin
 
+                # LIMS-1769. Allow to use LDL and UDL in calculations.
+                # https://jira.bikalabs.com/browse/LIMS-1769
+                # Since LDL, UDL, etc. are wildcards that can be used
+                # in calculations, these fields must be loaded always
+                # for 'live' calculations.
+                if can_edit_analysis:
+                    dls = {'default_ldl': 'none',
+                           'default_udl': 'none',
+                           'below_ldl': False,
+                           'above_udl': False,
+                           'is_ldl': False,
+                           'is_udl': False,
+                           'manual_allowed': False}
+                    if hasattr(obj, 'getDetectionLimits'):
+                        dls['below_ldl'] = obj.isBelowLowerDetectionLimit()
+                        dls['above_udl'] = obj.isBelowLowerDetectionLimit()
+                        dls['is_ldl'] = obj.isLowerDetectionLimit()
+                        dls['is_udl'] = obj.isUpperDetectionLimit()
+                        dls['default_ldl'] = service.getLowerDetectionLimit()
+                        dls['default_udl'] = service.getUpperDetectionLimit()
+                        dls['manual_allowed'] = service.getAllowManualDetectionLimit()
+                    dlsin = '<input type="hidden" id="AnalysisDLS.%s" value=\'%s\'/>'
+                    dlsin = dlsin % (obj.UID(), json.dumps(dls))
+                    item['after']['Result'] = dlsin
+
             else:
                 items[i]['Specification'] = ""
                 if 'Result' in items[i]['allow_edit']:
