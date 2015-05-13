@@ -808,6 +808,7 @@ class Analysis(BaseContent):
         dl = self.getDetectionLimitOperand()
         if dl:
             try:
+                result = float(result)
                 result = format_numeric_result(self, result, sciformat=sciformat)
                 return formatDecimalMark('%s %s' % (dl, result), decimalmark)
             except:
