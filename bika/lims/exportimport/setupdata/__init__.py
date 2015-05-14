@@ -783,12 +783,30 @@ class Instrument_Certifications(WorksheetImporter):
                 obj = _createObjectByType("InstrumentCertification", folder, tmpID())
                 obj.edit(
                     title=row['title'],
+                    AssetNumber=row.get('assetnumber', ''),
                     Date=row.get('date', ''),
                     ValidFrom=row.get('validfrom', ''),
                     ValidTo=row.get('validto', ''),
                     Agency=row.get('agency', ''),
-                    Remarks=row.get('remarks', '')
+                    Remarks=row.get('remarks', ''),
                 )
+                # Attaching the Report Certificate if exists
+                if row.get('report', None):
+                    path = resource_filename(
+                        self.dataset_project,
+                        "setupdata/%s/%s" % (self.dataset_name,
+                                             row['report'])
+                    )
+                file_data = open(path, "rb").read()
+                obj.setDocument(file_data)
+                # Getting lab contacts
+                bsc = getToolByName(self.context, 'bika_setup_catalog')
+                lab_contacts = [o.getObject() for o in bsc(portal_type="LabContact", nactive_state='active')]
+                for contact in lab_contacts:
+                    if contact.getFullname() == row.get('preparedby', ''):
+                        obj.setPreparator(contact.UID())
+                    if contact.getFullname() == row.get('approvedby', ''):
+                        obj.setValidator(contact.UID())
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
 

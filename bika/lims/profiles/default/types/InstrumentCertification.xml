@@ -16,8 +16,8 @@
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>
 
- <alias from="(Default)" to="base_edit"/>
- <alias from="view" to="base_edit"/>
+ <alias from="(Default)" to="base_view"/>
+ <alias from="view" to="base_view"/>
  <alias from="edit" to="base_edit"/>
 
  <action title="View"
@@ -27,7 +27,7 @@
          url_expr="string:${object_url}"
          i18n:attributes="title"
          i18n:domain="plone"
-         visible="False">
+         visible="True">
   <permission value="View"/>
  </action>
 
