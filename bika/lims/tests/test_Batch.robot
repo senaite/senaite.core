@@ -18,6 +18,7 @@ Suite Teardown   Close All Browsers
 Test Batch-AR
     Log in  test_labmanager  test_labmanager
 
+    Set up Auto print stickers
     Add Batch
     Batch state should be  open
     Add AR
@@ -146,7 +147,7 @@ Submit AR
     Input text                   xpath=//tr[@keyword='TVBcnt']//input[@type='text']      10
     Press Key                    xpath=//tr[@keyword='TVBcnt']//input[@type='text']      \t
     focus                        css=#content-core
-    Click button                 xpath=//input[@value="Submit for verification"]
+    Click button                 xpath=//input[@id="submit_transition"]
     Wait until page contains     saved
 
 Retract AR
@@ -154,14 +155,14 @@ Retract AR
     Go to                               http://localhost:55001/plone/batches/B-001/analysisrequests
     Wait until page contains            ${ar_id}
     Select checkbox                     xpath=//input[@item_title="${ar_id}"]
-    Click button                        xpath=//input[@value="Retract"]
+    Click button                        xpath=//input[@id="retract_transition"]
     Wait until page contains element    xpath=//input[@selector="state_title_AP-0001-R01" and @value="Received"]
     Go to                               http://localhost:55001/plone/batches/B-001/analysisrequests
     Wait until page contains            Add new
     Click link                          ${ar_id}
     Wait until page contains            Results not requested
     Select Checkbox                     ar_manage_results_lab_select_all
-    Click button                        xpath=//input[@value="Retract"]
+    Click button                        xpath=//input[@id="retract_transition"]
     Wait Until Page Contains            Changes saved
 
 Verify AR
@@ -169,5 +170,11 @@ Verify AR
     Go to                        http://localhost:55001/plone/batches/B-001/analysisrequests
     Wait until page contains     ${ar_id}
     Select checkbox              xpath=//input[@item_title="${ar_id}"]
-    Click button                 xpath=//input[@value="Verify"]
+    Click button                 xpath=//input[@id="verify_transition"]
     Wait until page contains     saved
+
+Set up Auto print stickers
+    Go to                               ${PLONEURL}/bika_setup/edit
+    Click link                          Stickers
+    Select From List By Value           AutoPrintStickers   None
+    Click Button                        Save
