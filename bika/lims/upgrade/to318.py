@@ -10,6 +10,8 @@ def upgrade(tool):
     portal = aq_parent(aq_inner(tool))
     setup = portal.portal_setup
 
+    # Reread typeinfo to update/add the modified/added types
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
     # Updated profile steps
 
     # Migrations
