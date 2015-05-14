@@ -711,7 +711,7 @@ class Instrument_Validations(WorksheetImporter):
     def Import(self):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         for row in self.get_rows(3):
-            if not row['instrument'] or not row['title']:
+            if not row.get('instrument', None) or not row.get('title', None):
                 continue
 
             folder = self.get_object(bsc, 'Instrument', row.get('instrument'))
@@ -743,7 +743,7 @@ class Instrument_Calibrations(WorksheetImporter):
     def Import(self):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         for row in self.get_rows(3):
-            if not row['instrument'] or not row['title']:
+            if not row.get('instrument', None) or not row.get('title', None):
                 continue
 
             folder = self.get_object(bsc, 'Instrument', row.get('instrument'))
@@ -756,8 +756,16 @@ class Instrument_Calibrations(WorksheetImporter):
                     Calibrator=row.get('calibrator', ''),
                     Considerations=row.get('considerations', ''),
                     WorkPerformed=row.get('workperformed', ''),
-                    Remarks=row.get('remarks', '')
+                    Remarks=row.get('remarks', ''),
+                    DateIssued=row.get('DateIssued', ''),
+                    ReportID=row.get('ReportID', '')
                 )
+                # Getting lab contacts
+                bsc = getToolByName(self.context, 'bika_setup_catalog')
+                lab_contacts = [o.getObject() for o in bsc(portal_type="LabContact", nactive_state='active')]
+                for contact in lab_contacts:
+                    if contact.getFullname() == row.get('Worker', ''):
+                        obj.setWorker(contact.UID())
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
 
