@@ -341,6 +341,9 @@ class Instrument(ATFolder):
         return self.objectValues('InstrumentMaintenanceTask')
 
     def getCalibrations(self):
+        """
+        Return all calibration objects related with the instrument
+        """
         return self.objectValues('InstrumentCalibration')
 
     def getCertifications(self):
@@ -366,13 +369,14 @@ class Instrument(ATFolder):
         return certs
 
     def isValid(self):
-        """ Returns if the current instrument is not out for verification ot
+        """ Returns if the current instrument is not out for verification, calibration,
         out-of-date regards to its certificates and if the latest QC succeed
         """
         return self.isOutOfDate() == False \
                 and self.isQCValid() == True \
                 and self.getDisposeUntilNextCalibrationTest() == False \
-                and self.isValidationInProgress == False
+                and self.isValidationInProgress == False \
+                and self.isCalibrationInProgress == False \
 
     def getLatestReferenceAnalyses(self):
         """ Returns a list with the latest Reference analyses performed
@@ -468,6 +472,19 @@ class Instrument(ATFolder):
                 return True
         return False
 
+    def isCalibrationInProgress(self):
+        """ Returns if the current instrument is out for a calibration progress
+        """
+        #import pdb;pdb.set_trace()
+        calibration = self.getLatestValidCalibration()
+        today = date.today()
+        if calibration and calibration.getDownTo():
+            validfrom = calibration.getDownFrom().asdatetime().date()
+            validto = calibration.getDownTo().asdatetime().date()
+            if validfrom <= today <= validto:
+                return True
+        return False
+
     def getCertificateExpireDate(self):
         """ Returns the current instrument's data expiration certificate
         """
@@ -529,6 +546,28 @@ class Instrument(ATFolder):
                 lastfrom = validfrom
                 lastto = validto
         return validation
+
+    def getLatestValidCalibration(self):
+        """ Returns the latest valid calibration. If no latest valid
+            calibration found, returns None
+        """
+        calibration = None
+        lastfrom = None
+        lastto = None
+        for c in self.getCalibrations():
+            validfrom = c.getDownFrom() if c else None
+            validto = c.getDownTo() if validfrom else None
+            if not validfrom or not validto:
+                continue
+            validfrom = validfrom.asdatetime().date()
+            validto = validto.asdatetime().date()
+            if not calibration \
+                or validto > lastto \
+                or (validto == lastto and validfrom > lastfrom):
+                calibration = c
+                lastfrom = validfrom
+                lastto = validto
+        return calibration
 
     def getValidations(self):
         """
