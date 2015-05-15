@@ -366,12 +366,13 @@ class Instrument(ATFolder):
         return certs
 
     def isValid(self):
-        """ Returns if the current instrument is not out-of-date regards
-            to its certificates and if the latest QC succeed
+        """ Returns if the current instrument is not out for verification ot
+        out-of-date regards to its certificates and if the latest QC succeed
         """
         return self.isOutOfDate() == False \
                 and self.isQCValid() == True \
-                and self.getDisposeUntilNextCalibrationTest() == False
+                and self.getDisposeUntilNextCalibrationTest() == False \
+                and self.isValidationInProgress == False
 
     def getLatestReferenceAnalyses(self):
         """ Returns a list with the latest Reference analyses performed
@@ -455,6 +456,18 @@ class Instrument(ATFolder):
                 return False
         return True
 
+    def isValidationInProgress(self):
+        """ Returns if the current instrument is out for a validation progress
+        """
+        validation = self.getLatestValidValidation()
+        today = date.today()
+        if validation and validation.getDownTo():
+            validfrom = validation.getDownFrom().asdatetime().date()
+            validto = validation.getDownTo().asdatetime().date()
+            if validfrom <= today <= validto:
+                return True
+        return False
+
     def getCertificateExpireDate(self):
         """ Returns the current instrument's data expiration certificate
         """
@@ -495,7 +508,32 @@ class Instrument(ATFolder):
                 lastto = validto
         return cert
 
+    def getLatestValidValidation(self):
+        """ Returns the latest valid validation. If no latest valid
+            validation found, returns None
+        """
+        validation = None
+        lastfrom = None
+        lastto = None
+        for v in self.getValidations():
+            validfrom = v.getDownFrom() if v else None
+            validto = v.getDownTo() if validfrom else None
+            if not validfrom or not validto:
+                continue
+            validfrom = validfrom.asdatetime().date()
+            validto = validto.asdatetime().date()
+            if not validation \
+                or validto > lastto \
+                or (validto == lastto and validfrom > lastfrom):
+                validation = v
+                lastfrom = validfrom
+                lastto = validto
+        return validation
+
     def getValidations(self):
+        """
+        Return all the validations objects related with the instrument
+        """
         return self.objectValues('InstrumentValidation')
 
     def getSchedule(self):

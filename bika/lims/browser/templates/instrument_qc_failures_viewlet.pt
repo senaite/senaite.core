@@ -48,4 +48,17 @@
         </div>
     </div>
 
+    <div id="portal-alert"
+            tal:define="items python:view.failed['validation'];"
+            tal:condition="python: len(items) > 0">
+        <div class="portlet-alert-item" tal:condition="python:len(items) > 0">
+            <p i18n:translate="instruments_qc_unvalidated" class="title">
+                <span i18n:name="nr_failed" tal:content="python:len(items)"/>
+                instruments under validation progress:
+            </p>
+            <p tal:content="structure python:', '.join([i['link'] for i in items])"/>
+        </div>
+    </div>
+
+
 </div>
