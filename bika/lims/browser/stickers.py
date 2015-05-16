@@ -48,6 +48,8 @@ class Sticker(BrowserView):
 
         if self.items[0].portal_type == 'SamplePartition':
             template = self.request.get('template', '')
+            if not template:
+                import pdb, sys; pdb.Pdb(stdout=sys.__stdout__).set_trace()
             prefix, tmpl = template.split(':')
             templates_dir = queryResourceDirectory('stickers', prefix).directory
 

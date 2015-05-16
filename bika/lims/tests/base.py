@@ -1,7 +1,7 @@
 from AccessControl.SecurityManagement import newSecurityManager
 from Acquisition import aq_base
 from bika.lims import logger
-from bika.lims.testing import BIKA_FUNCTIONAL_TESTING
+from bika.lims.testing import BIKA_FUNCTIONAL_TESTING, BIKA_SIMPLE_TESTING
 from plone.app.robotframework.remote import RemoteLibrary
 from plone.app.testing import setRoles
 from plone.app.testing import SITE_OWNER_NAME
@@ -35,11 +35,6 @@ class BikaTestCase(unittest.TestCase):
 
     def setUp(self):
         super(BikaTestCase, self).setUp()
-        self.app = self.layer['app']
-        self.portal = self.layer['portal']
-        self.request = self.layer['request']
-        self.request['ACTUAL_URL'] = self.portal.absolute_url()
-        setRoles(self.portal, TEST_USER_ID, ['LabManager', 'Member'])
 
     def afterSetUp(self):
         self.portal._original_MailHost = self.portal.MailHost
@@ -92,13 +87,28 @@ class BikaTestCase(unittest.TestCase):
         '''Changes the user's permissions.'''
         context.manage_role(role, permissions)
 
+class BikaSimpleTestCase(Functional, BikaTestCase):
 
+    layer = BIKA_SIMPLE_TESTING
+
+    def setUp(self):
+        super(BikaSimpleTestCase, self).setUp()
+        self.app = self.layer['app']
+        self.portal = self.layer['portal']
+        self.request = self.layer['request']
+        self.request['ACTUAL_URL'] = self.portal.absolute_url()
+        setRoles(self.portal, TEST_USER_ID, ['LabManager', 'Member'])
 
 class BikaFunctionalTestCase(Functional, BikaTestCase):
     layer = BIKA_FUNCTIONAL_TESTING
 
     def setUp(self):
         super(BikaFunctionalTestCase, self).setUp()
+        self.app = self.layer['app']
+        self.portal = self.layer['portal']
+        self.request = self.layer['request']
+        self.request['ACTUAL_URL'] = self.portal.absolute_url()
+        setRoles(self.portal, TEST_USER_ID, ['LabManager', 'Member'])
 
     def getBrowser(self, loggedIn=True):
         """ instantiate and return a testbrowser for convenience """
