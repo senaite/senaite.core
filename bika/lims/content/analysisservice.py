@@ -896,6 +896,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     StringField('CommercialID',
         searchable=1,
+        schemata='Description',
         required=0,
         widget=StringWidget(
             label=_("Commercial ID"),
@@ -904,7 +905,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     StringField('ProtocolID',
         searchable=1,
-        schemata = 'Insurance',
+        schemata = 'Description',
         required=0,
         widget=StringWidget(
             label=_("Protocol ID"),
