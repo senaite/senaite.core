@@ -15,7 +15,7 @@ class AnalysisProfileAnalysesView(BikaListingView):
     """ bika listing to display Analyses table for an Analysis Profile.
     """
 
-    def __init__(self, context, request, fieldvalue, allow_edit):
+    def __init__(self, context, request, fieldvalue=[], allow_edit=False):
         super(AnalysisProfileAnalysesView, self).__init__(context, request)
         self.catalog = "bika_setup_catalog"
         self.contentFilter = {'portal_type': 'AnalysisService',

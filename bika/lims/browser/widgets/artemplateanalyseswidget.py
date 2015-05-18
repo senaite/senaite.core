@@ -15,7 +15,7 @@ class ARTemplateAnalysesView(BikaListingView):
     """ bika listing to display Analyses table for an ARTemplate.
     """
 
-    def __init__(self, context, request, fieldvalue, allow_edit):
+    def __init__(self, context, request, fieldvalue=[], allow_edit=False):
         super(ARTemplateAnalysesView, self).__init__(context, request)
         self.catalog = "bika_setup_catalog"
         self.contentFilter = {'portal_type': 'AnalysisService',
