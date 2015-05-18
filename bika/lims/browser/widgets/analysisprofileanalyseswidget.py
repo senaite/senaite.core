@@ -29,12 +29,20 @@ class AnalysisProfileAnalysesView(BikaListingView):
         self.show_select_all_checkbox = False
         self.show_column_toggles = False
         self.show_select_column = True
-        self.show_categories = True
-        self.expand_all_categories = True
-        self.pagesize = 0
         self.allow_edit = allow_edit
         self.form_id = "analyses"
         self.profile = None
+
+        self.categories = []
+        self.do_cats = self.context.bika_setup.getCategoriseAnalysisServices()
+        if self.do_cats:
+            self.pagesize = 0  # hide batching controls
+            self.show_categories = True
+            self.expand_all_categories = False
+            self.ajax_categories = True
+            self.ajax_categories_url = self.context.absolute_url() + \
+                                       "/analysisprofile_analysesview"
+            self.category_index = 'getCategoryTitle'
 
         self.columns = {
             'Title': {'title': _('Service'),
@@ -86,9 +94,13 @@ class AnalysisProfileAnalysesView(BikaListingView):
             obj = items[x]['obj']
 
             cat = obj.getCategoryTitle()
-            items[x]['category'] = cat
-            if cat not in self.categories:
-                self.categories.append(cat)
+            # Category (upper C) is for display column value
+            items[x]['Category'] = cat
+            if self.do_cats:
+                # category is for bika_listing to groups entries
+                items[x]['category'] = cat
+                if cat not in self.categories:
+                    self.categories.append(cat)
 
             analyses = [a.UID() for a in self.fieldvalue]
 
