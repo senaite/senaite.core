@@ -88,49 +88,6 @@
 
         </thead>
 
-        <!-- Analysis Services / Analyses -->
-
-        <tbody tal:condition="python:context.bika_setup.getARAddServiceSelector() == 'single-select'">
-            <tr> <td tal:attributes="colspan python:view.ar_count+3"><h3> &nbsp;</h3> </td> </tr>
-            <tr class="service_selector single-select" uid="new">
-                <tal:def define="errors python:{}">
-                    <td colspan="2" style="white-space:nowrap;text-align:left">
-                        <input type="text"
-                               placeholder="Type to find Analysis Services"
-                               id="singleservice"
-                               name="singleservice"
-                               value=""/>
-                    </td>
-                    <td>
-                        <input type="checkbox"
-                               name="uids:list"
-                               style="vertical-align: -2px"/>
-                    </td>
-                    <tal:columns tal:repeat="arnum python:range(view.ar_count)">
-                        <td class="nowrap" tal:attributes="class string:ar.${arnum}">
-                            <span class="before">
-                                &nbsp;</span>
-                            <input type="checkbox" style="vertical-align: -2px"/>
-                            <span class="after">
-                                <tal:x condition="python:context.bika_setup.getEnableARSpecs()">
-                                    <input class="min" size="3" placeholder="&gt;min">
-                                    <input class="max" size="3" placeholder="&lt;max">
-                                    <input class="error" size="3" placeholder="err%">
-                                </tal:x>
-                                <span class="partnr"
-                                      tal:condition="python:context.bika_setup.getShowPartitions()">
-                                    &nbsp;</span>
-                            </span>
-                            <span class="alert"
-                                  tal:attributes="field string:ar.${arnum}">
-                                &nbsp;</span>
-                        </td>
-                    </tal:columns>
-                </tal:def>
-            </tr>
-            <tr> <td tal:attributes="colspan python:view.ar_count+3"><h3> &nbsp;</h3> </td> </tr>
-        </tbody>
-
         <!-- Prices -->
 
         <tfoot tal:condition="ShowPrices">
@@ -206,8 +163,7 @@
     </table>
 
     <!-- Analyses -->
-    <span
-            tal:condition="python:context.bika_setup.getARAddServiceSelector() == 'bika_listing'">
+    <span>
         <div style="text-align:left;padding-bottom:10px;">
             <input i18n:attributes="value"
                     class="context button allowMultiSubmit"
