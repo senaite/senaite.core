@@ -6,6 +6,8 @@ from bika.lims.browser import BrowserView
 from bika.lims.browser.analysisrequest import AnalysisRequestViewView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
+from bika.lims.controlpanel.bika_analysisservices import \
+    AnalysisServicesView as ASV
 from bika.lims.interfaces import IAnalysisRequestAddView
 from bika.lims.utils import getHiddenAttributesForClass, dicts_to_dict
 from bika.lims.utils import t
@@ -21,20 +23,169 @@ from zope.component import getAdapter
 from zope.interface import implements
 
 
+class AnalysisServicesView(ASV):
+    def _get_selected_items(self, full_objects=True, form_key=None):
+        """ return a list of selected form objects
+            full_objects defaults to True
+        """
+        form = self.request.form.get(form_key,
+            {}) if form_key else self.request.form
+        uc = getToolByName(self.context, 'uid_catalog')
+
+        selected_items = {}
+        for uid in form.get('uids', []):
+            try:
+                item = uc(UID=uid)[0].getObject()
+            except IndexError:
+                # ignore selected item if object no longer exists
+                continue
+            selected_items[uid] = item
+        return selected_items.values()
+
+    def __init__(self, context, request, poc, ar_count=None, category=None):
+        super(AnalysisServicesView, self).__init__(context, request)
+
+        self.contentFilter['getPointOfCapture'] = poc
+
+        if category:
+            self.contentFilter['getCategoryTitle'] = category
+
+        self.cat_header_class = "ignore_bikalisting_default_handler"
+
+        ar_count_default = ar_count if ar_count else 4
+        try:
+            self.ar_count = int(self.request.get('ar_count', ar_count_default))
+        except ValueError:
+            self.ar_count = ar_count_default
+
+        self.ar_add_items = []
+
+        # Customise form for AR Add context
+        self.form_id = poc
+
+        self.filter_indexes = ['id', 'Title', 'SearchableText', 'getKeyword']
+
+        self.pagesize = 0
+        self.table_only = True
+
+        default = [x for x in self.review_states if x['id'] == 'default'][0]
+        columns = default['columns']
+
+        self.review_states = [
+            {'id': 'default',
+             'title': _('All'),
+             'contentFilter': {},
+             'columns': columns,
+            },
+        ]
+
+        self.review_states[0]['custom_actions'] = []
+        self.review_states[0]['transitions'] = []
+
+        # Configure column layout
+        to_remove = ['Category', 'Instrument', 'Unit',
+                     'Calculation', 'Keyword', 'Price']
+        for col_name in to_remove:
+            if col_name in self.review_states[0]['columns']:
+                self.review_states[0]['columns'].remove(col_name)
+
+        # Add columns for each AR
+        for arnum in range(self.ar_count):
+            column = {
+                'title': _('AR ${ar_number}', mapping={'ar_number': arnum}),
+                'sortable': False,
+                'type': 'boolean',
+            }
+
+            self.columns['ar.%s' % arnum] = column
+            self.review_states[0]['columns'].append('ar.%s' % arnum)
+
+        # Removing sortable from services - it fails to respect table_only,
+        # and re-renders main-template inside the container!
+        for k, v in self.columns.items():
+            self.columns[k]['sortable'] = False
+
+        # results cached in ar_add_items
+        self.folderitems()
+
+    def selected_cats(self, items):
+        """This AnalysisServicesView extends the default selected_cats,
+        in order to include auto_expand categories as defined by
+        client.getDefaultCategories()
+
+        :param items: The original selected_cats calculates visibility
+            by looking at items in the current listing batch.
+        """
+        cats = super(AnalysisServicesView, self).selected_cats(items)
+        client = self.context.getClient()
+        if client:
+            cats.extend([c.Title() for c in client.getDefaultCategories()])
+        return cats
+
+    def restricted_cats(self, items):
+        """This AnalysisServicesView extends the default restricted_cats,
+        in order to include those listed in client.getRestrictedCategories
+        """
+        cats = super(AnalysisServicesView, self).restricted_cats(items)
+        client = self.context.getClient()
+        if client:
+            cats.extend([c.Title() for c in client.getRestrictedCategories()])
+        return cats
+
+    def folderitems(self):
+        # This folderitems acts slightly differently from others, in that it
+        # saves it's results in an attribute, and prevents itself from being
+        # run multiple times.  This is necessary so that AR Add can check
+        # the item count before choosing to render the table at all.
+        if not self.ar_add_items:
+            bs = self.context.bika_setup
+            items = super(AnalysisServicesView, self).folderitems()
+            for x, item in enumerate(items):
+                if 'obj' not in items[x]:
+                    continue
+                kw = items[x]['obj'].getKeyword()
+                for arnum in range(self.ar_count):
+                    key = 'ar.%s' % arnum
+                    # checked or not:
+                    selected = self._get_selected_items(form_key=key)
+                    items[x][key] = item in selected
+                    # always editable:
+                    items[x]['allow_edit'].append(key)
+                    # fields and controls after each checkbox
+                    items[x]['after'][key] = ''
+                    if self.context.bika_setup.getEnableARSpecs():
+                        items[x]['after'][key] += '''
+                            <input class="min" size="3" placeholder="&gt;min"/>
+                            <input class="max" size="3" placeholder="&lt;max"/>
+                            <input class="error" size="3" placeholder="err%"/>
+                        '''
+                    items[x]['after'][key] += '<span class="partnr"></span>'
+                    # place a clue for the JS to recognize that these are
+                    # AnalysisServices being selected here (service_selector
+                    # bika_listing):
+                    poc = items[x]['obj'].getPointOfCapture()
+                    items[x]['table_row_class'] = \
+                        'service_selector bika_listing ' + poc
+            self.ar_add_items = items
+        return self.ar_add_items
+
+
 class AnalysisRequestAddView(AnalysisRequestViewView):
     """ The main AR Add form
     """
     implements(IViewView, IAnalysisRequestAddView)
     template = ViewPageTemplateFile("templates/ar_add.pt")
+    ar_add_by_row_template = ViewPageTemplateFile('templates/ar_add_by_row.pt')
+    ar_add_by_col_template = ViewPageTemplateFile('templates/ar_add_by_col.pt')
 
     def __init__(self, context, request):
         AnalysisRequestViewView.__init__(self, context, request)
-        self.layout = "columns"
         self.came_from = "add"
         self.can_edit_sample = True
         self.can_edit_ar = True
         self.DryMatterService = self.context.bika_setup.getDryMatterService()
         request.set('disable_plone.rightcolumn', 1)
+        self.layout = "columns"
         self.ar_count = self.request.get('ar_count', 4)
         try:
             self.ar_count = int(self.ar_count)
@@ -100,6 +251,28 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
                 fields.append(field)
         return fields
 
+    def services_widget_content(self, poc, ar_count=None):
+
+        """Return a table displaying services to be selected for inclusion
+        in a new AR.  Used in add_by_row view popup, and add_by_col add view.
+
+        :param ar_count: number of AR columns to generate columns for.
+        :return: string: rendered HTML content of bika_listing_table.pt.
+            If no items are found, returns "".
+        """
+
+        if not ar_count:
+            ar_count = self.ar_count
+
+        s = AnalysisServicesView(self.context, self.request, poc,
+                                 ar_count=ar_count)
+        s.form_id = poc
+        s.folderitems()
+
+        if not s.ar_add_items:
+            return ''
+        return s.contents_table()
+
 
 class SecondaryARSampleInfo(BrowserView):
     """Return fieldnames and pre-digested values for Sample fields which
@@ -143,40 +316,6 @@ class SecondaryARSampleInfo(BrowserView):
                 fieldvalue = ''
             ret.append([fieldname, fieldvalue])
         return json.dumps(ret)
-
-
-class ajaxExpandCategory(BikaListingView):
-    """ ajax requests pull this view for insertion when category header
-    rows are clicked/expanded. """
-    template = ViewPageTemplateFile(
-        "templates/analysisrequest_analysisservices.pt")
-
-    def __call__(self):
-        plone.protect.CheckAuthenticator(self.request.form)
-        plone.protect.PostOnly(self.request.form)
-        if hasattr(self.context, 'getRequestID'):
-            self.came_from = "edit"
-        return self.template()
-
-    def bulk_discount_applies(self):
-        client = None
-        if self.context.portal_type == 'AnalysisRequest':
-            client = self.context.aq_parent
-        elif self.context.portal_type == 'Batch':
-            client = self.context.getClient()
-        elif self.context.portal_type == 'Client':
-            client = self.context
-        return client.getBulkDiscount() if client is not None else False
-
-    def Services(self, poc, CategoryUID):
-        """ return a list of services brains """
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
-        services = bsc(portal_type="AnalysisService",
-                       sort_on='sortable_title',
-                       inactive_state='active',
-                       getPointOfCapture=poc,
-                       getCategoryUID=CategoryUID)
-        return services
 
 
 class ajaxAnalysisRequestSubmit():
