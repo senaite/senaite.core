@@ -119,7 +119,7 @@ function AnalysisRequestAddView() {
 	 */
 	function filterByClient() {
 		// Iterate all the columns to filtrate by client
-		for (var col = 0; col < parseInt($("#col_count").val(), 10); col++) {
+		for (var col = 0; col < parseInt($("#ar_count").val(), 10); col++) {
 			var element = $("#ar_" + col + "_Contact");
 			var clientuid = $("#ar_" + col + "_Client_uid").val();
 			// Initial value of contact list, set by the page's hidden ClientUID.
@@ -364,7 +364,7 @@ function AnalysisRequestAddView() {
 		// to right.
 		// Keyboard tab flow top to bottom instead of left to right
 		var index = 10;
-		var count = $("input[id='col_count']").val();
+		var count = $("input[id='ar_count']").val();
 		for (var i=0; i<count; i++) {
 			var elements = $("td[column="+i+"]").find("input[type!=hidden]").not("[disabled]");
 			for (var j=0; j<elements.length; j++) {
@@ -616,7 +616,7 @@ function AnalysisRequestAddView() {
 	}
 
 	function add_path_filter_to_spec_lookups(){
-		for (var col=0; col<parseInt($("#col_count").val(), 10); col++) {
+		for (var col=0; col<parseInt($("#ar_count").val(), 10); col++) {
 			var element = $("#ar_"+col+"_Specification");
             if (element.length > 0) {
                 var bq = $.parseJSON($(element).attr("base_query"));
@@ -703,7 +703,7 @@ function AnalysisRequestAddView() {
 			$("#ar_"+column+"_total_display").val(total.toFixed(2));
 		} else {
 			// recalculate the entire form
-			for (var col=0; col<parseInt($("#col_count").val(), 10); col++) {
+			for (var col=0; col<parseInt($("#ar_count").val(), 10); col++) {
 				recalc_prices(String(col));
 			}
 		}
@@ -740,10 +740,10 @@ function AnalysisRequestAddView() {
 		var first_max = $("[name='ar.0.max." + service_uid + "']").prop("value");
 		var first_error = $("[name='ar.0.error." + service_uid + "']").prop("value");
 
-		var col_count = parseInt($("#col_count").val(), 10);
+		var ar_count = parseInt($("#ar_count").val(), 10);
 		var affected_elements = [];
 		// 0 is the first column; we only want to change cols 1 onward.
-		for (var column = 1; column < col_count; column++) {
+		for (var column = 1; column < ar_count; column++) {
 			unsetTemplate(column);
 			unsetAnalysisProfile(column);
 			var other_elem = $("input[column='" + column + "']").filter("#" + copybutton.id);
@@ -769,9 +769,9 @@ function AnalysisRequestAddView() {
 	function copy_checkbox(copybutton){
 		var fieldName = $(copybutton).attr("name");
 		var first_val = $("input[name^='ar\\.0\\."+fieldName+"']").prop("checked");
-		var col_count = parseInt($("#col_count").val(), 10);
+		var ar_count = parseInt($("#ar_count").val(), 10);
 		// col starts at 1 here; we don't copy into the the first row
-		for (var col=1; col<col_count; col++) {
+		for (var col=1; col<ar_count; col++) {
 			var other_elem = $("#ar_" + col + "_" + fieldName);
 			if ((other_elem.prop("checked")!=first_val)) {
 				other_elem.prop("checked",first_val?true:false);
@@ -784,7 +784,7 @@ function AnalysisRequestAddView() {
 	function copyButton(){
 		/*jshint validthis:true */
 		var fieldName = $(this).attr("name");
-		var col_count = parseInt($("#col_count").val(), 10);
+		var ar_count = parseInt($("#ar_count").val(), 10);
 
 		if ($(this).parent().attr("class") == "service"){
 			copy_service(this);
@@ -803,7 +803,7 @@ function AnalysisRequestAddView() {
 			// multi-valued fields: selection is in {fieldname}-listing
 			var first_multi_html = $("div[name^='ar\\.0\\."+fieldName+"-listing']").html();
 			// col starts at 1 here; we don't copy into the the first row
-			for (var col=1; col<col_count; col++) {
+			for (var col=1; col<ar_count; col++) {
 				var other_uid_elem = $("#ar_" + col + "_" + fieldName + "_uid");
 				if (first_uid !== undefined && first_uid !== null){
 					other_uid_elem.val(first_uid);
@@ -889,7 +889,7 @@ function AnalysisRequestAddView() {
 				"categoryUID": category_uid,
 				"column": column,
 				"disable": disable > -1 ? column : -1,
-				"col_count": $("#col_count").attr("value"),
+				"ar_count": $("#ar_count").attr("value"),
 				"poc": poc
 			};
 			// possibly remove the fake ar context

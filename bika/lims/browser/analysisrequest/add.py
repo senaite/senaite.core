@@ -35,11 +35,11 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         self.can_edit_ar = True
         self.DryMatterService = self.context.bika_setup.getDryMatterService()
         request.set('disable_plone.rightcolumn', 1)
-        self.col_count = self.request.get('col_count', 4)
+        self.ar_count = self.request.get('ar_count', 4)
         try:
-            self.col_count = int(self.col_count)
+            self.ar_count = int(self.ar_count)
         except:
-            self.col_count = 4
+            self.ar_count = 4
 
     def __call__(self):
         self.request.set('disable_border', 1)
@@ -200,7 +200,7 @@ class ajaxAnalysisRequestSubmit():
 
         # First make a list of non-empty columns
         columns = []
-        for column in range(int(form['col_count'])):
+        for column in range(int(form['ar_count'])):
             name = 'ar.%s' % column
             ar = form.get(name, None)
             if ar and 'Analyses' in ar.keys():
