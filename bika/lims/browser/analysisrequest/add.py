@@ -29,6 +29,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
 
     def __init__(self, context, request):
         AnalysisRequestViewView.__init__(self, context, request)
+        self.layout = "columns"
         self.came_from = "add"
         self.can_edit_sample = True
         self.can_edit_ar = True
@@ -88,12 +89,13 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
                 ps.append(service.UID())
         return json.dumps(ps)
 
-    def get_fields_with_visibility(self, visibility):
+    def get_fields_with_visibility(self, visibility, mode=None):
+        mode = mode if mode else 'add'
         schema = self.context.Schema()
         fields = []
         for field in schema.fields():
             isVisible = field.widget.isVisible
-            v = isVisible(self.context, 'add', default='invisible', field=field)
+            v = isVisible(self.context, mode, default='invisible', field=field)
             if v == visibility:
                 fields.append(field)
         return fields
