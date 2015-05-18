@@ -1,6 +1,7 @@
 3.1.8 (unreleased)
 ------------------
 WINE-44: Sample stickers uses Partition ID only if ShowPartitions option is enabled
+LIMS-1634: AR Import fields (ClientRef, ClientSid) not importing correctly
 LIMS-1474: Disposed date is not shown in Sample View
 LIMS-1779: Results report new fields and improvements
 LIMS-1775: Allow to select LDL or UDL defaults in results with readonly mode
