@@ -461,7 +461,7 @@ class Instrument(ATFolder):
         return True
 
     def isValidationInProgress(self):
-        """ Returns if the current instrument is out for a validation progress
+        """ Returns if the current instrument is under validation progress
         """
         validation = self.getLatestValidValidation()
         today = date.today()
@@ -473,9 +473,8 @@ class Instrument(ATFolder):
         return False
 
     def isCalibrationInProgress(self):
-        """ Returns if the current instrument is out for a calibration progress
+        """ Returns if the current instrument is under calibration progress
         """
-        #import pdb;pdb.set_trace()
         calibration = self.getLatestValidCalibration()
         today = date.today()
         if calibration and calibration.getDownTo():
