@@ -17,6 +17,7 @@ from sysmex.xs import i500, i1000
 from beckmancoulter.access import model2
 from rochecobas.taqman import model48
 from abaxis.vetscan import vs2
+from scilvet.abc import plus
 
 __all__ = ['generic.xml',
            'agilent.masshunter.quantitative',
@@ -35,7 +36,8 @@ __all__ = ['generic.xml',
            'sysmex.xs.i1000',
            'beckmancoulter.access.model2',
            'rochecobas.taqman.model48',
-           'abaxis.vetscan.vs2'
+           'abaxis.vetscan.vs2',
+           'scilvet.abc.plus'
            ]
 
 
