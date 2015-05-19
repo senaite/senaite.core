@@ -55,7 +55,7 @@ displayed when ajax requests the table. </tal:comment>
         tal:attributes="form_id form_id"/>
 
 <input type="hidden" name="ajax_categories_url"
-        tal:condition="view/bika_listing/ajax_categories_url"
+        tal:condition="python:hasattr(view.bika_listing, 'ajax_categories_url')"
         tal:attributes="value view/bika_listing/ajax_categories_url"/>
 
 <tal:worksheet-cheat-1 condition="python:hasattr(view.bika_listing, 'analyst')">
