@@ -872,19 +872,20 @@ class BikaListingView(BrowserView):
                 replace = {},
             )
             try:
-                state_title = workflow.getTitleForStateOnType(
-                    self.review_state, obj.portal_type)
-                state_title = t(PMF(state_title))
+                rs = workflow.getInfoFor(obj, 'review_state')
+                st_title = workflow.getTitleForStateOnType(rs, obj.portal_type)
+                st_title = t(PMF(st_title))
             except:
-                state_title = None
-            if self.review_state:
-                results_dict['review_state'] = self.review_state
+                rs = 'active'
+                st_title = None
+            if rs:
+                results_dict['review_state'] = rs
             for state_var, state in states.items():
-                if not state_title:
-                    state_title = workflow.getTitleForStateOnType(
+                if not st_title:
+                    st_title = workflow.getTitleForStateOnType(
                         state, obj.portal_type)
                 results_dict[state_var] = state
-            results_dict['state_title'] = state_title
+            results_dict['state_title'] = st_title
 
             # extra classes for individual fields on this item { field_id : "css classes" }
             results_dict['class'] = {}
