@@ -349,85 +349,96 @@ Table cells for each column from in review_state's column list.
 
 </tr>
 
-<!-- Row Range comments field (for Analysis Specifications) -->
-<tal:rangecomments
-    condition="python:view.context.portal_type=='AnalysisSpec'"
-    define="column string:rangecomment;
-            allow_edit python:view.bika_listing.allow_edit \
-                            and item.get('edit_condition', {}).get(column, True)">
-    <tr tal:attributes="class item/table_row_class;
+<tal:get_colspan tal:define="
+        form_id view/bika_listing/form_id;
+        review_state_id python:request.get(form_id+'_review_state', 'default');
+        review_state python:[t for t in view.bika_listing.review_states if t['id'] == review_state_id];
+        review_state python:review_state and review_state[0] or view.bika_listing.review_states[0];
+        nr_cols python:len(review_state['columns']);
+        nr_cols python:view.bika_listing.show_select_column and nr_cols + 1 or nr_cols;
+        nr_cols python:view.bika_listing.show_sort_column and nr_cols + 1 or nr_cols;
+        nr_cols python:str(nr_cols);">
+
+    <!-- Row Range comments field (for Analysis Specifications) -->
+    <tal:rangecomments
+        condition="python:view.context.portal_type=='AnalysisSpec'"
+        define="column string:rangecomment;
+                allow_edit python:view.bika_listing.allow_edit \
+                                and item.get('edit_condition', {}).get(column, True)">
+        <tr tal:attributes="class item/table_row_class;
+                            id string:folder-contents-item-${item/uid};
+                            uid item/uid;">
+           <td tal:attributes="class string:${item/state_class} result"></td>
+           <td tal:attributes="colspan python:int(nr_cols)-1;
+                                class string:${item/state_class} result"
+                style="padding-right:10px;padding-bottom:5px;">
+                <span i18n:translate="" style='color:#3f3f3f;font-size:0.95em;'>Range remarks:</span>&nbsp;
+                <textarea
+                    style="font-size: 0.9em;color:#3f3d3f;width:100%;display:block;"
+                    autocomplete="off"
+                    tal:condition="allow_edit"
+                    tal:attributes="
+                        selector string:${column}_${item/id};
+                        class python:'listing_remarks';
+                        uid string:${item/uid};
+                        st_uid string:${item/st_uid|nothing};
+                        objectId string:${item/id};
+                        field python:column;
+                        value python:item[column];
+                        originalvalue python:item[column];
+                        name string:${column}.${item/uid}:records"
+                    tal:content="python:item[column]"></textarea>
+                <span
+                    style="font-size: 0.9em;color:#3f3f3f;"
+                    autocomplete="off"
+                    tal:condition="python:not allow_edit"
+                    tal:content="python:item[column]['value']"/>
+            </td>
+        </tr>
+    </tal:rangecomments>
+
+    <!-- Row Remarks field (for Analyses) -->
+    <tal:remarks_condition
+        tal:define="remarksenabled python:view.context.bika_setup.getEnableAnalysisRemarks();
+                    isanalysis python:'obj' in item and item['obj'].portal_type == 'Analysis';
+                    hasremarks python:True if item.get('Remarks','') else False;
+                    remarksedit python: remarksenabled and 'Remarks' in item.get('allow_edit',[]);
+                    showremarks python:isanalysis and (hasremarks or remarksedit)">
+
+        <tr tal:condition="showremarks"
+            tal:define="keyword python:item.has_key('Keyword') and item['Keyword'] or '';"
+            tal:attributes="class item/table_row_class;
                         id string:folder-contents-item-${item/uid};
-                        uid item/uid;">
-       <td tal:attributes="class string:${item/state_class} result"></td>
-       <td tal:attributes="colspan python:int(nr_cols)-1;
-                            class string:${item/state_class} result"
-            style="padding-right:10px;padding-bottom:5px;">
-            <span i18n:translate="" style='color:#3f3f3f;font-size:0.95em;'>Range remarks:</span>&nbsp;
-            <textarea
-                style="font-size: 0.9em;color:#3f3d3f;width:100%;display:block;"
-                autocomplete="off"
-                tal:condition="allow_edit"
-                tal:attributes="
-                    selector string:${column}_${item/id};
-                    class python:'listing_remarks';
-                    uid string:${item/uid};
-                    st_uid string:${item/st_uid|nothing};
-                    objectId string:${item/id};
-                    field python:column;
-                    value python:item[column];
-                    originalvalue python:item[column];
-                    name string:${column}.${item/uid}:records"
-                tal:content="python:item[column]"></textarea>
-            <span
-                style="font-size: 0.9em;color:#3f3f3f;"
-                autocomplete="off"
-                tal:condition="python:not allow_edit"
-                tal:content="python:item[column]['value']"/>
-        </td>
-    </tr>
-</tal:rangecomments>
+                        uid item/uid;
+                        keyword keyword;">
 
-<!-- Row Remarks field (for Analyses) -->
-<tal:remarks_condition
-    tal:define="remarksenabled python:view.context.bika_setup.getEnableAnalysisRemarks();
-                isanalysis python:'obj' in item and item['obj'].portal_type == 'Analysis';
-                hasremarks python:True if item.get('Remarks','') else False;
-                remarksedit python: remarksenabled and 'Remarks' in item.get('allow_edit',[]);
-                showremarks python:isanalysis and (hasremarks or remarksedit)">
+            <td tal:attributes="class string:${item/state_class} result"></td>
 
-    <tr tal:condition="showremarks"
-        tal:define="keyword python:item.has_key('Keyword') and item['Keyword'] or '';"
-        tal:attributes="class item/table_row_class;
-                    id string:folder-contents-item-${item/uid};
-                    uid item/uid;
-                    keyword keyword;">
+            <td tal:attributes="colspan python:int(nr_cols)-1;
+                                class string:${item/state_class} result remarks"
+                style="padding-right:10px;padding-bottom:5px;">
+                <span i18n:translate="" style='color:#3f3f3f;font-size:0.95em;'>Remarks:</span>&nbsp;
+                <textarea
+                    style="font-size: 0.9em;color:#3f3f3f;width:100%;display:block;"
+                    autocomplete="off"
+                    rows="1"
+                    tal:condition="python:remarksedit==True"
+                    tal:attributes="
+                        class python:'listing_remarks';
+                        uid string:${item/uid};
+                        st_uid string:${item/st_uid|nothing};
+                        objectId string:${item/id};
+                        name string:Remarks.${item/uid}:records;
+                        value python:item.get('Remarks', '');"></textarea>
+                <span
+                    style="font-size: 0.9em;color:#3f3f3f;"
+                    autocomplete="off"
+                    tal:condition="python:remarksedit==False"
+                    tal:content="python:item.get('Remarks', '')"/>
+            </td>
+        </tr>
+    </tal:remarks_condition>
 
-        <td tal:attributes="class string:${item/state_class} result"></td>
-
-        <td tal:attributes="colspan python:int(nr_cols)-1;
-                            class string:${item/state_class} result remarks"
-            style="padding-right:10px;padding-bottom:5px;">
-            <span i18n:translate="" style='color:#3f3f3f;font-size:0.95em;'>Remarks:</span>&nbsp;
-            <textarea
-                style="font-size: 0.9em;color:#3f3f3f;width:100%;display:block;"
-                autocomplete="off"
-                rows="1"
-                tal:condition="python:remarksedit==True"
-                tal:attributes="
-                    class python:'listing_remarks';
-                    tabindex tabindex/next;
-                    uid string:${item/uid};
-                    st_uid string:${item/st_uid|nothing};
-                    objectId string:${item/id};
-                    name string:Remarks.${item/uid}:records;
-                    value python:item.get('Remarks', '');"></textarea>
-            <span
-                style="font-size: 0.9em;color:#3f3f3f;"
-                autocomplete="off"
-                tal:condition="python:remarksedit==False"
-                tal:content="python:item.get('Remarks', '')"/>
-        </td>
-    </tr>
-</tal:remarks_condition>
+</tal:get_colspan>
 
 </tal:items>
