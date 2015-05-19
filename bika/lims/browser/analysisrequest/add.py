@@ -1,4 +1,7 @@
 import json
+from bika.lims.utils.sample import create_sample
+from bika.lims.utils.samplepartition import create_samplepartition
+from bika.lims.workflow import doActionFor
 import plone
 
 from bika.lims import bikaMessageFactory as _
@@ -8,14 +11,14 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
 from bika.lims.controlpanel.bika_analysisservices import \
     AnalysisServicesView as ASV
-from bika.lims.interfaces import IAnalysisRequestAddView
+from bika.lims.interfaces import IAnalysisRequestAddView, ISample
 from bika.lims.utils import getHiddenAttributesForClass, dicts_to_dict
 from bika.lims.utils import t
 from bika.lims.utils import tmpID
 from bika.lims.utils.analysisrequest import create_analysisrequest
-from bika.lims.utils.form import ajax_form_error
 from magnitude import mg
 from plone.app.layout.globals.interfaces import IViewView
+from Products.Archetypes import PloneMessageFactory as PMF
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType, safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -317,170 +320,122 @@ class SecondaryARSampleInfo(BrowserView):
             ret.append([fieldname, fieldvalue])
         return json.dumps(ret)
 
+def ajax_form_error(errors, field=None, arnum=None, message=None):
+    if not message:
+        message = t(PMF('Input is required but no input given.'))
+    if (arnum or field):
+        error_key = ' %s.%s' % (int(arnum) + 1, field or '')
+    else:
+        error_key = 'Form Error'
+    errors[error_key] = message
 
 class ajaxAnalysisRequestSubmit():
+    """Handle data submitted from analysisrequest add forms.  As much
+    as possible, the incoming json arrays should already match the requirement
+    of the underlying AR/sample schema.
+    """
+
     def __init__(self, context, request):
         self.context = context
         self.request = request
+        # Errors are aggregated here, and returned together to the browser
+        self.errors = {}
 
     def __call__(self):
-
         form = self.request.form
         plone.protect.CheckAuthenticator(self.request.form)
         plone.protect.PostOnly(self.request.form)
-        came_from = 'came_from' in form and form['came_from'] or 'add'
-        wftool = getToolByName(self.context, 'portal_workflow')
         uc = getToolByName(self.context, 'uid_catalog')
         bsc = getToolByName(self.context, 'bika_setup_catalog')
+        portal_catalog = getToolByName(self.context, 'portal_catalog')
 
-        errors = {}
+        # Load the form data from request.state.  If anything goes wrong here,
+        # put a bullet through the whole process.
+        try:
+            states = json.loads(form['state'])
+        except Exception as e:
+            message = t(_('Badly formed state: ${errmsg}',
+                          mapping={'errmsg': e.message}))
+            ajax_form_error(self.errors, message=message)
+            return json.dumps({'errors': self.errors})
 
-        form_parts = json.loads(self.request.form['parts'])
+        # Validate incoming form data
+        required = [field.getName() for field
+                    in AnalysisRequestSchema.fields()
+                    if field.required] + ["Analyses"]
 
-        # First make a list of non-empty columns
-        columns = []
-        for column in range(int(form['ar_count'])):
-            name = 'ar.%s' % column
-            ar = form.get(name, None)
-            if ar and 'Analyses' in ar.keys():
-                columns.append(column)
+        # First remove all states which are completely empty; if all
+        # required fields are not present, we assume that the current
+        # AR had no data entered, and can be ignored
+        nonblank_states = {}
+        for arnum, state in states.items():
+            for key, val in state.items():
+                if val \
+                        and "%s_hidden" % key not in state \
+                        and not key.endswith('hidden'):
+                    nonblank_states[arnum] = state
+                    break
 
-        if len(columns) == 0:
-            ajax_form_error(errors, message=t(_("No analyses have been selected")))
-            return json.dumps({'errors':errors})
+        # in valid_states, all ars that pass validation will be stored
+        valid_states = {}
+        for arnum, state in nonblank_states.items():
+            # Secondary ARs are a special case, these fields are not required
+            if state.get('Sample', ''):
+                if 'SamplingDate' in required:
+                    required.remove('SamplingDate')
+                if 'SampleType' in required:
+                    required.remove('SampleType')
+            # fields flagged as 'hidden' are not considered required because
+            # they will already have default values inserted in them
+            for fieldname in required:
+                if fieldname + '_hidden' in state:
+                    required.remove(fieldname)
+            missing = [f for f in required if not state.get(f, '')]
+            # If there are required fields missing, flag an error
+            if missing:
+                msg = t(_('Required fields have no values: '
+                          '${field_names}',
+                          mapping={'field_names': ', '.join(missing)}))
+                ajax_form_error(self.errors, arnum=arnum, message=msg)
+                continue
+            # This ar is valid!
+            valid_states[arnum] = state
 
-        # Now some basic validation
-        required_fields = [field.getName() for field
-                           in AnalysisRequestSchema.fields()
-                           if field.required]
+        # - Expand lists of UIDs returned by multiValued reference widgets
+        # - Transfer _uid values into their respective fields
+        for arnum in valid_states.keys():
+            for field, value in valid_states[arnum].items():
+                if field.endswith('_uid') and ',' in value:
+                    valid_states[arnum][field] = value.split(',')
+                elif field.endswith('_uid'):
+                    valid_states[arnum][field] = value
 
-        for column in columns:
-            formkey = "ar.%s" % column
-            ar = form[formkey]
+        if self.errors:
+            return json.dumps({'errors': self.errors})
 
-            # check that required fields have values
-            for field in required_fields:
-                # This one is still special.
-                if field in ['RequestID']:
-                    continue
-                    # And these are not required if this is a secondary AR
-                if ar.get('Sample', '') != '' and field in [
-                    'SamplingDate',
-                    'SampleType'
-                ]:
-                    continue
-                if not ar.get(field, ''):
-                    ajax_form_error(errors, field, column)
-        # Return errors if there are any
-        if errors:
-            return json.dumps({'errors': errors})
-
-        # Get the prices from the form data
-        prices = form.get('Prices', None)
-        # Initialize the Anlysis Request collection
+        # Now, we will create the specified ARs.
         ARs = []
-        # if a new profile is created automatically,
-        # this flag triggers the status message
-        new_profile = None
-        # The actual submission
-        for column in columns:
-            # Get partitions from the form data
-            if form_parts:
-                partitions = form_parts[str(column)]
-            else:
-                partitions = []
-            # Get the form data using the appropriate form key
-            formkey = "ar.%s" % column
-            values = form[formkey].copy()
-            # resolved values is formatted as acceptable by archetypes
-            # widget machines
-            resolved_values = {}
-            for k, v in values.items():
-                # Analyses, we handle that specially.
-                if k == 'Analyses':
-                    continue
-                # Insert the reference *_uid values instead of titles.
-                if "_uid" in k:
-                    v = values[k]
-                    v = v.split(",") if v and "," in v else v
-                    fname = k.replace("_uid", "")
-                    resolved_values[fname] = v
-                    continue
-                # we want to write the UIDs and ignore the title values
-                if k+"_uid" in values:
-                    continue
-                resolved_values[k] = values[k]
-            # Get the analyses from the form data
-            analyses = values["Analyses"]
-
-            # Gather the specifications from the form
-            specs = json.loads(form['copy_to_new_specs']).get(str(column), {})
-            if not specs:
-                specs = json.loads(form['specs']).get(str(column), {})
-            if specs:
-                specs = dicts_to_dict(specs, 'keyword')
-            # Modify the spec with all manually entered values
-            for service_uid in analyses:
-                min_element_name = "ar.%s.min.%s" % (column, service_uid)
-                max_element_name = "ar.%s.max.%s" % (column, service_uid)
-                error_element_name = "ar.%s.error.%s" % (column, service_uid)
-                service_keyword = bsc(UID=service_uid)[0].getKeyword
-                if min_element_name in form:
-                    if service_keyword not in specs:
-                        specs[service_keyword] = {}
-                    specs[service_keyword]["keyword"] = service_keyword
-                    specs[service_keyword]["min"] = form[min_element_name]
-                    specs[service_keyword]["max"] = form[max_element_name]
-                    specs[service_keyword]["error"] = form[error_element_name]
-
-            # Selecting a template sets the hidden 'parts' field to template values.
-            # Selecting a profile will allow ar_add.js to fill in the parts field.
-            # The result is the same once we are here.
-            if not partitions:
-                partitions = [{
-                    'services': [],
-                    'container': None,
-                    'preservation': '',
-                    'separate': False
-                }]
-            # Apply DefaultContainerType to partitions without a container
-            default_container_type = resolved_values.get(
-                'DefaultContainerType', None
-            )
-            if default_container_type:
-                container_type = bsc(UID=default_container_type)[0].getObject()
-                containers = container_type.getContainers()
-                for partition in partitions:
-                    if not partition.get("container", None):
-                        partition['container'] = containers
-            # Retrieve the catalogue reference to the client
-            client = uc(UID=resolved_values['Client'])[0].getObject()
+        for arnum, state in valid_states.items():
             # Create the Analysis Request
             ar = create_analysisrequest(
-                client,
+                portal_catalog(UID=state['Client'])[0].getObject(),
                 self.request,
-                resolved_values,
-                analyses=analyses,
-                partitions=partitions,
-                specifications=specs.values(),
-                prices=prices
+                state
             )
-            # Add the created analysis request to the list
-            ARs.append(ar.getId())
+            ARs.append(ar.Title())
+
         # Display the appropriate message after creation
         if len(ARs) > 1:
-            message = _("Analysis requests ${ARs} were successfully created.",
+            message = _('Analysis requests ${ARs} were successfully created.',
                         mapping={'ARs': safe_unicode(', '.join(ARs))})
         else:
-            message = _("Analysis request ${AR} was successfully created.",
+            message = _('Analysis request ${AR} was successfully created.',
                         mapping={'AR': safe_unicode(ARs[0])})
         self.context.plone_utils.addPortalMessage(message, 'info')
-        # Automatic label printing
-        # Won't print labels for Register on Secondary ARs
-        new_ars = None
-        if came_from == 'add':
-            new_ars = [ar for ar in ARs if ar[-2:] == '01']
-        if 'register' in self.context.bika_setup.getAutoPrintStickers() and new_ars:
+        # Automatic label printing won't print "register" labels for Secondary. ARs
+        new_ars = [ar for ar in ARs if ar[-2:] == '01']
+        if 'register' in self.context.bika_setup.getAutoPrintStickers() \
+                and new_ars:
             return json.dumps({
                 'success': message,
                 'stickers': new_ars,
@@ -488,3 +443,136 @@ class ajaxAnalysisRequestSubmit():
             })
         else:
             return json.dumps({'success': message})
+
+
+
+def create_analysisrequest(context, request, values):
+    """Create an AR.
+
+    :param context the container in which the AR will be created (Client)
+    :param request the request object
+    :param values a dictionary containing fieldname/value pairs, which
+           will be applied.  Some fields will have specific code to handle them,
+           and others will be directly written to the schema.
+    :return the new AR instance
+
+    Special keys present (or required) in the values dict, which are not present
+    in the schema:
+
+        - Partitions: data about partitions to be created, and the
+                      analyses that are to be assigned to each.
+
+        - Prices: custom prices set in the HTML form.
+
+        - ResultsRange: Specification values entered in the HTML form.
+
+    """
+    # Gather neccesary tools
+    workflow = getToolByName(context, 'portal_workflow')
+    bc = getToolByName(context, 'bika_catalog')
+
+    # Create new sample or locate the existing for secondary AR
+    if values['Sample']:
+        secondary = True
+        if ISample.providedBy(values['Sample']):
+            sample = values['Sample']
+        else:
+            sample = bc(UID=values['Sample'])[0].getObject()
+        samplingworkflow_enabled = sample.getSamplingWorkflowEnabled()
+    else:
+        secondary = False
+        samplingworkflow_enabled = context.bika_setup.getSamplingWorkflowEnabled()
+        sample = create_sample(context, request, values)
+
+    # Create the Analysis Request
+    ar = _createObjectByType('AnalysisRequest', context, tmpID())
+    ar.setSample(sample)
+
+    # processform renames the sample, this requires values to contain the Sample.
+    values['Sample'] = sample
+    ar.processForm(REQUEST=request, values=values)
+
+    # Object has been renamed
+    ar.edit(RequestID=ar.getId())
+
+    # Set initial AR state
+    workflow_action = 'sampling_workflow' if samplingworkflow_enabled \
+        else 'no_sampling_workflow'
+    workflow.doActionFor(ar, workflow_action)
+
+    # Set analysis request analyses
+    ar.setAnalyses(values['Analyses'],
+                   prices=values.get("Prices", []),
+                   specs=values.get('ResultsRange', []))
+    analyses = ar.getAnalyses(full_objects=True)
+
+    skip_receive = ['to_be_sampled', 'sample_due', 'sampled', 'to_be_preserved']
+    if secondary:
+        # Only 'sample_due' and 'sample_recieved' samples can be selected
+        # for secondary analyses
+        doActionFor(ar, 'sampled')
+        doActionFor(ar, 'sample_due')
+        sample_state = workflow.getInfoFor(sample, 'review_state')
+        if sample_state not in skip_receive:
+            doActionFor(ar, 'receive')
+
+    for analysis in analyses:
+        doActionFor(analysis, 'sample_due')
+        analysis_state = workflow.getInfoFor(analysis, 'review_state')
+        if analysis_state not in skip_receive:
+            doActionFor(analysis, 'receive')
+
+    if not secondary:
+        # Create sample partitions
+        partitions = []
+        for n, partition in enumerate(values['Partitions']):
+            # Calculate partition id
+            partition_prefix = sample.getId() + "-P"
+            partition_id = '%s%s' % (partition_prefix, n + 1)
+            partition['part_id'] = partition_id
+            # Point to or create sample partition
+            if partition_id in sample.objectIds():
+                partition['object'] = sample[partition_id]
+            else:
+                partition['object'] = create_samplepartition(
+                    sample,
+                    partition
+                )
+            # now assign analyses to this partition.
+            obj = partition['object']
+            for analysis in analyses:
+                if analysis.getService().UID() in partition['services']:
+                    analysis.setSamplePartition(obj)
+
+            partitions.append(partition)
+
+        # If Preservation is required for some partitions,
+        # and the SamplingWorkflow is disabled, we need
+        # to transition to to_be_preserved manually.
+        if not samplingworkflow_enabled:
+            to_be_preserved = []
+            sample_due = []
+            lowest_state = 'sample_due'
+            for p in sample.objectValues('SamplePartition'):
+                if p.getPreservation():
+                    lowest_state = 'to_be_preserved'
+                    to_be_preserved.append(p)
+                else:
+                    sample_due.append(p)
+            for p in to_be_preserved:
+                doActionFor(p, 'to_be_preserved')
+            for p in sample_due:
+                doActionFor(p, 'sample_due')
+            doActionFor(sample, lowest_state)
+            doActionFor(ar, lowest_state)
+
+        # Transition pre-preserved partitions
+        for p in partitions:
+            if 'prepreserved' in p and p['prepreserved']:
+                part = p['object']
+                state = workflow.getInfoFor(part, 'review_state')
+                if state == 'to_be_preserved':
+                    workflow.doActionFor(part, 'preserve')
+
+    # Return the newly created Analysis Request
+    return ar
