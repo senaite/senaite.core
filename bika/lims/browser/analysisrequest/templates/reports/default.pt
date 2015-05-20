@@ -44,7 +44,7 @@
             data-showHRI='false'
             data-barHeight='15'
             data-addQuietZone='true'
-            tal:attributes="data-id analysisrequest/id"$>
+            tal:attributes="data-id analysisrequest/id">
         </div>
     </div>
     <div id='lab-logo'>
