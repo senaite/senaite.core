@@ -1,6 +1,6 @@
 3.1.8 (unreleased)
 ------------------
-LIMS-1811: Refactor AR Add.
+LIMS-1811: Refactor AR Add form Javascript, and related code.
 LIMS-1812: Use asynchronous requests for expanding categories in listings
 WINE-44: Sample stickers uses Partition ID only if ShowPartitions option is enabled
 LIMS-1634: AR Import fields (ClientRef, ClientSid) not importing correctly

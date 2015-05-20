@@ -21,7 +21,6 @@ Log in
     sleep   0.1
     Input text                      __ac_password  ${password}
     Click Button  Log in
-    Wait until page contains            You are now logged in
 
 
 Log out
