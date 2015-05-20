@@ -1,0 +1,163 @@
+Sample ID,Sample Details,Test Name,Result,Units,Absorbance
+1ppm NH3,,Ammonia2, 1.1797,mg N/L,0.440706
+1ppm NH3,,Ammonia2, 1.2170,mg N/L,0.450651
+2ppm NO3,,NO3,  1.283,ppm,0.221060
+2ppm NO3,,NO3,  1.558,ppm,0.257816
+2ppm NO2,,NO3,  1.658,ppm,0.271219
+2ppm NO2,,NO3,  1.606,ppm,0.264207
+1ppm Phos,,o-Phosphate,  1.124,mg P/L,0.413710
+1ppm Phos,,o-Phosphate,  1.039,mg P/L,0.382955
+80ppm Cl,,Chloride, 86.077,mg Cl/L,0.705416
+80ppm Cl,,Chloride, 83.976,mg Cl/L,0.695590
+W-B1,,Chloride,  5.950,mg Cl/L,0.214734
+W-B1,,o-Phosphate,  0.098,mg P/L,0.041093
+W-B1,,NO3,  0.619,ppm,0.132313
+W-B1,,Ammonia2, 2.9899,mg N/L,0.923392
+W-B2,,Chloride, 21.448,mg Cl/L,0.338903
+W-B2,,o-Phosphate,  0.347,mg P/L,0.131410
+W-B2,,NO3,  0.099,ppm,0.062887
+W-B2,,Ammonia2, 0.8553,mg N/L,0.354196
+W-B4,,Chloride,  7.802,mg Cl/L,0.231047
+W-B4,,o-Phosphate,  0.314,mg P/L,0.119577
+W-B4,,NO3,  5.818,ppm,0.827234
+W-B4,,Ammonia2, 8.6739,mg N/L,2.438971
+W-B5,,Chloride, 15.232,mg Cl/L,0.292140
+W-B5,,o-Phosphate,  0.203,mg P/L,0.079152
+W-B5,,NO3, -0.222,ppm,0.019890
+W-B5,,Ammonia2, 2.3751,mg N/L,0.759448
+V-B9,,Chloride,  3.299,mg Cl/L,0.190463
+V-B9,,o-Phosphate,  0.390,mg P/L,0.147028
+V-B9,,NO3, -0.247,ppm,0.016530
+V-B9,,Ammonia2, 0.1510,mg N/L,0.166417
+W-B10,,Chloride,  6.164,mg Cl/L,0.216645
+W-B10,,o-Phosphate,  0.164,mg P/L,0.065097
+W-B10,,NO3,  3.012,ppm,0.452221
+W-B10,,Ammonia2, 0.3048,mg N/L,0.207422
+W-B11,,Chloride, 21.978,mg Cl/L,0.342733
+W-B11,,o-Phosphate,  0.172,mg P/L,0.067888
+W-B11,,NO3,  1.654,ppm,0.270629
+W-B11,,Ammonia2, 0.4020,mg N/L,0.233346
+W-B12,,Chloride, 19.407,mg Cl/L,0.323924
+W-B12,,o-Phosphate,  0.143,mg P/L,0.057562
+W-B12,,NO3, 11.119,ppm,1.535782
+W-B12,,Ammonia2, 0.4128,mg N/L,0.236219
+W-B14,,Chloride,  9.674,mg Cl/L,0.247069
+W-B14,,o-Phosphate,  0.192,mg P/L,0.075128
+W-B14,,NO3, -0.099,ppm,0.036373
+W-B14,,Ammonia2, 1.6051,mg N/L,0.554143
+W-B16,,Chloride,  9.451,mg Cl/L,0.245179
+W-B16,,o-Phosphate,  0.128,mg P/L,0.052102
+W-B16,,NO3, -0.299,ppm,0.009687
+W-B16,,Ammonia2, 3.7484,mg N/L,1.125628
+V-B1,,Chloride,  5.035,mg Cl/L,0.206484
+V-B1,,o-Phosphate,  0.234,mg P/L,0.090712
+V-B1,,NO3, -0.270,ppm,0.013443
+V-B1,,Ammonia2, 0.3092,mg N/L,0.208589
+V-B2,,Chloride,  3.554,mg Cl/L,0.192848
+V-B2,,o-Phosphate,  0.202,mg P/L,0.078918
+V-B2,,NO3, -0.184,ppm,0.024947
+V-B2,,Ammonia2, 0.4703,mg N/L,0.251543
+V-B2 (New),,Chloride,  7.283,mg Cl/L,0.226529
+V-B2 (New),,o-Phosphate,  0.298,mg P/L,0.113696
+V-B2 (New),,NO3,  8.190,ppm,1.144346
+V-B2 (New),,Ammonia2, 0.5425,mg N/L,0.270805
+V-B3,,Chloride,  7.176,mg Cl/L,0.225589
+V-B3,,o-Phosphate,  0.673,mg P/L,0.250099
+V-B3,,NO3,  4.706,ppm,0.678571
+V-B3,,Ammonia2, 0.2339,mg N/L,0.188519
+V-B4,,Chloride,  3.567,mg Cl/L,0.192965
+V-B4,,o-Phosphate,  0.174,mg P/L,0.068634
+V-B4,,NO3,  2.751,ppm,0.417302
+V-B4,,Ammonia2, 0.3800,mg N/L,0.227481
+V-B5,,Chloride,  2.810,mg Cl/L,0.185857
+V-B5,,o-Phosphate,  0.204,mg P/L,0.079596
+V-B5,,NO3, -0.070,ppm,0.040265
+V-B5,,Ammonia2, 0.3265,mg N/L,0.213206
+V-B6,,Chloride,  3.705,mg Cl/L,0.194250
+V-B6,,o-Phosphate,  0.181,mg P/L,0.071232
+V-B6,,NO3,  0.408,ppm,0.104157
+V-B6,,Ammonia2, 0.4108,mg N/L,0.235686
+V-B7,,Chloride,  3.112,mg Cl/L,0.188702
+V-B7,,o-Phosphate,  0.067,mg P/L,0.029858
+V-B7,,NO3, -0.293,ppm,0.010404
+V-B7,,Ammonia2, 0.2722,mg N/L,0.198716
+V-B8,,Chloride, 18.357,mg Cl/L,0.316079
+V-B8,,o-Phosphate,  0.016,mg P/L,0.011531
+V-B8,,NO3,  2.465,ppm,0.379032
+V-B8,,Ammonia2, 0.6408,mg N/L,0.296999
+KL-B1,,Chloride,  4.419,mg Cl/L,0.200854
+KL-B1,,o-Phosphate,  0.362,mg P/L,0.136866
+KL-B1,,NO3, -0.304,ppm,0.008910
+KL-B1,,Ammonia2, 1.2622,mg N/L,0.462714
+KL-B2,,Chloride,  2.359,mg Cl/L,0.181571
+KL-B2,,o-Phosphate,  0.049,mg P/L,0.023302
+KL-B2,,NO3, -0.224,ppm,0.019621
+KL-B2,,Ammonia2, 1.3866,mg N/L,0.495878
+KL-B3,,Chloride,  5.051,mg Cl/L,0.206629
+KL-B3,,o-Phosphate,  0.057,mg P/L,0.026301
+KL-B3,,NO3,  0.378,ppm,0.100071
+KL-B3,,Ammonia2, 0.5961,mg N/L,0.285107
+KL-B5,,Chloride,  2.904,mg Cl/L,0.186743
+KL-B5,,o-Phosphate,  0.039,mg P/L,0.019614
+KL-B5,,NO3,  0.119,ppm,0.065502
+KL-B5,,Ammonia2, 0.5161,mg N/L,0.263770
+KL-B6,,Chloride,  3.656,mg Cl/L,0.193792
+KL-B6,,o-Phosphate,  0.092,mg P/L,0.039075
+KL-B6,,NO3, -0.313,ppm,0.007699
+KL-B6,,Ammonia2, 1.4686,mg N/L,0.517744
+KR-B1,,Chloride,  4.884,mg Cl/L,0.205107
+KR-B1,,o-Phosphate,  0.023,mg P/L,0.013860
+KR-B1,,NO3, -0.162,ppm,0.027953
+KR-B1,,Ammonia2, 0.7491,mg N/L,0.325880
+T-B1,,Chloride,  7.017,mg Cl/L,0.224189
+T-B1,,o-Phosphate,  0.085,mg P/L,0.036359
+T-B1,,NO3,  4.180,ppm,0.608265
+T-B1,,Ammonia2, 0.4733,mg N/L,0.252355
+T-B2,,Chloride,  3.075,mg Cl/L,0.188357
+T-B2,,o-Phosphate,  0.198,mg P/L,0.077567
+T-B2,,NO3,  6.995,ppm,0.984645
+T-B2,,Ammonia2, 0.8978,mg N/L,0.365552
+T-B3,,Chloride,  7.469,mg Cl/L,0.228154
+T-B3,,o-Phosphate,  0.091,mg P/L,0.038566
+T-B3,,NO3, 15.667,ppm,2.143750
+T-B3,,Ammonia2, 0.4422,mg N/L,0.244067
+T-B4,,Chloride, 11.439,mg Cl/L,0.261765
+T-B4,,o-Phosphate,  0.026,mg P/L,0.014894
+T-B4,,NO3, -0.035,ppm,0.044884
+T-B4,,Ammonia2, 0.5276,mg N/L,0.266834
+T-B6,,Chloride,  3.731,mg Cl/L,0.194498
+T-B6,,o-Phosphate,  0.083,mg P/L,0.035818
+T-B6,,NO3,  2.167,ppm,0.339303
+T-B6,,Ammonia2, 1.3248,mg N/L,0.479400
+W-S1,,Chloride, 13.439,mg Cl/L,0.277978
+W-S1,,o-Phosphate,  0.029,mg P/L,0.016218
+W-S1,,NO3, -0.211,ppm,0.021458
+W-S1,,Ammonia2, 3.3220,mg N/L,1.011939
+W-S2 (2),,Chloride,  9.987,mg Cl/L,0.249703
+W-S2 (2),,o-Phosphate,  0.077,mg P/L,0.033489
+W-S2 (2),,NO3,  0.114,ppm,0.064767
+W-S2 (2),,Ammonia2, 1.3415,mg N/L,0.483847
+W-S8,,Chloride, 14.271,mg Cl/L,0.284589
+W-S8,,o-Phosphate,  0.027,mg P/L,0.015427
+W-S8,,NO3,  0.039,ppm,0.054814
+W-S8,,Ammonia2, 2.8384,mg N/L,0.882984
+W-S13,,Chloride, 14.198,mg Cl/L,0.284015
+W-S13,,o-Phosphate,  0.084,mg P/L,0.036143
+W-S13,,NO3,  1.113,ppm,0.198390
+W-S13,,Ammonia2, 3.7202,mg N/L,1.118106
+W-S14,,Chloride, 14.559,mg Cl/L,0.286863
+W-S14,,o-Phosphate,  0.071,mg P/L,0.031253
+W-S14,,NO3,  1.119,ppm,0.199146
+W-S14,,Ammonia2, 4.1774,mg N/L,1.240027
+W-S15,,Chloride, 14.588,mg Cl/L,0.287096
+W-S15,,o-Phosphate,  0.199,mg P/L,0.077864
+W-S15,,NO3, -0.300,ppm,0.009530
+W-S15,,Ammonia2, 3.7724,mg N/L,1.132021
+W-S17,,Chloride, 12.863,mg Cl/L,0.273354
+W-S17,,o-Phosphate,  0.215,mg P/L,0.083653
+W-S17,,NO3, -0.270,ppm,0.013522
+W-S17,,Ammonia2, 3.5145,mg N/L,1.063278
+W-S18,,Chloride,  9.405,mg Cl/L,0.244792
+W-S18,,o-Phosphate,  0.270,mg P/L,0.103555
+W-S18,,NO3, -0.140,ppm,0.030916
+W-S18,,Ammonia2, 0.8586,mg N/L,0.355085

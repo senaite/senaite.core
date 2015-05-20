@@ -16,6 +16,7 @@ from tescan.tima import tima
 from sysmex.xs import i500, i1000
 from beckmancoulter.access import model2
 from rochecobas.taqman import model48
+from sealanalytical.aq2 import aq2
 
 __all__ = ['generic.xml',
            'agilent.masshunter.quantitative',
@@ -33,7 +34,8 @@ __all__ = ['generic.xml',
            'sysmex.xs.i500',
            'sysmex.xs.i1000',
            'beckmancoulter.access.model2',
-           'rochecobas.taqman.model48'
+           'rochecobas.taqman.model48',
+           'sealanalytical.aq2.aq2'
            ]
 
 
