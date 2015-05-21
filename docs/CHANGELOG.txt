@@ -1,5 +1,6 @@
 3.1.8 (unreleased)
 ------------------
+LIMS-1522: Site Error adding display columns to sorted AR list
 LIMS-1474: Disposed date is not shown in Sample View
 LIMS-1700: Lower and Upper Detection Limits (LDL/UDL). Allow manual input
 LIMS-1379: Allow manual uncertainty value input
