@@ -1,0 +1,51 @@
+Sample ID,Sample Details,Test Name,Result,Units,Absorbance
+2ppm NO3,,NO3 _ NO2,  2.629,mg N/L,0.427134
+2ppm NO3,,NO3 _ NO2,  2.628,mg N/L,0.427043
+2ppm NO2,,NO3 _ NO2,  2.744,mg N/L,0.442477
+2ppm NO2,,NO3 _ NO2,  2.620,mg N/L,0.425955
+15ppm Cl,,Chloride 200, 26.185,mg Cl/L,0.418543
+160ppm Cl,,Chloride 200,159.301,mg Cl/L,1.035962
+15ppm Cl,,Chloride 200, 14.497,mg Cl/L,0.328885
+160ppm Cl,,Chloride 200,153.230,mg Cl/L,1.017549
+BLANK,,Chloride 200,  0.217,mg Cl/L,0.212545
+BLANK,,NO3 _ NO2,  0.441,mg N/L,0.135595
+BLANK,,Chloride 200,  0.208,mg Cl/L,0.212465
+BLANK,,NO3 _ NO2,  0.283,mg N/L,0.114554
+BOG - 1,,Chloride 200,  2.034,mg Cl/L,0.227567
+BOG - 1,,NO3 _ NO2,  0.295,mg N/L,0.116060
+BOG - 2,,Chloride 200,  3.776,mg Cl/L,0.241940
+BOG - 2,,NO3 _ NO2,  0.282,mg N/L,0.114377
+BOG - 3,,Chloride 200,  2.636,mg Cl/L,0.232537
+BOG - 3,,NO3 _ NO2,  0.253,mg N/L,0.110505
+BOG - 4,,Chloride 200,  3.370,mg Cl/L,0.238588
+BOG - 4,,NO3 _ NO2,  0.324,mg N/L,0.120016
+BOG - 5,,Chloride 200,  3.290,mg Cl/L,0.237929
+BOG - 5,,NO3 _ NO2,  1.098,mg N/L,0.223167
+BOG - 6,,Chloride 200,  4.018,mg Cl/L,0.243933
+BOG - 6,,NO3 _ NO2,  0.337,mg N/L,0.121755
+BOG - 7,,Chloride 200,  3.395,mg Cl/L,0.238793
+BOG - 7,,NO3 _ NO2,  0.343,mg N/L,0.122475
+BOG - 8,,Chloride 200,  1.389,mg Cl/L,0.222235
+BOG - 8,,NO3 _ NO2,  0.266,mg N/L,0.112239
+BOG - 9,,Chloride 200, 27.276,mg Cl/L,0.426560
+BOG - 9,,NO3 _ NO2,  3.679,mg N/L,0.567103
+BOG - 10,,Chloride 200,  1.307,mg Cl/L,0.221561
+BOG - 10,,NO3 _ NO2,  0.245,mg N/L,0.109488
+BOG - 11,,Chloride 200,  0.138,mg Cl/L,0.211890
+BOG - 11,,NO3 _ NO2,  0.252,mg N/L,0.110341
+BOG - 12,,Chloride 200,  1.397,mg Cl/L,0.222304
+BOG - 12,,NO3 _ NO2,  0.251,mg N/L,0.110221
+BOG - 13,,Chloride 200,  3.209,mg Cl/L,0.237259
+BOG - 13,,NO3 _ NO2,  0.229,mg N/L,0.107243
+BOG - 14,,Chloride 200,  1.420,mg Cl/L,0.222489
+BOG - 14,,NO3 _ NO2,  0.225,mg N/L,0.106787
+BOG - 15,,Chloride 200,  1.782,mg Cl/L,0.225480
+BOG - 15,,NO3 _ NO2,  0.226,mg N/L,0.106873
+BOG - 16,,Chloride 200, 34.654,mg Cl/L,0.479051
+BOG - 16,,NO3 _ NO2,  0.217,mg N/L,0.105735
+BOG - 17,,Chloride 200,  1.891,mg Cl/L,0.226387
+BOG - 17,,NO3 _ NO2,  0.209,mg N/L,0.104610
+BOG - 18,,Chloride 200, 55.334,mg Cl/L,0.610171
+BOG - 18,,NO3 _ NO2,  0.237,mg N/L,0.108309
+BOG - 19,,Chloride 200,  4.975,mg Cl/L,0.251799
+BOG - 19,,NO3 _ NO2,  0.292,mg N/L,0.115705

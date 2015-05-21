@@ -16,6 +16,7 @@ from tescan.tima import tima
 from sysmex.xs import i500, i1000
 from beckmancoulter.access import model2
 from rochecobas.taqman import model48
+from sealanalytical.aq2 import aq2
 from horiba.jobinyvon import icp
 from abaxis.vetscan import vs2
 from scilvet.abc import plus
@@ -37,6 +38,7 @@ __all__ = ['generic.xml',
            'sysmex.xs.i1000',
            'beckmancoulter.access.model2',
            'rochecobas.taqman.model48',
+           'sealanalytical.aq2.aq2'
            'horiba.jobinyvon.icp'
            'abaxis.vetscan.vs2',
            'scilvet.abc.plus'
