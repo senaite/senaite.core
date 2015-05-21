@@ -171,7 +171,7 @@ def generateUniqueId(context):
                 sequence_start = d.get("sequence_start", None)
                 new_id = next_id(prefix+year)
                 # Jira-tracker LIMS-280
-                if sequence_start and sequence_start > int(new_id):
+                if sequence_start and int(sequence_start) > int(new_id):
                     new_id = str(sequence_start)
                 if padding:
                     new_id = new_id.zfill(int(padding))

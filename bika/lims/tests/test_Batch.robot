@@ -4,6 +4,7 @@ Library          Selenium2Library  timeout=5  implicit_wait=0.2
 Library          String
 Resource         keywords.txt
 Library          bika.lims.testing.Keywords
+Library          DebugLibrary
 Resource         plone/app/robotframework/selenium.robot
 Resource         plone/app/robotframework/saucelabs.robot
 Variables        plone/app/testing/interfaces.py
@@ -19,7 +20,7 @@ Test Batch-AR
     Log in  test_labmanager  test_labmanager
 
     Set up Auto print stickers
-    Add Batch
+    Add Batch  batch-1
     Batch state should be  open
     Add AR
     Receive AR  AP-0001-R01
@@ -95,14 +96,36 @@ Test batch inherited ARs
     click button                        Save
     go to                               ${PLONEURL}/batches/B-002/batchbook
 
+Test Batch with sequence_start in Bika Setup
+    Log in                       test_labmanager         test_labmanager
+    Add Batch                    batch-1
+    Go to                        http://localhost:55001/plone/batches
+    Page Should Contain          B-001
+    Add Batch                    batch-2
+    Go to                        http://localhost:55001/plone/batches
+    Page Should Contain          B-002
+    Set sequence start           45
+    Add Batch                    batch-3
+    Go to                        http://localhost:55001/plone/batches
+    Page Should Contain          B-045
+    Add Batch                    batch-4
+    Go to                        http://localhost:55001/plone/batches
+    Page Should Contain          B-046
+    Set sequence start           22
+    Add Batch                    batch-5
+    Go to                        http://localhost:55001/plone/batches
+    Page Should Contain          B-047
+
 
 *** Keywords ***
 
 Add Batch
+    [Arguments]   ${batch_title}
     Go to                        http://localhost:55001/plone/batches
     Wait until page contains     Add
     Click Link                   Add
     Wait until page contains     Add Batch
+    Input text                   title  ${batch_title}
     Input text                   description  Just a regular batch
     Select from dropdown         Client     Happy
     SelectDate                   BatchDate       1
@@ -130,7 +153,7 @@ Add AR
 
 Receive AR
     [Arguments]   ${ar_id}
-    Go to                        http://localhost:55001/plone/batches/B-001/analysisrequests
+    Go to                            http://localhost:55001/plone/batches/B-001/analysisrequests
     Wait until page contains     ${ar_id}
     Select checkbox              xpath=//input[@item_title="${ar_id}"]
     Click button                 xpath=//input[@id="receive_transition"]
@@ -178,3 +201,11 @@ Set up Auto print stickers
     Click link                          Stickers
     Select From List By Value           AutoPrintStickers   None
     Click Button                        Save
+
+Set sequence start
+    [Arguments]   ${sequence_start}
+    Go to                               http://localhost:55001/plone/bika_setup/edit
+    Click link                          Id server
+    Input text                          xpath=//input[@id='Prefixes-sequence_start-2']   ${sequence_start}
+    Click Button                        Save
+    Wait Until Page Contains            Changes saved
