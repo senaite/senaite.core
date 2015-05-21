@@ -144,7 +144,7 @@ class WorkflowAction:
 
         url = self.context.absolute_url() + "/portal_factory/" + \
               "AnalysisRequest/Request new analyses/ar_add" + \
-              "?col_count={0}".format(len(objects)) + \
+              "?ar_count={0}".format(len(objects)) + \
               "&copy_from={0}".format(",".join(objects.keys()))
         self.request.response.redirect(url)
         return
@@ -216,65 +216,132 @@ class BikaListingView(BrowserView):
     """
     """
     template = ViewPageTemplateFile("templates/bika_listing.pt")
+    render_items = ViewPageTemplateFile("templates/bika_listing_table_items.pt")
 
+    # If the view is rendered with control of it's own main_template etc,
+    # then it will use this for the title/description.  This gives each
+    # view a way to set this easily.
     title = ""
     description = ""
+
+    # The name of the catalog which will, by default, be searched for results
+    # matching self.contentFilter
     catalog = "portal_catalog"
+
+    # This is the list of query parameters passed to the catalog.
+    # It's just a default set.  This can be modified by Python, or by the
+    # contentFilter key in self.review_states.
     contentFilter = {}
+
+    # This is an override and a switch, but it does not guarantee allow_edit.
+    # This can be used to turn it off, regardless of settings in place by
+    # individual items/fields, but if it is turned on, ultimate control
+    # is still given to the individual items/fields.
     allow_edit = True
+
+    # We use the context_actions to show a list of buttons above the list
+    # The "Add" button is usually inserted here.
     context_actions = {}
+
+    # Display the left-most column for selecting all/individual items
+    # If this is disabled, then you can't transition items from this view,
+    # instead you will have to visit each item, and transition it inline.
     show_select_column = False
+
+    # This comes from default Plone; I'm not sure it works still.
     show_select_row = False
+
+    # Toggle display of the checkbox which selects all rows
     show_select_all_checkbox = True
+
+    # This is the column used to hold the handles used to manually re-order
+    # items in the list
     show_sort_column = False
+
+    # Workflow action buttons (and anything hacked into that list of actions)
+    # will not be displayed if this is False
     show_workflow_action_buttons = True
+
+    # Column toggles are displayed when right-clicking on the column headers.
+    # Set this to false to disallow setting column toggles for some reason.
     show_column_toggles = True
-    categories = []
-    # setting pagesize to 0 specifically disables the batch size dropdown
+
+    # setting pagesize to 0 specifically disables the batch size dropdown.
     pagesize = 25
+
+    # On first load, pagenumber=1 probably makes the most sense.
     pagenumber = 1
+
     # select checkbox is normally called uids:list
     # if table_only is set then the context form tag might require
     # these to have a different name=FieldName:list.
+    # This is a cheat and we can ignore it.
     select_checkbox_name = "uids"
+
     # when rendering multiple bika_listing tables, form_id must be unique
     form_id = "list"
     review_state = 'default'
+
+    # Show categorized list; categories are collapsed until required
     show_categories = False
+
+    # These are the possible categories.  If self.show_categories is True,
+    # These are the categories which will be rendered.  Any items without
+    # a 'category' key/value will be shown in a special "None" category.
+    categories = []
+
+    # By default every category will be expanded.  Careful with this, if there
+    # is a possibility that the list could get very large.
     expand_all_categories = False
+
+    # With this setting, we allow categories to be simple empty place-holders.
+    # When activated, the category data will be fetched from the server,
+    # and complted inline.  This is useful for list which will have many
+    # thousands of entries in many categories, where loading the entire list
+    # in HTML would be very slow.
+    ajax_categories = False
+
+    # using the following attribute, some python class may add a CSS class
+    # to the TH elements used for the category headings.  This allows all
+    # manner of Javascript trickery.
+    cat_header_class = ''
+
+    # category_index is the catalog index from each listed object.
+    # it will be used to decide if an item is a member of a category.
+    # This is required, if using ajax_categories.
+    category_index = None
+
+    # A list of fields, and the icons that should be shown in them.
     field_icons = {}
+
     show_table_footer = True
 
-
-    """
-     ### column definitions
-     The keys of the columns dictionary must all exist in all
-     items returned by subclassing view's .folderitems.  Blank
-     entries are inserted in the default folderitems for all entries
-     without values.
-
-     ### possible column dictionary keys are:
-     - allow_edit
-       if self.allow_edit is also True, this field is made editable
-       Interim fields are always editable
-     - type
-       "string" is the default, and actually, will require a NUMBER entry
-                in the rendered text field.
-       "choices" renders a dropdown.  Selected automatically if a vocabulary
-                 exists.  the vocabulary data must be placed in
-                 item['choices'][column_id].  it's a list of dictionaries:
-                 [{'ResultValue':x}, {'ResultText',x}].
-                 TODO 'choices' should probably expect a DisplayList...
-       "boolean" a checkbox is rendered
-       "date" A text field is rendered, with a jquery DatePicker attached.
-     - index
-       the name of the catalog index for the column. adds 'indexed' class,
-       to allow ajax table sorting for indexed columns
-     - sortable: defaults True.  if False, adds nosort class
-     - toggle: enable/disable column toggle ability
-     - input_class: CSS class applied to input widget in edit mode
-     - input_width: size attribute applied to input widget in edit mode
-    """
+    # Column definitions:
+    #
+    # The keys of the columns dictionary must all exist in all
+    # items returned by subclassing view's .folderitems method.
+    #
+    # Blank entries are inserted in the default folderitems for
+    # all entries without values.
+    #
+    # Possible column dictionary keys are:
+    # - allow_edit
+    #   This field is made editable.
+    #   Interim fields are always editable
+    # - type
+    #   "string" is the default.
+    #   "boolean" a checkbox is rendered
+    #   "date" A text field is rendered, with a jquery DatePicker attached.
+    #   "choices" renders a dropdown.  The vocabulary data must be placed in
+    #             item['choices'][column_id].  it's a list of dictionaries:
+    #             [{'ResultValue':x}, {'ResultText',x}].
+    # - index
+    #   The name of the catalog index for the column.  Allows full-table
+    #            sorting.
+    # - sortable: if False, adds nosort class to this column.
+    # - toggle: enable/disable column toggle ability.
+    # - input_class: CSS class applied to input widget in edit mode
+    # - input_width: size attribute applied to input widget in edit mode
     columns = {
            'obj_type': {'title': _('Type')},
            'id': {'title': _('ID')},
@@ -287,20 +354,23 @@ class BikaListingView(BrowserView):
     # any index name not specified in self.columns[] can be added here.
     filter_indexes = ['Title', 'Description', 'SearchableText']
 
-    """
-    ### review_state filter
-    with just one review_state, the selector won't show.
+    # The current or default review_state when one hasn't been selected.
+    # With this setting, BikaListing instances must be careful to change it,
+    # without having valid review_state existing in self.review_states
+    default_review_state = 'default'
 
-    if review_state[x]['transitions'] is defined, it is a list of dictionaries:
-        [{'id':'x'}]
-    Transitions will be ordered by and restricted to, these items.
-
-    if review_state[x]['custom_actions'] is defined. it's a list of dict:
-        [{'id':'x'}]
-    These transitions will be forced into the list of workflow actions.
-    They will need to be handled manually in the appropriate WorkflowAction
-    subclass.
-    """
+    # review_state
+    #
+    # A list of dictionaries, specifying parameters for listing filter buttons.
+    # - If review_state[x]['transitions'] is defined it's a list of dictionaries:
+    #     [{'id':'x'}]
+    # Transitions will be ordered by and restricted to, these items.
+    #
+    # - If review_state[x]['custom_actions'] is defined. it's a list of dict:
+    #     [{'id':'x'}]
+    # These transitions will be forced into the list of workflow actions.
+    # They will need to be handled manually in the appropriate WorkflowAction
+    # subclass.
     review_states = [
         {'id':'default',
          'contentFilter':{},
@@ -336,10 +406,53 @@ class BikaListingView(BrowserView):
         self.translate = self.context.translate
         self.show_all = False
 
+    @property
+    def review_state(self):
+        """Get workflow state of object in wf_id.
+        First try request: <form_id>_review_state
+        Then try 'default': self.default_review_state
+        :return: item from self.review_states
+        """
+        if not self.review_states:
+            logger.error("%s.review_states is undefined." % self)
+            return None
+        # get state_id from (request or default_review_states)
+        key = "%s_review_state" % self.form_id
+        state_id = self.request.form.get(key, self.default_review_state)
+        states = [r for r in self.review_states if r['id'] == state_id]
+        if not states:
+            logger.error("%s.review_states does not contains id='%s'." %
+                         (self, state_id))
+            return None
+        review_state = states[0] if states else self.review_states[0]
+        # set selected state into the request
+        self.request['%s_review_state' % self.form_id] = review_state['id']
+        return review_state
+
     def _process_request(self):
-        # Use this function from a template that is using bika_listing_table
-        # in such a way that the table_only request var will be used to
-        # in-place-update the table.
+        """Scan request for parameters and configure class attributes
+        accordingly.  Setup AdvancedQuery or catalog contentFilter.
+
+        Request parameters:
+        <form_id>_sort_on:          list items are sorted on this key
+        <form_id>_manual_sort_on:   no index - sort with python
+        <form_id>_pagesize:         number of items
+        <form_id>_pagenumber:       page number
+        <form_id>_filter:           A string, will be regex matched against
+                                    indexes in <form_id>_filter_indexes
+        <form_id>_filter_indexes:   list of index names which will be searched
+                                    for the value of <form_id>_filter
+
+        <form_id>_<index_name>:     Any index name can be used after <form_id>_.
+
+            any request variable named ${form_id}_{index_name} will pass it's
+            value to that index in self.contentFilter.
+
+            All conditions using ${form_id}_{index_name} are searched with AND.
+
+            The parameter value will be matched with regexp if a FieldIndex or
+            TextIndex.  Else, AdvancedQuery.Generic is used.
+        """
         form_id = self.form_id
         form = self.request.form
         workflow = getToolByName(self.context, 'portal_workflow')
@@ -357,14 +470,6 @@ class BikaListingView(BrowserView):
         if form_id not in self.request.get('table_only', form_id):
             return ''
 
-        ## review_state_selector - value can be specified in request
-        selected_state = self.request.get("%s_review_state" % form_id,
-                                          'default')
-        # get review_state id=selected_state
-        states = [r for r in self.review_states if r['id'] == selected_state]
-        self.review_state = states and states[0] or self.review_states[0]
-        # set selected review_state ('default'?) to request
-        self.request['review_state'] = self.review_state['id']
 
         # contentFilter is expected in every self.review_state.
         for k, v in self.review_state['contentFilter'].items():
@@ -470,6 +575,7 @@ class BikaListingView(BrowserView):
                 ##logger.info("Or: %s=%s"%(index, value))
                 if idx.meta_type in('ZCTextIndex', 'FieldIndex'):
                     self.Or.append(MatchRegexp(index, value))
+                    self.expand_all_categories = True
                     # https://github.com/bikalabs/Bika-LIMS/issues/1069
                     vals = value.split('-')
                     if len(vals) > 2:
@@ -477,6 +583,7 @@ class BikaListingView(BrowserView):
                         for i in range(1, len(vals)):
                             valroot = '%s-%s' % (valroot, vals[i])
                             self.Or.append(MatchRegexp(index, valroot+'-*'))
+                            self.expand_all_categories = True
                 elif idx.meta_type == 'DateIndex':
                     if type(value) in (list, tuple):
                         value = value[0]
@@ -486,13 +593,16 @@ class BikaListingView(BrowserView):
                         except:
                             logger.info("Error (And, DateIndex='%s', term='%s')"%(index,value))
                         self.Or.append(Between(index, lohi[0], lohi[1]))
+                        self.expand_all_categories = True
                     else:
                         try:
                             self.Or.append(Eq(index, DateTime(value)))
+                            self.expand_all_categories = True
                         except:
                             logger.info("Error (Or, DateIndex='%s', term='%s')"%(index,value))
                 else:
                     self.Or.append(Generic(index, value))
+                    self.expand_all_categories = True
             self.Or.append(MatchRegexp('review_state', value))
 
         # get toggle_cols cookie value
@@ -505,8 +615,7 @@ class BikaListingView(BrowserView):
                 self.columns[col]['toggle'] = False
 
     def get_toggle_cols(self):
-        states = [r for r in self.review_states if r['id'] == self.review_state]
-        self.review_state = states and states[0] or self.review_states[0]
+
         try:
             toggles = {}
             # request OR cookie OR default
@@ -552,7 +661,19 @@ class BikaListingView(BrowserView):
     def __call__(self):
         """ Handle request parameters and render the form."""
 
+        # ajax_categories, basic sanity.
+        # we do this here to allow subclasses time to define these things.
+        if self.ajax_categories and not self.category_index:
+            msg = "category_index must be defined when using ajax_categories."
+            raise AssertionError(msg)
+
         self._process_request()
+
+        # ajax_category_expand is included in the form if this form submission
+        # is an asynchronous one triggered by a category being expanded.
+        if self.request.get('ajax_category_expand', False):
+            # - get nice formatted category contents (tr rows only)
+            return self.rendered_items()
 
         if self.request.get('table_only', '') == self.form_id:
             return self.contents_table(table_only=self.request.get('table_only'))
@@ -560,7 +681,14 @@ class BikaListingView(BrowserView):
             return self.template()
 
     def selected_cats(self, items):
-        """return a list of categories containing 'selected'=True items
+        """Return a list of categories that will be expanded by default when
+        the page is reloaded.
+
+        In this default method, categories which contain selected
+        items are always expanded.
+
+        :param items: A list of items returned from self.folderitems().
+        :return: a list of strings, self.categories contains the complete list.
         """
         cats = []
         for item in items:
@@ -571,6 +699,17 @@ class BikaListingView(BrowserView):
                 if cat not in cats:
                     cats.append(cat)
         return cats
+
+    def restricted_cats(self, items):
+        """Return a list of categories that will not be displayed.
+
+        The items will still be present, and account for a part of the page
+        batch total.
+
+        :param items: A list of items returned from self.folderitems().
+        :return: a list of AnalysisCategory instances.
+        """
+        return []
 
     def isItemAllowed(self, obj):
         """ return if the item can be added to the items list.
@@ -733,21 +872,20 @@ class BikaListingView(BrowserView):
                 replace = {},
             )
             try:
-                self.review_state = workflow.getInfoFor(obj, 'review_state')
-                state_title = workflow.getTitleForStateOnType(
-                    self.review_state, obj.portal_type)
-                state_title = t(PMF(state_title))
+                rs = workflow.getInfoFor(obj, 'review_state')
+                st_title = workflow.getTitleForStateOnType(rs, obj.portal_type)
+                st_title = t(PMF(st_title))
             except:
-                self.review_state = 'active'
-                state_title = None
-            if self.review_state:
-                results_dict['review_state'] = self.review_state
+                rs = 'active'
+                st_title = None
+            if rs:
+                results_dict['review_state'] = rs
             for state_var, state in states.items():
-                if not state_title:
-                    state_title = workflow.getTitleForStateOnType(
+                if not st_title:
+                    st_title = workflow.getTitleForStateOnType(
                         state, obj.portal_type)
                 results_dict[state_var] = state
-            results_dict['state_title'] = state_title
+            results_dict['state_title'] = st_title
 
             # extra classes for individual fields on this item { field_id : "css classes" }
             results_dict['class'] = {}
@@ -786,6 +924,27 @@ class BikaListingView(BrowserView):
         table = BikaListingTable(bika_listing = self, table_only = table_only)
         return table.render(self)
 
+    def rendered_items(self):
+        """ If you set table_only to true, then nothing outside of the
+            <table/> tag will be printed (form tags, authenticator, etc).
+            Then you can insert your own form tags around it.
+        """
+        # Category which we are going to query:
+        self.cat = self.request.get('ajax_category_expand')
+        self.contentFilter[self.category_index] = self.request.get('cat')
+
+        # selected review_state must be adhered to
+        st_id = self.request.get('review_state')
+
+        # These are required to allow the template to work with this class as
+        # the view.  Normally these are attributes of class BikaListingTable.
+        self.bika_listing = self
+        self.this_cat_selected = True
+        self.this_cat_batch = self.folderitems()
+
+        data = self.render_items()
+        return data
+
     def get_workflow_actions(self):
         """ Compile a list of possible workflow transitions for items
             in this Table.
@@ -796,16 +955,6 @@ class BikaListingView(BrowserView):
             return []
 
         workflow = getToolByName(self.context, 'portal_workflow')
-
-
-        # check POST for a specified review_state selection
-        selected_state = self.request.get("%s_review_state"%self.form_id,
-                                          'default')
-        # get review_state id=selected_state
-        states = [r for r in self.review_states
-                  if r['id'] == selected_state]
-        self.review_state = states and states[0] \
-            or self.review_states[0]
 
         # get all transitions for all items.
         transitions = {}
@@ -863,9 +1012,17 @@ class BikaListingView(BrowserView):
                 if icon:
                     return '/'.join(icon.getPhysicalPath())
 
+    def tabindex(self):
+        i = 0
+        while True:
+            i += 1
+            yield i
+
+
 class BikaListingTable(tableview.Table):
 
     render = ViewPageTemplateFile("templates/bika_listing_table.pt")
+    render_items = ViewPageTemplateFile("templates/bika_listing_table_items.pt")
 
     def __init__(self, bika_listing = None, table_only = False):
         self.table = self
@@ -909,6 +1066,28 @@ class BikaListingTable(tableview.Table):
         self.request = bika_listing.request
         self.form_id = bika_listing.form_id
         self.items = folderitems
+
+    def rendered_items(self, cat=None, **kwargs):
+        """
+        Render the table rows of items in a particular category.
+        :param cat: the category ID with which we will filter the results
+        :param review_state: the current review_state from self.review_states
+        :param kwargs: all other keyword args are set as attributes of
+                       self and self.bika_listing, for injecting attributes
+                       that templates require.
+        :return: rendered HTML text
+        """
+        self.cat = cat
+        for key,val in kwargs.items():
+            self.__setattr__(key, val)
+            self.bika_listing.__setattr__(key, val)
+        selected_cats = self.bika_listing.selected_cats(self.batch)
+        self.this_cat_selected = cat in selected_cats
+        self.this_cat_batch = []
+        for item in self.batch:
+            if item.get('category', 'None') == cat:
+                self.this_cat_batch.append(item)
+        return self.render_items()
 
     def hide_hidden_attributes(self):
         """Use the bika_listing's contentFilter's portal_type

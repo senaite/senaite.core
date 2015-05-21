@@ -58,7 +58,6 @@ def BatchUID(instance):
 schema = BikaSchema.copy() + Schema((
     StringField(
         'RequestID',
-        required=1,
         searchable=True,
         mode="rw",
         read_permission=permissions.View,
@@ -1426,6 +1425,7 @@ class AnalysisRequest(BaseFolder):
                 managers[manager_id]['name'] = safe_unicode(manager.getFullname())
                 managers[manager_id]['email'] = safe_unicode(manager.getEmailAddress())
                 managers[manager_id]['phone'] = safe_unicode(manager.getBusinessPhone())
+                managers[manager_id]['job_title'] = safe_unicode(manager.getJobTitle())
                 if manager.getSignature():
                     managers[manager_id]['signature'] = '%s/Signature' % manager.absolute_url()
                 else:

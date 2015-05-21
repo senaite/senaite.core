@@ -8,6 +8,7 @@ from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IResultOutOfRange
 from bika.lims.utils import to_utf8, encode_header, createPdf, attachPdf
+from bika.lims.utils import isnumber
 from DateTime import DateTime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -308,7 +309,7 @@ class AnalysisRequestPublishView(BrowserView):
                     'client_sampleid': sample.getClientSampleID(),
                     'date_sampled': sample.getDateSampled(),
                     'sampling_date': sample.getSamplingDate(),
-                    'sampler': sample.getSampler(),
+                    'sampler': self._sampler_data(sample),
                     'date_received': sample.getDateReceived(),
                     'composite': sample.getComposite(),
                     'date_expired': sample.getDateExpired(),
@@ -319,6 +320,36 @@ class AnalysisRequestPublishView(BrowserView):
 
             data['sample_type'] = self._sample_type(sample)
             data['sample_point'] = self._sample_point(sample)
+        return data
+
+    def _sampler_data(self, sample=None):
+        data = {}
+        if not sample or not sample.getSampler():
+            return data
+        sampler = sample.getSampler()
+        mtool = getToolByName(self, 'portal_membership')
+        member = mtool.getMemberById(sampler)
+        if member:
+            mfullname = member.getProperty('fullname')
+            memail = member.getProperty('email')
+            mhomepage = member.getProperty('home_page')
+            pc = getToolByName(self, 'portal_catalog')
+            c = pc(portal_type='Contact', getUsername=member.id)
+            c = c[0].getObject() if c else None
+            cfullname = c.getFullname() if c else None
+            cemail = c.getEmailAddress() if c else None
+            data = {'id': member.id,
+                    'fullname': to_utf8(cfullname) if cfullname else to_utf8(mfullname),
+                    'email': cemail if cemail else memail,
+                    'business_phone': c.getBusinessPhone() if c else '',
+                    'business_fax': c.getBusinessFax() if c else '',
+                    'home_phone': c.getHomePhone() if c else '',
+                    'mobile_phone': c.getMobilePhone() if c else '',
+                    'job_title': to_utf8(c.getJobTitle()) if c else '',
+                    'department': to_utf8(c.getDepartment()) if c else '',
+                    'physical_address': to_utf8(c.getPhysicalAddress()) if c else '',
+                    'postal_address': to_utf8(c.getPostalAddress()) if c else '',
+                    'home_page': to_utf8(mhomepage)}
         return data
 
     def _sample_type(self, sample=None):
@@ -474,6 +505,7 @@ class AnalysisRequestPublishView(BrowserView):
                   'point_of_capture': to_utf8(POINTS_OF_CAPTURE.getValue(service.getPointOfCapture())),
                   'category': to_utf8(service.getCategoryTitle()),
                   'result': analysis.getResult(),
+                  'isnumber': isnumber(analysis.getResult()),
                   'unit': to_utf8(service.getUnit()),
                   'formatted_unit': format_supsub(to_utf8(service.getUnit())),
                   'capture_date': analysis.getResultCaptureDate(),
@@ -761,8 +793,7 @@ class AnalysisRequestPublishView(BrowserView):
                 host = getToolByName(ar, 'MailHost')
                 host.send(mime_msg.as_string(), immediate=True)
             except SMTPServerDisconnected as msg:
-                if not debug_mode:
-                    raise SMTPServerDisconnected(msg)
+                logger.warn("SMTPServerDisconnected: %s." % msg)
             except SMTPRecipientsRefused as msg:
                 raise WorkflowException(str(msg))
 

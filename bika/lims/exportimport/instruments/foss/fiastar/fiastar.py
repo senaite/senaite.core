@@ -1,25 +1,17 @@
-""" Fiastar
+""" FOSS FIAStar
 """
+from bika.lims.browser import BrowserView
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType
-from bika.lims.browser import BrowserView
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from Products.Archetypes.event import ObjectInitializedEvent
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from bika.lims.utils import changeWorkflowState
-from bika.lims.utils import to_utf8
-from bika.lims import logger
-from cStringIO import StringIO
-from operator import itemgetter
 from plone.i18n.normalizer.interfaces import IIDNormalizer
 from zope.component import getUtility
-import csv
+from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
+from . import FOSSFIAStarCSVParser, FOSSFIAStarImporter
+from cStringIO import StringIO
 import json
-import plone
-import zope
-import zope.event
+import traceback
+import csv
 
 title = "FOSS - FIAStar"
 
@@ -96,211 +88,75 @@ class Export(BrowserView):
         setheader('Content-Disposition', 'inline; filename=%s' % filename)
         self.request.RESPONSE.write(result)
 
-def Import(context,request):
-    """ Read FIAStar analysis results
+
+def Import(context, request):
+    """ FOSS FIAStar analysis results
     """
+    infile = request.form['data_file']
+    fileformat = request.form['format']
+    artoapply = request.form['artoapply']
+    override = request.form['override']
+    sample = request.form.get('sample',
+                              'requestid')
+    instrument = request.form.get('instrument', None)
+    errors = []
+    logs = []
+    warns = []
 
-    template = "fiastar_import.pt"
+    # Load the most suitable parser according to file extension/options/etc...
+    parser = None
+    if not hasattr(infile, 'filename'):
+        errors.append(_("No file selected"))
+    if fileformat == 'csv':
+        parser = FOSSFIAStarCSVParser(infile)
+    else:
+        errors.append(t(_("Unrecognized file format ${fileformat}",
+                          mapping={"fileformat": fileformat})))
 
-    csvfile = request.form['fiastar_file']
+    if parser:
+        # Load the importer
+        status = ['sample_received', 'attachment_due', 'to_be_verified']
+        if artoapply == 'received':
+            status = ['sample_received']
+        elif artoapply == 'received_tobeverified':
+            status = ['sample_received', 'attachment_due', 'to_be_verified']
 
-    bac = getToolByName(context, 'bika_analysis_catalog')
-    uc = getToolByName(context, 'uid_catalog')
-    bsc = getToolByName(context, 'bika_setup_catalog')
-    workflow = getToolByName(context, 'portal_workflow')
+        over = [False, False]
+        if override == 'nooverride':
+            over = [False, False]
+        elif override == 'override':
+            over = [True, False]
+        elif override == 'overrideempty':
+            over = [True, True]
 
-    updateable_states = ['sample_received', 'assigned', 'not_requested']
-    now = DateTime().strftime('%Y%m%d-%H%M')
+        sam = ['getRequestID', 'getSampleID', 'getClientSampleID']
+        if sample == 'requestid':
+            sam = ['getRequestID']
+        if sample == 'sampleid':
+            sam = ['getSampleID']
+        elif sample == 'clientsid':
+            sam = ['getClientSampleID']
+        elif sample == 'sample_clientsid':
+            sam = ['getSampleID', 'getClientSampleID']
 
-    res = {'errors': [],
-           'log': [],}
+        importer = FOSSFIAStarImporter(parser=parser,
+                                       context=context,
+                                       idsearchcriteria=sam,
+                                       allowed_ar_states=status,
+                                       allowed_analysis_states=None,
+                                       override=over,
+                                       instrument_uid=instrument)
+        tbex = ''
+        try:
+            importer.process()
+        except:
+            tbex = traceback.format_exc()
+        errors = importer.errors
+        logs = importer.logs
+        warns = importer.warns
+        if tbex:
+            errors.append(tbex)
 
-    options = {'dilute_factor' : 1,
-               'F SO2' : 'FSO2',
-               'T SO2' : 'TSO2'}
-    for k,v in options.items():
-        if k in request:
-            options[k] = request.get(k)
-        else:
-            options[k] = v
+    results = {'errors': errors, 'log': logs, 'warns': warns}
 
-    # kw_map to lookup Fiastar parameter -> service keyword and vice versa
-    kw_map = {}
-    for param in ['F SO2', 'T SO2']:
-        service = bsc(getKeyword = options[param])
-        if not service:
-            msg = _('Service keyword ${service_keyword} not found',
-                    mapping = {'keyword': options[param], })
-            res['errors'].append(t(msg))
-            continue
-        service = service[0].getObject()
-        kw_map[param] = service
-        kw_map[service.getKeyword()] = param
-
-    # all errors at this point are fatal ones
-    if res['errors']:
-        return json.dumps(res)
-
-    rows = []
-    batch_headers = None
-    fia1 = False
-    fia2 = False
-    # place all valid rows into list of dict by CSV row title
-    for row in csvfile.readlines():
-        if not row: continue
-        row = row.split(';')
-        # a new batch starts
-        if row[0] == 'List name':
-            fia1 = False
-            fia2 = False
-            if row[13] == 'Concentration':
-                fia1 = True
-            elif row[15] == 'Concentration':
-                row[13] = 'Peak Mean'
-                row[14] = 'Peak St dev'
-                row[16] = 'Concentration Mean'
-                row[17] = 'Concentration St dev'
-                fia2 = True
-            fields = row
-            continue
-        row = dict(zip(fields, row))
-        if row['Parameter'] == 'sample' or not row['Concentration']:
-            continue
-        if fia1:
-            row['Peak Mean'] = 0
-            row['Peak St dev'] = 0
-            row['Concentration Mean'] = 0
-            row['Concentration St dev'] = 0
-        rows.append(row)
-
-    log = []
-    if len(rows) == 0:
-        res['log'].append(t(_("No valid file or format")))
-
-    for row in rows:
-        param = row['Parameter']
-        service = kw_map[param]
-        keyword = service.getKeyword()
-        calc = service.getCalculation()
-        interim_fields = calc and calc.getInterimFields() or []
-
-        p_uid = row['Sample name']
-        parent = uc(UID = p_uid)
-        if len(parent) == 0:
-            msg = _('Analysis parent UID ${parent_uid} not found',
-                    mapping = {'parent_uid': row['Sample name'], })
-            res['errors'].append(t(msg))
-            continue
-        parent = parent[0].getObject()
-
-        c_uid = row['Sample type']
-        container = uc(UID = c_uid)
-        if len(container) == 0:
-            msg = _('Analysis container UID ${parent_uid} not found',
-                    mapping = {'container_uid': row['Sample type'], })
-            res['errors'].append(t(msg))
-            continue
-        container = container[0].getObject()
-
-        # Duplicates.
-        if p_uid != c_uid:
-            dups = [d.getObject() for d in
-                    bac(portal_type='DuplicateAnalysis',
-                       path={'query': "/".join(container.getPhysicalPath()),
-                             'level': 0,})]
-            # The analyses should exist already
-            # or no results will be imported.
-            analysis = None
-            for dup in dups:
-                if dup.getAnalysis().aq_parent == p_uid and \
-                   dup.getKeyword() in (options['F SO2'], options['T SO2']):
-                    analysis = dup
-            if not analysis:
-                msg = _('Duplicate analysis for slot ${slot} not found',
-                        mapping = {'slot': row['Cup'], })
-                res['errors'].append(t(msg))
-                continue
-            row['analysis'] = analysis
-        else:
-            analyses = parent.objectIds()
-            if keyword in analyses:
-                # analysis exists for this parameter.
-                analysis = parent.get(keyword)
-                row['analysis'] = analysis
-            else:
-                # analysis does not exist;
-                # create new analysis and set 'results_not_requested' state
-                analysis = _createObjectByType("Analysis", parent, keyword)
-                analysis.edit(Service = service,
-                              InterimFields = interim_fields,
-                              MaxTimeAllowed = service.getMaxTimeAllowed())
-                changeWorkflowState(analysis,
-                                    'not_requested',
-                                    comments="FOSS FIAStar")
-
-                analysis.unmarkCreationFlag()
-                zope.event.notify(ObjectInitializedEvent(analysis))
-                row['analysis'] = analysis
-
-        as_state = workflow.getInfoFor(analysis, 'review_state', '')
-        if (as_state not in updateable_states):
-            msg = _('Analysis ${service} at slot ${slot} in state ${state} - not updated',
-                    mapping = {'service': service.Title(),
-                               'slot': row['Cup'],
-                               'state': as_state,})
-            res['errors'].append(t(msg))
-            continue
-        if analysis.getResult():
-            msg = _('Analysis ${service} at slot ${slot} has a result - not updated',
-                    mapping = {'service': service.Title(),
-                               'slot': row['Cup'], })
-            res['errors'].append(t(msg))
-            continue
-
-        analysis.setInterimFields(
-            [
-            {'keyword':'dilution_factor',
-             'title': 'Dilution Factor',
-             'value': row['Dilution'],
-             'unit':''},
-            {'keyword':'injection',
-             'title': 'Injection',
-             'value': row['Injection'],
-             'unit':''},
-            {'keyword':'peak',
-             'title': 'Peak Height/Area',
-             'value': row['Peak Height/Area'],
-             'unit':''},
-            {'keyword':'peak_mean',
-             'title': 'Peak Mean',
-             'value': row.get('Peak Mean', '0'),
-             'unit':''},
-            {'keyword':'peak_st_dev',
-             'title': 'Peak St dev',
-             'value': row.get('Peak St dev', '0'),
-             'unit':''},
-            {'keyword':'concentration',
-             'title': 'Concentration',
-             'value': row['Concentration'],
-             'unit':''},
-            {'keyword':'concentration_mean',
-             'title': 'Concentration Mean',
-             'value': row['Concentration Mean'],
-             'unit':''},
-            {'keyword':'concentration_st_dev',
-             'title': 'Concentration St dev',
-             'value': row['Concentration St dev'],
-             'unit':''},
-            {'keyword':'deviation',
-             'title': 'Deviation',
-             'value': row['Deviation'],
-             'unit':''},
-            ]
-        )
-
-        msg = _('Analysis ${service} at slot ${slot}: OK',
-                mapping = {'service': service.Title(),
-                           'slot': row['Cup'], })
-        res['log'].append(t(msg))
-
-    return json.dumps(res)
+    return json.dumps(results)

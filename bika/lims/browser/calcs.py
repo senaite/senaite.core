@@ -69,7 +69,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
 
     def calculate(self, uid=None):
         analysis = self.analyses[uid]
-        form_result = self.current_results[uid]
+        form_result = self.current_results[uid]['result']
         service = analysis.getService()
         calculation = service.getCalculation()
         if analysis.portal_type == 'ReferenceAnalysis':
@@ -90,26 +90,62 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                 Result['result'] = ""
 
         if calculation:
-            # add all our dependent analyses results to the mapping.
-            # Retrieve value from database if it's not in the current_results.
+
+            '''
+             We need first to create the map of available parameters
+             acording to the interims, analyses and wildcards:
+             params = {
+                    <as-1-keyword>              : <analysis_result>,
+                    <as-1-keyword>.<wildcard-1> : <wildcard_1_value>,
+                    <as-1-keyword>.<wildcard-2> : <wildcard_2_value>,
+                    <interim-1>                 : <interim_result>,
+                    ...
+                    }
+            '''
+
+            # Get dependent analyses results and wildcard values to the
+            # mapping. If dependent analysis without result found,
+            # break and abort calculation
             unsatisfied = False
             for dependency_uid, dependency in deps.items():
                 if dependency_uid in self.ignore_uids:
                     unsatisfied = True
                     break
+
+                # LIMS-1769. Allow to use LDL and UDL in calculations.
+                # https://jira.bikalabs.com/browse/LIMS-1769
+                analysisvalues = {}
                 if dependency_uid in self.current_results:
-                    result = self.current_results[dependency_uid]
+                    analysisvalues = self.current_results[dependency_uid]
                 else:
-                    result = dependency.getResult()
-                if result == '':
+                    # Retrieve the result and DLs from the analysis
+                    analysisvalues = {
+                        'keyword':  dependency.getKeyword(),
+                        'result':   dependency.getResult(),
+                        'ldl':      dependency.getLowerDetectionLimit(),
+                        'udl':      dependency.getUpperDetectionLimit(),
+                        'belowldl': dependency.isBelowLowerDetectionLimit(),
+                        'aboveudl': dependency.isAboveUpperDetectionLimit(),
+                    }
+                if analysisvalues['result']=='':
+                    unsatisfied = True
+                    break;
+                key = analysisvalues.get('keyword',dependency.getService().getKeyword())
+
+                # Analysis result
+                # All result mappings must be float, or they are ignored.
+                try:
+                    mapping[key] = float(analysisvalues.get('result'))
+                    mapping['%s.%s' % (key, 'RESULT')] = float(analysisvalues.get('result'))
+                    mapping['%s.%s' % (key, 'LDL')] = float(analysisvalues.get('ldl'))
+                    mapping['%s.%s' % (key, 'UDL')] = float(analysisvalues.get('udl'))
+                    mapping['%s.%s' % (key, 'BELOWLDL')] = int(analysisvalues.get('belowldl'))
+                    mapping['%s.%s' % (key, 'ABOVEUDL')] = int(analysisvalues.get('aboveudl'))
+                except:
+                    # If not floatable, then abort!
                     unsatisfied = True
                     break
-                key = dependency.getService().getKeyword()
-                # All mappings must be float, or they are ignored.
-                try:
-                    mapping[key] = float(self.current_results[dependency_uid])
-                except:
-                    pass
+
             if unsatisfied:
                 # unsatisfied means that one or more result on which we depend
                 # is blank or unavailable, so we set blank result and abort.
@@ -240,6 +276,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                 except ValueError:
                     abovemax = False
                     pass
+
         if belowmin is True:
             Result['formatted_result'] = '< %s' % hidemin
         elif abovemax is True:

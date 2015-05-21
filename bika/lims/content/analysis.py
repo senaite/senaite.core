@@ -276,12 +276,16 @@ class Analysis(BaseContent):
     def setDetectionLimitOperand(self, value):
         """ Sets the detection limit operand for this analysis, so
             the result will be interpreted as a detection limit.
-            The value will only be set if the Service has 'Allow manual
-            detection limit' field set to True, otherwise, the detection
-            limit operand will be set to None.
+            The value will only be set if the Service has
+            'DetectionLimitSelector' field set to True, otherwise,
+            the detection limit operand will be set to None.
+            See LIMS-1775 for further information about the relation
+            amongst 'DetectionLimitSelector' and
+            'AllowManualDetectionLimit'.
+            https://jira.bikalabs.com/browse/LIMS-1775
         """
         srv = self.getService()
-        md = srv.getAllowManualDetectionLimit() if srv else False
+        md = srv.getDetectionLimitSelector() if srv else False
         val = value if (md and value in ('>', '<')) else None
         self.Schema().getField('DetectionLimitOperand').set(self, val)
 
@@ -370,6 +374,20 @@ class Analysis(BaseContent):
         """
         return [self.getLowerDetectionLimit(), self.getUpperDetectionLimit()]
 
+    def isLowerDetectionLimit(self):
+        """ Returns True if the result for this analysis represents
+            a Lower Detection Limit. Otherwise, returns False
+        """
+        return self.isBelowLowerDetectionLimit() and \
+                self.getDetectionLimitOperand() == '<'
+
+    def isUpperDetectionLimit(self):
+        """ Returns True if the result for this analysis represents
+            an Upper Detection Limit. Otherwise, returns False
+        """
+        return self.isAboveUpperDetectionLimit() and \
+                self.getDetectionLimitOperand() == '>'
+
     def getDependents(self):
         """ Return a list of analyses who depend on us
             to calculate their result
@@ -409,22 +427,49 @@ class Analysis(BaseContent):
         # Only allow DL if manually enabled in AS
         val = value
         if val and (val.strip().startswith('>') or val.strip().startswith('<')):
+            self.Schema().getField('DetectionLimitOperand').set(self, None)
             oper = '<' if val.strip().startswith('<') else '>'
             srv = self.getService()
-            if srv and srv.getAllowManualDetectionLimit():
-                # DL allowed, try to remove the operator and set the
-                # result as a detection limit
+            if srv and srv.getDetectionLimitSelector():
+                if srv.getAllowManualDetectionLimit():
+                    # DL allowed, try to remove the operator and set the
+                    # result as a detection limit
+                    try:
+                        val = val.replace(oper, '', 1)
+                        val = str(float(val))
+                        self.Schema().getField('DetectionLimitOperand').set(self, oper)
+                    except:
+                        val = value
+                else:
+                    # Trying to set a result with an '<,>' operator,
+                    # but manual DL not allowed, so override the
+                    # value with the service's default LDL or UDL
+                    # according to the operator, but only if the value
+                    # is not an indeterminate.
+                    try:
+                        val = val.replace(oper, '', 1)
+                        val = str(float(val)) # An indeterminate?
+                        if oper == '<':
+                            val = srv.getLowerDetectionLimit()
+                        else:
+                            val = srv.getUpperDetectionLimit()
+                        self.Schema().getField('DetectionLimitOperand').set(self, oper)
+                    except:
+                        # Oops, an indeterminate. Do nothing.
+                        val = value
+            elif srv:
+                # Ooopps. Trying to set a result with an '<,>' operator,
+                # but the service doesn't allow this in any case!
+                # No need to check for AllowManualDetectionLimit, cause
+                # we assume that this will always be False unless
+                # DetectionLimitSelector is True. See LIMS-1775 for
+                # further information about the relation amongst
+                # 'DetectionLimitSelector' and 'AllowManualDetectionLimit'.
+                # https://jira.bikalabs.com/browse/LIMS-1775
+                # Let's try to remove the operator and set the value as
+                # a regular result, but only if not an indeterminate
                 try:
-                    val = val.replace(oper, '', 1);
-                    val = str(float(val))
-                    self.Schema().getField('DetectionLimitOperand').set(self, oper)
-                except:
-                    val = value
-            else:
-                # DL not allowed, try to remove the operator, but only
-                # if the result is floatable.
-                try:
-                    val = val.replace(oper, '', 1);
+                    val = val.replace(oper, '', 1)
                     val = str(float(val))
                 except:
                     val = value
@@ -521,46 +566,33 @@ class Analysis(BaseContent):
         """ Calculates the result for the current analysis if it depends of
             other analysis/interim fields. Otherwise, do nothing
         """
-
         if self.getResult() and override == False:
             return False
 
-        calculation = self.getService().getCalculation()
-        if not calculation:
+        serv = self.getService()
+        calc = self.getCalculation() if self.getCalculation() \
+                                     else serv.getCalculation()
+        if not calc:
             return False
 
         mapping = {}
 
+        # Interims' priority order (from low to high):
+        # Calculation < Analysis Service < Analysis
+        interims = calc.getInterimFields() + \
+                   serv.getInterimFields() + \
+                   self.getInterimFields()
+
         # Add interims to mapping
-        for interimdata in self.getInterimFields():
-            for i in interimdata:
-                try:
-                    ivalue = float(i['value'])
-                    mapping[i['keyword']] = ivalue
-                except:
-                    # Interim not float, abort
-                    return False
-
-        # Add calculation's hidden interim fields to mapping
-        for field in calculation.getInterimFields():
-            if field['keyword'] not in mapping.keys():
-                if field.get('hidden', False):
-                    try:
-                        ivalue = float(field['value'])
-                        mapping[field['keyword']] = ivalue
-                    except:
-                        return False
-
-        # Add Analysis Service interim defaults to mapping
-        service = self.getService()
-        for field in service.getInterimFields():
-            if field['keyword'] not in mapping.keys():
-                if field.get('hidden', False):
-                    try:
-                        ivalue = float(field['value'])
-                        mapping[field['keyword']] = ivalue
-                    except:
-                        return False
+        for i in interims:
+            if 'keyword' not in i:
+                continue;
+            try:
+                ivalue = float(i['value'])
+                mapping[i['keyword']] = ivalue
+            except:
+                # Interim not float, abort
+                return False
 
         # Add dependencies results to mapping
         dependencies = self.getDependencies()
@@ -572,24 +604,27 @@ class Analysis(BaseContent):
                     # Try to calculate the dependency result
                     dependency.calculateResult(override, cascade)
                     result = dependency.getResult()
-                    if result:
-                        try:
-                            result = float(str(result))
-                            mapping[dependency.getKeyword()] = result
-                        except:
-                            return False
                 else:
                     return False
-            else:
-                # Result must be float
+            if result:
                 try:
                     result = float(str(result))
-                    mapping[dependency.getKeyword()] = result
+                    key = dependency.getKeyword()
+                    ldl = dependency.getLowerDetectionLimit()
+                    udl = dependency.getUpperDetectionLimit()
+                    bdl = dependency.isBelowLowerDetectionLimit()
+                    adl = dependency.isAboveUpperDetectionLimit()
+                    mapping[key]=result
+                    mapping['%s.%s' % (key, 'RESULT')]=result
+                    mapping['%s.%s' % (key, 'LDL')]=ldl
+                    mapping['%s.%s' % (key, 'UDL')]=udl
+                    mapping['%s.%s' % (key, 'BELOWLDL')]=int(bdl)
+                    mapping['%s.%s' % (key, 'ABOVEUDL')]=int(adl)
                 except:
                     return False
 
         # Calculate
-        formula = calculation.getMinifiedFormula()
+        formula = calc.getMinifiedFormula()
         formula = formula.replace('[', '%(').replace(']', ')f')
         try:
             formula = eval("'%s'%%mapping" % formula,
@@ -608,7 +643,7 @@ class Analysis(BaseContent):
             self.setResult("NA")
             return True
 
-        self.setResult(result)
+        self.setResult(str(result))
         return True
 
     def getPriority(self):
@@ -773,7 +808,8 @@ class Analysis(BaseContent):
         dl = self.getDetectionLimitOperand()
         if dl:
             try:
-                result = float(result)
+                result = float(result) # required, check if floatable
+                result = format_numeric_result(self, result, sciformat=sciformat)
                 return formatDecimalMark('%s %s' % (dl, result), decimalmark)
             except:
                 logger.warn("The result for the analysis %s is a "
@@ -825,12 +861,12 @@ class Analysis(BaseContent):
         # Below Lower Detection Limit (LDL)?
         ldl = self.getLowerDetectionLimit()
         if result < ldl:
-            return formatDecimalMark('< %s' % ldl, decimalmark)
+            return formatDecimalMark('< %s' % format_numeric_result(self, ldl, sciformat=sciformat), decimalmark)
 
         # Above Upper Detection Limit (UDL)?
         udl = self.getUpperDetectionLimit()
         if result > udl:
-            return formatDecimalMark('> %s' % udl, decimalmark)
+            return formatDecimalMark('> %s' % format_numeric_result(self, udl, sciformat=sciformat), decimalmark)
 
         # Render numerical values
         return formatDecimalMark(format_numeric_result(self, result, sciformat=sciformat), decimalmark=decimalmark)
