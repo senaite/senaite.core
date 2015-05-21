@@ -36,6 +36,14 @@ table.invoice-items thead tr {
 	border-bottom: 2px solid #ddd;
 }
 
+table.invoice-items tr.header-bottom-total{
+    border-top: none;
+}
+
+table.invoice-items tr.header-invoice-summary{
+    border-bottom: none;
+}
+
 table.invoice-items th {
 	padding: .25em;
 	text-align: center;
