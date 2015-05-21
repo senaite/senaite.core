@@ -1,5 +1,6 @@
 3.1.8 (unreleased)
 ------------------
+LIMS-1771: Instrument. Scil Vet abc Plus
 LIMS-1772: Instrument. VetScan VS2
 LIMS-1507: Bika must notify why is not possible to publish an AR
 LIMS-1805: Instrument Interface. Horiba JY ICP

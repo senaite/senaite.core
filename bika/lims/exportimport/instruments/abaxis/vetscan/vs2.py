@@ -1,4 +1,4 @@
-""" Abaxix VetScan VS2
+""" Abaxis Vet Scan - VS2
 """
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
@@ -6,7 +6,7 @@ from . import AbaxisVetScanCSVParser, AbaxisVetScanImporter
 import json
 import traceback
 
-title = "Abaxix VetScan - VS2"
+title = "Abaxis VetScan - VS2"
 
 
 def Import(context, request):
