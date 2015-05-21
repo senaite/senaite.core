@@ -1,5 +1,6 @@
 3.1.8 (unreleased)
 ------------------
+LIMS-1806: Instrument Interface. AQ2. Seal Analytical
 LIMS-1770: FIAStar import 'no header'
 LIMS-1771: Instrument. Scil Vet abc Plus
 LIMS-1772: Instrument. VetScan VS2
