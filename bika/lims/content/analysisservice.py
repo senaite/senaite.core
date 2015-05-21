@@ -898,7 +898,6 @@ schema = BikaSchema.copy() + Schema((
         searchable=1,
         schemata='Description',
         required=0,
-        schemata="Description",
         widget=StringWidget(
             label=_("Commercial ID"),
             description=_("The service's commercial ID for accounting purposes")

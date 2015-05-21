@@ -38,8 +38,8 @@ __all__ = ['generic.xml',
            'sysmex.xs.i1000',
            'beckmancoulter.access.model2',
            'rochecobas.taqman.model48',
-           'sealanalytical.aq2.aq2'
-           'horiba.jobinyvon.icp'
+           'sealanalytical.aq2.aq2',
+           'horiba.jobinyvon.icp',
            'abaxis.vetscan.vs2',
            'scilvet.abc.plus'
            ]
