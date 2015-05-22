@@ -348,7 +348,8 @@ class ClientARImportAddView(BrowserView):
                 aritem = _createObjectByType("ARImportItem", arimport, aritem_id)
                 aritem.edit(
                     SampleName=sample[0],
-                    ClientRef=sample[1],
+                    ClientRef=batch_headers[10],
+                    ClientSid=sample[1],
                     SampleDate=sample[2],
                     SampleType = sample[3],
                     PickingSlip = sample[4],

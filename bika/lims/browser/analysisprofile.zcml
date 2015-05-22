@@ -1,0 +1,20 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="bika">
+
+    <adapter
+      factory="bika.lims.browser.analysisprofile.JSONReadExtender"
+      provides="bika.lims.interfaces.IJSONReadExtender"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IAnalysisProfile"
+      name="analysisprofile_analysesview"
+      class="bika.lims.browser.widgets.analysisprofileanalyseswidget.AnalysisProfileAnalysesView"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+</configure>

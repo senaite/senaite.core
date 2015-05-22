@@ -46,7 +46,7 @@ Test batch inherited ARs
     Click Button                        Save
 
     go to                               ${PLONEURL}/batches/B-001/analysisrequests
-    select from list                    col_count           6
+    select from list                    ar_count           6
     click link                          Add new
     wait until page contains            Request new analyses
     Select from dropdown                ar_0_Contact            Rita
@@ -141,7 +141,7 @@ Batch state should be
 Add AR
     Go to                        http://localhost:55001/plone/batches/B-001/analysisrequests
     Wait until page contains     Add new
-    Select from list             col_count  1
+    Select from list             ar_count  1
     click Link                   Add new
     Wait until page contains     Request new analyses
     Select from dropdown         ar_0_Contact            Rita

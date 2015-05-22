@@ -1,0 +1,7 @@
+List name;Date;Time;Tray;Cup;Sample name;Sample type;Dilution;Remark;Parameter;Sample;Injection;Peak Height/Area;Concentration;Deviation;Error/Warning
+JC15-0008;2015/04/23;12:16:51 PM;1;1;V15-0031;Sample;1.000;;F SO2;1;1;    399;     42;;
+JC15-0008;2015/04/23;12:16:51 PM;1;2;V15-0032;Sample;1.000;;F SO2;2;1;    288;     30;;
+JC15-0008;2015/04/23;12:16:51 PM;1;3;kontrole;Sample;1.000;;F SO2;3;1;    326;     34;;
+JC15-0008;2015/04/23;12:16:51 PM;1;1;V15-0031;Sample;1.000;;T SO2;1;1;     34;     95;;
+JC15-0008;2015/04/23;12:16:51 PM;1;2;V15-0032;Sample;1.000;;T SO2;2;1;     24;     69;;
+JC15-0008;2015/04/23;12:16:51 PM;1;3;kontrole;Sample;1.000;;T SO2;3;1;     34;     96;;
