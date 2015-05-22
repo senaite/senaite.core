@@ -15,7 +15,7 @@ function ControlChart() {
     var lowerlimit_text = "Lower Limit";
     var upperlimit_text = "Upper Limit";
     var lowerlimit_text = "Center Limit";
-    var interpolation = "basis";
+    var interpolation = "linear";
     var pointid = "";
 
     /**
@@ -183,6 +183,11 @@ function ControlChart() {
             d.y_axis = tonumber(d[that.ycolumnkey]);
             d.point_id = d[that.pointid];
         });
+
+        function sortByDateAscending(a, b) {
+            return a.x_axis - b.x_axis;
+        }
+        that.datasource.sort(sortByDateAscending);
 
         x.domain(d3.extent(that.datasource, function(d) { return d.x_axis; }));
         var min = d3.min(that.datasource, function(d) { return d.y_axis; });
