@@ -119,7 +119,7 @@ def format_uncertainty(analysis, result, decimalmark='.', sciformat=1):
     service = analysis.getService()
     uncertainty = analysis.getUncertainty(result)
 
-    if uncertainty is None:
+    if uncertainty is None or uncertainty == 0:
         return ""
 
     # Scientific notation?

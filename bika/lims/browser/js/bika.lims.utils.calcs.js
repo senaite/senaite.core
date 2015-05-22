@@ -65,7 +65,19 @@ function CalculationUtils() {
                  * results with readonly mode
                  * https://jira.bikalabs.com/browse/LIMS-1775
                  */
-                var andls = $.parseJSON($(tr).find('input[id^="AnalysisDLS."]').val());
+                var defandls = {
+                                default_ldl: 0,
+                                default_udl: 100000,
+                                dlselect_allowed:  false,
+                                manual_allowed: false,
+                                is_ldl: false,
+                                is_udl: false,
+                                below_ldl: false,
+                                above_udl: false
+                            };
+                var andls = $(tr).find('input[id^="AnalysisDLS."]');
+                andls = andls.length > 0 ? andls.first().val() : null;
+                andls = andls != null ? $.parseJSON(andls) : defandls;
                 var dlop = $(tr).find('select[name^="DetectionLimit."]');
                 if (dlop.length > 0) {
                     // If the analysis is under edition, give priority to
@@ -86,7 +98,7 @@ function CalculationUtils() {
                                 andls.is_ldl = tryldl;
                                 andls.is_udl = tryudl;
                                 andls.below_ldl = tryldl;
-                                andls.above_ldl = tryudl;
+                                andls.above_udl = tryudl;
                             } else {
                                 // Unexpected case or Indeterminate result.
                                 // Although the selection of DL is allowed (DL
@@ -133,6 +145,8 @@ function CalculationUtils() {
                 var mapping = {
                                 keyword:  $(e).attr('objectid'),
                                 result:   result,
+                                isldl:    andls.is_ldl,
+                                isudl:    andls.is_udl,
                                 ldl:      andls.is_ldl ? result : andls.default_ldl,
                                 udl:      andls.is_udl ? result : andls.default_udl,
                                 belowldl: andls.below_ldl,
