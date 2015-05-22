@@ -15,7 +15,7 @@ function ControlChart() {
     var lowerlimit_text = "Lower Limit";
     var upperlimit_text = "Upper Limit";
     var lowerlimit_text = "Center Limit";
-    var interpolation = "linear";
+    var interpolation = "basis";
     var pointid = "";
 
     /**
