@@ -12,7 +12,7 @@ def upgrade(tool):
 
     # Updated profile steps
     setup.runImportStepFromProfile('profile-bika.lims:default', 'jsregistry')
-
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
     # Migrations
 
     return True

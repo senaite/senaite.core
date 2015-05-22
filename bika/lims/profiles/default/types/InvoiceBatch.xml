@@ -60,19 +60,18 @@
          i18n:attributes="title"
          visible="True">
     <permission value="BIKA: Manage Invoices"/>
- </action>
+ </action-->
 
- <action title="Export batch"
-         action_id="exportbatch"
-         category="folder_buttons"
+ <action title="Export Batch CSV"
+         action_id="export_batch_csv"
+         category="document_actions"
          condition_expr=""
          icon_expr=""
          link_target=""
-         url_expr="string:invoicebatch_export:method"
+         url_expr="string:invoicebatch_export_csv:method"
          i18n:attributes="title"
          visible="True">
     <permission value="BIKA: Manage Invoices"/>
  </action>
- -->
 
 </object>

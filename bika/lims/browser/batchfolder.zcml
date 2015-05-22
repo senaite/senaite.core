@@ -20,6 +20,14 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <browser:page
+      for="bika.lims.interfaces.IInvoiceBatch"
+      name="export_batch_csv"
+      class=".batchfolder.BatchFolderExportCSV"
+      permission="bika.lims.ManageInvoices"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
     <!-- This has to be done here, because in portal_factory edit forms,
          the context is the parent folder, not the new batch
     -->
