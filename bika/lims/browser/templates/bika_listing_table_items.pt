@@ -187,7 +187,7 @@ Table cells for each column from in review_state's column list.
         <em tal:condition="python:'unit' in item[column]"
             class="discreet"
             style="white-space:nowrap;"
-            tal:content="python:item[column]['unit']"/>
+            tal:content="structure python:item[column]['unit']"/>
     </span>
     <tal:comment replace="nothing"><!-- regular field --></tal:comment>
     <span tal:omit-tag="python:True"
@@ -325,7 +325,7 @@ Table cells for each column from in review_state's column list.
 <em tal:condition="python:'Unit' in item and column == 'Result'"
     class="discreet"
     style="white-space:nowrap;"
-    tal:content="python:item['Unit']"/>
+    tal:content="structure python:item['Unit']"/>
 
 </span>
 
