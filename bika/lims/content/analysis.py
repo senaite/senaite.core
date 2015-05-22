@@ -488,7 +488,7 @@ class Analysis(BaseContent):
         # https://jira.bikalabs.com/browse/LIMS-1808
         if self.isAboveUpperDetectionLimit() or \
            self.isBelowLowerDetectionLimit():
-            self.Schema().getField('Uncertainty').set(self, '0')
+            self.Schema().getField('Uncertainty').set(self, None)
 
     def setUncertainty(self, unc):
         """ Sets the uncertainty for this analysis. If the result is
@@ -499,7 +499,7 @@ class Analysis(BaseContent):
         # https://jira.bikalabs.com/browse/LIMS-1808
         if self.isAboveUpperDetectionLimit() or \
            self.isBelowLowerDetectionLimit():
-            self.Schema().getField('Uncertainty').set(self, '0')
+            self.Schema().getField('Uncertainty').set(self, None)
         else:
             self.Schema().getField('Uncertainty').set(self, unc)
 
