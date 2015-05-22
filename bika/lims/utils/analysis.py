@@ -118,7 +118,7 @@ def format_uncertainty(analysis, result, decimalmark='.', sciformat=1):
 
     objres = None
     try:
-        objres = float(result)
+        objres = float(analysis.getResult())
     except ValueError:
         pass
 
