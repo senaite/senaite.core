@@ -1,5 +1,6 @@
 3.1.8 (unreleased)
 ------------------
+LIMS-1773: Instrument. Thermo Fisher ELISA Spectrophotometer
 LIMS-1819: Bika LIMS in footer, not Bika Lab Systems
 LIMS-1522: Site Error adding display columns to sorted AR list
 LIMS-1705: Invoices. Currency unit overcooked
