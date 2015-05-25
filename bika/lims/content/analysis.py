@@ -833,8 +833,7 @@ class Analysis(BaseContent):
         dl = self.getDetectionLimitOperand()
         if dl:
             try:
-                result = float(result) # required, check if floatable
-                result = format_numeric_result(self, result, sciformat=sciformat)
+                res = float(result) # required, check if floatable
                 return formatDecimalMark('%s %s' % (dl, result), decimalmark)
             except:
                 logger.warn("The result for the analysis %s is a "
