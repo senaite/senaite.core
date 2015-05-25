@@ -1,5 +1,15 @@
     <p></p>
 
+
+    <!-- Analysis service to apply the results -->
+    <label for='analysis'>Analysis Service</label>
+    <select name="analysis" id="analysis" tal:define="analysislist view/getAnalysisServicesDisplayList">
+        <tal:options repeat="option analysislist">
+        <option tal:attributes="value python:option;"
+                tal:content="python:analysislist.getValue(option)"/>
+        </tal:options>
+    </select>
+    <p></p>
     <label for='data_file'>File</label>&nbsp;
     <input type="file" name="data_file" id="data_file"/>
     &nbsp;&nbsp;

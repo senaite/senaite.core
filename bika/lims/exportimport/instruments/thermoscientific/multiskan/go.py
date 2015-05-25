@@ -1,4 +1,4 @@
-"""Multiskan™ GO Microplate Spectrophotometer
+"""Multiskan GO Microplate Spectrophotometer
 """
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
@@ -19,6 +19,7 @@ def Import(context, request):
     sample = request.form.get('sample',
                               'requestid')
     instrument = request.form.get('instrument', None)
+    analysis = request.form.get('analysis', None)
     errors = []
     logs = []
     warns = []
@@ -28,7 +29,9 @@ def Import(context, request):
     if not hasattr(infile, 'filename'):
         errors.append(_("No file selected"))
     if fileformat == 'csv':
-        parser = ThermoScientificMultiskanGOCSVParser(infile)
+        if not analysis:
+            errors.append(_("No analysis service selected"))
+        parser = ThermoScientificMultiskanGOCSVParser(infile, analysis)
     else:
         errors.append(t(_("Unrecognized file format ${fileformat}",
                           mapping={"fileformat": fileformat})))
