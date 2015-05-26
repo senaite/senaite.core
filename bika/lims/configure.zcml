@@ -77,4 +77,9 @@
       name="bika-lims-logo.png"
       />
 
+  <browser:resource
+      file="skins/bika/bika-logo-crop.png"
+      name="bikaonly-logo.png"
+      />
+
 </configure>
