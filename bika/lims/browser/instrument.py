@@ -635,7 +635,9 @@ class InstrumentQCFailuresViewlet(ViewletBase):
         self.nr_failed = 0
         self.failed = {'out-of-date': [],
                        'qc-fail': [],
-                       'next-test': []}
+                       'next-test': [],
+                       'validation': [],
+                       'calibration': []}
 
     def get_failed_instruments(self):
         """ Find all active instruments who have failed QC tests
@@ -685,7 +687,19 @@ class InstrumentQCFailuresViewlet(ViewletBase):
                 'uid': i.UID(),
                 'title': i.Title(),
             }
-            if i.isOutOfDate():
+            if i.isValidationInProgress():
+                instr['link'] = '<a href="%s/validations">%s</a>' % (
+                    i.absolute_url(), i.Title()
+                )
+                self.nr_failed += 1
+                self.failed['validation'].append(instr)
+            elif i.isCalibrationInProgress():
+                instr['link'] = '<a href="%s/calibrations">%s</a>' % (
+                    i.absolute_url(), i.Title()
+                )
+                self.nr_failed += 1
+                self.failed['calibration'].append(instr)
+            elif i.isOutOfDate():
                 instr['link'] = '<a href="%s/certifications">%s</a>' % (
                     i.absolute_url(), i.Title()
                 )
