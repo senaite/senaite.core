@@ -364,8 +364,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 analysis.setUncertainty(uncertainties[uid])
 
             # Need to save the detection limit?
-            if analysis_active and uid in dlimits and dlimits[uid]:
-                analysis.setDetectionLimitOperand(dlimits[uid])
+            if analysis_active:
+                analysis.setDetectionLimitOperand(dlimits.get(uid, None))
 
             if uid not in results or not results[uid]:
                 continue

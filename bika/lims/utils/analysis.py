@@ -116,10 +116,21 @@ def format_uncertainty(analysis, result, decimalmark='.', sciformat=1):
     except ValueError:
         return ""
 
-    service = analysis.getService()
-    uncertainty = analysis.getUncertainty(result)
+    objres = None
+    try:
+        objres = float(analysis.getResult())
+    except ValueError:
+        pass
 
-    if uncertainty is None:
+    service = analysis.getService()
+    uncertainty = None
+    if result == objres:
+        # To avoid problems with DLs
+        uncertainty = analysis.getUncertainty()
+    else:
+        uncertainty = analysis.getUncertainty(result)
+
+    if uncertainty is None or uncertainty == 0:
         return ""
 
     # Scientific notation?
