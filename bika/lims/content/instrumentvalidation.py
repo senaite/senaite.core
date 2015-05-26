@@ -121,7 +121,6 @@ class InstrumentValidation(BaseFolder):
                            inactive_state='active',
                            sort_on='sortable_title'):
             pairs.append((contact.UID, contact.Title))
-        import pdb;pdb.set_trace()
         return DisplayList(pairs)
 
 atapi.registerType(InstrumentValidation, PROJECTNAME)
