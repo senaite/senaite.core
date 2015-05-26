@@ -190,16 +190,22 @@ table#section-info td#lab-info {
 
 #section-discreeter {
     margin-top:60px;
-    border-top:1px solid #AAA;
     color:#444;
 }
-#section-discreeter * {
+#section-discreeter *,
+.page-footer * {
     font-size:0.9em;
 }
 #section-discreeter ol {
     margin-left:0px;
     padding-left:15px;
 }
+.page-footer {
+    font-size: 0.9em;
+    margin: 0 -20px 20px;
+    padding-left: 15px;
+}
+
 #footer {
     visibility:hidden;
     display:none;

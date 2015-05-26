@@ -183,7 +183,7 @@ class InvoiceCreate(InvoiceView):
         mime_msg['From'] = formataddr(
             (encode_header(lab.getName()), lab.getEmailAddress()))
         mime_msg.preamble = 'This is a multi-part MIME message.'
-        msg_txt_t = MIMEText(templateHTML, _subtype='html')
+        msg_txt_t = MIMEText(templateHTML.encode('utf-8'), _subtype='html')
         mime_msg.attach(msg_txt_t)
 
         # Build the responsible's addresses

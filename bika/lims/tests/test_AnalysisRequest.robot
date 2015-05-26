@@ -16,6 +16,23 @@ Suite Teardown   Close All Browsers
 ${ar_factory_url}  portal_factory/AnalysisRequest/xxx/ar_add
 
 *** Test Cases ***
+
+Check Analysis Requests listing view
+    Log in                      test_labmanager  test_labmanager
+    Wait until page contains    You are now logged in
+    Create Simple AR
+    Open context menu           xpath=.//th[@id="foldercontents-getSample-column"]
+    Click element               xpath=.//tr[@col_id="AdHoc"]
+    Click link                  sample_due
+    Open context menu           xpath=.//th[@id="foldercontents-getSample-column"]
+    Click element               xpath=.//tr[@col_id="AdHoc"]
+    Click link                  default
+    Open context menu           xpath=.//th[@id="foldercontents-getSample-column"]
+    Click element               xpath=.//tr[@col_id="AdHoc"]
+    Click link                  sample_due
+    Open context menu           xpath=.//th[@id="foldercontents-getSample-column"]
+    Click element               xpath=.//tr[@col_id="AdHoc"]
+
 Check CCContacts widget basic functionality
     Log in                      test_labmanager  test_labmanager
     @{time} =                   Get Time        year month day hour min sec

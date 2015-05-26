@@ -13,6 +13,7 @@ def upgrade(tool):
     # Reread typeinfo to update/add the modified/added types
     setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
     # Updated profile steps
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'jsregistry')
 
     # Migrations
 

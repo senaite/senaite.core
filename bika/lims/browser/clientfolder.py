@@ -89,7 +89,8 @@ class ClientFolderContentsView(BikaListingView):
         ## (ritamo only sees Happy Hills).
         mtool = getToolByName(self.context, 'portal_membership')
         wf = getToolByName(self.context, 'portal_workflow')
-        state = self.request['review_state']
+        state = self.request.get('%s_review_state'%self.form_id,
+                             self.default_review_state)
         states = {'default': ['active', ],
                   'active': ['active', ],
                   'inactive': ['inactive', ],
