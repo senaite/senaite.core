@@ -13,7 +13,6 @@ from bika.lims.utils import t
 class View(BrowserView):
 
     template = ViewPageTemplateFile('templates/supplyorder_view.pt')
-    content = ViewPageTemplateFile('templates/supplyorder_content.pt')
     title = _('Supply Order')
 
     def __call__(self):
@@ -35,7 +34,6 @@ class View(BrowserView):
         # Collect order item data
         items = context.supplyorder_lineitems
 
-        products = setup.bika_labproducts.objectValues('LabProduct')
         self.items = []
         for item in items:
             prodid = item['Product']
