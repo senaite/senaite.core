@@ -17,6 +17,17 @@ Library          DebugLibrary
 
 *** Test Cases ***
 
+Test client supply order as LabManager
+    Enable autologin as  LabManager
+    # https://jira.bikalabs.com/browse/LIMS-1827
+    Given a blank order form in client-1
+     When I enter 1 for product Glass Container
+      and I select the contact Ŝarel Seemonster
+      and I submit the new order
+    page should contain   Seemonster
+    Then when I trigger dispatch transition
+    page should contain  Item state changed.
+
 Test client supply order as Client Contact
     Enable autologin as  Owner
     Set autologin username   ritamo
@@ -25,26 +36,14 @@ Test client supply order as Client Contact
      Then I can not select the contact Rita Mohale  # cannot select own self?
       and I can not select the contact Johanna Smith
       and I select the contact Ŝarel Seemonster
-
-    Given a blank order form in client-1
-     When I enter 4 for product Glass Container
+     Then when I enter 4 for product Glass Container
       and I enter 3 for product Glass Pipet
-      and I select the contact Ŝarel Seemonster
-     Then subtotal is 430.36
-      and vat is 60.25
-      and total is 490.61
+     subtotal is 430.36
+     vat is 60.25
+     total is 490.61
+     Then when I submit the new order
+     page should contain   Seemonster
 
-    When I submit the new order
-    then page should contain   Seemonster
-
-Test client supply order as LabManager
-    Enable autologin as  LabManager
-    # https://jira.bikalabs.com/browse/LIMS-1827
-    Given a blank order form in client-1
-     When I enter 1 for product Glass Container
-      and I select the contact Ŝarel Seemonster
-      and I submit the new order
-    then page should contain   Seemonster
 
 *** Keywords ***
 
@@ -66,6 +65,13 @@ I submit the new order
     click button  Save
     wait until page contains  Order pending
 
+I trigger ${transitionId} transition
+    Element Should Be Visible  css=dl#plone-contentmenu-workflow span
+    Element Should Not Be Visible  css=dl#plone-contentmenu-workflow dd.actionMenuContent
+    Click link  css=dl#plone-contentmenu-workflow dt.actionMenuHeader a
+    Wait until keyword succeeds  1  5  Element Should Be Visible  css=dl#plone-contentmenu-workflow dd.actionMenuContent
+    Click Link  workflow-transition-${transitionId}
+
 # --- Then -------------------------------------------------------------------
 
 I select the contact ${contact}
@@ -81,6 +87,10 @@ I can not select the contact ${contact}
     Input text  css=#Contact  ${contact}
     sleep  1
     Element should not be visible   xpath=//div[contains(@class,'cg-colItem')][1]
+
+status message should be ${message}
+    wait until page contains element  css=dl.portalMessage dt  Info
+    wait until page contains element  css=dl.portalMessage dd  ${message}
 
 subtotal is ${nr}
     [Documentation]  Verify the subtotal is calculated correctly
