@@ -39,4 +39,4 @@ def skip_pre315(portal):
     info = qi.upgradeInfo('bika.lims')
     if info['installedVersion'] > '315':
         return True
-
+    return False
