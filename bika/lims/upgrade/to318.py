@@ -3,16 +3,17 @@ from Acquisition import aq_parent
 from Products.Archetypes.BaseContent import BaseContent
 from bika.lims.upgrade import stub
 from Products.CMFCore.utils import getToolByName
-
+from bika.lims import logger
 
 def upgrade(tool):
     """Upgrade step required for Bika LIMS 3.1.8
     """
     portal = aq_parent(aq_inner(tool))
     setup = portal.portal_setup
+    qi = portal.portal_quickinstaller
+    ufrom = qi.upgradeInfo('bika.lims')['installedVersion']
+    logger.info("Upgrading Bika LIMS: %s -> %s" % (ufrom, '318'))
 
-    # Reread typeinfo to update/add the modified/added types
-    setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
     # Updated profile steps
     setup.runImportStepFromProfile('profile-bika.lims:default', 'jsregistry')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
@@ -27,6 +28,5 @@ def upgrade(tool):
 
     qi = portal.portal_quickinstaller
     setup.setLastVersionForProfile("profile-bika.lims:default", "3.1.8")
-    #import pdb;pdb.set_trace()
-    #qi.setProductVersion('bika.lims', '3.1.8')
+
     return True

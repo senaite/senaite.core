@@ -2,6 +2,7 @@ from Acquisition import aq_inner
 from Acquisition import aq_parent
 from Products.Archetypes.BaseContent import BaseContent
 from bika.lims.upgrade import stub
+from bika.lims import logger
 
 
 def LIMS1519(portal):
@@ -26,6 +27,9 @@ def upgrade(tool):
     """
     portal = aq_parent(aq_inner(tool))
     setup = portal.portal_setup
+    qi = portal.portal_quickinstaller
+    ufrom = qi.upgradeInfo('bika.lims')['installedVersion']
+    logger.info("Upgrading Bika LIMS: %s -> %s" % (ufrom, '317'))
 
     # Updated profile steps
 
