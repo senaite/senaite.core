@@ -17,11 +17,92 @@ Library          DebugLibrary
 
 *** Test Cases ***
 
-Contact is selected, CC Contacts should be automated
+Test price calculation when Template is selected
   Enable autologin as  LabClerk
+  Given an ar add form in client-1 with columns layout and 3 ars
+   When I select Borehole 12 Hardness from the Template combogrid in column 0
+   Then price value for discount is 3.00 in column 0
+    and price value for subtotal is 17.00 in column 0
+    and price value for vat is 2.38 in column 0
+    and price value for total is 19.38 in column 0
+   When I click the copy button for the Template field
+   Then price value for discount is 3.00 in column 1
+    and price value for subtotal is 17.00 in column 1
+    and price value for vat is 2.38 in column 1
+    and price value for total is 19.38 in column 1
+    and price value for discount is 3.00 in column 2
+    and price value for subtotal is 17.00 in column 2
+    and price value for vat is 2.38 in column 2
+    and price value for total is 19.38 in column 2
+
+Test price calculation when Profile is selected
+  Enable autologin as  LabClerk
+  Given an ar add form in client-1 with columns layout and 3 ars
+   When I select Trace Metals from the Profile combogrid in column 0
+   Then price value for discount is 12.00 in column 0
+    and price value for subtotal is 68.00 in column 0
+    and price value for vat is 9.52 in column 0
+    and price value for total is 77.52 in column 0
+   When I click the copy button for the Profile field
+   Then price value for discount is 12.00 in column 1
+    and price value for subtotal is 68.00 in column 1
+    and price value for vat is 9.52 in column 1
+    and price value for total is 77.52 in column 1
+    and price value for discount is 12.00 in column 2
+    and price value for subtotal is 68.00 in column 2
+    and price value for vat is 9.52 in column 2
+    and price value for total is 77.52 in column 2
+
+Test price calculation when services are manually selected
+  Enable autologin as  LabClerk
+  Given an ar add form in client-1 with columns layout and 3 ars
+   When I expand the lab Metals category
+    and I select the Calcium service in column 0
+    and I select the Copper service in column 0
+   Then price value for discount is 3.00 in column 0
+    and price value for subtotal is 17.00 in column 0
+    and price value for vat is 2.38 in column 0
+    and price value for total is 19.38 in column 0
+
+Copy-Across button for various fields/types
+  Enable autologin as  LabClerk
+  # Contact copy
+  Given an ar add form in client-1 with columns layout and 3 ars
+
+  When I select Neil Ŝtandard from the Contact combogrid in column 0
+    and I click the copy button for the Contact field
+   Then the Contact value in column 0 should be Neil Ŝtandard
+    and the Contact value in column 1 should be Neil Ŝtandard
+    and the Contact value in column 2 should be Neil Ŝtandard
+    and the CCContact field selections in column 0 should contain Ŝarel Seemonster
+    and the CCContact field selections in column 0 should contain Rita Mohale
+    and the CCContact field selections in column 1 should contain Ŝarel Seemonster
+    and the CCContact field selections in column 1 should contain Rita Mohale
+    and the CCContact field selections in column 2 should contain Ŝarel Seemonster
+    and the CCContact field selections in column 2 should contain Rita Mohale
+
+  # Remove Rita, and copy again:
+   When I delete Rita Mohale from CCContact in column 0
+    and I click the copy button for the CCContact field
+   Then the CCContact field selections in column 0 should not contain Rita Mohale
+    and the CCContact field selections in column 1 should not contain Rita Mohale
+    and the CCContact field selections in column 2 should not contain Rita Mohale
+
+  # Clear CC Contacts, and copy the empty value
+   When I delete Ŝarel Seemonster from CCContact in column 0
+    and I click the copy button for the CCContact field
+   Then the CCContact field selections in column 0 should not contain Ŝarel Seemonster
+    and the CCContact field selections in column 1 should not contain Ŝarel Seemonster
+    and the CCContact field selections in column 2 should not contain Ŝarel Seemonster
+
+Contact and CC Contact
+  Enable autologin as  LabClerk
+  # CC populates when Contact is selected
   Given an ar add form in client-1 with columns layout and 1 ars
-   When I select Rita Mohale from the Contact combogrid in column 0
-   Then the CCContact field selections in column 0 should contain Ŝarel Seemonster
+   When I select Neil Ŝtandard from the Contact combogrid in column 0
+   Then the Contact value in column 0 should be Neil Ŝtandard
+    and the CCContact field selections in column 0 should contain Ŝarel Seemonster
+    and the CCContact field selections in column 0 should contain Rita Mohale
 
 SamplePoint is selected, SampleType should be filtered
   Enable autologin as  LabClerk
@@ -40,26 +121,7 @@ Some fields should be filtered depending on the Client
   Given an ar add form in client-1 with columns layout and 1 ars
    Then I can not select Klaymore Shaft 1 from the SamplePoint combogrid in column 0
   Given an ar add form in client-2 with columns layout and 1 ars
-  debug
    Then I select Klaymore Shaft 1 from the SamplePoint combogrid in column 0
-
-Copy-Across button for various fields/types
-  # Contact copy-across
-  Given an ar add form in client-1 with columns layout and 3 ars
-   When I select Neil Ŝtandard from the Contact combogrid in column 0
-    and I click the copy-across button for the Contact field
-   Then the Contact value in column 2 should be Neil Ŝtandard
-    and the CCContact field selections in column 2 should contain Ŝarel Seemonster
-    and the CCContact field selections in column 2 should contain Rita Mohale
-  # Remove Rita, and copy again:
-  Given an ar add form in client-1 with columns layout and 3 ars
-   When I select Neil Ŝtandard from the Contact combogrid in column 0
-    and I click the copy-across button for the Contact field
-   Then the Contact value in column 2 should be Neil Ŝtandard
-    and the CCContact field selections in column 2 should contain Ŝarel Seemonster
-    and the CCContact field selections in column 2 should contain Rita Mohale
-
-
 
 *** Keywords ***
 
@@ -76,33 +138,62 @@ I select ${searchterm} from the ${field} combogrid in column ${column}
     [Documentation]  Search and select ${searchterm} from a referencewidget.
     wait until page contains element  css=#${field}-${column}
     Input text  css=#${field}-${column}  ${searchterm}
-    sleep  1
+    sleep   1
     Click Element  xpath=//div[contains(@class,'cg-colItem')][1]
 
 I can not select ${searchterm} from the ${field} combogrid in column ${column}
     [Documentation]  This combogrid should be filtered so the selection should not be possible
     wait until page contains element  css=#${field}-${column}
     Input text  css=#${field}-${column}  ${searchterm}
-    sleep  1
+    sleep   1
     Element should not be visible   xpath=//div[contains(@class,'cg-colItem')][1]
+
+I delete ${selection_string} from ${field} in column ${column}
+    [Documentation]  Click the delete button for a selected item in a reference widget
+    wait until page contains element  css=#${field}-${column}-listing img[data-contact-title='${selection_string}']
+    click element  css=#${field}-${column}-listing img[data-contact-title='${selection_string}']
+    page should not contain element  xpath= .//div[@id='${field}-${column}-listing']//div[.='${field}']
+
+I click the copy button for the ${field} field
+    [Documentation]  Click the copy-across button for a field row
+    wait until page contains element  css=tr[fieldname='${field}'] .copybutton
+    click element    css=tr[fieldname='${field}'] .copybutton
+
+I expand the ${poc} ${cat_title} category
+    [Documentation]  Expand a category.  No error checking, category must be collapsed.
+    click element  xpath=.//table[@form_id='${poc}']//th[@cat='${cat_title}' and contains(@class, 'collapsed')]
+    wait until page contains element   xpath=.//table[@form_id='${poc}']//th[@cat='${cat_title}' and contains(@class, 'expanded')]
+
+I select the ${service_title} service in column ${column}
+    [Documentation]  Select an analysis.
+    select checkbox  css=tr[title='${service_title}'] [id$=\\.0]
 
 # --- Then -------------------------------------------------------------------
 
 the ${field} field selections in column ${column} should contain ${selection_string}
-    [Documentation]  Check that a multivalued referencewidget has a specific selection.
+    [Documentation]  Check that a multivalued referencewidget has a specific selection
     xpath should match x times  .//div[@id='${field}-${column}-listing']//div[.='${selection_string}']  1
+
+the ${field} field selections in column ${column} should not contain ${selection_string}
+    [Documentation]  Check that a multivalued referencewidget is missing a specific selection
+    Page should not contain element  xpath =.//div[@id='${field}-${column}-listing']//div[.='${selection_string}']
 
 the ${field} value in column ${column} should be ${value}
     [Documentation]  Check that a text-field has a certain value
+    sleep   0.5
     textfield value should be  css=#${field}-${column}      ${value}
 
 There should be ${nr} entries in the ${field} combogrid in column ${column}
     Input text  css=#${field}-${column}  \
-    sleep  1
+    sleep   1
     xpath should match x times  //div[contains(@class,'cg-colItem')][1]  ${nr}
 
+price value for ${price_item} is ${value} in column ${column}
+    [Documentation]  check that discount/subtotal/vat/total are as expected
+    wait until page contains element  xpath=.//td[@arnum='${column}']/span[contains(@class, ${price_item}) and .='${value}']
 
-#### copy-across:
+
+#### copy:
 #
 #    # contact (reference, multivalued reference, and CC Contacts)
 #    select from dropdown               css=#Contact-0       Rita
