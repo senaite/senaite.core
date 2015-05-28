@@ -76,7 +76,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    ReferenceField('Perparator',
+    ReferenceField('Preparator',
         vocabulary='getLabContacts',
         allowed_types=('LabContact',),
         relationship='LabContactInstrumentCertificatePreparator',
