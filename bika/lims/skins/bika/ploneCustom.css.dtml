@@ -1187,4 +1187,10 @@ a.print_button,
 .bika-listing-table td.Result input[type="text"]:read-only:focus {
     background-color: transparent;
 }
+body.template-ar_add table.listing.analysisrequest.add {
+    width:100%;
+}
+body.template-ar_add table.th.column {
+    text-align:center;
+}
 </dtml-with>
