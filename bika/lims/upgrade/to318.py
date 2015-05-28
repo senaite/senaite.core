@@ -25,8 +25,4 @@ def upgrade(tool):
 
 
     # Migrations
-
-    qi = portal.portal_quickinstaller
-    setup.setLastVersionForProfile("profile-bika.lims:default", "3.1.8")
-
     return True
