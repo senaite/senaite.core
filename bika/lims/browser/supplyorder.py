@@ -13,8 +13,6 @@ from bika.lims.utils import t
 class View(BrowserView):
 
     template = ViewPageTemplateFile('templates/supplyorder_view.pt')
-    content = ViewPageTemplateFile('templates/supplyorder_content.pt')
-    currency_td = ViewPageTemplateFile('templates/currency_td.pt')
     title = _('Supply Order')
 
     def __call__(self):
@@ -36,7 +34,6 @@ class View(BrowserView):
         # Collect order item data
         items = context.supplyorder_lineitems
 
-        products = setup.bika_labproducts.objectValues('LabProduct')
         self.items = []
         for item in items:
             prodid = item['Product']
@@ -58,7 +55,7 @@ class View(BrowserView):
         # Render the template
         return self.template()
 
-    def getPreferredCurrencyAbreviattion(self):
+    def getPreferredCurrencyAbreviation(self):
         return self.context.bika_setup.getCurrency()
 
 
@@ -66,7 +63,6 @@ class EditView(BrowserView):
 
     template = ViewPageTemplateFile('templates/supplyorder_edit.pt')
     field = ViewPageTemplateFile('templates/row_field.pt')
-    currency_td = ViewPageTemplateFile('templates/currency_td.pt')
 
     def __call__(self):
         portal = self.portal
@@ -126,7 +122,7 @@ class EditView(BrowserView):
             # Render the template
             return self.template()
 
-    def getPreferredCurrencyAbreviattion(self):
+    def getPreferredCurrencyAbreviation(self):
         return self.context.bika_setup.getCurrency()
 
 

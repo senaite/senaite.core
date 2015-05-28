@@ -115,7 +115,7 @@ class PricelistView(BrowserView):
         self.pricelist_content = self.lineitems_pt()
         return self.template()
 
-    def getPreferredCurrencyAbreviattion(self):
+    def getPreferredCurrencyAbreviation(self):
         return self.context.bika_setup.getCurrency()
 
 
@@ -128,7 +128,7 @@ class PricelistPrintView(BrowserView):
         self.pricelist_content = self.lineitems_pt()
         return self.template()
 
-    def getPreferredCurrencyAbreviattion(self):
+    def getPreferredCurrencyAbreviation(self):
         return self.context.bika_setup.getCurrency()
 
 
@@ -189,5 +189,5 @@ class PricelistEmailView(BrowserView):
         else:
             return self.form_template()
 
-    def getPreferredCurrencyAbreviattion(self):
+    def getPreferredCurrencyAbreviation(self):
         return self.context.bika_setup.getCurrency()
