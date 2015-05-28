@@ -16,7 +16,7 @@ def upgrade(tool):
     # Updated profile steps
     setup.runImportStepFromProfile('profile-bika.lims:default', 'jsregistry')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
-    setup.runImportStepFromProfile('profile-bika.lims:default', 'workflow_csv')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'workflow-csv')
 
     # Update workflow permissions
     wf = getToolByName(portal, 'portal_workflow')
@@ -24,4 +24,9 @@ def upgrade(tool):
 
 
     # Migrations
+
+    qi = portal.portal_quickinstaller
+    setup.setLastVersionForProfile("profile-bika.lims:default", "3.1.8")
+    #import pdb;pdb.set_trace()
+    #qi.setProductVersion('bika.lims', '3.1.8')
     return True
