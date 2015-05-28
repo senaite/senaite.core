@@ -241,7 +241,8 @@ schema = BikaSchema.copy() + Schema((
     ),
     FixedPointField('LowerDetectionLimit',
                     schemata="Analysis",
-                    default='0.00',
+                    default='0.0',
+                    precision=7,
                     widget=DecimalWidget(
                         label = _("Lower Detection Limit (LDL)"),
                         description = _("The Lower Detection Limit is "
@@ -256,7 +257,8 @@ schema = BikaSchema.copy() + Schema((
     ),
     FixedPointField('UpperDetectionLimit',
                 schemata="Analysis",
-                default='1000.00',
+                default='1000000000.0',
+                precision=7,
                 widget=DecimalWidget(
                     label = _("Upper Detection Limit (UDL)"),
                     description = _("The Upper Detection Limit is the "
