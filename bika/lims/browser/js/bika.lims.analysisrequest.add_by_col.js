@@ -418,10 +418,11 @@ function AnalysisRequestAddByCol() {
 			var td1 = $(tr).find('td[arnum="0"]')[0]
 			var e, td, html
 			// ReferenceWidget cannot be simply copied, the combogrid dropdown widgets
-			// don't cooperate.
+			// don't cooperate and the multiValued div must be copied.
 			if ($(td1).find('.ArchetypesReferenceWidget').length > 0) {
 				var val1 = $(td1).find('input[type="text"]').val()
 				var uid1 = $(td1).find('input[type="text"]').attr("uid")
+				var multi_div = $("#CCContact-0-listing")
 				for (var arnum = 1; arnum < nr_ars; arnum++) {
 					td = $(tr).find('td[arnum="' + arnum + '"]')[0]
 					e = $(td).find('input[type="text"]')
@@ -431,6 +432,10 @@ function AnalysisRequestAddByCol() {
 					// then the hidden *_uid shadow field
 					$(td).find('input[id$="_uid"]').val(uid1)
 					$(e).trigger('copy')
+					// then the multiValued div
+					var multi_divX = multi_div.clone(true);
+					$(multi_divX).attr("id", "CCContact-" + arnum + "-listing")
+					$("#CCContact-" + arnum + "-listing").replaceWith(multi_divX)
 				}
 			}
 			// select element
