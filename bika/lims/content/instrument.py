@@ -31,6 +31,7 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         widget=SelectionWidget(
             format='select',
             label=_("Instrument type"),
+            visible={'view': 'invisible', 'edit': 'visible'}
         ),
     ),
 
@@ -42,6 +43,7 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         widget=SelectionWidget(
             format='select',
             label=_("Manufacturer"),
+            visible={'view': 'invisible', 'edit': 'visible'}
         ),
     ),
 
@@ -172,7 +174,16 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
     ComputedField('InstrumentTypeName',
         expression = 'here.getInstrumentType().Title() if here.getInstrumentType() else ""',
         widget = ComputedWidget(
-            visible=False,
+            label=_('Instrument Type'),
+            visible=True,
+         ),
+    ),
+
+    ComputedField('ManufacturerName',
+        expression = 'here.getManufacturer().Title() if here.getManufacturer() else ""',
+        widget = ComputedWidget(
+        label=_('Manufacturer'),
+            visible=True,
          ),
     ),
 
@@ -247,6 +258,9 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
 ))
 
 schema.moveField('AssetNumber', before='description')
+schema.moveField('ManufacturerName', before='Supplier')
+schema.moveField('InstrumentTypeName', before='ManufacturerName')
+
 
 schema['description'].widget.visible = True
 schema['description'].schemata = 'default'

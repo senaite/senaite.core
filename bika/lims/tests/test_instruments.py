@@ -43,8 +43,8 @@ class TestInstrumentAlerts(BikaFunctionalTestCase):
                 renameAfterCreation(cal_obj)
             else:
                 #  Updating last validation
-                lastval.setDownTo(today)
-                lastval.setDownFrom(today)
+                lastval.setDownTo(today.strftime("%Y/%m/%d"))
+                lastval.setDownFrom(today.strftime("%Y/%m/%d"))
 
         for instrument_name in instrument_names:
             instrument = self.portal.bika_setup.bika_instruments[instrument_name]
