@@ -19,7 +19,9 @@
 
 		$(".ArchetypesReferenceWidget").bind("selected blur change", function () {
 			var e = $(this).children("input.referencewidget");
-			if (e.val() == '') {
+			// multiValued fields always have empty values in the actual input widget:
+			var multiValued = $(e).attr("multiValued") == "1"
+			if (e.val() == '' && !multiValued) {
 				fieldName = $(e).attr("name").split(":")[0];
 				$(e).attr("uid", "");
 				$("input[name^='" + fieldName + "_uid']").val("");
@@ -100,7 +102,7 @@ function referencewidget_lookups(elements) {
 					$(uid_element).val(existing_uids.join(","));
 					// insert item to listing
 					var del_btn_src = window.portal_url + "/++resource++bika.lims.images/delete.png";
-					var del_btn = "<img class='deletebtn' src='" + del_btn_src + "' fieldName='" + fieldName + "' uid='" + selected_uid + "'/>";
+					var del_btn = "<img class='deletebtn' data-contact-title='" + ui.item.Title + "' src='" + del_btn_src + "' fieldName='" + fieldName + "' uid='" + selected_uid + "'/>";
 					var new_item = "<div class='reference_multi_item' uid='" + selected_uid + "'>" + del_btn + selected_value + "</div>";
 					$(listing_div).append($(new_item));
 				}
@@ -153,6 +155,12 @@ function save_UID_check() {
 	//Save the selected uid's item to avoid introduce non-listed
 	//values inside the widget.
 	$(".ArchetypesReferenceWidget").bind("selected", function () {
+		// None of this stuff should take effect for multivalued widgets;
+		// Right now, these must take care of themselves.
+		var multiValued = $(this).attr("multiValued") == "1"
+		if(multiValued){
+			return
+		}
 		var uid = $(this).children("input.referencewidget").attr("uid");
 		var val = $(this).children("input.referencewidget").val();
 		$(this).children("input.referencewidget").attr("uid_check", uid);
@@ -164,6 +172,12 @@ function check_UID_check() {
 	//Remove the necessary values to submit if the introduced data is
 	//not correct.
 	$(".ArchetypesReferenceWidget").children("input.referencewidget").bind("blur", function () {
+		// None of this stuff should take effect for multivalued widgets;
+		// Right now, these must take care of themselves.
+		var multiValued = $(this).attr("multiValued") == "1"
+		if(multiValued){
+			return
+		}
 		var chk = $(this).attr("uid_check");
 		var val_chk = $(this).attr("val_check");
 		var value = $(this).val();

@@ -22,7 +22,7 @@
                         as_uid python: suid if suid else None;
                         title python: item['title'] if 'title' in item else None;
                         price python: item['price'] if 'price' in item else None;
-                        vatamount python: item['vatamount'] if 'vatamount' in item else None">
+                        vat_percentage python: item['vat_percentage'] if 'vat_percentage' in item else None">
 
     <tal:comment replace="nothing">*************** Individual items' row_data is stored on each row. ********************************</tal:comment>
 

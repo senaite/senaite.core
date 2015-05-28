@@ -25,6 +25,17 @@ function AnalysisRequestAddByCol() {
 		// load-time form configuration
 		form_init()
 
+		//// Handy for the debugging; alerts when a certain selector's 'value' is changed
+		// var selector = input[id*='0_uid']
+		// Object.defineProperty(document.querySelector(selector), 'value', {
+		//	set: function (value) {
+		//		if(!value || value.length < 2)
+		//		{
+		//			debugger;
+		//		}
+		//	}
+		//})
+
 		/*
 		 The state variable is fully populated when the form is submitted,
 		 but in many cases it must be updated on the fly, to allow the form
@@ -325,7 +336,19 @@ function AnalysisRequestAddByCol() {
 	function referencewidget_change_handler(element, item) {
 		var arnum = get_arnum(element)
 		var fieldname = $(element).parents('[fieldname]').attr('fieldname')
-		state_set(arnum, fieldname, item.UID)
+		var multiValued = $(element).attr("multiValued") == "1"
+		var value = item.UID
+		if(multiValued){
+			// modify existing values
+			var uid_element = $(element).siblings("input[name*='_uid']")
+			var existing_values = $(uid_element).val()
+			if(existing_values.search(value) == -1){
+				value = existing_values + "," + value
+			} else {
+				value = existing_values
+			}
+		}
+		state_set(arnum, fieldname, value)
 	}
 
 	function referencewidget_change() {
@@ -517,8 +540,9 @@ function AnalysisRequestAddByCol() {
 		var contact_uid = $(contact_element).attr("uid")
 		// clear the CC selector widget and listing DIV
 		var cc_div = $("tr[fieldname='CCContact'] td[arnum='" + arnum + "'] .multiValued-listing")
-		var cc_uids = $("tr[fieldname='CCContact'] td[arnum='" + arnum + "'] input[name='CCContact_uid']")
+		var cc_uid_element = $("#CCContact-" + arnum + "_uid")
 		$(cc_div).empty()
+		$(cc_uid_element).empty()
 		if (contact_uid) {
 			var request_data = {
 				catalog_name: "portal_catalog",
@@ -532,13 +556,12 @@ function AnalysisRequestAddByCol() {
 					if (!cc_uids) {
 						return
 					}
-					$(cc_uids).val(cc_uids.join(","))
+					$(cc_uid_element).val(cc_uids.join(","))
 					for (var i = 0; i < cc_uids.length; i++) {
 						var title = cc_titles[i]
 						var uid = cc_uids[i]
 						var del_btn_src = window.portal_url + "/++resource++bika.lims.images/delete.png"
-						var del_btn =
-						  "<img class='deletebtn' src='" + del_btn_src + "' fieldname='CCContact' uid='" + uid + "'/>"
+						var del_btn = "<img class='deletebtn' data-contact-title='" + title + "' src='" + del_btn_src + "' fieldname='CCContact' uid='" + uid + "'/>"
 						var new_item = "<div class='reference_multi_item' uid='" + uid + "'>" + del_btn + title + "</div>"
 						$(cc_div).append($(new_item))
 					}
@@ -1346,7 +1369,6 @@ function AnalysisRequestAddByCol() {
 			var th = $("table[form_id='" + service['PointOfCapture'] + "'] " +
 					   "th[cat='" + service['CategoryTitle'] + "']")
 			if(expanded_categories.indexOf(th) < 0) {
-				console.log("expand handler on " + service['CategoryTitle'] + "/" + service['PointOfCapture'])
 				expanded_categories.push(th)
 				var def = $.Deferred()
 				def = category_header_expand_handler(th)
@@ -1359,6 +1381,7 @@ function AnalysisRequestAddByCol() {
 			for (var si = 0; si < services.length; si++) {
 				analysis_cb_check(arnum, services[si]['UID'])
 			}
+			recalc_prices(arnum)
 		})
 	}
 
@@ -1949,33 +1972,32 @@ function AnalysisRequestAddByCol() {
 	}
 
 	function recalc_prices(arnum) {
-		var price
+		var price = 0.00
 		var subtotal = 0.00
 		var discount_amount = 0.00
-		var vat = 0.00
+		var vat_amount = 0.00
 		var total = 0.00
 		var discount_pcnt = parseFloat($("#bika_setup").attr("MemberDiscount"), 10)
 		var checked = $("tr[uid] td[class*='ar\\." + arnum + "'] input[type='checkbox']:checked")
 		for (var i = 0; i < checked.length; i++) {
 			var cb = checked[i]
 			var form_price = parseFloat($(cb).parents("[price]").attr("price"), 10)
-			var vatamount = parseFloat($(cb).parents("[vatamount]").attr("vatamount"), 10)
+			var vat_percentage = parseFloat($(cb).parents("[vat_percentage]").attr("vat_percentage"), 10)
 			if ($(cb).prop("checked") && !$(cb).prop("disabled")) {
-				if (discount_pcnt) {
+				if(discount_pcnt){
 					price = form_price - ((form_price / 100) * discount_pcnt)
-				}
-				else {
+					discount_amount += ((form_price / 100) * discount_pcnt)
+				} else {
 					price = form_price
 				}
 				subtotal += price
-				discount_amount += ((form_price / 100) * discount_pcnt)
-				vat += ((price / 100) * vatamount)
-				total += price + ((price / 100) * vatamount)
+				vat_amount += ((price / 100) * vat_percentage)
 			}
 		}
+		total = (subtotal + vat_amount)
 		$("td[arnum='" + arnum + "'] span.price.discount").html(discount_amount.toFixed(2))
 		$("td[arnum='" + arnum + "'] span.price.subtotal").html(subtotal.toFixed(2))
-		$("td[arnum='" + arnum + "'] span.price.vat").html(vat.toFixed(2))
+		$("td[arnum='" + arnum + "'] span.price.vat").html(vat_amount.toFixed(2))
 		$("td[arnum='" + arnum + "'] span.price.total").html(total.toFixed(2))
 	}
 

@@ -146,7 +146,8 @@ class AnalysisServicesView(ASV):
             for x, item in enumerate(items):
                 if 'obj' not in items[x]:
                     continue
-                kw = items[x]['obj'].getKeyword()
+                obj = items[x]['obj']
+                kw = obj.getKeyword()
                 for arnum in range(self.ar_count):
                     key = 'ar.%s' % arnum
                     # checked or not:
@@ -163,6 +164,14 @@ class AnalysisServicesView(ASV):
                             <input class="error" size="3" placeholder="err%"/>
                         '''
                     items[x]['after'][key] += '<span class="partnr"></span>'
+
+                    # Price and VAT percentage are cheats: There is code in
+                    # bika_listing_table_items.pt which allows them to be
+                    # inserted into as attributes on <TR>.  TAL has this flaw;
+                    # that attributes cannot be dynamically inserted.
+                    items[x]['price'] = obj.getPrice()
+                    items[x]['vat_percentage'] = obj.getVAT()
+
                     # place a clue for the JS to recognize that these are
                     # AnalysisServices being selected here (service_selector
                     # bika_listing):
