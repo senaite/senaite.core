@@ -8,6 +8,7 @@ from foss.winescan import auto
 from foss.winescan import ft120
 from thermoscientific.gallery import Ts9861x
 from thermoscientific.arena import xt20
+from thermoscientific.multiskan import go
 from panalytical.omnia import axios_xrf
 from alere.pima import beads, cd4
 from lifetechnologies.qubit import qubit
@@ -41,7 +42,8 @@ __all__ = ['generic.xml',
            'sealanalytical.aq2.aq2',
            'horiba.jobinyvon.icp',
            'abaxis.vetscan.vs2',
-           'scilvet.abc.plus'
+           'scilvet.abc.plus',
+           'thermoscientific.multiskan.go'
            ]
 
 
