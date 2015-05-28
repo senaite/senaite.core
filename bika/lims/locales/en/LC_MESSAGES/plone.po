@@ -144,6 +144,11 @@ msgstr ""
 msgid "Containers"
 msgstr ""
 
+#
+# File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line: -1
+msgid "Create Invoice"
+msgstr ""
+
 msgid "Department"
 msgstr ""
 
@@ -394,6 +399,11 @@ msgid "Supply Orders"
 msgstr ""
 
 msgid "Validations"
+msgstr ""
+
+#
+# File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
+msgid "WINE-40: Do not move or remove this entry."
 msgstr ""
 
 msgid "Worksheet"
