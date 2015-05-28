@@ -16,5 +16,14 @@ def upgrade(tool):
     setup.runImportStepFromProfile('profile-bika.lims:default', 'jsregistry')
 
     # Migrations
+    HEALTH245(portal)
 
     return True
+
+def HEALTH245(portal):
+    """ Set the '-' as default separator in all ids. Otherwise, new
+        records will be created without '-', which has been used since
+        now by default
+    """
+    for p in portal.bika_setup.getPrefixes():
+        p['separator']='-' if not p['separator'] else p['separator']
