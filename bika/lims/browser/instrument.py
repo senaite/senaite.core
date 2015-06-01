@@ -631,6 +631,7 @@ class InstrumentMultifileView(BikaListingView):
                            'index': 'sortable_title'},
             'DocumentVersion': {'title': _('Document Version'), 'index': 'sortable_title'},
             'DocumentLocation': {'title': _('Document Location'), 'index': 'sortable_title'},
+            'DocumentType': {'title': _('Document Type'), 'index': 'sortable_title'},
             'FileDownload': {'title': _('File')}
         }
         self.review_states = [
@@ -640,6 +641,7 @@ class InstrumentMultifileView(BikaListingView):
              'columns': ['DocumentID',
                          'DocumentVersion',
                          'DocumentLocation',
+                         'DocumentType',
                          'FileDownload']},
         ]
 
@@ -656,10 +658,12 @@ class InstrumentMultifileView(BikaListingView):
                 items[x]['replace']['DocumentID'] = "<a href='%s'>%s</a>" % \
                     (items[x]['url'], items[x]['DocumentID'])
                 items[x]['FileDownload'] = obj.getFile().filename
+                filename = obj.getFile().filename if obj.getFile().filename != '' else 'File'
                 items[x]['replace']['FileDownload'] = "<a href='%s'>%s</a>" % \
-                    (obj.getFile().absolute_url_path(), obj.getFile().filename)
+                    (obj.getFile().absolute_url_path(), filename)
                 items[x]['DocumentVersion'] = obj.getDocumentVersion()
                 items[x]['DocumentLocation'] = obj.getDocumentLocation()
+                items[x]['DocumentType'] = obj.getDocumentType()
                 outitems.append(items[x])
         return outitems
 

@@ -117,6 +117,12 @@
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
 
     <adapter
+      name="Instrument_Documents"
+      factory="bika.lims.exportimport.setupdata.Instrument_Documents"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
       name="Instrument_Maintenance_Tasks"
       factory="bika.lims.exportimport.setupdata.Instrument_Maintenance_Tasks"
       provides="bika.lims.interfaces.ISetupDataImporter"

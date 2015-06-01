@@ -692,16 +692,6 @@ class Instruments(WorksheetImporter):
                 file_data = open(path, "rb").read()
                 obj.setInstallationCertificate(file_data)
 
-            # Attaching the User Manual if exists
-            if row.get('UserManualFile', None):
-                path = resource_filename(
-                    self.dataset_project,
-                    "setupdata/%s/%s" % (self.dataset_name,
-                                         row['UserManualFile'])
-                )
-                file_data = open(path, "rb").read()
-                obj.setUserManualFile(file_data)
-
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
 
@@ -807,6 +797,36 @@ class Instrument_Certifications(WorksheetImporter):
                         obj.setPreparator(contact.UID())
                     if contact.getFullname() == row.get('approvedby', ''):
                         obj.setValidator(contact.UID())
+                obj.unmarkCreationFlag()
+                renameAfterCreation(obj)
+
+
+class Instrument_Documents(WorksheetImporter):
+
+    def Import(self):
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        for row in self.get_rows(3):
+            if not row['instrument']:
+                continue
+
+            folder = self.get_object(bsc, 'Instrument', row.get('instrument', ''))
+            if folder:
+                obj = _createObjectByType("Multifile", folder, tmpID())
+                if row.get('File', None):
+                    path = resource_filename(
+                        self.dataset_project,
+                        "setupdata/%s/%s" % (self.dataset_name,
+                                             row['File'])
+                    )
+                    file_data = open(path, "rb").read()
+                    obj.edit(
+                        DocumentID=row['DocumentID'],
+                        DocumentVersion=row.get('DocumentVersion', ''),
+                        DocumentLocation=row.get('DocumentLocation', ''),
+                        DocumentType=row.get('DocumentType', ''),
+                        File=file_data
+                    )
+
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
 

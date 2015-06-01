@@ -16,14 +16,6 @@ schema = BikaSchema.copy() + atapi.Schema((
         )
     ),
 
-    atapi.ReferenceField('Instrument',
-        allowed_types=('Instrument',),
-        relationship='InstrumentMultifile',
-        widget=atapi.StringWidget(
-            visible=False,
-        )
-    ),
-
     atapi.FileField('File',
     required=1,
     widget = atapi.FileWidget(
