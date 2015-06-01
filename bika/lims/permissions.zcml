@@ -25,6 +25,7 @@
 <permission id="bika.lims.permissions.AddClientFolder" title="BIKA: Add ClientFolder"/>
 <permission id="bika.lims.permissions.AddInvoice" title="BIKA: Add Invoice"/>
 <permission id="bika.lims.permissions.AddMethod" title="BIKA: Add Method"/>
+<permission id="bika.lims.permissions.AddMultifile" title="BIKA: Add Multifile"/>
 <permission id="bika.lims.permissions.AddPricelist" title="BIKA: Add Pricelist"/>
 <permission id="bika.lims.permissions.AddSample" title="BIKA: Add Sample"/>
 <permission id="bika.lims.permissions.AddSupplyOrder" title="BIKA: Add SupplyOrder"/>
