@@ -15,7 +15,7 @@
 <head>
     <div tal:replace="structure provider:plone.resourceregistries.scripts" />
 </head>
-<body>
+<body class="layout_a4" data-layout="layout_a4">
     <div id='ar_publish_container'>
         <div id="ar_publish_header" tal:condition="python:view.showOptions()">
             <div id='options_handler'>
@@ -26,7 +26,13 @@
                                 tal:content="python:format['title']"></option>
                     </tal:formats>
                 </select>
-                <a href='#' id='sel_format_info'><img tal:attributes='src python:portal.absolute_url()+"/++resource++bika.lims.images/info.png";'/></a><br/>
+                <a href='#' id='sel_format_info'><img tal:attributes='src python:portal.absolute_url()+"/++resource++bika.lims.images/info.png";'/></a>
+                &nbsp;&nbsp;&nbsp;
+                <label for="sel_layout" i18n:translate="">Layout</label>
+                <select id="sel_layout" name="sel_layout">
+                    <option value="layout_a4" selected>DIN-A4 (210 x 297 mm)</option>
+                    <option value="layout_letter">Letter size (216 x 279mm)</option>
+                </select><br/>
                 <input type="checkbox" name="qcvisible" id='qcvisible' value="0"><span i18n:translate="">Show QC Analyses</span><br/>
                 <input type="checkbox" name="hvisible" id='hvisible' value="0"><span i18n:translate="">Show Hidden Analyses</span>
             </div>
@@ -41,11 +47,16 @@
                 </tal:ars>
             </div>
             <div id='ar_publish_buttons'>
-                <input type="button" id='cancel_button' i18n:translate="value" value="Cancel"/>&nbsp;&nbsp;
-                <input type="button" id='publish_button' i18n:translate="value" value="Publish"/>
+                <input type="button" id='cancel_button' value="Cancel"/>&nbsp;&nbsp;
+                <input type="button" id='publish_button' value="Publish"/>
             </div>
         </div>
+        <style id='report-style' tal:content='structure python:view.getReportStyle()'></style>
         <style>
+            * {
+                font-family: Arial;
+                font-size:11.5px;
+            }
             html {
                 background-color:#cdcdcd;
             }
@@ -54,10 +65,15 @@
                 padding: 0;
             }
             body {
-                width: 210mm;
                 padding: 10px 10px 0px 20px;
                 margin: 10px auto;
                 background-color:#fff;
+            }
+            body.layout_a4 {
+                width: 210mm;
+            }
+            body.layout_letter {
+                width: 216mm;
             }
             #ar_publish_header {
                 margin:-10px -10px 20px -20px;
@@ -126,16 +142,14 @@
                 margin: -60px -10px 0 -20px;
                 padding: 60px 10px 0 20px;
             }
-            .page-break, .page-footer {
-                background-color: #CDCDCD;
-                margin: 60px -10px 60px -20px;
-                padding-bottom: 20px;
-                padding-top: 20px;
+            .page-break, .page-break-before, .page-break-after {
+                background-color: #cdcdcd;
+                margin: 20px -20px 40px;
+                padding: 20px;
             }
             .page-footer {
-                border-bottom: 30px solid #cdcdcd;
                 background-color:transparent;
-                padding: 20px;
+                padding: 20px 0px 0px;
             }
             .error-report {
                 margin:0 -20px;
@@ -153,23 +167,60 @@
                 font-weight:normal;
             }
             .clearfix {
-                clear:both;
+                clear:both !important;
+                margin:0 !important;
+                padding:0 !important;
+                height:0 !important;
             }
+            .runtime {
+                position:fixed;
+                bottom:0;
+                z-index:1000;
+                padding:20px;
+                border-top:10px solid red;
+                left:0;
+                right:0;
+                height:200px;
+                background-color:#fff;    overflow: auto;
+                display:none;
+            }
+            .ar_publish_body {
+                margin:0 !important;
+                padding:0 !important;
+            }
+
+        </style>
+        <style id='layout-style'></style>
+        <style id='layout-print'>
             @media print {
                 html {
-                    background-color:#fff;
+                    background-color:#fff !important;
+                    margin:0 !important;
+                    padding:0 !important;
                 }
-                .page-break  {
-                    display: block;
+                body {
+                    padding:0 !important;
+                    margin:0 !important;
+                }
+                .page-break, .page-break-after, .page-break-before {
+                    display: block !important;
+                    border:none !important;
+                    padding:0 !important;
+                    margin:0 !important;
+                    background-color:transparent !important;
+                }
+                div.page-break {
+                    page-break-after: always;
+                }
+                div.page-break-after {
+                    page-break-after: always;
+                }
+                div.page-break-before {
                     page-break-before: always;
-                    margin:none;
-                    border:none;
                 }
                 .page-footer {
-                    display: block;
-                    page-break-after: always;
-                    margin:none;
-                    border:none;
+                    margin:0 !important;
+                    border:none !important;
                 }
                 #ar_publish_header {
                     display:none;
@@ -177,7 +228,6 @@
                 }
             }
         </style>
-        <style id='report-style' tal:content='structure python:view.getReportStyle()'></style>
         <div id='report'>
         <tal:ar tal:repeat="i python:range(view.getAnalysisRequestsCount())">
         <div tal:attributes="id python:view.getAnalysisRequestObj().id;
@@ -187,5 +237,7 @@
         </tal:ar>
         </div>
     </div>
+    <div class='runtime'></div>
+    <div id="my_mm" style="height:1mm;display:none"></div>
 </body>
 </html>

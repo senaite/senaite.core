@@ -39,7 +39,7 @@
 <!-- Split the report by department -->
 <tal:department repeat="dept python:view.getAnalysisRequestObj().getDepartments()">
 <!-- Report header -->
-<div id="section-header">
+<div id="section-header" class='page-header'>
     <div id='barcode-container'>
         <div id='ariddept'
             tal:define="deptidx repeat/dept/number"
@@ -393,5 +393,6 @@
     <div class="footer" tal:content="structure analysisrequest/footer"></div>
     <div class="clearfix"></div>
 </div>
+<div class='manual-page-break'></div>
 </tal:department>
 </tal:report>
