@@ -16,6 +16,14 @@ Suite Teardown   Close All Browsers
 ${ar_factory_url}  portal_factory/AnalysisRequest/xxx/ar_add
 
 *** Test Cases ***
+Analysis request with sequence_start in Bika Setup
+    Log in                              test_labmanager  test_labmanager
+    Wait until page contains            You are now logged in
+    Set sequence start                  85
+    Create Simple AR
+    Page Should Contain                 BAR-0085
+    Create Simple AR
+    Page Should Contain                 BAR-0086
 
 Check Analysis Requests listing view
     Log in                      test_labmanager  test_labmanager
@@ -47,6 +55,7 @@ Check that the editable SamplePoint widget in AnalysisRequestView shows both Cli
     # Create a new Client/SamplePoint
     Log in                              test_labmanager         test_labmanager
     Wait until page contains            You are now logged in
+    Set up Auto print stickers
     go to                        ${PLONEURL}/clients/client-1/portal_factory/SamplePoint/xxx/edit
     input text                   title                             Pringle Bay Beach
     click button                 Save
@@ -129,6 +138,7 @@ Analysis Request with no sampling or preservation workflow
 Create two different ARs from the same sample.
     Log in                              test_labmanager         test_labmanager
     Wait until page contains            You are now logged in
+    Set up Auto print stickers
     Create AR in client-1 with contact Rita
     Create Secondary AR
     In a client context, only allow selecting samples from that client.
@@ -185,6 +195,8 @@ AR with sampling workflow actived and preservation workflow actived
     Log in              test_labmanager    test_labmanager
     Go to               ${PLONEURL}/clients/client-1/${ar_id}/manage_results
     Execute transition verify inside ClientARView/ManageResults
+
+
 
 
 *** Keywords ***
@@ -376,3 +388,17 @@ Define container ${container} and preservation ${preservation} from Sample Parti
     Select From List    //span[2]/select    ${container}
     Select From List    //td[4]/span[2]/select    ${preservation}
     Click Button        save_partitions_button_transition
+
+Set up Auto print stickers
+    Go to                               ${PLONEURL}/bika_setup/edit
+    Click link                          Stickers
+    Select From List By Value           AutoPrintStickers   None
+    Click Button                        Save
+
+Set sequence start
+    [Arguments]   ${sequence_start}
+    Go to                               http://localhost:55001/plone/bika_setup/edit
+    Click link                          Id server
+    Input text                          xpath=//input[@id='SampleIDSequenceStart']   ${sequence_start}
+    Click Button                        Save
+    Wait Until Page Contains            Changes saved

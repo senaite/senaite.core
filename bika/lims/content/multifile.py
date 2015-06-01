@@ -44,6 +44,14 @@ schema = BikaSchema.copy() + atapi.Schema((
         description=_("Location where the document set is shelved"),
         )
     ),
+
+    atapi.StringField('DocumentType',
+    required=1,
+    widget = atapi.StringWidget(
+        label=_("Document Type"),
+        description=_("What type of document is that? A manual, a warn..."),
+        )
+    ),
 ))
 
 TitleField = schema['title']

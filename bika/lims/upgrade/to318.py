@@ -16,13 +16,19 @@ def upgrade(tool):
     setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
     # Updated profile steps
     setup.runImportStepFromProfile('profile-bika.lims:default', 'jsregistry')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'workflow_csv')
 
     # Adding Multifile content type
     at = getToolByName(portal, 'archetype_tool')
     at.setCatalogsByType('Multifile', ['bika_setup_catalog', ])
-    # Define permissions for ethnicity
+    # Update workflow permissions
+    wf = getToolByName(portal, 'portal_workflow')
+    wf.updateRoleMappings()
+    # Define permissions for Multifile
     mp = portal.manage_permission
     mp(AddMultifile, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
-    # Migrations
 
+
+    # Migrations
     return True

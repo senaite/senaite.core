@@ -9,6 +9,7 @@ from bika.lims.utils import tmpID
 from Products.Archetypes.config import REFERENCE_CATALOG
 from datetime import datetime
 from DateTime import DateTime
+import os
 
 class InstrumentResultsFileParser(Logger):
 
@@ -192,7 +193,12 @@ class InstrumentCSVResultsFileParser(InstrumentResultsFileParser):
         infile = self.getInputFile()
         self.log("Parsing file ${file_name}", mapping={"file_name":infile.filename})
         jump = 0
-        for line in infile.readlines():
+        # We test in import functions if the file was uploaded
+        try:
+            f = open(infile.name, 'rU')
+        except AttributeError:
+            f = infile
+        for line in f.readlines():
             self._numline += 1
             if jump == -1:
                 # Something went wrong. Finish

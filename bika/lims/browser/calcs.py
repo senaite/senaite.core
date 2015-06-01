@@ -2,7 +2,7 @@ from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IFieldIcons
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from bika.lims.utils import t, isnumber
 from bika.lims import logger
 from bika.lims.utils import to_utf8
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -213,7 +213,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                 # calculate
                 result = eval(formula)
                 Result['result'] = result
-                self.current_results[uid] = result
+                self.current_results[uid]['result'] = result
             except TypeError as e:
                 # non-numeric arguments in interim mapping?
                 alert = {'field': 'Result',
@@ -229,7 +229,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
             except ZeroDivisionError as e:
                 Result['result'] = '0/0'
                 Result['formatted_result'] = '0/0'
-                self.current_results[uid] = '0/0'
+                self.current_results[uid]['result'] = '0/0'
                 self.results.append(Result)
                 alert = {'field': 'Result',
                          'icon': path + '/exclamation.png',
@@ -326,9 +326,19 @@ class ajaxCalculateAnalysisEntry(BrowserView):
         #                                         analysis.id,
         #                                         Result))
 
-        self.uncertainties.append({'uid': uid,
-                                   'uncertainty': analysis.getUncertainty(
-                                       Result['result'])})
+        # LIMS-1808 Uncertainty calculation on DL
+        # https://jira.bikalabs.com/browse/LIMS-1808
+        flres = Result.get('result', None)
+        if flres and isnumber(flres):
+            flres = float(flres)
+            anvals = self.current_results[uid]
+            isldl = anvals.get('isldl', False)
+            isudl = anvals.get('isudl', False)
+            belowldl = (isldl or flres < float(anvals.get('ldl',0)))
+            aboveudl = (isudl or flres > float(anvals.get('udl',10000000)))
+            unc = '' if (belowldl or aboveudl) else analysis.getUncertainty(Result.get('result'))
+            if not (belowldl or aboveudl):
+                self.uncertainties.append({'uid': uid, 'uncertainty': unc})
 
         # maybe a service who depends on us must be recalculated.
         if analysis.portal_type == 'ReferenceAnalysis':

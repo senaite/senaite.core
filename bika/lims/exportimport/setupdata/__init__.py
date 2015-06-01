@@ -797,8 +797,8 @@ class Instrument_Certifications(WorksheetImporter):
                         "setupdata/%s/%s" % (self.dataset_name,
                                              row['report'])
                     )
-                file_data = open(path, "rb").read()
-                obj.setDocument(file_data)
+                    file_data = open(path, "rb").read()
+                    obj.setDocument(file_data)
                 # Getting lab contacts
                 bsc = getToolByName(self.context, 'bika_setup_catalog')
                 lab_contacts = [o.getObject() for o in bsc(portal_type="LabContact", nactive_state='active')]
