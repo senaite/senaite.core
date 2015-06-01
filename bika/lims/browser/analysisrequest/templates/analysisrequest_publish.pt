@@ -52,7 +52,7 @@
             </div>
         </div>
         <style id='report-style' tal:content='structure python:view.getReportStyle()'></style>
-        <style>
+        <style id='report-base-style'>
             * {
                 font-family: Arial;
                 font-size:11.5px;
@@ -193,6 +193,10 @@
         <style id='layout-style'></style>
         <style id='layout-print'>
             @media print {
+                a {
+                    text-decoration:none;
+                    color:#000;
+                }
                 html {
                     background-color:#fff !important;
                     margin:0 !important;
