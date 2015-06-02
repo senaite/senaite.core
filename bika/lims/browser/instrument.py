@@ -44,7 +44,7 @@ class InstrumentMaintenanceView(BikaListingView):
         self.show_select_all_checkbox = False
         self.pagesize = 40
         self.form_id = "instrumentmaintenance"
-        self.icon = "++resources++bika.lims.images/instrumentmaintenance_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/instrumentmaintenance_big.png"
         self.title = self.context.translate(_("Instrument Maintenance"))
         self.description = ""
 
@@ -144,7 +144,7 @@ class InstrumentCalibrationsView(BikaListingView):
         self.show_select_column = True
         self.pagesize = 25
         self.form_id = "instrumentcalibrations"
-        self.icon = "++resources++bika.lims.images/instrumentcalibration_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/instrumentcalibration_big.png"
         self.title = self.context.translate(_("Instrument Calibrations"))
         self.description = ""
 
@@ -201,7 +201,7 @@ class InstrumentValidationsView(BikaListingView):
         self.show_select_column = True
         self.pagesize = 25
         self.form_id = "instrumentvalidations"
-        self.icon = "++resources++bika.lims.images/instrumentvalidation_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/instrumentvalidation_big.png"
         self.title = self.context.translate(_("Instrument Validations"))
         self.description = ""
 
@@ -261,7 +261,7 @@ class InstrumentScheduleView(BikaListingView):
         self.pagesize = 25
 
         self.form_id = "instrumentschedule"
-        self.icon = "++resources++bika.lims.images/instrumentschedule_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/instrumentschedule_big.png"
         self.title = self.context.translate(_("Instrument Scheduled Tasks"))
         self.description = ""
 
@@ -622,7 +622,7 @@ class InstrumentMultifileView(BikaListingView):
         self.show_select_column = True
         self.pagesize = 25
         self.form_id = "instrumentmultifile"
-        self.icon = "++resources++bika.lims.images/instrumentcertification_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/instrumentcertification_big.png"
         self.title = self.context.translate(_("Instrument Files"))
         self.description = ""
 
