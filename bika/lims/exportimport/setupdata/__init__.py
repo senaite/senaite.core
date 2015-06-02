@@ -692,16 +692,6 @@ class Instruments(WorksheetImporter):
                 file_data = open(path, "rb").read()
                 obj.setInstallationCertificate(file_data)
 
-            # Attaching the User Manual if exists
-            if row.get('UserManualFile', None):
-                path = resource_filename(
-                    self.dataset_project,
-                    "setupdata/%s/%s" % (self.dataset_name,
-                                         row['UserManualFile'])
-                )
-                file_data = open(path, "rb").read()
-                obj.setUserManualFile(file_data)
-
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
 
@@ -809,6 +799,49 @@ class Instrument_Certifications(WorksheetImporter):
                         obj.setValidator(contact.UID())
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+
+
+class Instrument_Documents(WorksheetImporter):
+
+    def Import(self):
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        for row in self.get_rows(3):
+            if not row.get('instrument', ''):
+                continue
+
+            folder = self.get_object(bsc, 'Instrument', row.get('instrument', ''))
+            if folder:
+                # This content type need a file
+                if row.get('File', None):
+                    path = resource_filename(
+                        self.dataset_project,
+                        "setupdata/%s/%s" % (self.dataset_name,
+                                             row['File'])
+                    )
+                    file_data = open(path, "rb").read()
+                    # Obtain all created instrument documents content type
+                    catalog = getToolByName(self.context, 'bika_setup_catalog')
+                    documents_brains = catalog.searchResults({'portal_type': 'Multifile'})
+                    # If a the new document has the same DocumentID as a created document, this object won't be created.
+                    idAlreadyInUse = False
+                    for item in documents_brains:
+                        if item.getObject().getDocumentID() == row.get('DocumentID', ''):
+                            warning = "The ID '%s' used for this document is already in use on instrument '%s', consequently " \
+                                      "the file hasn't been upload." % (row.get('DocumentID', ''), row.get('instrument', ''))
+                            self.context.plone_utils.addPortalMessage(warning)
+                            idAlreadyInUse = True
+                    if not idAlreadyInUse:
+                        obj = _createObjectByType("Multifile", folder, tmpID())
+                        obj.edit(
+                            DocumentID=row.get('DocumentID', ''),
+                            DocumentVersion=row.get('DocumentVersion', ''),
+                            DocumentLocation=row.get('DocumentLocation', ''),
+                            DocumentType=row.get('DocumentType', ''),
+                            File=file_data
+                        )
+
+                        obj.unmarkCreationFlag()
+                        renameAfterCreation(obj)
 
 
 class Instrument_Maintenance_Tasks(WorksheetImporter):
