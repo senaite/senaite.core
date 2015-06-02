@@ -1,6 +1,7 @@
-3.1.8 (unreleased)
+3.1.8 (2015-05-29)
 ------------------
 LIMS-1773: Instrument. Thermo Fisher ELISA Spectrophotometer
+LIMS-1697: Error updating bika.lims 317 to 318 via quickinstaller
 LIMS-1820: QC Graphs DateTime's X-Axis not well sorted
 LIMS-280 : System IDs starting from a specific value
 LIMS-1819: Bika LIMS in footer, not Bika Lab Systems

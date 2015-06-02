@@ -8,6 +8,13 @@ from bika.lims.setuphandlers import BikaGenerator
 from bika.lims import logger
 
 def upgrade(tool):
+    # Hack prevent out-of-date upgrading
+    # Related: PR #1484
+    # https://github.com/bikalabs/Bika-LIMS/pull/1484
+    from bika.lims.upgrade import skip_pre315
+    if skip_pre315(aq_parent(aq_inner(tool))):
+        return True
+
     portal = aq_parent(aq_inner(tool))
 
     at = getToolByName(portal, 'archetype_tool')
@@ -73,7 +80,7 @@ def upgrade(tool):
         bc.delIndex('getSamplePointTitle')
     bc.addIndex('getSampleTypeTitle', 'KeywordIndex')
     bc.addIndex('getSamplePointTitle', 'KeywordIndex')
-    
+
     if 'getClientSampleID' not in pc.indexes():
         pc.addIndex('getClientSampleID', 'FieldIndex')
         pc.addColumn('getClientSampleID')
