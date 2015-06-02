@@ -55,15 +55,18 @@
             /** Report preview styling **/
             html, body { margin: 0; }
             html { background-color:#cdcdcd; }
-            body.layout_a4 {     width: 210mm; }
-            body.layout_letter { width: 216mm; }
+            body.layout_a4 #ar_publish_container { width: 210mm; }
+            body.layout_letter #ar_publish_container { width: 216mm; }
             #report {
                 background-color:#ffffff;
             }
-
-            /*
+            #ar_publish_container {
+                margin:0 auto;
+                background-color:#fff;
+                padding:30px;
+            }
             #ar_publish_header {
-                margin:-10px -10px 20px -20px;
+                margin:-30px -30px 30px -30px;
                 padding:10px 20px 20px 10px;
                 background-color: #dcdcdc;
                 border-bottom: 20px solid #CDCDCD;
@@ -72,11 +75,6 @@
             #ar_publish_header * {
                 font-family: Arial !important;
                 font-size:11.5px !important;
-            }
-            body {
-                padding: 10px 10px 0px 20px;
-                margin: 10px auto;
-                background-color:#fff;
             }
             #ar_publish_header #options_handler label {
                 padding:5px 10px 5px 10px;
@@ -138,6 +136,8 @@
                 margin: -60px -10px 0 -20px;
                 padding: 60px 10px 0 20px;
             }
+
+            /*
             .page-break, .page-break-before, .page-break-after {
                 background-color: #cdcdcd;
                 margin: 20px -20px 40px;
@@ -161,29 +161,13 @@
                 background-color:#fff;
                 color:#000;
                 font-weight:normal;
-            }
+            }*/
             .clearfix {
                 clear:both !important;
                 margin:0 !important;
                 padding:0 !important;
                 height:0 !important;
             }
-            .runtime {
-                position:fixed;
-                bottom:0;
-                z-index:1000;
-                padding:20px;
-                border-top:10px solid red;
-                left:0;
-                right:0;
-                height:200px;
-                background-color:#fff;    overflow: auto;
-                display:none;
-            }
-            .ar_publish_body {
-                margin:0 !important;
-                padding:0 !important;
-            }*/
         </style>
         <style id='report-style' tal:content='structure python:view.getReportStyle()'></style>
         <style id='layout-style'></style>
@@ -238,7 +222,6 @@
         </tal:ar>
         </div>
     </div>
-    <div class='runtime'></div>
     <div id="my_mm" style="height:1mm;display:none"></div>
 </body>
 </html>
