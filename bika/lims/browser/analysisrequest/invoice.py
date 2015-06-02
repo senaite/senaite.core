@@ -133,7 +133,7 @@ class InvoiceView(BrowserView):
             if icon:
                 return '/'.join(icon.getPhysicalPath())
 
-    def getPreferredCurrencyAbreviattion(self):
+    def getPreferredCurrencyAbreviation(self):
         return self.context.bika_setup.getCurrency()
 
 

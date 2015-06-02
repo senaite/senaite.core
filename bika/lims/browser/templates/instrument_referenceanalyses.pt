@@ -32,7 +32,7 @@
             </select>&nbsp;&nbsp;
             <label for='interpolation' i18n:translate="">Interpolation</label>
             <select id='interpolation' name='interpolation'>
-                <option value='basis' selected i18n:translate="">Basis</option>
+                <option value='basis' i18n:translate="" selected>Basis</option>
                 <option value='cardinal' i18n:translate="">Cardinal</option>
                 <option value='linear' i18n:translate="">Linear</option>
             </select>&nbsp;&nbsp;

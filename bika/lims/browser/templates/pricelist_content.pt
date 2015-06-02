@@ -36,15 +36,15 @@
                 <tr>
                     <td tal:content="item/title"></td>
                     <td>
-		        <span tal:content="python:view.getPreferredCurrencyAbreviattion()">R</span>
+		        <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
                         <span tal:content="item/Subtotal">0.00</span>
                     </td>
                     <td>
-                        <span tal:content="python:view.getPreferredCurrencyAbreviattion()">R</span>
+                        <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
 			<span tal:content="item/VATAmount">0.00</span>
                     </td>
                     <td>
-                        <span tal:content="python:view.getPreferredCurrencyAbreviattion()">R</span>
+                        <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
 			<span tal:content="item/Total">0.00</span>
                     </td>
                 </tr>

@@ -22,7 +22,7 @@
                         as_uid python: suid if suid else None;
                         title python: item['title'] if 'title' in item else None;
                         price python: item['price'] if 'price' in item else None;
-                        vatamount python: item['vatamount'] if 'vatamount' in item else None">
+                        vat_percentage python: item['vat_percentage'] if 'vat_percentage' in item else None">
 
     <tal:comment replace="nothing">*************** Individual items' row_data is stored on each row. ********************************</tal:comment>
 
@@ -187,7 +187,7 @@ Table cells for each column from in review_state's column list.
         <em tal:condition="python:'unit' in item[column]"
             class="discreet"
             style="white-space:nowrap;"
-            tal:content="python:item[column]['unit']"/>
+            tal:content="structure python:item[column]['unit']"/>
     </span>
     <tal:comment replace="nothing"><!-- regular field --></tal:comment>
     <span tal:omit-tag="python:True"
@@ -325,7 +325,7 @@ Table cells for each column from in review_state's column list.
 <em tal:condition="python:'Unit' in item and column == 'Result'"
     class="discreet"
     style="white-space:nowrap;"
-    tal:content="python:item['Unit']"/>
+    tal:content="structure python:item['Unit']"/>
 
 </span>
 

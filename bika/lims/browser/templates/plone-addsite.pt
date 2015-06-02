@@ -27,8 +27,8 @@
 </head>
 <body>
 
-  <img src="/++resource++plone-logo.png" width="213" height="54"
-    tal:attributes="src string:${context/absolute_url}/++resource++bika-lims-logo.png" />
+  <img src="/++resource++plone-logo.png"
+    tal:attributes="src string:${context/absolute_url}/++resource++bikaonly-logo.png" />
 
   <h1 i18n:translate="" i18n:domain="bika">Install a Bika Distribution</h1>
 

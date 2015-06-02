@@ -156,14 +156,23 @@ def generateUniqueId(context):
                 # Special case for Sample IDs
                 prefix = fn_normalize(context.getSampleType().getPrefix())
                 padding = context.bika_setup.getSampleIDPadding()
+                sequence_start = context.bika_setup.getSampleIDSequenceStart()
                 new_id = next_id(prefix+year)
+                # If sequence_start is greater than new_id. Set
+                # sequence_start as new_id. (Jira LIMS-280)
+                if sequence_start > int(new_id):
+                    new_id = str(sequence_start)
                 if padding:
                     new_id = new_id.zfill(int(padding))
                 return ('%s%s' + separator + '%s') % (prefix, year, new_id)
             elif d['portal_type'] == context.portal_type:
                 prefix = d['prefix']
                 padding = d['padding']
+                sequence_start = d.get("sequence_start", None)
                 new_id = next_id(prefix+year)
+                # Jira-tracker LIMS-280
+                if sequence_start and int(sequence_start) > int(new_id):
+                    new_id = str(sequence_start)
                 if padding:
                     new_id = new_id.zfill(int(padding))
                 return ('%s%s' + separator + '%s') % (prefix, year, new_id)

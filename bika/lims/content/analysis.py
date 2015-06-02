@@ -260,10 +260,16 @@ class Analysis(BaseContent):
         """ Returns the uncertainty for this analysis and result.
             Returns the value from Schema's Uncertainty field if the
             Service has the option 'Allow manual uncertainty'. Otherwise,
-            do a callback to getDefaultUncertainty()
+            do a callback to getDefaultUncertainty().
+            Returns None if no result specified and the current result
+            for this analysis is below or above detections limits.
         """
         serv = self.getService()
         schu = self.Schema().getField('Uncertainty').get(self)
+        if result is None and (self.isAboveUpperDetectionLimit() or \
+                               self.isBelowLowerDetectionLimit()):
+            return None
+
         if schu and serv.getAllowManualUncertainty() == True:
             try:
                 schu = float(schu)
@@ -477,6 +483,25 @@ class Analysis(BaseContent):
             # Reset DL
             self.Schema().getField('DetectionLimitOperand').set(self, None)
         self.getField('Result').set(self, val, **kw)
+
+        # Uncertainty calculation on DL
+        # https://jira.bikalabs.com/browse/LIMS-1808
+        if self.isAboveUpperDetectionLimit() or \
+           self.isBelowLowerDetectionLimit():
+            self.Schema().getField('Uncertainty').set(self, None)
+
+    def setUncertainty(self, unc):
+        """ Sets the uncertainty for this analysis. If the result is
+            a Detection Limit or the value is below LDL or upper UDL,
+            sets the uncertainty value to 0
+        """
+        # Uncertainty calculation on DL
+        # https://jira.bikalabs.com/browse/LIMS-1808
+        if self.isAboveUpperDetectionLimit() or \
+           self.isBelowLowerDetectionLimit():
+            self.Schema().getField('Uncertainty').set(self, None)
+        else:
+            self.Schema().getField('Uncertainty').set(self, unc)
 
     def getSample(self):
         # ReferenceSample cannot provide a 'getSample'
@@ -808,8 +833,7 @@ class Analysis(BaseContent):
         dl = self.getDetectionLimitOperand()
         if dl:
             try:
-                result = float(result) # required, check if floatable
-                result = format_numeric_result(self, result, sciformat=sciformat)
+                res = float(result) # required, check if floatable
                 return formatDecimalMark('%s %s' % (dl, result), decimalmark)
             except:
                 logger.warn("The result for the analysis %s is a "
