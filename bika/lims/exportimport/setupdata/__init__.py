@@ -811,37 +811,37 @@ class Instrument_Documents(WorksheetImporter):
 
             folder = self.get_object(bsc, 'Instrument', row.get('instrument', ''))
             if folder:
-                obj = _createObjectByType("Multifile", folder, tmpID())
+                # This content type need a file
                 if row.get('File', None):
                     path = resource_filename(
                         self.dataset_project,
                         "setupdata/%s/%s" % (self.dataset_name,
                                              row['File'])
                     )
+                    file_data = open(path, "rb").read()
                     # Obtain all created instrument documents content type
                     catalog = getToolByName(self.context, 'bika_setup_catalog')
                     documents_brains = catalog.searchResults({'portal_type': 'Multifile'})
                     # If a the new document has the same DocumentID as a created document, this object won't be created.
+                    idAlreadyInUse = False
                     for item in documents_brains:
-                        if item.getObject().get('DocumentID', '') != '' \
-                                and item.getObject.get('DocumentID', '') == obj.get('DocumentID', ''):
-                            warning = "The ID {id} used for this document is already in use, consequently " \
-                                      "the file hasn't been upload.".format(id=obj.get('DocumentID', ''))
-                            logger.warning(warning, self.sheetname)
+                        if item.getObject().getDocumentID() == row.get('DocumentID', ''):
+                            warning = "The ID '%s' used for this document is already in use on instrument '%s', consequently " \
+                                      "the file hasn't been upload." % (row.get('DocumentID', ''), row.get('instrument', ''))
                             self.context.plone_utils.addPortalMessage(warning)
-                            continue
+                            idAlreadyInUse = True
+                    if not idAlreadyInUse:
+                        obj = _createObjectByType("Multifile", folder, tmpID())
+                        obj.edit(
+                            DocumentID=row.get('DocumentID', ''),
+                            DocumentVersion=row.get('DocumentVersion', ''),
+                            DocumentLocation=row.get('DocumentLocation', ''),
+                            DocumentType=row.get('DocumentType', ''),
+                            File=file_data
+                        )
 
-                    file_data = open(path, "rb").read()
-                    obj.edit(
-                        DocumentID=row.get('DocumentID', ''),
-                        DocumentVersion=row.get('DocumentVersion', ''),
-                        DocumentLocation=row.get('DocumentLocation', ''),
-                        DocumentType=row.get('DocumentType', ''),
-                        File=file_data
-                    )
-
-                obj.unmarkCreationFlag()
-                renameAfterCreation(obj)
+                        obj.unmarkCreationFlag()
+                        renameAfterCreation(obj)
 
 
 class Instrument_Maintenance_Tasks(WorksheetImporter):

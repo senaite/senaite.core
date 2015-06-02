@@ -791,6 +791,7 @@ class BikaGenerator:
         addIndex(bsc, 'getVolume', 'FieldIndex')
         addIndex(bsc, 'sortKey', 'FieldIndex')
         addIndex(bsc, 'getMethodID', 'FieldIndex')
+        addIndex(bsc, 'getDocumentID', 'FieldIndex')
 
         addColumn(bsc, 'path')
         addColumn(bsc, 'UID')
