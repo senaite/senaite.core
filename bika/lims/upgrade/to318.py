@@ -1,8 +1,9 @@
 from Acquisition import aq_inner
 from Acquisition import aq_parent
+from Products.CMFCore.utils import getToolByName
+from bika.lims.permissions import AddMultifile
 from Products.Archetypes.BaseContent import BaseContent
 from bika.lims.upgrade import stub
-from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
 
 def upgrade(tool):
@@ -18,6 +19,21 @@ def upgrade(tool):
     setup.runImportStepFromProfile('profile-bika.lims:default', 'jsregistry')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'workflow-csv')
+
+    # Adding Multifile content type
+    at = getToolByName(portal, 'archetype_tool')
+    at.setCatalogsByType('Multifile', ['bika_setup_catalog', ])
+
+    # Adding indexes
+    bsc = getToolByName(portal, 'bika_setup_catalog', None)
+    if 'getMethodID' not in bsc.indexes():
+        bsc.addIndex('getMethodID', 'FieldIndex')
+    if 'getDocumentID' not in bsc.indexes():
+        bsc.addIndex('getDocumentID', 'FieldIndex')
+
+    # Define permissions for Multifile
+    mp = portal.manage_permission
+    mp(AddMultifile, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
 
     # Update workflow permissions
     wf = getToolByName(portal, 'portal_workflow')
