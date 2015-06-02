@@ -71,8 +71,6 @@ function AnalysisRequestAddByCol() {
 
         form_submit()
 
-        fix_table_layout();
-
     }
 
     // Form management, and utility functions //////////////////////////////////
@@ -2162,21 +2160,5 @@ function AnalysisRequestAddByCol() {
                     }
                 })
           })
-    }
-
-    function fix_table_layout() {
-        "use strict";
-
-        // Apply to header column
-        var headcolwidth = $('table.analysisrequest.add tr:first th').width();
-        headcolwidth += $('table.analysisrequest.add tr:first td:first').width();
-        $('table tr th input[id*="_toggle_cols"]').closest("th").css('width', 24);
-        $('table tr th[id="foldercontents-Title-column"]').css('width', headcolwidth);
-        $('table tr[id^="folder-contents-item-"] td[class*="Title"]').css('width', headcolwidth);
-
-        // Apply to Analyses columns
-        var arcolswidth = $('table.analysisrequest td[arnum]').width();
-        $('table tr th[id^="foldercontents-ar."]').css({'width':arcolswidth, 'text-align':'center'});
-        $('table tr[id^="folder-contents-item-"] td[class*="ar"]').css({'width':arcolswidth, 'text-align':'center'});
     }
 }
