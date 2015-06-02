@@ -275,7 +275,7 @@
 </div>
 
 <!-- Results interpretation section -->
-<div id="resultsinterpretation"
+<div id="section-resultsinterpretation"
     tal:define="ri analysisrequest/resultsinterpretationdepts"
     tal:condition="python: ri and (ri.get('') or ri.get(dept.Title()))">
     <h1 i18n:translate="">Results interpretation</h1>
@@ -337,44 +337,46 @@
 </div>
 
 <!-- Signatures section -->
-<table id="section-signatures">
-    <td tal:define="mngr_info analysisrequest/managers;
-                     mngr_ids python:mngr_info['ids'];
-                     managers python:mngr_info['dict'];"
-         tal:repeat="manager mngr_ids"
-         class="manager-info">
-         <tal:manager tal:define="rownum repeat/manager/number;
-                         email python:managers[manager]['email'];
-                         jobtitle python:managers[manager]['job_title'];
-                         phone python:managers[manager]['phone'];
-                         department python:managers[manager]['departments'];
-                         signature python:managers[manager]['signature'];"
-                      condition="python: department == dept.Title()">
+<div id="section-signatures">
+    <table>
+        <td tal:define="mngr_info analysisrequest/managers;
+                         mngr_ids python:mngr_info['ids'];
+                         managers python:mngr_info['dict'];"
+             tal:repeat="manager mngr_ids"
+             class="manager-info">
+             <tal:manager tal:define="rownum repeat/manager/number;
+                             email python:managers[manager]['email'];
+                             jobtitle python:managers[manager]['job_title'];
+                             phone python:managers[manager]['phone'];
+                             department python:managers[manager]['departments'];
+                             signature python:managers[manager]['signature'];"
+                          condition="python: department == dept.Title()">
 
-            <img tal:condition="signature"
-                 tal:attributes="src string:${signature}" style="height:75px"/>
-            <br/>
-            <span class="manager-fullname" tal:content="python:managers[manager]['name']">Joe Blogs</span>
-            <br tal:condition="jobtitle">
-            <span class="manager-jobtitle"
-                tal:condition="jobtitle"
-                tal:content="jobtitle"></span>
-            <br tal:condition="email"/>
-            <span class="manager-email" tal:condition="email">
-                <a tal:attributes="href string:mailto:${email}"
-                   tal:content="email">a@b.com</a>
-            </span>
-            <br tal:condition="phone"/>
-            <span class="manager-phone"
-                tal:content="phone"
-                tal:condition="phone">011 555 1112</span>
-            <br/>
-            <span class="manager-department" tal:content="department">Chemistry</span>
-            <span tal:condition="python: rownum % 3 == 0"
-                  tal:replace="structure python:'</tr>'"></span>
-        </tal:manager>
-    </td>
-</table>
+                <img tal:condition="signature"
+                     tal:attributes="src string:${signature}" style="height:75px"/>
+                <br/>
+                <span class="manager-fullname" tal:content="python:managers[manager]['name']">Joe Blogs</span>
+                <br tal:condition="jobtitle">
+                <span class="manager-jobtitle"
+                    tal:condition="jobtitle"
+                    tal:content="jobtitle"></span>
+                <br tal:condition="email"/>
+                <span class="manager-email" tal:condition="email">
+                    <a tal:attributes="href string:mailto:${email}"
+                       tal:content="email">a@b.com</a>
+                </span>
+                <br tal:condition="phone"/>
+                <span class="manager-phone"
+                    tal:content="phone"
+                    tal:condition="phone">011 555 1112</span>
+                <br/>
+                <span class="manager-department" tal:content="department">Chemistry</span>
+                <span tal:condition="python: rownum % 3 == 0"
+                      tal:replace="structure python:'</tr>'"></span>
+            </tal:manager>
+        </td>
+    </table>
+</div>
 
 <!-- Discreeter section -->
 <div id="section-discreeter">

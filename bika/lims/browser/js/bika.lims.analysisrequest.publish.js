@@ -15,8 +15,10 @@ function AnalysisRequestPublishView() {
     var layouts_mm = {layout_a4:     [210, 297],
                       layout_letter: [216, 279]};
 
-    var layouts_margin = {layout_a4:     [15, 15, 20, 15],
+    var layouts_margin = {layout_a4:     [20, 20, 20, 20],
                           layout_letter: [15, 15, 20, 15]};
+    /*var layouts_margin = {layout_a4:     [0, 0, 0, 0],
+                          layout_letter: [0, 15, 0, 0]};*/
     var header_height = 0;
     var footer_height = 0;
     var header_html = '';
@@ -214,7 +216,7 @@ function AnalysisRequestPublishView() {
         header_html = '';
         if ($('.page-header').length > 0) {
             var pgh = $('.page-header').first();
-            header_height = get_full_height(pgh);
+            header_height = pxTomm(get_full_height(pgh));
             header_html = $(pgh).html();
             $('.page-header').remove();
         }
@@ -222,15 +224,16 @@ function AnalysisRequestPublishView() {
         footer_html = '';
         if ($('.page-footer').length > 0) {
             var pgf = $('.page-footer').first();
-            footer_height = get_full_height(pgf);
+            footer_height = pxTomm(get_full_height(pgf));
             footer_html = $(pgf).html();
             $('.page-footer').remove();
         }
 
+        // Set page layout (DIN-A4, US-letter, etc.)
         currentlayout = $('#sel_layout').val();
         var layout_style = '@page { size: '+layouts_size[currentlayout]+' !important;';
-        layout_style += 'width: '+layouts_mm[currentlayout][0]+'mm !important;'
-        layout_style += 'height: '+layouts_mm[currentlayout][1]+'mm !important;'
+        layout_style += 'width: '+layouts_mm[currentlayout][0]+'mm !important;';
+        layout_style += 'height: '+layouts_mm[currentlayout][1]+'mm !important;';
         layout_style += 'margin: '+layouts_margin[currentlayout][0]+'mm ';
         layout_style +=  layouts_margin[currentlayout][1]+'mm ';
         layout_style +=  layouts_margin[currentlayout][2]+'mm ';
@@ -238,50 +241,86 @@ function AnalysisRequestPublishView() {
         $('#layout-style').html(layout_style);
 
         // Calculate pagination according to the selected Layout.
-        // DIN-A4, Letter US Size, etc.
+        var layheight = layouts_mm[currentlayout][1];
+        layheight    -= layouts_margin[currentlayout][0];
+        layheight    -= layouts_margin[currentlayout][2];
+        //layheight    -= 10; // Let 10mm for unit conversion looses.
+        var maxheight = layheight - footer_height - header_height;
+        console.log("Layout height: "+layheight+" , Max height: "+maxheight);
+
+        // Remove orphan page break
+        if ($('div.ar_publish_body > div').last().hasClass('manual-page-break')) {
+            $('div.manual-page-break').last().remove();
+        }
+
         // Iterate for each report body and apply the dimensions
+        // All heights, position, etc. are expressed in mm
+        var prevarid = '';
+        var position_offset = 0;
+        var el_abs_pos = 0;
+        var el_rel_pos = 0;
+        var el_height = 0;
+        var currheight = 0;
         var currelement = null;
         var footadded = false;
-        var prevarid = '';
-        var prevheight = 0;
-        var layheight = parseFloat(mmTopx(layouts_mm[currentlayout][1]));
-        layheight -= parseFloat(mmTopx(layouts_margin[currentlayout][0]));
-        layheight -= parseFloat(mmTopx(layouts_margin[currentlayout][2]));
-        var maxheight = parseFloat(layheight - footer_height - header_height);
-        console.log(layheight+" : "+maxheight);
         $('div.ar_publish_body > div').each(function(i) {
-            footadded = false;
             var arbody = $(this).closest('div.ar_publish_body');
-            var id_ar = $(arbody).attr('id');
-            if (id_ar != prevarid) {
-                // New AR report, new page
-                if (prevarid != '') {
-                    $("<div class='page-break'></div><div class='page-header'>"+header_html+"</div>").prependTo($(arbody));
-                } else {
-                    $("<div class='page-header'>"+header_html+"</div>").prependTo($(arbody));
-                }
-                prevheight = 0;
-                prevarid = id_ar;
+            var idar = $(arbody).attr('id');
+            if (idar != prevarid) {
+                // New AR, new page
+                var pgbreak = prevarid != '' ? "<div class='page-break'></div>" : '';
+                var pghead = pgbreak + "<div class='page-header'>" + header_html + "</div>";
+                $(pghead).prependTo($(arbody));
+                prevarid = idar;
+                position_offset = pxTomm($(this).position().top);
             }
-            var elheight = get_full_height($(this));
-            var currheight = parseFloat(prevheight + elheight);
-            console.log($(this).attr('id')+": "+$(this).outerHeight()+" -> "+currheight);
-            if (currheight > maxheight || $(this).hasClass('manual-page-break')) {
-                // Add page-break, hader and footer
-                var margin = maxheight - prevheight;
-                $("<div style='clear:both;padding-top:"+pxTomm(margin)+"mm'></div><div class='page-footer'>"+footer_html+"</div>").insertBefore($(this));
-                $("<div class='page-break'></div><div class='page-header'>"+header_html+"</div>").insertBefore($(this));
-                console.log("---> "+ prevheight +" + " + margin + " + "+ footer_height + " = " +(prevheight + margin + footer_height));
-                prevheight = $(this).hasClass('manual-page-break') ? 0 : elheight;
-                footadded = true;
+
+            // Absolute position of the current element in mm
+            el_abs_pos = pxTomm($(this).position().top);
+
+            // Relative position of the current element in mm
+            el_rel_pos = el_abs_pos - position_offset;
+
+            // Height of the current element in mm
+            var el_next = $(this).next();
+            if (el_next.length > 0) {
+                el_height = $(el_next).position().top - $(this).position().top;
+                el_height = pxTomm(el_height);
             } else {
-                prevheight = currheight;
+                el_height = pxTomm(get_full_height($(this)));
+            }
+
+            // Total relative height
+            currheight = el_rel_pos + el_height;
+            console.log("CURRENT HEIGHT: "+currheight+" ("+$(this).attr('id')+": "+el_height+")");
+
+            // Page-break needed?
+            if (currheight > maxheight || $(this).hasClass('manual-page-break')) {
+                // Calculate the margin/padding above the page-footer
+                // to keep the footer at the bottom of the page
+                //var margin = layheight - (prevheight + footer_height);//
+                var margin = maxheight - currheight + header_height + footer_height;
+                margin = margin > 0 ? margin : 0;
+                var pgbreak = "<div style='clear:both;padding-top:"+margin+"mm'></div>";
+                pgbreak += "<div class='page-footer'>"+footer_html+"</div>";
+                pgbreak += "<div class='page-break'></div>";
+                pgbreak += "<div class='page-header'>"+header_html+"</div>";
+                $(pgbreak).insertBefore($(this));
+
+                // Initialize the position offset
+                position_offset = pxTomm($(this).position().top);
             }
             currelement = $(this);
+            $(this).css('width', pxTomm($(this).width())+'mm');
+            /*$(this).css('height', pxTomm(get_full_height($(this)))+'mm');
+            $(this).css('max-height', pxTomm(get_full_height($(this)))+'mm');*/
         });
-        if (footadded == false && currelement != null) {
-            var margin =  maxheight - prevheight;
-            $("<div style='clear:both;padding-top:"+pxTomm(margin)+"mm'></div><div class='page-footer'>"+footer_html+"</div>").insertAfter($(currelement));
+
+        // End-of-document footer
+        if (currelement != null) {
+            // Last footer
+            var margin =  maxheight - currheight + header_height + footer_height;
+            $("<div style='clear:both;padding-top:"+margin+"mm'></div><div class='page-footer'>"+footer_html+"</div>").insertAfter($(currelement));
         }
         $('.manual-page-break').hide();
 
@@ -294,17 +333,23 @@ function AnalysisRequestPublishView() {
                 $(this).html(currnum);
                 currnum += 1;
             });
-            var currnum = 1;
+            currnum = 1;
             $(this).find('div.page-header .page-current-num').each(function(j) {
                 $(this).html(currnum);
                 currnum += 1;
             });
+           /* $(this).find('div.page-footer').each(function(j) {
+                $(this).parent('div').css('z-index', currnum);
+                $(this).parent('div').css('width', "100%");
+                $(this).parent('div').css('background-color', '#ffffff');
+                currnum -= 1;
+            });*/
         });
     }
 }
 var mmTopx = function(mm) {
-    return Math.floor(mm*$('#my_mm').height());
+    return parseFloat(mm*$('#my_mm').height());
 }
 var pxTomm = function(px){
-    return Math.floor(px/$('#my_mm').height());
+    return parseFloat(px/$('#my_mm').height());
 };
