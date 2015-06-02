@@ -51,36 +51,32 @@
                 <input type="button" id='publish_button' value="Publish"/>
             </div>
         </div>
-        <style id='report-style' tal:content='structure python:view.getReportStyle()'></style>
         <style id='report-base-style'>
-            * {
-                font-family: Arial;
-                font-size:11.5px;
+            /** Report preview styling **/
+            html, body { margin: 0; }
+            html { background-color:#cdcdcd; }
+            body.layout_a4 {     width: 210mm; }
+            body.layout_letter { width: 216mm; }
+            #report {
+                background-color:#ffffff;
             }
-            html {
-                background-color:#cdcdcd;
-            }
-            html, body {
-                margin: 0;
-                padding: 0;
-            }
-            body {
-                padding: 10px 10px 0px 20px;
-                margin: 10px auto;
-                background-color:#fff;
-            }
-            body.layout_a4 {
-                width: 210mm;
-            }
-            body.layout_letter {
-                width: 216mm;
-            }
+
+            /*
             #ar_publish_header {
                 margin:-10px -10px 20px -20px;
                 padding:10px 20px 20px 10px;
                 background-color: #dcdcdc;
                 border-bottom: 20px solid #CDCDCD;
-                font-size:1.1em;
+                font-size:11px;
+            }
+            #ar_publish_header * {
+                font-family: Arial !important;
+                font-size:11.5px !important;
+            }
+            body {
+                padding: 10px 10px 0px 20px;
+                margin: 10px auto;
+                background-color:#fff;
             }
             #ar_publish_header #options_handler label {
                 padding:5px 10px 5px 10px;
@@ -187,9 +183,9 @@
             .ar_publish_body {
                 margin:0 !important;
                 padding:0 !important;
-            }
-
+            }*/
         </style>
+        <style id='report-style' tal:content='structure python:view.getReportStyle()'></style>
         <style id='layout-style'></style>
         <style id='layout-print'>
             @media print {
@@ -225,6 +221,7 @@
                 .page-footer {
                     margin:0 !important;
                     border:none !important;
+                    background-color:#ffffff;
                 }
                 #ar_publish_header {
                     display:none;
