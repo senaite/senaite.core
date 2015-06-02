@@ -806,7 +806,7 @@ class Instrument_Documents(WorksheetImporter):
     def Import(self):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         for row in self.get_rows(3):
-            if not row['instrument']:
+            if not row.get('instrument', ''):
                 continue
 
             folder = self.get_object(bsc, 'Instrument', row.get('instrument', ''))
@@ -818,9 +818,22 @@ class Instrument_Documents(WorksheetImporter):
                         "setupdata/%s/%s" % (self.dataset_name,
                                              row['File'])
                     )
+                    # Obtain all created instrument documents content type
+                    catalog = getToolByName(self.context, 'bika_setup_catalog')
+                    documents_brains = catalog.searchResults({'portal_type': 'Multifile'})
+                    # If a the new document has the same DocumentID as a created document, this object won't be created.
+                    for item in documents_brains:
+                        if item.getObject().get('DocumentID', '') != '' \
+                                and item.getObject.get('DocumentID', '') == obj.get('DocumentID', ''):
+                            warning = "The ID {id} used for this document is already in use, consequently " \
+                                      "the file hasn't been upload.".format(id=obj.get('DocumentID', ''))
+                            logger.warning(warning, self.sheetname)
+                            self.context.plone_utils.addPortalMessage(warning)
+                            continue
+
                     file_data = open(path, "rb").read()
                     obj.edit(
-                        DocumentID=row['DocumentID'],
+                        DocumentID=row.get('DocumentID', ''),
                         DocumentVersion=row.get('DocumentVersion', ''),
                         DocumentLocation=row.get('DocumentLocation', ''),
                         DocumentType=row.get('DocumentType', ''),

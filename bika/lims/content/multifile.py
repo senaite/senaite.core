@@ -11,6 +11,7 @@ schema = BikaSchema.copy() + atapi.Schema((
 
     atapi.StringField('DocumentID',
     required=1,
+    validators=('uniquefieldvalidator',),
     widget = atapi.StringWidget(
         label=_("Document ID"),
         )
@@ -41,7 +42,7 @@ schema = BikaSchema.copy() + atapi.Schema((
     required=1,
     widget = atapi.StringWidget(
         label=_("Document Type"),
-        description=_("What type of document is that? A manual, a warn..."),
+        description=_("Type of document (e.g. user manual, instrument specifications, image, ...)"),
         )
     ),
 ))
