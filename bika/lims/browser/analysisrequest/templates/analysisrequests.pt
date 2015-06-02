@@ -29,8 +29,8 @@
 				<span tal:replace="python:add_item"/>
 			</a>
 		</tal:add_actions>
-		<select name="ar_count"
-			class='ar_count' style="vertical-align:top !important"
+		<select name="col_count"
+			class='col_count' style="vertical-align:top !important"
 			tal:condition="python:len(view.context_actions) > 0">
 			<option value='1' i18n:translate="">1</option>
 			<option value='2' i18n:translate="">2</option>
@@ -47,9 +47,9 @@
 	<script type="text/javascript">
 	(function( $ ) {
 	$(document).ready(function(){
-		$('.ar_count').change(function(){
+		$('.col_count').change(function(){
 			url = $(".context_action_link").attr('href').split("?")[0];
-			$(".context_action_link").attr('href', url + "?ar_count="+$(this).val());
+			$(".context_action_link").attr('href', url + "?col_count="+$(this).val());
 		});
 	});
 	}(jQuery));

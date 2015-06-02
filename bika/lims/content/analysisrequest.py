@@ -58,6 +58,7 @@ def BatchUID(instance):
 schema = BikaSchema.copy() + Schema((
     StringField(
         'RequestID',
+        required=1,
         searchable=True,
         mode="rw",
         read_permission=permissions.View,

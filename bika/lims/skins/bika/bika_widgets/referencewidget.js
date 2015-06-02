@@ -6,15 +6,11 @@ $(document).ready(function(){
     $(".reference_multi_item .deletebtn").live('click', function(){
         var fieldName = $(this).attr("fieldName");
         var uid = $(this).attr("uid");
-		var existing_value = $("input[name^='"+fieldName+"_uid']").val()
-		// It's true: the value may have been removed already, by another function
-		if (existing_value) {
-			var existing_uids = existing_value.split(",")
-	        destroy(existing_uids, uid);
-			$("input[name^='"+fieldName+"_uid']").val(existing_uids.join(","));
-			$("input[name='"+fieldName+"']").attr("uid", existing_uids.join(","));
-			$(this).parent().remove();
-		}
+        var existing_uids = $("input[name^='"+fieldName+"_uid']").val().split(",");
+        destroy(existing_uids, uid);
+        $("input[name^='"+fieldName+"_uid']").val(existing_uids.join(","));
+        $("input[name='"+fieldName+"']").attr("uid", existing_uids.join(","));
+        $(this).parent().remove();
     });
 
     $(".ArchetypesReferenceWidget").bind("selected blur change", function(){
@@ -75,15 +71,11 @@ function referencewidget_lookups(elements){
             event.preventDefault();
             var fieldName = $(this).attr("name");
             var skip;
-			var uid_element = $(this).siblings("input[$='_uid']")
-			var listing_div = $(this).siblings("div[id$='-listing']");
-			if($(listing_div).length > 0) {
+            var uid_element = $("input[name='"+fieldName+"_uid']");
+            var listing_div = $("div#"+fieldName+"-listing");
+            if($("#"+fieldName+"-listing").length > 0) {
                 // Add selection to textfield value
-				var existing_value = $(uid_element).val()
-				var existing_uids = ""
-				if (existing_value != undefined) {
-					existing_uids = existing_value.split(",")
-				}
+                var existing_uids = $("input[name='"+fieldName+"_uid']").val().split(",");
                 destroy(existing_uids,"");
                 destroy(existing_uids,"[]");
                 var selected_value = ui.item[$(this).attr("ui_item")];
@@ -99,15 +91,9 @@ function referencewidget_lookups(elements){
                     var new_item = "<div class='reference_multi_item' uid='"+selected_uid+"'>"+del_btn+selected_value+"</div>";
                     $(listing_div).append($(new_item));
                 }
-
-				// skip_referencewidget_lookup: a little cheat
-				// it prevents this widget from falling over itself,
-				// by allowing other JS to request that the "selected" action
-				// is not triggered.
                 skip = $(element).attr("skip_referencewidget_lookup");
                 if (skip !== true){
-					// Pass the entire selected item through to the selected handler
-					$(this).trigger("selected", ui.item);
+                    $(this).trigger("selected", ui.item.UID);
                 }
                 $(element).removeAttr("skip_referencewidget_lookup");
                 $(this).next("input").focus();
@@ -115,11 +101,10 @@ function referencewidget_lookups(elements){
                 // Set value in activated element (must exist in colModel!)
                 $(this).val(ui.item[$(this).attr("ui_item")]);
                 $(this).attr("uid", ui.item.UID);
-				$(uid_element).val(ui.item.UID);
+                $("input[name='"+fieldName+"_uid']").val(ui.item.UID);
                 skip = $(element).attr("skip_referencewidget_lookup");
                 if (skip !== true){
-					// Pass the entire selected item through to the selected handler
-					$(this).trigger("selected", ui.item);
+                    $(this).trigger("selected", ui.item.UID);
                 }
                 $(element).removeAttr("skip_referencewidget_lookup");
                 $(this).next("input").focus();

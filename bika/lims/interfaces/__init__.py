@@ -267,10 +267,7 @@ class IInstrumentTypes(Interface):
 
 
 class IAnalysisSpecs(Interface):
-    ""
 
-
-class IAnalysisProfile(Interface):
     ""
 
 
@@ -280,10 +277,7 @@ class IAnalysisProfile(Interface):
 
 
 class IAnalysisProfiles(Interface):
-    ""
 
-
-class IARTemplate(Interface):
     ""
 
 
@@ -293,6 +287,7 @@ class IARTemplate(Interface):
 
 
 class IARTemplates(Interface):
+
     ""
 
 

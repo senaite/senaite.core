@@ -6,7 +6,7 @@
 		currency python:context.bika_setup.getCurrency();
 		categoryUID python:view.request['categoryUID'];
 		poc python:view.request['poc'];
-		ar_count python:int(view.request.get('ar_count', 1));
+		col_count python:int(view.request.get('col_count', 1));
 		portal context/@@plone_portal_state/portal;
         ShowPrices python:context.bika_setup.getShowPrices();">
 	<tr tal:repeat="service python:view.Services(poc, categoryUID)"
@@ -84,14 +84,14 @@
 		<td class="service" tal:attributes="colspan python:'1' if ShowPrices else '2';">
 			<image
 				class="copyButton"
-				tal:condition="python:ar_count > 1"
+				tal:condition="python:col_count > 1"
 				tal:attributes="
 					id string:${service/UID};
                     name string:${service/Title};
 					src string:${view/portal_url}/++resource++bika.lims.images/copy.png"/>
 		</td>
 		<tal:i define="serviceUID service/UID;serviceTitle service/title">
-			<tal:i repeat="column python:range(int(view.request['ar_count']))">
+			<tal:i repeat="column python:range(int(view.request['col_count']))">
 				<td class='service'
 					tal:define="
 						disable python:int(view.request.get('disable', '-1'));

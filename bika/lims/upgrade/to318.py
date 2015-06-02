@@ -16,7 +16,6 @@ def upgrade(tool):
     logger.info("Upgrading Bika LIMS: %s -> %s" % (ufrom, '318'))
 
     # Updated profile steps
-    setup.runImportStepFromProfile('profile-bika.lims:default', 'jsregistry')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'workflow-csv')
 

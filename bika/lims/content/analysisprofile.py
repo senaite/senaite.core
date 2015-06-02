@@ -10,7 +10,6 @@ from bika.lims.browser.widgets import ServicesWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from Products.Archetypes.public import *
-from bika.lims.interfaces import IAnalysisProfile
 from Products.Archetypes.references import HoldingReference
 from Products.ATExtensions.field import RecordsField
 from Products.CMFCore.permissions import View, ModifyPortalContent
