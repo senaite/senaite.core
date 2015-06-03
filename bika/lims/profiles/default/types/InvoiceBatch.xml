@@ -68,7 +68,7 @@
          condition_expr=""
          icon_expr=""
          link_target=""
-         url_expr="string:invoicebatch_export_csv:method"
+         url_expr="string:${object_url}/invoicebatch_export_csv"
          i18n:attributes="title"
          visible="True">
     <permission value="BIKA: Manage Invoices"/>
