@@ -16,7 +16,6 @@ from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from zope.interface import Interface, implements
 import sys
-from bika.lims.interfaces import IAnalysisProfile
 
 schema = BikaSchema.copy() + Schema((
     StringField('ProfileKey',
@@ -122,7 +121,6 @@ class AnalysisProfile(BaseContent):
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
-    implements(IAnalysisProfile)
 
     _at_rename_after_creation = True
     def _renameAfterCreation(self, check_auto_id=False):

@@ -42,16 +42,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
 
     def __call__(self):
         self.request.set('disable_border', 1)
-        if 'ajax_category_expand' in self.request.keys():
-            cat = self.request.get('cat')
-            asv = AnalysisServicesView(self.context,
-                                        self.request,
-                                        self.request['form_id'],
-                                        category=cat,
-                                        ar_count=self.ar_count)
-            return asv()
-        else:
-            return self.template()
+        return self.template()
 
     def copy_to_new_specs(self):
         specs = {}
