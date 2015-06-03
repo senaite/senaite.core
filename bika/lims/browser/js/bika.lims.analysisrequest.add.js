@@ -199,7 +199,9 @@ function AnalysisRequestAddView() {
 				var form_rr = $.parseJSON($(element).val());
                 // If The Analysis Specification doesn't have results range, the form_rr[column]
                 // should be a void dictionary
-                if (data.objects[0]['ResultsRange'].length == 0) {
+                if (data.objects.length != 1 ||
+                    !('ResultsRange' in data.objects[0]) ||
+                    data.objects[0]['ResultsRange'].length == 0) {
                     form_rr[column] = {};
                 }
                 else {
