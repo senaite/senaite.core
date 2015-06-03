@@ -110,7 +110,7 @@ fi
 # ## (Option) Retrieve the development branch Bika code
 
 #git clone -b dev https://github.com/bikalabs/Bika-LIMS.git src/bika.lims
-git clone -b release/3.1.8 http://github.com/bikalabs/Bika-LIMS.git src/bika.lims
+git clone -b release/3.1.9 http://github.com/bikalabs/Bika-LIMS.git src/bika.lims
 #    Omit the command line switch '-b dev' to use the master branch instead.
 
 # ## Edit Plone/zinstance/buildout.conf and add Bika LIMS.
