@@ -16,9 +16,6 @@
         .nowrap{
             white-space: nowrap;
         }
-        .service_selector td{
-            text-align: left !important;
-        }
         .copybutton {
             cursor: pointer;
         }
