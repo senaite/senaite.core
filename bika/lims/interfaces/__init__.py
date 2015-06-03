@@ -271,7 +271,17 @@ class IAnalysisSpecs(Interface):
     ""
 
 
+class IAnalysisProfile(Interface):
+
+    ""
+
+
 class IAnalysisProfiles(Interface):
+
+    ""
+
+
+class IARTemplate(Interface):
 
     ""
 
