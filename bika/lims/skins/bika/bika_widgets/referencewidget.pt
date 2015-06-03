@@ -72,6 +72,7 @@
                                  resetButton widget/resetButton;
                                  minLength python:widget.minLength;
                                  ui_item widget/ui_item;
+                                 multiValued python:1 if context.Schema()[fieldName].multiValued else 0;
                                  combogrid_options python:widget.get_combogrid_options(context, fieldName)"
                  />
           <input
@@ -99,6 +100,7 @@
                                  resetButton widget/resetButton;
                                  minLength widget/minLength;
                                  ui_item widget/ui_item;
+                                 multiValued python:1 if context.Schema()[fieldName].multiValued else 0;
                                  combogrid_options python:widget.get_combogrid_options(context, fieldName)"
                  />
             <!-- AddButton definition -->
