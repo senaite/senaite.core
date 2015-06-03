@@ -117,11 +117,11 @@
   </action>
 
   <action title="Documents"
-        action_id="multifile"
+        action_id="instrumentmultifile"
         category="object"
         condition_expr=""
         icon_expr="string:${portal_url}/images/instrumentcertification.png"
-        url_expr="string:${object_url}/multifile"
+        url_expr="string:${object_url}/instrumentmultifile"
         i18n:attributes="title"
         visible="True">
     <permission value="Modify portal content"/>
