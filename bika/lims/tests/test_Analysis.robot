@@ -106,7 +106,7 @@ Test Analysis Uncertainty Precision
 Create AnalysisRequests
     [Documentation]     Add and receive 10 ARs at once.
     @{time} =                   Get Time        year month day hour min sec
-    Go to                       ${PLONEURL}/clients/client-2/portal_factory/AnalysisRequest/Request new analyses/ar_add?col_count=11
+    Go to                       ${PLONEURL}/clients/client-2/portal_factory/AnalysisRequest/Request new analyses/ar_add?ar_count=11
     Wait until page contains    Request new analyses
     Select From Dropdown        ar_0_Contact       Johanna Smith
     Select From Dropdown        ar_1_Contact       Johanna Smith

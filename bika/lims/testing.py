@@ -1,6 +1,7 @@
 # Testing layer to provide some of the features of PloneTestCase
 
 from bika.lims.exportimport.load_setup_data import LoadSetupData
+from plone.app.robotframework.testing import REMOTE_LIBRARY_BUNDLE_FIXTURE
 from plone.app.testing import applyProfile
 from plone.app.testing import FunctionalTesting
 from plone.app.testing import login
@@ -9,7 +10,6 @@ from plone.app.testing import PLONE_FIXTURE
 from plone.app.testing import PloneSandboxLayer
 from plone.app.testing import SITE_OWNER_NAME
 from plone.testing import z2
-from plone.app.robotframework.testing import AUTOLOGIN_LIBRARY_FIXTURE
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.setuphandlers import setupPortalContent
 from Testing.makerequest import makerequest
@@ -152,7 +152,9 @@ BIKA_FUNCTIONAL_TESTING = FunctionalTesting(
 )
 
 BIKA_ROBOT_TESTING = FunctionalTesting(
-    bases=(BIKA_FUNCTIONAL_FIXTURE, z2.ZSERVER_FIXTURE),
+    bases=(BIKA_FUNCTIONAL_FIXTURE,
+           REMOTE_LIBRARY_BUNDLE_FIXTURE,
+           z2.ZSERVER_FIXTURE),
     name="BikaTestingLayer:Robot"
 )
 

@@ -144,7 +144,7 @@ class WorkflowAction:
 
         url = self.context.absolute_url() + "/portal_factory/" + \
               "AnalysisRequest/Request new analyses/ar_add" + \
-              "?col_count={0}".format(len(objects)) + \
+              "?ar_count={0}".format(len(objects)) + \
               "&copy_from={0}".format(",".join(objects.keys()))
         self.request.response.redirect(url)
         return

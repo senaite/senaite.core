@@ -15,6 +15,7 @@ LIMS-1772: Instrument. VetScan VS2
 LIMS-1507: Bika must notify why is not possible to publish an AR
 LIMS-1805: Instrument Interface. Horiba JY ICP
 LIMS-1710: UnicodeEncode error while creating an Invoice from AR view
+LIMS-1811: Refactor AR Add form Javascript, and related code.
 LIMS-1812: Use asynchronous requests for expanding categories in listings
 WINE-44: Sample stickers uses Partition ID only if ShowPartitions option is enabled
 LIMS-1634: AR Import fields (ClientRef, ClientSid) not importing correctly
