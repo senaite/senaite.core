@@ -43,9 +43,6 @@ def upgrade(tool):
     # Migrations
     HEALTH245(portal)
 
-    qi = portal.portal_quickinstaller
-    setup.setLastVersionForProfile("profile-bika.lims:default", "3.1.8")
-
     return True
 
 def HEALTH245(portal):
@@ -54,4 +51,4 @@ def HEALTH245(portal):
         now by default
     """
     for p in portal.bika_setup.getPrefixes():
-        p['separator']='-' if not p['separator'] else p['separator']
+        p['separator']='-' if (not p.get('separator', None)) else p['separator']
