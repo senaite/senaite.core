@@ -22,11 +22,12 @@
     <element value="InstrumentValidation"/>
     <element value="Analysis"/>
     <element value="ReferenceAnalysis"/>
+    <element value="Multifile"/>
  </property>
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>
 
- <alias from="(Default)" to="referenceanalyses"/>
+ <alias from="(Default)" to="base_view"/>
  <alias from="view" to="base_view"/>
  <alias from="edit" to="base_edit"/>
 
@@ -37,7 +38,7 @@
          url_expr="string:${object_url}"
          i18n:attributes="title"
          i18n:domain="plone"
-         visible="False">
+         visible="True">
   <permission value="View"/>
  </action>
 
@@ -83,37 +84,26 @@
  </action>
 
  <action title="Validations"
-        action_id="validation"
+        action_id="validations"
         category="object"
         condition_expr=""
         icon_expr="string:${portal_url}/images/instrumentvalidation.png"
         url_expr="string:${object_url}/validations"
         i18n:attributes="title"
-        visible="False">
+        visible="True">
     <permission value="Modify portal content"/>
  </action>
 
  <action title="Calibrations"
-        action_id="calibration"
+        action_id="calibrations"
         category="object"
         condition_expr=""
         icon_expr="string:${portal_url}/images/instrumentcalibration.png"
         url_expr="string:${object_url}/calibrations"
         i18n:attributes="title"
-        visible="False">
+        visible="True">
     <permission value="Modify portal content"/>
  </action>
-
-  <action title="Validations"
-        action_id="validation"
-        category="object"
-        condition_expr=""
-        icon_expr="string:${portal_url}/images/instrumentvalidation.png"
-        url_expr="string:${object_url}/validations"
-        i18n:attributes="title"
-        visible="False">
-    <permission value="Modify portal content"/>
-  </action>
 
   <action title="Schedule"
         action_id="schedule"
@@ -125,4 +115,15 @@
         visible="False">
     <permission value="Modify portal content"/>
   </action>
+
+  <action title="Documents"
+        action_id="multifile"
+        category="object"
+        condition_expr=""
+        icon_expr="string:${portal_url}/images/instrumentcertification.png"
+        url_expr="string:${object_url}/multifile"
+        i18n:attributes="title"
+        visible="True">
+    <permission value="Modify portal content"/>
+ </action>
 </object>

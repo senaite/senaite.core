@@ -1,4 +1,0 @@
-<td class="currency">
-	<span tal:content="python:view.getPreferredCurrencyAbreviattion()">R</span>
-	<span tal:content="options/value"></span>
-</td>

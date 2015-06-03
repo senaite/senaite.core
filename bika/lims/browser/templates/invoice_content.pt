@@ -48,14 +48,26 @@
 
 <table class="invoice-items" summary="Analyses List">
 	<thead>
-		<tr>
+		<tr class="header-invoice-summary">
 			<th i18n:translate="">Date</th>
-			<th class="text" i18n:translate="">Description</th>
+            <th class="text" i18n:translate="">Description</th>
 			<th i18n:translate="">Order #</th>
 			<th class="currency" i18n:translate="">Amount</th>
 			<th class="currency" i18n:translate="">VAT</th>
 			<th class="currency" i18n:translate="">Amount incl. VAT</th>
 		</tr>
+        <tr class="header-bottom-total">
+            <td colspan="3"></td>
+            <td class="currency">
+                <span tal:content="view/currency">R</span>
+            </td>
+            <td class="currency">
+                <span tal:content="view/currency">R</span>
+            </td>
+            <td class="currency">
+                <span tal:content="view/currency">R</span>
+            </td>
+        </tr>
 	</thead>
 	<tbody>
 		<tal:items repeat="item view/items">
@@ -65,15 +77,12 @@
 					<td class="text" tal:content="item/description"></td>
 					<td tal:content="item/orderNo"></td>
 					<td>
-						<span tal:content="view/currency">R</span>
 						<span tal:content="item/subtotal">0.00</span>
 					</td>
 					<td>
-						<span tal:content="view/currency">R</span>
 						<span tal:content="item/VATAmount">0.00</span>
 					</td>
 					<td>
-						<span tal:content="view/currency">R</span>
 						<span tal:content="item/total">0.00</span>
 					</td>
 				</tr>

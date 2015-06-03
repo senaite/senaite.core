@@ -1,7 +1,7 @@
 import os
 from setuptools import setup, find_packages
 
-version = '3.1.7'
+version = '3.1.8'
 
 
 def read(*rnames):
@@ -59,6 +59,7 @@ setup(name='bika.lims',
           'collective.wtf',
           'WeasyPrint==0.19.2',
           'collective.progressbar',
+          'z3c.unconfigure==1.0.1',
       ],
       extras_require={
           'test': [

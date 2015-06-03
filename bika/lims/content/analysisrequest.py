@@ -1220,7 +1220,10 @@ schema = BikaSchema.copy() + Schema((
             showOn=True,
         ),
     ),
+
     # For comments or results interpretation
+    # Old one, to be removed because of the incorporation of
+    # ResultsInterpretationDepts (due to LIMS-1628)
     TextField(
         'ResultsInterpretation',
         searchable=True,
@@ -1238,24 +1241,24 @@ schema = BikaSchema.copy() + Schema((
             default_mime_type='text/x-rst',
             output_mime_type='text/x-html',
             rows=3,
-            visible={'edit': 'visible',
-                     'view': 'visible',
-                     'add': 'invisible',
-                     'header_table': 'prominent',
-                     'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'invisible'},
-                     'to_be_sampled':     {'view': 'visible', 'edit': 'visible'},
-                     'sampled':           {'view': 'visible', 'edit': 'visible'},
-                     'to_be_preserved':   {'view': 'visible', 'edit': 'visible'},
-                     'sample_due':        {'view': 'visible', 'edit': 'visible'},
-                     'sample_received':   {'view': 'visible', 'edit': 'visible'},
-                     'attachment_due':    {'view': 'visible', 'edit': 'visible'},
-                     'to_be_verified':    {'view': 'visible', 'edit': 'visible'},
-                     'verified':          {'view': 'visible', 'edit': 'visible'},
-                     'published':         {'view': 'visible', 'edit': 'invisible'},
-                     'invalid':           {'view': 'visible', 'edit': 'invisible'},
-                     },
-                render_own_label=True,
-        ),
+            visible=False),
+    ),
+    RecordsField('ResultsInterpretationDepts',
+        subfields = ('uid',
+                     'richtext'),
+        subfield_labels = {'uid': _('Department'),
+                           'richtext': _('Results Interpreation'),},
+        widget = RichWidget(visible=False),
+    ),
+    # Custom settings for the assigned analysis services
+    # https://jira.bikalabs.com/browse/LIMS-1324
+    # Fields:
+    #   - uid: Analysis Service UID
+    #   - hidden: True/False. Hide/Display in results reports
+    RecordsField('AnalysisServicesSettings',
+         required=0,
+         subfields=('uid', 'hidden',),
+         widget=ComputedWidget(visible=False),
     ),
 )
 )
@@ -1275,6 +1278,7 @@ schema['title'].widget.visible = {
 
 schema.moveField('Client', before='Contact')
 schema.moveField('ResultsInterpretation', pos='bottom')
+schema.moveField('ResultsInterpretationDepts', pos='bottom')
 
 class AnalysisRequest(BaseFolder):
     implements(IAnalysisRequest)
@@ -1422,6 +1426,7 @@ class AnalysisRequest(BaseFolder):
                 managers[manager_id]['name'] = safe_unicode(manager.getFullname())
                 managers[manager_id]['email'] = safe_unicode(manager.getEmailAddress())
                 managers[manager_id]['phone'] = safe_unicode(manager.getBusinessPhone())
+                managers[manager_id]['job_title'] = safe_unicode(manager.getJobTitle())
                 if manager.getSignature():
                     managers[manager_id]['signature'] = '%s/Signature' % manager.absolute_url()
                 else:
@@ -2007,6 +2012,85 @@ class AnalysisRequest(BaseFolder):
 
     def getSamplers(self):
         return getUsers(self, ['LabManager', 'Sampler'])
+
+    def getDepartments(self):
+        """ Returns a set with the departments assigned to the Analyses
+            from this Analysis Request
+        """
+        ans = [an.getObject() for an in self.getAnalyses()]
+        depts = [an.getService().getDepartment() for an in ans if an.getService().getDepartment()]
+        return set(depts)
+
+    def getResultsInterpretationByDepartment(self, department=None):
+        """ Returns the results interpretation for this Analysis Request
+            and department. If department not set, returns the results
+            interpretation tagged as 'General'.
+
+            Returns a dict with the following keys:
+            {'uid': <department_uid> or 'general',
+             'richtext': <text/plain>}
+        """
+        uid = department.UID() if department else 'general'
+        rows = self.Schema()['ResultsInterpretationDepts'].get(self)
+        row = [row for row in rows if row.get('uid') == uid]
+        if len(row) > 0:
+            row = row[0]
+        elif uid=='general' \
+            and hasattr(self, 'getResultsInterpretation') \
+            and self.getResultsInterpretation():
+            row = {'uid': uid, 'richtext': self.getResultsInterpretation()}
+        else:
+            row = {'uid': uid, 'richtext': ''};
+        return row
+
+    def getAnalysisServiceSettings(self, uid):
+        """ Returns a dictionary with the settings for the analysis
+            service that match with the uid provided.
+            If there are no settings for the analysis service and
+            analysis requests:
+            1. looks for settings in AR's ARTemplate. If found, returns
+                the settings for the AnalysisService set in the Template
+            2. If no settings found, looks in AR's ARProfile. If found,
+                returns the settings for the AnalysisService from the
+                AR Profile. Otherwise, returns a one entry dictionary
+                with only the key 'uid'
+        """
+        sets = [s for s in self.getAnalysisServicesSettings() \
+                if s.get('uid','') == uid]
+
+        # Created by using an ARTemplate?
+        if not sets and self.getTemplate():
+            adv = self.getTemplate().getAnalysisServiceSettings(uid)
+            sets = [adv] if 'hidden' in adv else []
+
+        # Created by using an AR Profile?
+        if not sets and self.getProfile():
+            adv = self.getProfile().getAnalysisServiceSettings(uid)
+            sets = [adv] if 'hidden' in adv else []
+
+        return sets[0] if sets else {'uid': uid}
+
+    def isAnalysisServiceHidden(self, uid):
+        """ Checks if the analysis service that match with the uid
+            provided must be hidden in results.
+            If no hidden assignment has been set for the analysis in
+            this request, returns the visibility set to the analysis
+            itself.
+            Raise a TypeError if the uid is empty or None
+            Raise a ValueError if there is no hidden assignment in this
+                request or no analysis service found for this uid.
+        """
+        if not uid:
+            raise TypeError('None type or empty uid')
+        sets = self.getAnalysisServiceSettings(uid)
+        if 'hidden' not in sets:
+            uc = getToolByName(self, 'uid_catalog')
+            serv = uc(UID=uid)
+            if serv and len(serv) == 1:
+                return serv[0].getObject().getRawHidden()
+            else:
+                raise ValueError('%s is not valid' % uid)
+        return sets.get('hidden', False)
 
     def guard_unassign_transition(self):
         """Allow or disallow transition depending on our children's states

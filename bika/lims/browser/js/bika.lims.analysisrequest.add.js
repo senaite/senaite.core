@@ -199,7 +199,9 @@ function AnalysisRequestAddView() {
 				var form_rr = $.parseJSON($(element).val());
                 // If The Analysis Specification doesn't have results range, the form_rr[column]
                 // should be a void dictionary
-                if (data.objects[0]['ResultsRange'].length == 0) {
+                if (data.objects.length != 1 ||
+                    !('ResultsRange' in data.objects[0]) ||
+                    data.objects[0]['ResultsRange'].length == 0) {
                     form_rr[column] = {};
                 }
                 else {
@@ -305,12 +307,16 @@ function AnalysisRequestAddView() {
 					var title = cc_titles[i];
 					var uid = cc_uids[i];
 					var del_btn_src = window.portal_url+"/++resource++bika.lims.images/delete.png";
-					var del_btn = "<img class='ar_deletebtn' src='"+del_btn_src+"' fieldName='"+fieldName+"' uid='"+uid+"'/>";
+					var del_btn = "<img class='ar_deletebtn' src='"+del_btn_src+"' fieldName='"+fieldName+"' uid='"+uid+"' onclick='customremove("+uid+")'/>";
 					var new_item = "<div class='reference_multi_item' uid='"+uid+"'>"+del_btn+title+"</div>";
 					$("#ar_"+column+"_CCContact-listing").append($(new_item));
 				}
 			});
 		}
+	}
+	function customremove(uid) {
+	    $('div[uid="'+uid+'"]').remove();
+		$('img[uid="'+uid+'"]').remove();
 	}
 
 	function modify_Specification_field_filter(column) {
@@ -614,10 +620,12 @@ function AnalysisRequestAddView() {
 	function add_path_filter_to_spec_lookups(){
 		for (var col=0; col<parseInt($("#col_count").val(), 10); col++) {
 			var element = $("#ar_"+col+"_Specification");
-			var bq = $.parseJSON($(element).attr("base_query"));
-			bq.path = [$("#bika_setup").attr("bika_analysisspecs_path"),
-					   $("#PhysicalPath").attr("here")];
-			$(element).attr("base_query", $.toJSON(bq));
+            if (element.length > 0) {
+                var bq = $.parseJSON($(element).attr("base_query"));
+                bq.path = [$("#bika_setup").attr("bika_analysisspecs_path"),
+                    $("#PhysicalPath").attr("here")];
+                $(element).attr("base_query", $.toJSON(bq));
+            }
 		}
 	}
 
@@ -635,7 +643,7 @@ function AnalysisRequestAddView() {
 		for (var i = inputs.length - 1; i >= 0; i--) {
 			var element = inputs[i];
 			var options = $.parseJSON($(element).attr("combogrid_options"));
-			if(options === "" || options === undefined){
+			if(options === "" || options === undefined || options == null){
 				continue;
 			}
 			options.select = ar_referencewidget_select_handler;

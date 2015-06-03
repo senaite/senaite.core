@@ -127,9 +127,11 @@ function InstrumentReferenceAnalysesView() {
      * Updates the QC Samples picklist
      */
     function updateQCSamples(qcsamples) {
+        var presel = $('#selqcsample').val();
         $('#selqcsample option').remove();
         $.map(qcsamples, function(v, k) {
-            $('#selqcsample').append('<option value="'+k+'">'+k+'</option>');
+            var selected = k==presel ? ' selected' : '';
+            $('#selqcsample').append('<option value="'+k+'"'+selected+'>'+k+'</option>');
         });
     }
 

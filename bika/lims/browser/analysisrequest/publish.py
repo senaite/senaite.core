@@ -8,6 +8,7 @@ from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IResultOutOfRange
 from bika.lims.utils import to_utf8, encode_header, createPdf, attachPdf
+from bika.lims.utils import isnumber
 from DateTime import DateTime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -21,6 +22,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone.resource.utils import iterDirectoriesOfType, queryResourceDirectory
 from zope.component import getAdapters
 import glob, os, sys, traceback
+import urllib2
 import App
 import Globals
 
@@ -30,6 +32,7 @@ class AnalysisRequestPublishView(BrowserView):
     _current_ar_index = 0
     _DEFAULT_TEMPLATE = 'default.pt'
     _publish = False
+    _images = {}
 
     def __init__(self, context, request, publish=False):
         super(AnalysisRequestPublishView, self).__init__(context, request)
@@ -113,7 +116,7 @@ class AnalysisRequestPublishView(BrowserView):
             specified in the request ('template' parameter)
         """
         templates_dir = 'templates/reports'
-        embedt = self.request.get('template', self._DEFAULT_TEMPLATE)
+        embedt = self.request.form.get('template', self._DEFAULT_TEMPLATE)
         if embedt.find(':') >= 0:
             prefix, template = embedt.split(':')
             templates_dir = queryResourceDirectory('reports', prefix).directory
@@ -135,7 +138,7 @@ class AnalysisRequestPublishView(BrowserView):
             return the content from 'default.css'. If no css file found
             for the current template, returns empty string
         """
-        template = self.request.get('template', self._DEFAULT_TEMPLATE)
+        template = self.request.form.get('template', self._DEFAULT_TEMPLATE)
         content = ''
         if template.find(':') >= 0:
             prefix, template = template.split(':')
@@ -154,7 +157,12 @@ class AnalysisRequestPublishView(BrowserView):
     def isQCAnalysesVisible(self):
         """ Returns if the QC Analyses must be displayed
         """
-        return self.request.get('qcvisible', '0').lower() in ['true', '1']
+        return self.request.form.get('qcvisible', '0').lower() in ['true', '1']
+
+    def isHiddenAnalysesVisible(self):
+        """ Returns true if hidden analyses are visible
+        """
+        return self.request.form.get('hvisible', '0').lower() in ['true', '1']
 
     def _ar_data(self, ar, excludearuids=[]):
         """ Creates an ar dict, accessible from the view and from each
@@ -217,6 +225,7 @@ class AnalysisRequestPublishView(BrowserView):
 
         # Categorize analyses
         data['categorized_analyses'] = {}
+        data['department_analyses'] = {}
         for an in data['analyses']:
             poc = an['point_of_capture']
             cat = an['category']
@@ -225,6 +234,19 @@ class AnalysisRequestPublishView(BrowserView):
             catlist.append(an)
             pocdict[cat] = catlist
             data['categorized_analyses'][poc] = pocdict
+
+            # Group by department too
+            anobj = an['obj']
+            dept = anobj.getService().getDepartment() if anobj.getService() else None
+            if dept:
+                dept = dept.UID()
+                dep = data['department_analyses'].get(dept, {})
+                dep_pocdict = dep.get(poc, {})
+                dep_catlist = dep_pocdict.get(cat, [])
+                dep_catlist.append(an)
+                dep_pocdict[cat] = dep_catlist
+                dep[poc] = dep_pocdict
+                data['department_analyses'][dept] = dep
 
         # Categorize qcanalyses
         data['categorized_qcanalyses'] = {}
@@ -247,6 +269,15 @@ class AnalysisRequestPublishView(BrowserView):
         data['portal'] = {'obj': portal,
                           'url': portal.absolute_url()}
         data['laboratory'] = self._lab_data()
+
+        #results interpretation
+        ri = {}
+        if (ar.getResultsInterpretationByDepartment(None)):
+            ri[''] = ar.getResultsInterpretationByDepartment(None)
+        depts = ar.getDepartments()
+        for dept in depts:
+            ri[dept.Title()] = ar.getResultsInterpretationByDepartment(dept)
+        data['resultsinterpretationdepts'] = ri
 
         return data
 
@@ -278,7 +309,7 @@ class AnalysisRequestPublishView(BrowserView):
                     'client_sampleid': sample.getClientSampleID(),
                     'date_sampled': sample.getDateSampled(),
                     'sampling_date': sample.getSamplingDate(),
-                    'sampler': sample.getSampler(),
+                    'sampler': self._sampler_data(sample),
                     'date_received': sample.getDateReceived(),
                     'composite': sample.getComposite(),
                     'date_expired': sample.getDateExpired(),
@@ -289,6 +320,36 @@ class AnalysisRequestPublishView(BrowserView):
 
             data['sample_type'] = self._sample_type(sample)
             data['sample_point'] = self._sample_point(sample)
+        return data
+
+    def _sampler_data(self, sample=None):
+        data = {}
+        if not sample or not sample.getSampler():
+            return data
+        sampler = sample.getSampler()
+        mtool = getToolByName(self, 'portal_membership')
+        member = mtool.getMemberById(sampler)
+        if member:
+            mfullname = member.getProperty('fullname')
+            memail = member.getProperty('email')
+            mhomepage = member.getProperty('home_page')
+            pc = getToolByName(self, 'portal_catalog')
+            c = pc(portal_type='Contact', getUsername=member.id)
+            c = c[0].getObject() if c else None
+            cfullname = c.getFullname() if c else None
+            cemail = c.getEmailAddress() if c else None
+            data = {'id': member.id,
+                    'fullname': to_utf8(cfullname) if cfullname else to_utf8(mfullname),
+                    'email': cemail if cemail else memail,
+                    'business_phone': c.getBusinessPhone() if c else '',
+                    'business_fax': c.getBusinessFax() if c else '',
+                    'home_phone': c.getHomePhone() if c else '',
+                    'mobile_phone': c.getMobilePhone() if c else '',
+                    'job_title': to_utf8(c.getJobTitle()) if c else '',
+                    'department': to_utf8(c.getDepartment()) if c else '',
+                    'physical_address': to_utf8(c.getPhysicalAddress()) if c else '',
+                    'postal_address': to_utf8(c.getPostalAddress()) if c else '',
+                    'home_page': to_utf8(mhomepage)}
         return data
 
     def _sample_type(self, sample=None):
@@ -395,8 +456,17 @@ class AnalysisRequestPublishView(BrowserView):
         dm = ar.aq_parent.getDecimalMark()
         batch = ar.getBatch()
         workflow = getToolByName(self.context, 'portal_workflow')
+        showhidden = self.isHiddenAnalysesVisible()
         for an in ar.getAnalyses(full_objects=True,
                                  review_state=analysis_states):
+
+            # Omit hidden analyses?
+            if not showhidden:
+                serv = an.getService()
+                asets = ar.getAnalysisServiceSettings(serv.UID())
+                if asets.get('hidden'):
+                    # Hide analysis
+                    continue
 
             # Build the analysis-specific dict
             andict = self._analysis_data(an, dm)
@@ -435,6 +505,7 @@ class AnalysisRequestPublishView(BrowserView):
                   'point_of_capture': to_utf8(POINTS_OF_CAPTURE.getValue(service.getPointOfCapture())),
                   'category': to_utf8(service.getCategoryTitle()),
                   'result': analysis.getResult(),
+                  'isnumber': isnumber(analysis.getResult()),
                   'unit': to_utf8(service.getUnit()),
                   'formatted_unit': format_supsub(to_utf8(service.getUnit())),
                   'capture_date': analysis.getResultCaptureDate(),
@@ -569,6 +640,22 @@ class AnalysisRequestPublishView(BrowserView):
 
         return managers
 
+
+    def renderImage(self, attachment):
+        af = attachment.getAttachmentFile()
+        filename = af.filename
+        fileurl = attachment.absolute_url() + "/at_download/AttachmentFile"
+        # WeasyPrint default's URL fetcher seems that doesn't support urls
+        # like at_download/AttachmentFile (without mime, header, etc.).
+        # Need to copy the image to the temp file and replace occurences
+        # in the HTML report later
+        outfilename = Globals.INSTANCE_HOME + '/var/' + filename
+        outfile = open(outfilename, 'wb')
+        outfile.write(str(af.data))
+        outfile.close()
+        self._images[fileurl] = "file://"+outfilename
+        return attachment.absolute_url() + "/at_download/AttachmentFile"
+
     def publishFromPOST(self):
         html = self.request.form.get('html')
         style = self.request.form.get('style')
@@ -604,7 +691,7 @@ class AnalysisRequestPublishView(BrowserView):
 
         # Create the pdf report (will always be attached to the AR)
         pdf_outfile = join(out_path, out_fn + ".pdf") if out_path else None
-        pdf_report = createPdf(results_html, pdf_outfile)
+        pdf_report = createPdf(htmlreport=results_html, outfile=pdf_outfile, images=self._images)
 
         recipients = []
         contact = ar.getContact()
@@ -668,9 +755,7 @@ class AnalysisRequestPublishView(BrowserView):
                     host = getToolByName(ar, 'MailHost')
                     host.send(mime_msg.as_string(), immediate=True)
                 except SMTPServerDisconnected as msg:
-                    pass
-                    if not debug_mode:
-                        raise SMTPServerDisconnected(msg)
+                    logger.warn("SMTPServerDisconnected: %s." % msg)
                 except SMTPRecipientsRefused as msg:
                     raise WorkflowException(str(msg))
 
@@ -708,8 +793,7 @@ class AnalysisRequestPublishView(BrowserView):
                 host = getToolByName(ar, 'MailHost')
                 host.send(mime_msg.as_string(), immediate=True)
             except SMTPServerDisconnected as msg:
-                if not debug_mode:
-                    raise SMTPServerDisconnected(msg)
+                logger.warn("SMTPServerDisconnected: %s." % msg)
             except SMTPRecipientsRefused as msg:
                 raise WorkflowException(str(msg))
 

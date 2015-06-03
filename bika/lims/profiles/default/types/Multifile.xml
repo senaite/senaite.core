@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<object name="Multifiles"
+        meta_type="Factory-based Type Information with dynamic views"
+        i18n:domain="bika.lims" xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+    <property name="title" i18n:translate="">Multifile</property>
+    <property name="description"
+              i18n:translate="">A contenttype to update files</property>
+    <property name="content_icon">++resource++bika.lims.images/instrumentcertification.png</property>
+    <property name="content_meta_type">Multifile</property>
+    <!--property name="content_icon">document_icon.gif</property-->
+    <property name="product">bika.lims</property>
+    <property name="factory">addMultifile</property>
+    <property name="global_allow">True</property>
+    <property name="filter_content_types">True</property>
+    <property name="allow_discussion">True</property>
+    <property name="default_view_fallback">False</property>
+
+    <alias from="(Default)" to="base_view" />
+    <alias from="edit" to="base_edit" />
+    <alias from="view" to="base_view" />
+
+    <!-- The <action> elements register type-specific actions for the content-type. The object category makes the
+    render as tabs in the Plone UI. -->
+    <action title="View"
+            action_id="view"
+            category="object"
+            condition_expr=""
+            url_expr="string:${object_url}/base_view"
+            visible="True">
+        <permission value="View" />
+    </action>
+
+    <action title="Edit"
+            action_id="edit"
+            category="object"
+            condition_expr=""
+            url_expr="string:${object_url}/base_edit"
+            visible="True">
+        <permission value="Modify portal content" />
+    </action>
+
+</object>

@@ -34,6 +34,7 @@ class AnalysisProfileAnalysesView(BikaListingView):
         self.pagesize = 0
         self.allow_edit = allow_edit
         self.form_id = "analyses"
+        self.profile = None
 
         self.columns = {
             'Title': {'title': _('Service'),
@@ -56,6 +57,17 @@ class AnalysisProfileAnalysesView(BikaListingView):
 
         self.fieldvalue = fieldvalue
         self.selected = [x.UID() for x in fieldvalue]
+
+        if self.aq_parent.portal_type == 'AnalysisProfile':
+            # Custom settings for the Analysis Services assigned to
+            # the Analysis Profile
+            # https://jira.bikalabs.com/browse/LIMS-1324
+            self.profile = self.aq_parent
+            self.columns['Hidden'] = {'title': _('Hidden'),
+                                      'sortable': False,
+                                      'type': 'boolean'}
+            self.review_states[0]['columns'].insert(1, 'Hidden')
+
 
     def folderitems(self):
         self.categories = []
@@ -116,6 +128,13 @@ class AnalysisProfileAnalysesView(BikaListingView):
                               _('Attachment not permitted'))
             if after_icons:
                 items[x]['after']['Title'] = after_icons
+
+            if self.profile:
+                # Display analyses for this Analysis Service in results?
+                ser = self.profile.getAnalysisServiceSettings(obj.UID())
+                items[x]['allow_edit'] = ['Hidden', ]
+                items[x]['Hidden'] = ser.get('hidden', obj.getHidden())
+
         self.categories.sort()
         return items
 
@@ -138,6 +157,18 @@ class AnalysisProfileAnalysesWidget(TypesWidget):
         bsc = getToolByName(instance, 'bika_setup_catalog')
         value = []
         service_uids = form.get('uids', None)
+
+        if instance.portal_type == 'AnalysisProfile':
+            # Hidden analyses?
+            outs = []
+            hiddenans = form.get('Hidden', {})
+            if service_uids:
+                for uid in service_uids:
+                    hidden = hiddenans.get(uid, '')
+                    hidden = True if hidden == 'on' else False
+                    outs.append({'uid':uid, 'hidden':hidden})
+            instance.setAnalysisServicesSettings(outs)
+
         return service_uids, {}
 
     security.declarePublic('Analyses')

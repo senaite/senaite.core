@@ -4,6 +4,7 @@ Library          Selenium2Library  timeout=5  implicit_wait=0.2
 Library          String
 Resource         keywords.txt
 Library          bika.lims.testing.Keywords
+Library          DebugLibrary
 Resource         plone/app/robotframework/selenium.robot
 Resource         plone/app/robotframework/saucelabs.robot
 Variables        plone/app/testing/interfaces.py
@@ -18,7 +19,8 @@ Suite Teardown   Close All Browsers
 Test Batch-AR
     Log in  test_labmanager  test_labmanager
 
-    Add Batch
+    Set up Auto print stickers
+    Add Batch  batch-1
     Batch state should be  open
     Add AR
     Receive AR  AP-0001-R01
@@ -94,14 +96,36 @@ Test batch inherited ARs
     click button                        Save
     go to                               ${PLONEURL}/batches/B-002/batchbook
 
+Test Batch with sequence_start in Bika Setup
+    Log in                       test_labmanager         test_labmanager
+    Add Batch                    batch-1
+    Go to                        http://localhost:55001/plone/batches
+    Page Should Contain          B-001
+    Add Batch                    batch-2
+    Go to                        http://localhost:55001/plone/batches
+    Page Should Contain          B-002
+    Set sequence start           45
+    Add Batch                    batch-3
+    Go to                        http://localhost:55001/plone/batches
+    Page Should Contain          B-045
+    Add Batch                    batch-4
+    Go to                        http://localhost:55001/plone/batches
+    Page Should Contain          B-046
+    Set sequence start           22
+    Add Batch                    batch-5
+    Go to                        http://localhost:55001/plone/batches
+    Page Should Contain          B-047
+
 
 *** Keywords ***
 
 Add Batch
+    [Arguments]   ${batch_title}
     Go to                        http://localhost:55001/plone/batches
     Wait until page contains     Add
     Click Link                   Add
     Wait until page contains     Add Batch
+    Input text                   title  ${batch_title}
     Input text                   description  Just a regular batch
     Select from dropdown         Client     Happy
     SelectDate                   BatchDate       1
@@ -129,7 +153,7 @@ Add AR
 
 Receive AR
     [Arguments]   ${ar_id}
-    Go to                        http://localhost:55001/plone/batches/B-001/analysisrequests
+    Go to                            http://localhost:55001/plone/batches/B-001/analysisrequests
     Wait until page contains     ${ar_id}
     Select checkbox              xpath=//input[@item_title="${ar_id}"]
     Click button                 xpath=//input[@id="receive_transition"]
@@ -146,7 +170,7 @@ Submit AR
     Input text                   xpath=//tr[@keyword='TVBcnt']//input[@type='text']      10
     Press Key                    xpath=//tr[@keyword='TVBcnt']//input[@type='text']      \t
     focus                        css=#content-core
-    Click button                 xpath=//input[@value="Submit for verification"]
+    Click button                 xpath=//input[@id="submit_transition"]
     Wait until page contains     saved
 
 Retract AR
@@ -154,14 +178,14 @@ Retract AR
     Go to                               http://localhost:55001/plone/batches/B-001/analysisrequests
     Wait until page contains            ${ar_id}
     Select checkbox                     xpath=//input[@item_title="${ar_id}"]
-    Click button                        xpath=//input[@value="Retract"]
+    Click button                        xpath=//input[@id="retract_transition"]
     Wait until page contains element    xpath=//input[@selector="state_title_AP-0001-R01" and @value="Received"]
     Go to                               http://localhost:55001/plone/batches/B-001/analysisrequests
     Wait until page contains            Add new
     Click link                          ${ar_id}
     Wait until page contains            Results not requested
     Select Checkbox                     ar_manage_results_lab_select_all
-    Click button                        xpath=//input[@value="Retract"]
+    Click button                        xpath=//input[@id="retract_transition"]
     Wait Until Page Contains            Changes saved
 
 Verify AR
@@ -169,5 +193,19 @@ Verify AR
     Go to                        http://localhost:55001/plone/batches/B-001/analysisrequests
     Wait until page contains     ${ar_id}
     Select checkbox              xpath=//input[@item_title="${ar_id}"]
-    Click button                 xpath=//input[@value="Verify"]
+    Click button                 xpath=//input[@id="verify_transition"]
     Wait until page contains     saved
+
+Set up Auto print stickers
+    Go to                               ${PLONEURL}/bika_setup/edit
+    Click link                          Stickers
+    Select From List By Value           AutoPrintStickers   None
+    Click Button                        Save
+
+Set sequence start
+    [Arguments]   ${sequence_start}
+    Go to                               http://localhost:55001/plone/bika_setup/edit
+    Click link                          Id server
+    Input text                          xpath=//input[@id='Prefixes-sequence_start-2']   ${sequence_start}
+    Click Button                        Save
+    Wait Until Page Contains            Changes saved

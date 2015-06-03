@@ -11,10 +11,22 @@ from bika.lims.config import PROJECTNAME
 import sys
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
+from bika.lims.interfaces import IMethod
 from bika.lims.utils import to_utf8
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
+    # Method ID should be unique, specified on MethodSchemaModifier
+    StringField('MethodID',
+        searchable=1,
+        required=0,
+        validators=('uniquefieldvalidator',),
+        widget=StringWidget(
+            visible={'view': 'visible', 'edit': 'visible'},
+            label=_('Method ID'),
+            description=_('Define an identifier code for the method. It must be unique.'),
+        ),
+    ),
     TextField('Instructions',
         default_content_type = 'text/plain',
         allowed_content_types= ('text/plain', ),
@@ -99,6 +111,13 @@ schema = BikaSchema.copy() + Schema((
             base_query={'inactive_state': 'active'},
         )
     ),
+    BooleanField('Accredited',
+        schemata="default",
+        default=True,
+        widget=BooleanWidget(
+            label=_("Accredited"),
+            description=_("Check if the method has been accredited"))
+    ),
 ))
 
 schema['description'].schemata = 'default'
@@ -107,6 +126,7 @@ schema['description'].widget.label = _("Description")
 schema['description'].widget.description = _("Describes the method in layman terms. This information is made available to lab clients")
 
 class Method(BaseFolder):
+    implements(IMethod)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

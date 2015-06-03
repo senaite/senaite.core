@@ -54,7 +54,105 @@ function CalculationUtils() {
             // collect all form results into a hash (by analysis UID)
             var results = {};
             $.each($("td:not(.state-retracted) input[field='Result'], td:not(.state-retracted) select[field='Result']"), function(i, e){
-                results[$(e).attr("uid")] = $(e).val();
+                var tr = $(e).closest('tr');
+                var result = $(e).val().trim();
+
+                /**
+                 * LIMS-1769. Allow to use LDL and UDL in calculations.
+                 * https://jira.bikalabs.com/browse/LIMS-1769
+                 *
+                 * LIMS-1775. Allow to select LDL or UDL defaults in
+                 * results with readonly mode
+                 * https://jira.bikalabs.com/browse/LIMS-1775
+                 */
+                var defandls = {
+                                default_ldl: 0,
+                                default_udl: 100000,
+                                dlselect_allowed:  false,
+                                manual_allowed: false,
+                                is_ldl: false,
+                                is_udl: false,
+                                below_ldl: false,
+                                above_udl: false
+                            };
+                var andls = $(tr).find('input[id^="AnalysisDLS."]');
+                andls = andls.length > 0 ? andls.first().val() : null;
+                andls = andls != null ? $.parseJSON(andls) : defandls;
+                var dlop = $(tr).find('select[name^="DetectionLimit."]');
+                if (dlop.length > 0) {
+                    // If the analysis is under edition, give priority to
+                    // the current values instead of AnalysisDLS values
+                    andls.is_ldl = false;
+                    andls.is_udl = false;
+                    andls.below_ldl = false;
+                    andls.above_udl = false;
+                    var tryldl = result.lastIndexOf('<', 0) === 0;
+                    var tryudl = result.lastIndexOf('>', 0) === 0;
+                    if (tryldl || tryudl) {
+                        // Trying to create a DL directly?
+                        var res = result.substring(1);
+                        if (!isNaN(parseFloat(res))) {
+                            result = ''+parseFloat(res);
+                            if (andls.manual_allowed == true) {
+                                // Yep, a manually created DL
+                                andls.is_ldl = tryldl;
+                                andls.is_udl = tryudl;
+                                andls.below_ldl = tryldl;
+                                andls.above_udl = tryudl;
+                            } else {
+                                // Unexpected case or Indeterminate result.
+                                // Although the selection of DL is allowed (DL
+                                // selection list displayed) and the manual
+                                // entry of DL is not allowed, the user has not
+                                // selected a LD option from the list and has
+                                // set a manual DL value in the result's input
+                                // field. Remove the operator
+                                $(e).val(result);
+                            }
+                        }
+                    } else {
+                        // LD set via selector
+                        andls.is_ldl = false;
+                        andls.is_udl = false;
+                        andls.below_ldl = false;
+                        andls.above_udl = false;
+                        if (!isNaN(parseFloat(result))) {
+                            dlop = dlop.first().val().trim();
+                            if (dlop == '<' || dlop == '>') {
+                                // The result is a Detection Limit
+                                andls.is_ldl = dlop == '<';
+                                andls.is_udl = dlop == '>';
+                                andls.below_ldl = andls.is_ldl;
+                                andls.above_udl = andls.is_udl;
+                            } else {
+                                // Regular result
+                                result = parseFloat(result);
+                                andls.below_ldl = result < andls.default_ldl;
+                                andls.above_udl = result > andls.default_udl;
+                                result = ''+result;
+                            }
+                        }
+                    }
+                } else if (!isNaN(parseFloat(result))) {
+                    // DL List not available and regular result
+                    result = parseFloat(result);
+                    andls.is_ldl = false;
+                    andls.is_udl = false;
+                    andls.below_ldl = result < andls.default_ldl;
+                    andls.above_udl = result > andls.default_udl;
+                    result = ''+result;
+                }
+                var mapping = {
+                                keyword:  $(e).attr('objectid'),
+                                result:   result,
+                                isldl:    andls.is_ldl,
+                                isudl:    andls.is_udl,
+                                ldl:      andls.is_ldl ? result : andls.default_ldl,
+                                udl:      andls.is_udl ? result : andls.default_udl,
+                                belowldl: andls.below_ldl,
+                                aboveudl: andls.above_udl,
+                            };
+                results[$(e).attr("uid")] = mapping;
             });
 
             options = {
@@ -93,6 +191,7 @@ function CalculationUtils() {
                     for(i=0;i<$(data['uncertainties']).length;i++){
                         u = $(data['uncertainties'])[i];
                         $('#'+u.uid+"-uncertainty").val(u.uncertainty);
+                        $('[uid="'+u.uid+'"][field="Uncertainty"]').val(u.uncertainty);
                     }
                     // put result values in their boxes
                     for(i=0;i<$(data['results']).length;i++){

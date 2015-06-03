@@ -27,6 +27,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     FixedPointField('Price',
+        required=1,
         widget = DecimalWidget(
             label=_("Price excluding VAT"),
         )

@@ -6,7 +6,7 @@
  <genericsetup:upgradeStep
         title="Add BatchID and BatchUID to AnalysisRequest"
         description="Batches were introduced; set the BatchID to None on all existing ARs."
-        source="*"
+        source="1000"
         destination="1010"
         handler="bika.lims.upgrade.to1010.addBatches"
         sortkey="1"
@@ -42,7 +42,7 @@
 <genericsetup:upgradeStep
         title="Upgrade 3000"
         description="Upgrade to bika 3"
-        source="*"
+        source="1102"
         destination="3000"
         handler="bika.lims.upgrade.to3000.upgrade"
         sortkey="1"
@@ -531,6 +531,15 @@
         source="3053"
         destination="317"
         handler="bika.lims.upgrade.to317.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+<genericsetup:upgradeStep
+        title="Upgrade to Bika LIMS 3.1.8"
+        description=""
+        source="317"
+        destination="318"
+        handler="bika.lims.upgrade.to318.upgrade"
         sortkey="1"
         profile="bika.lims:default"/>
 

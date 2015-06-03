@@ -1135,4 +1135,56 @@ a.print_button,
     border:1px solid &dtml-buttonBorderColor;;
     padding:4px 10px 4px 30px;
 }
+#content div.arresultsinterpretation-container {
+    padding-top:15px;
+}
+#content div.arresultsinterpretation-container ul {
+    list-style:none outside none;
+    margin:0;
+    padding:0;
+}
+#content div.arresultsinterpretation-container ul li {
+    display:inline;
+    padding-right: 5px;
+}
+#content div.arresultsinterpretation-container ul li a {
+    padding:5px 10px;
+    border: 1px solid #dcdcdc;
+    color: #888;
+    padding: 5px 10px;
+}
+#content div.arresultsinterpretation-container ul li a:hover,
+#content div.arresultsinterpretation-container ul li a.selected {
+    background-color: #fff;
+    border: 1px solid #999;
+    color: #333;
+    padding: 5px 10px;
+}
+#content div.arresultsinterpretation-container div.department-area {
+    padding-top:15px;
+}
+#content div.arresultsinterpretation-container .fieldTextFormat,
+#content div.arresultsinterpretation-container .mceButton.mce_image,
+#content div.arresultsinterpretation-container .mceButton.mce_code,
+#content div.arresultsinterpretation-container .mceButton.mce_save, {
+    display:none;
+}
+.bika-listing-table td.interim input[type="text"]:-moz-read-only,
+.bika-listing-table td.Result input[type="text"]:-moz-read-only {
+    color: #555;
+    cursor: not-allowed;
+}
+.bika-listing-table td.interim input[type="text"]:-moz-read-only:focus,
+.bika-listing-table td.Result input[type="text"]:-moz-read-only:focus{
+    background-color: transparent;
+}
+.bika-listing-table td.interim input[type="text"]:read-only,
+.bika-listing-table td.Result input[type="text"]:read-onl {
+    color: #555;
+    cursor: not-allowed;
+}
+.bika-listing-table td.interim input[type="text"]:read-only:focus,
+.bika-listing-table td.Result input[type="text"]:read-only:focus {
+    background-color: transparent;
+}
 </dtml-with>

@@ -21,12 +21,12 @@
 
 <body tal:define="sites view/sites">
 <div id="box">
-    <img src="/++resource++plone-logo.png" width="213" height="54"
-         tal:attributes="src string:${context/absolute_url}/++resource++bika-lims-logo.png"
+    <img src="/++resource++plone-logo.png"
+         tal:attributes="src string:${context/absolute_url}/++resource++bikaonly-logo.png"
          alt="Bika LIMS Logo"/>
     <div id="text">
         <h1 i18n:translate="" i18n:domain="bika">
-            Professional Open Source LIMS
+            Professional Open Source LIMS/LIS
         </h1>
         <ul>
             <tal:block tal:condition="sites">
@@ -39,7 +39,7 @@
                                tal:attributes="href site/absolute_url"
                                title="Go to your installation"
                                i18n:attributes="title;"
-                               i18n:translate="">View your Bika LIMS installation</a>
+                               i18n:translate="">View your Bika installation</a>
                         </span>
                         <div class="upgrade-warning"
                              tal:condition="python:view.outdated(site)">
@@ -105,7 +105,7 @@
             </tal:block>
             <li tal:condition="not:sites">
                 <span i18n:translate="">
-                    Bika LIMS has not been installed yet:
+                    No Bika distribution has been installed yet:
                 </span>
                 <form id="add-plone-site"
                       method="get"
@@ -114,7 +114,7 @@
                     <input type="hidden" name="site_id" value="Plone" />
                     <input type="submit"
                            i18n:attributes="value;"
-                           value="Install Bika LIMS" />
+                           value="Install a Bika distribution" />
                 </form>
             </li>
             <li>

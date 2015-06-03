@@ -8,8 +8,8 @@ Documentation    Generally useful keywords for Bika tests.
 
 *** Keywords ***
 Start browser
-    Open browser  ${PLONEURL}/login_form
-#    Open browser  ${PLONEURL}/login_form   browser=chrome
+#    Open browser  ${PLONEURL}/login_form
+    Open browser  ${PLONEURL}/login_form   browser=chrome
     Set selenium speed  ${SELENIUM_SPEED}
 
 Log in

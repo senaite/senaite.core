@@ -44,7 +44,7 @@
             data-showHRI='false'
             data-barHeight='15'
             data-addQuietZone='true'
-            tal:attributes="data-id analysisrequest/id"$>
+            tal:attributes="data-id analysisrequest/id">
         </div>
     </div>
     <div id='lab-logo'>
@@ -197,10 +197,10 @@
 <!-- Results section -->
 <div id="section-results">
     <h1 i18n:translate="">Results</h1>
+    <tal:poc tal:repeat="poc python:categanalyses.keys()">
+    <h2 tal:content="poc"></h2>
+    <tal:cat tal:repeat="cat python:sorted(categanalyses.get(poc,{}).keys())">
     <table>
-        <tal:poc tal:repeat="poc python:categanalyses.keys()">
-        <h2 tal:content="poc"></h2>
-        <tal:cat tal:repeat="cat python:sorted(categanalyses.get(poc,{}).keys())">
         <thead>
             <tr>
                 <th class="analysis"><span tal:content="string:${cat}">Category</span></th>
@@ -211,6 +211,18 @@
                 <th class="outofrange"></th>
             </tr>
         </thead>
+        <tfoot>
+            <!-- Category comments -->
+            <tr>
+                <td tal:attributes="colspan python:6 if hasprevresults else 5">
+                    <div class='category_comments'
+                         tal:define="category python:categanalyses[poc][cat][0]['obj'].getService().getCategory();
+                                     catcomm  python:category.getComments() if hasattr(category, 'getComments') else '';"
+                         tal:condition="catcomm"
+                         tal:content="catcomm"></div>
+                </td>
+            </tr>
+        </tfoot>
         <tbody>
             <tal:analyses tal:repeat="analysis python:categanalyses[poc][cat]">
             <tal:analysis tal:define="analysis_css_result python:'outofrange' if analysis['outofrange'] else '';
@@ -254,14 +266,22 @@
             </tr>
             </tal:analysis>
             </tal:analyses>
-            </tbody>
-        </tal:cat>
-        </tal:poc>
+        </tbody>
     </table>
+    </tal:cat>
+    </tal:poc>
 </div>
-<div id="resultsinterpretation" tal:condition="analysisrequest/resultsinterpretation">
+<div id="resultsinterpretation"
+    tal:define="ri analysisrequest/resultsinterpretationdepts"
+    tal:condition="ri">
     <h1 i18n:translate="">Result interpretation</h1>
-    <span tal:content="structure analysisrequest/resultsinterpretation"></span>
+    <tal:ris repeat="rid python:ri.keys()">
+        <h2 tal:content="rid"></h2>
+        <div>
+            <div tal:content="structure python:ri.get(rid,{}).get('richtext','')"></div>
+        </div>
+        <p>&nbsp;</p>
+    </tal:ris>
 </div>
 <!-- QC Results section -->
 <div id="section-qcresults" tal:condition="python:hasqcanalyses and showqcanalyses">
@@ -388,6 +408,7 @@
          class="manager-info">
          <tal:manager tal:define="rownum repeat/manager/number;
                          email python:managers[manager]['email'];
+                         jobtitle python:managers[manager]['job_title'];
                          phone python:managers[manager]['phone'];
                          department python:managers[manager]['departments'];
                          signature python:managers[manager]['signature'];">
@@ -396,6 +417,10 @@
                  tal:attributes="src string:${signature}" style="height:75px"/>
             <br/>
             <span class="manager-fullname" tal:content="python:managers[manager]['name']">Joe Blogs</span>
+            <br tal:condition="jobtitle">
+            <span class="manager-jobtitle"
+                tal:condition="jobtitle"
+                tal:content="jobtitle"></span>
             <br tal:condition="email"/>
             <span class="manager-email" tal:condition="email">
                 <a tal:attributes="href string:mailto:${email}"
@@ -425,7 +450,9 @@
          tal:condition="confidence_level" i18n:translate="">Test results are at a <tal:block replace="confidence_level" i18n:name="lab_confidence"/>% confidence level</div>
     <div tal:condition="python:contact.get('pubpref','') != '' and 'email' in contact['pubpref']" i18n:translate="">Methods of analysis available by clicking on the 'Request' link</div>
 </div>
-
-<div class="footer" tal:content="structure analysisrequest/footer"></div>
-<div class="page-break"></div>
+<div class='page-footer'>
+    <div class="clearfix"></div>
+    <div class="footer" tal:content="structure analysisrequest/footer"></div>
+    <div class="clearfix"></div>
+</div>
 </tal:report>

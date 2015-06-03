@@ -6,10 +6,7 @@
   <record name="bika.lims.client.default_landing_page">
     <field type="plone.registry.field.Choice">
       <default>analysisrequests</default>
-      <description i18n:translate="">
-        Select the default landing page.  This is used when a
-        Client user logs into the system, or when a client is
-        selected from the client folder listing.</description>
+      <description i18n:translate="">Select the default landing page. This is used when a Client user logs into the system, or when a client is selected from the client folder listing.</description>
       <required>True</required>
       <title i18n:translate="">Client Landing Page</title>
         <values>

@@ -44,7 +44,7 @@ class InstrumentMaintenanceView(BikaListingView):
         self.show_select_all_checkbox = False
         self.pagesize = 40
         self.form_id = "instrumentmaintenance"
-        self.icon = "++resources++bika.lims.images/instrumentmaintenance_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/instrumentmaintenance_big.png"
         self.title = self.context.translate(_("Instrument Maintenance"))
         self.description = ""
 
@@ -144,7 +144,7 @@ class InstrumentCalibrationsView(BikaListingView):
         self.show_select_column = True
         self.pagesize = 25
         self.form_id = "instrumentcalibrations"
-        self.icon = "++resources++bika.lims.images/instrumentcalibration_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/instrumentcalibration_big.png"
         self.title = self.context.translate(_("Instrument Calibrations"))
         self.description = ""
 
@@ -201,7 +201,7 @@ class InstrumentValidationsView(BikaListingView):
         self.show_select_column = True
         self.pagesize = 25
         self.form_id = "instrumentvalidations"
-        self.icon = "++resources++bika.lims.images/instrumentvalidation_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/instrumentvalidation_big.png"
         self.title = self.context.translate(_("Instrument Validations"))
         self.description = ""
 
@@ -261,7 +261,7 @@ class InstrumentScheduleView(BikaListingView):
         self.pagesize = 25
 
         self.form_id = "instrumentschedule"
-        self.icon = "++resources++bika.lims.images/instrumentschedule_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/instrumentschedule_big.png"
         self.title = self.context.translate(_("Instrument Scheduled Tasks"))
         self.description = ""
 
@@ -604,6 +604,70 @@ class InstrumentCertificationsView(BikaListingView):
         return items
 
 
+class InstrumentMultifileView(BikaListingView):
+    implements(IFolderContentsView, IViewView)
+
+    def __init__(self, context, request):
+        super(InstrumentMultifileView, self).__init__(context, request)
+        self.catalog = "bika_setup_catalog"
+        self.contentFilter = {
+            'portal_type': 'Multifile',
+        }
+        self.context_actions = {_('Add'):
+                                {'url': 'createObject?type_name=Multifile',
+                                 'icon': '++resource++bika.lims.images/add.png'}}
+        self.show_table_only = False
+        self.show_sort_column = False
+        self.show_select_row = False
+        self.show_select_column = True
+        self.pagesize = 25
+        self.form_id = "instrumentmultifile"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/instrumentcertification_big.png"
+        self.title = self.context.translate(_("Instrument Files"))
+        self.description = ""
+
+        self.columns = {
+            'DocumentID': {'title': _('Document ID'),
+                           'index': 'sortable_title'},
+            'DocumentVersion': {'title': _('Document Version'), 'index': 'sortable_title'},
+            'DocumentLocation': {'title': _('Document Location'), 'index': 'sortable_title'},
+            'DocumentType': {'title': _('Document Type'), 'index': 'sortable_title'},
+            'FileDownload': {'title': _('File')}
+        }
+        self.review_states = [
+            {'id': 'default',
+             'title': _('All'),
+             'contentFilter':{},
+             'columns': ['DocumentID',
+                         'DocumentVersion',
+                         'DocumentLocation',
+                         'DocumentType',
+                         'FileDownload']},
+        ]
+
+    def folderitems(self):
+        items = BikaListingView.folderitems(self)
+        outitems = []
+        toshow = []
+        for val in self.context.getDocuments():
+            toshow.append(val.UID())
+        for x in range (len(items)):
+            if not items[x].has_key('obj'): continue
+            obj = items[x]['obj']
+            if obj.UID() in toshow:
+                items[x]['replace']['DocumentID'] = "<a href='%s'>%s</a>" % \
+                    (items[x]['url'], items[x]['DocumentID'])
+                items[x]['FileDownload'] = obj.getFile().filename
+                filename = obj.getFile().filename if obj.getFile().filename != '' else 'File'
+                items[x]['replace']['FileDownload'] = "<a href='%s'>%s</a>" % \
+                    (obj.getFile().absolute_url_path(), filename)
+                items[x]['DocumentVersion'] = obj.getDocumentVersion()
+                items[x]['DocumentLocation'] = obj.getDocumentLocation()
+                items[x]['DocumentType'] = obj.getDocumentType()
+                outitems.append(items[x])
+        return outitems
+
+
 class ajaxGetInstrumentMethod(BrowserView):
     """ Returns the method assigned to the defined instrument.
         uid: unique identifier of the instrument
@@ -635,7 +699,9 @@ class InstrumentQCFailuresViewlet(ViewletBase):
         self.nr_failed = 0
         self.failed = {'out-of-date': [],
                        'qc-fail': [],
-                       'next-test': []}
+                       'next-test': [],
+                       'validation': [],
+                       'calibration': []}
 
     def get_failed_instruments(self):
         """ Find all active instruments who have failed QC tests
@@ -685,7 +751,19 @@ class InstrumentQCFailuresViewlet(ViewletBase):
                 'uid': i.UID(),
                 'title': i.Title(),
             }
-            if i.isOutOfDate():
+            if i.isValidationInProgress():
+                instr['link'] = '<a href="%s/validations">%s</a>' % (
+                    i.absolute_url(), i.Title()
+                )
+                self.nr_failed += 1
+                self.failed['validation'].append(instr)
+            elif i.isCalibrationInProgress():
+                instr['link'] = '<a href="%s/calibrations">%s</a>' % (
+                    i.absolute_url(), i.Title()
+                )
+                self.nr_failed += 1
+                self.failed['calibration'].append(instr)
+            elif i.isOutOfDate():
                 instr['link'] = '<a href="%s/certifications">%s</a>' % (
                     i.absolute_url(), i.Title()
                 )

@@ -48,49 +48,22 @@ function AnalysisRequestPublishView() {
         });
 
         $('#sel_format').change(function(e) {
-            var url = window.location.href;
-            var seltpl = $(this).val();
-            $('#report').animate({opacity:0.4}, 'slow');
-            $.ajax({
-                url: url,
-                type: 'POST',
-                async: false,
-                data: { "template":seltpl}
-            })
-            .always(function(data) {
-                var htmldata = data;
-                cssdata = $(htmldata).find('#report-style').html();
-                $('#report-style').html(cssdata);
-                htmldata = $(htmldata).find('#report').html();
-                $('#report').html(htmldata);
-                $('#report').animate({opacity:1}, 'slow');
-                load_barcodes();
-            });
+            reloadReport();
         });
 
         $('#qcvisible').click(function(e) {
-            var url = window.location.href;
-            if ($('#qcvisible').is(':checked')) {
-                url += url.indexOf('?') >= 0 ? "&qcvisible=1" : "?qcvisible=1";
-            }
-            $('#report').animate({opacity:0.4}, 'slow');
-            $.ajax({
-                url: url,
-                type: 'GET',
-                success: function(data, textStatus, $XHR){
-                    var htmldata = data;
-                    htmldata = $(htmldata).find('#report').html();
-                    $('#report').html(htmldata);
-                    $('#report').animate({opacity:1}, 'slow');
-                    load_barcodes();
-                }
-            });
+            reloadReport();
+        });
+
+        $('#hvisible').click(function(e) {
+            reloadReport();
         });
 
         $('#publish_button').click(function(e) {
             var url = window.location.href;
             var qcvisible = $('#qcvisible').is(':checked') ? 1 : 0;
-            var template = $('#self_format').val();
+            var hvisible = $('#hvisible').is(':checked') ? 1 : 0;
+            var template = $('#sel_format').val();
             $('#ar_publish_container').animate({opacity:0.4}, 'slow');
             var count = $('#ar_publish_container #report .ar_publish_body').length;
             $('#ar_publish_container #report .ar_publish_body').each(function(){
@@ -99,11 +72,14 @@ function AnalysisRequestPublishView() {
                 $.ajax({
                     url: url,
                     type: 'POST',
-                    async: false,
+                    async: true,
                     data: { "publish":1,
                             "id":$(this).attr('id'),
                             "uid":$(this).attr('uid'),
                             "html": rephtml,
+                            "template": template,
+                            "qcvisible": qcvisible,
+                            "hvisible": hvisible,
                             "style": repstyle}
                 })
                 .always(function(){
@@ -119,6 +95,7 @@ function AnalysisRequestPublishView() {
         });
 
         load_barcodes();
+        load_pagination();
 
         var invalidbackurl = window.portal_url + '/++resource++bika.lims.images/report_invalid_back.png';
         $('.ar-invalid').css('background', "url('"+invalidbackurl+"') repeat scroll #ffffff");
@@ -150,6 +127,43 @@ function AnalysisRequestPublishView() {
                             {'barHeight': parseInt(barHeight),
                              'addQuietZone': Boolean(addQuietZone),
                              'showHRI': Boolean(showHRI) });
+        });
+    }
+
+    function load_pagination() {
+        $(".paginated-report").each(function(i) {
+            var numpages = $(this).find('.page-footer').length;
+            $(this).find('.page-total-count').html(numpages);
+            $(this).find('.page-current-num').each(function(i) {
+                $(this).html(i+1);
+            });
+        });
+    }
+
+    function reloadReport() {
+        var url = window.location.href;
+        var template = $('#sel_format').val();
+        var qcvisible = $('#qcvisible').is(':checked') ? '1' : '0';
+        var hvisible = $('#hvisible').is(':checked') ? '1' : '0';
+        $('#report').fadeTo('fast', 0.4);
+        //$('#report').animate({opacity:0.4}, 'slow');
+        $.ajax({
+            url: url,
+            type: 'POST',
+            async: true,
+            data: { "template": template,
+                    "qcvisible": qcvisible,
+                    "hvisible": hvisible}
+        })
+        .always(function(data) {
+            var htmldata = data;
+            cssdata = $(htmldata).find('#report-style').html();
+            $('#report-style').html(cssdata);
+            htmldata = $(htmldata).find('#report').html();
+            $('#report').html(htmldata);
+            $('#report').fadeTo('fast', 1);
+            load_barcodes();
+            load_pagination();
         });
     }
 }

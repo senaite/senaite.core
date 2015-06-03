@@ -34,15 +34,15 @@
 						<tr>
 							<td class="title" tal:content="analysis/title">Title</td>
 							<td class="currency">
-								<span tal:content="python:view.getPreferredCurrencyAbreviattion()">R</span>
+								<span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
 								<span tal:content="analysis/price">0.00</span>
 							</td>
 							<td class="currency">
-								<span tal:content="python:view.getPreferredCurrencyAbreviattion()">R</span>
+								<span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
 								<span tal:content="analysis/priceVat">0.00</span>
 							</td>
 							<td class="currency">
-								<span tal:content="python:view.getPreferredCurrencyAbreviattion()">R</span>
+								<span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
 								<span tal:content="analysis/priceTotal">0.00</span>
 							</td>
 						</tr>
@@ -53,15 +53,15 @@
 		<tr class="totals">
 			<td class="title" i18n:translate="">Total</td>
 			<td class="currency">
-				<span tal:content="python:view.getPreferredCurrencyAbreviattion()">R</span>
+				<span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
 				<span tal:content="view/subtotal"></span>
 			</td>
 			<td class="currency">
-				<span tal:content="python:view.getPreferredCurrencyAbreviattion()">R</span>
+				<span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
 				<span tal:content="view/VATAmount"></span>
 			</td>
 			<td class="currency">
-				<span tal:content="python:view.getPreferredCurrencyAbreviattion()">R</span>
+				<span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
 				<span tal:content="view/totalPrice"></span>
 			</td>
 		</tr>

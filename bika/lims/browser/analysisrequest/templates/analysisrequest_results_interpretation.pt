@@ -1,0 +1,95 @@
+<tal:readonly
+    tal:define="fieldName string:ResultsInterpretationDepts"
+    tal:condition="python:view.allow_edit == False">
+    <div class='arresultsinterpretation-container'
+         tal:define="departments python:context.getDepartments()">
+        <!-- Tabs for departments -->
+        <ul>
+            <li>
+                <a class="department-tab" href='#'
+                   tal:attributes="data-uid python:fieldName+'-general';"
+                   i18n:translate="">General</a>
+            </li>
+            <tal:depts repeat="dep departments">
+            <li>
+                <a class="department-tab" href='#'
+                   tal:attributes="data-uid python:fieldName+'-'+dep.UID();"
+                   tal:content="dep/Title"></a>
+            </li>
+            </tal:depts>
+        </ul>
+        <div class="department-area"
+            tal:attributes="id python:fieldName+'-general';">
+            <div tal:replace="structure python:view.getText(None, 'raw')"></div>
+        </div>
+        <tal:department repeat="dept departments">
+        <div class="department-area"
+            tal:define="uid dept/UID"
+            tal:attributes="id python:fieldName+'-'+uid;">
+            <div tal:replace="structure python:view.getText(dept, 'raw')"></div>
+        </div>
+        </tal:department>
+    </div>
+</tal:readonly>
+
+<tal:edit
+    tal:define="fieldName string:ResultsInterpretationDepts"
+    tal:condition="python:view.allow_edit == True">
+    <form name="arresultsinterpretation_form"
+          enctype="multipart/form-data"
+          action="arresultsinterpretation_save"
+          method="POST">
+    <span tal:replace="structure context/@@authenticator/authenticator"/>
+    <div class='arresultsinterpretation-container'
+         tal:define="departments python:context.getDepartments()">
+        <!-- Tabs for departments -->
+        <ul>
+            <li>
+                <a class="department-tab" href='#'
+                   tal:attributes="data-uid python:fieldName+'-general';"
+                   i18n:translate="">General</a>
+            </li>
+            <tal:depts repeat="dep departments">
+            <li>
+                <a class="department-tab" href='#'
+                   tal:attributes="data-uid python:fieldName+'-'+dep.UID();"
+                   tal:content="dep/Title"></a>
+            </li>
+            </tal:depts>
+        </ul>
+        <!-- TextAreas (RichText) for results interpretation -->
+        <div class="department-area"
+            tal:attributes="id python:fieldName+'-general';">
+            <input tal:attributes="name  string:${fieldName}.uid:records:ignore_empty;
+                                   id    string:${fieldName}-uid-0;
+                                   value string:general;" type='hidden'/>
+            <textarea class="pat-tinymce mce_editable"
+                tal:define="configuration_method nocall:here/@@tinymce-jsonconfiguration;
+                            configuration_json python:configuration_method(field=None);"
+                tal:attributes="name  string:${fieldName}.richtext:records:ignore_empty;
+                                id    string:${fieldName}-richtext-0;
+                                data-mce-config configuration_json;"
+                tal:content="python: view.getText(None, 'raw')">
+            </textarea>
+        </div>
+        <tal:department repeat="dept departments">
+        <div class="department-area"
+            tal:define="uid dept/UID"
+            tal:attributes="id python:fieldName+'-'+uid;">
+            <input tal:attributes="name  string:${fieldName}.uid:records:ignore_empty;
+                                   id    string:${fieldName}-uid-${repeat/dept/number};
+                                   value string:${uid};" type='hidden'>
+            <textarea class="pat-tinymce mce_editable"
+                tal:define="configuration_method nocall:here/@@tinymce-jsonconfiguration;
+                            configuration_json python:configuration_method(field=None);"
+                tal:attributes="name  string:${fieldName}.richtext:records:ignore_empty;
+                                id    string:${fieldName}-richtext-${repeat/dept/number};
+                                data-mce-config configuration_json;"
+                tal:content="python: view.getText(dept, 'raw')">
+            </textarea>
+        </div>
+        </tal:department>
+    </div>
+    <input type="submit" name="send" i18n:translate="value" value="Save" />
+    </form>
+</tal:edit>

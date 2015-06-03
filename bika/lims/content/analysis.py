@@ -5,6 +5,7 @@
 from AccessControl import getSecurityManager
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
+from bika.lims import logger
 from bika.lims.utils.analysis import format_numeric_result
 from plone.indexer import indexer
 from Products.ATContentTypes.content import schemata
@@ -33,6 +34,8 @@ from bika.lims.interfaces import IAnalysis, IDuplicateAnalysis, IReferenceAnalys
     IRoutineAnalysis
 from bika.lims.interfaces import IReferenceSample
 from bika.lims.utils import changeWorkflowState, formatDecimalMark
+from bika.lims.utils import drop_trailing_zeros_decimal
+from bika.lims.utils.analysis import get_significant_digits
 from bika.lims.workflow import skip
 from bika.lims.workflow import doActionFor
 from decimal import Decimal
@@ -181,6 +184,14 @@ schema = BikaSchema.copy() + Schema((
     ComputedField('InstrumentValid',
         expression = 'context.isInstrumentValid()'
     ),
+    FixedPointField('Uncertainty',
+        widget=DecimalWidget(
+            label = _("Uncertainty"),
+        ),
+    ),
+    StringField('DetectionLimitOperand',
+    ),
+
 ),
 )
 
@@ -240,11 +251,149 @@ class Analysis(BaseContent):
         workflow = getToolByName(self, "portal_workflow")
         return workflow.getInfoFor(self, "review_state")
 
-    def getUncertainty(self, result=None):
+    def getDefaultUncertainty(self, result=None):
         """ Calls self.Service.getUncertainty with either the provided
             result value or self.Result
         """
         return self.getService().getUncertainty(result and result or self.getResult())
+
+    def getUncertainty(self, result=None):
+        """ Returns the uncertainty for this analysis and result.
+            Returns the value from Schema's Uncertainty field if the
+            Service has the option 'Allow manual uncertainty'. Otherwise,
+            do a callback to getDefaultUncertainty().
+            Returns None if no result specified and the current result
+            for this analysis is below or above detections limits.
+        """
+        serv = self.getService()
+        schu = self.Schema().getField('Uncertainty').get(self)
+        if result is None and (self.isAboveUpperDetectionLimit() or \
+                               self.isBelowLowerDetectionLimit()):
+            return None
+
+        if schu and serv.getAllowManualUncertainty() == True:
+            try:
+                schu = float(schu)
+                return schu
+            except ValueError:
+                # if uncertainty is not a number, return default value
+                return self.getDefaultUncertainty(result)
+        return self.getDefaultUncertainty(result)
+
+    def setDetectionLimitOperand(self, value):
+        """ Sets the detection limit operand for this analysis, so
+            the result will be interpreted as a detection limit.
+            The value will only be set if the Service has
+            'DetectionLimitSelector' field set to True, otherwise,
+            the detection limit operand will be set to None.
+            See LIMS-1775 for further information about the relation
+            amongst 'DetectionLimitSelector' and
+            'AllowManualDetectionLimit'.
+            https://jira.bikalabs.com/browse/LIMS-1775
+        """
+        srv = self.getService()
+        md = srv.getDetectionLimitSelector() if srv else False
+        val = value if (md and value in ('>', '<')) else None
+        self.Schema().getField('DetectionLimitOperand').set(self, val)
+
+    def getLowerDetectionLimit(self):
+        """ Returns the Lower Detection Limit (LDL) that applies to
+            this analysis in particular. If no value set or the
+            analysis service doesn't allow manual input of detection
+            limits, returns the value set by default in the Analysis
+            Service
+        """
+        operand = self.getDetectionLimitOperand()
+        if operand and operand == '<':
+            result = self.getResult()
+            try:
+                return float(result)
+            except:
+                logger.warn("The result for the analysis %s is a lower "
+                            "detection limit, but not floatable: '%s'. "
+                            "Returnig AS's default LDL." %
+                            (self.id, result))
+        return self.getService().getLowerDetectionLimit()
+
+    def getUpperDetectionLimit(self):
+        """ Returns the Upper Detection Limit (UDL) that applies to
+            this analysis in particular. If no value set or the
+            analysis service doesn't allow manual input of detection
+            limits, returns the value set by default in the Analysis
+            Service
+        """
+        operand = self.getDetectionLimitOperand()
+        if operand and operand == '>':
+            result = self.getResult()
+            try:
+                return float(result)
+            except:
+                logger.warn("The result for the analysis %s is a lower "
+                            "detection limit, but not floatable: '%s'. "
+                            "Returnig AS's default LDL." %
+                            (self.id, result))
+        return self.getService().getUpperDetectionLimit()
+
+    def isBelowLowerDetectionLimit(self):
+        """ Returns True if the result is below the Lower Detection
+            Limit or if Lower Detection Limit has been manually set
+        """
+        dl = self.getDetectionLimitOperand()
+        if dl and dl == '<':
+            return True
+        result = self.getResult()
+        if result and str(result).strip().startswith('<'):
+            return True
+        elif result:
+            ldl = self.getLowerDetectionLimit()
+            try:
+                result = float(result)
+                return result < ldl
+            except:
+                pass
+        return False
+
+    def isAboveUpperDetectionLimit(self):
+        """ Returns True if the result is above the Upper Detection
+            Limit or if Upper Detection Limit has been manually set
+        """
+        dl = self.getDetectionLimitOperand()
+        if dl and dl == '>':
+            return True
+        result = self.getResult()
+        if result and str(result).strip().startswith('>'):
+            return True
+        elif result:
+            udl = self.getUpperDetectionLimit()
+            try:
+                result = float(result)
+                return result > udl
+            except:
+                pass
+        return False
+
+    def getDetectionLimits(self):
+        """ Returns a two-value array with the limits of detection
+            (LDL and UDL) that applies to this analysis in particular.
+            If no value set or the analysis service doesn't allow
+            manual input of detection limits, returns the value set by
+            default in the Analysis Service
+        """
+        return [self.getLowerDetectionLimit(), self.getUpperDetectionLimit()]
+
+    def isLowerDetectionLimit(self):
+        """ Returns True if the result for this analysis represents
+            a Lower Detection Limit. Otherwise, returns False
+        """
+        return self.isBelowLowerDetectionLimit() and \
+                self.getDetectionLimitOperand() == '<'
+
+    def isUpperDetectionLimit(self):
+        """ Returns True if the result for this analysis represents
+            an Upper Detection Limit. Otherwise, returns False
+        """
+        return self.isAboveUpperDetectionLimit() and \
+                self.getDetectionLimitOperand() == '>'
 
     def getDependents(self):
         """ Return a list of analyses who depend on us
@@ -282,7 +431,78 @@ class Analysis(BaseContent):
     def setResult(self, value, **kw):
         # Always update ResultCapture date when this field is modified
         self.setResultCaptureDate(DateTime())
-        self.getField('Result').set(self, value, **kw)
+        # Only allow DL if manually enabled in AS
+        val = value
+        if val and (val.strip().startswith('>') or val.strip().startswith('<')):
+            self.Schema().getField('DetectionLimitOperand').set(self, None)
+            oper = '<' if val.strip().startswith('<') else '>'
+            srv = self.getService()
+            if srv and srv.getDetectionLimitSelector():
+                if srv.getAllowManualDetectionLimit():
+                    # DL allowed, try to remove the operator and set the
+                    # result as a detection limit
+                    try:
+                        val = val.replace(oper, '', 1)
+                        val = str(float(val))
+                        self.Schema().getField('DetectionLimitOperand').set(self, oper)
+                    except:
+                        val = value
+                else:
+                    # Trying to set a result with an '<,>' operator,
+                    # but manual DL not allowed, so override the
+                    # value with the service's default LDL or UDL
+                    # according to the operator, but only if the value
+                    # is not an indeterminate.
+                    try:
+                        val = val.replace(oper, '', 1)
+                        val = str(float(val)) # An indeterminate?
+                        if oper == '<':
+                            val = srv.getLowerDetectionLimit()
+                        else:
+                            val = srv.getUpperDetectionLimit()
+                        self.Schema().getField('DetectionLimitOperand').set(self, oper)
+                    except:
+                        # Oops, an indeterminate. Do nothing.
+                        val = value
+            elif srv:
+                # Ooopps. Trying to set a result with an '<,>' operator,
+                # but the service doesn't allow this in any case!
+                # No need to check for AllowManualDetectionLimit, cause
+                # we assume that this will always be False unless
+                # DetectionLimitSelector is True. See LIMS-1775 for
+                # further information about the relation amongst
+                # 'DetectionLimitSelector' and 'AllowManualDetectionLimit'.
+                # https://jira.bikalabs.com/browse/LIMS-1775
+                # Let's try to remove the operator and set the value as
+                # a regular result, but only if not an indeterminate
+                try:
+                    val = val.replace(oper, '', 1)
+                    val = str(float(val))
+                except:
+                    val = value
+        elif not val:
+            # Reset DL
+            self.Schema().getField('DetectionLimitOperand').set(self, None)
+        self.getField('Result').set(self, val, **kw)
+
+        # Uncertainty calculation on DL
+        # https://jira.bikalabs.com/browse/LIMS-1808
+        if self.isAboveUpperDetectionLimit() or \
+           self.isBelowLowerDetectionLimit():
+            self.Schema().getField('Uncertainty').set(self, None)
+
+    def setUncertainty(self, unc):
+        """ Sets the uncertainty for this analysis. If the result is
+            a Detection Limit or the value is below LDL or upper UDL,
+            sets the uncertainty value to 0
+        """
+        # Uncertainty calculation on DL
+        # https://jira.bikalabs.com/browse/LIMS-1808
+        if self.isAboveUpperDetectionLimit() or \
+           self.isBelowLowerDetectionLimit():
+            self.Schema().getField('Uncertainty').set(self, None)
+        else:
+            self.Schema().getField('Uncertainty').set(self, unc)
 
     def getSample(self):
         # ReferenceSample cannot provide a 'getSample'
@@ -293,6 +513,37 @@ class Analysis(BaseContent):
             return self.getAnalysis().aq_parent.getSample()
         return self.aq_parent.getSample()
 
+    def getResultsRange(self, specification=None):
+        """ Returns the valid results range for this analysis, a
+            dictionary with the following keys: 'keyword', 'uid', 'min',
+            'max', 'error', 'hidemin', 'hidemax', 'rangecomment'
+            Allowed values for specification='ar', 'client', 'lab', None
+            If specification is None, the following is the priority to
+            get the results range: AR > Client > Lab
+            If no specification available for this analysis, returns {}
+        """
+        rr = {}
+        an = self
+        while an and an.portal_type in ('DuplicateAnalysis', 'RejectAnalysis'):
+            an = an.getAnalysis()
+
+        if specification == 'ar' or specification is None:
+            if an.aq_parent and an.aq_parent.portal_type == 'AnalysisRequest':
+                key = an.getKeyword()
+                rr = an.aq_parent.getResultsRange()
+                rr = [r for r in rr if r.get('keyword', '') == an.getKeyword()]
+                rr = rr[0] if rr and len(rr) > 0 else {}
+            if specification == 'ar' or rr:
+                rr['uid'] = self.UID()
+                return rr
+
+        specs = an.getAnalysisSpecs(specification)
+        rr = specs.getResultsRangeDict() if specs else {}
+        rr = rr.get(an.getKeyword(), {}) if rr else {}
+        if rr:
+            rr['uid'] = self.UID()
+        return rr
+
     def getAnalysisSpecs(self, specification=None):
         """ Retrieves the analysis specs to be applied to this analysis.
             Allowed values for specification= 'client', 'lab', None
@@ -300,6 +551,7 @@ class Analysis(BaseContent):
             lab specification.
             If no specification available for this analysis, returns None
         """
+
         sample = self.getSample()
 
         # No specifications available for ReferenceSamples
@@ -319,9 +571,8 @@ class Analysis(BaseContent):
             if len(proxies) == 0:
                 # No client specs available, retrieve lab specs
                 labspecsuid = self.bika_setup.bika_analysisspecs.UID()
-                proxies = bsc(portal_type='AnalysisSpec',
-                              getSampleTypeUID=sampletype_uid,
-                              getClientUID=labspecsuid)
+                proxies = bsc(portal_type = 'AnalysisSpec',
+                          getSampleTypeUID = sampletype_uid)
         else:
             specuid = specification == "client" and self.getClientUID() or \
                     self.bika_setup.bika_analysisspecs.UID()
@@ -329,52 +580,45 @@ class Analysis(BaseContent):
                               getSampleTypeUID=sampletype_uid,
                               getClientUID=specuid)
 
-        return (proxies and len(proxies) > 0) and proxies[0].getObject() or None
+        outspecs = None
+        for spec in (p.getObject() for p in proxies):
+            if self.getKeyword() in spec.getResultsRangeDict():
+                outspecs = spec
+                break
+
+        return outspecs
 
     def calculateResult(self, override=False, cascade=False):
         """ Calculates the result for the current analysis if it depends of
             other analysis/interim fields. Otherwise, do nothing
         """
-
         if self.getResult() and override == False:
             return False
 
-        calculation = self.getService().getCalculation()
-        if not calculation:
+        serv = self.getService()
+        calc = self.getCalculation() if self.getCalculation() \
+                                     else serv.getCalculation()
+        if not calc:
             return False
 
         mapping = {}
 
+        # Interims' priority order (from low to high):
+        # Calculation < Analysis Service < Analysis
+        interims = calc.getInterimFields() + \
+                   serv.getInterimFields() + \
+                   self.getInterimFields()
+
         # Add interims to mapping
-        for interimdata in self.getInterimFields():
-            for i in interimdata:
-                try:
-                    ivalue = float(i['value'])
-                    mapping[i['keyword']] = ivalue
-                except:
-                    # Interim not float, abort
-                    return False
-
-        # Add calculation's hidden interim fields to mapping
-        for field in calculation.getInterimFields():
-            if field['keyword'] not in mapping.keys():
-                if field.get('hidden', False):
-                    try:
-                        ivalue = float(field['value'])
-                        mapping[field['keyword']] = ivalue
-                    except:
-                        return False
-
-        # Add Analysis Service interim defaults to mapping
-        service = self.getService()
-        for field in service.getInterimFields():
-            if field['keyword'] not in mapping.keys():
-                if field.get('hidden', False):
-                    try:
-                        ivalue = float(field['value'])
-                        mapping[field['keyword']] = ivalue
-                    except:
-                        return False
+        for i in interims:
+            if 'keyword' not in i:
+                continue;
+            try:
+                ivalue = float(i['value'])
+                mapping[i['keyword']] = ivalue
+            except:
+                # Interim not float, abort
+                return False
 
         # Add dependencies results to mapping
         dependencies = self.getDependencies()
@@ -386,24 +630,27 @@ class Analysis(BaseContent):
                     # Try to calculate the dependency result
                     dependency.calculateResult(override, cascade)
                     result = dependency.getResult()
-                    if result:
-                        try:
-                            result = float(str(result))
-                            mapping[dependency.getKeyword()] = result
-                        except:
-                            return False
                 else:
                     return False
-            else:
-                # Result must be float
+            if result:
                 try:
                     result = float(str(result))
-                    mapping[dependency.getKeyword()] = result
+                    key = dependency.getKeyword()
+                    ldl = dependency.getLowerDetectionLimit()
+                    udl = dependency.getUpperDetectionLimit()
+                    bdl = dependency.isBelowLowerDetectionLimit()
+                    adl = dependency.isAboveUpperDetectionLimit()
+                    mapping[key]=result
+                    mapping['%s.%s' % (key, 'RESULT')]=result
+                    mapping['%s.%s' % (key, 'LDL')]=ldl
+                    mapping['%s.%s' % (key, 'UDL')]=udl
+                    mapping['%s.%s' % (key, 'BELOWLDL')]=int(bdl)
+                    mapping['%s.%s' % (key, 'ABOVEUDL')]=int(adl)
                 except:
                     return False
 
         # Calculate
-        formula = calculation.getMinifiedFormula()
+        formula = calc.getMinifiedFormula()
         formula = formula.replace('[', '%(').replace(']', ')f')
         try:
             formula = eval("'%s'%%mapping" % formula,
@@ -422,7 +669,7 @@ class Analysis(BaseContent):
             self.setResult("NA")
             return True
 
-        self.setResult(result)
+        self.setResult(str(result))
         return True
 
     def getPriority(self):
@@ -560,11 +807,14 @@ class Analysis(BaseContent):
 
     def getFormattedResult(self, specs=None, decimalmark='.', sciformat=1):
         """Formatted result:
-        1. Print ResultText of matching ResultOptions
-        2. If the result is not floatable, return it without being formatted
-        3. If the analysis specs has hidemin or hidemax enabled and the
+        1. If the result is a detection limit, returns '< LDL' or '> UDL'
+        2. Print ResultText of matching ResultOptions
+        3. If the result is not floatable, return it without being formatted
+        4. If the analysis specs has hidemin or hidemax enabled and the
            result is out of range, render result as '<min' or '>max'
-        4. Otherwise, render numerical value
+        5. If the result is below Lower Detection Limit, show '<LDL'
+        6. If the result is above Upper Detecion Limit, show '>UDL'
+        7. Otherwise, render numerical value
         specs param is optional. A dictionary as follows:
             {'min': <min_val>,
              'max': <max_val>,
@@ -579,29 +829,40 @@ class Analysis(BaseContent):
                           By default 1
         """
         result = self.getResult()
+
+        # 1. The result is a detection limit, return '< LDL' or '> UDL'
+        dl = self.getDetectionLimitOperand()
+        if dl:
+            try:
+                res = float(result) # required, check if floatable
+                res = drop_trailing_zeros_decimal(res)
+                return formatDecimalMark('%s %s' % (dl, res), decimalmark)
+            except:
+                logger.warn("The result for the analysis %s is a "
+                            "detection limit, but not floatable: %s" %
+                            (self.id, result))
+                return formatDecimalMark(result, decimalmark=decimalmark)
+
         service = self.getService()
         choices = service.getResultOptions()
 
-        # 1. Print ResultText of matching ResulOptions
+        # 2. Print ResultText of matching ResulOptions
         match = [x['ResultText'] for x in choices
                  if str(x['ResultValue']) == str(result)]
         if match:
             return match[0]
 
-        # 2. If the result is not floatable, return it without being formatted
+        # 3. If the result is not floatable, return it without being formatted
         try:
             result = float(result)
         except:
-            return result
+            return formatDecimalMark(result, decimalmark=decimalmark)
 
-        # 3. If the analysis specs has enabled hidemin or hidemax and the
+        # 4. If the analysis specs has enabled hidemin or hidemax and the
         #    result is out of range, render result as '<min' or '>max'
         belowmin = False
         abovemax = False
-        if not specs:
-            specs = self.getAnalysisSpecs()
-            specs = specs.getResultsRangeDict() if specs is not None else {}
-            specs = specs.get(self.getKeyword(), {})
+        specs = specs if specs else self.getResultsRange()
         hidemin = specs.get('hidemin', '')
         hidemax = specs.get('hidemax', '')
         try:
@@ -615,16 +876,55 @@ class Analysis(BaseContent):
             abovemax = False
             pass
 
-        # 3.1. If result is below min and hidemin enabled, return '<min'
+        # 4.1. If result is below min and hidemin enabled, return '<min'
         if belowmin:
             return formatDecimalMark('< %s' % hidemin, decimalmark)
 
-        # 3.2. If result is above max and hidemax enabled, return '>max'
+        # 4.2. If result is above max and hidemax enabled, return '>max'
         if abovemax:
             return formatDecimalMark('> %s' % hidemax, decimalmark)
 
+        # Below Lower Detection Limit (LDL)?
+        ldl = self.getLowerDetectionLimit()
+        if result < ldl:
+            # LDL must not be formatted according to precision, etc.
+            # Drop trailing zeros from decimal
+            ldl = drop_trailing_zeros_decimal(ldl)
+            return formatDecimalMark('< %s' % ldl, decimalmark)
+
+        # Above Upper Detection Limit (UDL)?
+        udl = self.getUpperDetectionLimit()
+        if result > udl:
+            # UDL must not be formatted according to precision, etc.
+            # Drop trailing zeros from decimal
+            udl = drop_trailing_zeros_decimal(udl)
+            return formatDecimalMark('> %s' % udl, decimalmark)
+
         # Render numerical values
         return formatDecimalMark(format_numeric_result(self, result, sciformat=sciformat), decimalmark=decimalmark)
+
+    def getPrecision(self, result=None):
+        """
+        Returns the precision for the Analysis.
+        - ManualUncertainty not set: returns the precision from the
+            AnalysisService.
+        - ManualUncertainty set and Calculate Precision from Uncertainty
+          is also set in Analysis Service: calculates the precision of the
+          result according to the manual uncertainty set.
+        - ManualUncertainty set and Calculatet Precision from Uncertainty
+          not set in Analysis Service: returns the result as-is.
+        Further information at AnalysisService.getPrecision()
+        """
+        serv = self.getService()
+        schu = self.Schema().getField('Uncertainty').get(self)
+        if schu and serv.getAllowManualUncertainty() == True \
+            and serv.getPrecisionFromUncertainty() == True:
+            uncertainty = self.getUncertainty(result)
+            if uncertainty == 0:
+                return 1
+            return abs(get_significant_digits(uncertainty))
+        else:
+            return serv.getPrecision(result)
 
     def getAnalyst(self):
         """ Returns the identifier of the assigned analyst. If there is
@@ -876,7 +1176,6 @@ class Analysis(BaseContent):
             Service=self.getService(),
             Calculation=self.getCalculation(),
             InterimFields=self.getInterimFields(),
-            Result=self.getResult(),
             ResultDM=self.getResultDM(),
             Retested=True,  # True
             MaxTimeAllowed=self.getMaxTimeAllowed(),
@@ -886,6 +1185,8 @@ class Analysis(BaseContent):
             Analyst=self.getAnalyst(),
             Instrument=self.getInstrument(),
             SamplePartition=self.getSamplePartition())
+        analysis.setDetectionLimitOperand(self.getDetectionLimitOperand())
+        analysis.setResult(self.getResult())
         analysis.unmarkCreationFlag()
 
         # zope.event.notify(ObjectInitializedEvent(analysis))

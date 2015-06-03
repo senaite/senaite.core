@@ -26,8 +26,9 @@
                                 tal:content="python:format['title']"></option>
                     </tal:formats>
                 </select>
-                <a href='#' id='sel_format_info'><img tal:attributes='src python:portal.absolute_url()+"/++resource++bika.lims.images/info.png";'/></a>
-                <input type="checkbox" name="qcvisible" id='qcvisible' value="0"><span i18n:translate="">Show QC Analyses</span>
+                <a href='#' id='sel_format_info'><img tal:attributes='src python:portal.absolute_url()+"/++resource++bika.lims.images/info.png";'/></a><br/>
+                <input type="checkbox" name="qcvisible" id='qcvisible' value="0"><span i18n:translate="">Show QC Analyses</span><br/>
+                <input type="checkbox" name="hvisible" id='hvisible' value="0"><span i18n:translate="">Show Hidden Analyses</span>
             </div>
             <div id="sel_format_info_pane" style="display:none">
                 <p i18n:translate="">Refer to <a target="_blank" href="https://github.com/bikalabs/Bika-LIMS/wiki/Creating-new-report-templates">Creating new report templates</a> documentation from Bika LIMS wiki to get more or add your own report templates.</p>
@@ -59,7 +60,7 @@
                 background-color:#fff;
             }
             #ar_publish_header {
-                margin:-10px -10px 60px -20px;
+                margin:-10px -10px 20px -20px;
                 padding:10px 20px 20px 10px;
                 background-color: #dcdcdc;
                 border-bottom: 20px solid #CDCDCD;
@@ -67,6 +68,9 @@
             }
             #ar_publish_header #options_handler label {
                 padding:5px 10px 5px 10px;
+            }
+            #ar_publish_header #options_handler input {
+                padding:5px 10px 0px;
             }
             #ar_publish_header #ar_publish_summary {
                 padding-left:10px;
@@ -122,11 +126,16 @@
                 margin: -60px -10px 0 -20px;
                 padding: 60px 10px 0 20px;
             }
-            .page-break {
+            .page-break, .page-footer {
                 background-color: #CDCDCD;
                 margin: 60px -10px 60px -20px;
                 padding-bottom: 20px;
                 padding-top: 20px;
+            }
+            .page-footer {
+                border-bottom: 30px solid #cdcdcd;
+                background-color:transparent;
+                padding: 20px;
             }
             .error-report {
                 margin:0 -20px;
@@ -143,6 +152,9 @@
                 color:#000;
                 font-weight:normal;
             }
+            .clearfix {
+                clear:both;
+            }
             @media print {
                 html {
                     background-color:#fff;
@@ -150,6 +162,12 @@
                 .page-break  {
                     display: block;
                     page-break-before: always;
+                    margin:none;
+                    border:none;
+                }
+                .page-footer {
+                    display: block;
+                    page-break-after: always;
                     margin:none;
                     border:none;
                 }

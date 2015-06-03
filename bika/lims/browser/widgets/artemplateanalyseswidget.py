@@ -60,6 +60,16 @@ class ARTemplateAnalysesView(BikaListingView):
         self.fieldvalue = fieldvalue
         self.selected = [x['service_uid'] for x in fieldvalue]
 
+        if self.aq_parent.portal_type == 'ARTemplate':
+            # Custom settings for the Analysis Services assigned to
+            # the Analysis Request Template
+            # https://jira.bikalabs.com/browse/LIMS-1324
+            self.artemplate = self.aq_parent
+            self.columns['Hidden'] = {'title': _('Hidden'),
+                                      'sortable': False,
+                                      'type': 'boolean'}
+            self.review_states[0]['columns'].insert(1, 'Hidden')
+
     def folderitems(self):
         self.categories = []
 
@@ -137,6 +147,13 @@ class ARTemplateAnalysesView(BikaListingView):
                               _('Attachment not permitted'))
             if after_icons:
                 items[x]['after']['Title'] = after_icons
+
+            if self.artemplate:
+                # Display analyses for this Analysis Service in results?
+                ser = self.artemplate.getAnalysisServiceSettings(obj.UID())
+                items[x]['allow_edit'] = ['Hidden', ]
+                items[x]['Hidden'] = ser.get('hidden', obj.getHidden())
+
         self.categories.sort()
         return items
 
@@ -168,6 +185,18 @@ class ARTemplateAnalysesWidget(TypesWidget):
                    and Partitions[service_uid] != '':
                     value.append({'service_uid':service_uid,
                                   'partition':Partitions[service_uid]})
+
+        if instance.portal_type == 'ARTemplate':
+            # Hidden analyses?
+            outs = []
+            hiddenans = form.get('Hidden', {})
+            if service_uids:
+                for uid in service_uids:
+                    hidden = hiddenans.get(uid, '')
+                    hidden = True if hidden == 'on' else False
+                    outs.append({'uid':uid, 'hidden':hidden})
+            instance.setAnalysisServicesSettings(outs)
+
         return value, {}
 
     security.declarePublic('Analyses')

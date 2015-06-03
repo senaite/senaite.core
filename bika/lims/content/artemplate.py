@@ -171,6 +171,16 @@ schema = BikaSchema.copy() + Schema((
             description=_("Select analyses to include in this template"),
         )
     ),
+    # Custom settings for the assigned analysis services
+    # https://jira.bikalabs.com/browse/LIMS-1324
+    # Fields:
+    #   - uid: Analysis Service UID
+    #   - hidden: True/False. Hide/Display in results reports
+    RecordsField('AnalysisServicesSettings',
+         required=0,
+         subfields=('uid', 'hidden',),
+         widget=ComputedWidget(visible=False),
+    ),
 ),
 )
 
@@ -205,6 +215,38 @@ class ARTemplate(BaseContent):
         return DisplayList(items)
 
     def getClientUID(self):
-        return self.aq_parent.UID();
+        return self.aq_parent.UID()
+
+    def getAnalysisServiceSettings(self, uid):
+        """ Returns a dictionary with the settings for the analysis
+            service that match with the uid provided.
+            If there are no settings for the analysis service and
+            template, returns a dictionary with the key 'uid'
+        """
+        sets = [s for s in self.getAnalysisServicesSettings() \
+                if s.get('uid','') == uid]
+        return sets[0] if sets else {'uid': uid}
+
+    def isAnalysisServiceHidden(self, uid):
+        """ Checks if the analysis service that match with the uid
+            provided must be hidden in results.
+            If no hidden assignment has been set for the analysis in
+            this template, returns the visibility set to the analysis
+            itself.
+            Raise a TypeError if the uid is empty or None
+            Raise a ValueError if there is no hidden assignment in this
+                template or no analysis service found for this uid.
+        """
+        if not uid:
+            raise TypeError('None type or empty uid')
+        sets = self.getAnalysisServiceSettings(uid)
+        if 'hidden' not in sets:
+            uc = getToolByName(self, 'uid_catalog')
+            serv = uc(UID=uid)
+            if serv and len(serv) == 1:
+                return serv[0].getObject().getRawHidden()
+            else:
+                raise ValueError('%s is not valid' % uid)
+        return sets.get('hidden', False)
 
 registerType(ARTemplate, PROJECTNAME)

@@ -6,7 +6,12 @@
 
     <h1 class="documentFirstHeading" i18n:translate="bika-frontpage-title">
         <img tal:attributes="src view/icon"/> Welcome to Bika LIMS
+        <tal:version condition="python:'bika.lims' not in view.upgrades">
         <span tal:replace="python:view.versions['bika.lims']" i18n:name="version"/>
+        </tal:version>
+        <tal:upgrade condition="python:'bika.lims' in view.upgrades">
+        <span tal:replace="python:view.upgrades['bika.lims']"/>
+        </tal:upgrade>
     </h1>
 
 </metal:content-title>

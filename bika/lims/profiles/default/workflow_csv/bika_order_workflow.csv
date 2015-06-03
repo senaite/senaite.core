@@ -12,8 +12,8 @@ Title:,Dispatched,,,,,,,,,
 Description:,,,,,,,,,,
 Transitions,,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager
-Modify portal content,N,N,Y,N,N,N,N,N,N,N
-Delete objects,N,N,Y,N,N,N,N,N,N,N
+Modify portal content,N,N,Y,N,N,N,N,N,N,Y
+Delete objects,N,N,Y,N,N,N,N,N,N,Y
 ,,,,,,,,,,
 [State],,,,,,,,,,
 Id:,pending,,,,,,,,,

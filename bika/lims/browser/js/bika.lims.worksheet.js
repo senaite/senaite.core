@@ -240,6 +240,8 @@ function WorksheetManageResultsView() {
         loadWideInterimsEventHandlers();
 
         loadRemarksEventHandlers();
+
+        loadDetectionLimitsEventHandlers();
     }
 
     function portalMessage(message) {
@@ -267,6 +269,45 @@ function WorksheetManageResultsView() {
             }
         });
         $("a.add-remark").click();
+    }
+
+    function loadDetectionLimitsEventHandlers() {
+        $('select[name^="DetectionLimit."]').change(function() {
+            var defdls = $(this).closest('td').find('input[id^="DefaultDLS."]').first().val();
+            var resfld = $(this).closest('tr').find('input[name^="Result."]')[0];
+            var uncfld = $(this).closest('tr').find('input[name^="Uncertainty."]');
+            defdls = $.parseJSON(defdls);
+            $(resfld).prop('readonly', !defdls.manual);
+            if ($(this).val() == '<') {
+                $(resfld).val(defdls['min']);
+                // Inactivate uncertainty?
+                if (uncfld.length > 0) {
+                    $(uncfld).val('');
+                    $(uncfld).prop('readonly', true);
+                    $(uncfld).closest('td').children().hide();
+                }
+            } else if ($(this).val() == '>') {
+                $(resfld).val(defdls['max']);
+                // Inactivate uncertainty?
+                if (uncfld.length > 0) {
+                    $(uncfld).val('');
+                    $(uncfld).prop('readonly', true);
+                    $(uncfld).closest('td').children().hide();
+                }
+            } else {
+                $(resfld).val('');
+                $(resfld).prop('readonly',false);
+                // Activate uncertainty?
+                if (uncfld.length > 0) {
+                    $(uncfld).val('');
+                    $(uncfld).prop('readonly', false);
+                    $(uncfld).closest('td').children().show();
+                }
+            }
+            // Maybe the result is used in calculations...
+            $(resfld).change();
+        });
+        $('select[name^="DetectionLimit."]').change();
     }
 
     function loadWideInterimsEventHandlers() {

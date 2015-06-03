@@ -346,9 +346,7 @@ class BikaListingView(BrowserView):
         catalog = getToolByName(self.context, self.catalog)
 
         # Some ajax calls duplicate form values?  I have not figured out why!
-        if 'submitted' in self.request.form \
-        and self.request.form['submitted']\
-        and isinstance(self.request.form['submitted'], list):
+        if self.request.form:
             for key, value in self.request.form.items():
                 if isinstance(value, list):
                     self.request.form[key] = self.request.form[key][0]
@@ -459,6 +457,8 @@ class BikaListingView(BrowserView):
         # ${form_id}_filter is searched with OR agains all indexes
         request_key = "%s_filter" % form_id
         value = self.request.get(request_key, '')
+        if type(value) in (list, tuple):
+            value = value[0]
         if len(value) > 1:
             for index in self.filter_indexes:
                 idx = catalog.Indexes.get(index, None)
@@ -880,6 +880,9 @@ class BikaListingTable(tableview.Table):
 
         if hasattr(self.bika_listing, 'manual_sort_on') \
            and self.bika_listing.manual_sort_on:
+            mso = self.bika_listing.manual_sort_on
+            if type(mso) in (list, tuple):
+                self.bika_listing.manual_sort_on = mso[0]
             psi = self.bika_listing.page_start_index
             psi = psi and psi or 0
             # We do a sort of the current page using self.manual_sort_on, here

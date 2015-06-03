@@ -8,6 +8,7 @@ from foss.winescan import auto
 from foss.winescan import ft120
 from thermoscientific.gallery import Ts9861x
 from thermoscientific.arena import xt20
+from thermoscientific.multiskan import go
 from panalytical.omnia import axios_xrf
 from alere.pima import beads, cd4
 from lifetechnologies.qubit import qubit
@@ -16,6 +17,10 @@ from tescan.tima import tima
 from sysmex.xs import i500, i1000
 from beckmancoulter.access import model2
 from rochecobas.taqman import model48
+from sealanalytical.aq2 import aq2
+from horiba.jobinyvon import icp
+from abaxis.vetscan import vs2
+from scilvet.abc import plus
 
 __all__ = ['generic.xml',
            'agilent.masshunter.quantitative',
@@ -33,7 +38,12 @@ __all__ = ['generic.xml',
            'sysmex.xs.i500',
            'sysmex.xs.i1000',
            'beckmancoulter.access.model2',
-           'rochecobas.taqman.model48'
+           'rochecobas.taqman.model48',
+           'sealanalytical.aq2.aq2',
+           'horiba.jobinyvon.icp',
+           'abaxis.vetscan.vs2',
+           'scilvet.abc.plus',
+           'thermoscientific.multiskan.go'
            ]
 
 

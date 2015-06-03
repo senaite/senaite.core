@@ -1,3 +1,46 @@
+3.1.8 (2015-06-03)
+------------------
+LIMS-1773: Instrument. Thermo Fisher ELISA Spectrophotometer
+LIMS-1697: Error updating bika.lims 317 to 318 via quickinstaller
+LIMS-1820: QC Graphs DateTime's X-Axis not well sorted
+LIMS-280 : System IDs starting from a specific value
+LIMS-1819: Bika LIMS in footer, not Bika Lab Systems
+LIMS-1808: Uncertainty calculation on DL
+LIMS-1522: Site Error adding display columns to sorted AR list
+LIMS-1705: Invoices. Currency unit overcooked
+LIMS-1806: Instrument Interface. AQ2. Seal Analytical
+LIMS-1770: FIAStar import 'no header'
+LIMS-1771: Instrument. Scil Vet abc Plus
+LIMS-1772: Instrument. VetScan VS2
+LIMS-1507: Bika must notify why is not possible to publish an AR
+LIMS-1805: Instrument Interface. Horiba JY ICP
+LIMS-1710: UnicodeEncode error while creating an Invoice from AR view
+WINE-44: Sample stickers uses Partition ID only if ShowPartitions option is enabled
+LIMS-1634: AR Import fields (ClientRef, ClientSid) not importing correctly
+LIMS-1474: Disposed date is not shown in Sample View
+LIMS-1779: Results report new fields and improvements
+LIMS-1775: Allow to select LDL or UDL defaults in results with readonly mode
+LIMS-1769: Allow to use LDL and UDL in calculations.
+LIMS-1700: Lower and Upper Detection Limits (LDL/UDL). Allow manual input
+LIMS-1379: Allow manual uncertainty value input
+LIMS-1324: Allow to hide analyses in results reports
+LIMS-1754: Easy install for LIMS' add-ons was not possible
+LIMS-1741: Fixed unwanted overlay when trying to save supply order
+LIMS-1748: Error in adding supply order when a product has no price
+LIMS-1745: Retracted analyses in duplicates
+LIMS-1629: Pdf reports should split analysis results in different pages according to the lab department
+Some new ID Generator's features, as the possibility of select the separator type
+LIMS-1738: Regression. 'NoneType' object has no attribute 'getResultsRangeDict'
+LIMS-1739: Error with results interpretation field of an AR lacking departments
+LIMS-1740: Error when trying to view any Sample
+LIMS-1724: Fixed missing start and end dates on reports
+LIMS-1628: There should be a results interpretation field per lab department
+LIMS-1737: Error when adding pricelists of lab products with no volume and unit
+LIMS-1696: Decimal mark conversion is not working with "<0,002" results type
+LIMS-1729: Analysis Specification Not applying to Sample when Selected
+LIMS-1507: Do not cause exception on SMTPServerDisconnect when publishing AR results.
+
+
 3.1.7 (2015-02-26)
 ------------------
 LIMS-1693: Error trying to save a new AR

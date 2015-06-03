@@ -34,7 +34,7 @@
       class="bika.lims.browser.instrument.InstrumentMaintenanceView"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
-    />
+    /-->
 
     <browser:page
       for="bika.lims.interfaces.IInstrument"
@@ -50,7 +50,15 @@
       class="bika.lims.browser.instrument.InstrumentCalibrationsView"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
-    /-->
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IInstrument"
+      name="multifile"
+      class="bika.lims.browser.instrument.InstrumentMultifileView"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
 
     <browser:page
       for="*"
