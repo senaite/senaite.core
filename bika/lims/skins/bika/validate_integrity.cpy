@@ -15,7 +15,7 @@ from Products.Archetypes.utils import addStatusMessage
 request = context.REQUEST
 errors = {}
 errors = context.validate(REQUEST=request, errors=errors, data=1, metadata=0)
-import pdb; pdb.set_trace()
+
 if errors:
     message = _(u'Please correct the indicated errors.')
     addStatusMessage(request, message, type='error')
@@ -26,7 +26,6 @@ else:
 
     # Redirection after saving edition forms
     redirects = {'Multifile': context.aq_parent.absolute_url_path() + '/multifile'}
-    import pdb; pdb.set_trace()
     if context.portal_type in redirects:
         redirect = 'redirect_to:string:${portal_url}' + redirects[context.portal_type]
         state.setNextAction(redirect)
