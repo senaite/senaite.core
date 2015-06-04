@@ -54,7 +54,7 @@
 
     <browser:page
       for="bika.lims.interfaces.IInstrument"
-      name="instrumentmultifile"
+      name="multifile"
       class="bika.lims.browser.instrument.InstrumentMultifileView"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"

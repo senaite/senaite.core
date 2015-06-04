@@ -121,7 +121,7 @@
         category="object"
         condition_expr=""
         icon_expr="string:${portal_url}/images/instrumentcertification.png"
-        url_expr="string:${object_url}/instrumentmultifile"
+        url_expr="string:${object_url}/multifile"
         i18n:attributes="title"
         visible="True">
     <permission value="Modify portal content"/>
