@@ -117,7 +117,7 @@
   </action>
 
   <action title="Documents"
-        action_id="multifile"
+        action_id="instrumentmultifile"
         category="object"
         condition_expr=""
         icon_expr="string:${portal_url}/images/instrumentcertification.png"
