@@ -16,7 +16,7 @@ function AnalysisRequestPublishView() {
                       layout_letter: [216, 279]};
 
     var layouts_margin = {layout_a4:     [20, 20, 20, 20],
-                          layout_letter: [15, 15, 20, 15]};
+                          layout_letter: [20, 20, 20, 20]};
     /*var layouts_margin = {layout_a4:     [0, 0, 0, 0],
                           layout_letter: [0, 15, 0, 0]};*/
     var header_height = 0;
@@ -216,7 +216,7 @@ function AnalysisRequestPublishView() {
         header_html = '';
         if ($('.page-header').length > 0) {
             var pgh = $('.page-header').first();
-            header_height = pxTomm(get_full_height(pgh));
+            header_height = parseFloat($(pgh).outerHeight(true));
             header_html = $(pgh).html();
             $('.page-header').remove();
         }
@@ -224,7 +224,7 @@ function AnalysisRequestPublishView() {
         footer_html = '';
         if ($('.page-footer').length > 0) {
             var pgf = $('.page-footer').first();
-            footer_height = pxTomm(get_full_height(pgf));
+            footer_height = parseFloat($(pgf).outerHeight(true));
             footer_html = $(pgf).html();
             $('.page-footer').remove();
         }
@@ -241,9 +241,9 @@ function AnalysisRequestPublishView() {
         $('#layout-style').html(layout_style);
 
         // Calculate pagination according to the selected Layout.
-        var layheight = layouts_mm[currentlayout][1];
-        layheight    -= layouts_margin[currentlayout][0];
-        layheight    -= layouts_margin[currentlayout][2];
+        var layheight = mmTopx(layouts_mm[currentlayout][1]);
+        layheight    -= mmTopx(layouts_margin[currentlayout][0]);
+        layheight    -= mmTopx(layouts_margin[currentlayout][2]);
         //layheight    -= 10; // Let 10mm for unit conversion looses.
         var maxheight = layheight - footer_height - header_height;
         console.log("Layout height: "+layheight+" , Max height: "+maxheight+" , Foot height: "+footer_height+" , Header height: "+header_height);
@@ -263,7 +263,6 @@ function AnalysisRequestPublishView() {
         var currheight = 0;
         var currelement = null;
         var footadded = false;
-        $('div.ar_publish_body > *').css({'margin-top':0, 'margin-bottom':0});
         $('div.ar_publish_body > div').each(function(i) {
             var arbody = $(this).closest('div.ar_publish_body');
             var idar = $(arbody).attr('id');
@@ -273,11 +272,11 @@ function AnalysisRequestPublishView() {
                 var pghead = pgbreak + "<div class='page-header'>" + header_html + "</div>";
                 $(pghead).prependTo($(arbody));
                 prevarid = idar;
-                position_offset = pxTomm($(this).position().top);
+                position_offset = $(this).position().top;
             }
 
             // Absolute position of the current element in mm
-            el_abs_pos = pxTomm($(this).position().top);
+            el_abs_pos = $(this).position().top;
 
             // Relative position of the current element in mm
             el_rel_pos = el_abs_pos - position_offset;
@@ -288,7 +287,7 @@ function AnalysisRequestPublishView() {
                 el_height = $(el_next).position().top - $(this).position().top;
                 el_height = pxTomm(el_height);
             } else {
-                el_height = pxTomm(get_full_height($(this)));
+                el_height = $(this).outerHeight(true);
             }
 
             // Total relative height
@@ -308,14 +307,14 @@ function AnalysisRequestPublishView() {
                 var margin = maxheight - (currheight - el_height);// maxheight - currheight + header_height + footer_height;
                 margin = margin > 0 ? margin : 0;
                 console.log(" --- " + (currheight - el_height) + " + "+ margin +" = "+ (currheight - el_height + margin));
-                var pgbreak = "<div style='clear:both;padding-top:"+margin+"mm'></div>";
+                var pgbreak = "<div style='clear:both;padding-top:"+pxTomm(margin)+"mm'></div>";
                 pgbreak += "<div class='page-footer'>"+footer_html+"</div>";
                 pgbreak += "<div class='page-break'></div>";
                 pgbreak += "<div class='page-header'>"+header_html+"</div>";
                 $(pgbreak).insertBefore($(this));
 
                 // Initialize the position offset
-                position_offset = pxTomm($(this).position().top);
+                position_offset = $(this).position().top;
                 currheight = el_height + header_height;
             }
             currelement = $(this);
@@ -333,7 +332,7 @@ function AnalysisRequestPublishView() {
             var margin =  maxheight - (currheight - el_height) - footer_height; //maxheight - currheight + header_height + footer_height;
             margin = margin > 0 ? margin : 0;
             console.log(" --- " + (currheight - el_height) + " + "+ margin +" = "+ (currheight - el_height + margin));
-            $("<div style='clear:both;padding-top:"+margin+"mm'></div><div class='page-footer'>"+footer_html+"</div>").insertAfter($(currelement));
+            $("<div style='clear:both;padding-top:"+pxTomm(margin)+"mm'></div><div class='page-footer'>"+footer_html+"</div>").insertAfter($(currelement));
         }
         $('.manual-page-break').hide();
 
@@ -361,8 +360,10 @@ function AnalysisRequestPublishView() {
     }
 }
 var mmTopx = function(mm) {
-    return parseFloat(mm*$('#my_mm').height());
+    var px = parseFloat(mm*$('#my_mm').height());
+    return px > 0 ? Math.ceil(px) : Math.floor(px);
 }
 var pxTomm = function(px){
-    return parseFloat(px/$('#my_mm').height());
+    var mm = parseFloat(px/$('#my_mm').height());
+    return mm > 0 ? Math.floor(mm) : Math.ceil(mm);
 };
