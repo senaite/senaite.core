@@ -304,7 +304,7 @@ function AnalysisRequestPublishView() {
                 } else {
                     console.log("---- DYNAMIC PAGE BREAK ----");
                 }
-                var margin = maxheight - (currheight - el_height);// maxheight - currheight + header_height + footer_height;
+                var margin = maxheight - (currheight - el_height);
                 margin = margin > 0 ? margin : 0;
                 console.log(" --- " + (currheight - el_height) + " + "+ margin +" = "+ (currheight - el_height + margin));
                 var pgbreak = "<div style='clear:both;padding-top:"+pxTomm(margin)+"mm'></div>";
@@ -329,7 +329,7 @@ function AnalysisRequestPublishView() {
             console.log("CURRENT HEIGHT: "+currheight+": "+el_height+")");
             console.log("---- DOCUMENT FOOTER ----");
             $(currelement).css({'margin-top':0,'margin-bottom':0});
-            var margin =  maxheight - (currheight - el_height) - footer_height; //maxheight - currheight + header_height + footer_height;
+            var margin =  maxheight - (currheight - el_height) - footer_height - mmTopx(5);
             margin = margin > 0 ? margin : 0;
             console.log(" --- " + (currheight - el_height) + " + "+ margin +" = "+ (currheight - el_height + margin));
             $("<div style='clear:both;padding-top:"+pxTomm(margin)+"mm'></div><div class='page-footer'>"+footer_html+"</div>").insertAfter($(currelement));
