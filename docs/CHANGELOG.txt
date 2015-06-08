@@ -3,6 +3,7 @@
 LIMS-1812: Use asynchronous requests for expanding categories in listings
 LIMS-1811: Refactor AR Add form Javascript, and related code.
 LIMS-1818: Instrument Interface. Eltra CS-2000
+LIMS-1817: Instrument Interface. Rigaku Supermini XRF
 
 3.1.8 (2015-06-03)
 ------------------
