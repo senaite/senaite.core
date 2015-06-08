@@ -125,11 +125,10 @@
 <div id="section-alert" tal:condition="python:analysisrequest['prepublish']==True and analysisrequest['invalid']==False">
     <h1 i18n:translate="">Provisional report</h1>
 </div>
-
-<h1><span i18n:translate="">Department</span>: <span tal:content="dept/title"></span></h1>
 <!-- Summary section -->
 <div id="section-summary">
-    <h1 i18n:translate="">Summary</h1>
+    <h1><span i18n:translate="">Department</span>: <span tal:content="dept/title"></span></h1>
+    <h2 i18n:translate="">Summary</h2>
     <table>
         <tr>
             <td class="label" i18n:translate="">Request ID</td>
@@ -391,9 +390,23 @@
     <div tal:condition="python:contact.get('pubpref','') != '' and 'email' in contact['pubpref']" i18n:translate="">Methods of analysis available by clicking on the 'Request' link</div>
 </div>
 <div class='page-footer'>
-    <div class="clearfix"></div>
-    <div class="footer" tal:content="structure analysisrequest/footer"></div>
-    <div class="clearfix"></div>
+    <table>
+        <tr>
+            <td class='footer-discreeter'>
+                <div class="footer" tal:content="structure analysisrequest/footer"></div>
+                <div class="page-number">Page <span class="page-current-num"></span> of <span class="page-total-count"></span></div>
+            </td>
+            <td class='barcode-container'>
+                <div class='barcode'
+                        data-code='code128'
+                        data-showHRI='false'
+                        data-barHeight='12'
+                        data-addQuietZone='true'
+                        tal:attributes="data-id analysisrequest/id">
+                </div>
+            </td>
+        </tr>
+    </table>
 </div>
 <div class='manual-page-break'></div>
 </tal:department>

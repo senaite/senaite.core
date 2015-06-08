@@ -37,7 +37,7 @@
                         remarksenabled  python:view.context.bika_setup.getEnableAnalysisRemarks();">
 
 <!-- Report header -->
-<div id="section-header">
+<div id="section-header" class='page-header'>
     <div id='barcode-container'>
         <div class='barcode'
             data-code='code128'
@@ -271,18 +271,20 @@
     </tal:cat>
     </tal:poc>
 </div>
-<div id="resultsinterpretation"
-    tal:define="ri analysisrequest/resultsinterpretationdepts"
-    tal:condition="ri">
+<tal:resint define="ri analysisrequest/resultsinterpretationdepts"
+            condition="ri">
+<div>
     <h1 i18n:translate="">Result interpretation</h1>
-    <tal:ris repeat="rid python:ri.keys()">
-        <h2 tal:content="rid"></h2>
-        <div>
-            <div tal:content="structure python:ri.get(rid,{}).get('richtext','')"></div>
-        </div>
-        <p>&nbsp;</p>
-    </tal:ris>
 </div>
+<tal:ris repeat="rid python:ri.keys()">
+<div class='resultsinterpretation'>
+    <h2 tal:content="rid" tal:condition="rid"></h2>
+    <div>
+        <div tal:content="structure python:ri.get(rid,{}).get('richtext','')"></div>
+    </div>
+</div>    
+</tal:ris>
+</tal:resint>
 <!-- QC Results section -->
 <div id="section-qcresults" tal:condition="python:hasqcanalyses and showqcanalyses">
     <h1 i18n:translate="">QC Results</h1>
@@ -400,44 +402,45 @@
 </div>
 
 <!-- Signatures section -->
-<table id="section-signatures">
-    <td tal:define="mngr_info analysisrequest/managers;
-                     mngr_ids python:mngr_info['ids'];
-                     managers python:mngr_info['dict'];"
-         tal:repeat="manager mngr_ids"
-         class="manager-info">
-         <tal:manager tal:define="rownum repeat/manager/number;
-                         email python:managers[manager]['email'];
-                         jobtitle python:managers[manager]['job_title'];
-                         phone python:managers[manager]['phone'];
-                         department python:managers[manager]['departments'];
-                         signature python:managers[manager]['signature'];">
+<div id="section-signatures">
+    <table>
+        <td tal:define="mngr_info analysisrequest/managers;
+                         mngr_ids python:mngr_info['ids'];
+                         managers python:mngr_info['dict'];"
+             tal:repeat="manager mngr_ids"
+             class="manager-info">
+             <tal:manager tal:define="rownum repeat/manager/number;
+                             email python:managers[manager]['email'];
+                             jobtitle python:managers[manager]['job_title'];
+                             phone python:managers[manager]['phone'];
+                             department python:managers[manager]['departments'];
+                             signature python:managers[manager]['signature'];">
 
-            <img tal:condition="signature"
-                 tal:attributes="src string:${signature}" style="height:75px"/>
-            <br/>
-            <span class="manager-fullname" tal:content="python:managers[manager]['name']">Joe Blogs</span>
-            <br tal:condition="jobtitle">
-            <span class="manager-jobtitle"
-                tal:condition="jobtitle"
-                tal:content="jobtitle"></span>
-            <br tal:condition="email"/>
-            <span class="manager-email" tal:condition="email">
-                <a tal:attributes="href string:mailto:${email}"
-                   tal:content="email">a@b.com</a>
-            </span>
-            <br tal:condition="phone"/>
-            <span class="manager-phone"
-                tal:content="phone"
-                tal:condition="phone">011 555 1112</span>
-            <br/>
-            <span class="manager-department" tal:content="department">Chemistry</span>
-            <span tal:condition="python: rownum % 3 == 0"
-                  tal:replace="structure python:'</tr>'"></span>
-        </tal:manager>
-    </td>
-</table>
-
+                <img tal:condition="signature"
+                     tal:attributes="src string:${signature}" style="height:75px"/>
+                <br/>
+                <span class="manager-fullname" tal:content="python:managers[manager]['name']">Joe Blogs</span>
+                <br tal:condition="jobtitle">
+                <span class="manager-jobtitle"
+                    tal:condition="jobtitle"
+                    tal:content="jobtitle"></span>
+                <br tal:condition="email"/>
+                <span class="manager-email" tal:condition="email">
+                    <a tal:attributes="href string:mailto:${email}"
+                       tal:content="email">a@b.com</a>
+                </span>
+                <br tal:condition="phone"/>
+                <span class="manager-phone"
+                    tal:content="phone"
+                    tal:condition="phone">011 555 1112</span>
+                <br/>
+                <span class="manager-department" tal:content="department">Chemistry</span>
+                <span tal:condition="python: rownum % 3 == 0"
+                      tal:replace="structure python:'</tr>'"></span>
+            </tal:manager>
+        </td>
+    </table>
+</div>
 <!-- Discreeter section -->
 <div id="section-discreeter">
     <div id="discreeter-outofrange" i18n:translate="">* Result out of client specified range.</div>
@@ -451,8 +454,22 @@
     <div tal:condition="python:contact.get('pubpref','') != '' and 'email' in contact['pubpref']" i18n:translate="">Methods of analysis available by clicking on the 'Request' link</div>
 </div>
 <div class='page-footer'>
-    <div class="clearfix"></div>
-    <div class="footer" tal:content="structure analysisrequest/footer"></div>
-    <div class="clearfix"></div>
+    <table>
+        <tr>
+            <td class='footer-discreeter'>
+                <div class="footer" tal:content="structure analysisrequest/footer"></div>
+                <div class="page-number">Page <span class="page-current-num"></span> of <span class="page-total-count"></span></div>
+            </td>
+            <td class='barcode-container'>
+                <div class='barcode'
+                        data-code='code128'
+                        data-showHRI='false'
+                        data-barHeight='12'
+                        data-addQuietZone='true'
+                        tal:attributes="data-id analysisrequest/id">
+                </div>
+            </td>
+        </tr>
+    </table>
 </div>
 </tal:report>

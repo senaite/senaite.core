@@ -136,32 +136,11 @@
                 margin: -60px -10px 0 -20px;
                 padding: 60px 10px 0 20px;
             }
-
-            /*
-            .page-break, .page-break-before, .page-break-after {
+            .page-break {
                 background-color: #cdcdcd;
-                margin: 20px -20px 40px;
-                padding: 20px;
+                height: 20px;
+                margin: 20px -30px;
             }
-            .page-footer {
-                background-color:transparent;
-                padding: 20px 0px 0px;
-            }
-            .error-report {
-                margin:0 -20px;
-                padding:20px;
-                font-weight:bold;
-                color:#d40000;
-                border-bottom: 60px solid #CDCDCD;
-            }
-            .error-report pre {
-                font-family: monospace;
-                width:205mm;
-                overflow:auto;
-                background-color:#fff;
-                color:#000;
-                font-weight:normal;
-            }*/
             .clearfix {
                 clear:both !important;
                 margin:0 !important;
