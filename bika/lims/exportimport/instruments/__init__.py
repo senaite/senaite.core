@@ -21,6 +21,7 @@ from sealanalytical.aq2 import aq2
 from horiba.jobinyvon import icp
 from abaxis.vetscan import vs2
 from scilvet.abc import plus
+from eltra.cs import cs2000
 
 __all__ = ['generic.xml',
            'agilent.masshunter.quantitative',
@@ -43,7 +44,8 @@ __all__ = ['generic.xml',
            'horiba.jobinyvon.icp',
            'abaxis.vetscan.vs2',
            'scilvet.abc.plus',
-           'thermoscientific.multiskan.go'
+           'thermoscientific.multiskan.go',
+           'eltra.cs.cs2000'
            ]
 
 
