@@ -203,9 +203,9 @@ function AnalysisRequestPublishView() {
     }
 
     function get_full_height(element) {
-        var height = parseFloat($(element).outerHeight());
-        height += parseFloat($(element).css('marginTop'));
-        height += parseFloat($(element).css('marginBottom'));
+        var height = parseFloat($(element).outerHeight(true));
+     /*   height += parseFloat($(element).css('marginTop'));
+        height += parseFloat($(element).css('marginBottom'));*/
         return height;
     }
 
@@ -246,7 +246,7 @@ function AnalysisRequestPublishView() {
         layheight    -= layouts_margin[currentlayout][2];
         //layheight    -= 10; // Let 10mm for unit conversion looses.
         var maxheight = layheight - footer_height - header_height;
-        console.log("Layout height: "+layheight+" , Max height: "+maxheight);
+        console.log("Layout height: "+layheight+" , Max height: "+maxheight+" , Foot height: "+footer_height+" , Header height: "+header_height);
 
         // Remove orphan page break
         if ($('div.ar_publish_body > div').last().hasClass('manual-page-break')) {
@@ -263,6 +263,7 @@ function AnalysisRequestPublishView() {
         var currheight = 0;
         var currelement = null;
         var footadded = false;
+        $('div.ar_publish_body > *').css({'margin-top':0, 'margin-bottom':0});
         $('div.ar_publish_body > div').each(function(i) {
             var arbody = $(this).closest('div.ar_publish_body');
             var idar = $(arbody).attr('id');
@@ -283,7 +284,7 @@ function AnalysisRequestPublishView() {
 
             // Height of the current element in mm
             var el_next = $(this).next();
-            if (el_next.length > 0) {
+            if ($(el_next).length > 0) {
                 el_height = $(el_next).position().top - $(this).position().top;
                 el_height = pxTomm(el_height);
             } else {
@@ -299,8 +300,14 @@ function AnalysisRequestPublishView() {
                 // Calculate the margin/padding above the page-footer
                 // to keep the footer at the bottom of the page
                 //var margin = layheight - (prevheight + footer_height);//
-                var margin = maxheight - currheight + header_height + footer_height;
+                if ($(this).hasClass('manual-page-break')) {
+                    console.log("---- MANUAL PAGE BREAK ----");
+                } else {
+                    console.log("---- DYNAMIC PAGE BREAK ----");
+                }
+                var margin = maxheight - (currheight - el_height);// maxheight - currheight + header_height + footer_height;
                 margin = margin > 0 ? margin : 0;
+                console.log(" --- " + (currheight - el_height) + " + "+ margin +" = "+ (currheight - el_height + margin));
                 var pgbreak = "<div style='clear:both;padding-top:"+margin+"mm'></div>";
                 pgbreak += "<div class='page-footer'>"+footer_html+"</div>";
                 pgbreak += "<div class='page-break'></div>";
@@ -309,6 +316,7 @@ function AnalysisRequestPublishView() {
 
                 // Initialize the position offset
                 position_offset = pxTomm($(this).position().top);
+                currheight = el_height + header_height;
             }
             currelement = $(this);
             $(this).css('width', pxTomm($(this).width())+'mm');
@@ -318,8 +326,13 @@ function AnalysisRequestPublishView() {
 
         // End-of-document footer
         if (currelement != null) {
-            // Last footer
-            var margin =  maxheight - currheight + header_height + footer_height;
+            // Last footer            
+            console.log("CURRENT HEIGHT: "+currheight+": "+el_height+")");
+            console.log("---- DOCUMENT FOOTER ----");
+            $(currelement).css({'margin-top':0,'margin-bottom':0});
+            var margin =  maxheight - (currheight - el_height) - footer_height; //maxheight - currheight + header_height + footer_height;
+            margin = margin > 0 ? margin : 0;
+            console.log(" --- " + (currheight - el_height) + " + "+ margin +" = "+ (currheight - el_height + margin));
             $("<div style='clear:both;padding-top:"+margin+"mm'></div><div class='page-footer'>"+footer_html+"</div>").insertAfter($(currelement));
         }
         $('.manual-page-break').hide();
