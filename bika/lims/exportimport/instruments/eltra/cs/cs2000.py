@@ -29,9 +29,9 @@ def Import(context, request):
     parser = None
     if not hasattr(infile, 'filename'):
         errors.append(_("No file selected"))
-    elif not analysis1 or analysis2 or analysis1 == '' or analysis2 == '':
+    elif not analysis1 or not analysis2 or analysis1 == '' or analysis2 == '':
         errors.append(_("No Analysis Services defined"))
-    if fileformat == 'tsv':
+    elif fileformat == 'tsv':
         parser = EltraCS2000CSVParser(infile, analysis1, analysis2)
     else:
         errors.append(t(_("Unrecognized file format ${fileformat}",

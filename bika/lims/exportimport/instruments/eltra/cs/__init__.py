@@ -6,11 +6,12 @@
 from datetime import datetime
 from bika.lims.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter, InstrumentCSVResultsFileParser
+from bika.lims import bikaMessageFactory as _
 
 
 class EltraCSTSVParser(InstrumentCSVResultsFileParser):
-    def __init__(self, csv, analysis1, analysis2):
-        InstrumentCSVResultsFileParser.__init__(self, csv)
+    def __init__(self, tsv, analysis1, analysis2):
+        InstrumentCSVResultsFileParser.__init__(self, tsv)
         self._analysis1 = analysis1
         self._analysis2 = analysis2
 
@@ -28,20 +29,25 @@ class EltraCSTSVParser(InstrumentCSVResultsFileParser):
         """
 
         sline = line.split('\t')
-        raw_dict = {
-            self._analysis1: {
-                'DefaultResult': 'Result',
-                'Result': sline[2],
-                'Date': self.csvDate2BikaDate(sline[0])
-            },
-            self._analysis2: {
-                'DefaultResult': 'Result',
-                'Result': sline[3],
-                'Date': self.csvDate2BikaDate(sline[0])
+        if len(sline) < 4:
+            return -1
+        try:
+            raw_dict = {
+                self._analysis1: {
+                    'DefaultResult': 'Result',
+                    'Result': sline[2],
+                    'Date': self.csvDate2BikaDate(sline[0])
+                },
+                self._analysis2: {
+                    'DefaultResult': 'Result',
+                    'Result': sline[3],
+                    'Date': self.csvDate2BikaDate(sline[0])
+                }
             }
-        }
-        self._addRawResult(sline[1], raw_dict)
-        return 0
+            self._addRawResult(sline[1], raw_dict)
+            return 0
+        except IndexError:
+            return -1
 
     def csvDate2BikaDate(self, DateTime):
         # example: 11/03/2014 14:46:46 --> %d/%m/%Y %H:%M%S
