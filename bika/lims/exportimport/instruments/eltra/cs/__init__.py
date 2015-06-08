@@ -51,7 +51,7 @@ class EltraCSTSVParser(InstrumentCSVResultsFileParser):
 
     def csvDate2BikaDate(self, DateTime):
         # example: 11/03/2014 14:46:46 --> %d/%m/%Y %H:%M%S
-        dtobj = datetime.strptime(DateTime, "%m/%d/%Y %H:%M %p")
+        dtobj = datetime.strptime(DateTime, "%m/%d/%Y %I:%M %p")
         return dtobj.strftime("%Y%m%d %H:%M")
 
 
