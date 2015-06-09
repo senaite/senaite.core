@@ -1,15 +1,19 @@
 *** Settings ***
 
-Library          Selenium2Library  timeout=5  implicit_wait=0.2
-Library          String
-Resource         keywords.txt
-Library          bika.lims.testing.Keywords
-Resource         plone/app/robotframework/selenium.robot
-Resource         plone/app/robotframework/saucelabs.robot
-Variables        plone/app/testing/interfaces.py
-Variables        bika/lims/tests/variables.py
-Suite Setup      Start browser
-Suite Teardown   Close All Browsers
+Library         BuiltIn
+Library         Selenium2Library  timeout=5  implicit_wait=0.2
+Library         String
+Resource        keywords.txt
+Library         bika.lims.testing.Keywords
+Resource        plone/app/robotframework/selenium.robot
+Library         Remote  ${PLONEURL}/RobotRemote
+Variables       plone/app/testing/interfaces.py
+Variables       bika/lims/tests/variables.py
+
+Suite Setup     Start browser
+Suite Teardown  Close All Browsers
+
+Library          DebugLibrary
 
 *** Variables ***
 ${ASId} =  2
@@ -19,22 +23,16 @@ ${ClientSampleId} =  840557455
 *** Test Cases ***
 
 vs2 csv file
-    [Documentation]  Firts we have to create the AS to match the
+    [Documentation]  First we have to create the AS to match the
     ...              analysis in the file. Then we have to create the AR
     ...              and tranistion it. Finally qe can import the results.
     ${PATH_TO_TEST} =           run keyword   resource_filename
-    Disable Print Page
+    Disable stickers
     Create Analysis Service  ${ASId}  ${ASTitle}
-    Import Instrument File     Abaxix VetScan - VS2  ${PATH_TO_TEST}/files/VetScanVS2.csv
+    Import Instrument File     Abaxis VetScan - VS2  ${PATH_TO_TEST}/files/VetScanVS2.csv
     page should not contain    Serice keyword ${ASId} not found
 
 *** Keywords ***
-
-Start browser
-    Open browser                        ${PLONEURL}/login_form  chrome
-    Log in                              test_labmanager         test_labmanager
-    Wait until page contains            You are now logged in
-    Set selenium speed                  ${SELENIUM_SPEED}
 
 Create Analysis Service
    [Documentation]  Create an AS using the ID ASId

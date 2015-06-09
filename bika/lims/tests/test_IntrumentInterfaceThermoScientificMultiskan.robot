@@ -1,15 +1,19 @@
 *** Settings ***
 
-Library          Selenium2Library  timeout=5  implicit_wait=0.2
-Library          String
-Resource         keywords.txt
-Library          bika.lims.testing.Keywords
-Resource         plone/app/robotframework/selenium.robot
-Resource         plone/app/robotframework/saucelabs.robot
-Variables        plone/app/testing/interfaces.py
-Variables        bika/lims/tests/variables.py
-Suite Setup      Start browser
-Suite Teardown   Close All Browsers
+Library         BuiltIn
+Library         Selenium2Library  timeout=5  implicit_wait=0.2
+Library         String
+Resource        keywords.txt
+Library         bika.lims.testing.Keywords
+Resource        plone/app/robotframework/selenium.robot
+Library         Remote  ${PLONEURL}/RobotRemote
+Variables       plone/app/testing/interfaces.py
+Variables       bika/lims/tests/variables.py
+
+Suite Setup     Start browser
+Suite Teardown  Close All Browsers
+
+Library          DebugLibrary
 
 *** Variables ***
 
@@ -20,7 +24,7 @@ ELISA csv file
     ...              analysis in the file. Then we have to create the AR
     ...              and tranistion it. Finally qe can import the results.
     ${PATH_TO_TEST} =           run keyword   resource_filename
-    Disable Print Page
+    Disable stickers
     Import Instrument File     Thermo Scientific Multiskan - GO Microplate Spectrophotometer  ${PATH_TO_TEST}/files/ELISA.csv
 
     page should contain         End of file reached successfully: 24 objects, 1 analyses, 24 results

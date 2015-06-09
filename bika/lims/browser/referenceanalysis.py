@@ -4,6 +4,7 @@ from smtplib import SMTPRecipientsRefused
 from smtplib import SMTPServerDisconnected
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
+import tempfile
 
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
@@ -199,10 +200,9 @@ class AnalysesRetractedListReport(BrowserView):
         return self._data
 
     def toPdf(self):
-        outpath = join(Globals.INSTANCE_HOME, 'var')
-        filepath = join(outpath, tmpID() + ".pdf")
         html = safe_unicode(self.template()).encode('utf-8')
-        return createPdf(html, filepath)
+        pdf_data = createPdf(html)
+        return pdf_data
 
     def sendEmail(self):
         added = []

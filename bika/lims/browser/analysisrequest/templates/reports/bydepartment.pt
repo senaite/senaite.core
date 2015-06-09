@@ -239,7 +239,7 @@
                     <span class="result" tal:content="structure analysis/formatted_result">23</span>
                     <span class="units" tal:content="structure analysis/formatted_unit|nothing"></span>
                 </td>
-                <td class="dryresult" tal:condition="python: reportdrymatter and analysis/resultdm">
+                <td class="dryresult" tal:condition="python: reportdrymatter and getattr(analysis, 'resultdm', None)">
                     <span tal:content="structure string:${analysis/resultdm}  ${analysis/formatted_unit|nothing}">23</span>
                 </td>
                 <td class="specs">

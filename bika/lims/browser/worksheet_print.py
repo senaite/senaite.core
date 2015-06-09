@@ -204,7 +204,7 @@ class WorksheetPrintView(BrowserView):
                 'accredited': lab.getLaboratoryAccredited(),
                 'accreditation_body': to_utf8(lab.getAccreditationBody()),
                 'accreditation_logo': lab.getAccreditationBodyLogo(),
-                'logo': "%s/logo_print.jpg" % portal.absolute_url()}
+                'logo': "%s/logo_print.png" % portal.absolute_url()}
 
 
     def _ws_data(self, ws):

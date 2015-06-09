@@ -1,21 +1,26 @@
 *** Settings ***
 
-Library          BuiltIn
-Library          Selenium2Library  timeout=10  implicit_wait=0.5
-Library          String
-Resource         keywords.txt
-Library          bika.lims.testing.Keywords
-Variables        plone/app/testing/interfaces.py
-Variables        bika/lims/tests/variables.py
-Suite Setup      Start browser
-Suite Teardown   Close All Browsers
+Library         BuiltIn
+Library         Selenium2Library  timeout=5  implicit_wait=0.2
+Library         String
+Resource        keywords.txt
+Library         bika.lims.testing.Keywords
+Resource        plone/app/robotframework/selenium.robot
+Library         Remote  ${PLONEURL}/RobotRemote
+Variables       plone/app/testing/interfaces.py
+Variables       bika/lims/tests/variables.py
+
+Suite Setup     Start browser
+Suite Teardown  Close All Browsers
+
+Library          DebugLibrary
 
 *** Variables ***
 
 *** Test Cases ***
 
 Test ajax categories
-    Log in                            test_labmanager1   test_labmanager1
+   Wnable autologin as  LabManager
     # Ensure that categorized services are on
     Go to                             ${PLONEURL}/bika_setup/edit
     Click element                     css=#fieldsetlegend-analyses

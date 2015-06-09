@@ -878,13 +878,17 @@ function AnalysisRequestAddByCol() {
             var profile = data['objects'][0]
             // Set the services from the template into the form
             uncheck_all_services(arnum)
+            var defs = []
             if ($('#singleservice').length > 0) {
-                expand_services_singleservice(arnum, profile['service_data'])
+                defs.push(expand_services_singleservice(arnum, profile['service_data']))
             }
             else {
-                expand_services_bika_listing(arnum, profile['service_data'])
+                defs.push(expand_services_bika_listing(arnum, profile['service_data']))
             }
-            d.resolve()
+            // Call $.when with all deferreds
+            $.when.apply(null, defs).then(function () {
+                d.resolve()
+            })
         })
         return d.promise()
     }
@@ -970,36 +974,38 @@ function AnalysisRequestAddByCol() {
             }
 
             // Set the services from the template into the form
+            var defs = []
             if ($('#singleservice').length > 0) {
-                expand_services_singleservice(arnum, template['service_data'])
+                defs.push(expand_services_singleservice(arnum, template['service_data']))
             }
             else {
-                expand_services_bika_listing(arnum, template['service_data'])
+                defs.push(expand_services_bika_listing(arnum, template['service_data']))
             }
 
-            // Dry Matter checkbox.  drymatter_set will calculate it's
-            // dependencies and select them, and apply specs
-            td = $("tr[fieldname='ReportDryMatter'] td[arnum='" + arnum + "']")
-            if (template['ReportDryMatter']) {
-                $(td).find("input[type='checkbox']").attr("checked", true)
-                drymatter_set(arnum, true)
-            }
-
-            // Now apply the Template's partition information to the form.
-            // If the template doesn't specify partition information,
-            // calculate it like normal.
-            if (template['Partitions']) {
-                // Stick the current template's partition setup into the state
-                // though it were sent there by a the deps calculating ajax
-                state_set(arnum, 'Partitions', template['Partitions'])
-            }
-            else {
-                // ajax request to calculate the partitions from the form
-                partnrs_calc(arnum)
-            }
-            _partition_indicators_set(arnum)
-
-            d.resolve()
+            // Call $.when with all deferreds
+            $.when.apply(null, defs).then(function () {
+                // Dry Matter checkbox.  drymatter_set will calculate it's
+                // dependencies and select them, and apply specs
+                td = $("tr[fieldname='ReportDryMatter'] td[arnum='" + arnum + "']")
+                if (template['ReportDryMatter']) {
+                    $(td).find("input[type='checkbox']").attr("checked", true)
+                    drymatter_set(arnum, true)
+                }
+                // Now apply the Template's partition information to the form.
+                // If the template doesn't specify partition information,
+                // calculate it like normal.
+                if (template['Partitions']) {
+                    // Stick the current template's partition setup into the state
+                    // though it were sent there by a the deps calculating ajax
+                    state_set(arnum, 'Partitions', template['Partitions'])
+                }
+                else {
+                    // ajax request to calculate the partitions from the form
+                    partnrs_calc(arnum)
+                }
+                _partition_indicators_set(arnum)
+                d.resolve()
+            })
         })
         return d.promise()
     }
@@ -1366,6 +1372,7 @@ function AnalysisRequestAddByCol() {
     function expand_services_bika_listing(arnum, service_data) {
         // When the bika_listing serviceselector is in place,
         // this function is called to select services for Profiles and Templates.
+        var d = $.Deferred()
         var services = []
         var defs = []
         var expanded_categories = []
@@ -1389,7 +1396,9 @@ function AnalysisRequestAddByCol() {
                 analysis_cb_check(arnum, services[si]['UID'])
             }
             recalc_prices(arnum)
+            d.resolve()
         })
+        return d.promise()
     }
 
     function uncheck_all_services(arnum) {
