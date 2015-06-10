@@ -131,14 +131,6 @@
                 margin: 10px -20px 10px -10px;
                 padding: 10px 20px;
             }
-            .ar-invalid {
-                margin: -60px -10px 0 -20px;
-                padding: 60px 10px 0 20px;
-            }
-            .ar-provisional {
-                margin: -60px -10px 0 -20px;
-                padding: 60px 10px 0 20px;
-            }
             .page-break {
                 background-color: #cdcdcd;
                 height: 20px;

@@ -81,10 +81,12 @@ function AnalysisRequestPublishView() {
                 var repstyle = $('#report-style').clone().wrap('<div>').parent().html();
                 repstyle += $('#layout-style').clone().wrap('<div>').parent().html();
                 repstyle += $('#layout-print').clone().wrap('<div>').parent().html();
+                // We want this sincronously because we don't want to
+                // flood WeasyPrint
                 $.ajax({
                     url: url,
                     type: 'POST',
-                    async: true,
+                    async: false,
                     data: { "publish":1,
                             "id":$(this).attr('id'),
                             "uid":$(this).attr('uid'),
@@ -263,7 +265,6 @@ function AnalysisRequestPublishView() {
             var elOutHeight = 0;
             var contentHeight = 0;
 
-            console.log("OFF\tABS\tREL\tOUT\tHEI\tMAX");
             // Iterate through all div children to find the suitable
             // page-break points, split the report and add the header
             // and footer as well as pagination count as required.
@@ -278,6 +279,7 @@ function AnalysisRequestPublishView() {
             // elements from the document, such as tables, etc. Other
             // elements could be then labeled with "no-break" class to
             // prevent the system to break them.
+            //console.log("OFF\tABS\tREL\tOUT\tHEI\tMAX");
             $(this).children('div:visible').each(function(z) {
 
                 // Is the first page?
@@ -314,13 +316,13 @@ function AnalysisRequestPublishView() {
 
                 // Accumulated height
                 contentHeight = elRelTopPos + elOutHeight;
-                console.log(Math.floor(topOffset)     + "\t" +
+                /*console.log(Math.floor(topOffset)     + "\t" +
                             Math.floor(elAbsTopPos)   + "\t" +
                             Math.floor(elRelTopPos)   + "\t" +
                             Math.floor(elOutHeight)   + "\t" +
                             Math.floor(contentHeight) + "\t" +
                             Math.floor(maxHeight)     + "\t" +
-                            '#'+$(this).attr('id')+"."+$(this).attr('class'));
+                            '#'+$(this).attr('id')+"."+$(this).attr('class'));*/
 
                 if (contentHeight > maxHeight ||
                     $(this).hasClass('manual-page-break')) {
@@ -329,10 +331,6 @@ function AnalysisRequestPublishView() {
                     var paddingTopFoot = maxHeight - elRelTopPos;
                     var aboveBreakHtml = "<div style='clear:both;padding-top:"+pxTomm(paddingTopFoot)+"mm'></div>";
                     $(aboveBreakHtml + footer_html + pageBreakHtml + header_html).insertBefore($(this));
-
-                    console.log("--> "+Math.floor(paddingTopFoot + elRelTopPos)+" = "+Math.floor(pxTomm(paddingTopFoot + elRelTopPos)));
-                    console.log($(this).hasClass('manual-page-break') ? "--- MANUAL PAGE BREAK ---" : "--- PAGE BREAK ---");
-
                     topOffset = $(this).position().top;
                     if ($(this).hasClass('manual-page-break')) {
                         $(this).hide();
@@ -346,7 +344,6 @@ function AnalysisRequestPublishView() {
             // Document end-footer
             if (elCurrent != null) {
                 var paddingTopFoot = maxHeight - contentHeight;
-                console.log(maxHeight +" - ("+contentHeight+" - "+elOutHeight+" = "+paddingTopFoot);
                 var aboveBreakHtml = "<div style='clear:both;padding-top:"+pxTomm(paddingTopFoot)+"mm'></div>";
                 $(aboveBreakHtml + footer_html + pageBreakHtml).insertAfter($(elCurrent));
             }
