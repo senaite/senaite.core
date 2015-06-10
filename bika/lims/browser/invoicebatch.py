@@ -1,13 +1,8 @@
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from Products.CMFPlone.utils import getToolByName
-from bika.lims.permissions import AddInvoice
-from bika.lims.permissions import ManageInvoices
 from bika.lims.utils import currency_format
-from bika.lims.browser import BrowserView
-from bika.lims.content.invoicebatch import InvoiceBatch
-
+import csv
+from cStringIO import StringIO
 
 class InvoiceBatchInvoicesView(BikaListingView):
 
@@ -92,65 +87,67 @@ class BatchFolderExportCSV(InvoiceBatchInvoicesView):
         Nothing gets returned.
         """
 
-        import csv
-        from cStringIO import StringIO
         delimiter = ','
         filename = 'invoice_batch.txt'
+        # Getting the invoice batch
         container = self.context
         assert container
-
         container.plone_log("Exporting InvoiceBatch to CSV format for PASTEL")
+        # Getting the invoice batch's invoices
         invoices = self.getInvoices({})
-
         if not len(invoices):
             container.plone_log("InvoiceBatch contains no entries")
 
-        rows = []
-        _ordNum = 'starting at none'
+        csv_rows = [['Invoice Batch']]
+        # Invoice batch header
+        csv_rows.append(['ID', container.getId()])
+        csv_rows.append(['Invoice Batch Title', container.title])
+        csv_rows.append(['Start Date', container.getBatchStartDate().strftime('%Y-%m-%d')])
+        csv_rows.append(['End Date', container.getBatchEndDate().strftime('%Y-%m-%d')])
+        csv_rows.append([])
+
+        # Building the invoice field header
+        csv_rows.append(['Invoices'])
+        csv_rows.append(['Invoice ID', 'Client ID', 'Client Name', 'Account Num.', 'Phone', 'Date', 'Total Price'])
+        invoices_items_rows = []
         for invoice in invoices:
-            new_invoice = True
-            _invNum = "%s" % invoice.getId()
-            _clientNum = "%s" % invoice.getClient().getAccountNumber()
-            _invDate = "%s" % invoice.getInvoiceDate().strftime('%Y-%m-%d')
-            _monthNum = invoice.getInvoiceDate().month()
-
-            _message1 = ''
-            _message2 = ''
-            _message3 = ''
-
-            items = invoice.invoice_lineitems  # objectValues('InvoiceLineItem')
+            # Building the invoice field header
+            invoice_info_header = [invoice.getId(),
+                                   invoice.getClient().getId(),
+                                   invoice.getClient().getName(),
+                                   invoice.getClient().getAccountNumber(),
+                                   invoice.getClient().getPhone(),
+                                   invoice.getInvoiceDate().strftime('%Y-%m-%d'),
+                                   ]
+            csv_rows.append(invoice_info_header)
+            # Obtaining and sorting all analysis items. These analysis are saved inside a list to add later
+            items = invoice.invoice_lineitems
             mixed = [(item.get('OrderNumber', ''), item) for item in items]
             mixed.sort()
-            lines = [t[1] for t in mixed]
-            # iterate through each invoice line
-            for line in lines:
-                if new_invoice or line.get('OrderNumber', '') != _ordNum:
-                    new_invoice = False
-                    _ordNum = line.get('OrderNumber', '')
+            # Defining each analysis row
+            for line in mixed:
+                invoice_analysis = [line[1].get('ItemDate', ''),
+                                    line[1].get('ItemDescription', ''),
+                                    line[1].get('OrderNumber', ''),
+                                    line[1].get('Subtotal', ''),
+                                    line[1].get('VATAmount', ''),
+                                    line[1].get('Total', ''),
+                                    ]
+                invoices_items_rows.append(invoice_analysis)
 
-                    # create header csv entry as a list
-                    header = [
-                        "Header", _invNum, " ", " ", _clientNum,
-                        _invDate, _ordNum, "N", 0, _message1, _message2,
-                        _message3, "", "", "", "", "", "", 0, "", "", "", "",
-                        0, "", "", "N"]
-                    rows.append(header)
+        csv_rows.append([])
+        # Creating analysis items header
+        csv_rows.append(['Invoices items'])
+        csv_rows.append(['Date', 'Description', 'Order', 'Amount', 'VAT', 'Amount incl. VAT'])
+        # Adding all invoices items
+        for item_row in invoices_items_rows:
+            csv_rows.append(item_row)
 
-                    _quant = 1
-                    _unitp = line.get('Subtotal', '')
-                    _inclp = line.get('Total', '')
-                    _item = line.get('ItemDescription', '')
-                    _desc = "Analysis: %s" % _item
-
-                    # create detail csv entry as a list
-                    detail = ["Detail", 0, _quant, _unitp, _inclp,
-                        " ", "01", "0", "0", _desc]
-                    rows.append(detail)
         # convert lists to csv string
         ramdisk = StringIO()
-        writer = csv.writer(ramdisk, delimiter = delimiter)
-        assert(writer)
-        writer.writerows(rows)
+        writer = csv.writer(ramdisk, delimiter=delimiter)
+        assert writer
+        writer.writerows(csv_rows)
         result = ramdisk.getvalue()
         ramdisk.close()
         # stream file to browser
@@ -160,4 +157,3 @@ class BatchFolderExportCSV(InvoiceBatchInvoicesView):
             'text/x-comma-separated-values')
         setheader('Content-Disposition', 'inline; filename=%s' % filename)
         RESPONSE.write(result)
-
