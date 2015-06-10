@@ -80,6 +80,7 @@ def initialize(context):
     from content.manufacturer import Manufacturer
     from content.method import Method
     from content.methods import Methods
+    from content.multifile import Multifile
     from content.organisation import Organisation
     from content.person import Person
     from content.preservation import Preservation

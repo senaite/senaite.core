@@ -334,8 +334,12 @@ class ajaxCalculateAnalysisEntry(BrowserView):
             anvals = self.current_results[uid]
             isldl = anvals.get('isldl', False)
             isudl = anvals.get('isudl', False)
-            belowldl = (isldl or flres < float(anvals.get('ldl',0)))
-            aboveudl = (isudl or flres > float(anvals.get('udl',10000000)))
+            ldl = anvals.get('ldl',0)
+            udl = anvals.get('udl',0)
+            ldl = float(ldl) if isnumber(ldl) else 0
+            udl = float(udl) if isnumber(udl) else 10000000
+            belowldl = (isldl or flres < ldl)
+            aboveudl = (isudl or flres > udl)
             unc = '' if (belowldl or aboveudl) else analysis.getUncertainty(Result.get('result'))
             if not (belowldl or aboveudl):
                 self.uncertainties.append({'uid': uid, 'uncertainty': unc})

@@ -15,6 +15,11 @@ class FrontPageView(BrowserView):
         """Configure a list of product versions from portal.quickinstaller
         """
         self.versions = {}
+        self.upgrades = {}
         qi = self.context.portal_quickinstaller
         for key in qi.keys():
+            info = qi.upgradeInfo('bika.lims')
             self.versions[key] = qi.getProductVersion(key)
+            info = qi.upgradeInfo(key)
+            if info and 'installedVersion' in info:
+                self.upgrades[key] = info['installedVersion']

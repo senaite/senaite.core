@@ -226,35 +226,6 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         )
     ),
 
-    StringField('UserManualID',
-    schemata = 'Manual',
-    widget = StringWidget(
-        label=_("User Manual ID"),
-        )
-    ),
-
-    FileField('UserManualFile',
-    schemata = 'Manual',
-    widget = FileWidget(
-        label=_("User manual"),
-        description=_("User manual upload "),
-        )
-    ),
-
-    StringField('UserManualVersion',
-    schemata = 'Manual',
-    widget = StringWidget(
-        label=_("User Manual Version"),
-        )
-    ),
-
-    StringField('UserManualLocation',
-    schemata = 'Manual',
-    widget = StringWidget(
-        label=_("User Manual Location"),
-        description=_("Location where the manual set is shelved"),
-        )
-    ),
 ))
 
 schema.moveField('AssetNumber', before='description')
@@ -587,6 +558,12 @@ class Instrument(ATFolder):
         Return all the validations objects related with the instrument
         """
         return self.objectValues('InstrumentValidation')
+
+    def getDocuments(self):
+        """
+        Return all the multifile objects related with the instrument
+        """
+        return self.objectValues('Multifile')
 
     def getSchedule(self):
         return self.objectValues('InstrumentScheduledTask')

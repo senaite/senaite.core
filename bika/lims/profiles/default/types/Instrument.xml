@@ -22,6 +22,7 @@
     <element value="InstrumentValidation"/>
     <element value="Analysis"/>
     <element value="ReferenceAnalysis"/>
+    <element value="Multifile"/>
  </property>
  <property name="allow_discussion">False</property>
  <property name="default_view_fallback">False</property>
@@ -114,4 +115,15 @@
         visible="False">
     <permission value="Modify portal content"/>
   </action>
+
+  <action title="Documents"
+        action_id="instrumentmultifile"
+        category="object"
+        condition_expr=""
+        icon_expr="string:${portal_url}/images/instrumentcertification.png"
+        url_expr="string:${object_url}/multifile"
+        i18n:attributes="title"
+        visible="True">
+    <permission value="Modify portal content"/>
+ </action>
 </object>

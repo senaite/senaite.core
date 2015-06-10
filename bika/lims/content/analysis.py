@@ -34,6 +34,7 @@ from bika.lims.interfaces import IAnalysis, IDuplicateAnalysis, IReferenceAnalys
     IRoutineAnalysis
 from bika.lims.interfaces import IReferenceSample
 from bika.lims.utils import changeWorkflowState, formatDecimalMark
+from bika.lims.utils import drop_trailing_zeros_decimal
 from bika.lims.utils.analysis import get_significant_digits
 from bika.lims.workflow import skip
 from bika.lims.workflow import doActionFor
@@ -834,7 +835,8 @@ class Analysis(BaseContent):
         if dl:
             try:
                 res = float(result) # required, check if floatable
-                return formatDecimalMark('%s %s' % (dl, result), decimalmark)
+                res = drop_trailing_zeros_decimal(res)
+                return formatDecimalMark('%s %s' % (dl, res), decimalmark)
             except:
                 logger.warn("The result for the analysis %s is a "
                             "detection limit, but not floatable: %s" %
@@ -885,12 +887,18 @@ class Analysis(BaseContent):
         # Below Lower Detection Limit (LDL)?
         ldl = self.getLowerDetectionLimit()
         if result < ldl:
-            return formatDecimalMark('< %s' % format_numeric_result(self, ldl, sciformat=sciformat), decimalmark)
+            # LDL must not be formatted according to precision, etc.
+            # Drop trailing zeros from decimal
+            ldl = drop_trailing_zeros_decimal(ldl)
+            return formatDecimalMark('< %s' % ldl, decimalmark)
 
         # Above Upper Detection Limit (UDL)?
         udl = self.getUpperDetectionLimit()
         if result > udl:
-            return formatDecimalMark('> %s' % format_numeric_result(self, udl, sciformat=sciformat), decimalmark)
+            # UDL must not be formatted according to precision, etc.
+            # Drop trailing zeros from decimal
+            udl = drop_trailing_zeros_decimal(udl)
+            return formatDecimalMark('> %s' % udl, decimalmark)
 
         # Render numerical values
         return formatDecimalMark(format_numeric_result(self, result, sciformat=sciformat), decimalmark=decimalmark)

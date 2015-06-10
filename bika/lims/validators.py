@@ -32,6 +32,7 @@ class UniqueFieldValidator:
 
         for item in aq_parent(instance).objectValues():
             if hasattr(item, 'UID') and item.UID() != instance.UID() and \
+               fieldname in item.Schema() and \
                item.Schema()[fieldname].get(item) == value:
                 msg = _("Validation failed: '${value}' is not unique",
                         mapping={'value': safe_unicode(value)})
