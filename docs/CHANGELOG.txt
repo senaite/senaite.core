@@ -1,5 +1,7 @@
 3.1.9 (unreleased)
 ------------------
+LIMS-1867: Auto-header, auto-footer and auto-pagination in results reports
+LIMS-1743: Reports: ISO (A4) or ANSI (letter) pdf report size
 LIMS-1812: Use asynchronous requests for expanding categories in listings
 LIMS-1811: Refactor AR Add form Javascript, and related code.
 LIMS-1818: Instrument Interface. Eltra CS-2000

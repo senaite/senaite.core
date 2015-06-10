@@ -4,53 +4,38 @@
 function AnalysisRequestPublishView() {
 
     var that = this;
-
-    var report_format    = $('#ar_publish_container #sel_format');
-    var report_container = $('#ar_publish_container #report');
-
     var referrer_cookie_name = '_arpv';
 
-    var layouts_size = {layout_a4: 'A4', layout_letter: 'letter'};
+    // Allowed Paper sizes and default margins, in mm
+    var papersize_default = "A4";
+    var papersize = {
+        'A4': {
+                dimensions: [210, 297],
+                margins:    [20, 20, 30, 20] },
 
-    var layouts_mm = {layout_a4:     [210, 297],
-                      layout_letter: [216, 279]};
-
-    var layouts_margin = {layout_a4:     [20, 20, 20, 20],
-                          layout_letter: [20, 20, 20, 20]};
-    /*var layouts_margin = {layout_a4:     [0, 0, 0, 0],
-                          layout_letter: [0, 15, 0, 0]};*/
-    var header_height = 0;
-    var footer_height = 0;
-    var header_html = '';
-    var footer_html = '';
-    var current_layout = 'layout_a4';
-
+        'letter': {
+                dimensions: [216, 279],
+                margins:    [20, 20, 30, 20] },
+    };
 
     /**
      * Entry-point method for AnalysisRequestPublishView
      */
     that.load = function() {
 
-        load_barcodes();
+        // The report will be loaded dynamically by reloadReport()
+        $('#report').html('').hide();
+
+        // Load the report
+        reloadReport();
 
         // Store referrer in cookie in case it is lost due to a page reload
+        var cookiename = "ar.publish.view.referrer";
         var backurl = document.referrer;
         if (backurl) {
-            var d = new Date();
-            d.setTime(d.getTime() + (1*24*60*60*1000));
-            document.cookie = referrer_cookie_name + '=' + document.referrer + '; expires=' + d.toGMTString() + '; path=/';
+            createCookie(cookiename, backurl);
         } else {
-            var cookies = document.cookie.split(';');
-            for(var i=0; i<cookies.length; i++) {
-                var cookie = cookies[i];
-                while (cookie.charAt(0)==' ') {
-                    cookie = cookie.substring(1);
-                }
-                if (cookie.indexOf(referrer_cookie_name) != -1) {
-                    backurl = cookie.substring(referrer_cookie_name.length+1, cookie.length);
-                    break;
-                }
-            }
+            backurl = readCookie(cookiename);
             // Fallback to portal_url instead of staying inside publish.
             if (!backurl) {
                 backurl = portal_url;
@@ -62,7 +47,7 @@ function AnalysisRequestPublishView() {
             e.preventDefault();
             var anchor = $(this).attr('href');
             var offset = $(anchor).first().offset().top - 20;
-            $('html,body').animate({scrollTop: offset},'slow');
+            $('html,body').animate({scrollTop: offset},'fast');
         });
 
         $('#sel_format').change(function(e) {
@@ -121,8 +106,6 @@ function AnalysisRequestPublishView() {
             location.href=backurl;
         });
 
-        //load_pagination();
-
         var invalidbackurl = window.portal_url + '/++resource++bika.lims.images/report_invalid_back.png';
         $('.ar-invalid').css('background', "url('"+invalidbackurl+"') repeat scroll #ffffff");
 
@@ -133,7 +116,6 @@ function AnalysisRequestPublishView() {
             e.preventDefault();
             $('#sel_format_info_pane').toggle();
         });
-        reloadReport();
     }
 
     function get(name){
@@ -156,32 +138,18 @@ function AnalysisRequestPublishView() {
         });
     }
 
-    function load_pagination() {
-        $(".paginated-report").each(function(i) {
-            var layout = layouts[$('#sel_layout').val()];
-            if ($('.page-footer').length > 0) {
-                var hpf = $('.page-footer').css('margin-top',0).height();
-            } else {
-                $(this).css('height', layout[1]);
-            }
-        });
-
-        $(".paginated-report").each(function(i) {
-            var numpages = $(this).find('.page-footer').length;
-            $(this).find('.page-total-count').html(numpages);
-            $(this).find('.page-current-num').each(function(i) {
-                $(this).html(i+1);
-            });
-        });
-    }
-
+    /**
+     * Re-load the report view in accordance to the values set in the
+     * options panel (report format, pagesize, QC visible, etc.)
+     */
     function reloadReport() {
         var url = window.location.href;
         var template = $('#sel_format').val();
         var qcvisible = $('#qcvisible').is(':checked') ? '1' : '0';
         var hvisible = $('#hvisible').is(':checked') ? '1' : '0';
-        $('#report').fadeTo('fast', 0.4);
-        //$('#report').animate({opacity:0.4}, 'slow');
+        if ($('#report:visible').length > 0) {
+            $('#report').fadeTo('fast', 0.4);
+        }
         $.ajax({
             url: url,
             type: 'POST',
@@ -202,144 +170,215 @@ function AnalysisRequestPublishView() {
         });
     }
 
-    function get_full_height(element) {
-        var height = parseFloat($(element).outerHeight(true));
-     /*   height += parseFloat($(element).css('marginTop'));
-        height += parseFloat($(element).css('marginBottom'));*/
-        return height;
-    }
-
+    /**
+     * Applies the selected layout (A4, US-letter) to the reports view,
+     * splits each report in pages depending on the layout and margins
+     * and applies the dynamic footer and/or header if required.
+     * In fact, this method makes the html ready to be printed via
+     * Weasyprint.
+     */
     function load_layout() {
-        // Store footer and header heights for further pagination and
-        // page layout changes.
-        header_height = 0;
-        header_html = '';
-        if ($('.page-header').length > 0) {
-            var pgh = $('.page-header').first();
-            header_height = parseFloat($(pgh).outerHeight(true));
-            header_html = $(pgh).html();
-            $('.page-header').remove();
-        }
-        footer_height = 0;
-        footer_html = '';
-        if ($('.page-footer').length > 0) {
-            var pgf = $('.page-footer').first();
-            footer_height = parseFloat($(pgf).outerHeight(true));
-            footer_html = $(pgf).html();
-            $('.page-footer').remove();
-        }
-
         // Set page layout (DIN-A4, US-letter, etc.)
         currentlayout = $('#sel_layout').val();
-        var layout_style = '@page { size: '+layouts_size[currentlayout]+' !important;';
-        layout_style += 'width: '+layouts_mm[currentlayout][0]+'mm !important;';
-        layout_style += 'height: '+layouts_mm[currentlayout][1]+'mm !important;';
-        layout_style += 'margin: '+layouts_margin[currentlayout][0]+'mm ';
-        layout_style +=  layouts_margin[currentlayout][1]+'mm ';
-        layout_style +=  layouts_margin[currentlayout][2]+'mm ';
-        layout_style +=  layouts_margin[currentlayout][3]+'mm !important; }';
+        // Dimensions. All expressed in mm
+        var dim = {
+            size:         papersize[currentlayout].size,
+            outerWidth:   papersize[currentlayout].dimensions[0],
+            outerHeight:  papersize[currentlayout].dimensions[1],
+            marginTop:    papersize[currentlayout].margins[0],
+            marginRight:  papersize[currentlayout].margins[1],
+            marginBottom: papersize[currentlayout].margins[2],
+            marginLeft:   papersize[currentlayout].margins[3],
+            width:        papersize[currentlayout].dimensions[0]-papersize[currentlayout].margins[1]-papersize[currentlayout].margins[3],
+            height:       papersize[currentlayout].dimensions[1]-papersize[currentlayout].margins[0]-papersize[currentlayout].margins[2]
+        };
+
+        var layout_style =
+            '@page { size:  ' + dim.size + ' !important;' +
+            '        width:  ' + dim.width + 'mm !important;' +
+            '        margin: 0mm '+dim.marginRight+'mm 0mm '+dim.marginLeft+'mm !important;';
         $('#layout-style').html(layout_style);
+        $('#ar_publish_container').css({'width':dim.width + 'mm', 'padding': '0mm '+dim.marginRight + 'mm 0mm '+dim.marginLeft +'mm '});
+        $('#ar_publish_header').css('margin', '0mm -'+dim.marginRight + 'mm 0mm -' +dim.marginLeft+'mm');
+        $('div.ar_publish_body').css({'width': dim.width + 'mm', 'max-width': dim.width + 'mm', 'min-width': dim.width + 'mm'});
 
-        // Calculate pagination according to the selected Layout.
-        var layheight = mmTopx(layouts_mm[currentlayout][1]);
-        layheight    -= mmTopx(layouts_margin[currentlayout][0]);
-        layheight    -= mmTopx(layouts_margin[currentlayout][2]);
-        //layheight    -= 10; // Let 10mm for unit conversion looses.
-        var maxheight = layheight - footer_height - header_height;
-        console.log("Layout height: "+layheight+" , Max height: "+maxheight+" , Foot height: "+footer_height+" , Header height: "+header_height);
-
-        // Remove orphan page break
-        if ($('div.ar_publish_body > div').last().hasClass('manual-page-break')) {
-            $('div.manual-page-break').last().remove();
-        }
-
-        // Iterate for each report body and apply the dimensions
-        // All heights, position, etc. are expressed in mm
-        var prevarid = '';
-        var position_offset = 0;
-        var el_abs_pos = 0;
-        var el_rel_pos = 0;
-        var el_height = 0;
-        var currheight = 0;
-        var currelement = null;
-        var footadded = false;
-        $('div.ar_publish_body > div').each(function(i) {
-            var arbody = $(this).closest('div.ar_publish_body');
-            var idar = $(arbody).attr('id');
-            if (idar != prevarid) {
-                // New AR, new page
-                var pgbreak = prevarid != '' ? "<div class='page-break'></div>" : '';
-                var pghead = pgbreak + "<div class='page-header'>" + header_html + "</div>";
-                $(pghead).prependTo($(arbody));
-                prevarid = idar;
-                position_offset = $(this).position().top;
-            }
-
-            // Absolute position of the current element in mm
-            el_abs_pos = $(this).position().top;
-
-            // Relative position of the current element in mm
-            el_rel_pos = el_abs_pos - position_offset;
-
-            // Height of the current element in mm
-            var el_next = $(this).next();
-            if ($(el_next).length > 0) {
-                el_height = $(el_next).position().top - $(this).position().top;
-                el_height = pxTomm(el_height);
-            } else {
-                el_height = $(this).outerHeight(true);
-            }
-
-            // Total relative height
-            currheight = el_rel_pos + el_height;
-            console.log("CURRENT HEIGHT: "+currheight+" ("+$(this).attr('id')+": "+el_height+")");
-
-            // Page-break needed?
-            if (currheight > maxheight || $(this).hasClass('manual-page-break')) {
-                // Calculate the margin/padding above the page-footer
-                // to keep the footer at the bottom of the page
-                //var margin = layheight - (prevheight + footer_height);//
-                if ($(this).hasClass('manual-page-break')) {
-                    console.log("---- MANUAL PAGE BREAK ----");
-                } else {
-                    console.log("---- DYNAMIC PAGE BREAK ----");
-                }
-                var margin = maxheight - (currheight - el_height);
-                margin = margin > 0 ? margin : 0;
-                console.log(" --- " + (currheight - el_height) + " + "+ margin +" = "+ (currheight - el_height + margin));
-                var pgbreak = "<div style='clear:both;padding-top:"+pxTomm(margin)+"mm'></div>";
-                pgbreak += "<div class='page-footer'>"+footer_html+"</div>";
-                pgbreak += "<div class='page-break'></div>";
-                pgbreak += "<div class='page-header'>"+header_html+"</div>";
-                $(pgbreak).insertBefore($(this));
-
-                // Initialize the position offset
-                position_offset = $(this).position().top;
-                currheight = el_height + header_height;
-            }
-            currelement = $(this);
-            $(this).css('width', pxTomm($(this).width())+'mm');
-            /*$(this).css('height', pxTomm(get_full_height($(this)))+'mm');
-            $(this).css('max-height', pxTomm(get_full_height($(this)))+'mm');*/
-        });
-
-        // End-of-document footer
-        if (currelement != null) {
-            // Last footer            
-            console.log("CURRENT HEIGHT: "+currheight+": "+el_height+")");
-            console.log("---- DOCUMENT FOOTER ----");
-            $(currelement).css({'margin-top':0,'margin-bottom':0});
-            var margin =  maxheight - (currheight - el_height) - footer_height - mmTopx(5);
-            margin = margin > 0 ? margin : 0;
-            console.log(" --- " + (currheight - el_height) + " + "+ margin +" = "+ (currheight - el_height + margin));
-            $("<div style='clear:both;padding-top:"+pxTomm(margin)+"mm'></div><div class='page-footer'>"+footer_html+"</div>").insertAfter($(currelement));
-        }
-        $('.manual-page-break').hide();
-
-        // Page numbering
+        // Iterate for each AR report and apply the dimensions, header,
+        // footer, etc.
         $('div.ar_publish_body').each(function(i) {
-            var pagesnum = $(this).find('div.page-footer').length;
-            $(this).find('.page-total-count').html(pagesnum);
+
+            var arbody = $(this);
+
+            // Header defined for this AR Report?
+            // Note that if the header of the report is taller than the
+            // margin, the header will be dismissed.
+            var header_html = '<div class="page-header"></div>';
+            var header_height = $(header_html).outerHeight(true);
+            if ($(this).find('.page-header').length > 0) {
+                var pgh = $(this).find('.page-header').first();
+                header_height = parseFloat($(pgh).outerHeight(true));
+                if (header_height > mmTopx(dim.marginTop)) {
+                    // Footer too tall
+                    header_html = "<div class='page-header header-invalid'>Header height is above page's top margin height</div>";
+                    header_height = parseFloat($(header_html));
+                } else {
+                    header_html   = '<div class="page-header">'+$(pgh).html()+'</div>';
+                }
+                $(this).find('.page-header').remove();
+            }
+
+            // Footer defined for this AR Report?
+            // Note that if the footer of the report is taller than the
+            // margin, the footer will be dismissed
+            var footer_html = '<div class="page-footer"></div>';
+            var footer_height = $(footer_html).outerHeight(true);
+            if ($(this).find('.page-footer').length > 0) {
+                var pgf = $(this).find('.page-footer').first();
+                footer_height = parseFloat($(pgf).outerHeight(true));
+                if (footer_height > mmTopx(dim.marginBottom)) {
+                    // Footer too tall
+                    footer_html = "<div class='page-footer footer-invalid'>Footer height is above page's bottom margin height</div>";
+                    footer_height = parseFloat($(footer_html));
+                } else {
+                    footer_html   = '<div class="page-footer">'+$(pgf).html()+'</div>';
+                }
+                $(this).find('.page-footer').remove();
+            }
+
+            // Remove undesired and orphan page breaks
+            $(this).find('.page-break').remove();
+            if ($(this).find('div').last().hasClass('manual-page-break')) {
+                $(this).find('div').last().remove();
+            }
+            if ($(this).find('div').first().hasClass('manual-page-break')) {
+                $(this).find('div').first().remove();
+            }
+
+            // Top offset by default. The position in which the report
+            // starts relative to the top of the window. Used later to
+            // calculate when a page-break is needed.
+            var topOffset = $(this).position().top;
+            var pageBreakHtml = "<div class='page-break'></div>";
+            var maxHeight = mmTopx(dim.height);
+            var elCurrent = null;
+            var elOutHeight = 0;
+            var contentHeight = 0;
+
+            console.log("OFF\tABS\tREL\tOUT\tHEI\tMAX");
+            // Iterate through all div children to find the suitable
+            // page-break points, split the report and add the header
+            // and footer as well as pagination count as required.
+            //
+            // IMPORTANT
+            // Please note that only first-level div elements from
+            // within div.ar_publish_body are checked and will be
+            // treated as nob-breakable elements. So, if a div element
+            // from within a div.ar_publish_body is taller than the
+            // maximum allowed height, that element will be omitted.
+            // Further improvements may solve this and handle deeply
+            // elements from the document, such as tables, etc. Other
+            // elements could be then labeled with "no-break" class to
+            // prevent the system to break them.
+            $(this).children('div:visible').each(function(z) {
+
+                // Is the first page?
+                if (elCurrent == null) {
+                    // Add page header if required
+                    $(header_html).insertBefore($(this));
+                    topOffset = $(this).position().top;
+                }
+
+                // Instead of using the height css of each element to
+                // know if the total height at this iteration is above
+                // the maximum health, we use the element's position.
+                // This way, we will prevent underestimations due
+                // non-div elements or plain text directly set inside
+                // the div.ar_publish_body container, not wrapped by
+                // other div element.
+                var elAbsTopPos = $(this).position().top;
+                var elRelTopPos = elAbsTopPos - topOffset;
+                var elNext      = $(this).next();
+                elOutHeight = parseFloat($(this).outerHeight(true));
+                if ($(elNext).length > 0) {
+                    // Calculate the height of the element according to
+                    // the position of the next element instead of
+                    // using the outerHeight.
+                    elOutHeight = $(elNext).position().top-elAbsTopPos;
+                }
+
+                // The current element is taller than the maximum?
+                if (elOutHeight >  maxHeight) {
+                    console.warn("Element with id "+$(this).attr('id')+
+                                 " has a height above the maximum: "+
+                                 elOutHeight);
+                }
+
+                // Accumulated height
+                contentHeight = elRelTopPos + elOutHeight;
+                console.log(Math.floor(topOffset)     + "\t" +
+                            Math.floor(elAbsTopPos)   + "\t" +
+                            Math.floor(elRelTopPos)   + "\t" +
+                            Math.floor(elOutHeight)   + "\t" +
+                            Math.floor(contentHeight) + "\t" +
+                            Math.floor(maxHeight)     + "\t" +
+                            '#'+$(this).attr('id')+"."+$(this).attr('class'));
+
+                if (contentHeight > maxHeight ||
+                    $(this).hasClass('manual-page-break')) {
+                    // The content is taller than the allowed height
+                    // or a manual page break reached. Add a page break.
+                    var paddingTopFoot = maxHeight - elRelTopPos;
+                    var aboveBreakHtml = "<div style='clear:both;padding-top:"+pxTomm(paddingTopFoot)+"mm'></div>";
+                    $(aboveBreakHtml + footer_html + pageBreakHtml + header_html).insertBefore($(this));
+
+                    console.log("--> "+Math.floor(paddingTopFoot + elRelTopPos)+" = "+Math.floor(pxTomm(paddingTopFoot + elRelTopPos)));
+                    console.log($(this).hasClass('manual-page-break') ? "--- MANUAL PAGE BREAK ---" : "--- PAGE BREAK ---");
+
+                    topOffset = $(this).position().top;
+                    if ($(this).hasClass('manual-page-break')) {
+                        $(this).hide();
+                    }
+                    contentHeight = $(this).outerHeight(true);
+                }
+                $(this).css('width', '100%');
+                elCurrent = $(this);
+            });
+
+            // Document end-footer
+            if (elCurrent != null) {
+                var paddingTopFoot = maxHeight - contentHeight;
+                console.log(maxHeight +" - ("+contentHeight+" - "+elOutHeight+" = "+paddingTopFoot);
+                var aboveBreakHtml = "<div style='clear:both;padding-top:"+pxTomm(paddingTopFoot)+"mm'></div>";
+                $(aboveBreakHtml + footer_html + pageBreakHtml).insertAfter($(elCurrent));
+            }
+
+            // Wrap all elements in pages
+            var split_at = 'div.page-header';
+            $(this).find(split_at).each(function() {
+                $(this).add($(this).nextUntil(split_at)).wrapAll("<div class='ar_publish_page'/>");
+            });
+
+            // Move headers and footers out of the wrapping and assign
+            // the top and bottom margins
+            $(this).find('div.page-header').each(function() {
+                var baseheight = $(this).height();
+                $(this).css({'height': pxTomm(baseheight)+"mm",
+                             'margin': 0,
+                             'padding': (pxTomm(mmTopx(dim.marginTop) - baseheight)+"mm 0 0 0")});
+                $(this).parent().before(this);
+            });
+            $(this).find('div.page-break').each(function() {
+                $(this).parent().after(this);
+            });
+            $(this).find('div.page-footer').each(function() {
+                $(this).css({'height': dim.marginBottom+"mm",
+                             'margin': 0,
+                             'padding': 0});
+                $(this).parent().after(this);
+            });
+
+            // Page numbering
+            var numTotalPages = $(this).find('div.page-break').length;
+            $(this).find('.page-total-count').html(numTotalPages);
             var currnum = 1;
             $(this).find('div.page-footer .page-current-num').each(function(j) {
                 $(this).html(currnum);
@@ -350,13 +389,10 @@ function AnalysisRequestPublishView() {
                 $(this).html(currnum);
                 currnum += 1;
             });
-           /* $(this).find('div.page-footer').each(function(j) {
-                $(this).parent('div').css('z-index', currnum);
-                $(this).parent('div').css('width', "100%");
-                $(this).parent('div').css('background-color', '#ffffff');
-                currnum -= 1;
-            });*/
+
         });
+        // Remove manual page breaks
+        $('.manual-page-break').remove();
     }
 }
 var mmTopx = function(mm) {

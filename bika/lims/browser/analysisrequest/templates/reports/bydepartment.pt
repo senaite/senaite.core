@@ -57,6 +57,10 @@
             <img tal:attributes="src laboratory/logo"/>
         </a>
     </div>
+</div>
+
+<!-- Address and Lab info -->
+<div id="section-info">
     <div id="accreditation-logo"
         tal:condition="python:laboratory['accredited']==True">
         <img tal:condition="laboratory/accreditation_logo"
@@ -64,10 +68,6 @@
         <img tal:condition="not:laboratory/accreditation_logo"
              tal:attributes="src string:${portal/url}/++resource++bika.lims.images/AccreditationBodyLogo.png"/>
     </div>
-</div>
-
-<!-- Address and Lab info -->
-<div id="section-info">
     <table>
         <tr>
             <td id="client-info">

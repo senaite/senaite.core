@@ -15,7 +15,7 @@
 <head>
     <div tal:replace="structure provider:plone.resourceregistries.scripts" />
 </head>
-<body class="layout_a4" data-layout="layout_a4">
+<body class="A4" data-layout="A4">
     <div id='ar_publish_container'>
         <div id="ar_publish_header" tal:condition="python:view.showOptions()">
             <div id='options_handler'>
@@ -30,8 +30,8 @@
                 &nbsp;&nbsp;&nbsp;
                 <label for="sel_layout" i18n:translate="">Layout</label>
                 <select id="sel_layout" name="sel_layout">
-                    <option value="layout_a4" selected>DIN-A4 (210 x 297 mm)</option>
-                    <option value="layout_letter">Letter size (216 x 279mm)</option>
+                    <option value="A4" selected>DIN-A4 (210 x 297 mm)</option>
+                    <option value="letter">Letter size (216 x 279mm)</option>
                 </select><br/>
                 <input type="checkbox" name="qcvisible" id='qcvisible' value="0"><span i18n:translate="">Show QC Analyses</span><br/>
                 <input type="checkbox" name="hvisible" id='hvisible' value="0"><span i18n:translate="">Show Hidden Analyses</span>
@@ -55,10 +55,13 @@
             /** Report preview styling **/
             html, body { margin: 0; }
             html { background-color:#cdcdcd; }
-            body.layout_a4 #ar_publish_container { width: 210mm; }
-            body.layout_letter #ar_publish_container { width: 216mm; }
+            body.A4 #ar_publish_container { width: 210mm; }
+            body.letter #ar_publish_container { width: 216mm; }
             #report {
                 background-color:#ffffff;
+            }
+            div.ar_publish_page {
+                border: 1px dashed #cdcdcd;
             }
             #ar_publish_container {
                 margin:0 auto;
@@ -139,13 +142,19 @@
             .page-break {
                 background-color: #cdcdcd;
                 height: 20px;
-                margin: 20px -30px;
+                margin: 0mm -30mm;
             }
             .clearfix {
                 clear:both !important;
                 margin:0 !important;
                 padding:0 !important;
                 height:0 !important;
+            }
+            .page-footer.footer-invalid,
+            .page-header.header-invalid {
+                border: 1px dotted red;
+                color: red;
+                padding: 5px;
             }
         </style>
         <style id='report-style' tal:content='structure python:view.getReportStyle()'></style>
@@ -155,6 +164,9 @@
                 a {
                     text-decoration:none;
                     color:#000;
+                }
+                div.ar_publish_page {
+                    border: none;
                 }
                 html {
                     background-color:#fff !important;
@@ -189,6 +201,10 @@
                 #ar_publish_header {
                     display:none;
                     visibility:hidden;
+                }
+                .page-footer.footer-invalid,
+                .page-header.header-invalid {
+                    display:none;
                 }
             }
         </style>
