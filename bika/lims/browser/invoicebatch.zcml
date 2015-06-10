@@ -20,7 +20,7 @@
 
     <browser:page
       for="bika.lims.interfaces.IInvoiceBatch"
-      name="export_batch_csv"
+      name="invoicebatch_export_csv"
       class=".invoicebatch.BatchFolderExportCSV"
       permission="bika.lims.ManageInvoices"
       layer="bika.lims.interfaces.IBikaLIMS"

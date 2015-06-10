@@ -6,6 +6,7 @@ from bika.lims.permissions import AddInvoice
 from bika.lims.permissions import ManageInvoices
 from bika.lims.utils import currency_format
 from bika.lims.browser import BrowserView
+from bika.lims.content.invoicebatch import InvoiceBatch
 
 
 class InvoiceBatchInvoicesView(BikaListingView):
@@ -81,7 +82,7 @@ class InvoiceBatchInvoicesView(BikaListingView):
         return items
 
 
-class BatchFolderExportCSV(BrowserView):
+class BatchFolderExportCSV(InvoiceBatchInvoicesView):
 
     def __call__(self, REQUEST, RESPONSE):
         """
@@ -90,17 +91,16 @@ class BatchFolderExportCSV(BrowserView):
         the file to be streamed to the user.
         Nothing gets returned.
         """
-        import pdb;pdb.set_trace()
+
         import csv
         from cStringIO import StringIO
         delimiter = ','
-        filename = 'batch.txt'
-
-        container = self.unrestrictedTraverse(REQUEST.get('current_path'))
+        filename = 'invoice_batch.txt'
+        container = self.context
         assert container
 
         container.plone_log("Exporting InvoiceBatch to CSV format for PASTEL")
-        invoices = container.listFolderContents()
+        invoices = self.getInvoices({})
 
         if not len(invoices):
             container.plone_log("InvoiceBatch contains no entries")
@@ -109,68 +109,55 @@ class BatchFolderExportCSV(BrowserView):
         _ordNum = 'starting at none'
         for invoice in invoices:
             new_invoice = True
-            _invNum = "%s" % invoice.getId()[:8]
+            _invNum = "%s" % invoice.getId()
             _clientNum = "%s" % invoice.getClient().getAccountNumber()
             _invDate = "%s" % invoice.getInvoiceDate().strftime('%Y-%m-%d')
             _monthNum = invoice.getInvoiceDate().month()
-            if _monthNum < 7:
-                _periodNum = _monthNum + 6
-            else:
-                _periodNum = _monthNum - 6
-            _periodNum = "%s" % _monthNum
-        import pdb;pdb.set_trace()
-    #         _message1 = ''
-    #         _message2 = ''
-    #         _message3 = ''
 
-    # items = invoice.invoice_lineitems # objectValues('InvoiceLineItem')
-    #         mixed = [(item.getClientOrderNumber(), item) for item in items]
-    #         mixed.sort()
-    #         lines = [t[1] for t in mixed]
+            _message1 = ''
+            _message2 = ''
+            _message3 = ''
 
-    # iterate through each invoice line
-    #         for line in lines:
-    #             if new_invoice or line.getClientOrderNumber() != _ordNum:
-    #                 new_invoice = False
-    #                 _ordNum = line.getClientOrderNumber()
+            items = invoice.invoice_lineitems  # objectValues('InvoiceLineItem')
+            mixed = [(item.get('OrderNumber', ''), item) for item in items]
+            mixed.sort()
+            lines = [t[1] for t in mixed]
+            # iterate through each invoice line
+            for line in lines:
+                if new_invoice or line.get('OrderNumber', '') != _ordNum:
+                    new_invoice = False
+                    _ordNum = line.get('OrderNumber', '')
 
-    # create header csv entry as a list
-    #                 header = [ \
-    #                     "Header", _invNum, " ", " ", _clientNum, _periodNum, \
-    #                     _invDate, _ordNum, "N", 0, _message1, _message2, \
-    #                     _message3, "", "", "", "", "", "", 0, "", "", "", "", \
-    #                     0, "", "", "N"]
-    #                 rows.append(header)
+                    # create header csv entry as a list
+                    header = [
+                        "Header", _invNum, " ", " ", _clientNum,
+                        _invDate, _ordNum, "N", 0, _message1, _message2,
+                        _message3, "", "", "", "", "", "", 0, "", "", "", "",
+                        0, "", "", "N"]
+                    rows.append(header)
 
-    #             _quant = 1
-    #             _unitp = line.getSubtotal()
-    #             _inclp = line.getTotal()
-    #             _item = line.getItemDescription()
-    #             _desc = "Analysis: %s" % _item[:40]
-    #             if _item.startswith('Water') or _item.startswith('water'):
-    #                 _icode = "002"
-    #             else:
-    #                 _icode = "001"
-    #             _ltype = "4"
-    #             _ccode = ""
-    # create detail csv entry as a list
-    #             detail = ["Detail", 0, _quant, _unitp, _inclp, \
-    #                       "", "01", "0", "0", _icode, _desc, \
-    #                       _ltype, _ccode, ""]
-    #             rows.append(detail)
-    # convert lists to csv string
-    #     ramdisk = StringIO()
-    #     writer = csv.writer(ramdisk, delimiter = delimiter)
-    #     assert(writer)
-    #     writer.writerows(rows)
-    #     result = ramdisk.getvalue()
-    #     ramdisk.close()
-    # stream file to browser
-    #     setheader = RESPONSE.setHeader
-    #     setheader('Content-Length', len(result))
-    #     setheader('Content-Type',
-    #         'text/x-comma-separated-values')
-    #     setheader('Content-Disposition', 'inline; filename=%s' % filename)
-    #     RESPONSE.write(result)
-    #     return
+                    _quant = 1
+                    _unitp = line.get('Subtotal', '')
+                    _inclp = line.get('Total', '')
+                    _item = line.get('ItemDescription', '')
+                    _desc = "Analysis: %s" % _item
+
+                    # create detail csv entry as a list
+                    detail = ["Detail", 0, _quant, _unitp, _inclp,
+                        " ", "01", "0", "0", _desc]
+                    rows.append(detail)
+        # convert lists to csv string
+        ramdisk = StringIO()
+        writer = csv.writer(ramdisk, delimiter = delimiter)
+        assert(writer)
+        writer.writerows(rows)
+        result = ramdisk.getvalue()
+        ramdisk.close()
+        # stream file to browser
+        setheader = RESPONSE.setHeader
+        setheader('Content-Length', len(result))
+        setheader('Content-Type',
+            'text/x-comma-separated-values')
+        setheader('Content-Disposition', 'inline; filename=%s' % filename)
+        RESPONSE.write(result)
 

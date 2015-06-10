@@ -63,7 +63,7 @@
  </action-->
 
  <action title="Export Batch CSV"
-         action_id="export_batch_csv"
+         action_id="invoicebatch_export_csv"
          category="document_actions"
          condition_expr=""
          icon_expr=""
