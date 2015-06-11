@@ -13,9 +13,15 @@ def upgrade(tool):
     setup = portal.portal_setup
     # Updated profile steps
     setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'jsregistry')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'workflow_csv')
     # important info about upgrade steps in
     # http://stackoverflow.com/questions/7821498/is-there-a-good-reference-list-for-the-names-of-the-genericsetup-import-steps
     setup.runImportStepFromProfile('profile-bika.lims:default', 'skins')
+    # Update workflow permissions
+    wf = getToolByName(portal, 'portal_workflow')
+    wf.updateRoleMappings()
+
     qi = portal.portal_quickinstaller
     ufrom = qi.upgradeInfo('bika.lims')['installedVersion']
     logger.info("Upgrading Bika LIMS: %s -> %s" % (ufrom, '319'))
