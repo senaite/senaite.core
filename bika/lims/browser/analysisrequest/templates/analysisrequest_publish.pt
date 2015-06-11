@@ -15,7 +15,7 @@
 <head>
     <div tal:replace="structure provider:plone.resourceregistries.scripts" />
 </head>
-<body>
+<body class="A4" data-layout="A4">
     <div id='ar_publish_container'>
         <div id="ar_publish_header" tal:condition="python:view.showOptions()">
             <div id='options_handler'>
@@ -26,7 +26,13 @@
                                 tal:content="python:format['title']"></option>
                     </tal:formats>
                 </select>
-                <a href='#' id='sel_format_info'><img tal:attributes='src python:portal.absolute_url()+"/++resource++bika.lims.images/info.png";'/></a><br/>
+                <a href='#' id='sel_format_info'><img tal:attributes='src python:portal.absolute_url()+"/++resource++bika.lims.images/info.png";'/></a>
+                &nbsp;&nbsp;&nbsp;
+                <label for="sel_layout" i18n:translate="">Layout</label>
+                <select id="sel_layout" name="sel_layout">
+                    <option value="A4" selected>DIN-A4 (210 x 297 mm)</option>
+                    <option value="letter">Letter size (216 x 279mm)</option>
+                </select><br/>
                 <input type="checkbox" name="qcvisible" id='qcvisible' value="0"><span i18n:translate="">Show QC Analyses</span><br/>
                 <input type="checkbox" name="hvisible" id='hvisible' value="0"><span i18n:translate="">Show Hidden Analyses</span>
             </div>
@@ -41,30 +47,37 @@
                 </tal:ars>
             </div>
             <div id='ar_publish_buttons'>
-                <input type="button" id='cancel_button' i18n:translate="value" value="Cancel"/>&nbsp;&nbsp;
-                <input type="button" id='publish_button' i18n:translate="value" value="Publish"/>
+                <input type="button" id='cancel_button' value="Cancel"/>&nbsp;&nbsp;
+                <input type="button" id='publish_button' value="Publish"/>
             </div>
         </div>
-        <style>
-            html {
-                background-color:#cdcdcd;
+        <style id='report-base-style'>
+            /** Report preview styling **/
+            html, body { margin: 0; }
+            html { background-color:#cdcdcd; }
+            body.A4 #ar_publish_container { width: 210mm; }
+            body.letter #ar_publish_container { width: 216mm; }
+            #report {
+                background-color:#ffffff;
             }
-            html, body {
-                margin: 0;
-                padding: 0;
+            div.ar_publish_page {
+                border: 1px dashed #cdcdcd;
             }
-            body {
-                width: 210mm;
-                padding: 10px 10px 0px 20px;
-                margin: 10px auto;
+            #ar_publish_container {
+                margin:0 auto;
                 background-color:#fff;
+                padding:30px;
             }
             #ar_publish_header {
-                margin:-10px -10px 20px -20px;
+                margin:-30px -30px 30px -30px;
                 padding:10px 20px 20px 10px;
                 background-color: #dcdcdc;
                 border-bottom: 20px solid #CDCDCD;
-                font-size:1.1em;
+                font-size:11px;
+            }
+            #ar_publish_header * {
+                font-family: Arial !important;
+                font-size:11.5px !important;
             }
             #ar_publish_header #options_handler label {
                 padding:5px 10px 5px 10px;
@@ -118,66 +131,75 @@
                 margin: 10px -20px 10px -10px;
                 padding: 10px 20px;
             }
-            .ar-invalid {
-                margin: -60px -10px 0 -20px;
-                padding: 60px 10px 0 20px;
-            }
-            .ar-provisional {
-                margin: -60px -10px 0 -20px;
-                padding: 60px 10px 0 20px;
-            }
-            .page-break, .page-footer {
-                background-color: #CDCDCD;
-                margin: 60px -10px 60px -20px;
-                padding-bottom: 20px;
-                padding-top: 20px;
-            }
-            .page-footer {
-                border-bottom: 30px solid #cdcdcd;
-                background-color:transparent;
-                padding: 20px;
-            }
-            .error-report {
-                margin:0 -20px;
-                padding:20px;
-                font-weight:bold;
-                color:#d40000;
-                border-bottom: 60px solid #CDCDCD;
-            }
-            .error-report pre {
-                font-family: monospace;
-                width:205mm;
-                overflow:auto;
-                background-color:#fff;
-                color:#000;
-                font-weight:normal;
+            .page-break {
+                background-color: #cdcdcd;
+                height: 20px;
+                margin: 0mm -30mm;
             }
             .clearfix {
-                clear:both;
+                clear:both !important;
+                margin:0 !important;
+                padding:0 !important;
+                height:0 !important;
             }
+            .page-footer.footer-invalid,
+            .page-header.header-invalid {
+                border: 1px dotted red;
+                color: red;
+                padding: 5px;
+            }
+        </style>
+        <style id='report-style' tal:content='structure python:view.getReportStyle()'></style>
+        <style id='layout-style'></style>
+        <style id='layout-print'>
             @media print {
-                html {
-                    background-color:#fff;
+                a {
+                    text-decoration:none;
+                    color:#000;
                 }
-                .page-break  {
-                    display: block;
+                div.ar_publish_page {
+                    border: none;
+                }
+                html {
+                    background-color:#fff !important;
+                    margin:0 !important;
+                    padding:0 !important;
+                }
+                body {
+                    padding:0 !important;
+                    margin:0 !important;
+                }
+                .page-break, .page-break-after, .page-break-before {
+                    display: block !important;
+                    border:none !important;
+                    padding:0 !important;
+                    margin:0 !important;
+                    background-color:transparent !important;
+                }
+                div.page-break {
+                    page-break-after: always;
+                }
+                div.page-break-after {
+                    page-break-after: always;
+                }
+                div.page-break-before {
                     page-break-before: always;
-                    margin:none;
-                    border:none;
                 }
                 .page-footer {
-                    display: block;
-                    page-break-after: always;
-                    margin:none;
-                    border:none;
+                    margin:0 !important;
+                    border:none !important;
+                    background-color:#ffffff;
                 }
                 #ar_publish_header {
                     display:none;
                     visibility:hidden;
                 }
+                .page-footer.footer-invalid,
+                .page-header.header-invalid {
+                    display:none;
+                }
             }
         </style>
-        <style id='report-style' tal:content='structure python:view.getReportStyle()'></style>
         <div id='report'>
         <tal:ar tal:repeat="i python:range(view.getAnalysisRequestsCount())">
         <div tal:attributes="id python:view.getAnalysisRequestObj().id;
@@ -187,5 +209,6 @@
         </tal:ar>
         </div>
     </div>
+    <div id="my_mm" style="height:1mm;display:none"></div>
 </body>
 </html>

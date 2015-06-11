@@ -1,265 +1,195 @@
-* {
-    font-family: Arial;
-    font-size:12px;
+/* IMPORTANT NOTE
+ * Do not use margins, use padding instead
+ */
+
+#report {
+    font: 9pt Arial, Verdana, serif;
 }
 
-body {
-    width: 170mm;
-}
+#report h1 { font-size:1.4em; }
+#report h2 { font-size:1.2em; }
+#report h3 { font-size:1.1em; }
 
-h1 {
-    font-size:1.4em;
-    margin-top:40px;
-    margin-bottom:10px;
-    padding-bottom:5px;
-    /*border-bottom: 1px solid #000;*/
-}
-h2 {
-    font-size:1.2em;
-}
-.label {
+#report h1,
+#report h2,
+#report h3 {
     font-weight:bold;
-}
-h1 *,
-h2 * {
-    font-size:1em;
-}
-.result {
-
+    padding-bottom:5px !important;
 }
 
-.outofrange {
+#report table {
+    width: 100%;
+}
+
+#report table tr td,
+#report table tr th {
+    text-align:left;
+    vertical-align:top;
+}
+#report .label {
+    font-weight:bold;
+    padding-right: 10px;
+}
+
+#report .outofrange a {
     font-weight:bold;
     color:#d40000;
 }
-
-.units {
+#report .units,
+#report .units sub,
+#report .units sup {
     color:#777;
     font-weight:normal;
     font-style:italic;
 }
-.units sub,
-.units sup {
-    color:#777;
-    font-size:10px;
-    font-style:italic;
+#report .units sub,
+#report .units sup {
+    font-size:7pt;
 }
 
-table tr td,
-table tr th {
-    text-align:left;
-}
-
-table#section-header{
+#report table#section-header{
     border-bottom:1px solid #000;
 }
 
-table#section-header,
-table#section-info {
-    width:100%;
-    margin-bottom:20px;
+#report table#section-header,
+#report table#section-info {
+    
 }
-table#section-header tr td,
-table#section-info tr td {
-    vertical-align:top;
-}
-table#section-header td#lab-logo {
-
-}
-table#section-header td#accreditation-logo {
-    /*text-align:right;*/
+#report table#section-header td#accreditation-logo {
     width:80mm;
 }
-
-table#section-info {
-}
-table#section-info td#client-info {
-}
-table#section-info td#lab-info {
+#report table#section-info td#lab-info {
     width:80mm;
 }
-#section-alert {
+#report #section-alert {
     padding:20px;
     border:1px solid #CDCDCD;
     background-color:#ffffff;
     margin:0px;
 }
-#section-alert h1 {
+#report #section-alert h1 {
     font-size:1em;
-    margin-top:0px;
-    margin-bottom:0;
-    padding-bottom:0;
+    margin:0px;
+    padding:0;
     border:none;
     color:#d40000;
 }
-#section-summary table,
-#section-results table,
-#section-qcresults table {
-    padding-left:10px;
+#report #section-results,
+#report #section-qcresults,
+#report #section-resultsinterpretation {
+    padding-top:20px;
 }
-
-#section-summary tr td {
+#report #section-summary table tr td,
+#report #section-results table tr td,
+#report #section-qcresults table tr td {
+    padding-left:5px;
+}
+#report #section-summary tr td {
     padding-right:205px;
     border-left-width: 0px;
     border-bottom:1px solid #ccc;
 }
 
-
-
-#section-results h2,
-#section-qcresults h2 {
-    padding-left:13px;
-    margin-bottom:0px;
-    padding-bottom:0px;
-    margin-top:20px;
-}
-#section-results table,
-#section-qcresults table {
-    width:100%;
-}
-#section-results table thead tr th,
-#section-qcresults table thead tr th {
+#report #section-results table thead tr th,
+#report #section-qcresults table thead tr th {
     padding-right:10px;
 }
-#section-results table thead tr th span,
-#section-qcresults table thead tr th span {
+#report #section-results table thead tr th span,
+#report #section-qcresults table thead tr th span {
     display:block;
     border-bottom:1px solid #000;
     line-height:1.6;
 }
-
-#section-results .result {
+#report #section-results .result {
     width:100px;
 }
-
-
-
-#section-results .specs {
+#report #section-results .specs {
     width:200px;
     text-align:center;
     padding-right:10px;
 }
-#section-results .outofrange {
+#report #section-results .outofrange {
     width:10px;
 }
-#section-results .remarks {
+#report #section-results .remarks {
     font-size: 0.9em;
     padding: 0 400px 15px 3px;
     color: #555;
 }
-
-#section-qcresults .result {
+#report #section-qcresults .result {
     width:60px;
 }
-
-#section-qcresults .specs {
+#report #section-qcresults .specs {
     width:100px;
     text-align:center;
     padding-right:10px;
 }
-#section-qcresults .worksheet {
+#report #section-qcresults .worksheet {
     width:80px;
 }
-#section-qcresults .refsample {
+#report #section-qcresults .refsample {
     width:200px;
 }
-#section-qcresults .outofrange {
+#report #section-qcresults .outofrange {
     width:10px;
 }
 
-#section-attachments ul {
+#report #section-attachments ul {
     list-style-type:none;
     margin:0px;
     padding:0px;
     margin-bottom:20px;
 }
-
-#section-attachments table#analysis-attachments td {
+#report #section-attachments table#analysis-attachments td {
     padding-right:20px;
 }
-
-#section-signatures {
-    margin-top:100px;
-    width:100%
+#report #section-signatures {
+    padding:10mm 0 5mm;
 }
-#section-signatures table {
-    width:100%;
-}
-
-#section-signatures table tr td {
-    text-align:center;
-    padding-right:50px;
-}
-
 #section-discreeter {
-    margin-top:60px;
     color:#444;
 }
-#section-discreeter *,
-.page-footer * {
+#section-discreeter * {
     font-size:0.9em;
 }
 #section-discreeter ol {
-    margin-left:0px;
-    padding-left:15px;
+    margin:0;
+    padding: 0 0 0 15px;
 }
-.page-footer {
-    font-size: 0.9em;
-    margin: 0 -20px 20px;
-    padding-left: 15px;
+#report .page-footer .barcode-container {
+    text-align:right;
 }
-#footer {
-    visibility:hidden;
-    display:none;
-}
-#barcode-container {
-    width:100%;
-}
-.barcode {
+#report .barcode {
     float: right;
 }
-#ariddept {
+#report #ariddept {
     font-size: 10px;
     overflow: auto;
     padding: 0 10px 5px;
     text-align: right;
 }
-
-div#section-info td {
+#report div#section-info td {
     vertical-align: top;
 }
-div#section-info td a {
+#report div#section-info td a {
     text-decoration: none;
 }
-div#section-info table {
+#report div#section-info table {
     width: 100%;
 }
-
-img.accredited-ico {
+#report img.accredited-ico {
     vertical-align:bottom;
     padding-right:5px;
 }
-.category_comments {
+#report .category_comments {
     color: #333;
     font-size: 11px;
     line-height: 130%;
     padding: 10px 15px 15px;
 }
 
-@media print {
-    * {
-        font: 9pt Arial, Verdana, serif;
-    }
-    a {
-        text-decoration:none;
-        color:#000;
-    }
-    .outofrange a {
-        color:#d40000;
-    }
-
-    #section-attachments {
-        visibility:hidden;
-        display:none;
-    }
+#report .page-footer table {
+    border-top: 1px solid #aaaaaa;
+    padding: 5px 0;
+    width: 100%;
 }
