@@ -259,11 +259,12 @@ function AnalysisRequestPublishView() {
             // starts relative to the top of the window. Used later to
             // calculate when a page-break is needed.
             var topOffset = $(this).position().top;
-            var pageBreakHtml = "<div class='page-break'></div>";
             var maxHeight = mmTopx(dim.height);
             var elCurrent = null;
             var elOutHeight = 0;
             var contentHeight = 0;
+            var pagenum = 1;
+            var pagecounts = Array();
 
             // Iterate through all div children to find the suitable
             // page-break points, split the report and add the header
@@ -329,13 +330,22 @@ function AnalysisRequestPublishView() {
                     // The content is taller than the allowed height
                     // or a manual page break reached. Add a page break.
                     var paddingTopFoot = maxHeight - elRelTopPos;
+                    var manualbreak = $(this).hasClass('manual-page-break');
+                    var restartcount = manualbreak && $(this).hasClass('restart-page-count');
                     var aboveBreakHtml = "<div style='clear:both;padding-top:"+pxTomm(paddingTopFoot)+"mm'></div>";
-                    $(aboveBreakHtml + footer_html + pageBreakHtml + header_html).insertBefore($(this));
+                    var pageBreak = "<div class='page-break"+(restartcount ? " restart-page-count" : "")+"' data-pagenum='"+pagenum+"'></div>";
+                    $(aboveBreakHtml + footer_html + pageBreak + header_html).insertBefore($(this));
                     topOffset = $(this).position().top;
-                    if ($(this).hasClass('manual-page-break')) {
+                    if (manualbreak) {
                         $(this).hide();
+                        if (restartcount) {
+                            // The page count needs to be restarted!
+                            pagecounts.push(pagenum);
+                            pagenum = 0;
+                        }
                     }
                     contentHeight = $(this).outerHeight(true);
+                    pagenum += 1;
                 }
                 $(this).css('width', '100%');
                 elCurrent = $(this);
@@ -345,7 +355,9 @@ function AnalysisRequestPublishView() {
             if (elCurrent != null) {
                 var paddingTopFoot = maxHeight - contentHeight;
                 var aboveBreakHtml = "<div style='clear:both;padding-top:"+pxTomm(paddingTopFoot)+"mm'></div>";
-                $(aboveBreakHtml + footer_html + pageBreakHtml).insertAfter($(elCurrent));
+                var pageBreak = "<div class='page-break' data-pagenum='"+pagenum+"'></div>";
+                pagecounts.push(pagenum);
+                $(aboveBreakHtml + footer_html + pageBreak).insertAfter($(elCurrent));
             }
 
             // Wrap all elements in pages
@@ -374,19 +386,22 @@ function AnalysisRequestPublishView() {
             });
 
             // Page numbering
-            var numTotalPages = $(this).find('div.page-break').length;
-            $(this).find('.page-total-count').html(numTotalPages);
-            var currnum = 1;
-            $(this).find('div.page-footer .page-current-num').each(function(j) {
-                $(this).html(currnum);
-                currnum += 1;
+            pagenum = 1;
+            var pagecntidx = 0;
+            $(this).find('.page-current-num,.page-total-count,div.page-break').each(function() {
+                if ($(this).hasClass('page-break')) {
+                    if ($(this).hasClass('restart-page-count')) {
+                        pagenum = 1;
+                        pagecntidx += 1;
+                    } else {
+                        pagenum = parseInt($(this).attr('data-pagenum')) + 1;
+                    }
+                } else if ($(this).hasClass('page-current-num')) {
+                    $(this).html(pagenum);
+                } else {
+                    $(this).html(pagecounts[pagecntidx]);
+                }
             });
-            currnum = 1;
-            $(this).find('div.page-header .page-current-num').each(function(j) {
-                $(this).html(currnum);
-                currnum += 1;
-            });
-
         });
         // Remove manual page breaks
         $('.manual-page-break').remove();

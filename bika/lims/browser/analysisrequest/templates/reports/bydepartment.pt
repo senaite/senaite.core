@@ -38,7 +38,17 @@
 
 <!-- Split the report by department -->
 <tal:department repeat="dept python:view.getAnalysisRequestObj().getDepartments()">
-<!-- Report header -->
+    
+<!--
+    Page Header
+    A div element with the class "page-header" will be placed on the
+    top of the report, within the top margin area. This element
+    will be displayed on each page.
+
+    Page numbering
+    For the number of page, use the "page-current-num" class.
+    For the total count, use the "page-total-count" class.
+-->
 <div id="section-header" class='page-header'>
     <div id='barcode-container'>
         <div id='ariddept'
@@ -389,6 +399,17 @@
          tal:condition="confidence_level" i18n:translate="">Test results are at a <tal:block replace="confidence_level" i18n:name="lab_confidence"/>% confidence level</div>
     <div tal:condition="python:contact.get('pubpref','') != '' and 'email' in contact['pubpref']" i18n:translate="">Methods of analysis available by clicking on the 'Request' link</div>
 </div>
+
+<!--
+    Page footer
+    A div element with the class "page-footer" will be placed in the
+    bottom of the report, within the bottom margin area. This element
+    will be displayed on each page.
+
+    Page numbering
+    For the number of page, use the "page-current-num" class.
+    For the total count, use the "page-total-count" class.
+-->
 <div class='page-footer'>
     <table>
         <tr>
@@ -408,6 +429,15 @@
         </tr>
     </table>
 </div>
-<div class='manual-page-break'></div>
+
+<!--
+    Manual break ("manual-page-break" css class)
+    We want to report to be splitted by departments.
+
+    Restart page count ("restart-page-count" css class)
+    We want the number of pages to restart after the current page
+-->
+<div class='manual-page-break restart-page-count'></div>
+
 </tal:department>
 </tal:report>
