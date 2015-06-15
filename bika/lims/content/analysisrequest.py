@@ -1496,39 +1496,97 @@ class AnalysisRequest(BaseFolder):
     security.declareProtected(View, 'getBillableItems')
 
     def getBillableItems(self):
-        """ Return all items except those in 'not_requested' state """
+        """
+        Return all items except those in 'not_requested' state.
+        The items are analysis services and analysis profiles.
+        If an analysis belongs to a profile, this analysis will only be included in the profile list if the profile has
+        activated "Use Analysis Profile Price".
+         -> The main purpose of this function is to obtain just the elements to quote.
+        :return: a tuple of two lists. The first list only contains the analysis services not belonging to a profile
+                 with active "Use Analysis Profile Price".
+                 The second list contains the profiles with activated "Use Analysis Profile Price".
+        """
         workflow = getToolByName(self, 'portal_workflow')
-        items = []
+        # Analysis != Analysis services
+        analyses = []
+        analysis_profiles = []
         for analysis in self.objectValues('Analysis'):
             review_state = workflow.getInfoFor(analysis, 'review_state', '')
             if review_state != 'not_requested':
-                items.append(analysis)
-        return items
+                analyses.append(analysis)
+        # At the moment, analysis request types doesn't contain analysis profiles since analysis requests only
+        # references an analysis profile. In a close future this will change because one analysis request will be able
+        # to contain more than one analysis profile, so analysis request types will contain analysis profile types,
+        # not only reference them.
+        # Getting the analysis profiles which has "Use Analysis Profile Price" enabled
+        if self.getProfile() and self.getProfile().getUseAnalysisProfilePrice():
+            analysis_profiles.append(self.getProfile())
+
+        # If a profile has its own quote, we don't want to quote its own analysis separately, so we have to quit all
+        # analysis belonging to the profile
+        for profile in analysis_profiles:
+            for analysis_service in profile.getService():
+                for analysis in analyses:
+                    if analysis_service.getKeyword() == analysis.getService().getKeyword():
+                        analyses.remove(analysis)
+        return analyses, analysis_profiles
+
+    def getServicesAndProfiles(self):
+        """
+        This function gets all analysis services and all profiles and removes the services belonging to a profile.
+        :return: a tuple of two lists, where the first list contains the services and the second list the analyses.
+        """
+        # Getting requested analyses
+        workflow = getToolByName(self, 'portal_workflow')
+        analyses = []
+        analysis_profiles = []
+        for analysis in self.objectValues('Analysis'):
+            review_state = workflow.getInfoFor(analysis, 'review_state', '')
+            if review_state != 'not_requested':
+                analyses.append(analysis)
+        # Getting all profiles
+        analysis_profiles.append(self.getProfile())
+        # Cleaning services included in profiles
+        for profile in analysis_profiles:
+            for analysis_service in profile.getService():
+                for analysis in analyses:
+                    if analysis_service.getKeyword() == analysis.getService().getKeyword():
+                        analyses.remove(analysis)
+        return analyses, analysis_profiles
 
     security.declareProtected(View, 'getSubtotal')
 
     def getSubtotal(self):
         """ Compute Subtotal
         """
+        a_services, a_profiles = self.getBillableItems()
         return sum(
-            [Decimal(obj.getPrice()) for obj in self.getBillableItems()])
+            [Decimal(obj.getPrice()) for obj in a_services] +
+            [Decimal(obj.getAnalysisProfilePrice()) for obj in a_profiles]
+        )
 
     security.declareProtected(View, 'getVATAmount')
 
     def getVATAmount(self):
         """ Compute VAT """
-        billable = self.getBillableItems()
-        if len(billable) > 0:
-            return sum([o.getVATAmount() for o in billable])
+        a_services, a_profiles = self.getBillableItems()
+        if len(a_services) > 0 or len(a_profiles) > 0:
+            return sum(
+                [o.getVATAmount() for o in a_services] +
+                [o.getVATAmount() for o in a_profiles]
+            )
         return 0
 
     security.declareProtected(View, 'getTotalPrice')
 
     def getTotalPrice(self):
         """ Compute TotalPrice """
-        billable = self.getBillableItems()
-        if len(billable) > 0:
-            return sum([o.getTotalPrice() for o in billable])
+        a_services, a_profiles = self.getBillableItems()
+        if len(a_services) > 0 or len(a_profiles) > 0:
+            return sum(
+                [o.getTotalPrice() for o in a_services] +
+                [o.getTotalPrice() for o in a_profiles]
+            )
         return 0
     getTotal = getTotalPrice
 
@@ -1747,6 +1805,9 @@ class AnalysisRequest(BaseFolder):
         return child
 
     def getRequestedAnalyses(self):
+        """
+        It returns all requested analyses, even if they belong to an analysis profile or not.
+        """
         #
         # title=Get requested analyses
         #
