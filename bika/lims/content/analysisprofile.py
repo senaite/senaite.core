@@ -102,6 +102,14 @@ schema = BikaSchema.copy() + Schema((
             visible={'view': 'visible', 'edit': 'invisible'},
             ),
     ),
+    ComputedField('TotalPrice',
+          schemata="Accounting",
+          expression='context.getTotalPrice()',
+          widget=ComputedWidget(
+              label = _("Total price"),
+              visible={'edit': 'hidden', }
+          ),
+    ),
     # When it's set, the system uses the analysis profile's price to quote and the system's VAT is overridden by the
     # the analysis profile's specific VAT
     BooleanField('UseAnalysisProfilePrice',
@@ -170,5 +178,12 @@ class AnalysisProfile(BaseContent):
         """
         price, vat = self.getAnalysisProfilePrice(), self.getAnalysisProfileVAT()
         return float(price) * float(vat) / 100
+
+    def getTotalPrice(self):
+        """
+        Computes the final price using the VATAmount and the subtotal price
+        """
+        price, vat = self.getAnalysisProfilePrice(), self.getVATAmount()
+        return float(price) + float(vat)
 
 registerType(AnalysisProfile, PROJECTNAME)

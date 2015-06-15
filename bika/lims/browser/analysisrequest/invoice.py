@@ -97,10 +97,12 @@ class InvoiceView(BrowserView):
         #       <td tal:content="view/datePublished"></td>
         #   </tal:published>
         #</tr>
-
-        # Retrieve required data from analyses collection
         analyses = []
-        for analysis in context.getRequestedAnalyses():
+        profiles = []
+        # Retrieve required data from analyses collection
+        all_analyses, all_profiles = context.getServicesAndProfiles()
+        # Relating category with solo analysis
+        for analysis in all_analyses:
             service = analysis.getService()
             categoryName = service.getCategory().Title()
             # Find the category
@@ -118,7 +120,42 @@ class InvoiceView(BrowserView):
                 'priceVat': "%.2f" % analysis.getVATAmount(),
                 'priceTotal': "%.2f" % analysis.getTotalPrice(),
             })
+        # Relating analysis services with their profiles
+        # We'll take the analysis contained on each profile
+        for profile in all_profiles:
+            # If profile's checkbox "Use Analysis Profile Price" is enabled, only the profile price will be displayed.
+            # Otherwise each analysis will display its own price.
+            pservices = []
+            if profile.getUseAnalysisProfilePrice():
+                # We have to use the profiles price only
+                for pservice in profile.getService():
+                    pservices.append({
+                               'title': pservice.Title(),
+                               'price': '',
+                               'priceVat': '',
+                               'priceTotal': '',
+                               })
+                profiles.append({'name': profile.title,
+                                 'price': profile.getAnalysisProfilePrice(),
+                                 'priceVat': profile.getAnalysisProfileVAT(),
+                                 'priceTotal': profile.getTotalPrice(),
+                                 'analyses': pservices})
+            else:
+                # We need the analyses prices instead of profile price
+                for pservice in profile.getService():
+                    pservices.append({
+                                     'title': pservice.Title(),
+                                     'price': pservice.getPrice(),
+                                     'priceVat': "%.2f" % pservice.getVATAmount(),
+                                     'priceTotal': "%.2f" % pservice.getTotalPrice(),
+                                     })
+                profiles.append({'name': profile.title,
+                                 'price': '',
+                                 'priceVat': '',
+                                 'priceTotal': '',
+                                 'analyses': pservices})
         self.analyses = analyses
+        self.profiles = profiles
         # Get totals
         self.subtotal = context.getSubtotal()
         self.VATAmount = "%.2f" % context.getVATAmount()

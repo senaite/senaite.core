@@ -15,55 +15,97 @@
 <br />
 
 <table class="invoice-items" summary="Analyses List">
-	<thead>
-		<tr>
-			<th i18n:translate="">Analysis</th>
-			<th i18n:translate="">Price</th>
-			<th i18n:translate="">VAT</th>
-			<th i18n:translate="">Price incl VAT</th>
-		</tr>
-	</thead>
-	<tbody>
-		<tal:categories repeat="category view/analyses">
-			<tal:category>
-				<tr class="category">
-					<td colspan="4" tal:content="category/name"></td>
-				</tr>
-				<tal:analyses repeat="analysis category/analyses">
-					<tal:analysis>
-						<tr>
-							<td class="title" tal:content="analysis/title">Title</td>
-							<td class="currency">
-								<span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
-								<span tal:content="analysis/price">0.00</span>
-							</td>
-							<td class="currency">
-								<span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
-								<span tal:content="analysis/priceVat">0.00</span>
-							</td>
-							<td class="currency">
-								<span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
-								<span tal:content="analysis/priceTotal">0.00</span>
-							</td>
-						</tr>
-					</tal:analysis>
-				</tal:analyses>
-			</tal:category>
-		</tal:categories>
-		<tr class="totals">
-			<td class="title" i18n:translate="">Total</td>
-			<td class="currency">
-				<span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
-				<span tal:content="view/subtotal"></span>
-			</td>
-			<td class="currency">
-				<span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
-				<span tal:content="view/VATAmount"></span>
-			</td>
-			<td class="currency">
-				<span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
-				<span tal:content="view/totalPrice"></span>
-			</td>
-		</tr>
-	</tbody>
+    <!-- Analysis Profile header -->
+    <thead>
+    <tr>
+        <th ></th>
+        <th i18n:translate="">Price</th>
+        <th i18n:translate="">VAT</th>
+        <th i18n:translate="">Price incl VAT</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tal:profiles repeat="profile view/profiles">
+        <tal:profiles>
+            <tr class="profile">
+                <td colspan="4" tal:content="profile/name"></td>
+                <td class="currency">
+                    <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
+                    <span tal:content="profile/price">0.00</span>
+                </td>
+            </tr>
+            <tal:analyses repeat="analysis profile/analyses">
+                <tal:analysis>
+                    <tr>
+                        <td class="title" tal:content="analysis/title">Title</td>
+                        <td class="currency">
+                            <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
+                            <span tal:content="analysis/price">0.00</span>
+                        </td>
+                        <td class="currency">
+                            <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
+                            <span tal:content="analysis/priceVat">0.00</span>
+                        </td>
+                        <td class="currency">
+                            <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
+                            <span tal:content="analysis/priceTotal">0.00</span>
+                        </td>
+                    </tr>
+                </tal:analysis>
+            </tal:analyses>
+        </tal:profiles>
+    </tal:profiles>
+    </tbody>
+    <!-- Analysis Services header -->
+    <thead>
+    <tr>
+        <th i18n:translate="">Analysis Service</th>
+        <th i18n:translate="">Price</th>
+        <th i18n:translate="">VAT</th>
+        <th i18n:translate="">Price incl VAT</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tal:categories repeat="category view/analyses">
+        <tal:category>
+            <tr class="category">
+                <td colspan="4" tal:content="category/name"></td>
+            </tr>
+            <tal:analyses repeat="analysis category/analyses">
+                <tal:analysis>
+                    <tr>
+                        <td class="title" tal:content="analysis/title">Title</td>
+                        <td class="currency">
+                            <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
+                            <span tal:content="analysis/price">0.00</span>
+                        </td>
+                        <td class="currency">
+                            <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
+                            <span tal:content="analysis/priceVat">0.00</span>
+                        </td>
+                        <td class="currency">
+                            <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
+                            <span tal:content="analysis/priceTotal">0.00</span>
+                        </td>
+                    </tr>
+                </tal:analysis>
+            </tal:analyses>
+        </tal:category>
+    </tal:categories>
+    <tr class="totals">
+        <td class="title" i18n:translate="">Total</td>
+        <td class="currency">
+            <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
+            <span tal:content="view/subtotal"></span>
+        </td>
+        <td class="currency">
+            <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
+            <span tal:content="view/VATAmount"></span>
+        </td>
+        <td class="currency">
+            <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
+            <span tal:content="view/totalPrice"></span>
+        </td>
+    </tr>
+    </tbody>
 </table>
