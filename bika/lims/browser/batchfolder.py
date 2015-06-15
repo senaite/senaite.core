@@ -1,6 +1,7 @@
 from bika.lims.permissions import AddBatch
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims import bikaMessageFactory as _
+from bika.lims.config import ManageInvoices
 from bika.lims.utils import t
 from operator import itemgetter
 from plone.app.content.browser.interfaces import IFolderContentsView
