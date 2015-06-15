@@ -1558,9 +1558,9 @@ class AnalysisRequest(BaseFolder):
     def getSubtotal(self):
         """ Compute Subtotal
         """
-        a_services, a_profiles = self.getBillableItems()
+        analyses, a_profiles = self.getBillableItems()
         return sum(
-            [Decimal(obj.getPrice()) for obj in a_services] +
+            [Decimal(obj.getPrice()) for obj in analyses] +
             [Decimal(obj.getAnalysisProfilePrice()) for obj in a_profiles]
         )
 
@@ -1568,10 +1568,10 @@ class AnalysisRequest(BaseFolder):
 
     def getVATAmount(self):
         """ Compute VAT """
-        a_services, a_profiles = self.getBillableItems()
-        if len(a_services) > 0 or len(a_profiles) > 0:
+        analyses, a_profiles = self.getBillableItems()
+        if len(analyses) > 0 or len(a_profiles) > 0:
             return sum(
-                [o.getVATAmount() for o in a_services] +
+                [o.getVATAmount() for o in analyses] +
                 [o.getVATAmount() for o in a_profiles]
             )
         return 0
@@ -1580,10 +1580,10 @@ class AnalysisRequest(BaseFolder):
 
     def getTotalPrice(self):
         """ Compute TotalPrice """
-        a_services, a_profiles = self.getBillableItems()
-        if len(a_services) > 0 or len(a_profiles) > 0:
+        analyses, a_profiles = self.getBillableItems()
+        if len(analyses) > 0 or len(a_profiles) > 0:
             return sum(
-                [o.getTotalPrice() for o in a_services] +
+                [o.getTotalPrice() for o in analyses] +
                 [o.getTotalPrice() for o in a_profiles]
             )
         return 0
