@@ -34,7 +34,6 @@ def upgrade(tool):
     # Define permissions for Multifile
     mp = portal.manage_permission
     mp(AddMultifile, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
-
     # Update workflow permissions
     wf = getToolByName(portal, 'portal_workflow')
     wf.updateRoleMappings()
