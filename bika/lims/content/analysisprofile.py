@@ -70,6 +70,17 @@ schema = BikaSchema.copy() + Schema((
             description=_("The profile's commercial ID for accounting purposes."),
         ),
     ),
+    # When it's set, the system uses the analysis profile's price to quote and the system's VAT is overridden by the
+    # the analysis profile's specific VAT
+    BooleanField('UseAnalysisProfilePrice',
+        default=False,
+        schemata='Accounting',
+        widget=BooleanWidget(
+            label=_("Use Analysis Profile Price"),
+            description=_("When it's set, the system uses the analysis profile's price to quote and the system's VAT is"
+                          " overridden by the analysis profile's specific VAT"),
+        )
+    ),
     # The price will only be used if the checkbox "use analysis profiles' price" is set.
     # This price will be used to quote the analyses instead of analysis service's price.
     FixedPointField('AnalysisProfilePrice',
@@ -109,17 +120,6 @@ schema = BikaSchema.copy() + Schema((
               label = _("Total price"),
               visible={'edit': 'hidden', }
           ),
-    ),
-    # When it's set, the system uses the analysis profile's price to quote and the system's VAT is overridden by the
-    # the analysis profile's specific VAT
-    BooleanField('UseAnalysisProfilePrice',
-        default=False,
-        schrmata='Accounting',
-        widget=BooleanWidget(
-            label=_("Use Analysis Profile Price"),
-            description=_("When it's set, the system uses the analysis profile's price to quote and the system's VAT is"
-                          " overridden by the analysis profile's specific VAT"),
-        )
     ),
 )
 )
