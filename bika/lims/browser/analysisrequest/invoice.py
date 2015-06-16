@@ -131,13 +131,13 @@ class InvoiceView(BrowserView):
                 for pservice in profile.getService():
                     pservices.append({
                                'title': pservice.Title(),
-                               'price': '',
-                               'priceVat': '',
-                               'priceTotal': '',
+                               'price': None,
+                               'priceVat': None,
+                               'priceTotal': None,
                                })
                 profiles.append({'name': profile.title,
                                  'price': profile.getAnalysisProfilePrice(),
-                                 'priceVat': profile.getAnalysisProfileVAT(),
+                                 'priceVat': profile.getVATAmount(),
                                  'priceTotal': profile.getTotalPrice(),
                                  'analyses': pservices})
             else:
@@ -150,9 +150,9 @@ class InvoiceView(BrowserView):
                                      'priceTotal': "%.2f" % pservice.getTotalPrice(),
                                      })
                 profiles.append({'name': profile.title,
-                                 'price': '',
-                                 'priceVat': '',
-                                 'priceTotal': '',
+                                 'price': None,
+                                 'priceVat': None,
+                                 'priceTotal': None,
                                  'analyses': pservices})
         self.analyses = analyses
         self.profiles = profiles

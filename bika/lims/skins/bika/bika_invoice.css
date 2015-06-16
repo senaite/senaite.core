@@ -54,9 +54,10 @@ table.invoice-items tr {
 	border-bottom: 1px solid #ddd;
 }
 
-table.invoice-items tr.category {
-	font-weight: bold;
-	border-bottom-width: 2px;
+table.invoice-items tr.category,
+table.invoice-items tr.profile td.profile{
+    font-weight: bold;
+    border-bottom-width: 2px;
 }
 
 table.invoice-items tr.totals {
@@ -68,6 +69,11 @@ table.invoice-items tr.totals {
 table.invoice-items td:nth-child(1),
 table.invoice-items th:nth-child(1) {
 	text-align: left;
+}
+
+table.invoice-items tr.panalysis {
+    text-align: left;
+    text-indent:8%;
 }
 
 table.invoice-items td {
