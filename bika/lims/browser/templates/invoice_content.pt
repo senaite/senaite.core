@@ -2,19 +2,19 @@
 	<tbody>
 		<tr>
 			<th i18n:translate="">Invoice To</th>
-			<td tal:content="view/clientName"></td>
+			<td tal:content="view/clientContact"></td>
 			<th i18n:translate="">Invoice #</th>
 			<td tal:content="view/invoiceId"></td>
 		</tr>
 		<tr>
 			<th i18n:translate="">Phone</th>
-			<td tal:content="view/clientPhone"></td>
+			<td tal:content="view/contactPhone"></td>
 			<th i18n:translate="">Account #</th>
 			<td tal:content="view/clientAccountNumber"></td>
 		</tr>
 		<tr>
 			<th i18n:translate="">Fax</th>
-			<td tal:content="view/clientFax"></td>
+			<td tal:content="view/contactFax"></td>
 			<th i18n:translate="">Date</th>
 			<td tal:content="view/invoiceDate"></td>
 		</tr>
