@@ -15,57 +15,62 @@
 <br />
 
 <table class="invoice-items" summary="Analyses List">
-    <!-- Analysis Profile header -->
     <thead>
     <tr>
-        <th ></th>
+        <th i18n:translate="">Analyses</th>
         <th i18n:translate="">Price</th>
         <th i18n:translate="">VAT</th>
         <th i18n:translate="">Price incl VAT</th>
     </tr>
     </thead>
     <tbody>
+    <!-- Displaying the analysis profiles. -->
     <tal:profiles repeat="profile view/profiles">
-        <tal:profiles>
+        <tal:profile>
             <tr class="profile">
-                <td colspan="4" tal:content="profile/name"></td>
-                <td class="currency">
+                <td class="profile" tal:content="profile/name"></td>
+                <!-- If profile's checkbox "Use Analysis Profile Price" is enabled, the profile prices
+                will be displayed.-->
+
+                <td tal:condition="profile/price" class="currency">
                     <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
                     <span tal:content="profile/price">0.00</span>
                 </td>
+                <td tal:condition="profile/price" class="currency">
+                    <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
+                    <span tal:content="profile/priceVat">0.00</span>
+                </td>
+                <td tal:condition="profile/price" class="currency">
+                    <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
+                    <span tal:content="profile/priceTotal">0.00</span>
+                </td>
             </tr>
-            <tal:analyses repeat="analysis profile/analyses">
-                <tal:analysis>
-                    <tr>
+            <!-- Displaying profile's analysis services -->
+            <tal:panalyses repeat="analysis profile/analyses">
+                <tal:panalysis>
+                    <tr class="panalysis">
                         <td class="title" tal:content="analysis/title">Title</td>
-                        <td class="currency">
+                        <!-- Analysis price -->
+                        <td tal:condition="analysis/price" class="currency">
                             <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
                             <span tal:content="analysis/price">0.00</span>
                         </td>
-                        <td class="currency">
+                        <!-- Analysis VAT amount -->
+                        <td tal:condition="analysis/price" class="currency">
                             <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
                             <span tal:content="analysis/priceVat">0.00</span>
                         </td>
-                        <td class="currency">
+                        <!-- Analysis price + VAT amount -->
+                        <td tal:condition="analysis/price" class="currency">
                             <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
                             <span tal:content="analysis/priceTotal">0.00</span>
                         </td>
                     </tr>
-                </tal:analysis>
-            </tal:analyses>
-        </tal:profiles>
+                </tal:panalysis>
+            </tal:panalyses>
+        </tal:profile>
     </tal:profiles>
-    </tbody>
-    <!-- Analysis Services header -->
-    <thead>
-    <tr>
-        <th i18n:translate="">Analysis Service</th>
-        <th i18n:translate="">Price</th>
-        <th i18n:translate="">VAT</th>
-        <th i18n:translate="">Price incl VAT</th>
-    </tr>
-    </thead>
-    <tbody>
+    <!-- Displaying solo analysis. -->
     <tal:categories repeat="category view/analyses">
         <tal:category>
             <tr class="category">
@@ -75,14 +80,17 @@
                 <tal:analysis>
                     <tr>
                         <td class="title" tal:content="analysis/title">Title</td>
+                        <!-- Analysis price -->
                         <td class="currency">
                             <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
                             <span tal:content="analysis/price">0.00</span>
                         </td>
+                        <!-- Analysis VAT amount -->
                         <td class="currency">
                             <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
                             <span tal:content="analysis/priceVat">0.00</span>
                         </td>
+                        <!-- Analysis price + VAT amount -->
                         <td class="currency">
                             <span tal:content="python:view.getPreferredCurrencyAbreviation()">R</span>
                             <span tal:content="analysis/priceTotal">0.00</span>
@@ -92,6 +100,7 @@
             </tal:analyses>
         </tal:category>
     </tal:categories>
+    <!-- Last table line containing total prices -->
     <tr class="totals">
         <td class="title" i18n:translate="">Total</td>
         <td class="currency">
