@@ -23,6 +23,7 @@ class InvoiceView(BrowserView):
         # Gather relted objects
         batch = context.aq_parent
         client = context.getClient()
+        analysis_request = context.getAnalysisRequest() if context.getAnalysisRequest() else None
         # Gather general data
         self.invoiceId = context.getId()
         self.invoiceDate = self.ulocalized_time(context.getInvoiceDate())
@@ -35,9 +36,13 @@ class InvoiceView(BrowserView):
         self.batchRange = "%s to %s" % (start, end)
         # Gather client data
         self.clientName = client.Title()
+        self.clientContact = analysis_request.getContact().getFullname() if analysis_request else client.Title()
         self.clientPhone = client.getPhone()
+        self.contactPhone = analysis_request.getContact().getBusinessPhone() if analysis_request else client.getPhone()
         self.clientFax = client.getFax()
+        self.contactFax = analysis_request.getContact().getBusinessFax() if analysis_request else client.getFax()
         self.clientEmail = client.getEmailAddress()
+        self.contactEmail = analysis_request.getContact().getEmailAddress() if analysis_request else client.getEmailAddress()
         self.clientAccountNumber = client.getAccountNumber()
         # currency info
         locale = locales.getLocale('en')
