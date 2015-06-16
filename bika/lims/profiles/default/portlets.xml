@@ -34,7 +34,7 @@
     <property name="name">Navigation</property>
     <property name="includeTop">True</property>
     <property name="bottomLevel">0</property>
-    <property name="root">/</property>
+    <property name="root"/>
     </assignment>
 
     <assignment
