@@ -19,7 +19,7 @@
     <div id='ar_publish_container'>
         <div id="ar_publish_header" tal:condition="python:view.showOptions()">
             <div id='options_handler'>
-                <label for="sel_format" i18n:translate="">Available templates</label>
+                <label for="sel_format" i18n:translate="">Template</label>
                 <select id="sel_format" name="sel_format">
                     <tal:formats tal:repeat="format python:view.getAvailableFormats()">
                         <option tal:attributes="value python:format['id']"
@@ -33,6 +33,14 @@
                     <option value="A4" selected>DIN-A4 (210 x 297 mm)</option>
                     <option value="letter">Letter size (216 x 279mm)</option>
                 </select><br/>
+                <div class='options_margins'>
+                    <label i18n:translate="">Margins (mm)</label>
+                    <input class='option-margin' id="margin-top" type="text"/> X&nbsp;
+                    <input class='option-margin' id="margin-right" type="text"/> X&nbsp;
+                    <input class='option-margin' id="margin-bottom" type="text"/> X&nbsp;
+                    <input class='option-margin' id="margin-left" type="text"/>
+                </div>
+                <br/>
                 <input type="checkbox" name="qcvisible" id='qcvisible' value="0"><span i18n:translate="">Show QC Analyses</span><br/>
                 <input type="checkbox" name="hvisible" id='hvisible' value="0"><span i18n:translate="">Show Hidden Analyses</span>
             </div>
@@ -116,6 +124,11 @@
             }
             #ar_publish_header #ar_publish_buttons #publish_button {
                 background-color:#0B486B;
+            }
+            #ar_publish_header #options_handler input.option-margin {
+                padding:0;
+                width:20px;
+                size:2;
             }
             #sel_format_info {
                 padding: 0 15px 0 5px;

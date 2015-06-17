@@ -8,6 +8,7 @@ function AnalysisRequestPublishView() {
 
     // Allowed Paper sizes and default margins, in mm
     var papersize_default = "A4";
+    var default_margins = [20, 20, 30, 20];
     var papersize = {
         'A4': {
                 dimensions: [210, 297],
@@ -118,6 +119,27 @@ function AnalysisRequestPublishView() {
             e.preventDefault();
             $('#sel_format_info_pane').toggle();
         });
+
+        $('#margin-top').change(function(e) {
+            var currentlayout = $('#sel_layout').val();
+            papersize[currentlayout].margins[0] = $(this).val();
+            reloadReport();
+        });
+        $('#margin-right').change(function(e) {
+            var currentlayout = $('#sel_layout').val();
+            papersize[currentlayout].margins[1] = $(this).val();
+            reloadReport();
+        });
+        $('#margin-bottom').change(function(e) {
+            var currentlayout = $('#sel_layout').val();
+            papersize[currentlayout].margins[2] = $(this).val();
+            reloadReport();
+        });
+        $('#margin-left').change(function(e) {
+            var currentlayout = $('#sel_layout').val();
+            papersize[currentlayout].margins[3] = $(this).val();
+            reloadReport();
+        });
     }
 
     function get(name){
@@ -181,7 +203,7 @@ function AnalysisRequestPublishView() {
      */
     function load_layout() {
         // Set page layout (DIN-A4, US-letter, etc.)
-        currentlayout = $('#sel_layout').val();
+        var currentlayout = $('#sel_layout').val();
         // Dimensions. All expressed in mm
         var dim = {
             size:         papersize[currentlayout].size,
@@ -195,6 +217,11 @@ function AnalysisRequestPublishView() {
             height:       papersize[currentlayout].dimensions[1]-papersize[currentlayout].margins[0]-papersize[currentlayout].margins[2]
         };
 
+        $('#margin-top').val(dim.marginTop);
+        $('#margin-right').val(dim.marginRight);
+        $('#margin-bottom').val(dim.marginBottom);
+        $('#margin-left').val(dim.marginLeft);
+        
         var layout_style =
             '@page { size:  ' + dim.size + ' !important;' +
             '        width:  ' + dim.width + 'mm !important;' +

@@ -30,7 +30,7 @@
     font-weight:bold;
     padding-right: 10px;
 }
-
+#report .outofrange,
 #report .outofrange a {
     font-weight:bold;
     color:#d40000;
@@ -85,11 +85,12 @@
     padding-left:5px;
 }
 #report #section-summary tr td {
-    padding-right:205px;
     border-left-width: 0px;
     border-bottom:1px solid #ccc;
 }
-
+#report #section-summary tr td.label {
+    width:60mm;
+}
 #report #section-results table thead tr th,
 #report #section-qcresults table thead tr th {
     padding-right:10px;
