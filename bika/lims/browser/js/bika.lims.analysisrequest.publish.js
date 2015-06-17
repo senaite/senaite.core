@@ -121,25 +121,33 @@ function AnalysisRequestPublishView() {
         });
 
         $('#margin-top').change(function(e) {
-            var currentlayout = $('#sel_layout').val();
-            papersize[currentlayout].margins[0] = $(this).val();
-            reloadReport();
+            applyMarginAndReload($(this), 0);
         });
         $('#margin-right').change(function(e) {
-            var currentlayout = $('#sel_layout').val();
-            papersize[currentlayout].margins[1] = $(this).val();
-            reloadReport();
+            applyMarginAndReload($(this), 1);
         });
         $('#margin-bottom').change(function(e) {
-            var currentlayout = $('#sel_layout').val();
-            papersize[currentlayout].margins[2] = $(this).val();
-            reloadReport();
+            applyMarginAndReload($(this), 2);
         });
         $('#margin-left').change(function(e) {
-            var currentlayout = $('#sel_layout').val();
-            papersize[currentlayout].margins[3] = $(this).val();
-            reloadReport();
+            applyMarginAndReload($(this), 3);
         });
+    }
+
+    function applyMarginAndReload(element, idx) {
+        var currentlayout = $('#sel_layout').val();
+        // Maximum margin (1/4 of the total width)
+        var maxmargin = papersize[currentlayout].dimensions[(idx+1) % 2]/4;
+        // Is this a valid whole number?
+        var margin = $(element).val();
+        var n = ~~Number(margin);
+        if (String(n) === margin && n >= 0 && n <= maxmargin) {
+            papersize[currentlayout].margins[idx] = n;
+            reloadReport();
+        } else {
+            // Not a number of out of bounds
+            $(element).val(papersize[currentlayout].margins[idx]);
+        }
     }
 
     function get(name){
