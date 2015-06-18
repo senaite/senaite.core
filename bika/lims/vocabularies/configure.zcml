@@ -60,4 +60,9 @@
     name="bika.lims.vocabularies.AnalysisRequestWorkflowStates"
     />
 
+  <utility
+    component="bika.lims.vocabularies.ARReportTemplatesVocabularyFactory"
+    name="bika.lims.vocabularies.ARReportTemplates"
+    />
+
 </configure>

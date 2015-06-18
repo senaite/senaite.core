@@ -1,44 +1,51 @@
-import re
-from smtplib import SMTPServerDisconnected, SMTPRecipientsRefused
-import tempfile
 from bika.lims import bikaMessageFactory as _, t
-from bika.lims.utils import to_utf8, formatDecimalMark, format_supsub
-from bika.lims.utils.analysis import format_uncertainty
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IResultOutOfRange
-from bika.lims.utils import to_utf8, encode_header, createPdf, attachPdf
 from bika.lims.utils import isnumber
+from bika.lims.utils import to_utf8, encode_header, createPdf, attachPdf
+from bika.lims.utils import to_utf8, formatDecimalMark, format_supsub
+from bika.lims.utils.analysis import format_uncertainty
+from bika.lims.vocabularies import getARReportTemplates
 from DateTime import DateTime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.Utils import formataddr
 from operator import itemgetter
 from os.path import join
+from plone.resource.utils import iterDirectoriesOfType, queryResourceDirectory
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.utils import safe_unicode, _createObjectByType
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from plone.resource.utils import iterDirectoriesOfType, queryResourceDirectory
+from smtplib import SMTPServerDisconnected, SMTPRecipientsRefused
 from zope.component import getAdapters
-import glob, os, sys, traceback
-import urllib2
+
 import App
+import glob, os, sys, traceback
 import Globals
+import re
+import tempfile
+import urllib2
 
 class AnalysisRequestPublishView(BrowserView):
     template = ViewPageTemplateFile("templates/analysisrequest_publish.pt")
     _ars = []
     _current_ar_index = 0
-    _DEFAULT_TEMPLATE = 'default.pt'
     _publish = False
 
     def __init__(self, context, request, publish=False):
         super(AnalysisRequestPublishView, self).__init__(context, request)
         self._publish = publish
         self._ars = [self.context]
+
+    @property
+    def _DEFAULT_TEMPLATE(self):
+        registry = getUtility(IRegistry)
+        return registry.get(
+            'bika.lims.analysisrequest.default_arreport_template', 'default.pt')
 
     def __call__(self):
         if self.context.portal_type == 'AnalysisRequest':
@@ -68,22 +75,7 @@ class AnalysisRequestPublishView(BrowserView):
     def getAvailableFormats(self):
         """ Returns the available formats found in templates/reports
         """
-        this_dir = os.path.dirname(os.path.abspath(__file__))
-        templates_dir = os.path.join(this_dir, 'templates/reports')
-        tempath = '%s/%s' % (templates_dir, '*.pt')
-        templates = [t.split('/')[-1] for t in glob.glob(tempath)]
-        out = []
-        for template in templates:
-            out.append({'id': template, 'title': template[:-3]})
-        for templates_resource in iterDirectoriesOfType('reports'):
-            prefix = templates_resource.__name__
-            templates = [tpl for tpl in templates_resource.listDirectory() if tpl.endswith('.pt')]
-            for template in templates:
-                out.append({
-                    'id': '{0}:{1}'.format(prefix, template),
-                    'title': '{0} ({1})'.format(template[:-3], prefix),
-                })
-        return out
+        return getARReportTemplates()
 
     def getAnalysisRequests(self):
         """ Returns a dict with the analysis requests to manage
