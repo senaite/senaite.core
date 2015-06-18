@@ -32,13 +32,18 @@ class AnalysisRequestPublishView(BrowserView):
     template = ViewPageTemplateFile("templates/analysisrequest_publish.pt")
     _ars = []
     _current_ar_index = 0
-    _DEFAULT_TEMPLATE = 'default.pt'
     _publish = False
 
     def __init__(self, context, request, publish=False):
         super(AnalysisRequestPublishView, self).__init__(context, request)
         self._publish = publish
         self._ars = [self.context]
+
+    @property
+    def _DEFAULT_TEMPLATE(self):
+        registry = getUtility(IRegistry)
+        return registry.get(
+            'bika.lims.analysisrequest.default_arreport_template', 'default.pt')
 
     def __call__(self):
         if self.context.portal_type == 'AnalysisRequest':

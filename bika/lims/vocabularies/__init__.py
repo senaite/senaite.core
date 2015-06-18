@@ -7,11 +7,15 @@ from bika.lims.utils import to_utf8
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
+from pkg_resources import resource_filename
+from plone.resource.utils import iterDirectoriesOfType
 from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.vocabulary import SimpleTerm
 from zope.schema.vocabulary import SimpleVocabulary
 from zope.site.hooks import getSite
 
+import os
+import glob
 
 class CatalogVocabulary(object):
 
@@ -365,3 +369,32 @@ class ARPrioritiesVocabulary(BikaContentVocabulary):
         BikaContentVocabulary.__init__(self,
                                        ['bika_setup/bika_arpriorities', ],
                                        ['ARPriority', ])
+
+
+def _getARReportTemplates():
+    p = os.path.join("browser", "analysisrequest", "templates", "reports")
+    templates_dir = resource_filename("bika.lims", p)
+    tempath = os.path.join(templates_dir, '*.pt')
+    templates = [os.path.split(x)[-1] for x in glob.glob(tempath)]
+    out = [{'id': x, 'title': x} for x in templates]
+    for templates_resource in iterDirectoriesOfType('reports'):
+        prefix = templates_resource.__name__
+        dirlist = templates_resource.listDirectory()
+        templates = [tpl for tpl in dirlist if tpl.endswith('.pt')]
+        for template in templates:
+            out.append({
+                'id': '{0}:{1}'.format(prefix, template),
+                'title': '{0}:{1}'.format(prefix, template),
+            })
+    return out
+
+class ARReportTemplatesVocabulary(object):
+    """Locate all ARReport templates to allow user to set the default
+    """
+    implements(IVocabularyFactory)
+
+    def __call__(self, context):
+        out = [SimpleTerm(x['id'], x['id'], x['title']) for x in _getARReportTemplates()]
+        return SimpleVocabulary(out)
+
+ARReportTemplatesVocabularyFactory = ARReportTemplatesVocabulary()
