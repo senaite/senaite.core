@@ -371,7 +371,7 @@ class ARPrioritiesVocabulary(BikaContentVocabulary):
                                        ['ARPriority', ])
 
 
-def _getARReportTemplates():
+def getARReportTemplates():
     p = os.path.join("browser", "analysisrequest", "templates", "reports")
     templates_dir = resource_filename("bika.lims", p)
     tempath = os.path.join(templates_dir, '*.pt')
@@ -394,7 +394,7 @@ class ARReportTemplatesVocabulary(object):
     implements(IVocabularyFactory)
 
     def __call__(self, context):
-        out = [SimpleTerm(x['id'], x['id'], x['title']) for x in _getARReportTemplates()]
+        out = [SimpleTerm(x['id'], x['id'], x['title']) for x in getARReportTemplates()]
         return SimpleVocabulary(out)
 
 ARReportTemplatesVocabularyFactory = ARReportTemplatesVocabulary()
