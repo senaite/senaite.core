@@ -280,20 +280,16 @@
     </tal:cat>
     </tal:poc>
 </div>
-<tal:resint define="ri analysisrequest/resultsinterpretationdepts"
-            condition="ri">
-<div>
-    <h1 i18n:translate="">Result interpretation</h1>
-</div>
-<tal:ris repeat="rid python:ri.keys()">
-<div class='resultsinterpretation'>
-    <h2 tal:content="rid" tal:condition="rid"></h2>
-    <div>
+<div id="section-resultsinterpretation"
+    tal:define="ri python:dict([(k,v) for (k,v) in analysisrequest.get('resultsinterpretationdepts',{}).items() if v and v.get('richtext','')]);"
+    tal:condition="python: ri">
+    <h1 i18n:translate="">Results interpretation</h1>
+    <tal:ris repeat="rid python:ri.keys()">
+        <h2 tal:content="rid" tal:condition="rid"></h2>
         <div tal:content="structure python:ri.get(rid,{}).get('richtext','')"></div>
-    </div>
+        <p>&nbsp;</p>
+    </tal:ris>
 </div>
-</tal:ris>
-</tal:resint>
 <!-- QC Results section -->
 <div id="section-qcresults" tal:condition="python:hasqcanalyses and showqcanalyses">
     <h1 i18n:translate="">QC Results</h1>

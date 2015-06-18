@@ -8,6 +8,7 @@ function AnalysisRequestPublishView() {
 
     // Allowed Paper sizes and default margins, in mm
     var papersize_default = "A4";
+    var default_margins = [20, 20, 30, 20];
     var papersize = {
         'A4': {
                 dimensions: [210, 297],
@@ -118,6 +119,35 @@ function AnalysisRequestPublishView() {
             e.preventDefault();
             $('#sel_format_info_pane').toggle();
         });
+
+        $('#margin-top').change(function(e) {
+            applyMarginAndReload($(this), 0);
+        });
+        $('#margin-right').change(function(e) {
+            applyMarginAndReload($(this), 1);
+        });
+        $('#margin-bottom').change(function(e) {
+            applyMarginAndReload($(this), 2);
+        });
+        $('#margin-left').change(function(e) {
+            applyMarginAndReload($(this), 3);
+        });
+    }
+
+    function applyMarginAndReload(element, idx) {
+        var currentlayout = $('#sel_layout').val();
+        // Maximum margin (1/4 of the total width)
+        var maxmargin = papersize[currentlayout].dimensions[(idx+1) % 2]/4;
+        // Is this a valid whole number?
+        var margin = $(element).val();
+        var n = ~~Number(margin);
+        if (String(n) === margin && n >= 0 && n <= maxmargin) {
+            papersize[currentlayout].margins[idx] = n;
+            reloadReport();
+        } else {
+            // Not a number of out of bounds
+            $(element).val(papersize[currentlayout].margins[idx]);
+        }
     }
 
     function get(name){
@@ -181,7 +211,7 @@ function AnalysisRequestPublishView() {
      */
     function load_layout() {
         // Set page layout (DIN-A4, US-letter, etc.)
-        currentlayout = $('#sel_layout').val();
+        var currentlayout = $('#sel_layout').val();
         // Dimensions. All expressed in mm
         var dim = {
             size:         papersize[currentlayout].size,
@@ -195,6 +225,11 @@ function AnalysisRequestPublishView() {
             height:       papersize[currentlayout].dimensions[1]-papersize[currentlayout].margins[0]-papersize[currentlayout].margins[2]
         };
 
+        $('#margin-top').val(dim.marginTop);
+        $('#margin-right').val(dim.marginRight);
+        $('#margin-bottom').val(dim.marginBottom);
+        $('#margin-left').val(dim.marginLeft);
+        
         var layout_style =
             '@page { size:  ' + dim.size + ' !important;' +
             '        width:  ' + dim.width + 'mm !important;' +
