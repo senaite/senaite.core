@@ -33,7 +33,13 @@ class UniqueFieldValidator:
         for item in aq_parent(instance).objectValues():
             if hasattr(item, 'UID') and item.UID() != instance.UID() and \
                fieldname in item.Schema() and \
-               item.Schema()[fieldname].get(item) == value:
+               str(item.Schema()[fieldname].get(item)) == str(value):   # We have to compare them as strings because
+                                                                        # even if a number (as an  id) is saved inside
+                                                                        # a string widget and string field, it will be
+                                                                        # returned as an int. I don't know if it is
+                                                                        # caused because is called with
+                                                                        # <item.Schema()[fieldname].get(item)>,
+                                                                        # but it happens...
                 msg = _("Validation failed: '${value}' is not unique",
                         mapping={'value': safe_unicode(value)})
                 return to_utf8(translate(msg))
