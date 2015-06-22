@@ -10,6 +10,7 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
 from zope.interface import implements
 from pkg_resources import resource_filename
+import datetime
 
 import re
 import transaction
@@ -389,15 +390,11 @@ class Lab_Products(WorksheetImporter):
         folder = self.context.bika_setup.bika_labproducts
         # Iterate through the rows
         for row in self.get_rows(3):
-            # Check for required columns
-            check_for_required_columns('LabProduct', row, [
-                'title', 'volume', 'unit', 'price'
-            ])
             # Create the SRTemplate object
             obj = _createObjectByType('LabProduct', folder, tmpID())
             # Apply the row values
             obj.edit(
-                title=row['title'],
+                title=row.get('title', 'Unknown'),
                 description=row.get('description', ''),
                 Volume=row.get('volume', ''),
                 Unit=str(row.get('unit', '')),
@@ -678,9 +675,13 @@ class Instruments(WorksheetImporter):
                     "setupdata/%s/%s" % (self.dataset_name,
                                          row['Photo'])
                 )
-                file_data = open(path, "rb").read()
-                obj.setPhoto(file_data)
-
+                try:
+                    file_data = open(path, "rb").read()
+                    obj.setPhoto(file_data)
+                except IOError:
+                    warning = "Error while loading attached Photo from %s. The file will not be uploaded " \
+                              "into the system."
+                    logger.warning(warning, self.sheetname)
 
             # Attaching the Installation Certificate if exists
             if row.get('InstalationCertificate', None):
@@ -689,8 +690,13 @@ class Instruments(WorksheetImporter):
                     "setupdata/%s/%s" % (self.dataset_name,
                                          row['InstalationCertificate'])
                 )
-                file_data = open(path, "rb").read()
-                obj.setInstallationCertificate(file_data)
+                try:
+                    file_data = open(path, "rb").read()
+                    obj.setInstallationCertificate(file_data)
+                except IOError:
+                    warning = "Error while loading attached Installation Certificate from %s. " \
+                              "The file will not be uploaded into the system."
+                    logger.warning(warning, self.sheetname)
 
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
@@ -771,12 +777,17 @@ class Instrument_Certifications(WorksheetImporter):
             folder = self.get_object(bsc, 'Instrument', row.get('instrument',''))
             if folder:
                 obj = _createObjectByType("InstrumentCertification", folder, tmpID())
+                today = datetime.date.today()
+                certificate_expire_date = today.strftime('%d/%m') + '/' + str(today.year+1) \
+                    if row.get('validfrom', '') == '' else row.get('validfrom')
+                certificate_start_date = today.strftime('%d/%m/%Y') \
+                    if row.get('validto', '') == '' else row.get('validto')
                 obj.edit(
                     title=row['title'],
                     AssetNumber=row.get('assetnumber', ''),
                     Date=row.get('date', ''),
-                    ValidFrom=row.get('validfrom', ''),
-                    ValidTo=row.get('validto', ''),
+                    ValidFrom=certificate_start_date,
+                    ValidTo=certificate_expire_date,
                     Agency=row.get('agency', ''),
                     Remarks=row.get('remarks', ''),
                 )
@@ -787,8 +798,13 @@ class Instrument_Certifications(WorksheetImporter):
                         "setupdata/%s/%s" % (self.dataset_name,
                                              row['report'])
                     )
-                    file_data = open(path, "rb").read()
-                    obj.setDocument(file_data)
+                    try:
+                        file_data = open(path, "rb").read()
+                        obj.setDocument(file_data)
+                    except IOError:
+                        warning = "Error while loading attached report from %s. " \
+                                  "The file will not be uploaded into the system."
+                        logger.warning(warning, self.sheetname)
                 # Getting lab contacts
                 bsc = getToolByName(self.context, 'bika_setup_catalog')
                 lab_contacts = [o.getObject() for o in bsc(portal_type="LabContact", nactive_state='active')]
