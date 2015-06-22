@@ -396,9 +396,9 @@ class Lab_Products(WorksheetImporter):
             obj.edit(
                 title=row.get('title', 'Unknown'),
                 description=row.get('description', ''),
-                Volume=row.get('volume', ''),
-                Unit=str(row.get('unit', '')),
-                Price=str(row.get('price', '')),
+                Volume=row.get('volume', 0),
+                Unit=str(row.get('unit', 0)),
+                Price=str(row.get('price', 0)),
             )
             # Rename the new object
             renameAfterCreation(obj)
