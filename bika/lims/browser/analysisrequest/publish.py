@@ -628,7 +628,7 @@ class AnalysisRequestPublishView(BrowserView):
             for dept in departments[mngr]:
                 if final_depts:
                     final_depts += ', '
-                final_depts += dept
+                final_depts += to_utf8(dept)
             managers['dict'][mngr]['departments'] = final_depts
 
         return managers

@@ -364,6 +364,7 @@
                 <img tal:condition="signature"
                      tal:attributes="src string:${signature}" style="height:75px"/>
                 <br/>
+                <span class="manager-salutation" tal:content="python:managers[manager]['salutation']">Ms.</span>&nbsp;
                 <span class="manager-fullname" tal:content="python:managers[manager]['name']">Joe Blogs</span>
                 <br tal:condition="jobtitle">
                 <span class="manager-jobtitle"

@@ -1422,6 +1422,7 @@ class AnalysisRequest(BaseFolder):
             manager_id = manager.getId()
             if manager_id not in managers:
                 managers[manager_id] = {}
+                managers[manager_id]['salutation'] = safe_unicode(manager.getSalutation())
                 managers[manager_id]['name'] = safe_unicode(manager.getFullname())
                 managers[manager_id]['email'] = safe_unicode(manager.getEmailAddress())
                 managers[manager_id]['phone'] = safe_unicode(manager.getBusinessPhone())
