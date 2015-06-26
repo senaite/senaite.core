@@ -15,13 +15,14 @@ from email.mime.text import MIMEText
 from email.Utils import formataddr
 from operator import itemgetter
 from os.path import join
+from plone.registry.interfaces import IRegistry
 from plone.resource.utils import iterDirectoriesOfType, queryResourceDirectory
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.utils import safe_unicode, _createObjectByType
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from smtplib import SMTPServerDisconnected, SMTPRecipientsRefused
-from zope.component import getAdapters
+from zope.component import getAdapters, getUtility
 
 import App
 import glob, os, sys, traceback
