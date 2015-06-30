@@ -169,6 +169,10 @@ class AnalysisServicesView(BikaListingView):
             'DuplicateVariation': {'title': _('Dup Var'),
                                    'toggle': False},
             'Calculation': {'title': _('Calculation')},
+            'CommercialID': {'title': _('Commercial ID'),
+                             'toggle': True},
+            'ProtocolID': {'title': _('Protocol ID'),
+                           'toggle': True},
         }
 
         self.review_states = [
@@ -181,6 +185,8 @@ class AnalysisServicesView(BikaListingView):
                          'Keyword',
                          'Method',
                          'Department',
+                         'CommercialID',
+                         'ProtocolID',
                          'Instrument',
                          'Unit',
                          'Price',
@@ -201,6 +207,8 @@ class AnalysisServicesView(BikaListingView):
                          'Keyword',
                          'Method',
                          'Department',
+                         'CommercialID',
+                         'ProtocolID',
                          'Instrument',
                          'Unit',
                          'Price',
@@ -220,6 +228,8 @@ class AnalysisServicesView(BikaListingView):
                          'Category',
                          'Method',
                          'Department',
+                         'CommercialID',
+                         'ProtocolID',
                          'Instrument',
                          'Unit',
                          'Price',
