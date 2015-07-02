@@ -52,7 +52,7 @@
   <permission value="Modify portal content"/>
  </action>
 
- <action title="Internal Calibration Tests"
+ <action title="QC Results"
          action_id="referenceanalyses"
          category="object"
          url_expr="string:${object_url}/referenceanalyses"
