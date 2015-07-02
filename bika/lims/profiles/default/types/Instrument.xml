@@ -62,7 +62,18 @@
     <permission value="Modify portal content"/>
  </action>
 
- <action title="Certificates"
+ <action title="Calibrations"
+        action_id="calibrations"
+        category="object"
+        condition_expr=""
+        icon_expr="string:${portal_url}/images/instrumentcalibration.png"
+        url_expr="string:${object_url}/calibrations"
+        i18n:attributes="title"
+        visible="True">
+    <permission value="Modify portal content"/>
+ </action>
+
+ <action title="Calibration Certificates"
          action_id="certifications"
          category="object"
          url_expr="string:${object_url}/certifications"
@@ -89,17 +100,6 @@
         condition_expr=""
         icon_expr="string:${portal_url}/images/instrumentvalidation.png"
         url_expr="string:${object_url}/validations"
-        i18n:attributes="title"
-        visible="True">
-    <permission value="Modify portal content"/>
- </action>
-
- <action title="Calibrations"
-        action_id="calibrations"
-        category="object"
-        condition_expr=""
-        icon_expr="string:${portal_url}/images/instrumentcalibration.png"
-        url_expr="string:${object_url}/calibrations"
         i18n:attributes="title"
         visible="True">
     <permission value="Modify portal content"/>
