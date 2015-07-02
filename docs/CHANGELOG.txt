@@ -4,6 +4,7 @@ HEALTH-279: AS IDs to be near top of page. Columns in AS list
 LIMS-1625: Instrument tab titles and headers do not correspond
 LIMS-1924: Instrument tab very miss-titled. Internal Calibration Tests
 LIMS-1922: Instrument out of date typo and improvement
+HEALTH-175: Supplier does not resolve on Instrument view page
 LIMS-1887: uniquefield validator doesn't work properly
 LIMS-1869: Not possible to create an Analysis Request
 LIMS-1867: Auto-header, auto-footer and auto-pagination in results reports
