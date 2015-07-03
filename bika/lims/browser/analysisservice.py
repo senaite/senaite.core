@@ -1,7 +1,7 @@
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
-from bika.lims.jsonapi import load_field_values
+from bika.lims.jsonapi import load_field_values, get_include_fields
 from bika.lims.utils import t
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.browser.log import LogView
@@ -195,16 +195,17 @@ class JSONReadExtender(object):
             "Category_uid": service.getCategory().UID(),
             "Service": service.Title(),
             "Service_uid": service.UID(),
+            "Keyword": service.getKeyword(),
             "PointOfCapture": service.getPointOfCapture(),
             "PointOfCapture_title": POINTS_OF_CAPTURE.getValue(service.getPointOfCapture()),
         }
         return ret
 
     def __call__(self, request, data):
-        data["ServiceDependencies"] = []
-        data["ServiceDependants"] = []
-        data["MethodInstruments"] = {}
+        include_fields = get_include_fields(request)
 
+        if not include_fields or "ServiceDependencies" in include_fields:
+        data["ServiceDependencies"] = []
         calc = self.context.getCalculation()
         if calc:
             services = [self.service_info(service) for service
@@ -212,6 +213,8 @@ class JSONReadExtender(object):
                 if service.UID() != self.context.UID()]
             data["ServiceDependencies"] = services
 
+        if not include_fields or "ServiceDependants" in include_fields:
+            data["ServiceDependants"] = []
         calcs = self.context.getBackReferences('CalculationAnalysisService')
         if calcs:
             for calc in calcs:
@@ -220,6 +223,8 @@ class JSONReadExtender(object):
                     if service.UID() != self.context.UID()]
                 data["ServiceDependants"].extend(services)
 
+        if not include_fields or "MethodInstruments" in include_fields:
+            data["MethodInstruments"] = {}
         for method in self.context.getAvailableMethods():
             for instrument in method.getInstruments():
                 if method.UID() not in data["MethodInstruments"]:
