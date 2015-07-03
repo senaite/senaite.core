@@ -923,6 +923,8 @@ schema['title'].required = True
 schema['title'].widget.visible = True
 schema['title'].schemata = 'Description'
 schema.moveField('ShortTitle', after='title')
+schema.moveField('CommercialID', after='ShortTitle')
+schema.moveField('ProtocolID', after='CommercialID')
 
 
 class AnalysisService(BaseContent, HistoryAwareMixin):
