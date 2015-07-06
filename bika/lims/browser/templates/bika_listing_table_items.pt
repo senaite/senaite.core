@@ -1,17 +1,17 @@
 <tr tal:condition="not: view/this_cat_selected"
     tal:attributes="data-ajax_category view/cat"
-    style="display:none"/>
+    style="display:none"
+    tal:define="global rowspan python:{};
+                global rowspan_max python:{};
+                global colspan python:1;
+                global colspan_max python:1;"/>
 
-<tal:items tal:condition="view/this_cat_selected"
+            <tal:items tal:condition="view/this_cat_selected"
            tal:repeat="item view/this_cat_batch">
     <tr tal:define="keyword python:item.has_key('Keyword') and item['Keyword'] or '';
                     portal context/@@plone_portal_state/portal;
                     suid python:item.get('service_uid','');
                     tmpstyle python:view.context.bika_setup.getEnableAnalysisRemarks() and 'border-bottom:0 !important;;' or '';
-                    global rowspan python:{};
-                    global rowspan_max python:{};
-                    global colspan python:1;
-                    global colspan_max python:1;
                     tabindex view/tabindex;"
             tal:attributes="style tmpstyle;
                         cat python:item.get('category', 'None');
