@@ -10,7 +10,7 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
 from zope.interface import implements
 from pkg_resources import resource_filename
-import datetime
+import datetime, os.path
 
 import re
 import transaction
@@ -263,7 +263,7 @@ class Lab_Information(WorksheetImporter):
                 self.dataset_project,
                 "setupdata/%s/%s" % (self.dataset_name,
                                      values['AccreditationBodyLogo']))
-            file_data = open(path, "rb").read()
+            file_data = open(path, "rb").read() if os.path.isfile(path) else open(path.append('.pdf'), "rb").read()
         else:
             file_data = None
 
@@ -676,7 +676,8 @@ class Instruments(WorksheetImporter):
                                          row['Photo'])
                 )
                 try:
-                    file_data = open(path, "rb").read()
+                    file_data = open(path, "rb").read() if os.path.isfile(path) \
+                        else open(path+'.jpg', "rb").read()
                     obj.setPhoto(file_data)
                 except IOError:
                     warning = "Error while loading attached Photo from %s. The file will not be uploaded " \
@@ -691,7 +692,8 @@ class Instruments(WorksheetImporter):
                                          row['InstalationCertificate'])
                 )
                 try:
-                    file_data = open(path, "rb").read()
+                    file_data = open(path, "rb").read() if os.path.isfile(path) \
+                        else open(path+'.pdf', "rb").read()
                     obj.setInstallationCertificate(file_data)
                 except IOError:
                     warning = "Error while loading attached Installation Certificate from %s. " \
@@ -799,7 +801,8 @@ class Instrument_Certifications(WorksheetImporter):
                                              row['report'])
                     )
                     try:
-                        file_data = open(path, "rb").read()
+                        file_data = open(path, "rb").read() if os.path.isfile(path) \
+                            else open(path+'.pdf', "rb").read()
                         obj.setDocument(file_data)
                     except IOError:
                         warning = "Error while loading attached report from %s. " \
@@ -834,7 +837,8 @@ class Instrument_Documents(WorksheetImporter):
                         "setupdata/%s/%s" % (self.dataset_name,
                                              row['File'])
                     )
-                    file_data = open(path, "rb").read()
+                    file_data = open(path, "rb").read() if os.path.isfile(path) \
+                        else open(path+'.pdf', "rb").read()
                     # Obtain all created instrument documents content type
                     catalog = getToolByName(self.context, 'bika_setup_catalog')
                     documents_brains = catalog.searchResults({'portal_type': 'Multifile'})
@@ -1141,7 +1145,8 @@ class Methods(WorksheetImporter):
                         "setupdata/%s/%s" % (self.dataset_name,
                                              row['MethodDocument'])
                     )
-                    file_data = open(path, "rb").read()
+                    file_data = open(path, "rb").read() if os.path.isfile(path) \
+                        else open(path+'.pdf', "rb").read()
                     obj.setMethodDocument(file_data)
 
                 obj.unmarkCreationFlag()
@@ -1248,6 +1253,8 @@ class Analysis_Services(WorksheetImporter):
         for row in self.get_rows(3, worksheet=worksheet):
             service = self.get_object(bsc, 'AnalysisService',
                                       row.get('Service_title'))
+            if not service:
+                return
             sro = service.getResultOptions()
             sro.append({'ResultValue': row['ResultValue'],
                         'ResultText': row['ResultText']})
@@ -1319,7 +1326,7 @@ class Analysis_Services(WorksheetImporter):
                 Category=category,
                 Department=department,
                 ReportDryMatter=self.to_bool(row['ReportDryMatter']),
-                AttachmentOption=row['Attachment'][0].lower(),
+                AttachmentOption=row.get('Attachment', '')[0].lower() if row.get('Attachment', '') else 'p',
                 Unit=row['Unit'] and row['Unit'] or None,
                 Precision=row['Precision'] and str(row['Precision']) or '0',
                 MaxTimeAllowed=MTA,
