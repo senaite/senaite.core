@@ -11,10 +11,13 @@ from Products.CMFCore import permissions
 
 schema = BikaSchema.copy() + Schema((
 
-    StringField('AssetNumber',
-        widget = StringWidget(
-            label=_("Asset Number"),
-        ),
+    ComputedField('AssetNumber',
+        expression='here.getInstrumentAssetNumber()',
+        widget=ComputedWidget(
+            label=_('Instrument Asset Number'),
+            visible=True,
+            description=_("Instrument's Asset Number")
+         )
     ),
 
     ReferenceField('Instrument',
@@ -155,5 +158,12 @@ class InstrumentCertification(BaseFolder):
                            sort_on='sortable_title'):
             pairs.append((contact.UID, contact.Title))
         return DisplayList(pairs)
+
+    def getInstrumentAssetNumber(self):
+        """
+        Obtains the instrument's asset number
+        :return: The asset number string
+        """
+        return self.aq_parent.getAssetNumber() if self.aq_parent.getAssetNumber() else ''
 
 atapi.registerType(InstrumentCertification, PROJECTNAME)

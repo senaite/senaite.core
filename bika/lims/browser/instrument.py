@@ -610,6 +610,7 @@ class InstrumentMultifileView(MultifileView):
 
     def __init__(self, context, request):
         super(InstrumentMultifileView, self).__init__(context, request)
+        self.show_workflow_action_buttons = False
         self.title = self.context.translate(_("Instrument Files"))
         self.description = "Different interesting documents and files to be attached to the instrument"
 
