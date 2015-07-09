@@ -351,6 +351,7 @@ schema = BikaSchema.copy() + Schema((
             showOn=True,
         ),
     ),
+    # TODO: Profile'll be delated
     ReferenceField(
         'Profile',
         allowed_types=('AnalysisProfile',),
@@ -363,22 +364,43 @@ schema = BikaSchema.copy() + Schema((
             label = _("Analysis Profile"),
             size=20,
             render_own_label=True,
+            visible=False,
+            catalog_name='bika_setup_catalog',
+            base_query={'inactive_state': 'active'},
+            showOn=False,
+        ),
+    ),
+
+    ReferenceField(
+        'Profiles',
+        multiValued=1,
+        allowed_types=('AnalysisProfile',),
+        referenceClass=HoldingReference,
+        vocabulary_display_path_bound=sys.maxsize,
+        relationship='AnalysisRequestAnalysisProfiles',
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
+        widget=ReferenceWidget(
+            label = _("Analysis Profiles"),
+            size=20,
+            render_own_label=True,
             visible={'edit': 'visible',
                      'view': 'visible',
                      'add': 'edit',
                      'header_table': 'visible',
                      'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
-                     'to_be_sampled':     {'view': 'visible', 'edit': 'invisible'},
-                     'sampled':           {'view': 'visible', 'edit': 'invisible'},
-                     'to_be_preserved':   {'view': 'visible', 'edit': 'invisible'},
-                     'sample_due':        {'view': 'visible', 'edit': 'invisible'},
-                     'sample_received':   {'view': 'visible', 'edit': 'invisible'},
-                     'attachment_due':    {'view': 'visible', 'edit': 'invisible'},
-                     'to_be_verified':    {'view': 'visible', 'edit': 'invisible'},
-                     'verified':          {'view': 'visible', 'edit': 'invisible'},
-                     'published':         {'view': 'visible', 'edit': 'invisible'},
-                     'invalid':           {'view': 'visible', 'edit': 'invisible'},
-                     },
+                     'to_be_sampled': {'view': 'visible', 'edit': 'invisible'},
+                     'sampled': {'view': 'visible', 'edit': 'invisible'},
+                     'to_be_preserved': {'view': 'visible', 'edit': 'invisible'},
+                     'sample_due': {'view': 'visible', 'edit': 'invisible'},
+                     'sample_received': {'view': 'visible', 'edit': 'invisible'},
+                     'attachment_due': {'view': 'visible', 'edit': 'invisible'},
+                     'to_be_verified': {'view': 'visible', 'edit': 'invisible'},
+                     'verified': {'view': 'visible', 'edit': 'invisible'},
+                     'published': {'view': 'visible', 'edit': 'invisible'},
+                     'invalid': {'view': 'visible', 'edit': 'invisible'},
+            },
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
             showOn=True,
@@ -1138,8 +1160,8 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ComputedField(
-        'ProfileUID',
-        expression="here.getProfile() and here.getProfile().UID() or ''",
+        'ProfilesUID',
+        expression="here.getProfiles() and [profile.UID() for profile in here.getProfiles()] or []",
         widget=ComputedWidget(
             visible=False,
         ),
@@ -1319,8 +1341,8 @@ class AnalysisRequest(BaseFolder):
     def getContactTitle(self):
         return self.getContact().Title() if self.getContact() else ''
 
-    def getProfileTitle(self):
-        return self.getProfile().Title() if self.getProfile() else ''
+    def getProfilesTitle(self):
+        return [profile.Title() for profile in self.getProfiles()]
 
     def getTemplateTitle(self):
         return self.getTemplate().Title() if self.getTemplate() else ''
@@ -1497,37 +1519,45 @@ class AnalysisRequest(BaseFolder):
 
     def getBillableItems(self):
         """
-        Return all items except those in 'not_requested' state.
-        The items are analysis services and analysis profiles.
-        If an analysis belongs to a profile, this analysis will only be included in the profile list if the profile has
-        activated "Use Analysis Profile Price".
-         -> The main purpose of this function is to obtain just the elements to quote.
-        :return: a tuple of two lists. The first list only contains the analysis services not belonging to a profile
+        The main purpose of this function is to obtain the analysis services and profiles from the analysis request
+        whose prices are needed to quote the analysis request.
+        If an analysis belongs to a profile, this analysis will only be included in the analyses list if the profile
+        has disabled "Use Analysis Profile Price".
+        :return: a tuple of two lists. The first one only contains analysis services not belonging to a profile
                  with active "Use Analysis Profile Price".
                  The second list contains the profiles with activated "Use Analysis Profile Price".
         """
         workflow = getToolByName(self, 'portal_workflow')
-        # Analysis != Analysis services
+        # REMEMBER: Analysis != Analysis services
         analyses = []
         analysis_profiles = []
+        to_be_billed = []
+        # Getting all analysis request analyses
         for analysis in self.objectValues('Analysis'):
             review_state = workflow.getInfoFor(analysis, 'review_state', '')
             if review_state != 'not_requested':
                 analyses.append(analysis)
-        # At the moment, analysis request types doesn't contain analysis profiles since analysis requests only
-        # references an analysis profile. In a close future this will change because one analysis request will be able
-        # to contain more than one analysis profile, so analysis request types will contain analysis profile types,
-        # not only reference them.
-        # Getting the analysis profiles which has "Use Analysis Profile Price" enabled
-        if self.getProfile() and self.getProfile().getUseAnalysisProfilePrice():
-            analysis_profiles.append(self.getProfile())
-
-        # If a profile has its own quote, we don't want to quote its own analysis separately, so we have to quit all
-        # analysis belonging to the profile
+        # Getting analysis request profiles
+        for profile in self.getProfiles():
+            # Getting the analysis profiles which has "Use Analysis Profile Price" enabled
+            if profile.getUseAnalysisProfilePrice():
+                analysis_profiles.append(profile)
+            else:
+                # we only need the analysis service keywords from these profiles
+                to_be_billed += [service.getKeyword() for service in profile.getService()]
+        # So far we have three arrays:
+        #   - analyses: has all analyses (even if they are included inside a profile or not)
+        #   - analysis_profiles: has the profiles with "Use Analysis Profile Price" enabled
+        #   - to_be_quoted: has analysis services keywords from analysis profiles with "Use Analysis Profile Price"
+        #     disabled
+        # If a profile has its own price, we don't need their analises' prices, so we have to quit all
+        # analysis belonging to that profile. But if another profile has the same analysis service but has
+        # "Use Analysis Profile Price" disabled, the service must be included as billable.
         for profile in analysis_profiles:
             for analysis_service in profile.getService():
                 for analysis in analyses:
-                    if analysis_service.getKeyword() == analysis.getService().getKeyword():
+                    if analysis_service.getKeyword() == analysis.getService().getKeyword() and \
+                       analysis.getService().getKeyword() not in to_be_billed:
                         analyses.remove(analysis)
         return analyses, analysis_profiles
 
@@ -1545,7 +1575,7 @@ class AnalysisRequest(BaseFolder):
             if review_state != 'not_requested':
                 analyses.append(analysis)
         # Getting all profiles
-        analysis_profiles.append(self.getProfile())
+        analysis_profiles = self.getProfiles() if len(self.getProfiles()) > 0 else []
         # Cleaning services included in profiles
         for profile in analysis_profiles:
             for analysis_service in profile.getService():
@@ -2125,9 +2155,10 @@ class AnalysisRequest(BaseFolder):
             sets = [adv] if 'hidden' in adv else []
 
         # Created by using an AR Profile?
-        if not sets and self.getProfile():
-            adv = self.getProfile().getAnalysisServiceSettings(uid)
-            sets = [adv] if 'hidden' in adv else []
+        if not sets and self.getProfiles():
+            adv = []
+            adv += [profile.getAnalysisServiceSettings(uid) for profile in self.getProfiles()]
+            sets = adv if 'hidden' in adv[0] else []
 
         return sets[0] if sets else {'uid': uid}
 

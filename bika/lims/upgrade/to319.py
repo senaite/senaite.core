@@ -10,6 +10,8 @@ def upgrade(tool):
     """Upgrade step required for Bika LIMS 3.1.9
     """
     portal = aq_parent(aq_inner(tool))
+    # Adding new feature multiple profiles per Analysis Request
+    multipleAnalysisProfiles(portal)
     setup = portal.portal_setup
     # Updated profile steps
     setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
@@ -29,3 +31,19 @@ def upgrade(tool):
     # Migrations
 
     return True
+
+def multipleAnalysisProfiles(portal):
+    """
+    All the logic used to use multiple analysis profile selection in analysis request.
+    We have to add some indexes and columns in setuphandler.py and also we have to move all analysis profiles from the
+    analysis request's content field "profile" to profiles
+    """
+    bc = getToolByName(portal, 'bika_catalog', None)
+    if 'getProfilesTitle' not in bc.indexes():
+        bc.addIndex('getProfilesTitle', 'FieldIndex')
+        bc.addColumn('getProfilesTitle')
+    # Moving from profile to profiles
+    ars = bc(portal_type="AnalysisRequest")
+    for ar in ars:
+        if not ar.getProfiles():
+            ar.setProfiles(ar.getProfile())
