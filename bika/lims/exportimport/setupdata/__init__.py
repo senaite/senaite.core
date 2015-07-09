@@ -39,6 +39,18 @@ def Float(thing):
         f = 0.0
     return f
 
+def read_file(path):
+    if os.path.isfile(path):
+        return open(path, "rb").read()
+    allowed_ext = ['pdf', 'jpg', 'jpeg', 'png', 'gif', 'ods', 'odt', _
+                   'xlsx', 'doc', 'docx', 'xls', 'csv', 'txt']
+    allowed_ext += [e.upper() for e in allowed_ext]
+    for e in allowed_ext:
+        out = '%s.%s' % (path, e)
+        if os.path.isfile(out):
+            return open(out, "rb").read()
+    raise FileNotFoundError("File not found: %s. Allowed extensions: %s" % (path, ','.join(allowed_ext)))
+
 
 class SetupDataSetList(SDL):
 
@@ -263,7 +275,11 @@ class Lab_Information(WorksheetImporter):
                 self.dataset_project,
                 "setupdata/%s/%s" % (self.dataset_name,
                                      values['AccreditationBodyLogo']))
-            file_data = open(path, "rb").read() if os.path.isfile(path) else open(path.append('.pdf'), "rb").read()
+            try:
+                file_data = read_file(path)
+            except Exception msg:
+                file_data = None
+                logger.warning(msg, self.sheetname)
         else:
             file_data = None
 
@@ -676,13 +692,11 @@ class Instruments(WorksheetImporter):
                                          row['Photo'])
                 )
                 try:
-                    file_data = open(path, "rb").read() if os.path.isfile(path) \
-                        else open(path+'.jpg', "rb").read()
+                    file_data = read_file(path)
                     obj.setPhoto(file_data)
-                except IOError:
-                    warning = "Error while loading attached Photo from %s. The file will not be uploaded " \
-                              "into the system."
-                    logger.warning(warning, self.sheetname)
+                except Exception msg:
+                    file_data = None
+                    logger.warning(msg, self.sheetname)
 
             # Attaching the Installation Certificate if exists
             if row.get('InstalationCertificate', None):
@@ -692,13 +706,11 @@ class Instruments(WorksheetImporter):
                                          row['InstalationCertificate'])
                 )
                 try:
-                    file_data = open(path, "rb").read() if os.path.isfile(path) \
-                        else open(path+'.pdf', "rb").read()
+                    file_data = read_file(path)
                     obj.setInstallationCertificate(file_data)
-                except IOError:
-                    warning = "Error while loading attached Installation Certificate from %s. " \
-                              "The file will not be uploaded into the system."
-                    logger.warning(warning, self.sheetname)
+                except Exception msg:
+                    file_data = None
+                    logger.warning(msg, self.sheetname)
 
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
@@ -801,13 +813,12 @@ class Instrument_Certifications(WorksheetImporter):
                                              row['report'])
                     )
                     try:
-                        file_data = open(path, "rb").read() if os.path.isfile(path) \
-                            else open(path+'.pdf', "rb").read()
+                        file_data = read_file(path)
                         obj.setDocument(file_data)
-                    except IOError:
-                        warning = "Error while loading attached report from %s. " \
-                                  "The file will not be uploaded into the system."
-                        logger.warning(warning, self.sheetname)
+                    except Exception msg:
+                        file_data = None
+                        logger.warning(msg, self.sheetname)
+
                 # Getting lab contacts
                 bsc = getToolByName(self.context, 'bika_setup_catalog')
                 lab_contacts = [o.getObject() for o in bsc(portal_type="LabContact", nactive_state='active')]
@@ -837,8 +848,12 @@ class Instrument_Documents(WorksheetImporter):
                         "setupdata/%s/%s" % (self.dataset_name,
                                              row['File'])
                     )
-                    file_data = open(path, "rb").read() if os.path.isfile(path) \
-                        else open(path+'.pdf', "rb").read()
+                    try:
+                        file_data = read_file(path)
+                    except Exception msg:
+                        file_data = None
+                        logger.warning(msg, self.sheetname)
+                        
                     # Obtain all created instrument documents content type
                     catalog = getToolByName(self.context, 'bika_setup_catalog')
                     documents_brains = catalog.searchResults({'portal_type': 'Multifile'})
@@ -1145,9 +1160,12 @@ class Methods(WorksheetImporter):
                         "setupdata/%s/%s" % (self.dataset_name,
                                              row['MethodDocument'])
                     )
-                    file_data = open(path, "rb").read() if os.path.isfile(path) \
-                        else open(path+'.pdf', "rb").read()
-                    obj.setMethodDocument(file_data)
+                    try:
+                        file_data = read_file(path)
+                        obj.setMethodDocument(file_data)
+                    except Exception msg:
+                        file_data = None
+                        logger.warning(msg, self.sheetname)
 
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
