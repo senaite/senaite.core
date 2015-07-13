@@ -57,7 +57,7 @@ function AnalysisRequestAddByCol() {
         samplepoint_selected()
         sampletype_selected()
         profile_selected();
-        profile_unset();
+        profile_unset_trigger();
         template_selected()
         drymatter_selected()
         sample_selected()
@@ -500,7 +500,7 @@ function AnalysisRequestAddByCol() {
      samplepoint_set            - filter with sampletype<->samplepoint relation
      sampletype_set             - filter with sampletype<->samplepoint relation
      profile_set                - apply profile
-     profile_unset              - empty profile field in form and state
+     profile_unset_trigger      - Unset the deleted profile and its analyses
      template_set               - apply template
      template_unset             - empty template field in form and state
      drymatter_set              - select the DryMatterService and set state
@@ -916,12 +916,12 @@ function AnalysisRequestAddByCol() {
         if ($("#Profiles-" + arnum).attr('uid') !== "") {
             $("#Profiles-" + arnum).attr("price", "");
             $("#Profiles-" + arnum).attr("services", $.toJSON([]));
-            $("#ar_" + arnum + "_Profiles_uid").val("");
-            // Getting all ar-arnum-Profiles-listing divisions to obtein their analysis services and uncheck them
+            $("#Profiles-" + arnum + "_uid").val("");
+            // Getting all ar-arnum-Profiles-listing divisions to obtain their analysis services and uncheck them
             var profiles = $("div#Profiles-" + arnum + "-listing").children();
             var i;
             for (i = profiles.length - 1; i >= 0; i--) {
-                unset_analysis_services(profiles[i], arnum)
+                unset_profile_analysis_services(profiles[i], arnum)
             }
             // Removing all Profiles-arnum-listing divisions
             profiles.children().remove();
@@ -929,23 +929,23 @@ function AnalysisRequestAddByCol() {
         }
     }
 
-    function profile_unset() {
+    function profile_unset_trigger() {
         /***
          After deleting an analysis profile we have to uncheck their associated analysis services, so we need to bind
          the analyses service unseting function. Ever since this binding should be done on the delete image and
          (that is inserted dynamically), we need to settle the the event on the first ancestor element which doesn't
          load dynamically
          */
-        $("div#archetypes-fieldname-Profiles").
-            on('click', "div.reference_multi_item .deletebtn", function () {
+        $("div[id^='archetypes-fieldname-Profiles-']")
+            .on('click', "div.reference_multi_item .deletebtn", function () {
                 var profile_object = $(this).parent();
-                var arnum = $(profile_object).closest('td').attr('arnum');
-                unset_analysis_services(profile_object, arnum);
+                var arnum = get_arnum(profile_object);
+                unset_profile_analysis_services(profile_object, arnum);
                 recalc_prices(arnum);
             });
     }
 
-    function unset_analysis_services(profile, arnum) {
+    function unset_profile_analysis_services(profile, arnum) {
         /**
          * The function unsets the selected analyses services related with the removed analysis profile.
          * :profile: the profile DOM division
@@ -1662,7 +1662,7 @@ function AnalysisRequestAddByCol() {
         }
         // Unselecting Dry Matter Service unsets 'Report Dry Matter'
         if (uid == $("#getDryMatterService").val() && !checked) {
-            var dme = $("#ar_" + arnum + "_ReportDryMatter")
+            var dme = $("#ReportDryMatter-" + arnum);
             $(dme).removeAttr("checked")
         }
     }
@@ -1677,11 +1677,37 @@ function AnalysisRequestAddByCol() {
     }
 
     function state_analyses_remove(arnum, uid) {
-        arnum = parseInt(arnum, 10)
-        var analyses = bika.lims.ar_add.state[arnum]['Analyses']
+        // This function removes the analysis services checkbox's uid from the astate's analysis list.
+        arnum = parseInt(arnum, 10);
+        var analyses = bika.lims.ar_add.state[arnum]['Analyses'];
         if (analyses.indexOf(uid) > -1) {
-            analyses.splice(analyses.indexOf(uid), 1)
-            state_set(arnum, 'Analyses', analyses)
+            analyses.splice(analyses.indexOf(uid), 1);
+            state_set(arnum, 'Analyses', analyses);
+            // Ever since this is the last function invoked on the analysis services uncheck process, we'll
+            // remove the analysis profile related with the unset services here.
+                        // Unselecting the related analysis profiles
+            var profiles = $("div#Profiles-" + arnum + "-listing").children();
+            $.each(profiles, function(i, profile) {
+                // If the profile has the attribute services
+                if (typeof $(profile).attr('services') !== typeof undefined && $(profile).attr('services') !== false) {
+                    var service_uids = $(profile).attr('services').split(',');
+                    if ($.inArray(uid, service_uids) != -1) {
+                        var profile_uid = $(profile).attr('uid');
+                        $(profile).remove();
+                        // Removing the profile's uid from the profiles widget
+                        var p = $("#Profiles-" + arnum).attr('uid').split(',');
+                        p = $.grep(p, function(value) {
+                            return value != profile_uid;
+                        });
+                        var i;
+                        var p_str = '';
+                        for (i = p.length - 1; i >= 0; i--) { p_str = p_str + ',' + p[i]}
+                        $("#Profiles-" + arnum).attr('uid', p_str);
+                        $("#Profiles-" + arnum).attr('uid_check', p_str);
+                        $("#Profiles-" + arnum + "_uid").val(p_str);
+                    }
+                }
+            })
         }
     }
 
