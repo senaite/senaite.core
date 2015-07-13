@@ -1707,7 +1707,8 @@ function AnalysisRequestAddByCol() {
                         $("#Profiles-" + arnum + "_uid").val(p_str);
                     }
                 }
-            })
+            });
+            recalc_prices(arnum);
         }
     }
 
@@ -2073,33 +2074,64 @@ function AnalysisRequestAddByCol() {
     }
 
     function recalc_prices(arnum) {
-        var price = 0.00
-        var subtotal = 0.00
-        var discount_amount = 0.00
-        var vat_amount = 0.00
-        var total = 0.00
-        var discount_pcnt = parseFloat($("#bika_setup").attr("MemberDiscount"), 10)
-        var checked = $("tr[uid] td[class*='ar\\." + arnum + "'] input[type='checkbox']:checked")
+        var ardiscount_amount = 0.00;
+        var arservices_price = 0.00;
+        // Getting all checked analysis services
+        var checked = $("tr[uid] td[class*='ar\\." + arnum + "'] input[type='checkbox']:checked");
+        var member_discount = parseFloat($("#bika_setup").attr("MemberDiscount"));
+        var profiles = $("div#Profiles-" + arnum + "-listing").children();
+        var arprofiles_price = 0.00;
+        var arprofiles_vat_amount = 0.00;
+        var arservice_vat_amount = 0.00;
+        var services_from_priced_profile = [];
+
+        /* ANALYSIS PROFILES PRICE */
+        $.each(profiles, function(i, profile) {
+            // Getting available analysis profiles' prices and vat amounts
+            var profile_service_uids = $(profile).attr('services').split(',');
+            if (Boolean($(profile).attr('useprice'))) {
+                var profile_price = parseFloat($(profile).attr('price'));
+                var profile_vat = parseFloat($(profile).attr('VATAmount'));
+                arprofiles_price += profile_price;
+                arprofiles_vat_amount += profile_vat;
+                // We don't want repeated analysis services because of two profiles with the same analysis, so we'll
+                // check if the analysis is contained in the array before adding it
+                $.each(profile_service_uids, function (i, el) {
+                    if($.inArray(el, services_from_priced_profile) === -1) {
+                        services_from_priced_profile.push(el)
+                    }
+                });
+            }
+        });
+        /* ANALYSIS SERVICES PRICE*/
+        // Compute the price for each checked analysis service. We have to look for profiles which have set
+        // "use price" attribute and sum the profile's price to the total instead of using their individual
+        // services prices
         for (var i = 0; i < checked.length; i++) {
-            var cb = checked[i]
-            var form_price = parseFloat($(cb).parents("[price]").attr("price"), 10)
-            var vat_percentage = parseFloat($(cb).parents("[vat_percentage]").attr("vat_percentage"), 10)
-            if ($(cb).prop("checked") && !$(cb).prop("disabled")) {
-                if(discount_pcnt){
-                    price = form_price - ((form_price / 100) * discount_pcnt)
-                    discount_amount += ((form_price / 100) * discount_pcnt)
-                } else {
-                    price = form_price
-                }
-                subtotal += price
-                vat_amount += ((price / 100) * vat_percentage)
+            var cb = checked[i];
+            // For some browsers, checkbox `attr` is undefined; for others, its false. Check for both.
+            if ($(cb).prop("checked")
+                && !$(cb).prop("disabled")
+                && typeof $(cb).prop("disabled") !== "undefined"
+                && services_from_priced_profile.indexOf($(cb).attr('uid')) < 0)
+            {
+                var service_price = parseFloat($(cb).parents("[price]").attr("price"));
+                var service_vat_amount = parseFloat($(cb).parents("[vat_percentage]").attr("vat_percentage"));
+                arservice_vat_amount += service_price * service_vat_amount / 100;
+                arservices_price += service_price;
             }
         }
-        total = (subtotal + vat_amount)
-        $("td[arnum='" + arnum + "'] span.price.discount").html(discount_amount.toFixed(2))
-        $("td[arnum='" + arnum + "'] span.price.subtotal").html(subtotal.toFixed(2))
-        $("td[arnum='" + arnum + "'] span.price.vat").html(vat_amount.toFixed(2))
-        $("td[arnum='" + arnum + "'] span.price.total").html(total.toFixed(2))
+        var base_price = arservices_price + arprofiles_price;
+        if (member_discount) {
+            ardiscount_amount = base_price * member_discount / 100;
+        }
+        var subtotal = base_price - ardiscount_amount;
+        var vat_amount = arprofiles_vat_amount + arservice_vat_amount;
+        var total = subtotal + vat_amount;
+        $("td[arnum='" + arnum + "'] span.price.discount").html(ardiscount_amount.toFixed(2));
+        $("td[arnum='" + arnum + "'] span.price.subtotal").html(subtotal.toFixed(2));
+        $("td[arnum='" + arnum + "'] span.price.vat").html(vat_amount.toFixed(2));
+        $("td[arnum='" + arnum + "'] span.price.total").html(total.toFixed(2));
     }
 
     function set_state_from_form_values() {
