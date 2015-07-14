@@ -886,21 +886,22 @@ function AnalysisRequestAddByCol() {
             profile.attr("price", profile_objects['AnalysisProfilePrice']);
             profile.attr("useprice", profile_objects['UseAnalysisProfilePrice']);
             profile.attr("VATAmount", profile_objects['VATAmount']);
-            if ($('#singleservice').length > 0) {
-                defs.push(expand_services_singleservice(arnum, service_data))
-            }
-            else {
-                defs.push(expand_services_bika_listing(arnum, service_data))
-            }
             // I'm not sure about unset dry matter, but it was done in 318
-            $("#ReportDryMatter-" + arnum).prop("checked", false);
+            drymatter_unset(arnum);
             // Adding the services uids inside the analysis profile div, so we can get its analyses quickly
             if (service_data.length != 0) {
                 for (var i = 0; i < service_data.length; i++) {
                     arprofile_services_uid.push(service_data[i].UID);
                 }
             }
-            $("div.reference_multi_item[uid='" + profile_objects['UID'] + "']").attr('services', arprofile_services_uid);
+            profile.attr('services', arprofile_services_uid);
+            // Setting the services checkboxes
+            if ($('#singleservice').length > 0) {
+                defs.push(expand_services_singleservice(arnum, service_data))
+            }
+            else {
+                defs.push(expand_services_bika_listing(arnum, service_data))
+            }
             // Call $.when with all deferreds
             $.when.apply(null, defs).then(function () {
                 d.resolve()
@@ -954,7 +955,7 @@ function AnalysisRequestAddByCol() {
         var service_uids = $(profile).attr('services').split(',');
         var i;
         for (i = service_uids.length -1; i >=0; i--) {
-            $("input[id='"+service_uids[i]+"-ar." + arnum + "']").prop("checked", false);
+            analysis_cb_uncheck(arnum, service_uids[i]);
         }
     }
 
@@ -1100,37 +1101,37 @@ function AnalysisRequestAddByCol() {
          indicators from being set.  This is useful if drymatter is being
          checked during the application of a Template to this column.
          */
-        var dm_service = $("#getDryMatterService")
-        var uid = $(dm_service).val()
-        var cat = $(dm_service).attr("cat")
-        var poc = $(dm_service).attr("poc")
-        var keyword = $(dm_service).attr("keyword")
-        var title = $(dm_service).attr("title")
-        var price = $(dm_service).attr("price")
-        var vatamount = $(dm_service).attr("vatamount")
+        var dm_service = $("#getDryMatterService");
+        var uid = $(dm_service).val();
+        var cat = $(dm_service).attr("cat");
+        var poc = $(dm_service).attr("poc");
+        var keyword = $(dm_service).attr("keyword");
+        var title = $(dm_service).attr("title");
+        var price = $(dm_service).attr("price");
+        var vatamount = $(dm_service).attr("vatamount");
         var element = $("tr[fieldname='ReportDryMatter'] " +
                         "td[arnum='" + arnum + "'] " +
-                        "input[type='checkbox']")
+                        "input[type='checkbox']");
         // set drymatter service IF checkbox is checked
         if ($(element).attr("checked")) {
             var checkbox = $("tr[uid='" + uid + "'] " +
                              "td[class*='ar\\." + arnum + "'] " +
-                             "input[type='checkbox']")
+                             "input[type='checkbox']");
             // singleservice selection gets some added attributes.
             // singleservice_duplicate will apply these to the TR it creates
             if ($("#singleservice").length > 0) {
                 if ($(checkbox).length > 0) {
-                    analysis_cb_check(arnum, uid)
+                    $("#ReportDryMatter-" + arnum).prop("checked", true);
                 }
                 else {
-                    $("#singleservice").attr("uid", uid)
-                    $("#singleservice").attr("keyword", keyword)
-                    $("#singleservice").attr("title", title)
-                    $("#singleservice").attr("price", price)
-                    $("#singleservice").attr("vatamount", vatamount)
+                    $("#singleservice").attr("uid", uid);
+                    $("#singleservice").attr("keyword", keyword);
+                    $("#singleservice").attr("title", title);
+                    $("#singleservice").attr("price", price);
+                    $("#singleservice").attr("vatamount", vatamount);
                     singleservice_duplicate(uid, title, keyword, price,
-                                            vatamount)
-                    analysis_cb_check(arnum, uid)
+                                            vatamount);
+                    $("#ReportDryMatter-" + arnum).prop("checked", true);
                 }
                 state_analyses_push(arnum, uid)
             }
@@ -1138,11 +1139,12 @@ function AnalysisRequestAddByCol() {
             // must be applied manually to each TR.  bika_listing already
             // hacks in a lot of what we need (keyword, uid etc).
             else {
-                analysis_cb_check(arnum, uid)
+                $("#ReportDryMatter-" + arnum).prop("checked", true);
+                state_analyses_push(arnum, uid);
             }
-            deps_calc(arnum, [uid], true, _("Dry Matter"))
-            recalc_prices(arnum)
-            state_set(arnum, 'ReportDryMatter', true)
+            deps_calc(arnum, [uid], true, _("Dry Matter"));
+            recalc_prices(arnum);
+            state_set(arnum, 'ReportDryMatter', true);
             specification_apply()
         }
     }
@@ -2088,8 +2090,8 @@ function AnalysisRequestAddByCol() {
         /* ANALYSIS PROFILES PRICE */
         $.each(profiles, function(i, profile) {
             // Getting available analysis profiles' prices and vat amounts
-            var profile_service_uids = $(profile).attr('services').split(',');
-            if (Boolean($(profile).attr('useprice'))) {
+            if ($(profile).attr('useprice') === 'true') {
+                var profile_service_uids = $(profile).attr('services').split(',');
                 var profile_price = parseFloat($(profile).attr('price'));
                 var profile_vat = parseFloat($(profile).attr('VATAmount'));
                 arprofiles_price += profile_price;
