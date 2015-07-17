@@ -28,7 +28,6 @@ class InvoiceView(BrowserView):
         self.invoiceId = context.getId()
         self.invoiceDate = self.ulocalized_time(context.getInvoiceDate())
         self.subtotal = '%0.2f' % context.getSubtotal()
-        import pdb;pdb.set_trace()
         self.VATAmount = '%0.2f' % context.getVATAmount()
         self.total = '%0.2f' % context.getTotal()
         # Create the batch range
