@@ -58,6 +58,7 @@ def BatchUID(instance):
 schema = BikaSchema.copy() + Schema((
     StringField(
         'RequestID',
+        required=1,
         searchable=True,
         mode="rw",
         read_permission=permissions.View,
@@ -390,17 +391,17 @@ schema = BikaSchema.copy() + Schema((
                      'add': 'edit',
                      'header_table': 'visible',
                      'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
-                     'to_be_sampled': {'view': 'visible', 'edit': 'invisible'},
-                     'sampled': {'view': 'visible', 'edit': 'invisible'},
-                     'to_be_preserved': {'view': 'visible', 'edit': 'invisible'},
-                     'sample_due': {'view': 'visible', 'edit': 'invisible'},
-                     'sample_received': {'view': 'visible', 'edit': 'invisible'},
-                     'attachment_due': {'view': 'visible', 'edit': 'invisible'},
-                     'to_be_verified': {'view': 'visible', 'edit': 'invisible'},
-                     'verified': {'view': 'visible', 'edit': 'invisible'},
-                     'published': {'view': 'visible', 'edit': 'invisible'},
-                     'invalid': {'view': 'visible', 'edit': 'invisible'},
-            },
+                     'to_be_sampled':     {'view': 'visible', 'edit': 'invisible'},
+                     'sampled':           {'view': 'visible', 'edit': 'invisible'},
+                     'to_be_preserved':   {'view': 'visible', 'edit': 'invisible'},
+                     'sample_due':        {'view': 'visible', 'edit': 'invisible'},
+                     'sample_received':   {'view': 'visible', 'edit': 'invisible'},
+                     'attachment_due':    {'view': 'visible', 'edit': 'invisible'},
+                     'to_be_verified':    {'view': 'visible', 'edit': 'invisible'},
+                     'verified':          {'view': 'visible', 'edit': 'invisible'},
+                     'published':         {'view': 'visible', 'edit': 'invisible'},
+                     'invalid':           {'view': 'visible', 'edit': 'invisible'},
+                     },
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
             showOn=True,
@@ -1564,12 +1565,15 @@ class AnalysisRequest(BaseFolder):
     def getServicesAndProfiles(self):
         """
         This function gets all analysis services and all profiles and removes the services belonging to a profile.
-        :return: a tuple of two lists, where the first list contains the services and the second list the analyses.
+        :return: a tuple of three lists, where the first list contains the analyses and the second list the profiles.
+                 The third contains the analyses objects used by the profiles.
         """
         # Getting requested analyses
         workflow = getToolByName(self, 'portal_workflow')
         analyses = []
-        analysis_profiles = []
+        # profile_analyses contains the profile's analyses (analysis != service") objects to obtain
+        # the correct price later
+        profile_analyses = []
         for analysis in self.objectValues('Analysis'):
             review_state = workflow.getInfoFor(analysis, 'review_state', '')
             if review_state != 'not_requested':
@@ -1582,12 +1586,13 @@ class AnalysisRequest(BaseFolder):
                 for analysis in analyses:
                     if analysis_service.getKeyword() == analysis.getService().getKeyword():
                         analyses.remove(analysis)
-        return analyses, analysis_profiles
+                        profile_analyses.append(analysis)
+        return analyses, analysis_profiles, profile_analyses
 
     security.declareProtected(View, 'getSubtotal')
 
     def getSubtotal(self):
-        """ Compute Subtotal
+        """ Compute Subtotal (without member discount and without vat)
         """
         analyses, a_profiles = self.getBillableItems()
         return sum(
@@ -1595,29 +1600,60 @@ class AnalysisRequest(BaseFolder):
             [Decimal(obj.getAnalysisProfilePrice()) for obj in a_profiles]
         )
 
-    security.declareProtected(View, 'getVATAmount')
+    security.declareProtected(View, 'getSubtotalVATAmount')
 
-    def getVATAmount(self):
-        """ Compute VAT """
+    def getSubtotalVATAmount(self):
+        """ Compute VAT amount without member discount"""
         analyses, a_profiles = self.getBillableItems()
         if len(analyses) > 0 or len(a_profiles) > 0:
             return sum(
-                [o.getVATAmount() for o in analyses] +
-                [o.getVATAmount() for o in a_profiles]
+                [Decimal(o.getVATAmount()) for o in analyses] +
+                [Decimal(o.getVATAmount()) for o in a_profiles]
             )
         return 0
+
+    security.declareProtected(View, 'getSubtotalTotalPrice')
+
+    def getSubtotalTotalPrice(self):
+        """ Compute the price with VAT but no member discount"""
+        return self.getSubtotal() + self.getSubtotalVATAmount()
+
+    security.declareProtected(View, 'getDiscountAmount')
+
+    def getDiscountAmount(self):
+        """
+        It computes and returns the analysis service's discount amount without VAT
+        """
+        has_client_discount = self.aq_parent.getMemberDiscountApplies()
+        if has_client_discount:
+            discount = Decimal(self.getDefaultMemberDiscount())
+            return Decimal(self.getSubtotal() * discount / 100)
+        else:
+            return 0
+
+    def getVATAmount(self):
+        """
+        It computes the VAT amount from (subtotal-discount.)*VAT/100, but each analysis has its
+        own VAT!
+        :return: the analysis request VAT amount with the discount
+        """
+        has_client_discount = self.aq_parent.getMemberDiscountApplies()
+        VATAmount = self.getSubtotalVATAmount()
+        if has_client_discount:
+            discount = Decimal(self.getDefaultMemberDiscount())
+            return Decimal((1 - discount/100) * VATAmount)
+        else:
+            return VATAmount
 
     security.declareProtected(View, 'getTotalPrice')
 
     def getTotalPrice(self):
-        """ Compute TotalPrice """
-        analyses, a_profiles = self.getBillableItems()
-        if len(analyses) > 0 or len(a_profiles) > 0:
-            return sum(
-                [o.getTotalPrice() for o in analyses] +
-                [o.getTotalPrice() for o in a_profiles]
-            )
-        return 0
+        """
+        It gets the discounted price from analyses and profiles to obtain the total value with the VAT
+        and the discount applied
+        :return: the analysis request's total price including the VATs and discounts
+        """
+        return self.getSubtotal() - self.getDiscountAmount() + self.getVATAmount()
     getTotal = getTotalPrice
 
     security.declareProtected(ManageInvoices, 'issueInvoice')

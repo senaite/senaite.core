@@ -17,6 +17,7 @@ from Products.Archetypes import PloneMessageFactory as PMF
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import implements
+from decimal import Decimal
 
 import plone, App
 
@@ -100,7 +101,7 @@ class InvoiceView(BrowserView):
         analyses = []
         profiles = []
         # Retrieve required data from analyses collection
-        all_analyses, all_profiles = context.getServicesAndProfiles()
+        all_analyses, all_profiles, analyses_from_profiles = context.getServicesAndProfiles()
         # Relating category with solo analysis
         for analysis in all_analyses:
             service = analysis.getService()
@@ -143,11 +144,16 @@ class InvoiceView(BrowserView):
             else:
                 # We need the analyses prices instead of profile price
                 for pservice in profile.getService():
+                    # We want the analysis instead of the service, because we want the price for the client
+                    # (for instance the bulk price)
+                    panalysis = self._getAnalysisForProfileService(pservice.getKeyword(), analyses_from_profiles)
                     pservices.append({
                                      'title': pservice.Title(),
-                                     'price': pservice.getPrice(),
-                                     'priceVat': "%.2f" % pservice.getVATAmount(),
-                                     'priceTotal': "%.2f" % pservice.getTotalPrice(),
+                                     'price': panalysis.getPrice() if panalysis else pservice.getPrice(),
+                                     'priceVat': "%.2f" % panalysis.getVATAmount() if panalysis
+                                                                                   else pservice.getVATAmount(),
+                                     'priceTotal': "%.2f" % panalysis.getTotalPrice() if panalysis
+                                                                                   else pservice.getTotalPrice(),
                                      })
                 profiles.append({'name': profile.title,
                                  'price': None,
@@ -156,12 +162,28 @@ class InvoiceView(BrowserView):
                                  'analyses': pservices})
         self.analyses = analyses
         self.profiles = profiles
-        # Get totals
+        # Get subtotals
         self.subtotal = context.getSubtotal()
+        self.subtotalVATAmount = "%.2f" % context.getSubtotalVATAmount()
+        self.subtotalTotalPrice = "%.2f" % context.getSubtotalTotalPrice()
+        # Get totals
+        self.memberDiscount = Decimal(context.getDefaultMemberDiscount())
+        self.discountAmount = context.getDiscountAmount()
         self.VATAmount = "%.2f" % context.getVATAmount()
         self.totalPrice = "%.2f" % context.getTotalPrice()
         # Render the template
         return self.template()
+
+    def _getAnalysisForProfileService(self, service_keyword, analyses):
+        """
+        This function gets the analysis object from the analyses list using the keyword 'service_keyword'
+        :service_keyword: a service keyword
+        :analyses: a list of analyses
+        """
+        for analysis in analyses:
+            if service_keyword == analysis.getService().getKeyword():
+                return analysis
+        return 0
 
     def getPriorityIcon(self):
         priority = self.context.getPriority()

@@ -28,6 +28,7 @@ class InvoiceView(BrowserView):
         self.invoiceId = context.getId()
         self.invoiceDate = self.ulocalized_time(context.getInvoiceDate())
         self.subtotal = '%0.2f' % context.getSubtotal()
+        import pdb;pdb.set_trace()
         self.VATAmount = '%0.2f' % context.getVATAmount()
         self.total = '%0.2f' % context.getTotal()
         # Create the batch range
@@ -65,9 +66,9 @@ class InvoiceView(BrowserView):
             'invoiceDate': self.ulocalized_time(item['ItemDate']),
             'description': item['ItemDescription'],
             'orderNo': item['OrderNumber'],
-            'subtotal': item['Subtotal'],
-            'VATAmount': item['VATAmount'],
-            'total': item['Total'],
+            'subtotal': '%0.2f' % item['Subtotal'],
+            'VATAmount': '%0.2f' % item['VATAmount'],
+            'total': '%0.2f' % item['Total'],
         } for item in items]
         # Render the template
         return self.template()
