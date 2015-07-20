@@ -49,7 +49,7 @@ def read_file(path):
         out = '%s.%s' % (path, e)
         if os.path.isfile(out):
             return open(out, "rb").read()
-    raise FileNotFoundError("File not found: %s. Allowed extensions: %s" % (path, ','.join(allowed_ext)))
+    raise IOError("File not found: %s. Allowed extensions: %s" % (path, ','.join(allowed_ext)))
 
 
 class SetupDataSetList(SDL):
@@ -277,7 +277,7 @@ class Lab_Information(WorksheetImporter):
                                      values['AccreditationBodyLogo']))
             try:
                 file_data = read_file(path)
-            except Exception msg:
+            except Exception as msg:
                 file_data = None
                 logger.warning(msg, self.sheetname)
         else:
@@ -694,7 +694,7 @@ class Instruments(WorksheetImporter):
                 try:
                     file_data = read_file(path)
                     obj.setPhoto(file_data)
-                except Exception msg:
+                except Exception as msg:
                     file_data = None
                     logger.warning(msg, self.sheetname)
 
@@ -708,8 +708,7 @@ class Instruments(WorksheetImporter):
                 try:
                     file_data = read_file(path)
                     obj.setInstallationCertificate(file_data)
-                except Exception msg:
-                    file_data = None
+                except Exception as msg:
                     logger.warning(msg, self.sheetname)
 
             obj.unmarkCreationFlag()
@@ -815,7 +814,7 @@ class Instrument_Certifications(WorksheetImporter):
                     try:
                         file_data = read_file(path)
                         obj.setDocument(file_data)
-                    except Exception msg:
+                    except Exception as msg:
                         file_data = None
                         logger.warning(msg, self.sheetname)
 
@@ -850,7 +849,7 @@ class Instrument_Documents(WorksheetImporter):
                     )
                     try:
                         file_data = read_file(path)
-                    except Exception msg:
+                    except Exception as msg:
                         file_data = None
                         logger.warning(msg, self.sheetname)
                         
@@ -1163,8 +1162,7 @@ class Methods(WorksheetImporter):
                     try:
                         file_data = read_file(path)
                         obj.setMethodDocument(file_data)
-                    except Exception msg:
-                        file_data = None
+                    except Exception as msg:
                         logger.warning(msg, self.sheetname)
 
                 obj.unmarkCreationFlag()
