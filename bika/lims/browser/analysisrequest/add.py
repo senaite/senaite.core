@@ -142,6 +142,7 @@ class AnalysisServicesView(ASV):
         # the item count before choosing to render the table at all.
         if not self.ar_add_items:
             bs = self.context.bika_setup
+            client = self.context.aq_parent
             items = super(AnalysisServicesView, self).folderitems()
             for x, item in enumerate(items):
                 if 'obj' not in items[x]:
@@ -169,7 +170,7 @@ class AnalysisServicesView(ASV):
                     # bika_listing_table_items.pt which allows them to be
                     # inserted into as attributes on <TR>.  TAL has this flaw;
                     # that attributes cannot be dynamically inserted.
-                    items[x]['price'] = obj.getPrice()
+                    items[x]['price'] = obj.getBulkPrice() if client.getBulkDiscount() else obj.getPrice()
                     items[x]['vat_percentage'] = obj.getVAT()
 
                     # place a clue for the JS to recognize that these are
