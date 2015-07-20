@@ -42,7 +42,7 @@ def Float(thing):
 def read_file(path):
     if os.path.isfile(path):
         return open(path, "rb").read()
-    allowed_ext = ['pdf', 'jpg', 'jpeg', 'png', 'gif', 'ods', 'odt', _
+    allowed_ext = ['pdf', 'jpg', 'jpeg', 'png', 'gif', 'ods', 'odt',
                    'xlsx', 'doc', 'docx', 'xls', 'csv', 'txt']
     allowed_ext += [e.upper() for e in allowed_ext]
     for e in allowed_ext:
