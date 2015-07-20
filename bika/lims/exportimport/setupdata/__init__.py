@@ -219,11 +219,7 @@ class WorksheetImporter:
                 if fieldname in row:
                     logger.info("Address field %s not found on %s"%(fieldname,obj))
                 continue
-            try:
-                value = row[fieldname]
-            except:
-                logger.info("Column %s not found in row %s"%(fieldname,row))
-                continue
+            value = row.get(fieldname, '')
             field.set(obj, value)
 
     def get_object(self, catalog, portal_type, title=None, **kwargs):
@@ -455,7 +451,10 @@ class Client_Contacts(WorksheetImporter):
             client = pc(portal_type="Client",
                         getName=row['Client_title'])
             if len(client) == 0:
-                raise IndexError("Client invalid: '%s'" % row['Client_title'])
+                client_contact = "%(Firstname)s %(Surname)s" % row
+                error = "Client invalid: '%s'. The Client Contact %s will not be uploaded."
+                logger.error(error, row['Client_title'], client_contact)
+                continue
             client = client[0].getObject()
             contact = _createObjectByType("Contact", client, tmpID())
             fullname = "%(Firstname)s %(Surname)s" % row
@@ -769,7 +768,7 @@ class Instrument_Calibrations(WorksheetImporter):
                     DateIssued=row.get('DateIssued', ''),
                     ReportID=row.get('ReportID', '')
                 )
-                # Getting lab contacts
+                # Gettinginstrument lab contacts
                 bsc = getToolByName(self.context, 'bika_setup_catalog')
                 lab_contacts = [o.getObject() for o in bsc(portal_type="LabContact", nactive_state='active')]
                 for contact in lab_contacts:
@@ -792,9 +791,9 @@ class Instrument_Certifications(WorksheetImporter):
                 obj = _createObjectByType("InstrumentCertification", folder, tmpID())
                 today = datetime.date.today()
                 certificate_expire_date = today.strftime('%d/%m') + '/' + str(today.year+1) \
-                    if row.get('validfrom', '') == '' else row.get('validfrom')
-                certificate_start_date = today.strftime('%d/%m/%Y') \
                     if row.get('validto', '') == '' else row.get('validto')
+                certificate_start_date = today.strftime('%d/%m/%Y') \
+                    if row.get('validfrom', '') == '' else row.get('validfrom')
                 obj.edit(
                     title=row['title'],
                     AssetNumber=row.get('assetnumber', ''),
@@ -1020,8 +1019,9 @@ class Sample_Points(WorksheetImporter):
                 client_title = row['Client_title']
                 client = pc(portal_type="Client", getName=client_title)
                 if len(client) == 0:
-                    raise IndexError("Sample Point %s: Client invalid: '%s'" %
-                                     (row['title'], client_title))
+                    error = "Sample Point %s: Client invalid: '%s'. The Sample point will not be uploaded."
+                    logger.error(error, row['title'], client_title)
+                    continue
                 folder = client[0].getObject()
             else:
                 folder = setup_folder
