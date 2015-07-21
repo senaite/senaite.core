@@ -415,30 +415,30 @@ function AnalysisRequestAddByCol() {
 
     function copybutton_selected() {
         $('img.copybutton').live('click', function () {
-            var nr_ars = parseInt($('input[id="ar_count"]').val(), 10)
-            var tr = $(this).parents('tr')[0]
-            var fieldname = $(tr).attr('fieldname')
-            var td1 = $(tr).find('td[arnum="0"]')[0]
-            var e, td, html
+            var nr_ars = parseInt($('input[id="ar_count"]').val(), 10);
+            var tr = $(this).parents('tr')[0];
+            var fieldname = $(tr).attr('fieldname');
+            var td1 = $(tr).find('td[arnum="0"]')[0];
+            var e, td, html;
             // ReferenceWidget cannot be simply copied, the combogrid dropdown widgets
             // don't cooperate and the multiValued div must be copied.
             if ($(td1).find('.ArchetypesReferenceWidget').length > 0) {
-                var val1 = $(td1).find('input[type="text"]').val()
-                var uid1 = $(td1).find('input[type="text"]').attr("uid")
-                var multi_div = $("#" + fieldname + "-0-listing")
+                var val1 = $(td1).find('input[type="text"]').val();
+                var uid1 = $(td1).find('input[type="text"]').attr("uid");
+                var multi_div = $("#" + fieldname + "-0-listing");
                 for (var arnum = 1; arnum < nr_ars; arnum++) {
-                    td = $(tr).find('td[arnum="' + arnum + '"]')[0]
-                    e = $(td).find('input[type="text"]')
+                    td = $(tr).find('td[arnum="' + arnum + '"]')[0];
+                    e = $(td).find('input[type="text"]');
                     // First we copy the attributes of the text input:
-                    $(e).val(val1)
-                    $(e).attr('uid', uid1)
+                    $(e).val(val1);
+                    $(e).attr('uid', uid1);
                     // then the hidden *_uid shadow field
-                    $(td).find('input[id$="_uid"]').val(uid1)
-                    $(e).trigger('copy')
-                    // then the multiValued div
+                    $(td).find('input[id$="_uid"]').val(uid1);
+                     // then the multiValued div
                     var multi_divX = multi_div.clone(true);
-                    $(multi_divX).attr("id", fieldname + "-" + arnum + "-listing")
+                    $(multi_divX).attr("id", fieldname + "-" + arnum + "-listing");
                     $("#" + fieldname + "-" + arnum + "-listing").replaceWith(multi_divX)
+                    $(e).trigger('copy')
                 }
             }
             // select element
@@ -847,7 +847,7 @@ function AnalysisRequestAddByCol() {
          * - Set the partition number indicators
          */
         $("tr[fieldname='Profiles'] td[arnum] input[type='text']")
-            .live('selected copy', function (event, item) {
+            .live('selected', function (event, item) {
                 var arnum = $(this).parents('td').attr('arnum');
                 // We'll use this array to get the new added profile
                 var uids_array = $("#Profiles-" + arnum).attr('uid').split(',');
@@ -857,6 +857,21 @@ function AnalysisRequestAddByCol() {
                         specification_apply();
                         partition_indicators_set(arnum)
                     })
+            })
+            // On copy we have to set all profiles
+            .live('copy', function (event, item) {
+                var arnum = $(this).parents('td').attr('arnum');
+                // We'll use this array to get the ALL profiles
+                var uids_array = $("#Profiles-" + arnum).attr('uid').split(',');
+                template_unset(arnum);
+                for (var i = 0; i < uids_array.length; i++) {
+                    profile_set(arnum, uids_array[i])
+                        .then(function () {
+                            specification_apply();
+                            partition_indicators_set(arnum)
+                        })
+                }
+                recalc_prices(arnum);
             })
             .each(function (i, e) {
                 if ($(e).val()) {
