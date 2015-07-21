@@ -24,6 +24,17 @@ Simple AR Creation
     ${ar_id} =  Set Variable  ${dd_text.split()[2]}
     [return]  ${ar_id}
 
+I set profile ${profile-id} price to ${profile-price} and set client ${client-id} bulk discount
+    [Documentation]  Set a price for the profile
+    go to  ${PLONEURL}/bika_setup/bika_analysisprofiles/${profile-1}
+    click element  id=fieldsetlegend-accounting
+    select checkbox  id=UseAnalysisProfilePrice
+    input text  id=AnalysisProfilePrice  200
+    click on  Save
+    go to  ${PLONEURL}/clients/${client-id}/base_edit
+    select checkbox  id=BulkDiscount
+    click on  Save
+
 # --- Given ------------------------------------------------------------------
 
 an ar add form in ${client_id} with ${layout} layout and ${ar_count} ars
@@ -66,6 +77,10 @@ I expand the ${poc} ${cat_title} category
 I select the ${service_title} service in column ${column}
     [Documentation]  Select an analysis.
     select checkbox  css=tr[title='${service_title}'] [id$=\\.0]
+
+I select the ${service_title} service in column ${column}
+    [Documentation]  Unselect an analysis.
+    unselect checkbox  css=tr[title='${service_title}'] [id$=\\.0]
 
 I select the ${service_title} service in all columns
     [Documentation]  Select an analysis in all AR columns

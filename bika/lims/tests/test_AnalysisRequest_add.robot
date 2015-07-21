@@ -39,19 +39,35 @@ Test price calculation when Profile is selected
   Enable autologin as  LabClerk
   Given an ar add form in client-1 with columns layout and 3 ars
    When I select Trace Metals from the Profile combogrid in column 0
-   Then price value for discount is 12.00 in column 0
-    and price value for subtotal is 68.00 in column 0
-    and price value for vat is 9.52 in column 0
-    and price value for total is 77.52 in column 0
+   When I select Micro-Bio check from the Profile combogrid in column 0
+   Then price value for discount is 18.00 in column 0
+    and price value for subtotal is 102.00 in column 0
+    and price value for vat is 16.80 in column 0
+    and price value for total is 118.80 in column 0
    When I click the copy button for the Profile field
-   Then price value for discount is 12.00 in column 1
-    and price value for subtotal is 68.00 in column 1
-    and price value for vat is 9.52 in column 1
-    and price value for total is 77.52 in column 1
-    and price value for discount is 12.00 in column 2
-    and price value for subtotal is 68.00 in column 2
-    and price value for vat is 9.52 in column 2
-    and price value for total is 77.52 in column 2
+   Then price value for discount is 18.00 in column 1
+    and price value for subtotal is 102.00 in column 1
+    and price value for vat is 16.80 in column 1
+    and price value for total is 118.80 in column 1
+    and price value for discount is 18.00 in column 2
+    and price value for subtotal is 102.00 in column 2
+    and price value for vat is 16.80 in column 2
+    and price value for total is 118.80 in column 2
+
+Test price calculation when Profile is selected and has its own price
+  Enable autologin as  LabClerk
+  I set profile ${profile-id} price to ${profile-price} and set client ${client-id} bulk discount
+  Given an ar add form in client-1 with columns layout and 3 ars
+   When I select Trace Metals from the Profile combogrid in column 0
+   Then price value for discount is 30.00 in column 0
+    and price value for subtotal is 170.00 in column 0
+    and price value for vat is 0.00 in column 0
+    and price value for total is 170.00 in column 0
+   When unselect the Copper service in column 0
+   Then price value for discount is 7.88 in column 0
+    and price value for subtotal is 44.63 in column 0
+    and price value for vat is 7.53 in column 0
+    and price value for total is 51.98 in column 0
 
 Test price calculation when services are manually selected
   Enable autologin as  LabClerk
