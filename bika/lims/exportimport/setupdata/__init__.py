@@ -275,7 +275,7 @@ class Lab_Information(WorksheetImporter):
                 file_data = read_file(path)
             except Exception as msg:
                 file_data = None
-                logger.warning(msg, self.sheetname)
+                logger.warning(msg[0] + " Error on sheet: " + self.sheetname)
         else:
             file_data = None
 
@@ -695,7 +695,7 @@ class Instruments(WorksheetImporter):
                     obj.setPhoto(file_data)
                 except Exception as msg:
                     file_data = None
-                    logger.warning(msg, self.sheetname)
+                    logger.warning(msg[0] + " Error on sheet: " + self.sheetname)
 
             # Attaching the Installation Certificate if exists
             if row.get('InstalationCertificate', None):
@@ -708,7 +708,7 @@ class Instruments(WorksheetImporter):
                     file_data = read_file(path)
                     obj.setInstallationCertificate(file_data)
                 except Exception as msg:
-                    logger.warning(msg, self.sheetname)
+                    logger.warning(msg[0] + " Error on sheet: " + self.sheetname)
 
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
@@ -815,7 +815,7 @@ class Instrument_Certifications(WorksheetImporter):
                         obj.setDocument(file_data)
                     except Exception as msg:
                         file_data = None
-                        logger.warning(msg, self.sheetname)
+                        logger.warning(msg[0] + " Error on sheet: " + self.sheetname)
 
                 # Getting lab contacts
                 bsc = getToolByName(self.context, 'bika_setup_catalog')
@@ -850,7 +850,7 @@ class Instrument_Documents(WorksheetImporter):
                         file_data = read_file(path)
                     except Exception as msg:
                         file_data = None
-                        logger.warning(msg, self.sheetname)
+                        logger.warning(msg[0] + " Error on sheet: " + self.sheetname)
                         
                     # Obtain all created instrument documents content type
                     catalog = getToolByName(self.context, 'bika_setup_catalog')
@@ -1117,17 +1117,25 @@ class Analysis_Categories(WorksheetImporter):
         folder = self.context.bika_setup.bika_analysiscategories
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         for row in self.get_rows(3):
-            if row['title']:
+            department = None
+            if row.get('Department_title', None):
+                department = self.get_object(bsc, 'Department',
+                                             row.get('Department_title'))
+            if row.get('title', None) and department:
                 obj = _createObjectByType("AnalysisCategory", folder, tmpID())
                 obj.edit(
                     title=row['title'],
                     description=row.get('description', ''))
-                if row['Department_title']:
-                    department = self.get_object(bsc, 'Department',
-                                                 row.get('Department_title'))
-                    obj.setDepartment(department)
+                obj.setDepartment(department)
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+            elif not row.get('title', None):
+                logger.warning("Error in in " + self.sheetname + ". Missing Title field")
+            elif not row.get('Department_title', None):
+                logger.warning("Error in " + self.sheetname + ". Department field missing.")
+            else:
+                logger.warning("Error in " + self.sheetname + ". Department "
+                               + row.get('Department_title') + "is wrong.")
 
 
 class Methods(WorksheetImporter):
@@ -1163,7 +1171,7 @@ class Methods(WorksheetImporter):
                         file_data = read_file(path)
                         obj.setMethodDocument(file_data)
                     except Exception as msg:
-                        logger.warning(msg, self.sheetname)
+                        logger.warning(msg[0] + " Error on sheet: " + self.sheetname)
 
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
