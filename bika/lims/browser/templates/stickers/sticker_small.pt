@@ -40,6 +40,7 @@
     SampleType   python:sample.getSampleType().Title();
     Sampler      python:sample.getSampler();
     SampleID     python:sample.getId();
+    ClientSampleID     python:sample.getClientSampleID();
     SampleType   python:sample.getSampleType().Title();
     SamplePoint  python:sample.getSamplePoint() and sample.getSamplePoint().Title() or '';
     Preservation python:part.getPreservation() and part.getPreservation().Title() or '';
@@ -51,46 +52,89 @@
     show_partitions python:context.bika_setup.getShowPartitions();
     smart_id        python:part.getId() if show_partitions else sample.getId();
     ">
-<tr>
-    <td>
-        <strong tal:content="string:${smart_id}"/>
-        <img tal:condition="python:sample.getSampleType().getHazardous()"
-             tal:attributes="src string:${portal_url}/++resource++bika.lims.images/hazardous.png"/>
-    </td>
-    <td class='barcode' colspan="2">
-        <div tal:attributes="id string:barcode_${smart_id}"></div>
-    </td>
-</tr>
+    <!-- To render when barcode enabled -->
+    <span tal:condition="not:view/UseQRSticker">
+        <tr>
+            <!-- Sample ID -->
+            <td>
+                <strong tal:content="string:${smart_id}"/>
+                <img tal:condition="python:sample.getSampleType().getHazardous()"
+                        tal:attributes="src string:${portal_url}/++resource++bika.lims.images/hazardous.png"/>
+            </td>
+            <!-- The barcode is rendered here -->
+            <td class='barcode' colspan="2">
+                <div tal:attributes="id string:barcode_${smart_id}"></div>
+            </td>
+        </tr>
 
-<script
-    type='text/javascript'
-    tal:content="python:'$(\'#barcode_%s\').barcode(\'%s\', \'code128\', {\'barHeight\':12, addQuietZone:true, showHRI: false })'%(smart_id,smart_id)">
-</script>
+        <!-- JavaScript to generate the barcode. Python scratch will crate something like:
+        $('#barcode_BR-0001-P1').barcode('BR-0001-P1', 'code128', {'barHeight':12, addQuietZone:true, showHRI: false })-->
+        <script
+                type='text/javascript'
+                tal:content="python:'$(\'#barcode_%s\').barcode(\'%s\', \'code128\', {\'barHeight\':12, addQuietZone:true, showHRI: false })'%(smart_id,smart_id)">
+        </script>
+        <!-- Some information about the analysis request -->
+        <tr>
+            <td tal:content="SampleType"/>
+            <td style="text-align:center" tal:content="Preservation"/>
+            <td tal:content="SamplePoint"/>
+        </tr>
+    </span>
+    <!-- To render when QR enabled -->
+    <span tal:condition="view/UseQRSticker">
+        <tr>
+            <!-- The QR is rendered here -->
+            <td class='barcode' colspan="2">
+                <div tal:attributes="id string:barcode_${smart_id};
+                                     smart_id smart_id"></div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <!-- Sample ID -->
+                <strong tal:content="string:${smart_id}"/>
+                <img tal:condition="python:sample.getSampleType().getHazardous()"
+                        tal:attributes="src string:${portal_url}/++resource++bika.lims.images/hazardous.png"/>
+            </td>
+        </tr>
+        <!-- JavaScript to generate the QRcode. -->
+        <script type='text/javascript'>
+            var smart_id = $("div[id^='barcode_']").attr('smart_id');
+            $("#barcode_" + smart_id).qrcode({
+                "render": "image",
+                "size": 36, // 37.79 pixel == 10mm
+                "color": "#3a3",
+                "text": smart_id
+            });
+        </script>
+        <!-- Some information about the analysis request -->
+        <tr>
+            <td tal:content="SampleID"/>
+        </tr>
+        <tr>
+            <td tal:content="ClientSampleID"/>
+        </tr>
+    </span>
 
-<tr>
-    <td tal:content="SampleType"/>
-    <td style="text-align:center" tal:content="Preservation"/>
-    <td tal:content="SamplePoint"/>
-</tr>
-
-<tr>
-    <td i18n:translate="">Sampling Date</td>
-    <td style="text-align:center" tal:content="SamplingDate"/>
-    <td tal:content="Sampler"/>
-</tr>
-
+    <!-- The Sampling Date -->
+    <tr>
+        <td i18n:translate="">Sampling Date</td>
+        <td style="text-align:center" tal:content="SamplingDate"/>
+        <td tal:content="Sampler"/>
+    </tr>
 </table>
-<p style="page-break-after: always"/>
+    <p style="page-break-after: always"/>
 </metal:block>
 
+<!-- Go back's paragraph -->
 <p class="noPrint" tal:define="
-    portal_type  python:context.portal_type;
-    anchor_self  python:('Client','AnalysisRequest', 'AnalysisRequestsFolder', 'Batch');
-    ">
+        portal_type  python:context.portal_type;
+                anchor_self  python:('Client','AnalysisRequest', 'AnalysisRequestsFolder', 'Batch');
+        ">
     <a tal:attributes="href python:context.aq_parent.absolute_url()" id='goback'
-        i18n:translate="" tal:condition="python:portal_type not in anchor_self">Go back</a>
+            i18n:translate="" tal:condition="python:portal_type not in anchor_self">Go back</a>
     <a tal:attributes="href python:context.absolute_url()" id='goback'
-        i18n:translate="" tal:condition="python:portal_type in anchor_self">Go back</a>
+            i18n:translate="" tal:condition="python:portal_type in anchor_self">Go back</a>
 </p>
 
 </body>

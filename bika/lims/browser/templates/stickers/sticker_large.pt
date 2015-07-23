@@ -117,20 +117,39 @@
       <td colspan="4" tal:content="python:analysis.getService().Title()"/>
    </tr>
 </tal:block>
-
-<tr>
-    <td class='barcode' colspan="4">
-        <div tal:attributes="id string:barcode_${smart_id}">
-        </div>
+    <!-- To render when barcode enabled -->
+        <tr tal:condition="not:view/UseQRSticker">
+            <td class='barcode' colspan="4">
+                <div tal:attributes="id string:barcode_${smart_id}">
+                </div>
+            </td>
+            <!-- JavaScript to generate the barcode. Python scratch will crate something like:
+            $('#barcode_BR-0001-P1').barcode('BR-0001-P1', 'code128', {'barHeight':12, addQuietZone:true, showHRI: false })-->
+            <script
+                    type='text/javascript'
+                    tal:content="python:'$(\'#barcode_%s\').barcode(\'%s\', \'code128\', {\'barHeight\':15, addQuietZone:true, showHRI: false })'%(smart_id,smart_id)">
+            </script>
+        </tr>
+<!-- To render when QR enabled -->
+<tr tal:condition="view/UseQRSticker">
+    <td class='barcode' colspan="4" style="text-align:center">
+        <div tal:attributes="id string:barcode_${smart_id};
+                             smart_id smart_id"></div>
     </td>
+    <!-- JavaScript to generate the QR code. -->
+    <script type='text/javascript'>
+        var smart_id = $("div[id^='barcode_']").attr('smart_id');
+        $("#barcode_" + smart_id).qrcode({
+            "render": "image",
+            "size": 50, // They are pixels
+            "color": "#3a3",
+            "text": smart_id
+        });
+    </script>
 </tr>
-
-<script
-    type='text/javascript'
-    tal:content="python:'$(\'#barcode_%s\').barcode(\'%s\', \'code128\', {\'barHeight\':15, addQuietZone:true, showHRI: false })'%(smart_id,smart_id)">
-</script>
-
 </thead>
+
+
 
 </table>
 <p style="page-break-after: always"/>

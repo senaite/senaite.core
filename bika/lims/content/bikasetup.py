@@ -423,6 +423,14 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_("Select which sticker to print when automatic sticker printing is enabled"),
         )
     ),
+    BooleanField('UseQRSticker',
+        schemata="Stickers",
+        default=False,
+        widget=BooleanWidget(
+            label=_("Use QR stickers"),
+            description=_("Check this if you want to use stickers in QR format")
+        ),
+    ),
     PrefixesField('Prefixes',
         schemata = "ID Server",
         default = [{'portal_type': 'ARImport', 'prefix': 'AI', 'padding': '4', 'separator': '-', 'sequence_start': '0'},
@@ -536,7 +544,8 @@ class BikaSetup(folder.ATFolder):
         out = []
         for stickers_resource in iterDirectoriesOfType('stickers'):
             prefix = stickers_resource.__name__
-            stickers = [stk for stk in stickers_resource.listDirectory() if stk.endswith('.pt')]
+            stickers = [stk for stk in stickers_resource.listDirectory()
+                        if stk.endswith('.pt') and stk.startswith('sticker')]
             for sticker in stickers:
                 name ='%s:%s' %(prefix,sticker)
                 out.append([name, name])
