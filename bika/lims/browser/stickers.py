@@ -56,3 +56,7 @@ class Sticker(BrowserView):
 
         elif self.items[0].portal_type == 'ReferenceSample':
             return self.referencesample_sticker()
+
+    def StickerFormatCode(self):
+        # It'll be used in a condition to know which sticker type should be rendered
+        return self.context.bika_setup.getCodeBarType()

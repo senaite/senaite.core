@@ -39,7 +39,9 @@
 <metal:block tal:repeat="part view/items">
 
 <table cellpadding="0" cellspacing="0" tal:define="
+    stickerformat   view/StickerFormatCode;
     portal_url   nocall:context/portal_url;
+    AnalysisRequestID   context/id;
     partnr       python:part.getId().split('-')[1];
     sample       python:part.aq_parent;
     CSID         python:sample.getClientSampleID();
@@ -117,20 +119,30 @@
       <td colspan="4" tal:content="python:analysis.getService().Title()"/>
    </tr>
 </tal:block>
-
-<tr>
-    <td class='barcode' colspan="4">
-        <div tal:attributes="id string:barcode_${smart_id}">
-        </div>
+    <!-- To render when barcode enabled -->
+        <tr tal:condition="python: stickerformat != 'QR'">
+            <td class='barcode' colspan="4">
+                <div tal:attributes="id string:barcode_${smart_id}">
+                </div>
+            </td>
+            <!-- JavaScript to generate the barcode. Python scratch will crate something like:
+            $('#barcode_BR-0001-P1').barcode('BR-0001-P1', 'code128', {'barHeight':12, addQuietZone:true, showHRI: false })-->
+            <script
+                    type='text/javascript'
+                    tal:content="python:'$(\'#barcode_%s\').barcode(\'%s\', \'%s\', {\'barHeight\':12, addQuietZone:true, showHRI: false })'
+                            %(smart_id,smart_id,stickerformat)">
+            </script>
+        </tr>
+<!-- To render when QR enabled -->
+<tr tal:condition="python: stickerformat == 'QR'">
+    <td class='barcode' colspan="4" style="text-align:center">
+        <div class='qrcode' data-size="50"
+                tal:attributes="data-code AnalysisRequestID"></div>
     </td>
 </tr>
-
-<script
-    type='text/javascript'
-    tal:content="python:'$(\'#barcode_%s\').barcode(\'%s\', \'code128\', {\'barHeight\':15, addQuietZone:true, showHRI: false })'%(smart_id,smart_id)">
-</script>
-
 </thead>
+
+
 
 </table>
 <p style="page-break-after: always"/>

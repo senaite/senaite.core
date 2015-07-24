@@ -51,6 +51,11 @@ STICKER_AUTO_OPTIONS = DisplayList((
     ('register', _('Register')),
     ('receive', _('Receive')),
 ))
+STICKER_FORMATCODES = DisplayList((
+    ('code128', _('Bar Code - code128')),
+    ('code39', _('Bar Code - code39')),
+    ('QR', _('QRFormat')),
+))
 
 
 schema = BikaFolderSchema.copy() + Schema((
@@ -423,6 +428,16 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_("Select which sticker to print when automatic sticker printing is enabled"),
         )
     ),
+    StringField('CodeBarType',
+        schemata="Stickers",
+        vocabulary=STICKER_FORMATCODES,
+        default='code128',
+        widget=SelectionWidget(
+            label=_("Code Bar/QR Type"),
+            description=_("Select the code format desired to be used in stickers."),
+            format='select',
+        )
+    ),
     PrefixesField('Prefixes',
         schemata = "ID Server",
         default = [{'portal_type': 'ARImport', 'prefix': 'AI', 'padding': '4', 'separator': '-', 'sequence_start': '0'},
@@ -536,7 +551,8 @@ class BikaSetup(folder.ATFolder):
         out = []
         for stickers_resource in iterDirectoriesOfType('stickers'):
             prefix = stickers_resource.__name__
-            stickers = [stk for stk in stickers_resource.listDirectory() if stk.endswith('.pt')]
+            stickers = [stk for stk in stickers_resource.listDirectory()
+                        if stk.endswith('.pt') and stk.startswith('sticker')]
             for sticker in stickers:
                 name ='%s:%s' %(prefix,sticker)
                 out.append([name, name])

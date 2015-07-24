@@ -15,7 +15,7 @@ window.bika.lims.controllers =  {
         ['CommonUtils'],
 
     // Barcode utils
-    ".barcode":
+    ".barcode, .qrcode":
         ['BarcodeUtils'],
 
     // Calculation utils
