@@ -39,7 +39,9 @@
 <metal:block tal:repeat="part view/items">
 
 <table cellpadding="0" cellspacing="0" tal:define="
+    stickerformat   view/StickerFormatCode;
     portal_url   nocall:context/portal_url;
+    AnalysisRequestID   context/id;
     partnr       python:part.getId().split('-')[1];
     sample       python:part.aq_parent;
     CSID         python:sample.getClientSampleID();
@@ -118,7 +120,7 @@
    </tr>
 </tal:block>
     <!-- To render when barcode enabled -->
-        <tr tal:condition="not:view/UseQRSticker">
+        <tr tal:condition="python: stickerformat != 'QR'">
             <td class='barcode' colspan="4">
                 <div tal:attributes="id string:barcode_${smart_id}">
                 </div>
@@ -127,25 +129,16 @@
             $('#barcode_BR-0001-P1').barcode('BR-0001-P1', 'code128', {'barHeight':12, addQuietZone:true, showHRI: false })-->
             <script
                     type='text/javascript'
-                    tal:content="python:'$(\'#barcode_%s\').barcode(\'%s\', \'code128\', {\'barHeight\':15, addQuietZone:true, showHRI: false })'%(smart_id,smart_id)">
+                    tal:content="python:'$(\'#barcode_%s\').barcode(\'%s\', \'%s\', {\'barHeight\':12, addQuietZone:true, showHRI: false })'
+                            %(smart_id,smart_id,stickerformat)">
             </script>
         </tr>
 <!-- To render when QR enabled -->
-<tr tal:condition="view/UseQRSticker">
+<tr tal:condition="python: stickerformat == 'QR'">
     <td class='barcode' colspan="4" style="text-align:center">
-        <div tal:attributes="id string:barcode_${smart_id};
-                             smart_id smart_id"></div>
+        <div class='qrcode' data-size="50"
+                tal:attributes="data-code AnalysisRequestID"></div>
     </td>
-    <!-- JavaScript to generate the QR code. -->
-    <script type='text/javascript'>
-        var smart_id = $("div[id^='barcode_']").attr('smart_id');
-        $("#barcode_" + smart_id).qrcode({
-            "render": "image",
-            "size": 50, // They are pixels
-            "color": "#3a3",
-            "text": smart_id
-        });
-    </script>
 </tr>
 </thead>
 

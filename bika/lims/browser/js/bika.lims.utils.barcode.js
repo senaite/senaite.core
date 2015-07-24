@@ -48,5 +48,16 @@ function BarcodeUtils() {
                 }
             }
         });
+
+        $('.qrcode').each(function(i) {
+           var code = $(this).attr('data-code');
+           var size = $(this).attr('data-size');
+           $(this).qrcode({
+                "render": "image",
+                "size": size, // 37.79 pixel == 10mm
+                "color": "#3a3",
+                "text": code
+            });
+        });
     }
 }

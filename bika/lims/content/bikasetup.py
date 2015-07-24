@@ -51,6 +51,11 @@ STICKER_AUTO_OPTIONS = DisplayList((
     ('register', _('Register')),
     ('receive', _('Receive')),
 ))
+STICKER_FORMATCODES = DisplayList((
+    ('code128', _('Bar Code - code128')),
+    ('code39', _('Bar Code - code39')),
+    ('QR', _('QRFormat')),
+))
 
 
 schema = BikaFolderSchema.copy() + Schema((
@@ -423,13 +428,15 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_("Select which sticker to print when automatic sticker printing is enabled"),
         )
     ),
-    BooleanField('UseQRSticker',
+    StringField('CodeBarType',
         schemata="Stickers",
-        default=False,
-        widget=BooleanWidget(
-            label=_("Use QR stickers"),
-            description=_("Check this if you want to use stickers in QR format")
-        ),
+        vocabulary=STICKER_FORMATCODES,
+        default='code128',
+        widget=SelectionWidget(
+            label=_("Code Bar/QR Type"),
+            description=_("Select the code format desired to be used in stickers."),
+            format='select',
+        )
     ),
     PrefixesField('Prefixes',
         schemata = "ID Server",
