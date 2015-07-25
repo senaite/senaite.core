@@ -95,7 +95,12 @@
         @media print {
             .noprint {display:none !important;}
             body {background-color:#fff;}
-            .sticker-wrapper {margin:0;border:none;}
+            .sticker-wrapper {
+              margin:0;
+              border:none;
+              box-shadow:none;
+              border-bottom:none;
+            }
         }
     </style>
 </head>
