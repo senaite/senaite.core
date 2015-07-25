@@ -30,13 +30,13 @@ class Sticker(BrowserView):
 
         a) For posted items from AnalysisRequest type, populates an array
         where each item is an array of objects as follows:
-            ['analysisrequest', ar, sample, partition]
+            [ar, sample, partition]
 
         b) For posted items from Sample type, populates an array as follows:
-            ['sample', None, sample, partition]
+            [None, sample, partition]
 
         c) For posted items from ReferenceSample type, populates an array:
-            ['refsample', None, refsample, None]
+            [None, refsample, None]
         """
         new_items = []
         for i in self.items:
