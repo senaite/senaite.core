@@ -54,7 +54,7 @@ STICKER_AUTO_OPTIONS = DisplayList((
 STICKER_FORMATCODES = DisplayList((
     ('code128', _('Bar Code - code128')),
     ('code39', _('Bar Code - code39')),
-    ('QR', _('QRFormat')),
+    ('QR', _('QR Format')),
 ))
 
 

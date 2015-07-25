@@ -59,5 +59,18 @@ function BarcodeUtils() {
                 "text": code
             });
         });
+
+
+        $('.barcode').each(function() {
+            var id = $(this).attr('data-id');
+            var code = $(this).attr('data-code');
+            var barHeight = $(this).attr('data-barHeight');
+            var addQuietZone = $(this).attr('data-addQuietZone');
+            var showHRI = $(this).attr('data-showHRI');
+            $(this).barcode(id, code,
+                            {'barHeight': parseInt(barHeight),
+                             'addQuietZone': Boolean(addQuietZone),
+                             'showHRI': Boolean(showHRI) });
+        });
     }
 }

@@ -23,39 +23,58 @@ class Sticker(BrowserView):
         else:
             self.items = [self.context,]
 
-        # ARs get stickers for their respective samples.
+        """
+        A given sample can be used in more than one Analysis Request
+        via secondary AR creation, so in case we want to print the AR-ID
+        together with the Sample ID, we cannot throw out the ARs.
+
+        a) For posted items from AnalysisRequest type, populates an array
+        where each item is an array of objects as follows:
+            ['analysisrequest', ar, sample, partition]
+
+        b) For posted items from Sample type, populates an array as follows:
+            ['sample', None, sample, partition]
+
+        c) For posted items from ReferenceSample type, populates an array:
+            ['refsample', None, refsample, None]
+        """
         new_items = []
         for i in self.items:
-            if i.portal_type == 'AnalysisRequest':
-                new_items.append(i.getSample())
-            else:
-                new_items.append(i)
-        self.items = new_items
+            outitems = self._populateItems(i)
+            new_items.extend(outitems)
 
-        # Samples get stickers for their partitions.
-        new_items = []
-        for i in self.items:
-            if i.portal_type == 'Sample':
-                new_items += i.objectValues('SamplePartition')
-            else:
-                new_items.append(i)
         self.items = new_items
-
         if not self.items:
             logger.warning("Cannot print stickers: no items specified in request")
             self.request.response.redirect(self.context.absolute_url())
             return
 
-        if self.items[0].portal_type == 'SamplePartition':
-            template = self.request.get('template', '')
-            prefix, tmpl = template.split(':')
-            templates_dir = queryResourceDirectory('stickers', prefix).directory
+        template = self.request.get('template', '')
+        prefix, tmpl = template.split(':')
+        templates_dir = queryResourceDirectory('stickers', prefix).directory
+        stickertemplate = ViewPageTemplateFile(os.path.join(templates_dir, tmpl))
+        return stickertemplate(self)
 
-            stickertemplate = ViewPageTemplateFile(os.path.join(templates_dir, tmpl))
-            return stickertemplate(self)
+    def _populateItems(self, item):
+        ar = None
+        sample = None
+        parts = []
+        if item.portal_type == 'AnalysisRequest':
+            ar = item
+            sample = item.getSample()
+            parts = sample.objectValues('SamplePartition')
+        elif item.portal_type == 'Sample':
+            sample = item
+            parts = sample.objectValues('SamplePartition')
+        elif item.portal_type == 'SamplePartition':
+            sample = item.aq_parent
+            parts = [item,]
 
-        elif self.items[0].portal_type == 'ReferenceSample':
-            return self.referencesample_sticker()
+        items = []
+        for p in parts:
+            items.append([ar, sample, p])
+        return items
+
 
     def StickerFormatCode(self):
         # It'll be used in a condition to know which sticker type should be rendered
