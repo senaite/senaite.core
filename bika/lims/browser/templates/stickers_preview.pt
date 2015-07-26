@@ -21,8 +21,42 @@
             margin: 0;
             padding: 0;
         }
-        #stickers-wrapper {
-            margin-top: 5mm;
+        #sticker-preview-header {
+            font-family:Helvetica, Arial;
+            font-size:0.9em;
+            background-color: #dcdcdc;
+            box-shadow: 1px 1px 1px #ccc;
+            margin: 0 0 40px;
+            padding: 10px;
+            text-align: center;
+        }
+        #sticker-preview-header .options-line {
+            padding:0 0 10px 0;
+        }
+        #sticker-preview-header select {
+            margin-left: 10px;
+            padding: 0 5px;
+        }
+        #sticker-preview-header #sticker-buttons input {
+            text-align:center;
+            width:30mm;
+            margin:0 2mm;
+            background-color: #aaa;
+            border-radius: 5px;
+            color: #fff;
+            font-family: Helvetica,Arial;
+            font-size: 9pt;
+            font-weight: bold;
+            padding: 4px 15px;
+            text-decoration: none;
+            text-shadow: 1px 1px 1px #999;
+            text-transform: uppercase;
+            border:none;
+            cursor:pointer;
+        }
+        #sticker-preview-header #sticker-buttons input:hover {
+              background-color: #bbb;
+              text-shadow: 1px 1px 1px #aaa;
         }
         .sticker {
             margin:0 auto;
@@ -32,53 +66,23 @@
         }
 
         @media print {
-            .noprint {display:none !important;}
             body {background-color:#fff;}
-            .sticker-wrapper {
+            #sticker-preview-header {display:none !important;}
+            #stickers-wrapper { margin:0;}
+            .sticker {
               margin:0;
               border:none;
               box-shadow:none;
               border-bottom:none;
             }
         }
-        .sticker-wrapper.qr {
-            height: 21mm;
-            padding: 8mm 0 0;
-            text-align: center;
-            width: 14mm;
-        }
-        .sticker-wrapper.qr div.requestid {
-            padding-top: 2mm;
-            line-height: 4mm;
-        }
-        .sticker-wrapper.qr div.clientsampleid {
-            line-height: 4mm;
-        }
-        .goback-top, .goback-bottom {
-            margin: 20px auto;
-            text-align: center;
-            width: 50mm;
-        }
-        .goback-top > a,
-        .goback-bottom > a {
-          background-color: #aaa;
-          border-radius: 5px;
-          color: #fff;
-          font-family: Helvetica,Arial;
-          font-size: 9pt;
-          font-weight: bold;
-          padding: 4px 15px;
-          text-decoration: none;
-          text-shadow: 1px 1px 1px #999;
-          text-transform: uppercase;
-        }
-        .goback-top.noprint > a:hover,
-        .goback-bottom > a:hover {
-            background-color: #bbb;
-            text-shadow: 1px 1px 1px #aaa;
-        }
     </style>
     <style type="text/css" tal:content="structure python:view.getSelectedTemplateCSS()"></style>
+    <script type="text/javascript">
+      $('#print-button').click(function(e) {
+          return window.print();
+      });
+    </script>
 </head>
 <body>
     <div id='sticker-preview-wrapper'>
@@ -102,7 +106,7 @@
                 </div>
             </div>
             <div id='sticker-buttons'>
-                <input type="button" id='cancel-button' value="Go back"/>&nbsp;&nbsp;
+                <input type="button" id='cancel-button' value="Go back"/>
                 <input type="button" id='print-button' value="Print"/>
             </div>
         </div>
