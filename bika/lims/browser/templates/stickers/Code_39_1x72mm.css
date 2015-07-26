@@ -1,0 +1,29 @@
+.sticker {
+    font-family: Helvetica, Arial;
+    font-size:6pt;
+    /* Total width: 70mm + 2x1mm = 72mm */
+    padding:1mm; width: 70mm;
+}
+.sticker .sample-id {
+    height: 5mm;
+    text-align:center;
+}
+table {
+    border-collapse:collapse;
+    margin: 1px 1px 1px 1px;
+    font-size: 6pt;
+    width:100%;
+}
+th {
+    text-align: left;
+    text-transform: none;
+    border: 1pt solid #888;
+    padding:0.5mm;
+}
+td {
+    border: 1pt solid #888;
+    padding:0.5mm;
+}
+.barcode {
+    margin:0 auto;
+}
