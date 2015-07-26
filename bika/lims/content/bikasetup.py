@@ -12,6 +12,7 @@ from bika.lims.interfaces import IBikaSetup
 from bika.lims.interfaces import IHaveNoBreadCrumbs
 from bika.lims.browser.widgets import DurationWidget
 from bika.lims.browser.fields import DurationField
+from bika.lims.vocabularies import getStickerTemplates as _getStickerTemplates
 from plone.app.folder import folder
 from zope.interface import implements
 from plone.resource.utils import iterDirectoriesOfType, queryResourceDirectory
@@ -548,14 +549,7 @@ class BikaSetup(folder.ATFolder):
 
     def getStickerTemplates(self):
         """ get the sticker templates """
-        out = []
-        for stickers_resource in iterDirectoriesOfType('stickers'):
-            prefix = stickers_resource.__name__
-            stickers = [stk for stk in stickers_resource.listDirectory()
-                        if stk.endswith('.pt') and stk.startswith('sticker')]
-            for sticker in stickers:
-                name ='%s:%s' %(prefix,sticker)
-                out.append([name, name])
+        out = [[t['id'], t['title']] for t in _getStickerTemplates()]
         return DisplayList(out)
 
     def getARAttachmentsPermitted(self):
