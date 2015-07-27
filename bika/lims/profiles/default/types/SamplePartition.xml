@@ -61,7 +61,7 @@
          condition_expr=""
          icon_expr="string:${object_url}/++resource++bika.lims.images/sticker_large.png"
          link_target=""
-         url_expr="string:${object_url}/sticker?template=sticker_large"
+         url_expr="string:${object_url}/sticker?autoprint=1&amp;size=large"
          i18n:attributes="title"
          visible="True">
   <permission value="View"/>
@@ -73,10 +73,20 @@
          condition_expr=""
          icon_expr="string:${object_url}/++resource++bika.lims.images/sticker_small.png"
          link_target=""
-         url_expr="string:${object_url}/sticker?template=sticker_small"
+         url_expr="string:${object_url}/sticker?autoprint=1&amp;size=small"
          i18n:attributes="title"
          visible="True">
   <permission value="View"/>
  </action>
-
+ <action title="Stickers preview"
+         action_id="sticker_preview"
+         category="document_actions"
+         condition_expr=""
+         icon_expr="string:${object_url}/++resource++bika.lims.images/sticker_preview.png"
+         link_target="Stickers preview"
+         url_expr="string:${object_url}/sticker"
+         i18n:attributes="title"
+         visible="True">
+     <permission value="View"/>
+ </action>
 </object>

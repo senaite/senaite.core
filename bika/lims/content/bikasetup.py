@@ -423,6 +423,26 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_("Select which sticker to print when automatic sticker printing is enabled"),
         )
     ),
+    StringField('SmallStickerTemplate',
+        schemata = "Stickers",
+        vocabulary = "getStickerTemplates",
+        default = "Code_128_1x48mm.pt",
+        widget = SelectionWidget(
+            format = 'select',
+            label = _("Small sticker"),
+            description = _("Select which sticker should be used as the 'small' sticker by default")
+        )
+    ),
+    StringField('LargeStickerTemplate',
+        schemata = "Stickers",
+        vocabulary = "getStickerTemplates",
+        default = "Code_128_1x72mm.pt",
+        widget = SelectionWidget(
+            format = 'select',
+            label = _("Large sticker"),
+            description = _("Select which sticker should be used as the 'large' sticker by default")
+        )
+    ),
     PrefixesField('Prefixes',
         schemata = "ID Server",
         default = [{'portal_type': 'ARImport', 'prefix': 'AI', 'padding': '4', 'separator': '-', 'sequence_start': '0'},

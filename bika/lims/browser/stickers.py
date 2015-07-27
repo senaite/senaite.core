@@ -109,8 +109,15 @@ class Sticker(BrowserView):
             default template set in Bika Setup > Stickers.
             If the template doesn't exist, uses the default bika.lims'
             Code_128_1x48mm.pt template (was sticker_small.pt).
+            If no template selected but size param, get the sticker template
+            set as default in Bika Setup for the size set.
         """
         bs_template = self.context.bika_setup.getAutoStickerTemplate()
+        size = self.request.get('size', '')
+        if size == 'small':
+            bs_template = self.context.bika_setup.getSmallStickerTemplate()
+        elif size == 'large':
+            bs_template = self.context.bika_setup.getLargeStickerTemplate()
         rq_template = self.request.get('template', bs_template)
         # Check if the template exists. If not, fallback to default's
         if rq_template.find(':') >= 0:
