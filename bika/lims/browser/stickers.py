@@ -183,6 +183,8 @@ class Sticker(BrowserView):
             return "<div class='error'>%s - %s '%s':<pre>%s</pre></div>" % \
                     (stickerid, _("Unable to load the template"), embedt, tbex)
 
-    def StickerFormatCode(self):
-        # It'll be used in a condition to know which sticker type should be rendered
-        return self.context.bika_setup.getCodeBarType()
+    def getItemsURL(self):
+        req_items = self.request.get('items', '')
+        req_items = req_items if req_items else self.context.getId()
+        req = '%s?items=%s' % (self.request.URL, req_items)
+        return req

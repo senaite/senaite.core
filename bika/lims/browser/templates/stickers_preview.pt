@@ -80,7 +80,6 @@
             }
         }
     </style>
-    <style type="text/css" tal:content="structure python:view.getSelectedTemplateCSS()"></style>
     <script type="text/javascript">
         $(function(){
             $('#print-button').click(function(e) {
@@ -91,10 +90,36 @@
                 e.preventDefault();
                 window.location = $(this).attr('data-url');
             });
+            $('select#template').change(function(e) {
+                reload($('select#template').val());
+            });
+
+            /**
+             * Re-loads the stickers preview by using the template specified
+             */
+            function reload(template) {
+                var baseurl = $('body').attr('data-itemsurl');
+                $('#stickers-wrapper').fadeTo('fast', 0.4);
+                $.ajax({
+                    url: baseurl,
+                    type: 'POST',
+                    async: true,
+                    data: {"template": template}
+                })
+                .always(function(data) {
+                    var htmldata = data;
+                    htmldata = $(htmldata).find('#stickers-wrapper').html();
+                    $('#stickers-wrapper').html(htmldata);
+                    $('#stickers-wrapper').fadeTo('fast', 1);
+                    // reload barcoding
+                    bika.lims.BarcodeUtils.load();
+                });
+            }
         });
     </script>
 </head>
-<body>
+<body tal:attributes="onload        python:'this.print()' if view.request.get('autoprint', False) else '';
+                      data-itemsurl python:view.getItemsURL();">
     <div id='sticker-preview-wrapper'>
         <!-- Header of the preview. This will never be printed.
              Container with preview options and buttons --->
@@ -124,6 +149,7 @@
 
         <!-- Container where all the stickers are embedded. -->
         <div id="stickers-wrapper">
+            <style id='stickers-style' type="text/css" tal:content="structure python:view.getSelectedTemplateCSS()"></style>
             <tal:sticker tal:repeat="sticker view/items">
             <div class='sticker'
                  tal:content='structure python:view.renderItem()'></div>
