@@ -432,12 +432,14 @@ def getStickerTemplates():
         templates.extend(exts)
 
     out = []
+    templates.sort()
     for template in templates:
         title = template[:-3]
         title = title.replace('_', ' ')
         title = title.replace(':', ': ')
         out.append({'id': template,
                     'title': title})
+
     return out
 
 class StickerTemplatesVocabulary(object):

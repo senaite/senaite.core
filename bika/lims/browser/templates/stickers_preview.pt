@@ -11,7 +11,10 @@
       tal:define="portal_state context/@@plone_portal_state;
                   portal_url portal_state/portal_url;
                   plone_view context/@@plone;
-                  portal portal_state/portal;">
+                  portal portal_state/portal;
+                  portal_type python:context.portal_type;
+                  anchor_self python:('Client','AnalysisRequest', 'AnalysisRequestsFolder', 'Batch');
+                  goback_url  python:context.absolute_url() if portal_type in anchor_self else context.aq_parent.absolute_url();">
 <head>
     <div tal:replace="structure provider:plone.resourceregistries.scripts" />
     <!-- Generic style -->
@@ -79,9 +82,16 @@
     </style>
     <style type="text/css" tal:content="structure python:view.getSelectedTemplateCSS()"></style>
     <script type="text/javascript">
-      $('#print-button').click(function(e) {
-          return window.print();
-      });
+        $(function(){
+            $('#print-button').click(function(e) {
+                e.preventDefault();
+                window.print();
+            });
+            $('#cancel-button').click(function(e) {
+                e.preventDefault();
+                window.location = $(this).attr('data-url');
+            });
+        });
     </script>
 </head>
 <body>
@@ -106,7 +116,8 @@
                 </div>
             </div>
             <div id='sticker-buttons'>
-                <input type="button" id='cancel-button' value="Go back"/>
+                <input type="button" id='cancel-button' value="Go back"
+                       tal:attributes="data-url goback_url;"/>
                 <input type="button" id='print-button' value="Print"/>
             </div>
         </div>
