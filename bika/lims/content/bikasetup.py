@@ -52,12 +52,6 @@ STICKER_AUTO_OPTIONS = DisplayList((
     ('register', _('Register')),
     ('receive', _('Receive')),
 ))
-STICKER_FORMATCODES = DisplayList((
-    ('code128', _('Bar Code - code128')),
-    ('code39', _('Bar Code - code39')),
-    ('QR', _('QR Format')),
-))
-
 
 schema = BikaFolderSchema.copy() + Schema((
     IntegerField('PasswordLifetime',
@@ -427,16 +421,6 @@ schema = BikaFolderSchema.copy() + Schema((
             format = 'select',
             label=_("Sticker templates"),
             description=_("Select which sticker to print when automatic sticker printing is enabled"),
-        )
-    ),
-    StringField('CodeBarType',
-        schemata="Stickers",
-        vocabulary=STICKER_FORMATCODES,
-        default='code128',
-        widget=SelectionWidget(
-            label=_("Code Bar/QR Type"),
-            description=_("Select the code format desired to be used in stickers."),
-            format='select',
         )
     ),
     PrefixesField('Prefixes',
