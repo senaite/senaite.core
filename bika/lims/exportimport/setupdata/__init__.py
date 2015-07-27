@@ -851,7 +851,7 @@ class Instrument_Documents(WorksheetImporter):
                     except Exception as msg:
                         file_data = None
                         logger.warning(msg[0] + " Error on sheet: " + self.sheetname)
-                        
+
                     # Obtain all created instrument documents content type
                     catalog = getToolByName(self.context, 'bika_setup_catalog')
                     documents_brains = catalog.searchResults({'portal_type': 'Multifile'})
@@ -1702,7 +1702,7 @@ class Setup(WorksheetImporter):
                 'AnalysisAttachmentOption'][0].lower(),
             DefaultSampleLifetime=DSL,
             AutoPrintStickers=values.get('AutoPrintStickers','receive').lower(),
-            AutoStickerTemplate=values.get('AutoStickerTemplate', 'bika.lims:sticker_small.pt').lower(),
+            AutoStickerTemplate=values.get('AutoStickerTemplate', 'Code_128_1x48mm.pt'),
             YearInPrefix=self.to_bool(values['YearInPrefix']),
             SampleIDPadding=int(values['SampleIDPadding']),
             ARIDPadding=int(values['ARIDPadding']),
@@ -2047,6 +2047,3 @@ class AR_Priorities(WorksheetImporter):
                         obj.setBigIcon(big_icon)
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
-
-
-

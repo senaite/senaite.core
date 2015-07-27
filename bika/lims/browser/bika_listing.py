@@ -204,7 +204,7 @@ class WorkflowAction:
         # automatic label printing
         if transitioned and action == 'receive' \
             and 'receive' in self.portal.bika_setup.getAutoPrintStickers():
-            q = "/sticker?template=%s&items=" % (self.portal.bika_setup.getAutoStickerTemplate())
+            q = "/sticker?autoprint=1&template=%s&items=" % (self.portal.bika_setup.getAutoStickerTemplate())
             # selected_items is a list of UIDs (stickers for AR_add use IDs)
             q += ",".join(transitioned)
             dest = self.context.absolute_url() + q
@@ -645,7 +645,7 @@ class BikaListingView(BrowserView):
         # override from self attributes
         for x in "pagenumber", "pagesize", "review_state", "sort_order", "sort_on":
             if str(getattr(self, x, None)) != 'None':
-                # I don't understand why on AR listing, getattr(self,x) 
+                # I don't understand why on AR listing, getattr(self,x)
                 # is a dict, but this line will resolve LIMS-1420
                 if x == "review_state" and type(getattr(self, x))==dict:
                     query['%s_%s'%(self.form_id, x)] = getattr(self, x)['id']

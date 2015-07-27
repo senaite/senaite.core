@@ -6,6 +6,7 @@ from bika.lims.testing import BIKA_SIMPLE_TESTING
 from bika.lims.tests.base import BikaSimpleTestCase
 from bika.lims.utils import tmpID
 from bika.lims.utils.analysisrequest import create_analysisrequest
+from bika.lims.vocabularies import getStickerTemplates
 from bika.lims.workflow import doActionFor
 from plone.app.testing import login, logout
 from plone.app.testing import TEST_USER_NAME
@@ -55,7 +56,7 @@ class TestShowPartitions(BikaSimpleTestCase):
                   'SamplingDate': '2015-01-01',
                   'SampleType': sampletype.UID()}
 
-        for size in ["large", "small"]:
+        for stemp in getStickerTemplates():
 
             # create and receive AR
             ar = create_analysisrequest(client, {}, values, service_uids)
@@ -64,7 +65,7 @@ class TestShowPartitions(BikaSimpleTestCase):
             self.assertEquals(ar.portal_workflow.getInfoFor(ar, 'review_state'), 'sample_received')
             # check sticker text
             ar.REQUEST['items'] = ar.getId()
-            ar.REQUEST['template'] = "bika.lims:sticker_%s.pt"%size
+            ar.REQUEST['template'] = stemp.get('id')
             sticker = Sticker(ar, ar.REQUEST)()
             pid = ar.getSample().objectValues("SamplePartition")[0].getId()
             self.assertNotIn(pid, sticker, "Sticker must not contain partition ID %s"%pid)
@@ -76,7 +77,7 @@ class TestShowPartitions(BikaSimpleTestCase):
             self.assertEquals(ar.portal_workflow.getInfoFor(ar, 'review_state'), 'sample_received')
             # check sticker text
             ar.REQUEST['items'] = ar.getId()
-            ar.REQUEST['template'] = "bika.lims:sticker_%s.pt"%size
+            ar.REQUEST['template'] = stemp.get('id')
             sticker = Sticker(ar, ar.REQUEST)()
             pid = ar.getSample().objectValues("SamplePartition")[0].getId()
             self.assertIn(pid, sticker, "Sticker must contain partition ID %s"%pid)
