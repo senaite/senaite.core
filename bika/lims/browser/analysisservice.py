@@ -205,13 +205,13 @@ class JSONReadExtender(object):
         include_fields = get_include_fields(request)
 
         if not include_fields or "ServiceDependencies" in include_fields:
-        data["ServiceDependencies"] = []
-        calc = self.context.getCalculation()
-        if calc:
-            services = [self.service_info(service) for service
-                in calc.getCalculationDependencies(flat=True)
-                if service.UID() != self.context.UID()]
-            data["ServiceDependencies"] = services
+            data["ServiceDependencies"] = []
+            calc = self.context.getCalculation()
+            if calc:
+                services = [self.service_info(service) for service
+                    in calc.getCalculationDependencies(flat=True)
+                    if service.UID() != self.context.UID()]
+                data["ServiceDependencies"] = services
 
         if not include_fields or "ServiceDependants" in include_fields:
             data["ServiceDependants"] = []
