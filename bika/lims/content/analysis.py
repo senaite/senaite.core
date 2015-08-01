@@ -963,6 +963,13 @@ class Analysis(BaseContent):
                 if not "verify all analyses" in self.REQUEST['workflow_skiplist']:
                     self.REQUEST["workflow_skiplist"].append("verify all analyses")
                 workflow.doActionFor(ar, "verify")
+        # Possible verify dependents of this analysis
+        for dep in self.getDependents():
+            dep_state = workflow.getInfoFor(dep, 'review_state')
+            if dep_state == 'to_be_verified' \
+                    and not skip(dep, "verify", peek=True):
+                workflow.doActionFor(dep, 'verify')
+                skip(dep, "verify")
         # If this is on a worksheet and all it's other analyses are verified,
         # then verify the worksheet.
         ws = self.getBackReferences("WorksheetAnalysis")
