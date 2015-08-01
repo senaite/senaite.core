@@ -1,3 +1,10 @@
+3.1.5.1 (2015-08-01)
+--------------------
+
+LIMS-1946: Verification transition cascade handles calculation dependant analyses
+Fixed buildout.cfg to create a functioning test system
+Fix compatibility with Plone >= 4.3.5
+
 3.1.5 (2014-10-06)
 ------------------
 
