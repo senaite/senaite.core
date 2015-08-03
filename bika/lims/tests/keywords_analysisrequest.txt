@@ -78,7 +78,7 @@ I select the ${service_title} service in column ${column}
     [Documentation]  Select an analysis.
     select checkbox  css=tr[title='${service_title}'] [id$=\\.0]
 
-I select the ${service_title} service in column ${column}
+I unselect the ${service_title} service in column ${column}
     [Documentation]  Unselect an analysis.
     unselect checkbox  css=tr[title='${service_title}'] [id$=\\.0]
 

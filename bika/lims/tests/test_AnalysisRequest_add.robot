@@ -9,12 +9,9 @@ Resource        plone/app/robotframework/selenium.robot
 Library         Remote  ${PLONEURL}/RobotRemote
 Variables       plone/app/testing/interfaces.py
 Variables       bika/lims/tests/variables.py
-
 Suite Setup     Start browser
 Suite Teardown  Close All Browsers
-
 Library          DebugLibrary
-
 *** Test Cases ***
 
 Test price calculation when Template is selected
@@ -56,7 +53,7 @@ Test price calculation when Profile is selected
 
 Test price calculation when Profile is selected and has its own price
   Enable autologin as  LabClerk
-  I set profile ${profile-id} price to ${profile-price} and set client ${client-id} bulk discount
+  I set profile analysisprofile-1 price to 200 and set client client-1 bulk discount
   Given an ar add form in client-1 with columns layout and 3 ars
    When I select Trace Metals from the Profile combogrid in column 0
    Then price value for discount is 30.00 in column 0
