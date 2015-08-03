@@ -1346,7 +1346,7 @@ class Analysis_Services(WorksheetImporter):
                 ShortTitle=row.get('ShortTitle', row['title']),
                 description=row.get('description', ''),
                 Keyword=row['Keyword'],
-                PointOfCapture=row['PointOfCapture'],
+                PointOfCapture=row['PointOfCapture'].lower(),
                 Category=category,
                 Department=department,
                 ReportDryMatter=self.to_bool(row['ReportDryMatter']),
