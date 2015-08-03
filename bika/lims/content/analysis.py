@@ -783,7 +783,7 @@ class Analysis(BaseContent):
         if service.getInstrumentEntryOfResults() == True:
             uids = service.getRawInstruments()
 
-        elif service.getManualEntryOfResults == True:
+        elif service.getManualEntryOfResults() == True:
             meths = self.getAllowedMethods(False)
             for meth in meths:
                 uids += meth.getInstrumentUIDs()
@@ -802,7 +802,7 @@ class Analysis(BaseContent):
             set yet an Instrument, looks to the Service
         """
         instr = self.getInstrument() \
-            if self.getInstrument else self.getDefaultInstrument()
+            if self.getInstrument() else self.getDefaultInstrument()
         return instr.getMethod() if instr else None
 
     def getFormattedResult(self, specs=None, decimalmark='.', sciformat=1):
