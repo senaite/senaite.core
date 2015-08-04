@@ -1,0 +1,21 @@
+.sticker {
+    font-family: Helvetica, Arial;
+    font-size:6pt;
+    /* Total width: 52mm + 2x1mm = 54mm */
+    padding:1mm; width: 52mm;
+}
+.sticker .sample-id {
+    height: 5mm;
+    text-align:center;
+}
+.sticker .analysisrequest-info table,
+.sticker .sampling-date-info table {
+    border-collapse:collapse;
+    margin: 1px 1px 1px 1px;
+    font-size: 6pt;
+    width:100%;
+}
+.sticker .analysisrequest-info table td,
+.sticker .sampling-date-info table td {
+    border:none;
+}

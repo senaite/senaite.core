@@ -12,6 +12,7 @@ from bika.lims.interfaces import IBikaSetup
 from bika.lims.interfaces import IHaveNoBreadCrumbs
 from bika.lims.browser.widgets import DurationWidget
 from bika.lims.browser.fields import DurationField
+from bika.lims.vocabularies import getStickerTemplates as _getStickerTemplates
 from plone.app.folder import folder
 from zope.interface import implements
 from plone.resource.utils import iterDirectoriesOfType, queryResourceDirectory
@@ -51,7 +52,6 @@ STICKER_AUTO_OPTIONS = DisplayList((
     ('register', _('Register')),
     ('receive', _('Receive')),
 ))
-
 
 schema = BikaFolderSchema.copy() + Schema((
     IntegerField('PasswordLifetime',
@@ -423,6 +423,26 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_("Select which sticker to print when automatic sticker printing is enabled"),
         )
     ),
+    StringField('SmallStickerTemplate',
+        schemata = "Stickers",
+        vocabulary = "getStickerTemplates",
+        default = "Code_128_1x48mm.pt",
+        widget = SelectionWidget(
+            format = 'select',
+            label = _("Small sticker"),
+            description = _("Select which sticker should be used as the 'small' sticker by default")
+        )
+    ),
+    StringField('LargeStickerTemplate',
+        schemata = "Stickers",
+        vocabulary = "getStickerTemplates",
+        default = "Code_128_1x72mm.pt",
+        widget = SelectionWidget(
+            format = 'select',
+            label = _("Large sticker"),
+            description = _("Select which sticker should be used as the 'large' sticker by default")
+        )
+    ),
     PrefixesField('Prefixes',
         schemata = "ID Server",
         default = [{'portal_type': 'ARImport', 'prefix': 'AI', 'padding': '4', 'separator': '-', 'sequence_start': '0'},
@@ -533,13 +553,7 @@ class BikaSetup(folder.ATFolder):
 
     def getStickerTemplates(self):
         """ get the sticker templates """
-        out = []
-        for stickers_resource in iterDirectoriesOfType('stickers'):
-            prefix = stickers_resource.__name__
-            stickers = [stk for stk in stickers_resource.listDirectory() if stk.endswith('.pt')]
-            for sticker in stickers:
-                name ='%s:%s' %(prefix,sticker)
-                out.append([name, name])
+        out = [[t['id'], t['title']] for t in _getStickerTemplates()]
         return DisplayList(out)
 
     def getARAttachmentsPermitted(self):

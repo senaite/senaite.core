@@ -241,7 +241,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         if trans and 'receive' in self.context.bika_setup.getAutoPrintStickers():
             transitioned = [item.id for item in items]
             tmpl = self.context.bika_setup.getAutoStickerTemplate()
-            q = "/sticker?template=%s&items=" % tmpl
+            q = "/sticker?autoprint=1&template=%s&items=" % tmpl
             q += ",".join(transitioned)
             self.request.response.redirect(self.context.absolute_url() + q)
         elif trans:

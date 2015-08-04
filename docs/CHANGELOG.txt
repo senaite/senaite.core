@@ -1,5 +1,7 @@
 3.1.9 (unreleased)
 ------------------
+LIMS-1943: Stickers preview and custom stickers templates support
+LIMS-1855: Small Sticker layout. QR-code capabilities
 HEALTH-279: AS IDs to be near top of page. Columns in AS list
 LIMS-1625: Instrument tab titles and headers do not correspond
 LIMS-1924: Instrument tab very miss-titled. Internal Calibration Tests
@@ -772,4 +774,3 @@ http://plone.org/documentation/manual/upgrade-guide
  - Added CHANGES.txt and README.txt
  - Added windows batch script for ID server
    (scripts/start-id-server.bat)
-

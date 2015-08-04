@@ -48,5 +48,29 @@ function BarcodeUtils() {
                 }
             }
         });
+
+        $('.qrcode').each(function(i) {
+           var code = $(this).attr('data-code');
+           var size = $(this).attr('data-size');
+           $(this).qrcode({
+                "render": "image",
+                "size": size, // 37.79 pixel == 10mm
+                "color": "#3a3",
+                "text": code
+            });
+        });
+
+
+        $('.barcode').each(function() {
+            var id = $(this).attr('data-id');
+            var code = $(this).attr('data-code');
+            var barHeight = $(this).attr('data-barHeight');
+            var addQuietZone = $(this).attr('data-addQuietZone');
+            var showHRI = $(this).attr('data-showHRI');
+            $(this).barcode(id, code,
+                            {'barHeight': parseInt(barHeight),
+                             'addQuietZone': Boolean(addQuietZone),
+                             'showHRI': Boolean(showHRI) });
+        });
     }
 }
