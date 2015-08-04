@@ -215,19 +215,19 @@ class JSONReadExtender(object):
 
         if not include_fields or "ServiceDependants" in include_fields:
             data["ServiceDependants"] = []
-        calcs = self.context.getBackReferences('CalculationAnalysisService')
-        if calcs:
-            for calc in calcs:
-                services = [self.service_info(service) for service
-                    in calc.getCalculationDependants()
-                    if service.UID() != self.context.UID()]
-                data["ServiceDependants"].extend(services)
+            calcs = self.context.getBackReferences('CalculationAnalysisService')
+            if calcs:
+                for calc in calcs:
+                    services = [self.service_info(service) for service
+                        in calc.getCalculationDependants()
+                        if service.UID() != self.context.UID()]
+                    data["ServiceDependants"].extend(services)
 
         if not include_fields or "MethodInstruments" in include_fields:
             data["MethodInstruments"] = {}
-        for method in self.context.getAvailableMethods():
-            for instrument in method.getInstruments():
-                if method.UID() not in data["MethodInstruments"]:
-                    data["MethodInstruments"][method.UID()] = []
-                data["MethodInstruments"][method.UID()].append(
-                    load_field_values(instrument, include_fields=[]))
+            for method in self.context.getAvailableMethods():
+                for instrument in method.getInstruments():
+                    if method.UID() not in data["MethodInstruments"]:
+                        data["MethodInstruments"][method.UID()] = []
+                    data["MethodInstruments"][method.UID()].append(
+                        load_field_values(instrument, include_fields=[]))
