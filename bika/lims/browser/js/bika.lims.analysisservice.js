@@ -390,13 +390,14 @@ function AnalysisServiceEditView() {
                             $('#invalid-instruments-alert').remove();
                         } else if (data.objects[0].Valid != '1') {
                             var title = data.objects[0].Title;
+                            var instrument_path = window.location.protocol + "//" + window.location.host + data.objects[0].path;
                             if ($('#invalid-instruments-alert').length > 0) {
                                 $('#invalid-instruments-alert dd').first().append(", " + title);
                             } else {
                                 var errmsg = _("Some of the selected instruments are out-of-date or with failed calibration tests");
                                 var html = "<div id='invalid-instruments-alert' class='alert'>"+
                                            "    <dt>" + errmsg + ":</dt>"+
-                                           "    <dd>" + title + "</dd>"+
+                                           "    <dd> <a href=" +instrument_path + ">" + title + "</a></dd>"+
                                            "</div>";
                                 $('#analysisservice-base-edit').before(html);
                             }
@@ -711,13 +712,14 @@ function AnalysisServiceEditView() {
                 window.bika.lims.jsonapi_read(request_data, function(data) {
                     if (data.objects[0].Valid != '1') {
                         var title = data.objects[0].Title;
+                        var instrument_path = window.location.protocol + "//" + window.location.host + data.objects[0].path;
                         if ($('#invalid-instruments-alert').length > 0) {
                             $('#invalid-instruments-alert dd').first().append(", " + title);
                         } else {
                             var errmsg = _("Some of the selected instruments are out-of-date or with failed calibration tests");
                             var html = "<div id='invalid-instruments-alert' class='alert'>"+
                                        "    <dt>" + errmsg + ":</dt>"+
-                                       "    <dd>" + title + "</dd>"+
+                                       "    <dd> <a href=" +instrument_path + ">" + title + "</a></dd>"+
                                        "</div>";
                             $('#analysisservice-base-edit').before(html);
                         }
