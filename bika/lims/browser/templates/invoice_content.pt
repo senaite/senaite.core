@@ -2,19 +2,21 @@
 	<tbody>
 		<tr>
 			<th i18n:translate="">Invoice To</th>
-			<td tal:content="view/clientContact"></td>
+            <td> <a tal:attributes="
+                    href  view/clientURL"
+                    tal:content="view/clientName"></a></td>
 			<th i18n:translate="">Invoice #</th>
 			<td tal:content="view/invoiceId"></td>
 		</tr>
 		<tr>
 			<th i18n:translate="">Phone</th>
-			<td tal:content="view/contactPhone"></td>
+			<td tal:content="view/clientPhone"></td>
 			<th i18n:translate="">Account #</th>
 			<td tal:content="view/clientAccountNumber"></td>
 		</tr>
 		<tr>
 			<th i18n:translate="">Fax</th>
-			<td tal:content="view/contactFax"></td>
+			<td tal:content="view/clientFax"></td>
 			<th i18n:translate="">Date</th>
 			<td tal:content="view/invoiceDate"></td>
 		</tr>
@@ -71,7 +73,7 @@
 				<tr>
 					<td tal:content="item/invoiceDate"></td>
 					<td class="text" tal:content="item/description"></td>
-					<td tal:content="item/orderNo"></td>
+                    <td><a tal:attributes="href  item/orderNoURL" tal:content="item/orderNo"></a></td>
 					<td>
 						<span tal:content="item/VATAmount">0.00</span>
 					</td>

@@ -36,13 +36,10 @@ class InvoiceView(BrowserView):
         self.batchRange = "%s to %s" % (start, end)
         # Gather client data
         self.clientName = client.Title()
-        self.clientContact = analysis_request.getContact().getFullname() if analysis_request else client.Title()
+        self.clientURL = client.absolute_url()
         self.clientPhone = client.getPhone()
-        self.contactPhone = analysis_request.getContact().getBusinessPhone() if analysis_request else client.getPhone()
         self.clientFax = client.getFax()
-        self.contactFax = analysis_request.getContact().getBusinessFax() if analysis_request else client.getFax()
         self.clientEmail = client.getEmailAddress()
-        self.contactEmail = analysis_request.getContact().getEmailAddress() if analysis_request else client.getEmailAddress()
         self.clientAccountNumber = client.getAccountNumber()
         # currency info
         locale = locales.getLocale('en')
@@ -65,9 +62,10 @@ class InvoiceView(BrowserView):
             'invoiceDate': self.ulocalized_time(item['ItemDate']),
             'description': item['ItemDescription'],
             'orderNo': item['OrderNumber'],
-            'subtotal': '%0.2f' % item['Subtotal'],
-            'VATAmount': '%0.2f' % item['VATAmount'],
-            'total': '%0.2f' % item['Total'],
+            'orderNoURL': item['AnalysisRequest'].absolute_url(),
+            'subtotal': item['Subtotal'],
+            'VATAmount': item['VATAmount'],
+            'total': item['Total'],
         } for item in items]
         # Render the template
         return self.template()
