@@ -10,7 +10,7 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
 from zope.interface import implements
 from pkg_resources import resource_filename
-import datetime
+import datetime, os.path
 
 import re
 import transaction
@@ -38,6 +38,18 @@ def Float(thing):
     except ValueError:
         f = 0.0
     return f
+
+def read_file(path):
+    if os.path.isfile(path):
+        return open(path, "rb").read()
+    allowed_ext = ['pdf', 'jpg', 'jpeg', 'png', 'gif', 'ods', 'odt',
+                   'xlsx', 'doc', 'docx', 'xls', 'csv', 'txt']
+    allowed_ext += [e.upper() for e in allowed_ext]
+    for e in allowed_ext:
+        out = '%s.%s' % (path, e)
+        if os.path.isfile(out):
+            return open(out, "rb").read()
+    raise IOError("File not found: %s. Allowed extensions: %s" % (path, ','.join(allowed_ext)))
 
 
 class SetupDataSetList(SDL):
@@ -207,11 +219,7 @@ class WorksheetImporter:
                 if fieldname in row:
                     logger.info("Address field %s not found on %s"%(fieldname,obj))
                 continue
-            try:
-                value = row[fieldname]
-            except:
-                logger.info("Column %s not found in row %s"%(fieldname,row))
-                continue
+            value = row.get(fieldname, '')
             field.set(obj, value)
 
     def get_object(self, catalog, portal_type, title=None, **kwargs):
@@ -263,7 +271,11 @@ class Lab_Information(WorksheetImporter):
                 self.dataset_project,
                 "setupdata/%s/%s" % (self.dataset_name,
                                      values['AccreditationBodyLogo']))
-            file_data = open(path, "rb").read()
+            try:
+                file_data = read_file(path)
+            except Exception as msg:
+                file_data = None
+                logger.warning(msg[0] + " Error on sheet: " + self.sheetname)
         else:
             file_data = None
 
@@ -439,7 +451,10 @@ class Client_Contacts(WorksheetImporter):
             client = pc(portal_type="Client",
                         getName=row['Client_title'])
             if len(client) == 0:
-                raise IndexError("Client invalid: '%s'" % row['Client_title'])
+                client_contact = "%(Firstname)s %(Surname)s" % row
+                error = "Client invalid: '%s'. The Client Contact %s will not be uploaded."
+                logger.error(error, row['Client_title'], client_contact)
+                continue
             client = client[0].getObject()
             contact = _createObjectByType("Contact", client, tmpID())
             fullname = "%(Firstname)s %(Surname)s" % row
@@ -676,12 +691,11 @@ class Instruments(WorksheetImporter):
                                          row['Photo'])
                 )
                 try:
-                    file_data = open(path, "rb").read()
+                    file_data = read_file(path)
                     obj.setPhoto(file_data)
-                except IOError:
-                    warning = "Error while loading attached Photo from %s. The file will not be uploaded " \
-                              "into the system."
-                    logger.warning(warning, self.sheetname)
+                except Exception as msg:
+                    file_data = None
+                    logger.warning(msg[0] + " Error on sheet: " + self.sheetname)
 
             # Attaching the Installation Certificate if exists
             if row.get('InstalationCertificate', None):
@@ -691,12 +705,10 @@ class Instruments(WorksheetImporter):
                                          row['InstalationCertificate'])
                 )
                 try:
-                    file_data = open(path, "rb").read()
+                    file_data = read_file(path)
                     obj.setInstallationCertificate(file_data)
-                except IOError:
-                    warning = "Error while loading attached Installation Certificate from %s. " \
-                              "The file will not be uploaded into the system."
-                    logger.warning(warning, self.sheetname)
+                except Exception as msg:
+                    logger.warning(msg[0] + " Error on sheet: " + self.sheetname)
 
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
@@ -756,7 +768,7 @@ class Instrument_Calibrations(WorksheetImporter):
                     DateIssued=row.get('DateIssued', ''),
                     ReportID=row.get('ReportID', '')
                 )
-                # Getting lab contacts
+                # Gettinginstrument lab contacts
                 bsc = getToolByName(self.context, 'bika_setup_catalog')
                 lab_contacts = [o.getObject() for o in bsc(portal_type="LabContact", nactive_state='active')]
                 for contact in lab_contacts:
@@ -779,9 +791,9 @@ class Instrument_Certifications(WorksheetImporter):
                 obj = _createObjectByType("InstrumentCertification", folder, tmpID())
                 today = datetime.date.today()
                 certificate_expire_date = today.strftime('%d/%m') + '/' + str(today.year+1) \
-                    if row.get('validfrom', '') == '' else row.get('validfrom')
-                certificate_start_date = today.strftime('%d/%m/%Y') \
                     if row.get('validto', '') == '' else row.get('validto')
+                certificate_start_date = today.strftime('%d/%m/%Y') \
+                    if row.get('validfrom', '') == '' else row.get('validfrom')
                 obj.edit(
                     title=row['title'],
                     AssetNumber=row.get('assetnumber', ''),
@@ -799,12 +811,12 @@ class Instrument_Certifications(WorksheetImporter):
                                              row['report'])
                     )
                     try:
-                        file_data = open(path, "rb").read()
+                        file_data = read_file(path)
                         obj.setDocument(file_data)
-                    except IOError:
-                        warning = "Error while loading attached report from %s. " \
-                                  "The file will not be uploaded into the system."
-                        logger.warning(warning, self.sheetname)
+                    except Exception as msg:
+                        file_data = None
+                        logger.warning(msg[0] + " Error on sheet: " + self.sheetname)
+
                 # Getting lab contacts
                 bsc = getToolByName(self.context, 'bika_setup_catalog')
                 lab_contacts = [o.getObject() for o in bsc(portal_type="LabContact", nactive_state='active')]
@@ -834,7 +846,12 @@ class Instrument_Documents(WorksheetImporter):
                         "setupdata/%s/%s" % (self.dataset_name,
                                              row['File'])
                     )
-                    file_data = open(path, "rb").read()
+                    try:
+                        file_data = read_file(path)
+                    except Exception as msg:
+                        file_data = None
+                        logger.warning(msg[0] + " Error on sheet: " + self.sheetname)
+                        
                     # Obtain all created instrument documents content type
                     catalog = getToolByName(self.context, 'bika_setup_catalog')
                     documents_brains = catalog.searchResults({'portal_type': 'Multifile'})
@@ -1002,8 +1019,9 @@ class Sample_Points(WorksheetImporter):
                 client_title = row['Client_title']
                 client = pc(portal_type="Client", getName=client_title)
                 if len(client) == 0:
-                    raise IndexError("Sample Point %s: Client invalid: '%s'" %
-                                     (row['title'], client_title))
+                    error = "Sample Point %s: Client invalid: '%s'. The Sample point will not be uploaded."
+                    logger.error(error, row['title'], client_title)
+                    continue
                 folder = client[0].getObject()
             else:
                 folder = setup_folder
@@ -1099,17 +1117,25 @@ class Analysis_Categories(WorksheetImporter):
         folder = self.context.bika_setup.bika_analysiscategories
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         for row in self.get_rows(3):
-            if row['title']:
+            department = None
+            if row.get('Department_title', None):
+                department = self.get_object(bsc, 'Department',
+                                             row.get('Department_title'))
+            if row.get('title', None) and department:
                 obj = _createObjectByType("AnalysisCategory", folder, tmpID())
                 obj.edit(
                     title=row['title'],
                     description=row.get('description', ''))
-                if row['Department_title']:
-                    department = self.get_object(bsc, 'Department',
-                                                 row.get('Department_title'))
-                    obj.setDepartment(department)
+                obj.setDepartment(department)
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
+            elif not row.get('title', None):
+                logger.warning("Error in in " + self.sheetname + ". Missing Title field")
+            elif not row.get('Department_title', None):
+                logger.warning("Error in " + self.sheetname + ". Department field missing.")
+            else:
+                logger.warning("Error in " + self.sheetname + ". Department "
+                               + row.get('Department_title') + "is wrong.")
 
 
 class Methods(WorksheetImporter):
@@ -1141,8 +1167,11 @@ class Methods(WorksheetImporter):
                         "setupdata/%s/%s" % (self.dataset_name,
                                              row['MethodDocument'])
                     )
-                    file_data = open(path, "rb").read()
-                    obj.setMethodDocument(file_data)
+                    try:
+                        file_data = read_file(path)
+                        obj.setMethodDocument(file_data)
+                    except Exception as msg:
+                        logger.warning(msg[0] + " Error on sheet: " + self.sheetname)
 
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
@@ -1248,6 +1277,8 @@ class Analysis_Services(WorksheetImporter):
         for row in self.get_rows(3, worksheet=worksheet):
             service = self.get_object(bsc, 'AnalysisService',
                                       row.get('Service_title'))
+            if not service:
+                return
             sro = service.getResultOptions()
             sro.append({'ResultValue': row['ResultValue'],
                         'ResultText': row['ResultText']})
@@ -1319,7 +1350,7 @@ class Analysis_Services(WorksheetImporter):
                 Category=category,
                 Department=department,
                 ReportDryMatter=self.to_bool(row['ReportDryMatter']),
-                AttachmentOption=row['Attachment'][0].lower(),
+                AttachmentOption=row.get('Attachment', '')[0].lower() if row.get('Attachment', '') else 'p',
                 Unit=row['Unit'] and row['Unit'] or None,
                 Precision=row['Precision'] and str(row['Precision']) or '0',
                 MaxTimeAllowed=MTA,
