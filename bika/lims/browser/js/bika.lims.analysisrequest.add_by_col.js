@@ -56,7 +56,8 @@ function AnalysisRequestAddByCol() {
         spec_selected()
         samplepoint_selected()
         sampletype_selected()
-        profile_selected()
+        profile_selected();
+        profile_unset_trigger();
         template_selected()
         drymatter_selected()
         sample_selected()
@@ -134,7 +135,7 @@ function AnalysisRequestAddByCol() {
                 }
             }
             if ($(div).hasClass('ArchetypesStringWidget')
-              || $(div).hasClass('ArchetypesDateTimeWidget')) {
+                || $(div).hasClass('ArchetypesDateTimeWidget')) {
                 e = $(div).find('[type="text"]')[0]
                 $(e).attr('id', $(e).attr('id') + '-' + arnum)
                 $(e).attr('name', $(e).attr('name') + '-' + arnum)
@@ -242,7 +243,7 @@ function AnalysisRequestAddByCol() {
         element = $("tr[fieldname=Template] td[arnum=" + arnum + "] input")[0]
         filter_combogrid(element, "getClientUID", uids)
         uids = [uid, $("#bika_setup").attr("bika_analysisprofiles_uid")]
-        element = $("tr[fieldname=Profile] td[arnum=" + arnum + "] input")[0]
+        element = $("tr[fieldname=Profiles] td[arnum=" + arnum + "] input")[0]
         filter_combogrid(element, "getClientUID", uids)
         uids = [uid, $("#bika_setup").attr("bika_analysisspecs_uid")]
         element = $("tr[fieldname=Specification] td[arnum=" + arnum + "] input")[0]
@@ -326,13 +327,13 @@ function AnalysisRequestAddByCol() {
          * The checkboxes used to select analyses are handled separately.
          */
         $('tr[fieldname] input[type="checkbox"]')
-          .live('change copy', function () {
-                    checkbox_change_handler(this)
-                })
-          .each(function (i, e) {
-                    // trigger copy on form load
-                    $(e).trigger('copy')
-                })
+            .live('change copy', function () {
+                checkbox_change_handler(this)
+            })
+            .each(function (i, e) {
+                // trigger copy on form load
+                $(e).trigger('copy')
+            })
     }
 
     function referencewidget_change_handler(element, item) {
@@ -340,11 +341,11 @@ function AnalysisRequestAddByCol() {
         var fieldname = $(element).parents('[fieldname]').attr('fieldname')
         var multiValued = $(element).attr("multiValued") == "1"
         var value = item.UID
-        if(multiValued){
+        if (multiValued) {
             // modify existing values
             var uid_element = $(element).siblings("input[name*='_uid']")
             var existing_values = $(uid_element).val()
-            if(existing_values.search(value) == -1){
+            if (existing_values.search(value) == -1) {
                 value = existing_values + "," + value
             } else {
                 value = existing_values
@@ -357,15 +358,15 @@ function AnalysisRequestAddByCol() {
         /* Generic state-setter for AR field referencewidgets
          */
         $('tr[fieldname] input.referencewidget')
-          .live('selected', function (event, item) {
-                    referencewidget_change_handler(this, item)
-                })
+            .live('selected', function (event, item) {
+                referencewidget_change_handler(this, item)
+            })
         // we must create a fake 'item' for this handler
         $('tr[fieldname] input.referencewidget')
-          .live('copy', function (event) {
-                    var item = {UID: $(this).attr('uid')}
-                    referencewidget_change_handler(this, item)
-                })
+            .live('copy', function (event) {
+                var item = {UID: $(this).attr('uid')}
+                referencewidget_change_handler(this, item)
+            })
     }
 
     function select_element_change_handler(element) {
@@ -379,13 +380,13 @@ function AnalysisRequestAddByCol() {
         /* Generic state-setter for SELECT inputs
          */
         $('tr[fieldname] select')
-          .live('change copy', function (event, item) {
-                    select_element_change_handler(this)
-                })
-          .each(function (i, e) {
-                    // trigger copy on form load
-                    $(e).trigger('copy')
-                })
+            .live('change copy', function (event, item) {
+                select_element_change_handler(this)
+            })
+            .each(function (i, e) {
+                // trigger copy on form load
+                $(e).trigger('copy')
+            })
     }
 
     function textinput_change_handler(element) {
@@ -399,45 +400,45 @@ function AnalysisRequestAddByCol() {
         /* Generic state-setter for SELECT inputs
          */
         $('tr[fieldname] input[type="text"]')
-          .not("#singleservice")
-          .not(".referencewidget")
-          .live('change copy', function () {
-                    textinput_change_handler(this)
-                })
-          .each(function (i, e) {
-                    if ($(e).val()) {
-                        // trigger copy on form load
-                        $(e).trigger('copy')
-                    }
-                })
+            .not("#singleservice")
+            .not(".referencewidget")
+            .live('change copy', function () {
+                textinput_change_handler(this)
+            })
+            .each(function (i, e) {
+                if ($(e).val()) {
+                    // trigger copy on form load
+                    $(e).trigger('copy')
+                }
+            })
     }
 
     function copybutton_selected() {
         $('img.copybutton').live('click', function () {
-            var nr_ars = parseInt($('input[id="ar_count"]').val(), 10)
-            var tr = $(this).parents('tr')[0]
-            var fieldname = $(tr).attr('fieldname')
-            var td1 = $(tr).find('td[arnum="0"]')[0]
-            var e, td, html
+            var nr_ars = parseInt($('input[id="ar_count"]').val(), 10);
+            var tr = $(this).parents('tr')[0];
+            var fieldname = $(tr).attr('fieldname');
+            var td1 = $(tr).find('td[arnum="0"]')[0];
+            var e, td, html;
             // ReferenceWidget cannot be simply copied, the combogrid dropdown widgets
             // don't cooperate and the multiValued div must be copied.
             if ($(td1).find('.ArchetypesReferenceWidget').length > 0) {
-                var val1 = $(td1).find('input[type="text"]').val()
-                var uid1 = $(td1).find('input[type="text"]').attr("uid")
-                var multi_div = $("#CCContact-0-listing")
+                var val1 = $(td1).find('input[type="text"]').val();
+                var uid1 = $(td1).find('input[type="text"]').attr("uid");
+                var multi_div = $("#" + fieldname + "-0-listing");
                 for (var arnum = 1; arnum < nr_ars; arnum++) {
-                    td = $(tr).find('td[arnum="' + arnum + '"]')[0]
-                    e = $(td).find('input[type="text"]')
+                    td = $(tr).find('td[arnum="' + arnum + '"]')[0];
+                    e = $(td).find('input[type="text"]');
                     // First we copy the attributes of the text input:
-                    $(e).val(val1)
-                    $(e).attr('uid', uid1)
+                    $(e).val(val1);
+                    $(e).attr('uid', uid1);
                     // then the hidden *_uid shadow field
-                    $(td).find('input[id$="_uid"]').val(uid1)
-                    $(e).trigger('copy')
-                    // then the multiValued div
+                    $(td).find('input[id$="_uid"]').val(uid1);
+                     // then the multiValued div
                     var multi_divX = multi_div.clone(true);
-                    $(multi_divX).attr("id", "CCContact-" + arnum + "-listing")
-                    $("#CCContact-" + arnum + "-listing").replaceWith(multi_divX)
+                    $(multi_divX).attr("id", fieldname + "-" + arnum + "-listing");
+                    $("#" + fieldname + "-" + arnum + "-listing").replaceWith(multi_divX)
+                    $(e).trigger('copy')
                 }
             }
             // select element
@@ -499,7 +500,7 @@ function AnalysisRequestAddByCol() {
      samplepoint_set            - filter with sampletype<->samplepoint relation
      sampletype_set             - filter with sampletype<->samplepoint relation
      profile_set                - apply profile
-     profile_unset              - empty profile field in form and state
+     profile_unset_trigger      - Unset the deleted profile and its analyses
      template_set               - apply template
      template_unset             - empty template field in form and state
      drymatter_set              - select the DryMatterService and set state
@@ -507,30 +508,30 @@ function AnalysisRequestAddByCol() {
      */
 
     function client_selected() {
-        /* Client field is visibile and a client has been selectec
+        /* Client field is visible and a client has been selected
          */
         $('tr[fieldname="Client"] input[type="text"]')
-          .live('selected copy', function (event, item) {
-                    // filter any references that search inside the Client.
-                    var arnum = get_arnum(this)
-                    filter_by_client(arnum)
-                })
-          .each(function (i, e) {
-                    if ($(e).val()) {
-                        // trigger copy on form load
-                        $(e).trigger('copy')
-                    }
-                })
+            .live('selected copy', function (event, item) {
+                // filter any references that search inside the Client.
+                var arnum = get_arnum(this)
+                filter_by_client(arnum)
+            })
+            .each(function (i, e) {
+                if ($(e).val()) {
+                    // trigger copy on form load
+                    $(e).trigger('copy')
+                }
+            })
     }
 
     function contact_selected() {
         /* Selected a Contact: retrieve and complete UI for CC Contacts
          */
         $('tr[fieldname="Contact"] input[type="text"]')
-          .live('selected copy', function (event, item) {
-                    var arnum = get_arnum(this)
-                    cc_contacts_set(arnum)
-                })
+            .live('selected copy', function (event, item) {
+                var arnum = get_arnum(this)
+                cc_contacts_set(arnum)
+            })
         // We do not trigger copy event on load for Contact because doing so would
         // clear any default value supplied for the CCContact field.
     }
@@ -597,17 +598,17 @@ function AnalysisRequestAddByCol() {
          *
          */
         $("[id*='_Specification']")
-          .live('selected copy',
-                function (event, item) {
-                    var arnum = $(this).parents('td').attr('arnum')
-                    specification_refetch(arnum)
-                })
-          .each(function (i, e) {
-                    if ($(e).val()) {
-                        // trigger copy on form load
-                        $(e).trigger('copy')
-                    }
-                })
+            .live('selected copy',
+            function (event, item) {
+                var arnum = $(this).parents('td').attr('arnum')
+                specification_refetch(arnum)
+            })
+            .each(function (i, e) {
+                if ($(e).val()) {
+                    // trigger copy on form load
+                    $(e).trigger('copy')
+                }
+            })
     }
 
     function spec_field_entry() {
@@ -708,17 +709,17 @@ function AnalysisRequestAddByCol() {
             if (hashlist) {
                 var spec = hashes_to_hash(hashlist, 'uid')
                 $.each($("tr.service_selector td[class*='ar\\." + arnum + "']"),
-                       function (i, td) {
-                           var uid = $(td).parents("[uid]").attr("uid")
-                           if (uid && uid != "new" && uid in spec) {
-                               var min = $(td).find(".min")
-                               var max = $(td).find(".max")
-                               var error = $(td).find(".error")
-                               $(min).attr("value", (spec[uid].min))
-                               $(max).attr("value", (spec[uid].max))
-                               $(error).attr("value", (spec[uid].error))
-                           }
-                       })
+                    function (i, td) {
+                        var uid = $(td).parents("[uid]").attr("uid")
+                        if (uid && uid != "new" && uid in spec) {
+                            var min = $(td).find(".min")
+                            var max = $(td).find(".max")
+                            var error = $(td).find(".error")
+                            $(min).attr("value", (spec[uid].min))
+                            $(max).attr("value", (spec[uid].max))
+                            $(error).attr("value", (spec[uid].error))
+                        }
+                    })
             }
         }
     }
@@ -731,18 +732,18 @@ function AnalysisRequestAddByCol() {
          * 3) Set the partition indicator numbers.
          */
         var st_uid = $("tr[fieldname='SampleType'] " +
-                       "td[arnum='" + arnum + "'] " +
-                       "input[type='text']").attr("uid")
+            "td[arnum='" + arnum + "'] " +
+            "input[type='text']").attr("uid")
         if (!st_uid) {
             return
         }
         spec_filter_on_sampletype(arnum)
         var spec_element = $("tr[fieldname='Specification'] " +
-                             "td[arnum='" + arnum + "'] " +
-                             "input[type='text']")
+            "td[arnum='" + arnum + "'] " +
+            "input[type='text']")
         var spec_uid_element = $("tr[fieldname='Specification'] " +
-                                 "td[arnum='" + arnum + "'] " +
-                                 "input[id$='_uid']")
+            "td[arnum='" + arnum + "'] " +
+            "input[id$='_uid']")
         var request_data = {
             catalog_name: "bika_setup_catalog",
             portal_type: "AnalysisSpec",
@@ -791,16 +792,16 @@ function AnalysisRequestAddByCol() {
 
     function samplepoint_selected() {
         $("tr[fieldname='SamplePoint'] td[arnum] input[type='text']")
-          .live('selected copy', function (event, item) {
-                    var arnum = get_arnum(this)
-                    samplepoint_set(arnum)
-                })
-          .each(function (i, e) {
-                    if ($(e).val()) {
-                        // trigger copy on form load
-                        $(e).trigger('copy')
-                    }
-                })
+            .live('selected copy', function (event, item) {
+                var arnum = get_arnum(this)
+                samplepoint_set(arnum)
+            })
+            .each(function (i, e) {
+                if ($(e).val()) {
+                    // trigger copy on form load
+                    $(e).trigger('copy')
+                }
+            })
     }
 
     function samplepoint_set(arnum) {
@@ -810,21 +811,21 @@ function AnalysisRequestAddByCol() {
         var spe = $("tr[fieldname='SamplePoint'] td[arnum='" + arnum + "'] input[type='text']")
         var ste = $("tr[fieldname='SampleType'] td[arnum='" + arnum + "'] input[type='text']")
         filter_combogrid(ste, "getSamplePointTitle", $(spe).val(),
-                         'search_query')
+            'search_query')
     }
 
     function sampletype_selected() {
         $("tr[fieldname='SampleType'] td[arnum] input[type='text']")
-          .live('selected copy', function (event, item) {
-                    var arnum = get_arnum(this)
-                    sampletype_set(arnum)
-                })
-          .each(function (i, e) {
-                    if ($(e).val()) {
-                        // trigger copy on form load
-                        $(e).trigger('copy')
-                    }
-                })
+            .live('selected copy', function (event, item) {
+                var arnum = get_arnum(this)
+                sampletype_set(arnum)
+            })
+            .each(function (i, e) {
+                if ($(e).val()) {
+                    // trigger copy on form load
+                    $(e).trigger('copy')
+                }
+            })
     }
 
     function sampletype_set(arnum) {
@@ -835,7 +836,7 @@ function AnalysisRequestAddByCol() {
         var spe = $("tr[fieldname='SamplePoint'] td[arnum='" + arnum + "'] input[type='text']")
         var ste = $("tr[fieldname='SampleType'] td[arnum='" + arnum + "'] input[type='text']")
         filter_combogrid(spe, "getSampleTypeTitle", $(ste).val(),
-                         'search_query')
+            'search_query')
         set_spec_from_sampletype(arnum)
         partition_indicators_set(arnum)
     }
@@ -845,58 +846,132 @@ function AnalysisRequestAddByCol() {
          * - Set the profile's analyses (existing analyses will be cleared)
          * - Set the partition number indicators
          */
-        $("tr[fieldname='Profile'] td[arnum] input[type='text']")
-          .live('selected copy', function (event, item) {
-                    var arnum = $(this).parents('td').attr('arnum')
-                    profile_set(arnum, $(this).val())
-                      .then(function () {
-                                specification_apply()
-                                partition_indicators_set(arnum)
-                            })
-                })
-          .each(function (i, e) {
-                    if ($(e).val()) {
-                        // trigger copy on form load
-                        $(e).trigger('copy')
-                    }
-                })
+        $("tr[fieldname='Profiles'] td[arnum] input[type='text']")
+            .live('selected', function (event, item) {
+                var arnum = $(this).parents('td').attr('arnum');
+                // We'll use this array to get the new added profile
+                var uids_array = $("#Profiles-" + arnum).attr('uid').split(',');
+                template_unset(arnum);
+                profile_set(arnum, uids_array[uids_array.length - 1])
+                    .then(function () {
+                        specification_apply();
+                        partition_indicators_set(arnum)
+                    })
+            })
+            // On copy we have to set all profiles
+            .live('copy', function (event, item) {
+                var arnum = $(this).parents('td').attr('arnum');
+                // We'll use this array to get the ALL profiles
+                var uids_array = $("#Profiles-" + arnum).attr('uid').split(',');
+                template_unset(arnum);
+                for (var i = 0; i < uids_array.length; i++) {
+                    profile_set(arnum, uids_array[i])
+                        .then(function () {
+                            specification_apply();
+                            partition_indicators_set(arnum)
+                        })
+                }
+                recalc_prices(arnum);
+            })
+            .each(function (i, e) {
+                if ($(e).val()) {
+                    // trigger copy on form load
+                    $(e).trigger('copy')
+                }
+            })
     }
 
-    function profile_set(arnum, profile_title) {
+    function profile_set(arnum, profile_uid) {
         /* Set the profile analyses for the AR in this column
-         *  This will clear  analyses in this AR column, and it will
          *  also clear the AR Template field.
          */
-        template_unset(arnum)
-        var d = $.Deferred()
+        var d = $.Deferred();
         var request_data = {
             catalog_name: "bika_setup_catalog",
             portal_type: "AnalysisProfile",
-            title: profile_title
-        }
+            UID: profile_uid
+        };
         bika.lims.jsonapi_read(request_data, function (data) {
-            var profile = data['objects'][0]
+            var profile_objects = data['objects'][0];
             // Set the services from the template into the form
-            uncheck_all_services(arnum)
-            var defs = []
+            var profile = $("div.reference_multi_item[uid='" + profile_objects.UID + "']");
+            var defs = [];
+            var service_data = profile_objects['service_data'];
+            var arprofile_services_uid = [];
+            profile.attr("price", profile_objects['AnalysisProfilePrice']);
+            profile.attr("useprice", profile_objects['UseAnalysisProfilePrice']);
+            profile.attr("VATAmount", profile_objects['VATAmount']);
+            // I'm not sure about unset dry matter, but it was done in 318
+            drymatter_unset(arnum);
+            // Adding the services uids inside the analysis profile div, so we can get its analyses quickly
+            if (service_data.length != 0) {
+                for (var i = 0; i < service_data.length; i++) {
+                    arprofile_services_uid.push(service_data[i].UID);
+                }
+            }
+            profile.attr('services', arprofile_services_uid);
+            // Setting the services checkboxes
             if ($('#singleservice').length > 0) {
-                defs.push(expand_services_singleservice(arnum, profile['service_data']))
+                defs.push(expand_services_singleservice(arnum, service_data))
             }
             else {
-                defs.push(expand_services_bika_listing(arnum, profile['service_data']))
+                defs.push(expand_services_bika_listing(arnum, service_data))
             }
             // Call $.when with all deferreds
             $.when.apply(null, defs).then(function () {
                 d.resolve()
             })
-        })
+        });
         return d.promise()
     }
 
-    function profile_unset(arnum) {
-        var td = $("tr[fieldname='Profile'] td[arnum='" + arnum + "']")
-        $(td).find("input[type='text']").val("").attr("uid", "")
-        $(td).find("input[id$='_uid']").val("")
+    function profiles_unset_all(arnum) {
+        /**
+         * This function remove all the selected analysis profiles
+         */
+        if ($("#Profiles-" + arnum).attr('uid') !== "") {
+            $("#Profiles-" + arnum).attr("price", "");
+            $("#Profiles-" + arnum).attr("services", $.toJSON([]));
+            $("#Profiles-" + arnum + "_uid").val("");
+            // Getting all ar-arnum-Profiles-listing divisions to obtain their analysis services and uncheck them
+            var profiles = $("div#Profiles-" + arnum + "-listing").children();
+            var i;
+            for (i = profiles.length - 1; i >= 0; i--) {
+                unset_profile_analysis_services(profiles[i], arnum)
+            }
+            // Removing all Profiles-arnum-listing divisions
+            profiles.children().remove();
+            recalc_prices(arnum);
+        }
+    }
+
+    function profile_unset_trigger() {
+        /***
+         After deleting an analysis profile we have to uncheck their associated analysis services, so we need to bind
+         the analyses service unseting function. Ever since this binding should be done on the delete image and
+         (that is inserted dynamically), we need to settle the the event on the first ancestor element which doesn't
+         load dynamically
+         */
+        $("div[id^='archetypes-fieldname-Profiles-']")
+            .on('click', "div.reference_multi_item .deletebtn", function () {
+                var profile_object = $(this).parent();
+                var arnum = get_arnum(profile_object);
+                unset_profile_analysis_services(profile_object, arnum);
+                recalc_prices(arnum);
+            });
+    }
+
+    function unset_profile_analysis_services(profile, arnum) {
+        /**
+         * The function unsets the selected analyses services related with the removed analysis profile.
+         * :profile: the profile DOM division
+         * :arnum: the number of the column
+         **/
+        var service_uids = $(profile).attr('services').split(',');
+        var i;
+        for (i = service_uids.length -1; i >=0; i--) {
+            analysis_cb_uncheck(arnum, service_uids[i]);
+        }
     }
 
     function template_selected() {
@@ -970,7 +1045,7 @@ function AnalysisRequestAddByCol() {
                 state_set(arnum, 'Profile', template['AnalysisProfileUID'])
             }
             else {
-                profile_unset(arnum)
+                profiles_unset_all(arnum)
             }
 
             // Set the services from the template into the form
@@ -1041,37 +1116,37 @@ function AnalysisRequestAddByCol() {
          indicators from being set.  This is useful if drymatter is being
          checked during the application of a Template to this column.
          */
-        var dm_service = $("#getDryMatterService")
-        var uid = $(dm_service).val()
-        var cat = $(dm_service).attr("cat")
-        var poc = $(dm_service).attr("poc")
-        var keyword = $(dm_service).attr("keyword")
-        var title = $(dm_service).attr("title")
-        var price = $(dm_service).attr("price")
-        var vatamount = $(dm_service).attr("vatamount")
+        var dm_service = $("#getDryMatterService");
+        var uid = $(dm_service).val();
+        var cat = $(dm_service).attr("cat");
+        var poc = $(dm_service).attr("poc");
+        var keyword = $(dm_service).attr("keyword");
+        var title = $(dm_service).attr("title");
+        var price = $(dm_service).attr("price");
+        var vatamount = $(dm_service).attr("vatamount");
         var element = $("tr[fieldname='ReportDryMatter'] " +
                         "td[arnum='" + arnum + "'] " +
-                        "input[type='checkbox']")
+                        "input[type='checkbox']");
         // set drymatter service IF checkbox is checked
         if ($(element).attr("checked")) {
             var checkbox = $("tr[uid='" + uid + "'] " +
                              "td[class*='ar\\." + arnum + "'] " +
-                             "input[type='checkbox']")
+                             "input[type='checkbox']");
             // singleservice selection gets some added attributes.
             // singleservice_duplicate will apply these to the TR it creates
             if ($("#singleservice").length > 0) {
                 if ($(checkbox).length > 0) {
-                    analysis_cb_check(arnum, uid)
+                    $("#ReportDryMatter-" + arnum).prop("checked", true);
                 }
                 else {
-                    $("#singleservice").attr("uid", uid)
-                    $("#singleservice").attr("keyword", keyword)
-                    $("#singleservice").attr("title", title)
-                    $("#singleservice").attr("price", price)
-                    $("#singleservice").attr("vatamount", vatamount)
+                    $("#singleservice").attr("uid", uid);
+                    $("#singleservice").attr("keyword", keyword);
+                    $("#singleservice").attr("title", title);
+                    $("#singleservice").attr("price", price);
+                    $("#singleservice").attr("vatamount", vatamount);
                     singleservice_duplicate(uid, title, keyword, price,
-                                            vatamount)
-                    analysis_cb_check(arnum, uid)
+                                            vatamount);
+                    $("#ReportDryMatter-" + arnum).prop("checked", true);
                 }
                 state_analyses_push(arnum, uid)
             }
@@ -1079,11 +1154,12 @@ function AnalysisRequestAddByCol() {
             // must be applied manually to each TR.  bika_listing already
             // hacks in a lot of what we need (keyword, uid etc).
             else {
-                analysis_cb_check(arnum, uid)
+                $("#ReportDryMatter-" + arnum).prop("checked", true);
+                state_analyses_push(arnum, uid);
             }
-            deps_calc(arnum, [uid], true, _("Dry Matter"))
-            recalc_prices(arnum)
-            state_set(arnum, 'ReportDryMatter', true)
+            deps_calc(arnum, [uid], true, _("Dry Matter"));
+            recalc_prices(arnum);
+            state_set(arnum, 'ReportDryMatter', true);
             specification_apply()
         }
     }
@@ -1603,7 +1679,7 @@ function AnalysisRequestAddByCol() {
         }
         // Unselecting Dry Matter Service unsets 'Report Dry Matter'
         if (uid == $("#getDryMatterService").val() && !checked) {
-            var dme = $("#ar_" + arnum + "_ReportDryMatter")
+            var dme = $("#ReportDryMatter-" + arnum);
             $(dme).removeAttr("checked")
         }
     }
@@ -1618,11 +1694,38 @@ function AnalysisRequestAddByCol() {
     }
 
     function state_analyses_remove(arnum, uid) {
-        arnum = parseInt(arnum, 10)
-        var analyses = bika.lims.ar_add.state[arnum]['Analyses']
+        // This function removes the analysis services checkbox's uid from the astate's analysis list.
+        arnum = parseInt(arnum, 10);
+        var analyses = bika.lims.ar_add.state[arnum]['Analyses'];
         if (analyses.indexOf(uid) > -1) {
-            analyses.splice(analyses.indexOf(uid), 1)
-            state_set(arnum, 'Analyses', analyses)
+            analyses.splice(analyses.indexOf(uid), 1);
+            state_set(arnum, 'Analyses', analyses);
+            // Ever since this is the last function invoked on the analysis services uncheck process, we'll
+            // remove the analysis profile related with the unset services here.
+                        // Unselecting the related analysis profiles
+            var profiles = $("div#Profiles-" + arnum + "-listing").children();
+            $.each(profiles, function(i, profile) {
+                // If the profile has the attribute services
+                if (typeof $(profile).attr('services') !== typeof undefined && $(profile).attr('services') !== false) {
+                    var service_uids = $(profile).attr('services').split(',');
+                    if ($.inArray(uid, service_uids) != -1) {
+                        var profile_uid = $(profile).attr('uid');
+                        $(profile).remove();
+                        // Removing the profile's uid from the profiles widget
+                        var p = $("#Profiles-" + arnum).attr('uid').split(',');
+                        p = $.grep(p, function(value) {
+                            return value != profile_uid;
+                        });
+                        var i;
+                        var p_str = '';
+                        for (i = p.length - 1; i >= 0; i--) { p_str = p_str + ',' + p[i]}
+                        $("#Profiles-" + arnum).attr('uid', p_str);
+                        $("#Profiles-" + arnum).attr('uid_check', p_str);
+                        $("#Profiles-" + arnum + "_uid").val(p_str);
+                    }
+                }
+            });
+            recalc_prices(arnum);
         }
     }
 
@@ -1988,33 +2091,64 @@ function AnalysisRequestAddByCol() {
     }
 
     function recalc_prices(arnum) {
-        var price = 0.00
-        var subtotal = 0.00
-        var discount_amount = 0.00
-        var vat_amount = 0.00
-        var total = 0.00
-        var discount_pcnt = parseFloat($("#bika_setup").attr("MemberDiscount"), 10)
-        var checked = $("tr[uid] td[class*='ar\\." + arnum + "'] input[type='checkbox']:checked")
+        var ardiscount_amount = 0.00;
+        var arservices_price = 0.00;
+        // Getting all checked analysis services
+        var checked = $("tr[uid] td[class*='ar\\." + arnum + "'] input[type='checkbox']:checked");
+        var member_discount = parseFloat($("#bika_setup").attr("MemberDiscount"));
+        var profiles = $("div#Profiles-" + arnum + "-listing").children();
+        var arprofiles_price = 0.00;
+        var arprofiles_vat_amount = 0.00;
+        var arservice_vat_amount = 0.00;
+        var services_from_priced_profile = [];
+
+        /* ANALYSIS PROFILES PRICE */
+        $.each(profiles, function(i, profile) {
+            // Getting available analysis profiles' prices and vat amounts
+            if ($(profile).attr('useprice') === 'true') {
+                var profile_service_uids = $(profile).attr('services').split(',');
+                var profile_price = parseFloat($(profile).attr('price'));
+                var profile_vat = parseFloat($(profile).attr('VATAmount'));
+                arprofiles_price += profile_price;
+                arprofiles_vat_amount += profile_vat;
+                // We don't want repeated analysis services because of two profiles with the same analysis, so we'll
+                // check if the analysis is contained in the array before adding it
+                $.each(profile_service_uids, function (i, el) {
+                    if($.inArray(el, services_from_priced_profile) === -1) {
+                        services_from_priced_profile.push(el)
+                    }
+                });
+            }
+        });
+        /* ANALYSIS SERVICES PRICE*/
+        // Compute the price for each checked analysis service. We have to look for profiles which have set
+        // "use price" attribute and sum the profile's price to the total instead of using their individual
+        // services prices
         for (var i = 0; i < checked.length; i++) {
-            var cb = checked[i]
-            var form_price = parseFloat($(cb).parents("[price]").attr("price"), 10)
-            var vat_percentage = parseFloat($(cb).parents("[vat_percentage]").attr("vat_percentage"), 10)
-            if ($(cb).prop("checked") && !$(cb).prop("disabled")) {
-                if(discount_pcnt){
-                    price = form_price - ((form_price / 100) * discount_pcnt)
-                    discount_amount += ((form_price / 100) * discount_pcnt)
-                } else {
-                    price = form_price
-                }
-                subtotal += price
-                vat_amount += ((price / 100) * vat_percentage)
+            var cb = checked[i];
+            // For some browsers, checkbox `attr` is undefined; for others, its false. Check for both.
+            if ($(cb).prop("checked")
+                && !$(cb).prop("disabled")
+                && typeof $(cb).prop("disabled") !== "undefined"
+                && services_from_priced_profile.indexOf($(cb).attr('uid')) < 0)
+            {
+                var service_price = parseFloat($(cb).parents("[price]").attr("price"));
+                var service_vat_amount = parseFloat($(cb).parents("[vat_percentage]").attr("vat_percentage"));
+                arservice_vat_amount += service_price * service_vat_amount / 100;
+                arservices_price += service_price;
             }
         }
-        total = (subtotal + vat_amount)
-        $("td[arnum='" + arnum + "'] span.price.discount").html(discount_amount.toFixed(2))
-        $("td[arnum='" + arnum + "'] span.price.subtotal").html(subtotal.toFixed(2))
-        $("td[arnum='" + arnum + "'] span.price.vat").html(vat_amount.toFixed(2))
-        $("td[arnum='" + arnum + "'] span.price.total").html(total.toFixed(2))
+        var base_price = arservices_price + arprofiles_price;
+        if (member_discount) {
+            ardiscount_amount = base_price * member_discount / 100;
+        }
+        var subtotal = base_price - ardiscount_amount;
+        var vat_amount = arprofiles_vat_amount + arservice_vat_amount;
+        var total = subtotal + vat_amount;
+        $("td[arnum='" + arnum + "'] span.price.discount").html(ardiscount_amount.toFixed(2));
+        $("td[arnum='" + arnum + "'] span.price.subtotal").html(subtotal.toFixed(2));
+        $("td[arnum='" + arnum + "'] span.price.vat").html(vat_amount.toFixed(2));
+        $("td[arnum='" + arnum + "'] span.price.total").html(total.toFixed(2));
     }
 
     function set_state_from_form_values() {

@@ -49,6 +49,9 @@ window.bika.lims.controllers =  {
     ".portaltype-analysisservice.template-base_edit":
         ['AnalysisServiceEditView'],
 
+    // Analysis Profile
+    ".portaltype-analysisprofile.template-base_edit":
+        ['AnalysisProfileEditView'],
 
     // Instruments
     ".portaltype-instrument.template-referenceanalyses":

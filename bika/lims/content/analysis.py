@@ -684,7 +684,16 @@ class Analysis(BaseContent):
             if hasattr(self.aq_parent, 'getPriority') else None
 
     def getPrice(self):
-        price = self.getService().getPrice()
+        """
+        The function obtains the analysis' price without VAT and without member discount
+        :return: the price (without VAT or Member Discount) in decimal format
+        """
+        analysis_request = self.aq_parent
+        client = analysis_request.aq_parent
+        if client.getBulkDiscount():
+            price = self.getService().getBulkPrice()
+        else:
+            price = self.getService().getPrice()
         priority = self.getPriority()
         if priority and priority.getPricePremium() > 0:
             price = Decimal(price) + (
@@ -693,11 +702,20 @@ class Analysis(BaseContent):
         return price
 
     def getVATAmount(self):
+        """
+        Compute the VAT amount without member discount.
+        :return: the result as a float
+        """
         vat = self.getService().getVAT()
         price = self.getPrice()
         return float(price) * float(vat) / 100
 
     def getTotalPrice(self):
+        """
+        Obtain the total price without client's member discount. The function keeps in mind the
+        client's bulk discount.
+        :return: the result as a float
+        """
         return float(self.getPrice()) + float(self.getVATAmount())
 
     def isInstrumentValid(self):

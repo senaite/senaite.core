@@ -2,6 +2,7 @@
 ------------------
 LIMS-1943: Stickers preview and custom stickers templates support
 LIMS-1855: Small Sticker layout. QR-code capabilities
+LIMS-1627: Pricing per Analysis Profile
 HEALTH-279: AS IDs to be near top of page. Columns in AS list
 LIMS-1625: Instrument tab titles and headers do not correspond
 LIMS-1924: Instrument tab very miss-titled. Internal Calibration Tests

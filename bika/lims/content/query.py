@@ -128,7 +128,7 @@ class Query(Collection):
             ('getDatePublished', _('Date Published')),
             ('getDateReceived', _('Date Received')),
             ('getDateSampled', _('Date Sampled')),
-            ('getProfileTitle', _('Analysis Profile')),
+            ('getProfilesTitle', _('Analysis Profiles')),
             ('getRequestID', _('Request ID')),
             ('getSampleID', _('Sample ID')),
             ('getSamplePointTitle', _('Sample Point')),
