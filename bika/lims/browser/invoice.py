@@ -35,6 +35,7 @@ class InvoiceView(BrowserView):
         self.batchRange = "%s to %s" % (start, end)
         # Gather client data
         self.clientName = client.Title()
+        self.clientURL = client.absolute_url()
         self.clientPhone = client.getPhone()
         self.clientFax = client.getFax()
         self.clientEmail = client.getEmailAddress()
@@ -60,6 +61,7 @@ class InvoiceView(BrowserView):
             'invoiceDate': self.ulocalized_time(item['ItemDate']),
             'description': item['ItemDescription'],
             'orderNo': item['OrderNumber'],
+            'orderNoURL': item['AnalysisRequest'].absolute_url(),
             'subtotal': item['Subtotal'],
             'VATAmount': item['VATAmount'],
             'total': item['Total'],
