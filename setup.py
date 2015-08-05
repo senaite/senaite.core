@@ -69,6 +69,8 @@ setup(name='bika.lims',
               'plone.app.robotframework',
               'Products.PloneTestCase',
               'robotframework-debuglibrary',
+              'plone.resource',
+              'plone.app.textfield',
           ]
       },
       entry_points="""

@@ -26,14 +26,14 @@ Simple AR Creation
 
 I set profile ${profile-id} price to ${profile-price} and set client ${client-id} bulk discount
     [Documentation]  Set a price for the profile
-    go to  ${PLONEURL}/bika_setup/bika_analysisprofiles/${profile-1}
-    click element  id=fieldsetlegend-accounting
+    go to  ${PLONEURL}/bika_setup/bika_analysisprofiles/${profile-id}
+    click link  id=fieldsetlegend-accounting
     select checkbox  id=UseAnalysisProfilePrice
-    input text  id=AnalysisProfilePrice  200
-    click on  Save
+    input text  id=AnalysisProfilePrice  ${profile-price}
+    click button  Save
     go to  ${PLONEURL}/clients/${client-id}/base_edit
     select checkbox  id=BulkDiscount
-    click on  Save
+    click button  Save
 
 # --- Given ------------------------------------------------------------------
 

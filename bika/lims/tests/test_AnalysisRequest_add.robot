@@ -20,28 +20,28 @@ Test price calculation when Template is selected
    When I select Borehole 12 Hardness from the Template combogrid in column 0
    Then price value for discount is 3.00 in column 0
     and price value for subtotal is 17.00 in column 0
-    and price value for vat is 2.38 in column 0
-    and price value for total is 19.38 in column 0
+    and price value for vat is 2.80 in column 0
+    and price value for total is 19.80 in column 0
    When I click the copy button for the Template field
    Then price value for discount is 3.00 in column 1
     and price value for subtotal is 17.00 in column 1
-    and price value for vat is 2.38 in column 1
-    and price value for total is 19.38 in column 1
+    and price value for vat is 2.80 in column 1
+    and price value for total is 19.80 in column 1
     and price value for discount is 3.00 in column 2
     and price value for subtotal is 17.00 in column 2
-    and price value for vat is 2.38 in column 2
-    and price value for total is 19.38 in column 2
+    and price value for vat is 2.80 in column 2
+    and price value for total is 19.80 in column 2
 
 Test price calculation when Profile is selected
   Enable autologin as  LabClerk
   Given an ar add form in client-1 with columns layout and 3 ars
-   When I select Trace Metals from the Profile combogrid in column 0
-   When I select Micro-Bio check from the Profile combogrid in column 0
+   When I select Trace Metals from the Profiles combogrid in column 0
+   When I select Micro-Bio check from the Profiles combogrid in column 0
    Then price value for discount is 18.00 in column 0
     and price value for subtotal is 102.00 in column 0
     and price value for vat is 16.80 in column 0
     and price value for total is 118.80 in column 0
-   When I click the copy button for the Profile field
+   When I click the copy button for the Profiles field
    Then price value for discount is 18.00 in column 1
     and price value for subtotal is 102.00 in column 1
     and price value for vat is 16.80 in column 1
@@ -52,18 +52,18 @@ Test price calculation when Profile is selected
     and price value for total is 118.80 in column 2
 
 Test price calculation when Profile is selected and has its own price
-  Enable autologin as  LabClerk
+  Enable autologin as  LabManager
   I set profile analysisprofile-1 price to 200 and set client client-1 bulk discount
   Given an ar add form in client-1 with columns layout and 3 ars
-   When I select Trace Metals from the Profile combogrid in column 0
+   When I select Trace Metals from the Profiles combogrid in column 0
    Then price value for discount is 30.00 in column 0
     and price value for subtotal is 170.00 in column 0
     and price value for vat is 0.00 in column 0
     and price value for total is 170.00 in column 0
-   When unselect the Copper service in column 0
+   When I unselect the Copper service in column 0
    Then price value for discount is 7.88 in column 0
     and price value for subtotal is 44.63 in column 0
-    and price value for vat is 7.53 in column 0
+    and price value for vat is 7.35 in column 0
     and price value for total is 51.98 in column 0
 
 Test price calculation when services are manually selected
@@ -74,8 +74,8 @@ Test price calculation when services are manually selected
     and I select the Copper service in column 0
    Then price value for discount is 3.00 in column 0
     and price value for subtotal is 17.00 in column 0
-    and price value for vat is 2.38 in column 0
-    and price value for total is 19.38 in column 0
+    and price value for vat is 2.80 in column 0
+    and price value for total is 19.80 in column 0
 
 Copy-Across button for various fields/types
   Enable autologin as  LabClerk
