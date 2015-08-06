@@ -395,6 +395,8 @@ class ajaxAnalysisRequestSubmit():
                     required.remove('SamplingDate')
                 if 'SampleType' in required:
                     required.remove('SampleType')
+            # RequestID is compulsory, but it'll be filled after AnalysisRequest object creation
+            required.remove('RequestID')
             # fields flagged as 'hidden' are not considered required because
             # they will already have default values inserted in them
             for fieldname in required:
