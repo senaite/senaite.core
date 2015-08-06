@@ -44,6 +44,7 @@ def multipleAnalysisProfiles(portal):
         bc.addColumn('getProfilesTitle')
     # Moving from profile to profiles
     ars = bc(portal_type="AnalysisRequest")
-    for ar in ars:
+    for ar_brain in ars:
+        ar = ar_brain.getObject()
         if not ar.getProfiles():
             ar.setProfiles(ar.getProfile())
