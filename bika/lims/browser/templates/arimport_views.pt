@@ -38,10 +38,10 @@
                 <span tal:condition="contact"
                       tal:content="contact/Title">JonesJJ</span>
             </td>
-            <td i18n:translate="label_contactid"
-                tal:attributes="colspan python:left_col">Contact ID</td>
+            <td i18n:translate=""
+                tal:attributes="colspan python:left_col">Batch</td>
             <td class="right" tal:attributes="colspan python:right_col"
-                tal:content="context/getContactID">JonesJJ</td>
+                tal:content="python:context.getBatch().Title() if context.getBatch() else ''">batch-1</td>
         </tr>
 
         <tr class="odd" tal:define="cccontact context/getCCContact | nothing;">

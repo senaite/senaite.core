@@ -245,6 +245,11 @@ schema = BikaSchema.copy() + Schema((
             showOn=True,
         ),
     ),
+    ReferenceField(
+        'Batch',
+        allowed_types=('Batch',),
+        relationship='ARImportBatch',
+    ),
 ),
 )
 
@@ -411,6 +416,7 @@ class ARImport(BaseFolder):
                 ReportDryMatter = report_dry_matter,
                 Analyses = analyses,
                 Priority = priorities[0].getObject(),
+                Batch = self.getBatch(),
                 )
             ar.setSample(sample_uid)
             sample = ar.getSample()
@@ -613,6 +619,7 @@ class ARImport(BaseFolder):
                 Analyses = analyses,
                 Remarks = aritem.getClientRemarks(),
                 Priority = priority,
+                Batch = self.getBatch()
                 )
             ar.setSample(sample_uid)
             sample = ar.getSample()
