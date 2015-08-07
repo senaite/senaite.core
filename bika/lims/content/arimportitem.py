@@ -39,6 +39,11 @@ schema = BikaSchema.copy() + Schema((
             label = _("Sample Type"),
         )
     ),
+    StringField('SamplePoint',
+        widget = StringWidget(
+            label = _("Sample Point"),
+        )
+    ),
     StringField('SampleDate',
         widget = StringWidget(
             label = _("Sample Date"),

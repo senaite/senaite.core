@@ -3,6 +3,7 @@ def contentmenu_factories_available(self):
     """
     if hasattr(self._addContext(), 'portal_type') \
     and self._addContext().portal_type in [
+        'ARImport',
         'Batch',
         'Client',
         'AnalysisRequest',
