@@ -12,6 +12,7 @@ from bika.lims.interfaces import IBikaSetup
 from bika.lims.interfaces import IHaveNoBreadCrumbs
 from bika.lims.browser.widgets import DurationWidget
 from bika.lims.browser.fields import DurationField
+from bika.lims.vocabularies import getStickerTemplates as _getStickerTemplates
 from plone.app.folder import folder
 from zope.interface import implements
 from plone.resource.utils import iterDirectoriesOfType, queryResourceDirectory
@@ -23,18 +24,26 @@ class PrefixesField(RecordsField):
     _properties = RecordsField._properties.copy()
     _properties.update({
         'type' : 'prefixes',
-        'subfields' : ('portal_type', 'prefix', 'padding'),
+        'subfields' : ('portal_type', 'prefix', 'separator', 'padding', 'sequence_start'),
         'subfield_labels':{'portal_type': 'Portal type',
                            'prefix': 'Prefix',
+                           'separator': 'Prefix Separator',
                            'padding': 'Padding',
+                           'sequence_start': 'Sequence Start',
                            },
         'subfield_readonly':{'portal_type': False,
                              'prefix': False,
                              'padding': False,
+                             'separator': False,
+                             'sequence_start': False,
                             },
         'subfield_sizes':{'portal_type':32,
                           'prefix': 12,
-                          'padding':12},
+                          'padding':12,
+                          'separator': 5,
+                          'sequence_start': 12,
+                          },
+        'subfield_types':{'padding':'int', 'sequence_start': 'int'},
     })
     security = ClassSecurityInfo()
 
@@ -43,7 +52,6 @@ STICKER_AUTO_OPTIONS = DisplayList((
     ('register', _('Register')),
     ('receive', _('Receive')),
 ))
-
 
 schema = BikaFolderSchema.copy() + Schema((
     IntegerField('PasswordLifetime',
@@ -80,7 +88,7 @@ schema = BikaFolderSchema.copy() + Schema((
         default=True,
         widget=BooleanWidget(
             label=_("Allow access to worksheets only to assigned analysts"),
-            description=_("If unticked, analysts will have access to all worksheets.")
+            description=_("If unchecked, analysts will have access to all worksheets.")
         )
     ),
     BooleanField(
@@ -89,11 +97,11 @@ schema = BikaFolderSchema.copy() + Schema((
         default=True,
         widget=BooleanWidget(
             label=_("Only lab managers can create and manage worksheets"),
-            description=_("If unticked, analysts and lab clerks will "
+            description=_("If unchecked, analysts and lab clerks will "
                           "be able to manage Worksheets, too. If the "
                           "users have restricted access only to those "
                           "worksheets for which they are assigned, "
-                          "this option will be ticked and readonly.")
+                          "this option will be checked and readonly.")
         )
     ),
     BooleanField(
@@ -415,19 +423,39 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_("Select which sticker to print when automatic sticker printing is enabled"),
         )
     ),
+    StringField('SmallStickerTemplate',
+        schemata = "Stickers",
+        vocabulary = "getStickerTemplates",
+        default = "Code_128_1x48mm.pt",
+        widget = SelectionWidget(
+            format = 'select',
+            label = _("Small sticker"),
+            description = _("Select which sticker should be used as the 'small' sticker by default")
+        )
+    ),
+    StringField('LargeStickerTemplate',
+        schemata = "Stickers",
+        vocabulary = "getStickerTemplates",
+        default = "Code_128_1x72mm.pt",
+        widget = SelectionWidget(
+            format = 'select',
+            label = _("Large sticker"),
+            description = _("Select which sticker should be used as the 'large' sticker by default")
+        )
+    ),
     PrefixesField('Prefixes',
         schemata = "ID Server",
-        default = [{'portal_type': 'ARImport', 'prefix': 'AI', 'padding': '4'},
-                   {'portal_type': 'AnalysisRequest', 'prefix': 'client', 'padding': '0'},
-                   {'portal_type': 'Client', 'prefix': 'client', 'padding': '0'},
-                   {'portal_type': 'Batch', 'prefix': 'batch', 'padding': '0'},
-                   {'portal_type': 'DuplicateAnalysis', 'prefix': 'DA', 'padding': '0'},
-                   {'portal_type': 'Invoice', 'prefix': 'I', 'padding': '4'},
-                   {'portal_type': 'ReferenceAnalysis', 'prefix': 'RA', 'padding': '4'},
-                   {'portal_type': 'ReferenceSample', 'prefix': 'RS', 'padding': '4'},
-                   {'portal_type': 'SupplyOrder', 'prefix': 'O', 'padding': '3'},
-                   {'portal_type': 'Worksheet', 'prefix': 'WS', 'padding': '4'},
-                   {'portal_type': 'Pricelist', 'prefix': 'PL', 'padding': '4'},
+        default = [{'portal_type': 'ARImport', 'prefix': 'AI', 'padding': '4', 'separator': '-', 'sequence_start': '0'},
+                   {'portal_type': 'AnalysisRequest', 'prefix': 'client', 'padding': '0', 'separator': '-', 'sequence_start': '0'},
+                   {'portal_type': 'Client', 'prefix': 'client', 'padding': '0', 'separator': '-', 'sequence_start': '0'},
+                   {'portal_type': 'Batch', 'prefix': 'batch', 'padding': '0', 'separator': '-', 'sequence_start': '0'},
+                   {'portal_type': 'DuplicateAnalysis', 'prefix': 'DA', 'padding': '0', 'separator': '-', 'sequence_start': '0'},
+                   {'portal_type': 'Invoice', 'prefix': 'I', 'padding': '4', 'separator': '-', 'sequence_start': '0'},
+                   {'portal_type': 'ReferenceAnalysis', 'prefix': 'RA', 'padding': '4', 'separator': '-', 'sequence_start': '0'},
+                   {'portal_type': 'ReferenceSample', 'prefix': 'RS', 'padding': '4', 'separator': '-', 'sequence_start': '0'},
+                   {'portal_type': 'SupplyOrder', 'prefix': 'O', 'padding': '3', 'separator': '-', 'sequence_start': '0'},
+                   {'portal_type': 'Worksheet', 'prefix': 'WS', 'padding': '4', 'separator': '-', 'sequence_start': '0'},
+                   {'portal_type': 'Pricelist', 'prefix': 'PL', 'padding': '4', 'separator': '-', 'sequence_start': '0'},
                    ],
 #        fixedSize=8,
         widget=RecordsWidget(
@@ -436,7 +464,10 @@ schema = BikaFolderSchema.copy() + Schema((
                 "Define the prefixes for the unique sequential IDs the system issues for "
                 "objects. In the 'Padding' field, indicate with how many leading zeros the "
                 "numbers must be padded. E.g. a prefix of WS for worksheets with padding of "
-                "4, will see them numbered from WS-0001 to WS-9999. NB: Note that samples "
+                "4, will see them numbered from WS-0001 to WS-9999. Sequence Start "
+                "indicates the number from which the next ID should start. This is "
+                "set only if it is greater than existing id numbers. Note that the "
+                "gap created by jumping IDs cannot be refilled. NB: Note that samples "
                 "and analysis requests are prefixed with sample type abbreviations and are "
                 "not configured in this table - their padding can be set in the specified "
                 "fields below"),
@@ -458,6 +489,19 @@ schema = BikaFolderSchema.copy() + Schema((
         widget = IntegerWidget(
             label=_("Sample ID Padding"),
             description=_("The length of the zero-padding for Sample IDs"),
+        )
+    ),
+    IntegerField('SampleIDSequenceStart',
+        schemata = "ID Server",
+        required = 1,
+        default = 0,
+        widget = IntegerWidget(
+            label=_("Sample ID Sequence Start"),
+            description=_(
+                "The number from which the next id should start. This "
+                "is set only if it is greater than existing id numbers. "
+                "Note that the resultant gap between IDs cannot be filled."
+                ),
         )
     ),
     IntegerField('ARIDPadding',
@@ -509,13 +553,7 @@ class BikaSetup(folder.ATFolder):
 
     def getStickerTemplates(self):
         """ get the sticker templates """
-        out = []
-        for stickers_resource in iterDirectoriesOfType('stickers'):
-            prefix = stickers_resource.__name__
-            stickers = [stk for stk in stickers_resource.listDirectory() if stk.endswith('.pt')]
-            for sticker in stickers:
-                name ='%s:%s' %(prefix,sticker)
-                out.append([name, name])
+        out = [[t['id'], t['title']] for t in _getStickerTemplates()]
         return DisplayList(out)
 
     def getARAttachmentsPermitted(self):

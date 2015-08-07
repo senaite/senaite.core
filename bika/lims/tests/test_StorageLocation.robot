@@ -1,15 +1,19 @@
 *** Settings ***
 
-Library          Selenium2Library  timeout=5  implicit_wait=0.2
-Library          String
-Resource         keywords.txt
-Library          bika.lims.testing.Keywords
-Resource         plone/app/robotframework/selenium.robot
-Resource         plone/app/robotframework/saucelabs.robot
-Variables        plone/app/testing/interfaces.py
-Variables        bika/lims/tests/variables.py
-Suite Setup      Start browser
-Suite Teardown   Close All Browsers
+Library         BuiltIn
+Library         Selenium2Library  timeout=5  implicit_wait=0.2
+Library         String
+Resource        keywords.txt
+Library         bika.lims.testing.Keywords
+Resource        plone/app/robotframework/selenium.robot
+Library         Remote  ${PLONEURL}/RobotRemote
+Variables       plone/app/testing/interfaces.py
+Variables       bika/lims/tests/variables.py
+
+Suite Setup     Start browser
+Suite Teardown  Close All Browsers
+
+Library          DebugLibrary
 
 *** Variables ***
 
@@ -20,17 +24,12 @@ ${SHELF} =          S2
 *** Test Cases ***
 
 Test Storage Location
-    Log in                      test_labmanager  test_labmanager
-
+    Enable autologin as  LabManager
     Check Bika Setup imported correctly
     Create Setup Location
     Check AR Creation
 
 *** Keywords ***
-
-Start browser
-    Open browser                ${PLONEURL}/login
-    Set selenium speed          ${SELENIUM_SPEED}
 
 Check Bika Setup imported correctly
     Go to                       ${PLONEURL}/bika_setup/bika_storagelocations
@@ -64,7 +63,6 @@ Create Location
     Wait until page contains    Changes saved.
 
 Check AR Creation
-    Go to                       ${PLONEURL}/clients/client-1
     ${ar_id}=                   Create AR
     Go to                       ${PLONEURL}/clients/client-1/${ar_id}
     Textfield Value Should Be   StorageLocation   ${SITE}.${UNIT}.${SHELF}    Storage location field is not set correctly
@@ -72,27 +70,23 @@ Check AR Creation
     Textfield Value Should Be   StorageLocation   ${SITE}.${UNIT}.${SHELF}    Storage location field is not set correctly
 
 Create AR
-    Click Link                  link=Add
-    Wait until page contains    Request new analyses
-    @{time} =                   Get Time        year month day hour min sec
-    Select from dropdown        ar_0_Contact       Rita
-    SelectDate                  ar_0_SamplingDate   @{time}[2]
-    Select From Dropdown        ar_0_SampleType    Water
-    Select from dropdown        ar_0_StorageLocation  ${SITE}.${UNIT}.${SHELF}
-    Click Element               xpath=//th[@id='cat_lab_Water Chemistry']
-    Select Checkbox             xpath=//input[@title='Moisture' and @name='ar.0.Analyses:list:ignore_empty:record']
-    Click Element               xpath=//th[@id='cat_lab_Metals']
-    Select Checkbox             xpath=//input[@title='Calcium' and @name='ar.0.Analyses:list:ignore_empty:record']
-    Select Checkbox             xpath=//input[@title='Phosphorus' and @name='ar.0.Analyses:list:ignore_empty:record']
-    Click Element               xpath=//th[@id='cat_lab_Microbiology']
-    Select Checkbox             xpath=//input[@title='Clostridia' and @name='ar.0.Analyses:list:ignore_empty:record']
-    Select Checkbox             xpath=//input[@title='Ecoli' and @name='ar.0.Analyses:list:ignore_empty:record']
-    Select Checkbox             xpath=//input[@title='Enterococcus' and @name='ar.0.Analyses:list:ignore_empty:record']
-    Select Checkbox             xpath=//input[@title='Salmonella' and @name='ar.0.Analyses:list:ignore_empty:record']
-    Set Selenium Timeout        30
-    Click Button                Save
-    Wait until page contains    created
-    Set Selenium Timeout        10
-    ${ar_id} =                  Get text      //dl[contains(@class, 'portalMessage')][2]/dd
-    ${ar_id} =                  Set Variable  ${ar_id.split()[2]}
-    [return]                    ${ar_id}
+    given an ar add form in client-1 with columns layout and 1 ars
+    I select Rita from the Contact combogrid in column 0
+    I select Water from the SampleType combogrid in column 0
+    I select ${SITE}.${UNIT}.${SHELF} from the StorageLocation combogrid in column 0
+    Select Date   SamplingDate-0  1
+    I expand the lab Water Chemistry category
+    I select the Moisture service in column 0
+    I expand the lab Metals category
+    I select the Calcium service in column 0
+    I select the Phosphorus service in column 0
+    I expand the lab Microbiology category
+    I select the Clostridia service in column 0
+    I select the Ecoli service in column 0
+    I select the Enterococcus service in column 0
+    I select the Salmonella service in column 0
+    Click button  Save
+    wait until page contains element  xpath=.//dd[contains(text(), 'created')]
+    ${dd_text} =  Get text  xpath=.//dd[contains(text(), 'created')]
+    ${ar_id} =  Set Variable  ${dd_text.split()[2]}
+    [return]  ${ar_id}

@@ -1,21 +1,27 @@
 *** Settings ***
-Documentation    Tests related with AnalysisRequestView only.
-Library          Selenium2Library  timeout=5  implicit_wait=0.2
-Library          String
-Resource         keywords.txt
-Library          bika.lims.testing.Keywords
-Resource         plone/app/robotframework/selenium.robot
-Resource         plone/app/robotframework/saucelabs.robot
-Variables        plone/app/testing/interfaces.py
-Variables        bika/lims/tests/variables.py
-Suite Setup      Start browser
-Suite Teardown   Close All Browsers
+
+Library         BuiltIn
+Library         Selenium2Library  timeout=5  implicit_wait=0.2
+Library         String
+Resource        keywords.txt
+Library         bika.lims.testing.Keywords
+Resource        plone/app/robotframework/selenium.robot
+Library         Remote  ${PLONEURL}/RobotRemote
+Variables       plone/app/testing/interfaces.py
+Variables       bika/lims/tests/variables.py
+
+Suite Setup     Start browser
+Suite Teardown  Close All Browsers
+
+Library          DebugLibrary
 
 *** Test Cases ***
 Test CCContacts dropdown filter by client
     [Documentation]  This test checks if the CCContacts dropdown list
     ...  is filtred by client.
-    ${ARId}=  Simple AR Creation  Happy Hills  Rita  Barley  Metals  Calcium
+    Log in                              test_labmanager         test_labmanager
+    Wait until page contains            You are now logged in
+    ${ARId}=  Simple AR Creation  client-1  Rita  Barley  Metals  Calcium
     # Create a contact in an other client.
     Create a contact  Klaymore  Moist Von  LipWig
     # Check if you can select a Contact from another client.
@@ -26,10 +32,12 @@ Test CCContacts dropdown filter by client
     page should contain  Seemonster
 
 Test autosave feature
+    Log in                              test_labmanager         test_labmanager
+    Wait until page contains            You are now logged in
     [Documentation]  It ckhecks the correct functionament of autosaving feature.
     # Enable sampling workflow to test all possibilities
     Enable Sampling Workflow
-    ${ARId}=  Simple AR Creation  Happy Hills  Rita  Barley  Metals  Calcium
+    ${ARId}=  Simple AR Creation  client-1  Rita  Barley  Metals  Calcium
     Go to             ${PLONEURL}/clients/client-1/analysisrequests
     click link        ${ARId}
     # Testing checkboxes
@@ -66,11 +74,6 @@ Test autosave feature
 
 
 *** Keywords ***
-Start browser
-    Open browser                        ${PLONEURL}/login_form
-    Log in                              test_labmanager         test_labmanager
-    Wait until page contains            You are now logged in
-    Set selenium speed                  ${SELENIUM_SPEED}
 
 Provided precondition
     Setup system under test

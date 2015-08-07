@@ -1,24 +1,62 @@
 *** Settings ***
 
-Library          Selenium2Library  timeout=5  implicit_wait=0.2
-Library          String
-Resource         keywords.txt
-Library          bika.lims.testing.Keywords
-Resource         plone/app/robotframework/selenium.robot
-Resource         plone/app/robotframework/saucelabs.robot
-Variables        plone/app/testing/interfaces.py
-Variables        bika/lims/tests/variables.py
-Suite Setup      Start browser
-Suite Teardown   Close All Browsers
+Library         BuiltIn
+Library         Selenium2Library  timeout=5  implicit_wait=0.2
+Library         String
+Resource        keywords.txt
+Library         bika.lims.testing.Keywords
+Resource        plone/app/robotframework/selenium.robot
+Library         Remote  ${PLONEURL}/RobotRemote
+Variables       plone/app/testing/interfaces.py
+Variables       bika/lims/tests/variables.py
+
+Suite Setup     Start browser
+Suite Teardown  Close All Browsers
+
+Library          DebugLibrary
 
 *** Variables ***
 
 ${ar_factory_url}  portal_factory/AnalysisRequest/xxx/ar_add
 
 *** Test Cases ***
+Analysis request with sequence_start in Bika Setup
+    Enable autologin as  LabManager
+    Set sequence start                  85
+    Create Simple AR
+    Page Should Contain                 BAR-0085
+    Create Simple AR
+    Page Should Contain                 BAR-0086
+
+Check Analysis Requests listing view
+    Enable autologin as  LabManager
+    Create Simple AR
+    Open context menu           xpath=.//th[@id="foldercontents-getSample-column"]
+    Click element               xpath=.//tr[@col_id="AdHoc"]
+    Click link                  sample_due
+    Open context menu           xpath=.//th[@id="foldercontents-getSample-column"]
+    Click element               xpath=.//tr[@col_id="AdHoc"]
+    Click link                  default
+    Open context menu           xpath=.//th[@id="foldercontents-getSample-column"]
+    Click element               xpath=.//tr[@col_id="AdHoc"]
+    Click link                  sample_due
+    Open context menu           xpath=.//th[@id="foldercontents-getSample-column"]
+    Click element               xpath=.//tr[@col_id="AdHoc"]
+
+Check CCContacts widget basic functionality
+    Enable autologin as  LabManager
+    @{time} =                   Get Time        year month day hour min sec
+    Go to                       ${PLONEURL}/clients/client-1
+    Wait until page contains element    css=body.portaltype-client
+    Click Link                  Add
+    Wait until page contains    Request new analyses
+    Select from dropdown        ar_0_CCContact                Rita
+    Element Should Contain      ar_0_CCContact-listing        Rita
 
 Check that the editable SamplePoint widget in AnalysisRequestView shows both Client and Lab items
     # Create a new Client/SamplePoint
+    Enable autologin as  LabManager
+    Set up Auto print stickers
     go to                        ${PLONEURL}/clients/client-1/portal_factory/SamplePoint/xxx/edit
     input text                   title                             Pringle Bay Beach
     click button                 Save
@@ -44,6 +82,7 @@ Check that the editable SamplePoint widget in AnalysisRequestView shows both Cli
 
 Check the AR Add javascript
    # check that the Contact CC auto-fills correctly when a contact is selected
+    Enable autologin as  LabManager
     Go to                     ${PLONEURL}/clients/client-1
     Wait until page contains  Happy
     Click Link                Add
@@ -70,31 +109,35 @@ Check the AR Add javascript
 # XXX copy across in all fields
 
 Analysis Request with no sampling or preservation workflow
-
+    Enable autologin as  LabManager
+    Set autologin username  test_labmanager
     Go to                     ${PLONEURL}/clients/client-1
     Click Link                Add
     ${ar_id}=                 Complete ar_add form with template Bore
     Go to                     ${PLONEURL}/clients/client-1/analysisrequests
     Execute transition receive on items in form_id analysisrequests
-    Log out
-    Log in                    test_analyst    test_analyst
+    Disable autologin
+    Enable autologin as  Analyst
     Go to                     ${PLONEURL}/clients/client-1/${ar_id}/manage_results
     Submit results with out of range tests
-    Log out
-    Log in                    test_labmanager1    test_labmanager1
+    Disable autologin
+    Enable autologin as  LabManager
+    Set autologin username  test_labmanager1
     Go to                     ${PLONEURL}/clients/client-1/${ar_id}/manage_results
     Add new Copper analysis to ${ar_id}
     ${ar_id} state should be sample_received
     Go to                     ${PLONEURL}/clients/client-1/${ar_id}/base_view
     Execute transition verify on items in form_id lab_analyses
-#    Log out
-#    Log in                    test_labmanager1    test_labmanager1
+#    Disable autologin
+#    Enable autologin as  LabManager
 # There is no "retract" transition on verified analyses - but there should/will be.
 # Go to                     ${PLONEURL}/clients/client-1/${ar_id}/base_view
 # Execute transition retract on items in form_id lab_analyses
 
 
 Create two different ARs from the same sample.
+    Enable autologin as  LabManager
+    Set up Auto print stickers
     Create AR in client-1 with contact Rita
     Create Secondary AR
     In a client context, only allow selecting samples from that client.
@@ -104,7 +147,8 @@ AR with sampling workflow actived and preservation workflow desactived
     ...  enabled, but without preserving the sample. This is the correct
     ...  workflow, but more things should be tested, like transitions from
     ...  button (both, SamplePartition and Analysis), etc
-
+    Enable autologin as  LabManager
+    Set autologin username  test_labmanager
     Enable Sampling Workflow
     ${ar_id}=           Create Simple AR
     Click Link          ${ar_id}
@@ -112,13 +156,13 @@ AR with sampling workflow actived and preservation workflow desactived
     Save a Sampler and DateSampled on AR
     Execute transition sample inside ClientARView/ManageResults
     Execute transition receive inside ClientARView/ManageResults
-    Log out
-    Log in              test_analyst    test_analyst
+    Disable autologin
+    Enable autologin as  Analyst
     Go to               ${PLONEURL}/clients/client-1/${ar_id}/manage_results
     Submit results with out of range tests
-    Log out
-    Log in              test_labmanager    test_labmanager
-    Go to               ${PLONEURL}/clients/client-1/${ar_id}/manage_results
+    Disable autologin
+    Enable autologin as  LabManager
+    Set autologin username  test_labmanager1
     Execute transition verify inside ClientARView/ManageResults
 
 AR with sampling workflow actived and preservation workflow actived
@@ -126,7 +170,7 @@ AR with sampling workflow actived and preservation workflow actived
     ...  enabled and with preserving the sample. This is the correct
     ...  workflow, but more things should be tested, like transitions from
     ...  button (both, SamplePartition and Analysis), etc
-
+    Enable autologin as  LabManager
     Enable Sampling Workflow
     ${ar_id}=           Create Simple AR
     Click Link          ${ar_id}
@@ -141,23 +185,16 @@ AR with sampling workflow actived and preservation workflow actived
     Click Button        id=preserve_transition
     Page Should Contain      is waiting to be received.
     Execute transition receive inside ClientARView/ManageResults
-    Log out
-    Log in              test_analyst    test_analyst
+    Disable autologin
+    Enable autologin as   Analyst
     Go to               ${PLONEURL}/clients/client-1/${ar_id}/manage_results
     Submit results with out of range tests
-    Log out
-    Log in              test_labmanager    test_labmanager
+    Disable autologin
+    Enable autologin as   LabManager
     Go to               ${PLONEURL}/clients/client-1/${ar_id}/manage_results
     Execute transition verify inside ClientARView/ManageResults
 
-
 *** Keywords ***
-
-Start browser
-    Open browser                        ${PLONEURL}/login_form
-    Log in                              test_labmanager         test_labmanager
-    Wait until page contains            You are now logged in
-    Set selenium speed                  ${SELENIUM_SPEED}
 
 Create AR in ${client_id} with contact ${contact}
     @{time} =                   Get Time        year month day hour min sec
@@ -204,7 +241,7 @@ Create Simple AR
     [Return]    ${ar_id}
 
 Create Secondary AR
-    Log in                      test_labmanager  test_labmanager
+    Enable autologin as  LabManager
     @{time} =                   Get Time        year month day hour min sec
     Go to                       ${PLONEURL}/clients/client-1
     Wait until page contains element    css=body.portaltype-client
@@ -222,7 +259,7 @@ Create Secondary AR
     [return]                    ${ar_id}
 
 In a client context, only allow selecting samples from that client.
-    Log in                      test_labmanager  test_labmanager
+    Enable autologin as  LabManager
     @{time} =                   Get Time        year month day hour min sec
     Go to                       ${PLONEURL}/clients/client-2
     Wait until page contains element    css=body.portaltype-client
@@ -346,3 +383,17 @@ Define container ${container} and preservation ${preservation} from Sample Parti
     Select From List    //span[2]/select    ${container}
     Select From List    //td[4]/span[2]/select    ${preservation}
     Click Button        save_partitions_button_transition
+
+Set up Auto print stickers
+    Go to                               ${PLONEURL}/bika_setup/edit
+    Click link                          Stickers
+    Select From List By Value           AutoPrintStickers   None
+    Click Button                        Save
+
+Set sequence start
+    [Arguments]   ${sequence_start}
+    Go to                               http://localhost:55001/plone/bika_setup/edit
+    Click link                          Id server
+    Input text                          xpath=//input[@id='SampleIDSequenceStart']   ${sequence_start}
+    Click Button                        Save
+    Wait Until Page Contains            Changes saved

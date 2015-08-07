@@ -142,20 +142,24 @@ function AnalysisRequestViewView() {
     }
 
     function resultsinterpretation_move_below(){
-        //Remove non needed buttons from richwidget, timeout is needed because that widget is rendered quite late.
+        // By default show only the Results Interpretation for the whole AR, not Dept specific
+        $('a.department-tab').click(function(e) {
+            e.preventDefault();
+            var uid = $(this).attr('data-uid');
+            $('.department-area').not(':[id="'+uid+'"]').hide();
+            $('.department-area:[id="'+uid+'"]').show();
+            $('a.department-tab.selected').removeClass('selected');
+            $(this).addClass('selected');
+        });
+        $('a.department-tab:[data-uid="ResultsInterpretationDepts-general"]').click();
+
+        //Remove buttons from TinyMCE
         setTimeout(function() {
-            $("#archetypes-fieldname-ResultsInterpretation .fieldTextFormat").remove();
-            $("#ResultsInterpretation_image").remove();
-            $("#ResultsInterpretation_code").remove();
-        }, 2000);
-        //Move the widget to the bottom of the page
-        elem = $("#archetypes-fieldname-ResultsInterpretation").closest("td").closest("tr");
-        label = elem.children()[0];
-        box= elem.children()[1];
-        box = $(box).children();
-        $("#archetypes-fieldname-Remarks").before(box);
-        $("#archetypes-fieldname-ResultsInterpretation").before("<label id='label_resultsinterpretation'></label>");
-        $("#label_resultsinterpretation").prepend(label);
+            $("div.arresultsinterpretation-container .fieldTextFormat").remove();
+            $("table.mceToolbar a.mce_image").remove();
+            $("table.mceToolbar a.mce_code").remove();
+            $('table.mceToolbar a.mce_save').hide();
+        }, 1500);
     }
 
     function filter_CCContacts(){

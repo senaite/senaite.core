@@ -4,7 +4,7 @@
 # Proxy handling and Fedora suppot added
 # by Pieter vd Merwe pieter_vdm@debortoli.com.au
 # Updated to Plone 4.3.3 on 10 Jun 2014 by Inus Scheepers
-# Also see https://github.com/bikalabs/Bika-LIMS/wiki/Bika-LIMS-Installation 
+# Also see https://github.com/bikalabs/Bika-LIMS/wiki/Bika-LIMS-Installation
 # Bika LIMS Installation
 # ----------------------
 #
@@ -110,7 +110,7 @@ fi
 # ## (Option) Retrieve the development branch Bika code
 
 #git clone -b dev https://github.com/bikalabs/Bika-LIMS.git src/bika.lims
-git clone -b release/3.1 http://github.com/bikalabs/Bika-LIMS.git src/bika.lims
+git clone -b release/3.1.9 http://github.com/bikalabs/Bika-LIMS.git src/bika.lims
 #    Omit the command line switch '-b dev' to use the master branch instead.
 
 # ## Edit Plone/zinstance/buildout.conf and add Bika LIMS.

@@ -1,30 +1,35 @@
 *** Settings ***
 
-Library          Selenium2Library  timeout=10  implicit_wait=0.5
-Library          String
-Resource         keywords.txt
-Library          bika.lims.testing.Keywords
-Resource         plone/app/robotframework/selenium.robot
-Resource         plone/app/robotframework/saucelabs.robot
-Variables        plone/app/testing/interfaces.py
-Variables        bika/lims/tests/variables.py
-Suite Setup      Start browser
-Suite Teardown   Close All Browsers
+Library         BuiltIn
+Library         Selenium2Library  timeout=5  implicit_wait=0.2
+Library         String
+Resource        keywords.txt
+Library         bika.lims.testing.Keywords
+Resource        plone/app/robotframework/selenium.robot
+Library         Remote  ${PLONEURL}/RobotRemote
+Variables       plone/app/testing/interfaces.py
+Variables       bika/lims/tests/variables.py
+
+Suite Setup     Start browser
+Suite Teardown  Close All Browsers
+
+Library          DebugLibrary
 
 *** Variables ***
 
 *** Test Cases ***
 
 Client DefaultCategories and RestrictedCategories
-    Log in                      test_labmanager1   test_labmanager1
+    Enable autologin as  LabManager
     Go to                       ${PLONEURL}/clients/client-1/base_edit
     Click element               css=#fieldsetlegend-preferences
     Select from list            DefaultCategories:list                Metals
     Select from list            RestrictedCategories:list             Metals   Microbiology
     Click button                Save
     wait until page contains    saved.
-    Log out
-    Log in                      ritamo      ritamo
+    Disable autologin
+    Enable autologin as  Owner
+    Set autologin username   ritamo
     Go to                       ${PLONEURL}/clients/client-1
     Wait until page contains    Happy
     Click Link                  Add
@@ -33,11 +38,11 @@ Client DefaultCategories and RestrictedCategories
 
 
 Create Client
-    Log in   test_labmanager1   test_labmanager1
+    Enable autologin as  LabManager
     New client
 
 Create Client Contact
-    Log in          test_labmanager1   test_labmanager1
+    Enable autologin as  LabManager
     Go to           ${PLONEURL}/clients/client-1
     Click link      Contacts
     Click link      Add
@@ -81,14 +86,16 @@ Create Client Contact
     Page should contain  Changes saved.
 
 Client contact should be able to access client views
-    Log in          ritamo   ritamo
+    Enable autologin as  Owner
+    set autologin username  ritamo
     Go to           ${PLONEURL}/clients
     Page should contain   Happy Hills
     Click link            Happy Hills
     Page should contain   Analysis Specifications
 
 Client contact should not be able to see or access other clients
-    Log in          ritamo   ritamo
+    Enable autologin as  Owner
+    set autologin username  ritamo
     Go to           ${PLONEURL}/clients/client-2
     Page should contain   Insufficient Privileges
 
@@ -96,7 +103,7 @@ Add AR Template
     # Create a SampleType and a ClientSamplePoint with the created SampleTypes
     # Then Add an ARTemplate with the created SamplePoint.
     # Finally test if SampleTypes is filtered by selected ClientSamplePoint
-    Log in   test_labmanager1   test_labmanager1
+    Enable autologin as  LabManager
 
     # Create a new SampleType
     Go to       ${PLONEURL}/bika_setup/bika_sampletypes
@@ -140,10 +147,6 @@ Add AR Template
     Page should contain  No analyses have been selected
 
 *** Keywords ***
-
-Start browser
-    Open browser        ${PLONEURL}/login_form
-    Set selenium speed  ${SELENIUM_SPEED}
 
 New client
     Go to                       ${PLONEURL}/clients

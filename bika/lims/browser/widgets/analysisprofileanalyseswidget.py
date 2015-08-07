@@ -15,7 +15,7 @@ class AnalysisProfileAnalysesView(BikaListingView):
     """ bika listing to display Analyses table for an Analysis Profile.
     """
 
-    def __init__(self, context, request, fieldvalue, allow_edit):
+    def __init__(self, context, request, fieldvalue=[], allow_edit=False):
         super(AnalysisProfileAnalysesView, self).__init__(context, request)
         self.catalog = "bika_setup_catalog"
         self.contentFilter = {'portal_type': 'AnalysisService',
@@ -29,11 +29,20 @@ class AnalysisProfileAnalysesView(BikaListingView):
         self.show_select_all_checkbox = False
         self.show_column_toggles = False
         self.show_select_column = True
-        self.show_categories = True
-        self.expand_all_categories = True
-        self.pagesize = 0
         self.allow_edit = allow_edit
         self.form_id = "analyses"
+        self.profile = None
+
+        self.categories = []
+        self.do_cats = self.context.bika_setup.getCategoriseAnalysisServices()
+        if self.do_cats:
+            self.pagesize = 0  # hide batching controls
+            self.show_categories = True
+            self.expand_all_categories = False
+            self.ajax_categories = True
+            self.ajax_categories_url = self.context.absolute_url() + \
+                                       "/analysisprofile_analysesview"
+            self.category_index = 'getCategoryTitle'
 
         self.columns = {
             'Title': {'title': _('Service'),
@@ -57,6 +66,17 @@ class AnalysisProfileAnalysesView(BikaListingView):
         self.fieldvalue = fieldvalue
         self.selected = [x.UID() for x in fieldvalue]
 
+        if self.aq_parent.portal_type == 'AnalysisProfile':
+            # Custom settings for the Analysis Services assigned to
+            # the Analysis Profile
+            # https://jira.bikalabs.com/browse/LIMS-1324
+            self.profile = self.aq_parent
+            self.columns['Hidden'] = {'title': _('Hidden'),
+                                      'sortable': False,
+                                      'type': 'boolean'}
+            self.review_states[0]['columns'].insert(1, 'Hidden')
+
+
     def folderitems(self):
         self.categories = []
 
@@ -74,9 +94,13 @@ class AnalysisProfileAnalysesView(BikaListingView):
             obj = items[x]['obj']
 
             cat = obj.getCategoryTitle()
-            items[x]['category'] = cat
-            if cat not in self.categories:
-                self.categories.append(cat)
+            # Category (upper C) is for display column value
+            items[x]['Category'] = cat
+            if self.do_cats:
+                # category is for bika_listing to groups entries
+                items[x]['category'] = cat
+                if cat not in self.categories:
+                    self.categories.append(cat)
 
             analyses = [a.UID() for a in self.fieldvalue]
 
@@ -116,6 +140,13 @@ class AnalysisProfileAnalysesView(BikaListingView):
                               _('Attachment not permitted'))
             if after_icons:
                 items[x]['after']['Title'] = after_icons
+
+            if self.profile:
+                # Display analyses for this Analysis Service in results?
+                ser = self.profile.getAnalysisServiceSettings(obj.UID())
+                items[x]['allow_edit'] = ['Hidden', ]
+                items[x]['Hidden'] = ser.get('hidden', obj.getHidden())
+
         self.categories.sort()
         return items
 
@@ -138,6 +169,18 @@ class AnalysisProfileAnalysesWidget(TypesWidget):
         bsc = getToolByName(instance, 'bika_setup_catalog')
         value = []
         service_uids = form.get('uids', None)
+
+        if instance.portal_type == 'AnalysisProfile':
+            # Hidden analyses?
+            outs = []
+            hiddenans = form.get('Hidden', {})
+            if service_uids:
+                for uid in service_uids:
+                    hidden = hiddenans.get(uid, '')
+                    hidden = True if hidden == 'on' else False
+                    outs.append({'uid':uid, 'hidden':hidden})
+            instance.setAnalysisServicesSettings(outs)
+
         return service_uids, {}
 
     security.declarePublic('Analyses')

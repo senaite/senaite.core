@@ -1,15 +1,19 @@
 *** Settings ***
 
-Library          Selenium2Library  timeout=5  implicit_wait=0.2
-Library          String
-Resource         keywords.txt
-Library          bika.lims.testing.Keywords
-Resource         plone/app/robotframework/selenium.robot
-Resource         plone/app/robotframework/saucelabs.robot
-Variables        plone/app/testing/interfaces.py
-Variables        bika/lims/tests/variables.py
-Suite Setup      Start browser
-Suite Teardown   Close All Browsers
+Library         BuiltIn
+Library         Selenium2Library  timeout=5  implicit_wait=0.2
+Library         String
+Resource        keywords.txt
+Library         bika.lims.testing.Keywords
+Resource        plone/app/robotframework/selenium.robot
+Library         Remote  ${PLONEURL}/RobotRemote
+Variables       plone/app/testing/interfaces.py
+Variables       bika/lims/tests/variables.py
+
+Suite Setup     Start browser
+Suite Teardown  Close All Browsers
+
+Library          DebugLibrary
 
 *** Variables ***
 
@@ -67,7 +71,3 @@ Test Pricelist-AR
 
 *** Keywords ***
 
-Start browser
-    Open browser         http://localhost:55001/plone/login
-    Maximize browser window
-    Set selenium speed   ${SELENIUM_SPEED}

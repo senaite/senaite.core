@@ -44,7 +44,11 @@ membership_tool.loginUser(REQUEST)
 
 client = logged_in_client(context, member)
 registry = getUtility(IRegistry)
-landing_page = registry['bika.lims.client.default_landing_page']
+if 'bika.lims.client.default_landing_page' in registry:
+    landing_page = registry['bika.lims.client.default_landing_page']
+else:
+    landing_page = 'analysisrequests'
+
 if client:
     url = client.absolute_url() + "/" + landing_page
     return context.REQUEST.response.redirect(url)

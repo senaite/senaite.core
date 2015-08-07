@@ -10,7 +10,7 @@
 <head>
   <meta http-equiv="content-type" content="text/html;charset=utf-8" />
 
-  <title i18n:translate="" i18n:domain="bika">Install Bika LIMS</title>
+  <title i18n:translate="" i18n:domain="bika">Install a Bika Distribution</title>
 
   <link rel="stylesheet" type="text/css"
         tal:attributes="href string:${context/absolute_url}/++resource++plone-admin-ui.css"
@@ -27,10 +27,10 @@
 </head>
 <body>
 
-  <img src="/++resource++plone-logo.png" width="213" height="54"
-    tal:attributes="src string:${context/absolute_url}/++resource++bika-lims-logo.png" />
+  <img src="/++resource++plone-logo.png"
+    tal:attributes="src string:${context/absolute_url}/++resource++bikaonly-logo.png" />
 
-  <h1 i18n:translate="" i18n:domain="bika">Install Bika LIMS</h1>
+  <h1 i18n:translate="" i18n:domain="bika">Install a Bika Distribution</h1>
 
   <form action="#"
         method="post"
@@ -69,7 +69,7 @@
           browser window on each page.
         </div>
 
-        <input type="text" name="title" size="30" value="Bika LIMS"
+        <input type="text" name="title" size="30" value="Bika"
                i18n:attributes="value text_default_site_title;" i18n:domain="bika" />
       </div>
 
@@ -142,8 +142,6 @@
         </div>
       </tal:baseprofile>
 
-      <!-- Advanced installation -->
-      <tal:advanced tal:condition="advanced">
           <tal:extensionprofiles condition="python:extension_profiles">
             <fieldset id="add-on-list">
               <legend i18n:translate="">
@@ -151,27 +149,27 @@
               </legend>
 
               <div class="formHelp" i18n:translate="">
-                  Select any add-ons you want to activate immediately. You can
-                  also activate add-ons after the site has been created using the
-                  Add-ons control panel.
+                  Select one of the following configurations of Bika. You can  also de/activate the add-ons once the site has been created from the Plone's add-ons setup view
               </div>
 
               <dl id="extension_ids">
                 <tal:addons tal:repeat="info extension_profiles">
-                  <tal:info tal:define="selected info/selected|nothing">
+                  <tal:info tal:define="selected info/selected|nothing;
+                                        infostyle python:'' if info['id'].startswith('bika.') else 'display:none';">
                     <tal:normal tal:condition="python: not selected or advanced">
-                      <dt>
+                      <dt tal:attributes="style infostyle">
                         <input type="checkbox" name="extension_ids:list" value=""
                                tal:attributes="value info/id;
                                                id info/id;
-                                               checked info/selected|nothing;" />
+                                               checked info/selected|nothing;"/>
                         <label
                             tal:attributes="for info/id"
                             tal:content="info/title">
                           profile title
                         </label>
                       </dt>
-                      <dd tal:content="info/description">
+                      <dd tal:content="info/description"
+                          tal:attributes="style infostyle">
                         profile description
                       </dd>
                     </tal:normal>
@@ -185,25 +183,9 @@
               </dl>
             </fieldset>
           </tal:extensionprofiles>
-      </tal:advanced>
-
-      <!-- Easy installation -->
-      <tal:easy tal:condition="not:advanced">
-          <tal:addons tal:repeat="info extension_profiles">
-              <tal:info tal:define="selected info/selected|nothing">
-                  <tal:hidden tal:condition="python: selected">
-                      <input type="hidden" name="extension_ids:list" value=""
-                          tal:attributes="value info/id;
-                          checked info/selected|nothing;" />
-                  </tal:hidden>
-              </tal:info>
-          </tal:addons>
-          <input type="hidden" checked="checked" name="extension_ids:list" value="bika.lims:default" />
-      </tal:easy>
-
       <div class="formControls">
         <input type="hidden" name="form.submitted:boolean" value="True" />
-        <input type="submit" name="submit" value="Install Bika LIMS"
+        <input type="submit" name="submit" value="Install"
                i18n:attributes="value;" i18n:domain="bika" />
       </div>
 

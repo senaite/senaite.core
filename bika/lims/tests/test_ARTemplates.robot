@@ -1,15 +1,19 @@
 *** Settings ***
 
-Library          Selenium2Library  timeout=5  implicit_wait=0.2
-Library          String
-Resource         keywords.txt
-Library          bika.lims.testing.Keywords
-Resource         plone/app/robotframework/selenium.robot
-Resource         plone/app/robotframework/saucelabs.robot
-Variables        plone/app/testing/interfaces.py
-Variables        bika/lims/tests/variables.py
-Suite Setup      Start browser
-Suite Teardown   Close All Browsers
+Library         BuiltIn
+Library         Selenium2Library  timeout=5  implicit_wait=0.2
+Library         String
+Resource        keywords.txt
+Library         bika.lims.testing.Keywords
+Resource        plone/app/robotframework/selenium.robot
+Library         Remote  ${PLONEURL}/RobotRemote
+Variables       plone/app/testing/interfaces.py
+Variables       bika/lims/tests/variables.py
+
+Suite Setup     Start browser
+Suite Teardown  Close All Browsers
+
+Library          DebugLibrary
 
 *** Variables ***
 
@@ -19,16 +23,13 @@ Suite Teardown   Close All Browsers
 Add an ARTemplate with Analysis Dependencies
     #Test if alert is shown when selecting an analysis which has
     #a dependency in another analysis when creating a Profile and Template.
+
+    Log in                              test_labmanager         test_labmanager
+    Wait until page contains            You are now logged in
     Create ARTemplate with Analysis Dependences
 
 
 *** Keywords ***
-
-Start browser
-    Open browser                        ${PLONEURL}/login_form
-    Log in                              test_labmanager         test_labmanager
-    Wait until page contains            You are now logged in
-    Set selenium speed                  ${SELENIUM_SPEED}
 
 Add a Dependence to an Analysis Service
     #Test.xlsx set the check box "Use default calculation" from AddARTemplate/Method

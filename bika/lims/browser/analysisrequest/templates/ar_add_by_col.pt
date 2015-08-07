@@ -1,0 +1,183 @@
+<div metal:define-macro="ar_add_by_col"
+     style="padding-bottom:10px;">
+    <script type="text/javascript" src="++resource++bika.lims.js/bika.lims.analysisrequest.add_by_col.js"></script>
+    <script type="text/javascript"
+            tal:attributes="src python:portal.absolute_url() + '/bika_widgets/referencewidget.js'"></script>
+    <link rel="stylesheet" type="text/css" media="all" href=""
+            tal:attributes="href string:${portal/absolute_url}/bika_widgets/referencewidget.css"/>
+    <style media="screen" type="text/css">
+        #singleservice {
+            width:90%;
+        }
+        .partnr {
+            color: #555;
+            font-size: 86%;
+        }
+        .nowrap{
+            white-space: nowrap;
+        }
+        .copybutton {
+            cursor: pointer;
+        }
+    </style>
+    <table summary="Add analysis requests"
+           class="listing analysisrequest add nosort"
+           cellpadding="0" cellspacing="0">
+        <thead>
+        <thead class="analysisrequest_add_by_col">
+            <!-- All edit fields with fields with add=visible -->
+            <tal:field tal:repeat="field python:view.get_fields_with_visibility('edit')">
+                <tal:def define="
+                    fieldName python:field.getName();
+                    field_macro here/widgets/field/macros/edit;
+                    accessor python:field.getAccessor(context);
+                    widget python:field.widget;
+                    errors python:{};
+                    mode string:edit;">
+                    <tr tal:attributes="fieldName fieldName">
+                        <th colspan="2" style="white-space:nowrap">
+                            <label class="formQuestion">
+                                <span tal:replace="python:view.context.translate(widget.Label(here))"/>
+                            <span class="fieldRequired"
+                                    tal:condition="field/required"
+                                    title="Required"
+                                    i18n:attributes="title title_required;">&nbsp;</span>
+                                <em style="display:block"
+                                    class="discreet"
+                                        tal:define="description python:view.context.translate(widget.Description(here))"
+                                        tal:content="structure description"
+                                        tal:attributes="id string:${fieldName}_help">Help </em>
+                            </label>
+
+                        </th>
+                        <td>
+                            <img class="copybutton"
+                                 tal:condition="python:view.ar_count > 1"
+                                 tal:attributes="
+                                      src string:${portal/absolute_url}/++resource++bika.lims.images/copy.png;"/>
+                        </td>
+                        <tal:columns tal:repeat="arnum python:range(view.ar_count)">
+                            <td class="nowrap" tal:attributes="arnum arnum">
+                                <metal:field
+                                        use-macro="python:context.widget(fieldName, mode='edit')"/>
+                            </td>
+                        </tal:columns>
+                    </tr>
+                </tal:def>
+            </tal:field>
+
+            <tal:field
+                tal:repeat="field python:view.get_fields_with_visibility('hidden')">
+                <tal:def define="fieldName python:field.getName();">
+                    <tr style="display:none" tal:attributes="fieldName fieldName">
+                        <tal:columns tal:repeat="arnum python:range(view.ar_count)"
+                                tal:define="val python:field.getAccessor(context)()">
+                            <td hidden="true"
+                                    tal:attributes="arnum arnum; fieldName fieldName">
+                                <input type="hidden" tal:attributes="
+                                    value val/Title|nothing;
+                                    uid val/UID|nothing;"/>
+                            </td>
+                        </tal:columns>
+                    </tr>
+                </tal:def>
+            </tal:field>
+
+        </thead>
+
+        <!-- Prices -->
+
+        <tfoot tal:condition="ShowPrices">
+
+            <tr tal:condition="view/getMemberDiscountApplies">
+                <th class="topborder" colspan="2">
+                    <b i18n:translate="">Discount</b>
+                    <span class="discreet">(<tal:i content="here/bika_setup/getMemberDiscount"/>%)</span>
+                </th>
+                <td class="topborder noleftborder" style="text-align:center">
+                    <span tal:replace="python:currencies[currency].symbol"/>
+                </td>
+                <tal:columns repeat="arnum python:range(view.ar_count)">
+                    <td class="topborder" tal:attributes="arnum arnum">
+                        <span class="price discount noborder">0.00</span>
+                    </td>
+                </tal:columns>
+            </tr>
+
+            <tr>
+                <th class="topborder" colspan="2"><b i18n:translate="">Subtotal</b></th>
+                <td class="topborder noleftborder" style="text-align:center">
+                    <span tal:replace="python:currencies[currency].symbol"/>
+                </td>
+                <tal:columns repeat="arnum python:range(view.ar_count)">
+                    <td class="topborder" tal:attributes="arnum arnum">
+                        <span class="price subtotal noborder">0.00</span>
+                    </td>
+                </tal:columns>
+            </tr>
+
+            <tr>
+                <th class="topborder" colspan="2"><b i18n:translate="">VAT</b></th>
+                <td class="topborder noleftborder" style="text-align:center">
+                    <span tal:replace="python:currencies[currency].symbol"/>
+                </td>
+                <tal:columns repeat="arnum python:range(view.ar_count)">
+                    <td class="topborder" tal:attributes="arnum arnum">
+                        <span class="price vat noborder">0.00</span>
+                    </td>
+                </tal:columns>
+            </tr>
+
+            <tr>
+                <th class="topborder" colspan="2"><b i18n:translate="">Total</b></th>
+                <td class="topborder noleftborder" style="text-align:center">
+                    <span tal:replace="python:currencies[currency].symbol"/>
+                </td>
+                <tal:columns repeat="arnum python:range(view.ar_count)">
+                    <td class="topborder" tal:attributes="arnum arnum">
+                        <span class="price total noborder">0.00</span>
+                    </td>
+                </tal:columns>
+            </tr>
+
+            <!--
+            <tr>
+                <th colspan="3" style="background-color: #FFF">
+                </th>
+                <tal:block repeat="arnum python:range(view.ar_count)">
+                    <td>
+                        <input type="button" value="Create Profile"
+                                tal:attributes="
+                                        class string:ar_${arnum}_save_profile;
+                                name string:save_profile;
+                                id string:ar_${arnum}_save_profile;
+                                " />
+                    </td>
+                </tal:block>
+            </tr>
+-->
+        </tfoot>
+    </table>
+
+    <!-- Analyses -->
+    <span>
+        <div style="text-align:left;padding-bottom:10px;">
+            <input i18n:attributes="value"
+                    class="context button allowMultiSubmit"
+                    type="submit"
+                    name="save_button"
+                    value="Save"/>
+        </div>
+
+        <span id="field" tal:define="services python:view.services_widget_content('field', ar_count=view.ar_count)">
+            <h3 tal:condition="services" i18n:translate="">Field Analyses</h3>
+            <span tal:replace="structure services"></span>
+        </span>
+
+        <span id="lab" tal:define="services python:view.services_widget_content('lab', ar_count=view.ar_count)">
+            <h3 tal:condition="services" i18n:translate="">Lab Analyses</h3>
+            <span tal:replace="structure services"></span>
+        </span>
+    </span>
+
+</div>

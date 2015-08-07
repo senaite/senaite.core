@@ -90,7 +90,7 @@
         condition_expr=""
         icon_expr="string:${object_url}/++resource++bika.lims.images/sticker_large.png"
         link_target=""
-        url_expr="string:${object_url}/sticker"
+        url_expr="string:${object_url}/sticker?size=large"
         i18n:attributes="title"
         visible="True">
     <permission value="View"/>

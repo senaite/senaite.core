@@ -146,8 +146,10 @@ class AnalysisServicesView(BikaListingView):
         self.do_cats = self.context.bika_setup.getCategoriseAnalysisServices()
         if self.do_cats:
             self.pagesize = 0  # hide batching controls
-            self.show_categories = True,
+            self.show_categories = True
             self.expand_all_categories = False
+            self.ajax_categories = True
+            self.category_index = 'getCategoryTitle'
 
         self.columns = {
             'Title': {'title': _('Service'),
@@ -167,6 +169,10 @@ class AnalysisServicesView(BikaListingView):
             'DuplicateVariation': {'title': _('Dup Var'),
                                    'toggle': False},
             'Calculation': {'title': _('Calculation')},
+            'CommercialID': {'title': _('Commercial ID'),
+                             'toggle': True},
+            'ProtocolID': {'title': _('Protocol ID'),
+                           'toggle': True},
         }
 
         self.review_states = [
@@ -179,6 +185,8 @@ class AnalysisServicesView(BikaListingView):
                          'Keyword',
                          'Method',
                          'Department',
+                         'CommercialID',
+                         'ProtocolID',
                          'Instrument',
                          'Unit',
                          'Price',
@@ -199,6 +207,8 @@ class AnalysisServicesView(BikaListingView):
                          'Keyword',
                          'Method',
                          'Department',
+                         'CommercialID',
+                         'ProtocolID',
                          'Instrument',
                          'Unit',
                          'Price',
@@ -218,6 +228,8 @@ class AnalysisServicesView(BikaListingView):
                          'Category',
                          'Method',
                          'Department',
+                         'CommercialID',
+                         'ProtocolID',
                          'Instrument',
                          'Unit',
                          'Price',
@@ -240,11 +252,13 @@ class AnalysisServicesView(BikaListingView):
                 continue
             obj = items[x]['obj']
             items[x]['Keyword'] = obj.getKeyword()
+
             cat = obj.getCategoryTitle()
-            items[x]['Category'] = cat  # Category is for display column value
+            # Category (upper C) is for display column value
+            items[x]['Category'] = cat
             if self.do_cats:
-                items[x][
-                    'category'] = cat  # category is for bika_listing to groups entries
+                # category is for bika_listing to groups entries
+                items[x]['category'] = cat
                 if cat not in self.categories:
                     self.categories.append(cat)
 

@@ -16,6 +16,7 @@ from bika.lims.permissions import *
 from operator import itemgetter
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analyses import AnalysesView
+from bika.lims.browser.multifile import MultifileView
 from bika.lims.browser.analyses import QCAnalysesView
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
@@ -44,7 +45,7 @@ class InstrumentMaintenanceView(BikaListingView):
         self.show_select_all_checkbox = False
         self.pagesize = 40
         self.form_id = "instrumentmaintenance"
-        self.icon = "++resources++bika.lims.images/instrumentmaintenance_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/instrumentmaintenance_big.png"
         self.title = self.context.translate(_("Instrument Maintenance"))
         self.description = ""
 
@@ -144,7 +145,7 @@ class InstrumentCalibrationsView(BikaListingView):
         self.show_select_column = True
         self.pagesize = 25
         self.form_id = "instrumentcalibrations"
-        self.icon = "++resources++bika.lims.images/instrumentcalibration_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/instrumentcalibration_big.png"
         self.title = self.context.translate(_("Instrument Calibrations"))
         self.description = ""
 
@@ -201,7 +202,7 @@ class InstrumentValidationsView(BikaListingView):
         self.show_select_column = True
         self.pagesize = 25
         self.form_id = "instrumentvalidations"
-        self.icon = "++resources++bika.lims.images/instrumentvalidation_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/instrumentvalidation_big.png"
         self.title = self.context.translate(_("Instrument Validations"))
         self.description = ""
 
@@ -261,7 +262,7 @@ class InstrumentScheduleView(BikaListingView):
         self.pagesize = 25
 
         self.form_id = "instrumentschedule"
-        self.icon = "++resources++bika.lims.images/instrumentschedule_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/instrumentschedule_big.png"
         self.title = self.context.translate(_("Instrument Scheduled Tasks"))
         self.description = ""
 
@@ -604,6 +605,16 @@ class InstrumentCertificationsView(BikaListingView):
         return items
 
 
+class InstrumentMultifileView(MultifileView):
+    implements(IFolderContentsView, IViewView)
+
+    def __init__(self, context, request):
+        super(InstrumentMultifileView, self).__init__(context, request)
+        self.show_workflow_action_buttons = False
+        self.title = self.context.translate(_("Instrument Files"))
+        self.description = "Different interesting documents and files to be attached to the instrument"
+
+
 class ajaxGetInstrumentMethod(BrowserView):
     """ Returns the method assigned to the defined instrument.
         uid: unique identifier of the instrument
@@ -635,46 +646,16 @@ class InstrumentQCFailuresViewlet(ViewletBase):
         self.nr_failed = 0
         self.failed = {'out-of-date': [],
                        'qc-fail': [],
-                       'next-test': []}
+                       'next-test': [],
+                       'validation': [],
+                       'calibration': []}
 
     def get_failed_instruments(self):
         """ Find all active instruments who have failed QC tests
             Find instruments whose certificate is out of date
             Find instruments which are disposed until next calibration test
 
-            Return a dictionary with the following structure:
-
-                out-of-date: [{uid: <uid>,
-                              title: <title>,
-                              link: <absolute_path>},]
-                qc-fail:     [{uid: <uid>,
-                              title: <title>,
-                              link: <absolute_path>},]
-                next-test:   [{uid: <uid>,
-                              title: <title>,
-                              link: <absolute_path>},]
-
-        >>> portal = layer['portal']
-        >>> portal_url = portal.absolute_url()
-        >>> from plone.app.testing import SITE_OWNER_NAME
-        >>> from plone.app.testing import SITE_OWNER_PASSWORD
-        >>> from DateTime import DateTime
-        >>> from transaction import commit
-
-        Expire the Blott Titrator's certificate:
-
-        >>> bsc = portal.bika_setup_catalog
-        >>> blott = bsc(portal_type='Instrument', Title='Blott Titrator')[0].getObject()
-        >>> cert = blott.objectValues('InstrumentCertification')[0]
-        >>> cert.setValidTo(DateTime('2014/11/27'))
-        >>> commit()
-
-        Then be sure that the viewlet is displayed:
-
-        >>> browser = layer['getBrowser'](portal, loggedIn=True, username=SITE_OWNER_NAME, password=SITE_OWNER_PASSWORD)
-        >>> browser.open(portal_url)
-        >>> browser.contents
-        '...instruments are out-of-date...'
+            Return a dictionary with all info about expired/invalid instruments
 
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
@@ -685,7 +666,19 @@ class InstrumentQCFailuresViewlet(ViewletBase):
                 'uid': i.UID(),
                 'title': i.Title(),
             }
-            if i.isOutOfDate():
+            if i.isValidationInProgress():
+                instr['link'] = '<a href="%s/validations">%s</a>' % (
+                    i.absolute_url(), i.Title()
+                )
+                self.nr_failed += 1
+                self.failed['validation'].append(instr)
+            elif i.isCalibrationInProgress():
+                instr['link'] = '<a href="%s/calibrations">%s</a>' % (
+                    i.absolute_url(), i.Title()
+                )
+                self.nr_failed += 1
+                self.failed['calibration'].append(instr)
+            elif i.isOutOfDate():
                 instr['link'] = '<a href="%s/certifications">%s</a>' % (
                     i.absolute_url(), i.Title()
                 )

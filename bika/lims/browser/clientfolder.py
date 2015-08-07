@@ -89,7 +89,8 @@ class ClientFolderContentsView(BikaListingView):
         ## (ritamo only sees Happy Hills).
         mtool = getToolByName(self.context, 'portal_membership')
         wf = getToolByName(self.context, 'portal_workflow')
-        state = self.request['review_state']
+        state = self.request.get('%s_review_state'%self.form_id,
+                             self.default_review_state)
         states = {'default': ['active', ],
                   'active': ['active', ],
                   'inactive': ['inactive', ],
@@ -105,7 +106,10 @@ class ClientFolderContentsView(BikaListingView):
         self.contentsMethod = self.getClientList
         items = BikaListingView.folderitems(self)
         registry = getUtility(IRegistry)
-        landing_page = registry['bika.lims.client.default_landing_page']
+        if 'bika.lims.client.default_landing_page' in registry:
+            landing_page = registry['bika.lims.client.default_landing_page']
+        else:
+            landing_page = 'analysisrequests'
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']

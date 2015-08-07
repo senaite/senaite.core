@@ -531,7 +531,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
         value = proxies[0].aq_parent.Title()
         return value
 
-    def getProfileTitle(self):
+    def getProfilesTitle(self):
         return ""
 
     def getAnalysisCategory(self):
@@ -727,6 +727,10 @@ class Sample(BaseFolder, HistoryAwareMixin):
     def workflow_script_expire(self):
         self.setDateExpired(DateTime())
         self.reindexObject(idxs=["review_state", "getDateExpired", ])
+
+    def workflow_script_dispose(self):
+        self.setDateDisposed(DateTime())
+        self.reindexObject(idxs=["review_state", "getDateDisposed", ])
 
     def workflow_script_sample(self):
         if skip(self, "sample"):

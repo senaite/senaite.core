@@ -1,7 +1,7 @@
 import os
 from setuptools import setup, find_packages
 
-version = '3.1.7dev'
+version = '3.1.9'
 
 
 def read(*rnames):
@@ -11,10 +11,13 @@ setup(name='bika.lims',
       version=version,
       description="Bika LIMS",
       long_description=read("README.rst") + \
-                       read("INSTALL.rst") + \
-                       "\n".join(["Bika Lab Systems",
-                                  "info@bikalabs.com",
-                                  "http://www.bikalabs.com"]),
+                       read("docs/INSTALL.rst") + \
+                       read("docs/CHANGELOG.txt") + \
+                       "\n\n" + \
+                       "Authors and maintainers\n" + \
+                       "-----------------------\n" + \
+                       "- Bika Lab Systems, http://bikalabs.com\n" + \
+                       "- Naralabs, http://naralabs.com",
       # Get more strings from
       # http://pypi.python.org/pypi?:action=list_classifiers
       classifiers=[
@@ -26,10 +29,12 @@ setup(name='bika.lims',
           "Intended Audience :: Science/Research",
           "License :: OSI Approved :: GNU Affero General Public License v3 or later (AGPLv3+)",
       ],
-      keywords='Bika Open Source LIMS',
+      keywords=['lims', 'bika', 'opensource'],
       author='Bika Laboratory Systems',
       author_email='support@bikalabs.com',
-      url='www.bikalabs.com',
+      maintainer='Naralabs',
+      maintainer_email='info@naralabs.com',
+      url='www.bikalims.org',
       license='AGPL',
       packages=find_packages(exclude=['ez_setup']),
       namespace_packages=['bika'],
@@ -54,6 +59,7 @@ setup(name='bika.lims',
           'collective.wtf',
           'WeasyPrint==0.19.2',
           'collective.progressbar',
+          'z3c.unconfigure==1.0.1',
       ],
       extras_require={
           'test': [
@@ -63,6 +69,8 @@ setup(name='bika.lims',
               'plone.app.robotframework',
               'Products.PloneTestCase',
               'robotframework-debuglibrary',
+              'plone.resource',
+              'plone.app.textfield',
           ]
       },
       entry_points="""

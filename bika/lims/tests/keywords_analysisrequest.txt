@@ -1,0 +1,113 @@
+*** Settings ***
+
+Documentation    Keywords for adding and working with ARs
+
+*** Keywords ***
+
+Simple AR Creation
+    [Documentation]  Create a simple AR
+    [Arguments]  ${client_id}
+    ...          ${Contact}
+    ...          ${SampleType}
+    ...          ${ASCategory}
+    ...          ${ASTitle}
+    @{time} =                   Get Time        year month day hour min sec
+    given an ar add form in ${client_id} with columns layout and 1 ars
+    I select ${Contact} from the Contact combogrid in column 0
+    Select Date  SamplingDate-0  @{time}[2]
+    I select ${SampleType} from the SampleType combogrid in column 0
+    I expand the lab ${ASCategory} category
+    I select the ${ASTitle} service in column 0
+    Click Button                Save
+    wait until page contains element  xpath=.//dd[contains(text(), 'created')]
+    ${dd_text} =  Get text  xpath=.//dd[contains(text(), 'created')]
+    ${ar_id} =  Set Variable  ${dd_text.split()[2]}
+    [return]  ${ar_id}
+
+I set profile ${profile-id} price to ${profile-price} and set client ${client-id} bulk discount
+    [Documentation]  Set a price for the profile
+    go to  ${PLONEURL}/bika_setup/bika_analysisprofiles/${profile-id}
+    click link  id=fieldsetlegend-accounting
+    select checkbox  id=UseAnalysisProfilePrice
+    input text  id=AnalysisProfilePrice  ${profile-price}
+    click button  Save
+    go to  ${PLONEURL}/clients/${client-id}/base_edit
+    select checkbox  id=BulkDiscount
+    click button  Save
+
+# --- Given ------------------------------------------------------------------
+
+an ar add form in ${client_id} with ${layout} layout and ${ar_count} ars
+    [Documentation]  Load a fresh AR Add form.
+    go to  ${PLONEURL}/clients/${client_id}/portal_factory/AnalysisRequest/xxx/ar_add?layout=${layout}&ar_count=${ar_count}
+    wait until page contains  xxx
+
+# --- When -------------------------------------------------------------------
+
+I select ${searchterm} from the ${field} combogrid in column ${column}
+    [Documentation]  Search and select ${searchterm} from a referencewidget.
+    wait until page contains element  css=#${field}-${column}
+    Input text  css=#${field}-${column}  ${searchterm}
+    sleep   1
+    Click Element  xpath=//div[contains(@class,'cg-colItem')][1]
+
+I can not select ${searchterm} from the ${field} combogrid in column ${column}
+    [Documentation]  This combogrid should be filtered so the selection should not be possible
+    wait until page contains element  css=#${field}-${column}
+    Input text  css=#${field}-${column}  ${searchterm}
+    sleep   1
+    Element should not be visible   xpath=//div[contains(@class,'cg-colItem')][1]
+
+I delete ${selection_string} from ${field} in column ${column}
+    [Documentation]  Click the delete button for a selected item in a reference widget
+    wait until page contains element  css=#${field}-${column}-listing img[data-contact-title='${selection_string}']
+    click element  css=#${field}-${column}-listing img[data-contact-title='${selection_string}']
+    page should not contain element  xpath= .//div[@id='${field}-${column}-listing']//div[.='${field}']
+
+I click the copy button for the ${field} field
+    [Documentation]  Click the copy-across button for a field row
+    wait until page contains element  css=tr[fieldname='${field}'] .copybutton
+    click element    css=tr[fieldname='${field}'] .copybutton
+
+I expand the ${poc} ${cat_title} category
+    [Documentation]  Expand a category.  No error checking, category must be collapsed.
+    click element  xpath=.//table[@form_id='${poc}']//th[@cat='${cat_title}' and contains(@class, 'collapsed')]
+    wait until page contains element   xpath=.//table[@form_id='${poc}']//th[@cat='${cat_title}' and contains(@class, 'expanded')]
+
+I select the ${service_title} service in column ${column}
+    [Documentation]  Select an analysis.
+    select checkbox  css=tr[title='${service_title}'] [id$=\\.0]
+
+I unselect the ${service_title} service in column ${column}
+    [Documentation]  Unselect an analysis.
+    unselect checkbox  css=tr[title='${service_title}'] [id$=\\.0]
+
+I select the ${service_title} service in all columns
+    [Documentation]  Select an analysis in all AR columns
+    select checkbox  css=tr[title='${service_title}'] [name='uids:list']
+
+
+# --- Then -------------------------------------------------------------------
+
+the ${field} field selections in column ${column} should contain ${selection_string}
+    [Documentation]  Check that a multivalued referencewidget has a specific selection
+    xpath should match x times  .//div[@id='${field}-${column}-listing']//div[.='${selection_string}']  1
+
+the ${field} field selections in column ${column} should not contain ${selection_string}
+    [Documentation]  Check that a multivalued referencewidget is missing a specific selection
+    Page should not contain element  xpath =.//div[@id='${field}-${column}-listing']//div[.='${selection_string}']
+
+the ${field} value in column ${column} should be ${value}
+    [Documentation]  Check that a text-field has a certain value
+    sleep   0.5
+    textfield value should be  css=#${field}-${column}      ${value}
+
+There should be ${nr} entries in the ${field} combogrid in column ${column}
+    Input text  css=#${field}-${column}  \
+    sleep   1
+    xpath should match x times  //div[contains(@class,'cg-colItem')][1]  ${nr}
+
+price value for ${price_item} is ${value} in column ${column}
+    [Documentation]  check that discount/subtotal/vat/total are as expected
+    wait until page contains element  xpath=.//td[@arnum='${column}']/span[contains(@class, ${price_item}) and .='${value}']
+

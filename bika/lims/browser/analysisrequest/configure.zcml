@@ -76,6 +76,15 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <!-- Results Interpretation button clicked iside AR -->
+    <browser:page
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="arresultsinterpretation_save"
+      class="bika.lims.browser.analysisrequest.resultsinterpretation.Save"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
     <browser:page
       for="bika.lims.interfaces.IAnalysisRequest"
       name="ar_add"
@@ -145,14 +154,6 @@
       name="invoice"
       class="bika.lims.browser.analysisrequest.InvoiceView"
       permission="bika.lims.ManageInvoices"
-      layer="bika.lims.interfaces.IBikaLIMS"
-    />
-
-    <browser:page
-      for="*"
-      name="analysisrequest_analysisservices"
-      class="bika.lims.browser.analysisrequest.add.ajaxExpandCategory"
-      permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

@@ -58,7 +58,6 @@ def BatchUID(instance):
 schema = BikaSchema.copy() + Schema((
     StringField(
         'RequestID',
-        required=1,
         searchable=True,
         mode="rw",
         read_permission=permissions.View,
@@ -352,6 +351,7 @@ schema = BikaSchema.copy() + Schema((
             showOn=True,
         ),
     ),
+    # TODO: Profile'll be delated
     ReferenceField(
         'Profile',
         allowed_types=('AnalysisProfile',),
@@ -362,6 +362,27 @@ schema = BikaSchema.copy() + Schema((
         write_permission=permissions.ModifyPortalContent,
         widget=ReferenceWidget(
             label = _("Analysis Profile"),
+            size=20,
+            render_own_label=True,
+            visible=False,
+            catalog_name='bika_setup_catalog',
+            base_query={'inactive_state': 'active'},
+            showOn=False,
+        ),
+    ),
+
+    ReferenceField(
+        'Profiles',
+        multiValued=1,
+        allowed_types=('AnalysisProfile',),
+        referenceClass=HoldingReference,
+        vocabulary_display_path_bound=sys.maxsize,
+        relationship='AnalysisRequestAnalysisProfiles',
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
+        widget=ReferenceWidget(
+            label = _("Analysis Profiles"),
             size=20,
             render_own_label=True,
             visible={'edit': 'visible',
@@ -1139,8 +1160,8 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ComputedField(
-        'ProfileUID',
-        expression="here.getProfile() and here.getProfile().UID() or ''",
+        'ProfilesUID',
+        expression="here.getProfiles() and [profile.UID() for profile in here.getProfiles()] or []",
         widget=ComputedWidget(
             visible=False,
         ),
@@ -1220,7 +1241,10 @@ schema = BikaSchema.copy() + Schema((
             showOn=True,
         ),
     ),
+
     # For comments or results interpretation
+    # Old one, to be removed because of the incorporation of
+    # ResultsInterpretationDepts (due to LIMS-1628)
     TextField(
         'ResultsInterpretation',
         searchable=True,
@@ -1238,24 +1262,24 @@ schema = BikaSchema.copy() + Schema((
             default_mime_type='text/x-rst',
             output_mime_type='text/x-html',
             rows=3,
-            visible={'edit': 'visible',
-                     'view': 'visible',
-                     'add': 'invisible',
-                     'header_table': 'prominent',
-                     'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'invisible'},
-                     'to_be_sampled':     {'view': 'visible', 'edit': 'visible'},
-                     'sampled':           {'view': 'visible', 'edit': 'visible'},
-                     'to_be_preserved':   {'view': 'visible', 'edit': 'visible'},
-                     'sample_due':        {'view': 'visible', 'edit': 'visible'},
-                     'sample_received':   {'view': 'visible', 'edit': 'visible'},
-                     'attachment_due':    {'view': 'visible', 'edit': 'visible'},
-                     'to_be_verified':    {'view': 'visible', 'edit': 'visible'},
-                     'verified':          {'view': 'visible', 'edit': 'visible'},
-                     'published':         {'view': 'visible', 'edit': 'invisible'},
-                     'invalid':           {'view': 'visible', 'edit': 'invisible'},
-                     },
-                render_own_label=True,
-        ),
+            visible=False),
+    ),
+    RecordsField('ResultsInterpretationDepts',
+        subfields = ('uid',
+                     'richtext'),
+        subfield_labels = {'uid': _('Department'),
+                           'richtext': _('Results Interpreation'),},
+        widget = RichWidget(visible=False),
+    ),
+    # Custom settings for the assigned analysis services
+    # https://jira.bikalabs.com/browse/LIMS-1324
+    # Fields:
+    #   - uid: Analysis Service UID
+    #   - hidden: True/False. Hide/Display in results reports
+    RecordsField('AnalysisServicesSettings',
+         required=0,
+         subfields=('uid', 'hidden',),
+         widget=ComputedWidget(visible=False),
     ),
 )
 )
@@ -1275,6 +1299,7 @@ schema['title'].widget.visible = {
 
 schema.moveField('Client', before='Contact')
 schema.moveField('ResultsInterpretation', pos='bottom')
+schema.moveField('ResultsInterpretationDepts', pos='bottom')
 
 class AnalysisRequest(BaseFolder):
     implements(IAnalysisRequest)
@@ -1316,8 +1341,8 @@ class AnalysisRequest(BaseFolder):
     def getContactTitle(self):
         return self.getContact().Title() if self.getContact() else ''
 
-    def getProfileTitle(self):
-        return self.getProfile().Title() if self.getProfile() else ''
+    def getProfilesTitle(self):
+        return [profile.Title() for profile in self.getProfiles()]
 
     def getTemplateTitle(self):
         return self.getTemplate().Title() if self.getTemplate() else ''
@@ -1419,9 +1444,11 @@ class AnalysisRequest(BaseFolder):
             manager_id = manager.getId()
             if manager_id not in managers:
                 managers[manager_id] = {}
+                managers[manager_id]['salutation'] = safe_unicode(manager.getSalutation())
                 managers[manager_id]['name'] = safe_unicode(manager.getFullname())
                 managers[manager_id]['email'] = safe_unicode(manager.getEmailAddress())
                 managers[manager_id]['phone'] = safe_unicode(manager.getBusinessPhone())
+                managers[manager_id]['job_title'] = safe_unicode(manager.getJobTitle())
                 if manager.getSignature():
                     managers[manager_id]['signature'] = '%s/Signature' % manager.absolute_url()
                 else:
@@ -1491,40 +1518,141 @@ class AnalysisRequest(BaseFolder):
     security.declareProtected(View, 'getBillableItems')
 
     def getBillableItems(self):
-        """ Return all items except those in 'not_requested' state """
+        """
+        The main purpose of this function is to obtain the analysis services and profiles from the analysis request
+        whose prices are needed to quote the analysis request.
+        If an analysis belongs to a profile, this analysis will only be included in the analyses list if the profile
+        has disabled "Use Analysis Profile Price".
+        :return: a tuple of two lists. The first one only contains analysis services not belonging to a profile
+                 with active "Use Analysis Profile Price".
+                 The second list contains the profiles with activated "Use Analysis Profile Price".
+        """
         workflow = getToolByName(self, 'portal_workflow')
-        items = []
+        # REMEMBER: Analysis != Analysis services
+        analyses = []
+        analysis_profiles = []
+        to_be_billed = []
+        # Getting all analysis request analyses
         for analysis in self.objectValues('Analysis'):
             review_state = workflow.getInfoFor(analysis, 'review_state', '')
             if review_state != 'not_requested':
-                items.append(analysis)
-        return items
+                analyses.append(analysis)
+        # Getting analysis request profiles
+        for profile in self.getProfiles():
+            # Getting the analysis profiles which has "Use Analysis Profile Price" enabled
+            if profile.getUseAnalysisProfilePrice():
+                analysis_profiles.append(profile)
+            else:
+                # we only need the analysis service keywords from these profiles
+                to_be_billed += [service.getKeyword() for service in profile.getService()]
+        # So far we have three arrays:
+        #   - analyses: has all analyses (even if they are included inside a profile or not)
+        #   - analysis_profiles: has the profiles with "Use Analysis Profile Price" enabled
+        #   - to_be_quoted: has analysis services keywords from analysis profiles with "Use Analysis Profile Price"
+        #     disabled
+        # If a profile has its own price, we don't need their analises' prices, so we have to quit all
+        # analysis belonging to that profile. But if another profile has the same analysis service but has
+        # "Use Analysis Profile Price" disabled, the service must be included as billable.
+        for profile in analysis_profiles:
+            for analysis_service in profile.getService():
+                for analysis in analyses:
+                    if analysis_service.getKeyword() == analysis.getService().getKeyword() and \
+                       analysis.getService().getKeyword() not in to_be_billed:
+                        analyses.remove(analysis)
+        return analyses, analysis_profiles
+
+    def getServicesAndProfiles(self):
+        """
+        This function gets all analysis services and all profiles and removes the services belonging to a profile.
+        :return: a tuple of three lists, where the first list contains the analyses and the second list the profiles.
+                 The third contains the analyses objects used by the profiles.
+        """
+        # Getting requested analyses
+        workflow = getToolByName(self, 'portal_workflow')
+        analyses = []
+        # profile_analyses contains the profile's analyses (analysis != service") objects to obtain
+        # the correct price later
+        profile_analyses = []
+        for analysis in self.objectValues('Analysis'):
+            review_state = workflow.getInfoFor(analysis, 'review_state', '')
+            if review_state != 'not_requested':
+                analyses.append(analysis)
+        # Getting all profiles
+        analysis_profiles = self.getProfiles() if len(self.getProfiles()) > 0 else []
+        # Cleaning services included in profiles
+        for profile in analysis_profiles:
+            for analysis_service in profile.getService():
+                for analysis in analyses:
+                    if analysis_service.getKeyword() == analysis.getService().getKeyword():
+                        analyses.remove(analysis)
+                        profile_analyses.append(analysis)
+        return analyses, analysis_profiles, profile_analyses
 
     security.declareProtected(View, 'getSubtotal')
 
     def getSubtotal(self):
-        """ Compute Subtotal
+        """ Compute Subtotal (without member discount and without vat)
         """
+        analyses, a_profiles = self.getBillableItems()
         return sum(
-            [Decimal(obj.getPrice()) for obj in self.getBillableItems()])
+            [Decimal(obj.getPrice()) for obj in analyses] +
+            [Decimal(obj.getAnalysisProfilePrice()) for obj in a_profiles]
+        )
 
-    security.declareProtected(View, 'getVATAmount')
+    security.declareProtected(View, 'getSubtotalVATAmount')
+
+    def getSubtotalVATAmount(self):
+        """ Compute VAT amount without member discount"""
+        analyses, a_profiles = self.getBillableItems()
+        if len(analyses) > 0 or len(a_profiles) > 0:
+            return sum(
+                [Decimal(o.getVATAmount()) for o in analyses] +
+                [Decimal(o.getVATAmount()) for o in a_profiles]
+            )
+        return 0
+
+    security.declareProtected(View, 'getSubtotalTotalPrice')
+
+    def getSubtotalTotalPrice(self):
+        """ Compute the price with VAT but no member discount"""
+        return self.getSubtotal() + self.getSubtotalVATAmount()
+
+    security.declareProtected(View, 'getDiscountAmount')
+
+    def getDiscountAmount(self):
+        """
+        It computes and returns the analysis service's discount amount without VAT
+        """
+        has_client_discount = self.aq_parent.getMemberDiscountApplies()
+        if has_client_discount:
+            discount = Decimal(self.getDefaultMemberDiscount())
+            return Decimal(self.getSubtotal() * discount / 100)
+        else:
+            return 0
 
     def getVATAmount(self):
-        """ Compute VAT """
-        billable = self.getBillableItems()
-        if len(billable) > 0:
-            return sum([o.getVATAmount() for o in billable])
-        return 0
+        """
+        It computes the VAT amount from (subtotal-discount.)*VAT/100, but each analysis has its
+        own VAT!
+        :return: the analysis request VAT amount with the discount
+        """
+        has_client_discount = self.aq_parent.getMemberDiscountApplies()
+        VATAmount = self.getSubtotalVATAmount()
+        if has_client_discount:
+            discount = Decimal(self.getDefaultMemberDiscount())
+            return Decimal((1 - discount/100) * VATAmount)
+        else:
+            return VATAmount
 
     security.declareProtected(View, 'getTotalPrice')
 
     def getTotalPrice(self):
-        """ Compute TotalPrice """
-        billable = self.getBillableItems()
-        if len(billable) > 0:
-            return sum([o.getTotalPrice() for o in billable])
-        return 0
+        """
+        It gets the discounted price from analyses and profiles to obtain the total value with the VAT
+        and the discount applied
+        :return: the analysis request's total price including the VATs and discounts
+        """
+        return self.getSubtotal() - self.getDiscountAmount() + self.getVATAmount()
     getTotal = getTotalPrice
 
     security.declareProtected(ManageInvoices, 'issueInvoice')
@@ -1561,6 +1689,7 @@ class AnalysisRequest(BaseFolder):
         client_uid = self.getClientUID()
         # Get the created invoice
         invoice = invoice_batch.createInvoice(client_uid, [self, ])
+        invoice.setAnalysisRequest(self)
         # Set the created invoice in the schema
         self.Schema()['Invoice'].set(self, invoice)
 
@@ -1741,6 +1870,9 @@ class AnalysisRequest(BaseFolder):
         return child
 
     def getRequestedAnalyses(self):
+        """
+        It returns all requested analyses, even if they belong to an analysis profile or not.
+        """
         #
         # title=Get requested analyses
         #
@@ -2006,6 +2138,86 @@ class AnalysisRequest(BaseFolder):
 
     def getSamplers(self):
         return getUsers(self, ['LabManager', 'Sampler'])
+
+    def getDepartments(self):
+        """ Returns a set with the departments assigned to the Analyses
+            from this Analysis Request
+        """
+        ans = [an.getObject() for an in self.getAnalyses()]
+        depts = [an.getService().getDepartment() for an in ans if an.getService().getDepartment()]
+        return set(depts)
+
+    def getResultsInterpretationByDepartment(self, department=None):
+        """ Returns the results interpretation for this Analysis Request
+            and department. If department not set, returns the results
+            interpretation tagged as 'General'.
+
+            Returns a dict with the following keys:
+            {'uid': <department_uid> or 'general',
+             'richtext': <text/plain>}
+        """
+        uid = department.UID() if department else 'general'
+        rows = self.Schema()['ResultsInterpretationDepts'].get(self)
+        row = [row for row in rows if row.get('uid') == uid]
+        if len(row) > 0:
+            row = row[0]
+        elif uid=='general' \
+            and hasattr(self, 'getResultsInterpretation') \
+            and self.getResultsInterpretation():
+            row = {'uid': uid, 'richtext': self.getResultsInterpretation()}
+        else:
+            row = {'uid': uid, 'richtext': ''};
+        return row
+
+    def getAnalysisServiceSettings(self, uid):
+        """ Returns a dictionary with the settings for the analysis
+            service that match with the uid provided.
+            If there are no settings for the analysis service and
+            analysis requests:
+            1. looks for settings in AR's ARTemplate. If found, returns
+                the settings for the AnalysisService set in the Template
+            2. If no settings found, looks in AR's ARProfile. If found,
+                returns the settings for the AnalysisService from the
+                AR Profile. Otherwise, returns a one entry dictionary
+                with only the key 'uid'
+        """
+        sets = [s for s in self.getAnalysisServicesSettings() \
+                if s.get('uid','') == uid]
+
+        # Created by using an ARTemplate?
+        if not sets and self.getTemplate():
+            adv = self.getTemplate().getAnalysisServiceSettings(uid)
+            sets = [adv] if 'hidden' in adv else []
+
+        # Created by using an AR Profile?
+        if not sets and self.getProfiles():
+            adv = []
+            adv += [profile.getAnalysisServiceSettings(uid) for profile in self.getProfiles()]
+            sets = adv if 'hidden' in adv[0] else []
+
+        return sets[0] if sets else {'uid': uid}
+
+    def isAnalysisServiceHidden(self, uid):
+        """ Checks if the analysis service that match with the uid
+            provided must be hidden in results.
+            If no hidden assignment has been set for the analysis in
+            this request, returns the visibility set to the analysis
+            itself.
+            Raise a TypeError if the uid is empty or None
+            Raise a ValueError if there is no hidden assignment in this
+                request or no analysis service found for this uid.
+        """
+        if not uid:
+            raise TypeError('None type or empty uid')
+        sets = self.getAnalysisServiceSettings(uid)
+        if 'hidden' not in sets:
+            uc = getToolByName(self, 'uid_catalog')
+            serv = uc(UID=uid)
+            if serv and len(serv) == 1:
+                return serv[0].getObject().getRawHidden()
+            else:
+                raise ValueError('%s is not valid' % uid)
+        return sets.get('hidden', False)
 
     def guard_unassign_transition(self):
         """Allow or disallow transition depending on our children's states

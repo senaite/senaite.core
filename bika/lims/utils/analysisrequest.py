@@ -21,7 +21,7 @@ def create_analysisrequest(
     bc = getToolByName(context, 'bika_catalog')
 
     # Create new sample or locate the existing for secondary AR
-    if values['Sample']:
+    if values.get('Sample'):
         secondary = True
         if ISample.providedBy(values['Sample']):
             sample = values['Sample']
@@ -70,6 +70,8 @@ def create_analysisrequest(
 
     if not secondary:
         # Create sample partitions
+        if not partitions:
+            partitions = [{'services':analyses}]
         for n, partition in enumerate(partitions):
             # Calculate partition id
             partition_prefix = sample.getId() + "-P"

@@ -1,15 +1,19 @@
 *** Settings ***
 
-Library          Selenium2Library  timeout=5  implicit_wait=0.2
-Library          String
-Resource         keywords.txt
-Library          bika.lims.testing.Keywords
-Resource         plone/app/robotframework/selenium.robot
-Resource         plone/app/robotframework/saucelabs.robot
-Variables        plone/app/testing/interfaces.py
-Variables        bika/lims/tests/variables.py
-Suite Setup      Start browser
-Suite Teardown   Close All Browsers
+Library         BuiltIn
+Library         Selenium2Library  timeout=5  implicit_wait=0.2
+Library         String
+Resource        keywords.txt
+Library         bika.lims.testing.Keywords
+Resource        plone/app/robotframework/selenium.robot
+Library         Remote  ${PLONEURL}/RobotRemote
+Variables       plone/app/testing/interfaces.py
+Variables       bika/lims/tests/variables.py
+
+Suite Setup     Start browser
+Suite Teardown  Close All Browsers
+
+Library          DebugLibrary
 
 *** Variables ***
 
@@ -103,68 +107,26 @@ Test Analysis Uncertainty Precision
 
 *** Keywords ***
 
-Start browser
-    Open browser  ${PLONEURL}/login_form
-    Set selenium speed  ${SELENIUM_SPEED}
-
 Create AnalysisRequests
     [Documentation]     Add and receive 10 ARs at once.
-    @{time} =                   Get Time        year month day hour min sec
-    Go to                       ${PLONEURL}/clients/client-2/portal_factory/AnalysisRequest/Request new analyses/ar_add?col_count=11
-    Wait until page contains    Request new analyses
-    Select From Dropdown        ar_0_Contact       Johanna Smith
-    Select From Dropdown        ar_1_Contact       Johanna Smith
-    Select From Dropdown        ar_2_Contact       Johanna Smith
-    Select From Dropdown        ar_3_Contact       Johanna Smith
-    Select From Dropdown        ar_4_Contact       Johanna Smith
-    Select From Dropdown        ar_5_Contact       Johanna Smith
-    Select From Dropdown        ar_6_Contact       Johanna Smith
-    Select From Dropdown        ar_7_Contact       Johanna Smith
-    Select From Dropdown        ar_8_Contact       Johanna Smith
-    Select From Dropdown        ar_9_Contact       Johanna Smith
-    Select From Dropdown        ar_10_Contact      Johanna Smith
-    Select From Dropdown        ar_0_SampleType    Water
-    Select From Dropdown        ar_1_SampleType    Water
-    Select From Dropdown        ar_2_SampleType    Water
-    Select From Dropdown        ar_3_SampleType    Water
-    Select From Dropdown        ar_4_SampleType    Water
-    Select From Dropdown        ar_5_SampleType    Water
-    Select From Dropdown        ar_6_SampleType    Water
-    Select From Dropdown        ar_7_SampleType    Water
-    Select From Dropdown        ar_8_SampleType    Water
-    Select From Dropdown        ar_9_SampleType    Water
-    Select From Dropdown        ar_10_SampleType   Water
-    SelectDate                 ar_0_SamplingDate   @{time}[2]
-    SelectDate                 ar_1_SamplingDate   @{time}[2]
-    SelectDate                 ar_2_SamplingDate   @{time}[2]
-    SelectDate                 ar_3_SamplingDate   @{time}[2]
-    SelectDate                 ar_4_SamplingDate   @{time}[2]
-    SelectDate                 ar_5_SamplingDate   @{time}[2]
-    SelectDate                 ar_6_SamplingDate   @{time}[2]
-    SelectDate                 ar_7_SamplingDate   @{time}[2]
-    SelectDate                 ar_8_SamplingDate   @{time}[2]
-    SelectDate                 ar_9_SamplingDate   @{time}[2]
-    SelectDate                 ar_10_SamplingDate   @{time}[2]
-    Click Element              xpath=//th[@id='cat_lab_Metals']
-    Select Checkbox            xpath=//input[@title='Calcium' and @name='ar.0.Analyses:list:ignore_empty:record']
-    Select Checkbox            xpath=//input[@title='Calcium' and @name='ar.1.Analyses:list:ignore_empty:record']
-    Select Checkbox            xpath=//input[@title='Calcium' and @name='ar.2.Analyses:list:ignore_empty:record']
-    Select Checkbox            xpath=//input[@title='Calcium' and @name='ar.3.Analyses:list:ignore_empty:record']
-    Select Checkbox            xpath=//input[@title='Calcium' and @name='ar.4.Analyses:list:ignore_empty:record']
-    Select Checkbox            xpath=//input[@title='Calcium' and @name='ar.5.Analyses:list:ignore_empty:record']
-    Select Checkbox            xpath=//input[@title='Calcium' and @name='ar.6.Analyses:list:ignore_empty:record']
-    Select Checkbox            xpath=//input[@title='Calcium' and @name='ar.7.Analyses:list:ignore_empty:record']
-    Select Checkbox            xpath=//input[@title='Calcium' and @name='ar.8.Analyses:list:ignore_empty:record']
-    Select Checkbox            xpath=//input[@title='Calcium' and @name='ar.9.Analyses:list:ignore_empty:record']
-    Select Checkbox            xpath=//input[@title='Calcium' and @name='ar.10.Analyses:list:ignore_empty:record']
-    Set Selenium Timeout       90
-    Click Button               Save
-    Wait until page contains   created
-    Go to                      ${PLONEURL}/clients/client-2
-    Set Selenium Timeout       10
-    Select checkbox            analysisrequests_select_all
-    Click element               receive_transition
-    Wait until page contains    saved
+    Disable stickers
+    given an ar add form in client-2 with columns layout and 10 ars
+    I select Johanna Smith from the Contact combogrid in column 0
+    I click the copy button for the Contact field
+    I select Water from the SampleType combogrid in column 0
+    I click the copy button for the SampleType field
+    Select date  SamplingDate-0  1
+    I click the copy button for the SamplingDate field
+    I expand the lab Metals category
+    I select the Calcium service in all columns
+    set selenium timeout   30
+    Click Button  Save
+    Wait until page contains  created
+    Go to  ${PLONEURL}/clients/client-2
+    Select checkbox  analysisrequests_select_all
+    Click element  receive_transition
+    set selenium timeout   5
+    Wait until page contains  saved
 
 Create Worksheet With Analysis Requests
     Create Worksheet
@@ -194,16 +156,16 @@ Add Analyses
     Set Selenium Timeout        10
 
 Submit results and test
-    Input Text    xpath=//tr[@keyword='Ca']//input[@selector='Result_Ca'][1]          5.234
-    Input Text    xpath=//tr[@keyword='Ca']//input[@selector='Result_Ca'][2]          13.5
-    Input Text    xpath=//tr[@keyword='Ca']//input[@selector='Result_Ca'][3]          0.0077
-    Input Text    xpath=//tr[@keyword='Ca']//input[@selector='Result_Ca'][4]          0.123
-    Input Text    xpath=//tr[@keyword='Ca']//input[@selector='Result_Ca'][5]          0.00101
-    Input Text    xpath=//tr[@keyword='Ca']//input[@selector='Result_Ca'][6]          3.123
-    Input Text    xpath=//tr[@keyword='Ca']//input[@selector='Result_Ca'][7]          32092
-    Input Text    xpath=//tr[@keyword='Ca']//input[@selector='Result_Ca'][8]          456021
-    Input Text    xpath=//tr[@keyword='Ca']//input[@selector='Result_Ca'][9]          1293945
-    Input Text    xpath=//tr[@keyword='Ca']//input[@selector='Result_Ca'][10]         0.0000123
+    Input Text  xpath=//tr[@keyword='Ca'][1]//input[@selector='Result_Ca']  5.234
+    Input Text  xpath=//tr[@keyword='Ca'][2]//input[@selector='Result_Ca']  13.5
+    Input Text  xpath=//tr[@keyword='Ca'][3]//input[@selector='Result_Ca']  0.0077
+    Input Text  xpath=//tr[@keyword='Ca'][4]//input[@selector='Result_Ca']  0.123
+    Input Text  xpath=//tr[@keyword='Ca'][5]//input[@selector='Result_Ca']  0.00101
+    Input Text  xpath=//tr[@keyword='Ca'][6]//input[@selector='Result_Ca']  3.123
+    Input Text  xpath=//tr[@keyword='Ca'][7]//input[@selector='Result_Ca']  32092
+    Input Text  xpath=//tr[@keyword='Ca'][8]//input[@selector='Result_Ca']  456021
+    Input Text  xpath=//tr[@keyword='Ca'][9]//input[@selector='Result_Ca']  1293945
+    Input Text  xpath=//tr[@keyword='Ca'][10]//input[@selector='Result_Ca']  0.0000123
 
     Focus                       css=.analyst
     Click Element               xpath=//input[@value='Submit for verification'][1]
@@ -228,19 +190,19 @@ Submit results and test
     Page should contain   0.01
     Page should contain   0.00001
     Page should contain   0.8
-    Page should contain   0.004e+04
-    Page should contain   0.0042e+05
-    Page should contain   0.00018e+06 
+    Page should contain   0.004e04
+    Page should contain   0.0042e05
+    Page should contain   0.00018e06
     Page should contain   0.2e-05
 
 Check result formatting options
     Go to   ${PLONEURL}/bika_setup
     Click link  Analyses
-    Wait Until Page Contains Element    ScientificNotationResults
-    Select from dropdown    ScientificNotationResults   ax10^b / ax10^-b
-    Select from dropdown    ResultsDecimalMark   Comma (,)
+    Wait Until element is visible  ScientificNotationResults
+    Select from list  ScientificNotationResults   ax10^b / ax10^-b
+    Select from list  ResultsDecimalMark   Comma (,)
     Click Button  Save
-    Wait Until Page Contains    Changes saved.
+    Wait Until Page Contains  Changes saved.
     
     Go to   ${PLONEURL}/worksheets/WS-001    
     
@@ -251,10 +213,10 @@ Check result formatting options
     Page should contain   0,12
     Page should contain   0,00101
     Page should contain   3,1
-    Page should contain   3,2092x10^4
-    Page should contain   4,56021x10^5
-    Page should contain   1,293945x10^6
-    Page should contain   1,23000e-05
+    Page should contain   3,209x10^4
+    Page should contain   4,5602x10^5
+    Page should contain   1,29394x10^6
+    Page should contain   1,23x10^-5
 
     # Uncertainties
     Page should contain   0,2

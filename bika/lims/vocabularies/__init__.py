@@ -7,11 +7,15 @@ from bika.lims.utils import to_utf8
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
+from pkg_resources import resource_filename
+from plone.resource.utils import iterDirectoriesOfType
 from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.vocabulary import SimpleTerm
 from zope.schema.vocabulary import SimpleVocabulary
 from zope.site.hooks import getSite
 
+import os
+import glob
 
 class CatalogVocabulary(object):
 
@@ -365,3 +369,87 @@ class ARPrioritiesVocabulary(BikaContentVocabulary):
         BikaContentVocabulary.__init__(self,
                                        ['bika_setup/bika_arpriorities', ],
                                        ['ARPriority', ])
+
+
+def getARReportTemplates():
+    p = os.path.join("browser", "analysisrequest", "templates", "reports")
+    templates_dir = resource_filename("bika.lims", p)
+    tempath = os.path.join(templates_dir, '*.pt')
+    templates = [os.path.split(x)[-1] for x in glob.glob(tempath)]
+    out = [{'id': x, 'title': x} for x in templates]
+    for templates_resource in iterDirectoriesOfType('reports'):
+        prefix = templates_resource.__name__
+        dirlist = templates_resource.listDirectory()
+        templates = [tpl for tpl in dirlist if tpl.endswith('.pt')]
+        for template in templates:
+            out.append({
+                'id': '{0}:{1}'.format(prefix, template),
+                'title': '{0}:{1}'.format(prefix, template),
+            })
+    return out
+
+class ARReportTemplatesVocabulary(object):
+    """Locate all ARReport templates to allow user to set the default
+    """
+    implements(IVocabularyFactory)
+
+    def __call__(self, context):
+        out = [SimpleTerm(x['id'], x['id'], x['title']) for x in getARReportTemplates()]
+        return SimpleVocabulary(out)
+
+def getStickerTemplates():
+    """ Returns an array with the sticker templates available. Retrieves the
+        TAL templates saved in templates/stickers folder.
+
+        Each array item is a dictionary with the following structure:
+            {'id': <template_id>,
+             'title': <template_title>}
+
+        If the template lives outside the bika.lims add-on, both the template_id
+        and template_title include a prefix that matches with the add-on
+        identifier. template_title is the same name as the id, but with
+        whitespaces and without extension.
+
+        As an example, for a template from the my.product add-on located in
+        templates/stickers, and with a filename "EAN128_default_small.pt", the
+        dictionary will look like:
+            {'id': 'my.product:EAN128_default_small.pt',
+             'title': 'my.product: EAN128 default small'}
+    """
+    # Retrieve the templates from bika.lims add-on
+    p = os.path.join("browser", "templates", "stickers")
+    templates_dir = resource_filename("bika.lims", p)
+    tempath = os.path.join(templates_dir, '*.pt')
+    templates = [os.path.split(x)[-1] for x in glob.glob(tempath)]
+
+    # Retrieve the templates from other add-ons
+    for templates_resource in iterDirectoriesOfType('stickers'):
+        prefix = templates_resource.__name__
+        if prefix == 'bika.lims':
+            continue
+        dirlist = templates_resource.listDirectory()
+        exts = ['{0}:{1}'.format(prefix, tpl) for tpl in dirlist if tpl.endswith('.pt')]
+        templates.extend(exts)
+
+    out = []
+    templates.sort()
+    for template in templates:
+        title = template[:-3]
+        title = title.replace('_', ' ')
+        title = title.replace(':', ': ')
+        out.append({'id': template,
+                    'title': title})
+
+    return out
+
+class StickerTemplatesVocabulary(object):
+    """ Locate all sticker templates
+    """
+    implements(IVocabularyFactory)
+
+    def __call__(self, context):
+        out = [SimpleTerm(x['id'], x['id'], x['title']) for x in getStickerTemplates()]
+        return SimpleVocabulary(out)
+
+
+ARReportTemplatesVocabularyFactory = ARReportTemplatesVocabulary()

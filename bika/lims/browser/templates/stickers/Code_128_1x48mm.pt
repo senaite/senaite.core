@@ -1,0 +1,78 @@
+<!--
+    Default template used to render one barcode small sticker
+
+    To retrieve the item, use view.current_item, that will return an array with
+    the following structure:
+
+    [analysis_request_object, sample_object, sample_partition_object]
+
+    Although sample_object (position 1 in the array) will never be None,
+    analysis_request_object can be None when
+    a) The user requested to render stickers for samples (instead of ARs) or
+    b) The user requested to render stickers for sample partitions or
+    c) The user requested to render stickers for reference samples.
+
+    If c), both analysis_request_object and sample_partition_object will be None
+-->
+<tal:sticker define="
+    portal_state      context/@@plone_portal_state;
+    portal_url        portal_state/portal_url;
+    item              view/current_item;
+    ar                python:item[0];
+    ar_id             python:ar.getId() if ar else '';
+    sample            python:item[1];
+    part              python:item[2];
+    partnr            python:part.getId().split('-')[1];
+    sampler           python:sample.getSampler();
+    sample_id         python:sample.getId();
+    sample_point      python:sample.getSamplePoint() and sample.getSamplePoint().Title() or '';
+    sample_type       python:sample.getSampleType().Title();
+    sampling_date     python:sample.getSamplingDate() and sample.getSamplingDate().Date();
+    client_sample_id  python:sample.getClientSampleID();
+    preservation      python:part.getPreservation() and part.getPreservation().Title() or '';
+    container         python:part.getContainer() and part.getContainer().Title() or '';
+    date_sampled      python:sample.getDateSampled() and sample.getDateSampled().Date();
+    analyses          python:part.getBackReferences('AnalysisSamplePartition');
+    field_analyses    python:[analysis for analysis in analyses if analysis.getService().getPointOfCapture()=='field'];
+    show_partitions   python:context.bika_setup.getShowPartitions();
+    smart_id          python:part.getId() if show_partitions else sample.getId();
+    hazardous         python:sample.getSampleType().getHazardous();">
+
+    <!-- Sample ID -->
+    <div class="sample-id">
+        <!--span tal:replace="string:${smart_id}"/-->
+        <img tal:condition="hazardous | nothing"
+             tal:attributes="src string:${portal_url}/++resource++bika.lims.images/hazardous.png"/>
+    </div>
+
+    <!-- Barcode -->
+    <div class="barcode"
+        tal:attributes="data-id smart_id;"
+        data-code="code128"
+        data-barHeight="12"
+        data-addQuietZone="true"
+        data-showHRI="false">
+    </div>
+
+    <!-- Some additional info about the sample -->
+    <div class="analysisrequest-info">
+        <table cellpadding="0" cellspacing="0" border="0">
+            <tr>
+                <td class="sample-type" tal:content="sample_type"/>
+                <td class="preservation" tal:content="preservation"/>
+                <td class="sample-point" tal:content="sample_point"/>
+            </tr>
+        </table>
+    </div>
+
+    <!-- Sampling Date -->
+    <div class="sampling-date-info">
+        <table cellpadding="0" cellspacing="0" border="0">
+            <tr>
+                <td class='label' i18n:translate="">Sampling Date</td>
+                <td class='sampling-date' tal:content="sampling_date"></td>
+                <td class='sampler' tal:content="sampler"></td>
+            </tr>
+        </table>
+    </div>
+</tal:sticker>

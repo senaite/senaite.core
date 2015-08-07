@@ -2,7 +2,9 @@
 	<tbody>
 		<tr>
 			<th i18n:translate="">Invoice To</th>
-			<td tal:content="view/clientName"></td>
+            <td> <a tal:attributes="
+                    href  view/clientURL"
+                    tal:content="view/clientName"></a></td>
 			<th i18n:translate="">Invoice #</th>
 			<td tal:content="view/invoiceId"></td>
 		</tr>
@@ -48,14 +50,22 @@
 
 <table class="invoice-items" summary="Analyses List">
 	<thead>
-		<tr>
+		<tr class="header-invoice-summary">
 			<th i18n:translate="">Date</th>
-			<th class="text" i18n:translate="">Description</th>
+            <th class="text" i18n:translate="">Description</th>
 			<th i18n:translate="">Order #</th>
-			<th class="currency" i18n:translate="">Amount</th>
 			<th class="currency" i18n:translate="">VAT</th>
 			<th class="currency" i18n:translate="">Amount incl. VAT</th>
 		</tr>
+        <tr class="header-bottom-total">
+            <td colspan="3"></td>
+            <td class="currency">
+                <span tal:content="view/currency">R</span>
+            </td>
+            <td class="currency">
+                <span tal:content="view/currency">R</span>
+            </td>
+        </tr>
 	</thead>
 	<tbody>
 		<tal:items repeat="item view/items">
@@ -63,17 +73,11 @@
 				<tr>
 					<td tal:content="item/invoiceDate"></td>
 					<td class="text" tal:content="item/description"></td>
-					<td tal:content="item/orderNo"></td>
+                    <td><a tal:attributes="href  item/orderNoURL" tal:content="item/orderNo"></a></td>
 					<td>
-						<span tal:content="view/currency">R</span>
-						<span tal:content="item/subtotal">0.00</span>
-					</td>
-					<td>
-						<span tal:content="view/currency">R</span>
 						<span tal:content="item/VATAmount">0.00</span>
 					</td>
 					<td>
-						<span tal:content="view/currency">R</span>
 						<span tal:content="item/total">0.00</span>
 					</td>
 				</tr>
@@ -81,10 +85,6 @@
 		</tal:items>
 		<tr class="totals">
 			<td colspan="3" i18n:translate="">Total</td>
-			<td class="currency">
-				<span tal:content="view/currency">R</span>
-				<span tal:content="view/subtotal"></span>
-			</td>
 			<td class="currency">
 				<span tal:content="view/currency">R</span>
 				<span tal:content="view/VATAmount"></span>

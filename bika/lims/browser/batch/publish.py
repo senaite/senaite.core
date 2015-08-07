@@ -1,4 +1,6 @@
+import tempfile
 from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
 from bika.lims.utils import t, formatDecimalMark
 from bika.lims.utils.analysis import format_uncertainty, format_numeric_result
 from bika.lims.browser import BrowserView
@@ -119,17 +121,18 @@ class PublishView(BrowserView):
 
         debug_mode = App.config.getConfiguration().debug_mode
         if debug_mode:
-            open(os.path.join(Globals.INSTANCE_HOME, 'var', fn + ".html"),
-                 "w").write(report_html)
+            tmp_fd, tmp_fn = tempfile.mkstemp(suffix=".html")
+            logger.debug("Writing HTML for %s to %s" % (self.context, tmp_fn))
+            tmp_fd.write(report_html)
+            tmp_fd.close()
 
-        ramdisk = StringIO()
-        pdf = createPdf(report_html, ramdisk)
-        pdf_data = ramdisk.getvalue()
-        ramdisk.close()
-
+        pdf_fd, pdf_fn = tempfile.mkstemp(suffix="pdf")
+        pdf_fd.close()
+        pdf = createPdf(report_html, outfile=pdf_fn)
         if debug_mode:
-            open(os.path.join(Globals.INSTANCE_HOME, 'var', fn + ".pdf"),
-                 "wb").write(pdf_data)
+            logger.debug("Wrote PDF for %s to %s" % (self.context, pdf_fn))
+        else:
+            os.remove(pdf_fn)
 
         # XXX Email published batches to who?
 
@@ -138,4 +141,4 @@ class PublishView(BrowserView):
             setheader = self.request.RESPONSE.setHeader
             setheader('Content-Type', 'application/pdf')
             setheader("Content-Disposition", "attachment;filename=\"%s\"" % fn)
-            self.request.RESPONSE.write(pdf_data)
+            self.request.RESPONSE.write(pdf)

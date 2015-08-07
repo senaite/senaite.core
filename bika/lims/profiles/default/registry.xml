@@ -3,23 +3,30 @@
 <!-- Operation Definitions -->
 <registry xmlns:i18n="http://xml.zope.org/namespaces/i18n" i18n:domain="bika">
 
-  <record name="bika.lims.client.default_landing_page">
-    <field type="plone.registry.field.Choice">
-      <default>analysisrequests</default>
-      <description i18n:translate="">
-        Select the default landing page.  This is used when a
-        Client user logs into the system, or when a client is
-        selected from the client folder listing.</description>
-      <required>True</required>
-      <title i18n:translate="">Client Landing Page</title>
-        <values>
-          <element>analysisrequests</element>
-          <element>batches</element>
-        </values>
-    </field>
-  </record>
+    <record name="bika.lims.client.default_landing_page">
+      <field type="plone.registry.field.Choice">
+        <default>analysisrequests</default>
+        <description i18n:translate="">Select the default landing page. This is used when a Client user logs into the system, or when a client is selected from the client folder listing.</description>
+        <required>True</required>
+        <title i18n:translate="">Client Landing Page</title>
+          <values>
+            <element>analysisrequests</element>
+            <element>batches</element>
+          </values>
+      </field>
+    </record>
 
-  <!-- QueryField declarations  -->
+    <record name="bika.lims.analysisrequest.default_arreport_template">
+        <field type="plone.registry.field.Choice">
+            <default>default.pt</default>
+            <description i18n:translate="">Select the template which will be used, by default, when publishing ARs.</description>
+            <required>True</required>
+            <title i18n:translate="">Default ARReport Template</title>
+            <vocabulary key="vocabulary">bika.lims.vocabularies.ARReportTemplates</vocabulary>
+        </field>
+    </record>
+
+    <!-- QueryField declarations  -->
 
   <!-- Analysis Request group -->
   <records interface="plone.app.querystring.interfaces.IQueryField"

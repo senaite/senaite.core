@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from time import time
 from AccessControl import ModuleSecurityInfo, allow_module
 from bika.lims import logger
 from bika.lims.browser import BrowserView
@@ -12,13 +11,18 @@ from plone.registry.interfaces import IRegistry
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
+from socket import timeout
+from time import time
+from weasyprint import HTML, CSS
 from zope.component import queryUtility
 from zope.i18n import translate
 from zope.i18n.locales import locales
+
 import App
 import Globals
 import os
 import re
+import tempfile
 import urllib2
 
 ModuleSecurityInfo('email.Utils').declarePublic('formataddr')
@@ -181,10 +185,13 @@ def formatDecimalMark(value, decimalmark='.'):
         thousand mark.
     """
     rawval = value
-    if decimalmark == ',':
-        rawval = rawval.replace('.', '[comma]')
-        rawval = rawval.replace(',', '.')
-        rawval = rawval.replace('[comma]', ',')
+    try:
+        if decimalmark == ',':
+            rawval = rawval.replace('.', '[comma]')
+            rawval = rawval.replace(',', '.')
+            rawval = rawval.replace('[comma]', ',')
+    except:
+        pass
     return rawval
 
 
@@ -343,39 +350,70 @@ def isnumber(s):
         return False
 
 
-def createPdf(htmlreport, outfile=None, css=None):
-    debug_mode = App.config.getConfiguration().debug_mode
-    # XXX css must be a local file - urllib fails under robotframework tests.
+def createPdf(htmlreport, outfile=None, css=None, images={}):
+    """create a PDF from some HTML.
+    htmlreport: rendered html
+    outfile: pdf filename; if supplied, caller is responsible for creating
+             and removing it.
+    css: remote URL of css file to download
+    images: A dictionary containing possible URLs (keys) and local filenames
+            (values) with which they may to be replaced during rendering.
+    # WeasyPrint will attempt to retrieve images directly from the URL
+    # referenced in the HTML report, which may refer back to a single-threaded
+    # (and currently occupied) zeoclient, hanging it.  All image source
+    # URL's referenced in htmlreport should be local files.
+    """
+    # A list of files that should be removed after PDF is written
+    cleanup = []
     css_def = ''
     if css:
         if css.startswith("http://") or css.startswith("https://"):
             # Download css file in temp dir
             u = urllib2.urlopen(css)
-            _cssfile = Globals.INSTANCE_HOME + '/var/' + tmpID() + '.css'
+            _cssfile = tempfile.mktemp(suffix='.css')
             localFile = open(_cssfile, 'w')
             localFile.write(u.read())
             localFile.close()
+            cleanup.append(_cssfile)
         else:
             _cssfile = css
         cssfile = open(_cssfile, 'r')
         css_def = cssfile.read()
-    if not outfile:
-        outfile = Globals.INSTANCE_HOME + "/var/" + tmpID() + ".pdf"
 
-    from weasyprint import HTML, CSS
-    import os
+    htmlreport = to_utf8(htmlreport)
+
+    # copy IMG sources to local files and modify htmlreport
+    # for match in re.finditer("""\<img.*\>""", htmlreport, re.I):
+    #     remote_url = re.sub("""(<img.*src.*['"])([^'"]*)(['"])(.*)""", "\\2", match.group(), re.I)
+    #     try:
+    #         u = urllib2.urlopen(remote_url, timeout=5)
+    #     except timeout:
+    #         continue
+    #     ext = remote_url.split('.')[-1]
+    #     fn = tempfile.mktemp(suffix="."+ext)
+    #     fd = open(fn, "wb")
+    #     fd.write(u.read())
+    #     fd.close()
+    #     htmlreport.replace(remote_url, fn)
+    #     cleanup.append(fn)
+    for (key, val) in images.items():
+        htmlreport = htmlreport.replace(key, val)
+
+    # render
+    htmlreport = to_utf8(htmlreport)
+    renderer = HTML(string=htmlreport, encoding='utf-8')
+    pdf_fn = outfile if outfile else tempfile.mktemp(suffix=".pdf")
     if css:
-        HTML(string=htmlreport, encoding='utf-8').write_pdf(outfile,
-            stylesheets=[CSS(string=css_def)])
+        renderer.write_pdf(pdf_fn, stylesheets=[CSS(string=css_def)])
     else:
-        HTML(string=htmlreport, encoding='utf-8').write_pdf(outfile)
-
-    if debug_mode:
-        htmlfilepath = Globals.INSTANCE_HOME + "/var/" + tmpID() + ".html"
-        htmlfile = open(htmlfilepath, 'w')
-        htmlfile.write(htmlreport)
-        htmlfile.close()
-    return open(outfile, 'r').read();
+        renderer.write_pdf(pdf_fn)
+    # return file data
+    pdf_data = open(pdf_fn, "rb").read()
+    if outfile is None:
+        os.remove(pdf_fn)
+    for fn in cleanup:
+        os.remove(fn)
+    return pdf_data
 
 def attachPdf(mimemultipart, pdfreport, filename=None):
     part = MIMEBase('application', "pdf")
@@ -514,3 +552,10 @@ def format_supsub(text):
         out.append(subsup.pop())
 
     return ''.join(out)
+
+def drop_trailing_zeros_decimal(num):
+    """ Drops the trailinz zeros from decimal value.
+        Returns a string
+    """
+    out = str(num)
+    return out.rstrip('0').rstrip('.') if '.' in out else out

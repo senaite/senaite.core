@@ -184,6 +184,11 @@ function ControlChart() {
             d.point_id = d[that.pointid];
         });
 
+        function sortByDateAscending(a, b) {
+            return a.x_axis - b.x_axis;
+        }
+        that.datasource.sort(sortByDateAscending);
+
         x.domain(d3.extent(that.datasource, function(d) { return d.x_axis; }));
         var min = d3.min(that.datasource, function(d) { return d.y_axis; });
         if (min > that.lowerlimit) {

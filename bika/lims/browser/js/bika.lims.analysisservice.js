@@ -24,11 +24,26 @@ function AnalysisServiceEditView() {
     var acalc_sel  = $('#archetypes-fieldname-DeferredCalculation #DeferredCalculation');
     var interim_fd = $("#archetypes-fieldname-InterimFields");
     var interim_rw = $("#archetypes-fieldname-InterimFields tr.records_row_InterimFields");
+    var ldsel_chk  = $('#archetypes-fieldname-DetectionLimitSelector #DetectionLimitSelector');
+    var ldman_fd   = $('#archetypes-fieldname-AllowManualDetectionLimit');
+    var ldman_chk  = $('#archetypes-fieldname-AllowManualDetectionLimit #AllowManualDetectionLimit');
 
     /**
      * Entry-point method for AnalysisServiceEditView
      */
     that.load = function() {
+
+        // LIMS-1775 Allow to select LDL or UDL defaults in results with readonly mode
+        // https://jira.bikalabs.com/browse/LIMS-1775
+        $(ldsel_chk).change(function() {
+            if ($(this).is(':checked')) {
+                $(ldman_fd).show();
+            } else {
+                $(ldman_fd).hide();
+                $(ldman_chk).prop('checked', false);
+            }
+        });
+        $(ldsel_chk).change();
 
         // service defaults
         // update defalt Containers
@@ -375,13 +390,14 @@ function AnalysisServiceEditView() {
                             $('#invalid-instruments-alert').remove();
                         } else if (data.objects[0].Valid != '1') {
                             var title = data.objects[0].Title;
+                            var instrument_path = window.location.protocol + "//" + window.location.host + data.objects[0].path;
                             if ($('#invalid-instruments-alert').length > 0) {
                                 $('#invalid-instruments-alert dd').first().append(", " + title);
                             } else {
                                 var errmsg = _("Some of the selected instruments are out-of-date or with failed calibration tests");
                                 var html = "<div id='invalid-instruments-alert' class='alert'>"+
                                            "    <dt>" + errmsg + ":</dt>"+
-                                           "    <dd>" + title + "</dd>"+
+                                           "    <dd> <a href=" +instrument_path + ">" + title + "</a></dd>"+
                                            "</div>";
                                 $('#analysisservice-base-edit').before(html);
                             }
@@ -696,13 +712,14 @@ function AnalysisServiceEditView() {
                 window.bika.lims.jsonapi_read(request_data, function(data) {
                     if (data.objects[0].Valid != '1') {
                         var title = data.objects[0].Title;
+                        var instrument_path = window.location.protocol + "//" + window.location.host + data.objects[0].path;
                         if ($('#invalid-instruments-alert').length > 0) {
                             $('#invalid-instruments-alert dd').first().append(", " + title);
                         } else {
                             var errmsg = _("Some of the selected instruments are out-of-date or with failed calibration tests");
                             var html = "<div id='invalid-instruments-alert' class='alert'>"+
                                        "    <dt>" + errmsg + ":</dt>"+
-                                       "    <dd>" + title + "</dd>"+
+                                       "    <dd> <a href=" +instrument_path + ">" + title + "</a></dd>"+
                                        "</div>";
                             $('#analysisservice-base-edit').before(html);
                         }

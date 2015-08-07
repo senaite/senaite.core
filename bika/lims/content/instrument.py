@@ -31,6 +31,7 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         widget=SelectionWidget(
             format='select',
             label=_("Instrument type"),
+            visible={'view': 'invisible', 'edit': 'visible'}
         ),
     ),
 
@@ -42,6 +43,7 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         widget=SelectionWidget(
             format='select',
             label=_("Manufacturer"),
+            visible={'view': 'invisible', 'edit': 'visible'}
         ),
     ),
 
@@ -53,6 +55,7 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         widget=SelectionWidget(
             format='select',
             label=_("Supplier"),
+            visible={'view': 'invisible', 'edit': 'visible'}
         ),
     ),
 
@@ -84,11 +87,9 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
     BooleanField('DisposeUntilNextCalibrationTest',
         default = False,
         widget = BooleanWidget(
-            label=_("Dispose until next calibration test"),
-            description = _("If checked, the instrument will not be "
-                            "available until the next valid calibration "
-                            "test being performed. This checkbox will "
-                            "be automatically unchecked too."),
+            label=_("De-activate until next calibration test"),
+            description=_("If checked, the instrument will be unavailable until the next valid "
+                          "calibration was performed. This checkbox will automatically be unchecked."),
         ),
     ),
 
@@ -174,11 +175,73 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
     ComputedField('InstrumentTypeName',
         expression = 'here.getInstrumentType().Title() if here.getInstrumentType() else ""',
         widget = ComputedWidget(
-            visible=False,
+            label=_('Instrument Type'),
+            visible=True,
          ),
     ),
 
+    ComputedField('ManufacturerName',
+        expression = 'here.getManufacturer().Title() if here.getManufacturer() else ""',
+        widget = ComputedWidget(
+        label=_('Manufacturer'),
+            visible=True,
+         ),
+    ),
+
+    ComputedField('SupplierName',
+        expression = 'here.getSupplier().Title() if here.getSupplier() else ""',
+        widget = ComputedWidget(
+        label=_('Supplier'),
+            visible=True,
+         ),
+    ),
+
+    StringField('AssetNumber',
+        widget = StringWidget(
+            label=_("Asset Number"),
+            description=_("The instrument's ID in the lab's asset register"),
+        )
+    ),
+
+    StringField('Location',
+        schemata = 'Additional info.',
+        widget = StringWidget(
+            label=_("Location"),
+            description=_("The room and location where the instrument is installed"),
+        )
+    ),
+
+    ImageField('Photo',
+        schemata='Additional info.',
+        widget=ImageWidget(
+            label=_("Photo image file"),
+            description=_("Photo of the instrument"),
+        ),
+    ),
+
+    DateTimeField('InstallationDate',
+    schemata = 'Additional info.',
+    widget = DateTimeWidget(
+        label=_("InstallationDate"),
+        description=_("The date the instrument was installed"),
+        )
+    ),
+
+    FileField('InstallationCertificate',
+    schemata = 'Additional info.',
+    widget = FileWidget(
+        label=_("Installation Certificate"),
+        description=_("Installation certificate upload"),
+        )
+    ),
+
 ))
+
+schema.moveField('AssetNumber', before='description')
+schema.moveField('SupplierName', before='Model')
+schema.moveField('ManufacturerName', before='SupplierName')
+schema.moveField('InstrumentTypeName', before='ManufacturerName')
+
 schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 
@@ -272,6 +335,9 @@ class Instrument(ATFolder):
         return self.objectValues('InstrumentMaintenanceTask')
 
     def getCalibrations(self):
+        """
+        Return all calibration objects related with the instrument
+        """
         return self.objectValues('InstrumentCalibration')
 
     def getCertifications(self):
@@ -297,12 +363,14 @@ class Instrument(ATFolder):
         return certs
 
     def isValid(self):
-        """ Returns if the current instrument is not out-of-date regards
-            to its certificates and if the latest QC succeed
+        """ Returns if the current instrument is not out for verification, calibration,
+        out-of-date regards to its certificates and if the latest QC succeed
         """
         return self.isOutOfDate() == False \
                 and self.isQCValid() == True \
-                and self.getDisposeUntilNextCalibrationTest() == False
+                and self.getDisposeUntilNextCalibrationTest() == False \
+                and self.isValidationInProgress == False \
+                and self.isCalibrationInProgress == False \
 
     def getLatestReferenceAnalyses(self):
         """ Returns a list with the latest Reference analyses performed
@@ -386,6 +454,30 @@ class Instrument(ATFolder):
                 return False
         return True
 
+    def isValidationInProgress(self):
+        """ Returns if the current instrument is under validation progress
+        """
+        validation = self.getLatestValidValidation()
+        today = date.today()
+        if validation and validation.getDownTo():
+            validfrom = validation.getDownFrom().asdatetime().date()
+            validto = validation.getDownTo().asdatetime().date()
+            if validfrom <= today <= validto:
+                return True
+        return False
+
+    def isCalibrationInProgress(self):
+        """ Returns if the current instrument is under calibration progress
+        """
+        calibration = self.getLatestValidCalibration()
+        today = date.today()
+        if calibration and calibration.getDownTo():
+            validfrom = calibration.getDownFrom().asdatetime().date()
+            validto = calibration.getDownTo().asdatetime().date()
+            if validfrom <= today <= validto:
+                return True
+        return False
+
     def getCertificateExpireDate(self):
         """ Returns the current instrument's data expiration certificate
         """
@@ -426,8 +518,61 @@ class Instrument(ATFolder):
                 lastto = validto
         return cert
 
+    def getLatestValidValidation(self):
+        """ Returns the latest valid validation. If no latest valid
+            validation found, returns None
+        """
+        validation = None
+        lastfrom = None
+        lastto = None
+        for v in self.getValidations():
+            validfrom = v.getDownFrom() if v else None
+            validto = v.getDownTo() if validfrom else None
+            if not validfrom or not validto:
+                continue
+            validfrom = validfrom.asdatetime().date()
+            validto = validto.asdatetime().date()
+            if not validation \
+                or validto > lastto \
+                or (validto == lastto and validfrom > lastfrom):
+                validation = v
+                lastfrom = validfrom
+                lastto = validto
+        return validation
+
+    def getLatestValidCalibration(self):
+        """ Returns the latest valid calibration. If no latest valid
+            calibration found, returns None
+        """
+        calibration = None
+        lastfrom = None
+        lastto = None
+        for c in self.getCalibrations():
+            validfrom = c.getDownFrom() if c else None
+            validto = c.getDownTo() if validfrom else None
+            if not validfrom or not validto:
+                continue
+            validfrom = validfrom.asdatetime().date()
+            validto = validto.asdatetime().date()
+            if not calibration \
+                or validto > lastto \
+                or (validto == lastto and validfrom > lastfrom):
+                calibration = c
+                lastfrom = validfrom
+                lastto = validto
+        return calibration
+
     def getValidations(self):
+        """
+        Return all the validations objects related with the instrument
+        """
         return self.objectValues('InstrumentValidation')
+
+    def getDocuments(self):
+        """
+        Return all the multifile objects related with the instrument
+        """
+        return self.objectValues('Multifile')
 
     def getSchedule(self):
         return self.objectValues('InstrumentScheduledTask')

@@ -6,13 +6,13 @@
         tal:define="portal python:context.portal_url.getPortalObject()">
       <ul>
         <li>
-          <a href="http://www.bikalabs.com">
+          <a href="https://www.bikalims.org/">
             <img src=""
                  height="18"
                  width="76"
-                 alt="www.bikalabs.com - Home of Bika Lab Systems, implementers of web based free and open source LIMS"
-                 title="Bika web based free and open source LIMS. For more information visit www.bikalabs.com"
-	             tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/logobikalabsfooter.png"
+                 alt="BikaLIMS.org - Home of the Bika Open Source LIMS Collective"
+                 title="Bika web based Free and Open Source LIMS. For more information visit BikaLIMS.org"
+	             tal:attributes="src string:${portal/absolute_url}/++resource++bika.lims.images/logo_OSLIMSCollective_footer.png"
                  i18n:attributes="alt; title" />
 		  </a>
 		  &nbsp;

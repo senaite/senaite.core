@@ -112,6 +112,17 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             return
         Analyses = objects.keys()
         prices = form.get("Price", [None])[0]
+
+        # Hidden analyses?
+        # https://jira.bikalabs.com/browse/LIMS-1324
+        outs = []
+        hiddenans = form.get('Hidden', {})
+        for uid in Analyses:
+            hidden = hiddenans.get(uid, '')
+            hidden = True if hidden == 'on' else False
+            outs.append({'uid':uid, 'hidden':hidden})
+        ar.setAnalysisServicesSettings(outs)
+
         specs = {}
         if form.get("min", None):
             for service_uid in Analyses:
@@ -142,6 +153,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 analysis = ar[service.getKeyword()]
                 analysis.setSamplePartition(part)
                 analysis.reindexObject()
+
         if new:
             for analysis in new:
                 # if the AR has progressed past sample_received, we need to bring it back.
@@ -229,7 +241,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         if trans and 'receive' in self.context.bika_setup.getAutoPrintStickers():
             transitioned = [item.id for item in items]
             tmpl = self.context.bika_setup.getAutoStickerTemplate()
-            q = "/sticker?template=%s&items=" % tmpl
+            q = "/sticker?autoprint=1&template=%s&items=" % tmpl
             q += ",".join(transitioned)
             self.request.response.redirect(self.context.absolute_url() + q)
         elif trans:
@@ -305,6 +317,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         methods = self.request.form.get('Method', [{}])[0]
         instruments = self.request.form.get('Instrument', [{}])[0]
         analysts = self.request.form.get('Analyst', [{}])[0]
+        uncertainties = self.request.form.get('Uncertainty', [{}])[0]
+        dlimits = self.request.form.get('DetectionLimit', [{}])[0]
         # discover which items may be submitted
         submissable = []
         for uid, analysis in selected_analyses.items():
@@ -343,7 +357,15 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
 
             # Need to save the analyst?
             if uid in analysts and analysis_active:
-                analysis.setAnalyst(analysts[uid]);
+                analysis.setAnalyst(analysts[uid])
+
+            # Need to save the uncertainty?
+            if uid in uncertainties and analysis_active:
+                analysis.setUncertainty(uncertainties[uid])
+
+            # Need to save the detection limit?
+            if analysis_active:
+                analysis.setDetectionLimitOperand(dlimits.get(uid, None))
 
             if uid not in results or not results[uid]:
                 continue
@@ -505,7 +527,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             return
         url = self.context.absolute_url() + "/portal_factory/" + \
             "AnalysisRequest/Request new analyses/ar_add" + \
-            "?col_count={0}".format(len(objects)) + \
+            "?ar_count={0}".format(len(objects)) + \
             "&copy_from={0}".format(",".join(objects.keys()))
         self.request.response.redirect(url)
         return

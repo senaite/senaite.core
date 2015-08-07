@@ -83,6 +83,18 @@
               insert-after="++resource++plone.app.jquerytools.dateinput.js"
               />
 
+      <javascript authenticated="False"
+              id="++resource++bika.lims.js/thirdparty/jquery/jquery.qrcode-0.12.0.min.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              inline="False"
+              insert-after="++resource++bika.lims.js/thirdparty/d3/d3.js"
+              />
+
   <!-- Bika LIMS javascripts -->
   <javascript authenticated="False"
               id="++resource++bika.lims.js/bika.lims.common.js"
@@ -142,17 +154,6 @@
 
   <javascript authenticated="True"
               id="++resource++bika.lims.js/bika.lims.analysisrequest.add.js"
-              cacheable="True"
-              compression="safe"
-              conditionalcomment=""
-              cookable="True"
-              enabled="on"
-              expression=""
-              inline="False"
-              insert-after="*"/>
-
-  <javascript authenticated="True"
-              id="++resource++bika.lims.js/bika.lims.analysisrequest.analyses.js"
               cacheable="True"
               compression="safe"
               conditionalcomment=""
@@ -393,6 +394,17 @@
               inline="False"
               insert-after="*"/>
 
+  <javascript authenticated="False"
+              id="++resource++bika.lims.js/bika.lims.analysisprofile.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="True"
+              enabled="on"
+              expression=""
+              inline="False"
+              insert-after="*"/>
+
   <!-- Add javascripts ALWAYS BEFORE this one -->
   <javascript authenticated="False"
               id="++resource++bika.lims.js/bika.lims.loader.js"
@@ -445,4 +457,6 @@
   <javascript id="++resource++bika.lims.js/bika.lims.sandbox.ar_analyses.js" enabled="False"/>
   <javascript id="++resource++bika.lims.js/bika.lims.utils.contact.js" enabled="False"/>
   <javascript id="++resource++bika.lims.js/bika.lims.utils.js" enabled="False"/>
+  <javascript id="++resource++bika.lims.js/bika.lims.analysisrequest.analyses.js" enabled="False"/>
+
  </object>

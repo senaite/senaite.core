@@ -1,22 +1,27 @@
 *** Settings ***
 
-Library          Selenium2Library  timeout=5  implicit_wait=0.2
-Library          String
-Resource         keywords.txt
-Library          bika.lims.testing.Keywords
-Resource         plone/app/robotframework/selenium.robot
-Resource         plone/app/robotframework/saucelabs.robot
-Variables        plone/app/testing/interfaces.py
-Variables        bika/lims/tests/variables.py
-Suite Setup      Start browser
-Suite Teardown   Close All Browsers
+Library         BuiltIn
+Library         Selenium2Library  timeout=5  implicit_wait=0.2
+Library         String
+Resource        keywords.txt
+Library         bika.lims.testing.Keywords
+Resource        plone/app/robotframework/selenium.robot
+Library         Remote  ${PLONEURL}/RobotRemote
+Variables       plone/app/testing/interfaces.py
+Variables       bika/lims/tests/variables.py
+
+Suite Setup     Start browser
+Suite Teardown  Close All Browsers
+
+Library          DebugLibrary
 
 *** Variables ***
 
 *** Test Cases ***
 
 Test AnalysisRequest Specifications
-    Log in                              test_labmanager  test_labmanager
+    Enable autologin as  LabManager
+    Set autologin username   test_labmanager
 
     # First enable visibility of AR Specification fields
     Go To                               ${PLONEURL}/bika_setup/edit
@@ -124,8 +129,10 @@ Test AnalysisRequest Specifications
     Page should contain element         css=[field='max'][value='33']
     Page should contain element         css=[field='error'][value='44']
 
-    Log Out
-    Log in                              test_labmanager1  test_labmanager1
+    Disable autologin
+    Enable autologin as  LabManager
+    Set autologin username   test_labmanager1
+
     go to                               ${PLONEURL}/clients/client-1/AP-0001-R01
     wait until page contains element    css=#lab_analyses_select_all
     select checkbox                     css=#lab_analyses_select_all
@@ -134,7 +141,8 @@ Test AnalysisRequest Specifications
     Wait until page contains            Publish
 
 when selecting a Spec it should be set on the AR.
-    Log in                              test_labmanager  test_labmanager
+    Enable autologin as  LabManager
+    Set autologin username   test_labmanager
 
     # enable ar spec fields
     go to                               ${PLONEURL}/bika_setup/edit
@@ -173,7 +181,3 @@ when selecting a Spec it should be set on the AR.
     # Page should contain element         xpath=.//a[@href='http://localhost:55001/plone/bika_setup/bika_analysisspecs/analysisspec-9']
 
 *** Keywords ***
-
-Start browser
-    Open browser                ${PLONEURL}/login_form
-    Set selenium speed          ${SELENIUM_SPEED}
