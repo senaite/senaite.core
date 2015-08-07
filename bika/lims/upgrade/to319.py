@@ -30,7 +30,7 @@ def upgrade(tool):
 
     # Migrations
 
-    LIMS1519(portal)
+    LIMS1546(portal)
 
     return True
 
