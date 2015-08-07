@@ -21,6 +21,7 @@ def LIMS1519(portal):
             )
             order.supplyorder_lineitems.append(item)
 
+
 def upgrade(tool):
     """Upgrade step required for Bika LIMS 3.1.7
     """
@@ -32,14 +33,10 @@ def upgrade(tool):
 
     # Updated profile steps
 
-    setup.runImportStepFromProfile('profile-bika.lims:default', 'cssregistry')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'jsregistry')
-    setup.runImportStepFromProfile('profile-bika.lims:default', 'propertiestool')
-    setup.runImportStepFromProfile('profile-bika.lims:default', 'workflow')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'workflow-csv')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'plone.app.registry')
-    setup.runImportStepFromProfile('profile-bika.lims:default', 'controlpanel')
 
     # Migrations
 
