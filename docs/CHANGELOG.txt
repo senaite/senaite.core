@@ -1,8 +1,6 @@
-3.1.7-dev (unreleased)
------
-LIMS-1546: Sampling Round Template Creation and Edit view
 3.1.9 (unreleased)
 ------------------
+LIMS-1546: Sampling Round Template Creation and Edit view
 LIMS-1959: Not possible to create an AR
 LIMS-1956: Error upgrading to 319
 LIMS-1934: Hyperlinks in invoices

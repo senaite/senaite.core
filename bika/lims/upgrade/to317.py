@@ -1,7 +1,6 @@
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from Products.Archetypes.BaseContent import BaseContent
-from Products.CMFCore.utils import getToolByName
 from bika.lims.upgrade import stub
 from bika.lims import logger
 
@@ -21,16 +20,6 @@ def LIMS1519(portal):
                 VAT=soli.VAT,
             )
             order.supplyorder_lineitems.append(item)
-
-def LIMS1546(portal):
-    """Set catalogs for SRTemplate
-    """
-    at = getToolByName(portal, 'archetype_tool')
-    at.setCatalogsByType('SRTemplate', ['bika_setup_catalog', 'portal_catalog'])
-    for obj in portal.bika_setup.bika_srtemplates.objectValues():
-        obj.unmarkCreationFlag()
-        obj.reindexObject()
-
 
 def upgrade(tool):
     """Upgrade step required for Bika LIMS 3.1.7
@@ -55,6 +44,5 @@ def upgrade(tool):
     # Migrations
 
     LIMS1519(portal)
-    LIMS1546(portal)
 
     return True
