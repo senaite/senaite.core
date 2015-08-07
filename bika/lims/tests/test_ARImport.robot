@@ -11,7 +11,7 @@ Variables       plone/app/testing/interfaces.py
 Variables       bika/lims/tests/variables.py
 
 Suite Setup     Start browser
-Suite Teardown  Close All Browsers
+#Suite Teardown  Close All Browsers
 
 Library          DebugLibrary
 
@@ -22,8 +22,7 @@ ${input_identifier} =  input#arimport_file
 *** Test Cases ***
 
 Test AR Importing dependencies
-    Log in                      test_labmanager  test_labmanager
-    Wait until page contains    You are now logged in
+    Enable autologin as  LabManager
 
     Import Classic Valid AR
     Submit Valid AR Import
