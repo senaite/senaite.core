@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<object name="Containers"
+<object name="ContainerTypes"
         meta_type="Factory-based Type Information with dynamic views"
         xmlns:i18n="http://xml.zope.org/namespaces/i18n"
         i18n:domain="plone"
@@ -7,7 +7,7 @@
  <property name="title" i18n:translate="">Container Types</property>
  <property name="description"></property>
  <property name="content_icon">++resource++bika.lims.images/container.png</property>
- <property name="content_meta_type">Containers</property>
+ <property name="content_meta_type">ContainerTypes</property>
  <property name="product">bika.lims</property>
  <property name="factory">addContainerTypes</property>
  <property name="global_allow">False</property>
