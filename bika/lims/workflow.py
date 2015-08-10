@@ -51,6 +51,19 @@ def doActionFor(instance, action_id):
     return actionperformed, message
 
 
+def BeforeTransitionEventHandler(instance, event):
+    """This will run the workflow_before_* on any
+    content type that has one.
+    """
+    # creation doesn't have a 'transition'
+    if not event.transition:
+        return
+    key = 'workflow_before_' + event.transition.id
+    method = getattr(instance, key, False)
+    if method:
+        method()
+
+
 def AfterTransitionEventHandler(instance, event):
     """This will run the workflow_script_* on any
     content type that has one.

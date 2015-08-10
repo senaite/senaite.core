@@ -10,4 +10,17 @@
       for="*"
     />
 
+    <subscriber
+      for="*
+           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
+      handler="bika.lims.workflow.AfterTransitionEventHandler"
+    />
+
+    <subscriber
+      for="*
+           Products.DCWorkflow.interfaces.IBeforeTransitionEvent"
+      handler="bika.lims.workflow.BeforeTransitionEventHandler"
+    />
+
+
 </configure>
