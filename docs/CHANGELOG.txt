@@ -1,5 +1,6 @@
 3.1.9 (unreleased)
 ------------------
+LIMS-1548: Client-specific Sampling Round Templates
 LIMS-1546: Sampling Round Template Creation and Edit view
 LIMS-1959: Not possible to create an AR
 LIMS-1956: Error upgrading to 319
