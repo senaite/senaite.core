@@ -30,7 +30,7 @@ class TemplatesView(BikaListingView):
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
-        self.icon = self.portal_url + "/++resource++bika.lims.images/artemplate_big.png"
+        self.icon = self.portal_url + "/++resource++bika.lims.images/srtemplate_big.png"
         self.title = self.context.translate(_("Sampling Round Templates"))
         self.description = ""
         self.context_actions = {
