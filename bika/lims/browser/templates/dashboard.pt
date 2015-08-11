@@ -95,7 +95,7 @@
     list-style:none;
     margin:10px 0;
     padding:0;
-    
+
 }
 #content ul.dashboard-time-selector li {
     display:inline;
@@ -117,6 +117,10 @@
     position: absolute;
     z-index: -1;
     padding: 0 10px;
+}
+div.dashboard-period {
+  padding:10px;
+  font-size:1.2em;
 }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
@@ -152,7 +156,7 @@ $(document).ready(function(){
           .enter().append("path")
             .style("fill", function(d, i) { return color(i); })
             .attr("d", arc);
-                
+
             });
 
 });
@@ -160,13 +164,18 @@ $(document).ready(function(){
 
     </script>
 <ul class='dashboard-time-selector'>
-    <li tal:attributes="class python:'selected' if view.daysback == 7 else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?days=7' i8n:translate="">Last 7 days</a></li>
-    <li tal:attributes="class python:'selected' if view.daysback == 15 else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?days=15' i8n:translate="">Last 15 days</a></li>
-    <li tal:attributes="class python:'selected' if view.daysback == 30 else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?days=30' i8n:translate="">Last 30 days</a></li>
-    <li tal:attributes="class python:'selected' if view.daysback == 60 else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?days=60' i8n:translate="">Last 60 days</a></li>
-    <li tal:attributes="class python:'selected' if view.daysback == 120 else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?days=120' i8n:translate="">Last 120 days</a></li>
-    <li tal:attributes="class python:'selected' if view.daysback == 240 else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?days=240' i8n:translate="">Last 240 days</a></li>
+    <li tal:attributes="class python:'selected' if view.periodicity == 'd' else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?p=d' i8n:translate="">Daily</a></li>
+    <li tal:attributes="class python:'selected' if view.periodicity == 'w' else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?p=w' i8n:translate="">Weekly</a></li>
+    <li tal:attributes="class python:'selected' if view.periodicity == 'm' else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?p=m' i8n:translate="">Monthly</a></li>
+    <li tal:attributes="class python:'selected' if view.periodicity == 'q' else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?p=q' i8n:translate="">Quarterly</a></li>
+    <li tal:attributes="class python:'selected' if view.periodicity == 'b' else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?p=b' i8n:translate="">Biannual</a></li>
+    <li tal:attributes="class python:'selected' if view.periodicity == 'y' else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?p=y' i8n:translate="">Yearly</a></li>
 </ul>
+<div class='dashboard-period'>
+  <span i18n:translate="">Period</span>:&nbsp;
+  <span tal:content="python:here.toLocalizedTime(view.date_from)"></span>&nbsp;-&nbsp;
+  <span tal:content="python:here.toLocalizedTime(view.date_to)"></span>
+</div>
 <tal:section repeat="section python:view.get_sections()">
 <div class='dashboard-section'>
     <h2 tal:content="section/title" class='dashboard-section-title'></h2>

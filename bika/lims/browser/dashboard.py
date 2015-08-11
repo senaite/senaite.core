@@ -2,7 +2,9 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims.browser import BrowserView
 from bika.lims import bikaMessageFactory as _
+from calendar import monthrange
 from DateTime import DateTime
+import datetime
 
 class DashboardView(BrowserView):
     template = ViewPageTemplateFile("templates/dashboard.pt")
@@ -10,20 +12,51 @@ class DashboardView(BrowserView):
     def __call__(self):
         self.icon = self.portal_url + "/++resource++bika.lims.images/chevron_big.png"
 
-        # By default, items from last 15 days
-        self.daysback = int(self.request.get('days', '15'))
-        self.date_from = DateTime() - self.daysback 
-        self.date_to = DateTime() + 1
+        # By default, weekly
+        self.periodicity = self.request.get('p', 'w')
+        if (self.periodicity == 'd'):
+            # Daily
+            self.date_from = DateTime()
+            self.date_to = DateTime() + 1
+        elif (self.periodicity == 'm'):
+            # Monthly
+            today = datetime.date.today()
+            self.date_from = DateTime(today.year, today.month, 1)
+            self.date_to = DateTime(today.year, today.month, monthrange(today.year, today.month)[1], 23, 59, 59)
+        elif (self.periodicity == 'q'):
+            # Quarterly
+            today = datetime.date.today()
+            m = (((today.month-1)/3)*3)+1
+            self.date_from = DateTime(today.year, m, 1)
+            self.date_to = DateTime(today.year, m+2, monthrange(today.year, m+2)[1], 23, 59, 59)
+        elif (self.periodicity == 'b'):
+            # Biannual
+            today = datetime.date.today()
+            m = (((today.month-1)/6)*6)+1
+            self.date_from = DateTime(today.year, m, 1)
+            self.date_to = DateTime(today.year, m+5, monthrange(today.year, m+5)[1], 23, 59, 59)
+        elif (self.periodicity == 'y'):
+            # Yearly
+            today = datetime.date.today()
+            self.date_from = DateTime(today.year, 1, 1)
+            self.date_to = DateTime(today.year, 12, 31, 23, 59, 59)
+        else:
+            # weekly
+            today = datetime.date.today()
+            year, weeknum, dow = today.isocalendar()
+            self.date_from = DateTime() - dow
+            self.date_to = self.date_from + 7
+
         self.date_range = {'query': (self.date_from, self.date_to), 'range': 'min:max'}
         self.below_date = {'query': (DateTime('1990-01-01 00:00:00'), self.date_from - 1), 'range':'min:max'}
-        
+
         return self.template()
 
     def get_sections(self):
-    
+
         sections = [self.get_analysisrequests_section(),
                     self.get_worksheets_section()]
-        
+
         return sections
 
     def get_analysisrequests_section(self):
@@ -38,8 +71,12 @@ class DashboardView(BrowserView):
                      'attachment_due',
                      'verified']
         bc = getToolByName(self.context, "bika_catalog")
-        numars = len(bc(portal_type="AnalysisRequest",
-                        created=self.date_range))
+        ars = bc(portal_type="AnalysisRequest", created=self.date_range)
+
+        # Create a barchart with the number for ARs created per period
+
+
+        numars = len(ars)
         numars += len(bc(portal_type="AnalysisRequest",
                         review_state=active_rs,
                         cancellation_state=['active',],
@@ -145,7 +182,7 @@ class DashboardView(BrowserView):
         active_ws = ['open', 'to_be_verified']
         numws = len(bc(portal_type="Worksheet",
                        created=self.date_range))
-                       
+
         numws += len(bc(portal_type="Worksheet",
                         review_state=active_ws,
                         cancellation_state=['active',],
@@ -180,8 +217,7 @@ class DashboardView(BrowserView):
                     'total':        numws,
                     'legend':        '/' + str(numws) + ' (' + ratio +'%)',
                     'link':         self.portal_url + '/worksheets?list_review_state=to_be_verified'})
-                    
+
         return {'id': 'worksheets',
                 'title': _('Worksheets'),
                 'panels': out}
-
