@@ -1,4 +1,5 @@
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from Products.CMFCore.utils import getToolByName
 from bika.lims.browser import BrowserView
 
 
@@ -6,9 +7,14 @@ class FrontPageView(BrowserView):
     template = ViewPageTemplateFile("templates/bika-frontpage.pt")
 
     def __call__(self):
-        self.set_versions()
-        self.icon = self.portal_url + "/++resource++bika.lims.images/chevron_big.png"
-        return self.template()
+        membership_tool=getToolByName(self.context, 'portal_membership')
+        if not membership_tool.isAnonymousUser():
+            # If authenticated user, display the Main Dashboard view
+            self.request.response.redirect(self.portal_url + "/bika-dashboard")
+        else:
+            self.set_versions()
+            self.icon = self.portal_url + "/++resource++bika.lims.images/chevron_big.png"
+            return self.template()
 
 
     def set_versions(self):

@@ -1,0 +1,201 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+        metal:use-macro="here/main_template/macros/master"
+        i18n:domain="bika">
+
+<metal:content-title fill-slot="content-title">
+<h1 class="documentFirstHeading" i18n:translate="">System Dashboard</h1>
+</metal:content-title>
+
+<metal:content-description fill-slot="content-description">
+</metal:content-description>
+
+
+<metal:content-core fill-slot="content-core">
+    <style>
+
+#edit-bar {
+    display:none;
+}
+.dashboard-section {
+    padding:10px 20px 0px 0px;
+    float:left;
+}
+
+.dashboard-section h2 {
+    border-bottom: 1px solid #dcdcdc;
+    margin: 0 20px 0 0;
+    padding: 0 0 10px;
+}
+.dashboard-panels {
+    padding-top:10px;
+}
+.dashboard-info-panel-wrapper {
+    float:left;
+    margin: 0 20px 10px 0;
+}
+.dashboard-info-panel {
+    /*border: 1px dotted #cdcdcd;*/
+    width: 120px;
+    height: 120px;
+    padding: 10px;
+    text-align: center;
+}
+#content .dashboard-info-panel-wrapper a {
+    color:#333;
+    text-decoration:none;
+}
+#content .dashboard-info-panel-wrapper a:hover div {
+    opacity:0.8;
+    filter:alpha(opacity=80);
+        -webkit-transition: opacity 250ms ease-in-out;
+    -moz-transition: opacity 250ms ease-in-out;
+    -o-transition: opacity 250ms ease-in-out;
+    -ms-transition: opacity 250ms ease-in-out;
+    transition: opacity 250ms ease-in-out
+}
+#content .dashboard-info-panel-wrapper a:hover div.dashboard-info-panel {
+    /*border: 1px dotted #205c90;*/
+}
+.dashboard-info-panel-number {
+    font-size: 3em;
+    font-weight: bold;
+    line-height: 130%;
+    text-align: center;
+    padding: 25px 0;
+    color:#777;
+}
+#content .dashboard-info-panel-wrapper {
+    opacity:0.4;
+    filter:alpha(opacity=40);
+
+}
+#content .dashboard-info-panel-wrapper.highlight {
+    opacity:1;
+    filter:alpha(opacity=100);
+}
+#content .dashboard-info-panel-wrapper.highlight .dashboard-info-panel-number {
+    color:#ff7f0e;
+}
+
+
+.dashboard-info-panel-description {
+    color: #333;
+    display: block;
+    font-size: 0.85em;
+    line-height: 130%;
+    margin: 0 -11px;
+    padding: 10px 5px;
+    height: 40px;
+}
+.dashboard-info-panel-total {
+    font-size: 0.8em;
+    color:#666;
+}
+#content ul.dashboard-time-selector {
+    list-style:none;
+    margin:10px 0;
+    padding:0;
+    
+}
+#content ul.dashboard-time-selector li {
+    display:inline;
+}
+#content ul.dashboard-time-selector li a {
+    background-color: #efefef;
+    border-radius: 5px;
+    margin: 0 5px;
+    padding: 4px 10px;
+    color:#333;
+}
+#content ul.dashboard-time-selector li.selected a {
+    background-color: #dcdcdc;
+}
+.clearfix {
+    clear: both;
+}
+.pie-chart {
+    position: absolute;
+    z-index: -1;
+    padding: 0 10px;
+}
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.5/d3.min.js"></script>
+<script>
+
+(function( $ ) {
+$(document).ready(function(){
+
+    $('.pie-chart').each(function(e) {
+        var id = $(this).attr('id');
+        var data = $.parseJSON($(this).attr('data'));
+        var width = 100;
+        var height = 100;
+        var radius = height / 2 - 10;
+
+        var arc = d3.svg.arc()
+            .innerRadius(radius - 3)
+            .outerRadius(radius);
+
+        var pie = d3.layout.pie()
+            .padAngle(.02);
+
+        var color = d3.scale.category10();
+
+        var svg = d3.select("#"+id).append("svg")
+            .attr("width", width)
+            .attr("height", height)
+          .append("g")
+            .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+        svg.selectAll("path")
+            .data(pie(data))
+          .enter().append("path")
+            .style("fill", function(d, i) { return color(i); })
+            .attr("d", arc);
+                
+            });
+
+});
+}(jQuery));
+
+    </script>
+<ul class='dashboard-time-selector'>
+    <li tal:attributes="class python:'selected' if view.daysback == 7 else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?days=7' i8n:translate="">Last 7 days</a></li>
+    <li tal:attributes="class python:'selected' if view.daysback == 15 else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?days=15' i8n:translate="">Last 15 days</a></li>
+    <li tal:attributes="class python:'selected' if view.daysback == 30 else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?days=30' i8n:translate="">Last 30 days</a></li>
+    <li tal:attributes="class python:'selected' if view.daysback == 60 else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?days=60' i8n:translate="">Last 60 days</a></li>
+    <li tal:attributes="class python:'selected' if view.daysback == 120 else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?days=120' i8n:translate="">Last 120 days</a></li>
+    <li tal:attributes="class python:'selected' if view.daysback == 240 else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?days=240' i8n:translate="">Last 240 days</a></li>
+</ul>
+<tal:section repeat="section python:view.get_sections()">
+<div class='dashboard-section'>
+    <h2 tal:content="section/title" class='dashboard-section-title'></h2>
+    <div class='dashboard-panels'>
+        <tal:panels repeat="panel section/panels">
+        <div tal:define="num panel/number;
+                         numclass python:'' if num==0 else 'highlight';"
+             tal:attributes="class python:'dashboard-info-panel-wrapper %s %s' % (panel.get('class', ''), numclass);"
+             tal:condition="python:panel.get('type', '') == 'simple-panel'">
+            <a tal:attributes="href panel/link">
+                <div class='dashboard-info-panel'>
+                <div class='pie-chart'
+                    tal:define='total panel/total;
+                                substract python:total-num;
+                                itemnum repeat/panel/number;'
+                    tal:attributes='data python:"[%s,%s]" % (str(substract), str(num));
+                                    id python:"pie-chart-%s-%s" % (section["id"],itemnum);'></div>
+                    <div tal:content="panel/number" class='dashboard-info-panel-number'></div>
+                    <div tal:content="panel/legend" class='dashboard-info-panel-total' tal:condition="python:panel.get('legend','')"></div>
+                    <div tal:content="panel/description" class='dashboard-info-panel-description'></div>
+                </div>
+            </a>
+        </div>
+        </tal:panels>
+        <div class='clearfix'></div>
+    </div>
+</div>
+</tal:section>
+</metal:content-core>
+
+
+</html>
