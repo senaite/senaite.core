@@ -67,11 +67,14 @@ class DashboardView(BrowserView):
                      'to_be_preserved',
                      'sample_due',
                      'sample_received',
+                     'assigned',
                      'to_be_verified',
                      'attachment_due',
                      'verified']
         bc = getToolByName(self.context, "bika_catalog")
-        ars = bc(portal_type="AnalysisRequest", created=self.date_range)
+        ars = bc(portal_type="AnalysisRequest",
+                 created=self.date_range,
+                 cancellation_state=['active',])
 
         # Create a barchart with the number for ARs created per period
 
@@ -84,7 +87,9 @@ class DashboardView(BrowserView):
 
         # Analysis Requests awaiting to be sampled
         review_state = ['to_be_sampled',]
-        ars = len(bc(portal_type="AnalysisRequest", review_state=review_state))
+        ars = len(bc(portal_type="AnalysisRequest",
+                     review_state=review_state,
+                     cancellation_state=['active',]))
         ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
         msg = _("To be sampled")
@@ -94,12 +99,14 @@ class DashboardView(BrowserView):
                     'description':  msg,
                     'number':       ars,
                     'total':        numars,
-                    'legend':        '/' + str(numars) + ' (' + ratio +'%)',
+                    'legend':       _('of') + " " + str(numars) + ' (' + ratio +'%)',
                     'link':         self.portal_url + '/analysisrequests?analysisrequests_review_state=to_be_sampled'})
 
         # Analysis Requests awaiting to be preserved
         review_state = ['to_be_preserved',]
-        ars = len(bc(portal_type="AnalysisRequest", review_state=review_state))
+        ars = len(bc(portal_type="AnalysisRequest",
+                     review_state=review_state,
+                     cancellation_state=['active',]))
         ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
         msg = _("To be preserved")
@@ -109,12 +116,14 @@ class DashboardView(BrowserView):
                     'description':  msg,
                     'number':       ars,
                     'total':        numars,
-                    'legend':        '/' + str(numars) + ' (' + ratio +'%)',
+                    'legend':       _('of') + " " + str(numars) + ' (' + ratio +'%)',
                     'link':         self.portal_url + '/analysisrequests?analysisrequests_review_state=to_be_preserved'})
 
         # Analysis Requests awaiting for reception
         review_state = ['sample_due',]
-        ars = len(bc(portal_type="AnalysisRequest", review_state=review_state))
+        ars = len(bc(portal_type="AnalysisRequest",
+                     review_state=review_state,
+                     cancellation_state=['active',]))
         ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
         msg = _("Reception pending")
@@ -124,12 +133,14 @@ class DashboardView(BrowserView):
                     'description':  msg,
                     'number':       ars,
                     'total':        numars,
-                    'legend':        '/' + str(numars) + ' (' + ratio +'%)',
+                    'legend':       _('of') + " " + str(numars) + ' (' + ratio +'%)',
                     'link':         self.portal_url + '/analysisrequests?analysisrequests_review_state=sample_due'})
 
         # Analysis Requests under way
         review_state = ['attachment_due', 'sample_received', 'assigned']
-        ars = len(bc(portal_type="AnalysisRequest", review_state=review_state))
+        ars = len(bc(portal_type="AnalysisRequest",
+                     review_state=review_state,
+                     cancellation_state=['active',]))
         ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
         msg = _("Results pending")
@@ -139,12 +150,14 @@ class DashboardView(BrowserView):
                     'description':  msg,
                     'number':       ars,
                     'total':        numars,
-                    'legend':        '/' + str(numars) + ' (' + ratio +'%)',
+                    'legend':       _('of') + " " + str(numars) + ' (' + ratio +'%)',
                     'link':         self.portal_url + '/analysisrequests?analysisrequests_review_state=sample_received'})
 
         # Analysis Requests to be verified
         review_state = ['to_be_verified',]
-        ars = len(bc(portal_type="AnalysisRequest", review_state=review_state))
+        ars = len(bc(portal_type="AnalysisRequest",
+                     review_state=review_state,
+                     cancellation_state=['active',]))
         ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
         msg = _("To be verified")
@@ -154,12 +167,14 @@ class DashboardView(BrowserView):
                     'description':  msg,
                     'number':       ars,
                     'total':        numars,
-                    'legend':        '/' + str(numars) + ' (' + ratio +'%)',
+                    'legend':       _('of') + " " + str(numars) + ' (' + ratio +'%)',
                     'link':         self.portal_url + '/analysisrequests?analysisrequests_review_state=to_be_verified'})
 
         # Analysis Requests to be published
         review_state = ['verified',]
-        ars = len(bc(portal_type="AnalysisRequest", review_state=review_state))
+        ars = len(bc(portal_type="AnalysisRequest",
+                     review_state=review_state,
+                     cancellation_state=['active',]))
         ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
         msg = _("To be published")
@@ -169,7 +184,7 @@ class DashboardView(BrowserView):
                     'description':  msg,
                     'number':       ars,
                     'total':        numars,
-                    'legend':        '/' + str(numars) + ' (' + ratio +'%)',
+                    'legend':       _('of') + " " + str(numars) + ' (' + ratio +'%)',
                     'link':         self.portal_url + '/analysisrequests?analysisrequests_review_state=verified'})
 
         return {'id': 'analysisrequests',
@@ -179,43 +194,44 @@ class DashboardView(BrowserView):
     def get_worksheets_section(self):
         out = []
         bc = getToolByName(self.context, "bika_catalog")
-        active_ws = ['open', 'to_be_verified']
+        active_ws = ['open', 'to_be_verified', 'attachment_due']
         numws = len(bc(portal_type="Worksheet",
                        created=self.date_range))
 
         numws += len(bc(portal_type="Worksheet",
                         review_state=active_ws,
-                        cancellation_state=['active',],
                         created=self.below_date))
 
         # Open worksheets
-        review_state = ['open', ]
-        ws = len(bc(portal_type="Worksheet", review_state=review_state))
+        review_state = ['open', 'attachment_due']
+        ws = len(bc(portal_type="Worksheet",
+                    review_state=review_state))
         ratio = (float(ws)/float(numws))*100 if ws > 0 and numws > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
-        msg = _("Under way")
+        msg = _("Results pending")
         out.append({'type':         'simple-panel',
-                    'name':         _('Open worksheets'),
+                    'name':         _('Results pending'),
                     'class':        'informative',
                     'description':  msg,
                     'number':       ws,
                     'total':        numws,
-                    'legend':       '/' + str(numws) + ' (' + ratio +'%)',
+                    'legend':       _('of') + " " + str(numws) + ' (' + ratio +'%)',
                     'link':         self.portal_url + '/worksheets?list_review_state=open'})
 
         # Worksheets to be verified
         review_state = ['to_be_verified', ]
-        ws = len(bc(portal_type="Worksheet", review_state=review_state))
+        ws = len(bc(portal_type="Worksheet",
+                    review_state=review_state))
         ratio = (float(ws)/float(numws))*100 if ws > 0 and numws > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
-        msg = _("Verification pending")
+        msg = _("To be verified")
         out.append({'type':         'simple-panel',
-                    'name':         _('Open worksheets'),
+                    'name':         _('To be verified'),
                     'class':        'informative',
                     'description':  msg,
                     'number':       ws,
                     'total':        numws,
-                    'legend':        '/' + str(numws) + ' (' + ratio +'%)',
+                    'legend':       _('of') + " " + str(numws) + ' (' + ratio +'%)',
                     'link':         self.portal_url + '/worksheets?list_review_state=to_be_verified'})
 
         return {'id': 'worksheets',
