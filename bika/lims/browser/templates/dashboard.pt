@@ -16,7 +16,7 @@
         display:none;
     }
     .dashboard-section {
-        padding:10px 0px 0px 0px;
+        padding: 20px 0 30px;
     }
 
     .dashboard-section h2 {
