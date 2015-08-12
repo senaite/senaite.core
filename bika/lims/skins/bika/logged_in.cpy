@@ -74,7 +74,4 @@ elif 'Samplers' in member_groups:
         url += "/list_review_state=to_be_sampled"
     return context.REQUEST.RESPONSE.redirect(url)
 
-else:
-    return context.REQUEST.RESPONSE.redirect('/bika-dashboard')
-
 return state
