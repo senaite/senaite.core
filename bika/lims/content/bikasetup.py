@@ -402,6 +402,17 @@ schema = BikaFolderSchema.copy() + Schema((
             format='select',
         )
     ),
+    StringField('WorksheetLayout',
+        schemata = "Analyses",
+        default = '1',
+        vocabulary = WORKSHEET_LAYOUT_OPTIONS,
+        widget = SelectionWidget(
+            label=_("Default layout in worksheet view"),
+            description =_("Preferred layout of the results entry table "
+                           "in the Worksheet view"),
+            format='select',
+        )
+    ),
     StringField('AutoPrintStickers',
         schemata = "Stickers",
         vocabulary = STICKER_AUTO_OPTIONS,
