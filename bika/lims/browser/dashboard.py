@@ -11,7 +11,22 @@ class DashboardView(BrowserView):
 
     def __call__(self):
         self.icon = self.portal_url + "/++resource++bika.lims.images/chevron_big.png"
+        self._init_date_range()
+        return self.template()
 
+    def _init_date_range(self):
+        """ Sets the date range from which the data must be retrieved.
+            Sets the values to the class parameters 'date_from',
+            'date_to', 'date_range' and 'below_date'
+            Calculates the date range according to the value of the
+            request's 'p' parameter:
+            - 'd' (daily)
+            - 'w' (weekly)
+            - 'm' (monthly)
+            - 'q' (quarterly)
+            - 'b' (biannual)
+            - 'y' (yearly)
+        """
         # By default, weekly
         self.periodicity = self.request.get('p', 'w')
         if (self.periodicity == 'd'):
@@ -50,16 +65,20 @@ class DashboardView(BrowserView):
         self.date_range = {'query': (self.date_from, self.date_to), 'range': 'min:max'}
         self.below_date = {'query': (DateTime('1990-01-01 00:00:00'), self.date_from - 1), 'range':'min:max'}
 
-        return self.template()
-
     def get_sections(self):
-
-        sections = [self.get_analysisrequests_section(),
-                    self.get_worksheets_section()]
-
+        """ Returns an array with the sections to be displayed.
+            Every section is a dictionary with the following structure:
+                {'id': <section_identifier>,
+                 'title': <section_title>,
+                'panels': <array of panels>}
+        """
         return sections
 
     def get_analysisrequests_section(self):
+        """ Returns the section dictionary related with Analysis
+            Requests, that contains some informative panels (like
+            ARs to be verified, ARs to be published, etc.)
+        """
         out = []
 
         # Analysis Requests
@@ -192,6 +211,10 @@ class DashboardView(BrowserView):
                 'panels': out}
 
     def get_worksheets_section(self):
+        """ Returns the section dictionary related with Worksheets,
+            that contains some informative panels (like
+            WS to be verified, WS with results pending, etc.)
+        """
         out = []
         bc = getToolByName(self.context, "bika_catalog")
         active_ws = ['open', 'to_be_verified', 'attachment_due']
