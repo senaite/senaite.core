@@ -30,7 +30,7 @@ class ServicesView(BikaListingView):
         self.show_select_row = False
         self.show_select_all_checkbox = False
         self.show_select_column = True
-        self.pagesize = 0
+        self.pagesize = 999999
         self.form_id = 'serviceswidget'
 
         self.columns = {

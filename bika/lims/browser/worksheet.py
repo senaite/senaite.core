@@ -1299,7 +1299,7 @@ class WorksheetServicesView(BikaListingView):
         self.show_select_row = False
         self.show_select_all_checkbox = False
         self.show_select_column = True
-        self.pagesize = 0
+        self.pagesize = 999999
         self.show_workflow_action_buttons = False
         self.show_categories=context.bika_setup.getCategoriseAnalysisServices()
         self.expand_all_categories=True

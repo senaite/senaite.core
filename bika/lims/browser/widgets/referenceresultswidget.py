@@ -27,7 +27,7 @@ class ReferenceResultsView(BikaListingView):
         self.show_select_row = False
         self.show_select_all_checkbox = False
         self.show_select_column = False
-        self.pagesize = 0
+        self.pagesize = 999999
         self.allow_edit = allow_edit
         self.show_categories = True
         # self.expand_all_categories = False
