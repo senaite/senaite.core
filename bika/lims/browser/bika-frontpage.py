@@ -7,9 +7,17 @@ class FrontPageView(BrowserView):
     template = ViewPageTemplateFile("templates/bika-frontpage.pt")
 
     def __call__(self):
-        membership_tool=getToolByName(self.context, 'portal_membership')
-        if not membership_tool.isAnonymousUser():
-            # If authenticated user, display the Main Dashboard view
+        todashboard = False
+        mtool=getToolByName(self.context, 'portal_membership')
+        if not mtool.isAnonymousUser():
+            # If authenticated user with labman role,
+            # display the Main Dashboard view
+            pm = getToolByName(self.context, "portal_membership")
+            member = pm.getAuthenticatedMember()
+            roles = member.getRoles()
+            todashboard = 'Manager' in roles or 'LabManager' in roles
+
+        if todashboard == True:
             self.request.response.redirect(self.portal_url + "/bika-dashboard")
         else:
             self.set_versions()

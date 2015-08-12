@@ -11,9 +11,21 @@ class DashboardView(BrowserView):
     template = ViewPageTemplateFile("templates/dashboard.pt")
 
     def __call__(self):
-        self.icon = self.portal_url + "/++resource++bika.lims.images/chevron_big.png"
-        self._init_date_range()
-        return self.template()
+        tofrontpage = True
+        mtool=getToolByName(self.context, 'portal_membership')
+        if not mtool.isAnonymousUser():
+            # If authenticated user with labman role,
+            # display the Main Dashboard view
+            pm = getToolByName(self.context, "portal_membership")
+            member = pm.getAuthenticatedMember()
+            roles = member.getRoles()
+            tofrontpage = 'Manager' not in roles and 'LabManager' not in roles
+
+        if tofrontpage == True:
+            self.request.response.redirect(self.portal_url + "/bika-frontpage")
+        else:
+            self._init_date_range()
+            return self.template()
 
     def _init_date_range(self):
         """ Sets the date range from which the data must be retrieved.
