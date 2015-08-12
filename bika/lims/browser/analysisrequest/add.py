@@ -68,7 +68,7 @@ class AnalysisServicesView(ASV):
 
         self.filter_indexes = ['id', 'Title', 'SearchableText', 'getKeyword']
 
-        self.pagesize = 0
+        self.pagesize = 999999
         self.table_only = True
 
         default = [x for x in self.review_states if x['id'] == 'default'][0]

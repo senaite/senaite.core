@@ -39,7 +39,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
         self.show_select_column = True
         self.table_only = True
         self.show_select_all_checkbox = False
-        self.pagesize = 0
+        self.pagesize = 999999
 
         self.categories = []
         self.do_cats = self.context.bika_setup.getCategoriseAnalysisServices()
