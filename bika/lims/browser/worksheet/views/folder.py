@@ -23,14 +23,14 @@ import plone
 import json
 import zope
 
-class WorksheetsView(BikaListingView):
+class FolderView(BikaListingView):
 
     implements(IFolderContentsView, IViewView)
 
     template = ViewPageTemplateFile("templates/worksheets.pt")
 
     def __init__(self, context, request):
-        super(WorksheetsView, self).__init__(context, request)
+        super(FolderView, self).__init__(context, request)
         self.catalog = 'bika_catalog'
         self.contentFilter = {
             'portal_type': 'Worksheet',
@@ -227,7 +227,7 @@ class WorksheetsView(BikaListingView):
             # Remove the add button
             self.context_actions = {}
 
-        return super(WorksheetsView, self).__call__()
+        return super(FolderView, self).__call__()
 
     def isManagementAllowed(self):
         mtool = getToolByName(self.context, 'portal_membership')
@@ -457,55 +457,3 @@ class WorksheetsView(BikaListingView):
             Used in bika_listing.pt
         """
         return json.dumps(self.templateinstruments)
-
-
-class AddWorksheetView(BrowserView):
-    """ Handler for the "Add Worksheet" button in Worksheet Folder.
-        If a template was selected, the worksheet is pre-populated here.
-    """
-
-    def __call__(self):
-
-        # Validation
-        form = self.request.form
-        analyst = self.request.get('analyst', '')
-        template = self.request.get('template', '')
-        instrument = self.request.get('instrument', '')
-
-        if not analyst:
-            message = _("Analyst must be specified.")
-            self.context.plone_utils.addPortalMessage(message, 'info')
-            self.request.RESPONSE.redirect(self.context.absolute_url())
-            return
-
-        rc = getToolByName(self.context, REFERENCE_CATALOG)
-        wf = getToolByName(self.context, "portal_workflow")
-        pm = getToolByName(self.context, "portal_membership")
-
-        ws = _createObjectByType("Worksheet", self.context, tmpID())
-        ws.processForm()
-
-        # Set analyst and instrument
-        ws.setAnalyst(analyst)
-        if instrument:
-            ws.setInstrument(instrument)
-
-        # overwrite saved context UID for event subscribers
-        self.request['context_uid'] = ws.UID()
-
-        # if no template was specified, redirect to blank worksheet
-        if not template:
-            ws.processForm()
-            self.request.RESPONSE.redirect(ws.absolute_url() + "/add_analyses")
-            return
-
-        wst = rc.lookupObject(template)
-        ws.setWorksheetTemplate(wst)
-        ws.applyWorksheetTemplate(wst)
-
-        if ws.getLayout():
-            self.request.RESPONSE.redirect(ws.absolute_url() + "/manage_results")
-        else:
-            msg = _("No analyses were added")
-            self.context.plone_utils.addPortalMessage(msg)
-            self.request.RESPONSE.redirect(ws.absolute_url() + "/add_analyses")

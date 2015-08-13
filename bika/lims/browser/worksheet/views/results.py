@@ -11,6 +11,8 @@ from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.referencesample import ReferenceSamplesView
+from bika.lims.browser.worksheet.tools import checkUserAccess
+from bika.lims.browser.worksheet.tools import showRejectionMessage
 from bika.lims.exportimport import instruments
 from bika.lims.interfaces import IFieldIcons
 from bika.lims.interfaces import IWorksheet
@@ -54,7 +56,7 @@ class ManageResultsView(BrowserView):
         if checkUserAccess(self.context, self.request) == False:
             return []
 
-        rejected_alerts(self.context)
+        showRejectionMessage(self.context)
 
         self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
 
@@ -117,7 +119,7 @@ class ManageResultsView(BrowserView):
 
         # Here we create an instance of WorksheetAnalysesView
         self.Analyses = WorksheetAnalysesView(self.context, self.request)
-        self.analystname = getAnalystName(self.context)
+        self.analystname = self.context.getAnalystName()
         self.instrumenttitle = self.context.getInstrument() and self.context.getInstrument().Title() or ''
 
         # Check if the instruments used are valid

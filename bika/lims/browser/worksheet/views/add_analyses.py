@@ -11,6 +11,7 @@ from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.referencesample import ReferenceSamplesView
+from bika.lims.browser.worksheet.tools import checkUserManage
 from bika.lims.exportimport import instruments
 from bika.lims.interfaces import IFieldIcons
 from bika.lims.interfaces import IWorksheet
@@ -117,7 +118,7 @@ class AddAnalysesView(BikaListingView):
         if checkUserManage(self.context, self.request) == False:
             return []
 
-        rejected_alerts(self.context)
+        showRejectionMessage(self.context)
 
         translate = self.context.translate
 

@@ -11,6 +11,8 @@ from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.browser.referencesample import ReferenceSamplesView
+from bika.lims.browser.worksheet.tools import checkUserManage
+from bika.lims.browser.worksheet.tools import showRejectionMessage
 from bika.lims.exportimport import instruments
 from bika.lims.interfaces import IFieldIcons
 from bika.lims.interfaces import IWorksheet
@@ -41,16 +43,17 @@ import plone
 import plone.protect
 import json
 
-class AddDuplicateView(BrowserView):
+class AddControlView(BrowserView):
     implements(IViewView)
-    template = ViewPageTemplateFile("templates/worksheet_add_duplicate.pt")
+    template = ViewPageTemplateFile("templates/worksheet_add_control.pt")
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
         self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
-        self.title = self.context.translate(_("Add Duplicate"))
-        self.description = self.context.translate(_("Select a destinaton position and the AR to duplicate."))
-
+        self.title = self.context.translate(_("Add Control Reference"))
+        self.description = self.context.translate(_(
+                             "Select services in the left column to locate "
+                             "reference samples. Select a reference by clicking it. "))
     def __call__(self):
         if not(getSecurityManager().checkPermission(EditWorksheet, self.context)):
             self.request.response.redirect(self.context.absolute_url())
@@ -60,19 +63,24 @@ class AddDuplicateView(BrowserView):
         if checkUserManage(self.context, self.request) == False:
             return []
 
-        rejected_alerts(self.context)
+        showRejectionMessage(self.context)
 
         form = self.request.form
         if 'submitted' in form:
-            ar_uid = self.request.get('ar_uid', '')
-            src_slot = [slot['position'] for slot in self.context.getLayout() if
-                        slot['container_uid'] == ar_uid and slot['type'] == 'a'][0]
-            position = self.request.get('position', '')
+            rc = getToolByName(self.context, REFERENCE_CATALOG)
+            # parse request
+            service_uids = form['selected_service_uids']
+            if type(form['selected_service_uids']) not in (list, tuple):
+                service_uids = str(form['selected_service_uids']).split(",")
+            position = form['position']
+            reference_uid = form['reference_uid']
+            reference = rc.lookupObject(reference_uid)
             self.request['context_uid'] = self.context.UID()
-            self.context.addDuplicateAnalyses(src_slot, position)
+            ref_analyses = self.context.addReferences(position, reference, service_uids)
             self.request.response.redirect(self.context.absolute_url() + "/manage_results")
         else:
-            self.ARs = WorksheetARsView(self.context, self.request)
+            self.Services = WorksheetServicesView(self.context, self.request)
+            self.Services.view_url = self.Services.base_url + "/add_control"
             return self.template()
 
     def getAvailablePositions(self):
