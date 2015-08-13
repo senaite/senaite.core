@@ -8,7 +8,7 @@
     <browser:page
       for="bika.lims.interfaces.IWorksheetFolder"
       name="base_view"
-      class="bika.lims.browser.worksheetfolder.WorksheetFolderListingView"
+      class="bika.lims.browser.worksheet.worksheets.WorksheetsView"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

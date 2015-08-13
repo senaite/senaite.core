@@ -23,14 +23,14 @@ import plone
 import json
 import zope
 
-class WorksheetFolderListingView(BikaListingView):
+class WorksheetsView(BikaListingView):
 
     implements(IFolderContentsView, IViewView)
 
     template = ViewPageTemplateFile("templates/worksheetfolder.pt")
 
     def __init__(self, context, request):
-        super(WorksheetFolderListingView, self).__init__(context, request)
+        super(WorksheetsView, self).__init__(context, request)
         self.catalog = 'bika_catalog'
         self.contentFilter = {
             'portal_type': 'Worksheet',
@@ -227,7 +227,7 @@ class WorksheetFolderListingView(BikaListingView):
             # Remove the add button
             self.context_actions = {}
 
-        return super(WorksheetFolderListingView, self).__call__()
+        return super(WorksheetsView, self).__call__()
 
     def isManagementAllowed(self):
         mtool = getToolByName(self.context, 'portal_membership')
