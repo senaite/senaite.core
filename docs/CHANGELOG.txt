@@ -1,5 +1,6 @@
 3.1.9 (unreleased)
 ------------------
+LIMS-1944: Prevent concurrent form submissions from clobbering each other's results
 LIMS-1930: AssertionError: Having an orphan size, higher than batch size is undefined
 LIMS-1959: Not possible to create an AR
 LIMS-1956: Error upgrading to 319
