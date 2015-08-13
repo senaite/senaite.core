@@ -27,7 +27,7 @@ class WorksheetsView(BikaListingView):
 
     implements(IFolderContentsView, IViewView)
 
-    template = ViewPageTemplateFile("templates/worksheetfolder.pt")
+    template = ViewPageTemplateFile("templates/worksheets.pt")
 
     def __init__(self, context, request):
         super(WorksheetsView, self).__init__(context, request)
