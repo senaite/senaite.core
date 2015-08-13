@@ -4,6 +4,32 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="bika">
 
+    <!-- Worksheet Folder -->
+    <browser:page
+      for="bika.lims.interfaces.IWorksheetFolder"
+      name="base_view"
+      class="bika.lims.browser.worksheetfolder.WorksheetFolderListingView"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IWorksheetFolder"
+      name="worksheet_add"
+      class="bika.lims.browser.worksheetfolder.AddWorksheetView"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <!-- Workflow action button clicked -->
+    <browser:page
+      for="bika.lims.interfaces.IWorksheetFolder"
+      name="workflow_action"
+      class="bika.lims.browser.worksheetfolder.WorksheetFolderWorkflowAction"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
     <!-- Workflow action button clicked -->
     <browser:page
       for="bika.lims.interfaces.IWorksheet"
