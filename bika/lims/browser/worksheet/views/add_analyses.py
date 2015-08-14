@@ -9,10 +9,12 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import implements
 
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 from bika.lims import EditResults, EditWorksheet, ManageWorksheets
 from bika.lims import PMF, logger
 from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.browser.worksheet.tools import checkUserManage
+from bika.lims.browser.worksheet.tools import showRejectionMessage
+from bika.lims.utils import t
 
 
 class AddAnalysesView(BikaListingView):

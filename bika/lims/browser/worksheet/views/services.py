@@ -1,6 +1,7 @@
 # coding=utf-8
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
+from Products.CMFCore.utils import getToolByName
 
 
 class ServicesView(BikaListingView):

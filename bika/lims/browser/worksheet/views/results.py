@@ -14,6 +14,7 @@ from bika.lims.utils import t
 from bika.lims.browser import BrowserView
 from bika.lims.browser.worksheet.tools import checkUserAccess
 from bika.lims.browser.worksheet.tools import showRejectionMessage
+from bika.lims.browser.worksheet.views import AnalysesView
 from bika.lims.utils import getUsers, tmpID
 
 

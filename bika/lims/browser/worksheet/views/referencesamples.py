@@ -1,6 +1,7 @@
 # coding=utf-8
 from operator import itemgetter
 from plone.app.layout.globals.interfaces import IViewView
+from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
 
 from bika.lims import bikaMessageFactory as _

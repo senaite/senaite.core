@@ -12,6 +12,7 @@ from bika.lims.permissions import EditWorksheet
 from bika.lims.browser import BrowserView
 from bika.lims.browser.worksheet.tools import checkUserManage
 from bika.lims.browser.worksheet.tools import showRejectionMessage
+from bika.lims.browser.worksheet.views.analysisrequests import AnalysisRequestsView
 
 
 class AddDuplicateView(BrowserView):

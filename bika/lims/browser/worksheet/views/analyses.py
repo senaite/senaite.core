@@ -3,14 +3,14 @@ from operator import itemgetter
 from Products.CMFPlone.i18nl10n import ulocalized_time
 
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.analyses import AnalysesView
+from bika.lims.browser.analyses import AnalysesView as BaseView
 
 
-class AnalysesView(AnalysesView):
+class AnalysesView(BaseView):
     """ This renders the table for ManageResultsView.
     """
     def __init__(self, context, request):
-        AnalysesView.__init__(self, context, request)
+        BaseView.__init__(self, context, request)
         self.catalog = 'bika_analysis_catalog'
         self.contentFilter = {'portal_type':'Analysis',
                               'review_state':'sample_received',
@@ -72,7 +72,7 @@ class AnalysesView(AnalysesView):
         self.analyst = self.context.getAnalyst().strip()
         self.instrument = self.context.getInstrument()
         self.contentsMethod = self.context.getFolderContents
-        items = AnalysesView.folderitems(self)
+        items = BaseView.folderitems(self)
         layout = self.context.getLayout()
         highest_position = 0
         new_items = []
