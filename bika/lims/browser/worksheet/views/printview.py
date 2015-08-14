@@ -18,7 +18,7 @@ import App
 import Globals
 
 
-class WorksheetPrintView(BrowserView):
+class PrintView(BrowserView):
     """ Print view for a worksheet. This view acts as a placeholder, so
         the user can select the preferred options (AR by columns, AR by
         rows, etc.) for printing. Both a print button and pdf button
@@ -36,12 +36,12 @@ class WorksheetPrintView(BrowserView):
 
 
     def __init__(self, context, request):
-        super(WorksheetPrintView, self).__init__(context, request)
+        super(PrintView, self).__init__(context, request)
         self._worksheets = [self.context]
 
 
     def __call__(self):
-        """ Entry point of WorksheetPrintView.
+        """ Entry point of PrintView.
             If context.portal_type is a Worksheet, then the PrintView
             is initialized to manage only that worksheet. If the
             context.portal_type is a WorksheetFolder and there are
@@ -63,7 +63,7 @@ class WorksheetPrintView(BrowserView):
 
         else:
             # Warn and redirect to referer
-            logger.warning('WorksheetPrintView: type not allowed: %s' %
+            logger.warning('PrintView: type not allowed: %s' %
                             self.context.portal_type)
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())

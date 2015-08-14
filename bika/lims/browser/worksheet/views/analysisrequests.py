@@ -8,7 +8,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 
 
-class WorksheetARsView(BikaListingView):
+class AnalysisRequestsView(BikaListingView):
     ## This table displays a list of ARs referenced by this worksheet.
     ## used in add_duplicate view.
     def __init__(self, context, request):

@@ -43,7 +43,7 @@
     <browser:page
       for="bika.lims.interfaces.IWorksheet"
       name="manage_results"
-      class="bika.lims.browser.worksheet.views.ResultsView"
+      class="bika.lims.browser.worksheet.views.ManageResultsView"
       permission="bika.lims.ViewResults"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -99,7 +99,7 @@
     <browser:page
       for="bika.lims.interfaces.IWorksheet"
       name="print"
-      class="bika.lims.browser.worksheet.views.WorksheetPrintView"
+      class="bika.lims.browser.worksheet.views.PrintView"
       permission="bika.lims.EditWorksheet"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

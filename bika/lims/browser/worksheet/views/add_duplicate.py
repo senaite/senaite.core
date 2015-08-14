@@ -45,7 +45,7 @@ class AddDuplicateView(BrowserView):
             self.context.addDuplicateAnalyses(src_slot, position)
             self.request.response.redirect(self.context.absolute_url() + "/manage_results")
         else:
-            self.ARs = WorksheetARsView(self.context, self.request)
+            self.ARs = AnalysisRequestsView(self.context, self.request)
             return self.template()
 
     def getAvailablePositions(self):

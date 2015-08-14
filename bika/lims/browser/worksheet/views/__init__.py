@@ -10,5 +10,5 @@ from export import ExportView
 from folder import FolderView
 from printview import PrintView
 from referencesamples import ReferenceSamplesView
-from results import ResultsView
+from results import ManageResultsView
 from services import ServicesView

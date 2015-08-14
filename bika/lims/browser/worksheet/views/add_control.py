@@ -50,7 +50,7 @@ class AddControlView(BrowserView):
             ref_analyses = self.context.addReferences(position, reference, service_uids)
             self.request.response.redirect(self.context.absolute_url() + "/manage_results")
         else:
-            self.Services = WorksheetServicesView(self.context, self.request)
+            self.Services = ServicesView(self.context, self.request)
             self.Services.view_url = self.Services.base_url + "/add_control"
             return self.template()
 

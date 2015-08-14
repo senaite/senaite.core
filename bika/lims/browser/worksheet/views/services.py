@@ -3,7 +3,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 
 
-class WorksheetServicesView(BikaListingView):
+class ServicesView(BikaListingView):
     """ This table displays a list of services for the adding controls / blanks.
         Services which have analyses in this worksheet are selected, and their
         categories are expanded by default

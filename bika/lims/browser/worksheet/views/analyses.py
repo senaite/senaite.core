@@ -6,7 +6,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.analyses import AnalysesView
 
 
-class WorksheetAnalysesView(AnalysesView):
+class AnalysesView(AnalysesView):
     """ This renders the table for ManageResultsView.
     """
     def __init__(self, context, request):

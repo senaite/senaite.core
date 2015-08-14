@@ -91,7 +91,7 @@ class ManageResultsView(BrowserView):
                     analysis.setAttachment(attachments)
 
         # Here we create an instance of WorksheetAnalysesView
-        self.Analyses = WorksheetAnalysesView(self.context, self.request)
+        self.Analyses = AnalysesView(self.context, self.request)
         self.analystname = self.context.getAnalystName()
         self.instrumenttitle = self.context.getInstrument() and self.context.getInstrument().Title() or ''
 
