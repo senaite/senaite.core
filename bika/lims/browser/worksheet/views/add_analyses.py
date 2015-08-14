@@ -15,7 +15,7 @@ from bika.lims.utils import t
 
 class AddAnalysesView(BikaListingView):
     implements(IViewView)
-    template = ViewPageTemplateFile("templates/worksheet_add_analyses.pt")
+    template = ViewPageTemplateFile("../templates/add_analyses.pt")
 
     def __init__(self, context, request):
         BikaListingView.__init__(self, context, request)

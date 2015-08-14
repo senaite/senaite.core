@@ -16,7 +16,7 @@ from bika.lims.browser.worksheet.tools import showRejectionMessage
 
 class AddBlankView(BrowserView):
     implements(IViewView)
-    template = ViewPageTemplateFile("templates/worksheet_add_control.pt")
+    template = ViewPageTemplateFile("../templates/add_control.pt")
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)

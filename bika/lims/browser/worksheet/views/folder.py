@@ -28,7 +28,7 @@ class FolderView(BikaListingView):
 
     implements(IFolderContentsView, IViewView)
 
-    template = ViewPageTemplateFile("templates/worksheets.pt")
+    template = ViewPageTemplateFile("../templates/worksheets.pt")
 
     def __init__(self, context, request):
         super(FolderView, self).__init__(context, request)

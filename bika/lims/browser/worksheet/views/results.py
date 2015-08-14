@@ -19,7 +19,7 @@ from bika.lims.utils import getUsers, tmpID
 
 class ManageResultsView(BrowserView):
     implements(IViewView)
-    template = ViewPageTemplateFile("templates/worksheet_manage_results.pt")
+    template = ViewPageTemplateFile("../templates/results.pt")
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
         self.getAnalysts = getUsers(context, ['Manager', 'LabManager', 'Analyst'])

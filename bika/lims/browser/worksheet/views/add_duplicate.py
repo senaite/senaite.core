@@ -16,7 +16,7 @@ from bika.lims.browser.worksheet.tools import showRejectionMessage
 
 class AddDuplicateView(BrowserView):
     implements(IViewView)
-    template = ViewPageTemplateFile("templates/worksheet_add_duplicate.pt")
+    template = ViewPageTemplateFile("../templates/add_duplicate.pt")
 
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
