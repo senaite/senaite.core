@@ -106,7 +106,6 @@ def getUsers(context, roles, allow_empty=True):
     pairs.sort(lambda x, y: cmp(x[1], y[1]))
     return DisplayList(pairs)
 
-
 def isActive(obj):
     """ Check if obj is inactive or cancelled.
     """

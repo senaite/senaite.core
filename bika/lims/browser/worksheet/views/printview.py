@@ -1,32 +1,34 @@
 # coding=utf-8
+from DateTime import DateTime
+from plone.resource.utils import iterDirectoriesOfType, queryResourceDirectory
+from Products.CMFCore.utils import getToolByName
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from zope.component import getAdapters
+
 from bika.lims import bikaMessageFactory as _, t
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.interfaces import IResultOutOfRange
-from bika.lims.utils import to_utf8, createPdf
-from bika.lims.utils import formatDecimalMark, format_supsub
+from bika.lims.utils import to_utf8, createPdf, formatDecimalMark, format_supsub
 from bika.lims.utils.analysis import format_uncertainty
-from DateTime import DateTime
-from Products.CMFCore.utils import getToolByName
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from plone.resource.utils import iterDirectoriesOfType, queryResourceDirectory
-from zope.component import getAdapters
+
 import glob, os, sys, traceback
 import App
 import Globals
 
-class WorksheetPrintView(BrowserView):
+
+class PrintView(BrowserView):
     """ Print view for a worksheet. This view acts as a placeholder, so
         the user can select the preferred options (AR by columns, AR by
         rows, etc.) for printing. Both a print button and pdf button
         are shown.
     """
 
-    template = ViewPageTemplateFile("worksheet/templates/worksheet_print.pt")
+    template = ViewPageTemplateFile("../templates/print.pt")
     _DEFAULT_TEMPLATE = 'ar_by_column.pt'
     _DEFAULT_NUMCOLS = 4
-    _TEMPLATES_DIR = 'worksheet/templates/print'
+    _TEMPLATES_DIR = '../templates/print'
     # Add-on folder to look for templates
     _TEMPLATES_ADDON_DIR = 'worksheets'
     _current_ws_index = 0
@@ -34,12 +36,12 @@ class WorksheetPrintView(BrowserView):
 
 
     def __init__(self, context, request):
-        super(WorksheetPrintView, self).__init__(context, request)
+        super(PrintView, self).__init__(context, request)
         self._worksheets = [self.context]
 
 
     def __call__(self):
-        """ Entry point of WorksheetPrintView.
+        """ Entry point of PrintView.
             If context.portal_type is a Worksheet, then the PrintView
             is initialized to manage only that worksheet. If the
             context.portal_type is a WorksheetFolder and there are
@@ -61,7 +63,7 @@ class WorksheetPrintView(BrowserView):
 
         else:
             # Warn and redirect to referer
-            logger.warning('WorksheetPrintView: type not allowed: %s' %
+            logger.warning('PrintView: type not allowed: %s' %
                             self.context.portal_type)
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())

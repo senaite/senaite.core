@@ -43,7 +43,7 @@ class AnalysesView(BikaListingView):
         self.show_select_row = False
         self.show_select_column = False
         self.show_column_toggles = False
-        self.pagesize = 0
+        self.pagesize = 999999
         self.form_id = 'analyses_form'
 
         self.portal = getToolByName(context, 'portal_url').getPortalObject()
