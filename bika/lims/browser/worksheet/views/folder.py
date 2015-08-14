@@ -1,85 +1,37 @@
+# coding=utf-8
 from DateTime import DateTime
+from DocumentTemplate import sequence
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import DisplayList
-from DocumentTemplate import sequence
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
-from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from plone.app.content.browser.interfaces import IFolderContentsView
+from plone.app.layout.globals.interfaces import IViewView
+from zope.interface import implements
+
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 from bika.lims import PMF, logger
+from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.browser.bika_listing import WorkflowAction
 from bika.lims.permissions import EditWorksheet
 from bika.lims.permissions import ManageWorksheets
-from bika.lims.utils import getUsers, tmpID
+from bika.lims.utils import getUsers, tmpID, t
 from bika.lims.utils import to_utf8 as _c
-from plone.app.content.browser.interfaces import IFolderContentsView
-from plone.app.layout.globals.interfaces import IViewView
-from zope.interface import implements
+
 import plone
 import json
 import zope
 
-class WorksheetFolderWorkflowAction(WorkflowAction):
-    """ Workflow actions taken in the WorksheetFolder
-        This function is called to do the workflow actions
-        that apply to worksheets in the WorksheetFolder
-    """
-    def __call__(self):
-        form = self.request.form
-        plone.protect.CheckAuthenticator(form)
-        workflow = getToolByName(self.context, 'portal_workflow')
-        rc = getToolByName(self.context, REFERENCE_CATALOG)
-        action, came_from = WorkflowAction._get_form_workflow_action(self)
-
-        if action == 'reassign':
-            mtool = getToolByName(self.context, 'portal_membership')
-            if not mtool.checkPermission(ManageWorksheets, self.context):
-
-                # Redirect to WS list
-                msg = _('You do not have sufficient privileges to '
-                        'manage worksheets.')
-                self.context.plone_utils.addPortalMessage(msg, 'warning')
-                portal = getToolByName(self.context, 'portal_url').getPortalObject()
-                self.destination_url = portal.absolute_url() + "/worksheets"
-                self.request.response.redirect(self.destination_url)
-                return
-
-            selected_worksheets = WorkflowAction._get_selected_items(self)
-            selected_worksheet_uids = selected_worksheets.keys()
-
-            if selected_worksheets:
-                changes = False
-                for uid in selected_worksheet_uids:
-                    worksheet = selected_worksheets[uid]
-                    # Double-check the state first
-                    if workflow.getInfoFor(worksheet, 'review_state') == 'open':
-                        worksheet.setAnalyst(form['Analyst'][0][uid])
-                        worksheet.reindexObject(idxs=['getAnalyst'])
-                        changes = True
-
-                if changes:
-                    message = PMF('Changes saved.')
-                    self.context.plone_utils.addPortalMessage(message, 'info')
-
-            self.destination_url = self.request.get_header("referer",
-                                   self.context.absolute_url())
-            self.request.response.redirect(self.destination_url)
-        else:
-            # default bika_listing.py/WorkflowAction for other transitions
-            WorkflowAction.__call__(self)
-
-
-class WorksheetFolderListingView(BikaListingView):
+class FolderView(BikaListingView):
 
     implements(IFolderContentsView, IViewView)
 
-    template = ViewPageTemplateFile("templates/worksheetfolder.pt")
+    template = ViewPageTemplateFile("../templates/worksheets.pt")
 
     def __init__(self, context, request):
-        super(WorksheetFolderListingView, self).__init__(context, request)
+        super(FolderView, self).__init__(context, request)
         self.catalog = 'bika_catalog'
         self.contentFilter = {
             'portal_type': 'Worksheet',
@@ -168,7 +120,7 @@ class WorksheetFolderListingView(BikaListingView):
             {'id':'default',
              'title': _('All'),
              'contentFilter': {'portal_type': 'Worksheet',
-                               'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
+                               'review_state':['open', 'to_be_verified',],
                                'sort_on':'id',
                                'sort_order': 'reverse'},
              'transitions':[{'id':'retract'},
@@ -276,7 +228,7 @@ class WorksheetFolderListingView(BikaListingView):
             # Remove the add button
             self.context_actions = {}
 
-        return super(WorksheetFolderListingView, self).__call__()
+        return super(FolderView, self).__call__()
 
     def isManagementAllowed(self):
         mtool = getToolByName(self.context, 'portal_membership')
@@ -506,55 +458,3 @@ class WorksheetFolderListingView(BikaListingView):
             Used in bika_listing.pt
         """
         return json.dumps(self.templateinstruments)
-
-
-class AddWorksheetView(BrowserView):
-    """ Handler for the "Add Worksheet" button in Worksheet Folder.
-        If a template was selected, the worksheet is pre-populated here.
-    """
-
-    def __call__(self):
-
-        # Validation
-        form = self.request.form
-        analyst = self.request.get('analyst', '')
-        template = self.request.get('template', '')
-        instrument = self.request.get('instrument', '')
-
-        if not analyst:
-            message = _("Analyst must be specified.")
-            self.context.plone_utils.addPortalMessage(message, 'info')
-            self.request.RESPONSE.redirect(self.context.absolute_url())
-            return
-
-        rc = getToolByName(self.context, REFERENCE_CATALOG)
-        wf = getToolByName(self.context, "portal_workflow")
-        pm = getToolByName(self.context, "portal_membership")
-
-        ws = _createObjectByType("Worksheet", self.context, tmpID())
-        ws.processForm()
-
-        # Set analyst and instrument
-        ws.setAnalyst(analyst)
-        if instrument:
-            ws.setInstrument(instrument)
-
-        # overwrite saved context UID for event subscribers
-        self.request['context_uid'] = ws.UID()
-
-        # if no template was specified, redirect to blank worksheet
-        if not template:
-            ws.processForm()
-            self.request.RESPONSE.redirect(ws.absolute_url() + "/add_analyses")
-            return
-
-        wst = rc.lookupObject(template)
-        ws.setWorksheetTemplate(wst)
-        ws.applyWorksheetTemplate(wst)
-
-        if ws.getLayout():
-            self.request.RESPONSE.redirect(ws.absolute_url() + "/manage_results")
-        else:
-            msg = _("No analyses were added")
-            self.context.plone_utils.addPortalMessage(msg)
-            self.request.RESPONSE.redirect(ws.absolute_url() + "/add_analyses")
