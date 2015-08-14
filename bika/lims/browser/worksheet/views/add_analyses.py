@@ -2,16 +2,18 @@
 from AccessControl import getSecurityManager
 from DateTime import DateTime
 from plone.app.layout.globals.interfaces import IViewView
+from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.i18nl10n import ulocalized_time
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import implements
 
 from bika.lims import bikaMessageFactory as _
+from bika.lims.utils import t
+from bika.lims import EditResults, EditWorksheet, ManageWorksheets
 from bika.lims import PMF, logger
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.permissions import EditResults, EditWorksheet, ManageWorksheets
-from bika.lims.utils import t
+
 
 class AddAnalysesView(BikaListingView):
     implements(IViewView)
