@@ -1,0 +1,32 @@
+Analysis Prifiles. The 'Panels of Tests' offered by the lab,,
+Keyword,Title,Description
+PTM,Trace Metals,Trace metals in feeds and Water
+TH,Total Hardness,Total permanent hardness of water (CACO3)
+Mbcheck,Micro-Bio check,Tests presence of organisms only
+Mbcount,Micro-Bio counts,Size of infestation
+Test,țest,Test
+Temp,Temperature,
+pHField,pH (field),
+Ca,Calcium,
+COD,COD,
+Conductivity,Conductivity @ 25 deg C,
+Cu,Copper,
+Fe,Iron,
+Mg,Magnesium,
+Mn,Manganese,
+Moist,Moisture,
+Phos,Phosphorus,
+pH,pH (laboratory),
+Na,Sodium,
+CaCO3,Tot. Alkalinity (CaCO3),
+THCaCO3,Tot. Hardness (THCaCO3),
+Zn,Zinc,
+T,Ƭest,
+DM,Dry Matter,
+Clos,Clostridia,
+Entero,Enterococcus,
+Ecoli,Ecoli,
+Salmon,Salmonella,
+Ecolicnt,Ecoli Count,
+Enterocnt,Enterococcus count,
+TVBcnt,Total Viable Bacteria count,
