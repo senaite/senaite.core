@@ -514,9 +514,13 @@ class Sample(BaseFolder, HistoryAwareMixin):
         from bika.lims.catalog import getCatalog
         return getCatalog(self)
 
-    def Title(self):
+    def getSampleID(self):
         """ Return the Sample ID as title """
         return safe_unicode(self.getId()).encode('utf-8')
+
+    def Title(self):
+        """ Return the Sample ID as title """
+        return self.getSampleID()
 
     def getSamplingWorkflowEnabledDefault(self):
         return self.bika_setup.getSamplingWorkflowEnabled()

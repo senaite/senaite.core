@@ -19,6 +19,8 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import alsoProvides
 from zope.interface import implements
 
+import os
+
 
 class ARImportsView(BikaListingView):
     implements(IViewView)
@@ -221,7 +223,7 @@ class ClientARImportAddView(BrowserView):
         pc = getToolByName(self.context, 'portal_catalog')
         nr = 1
         while True:
-            newname = '%s-%s' % (filename, nr)
+            newname = '%s-%s' % (os.path.splitext(filename)[0], nr)
             existing = pc(portal_type='ARImport', title=newname)
             if not existing:
                 return newname
