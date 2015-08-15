@@ -1,6 +1,7 @@
 from AccessControl import ClassSecurityInfo
 import csv
 from DateTime.DateTime import DateTime
+from Products.Archetypes.event import ObjectInitializedEvent
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import ulocalized_time
 from bika.lims.config import PROJECTNAME
@@ -29,6 +30,7 @@ from Products.DataGridField import DateColumn
 from Products.DataGridField import LinesColumn
 from Products.DataGridField import SelectColumn
 from zExceptions import Redirect
+from zope import event
 from zope.event import notify
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implements
@@ -256,11 +258,24 @@ class ARImport(BaseFolder):
         if self.getErrors():
             addStatusMessage(self.REQUEST, _p('Validation errors.'), 'error')
             transaction.commit()
-            raise Redirect(self.absolute_url() + "/edit")
+            self.REQUEST.response.write(
+                '<script>document.location.href="%s/edit"</script>' % (
+                    self.absolute_url()))
+        self.REQUEST.response.write(
+            '<script>document.location.href="%s/view"</script>' % (
+                self.absolute_url()))
+
+
+    def at_post_edit_script(self):
+        super(ARImport, self).at_post_edit_script()
+        workflow = getToolByName(self, 'portal_workflow')
+        workflow.doActionFor(self, 'validate')
 
     def workflow_script_import(self):
         """Create objects from valid ARImport
         """
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        workflow = getToolByName(self, 'portal_workflow')
         client = self.aq_parent
 
         title = _('Submitting AR Import')
@@ -270,29 +285,75 @@ class ARImport(BaseFolder):
 
         gridrows = self.schema['SampleData'].get(self)
         row_cnt = 0
-        for row in gridrows:
+        for therow in gridrows:
+            row = therow.copy()
             row_cnt += 1
             # Create Sample
             sample = _createObjectByType('Sample', client, tmpID())
+            sample.unmarkCreationFlag()
+            # First convert all row values into something the field can take
             sample.edit(**row)
-            sample.processForm()
+            sample._renameAfterCreation()
+            event.notify(ObjectInitializedEvent(sample))
+            sample.at_post_create_script()
+            swe = self.bika_setup.getSamplingWorkflowEnabled()
+            if swe:
+                workflow.doActionFor(sample, 'sampling_workflow')
+            else:
+                workflow.doActionFor(sample, 'no_sampling_workflow')
             part = _createObjectByType('SamplePartition', sample, 'part-1')
+            part.unmarkCreationFlag()
+            if swe:
+                workflow.doActionFor(part, 'sampling_workflow')
+            else:
+                workflow.doActionFor(part, 'no_sampling_workflow')
+            # Container is special... it could be a containertype.
             container = self.get_row_container(row)
             if container:
-                part.edit(Container=container)
+                if container.portal_type == 'ContainerType':
+                    containers = container.getContainers()
+                # XXX And so we must calculate the best container for this partition
+                part.edit(Container=containers[0])
+            # Profiles are titles, convert them to UIDs.
+            newprofiles = []
+            for title in row['Profiles']:
+                brains = bsc(portal_type='AnalysisProfile', title=title)
+                for brain in brains:
+                    newprofiles.append(brain.UID)
+            row['Profiles'] = newprofiles
+            # BBB in bika.lims < 3.1.9, only one profile is permitted
+            # on an AR.  The services are all added, but only first selected
+            # profile name is stored.
+            row['Profile'] = newprofiles[0] if newprofiles else Nonw
+
+            # Same for analyses
+            newanalyses = set(self.get_row_services(row) +
+                              self.get_row_profile_services(row))
+            row['Analyses'] = list(newanalyses)
+            # get batch
+            batch = self.schema['Batch'].get(self)
+            if batch:
+                row['Batch'] = batch
             # Create AR
-            row['Analyses'] = [u for u in self.get_row_services(row)]
-            row['Profiles'] = [u for u in self.get_row_profiles(row)]
             ar = _createObjectByType("AnalysisRequest", client, tmpID())
-            ar.edit(**row)
             ar.setSample(sample)
-            ar.processForm()
+            ar.unmarkCreationFlag()
+            ar.edit(**row)
+            ar._renameAfterCreation()
             for analysis in ar.getAnalyses(full_objects=True):
                 analysis.setSamplePartition(part)
+            ar.at_post_create_script()
+            if swe:
+                workflow.doActionFor(ar, 'sampling_workflow')
+            else:
+                workflow.doActionFor(ar, 'no_sampling_workflow')
             progress_index = float(row_cnt) / len(gridrows) * 100
             progress = ProgressState(self.REQUEST, progress_index)
             notify(UpdateProgressEvent(progress))
-        self.REQUEST.response.redirect(self.absolute_url())
+        # document has been written to, and redirect() fails here
+        self.REQUEST.response.write(
+            '<script>document.location.href="%s"</script>' % (
+                self.absolute_url()))
 
     def get_header_values(self):
         """Scrape the "Header" values from the original input file
@@ -481,6 +542,8 @@ class ARImport(BaseFolder):
 
             # match against sample schema
             for k, v in row.items():
+                if k in ['Analyses', 'Profiles']:
+                    continue
                 if k in sample_schema:
                     del (row[k])
                     try:
@@ -492,6 +555,8 @@ class ARImport(BaseFolder):
 
             # match against ar schema
             for k, v in row.items():
+                if k in ['Analyses', 'Profiles']:
+                    continue
                 if k in ar_schema:
                     del (row[k])
                     try:
@@ -501,23 +566,18 @@ class ARImport(BaseFolder):
                         errors.append(e.message)
 
             # Count and remove Keywords and Profiles from the list
-            analyses = []
+            gridrow['Analyses'] = []
             for k, v in row.items():
                 if k in keywords:
                     del (row[k])
                     if str(v).strip().lower() not in ('', '0', 'false'):
-                        analyses.append(k)
-            gridrow['Analyses'] = ','.join(analyses)
-
-            # Count and remove Keywords and Profiles from the list
-            profiles = []
+                        gridrow['Analyses'].append(k)
+            gridrow['Profiles'] = []
             for k, v in row.items():
                 if k in profiles:
                     del (row[k])
                     if str(v).strip().lower() not in ('', '0', 'false'):
-                        profiles.append(k)
-            gridrow['Profiles'] = ','.join(profiles)
-
+                        gridrow['Profiles'].append(k)
             if len(gridrow['Analyses']) + len(gridrow['Profiles']) != nr_an:
                 errors.append(
                     "Row %s: Number of analyses does not match provided value" %
@@ -541,6 +601,7 @@ class ARImport(BaseFolder):
     def get_batch_header_values(self):
         """Scrape the "Batch Header" values from the original input file
         """
+        import pdb;pdb.set_trace()
         lines = self.getOriginalFile().data.splitlines()
         reader = csv.reader(lines)
         batch_headers = []
@@ -584,9 +645,9 @@ class ARImport(BaseFolder):
         # we will attempt to create the bach now.
         if 'title' in batch_headers:
             if 'id' in batch_headers:
-                del(batch_headers['id'])
+                del (batch_headers['id'])
             if '' in batch_headers:
-                del(batch_headers[''])
+                del (batch_headers[''])
             batch = _createObjectByType('Batch', client, tmpID())
             batch.processForm()
             batch.edit(**batch_headers)
@@ -611,6 +672,8 @@ class ARImport(BaseFolder):
         if field.type == 'reference':
             value = str(value).strip()
             brains = self.lookup(field.allowed_types, Title=value)
+            if not brains:
+                brains = self.lookup(field.allowed_types, UID=value)
             if not brains:
                 raise ValueError('Row %s: value is invalid (%s=%s)' % (
                     row_nr, fieldname, value))
@@ -651,9 +714,11 @@ class ARImport(BaseFolder):
                                 review_state=['valid', 'imported'])
         # Verify Client Order Number
         for arimport in existing_arimports:
-            if arimport.UID == self.UID():
+            if arimport.UID == self.UID() \
+                or not arimport.getClientOrderNumber():
                 continue
             arimport = arimport.getObject()
+
             if arimport.getClientOrderNumber() == self.getClientOrderNumber():
                 self.error('%s: already used by existing ARImport.' %
                            'ClientOrderNumber')
@@ -661,7 +726,8 @@ class ARImport(BaseFolder):
 
         # Verify Client Reference
         for arimport in existing_arimports:
-            if arimport.UID == self.UID():
+            if arimport.UID == self.UID() \
+                or not arimport.getClientReference():
                 continue
             arimport = arimport.getObject()
             if arimport.getClientReference() == self.getClientReference():
@@ -698,6 +764,8 @@ class ARImport(BaseFolder):
 
             # validate against sample and ar schemas
             for k, v in gridrow.items():
+                if k in ['Analysis', 'Profiles']:
+                    break
                 if k in sample_schema:
                     try:
                         self.validate_against_schema(
@@ -714,16 +782,16 @@ class ARImport(BaseFolder):
                         self.error(e.message)
 
             an_cnt = 0
-            for v in gridrow['Analyses'].split(','):
+            for v in gridrow['Analyses']:
                 if v and v not in keywords:
-                    self.error("Row %s: Invalid analysis keyword (%s)" %
-                               (row_nr, v))
+                    self.error("Row %s: value is invalid (%s=%s)" %
+                               ('Analysis keyword', row_nr, v))
                 else:
                     an_cnt += 1
-            for v in gridrow['Profiles'].split(','):
+            for v in gridrow['Profiles']:
                 if v and v not in profiles:
-                    self.error("Row %s: Invalid profile title (%s)" %
-                               (row_nr, v))
+                    self.error("Row %s: value is invalid (%s=%s)" %
+                               ('Profile Title', row_nr, v))
                 else:
                     an_cnt += 1
             if not an_cnt:
@@ -738,7 +806,12 @@ class ARImport(BaseFolder):
             return value
         if field.type == 'reference':
             value = str(value).strip()
-            brains = self.lookup(field.allowed_types, Title=value)
+            if field.required and not value:
+                raise ValueError("Row %s: %s field requires a value" % (
+                    row_nr, fieldname))
+            if not value:
+                return value
+            brains = self.lookup(field.allowed_types, UID=value)
             if not brains:
                 raise ValueError("Row %s: value is invalid (%s=%s)" % (
                     row_nr, fieldname, value))
@@ -769,17 +842,25 @@ class ARImport(BaseFolder):
                 return brains
 
     def get_row_services(self, row):
-        """Return a list of services which are referenced in this row, either
-        as Service Keywords or as services included in an Analysis Profile.
+        """Return a list of services which are referenced in Analyses
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
         services = set()
-        for kw in row.get('Analyses', '').split(','):
-            service = bsc(portal_type='AnalysisService', getKeyword=kw)
-            services.add(service.UID)
-        for profile_title in row.get('Profiles', '').split(','):
-            profile = bsc(portal_type='Profile', title=profile_title)
-            for service in profile.getService():
+        for kw in row.get('Analyses', ''):
+            brains = bsc(portal_type='AnalysisService', getKeyword=kw)
+            if brains:
+                services.add(brains[0].UID)
+        return list(services)
+
+    def get_row_profile_services(self, row):
+        """Return a list of services which are referenced in profiles
+        """
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        services = set()
+        for profile_title in row.get('Profiles', ''):
+            brains = bsc(portal_type='Profile', title=profile_title)
+            for brain in brains:
+                service = brain.getObject().getService()
                 services.add(service.UID())
         return list(services)
 
@@ -787,11 +868,12 @@ class ARImport(BaseFolder):
         """Return a sample container
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
-        if row.get('Container', False):
+        val = row.get('Container', False)
+        if val:
             brains = bsc(portal_type='Container', UID=row['Container'])
-            return brains[0].getObject()
-        if row.get('ContainerType', False):
-            brains = bsc(portal_type='ContainerType', UID=row['ContainerType'])
+            if brains:
+                brains[0].getObject()
+            brains = bsc(portal_type='ContainerType', UID=row['Container'])
             if brains:
                 # XXX Cheating.  The calculation of capacity vs. volume  is not done.
                 return brains[0].getObject()

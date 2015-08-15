@@ -28,7 +28,7 @@ Title:,Imported,,,,,,,,,
 Description:,,,,,,,,,,
 Transitions,,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager
-Modify portal content,N,N,Y,N,N,N,N,N,N,N
+Modify portal content,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,
 [Transition],,,,,,,,,,
 Id:,validate,,,,,,,,,
