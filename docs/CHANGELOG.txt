@@ -2,6 +2,8 @@
 ------------------
 LIMS-1548: Client-specific Sampling Round Templates
 LIMS-1546: Sampling Round Template Creation and Edit view
+LIMS-1944: Prevent concurrent form submissions from clobbering each other's results
+LIMS-1930: AssertionError: Having an orphan size, higher than batch size is undefined
 LIMS-1959: Not possible to create an AR
 LIMS-1956: Error upgrading to 319
 LIMS-1934: Hyperlinks in invoices
@@ -22,6 +24,7 @@ LIMS-1812: Use asynchronous requests for expanding categories in listings
 LIMS-1811: Refactor AR Add form Javascript, and related code.
 LIMS-1818: Instrument Interface. Eltra CS-2000
 LIMS-1817: Instrument Interface. Rigaku Supermini XRF
+- New System Dashboard for LabManagers and Admins
 
 
 3.1.8.1 (2015-06-23)

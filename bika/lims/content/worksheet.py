@@ -558,6 +558,17 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         self.getField('Instrument').set(self, instrument)
         return total
 
+    def getAnalystName(self):
+        """ Returns the name of the currently assigned analyst
+        """
+        mtool = getToolByName(self, 'portal_membership')
+        analyst = self.getAnalyst().strip()
+        analyst_member = mtool.getMemberById(analyst)
+        if analyst_member != None:
+            return analyst_member.getProperty('fullname')
+        else:
+            return analyst
+
     def workflow_script_submit(self):
         # Don't cascade. Shouldn't be submitting WSs directly for now,
         # except edge cases where all analyses are already submitted,
