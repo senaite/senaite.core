@@ -324,7 +324,7 @@ class ARImport(BaseFolder):
             # BBB in bika.lims < 3.1.9, only one profile is permitted
             # on an AR.  The services are all added, but only first selected
             # profile name is stored.
-            row['Profile'] = newprofiles[0] if newprofiles else Nonw
+            row['Profile'] = newprofiles[0] if newprofiles else None
 
             # Same for analyses
             newanalyses = set(self.get_row_services(row) +
