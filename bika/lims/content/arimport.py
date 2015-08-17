@@ -29,7 +29,6 @@ from Products.DataGridField import DataGridWidget
 from Products.DataGridField import DateColumn
 from Products.DataGridField import LinesColumn
 from Products.DataGridField import SelectColumn
-from zExceptions import Redirect
 from zope import event
 from zope.event import notify
 from zope.i18nmessageid import MessageFactory
@@ -601,7 +600,6 @@ class ARImport(BaseFolder):
     def get_batch_header_values(self):
         """Scrape the "Batch Header" values from the original input file
         """
-        import pdb;pdb.set_trace()
         lines = self.getOriginalFile().data.splitlines()
         reader = csv.reader(lines)
         batch_headers = []
