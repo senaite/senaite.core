@@ -30,6 +30,8 @@ def upgrade(tool):
 
     # Migrations
 
+    LIMS1546(portal)
+
     return True
 
 def multipleAnalysisProfiles(portal):
@@ -48,3 +50,13 @@ def multipleAnalysisProfiles(portal):
         ar = ar_brain.getObject()
         if not ar.getProfiles():
             ar.setProfiles(ar.getProfile())
+
+
+def LIMS1546(portal):
+    """Set catalogs for SRTemplate
+    """
+    at = getToolByName(portal, 'archetype_tool')
+    at.setCatalogsByType('SRTemplate', ['bika_setup_catalog', 'portal_catalog'])
+    for obj in portal.bika_setup.bika_srtemplates.objectValues():
+        obj.unmarkCreationFlag()
+        obj.reindexObject()

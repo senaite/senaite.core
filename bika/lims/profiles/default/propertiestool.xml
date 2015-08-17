@@ -55,7 +55,7 @@
     <element value="DuplicateAnalysis"/>
     <element value="Instrument"/>
     <element value="InstrumentCalibration"/>
-	<element value="InstrumentCertification"/>
+    <element value="InstrumentCertification"/>
     <element value="InstrumentMaintenanceTask"/>
     <element value="InstrumentScheduledTask"/>
     <element value="InstrumentType"/>
@@ -69,6 +69,7 @@
     <element value="Method"/>
     <element value="Query"/>
     <element value="QueryFolder"/>
+    <element value="SRTemplate"/>
     <element value="Supplier"/>
     <element value="SupplyOrder"/>
     <element value="Preservation"/>
