@@ -107,10 +107,16 @@ Total price excl Tax,,,,,,,,,,,,,,
         l = len(bc(portal_type='Sample'))
         if l != 4:
             self.fail('4 Samples were not created!  We found %s' % l)
-            bac = getToolByName(self.portal, 'bika_analysis_catalog')
-            l - len(bac(portal_type='Analysis'))
-            if l != 12:
-                self.fail('12 Analysis not found! We found %s' % l)
+        bac = getToolByName(self.portal, 'bika_analysis_catalog')
+        analyses = bac(portal_type='Analysis')
+        l = len(analyses)
+        if l != 12:
+            self.fail('12 Analysis not found! We found %s' % l)
+        states = [workflow.getInfoFor(a.getObject(), 'review_state')
+                  for a in analyses]
+        if states != ['sample_due']*12:
+            self.fail('Analysis states should all be sample_due, but are not!')
+
 
 def test_suite():
     suite = unittest.TestSuite()

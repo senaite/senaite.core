@@ -328,7 +328,7 @@ class ARImport(BaseFolder):
             # Same for analyses
             newanalyses = set(self.get_row_services(row) +
                               self.get_row_profile_services(row))
-            row['Analyses'] = list(newanalyses)
+            row['Analyses'] = []
             # get batch
             batch = self.schema['Batch'].get(self)
             if batch:
@@ -346,6 +346,7 @@ class ARImport(BaseFolder):
                 workflow.doActionFor(ar, 'sampling_workflow')
             else:
                 workflow.doActionFor(ar, 'no_sampling_workflow')
+            ar.setAnalyses(list(newanalyses))
             progress_index = float(row_cnt) / len(gridrows) * 100
             progress = ProgressState(self.REQUEST, progress_index)
             notify(UpdateProgressEvent(progress))
