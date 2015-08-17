@@ -1,0 +1,343 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+        metal:use-macro="here/main_template/macros/master"
+        i18n:domain="bika">
+
+<metal:content-title fill-slot="content-title">
+<h1 class="documentFirstHeading" i18n:translate="">System Dashboard</h1>
+</metal:content-title>
+
+<metal:content-description fill-slot="content-description">
+</metal:content-description>
+
+
+<metal:content-core fill-slot="content-core">
+<style>
+    #edit-bar {
+        display:none;
+    }
+    .dashboard-section {
+        padding: 20px 0 30px;
+    }
+
+    .dashboard-section h2 {
+        border-bottom: 1px solid #dcdcdc;
+        margin: 0 20px 0 0;
+        padding: 0 0 10px;
+    }
+    .dashboard-panels {
+        padding-top:10px;
+    }
+    .dashboard-info-panel-wrapper {
+        float:left;
+        margin: 0 20px 10px 0;
+    }
+    .dashboard-info-panel {
+        /*border: 1px dotted #cdcdcd;*/
+        width: 120px;
+        height: 120px;
+        padding: 10px;
+        text-align: center;
+    }
+    #content .dashboard-info-panel-wrapper a {
+        color:#333;
+        text-decoration:none;
+    }
+    #content .dashboard-info-panel-wrapper a:hover div {
+        opacity:0.8;
+        filter:alpha(opacity=80);
+            -webkit-transition: opacity 250ms ease-in-out;
+        -moz-transition: opacity 250ms ease-in-out;
+        -o-transition: opacity 250ms ease-in-out;
+        -ms-transition: opacity 250ms ease-in-out;
+        transition: opacity 250ms ease-in-out
+    }
+    #content .dashboard-info-panel-wrapper a:hover div.dashboard-info-panel {
+        /*border: 1px dotted #205c90;*/
+    }
+    .dashboard-info-panel-number {
+        font-size: 3em;
+        font-weight: bold;
+        line-height: 130%;
+        text-align: center;
+        padding: 25px 0;
+        color:#777;
+    }
+    #content .dashboard-info-panel-wrapper {
+        opacity:0.4;
+        filter:alpha(opacity=40);
+
+    }
+    #content .dashboard-info-panel-wrapper.highlight {
+        opacity:1;
+        filter:alpha(opacity=100);
+    }
+    #content .dashboard-info-panel-wrapper.highlight .dashboard-info-panel-number {
+        color:#ff7f0e;
+    }
+
+
+    .dashboard-info-panel-description {
+        color: #333;
+        display: block;
+        font-size: 0.85em;
+        line-height: 130%;
+        margin: 0 -11px;
+        padding: 10px 5px;
+        height: 40px;
+    }
+    .dashboard-info-panel-total {
+        font-size: 0.8em;
+        color:#666;
+    }
+    #content ul.dashboard-time-selector {
+        list-style:none;
+        margin:10px 0;
+        padding:0;
+
+    }
+    #content ul.dashboard-time-selector li {
+        display:inline;
+    }
+    #content ul.dashboard-time-selector li a {
+        background-color: #efefef;
+        border-radius: 5px;
+        margin: 0 5px;
+        padding: 4px 10px;
+        color:#333;
+    }
+    #content ul.dashboard-time-selector li.selected a {
+        background-color: #dcdcdc;
+    }
+    .clearfix {
+        clear: both;
+    }
+    .pie-chart {
+        position: absolute;
+        z-index: -1;
+        padding: 0 10px;
+    }
+    .bar-chart {
+        width:100%;
+        min-width:640px;
+    }
+    .bar-chart g.legend {
+        font-size: 0.8em;
+    }
+    .bar-chart .x.axis {
+        font-size: 0.8em;
+    }
+    .bar-chart .graph-text-bar {
+        border:1px solid red;
+        background-color:red;
+    }
+    div.dashboard-period {
+      padding:10px;
+      font-size:1.2em;
+    }
+</style>
+<script>
+    (function( $ ) {
+    $(document).ready(function(){
+        loadCharts();
+    });
+
+    function loadCharts() {
+        $('.pie-chart').each(function(e) {
+            var id = $(this).attr('id');
+            var data = $.parseJSON($(this).attr('data'));
+            var width = 100;
+            var height = 100;
+            var radius = height / 2 - 10;
+
+            var arc = d3.svg.arc()
+                .innerRadius(radius - 3)
+                .outerRadius(radius);
+
+            var pie = d3.layout.pie()
+                .padAngle(.02);
+
+            var color = d3.scale.category10();
+
+            var svg = d3.select("#"+id).append("svg")
+                .attr("width", width)
+                .attr("height", height)
+              .append("g")
+                .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+            svg.selectAll("path")
+                .data(pie(data))
+              .enter().append("path")
+                .style("fill", function(d, i) { return color(i); })
+                .attr("d", arc);
+        });
+
+        $('.bar-chart').each(function(e) {
+            var id = $(this).attr('id');
+            var data = $.parseJSON($(this).attr('data'));
+            if (data.length == 0) {
+                $(this).hide();
+                return;
+            }
+            var margin = {top: 10, right: 120, bottom: 30, left: 20},
+                width = $(this).innerWidth() - margin.left - margin.right,
+                height = 100 - margin.top - margin.bottom;
+
+            var x0 = d3.scale.ordinal().rangeRoundBands([0, width], 0);
+            var x1 = d3.scale.ordinal();
+            var y = d3.scale.linear().range([height, 0]);
+            var color = d3.scale.category10();
+            color.domain(d3.keys(data[0]).filter(function(key) { return key !== "date"; }));
+            
+            var parseDate = d3.time.format("%Y-%m-%d").parse;
+            var xAxis = d3.svg.axis()
+                .scale(x0)
+                .orient("bottom");
+            
+            var yAxis = d3.svg.axis()
+                .scale(y)
+                .orient("left")
+                .tickFormat(d3.format(".2s"));
+
+            var svg = d3.select("#"+id).append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+              .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            var statusNames = d3.keys(data[0]).filter(function(key) {
+                return key !== "date";
+            });
+            data.forEach(function(d) {
+                d.statuses = statusNames.map(function(name) {
+                    return {name: name, value: +d[name], date: d.date};
+                });
+            });
+
+            x0.domain(data.map(function(d) { return d.date; }));
+            x1.domain(statusNames).rangeRoundBands([0, x0.rangeBand()]);
+            y.domain([0, d3.max(data, function(d) { return d3.max(d.statuses, function(d) { return d.value; }); })]);
+              
+            svg.append("g")
+                .attr("class", "x axis")
+                .attr("transform", "translate(0," + height + ")")
+                .call(xAxis)
+
+            var state = svg.selectAll(".state")
+                .data(data)
+                .enter()
+                .append("g")
+                    .attr("class", "g")
+                    .attr("transform", function(d) { return "translate(" + x0(d.date) + ",0)"; });
+
+            state.selectAll("rect")
+                .data(function(d) { return d.statuses; })
+                .enter()
+                .append("rect")
+                    .attr("width", x1.rangeBand())
+                    .attr("x", function(d) { return x1(d.name); })
+                    .attr("y", function(d) { return y(d.value); })
+                    .attr("height", function(d) { return height - y(d.value); })
+                    .attr("data-date",function(d) { return d.date; })
+                    .attr("data-value", function(d) { return d.value; })
+                    .attr("data-name", function(d) { return d.name; })
+                    .style("fill", function(d) { return color(d.name); })
+                    .on("mouseout", function() {
+                        d3.select(this.parentNode.children[this.parentNode.children.length-1])
+                        .remove();
+                    })
+                    .on("mouseover",  function() {
+                        var date = d3.select(this).attr('data-date');
+                        var name = d3.select(this).attr('data-name');
+                        var val = d3.select(this).attr('data-value');
+                        var y = d3.select(this).attr('y');
+                        var x = d3.select(this).attr('x');
+                        d3.select(this.parentNode)
+                            .append("text")
+                                .attr("fill", "#333")
+                                .style("font-size", "10px")
+                                .style("font-weight", "bold")
+                                .attr("x", x)
+                                .attr("y", 0)
+                                .attr("class", "graph-text-bar")
+                                .text(val);
+                    });
+
+            var legend = svg.selectAll(".legend")
+                    .data(statusNames.slice().reverse())
+                    .enter().append("g")
+                        .attr("class", "legend")
+                        .attr("transform", function(d, i) {
+                            return "translate(0," + i * 12 + ")";
+                        });
+
+            legend.append("rect")
+              .attr("x", width + 15)
+              .attr("width", 6)
+              .attr("height", 6)
+              .style("fill", color);
+
+            legend.append("text")
+              .attr("x", width + 30)
+              .attr("y", 0)
+              .attr("dy", "6")
+              .text(function(d) { return d; })
+          });
+      }
+    
+    }(jQuery));
+</script>
+
+<ul class='dashboard-time-selector'>
+    <li tal:attributes="class python:'selected' if view.periodicity == 'd' else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?p=d' i8n:translate="">Daily</a></li>
+    <li tal:attributes="class python:'selected' if view.periodicity == 'w' else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?p=w' i8n:translate="">Weekly</a></li>
+    <li tal:attributes="class python:'selected' if view.periodicity == 'm' else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?p=m' i8n:translate="">Monthly</a></li>
+    <li tal:attributes="class python:'selected' if view.periodicity == 'q' else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?p=q' i8n:translate="">Quarterly</a></li>
+    <li tal:attributes="class python:'selected' if view.periodicity == 'b' else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?p=b' i8n:translate="">Biannual</a></li>
+    <li tal:attributes="class python:'selected' if view.periodicity == 'y' else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?p=y' i8n:translate="">Yearly</a></li>
+</ul>
+<div class='dashboard-period'>
+  <span i18n:translate="">Period</span>:&nbsp;
+  <span tal:content="python:here.toLocalizedTime(view.date_from)"></span>&nbsp;-&nbsp;
+  <span tal:content="python:here.toLocalizedTime(view.date_to)"></span>
+</div>
+<tal:section repeat="section python:view.get_sections()">
+<div class='dashboard-section'>
+    <h2 tal:content="section/title" class='dashboard-section-title'></h2>
+    <div class='dashboard-panels'>
+
+        <!-- Bar-chart panels -->
+        <tal:barchart_panels repeat="panel python:[p for p in section.get('panels',[]) if p.get('type','')=='bar-chart-panel']">
+        <div tal:attributes="class python:'dashboard-bargraph-panel-wrapper %s' % panel.get('class', '');"
+             tal:define='itemnum repeat/panel/number;'>
+            <div class='bar-chart'
+                tal:attributes='id python:"bar-chart-%s-%s" % (section["id"],itemnum);
+                                data panel/data;'></div>
+        </div>
+        </tal:barchart_panels>
+        
+        <!-- Simple panels -->
+        <tal:simple_panels repeat="panel python:[p for p in section.get('panels',[]) if p.get('type','')=='simple-panel']">
+        <div tal:define="num panel/number;
+                         numclass python:'' if num==0 else 'highlight';"
+             tal:attributes="class python:'dashboard-info-panel-wrapper %s %s' % (panel.get('class', ''), numclass);">
+            <a tal:attributes="href panel/link">
+                <div class='dashboard-info-panel'>
+                <div class='pie-chart'
+                    tal:define='total panel/total;
+                                substract python:total-num;
+                                itemnum repeat/panel/number;'
+                    tal:attributes='data python:"[%s,%s]" % (str(substract), str(num));
+                                    id python:"pie-chart-%s-%s" % (section["id"],itemnum);'></div>
+                    <div tal:content="panel/number" class='dashboard-info-panel-number'></div>
+                    <div tal:content="panel/legend" class='dashboard-info-panel-total' tal:condition="python:panel.get('legend','')"></div>
+                    <div tal:content="panel/description" class='dashboard-info-panel-description'></div>
+                </div>
+            </a>
+        </div>
+        </tal:simple_panels>
+        <div class='clearfix'></div>
+    </div>
+</div>
+</tal:section>
+</metal:content-core>
+</html>

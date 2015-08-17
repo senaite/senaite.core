@@ -155,12 +155,12 @@
   <type type_id="InstrumentCalibration"/>
   <type type_id="InstrumentCertification"/>
   <type type_id="InstrumentMaintenanceTask">
-  	<bound-workflow workflow_id="bika_one_state_workflow"/>
+    <bound-workflow workflow_id="bika_one_state_workflow"/>
     <bound-workflow workflow_id="bika_cancellation_workflow"/>
   </type>
 
   <type type_id="InstrumentScheduledTask">
-  	<bound-workflow workflow_id="bika_one_state_workflow"/>
+    <bound-workflow workflow_id="bika_one_state_workflow"/>
     <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
 
@@ -196,8 +196,8 @@
 
   <type type_id="Manufacturers"/>
   <type type_id="Manufacturer">
-  	<bound-workflow workflow_id="bika_one_state_workflow"/>
-  	<bound-workflow workflow_id="bika_inactive_workflow"/>
+    <bound-workflow workflow_id="bika_one_state_workflow"/>
+    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
 
   <type type_id="Methods"/>
@@ -217,8 +217,8 @@
 
   <type type_id="Suppliers"/>
   <type type_id="Supplier">
-  	<bound-workflow workflow_id="bika_one_state_workflow"/>
-  	<bound-workflow workflow_id="bika_inactive_workflow"/>
+    <bound-workflow workflow_id="bika_one_state_workflow"/>
+    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
 
   <type type_id="SupplyOrder">
@@ -313,9 +313,11 @@
 
   <type type_id="SamplesFolder"/>
 
-  <type type_id="SRTemplate"/>
-
   <type type_id="SRTemplates"/>
+  <type type_id="SRTemplate">
+   <bound-workflow workflow_id="bika_one_state_workflow"/>
+   <bound-workflow workflow_id="bika_inactive_workflow"/>
+  </type>
 
   <type type_id="SupplierContact">
    <bound-workflow workflow_id="bika_one_state_workflow"/>
