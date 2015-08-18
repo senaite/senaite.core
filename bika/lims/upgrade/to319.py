@@ -32,6 +32,9 @@ def upgrade(tool):
 
     LIMS1546(portal)
 
+    # Install Products.DataGridField
+    qi.installProducts(['Products.DataGridField'])
+
     return True
 
 def multipleAnalysisProfiles(portal):
