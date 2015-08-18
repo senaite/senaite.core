@@ -8,6 +8,7 @@ from collective.progressbar.events import ProgressBar
 from collective.progressbar.events import ProgressState
 from collective.progressbar.events import UpdateProgressEvent
 from DateTime import DateTime
+from plone.app.content.browser.interfaces import IContentsPage
 from plone.app.layout.globals.interfaces import IViewView
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
@@ -15,7 +16,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from Products.statusmessages.interfaces import IStatusMessage
 from zExceptions import BadRequest
 from zope.event import notify
-from zope.interface import implements
+from zope.interface import implements, alsoProvides
 
 import csv
 import os
@@ -24,6 +25,10 @@ import plone
 
 class ARImportView(BrowserView):
     implements(IViewView)
+
+    def __init__(self, context, request):
+        alsoProvides(request, IContentsPage)
+        super(ARImportView, self).__init__(context, request)
 
     def getImportOption(self):
         return self.context.getImportOption()
@@ -193,6 +198,10 @@ class ClientARImportAddView(BrowserView):
     implements(IViewView)
     template = ViewPageTemplateFile('templates/arimport_add_form.pt')
 
+    def __init__(self, context, request):
+        alsoProvides(request, IContentsPage)
+        super(ClientARImportAddView, self).__init__(context, request)
+
     def __call__(self):
         request = self.request
         response = request.response
@@ -210,13 +219,18 @@ class ClientARImportAddView(BrowserView):
             arimport, msg = self._import_file(option, csvfile, client_id)
 
             if arimport:
+                arimport.reindexObject()
                 IStatusMessage(request).addStatusMessage(_(msg), "info")
-                response.redirect('%s/arimports' % self.context.absolute_url(),
-                                  lock=True)
+                response.write("<script type='text/javascript'>"
+                               "window.location.href='%s'</script>" %
+                               arimport.absolute_url())
+                return
             else:
                 IStatusMessage(request).addStatusMessage(_(msg), "error")
-                response.redirect('%s/arimports' % self.context.absolute_url(),
-                                  lock=True)
+                response.write("<script type='text/javascript'>"
+                               "window.location.href='%s/arimport_add'</script>" %
+                               self.context.absolute_url())
+                return
         return self.template()
 
     def lookup(self, allowed_types, **kwargs):
@@ -240,7 +254,7 @@ class ClientARImportAddView(BrowserView):
         """
         for key, value in values.items():
             if key not in schema:
-                logger.info("ARImport: field %s not present in schema; ignored")
+                logger.info("ARImport: %s not in schema, ignored" % key)
                 continue
             field = schema[key]
             if field.type == 'boolean':
@@ -432,6 +446,7 @@ class ClientARImportAddView(BrowserView):
                     ClientSid=sample.get('Client Sample ID', ''),
                     SampleDate=sample.get('Sampling date', ''),
                     SampleType=sample.get('Sample Type', ''),
+                    SamplePoint=sample.get('Sample Point', ''),
                     PickingSlip=sample.get('Picking Slip', ''),
                     SampleMatrix=sample.get('Sample Matrix', ''),
                     ContainerType=sample.get('Container Type', ''),
@@ -470,7 +485,6 @@ class ClientARImportAddView(BrowserView):
             OrderID=header.get('Order ID', ''),
             ###QuoteID=header.get('Q', '')
             ###'Client Reference': 'Q123',
-            SamplePoint=header.get('Sample point', ''),
             NumberSamples=nr_samples,
             Analyses=list(used_keywords),
             DateImported=DateTime(),

@@ -11,11 +11,12 @@ Start browser
 #    Open browser  ${PLONEURL}/login_form
     Open browser  ${PLONEURL}/login_form   browser=chrome
     Set selenium speed  ${SELENIUM_SPEED}
+    # A large window, so that debug screenshots are sensibly sized
+    set window size   1920    1080
 
 Log in
     [Arguments]  ${userid}  ${password}
     Go to                          http://localhost:55001/plone/login_form
-    Maximize Browser Window
     sleep   0.1
     Input text                      __ac_name      ${userid}
     sleep   0.1

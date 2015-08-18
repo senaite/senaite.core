@@ -1,8 +1,8 @@
 Header,Import / Export,File name,Client name,Client ID,Contact ID,CC Names - Report,CC Emails - Report,CC Emails -Invoice,Order ID,Client Reference,Sample point,No of Samples,,,,
 Header Data,Import,ARImportClassicValid,Happy Hills Feeds,HH,ritamo,Sarel Seemonster;Mike Metcalfe,mike@metcalfe.co.za; joe@soap.com,jo@blogs.com; jack@jones.com,O12349a,Q123,Point1.1,10,,,,
 Batch Fields,id,title,description,ClientOrderNumber,ClientReference,ClientBatchID,ClientBatchComment,BatchLabels,ReturnSampleToClient,,,,,,,
-Batch Data,,Optional Batch Title1,Optional descr.,June cylinder check,Cylchck 06,CC 201506,Routine monthly safety measure,Commercial,1,,,,,,,
-Samples,Client Sample ID,Sampling date,Sample Category,Sample Matrix,Picking Slip,Container Type,Report DM,Priority,Total number of analyses,Price excl Tax,pH,COD,THCaCO3,Ca,Mg,Zn
+Batch Data,BATCH-001,Optional Batch Title1,Optional descr.,June cylinder check,Cylchck 06,CC 201506,Routine monthly safety measure,Commercial,1,,,,,,,
+Samples,Client Sample ID,Sampling date,Sample Type,Sample Matrix,Picking Slip,Container Type,Report DM,Priority,Total number of analyses,Price excl Tax,pH,COD,THCaCO3,Ca,Mg,Zn
 Analysis price,,,,,,,,,,,R 45,R 45,R 40,R 150,R 90,R 85
 Total analyses,,,,,,,,,24,R 680,3,0,7,7,7,1
 Total price excl Tax,,,,,,,,,24,R 595,R 135,R 0,R 280,R 0,R 180,R 85
