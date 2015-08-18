@@ -136,10 +136,11 @@ CCContacts = DataGridField(
              'CCEmailsReport',
              'CCNamesInvoice',
              'CCEmailsInvoice'),
-    default=[{'CCNamesReport': '',
-              'CCEmailsReport': '',
-              'CCNamesInvoice': '',
-              'CCEmailsInvoice': '', }],
+    default=[{'CCNamesReport': [],
+              'CCEmailsReport': [],
+              'CCNamesInvoice': [],
+              'CCEmailsInvoice': []
+              }],
     widget=DataGridWidget(
         columns={
             'CCNamesReport': LinesColumn('Report CC Contacts'),
@@ -263,7 +264,6 @@ class ARImport(BaseFolder):
         self.REQUEST.response.write(
             '<script>document.location.href="%s/view"</script>' % (
                 self.absolute_url()))
-
 
     def at_post_edit_script(self):
         super(ARImport, self).at_post_edit_script()
@@ -482,7 +482,11 @@ class ARImport(BaseFolder):
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
         keywords = self.bika_setup_catalog.uniqueValuesFor('getKeyword')
-        profiles = [x.Title for x in bsc(portal_type='AnalysisProfile')]
+        profiles = []
+        for p in bsc(portal_type='AnalysisProfile'):
+            p = p.getObject()
+            profiles.append(p.Title())
+            profiles.append(p.getProfileKey())
 
         sample_data = self.get_sample_values()
         if not sample_data:
@@ -518,6 +522,10 @@ class ARImport(BaseFolder):
                 nr_an = row['Total number of Analyses or Profiles']
                 del (row['Total number of Analyses or Profiles'])
             else:
+                nr_an = 0
+            try:
+                nr_an = int(nr_an)
+            except ValueError:
                 nr_an = 0
 
             # TODO this is ignored and is probably meant to serve some purpose.
@@ -649,6 +657,7 @@ class ARImport(BaseFolder):
             batch = _createObjectByType('Batch', client, tmpID())
             batch.processForm()
             batch.edit(**batch_headers)
+            self.setBatch(batch)
 
     def munge_field_value(self, schema, row_nr, fieldname, value):
         """Convert a spreadsheet value into a field value that fits in
@@ -713,7 +722,7 @@ class ARImport(BaseFolder):
         # Verify Client Order Number
         for arimport in existing_arimports:
             if arimport.UID == self.UID() \
-                or not arimport.getClientOrderNumber():
+                    or not arimport.getClientOrderNumber():
                 continue
             arimport = arimport.getObject()
 
@@ -725,7 +734,7 @@ class ARImport(BaseFolder):
         # Verify Client Reference
         for arimport in existing_arimports:
             if arimport.UID == self.UID() \
-                or not arimport.getClientReference():
+                    or not arimport.getClientReference():
                 continue
             arimport = arimport.getObject()
             if arimport.getClientReference() == self.getClientReference():
@@ -733,19 +742,27 @@ class ARImport(BaseFolder):
                            'ClientReference')
                 break
 
-        cc_contacts = self.getCCContacts()[0]
-        contacts = [x for x in client.objectValues('Contact')]
-        contact_names = [c.Title() for c in contacts]
-        # validate Contact existence in this Client
-        for k in ['CCNamesReport', 'CCNamesInvoice']:
-            for val in cc_contacts[k]:
-                if val and val not in contact_names:
-                    self.error('%s: value is invalid (%s)' % (k, val))
-        # validate Contact existence in this Client
-        for k in ['CCEmailsReport', 'CCEmailsInvoice']:
-            for val in cc_contacts[k]:
-                if val and not pu.validateSingleNormalizedEmailAddress(val):
-                    self.error('%s: value is invalid (%s)' % (k, val))
+        # getCCContacts has no value if object is not complete (eg during test)
+        if self.getCCContacts():
+            cc_contacts = self.getCCContacts()[0]
+            contacts = [x for x in client.objectValues('Contact')]
+            contact_names = [c.Title() for c in contacts]
+            # validate Contact existence in this Client
+            for k in ['CCNamesReport', 'CCNamesInvoice']:
+                for val in cc_contacts[k]:
+                    if val and val not in contact_names:
+                        self.error('%s: value is invalid (%s)' % (k, val))
+        else:
+            cc_contacts = {'CCNamesReport': [],
+                           'CCEmailsReport': [],
+                           'CCNamesInvoice': [],
+                           'CCEmailsInvoice': []
+                           }
+            # validate Contact existence in this Client
+            for k in ['CCEmailsReport', 'CCEmailsInvoice']:
+                for val in cc_contacts.get(k, []):
+                    if val and not pu.validateSingleNormalizedEmailAddress(val):
+                        self.error('%s: value is invalid (%s)' % (k, val))
 
     def validate_samples(self):
         """Scan through the SampleData values and make sure
@@ -754,7 +771,11 @@ class ARImport(BaseFolder):
 
         bsc = getToolByName(self, 'bika_setup_catalog')
         keywords = bsc.uniqueValuesFor('getKeyword')
-        profiles = [x.Title for x in bsc(portal_type='AnalysisProfile')]
+        profiles = []
+        for p in bsc(portal_type='AnalysisProfile'):
+            p = p.getObject()
+            profiles.append(p.Title())
+            profiles.append(p.getProfileKey())
 
         row_nr = 0
         for gridrow in self.getSampleData():
@@ -840,26 +861,41 @@ class ARImport(BaseFolder):
                 return brains
 
     def get_row_services(self, row):
-        """Return a list of services which are referenced in Analyses
+        """Return a list of services which are referenced in Analyses.
+        values may be UID, Title or Keyword.
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
         services = set()
-        for kw in row.get('Analyses', ''):
-            brains = bsc(portal_type='AnalysisService', getKeyword=kw)
+        for val in row.get('Analyses', []):
+            brains = bsc(portal_type='AnalysisService', getKeyword=val)
+            if not brains:
+                brains = bsc(portal_type='AnalysisService', title=val)
+            if not brains:
+                brains = bsc(portal_type='AnalysisService', UID=val)
             if brains:
                 services.add(brains[0].UID)
+            else:
+                self.error("Invalid analysis specified: %s"%val)
         return list(services)
 
     def get_row_profile_services(self, row):
         """Return a list of services which are referenced in profiles
+        values may be UID, Title or ProfileKey.
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
         services = set()
-        for profile_title in row.get('Profiles', ''):
-            brains = bsc(portal_type='Profile', title=profile_title)
-            for brain in brains:
-                service = brain.getObject().getService()
-                services.add(service.UID())
+        profiles = [x.getObject() for x in bsc(portal_type='AnalysisProfile')]
+        for val in row.get('Profiles', []):
+            objects = [x for x in profiles if x.getProfileKey() == val]
+            if not objects:
+                objects = [x for x in profiles if x.Title() == val]
+            if not objects:
+                objects = [x for x in profiles if x.UID() == val]
+            if objects:
+                for service in objects[0].getService():
+                    services.add(service.UID())
+            else:
+                self.error("Invalid profile specified: %s"%val)
         return list(services)
 
     def get_row_container(self, row):
