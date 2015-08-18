@@ -620,7 +620,6 @@ msgid "Analysis Keyword"
 msgstr ""
 #
 # File: bika.lims/bika/lims/content/analysisrequest.py, line: 363
-# File: bika.lims/bika/lims/content/arimportitem.py, line: 74
 # File: bika.lims/bika/lims/content/artemplate.py, line: 153
 msgid "Analysis Profile"
 msgstr ""
@@ -776,7 +775,6 @@ msgstr ""
 msgid "Analysis turnaround times over time"
 msgstr ""
 #
-# File: bika.lims/bika/lims/content/arimportitem.py, line: 92
 msgid "AnalysisProfile Request"
 msgstr ""
 #
@@ -1314,7 +1312,6 @@ msgstr ""
 #
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line: 76
 # File: bika.lims/bika/lims/browser/sample.py, line: 434
-# File: bika.lims/bika/lims/content/arimportitem.py, line: 24
 msgid "Client Ref"
 msgstr ""
 #
@@ -1324,7 +1321,6 @@ msgstr ""
 msgid "Client Reference"
 msgstr ""
 #
-# File: bika.lims/bika/lims/content/arimportitem.py, line: 29
 msgid "Client Remarks"
 msgstr ""
 #
@@ -1441,7 +1437,6 @@ msgid "Container"
 msgstr ""
 #
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 95
-# File: bika.lims/bika/lims/content/arimportitem.py, line: 59
 # File: bika.lims/bika/lims/content/container.py, line: 27
 msgid "Container Type"
 msgstr ""
@@ -3128,7 +3123,6 @@ msgstr ""
 msgid "No new items were created."
 msgstr ""
 #
-# File: bika.lims/bika/lims/content/arimportitem.py, line: 49
 msgid "No of containers"
 msgstr ""
 #
@@ -3393,7 +3387,6 @@ msgstr ""
 msgid "Physical address"
 msgstr ""
 #
-# File: bika.lims/bika/lims/content/arimportitem.py, line: 54
 msgid "Picking Slip"
 msgstr ""
 #
@@ -3870,7 +3863,6 @@ msgstr ""
 #
 # File: bika.lims/bika/lims/content/analysisrequest.py, line: 916
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 325
-# File: bika.lims/bika/lims/content/arimportitem.py, line: 64
 msgid "Report as Dry Matter"
 msgstr ""
 #
@@ -4089,7 +4081,6 @@ msgstr ""
 msgid "Sample Conditions"
 msgstr ""
 #
-# File: bika.lims/bika/lims/content/arimportitem.py, line: 44
 msgid "Sample Date"
 msgstr ""
 #
@@ -5739,32 +5730,22 @@ msgid "keywords"
 msgstr ""
 #
 #. Default: "CC Emails - Invoice"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 76
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 68
 msgid "label_CCEmailsInvoice"
 msgstr ""
 #
 #. Default: "CC Names - Report"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 69
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 62
 msgid "label_CCNamesReport"
 msgstr ""
 #
 #. Default: "Client Reference"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 89
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 79
 msgid "label_ClientReference"
 msgstr ""
 #
 #. Default: "Detail"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 229
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 192
 msgid "label_Detail"
 msgstr ""
 #
 #. Default: "Order"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 85
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 76
 msgid "label_OrderID"
 msgstr ""
 #
@@ -5774,86 +5755,58 @@ msgid "label_add_to_groups"
 msgstr ""
 #
 #. Default: "Analyses"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 160
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 138
 msgid "label_analyses"
 msgstr ""
 #
 #. Default: "CC"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 49
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 45
 msgid "label_cc"
 msgstr ""
 #
 #. Default: "CC Contact ID"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 55
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 50
 msgid "label_cccontactid"
 msgstr ""
 #
 #. Default: "CC Emails - Report"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 65
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 59
 msgid "label_ccemails"
 msgstr ""
 #
 #. Default: "Client ID"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 29
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 28
 msgid "label_clientid"
 msgstr ""
 #
 #. Default: "Client"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 25
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 25
 msgid "label_clientname"
 msgstr ""
 #
 #. Default: "Client Ref"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 152
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 129
 msgid "label_clientref"
 msgstr ""
 #
 #. Default: "Client Sid"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 153
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 130
 msgid "label_clientsid"
 msgstr ""
 #
 #. Default: "Contact Name"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 35
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 33
 msgid "label_contact"
 msgstr ""
 #
 #. Default: "Contact ID"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 41
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 38
 msgid "label_contactid"
 msgstr ""
 #
 #. Default: "Container Type"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 157
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 134
 msgid "label_containertype"
 msgstr ""
 #
 #. Default: "Date applied"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 119
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 104
 msgid "label_dateapplied"
 msgstr ""
 #
 #. Default: "Date imported"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 114
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 100
 msgid "label_dateimported"
 msgstr ""
 #
 #. Default: "File name"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 97
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 85
 msgid "label_filename"
 msgstr ""
 #
@@ -5868,67 +5821,46 @@ msgid "label_import_option"
 msgstr ""
 #
 #. Default: "Order ID"
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 137
 msgid "label_orderid"
 msgstr ""
 #
 #. Default: "Picking slip"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 156
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 133
 msgid "label_pickingslip"
 msgstr ""
 #
 #. Default: "Priority"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 159
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 136
 msgid "label_priority"
 msgstr ""
 #
 #. Default: "Profile"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 162
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 140
 msgid "label_profile"
 msgstr ""
 #
 #. Default: "Remarks"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 262
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 223
 msgid "label_remarks"
 msgstr ""
 #
 #. Default: "Report as DM"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 158
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 135
 msgid "label_report_dry_matter"
 msgstr ""
 #
 #. Default: "Request ID"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 150
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 127
 msgid "label_requestid"
 msgstr ""
 #
 #. Default: "Sample Date"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 154
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 131
 msgid "label_sampledate"
 msgstr ""
 #
 #. Default: "Sample"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 147
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 124
 msgid "label_samplename"
 msgstr ""
 #
 #. Default: "Sample Point"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 131
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 114
 msgid "label_samplepoint"
 msgstr ""
 #
 #. Default: "Sample type"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 155
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 132
 msgid "label_sampletype"
 msgstr ""
 #
@@ -5938,14 +5870,10 @@ msgid "label_specification"
 msgstr ""
 #
 #. Default: "Status"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 103
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 90
 msgid "label_status"
 msgstr ""
 #
 #. Default: "Valid"
-# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 164
-# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 142
 msgid "label_valid"
 msgstr ""
 #
