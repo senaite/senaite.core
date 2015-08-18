@@ -121,6 +121,6 @@ SCINOTATION_OPTIONS = DisplayList((
     ('5', 'a·10^b / a·10^-b (with superscript)'),
 ))
 WORKSHEET_LAYOUT_OPTIONS = DisplayList((
-    ('1', 'Analysis Requests in rows'),
-    ('2', 'Analysis Requests in columns'),
+    ('1', _('Classic')),
+    ('2', _('Transposed')),
 ))

@@ -10,6 +10,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import implements
 
 from bika.lims import bikaMessageFactory as _
+from bika.lims.config import WORKSHEET_LAYOUT_OPTIONS
 from bika.lims.utils import t
 from bika.lims.browser import BrowserView
 from bika.lims.browser.worksheet.tools import checkUserAccess
@@ -24,6 +25,7 @@ class ManageResultsView(BrowserView):
     def __init__(self, context, request):
         BrowserView.__init__(self, context, request)
         self.getAnalysts = getUsers(context, ['Manager', 'LabManager', 'Analyst'])
+        self.layout_displaylist = WORKSHEET_LAYOUT_OPTIONS
 
     def __call__(self):
         # Deny access to foreign analysts
@@ -98,6 +100,14 @@ class ManageResultsView(BrowserView):
 
         # Check if the instruments used are valid
         self.checkInstrumentsValidity()
+
+        # Save the results layout
+        rlayout = self.request.get('resultslayout', '')
+        if rlayout and rlayout in WORKSHEET_LAYOUT_OPTIONS.keys() \
+            and rlayout != self.context.getResultsLayout():
+            self.context.setResultsLayout(rlayout)
+            message = _("Changes saved.")
+            self.context.plone_utils.addPortalMessage(message, 'info')
 
         return self.template()
 

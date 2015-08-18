@@ -409,7 +409,11 @@ schema = BikaFolderSchema.copy() + Schema((
         widget = SelectionWidget(
             label=_("Default layout in worksheet view"),
             description =_("Preferred layout of the results entry table "
-                           "in the Worksheet view"),
+                           "in the Worksheet view. Classic layout displays "
+                           "the Analysis Requests in rows and the analyses "
+                           "in columns. Transposed layout displays the "
+                           "Analysis Requests in columns and the analyses "
+                           "in rows."),
             format='select',
         )
     ),

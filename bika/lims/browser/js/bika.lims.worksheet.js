@@ -381,6 +381,12 @@ function WorksheetManageResultsView() {
             });
         });
 
+        // Change the results layout
+        $("#resultslayout_form #resultslayout_button").hide();
+        $("#resultslayout_form #resultslayout").change(function() {
+            $("#resultslayout_form #resultslayout_button").click();
+        });
+
         $(".manage_results_header .instrument").change(function(){
             $("#content-core .instrument-error").remove();
             var instruid = $(this).val();
