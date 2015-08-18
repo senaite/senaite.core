@@ -8,10 +8,8 @@
   <include file="bika-frontpage.zcml"/>
 
   <include file="analysis.zcml"/>
-  <include file="analysisprofile.zcml"/>
   <include file="analysisservice.zcml"/>
   <include file="analysisspec.zcml"/>
-  <include file="artemplate.zcml"/>
   <include file="attachment.zcml"/>
   <include file="batchfolder.zcml"/>
   <include file="bika_listing.zcml"/>
@@ -38,12 +36,13 @@
   <include file="supplier.zcml"/>
   <include file="supplyorder.zcml"/>
   <include file="supplyorderfolder.zcml"/>
+  <include file="worksheet.zcml"/>
+  <include file="worksheetfolder.zcml"/>
   <include file="viewlets.zcml"/>
   <include file="arimports.zcml"/>
 
   <include package=".analysisrequest"/>
   <include package=".batch"/>
-  <include package=".worksheet"/>
 
   <include package=".fields"/>
   <include package=".widgets"/>
