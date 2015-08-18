@@ -15,6 +15,7 @@ from bika.lims.utils import t
 from bika.lims.browser import BrowserView
 from bika.lims.browser.worksheet.tools import checkUserAccess
 from bika.lims.browser.worksheet.tools import showRejectionMessage
+from bika.lims.browser.worksheet.views import AnalysesTransposedView
 from bika.lims.browser.worksheet.views import AnalysesView
 from bika.lims.utils import getUsers, tmpID
 
@@ -93,14 +94,6 @@ class ManageResultsView(BrowserView):
                     attachments.append(attachment.UID())
                     analysis.setAttachment(attachments)
 
-        # Here we create an instance of WorksheetAnalysesView
-        self.Analyses = AnalysesView(self.context, self.request)
-        self.analystname = self.context.getAnalystName()
-        self.instrumenttitle = self.context.getInstrument() and self.context.getInstrument().Title() or ''
-
-        # Check if the instruments used are valid
-        self.checkInstrumentsValidity()
-
         # Save the results layout
         rlayout = self.request.get('resultslayout', '')
         if rlayout and rlayout in WORKSHEET_LAYOUT_OPTIONS.keys() \
@@ -108,6 +101,20 @@ class ManageResultsView(BrowserView):
             self.context.setResultsLayout(rlayout)
             message = _("Changes saved.")
             self.context.plone_utils.addPortalMessage(message, 'info')
+
+        # Here we create an instance of WorksheetAnalysesView
+        if self.context.getResultsLayout() == '2':
+            # Transposed view
+            self.Analyses = AnalysesTransposedView(self.context, self.request)
+        else:
+            # Classic view
+            self.Analyses = AnalysesView(self.context, self.request)
+
+        self.analystname = self.context.getAnalystName()
+        self.instrumenttitle = self.context.getInstrument() and self.context.getInstrument().Title() or ''
+
+        # Check if the instruments used are valid
+        self.checkInstrumentsValidity()
 
         return self.template()
 
