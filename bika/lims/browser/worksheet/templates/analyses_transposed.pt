@@ -1,1 +1,66 @@
-TODO: bika/lims/browser/worksheets/templates/results_analyses_transposed.pt
+<div tal:omit-tag="python:True"
+     tal:define="
+        form_id view/bika_listing/form_id;
+        review_state_id python:request.get(form_id+'_review_state', 'default');
+        review_state python:[t for t in view.bika_listing.review_states
+                            if t['id'] == review_state_id];
+        review_state python:review_state and review_state[0]
+                            or view.bika_listing.review_states[0];
+        toggle_cols python:dict([(col, view.bika_listing.columns[col])
+                                for col in view.bika_listing.columns.keys()
+                                if col in review_state['columns']]);
+        sm python:modules['AccessControl'].getSecurityManager();
+        EditAnalyses python:sm.checkPermission('BIKA: Edit analyses', context);
+        ViewResults python:sm.checkPermission('BIKA: View Results', context);
+        tabindex view/tabindex;
+        user python:sm.getUser();
+        roles python:user.getRoles();
+        nr_cols python:len(review_state['columns']);
+        nr_cols python:view.bika_listing.show_select_column and nr_cols + 1 or nr_cols;
+        nr_cols python:view.bika_listing.show_sort_column and nr_cols + 1 or nr_cols;
+        nr_cols python:str(nr_cols);">
+
+<table
+    tal:define="
+        form_id view/bika_listing/form_id;
+        review_state_id python:request.get(form_id+'_review_state', 'default');
+        review_state python:[t for t in view.bika_listing.review_states
+                            if t['id'] == review_state_id];
+        review_state python:review_state and review_state[0]
+                            or view.bika_listing.review_states[0];
+        toggle_cols python:dict([(col, view.bika_listing.columns[col])
+                                for col in view.bika_listing.columns.keys()
+                                if col in review_state['columns']]);
+        sm python:modules['AccessControl'].getSecurityManager();
+        EditAnalyses python:sm.checkPermission('BIKA: Edit analyses', context);
+        ViewResults python:sm.checkPermission('BIKA: View Results', context);
+        tabindex view/tabindex;
+        user python:sm.getUser();
+        roles python:user.getRoles();
+        nr_cols python:len(review_state['columns']);
+        nr_cols python:view.bika_listing.show_select_column and nr_cols + 1 or nr_cols;
+        nr_cols python:view.bika_listing.show_sort_column and nr_cols + 1 or nr_cols;
+        nr_cols python:str(nr_cols);"
+    tal:attributes="class python:'bika-listing-table';
+                    form_id view/bika_listing/form_id"
+    i18n:attributes="summary summary_content_listing;"
+    summary="Content listing">
+
+    <tbody class="item-listing-tbody" tal:condition="view/items">
+        <thead>
+            <tr>
+                <th colspan="5">&nbsp;</th>
+            </tr>
+        </thead>
+
+        <tr tal:repeat="row python:view.get_rows_headers()">
+            <td><span tal:content="structure row/title"></span></td>
+            <td tal:content="row/row_type">col 2</td>
+            <td>col 3</td>
+            <td>col 4</td>
+            <td>col 5</td>
+        </tr>
+
+    </tbody>
+</table>
+</div>

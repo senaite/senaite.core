@@ -15,12 +15,12 @@ class AnalysesTransposedView(AnalysesView):
         contextual menus for columns, etc. will not work in this view.
     """
 
-    def contents_table(self, table_only = False):
+    def contents_table(self, table_only = True):
         """ Overrides contents_table method from the parent class
             BikaListingView, using the transposed template instead
             of the classic template.
         """
-        table = AnalysesTransposedTable(bika_listing = self, table_only = table_only)
+        table = AnalysesTransposedTable(bika_listing = self, table_only = True)
         return table.render(self)
 
 
@@ -32,3 +32,33 @@ class AnalysesTransposedTable(BikaListingTable):
 
     def rendered_items(self, cat=None, **kwargs):
         return ''
+
+    def get_rows_headers(self):
+        cached = []
+        rows = []
+        index = 0
+        for col in self.bika_listing.review_state['columns']:
+            lcol = self.bika_listing.columns[col]
+            rows.append({'title': lcol['title'],
+                         'input_class': lcol.get('input_class',''),
+                         'input_width': lcol.get('input_width',''),
+                         'type': lcol.get('type',''),
+                         'toggle': lcol.get('toggle', True),
+                         'row_type': 'field'})
+            index += 1
+        for item in self.items:
+            for interim in item.get('interim_fields', []):
+                if interim['title'] not in cached:
+                    rows.append({'title': interim['title'],
+                                 'row_type': 'interim',
+                                 'index': index})
+                    index += 1
+                    cached.append(interim['title'])
+            if item['title'] not in cached:
+                rows.append({'title': item['title'],
+                             'row_type': 'analysis',
+                             'index': index})
+                index += 1
+                cached.append(item['title'])
+        return rows
+
