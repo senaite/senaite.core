@@ -12,14 +12,13 @@
  <property name="global_allow">False</property>
  <property name="filter_content_types">True</property>
  <property name="allowed_content_types">
-  <element value="ARImportItem"/>
  </property>
  <property name="allow_discussion">False</property>
  <property name="default_view">arimport_view</property>
 
- <alias from="(Default)" to="arimport_view"/>
+ <alias from="(Default)" to="base_view"/>
  <alias from="edit" to="base_edit"/>
- <alias from="view" to="arimport_view"/>
+ <alias from="view" to="base_view"/>
 
  <action title="Edit"
          action_id="edit"
@@ -30,7 +29,7 @@
          i18n:attributes="title"
          i18n:domain="plone"
          visible="True">
-     <permission value='BIKA: Manage ARImport'/>
+     <permission value='Modify portal content'/>
  </action>
 
  <action title="View"

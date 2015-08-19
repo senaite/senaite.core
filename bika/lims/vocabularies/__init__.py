@@ -17,8 +17,8 @@ from zope.site.hooks import getSite
 import os
 import glob
 
-class CatalogVocabulary(object):
 
+class CatalogVocabulary(object):
     """Make vocabulary from catalog query.
 
     """
@@ -29,33 +29,56 @@ class CatalogVocabulary(object):
     key = 'UID'
     value = 'Title'
 
-    def __init__(self, context):
+    def __init__(self, context, key=None, value=None, contentFilter=None):
         self.context = context
+        self.key = key if key else self.key
+        self.value = value if value else self.value
+        self.contentFilter = \
+            contentFilter if contentFilter else self.contentFilter
 
     def __call__(self, **kwargs):
         site = getSite()
         request = aq_get(site, 'REQUEST', None)
         catalog = getToolByName(site, self.catalog)
-        if 'inactive_state' in catalog.indexes():
-            self.contentFilter['inactive_state'] = 'active'
-        if 'cancellation_state' in catalog.indexes():
-            self.contentFilter['cancellation_state'] = 'active'
-        self.contentFilter.update(**kwargs)
-        objects = (b.getObject() for b in catalog(self.contentFilter))
+        if 'allow_blank' in kwargs:
+            allow_blank = True
+            del (kwargs['allow_blank'])
 
-        items = []
-        for obj in objects:
-            key = obj[self.key]
-            key = callable(key) and key() or key
-            value = obj[self.value]
-            value = callable(value) and value() or value
+        self.contentFilter.update(**kwargs)
+
+        # If a secondary deactivation/cancellation workflow is anbled,
+        # Be sure and select only active objects, unless other instructions
+        # are explicitly specified:
+        wf = getToolByName(site, 'portal_workflow')
+        if 'portal_type' in self.contentFilter:
+            portal_type = self.contentFilter['portal_type']
+            wf_ids = [x.id for x in wf.getWorkflowsFor(portal_type)]
+            if 'bika_inactive_workflow' in wf_ids \
+                    and 'bika_inactive_workflow' not in self.contentFilter:
+                self.contentFilter['inactive_state'] = 'active'
+            elif 'bika_cancellation_workflow' in wf_ids \
+                    and 'bika_inactive_workflow' not in self.contentFilter:
+                self.contentFilter['cancellation_state'] = 'active'
+
+        brains = catalog(self.contentFilter)
+
+        items = [('', '')] if allow_blank else []
+        for brain in brains:
+            if self.key in brain and self.value in brain:
+                key = getattr(brain, self.key)
+                value = getattr(brain, self.value)
+            else:
+                obj = brain.getObjec()
+                key = obj[self.key]
+                key = callable(key) and key() or key
+                value = obj[self.value]
+                value = callable(value) and value() or value
             items.append((key, t(value)))
 
         return DisplayList(items)
 
 
 class BikaContentVocabulary(object):
-
     """Vocabulary factory for Bika Setup objects.  We find them by listing
     folder contents directly.
     """
@@ -63,9 +86,9 @@ class BikaContentVocabulary(object):
 
     def __init__(self, folders, portal_types):
         self.folders = isinstance(folders, (tuple, list)) and \
-            folders or [folders, ]
+                       folders or [folders, ]
         self.portal_types = isinstance(portal_types, (tuple, list)) and \
-            portal_types or [portal_types, ]
+                            portal_types or [portal_types, ]
 
     def __call__(self, context):
         site = getSite()
@@ -98,19 +121,19 @@ class BikaCatalogTypesVocabulary(object):
         translate = context.translate
         types = (
             ('AnalysisRequest', translate(to_utf8(_('Analysis Request')))),
-            ('Batch',  translate(to_utf8(_('Batch')))),
-            ('Sample',  translate(to_utf8(_('Sample')))),
-            ('ReferenceSample',  translate(to_utf8(_('Reference Sample')))),
-            ('Worksheet',  translate(to_utf8(_('Worksheet'))))
+            ('Batch', translate(to_utf8(_('Batch')))),
+            ('Sample', translate(to_utf8(_('Sample')))),
+            ('ReferenceSample', translate(to_utf8(_('Reference Sample')))),
+            ('Worksheet', translate(to_utf8(_('Worksheet'))))
         )
         items = [SimpleTerm(i[0], i[0], i[1]) for i in types]
         return SimpleVocabulary(items)
+
 
 BikaCatalogTypesVocabularyFactory = BikaCatalogTypesVocabulary()
 
 
 class AnalysisCategoryVocabulary(BikaContentVocabulary):
-
     """" AnalysisCategories
 
     >>> portal = layer['portal']
@@ -140,73 +163,74 @@ class AnalysisCategoryVocabulary(BikaContentVocabulary):
 
     def __init__(self):
         BikaContentVocabulary.__init__(self,
-                                   ['bika_setup/bika_analysiscategories', ],
-                                   ['AnalysisCategory', ])
+                                       ['bika_setup/bika_analysiscategories', ],
+                                       ['AnalysisCategory', ])
+
 
 AnalysisCategoryVocabularyFactory = AnalysisCategoryVocabulary()
 
 
 class AnalysisProfileVocabulary(BikaContentVocabulary):
-
     def __init__(self):
         BikaContentVocabulary.__init__(self,
                                        ['bika_setup/bika_analysisprofiles', ],
                                        ['AnalysisProfile', ])
 
+
 AnalysisProfileVocabularyFactory = AnalysisProfileVocabulary()
 
 
 class StorageLocationVocabulary(BikaContentVocabulary):
-
     def __init__(self):
         BikaContentVocabulary.__init__(self,
                                        ['bika_setup/bika_storagelocations', ],
                                        ['StorageLocation', ])
 
+
 StorageLocationVocabularyFactory = StorageLocationVocabulary()
 
-class SamplePointVocabulary(BikaContentVocabulary):
 
+class SamplePointVocabulary(BikaContentVocabulary):
     def __init__(self):
         BikaContentVocabulary.__init__(self,
                                        ['bika_setup/bika_samplepoints', ],
                                        ['SamplePoint', ])
 
+
 SamplePointVocabularyFactory = SamplePointVocabulary()
 
 
 class SampleTypeVocabulary(BikaContentVocabulary):
-
     def __init__(self):
         BikaContentVocabulary.__init__(self,
                                        ['bika_setup/bika_sampletypes', ],
                                        ['SampleType', ])
 
+
 SampleTypeVocabularyFactory = SampleTypeVocabulary()
 
 
 class AnalysisServiceVocabulary(BikaContentVocabulary):
-
     def __init__(self):
         BikaContentVocabulary.__init__(self,
                                        ['bika_setup/bika_analysisservices', ],
                                        ['AnalysisService', ])
 
+
 AnalysisServiceVocabularyFactory = AnalysisServiceVocabulary()
 
 
 class ClientVocabulary(BikaContentVocabulary):
-
     def __init__(self):
         BikaContentVocabulary.__init__(self,
                                        ['clients', ],
                                        ['Client', ])
 
+
 ClientVocabularyFactory = ClientVocabulary()
 
 
 class UserVocabulary(object):
-
     """ Present a vocabulary containing users in the specified
     list of roles
 
@@ -249,14 +273,13 @@ class UserVocabulary(object):
         items = [SimpleTerm(i[1], i[1], i[0]) for i in items]
         return SimpleVocabulary(items)
 
-UserVocabularyFactory = UserVocabulary()
 
+UserVocabularyFactory = UserVocabulary()
 
 ClientVocabularyFactory = ClientVocabulary()
 
 
 class ClientContactVocabulary(object):
-
     """ Present Client Contacts
 
     >>> from zope.component import queryUtility
@@ -306,19 +329,19 @@ class ClientContactVocabulary(object):
             items += xitems
         return SimpleVocabulary(items)
 
+
 ClientContactVocabularyFactory = ClientContactVocabulary()
 
 
 class AnalystVocabulary(UserVocabulary):
-
     def __init__(self):
         UserVocabulary.__init__(self, roles=['Analyst', ])
+
 
 AnalystVocabularyFactory = AnalystVocabulary()
 
 
 class AnalysisRequestWorkflowStateVocabulary(object):
-
     """Vocabulary factory for workflow states.
 
         >>> from zope.component import queryUtility
@@ -360,11 +383,12 @@ class AnalysisRequestWorkflowStateVocabulary(object):
         terms = [SimpleTerm(k, title=u'%s' % v) for k, v in items_list]
         return SimpleVocabulary(terms)
 
+
 AnalysisRequestWorkflowStateVocabularyFactory = \
     AnalysisRequestWorkflowStateVocabulary()
 
-class ARPrioritiesVocabulary(BikaContentVocabulary):
 
+class ARPrioritiesVocabulary(BikaContentVocabulary):
     def __init__(self):
         BikaContentVocabulary.__init__(self,
                                        ['bika_setup/bika_arpriorities', ],
@@ -388,14 +412,17 @@ def getARReportTemplates():
             })
     return out
 
+
 class ARReportTemplatesVocabulary(object):
     """Locate all ARReport templates to allow user to set the default
     """
     implements(IVocabularyFactory)
 
     def __call__(self, context):
-        out = [SimpleTerm(x['id'], x['id'], x['title']) for x in getARReportTemplates()]
+        out = [SimpleTerm(x['id'], x['id'], x['title']) for x in
+               getARReportTemplates()]
         return SimpleVocabulary(out)
+
 
 def getStickerTemplates():
     """ Returns an array with the sticker templates available. Retrieves the
@@ -428,7 +455,8 @@ def getStickerTemplates():
         if prefix == 'bika.lims':
             continue
         dirlist = templates_resource.listDirectory()
-        exts = ['{0}:{1}'.format(prefix, tpl) for tpl in dirlist if tpl.endswith('.pt')]
+        exts = ['{0}:{1}'.format(prefix, tpl) for tpl in dirlist if
+                tpl.endswith('.pt')]
         templates.extend(exts)
 
     out = []
@@ -442,13 +470,15 @@ def getStickerTemplates():
 
     return out
 
+
 class StickerTemplatesVocabulary(object):
     """ Locate all sticker templates
     """
     implements(IVocabularyFactory)
 
     def __call__(self, context):
-        out = [SimpleTerm(x['id'], x['id'], x['title']) for x in getStickerTemplates()]
+        out = [SimpleTerm(x['id'], x['id'], x['title']) for x in
+               getStickerTemplates()]
         return SimpleVocabulary(out)
 
 

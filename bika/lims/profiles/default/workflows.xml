@@ -31,10 +31,10 @@
   </default>
   <type type_id="ARImport">
    <bound-workflow workflow_id="bika_arimport_workflow"/>
+   <bound-workflow workflow_id="bika_cancellation_workflow"/>
   </type>
 
   <type type_id="ARPriorities"/>
-
   <type type_id="ARPriority">
    <bound-workflow workflow_id="bika_one_state_workflow"/>
    <bound-workflow workflow_id="bika_inactive_workflow"/>
@@ -49,21 +49,6 @@
    <bound-workflow workflow_id="bika_one_state_workflow"/>
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
-  <type type_id="ATBooleanCriterion"/>
-  <type type_id="ATCurrentAuthorCriterion"/>
-  <type type_id="ATDateCriteria"/>
-  <type type_id="ATDateRangeCriterion"/>
-  <type type_id="ATListCriterion"/>
-  <type type_id="ATPathCriterion"/>
-  <type type_id="ATPortalTypeCriterion"/>
-  <type type_id="ATReferenceCriterion"/>
-  <type type_id="ATRelativePathCriterion"/>
-  <type type_id="ATSelectionCriterion"/>
-  <type type_id="ATSimpleIntCriterion"/>
-  <type type_id="ATSimpleStringCriterion"/>
-  <type type_id="ATSortCriterion"/>
-  <type type_id="File"/>
-  <type type_id="Image"/>
 
   <type type_id="Analysis">
    <bound-workflow workflow_id="bika_analysis_workflow"/>
@@ -97,7 +82,6 @@
   </type>
 
   <type type_id="AnalysisSpecs"/>
-  <type type_id="ARImportItem"/>
   <type type_id="Attachment"/>
   <type type_id="AttachmentType">
    <bound-workflow workflow_id="bika_one_state_workflow"/>
