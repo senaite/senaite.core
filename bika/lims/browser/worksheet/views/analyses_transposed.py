@@ -38,7 +38,7 @@ class AnalysesTransposedTable(BikaListingTable):
         cached = []
         rows = []
         index = 0
-        ignore = ['Analysis', 'Result']
+        ignore = ['Analysis', 'Service', 'Result']
         for col in self.bika_listing.review_state['columns']:
             if col == 'Result':
                 # Further interims will be inserted in this position

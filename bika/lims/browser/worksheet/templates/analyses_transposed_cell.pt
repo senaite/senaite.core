@@ -1,1 +1,18 @@
-TODO: bika/lims/browser/worksheet/templates/analyses_transposed_cell.pt
+<td tal:define="
+        item python:view.current_item;
+        row_head python:view.current_rowhead;
+        column python:row_head['id'];
+        allow_edit python:view.bika_listing.allow_edit
+                        and column in item['allow_edit']
+                        and item.get('edit_condition', {}).get(column, True);
+        required python:'required' in item and column in item['required'] or False;
+        before python:column in item['before'] and
+            item['before'][column] or '';
+        after python:column in item['after'] and
+            item['after'][column] or '';
+        replace python:column in item['replace'] and
+            item['replace'][column] or '';">
+    <span class="before" tal:content="structure before"/>
+    <span tal:replace="structure replace"></span>
+
+</td>
