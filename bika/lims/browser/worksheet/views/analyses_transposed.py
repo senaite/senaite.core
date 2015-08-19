@@ -29,6 +29,7 @@ class AnalysesTransposedTable(BikaListingTable):
         displaying the results.
     """
     render = ViewPageTemplateFile("../templates/analyses_transposed.pt")
+    render_cell = ViewPageTemplateFile("../templates/analyses_transposed_cell.pt")
 
     def rendered_items(self, cat=None, **kwargs):
         return ''
@@ -37,28 +38,50 @@ class AnalysesTransposedTable(BikaListingTable):
         cached = []
         rows = []
         index = 0
+        ignore = ['Analysis', 'Result']
         for col in self.bika_listing.review_state['columns']:
+            if col == 'Result':
+                # Further interims will be inserted in this position
+                resindex = index
+            if col in ignore:
+                continue
             lcol = self.bika_listing.columns[col]
-            rows.append({'title': lcol['title'],
-                         'input_class': lcol.get('input_class',''),
-                         'input_width': lcol.get('input_width',''),
+            rows.append({'id': col,
+                         'title': lcol['title'],
                          'type': lcol.get('type',''),
-                         'toggle': lcol.get('toggle', True),
-                         'row_type': 'field'})
+                         'row_type': 'field',
+                         'hidden': not lcol.get('toggle', True),
+                         'input_class': lcol.get('input_class',''),
+                         'input_width': lcol.get('input_width','')})
+            cached.append(col)
             index += 1
+
         for item in self.items:
             for interim in item.get('interim_fields', []):
-                if interim['title'] not in cached:
-                    rows.append({'title': interim['title'],
+                if interim['keyword'] not in cached:
+                    rows.insert(resindex,
+                                {'id': interim['keyword'],
+                                 'title': interim['title'],
+                                 'type': interim.get('type'),
                                  'row_type': 'interim',
-                                 'index': index})
-                    index += 1
-                    cached.append(interim['title'])
-            if item['title'] not in cached:
-                rows.append({'title': item['title'],
+                                 'hidden': interim.get('hidden', False)})
+                    cached.append(interim['keyword'])
+                    resindex += 1
+
+            if item['id'] not in cached:
+                rows.insert(resindex,
+                            {'id': item['id'],
+                             'title': item['title'],
+                             'type': item.get('type',''),
                              'row_type': 'analysis',
                              'index': index})
-                index += 1
-                cached.append(item['title'])
+                resindex += 1
+                cached.append(item['id'])
         return rows
+
+    def render_row_cell(self, rowheader, item):
+        self.current_rowhead = rowheader
+        self.current_item = item
+        return self.render_cell()
+
 

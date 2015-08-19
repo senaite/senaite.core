@@ -47,18 +47,17 @@
     summary="Content listing">
 
     <tbody class="item-listing-tbody" tal:condition="view/items">
-        <thead>
+        <!--thead>
             <tr>
                 <th colspan="5">&nbsp;</th>
             </tr>
-        </thead>
+        </thead-->
 
-        <tr tal:repeat="row python:view.get_rows_headers()">
-            <td><span tal:content="structure row/title"></span></td>
-            <td tal:content="row/row_type">col 2</td>
-            <td>col 3</td>
-            <td>col 4</td>
-            <td>col 5</td>
+        <tr tal:repeat="row python:[r for r in view.get_rows_headers() if r.get('hidden',False) == False]">
+            <th><span tal:content="structure row/title"></span></th>
+            <tal:analysis repeat="item view/items">
+                <td tal:content="structure python:view.render_row_cell(row, item)"></td>
+            </tal:analysis>
         </tr>
 
     </tbody>
