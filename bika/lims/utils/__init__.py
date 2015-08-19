@@ -45,7 +45,7 @@ def t(i18n_msg):
     """Safely translate and convert to UTF8, any zope i18n msgid returned from
     a bikaMessageFactory _
     """
-    return to_utf8(translate(i18n_msg))
+    return to_utf8(translate(to_unicode(i18n_msg)))
 
 # Wrapper for PortalTransport's sendmail - don't know why there sendmail
 # method is marked private
