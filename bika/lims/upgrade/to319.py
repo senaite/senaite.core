@@ -17,6 +17,8 @@ def upgrade(tool):
     setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'jsregistry')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'workflow-csv')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'factorytool')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'controlpanel')
     # important info about upgrade steps in
     # http://stackoverflow.com/questions/7821498/is-there-a-good-reference-list-for-the-names-of-the-genericsetup-import-steps
     setup.runImportStepFromProfile('profile-bika.lims:default', 'skins')

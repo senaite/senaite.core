@@ -5,6 +5,7 @@ __version__ = pkg_resources.get_distribution("bika.lims").version
 # import this to create messages in the bika domain.
 from zope.i18nmessageid import MessageFactory
 bikaMessageFactory = MessageFactory('bika')
+_ = MessageFactory('bika.lims')
 from Products.Archetypes import PloneMessageFactory as PMF
 
 # import this to log messages
@@ -99,6 +100,7 @@ def initialize(context):
     from content.samplematrix import SampleMatrix
     from content.samplepartition import SamplePartition
     from content.samplepoint import SamplePoint
+    # from content.samplinground import SamplingRound
     from content.storagelocation import StorageLocation
     from content.samplesfolder import SamplesFolder
     from content.sampletype import SampleType
