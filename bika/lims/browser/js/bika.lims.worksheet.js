@@ -427,7 +427,7 @@ function WorksheetManageResultsView() {
             var method = null;
             var service = null;
             var muid = $(this).val();
-            var suid = $(this).closest('tr').attr('as_uid');
+            var suid = $(this).attr('as_uid');
             var instrselector = $(this).closest('tr').find('select.listing_select_entry[field="Instrument"]');
             var selectedinstr = $(instrselector).val();
             var m_manualentry = true;

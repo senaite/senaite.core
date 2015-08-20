@@ -67,8 +67,9 @@
                                     tal:attributes="
                                         selector string:${key}_${item/id};
                                         tabindex tabindex/next;
-                                        field column;
+                                        field key;
                                         name string:${key}.${item/uid}:records;
+                                        as_uid string:${item/service_uid|nothing};
                                         uid item/uid;">
                                     <option value="" tal:condition="not:frequired"></option>
                                     <tal:options tal:repeat="option python:item['choices'][key]">
@@ -89,6 +90,7 @@
                                     uid string:${item/uid};
                                     field python:key;
                                     value python:item.get(key,'');
+                                    as_uid string:${item/service_uid|nothing};
                                     name string:${key}.${item/uid}:records"/>
                             </tal:view>
                         </tal:fnoreplace>
@@ -113,6 +115,7 @@
                                 tabindex tabindex/next;
                                 size input_width;
                                 uid string:${item/uid};
+                                as_uid string:${item/service_uid|nothing};
                                 st_uid string:${item/st_uid|nothing};
                                 objectId string:${item/id};
                                 field python:interim['keyword'];
@@ -128,6 +131,7 @@
                                 selector string:${column}_${item/id};
                                 size input_width;
                                 uid string:${item/uid};
+                                as_uid string:${item/service_uid|nothing};
                                 st_uid string:${item/st_uid|nothing};
                                 field python:interim['keyword'];
                                 value python:interim['value'];"/>
@@ -150,6 +154,7 @@
                     tal:attributes="
                         selector string:${column}_${item/id};
                         uid string:${item/uid};
+                        as_uid string:${item/service_uid|nothing};
                         st_uid string:${item/st_uid|nothing};
                         objectId string:${item/id};
                         field string:Result;
@@ -172,6 +177,7 @@
                             tabindex tabindex/next;
                             size input_width;
                             uid string:${item/uid};
+                            as_uid string:${item/service_uid|nothing};
                             st_uid string:${item/st_uid|nothing};
                             objectId string:${item/id};
                             field python:column;
@@ -184,6 +190,7 @@
                             selector string:${column}_${item/id};
                             tabindex tabindex/next;
                             field column;
+                            as_uid string:${item/service_uid|nothing};
                             name string:${column}.${item/uid}:records;
                             uid item/uid;">
                         <option value="" tal:condition="not:required"></option>
@@ -209,6 +216,7 @@
                                 selector string:${column}_${item/id};
                                 size input_width;
                                 uid string:${item/uid};
+                                as_uid string:${item/service_uid|nothing};
                                 st_uid string:${item/st_uid|nothing};
                                 objectId string:${item/id};
                                 field python:column;
@@ -223,6 +231,7 @@
                                 uid string:${item/uid};
                                 field python:column;
                                 value python:item[column];
+                                as_uid string:${item/service_uid|nothing};
                                 name string:${column}.${item/uid}:records"/>
                     </tal:choicesresult>
                 </tal:view>
