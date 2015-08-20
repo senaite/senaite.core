@@ -35,6 +35,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.component import adapts
+from bika.lims.controlpanel.bika_samplingrounds import SamplingRoundsView
 from zope.interface import implements
 
 
@@ -893,3 +894,45 @@ class ajaxGetClientInfo(BrowserView):
 
         return json.dumps(ret)
 
+class ClientSamplingRoundsView(SamplingRoundsView):
+    """This is displayed in the "Sampling Rounds" tab on each client
+    """
+
+    def __init__(self, context, request):
+        super(ClientSamplingRoundsView, self).__init__(context, request)
+        self.contentFilters = {
+            'portal_type': 'SamplingRound',
+            'sort_on': 'sortable_title',
+            'path': {
+                "query": "/".join(self.context.getPhysicalPath()),
+                "level": 0},
+        }
+        self.title = self.context.translate(_("Client Sampling Rounds"))
+        self.context_actions = {_('Add'):
+                                    {'url': 'createObject?type_name=SamplingRound',
+                                     'icon': '++resource++bika.lims.images/add.png'}}
+        self.column = {
+            'title': {'title': _('Title'),
+                      'index': 'sortable_title'},
+            'Description': {'title': _('Description')},
+        }
+
+    def __call__(self):
+        mtool = getToolByName(self.context, 'portal_membership')
+        checkPermission = mtool.checkPermission
+        # if checkPermission(AddSamplingRound, self.context):
+        #    self.context_actions = {_('Add'):
+        #                            {'url': 'createObject?type_name=SamplingRound',
+        #                             'icon': '++resource++bika.lims.images/add.png'}}
+        return super(SamplingRoundsView, self).__call__()
+
+    def folderitems(self):
+        items = BikaListingView.folderitems(self)
+        for x in range(len(items)):
+            if not items[x].has_key('obj'): continue
+            obj = items[x]['obj']
+            items[x]['title'] = obj.Title()
+            items[x]['replace']['title'] = "<a href='%s'>%s</a>" % \
+                 (items[x]['url'], items[x]['title'])
+
+        return items

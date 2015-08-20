@@ -8,7 +8,7 @@
   <property name="description"
     i18n:translate="">A sampling round object</property>
   <property name="icon_expr">string:${portal_url}/document_icon.png</property>
-  <property name="factory">bika.lims.content.samplingsound</property>
+  <property name="factory">bika.lims.content.samplingsround</property>
   <property name="global_allow">False</property>
   <property name="filter_content_types">True</property>
   <property name="allowed_content_types" />

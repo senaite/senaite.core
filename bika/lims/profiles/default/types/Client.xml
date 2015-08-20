@@ -28,6 +28,7 @@
   <element value="SRTemplate"/>
   <element value="SupplyOrder"/>
   <element value="Folder"/>
+  <element value="SamplingRound"/>
  </property>
  <property name="allow_discussion">False</property>
  <property name="immediate_view">base_edit</property>
@@ -127,6 +128,18 @@
          icon_expr="string:${portal_url}/images/artemplate.png"
          link_target=""
          url_expr="string:${object_url}/artemplates"
+         i18n:attributes="title"
+         visible="True">
+  <permission value="View"/>
+ </action>
+
+ <action title="Sampling Rounds"
+         action_id="sampling_rounds_view"
+         category="object"
+         condition_expr=""
+         icon_expr="string:${portal_url}/images/samplepoints.png"
+         link_target=""
+         url_expr="string:${object_url}/sampling_rounds_view"
          i18n:attributes="title"
          visible="True">
   <permission value="View"/>
