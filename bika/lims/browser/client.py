@@ -900,7 +900,7 @@ class ClientSamplingRoundsView(SamplingRoundsView):
 
     def __init__(self, context, request):
         super(ClientSamplingRoundsView, self).__init__(context, request)
-        self.contentFilters = {
+        self.contentFilter = {
             'portal_type': 'SamplingRound',
             'sort_on': 'sortable_title',
             'path': {
@@ -924,10 +924,10 @@ class ClientSamplingRoundsView(SamplingRoundsView):
         #    self.context_actions = {_('Add'):
         #                            {'url': 'createObject?type_name=SamplingRound',
         #                             'icon': '++resource++bika.lims.images/add.png'}}
-        return super(SamplingRoundsView, self).__call__()
+        return super(ClientSamplingRoundsView, self).__call__()
 
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
+    def folderitems(self, full_objects=True):
+        items = BikaListingView.folderitems(self, full_objects)
         for x in range(len(items)):
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
