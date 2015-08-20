@@ -53,10 +53,10 @@
             </tr>
         </thead-->
 
-        <tr tal:repeat="row python:[r for r in view.get_rows_headers() if r.get('hidden',False) == False]">
+        <tr tal:repeat="row python:[r for r in view.rows_headers if r.get('hidden',False) == False]">
             <th><span tal:content="structure row/title"></span></th>
-            <tal:analysis repeat="item view/items">
-                <td tal:content="structure python:view.render_row_cell(row, item)"></td>
+            <tal:analysis repeat="partition view/partitions">
+                <td tal:content="structure python:view.render_row_cell(row, partition)"></td>
             </tal:analysis>
         </tr>
 

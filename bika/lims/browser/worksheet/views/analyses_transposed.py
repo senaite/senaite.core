@@ -31,22 +31,28 @@ class AnalysesTransposedTable(BikaListingTable):
     render = ViewPageTemplateFile("../templates/analyses_transposed.pt")
     render_cell = ViewPageTemplateFile("../templates/analyses_transposed_cell.pt")
 
-    def rendered_items(self, cat=None, **kwargs):
-        return ''
+    def __init__(self, bika_listing = None, table_only = False):
+        BikaListingTable.__init__(self, bika_listing, True)
+        self.rows_headers = []
+        self.trans_items = {}
+        self.partitions = []
+        self._transpose_data()
 
-    def get_rows_headers(self):
+    def _transpose_data(self):
         cached = []
-        rows = []
         index = 0
-        ignore = ['Analysis', 'Service', 'Result']
+        #ignore = ['Analysis', 'Service', 'Result', 'ResultDM']
+        include = ['Attachments', 'DetectionLimit', 'DueDate',
+                   'Instrument', 'Method', 'Pos', 'Priority',
+                   'ResultDM', 'Uncertainty', 'retested', 'state_title']
         for col in self.bika_listing.review_state['columns']:
             if col == 'Result':
                 # Further interims will be inserted in this position
                 resindex = index
-            if col in ignore:
+            if col not in include:
                 continue
             lcol = self.bika_listing.columns[col]
-            rows.append({'id': col,
+            self.rows_headers.append({'id': col,
                          'title': lcol['title'],
                          'type': lcol.get('type',''),
                          'row_type': 'field',
@@ -57,9 +63,9 @@ class AnalysesTransposedTable(BikaListingTable):
             index += 1
 
         for item in self.items:
-            for interim in item.get('interim_fields', []):
+            """for interim in item.get('interim_fields', []):
                 if interim['keyword'] not in cached:
-                    rows.insert(resindex,
+                    self.rows_headers.insert(resindex,
                                 {'id': interim['keyword'],
                                  'title': interim['title'],
                                  'type': interim.get('type'),
@@ -67,9 +73,9 @@ class AnalysesTransposedTable(BikaListingTable):
                                  'hidden': interim.get('hidden', False)})
                     cached.append(interim['keyword'])
                     resindex += 1
-
+            """
             if item['id'] not in cached:
-                rows.insert(resindex,
+                self.rows_headers.insert(resindex,
                             {'id': item['id'],
                              'title': item['title'],
                              'type': item.get('type',''),
@@ -77,11 +83,33 @@ class AnalysesTransposedTable(BikaListingTable):
                              'index': index})
                 resindex += 1
                 cached.append(item['id'])
-        return rows
 
-    def render_row_cell(self, rowheader, item):
+            part = item['Partition']
+            if part in self.trans_items:
+                self.trans_items[part][item['id']] = item
+            else:
+                self.trans_items[part] = {item['id']: item}
+            if part not in self.partitions:
+                self.partitions.append(part)
+
+    def rendered_items(self, cat=None, **kwargs):
+        return ''
+
+    def render_row_cell(self, rowheader, partition = ''):
         self.current_rowhead = rowheader
-        self.current_item = item
+        self.current_partition = partition
+        if rowheader['row_type'] == 'field':
+            # Only the first item for this partition contains common
+            # data for all the analyses with the same partition
+            its = [i for i in self.items if i['Partition'] == partition]
+            self.current_item = its[0] if its else {}
+
+        elif partition in self.trans_items \
+            and rowheader['id'] in self.trans_items[partition]:
+            self.current_item = self.trans_items[partition][rowheader['id']]
+
+        else:
+            import pdb; pdb.set_trace()
+            self.current_item = {}
+
         return self.render_cell()
-
-
