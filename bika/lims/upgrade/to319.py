@@ -10,6 +10,7 @@ def upgrade(tool):
     """Upgrade step required for Bika LIMS 3.1.9
     """
     portal = aq_parent(aq_inner(tool))
+    typestool = getToolByName(portal, 'portal_types')
     # Adding new feature multiple profiles per Analysis Request
     multipleAnalysisProfiles(portal)
     setup = portal.portal_setup
@@ -33,7 +34,17 @@ def upgrade(tool):
     # Migrations
 
     LIMS1546(portal)
-
+    # If Sampling rounds folder is not created yet, we should create it
+    if not portal['bika_setup'].get('bika_samplingrounds'):
+        typestool.constructContent(type_name="SamplingRounds",
+                                   container=portal['bika_setup'],
+                                   id='bika_samplingrounds',
+                                   title='Sampling Rounds')
+    obj = portal['bika_setup']['bika_samplingrounds']
+    obj.unmarkCreationFlag()
+    obj.reindexObject()
+    if not portal['bika_setup'].get('bika_samplingrounds'):
+        logger.info("SamplingRounds not created")
     # Install Products.DataGridField
     qi.installProducts(['Products.DataGridField'])
 
