@@ -42,9 +42,7 @@ class AnalysesTransposedTable(BikaListingTable):
         cached = []
         index = 0
         #ignore = ['Analysis', 'Service', 'Result', 'ResultDM']
-        include = ['Attachments', 'DetectionLimit', 'DueDate',
-                   'Instrument', 'Method', 'Pos', 'Priority',
-                   'ResultDM', 'Uncertainty', 'retested', 'state_title']
+        include = ['Attachments', 'DetectionLimit', 'DueDate','Pos', 'ResultDM']
         for col in self.bika_listing.review_state['columns']:
             if col == 'Result':
                 # Further interims will be inserted in this position
@@ -109,7 +107,6 @@ class AnalysesTransposedTable(BikaListingTable):
             self.current_item = self.trans_items[partition][rowheader['id']]
 
         else:
-            import pdb; pdb.set_trace()
-            self.current_item = {}
+            return ''
 
         return self.render_cell()

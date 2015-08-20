@@ -41,25 +41,22 @@
         nr_cols python:view.bika_listing.show_select_column and nr_cols + 1 or nr_cols;
         nr_cols python:view.bika_listing.show_sort_column and nr_cols + 1 or nr_cols;
         nr_cols python:str(nr_cols);"
-    tal:attributes="class python:'bika-listing-table';
+    tal:attributes="class python:'bika-listing-table bika-listing-table-transposed';
                     form_id view/bika_listing/form_id"
     i18n:attributes="summary summary_content_listing;"
     summary="Content listing">
 
     <tbody class="item-listing-tbody" tal:condition="view/items">
-        <!--thead>
-            <tr>
-                <th colspan="5">&nbsp;</th>
-            </tr>
-        </thead-->
-
         <tr tal:repeat="row python:[r for r in view.rows_headers if r.get('hidden',False) == False]">
             <th><span tal:content="structure row/title"></span></th>
             <tal:analysis repeat="partition view/partitions">
-                <td tal:content="structure python:view.render_row_cell(row, partition)"></td>
+                <tal:cell define="cellhtml python:view.render_row_cell(row, partition)">
+                    <td tal:condition="python:cellhtml"
+                        tal:content="structure cellhtml"></td>
+                    <td tal:condition="python:not cellhtml" class="filled-cell"></td>
+                </tal:cell>
             </tal:analysis>
         </tr>
-
     </tbody>
 </table>
 </div>
