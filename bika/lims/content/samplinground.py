@@ -8,6 +8,27 @@ from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary
 from Products.CMFCore.utils import getToolByName
 
+# I implemented it here because following this example
+# (http://docs.plone.org/external/plone.app.dexterity/docs/advanced/vocabularies.html#named-vocabularies)
+# was giving me an error: "TypeError: object() takes no parameters"
+class Departments(object):
+    """Context source binder to provide a vocabulary of departments.
+    """
+    implements(IContextSourceBinder)
+
+    def __call__(self, context):
+        catalog_name = 'portal_catalog'
+        contentFilter = {'portal_type': 'Department',
+                         'inactive_state': 'active'}
+        catalog = getToolByName(context, catalog_name)
+        brains = catalog(contentFilter)
+        terms = []
+        for brain in brains:
+            department_id = brain.id
+            title = brain.Title
+            terms.append(SimpleVocabulary.createTerm(department_id, str(department_id), title))
+        return SimpleVocabulary(terms)
+
 
 class Samplers(object):
     """Context source binder to provide a vocabulary of the samplers.
@@ -57,10 +78,11 @@ class ISamplingRound(model.Schema):
                 source=Samplers(['LabManager', 'Sampler']),
                 )
 
-        department = schema.TextLine(
+        department = schema.Choice(
                 title=_(u"Department"),
                 description=_(u"The lab department responsible for the sampling round"),
-                required=False
+                required=False,
+                source=Departments()
                 )
 
         sampling_freq = schema.Int(
