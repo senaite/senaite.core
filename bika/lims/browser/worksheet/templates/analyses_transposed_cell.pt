@@ -207,7 +207,7 @@
                 </tal:edit>
                 <tal:view condition="python:not allow_edit">
                     <span tal:content="python:item.get('formatted_result', item[column])"
-                          tal:attributes="class item/state_class result"/>
+                          tal:attributes="class python:item.get('state_class') + ' result'"/>
                     <!-- String result -->
                     <tal:stringresult tal:condition="python:field_type=='string'">
                         <input

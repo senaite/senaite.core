@@ -543,5 +543,8 @@ table.bika-listing-table-transposed tbody tr td div.interim-title {
     display: block;
     font-size: 0.95em;
 }
+table.bika-listing-table-transposed table.worksheet-position tbody tr {
+    border:none;
+}
 /* </dtml-with> */
 
