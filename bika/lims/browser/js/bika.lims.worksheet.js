@@ -433,7 +433,7 @@ function WorksheetManageResultsView() {
             var selectedinstr = $(instrselector).val();
             var m_manualentry = true;
             var s_instrentry  = false;
-            var qc_analysis = $(this).closest('tr').hasClass('qc-analysis');
+            var qc_analysis = $(this).closest('tr,td').hasClass('qc-analysis');
             $(instrselector).find('option').remove();
             $(instrselector).prop('disabled', false);
             $('img.alert-instruments-invalid[uid="'+auid+'"]').remove();

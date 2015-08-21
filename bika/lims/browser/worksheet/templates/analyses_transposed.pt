@@ -52,6 +52,7 @@
             <tal:analysis repeat="partition view/partitions">
                 <tal:cell define="cellhtml python:view.render_row_cell(row, partition)">
                     <td tal:condition="python:cellhtml"
+                        tal:attributes="class python:view.current_item.get('table_row_class','');"
                         tal:content="structure cellhtml"></td>
                     <td tal:condition="python:not cellhtml" class="filled-cell"></td>
                 </tal:cell>
