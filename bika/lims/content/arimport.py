@@ -365,7 +365,7 @@ class ARImport(BaseFolder):
         """
         lines = self.getOriginalFile().data.splitlines()
         reader = csv.reader(lines)
-        header_fields = []
+        header_fields = header_data = []
         for row in reader:
             if not any(row):
                 continue
@@ -616,7 +616,7 @@ class ARImport(BaseFolder):
         """
         lines = self.getOriginalFile().data.splitlines()
         reader = csv.reader(lines)
-        batch_headers = []
+        batch_headers = batch_data = []
         for row in reader:
             if not any(row):
                 continue
