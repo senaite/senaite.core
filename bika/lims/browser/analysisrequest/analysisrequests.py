@@ -547,9 +547,6 @@ class AnalysisRequestsView(BikaListingView):
             items[x]['replace']['getSample'] = \
                 "<a href='%s'>%s</a>" % (sample.absolute_url(), sample.Title())
 
-            items[x]['replace']['getProfilesTitle'] = ", ".join(
-                [p.Title() for p in obj.getProfiles()])
-
             if obj.getAnalysesNum():
                 items[x]['getAnalysesNum'] = str(obj.getAnalysesNum()[0]) + '/' + str(obj.getAnalysesNum()[1])
             else:
