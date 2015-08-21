@@ -1,5 +1,10 @@
 3.1.8.1 (2015-06-23)
 --------------------
+LIMS-1760: Customised AR Import spreadsheets (refactored, support importing to Batch)
+
+
+3.1.8.1 (2015-06-23)
+--------------------
 Fix portlets.xml for Plone 4.3.6 compatibility
 
 
