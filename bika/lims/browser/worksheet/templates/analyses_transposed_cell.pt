@@ -224,7 +224,7 @@
                                 value python:item[column];"/>
                     </tal:stringresult>
                     <!-- Choices result -->
-                    <tal:choicesresult>
+                    <tal:choicesresult condition="python:field_type=='choices' and column in item['choices']">
                         <input
                             type="hidden"
                             tal:attributes="
