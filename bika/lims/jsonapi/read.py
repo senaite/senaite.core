@@ -41,7 +41,10 @@ def read(context, request):
             contentFilter[index] = safe_unicode(request[index])
         if "%s[]"%index in request:
             value = request["%s[]"%index]
-            contentFilter[index] = [safe_unicode(v) for v in value]
+            if type(value) in (list, tuple):
+                contentFilter[index] = [safe_unicode(v) for v in value]
+            else:
+                contentFilter[index] = value
 
     if 'limit' in request:
         try:
