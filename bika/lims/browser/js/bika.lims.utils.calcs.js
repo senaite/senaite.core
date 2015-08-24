@@ -29,7 +29,6 @@ function CalculationUtils() {
 
             form = $(this).parents("form");
             form_id = $(form).attr("id");
-            td = $(this).parents('td');
             uid = $(this).attr('uid');
             field = $(this).attr('field');
             value = $(this).attr('value');
@@ -38,7 +37,7 @@ function CalculationUtils() {
             // clear out the alerts for this field
             $(".alert").filter("span[uid='"+$(this).attr("uid")+"']").empty();
 
-            if ($(this).parents('td').last().hasClass('interim')){
+            if ($(this).parents('td,div').first().hasClass('interim')){
                 // add value to form's item_data
                 item_data = $.parseJSON(item_data);
                 for(i = 0; i < item_data[uid].length;i++){
@@ -54,7 +53,7 @@ function CalculationUtils() {
             // collect all form results into a hash (by analysis UID)
             var results = {};
             $.each($("td:not(.state-retracted) input[field='Result'], td:not(.state-retracted) select[field='Result']"), function(i, e){
-                var tr = $(e).closest('tr');
+                var uid = $(e).attr('uid');
                 var result = $(e).val().trim();
 
                 /**
@@ -75,10 +74,10 @@ function CalculationUtils() {
                                 below_ldl: false,
                                 above_udl: false
                             };
-                var andls = $(tr).find('input[id^="AnalysisDLS."]');
+                var andls = $('input[id^="AnalysisDLS."][uid="'+uid+'"]');
                 andls = andls.length > 0 ? andls.first().val() : null;
                 andls = andls != null ? $.parseJSON(andls) : defandls;
-                var dlop = $(tr).find('select[name^="DetectionLimit."]');
+                var dlop = $('select[name^="DetectionLimit."][uid="'+uid+'"]');
                 if (dlop.length > 0) {
                     // If the analysis is under edition, give priority to
                     // the current values instead of AnalysisDLS values
@@ -152,7 +151,7 @@ function CalculationUtils() {
                                 belowldl: andls.below_ldl,
                                 aboveudl: andls.above_udl,
                             };
-                results[$(e).attr("uid")] = mapping;
+                results[uid] = mapping;
             });
 
             options = {
