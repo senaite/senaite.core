@@ -33,7 +33,7 @@
 
     <tal:replace condition="replace">
         <tal:attachments condition="python:column=='Attachments'">
-            <tal:attachment repeat="titem python:[t for t in view.trans_items[view.current_partition].values() if t.get('replace',{}).get('Attachments','')]">
+            <tal:attachment repeat="titem python:[t for t in view.trans_items[view.current_position].values() if t.get('replace',{}).get('Attachments','')]">
             <div tal:content="structure titem/replace/Attachments"></div>
             </tal:attachment>
         </tal:attachments>

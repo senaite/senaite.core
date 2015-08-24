@@ -35,7 +35,7 @@ class AnalysesTransposedTable(BikaListingTable):
         BikaListingTable.__init__(self, bika_listing, True)
         self.rows_headers = []
         self.trans_items = {}
-        self.partitions = []
+        self.positions = []
         self._transpose_data()
 
     def _transpose_data(self):
@@ -61,17 +61,6 @@ class AnalysesTransposedTable(BikaListingTable):
             index += 1
 
         for item in self.items:
-            """for interim in item.get('interim_fields', []):
-                if interim['keyword'] not in cached:
-                    self.rows_headers.insert(resindex,
-                                {'id': interim['keyword'],
-                                 'title': interim['title'],
-                                 'type': interim.get('type'),
-                                 'row_type': 'interim',
-                                 'hidden': interim.get('hidden', False)})
-                    cached.append(interim['keyword'])
-                    resindex += 1
-            """
             if item['id'] not in cached:
                 self.rows_headers.insert(resindex,
                             {'id': item['id'],
@@ -82,29 +71,29 @@ class AnalysesTransposedTable(BikaListingTable):
                 resindex += 1
                 cached.append(item['id'])
 
-            part = item['Partition']
-            if part in self.trans_items:
-                self.trans_items[part][item['id']] = item
+            pos = item['Pos']
+            if pos in self.trans_items:
+                self.trans_items[pos][item['id']] = item
             else:
-                self.trans_items[part] = {item['id']: item}
-            if part not in self.partitions:
-                self.partitions.append(part)
+                self.trans_items[pos] = {item['id']: item}
+            if pos not in self.positions:
+                self.positions.append(pos)
 
     def rendered_items(self, cat=None, **kwargs):
         return ''
 
-    def render_row_cell(self, rowheader, partition = ''):
+    def render_row_cell(self, rowheader, position = ''):
         self.current_rowhead = rowheader
-        self.current_partition = partition
+        self.current_position = position
         if rowheader['row_type'] == 'field':
-            # Only the first item for this partition contains common
-            # data for all the analyses with the same partition
-            its = [i for i in self.items if i['Partition'] == partition]
+            # Only the first item for this position contains common
+            # data for all the analyses with the same position
+            its = [i for i in self.items if i['Pos'] == position]
             self.current_item = its[0] if its else {}
 
-        elif partition in self.trans_items \
-            and rowheader['id'] in self.trans_items[partition]:
-            self.current_item = self.trans_items[partition][rowheader['id']]
+        elif position in self.trans_items \
+            and rowheader['id'] in self.trans_items[position]:
+            self.current_item = self.trans_items[position][rowheader['id']]
 
         else:
             return ''
