@@ -48,7 +48,7 @@
                    'Instrument', 'Method', 'Pos', 'ResultDM']-->
             <!-- Method, Instrument and Detection Limit -->
             <tal:results_additional define="keys python:['Method', 'Instrument', 'DetectionLimit'];">
-                <tal:fieldrepeat repeat="key keys">
+                <tal:fieldrepeat repeat="key python:[k for k in keys if view.bika_listing.columns.get(k,{}).get('toggle', False)== True]">
                     <tal:field
                         define="ftitle python: view.bika_listing.columns.get(key,{}).get('title','');
                                 ftype python:'type' if view.bika_listing.columns.get(key,{}).get('type','') else 'string';
