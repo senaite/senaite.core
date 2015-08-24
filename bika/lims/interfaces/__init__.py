@@ -365,6 +365,8 @@ class ISRTemplates(Interface):
 
     ""
 
+class ISamplingRoundTemplate(Interface):
+    ""
 
 class ISupplier(Interface):
 

@@ -24,11 +24,32 @@ class Departments(object):
         brains = catalog(contentFilter)
         terms = []
         for brain in brains:
-            department_id = brain.id
+            department_id = brain.UID
             title = brain.Title
             terms.append(SimpleVocabulary.createTerm(department_id, str(department_id), title))
         return SimpleVocabulary(terms)
 
+class SamplingRoundTemplates(object):
+    """Context source binder to provide a vocabulary of Lab and client's Sampling Round Templates.
+    """
+    implements(IContextSourceBinder)
+
+    def __call__(self, context):
+        catalog_name = 'portal_catalog'
+        contentFilter = {'portal_type': 'SRTemplate',
+                         'inactive_state': 'active'}
+        catalog = getToolByName(context, catalog_name)
+        brains = catalog(contentFilter)
+        terms = []
+        for brain in brains:
+            container = brain.getObject().aq_parent
+            # Show only the client and lab's Sampling Round Templates
+            if container.portal_type == 'Client' and container != context.aq_parent:
+                continue
+            srt_uid = brain.UID
+            title = brain.Title
+            terms.append(SimpleVocabulary.createTerm(srt_uid, str(srt_uid), title))
+        return SimpleVocabulary(terms)
 
 class Samplers(object):
     """Context source binder to provide a vocabulary of the samplers.
@@ -91,20 +112,21 @@ class ISamplingRound(model.Schema):
                 required=True
                 )
 
-        instructions = RichText(
-                title=_(u"Instructions"),
-                required=False
-                )
-
-        ar_templates = schema.TextLine(
-                title=_(u"Analysis request templates"),
+        sr_template = schema.Choice(
+                title=_(u"Sampling Round Template"),
                 description=_(u"Analysis request templates to be included in the Sampling Round Template"),
-                required=False
+                source=SamplingRoundTemplates(),
+                required=True,
                 )
 
         sampling_date = schema.Date(
                 title=_(u"Sampling date"),
                 description=_(u"The date to do the sampling process"),
+                required=False
+                )
+
+        instructions = RichText(
+                title=_(u"Instructions"),
                 required=False
                 )
 
