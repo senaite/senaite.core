@@ -909,7 +909,7 @@ class ClientSamplingRoundsView(SamplingRoundsView):
         }
         self.title = self.context.translate(_("Client Sampling Rounds"))
         self.context_actions = {_('Add'):
-                                    {'url': 'createObject?type_name=SamplingRound',
+                                    {'url': '++add++SamplingRound',  # To work with dexterity
                                      'icon': '++resource++bika.lims.images/add.png'}}
         self.column = {
             'title': {'title': _('Title'),

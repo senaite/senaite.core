@@ -44,7 +44,7 @@ class SamplingRoundTemplates(object):
         for brain in brains:
             container = brain.getObject().aq_parent
             # Show only the client and lab's Sampling Round Templates
-            if container.portal_type == 'Client' and container != context.aq_parent:
+            if container.portal_type == 'Client' and container != context:
                 continue
             srt_uid = brain.UID
             title = brain.Title
@@ -113,7 +113,7 @@ class ISamplingRound(model.Schema):
                 )
 
         sr_template = schema.Choice(
-                title=_(u"Sampling Round Template"),
+                title=_(u"Sampling Rounds Template"),
                 description=_(u"Analysis request templates to be included in the Sampling Round Template"),
                 source=SamplingRoundTemplates(),
                 required=True,

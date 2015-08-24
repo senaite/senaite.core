@@ -47,8 +47,8 @@
 
     <subscriber
         for="bika.lims.content.samplinground.ISamplingRound
-           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
-      handler="bika.lims.subscribers.samplinground.SamplingRoundModifiedEventHandler"
+           zope.lifecycleevent.interfaces.IObjectAddedEvent"
+      handler="bika.lims.subscribers.samplinground.SamplingRoundAddedEventHandler"
     />
 
  </configure>
