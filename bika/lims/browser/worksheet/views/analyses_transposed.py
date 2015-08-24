@@ -61,21 +61,21 @@ class AnalysesTransposedTable(BikaListingTable):
             index += 1
 
         for item in self.items:
-            if item['id'] not in cached:
+            if item['Service'] not in cached:
                 self.rows_headers.insert(resindex,
-                            {'id': item['id'],
+                            {'id': item['Service'],
                              'title': item['title'],
                              'type': item.get('type',''),
                              'row_type': 'analysis',
                              'index': index})
                 resindex += 1
-                cached.append(item['id'])
+                cached.append(item['Service'])
 
             pos = item['Pos']
             if pos in self.trans_items:
-                self.trans_items[pos][item['id']] = item
+                self.trans_items[pos][item['Service']] = item
             else:
-                self.trans_items[pos] = {item['id']: item}
+                self.trans_items[pos] = {item['Service']: item}
             if pos not in self.positions:
                 self.positions.append(pos)
 
