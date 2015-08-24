@@ -7,6 +7,6 @@
  <index name="getName" meta_type="FieldIndex"> <indexed_attr value="getName"/> </index>
  <index name="review_state" meta_type="FieldIndex"> <indexed_attr value="review_state"/> </index>
  <index name="inactive_state" meta_type="FieldIndex"> <indexed_attr value="inactive_state"/> </index>
- <index name="cancellation_state" meta_type="FieldIndex"> <indexed_attr value="inactive_state"/> </index>
+ <index name="cancellation_state" meta_type="FieldIndex"> <indexed_attr value="cancellation_state"/> </index>
  <column value="review_state"/>
 </object>

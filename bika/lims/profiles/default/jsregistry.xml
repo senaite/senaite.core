@@ -250,17 +250,6 @@
               inline="False"
               insert-after="*"/>
 
- <javascript authenticated="False"
-              id="++resource++bika.lims.js/bika.lims.arimport.js"
-              cacheable="True"
-              compression="safe"
-              conditionalcomment=""
-              cookable="True"
-              enabled="on"
-              expression=""
-              inline="False"
-              insert-after="*"/>
-
   <javascript authenticated="False"
               id="++resource++bika.lims.js/bika.lims.graphics.controlchart.js"
               cacheable="True"
@@ -405,8 +394,7 @@
               inline="False"
               insert-after="*"/>
 
-
-  <!-- Remove javascripts no longer used -->
+  <!-- TODO Remove javascripts no longer used XXX-->
   <javascript id="++resource++bika.lims.js/jquery.json.js" enabled="False"/>
   <javascript id="++resource++bika.lims.js/utils.js" enabled="False"/>
   <javascript id="++resource++bika.lims.js/bika_listing.js" enabled="False"/>
@@ -431,6 +419,7 @@
   <javascript id="++resource++bika.lims.js/attachments.js" enabled="False"/>
   <javascript id="++resource++bika.lims.js/supplyorder_edit.js" enabled="False"/>
   <javascript id="++resource++bika.lims.js/arimport.js" enabled="False"/>
+  <javascript id="++resource++bika.lims.js/bika.lims.arimport.js" enabled="False"/>
   <javascript id="++resource++bika.lims.js/d3.js" enabled="False"/>
   <javascript id="++resource++bika.lims.js/bika.d3.controlchart.js" enabled="False"/>
   <javascript id="++resource++bika.lims.js/bika.lims.method.edit.js" enabled="False"/>

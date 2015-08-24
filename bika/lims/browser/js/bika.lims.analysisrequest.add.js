@@ -1347,7 +1347,7 @@ function AnalysisRequestAddView() {
 			var profile_objects = data.objects;
 			var request_data = {
 				portal_type: "AnalysisService",
-				title: profile_objects[0].Service,
+				UID: profile_objects[0].Service_uid,
 				include_fields: ["PointOfCapture", "Category", "UID", "title"]
 			};
 			window.bika.lims.jsonapi_read(request_data, function(data){

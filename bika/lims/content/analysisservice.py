@@ -59,7 +59,7 @@ def getContainers(instance,
     XXX obj = bsc(getKeyword='Moist')[0].getObject()
     XXX u'Container Type: Canvas bag' in obj.getContainers().values()
     XXX True
-
+x
     """
 
     bsc = getToolByName(instance, 'bika_setup_catalog')
@@ -922,7 +922,12 @@ schema['description'].widget.visible = True
 schema['title'].required = True
 schema['title'].widget.visible = True
 schema['title'].schemata = 'Description'
+schema['title'].validators = ()
+# Update the validation layer after change the validator in runtime
+schema['title']._validationLayer()
 schema.moveField('ShortTitle', after='title')
+schema.moveField('CommercialID', after='ShortTitle')
+schema.moveField('ProtocolID', after='CommercialID')
 
 
 class AnalysisService(BaseContent, HistoryAwareMixin):
