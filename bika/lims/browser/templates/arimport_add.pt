@@ -1,0 +1,38 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en"
+      lang="en"
+      metal:use-macro="here/main_template/macros/master"
+      i18n:domain="bika">
+
+<head>< i18n:translate=""
+        tal:content="Add ARImport"/>
+</head>
+
+
+<body>
+
+<div metal:fill-slot="main">
+
+    <h1>
+        <img tal:attributes="src string:++resource++bika.lims.images/analysisprofile_big.png"/>
+        <span i18n:translate="">Import Analysis Request Data</span>
+    </h1>
+
+    <form method="post" name="import_analysisrequest" enctype="multipart/form-data">
+        <input type="hidden" name="submitted" value="1" />
+        <input type="hidden" name="ClientID" tal:attributes="value here/getId"/>
+        <div class="field">
+            <input id="arimport_file" type="file" name="csvfile" size="60"/>
+        </div>
+        <input
+            class="context"
+            type="submit"
+            name="submit"
+            value="Import"
+            i18n:attributes="value"
+        />
+    </form>
+
+</div>
+
+</body>
+</html>

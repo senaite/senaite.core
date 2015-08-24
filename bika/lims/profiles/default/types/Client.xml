@@ -21,9 +21,11 @@
   <element value="AnalysisRequest"/>
   <element value="AnalysisSpec"/>
   <element value="Attachment"/>
+  <element value="Batch"/>
   <element value="Contact"/>
   <element value="Sample"/>
   <element value="SamplePoint"/>
+  <element value="SRTemplate"/>
   <element value="SupplyOrder"/>
   <element value="Folder"/>
  </property>
@@ -137,6 +139,18 @@
          icon_expr="string:${portal_url}/images/analysisspec.png"
          link_target=""
          url_expr="string:${object_url}/analysisspecs"
+         i18n:attributes="title"
+         visible="True">
+  <permission value="View"/>
+ </action>
+
+ <action title="Sampling Round Templates"
+         action_id="srtemplates"
+         category="object"
+         condition_expr=""
+         icon_expr="string:${portal_url}/images/srtemplate.png"
+         link_target=""
+         url_expr="string:${object_url}/srtemplates"
          i18n:attributes="title"
          visible="True">
   <permission value="View"/>
