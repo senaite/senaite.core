@@ -1,5 +1,6 @@
 3.1.9 (unreleased)
 ------------------
+LIMS-1996: On new system with no instrument data it is difficult to get going. The warnings could be confusing
 LIMS-1312: Transposed Worksheet view, ARs in columns
 LIMS-1760: Customised AR Import spreadsheets (refactored, support importing to Batch)
 LIMS-1548: Client-specific Sampling Round Templates
