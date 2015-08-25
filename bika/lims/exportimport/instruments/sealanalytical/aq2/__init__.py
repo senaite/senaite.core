@@ -42,7 +42,7 @@ class SealAnalyticsAQ2CSVParser(InstrumentCSVResultsFileParser):
             rawdict[self._columns[idx]] = result
 
         resid = rawdict['Sample ID']
-        rawdict['DefaultResults'] = 'Result'
+        rawdict['DefaultResult'] = 'Result'
         rawdict['Remarks'] = rawdict['Sample Details']
         del rawdict['Sample Details']
         name = rawdict['Test Name']
