@@ -1,12 +1,11 @@
 from bika.lims import _
-from plone.app.textfield import RichText
 from plone.supermodel import model
 from zope import schema
 from plone.dexterity.content import Item
 from zope.interface import implements
-from zope.schema.interfaces import IContextSourceBinder
 from zope.schema.vocabulary import SimpleVocabulary
 from Products.CMFCore.utils import getToolByName
+from zope.schema.interfaces import IContextSourceBinder
 
 # I implemented it here because following this example
 # (http://docs.plone.org/external/plone.app.dexterity/docs/advanced/vocabularies.html#named-vocabularies)
@@ -51,6 +50,28 @@ class SamplingRoundTemplates(object):
             terms.append(SimpleVocabulary.createTerm(srt_uid, str(srt_uid), title))
         return SimpleVocabulary(terms)
 
+class AnalysisRequestTemplates(object):
+    """Context source binder to provide a vocabulary of Lab and client's Sampling Round Templates.
+    """
+    implements(IContextSourceBinder)
+
+    def __call__(self, context):
+        catalog_name = 'portal_catalog'
+        contentFilter = {'portal_type': 'ARTemplate',
+                         'inactive_state': 'active'}
+        catalog = getToolByName(context, catalog_name)
+        brains = catalog(contentFilter)
+        terms = []
+        for brain in brains:
+            container = brain.getObject().aq_parent
+            # Show only the client and lab's Sampling Round Templates
+            if container.portal_type == 'Client' and container != context:
+                continue
+            art_uid = brain.UID
+            title = brain.Title
+            terms.append(SimpleVocabulary.createTerm(art_uid, str(art_uid), title))
+        return SimpleVocabulary(terms)
+
 class Samplers(object):
     """Context source binder to provide a vocabulary of the samplers.
     :sampler_group: The role's names to obtain the objects
@@ -92,6 +113,13 @@ class ISamplingRound(model.Schema):
                 required=False
                 )
 
+        sr_template = schema.Choice(
+                title=_(u"Sampling Rounds Template"),
+                description=_(u"Analysis request templates to be included in the Sampling Round Template"),
+                source=SamplingRoundTemplates(),
+                required=False,
+                )
+
         sampler = schema.Choice(
                 title=_(u"Sampler"),
                 description=_(u"The default Sampler for these Sampling Round"),
@@ -102,21 +130,15 @@ class ISamplingRound(model.Schema):
         department = schema.Choice(
                 title=_(u"Department"),
                 description=_(u"The lab department responsible for the sampling round"),
-                required=False,
+                required=True,
                 source=Departments()
                 )
 
         sampling_freq = schema.Int(
                 title=_(u"Sampling frequency"),
                 description=_(u"The number of days between recurring field trips"),
-                required=True
-                )
-
-        sr_template = schema.Choice(
-                title=_(u"Sampling Rounds Template"),
-                description=_(u"Analysis request templates to be included in the Sampling Round Template"),
-                source=SamplingRoundTemplates(),
                 required=True,
+                default=7,
                 )
 
         sampling_date = schema.Date(
@@ -125,11 +147,17 @@ class ISamplingRound(model.Schema):
                 required=False
                 )
 
-        instructions = RichText(
+        instructions = schema.Text(
                 title=_(u"Instructions"),
                 required=False
                 )
 
+        model = schema.List(
+            title=_(u'Analysis Request Templates'),
+            value_type=schema.Choice(
+                source=AnalysisRequestTemplates()
+            )
+        )
 
 # Custom content-type class; objects created for this content type will
 # be instances of this class. Use this class to add content-type specific
