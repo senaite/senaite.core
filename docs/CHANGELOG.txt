@@ -1,5 +1,6 @@
 3.1.8.2 (2015-09-23)
 --------------------
+LIMS-1996: On new system with no instrument data is difficult to get going.
 LIMS-1760: Customised AR Import spreadsheets (refactored, support importing to Batch)
 LIMS-1930: AssertionError: Having an orphan size, higher than batch size is undefined
 LIMS-1818: Instrument Interface. Eltra CS-2000
