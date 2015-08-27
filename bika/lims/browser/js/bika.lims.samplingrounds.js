@@ -20,7 +20,10 @@ function ClientSamplingRoundAddEditView() {
                 else {
                     unsetSamplingRoundTemplate();
                 }
-            })
+            });
+        // Hiding not needed buttons
+        $("button[name='upButton']").hide();
+        $("button[name='downButton']").hide();
     };
 
     function hasSamplingRoundTemplateData() {
