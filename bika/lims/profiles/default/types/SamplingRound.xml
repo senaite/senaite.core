@@ -13,6 +13,7 @@
   <property name="filter_content_types">True</property>
   <property name="allowed_content_types" >
       <element value="ARTemplate" />
+      <element value="AnalysisRequest"/>
   </property>
   <property name="allow_discussion">False</property>
 
@@ -58,4 +59,17 @@
           visible="True">
     <permission value="Modify portal content" />
   </action>
+
+  <action title="Analysis Requests"
+         action_id="analysisrequests"
+         category="object"
+         condition_expr=""
+         icon_expr="string:${portal_url}/++resource++bika.lims.images/analyissrequest.png"
+         link_target=""
+         url_expr="string:${object_url}/analysisrequests"
+         i18n:attributes="title"
+         i18n:domain="plone"
+         visible="True">
+  <permission value="View"/>
+ </action>
 </object>

@@ -179,4 +179,9 @@ class SamplingRound(Item):
     """
     implements(ISamplingRound)
     # Add your class methods and properties here
+
+    def getAnalysisRequests(self):
+        """ Return all the Analysis Requests linked to the Sampling Round
+        """
+        return self.getBackReferences("AnalysisRequestSamplingRound")
     pass

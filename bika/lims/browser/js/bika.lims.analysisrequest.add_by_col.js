@@ -169,7 +169,20 @@ function AnalysisRequestAddByCol() {
             for (arnum = 0; arnum < nr_ars; arnum++) {
                 filter_by_client(arnum)
             }
-        }, 250)
+        }, 250);
+        // Checking if the request cames from a sampling round
+        var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName;
+        for (i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+            if (sParameterName[0] === 'samplinground') {
+                // Getting the sampling round UID
+                var samplinground_UID = sParameterName[1];
+                // Selecting the sampling round
+
+            }
+        }
     }
 
     function state_set(arnum, fieldname, value) {
