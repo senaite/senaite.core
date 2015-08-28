@@ -145,7 +145,7 @@ class AnalysisServicesView(BikaListingView):
         self.categories = []
         self.do_cats = self.context.bika_setup.getCategoriseAnalysisServices()
         if self.do_cats:
-            self.pagesize = 0  # hide batching controls
+            self.pagesize = 999999  # hide batching controls
             self.show_categories = True,
             self.expand_all_categories = False
 

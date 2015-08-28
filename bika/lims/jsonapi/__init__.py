@@ -150,6 +150,8 @@ def set_fields_from_request(obj, request):
             if value:
                 brains = resolve_request_lookup(obj, request, fieldname)
                 if not brains:
+                    import pdb;pdb.set_trace()
+                    brains = resolve_request_lookup(obj, request, fieldname)
                     raise BadRequest("Can't resolve reference: %s" % fieldname)
             if schema[fieldname].multiValued:
                 value = [b.UID for b in brains] if brains else []

@@ -34,7 +34,7 @@ class LogView(BikaListingView):
         self.show_select_row = False
         self.show_select_column = False
         self.show_workflow_action_buttons = False
-        self.pagesize = 0
+        self.pagesize = 999999
 
         self.icon = self.portal_url + "/++resource++bika.lims.images/%s_big.png" % \
             context.portal_type.lower()
