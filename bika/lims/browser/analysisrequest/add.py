@@ -142,7 +142,9 @@ class AnalysisServicesView(ASV):
         # the item count before choosing to render the table at all.
         if not self.ar_add_items:
             bs = self.context.bika_setup
-            client = self.context.aq_parent
+            # The parent folder can be a client or a batch, but we need the client
+            client = self.context.aq_parent if self.context.aq_parent.portal_type == 'Client'\
+                else self.context.aq_parent.getClient()
             items = super(AnalysisServicesView, self).folderitems()
             for x, item in enumerate(items):
                 if 'obj' not in items[x]:
