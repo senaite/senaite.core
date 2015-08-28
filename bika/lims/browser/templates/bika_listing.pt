@@ -47,7 +47,9 @@
 	<div id="folderlisting-main-table"
 		tal:content="structure view/contents_table"/>
 
-	<tal:hasremarks tal:condition="python:hasattr(context.aq_inner, 'Remarks')">
+	<tal:hasremarks tal:condition="python:hasattr(context.aq_inner, 'Remarks')
+                                        and context.Schema()
+                                        and context.Schema().get('Remarks','')">
 		<tal:remarks define="
 			field python:context.Schema()['Remarks'];
 			errors python:{};">
