@@ -152,7 +152,7 @@ class ISamplingRound(model.Schema):
                 required=False
                 )
 
-        model = schema.List(
+        ar_templates = schema.List(
             title=_(u'Analysis Request Templates'),
             value_type=schema.Choice(
                 source=AnalysisRequestTemplates()

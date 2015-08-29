@@ -170,7 +170,7 @@ function AnalysisRequestAddByCol() {
                 filter_by_client(arnum)
             }
         }, 250);
-        // Checking if the request cames from a sampling round
+        // Checking if the request comes from a sampling round
         var sPageURL = decodeURIComponent(window.location.search.substring(1)),
         sURLVariables = sPageURL.split('&'),
         sParameterName;
@@ -179,8 +179,25 @@ function AnalysisRequestAddByCol() {
             if (sParameterName[0] === 'samplinground') {
                 // Getting the sampling round UID
                 var samplinground_UID = sParameterName[1];
-                // Selecting the sampling round
-
+                var request_data = {
+                    catalog_name: "portal_catalog",
+                    portal_type: "SamplingRound",
+                    UID: samplinground_UID,
+                    include_fields: ["Title", "UID", "ar_templates"]
+                };
+                window.bika.lims.jsonapi_read(request_data, function (data) {
+                    if (data.objects.length > 0) {
+                        var spec = data.objects[0];
+                        // Selecting the sampling round
+                        var sr =$('input[id^="SamplingRound-"]');
+                        sr.attr('uid', spec['UID'])
+                            .val(spec['Title'])
+                            .attr('uid_check', spec['UID'])
+                            .attr('val_check', spec['Title'])
+                            .attr('disabled','disabled');
+                        $('[id^="SamplingRound-"][id$="_uid"]').val(spec['UID']);
+                    }
+                });
             }
         }
     }
