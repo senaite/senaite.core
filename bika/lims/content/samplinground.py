@@ -1,5 +1,6 @@
 from bika.lims import _
 from plone.supermodel import model
+from plone import api
 from zope import schema
 from plone.dexterity.content import Item
 from zope.interface import implements
@@ -159,6 +160,20 @@ class ISamplingRound(model.Schema):
             )
         )
 
+        num_sample_points = schema.Int(
+                title=_(u"Number of Sample Points"),
+                description=_(u"the total number of Containers included in the Round."),
+                required=False,
+                readonly=True,
+                )
+
+        num_containers = schema.Int(
+                title=_(u"Number of Containers"),
+                description=_(u"The total number of Containers included in the Round."),
+                required=False,
+                readonly=True,
+                )
+
 # Custom content-type class; objects created for this content type will
 # be instances of this class. Use this class to add content-type specific
 # methods and properties. Put methods that are mainly useful for rendering
@@ -180,8 +195,30 @@ class SamplingRound(Item):
     implements(ISamplingRound)
     # Add your class methods and properties here
 
+    @property
+    def num_sample_points(self):
+        ar_brains = self.getAnalysisRequests()
+        sp_num = 0
+        for ar_brain in ar_brains:
+            ar_samplepoint = ar_brain.getObject().getSamplePoint()
+            if ar_samplepoint:
+                sp_num += 1
+        return sp_num
+
+    @property
+    def num_containers(self):
+        ar_brains = self.getAnalysisRequests()
+        containers = []
+        for ar_brain in ar_brains:
+            containers.append(ar_brain.getObject().getContainers())
+        return len(containers)
+
     def getAnalysisRequests(self):
         """ Return all the Analysis Requests linked to the Sampling Round
         """
-        return self.getBackReferences("AnalysisRequestSamplingRound")
-    pass
+        # I have to get the catalog in this way because I can't do it with 'self'...
+        pc = getToolByName(api.portal.get(), 'portal_catalog')
+        contentFilter = {'portal_type': 'AnalysisRequest',
+                         #'inactive_state': 'active',
+                         'getSamplingRoundUID': self.UID()}
+        return pc(contentFilter)

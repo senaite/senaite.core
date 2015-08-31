@@ -55,6 +55,12 @@ def BatchUID(instance):
     if batch:
         return batch.UID()
 
+@indexer(IAnalysisRequest)
+def SamplingRoundUID(instance):
+    sr = instance.getSamplingRound()
+    if sr:
+        return sr.UID()
+
 schema = BikaSchema.copy() + Schema((
     StringField(
         'RequestID',
@@ -1936,6 +1942,16 @@ class AnalysisRequest(BaseFolder):
                 result.append(analyses[analysis_key])
         return result
 
+    def getSamplingRoundUID(self):
+        """
+        Obtains the sampling round UID
+        :return: a UID
+        """
+        if self.getSamplingRound():
+            return self.getSamplingRound().UID()
+        else:
+            return ''
+
     def setResultsRange(self, value=None):
         """Sets the spec values for this AR.
         1 - Client specs where (spec.Title) matches (ar.SampleType.Title)
@@ -2234,6 +2250,28 @@ class AnalysisRequest(BaseFolder):
             sets = adv if 'hidden' in adv[0] else []
 
         return sets[0] if sets else {'uid': uid}
+
+    def getPartitions(self):
+        """
+        This functions returns the partitions from the analysis request's analyses
+        :return: a list with the full partition objects
+        """
+        analyses = self.getRequestedAnalyses()
+        partitions = []
+        for analysis in analyses:
+            partitions.append(analysis.getSamplePartition())
+        return partitions
+
+    def getContainers(self):
+        """
+        This functions returns the containers from the analysis request's analyses
+        :return: a list with the full partition objects
+        """
+        partitions = self.getPartitions()
+        containers = []
+        for partition in partitions:
+            containers.append(partition.getContainer())
+        return containers
 
     def isAnalysisServiceHidden(self, uid):
         """ Checks if the analysis service that match with the uid
