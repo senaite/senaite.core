@@ -24,9 +24,9 @@ class Departments(object):
         brains = catalog(contentFilter)
         terms = []
         for brain in brains:
-            department_id = brain.UID
+            department_uid = brain.UID
             title = brain.Title
-            terms.append(SimpleVocabulary.createTerm(department_id, str(department_id), title))
+            terms.append(SimpleVocabulary.createTerm(department_uid, str(department_uid), title))
         return SimpleVocabulary(terms)
 
 class SamplingRoundTemplates(object):
@@ -44,8 +44,11 @@ class SamplingRoundTemplates(object):
         for brain in brains:
             container = brain.getObject().aq_parent
             # Show only the client and lab's Sampling Round Templates
-            if container.portal_type == 'Client' and container != context:
-                continue
+            if container.portal_type == 'Client':
+                if context.portal_type == 'Client' and container.UID() != context.UID():
+                    continue
+                elif context.portal_type == 'SamplingRound' and container.UID() != context.aq_parent.UID():
+                    continue
             srt_uid = brain.UID
             title = brain.Title
             terms.append(SimpleVocabulary.createTerm(srt_uid, str(srt_uid), title))
