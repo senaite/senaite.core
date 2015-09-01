@@ -35,6 +35,10 @@ class SamplingRoundsView(BikaListingView):
                       'sortable': True,
                       'toggle': True},
             'Description': {'title': _('Description')},
+            'num_sample_points': {'title': _('Number of sampling points'),
+                                    'index': 'sortable_title'},
+            'num_containers': {'title': _('Number of containers'),
+                               'index': 'sortable_title'},
         }
         self.review_states = [
             {'id': 'default',
@@ -55,6 +59,8 @@ class SamplingRoundsView(BikaListingView):
             items[x]['title'] = obj.Title()
             items[x]['replace']['title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['title'])
+            #items[x]['num_sample_points'] = obj.num_sample_points
+            #items[x]['num_containers'] = obj.num_containers
         return items
 
 
