@@ -15,6 +15,8 @@ def upgrade(tool):
     multipleAnalysisProfiles(portal)
     setup = portal.portal_setup
     # Updated profile steps
+    # list of the generic setup import step names: portal.portal_setup.getSortedImportSteps() <---
+    # if you want more metadata use this: portal.portal_setup.getImportStepMetadata('jsregistry') <---
     setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'jsregistry')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'workflow-csv')

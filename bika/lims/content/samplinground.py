@@ -222,6 +222,6 @@ class SamplingRound(Item):
         # I have to get the catalog in this way because I can't do it with 'self'...
         pc = getToolByName(api.portal.get(), 'portal_catalog')
         contentFilter = {'portal_type': 'AnalysisRequest',
-                         #'inactive_state': 'active',
+                         'cancellation_state': 'active',
                          'getSamplingRoundUID': self.UID()}
         return pc(contentFilter)

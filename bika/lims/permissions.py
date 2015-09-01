@@ -151,6 +151,12 @@ EditBatch = 'BIKA: Edit Batch'
 CloseBatch = 'BIKA: Close Batch'
 ReopenBatch = 'BIKA: Reopen Batch'
 
+# Sampling Round permissions
+# --------------------------
+EditSamplingRound = 'BIKA: Edit SamplingRound'
+CloseSamplingRound = 'BIKA: Close SamplingRound'
+ReopenSamplingRound = 'BIKA: Reopen SamplingRound'
+
 # Manage AR Imports
 # ----------------------------------------------
 ManageARImport = 'BIKA: Manage ARImport'

@@ -922,17 +922,6 @@ class ClientSamplingRoundsView(SamplingRoundsView):
                                'index': 'sortable_title',
                                'sortable': True},
         }
-        self.review_states = [
-            {'id': 'default',
-             'title':  _('All'),
-             'contentFilter': {},
-             'columns': ['title',
-                         'Description',
-                         'num_sample_points',
-                         'num_containers',
-                         ]
-             },
-        ]
 
     def __call__(self):
         mtool = getToolByName(self.context, 'portal_membership')
@@ -953,7 +942,4 @@ class ClientSamplingRoundsView(SamplingRoundsView):
             items[x]['title'] = obj.Title()
             items[x]['replace']['title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['title'])
-            #items[x]['num_sample_points'] = obj.num_sample_points
-            #items[x]['num_containers'] = obj.num_containers
-            #import pdb; pdb.set_trace()
         return items

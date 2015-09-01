@@ -42,12 +42,45 @@ class SamplingRoundsView(BikaListingView):
         }
         self.review_states = [
             {'id': 'default',
+             'title':  _('Open'),
+             'contentFilter': {'review_state': 'open',
+                               'cancellation_state': 'active'},
+             'columns': ['title',
+                         'Description',
+                         'num_sample_points',
+                         'num_containers',
+                         ]
+             },
+             {'id': 'closed',
+             'contentFilter': {'review_state': 'closed',
+                               'cancellation_state': 'active'},
+             'title': _('Closed'),
+             'transitions': [{'id': 'open'}],
+             'columns': ['title',
+                         'Description',
+                         'num_sample_points',
+                         'num_containers',
+                         ]
+             },
+            {'id': 'cancelled',
+             'title': _('Cancelled'),
+             'transitions': [{'id': 'reinstate'}],
+             'contentFilter': {'cancellation_state': 'cancelled'},
+             'columns': ['title',
+                         'Description',
+                         'num_sample_points',
+                         'num_containers',
+                         ]
+             },
+            {'id': 'all',
              'title': _('All'),
+             'transitions': [],
              'contentFilter':{},
              'columns': ['title',
                          'Description',
-                         ],
-             'transitions': [],
+                         'num_sample_points',
+                         'num_containers',
+                         ]
              },
         ]
 
@@ -59,8 +92,6 @@ class SamplingRoundsView(BikaListingView):
             items[x]['title'] = obj.Title()
             items[x]['replace']['title'] = "<a href='%s'>%s</a>" % \
                  (items[x]['url'], items[x]['title'])
-            #items[x]['num_sample_points'] = obj.num_sample_points
-            #items[x]['num_containers'] = obj.num_containers
         return items
 
 

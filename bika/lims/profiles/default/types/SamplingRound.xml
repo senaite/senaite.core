@@ -27,7 +27,7 @@
 
   <!-- View information -->
   <property name="link_target"></property>
-  <property name="immediate_view">view</property>
+  <property name="immediate_view">analysisrequests</property>
   <property name="default_view">view</property>
   <property name="view_methods">
    <element value="view"/>
