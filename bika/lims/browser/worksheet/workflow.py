@@ -166,7 +166,6 @@ class WorksheetWorkflowAction(WorkflowAction):
         sm = getSecurityManager()
 
         hasInterims = {}
-
         # XXX combine data from multiple bika listing tables.
         item_data = {}
         if 'item_data' in form:
