@@ -381,6 +381,12 @@ function WorksheetManageResultsView() {
             });
         });
 
+        // Change the results layout
+        $("#resultslayout_form #resultslayout_button").hide();
+        $("#resultslayout_form #resultslayout").change(function() {
+            $("#resultslayout_form #resultslayout_button").click();
+        });
+
         $(".manage_results_header .instrument").change(function(){
             $("#content-core .instrument-error").remove();
             var instruid = $(this).val();
@@ -421,17 +427,18 @@ function WorksheetManageResultsView() {
             var method = null;
             var service = null;
             var muid = $(this).val();
-            var suid = $(this).closest('tr').attr('as_uid');
-            var instrselector = $(this).closest('tr').find('select.listing_select_entry[field="Instrument"]');
+            var auid = $(this).attr('uid');
+            var suid = $(this).attr('as_uid');
+            var instrselector = $('select.listing_select_entry[field="Instrument"][uid="'+auid+'"]');
             var selectedinstr = $(instrselector).val();
             var m_manualentry = true;
             var s_instrentry  = false;
-            var qc_analysis = $(this).closest('tr').hasClass('qc-analysis');
+            var qc_analysis = $(this).closest('tr,td').hasClass('qc-analysis');
             $(instrselector).find('option').remove();
             $(instrselector).prop('disabled', false);
-            $(this).closest('tr').find('img.alert-instruments-invalid').remove();
-            $(this).closest('tr').find('td.interim input').prop('disabled', false);
-            $(this).closest('tr').find('td.Result input').prop('disabled', false);
+            $('img.alert-instruments-invalid[uid="'+auid+'"]').remove();
+            $('.interim input[uid="'+auid+'"]').prop('disabled', false);
+            $('.input[field="Result"][uid="'+auid+'"]').prop('disabled', false);
 
             if (muid != '') {
                 // Update the instruments selector, but only if the service has AllowInstrumentEntryOfResults enabled.
@@ -447,12 +454,12 @@ function WorksheetManageResultsView() {
                 window.bika.lims.jsonapi_read(request_data, function(data) {
                     method = (data.objects && data.objects.length > 0) ? data.objects[0] : null;
                     m_manualentry = (method != null) ? method.ManualEntryOfResultsViewField : true;
-                    $(instrselector).closest('tr').find('td.interim input').prop('disabled', !m_manualentry);
-                    $(instrselector).closest('tr').find('td.Result input').prop('disabled', !m_manualentry);
+                    $('.interim input[uid="'+auid+'"]').prop('disabled', !m_manualentry);
+                    $('.input[field="Result"][uid="'+auid+'"]').prop('disabled', !m_manualentry);
                     if (!m_manualentry) {
                         // This method doesn't allow the manual entry of Results
                         var title = _("Manual entry of results for method ${methodname} is not allowed", {methodname: method.Title});
-                        $(instrselector).closest('tr').find('td.Result input').parent().append('<img class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/warning.png" title="'+title+'")">');
+                        $('.input[field="Result"][uid="'+auid+'"]').parent().append('<img uid="'+auid+'" class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/warning.png" title="'+title+'")">');
                     }
 
                     // Has the Analysis Service the 'Allow Instrument Entry of Results' enabled?
@@ -515,20 +522,20 @@ function WorksheetManageResultsView() {
                                 if (valid) {
                                     // At least one instrument valid found too
                                     var title = _("Invalid instruments are not shown: ${invalid_list}", {invalid_list: invalid.join(", ")});
-                                    $(instrselector).parent().append('<img class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/warning.png" title="'+title+'")">');
+                                    $(instrselector).parent().append('<img uid="'+auid+'" class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/warning.png" title="'+title+'")">');
 
                                 } else if (m_manualentry) {
                                     // All instruments found are invalid, but manual entry is allowed
                                     var title = _("No valid instruments found: ${invalid_list}", {invalid_list: invalid.join(", ")});
-                                    $(instrselector).parent().append('<img class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/exclamation.png" title="'+title+'")">');
+                                    $(instrselector).parent().append('<img uid="'+auid+'" class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/exclamation.png" title="'+title+'")">');
 
                                 } else {
                                     // All instruments found are invalid and manual entry not allowed
                                     var title = _("Manual entry of results for method {methodname} is not allowed and no valid instruments found: ${invalid_list}",
                                                   {methodname:  method.Title, invalid_list:invalid.join(", ")});
-                                    $(instrselector).parent().append('<img class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/exclamation.png" title="'+title+'")">');
-                                    $(instrselector).closest('tr').find('td.interim input').prop('disabled', true);
-                                    $(instrselector).closest('tr').find('td.Result input').prop('disabled', true);
+                                    $(instrselector).parent().append('<img uid="'+auid+'" class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/exclamation.png" title="'+title+'")">');
+                                    $('.interim input[uid="'+auid+'"]').prop('disabled', true);
+                                    $('.input[field="Result"][uid="'+auid+'"]').prop('disabled', true);
                                 }
                             }
 
@@ -537,7 +544,7 @@ function WorksheetManageResultsView() {
                             $(instrselector).val("");
                             if (!m_manualentry) {
                                 var title = _("Unable to load instruments: ${invalid_list}", {invalid_list: invalid.join(", ")});
-                                $(instrselector).parent().append('<img class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/exclamation.png" title="'+title+'")">');
+                                $(instrselector).parent().append('<img uid="'+auid+'" class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/exclamation.png" title="'+title+'")">');
                                 $(instrselector).prop('disabled', true);
                             } else {
                                 $(instrselector).prop('disabled', false);
@@ -587,18 +594,18 @@ function WorksheetManageResultsView() {
                         if (valid) {
                             // At least one instrument valid found too
                             var title = _("Invalid instruments are not shown: ${invalid_list}", {invalid_list: invalid.join(", ")});
-                            $(instrselector).parent().append('<img class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/warning.png" title="'+title+'")">');
+                            $(instrselector).parent().append('<img uid="'+auid+'" class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/warning.png" title="'+title+'")">');
                         } else {
                             // All instruments found are invalid
                             var title = _("No valid instruments found: ${invalid_list}", {invalid_list: invalid.join(", ")});
-                            $(instrselector).parent().append('<img class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/exclamation.png" title="'+title+'")">');
+                            $(instrselector).parent().append('<img uid="'+auid+'" class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/exclamation.png" title="'+title+'")">');
                         }
                     }
                 }).fail(function() {
                     $(instrselector).append('<option value="">'+_('None')+'</option>');
                     $(instrselector).val('');
                     var title = _("Unable to load instruments: ${invalid_list}", {invalid_list: invalid.join(", ")});
-                    $(instrselector).parent().append('<img class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/exclamation.png" title="'+title+'")">');
+                    $(instrselector).parent().append('<img uid="'+auid+'" class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/exclamation.png" title="'+title+'")">');
                     $(instrselector).prop('disabled', true);
                 });
             }

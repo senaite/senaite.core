@@ -81,6 +81,23 @@
             <td>
                 <a tal:attributes="href python:context.absolute_url()+'/print';" i18n:translate="" class="print_button">Print</a>
             </td>
+            <td>
+                <form id="resultslayout_form" name="resultslayout_form" enctype="multipart/form-data" method="post">
+                    <label for="resultslayout">Layout:</label>&nbsp;
+                    <select id="resultslayout" name="resultslayout">
+                        <tal:layoutoption repeat="option python:view.layout_displaylist.items()">
+                            <option selected tal:condition="python: option[0] == context.getResultsLayout()"
+                                    tal:attributes="value python:option[0]"
+                                    tal:content="python:option[1]">
+                            </option>
+                            <option tal:condition="python: option[0] != context.getResultsLayout()"
+                                    tal:attributes="value python:option[0]"
+                                    tal:content="python:option[1]"></option>
+                        </tal:layoutoption>
+                    </select>
+                    <input type="submit" id="resultslayout_button" value="Apply"/>
+                </form>
+            </td>
         </tr>
     </table>
 
