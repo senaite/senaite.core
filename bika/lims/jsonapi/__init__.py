@@ -40,22 +40,12 @@ def load_brain_metadata(proxy, include_fields):
     """Load values from the catalog metadata into a list of dictionaries
     """
     ret = {}
-    inc_fields = include_fields if include_fields else []
     for index in proxy.indexes():
-        if index not in inc_fields:
+        if not index in proxy:
             continue
-        if index not in proxy:
-            # Try with the object
-        #    obj = proxy.getObject() if proxy and proxy.getObject() else None
-        #    if obj and hasattr(obj, index):
-        #        val = getattr(obj, index)
-        #    else:
-        #        continue
+        if include_fields and index not in include_fields:
             continue
-        else:
-            val = getattr(proxy, index)
-       # if index == 'getAnalysisRequestTemplates':
-       #     import pdb; pdb.set_trace()
+        val = getattr(proxy, index)
         if val != Missing.Value:
             try:
                 json.dumps(val)
