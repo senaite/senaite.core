@@ -131,7 +131,8 @@ class Client(Organisation):
 
     def Title(self):
         """ Return the Organisation's Name as its title """
-        return safe_unicode(self.getField('Name').get(self)).encode('utf-8')
+        name = self.schema['Name'].get(self)
+        return safe_unicode(name).encode('utf-8')
 
     security.declarePublic('getContactFromUsername')
     def getContactFromUsername(self, username):
