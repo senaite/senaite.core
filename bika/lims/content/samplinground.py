@@ -1,6 +1,7 @@
 from bika.lims import _
 from plone.supermodel import model
 from plone import api
+from plone.indexer import indexer
 from zope import schema
 from plone.dexterity.content import Item
 from zope.interface import implements
@@ -177,6 +178,10 @@ class ISamplingRound(model.Schema):
                 readonly=True,
                 )
 
+@indexer(ISamplingRound)
+def analysisRequestTemplates(obj):
+    return obj.getAnalysisRequestTemplates()
+
 # Custom content-type class; objects created for this content type will
 # be instances of this class. Use this class to add content-type specific
 # methods and properties. Put methods that are mainly useful for rendering
@@ -225,3 +230,19 @@ class SamplingRound(Item):
                          'cancellation_state': 'active',
                          'getSamplingRoundUID': self.UID()}
         return pc(contentFilter)
+
+    def getAnalysisRequestTemplates(self):
+        """
+        This functions builds a list of tuples with the object AnalysisRequestTemplates' uids and names.
+        :return: A list of tuples where the first value of the tuple is the AnalysisRequestTemplate name and the
+        second one is the AnalysisRequestTemplate UID. --> [(ART.title),(ART.UID),...]
+        """
+        l = []
+        art_uids = self.ar_templates
+        # I have to get the catalog in this way because I can't do it with 'self'...
+        pc = getToolByName(api.portal.get(), 'uid_catalog')
+        for art_uid in art_uids:
+            art_obj = pc(UID=art_uid)
+            if len(art_obj) != 0:
+                l.append((art_obj[0].Title, art_uid))
+        return l

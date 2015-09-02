@@ -177,27 +177,9 @@ function AnalysisRequestAddByCol() {
         for (i = 0; i < sURLVariables.length; i++) {
             sParameterName = sURLVariables[i].split('=');
             if (sParameterName[0] === 'samplinground') {
-                // Getting the sampling round UID
+                // If the request comes from a sampling round, we have to set up the form with the sampling round info
                 var samplinground_UID = sParameterName[1];
-                var request_data = {
-                    catalog_name: "portal_catalog",
-                    portal_type: "SamplingRound",
-                    UID: samplinground_UID,
-                    include_fields: ["Title", "UID", "ar_templates"]
-                };
-                window.bika.lims.jsonapi_read(request_data, function (data) {
-                    if (data.objects.length > 0) {
-                        var spec = data.objects[0];
-                        // Selecting the sampling round
-                        var sr =$('input[id^="SamplingRound-"]');
-                        sr.attr('uid', spec['UID'])
-                            .val(spec['Title'])
-                            .attr('uid_check', spec['UID'])
-                            .attr('val_check', spec['Title'])
-                            .attr('disabled','disabled');
-                        $('[id^="SamplingRound-"][id$="_uid"]').val(spec['UID']);
-                    }
-                });
+                setupSamplingRoundInfo(samplinground_UID);
             }
         }
     }
@@ -210,6 +192,45 @@ function AnalysisRequestAddByCol() {
             // console.log("arnum=" + arnum + ", fieldname=" + fieldname + ", value=" + value)
             bika.lims.ar_add.state[arnum_i][fieldname] = value
         }
+    }
+
+    function setupSamplingRoundInfo(samplinground_UID){
+        /**
+         * This function sets up the sampling round information such as the sampling round to use and the
+         * different analysis request templates needed.
+         * :samplinground_uid: a string with the sampling round uid
+         */
+        var request_data = {
+            catalog_name: "portal_catalog",
+            portal_type: "SamplingRound",
+            UID: samplinground_UID,
+            include_fields: ["Title", "UID", "analysisRequestTemplates"]
+        };
+        window.bika.lims.jsonapi_read(request_data, function (data) {
+            if (data.objects.length > 0) {
+                var spec = data.objects[0];
+                // Selecting the sampling round
+                var sr = $('input[id^="SamplingRound-"]');
+                // Filling out and halting the sampling roud fields
+                sr.attr('uid', spec['UID'])
+                    .val(spec['Title'])
+                    .attr('uid_check', spec['UID'])
+                    .attr('val_check', spec['Title'])
+                    .attr('disabled','disabled');
+                $('[id^="SamplingRound-"][id$="_uid"]').val(spec['UID']);
+                // Filling out and halting the analysis request templates fields
+                var ar_templates = $('input[id^="Template-"]:visible"');
+                ar_templates.each(function(index, element){
+                    $(element).attr('uid', spec['analysisRequestTemplates'][index][1])
+                    .val(spec['analysisRequestTemplates'][index][0])
+                    .attr('uid_check', spec['analysisRequestTemplates'][index][1])
+                    .attr('val_check', spec['analysisRequestTemplates'][index][1])
+                    .attr('disabled','disabled');
+                    $('input#Template-' + index + '_uid').val(spec['analysisRequestTemplates'][index][1]);
+                    template_set(index);
+                })
+            }
+        });
     }
 
     function filter_combogrid(element, filterkey, filtervalue, querytype) {
