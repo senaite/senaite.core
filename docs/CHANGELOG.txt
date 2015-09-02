@@ -1,7 +1,9 @@
 3.1.9 (unreleased)
 ------------------
 LIMS-1996: On new system with no instrument data is difficult to get going.
+LIMS-2005: Click on Validations tab of Instruments it give error
 LIMS-1806: Instrument Interface. AQ2. Seal Analytical - Error
+LIMS-2002: Error creating Analysis Requests from batch.
 LIMS-1760: Customised AR Import spreadsheets (refactored, support importing to Batch)
 LIMS-1548: Client-specific Sampling Round Templates
 LIMS-1546: Sampling Round Template Creation and Edit view
