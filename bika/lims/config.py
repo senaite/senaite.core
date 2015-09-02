@@ -120,3 +120,7 @@ SCINOTATION_OPTIONS = DisplayList((
     ('4', 'a·10^b / a·10^-b'),
     ('5', 'a·10^b / a·10^-b (with superscript)'),
 ))
+WORKSHEET_LAYOUT_OPTIONS = DisplayList((
+    ('1', _('Classic')),
+    ('2', _('Transposed')),
+))

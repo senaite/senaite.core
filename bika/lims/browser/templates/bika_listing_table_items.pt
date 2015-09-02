@@ -164,6 +164,7 @@ Table cells for each column from in review_state's column list.
                 tabindex tabindex/next;
                 size input_width;
                 uid string:${item/uid};
+                as_uid string:${item/service_uid|nothing};
                 st_uid string:${item/st_uid|nothing};
                 objectId string:${item/id};
                 field python:column;
@@ -180,6 +181,7 @@ Table cells for each column from in review_state's column list.
                 selector string:${column}_${item/id};
                 size input_width;
                 uid string:${item/uid};
+                as_uid string:${item/service_uid|nothing};
                 st_uid string:${item/st_uid|nothing};
                 field python:column;
                 value python:item[column]['value'];"/>
@@ -204,6 +206,7 @@ Table cells for each column from in review_state's column list.
                 tabindex tabindex/next;
                 size input_width;
                 uid string:${item/uid};
+                as_uid string:${item/service_uid|nothing};
                 st_uid string:${item/st_uid|nothing};
                 objectId string:${item/id};
                 field python:column;
@@ -225,6 +228,7 @@ Table cells for each column from in review_state's column list.
                 selector string:${column}_${item/id};
                 size input_width;
                 uid string:${item/uid};
+                as_uid string:${item/service_uid|nothing};
                 st_uid string:${item/st_uid|nothing};
                 objectId string:${item/id};
                 field python:column;
@@ -247,6 +251,7 @@ Table cells for each column from in review_state's column list.
             tal:attributes="
                 selector string:${column}_${item/id};
                 uid string:${item/uid};
+                as_uid string:${item/service_uid|nothing};
                 st_uid string:${item/st_uid|nothing};
                 objectId string:${item/id};
                 field string:Result;
@@ -291,6 +296,7 @@ Table cells for each column from in review_state's column list.
                 tabindex tabindex/next;
                 field column;
                 name string:${column}.${item/uid}:records;
+                as_uid string:${item/service_uid|nothing};
                 uid item/uid;">
             <option value="" tal:condition="not:required"></option>
             <tal:options tal:repeat="option python:item['choices'][column]">
@@ -310,6 +316,7 @@ Table cells for each column from in review_state's column list.
             <input
                 type="hidden"
                 tal:attributes="
+                    as_uid string:${item/service_uid|nothing};
                     uid string:${item/uid};
                     field python:column;
                     value python:item[column];
@@ -381,6 +388,7 @@ Table cells for each column from in review_state's column list.
                         selector string:${column}_${item/id};
                         class python:'listing_remarks';
                         uid string:${item/uid};
+                        as_uid string:${item/service_uid|nothing};
                         st_uid string:${item/st_uid|nothing};
                         objectId string:${item/id};
                         field python:column;
@@ -426,6 +434,7 @@ Table cells for each column from in review_state's column list.
                     tal:attributes="
                         class python:'listing_remarks';
                         uid string:${item/uid};
+                        as_uid string:${item/service_uid|nothing};
                         st_uid string:${item/st_uid|nothing};
                         objectId string:${item/id};
                         name string:Remarks.${item/uid}:records;

@@ -40,6 +40,9 @@ class AddWorksheetView(BrowserView):
         if instrument:
             ws.setInstrument(instrument)
 
+        # Set the default layout for results display
+        ws.setResultsLayout(self.context.bika_setup.getWorksheetLayout())
+
         # overwrite saved context UID for event subscribers
         self.request['context_uid'] = ws.UID()
 
