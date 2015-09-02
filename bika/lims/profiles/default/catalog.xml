@@ -10,5 +10,7 @@
  <index name="cancellation_state" meta_type="FieldIndex"> <indexed_attr value="cancellation_state"/> </index>
  <index name="analysisRequestTemplates" meta_type="FieldIndex"> <indexed_attr value="analysisRequestTemplates"/> </index>
  <column value="analysisRequestTemplates"/>
+ <index name="samplingRoundSamplingDate" meta_type="FieldIndex"> <indexed_attr value="samplingRoundSamplingDate"/> </index>
+ <column value="samplingRoundSamplingDate"/>
  <column value="review_state"/>
 </object>

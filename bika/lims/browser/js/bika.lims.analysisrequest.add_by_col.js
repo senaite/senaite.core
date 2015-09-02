@@ -207,14 +207,14 @@ function AnalysisRequestAddByCol() {
             catalog_name: "portal_catalog",
             portal_type: "SamplingRound",
             UID: samplinground_UID,
-            include_fields: ["Title", "UID", "analysisRequestTemplates"]
+            include_fields: ["Title", "UID", "analysisRequestTemplates", "samplingRoundSamplingDate"]
         };
         window.bika.lims.jsonapi_read(request_data, function (data) {
             if (data.objects.length > 0) {
                 var spec = data.objects[0];
                 // Selecting the sampling round
                 var sr = $('input[id^="SamplingRound-"]');
-                // Filling out and halting the sampling roud fields
+                // Filling out and halting the sampling round fields
                 sr.attr('uid', spec['UID'])
                     .val(spec['Title'])
                     .attr('uid_check', spec['UID'])
@@ -222,7 +222,7 @@ function AnalysisRequestAddByCol() {
                     .attr('disabled','disabled');
                 $('[id^="SamplingRound-"][id$="_uid"]').val(spec['UID']);
                 // Filling out and halting the analysis request templates fields
-                var ar_templates = $('input[id^="Template-"]:visible"');
+                var ar_templates = $('input[id^="Template-"]:visible');
                 ar_templates.each(function(index, element){
                     $(element).attr('uid', spec['analysisRequestTemplates'][index][1])
                     .val(spec['analysisRequestTemplates'][index][0])
@@ -232,6 +232,8 @@ function AnalysisRequestAddByCol() {
                     $('input#Template-' + index + '_uid').val(spec['analysisRequestTemplates'][index][1]);
                     template_set(index);
                 });
+                // Writing the sampling date
+                $('input[id^="SamplingDate-"]:visible').val(spec['samplingRoundSamplingDate']);
                 // Hiding all fields which depends on the sampling round
                 var to_disable = ['SampleType', 'Specification', 'SamplePoint', 'ReportDryMatter', 'Sample', 'Batch',
                     'SubGroup', 'SamplingDate', 'Composite', 'Profiles', 'DefaultContainerType', 'AdHoc'];
