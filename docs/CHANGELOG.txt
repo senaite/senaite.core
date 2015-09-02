@@ -1,5 +1,6 @@
 3.1.9 (unreleased)
 ------------------
+LIMS-1397: Fix Client Title accessor to prevent catalog error when data is imported
 LIMS-1996: On new system with no instrument data is difficult to get going.
 LIMS-2005: Click on Validations tab of Instruments it give error
 LIMS-1806: Instrument Interface. AQ2. Seal Analytical - Error
