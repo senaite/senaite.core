@@ -8,6 +8,7 @@ from zope.interface import implements
 from zope.schema.vocabulary import SimpleVocabulary
 from Products.CMFCore.utils import getToolByName
 from zope.schema.interfaces import IContextSourceBinder
+from datetime import date
 
 # I implemented it here because following this example
 # (http://docs.plone.org/external/plone.app.dexterity/docs/advanced/vocabularies.html#named-vocabularies)
@@ -149,7 +150,8 @@ class ISamplingRound(model.Schema):
         sampling_date = schema.Date(
                 title=_(u"Sampling date"),
                 description=_(u"The date to do the sampling process"),
-                required=False
+                default=date.today(),
+                required=True
                 )
 
         instructions = schema.Text(
