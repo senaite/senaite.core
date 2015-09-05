@@ -251,7 +251,13 @@ class AnalysisServicesView(BikaListingView):
             if 'obj' not in items[x]:
                 continue
             obj = items[x]['obj']
+
+            # Although these should be automatically inserted when bika_listing
+            # searches the schema for fields that match columns, it is still
+            # not harmful to be explicit:
             items[x]['Keyword'] = obj.getKeyword()
+            items[x]['CommercialID'] = obj.getCommercialID()
+            items[x]['ProtocolID'] = obj.getProtocolID()
 
             cat = obj.getCategoryTitle()
             # Category (upper C) is for display column value
