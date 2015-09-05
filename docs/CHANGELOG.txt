@@ -1,7 +1,6 @@
 3.1.9 (unreleased)
 ------------------
 LIMS-1969: AR Add error when "Categorise analysis services" is disabled
-LIMS-1970: Analyses with AR Specifications not displayed properly in AR Add form
 LIMS-1397: Fix Client Title accessor to prevent catalog error when data is imported
 LIMS-1996: On new system with no instrument data is difficult to get going.
 LIMS-2005: Click on Validations tab of Instruments it give error
