@@ -10,84 +10,24 @@ function AnalysisRequestView() {
      */
     that.load = function() {
 
-        $("#workflow-transition-prepublish").click(workflow_transition_prepublish);
-        $("#workflow-transition-publish").click(workflow_transition_publish);
-        $("#workflow-transition-republish").click(workflow_transition_republish);
-        $("#workflow-transition-receive").click(workflow_transition_receive);
-        $("#workflow-transition-retract_ar").click(workflow_transition_retract_ar);
+        // fires for all AR workflow transitions fired using the plone contentmenu workflow actions
+        $("a[id^='workflow-transition']").click(transition_with_publication_spec);
 
     }
 
-    function workflow_transition_receive(event) {
+    function transition_with_publication_spec(event) {
+        // Pass the Publication Spec UID (if present) into the WorkflowAction handler
+        // Force the transition to use the "workflow_action" url instead of content_status_modify.
+        // TODO This should be using content_status_modify!  modifying the href is silly.
         event.preventDefault();
-        var requestdata = {};
-        requestdata.workflow_action = "receive";
-        var requeststring = $.param(requestdata);
-        var href = window.location.href.split("?")[0]
-            .replace("/base_view", "")
-            .replace("/manage_results", "")
-            .replace("/workflow_action", "")
-            .replace("/view", "") + "/workflow_action?" + requeststring;
-        window.location.href = href;
+        var href = event.currentTarget.href.replace("content_status_modify", "workflow_action");
+        var element = $("#PublicationSpecification_uid");
+        if (element.length > 0) {
+            href = href + "&PublicationSpecification=" + $(element).val();
+        }
+        window.location.href = href
     }
 
-    function workflow_transition_prepublish(event){
-        event.preventDefault();
-        var requestdata = {};
-        var spec_uid = $("#PublicationSpecification_uid").val();
-        requestdata.PublicationSpecification = spec_uid;
-        requestdata.workflow_action = "prepublish";
-        var requeststring = $.param(requestdata);
-        var href = window.location.href.split("?")[0]
-            .replace("/base_view", "")
-            .replace("/manage_results", "")
-            .replace("/workflow_action", "")
-            .replace("/view", "") + "/workflow_action?" + requeststring;
-        window.location.href = href;
-    }
-
-    function workflow_transition_publish(event){
-        event.preventDefault();
-        var requestdata = {};
-        var spec_uid = $("#PublicationSpecification_uid").val();
-        requestdata.PublicationSpecification = spec_uid;
-        requestdata.workflow_action = "publish";
-        var requeststring = $.param(requestdata);
-        var href = window.location.href.split("?")[0]
-            .replace("/base_view", "")
-            .replace("/manage_results", "")
-            .replace("/workflow_action", "")
-            .replace("/view", "") + "/workflow_action?" + requeststring;
-        window.location.href = href;
-    }
-
-    function workflow_transition_republish(event){
-        event.preventDefault();
-        var requestdata = {};
-        var spec_uid = $("#PublicationSpecification_uid").val();
-        requestdata.PublicationSpecification = spec_uid;
-        requestdata.workflow_action = "republish";
-        var requeststring = $.param(requestdata);
-        var href = window.location.href.split("?")[0]
-            .replace("/base_view", "")
-            .replace("/manage_results", "")
-            .replace("/workflow_action", "")
-            .replace("/view", "") + "/workflow_action?" + requeststring;
-        window.location.href = href;
-    }
-
-    function workflow_transition_retract_ar(event) {
-        event.preventDefault();
-        var requestdata = {};
-        requestdata.workflow_action = "retract_ar";
-        var requeststring = $.param(requestdata);
-        var href = window.location.href.split("?")[0]
-            .replace("/base_view", "")
-            .replace("/manage_results", "")
-            .replace("/workflow_action", "")
-            .replace("/view", "") + "/workflow_action?" + requeststring;
-        window.location.href = href;
-    }
 }
 
 /**
