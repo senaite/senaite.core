@@ -89,7 +89,7 @@
  <action title="Invoice"
          action_id="invoice"
          category="object"
-         condition_expr=""
+         condition_expr="python:here.bika_setup.getShowPrices()"
          url_expr="string:${object_url}/invoice"
          i18n:attributes="title"
          visible="True">
