@@ -12,7 +12,7 @@
  <column value="analysisRequestTemplates"/>
  <index name="samplingRoundSamplingDate" meta_type="FieldIndex"> <indexed_attr value="samplingRoundSamplingDate"/> </index>
  <column value="samplingRoundSamplingDate"/>
- <index name="samplingRoundClient" meta_type="FieldIndex"> <indexed_attr value="samplingRoundClient"/> </index>
- <column value="samplingRoundClient"/>
+ <index name="SamplingRoundUID" meta_type="FieldIndex"> <indexed_attr value="SamplingRoundUID"/> </index>
+ <column value="SamplingRoundUID"/>
  <column value="review_state"/>
 </object>
