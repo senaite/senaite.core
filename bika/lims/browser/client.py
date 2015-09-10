@@ -935,8 +935,6 @@ class ClientSamplingRoundsView(SamplingRoundsView):
     def folderitems(self, full_objects=True):
         items = BikaListingView.folderitems(self, full_objects)
         for x in range(len(items)):
-            if x == 'num_containers':
-                import pdb;pdb.set_trace()
             if not items[x].has_key('obj'): continue
             obj = items[x]['obj']
             items[x]['title'] = obj.Title()
