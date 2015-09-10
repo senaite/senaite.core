@@ -14,6 +14,7 @@
     <adapter name="Priority" factory=".worksheet.Priority" />
     <adapter name="analysisRequestTemplates" factory=".samplinground.analysisRequestTemplates" />
     <adapter name="samplingRoundSamplingDate" factory=".samplinground.samplingRoundSamplingDate" />
+    <adapter name="samplingRoundClient" factory=".samplinground.samplingRoundClient" />
 
     <subscriber
       for="bika.lims.interfaces.IPricelist

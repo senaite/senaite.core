@@ -16,7 +16,12 @@ class AnalysisRequestsView(_ARV, _ARAV):
         super(AnalysisRequestsView, self).__init__(context, request)
 
     def contentsMethod(self, contentFilter):
-        return self.context.getBackReferences("AnalysisRequestSamplingRound")
+        bc = getToolByName(self.context, 'bika_catalog')
+        import pdb;pdb.set_trace()
+        if 'samplingRoundClient' not in contentFilter.keys():
+            contentFilter['samplingRoundClient'] = self.context.aq_parent.UID()
+        return bc(contentFilter)
+        #return self.context.getBackReferences("AnalysisRequestSamplingRound")
 
     def __call__(self):
         self.context_actions = {}
@@ -32,3 +37,18 @@ class AnalysisRequestsView(_ARV, _ARAV):
                     + self.context.UID() + "&ar_count=" + str(num_art),
                 'icon': '++resource++bika.lims.images/add.png'}
         return super(AnalysisRequestsView, self).__call__()
+
+    def getMemberDiscountApplies(self):
+        import pdb; pdb.set_trace()
+        client = self.context.aq_parent
+        return client and client.getMemberDiscountApplies() or False
+
+    def getRestrictedCategories(self):
+        import pdb; pdb.set_trace()
+        client = self.context.aq_parent
+        return client and client.getRestrictedCategories() or []
+
+    def getDefaultCategories(self):
+        import pdb; pdb.set_trace()
+        client = self.context.aq_parent
+        return client and client.getDefaultCategories() or []

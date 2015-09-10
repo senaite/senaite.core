@@ -189,6 +189,10 @@ def samplingRoundSamplingDate(obj):
     date = obj.sampling_date
     return date.strftime("%Y-%m-%d")
 
+@indexer(ISamplingRound)
+def samplingRoundClient(obj):
+    return obj.aq_parent.UID()
+
 # Custom content-type class; objects created for this content type will
 # be instances of this class. Use this class to add content-type specific
 # methods and properties. Put methods that are mainly useful for rendering
