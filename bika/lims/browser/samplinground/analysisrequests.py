@@ -7,6 +7,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import implements
 from bika.lims.utils import t
+from copy import copy
 
 
 class AnalysisRequestsView(_ARV, _ARAV):
@@ -18,6 +19,8 @@ class AnalysisRequestsView(_ARV, _ARAV):
         self.catalog = "portal_catalog"
         SamplingWorkflowEnabled = self.context.bika_setup.getSamplingWorkflowEnabled()
         self.columns = {
+            'partition': {'title': _('Partition ID'),
+                          'toggle': True},
             'samplingRoundTemplate': {'title': _('Sampling Round Template'),
                                       'toggle': True},
             'getRequestID': {'title': _('Request ID'),
@@ -60,7 +63,8 @@ class AnalysisRequestsView(_ARV, _ARAV):
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
              'custom_actions': [],
-             'columns': ['getRequestID',
+             'columns': ['partition',
+                         'getRequestID',
                          'samplingRoundTemplate',
                          'getSample',
                          'Priority',
@@ -79,7 +83,8 @@ class AnalysisRequestsView(_ARV, _ARAV):
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
              'custom_actions': [],
-             'columns': ['getRequestID',
+             'columns': ['partition',
+                         'getRequestID',
                          'samplingRoundTemplate',
                          'getSample',
                          'Priority',
@@ -94,7 +99,8 @@ class AnalysisRequestsView(_ARV, _ARAV):
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
              'custom_actions': [],
-             'columns': ['getRequestID',
+             'columns': ['partition',
+                         'getRequestID',
                          'samplingRoundTemplate',
                          'getSample',
                          'Priority',
@@ -111,7 +117,8 @@ class AnalysisRequestsView(_ARV, _ARAV):
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
              'custom_actions': [],
-             'columns': ['getRequestID',
+             'columns': ['partition',
+                         'getRequestID',
                          'samplingRoundTemplate',
                          'getSample',
                          'Priority',
@@ -124,7 +131,8 @@ class AnalysisRequestsView(_ARV, _ARAV):
                                'sort_order': 'reverse'},
              'transitions': [{'id': 'publish'}],
              'custom_actions': [],
-             'columns': ['getRequestID',
+             'columns': ['partition',
+                         'getRequestID',
                          'samplingRoundTemplate',
                          'getSample',
                          'Priority',
@@ -137,7 +145,8 @@ class AnalysisRequestsView(_ARV, _ARAV):
                                'sort_order': 'reverse'},
              'transitions': [{'id': 'republish'}],
              'custom_actions': [],
-             'columns': ['getRequestID',
+             'columns': ['partition',
+                         'getRequestID',
                          'samplingRoundTemplate',
                          'getSample',
                          'Priority',
@@ -154,12 +163,13 @@ class AnalysisRequestsView(_ARV, _ARAV):
                                'sort_order': 'reverse'},
              'transitions': [{'id': 'reinstate'}],
              'custom_actions': [],
-             'columns': ['samplingRoundTemplate',
+             'columns': ['partition',
                          'getRequestID',
-                        'getSample',
-                        'Priority',
-                        'getDateSampled',
-                        'state_title']},
+                         'samplingRoundTemplate',
+                         'getSample',
+                         'Priority',
+                         'getDateSampled',
+                         'state_title']},
             {'id': 'invalid',
              'title': _('Invalid'),
              'contentFilter': {'review_state': 'invalid',
@@ -167,7 +177,8 @@ class AnalysisRequestsView(_ARV, _ARAV):
                                'sort_order': 'reverse'},
              'transitions': [],
              'custom_actions': [],
-             'columns': ['getRequestID',
+             'columns': ['partition',
+                         'getRequestID',
                          'samplingRoundTemplate',
                          'getSample',
                          'Priority',
@@ -191,7 +202,8 @@ class AnalysisRequestsView(_ARV, _ARAV):
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
              'custom_actions': [],
-             'columns': ['getRequestID',
+             'columns': ['partition',
+                         'getRequestID',
                          'samplingRoundTemplate',
                          'getSample',
                          'Priority',
@@ -216,7 +228,8 @@ class AnalysisRequestsView(_ARV, _ARAV):
                              {'id': 'cancel'},
                              {'id': 'reinstate'}],
              'custom_actions': [],
-             'columns': ['getRequestID',
+             'columns': ['partition',
+                         'getRequestID',
                          'samplingRoundTemplate',
                          'getSample',
                          'Priority',
@@ -246,15 +259,33 @@ class AnalysisRequestsView(_ARV, _ARAV):
         return super(AnalysisRequestsView, self).__call__()
 
     def folderitems(self, full_objects=True):
+        # In sampling rounds, analysis request list will be listed per Sample Partition/Container
+        # Obtaining analysis requests
         items = _ARV.folderitems(self, full_objects)
+        new_items = []
         for x in range(len(items)):
             if 'obj' not in items[x]:
+                new_items.append(items[x])
                 continue
             obj = items[x]['obj']
-            srTemplateUID = obj.getSamplingRound().sr_template \
-                if obj.getSamplingRound().sr_template else ''
+            # Getting the sampling round template uid
+            srTemplateUID = obj.getSamplingRound().sr_template if obj.getSamplingRound().sr_template else ''
             # Getting the sampling round object
             catalog = getToolByName(self.context, 'uid_catalog')
             srTemplateObj = catalog(UID=srTemplateUID)[0].getObject()
-            items[x]['samplingRoundTemplate'] = srTemplateObj.title
-        return items
+            # Getting the partitions and creating a row per partition
+            analysis_partitions = obj.getPartitions()
+            # analysis_partitions has repeated partitions, we should have to remove them
+            partitions = list(set(analysis_partitions))
+            for part in partitions:
+                item = items[x].copy()
+                # We ave to make a copy of 'replace' because it's a reference to a dict object
+                item['replace'] = items[x]['replace'].copy()
+                item['partition'] = part.id
+                item['replace']['partition'] = "<a href='%s'>%s</a>" % (part.absolute_url(), item['partition'])
+                if srTemplateObj:
+                    item['samplingRoundTemplate'] = srTemplateObj.title
+                    item['replace']['samplingRoundTemplate'] = \
+                        "<a href='%s'>%s</a>" % (srTemplateObj.absolute_url, item['samplingRoundTemplate'])
+                new_items.append(item)
+        return new_items
