@@ -274,9 +274,7 @@ class AnalysisRequestsView(_ARV, _ARAV):
             catalog = getToolByName(self.context, 'uid_catalog')
             srTemplateObj = catalog(UID=srTemplateUID)[0].getObject()
             # Getting the partitions and creating a row per partition
-            analysis_partitions = obj.getPartitions()
-            # analysis_partitions has repeated partitions, we should have to remove them
-            partitions = list(set(analysis_partitions))
+            partitions = obj.getPartitions()
             for part in partitions:
                 item = items[x].copy()
                 # We ave to make a copy of 'replace' because it's a reference to a dict object
