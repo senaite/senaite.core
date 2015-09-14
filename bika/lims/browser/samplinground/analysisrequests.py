@@ -6,6 +6,7 @@ from plone.app.layout.globals.interfaces import IViewView
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import implements
+from bika.lims.utils import t
 
 
 class AnalysisRequestsView(_ARV, _ARAV):
@@ -15,13 +16,219 @@ class AnalysisRequestsView(_ARV, _ARAV):
     def __init__(self, context, request):
         super(AnalysisRequestsView, self).__init__(context, request)
         self.catalog = "portal_catalog"
+        SamplingWorkflowEnabled = self.context.bika_setup.getSamplingWorkflowEnabled()
+        self.columns = {
+            'samplingRoundTemplate': {'title': _('Sampling Round Template'),
+                                      'toggle': True},
+            'getRequestID': {'title': _('Request ID'),
+                             'index': 'getRequestID'},
+            'getSample': {'title': _("Sample"),
+                          'toggle': True, },
+            'Priority': {'title': _('Priority'),
+                            'toggle': True,
+                            'index': 'Priority',
+                            'sortable': True},
+            'getDateSampled': {'title': _('Date Sampled'),
+                               'index': 'getDateSampled',
+                               'toggle': True,
+                               'input_class': 'datepicker_nofuture',
+                               'input_width': '10'},
+            'state_title': {'title': _('State'),
+                            'index': 'review_state'},
+            'getProfilesTitle': {'title': _('Profile'),
+                                'index': 'getProfilesTitle',
+                                'toggle': False},
+            'getTemplateTitle': {'title': _('Template'),
+                                 'index': 'getTemplateTitle',
+                                 'toggle': False},
+        }
+
+        self.review_states = [
+            {'id': 'default',
+             'title': _('Active'),
+             'contentFilter': {'cancellation_state': 'active',
+                              'sort_on': 'created',
+                              'sort_order': 'reverse'},
+             'transitions': [{'id': 'sample'},
+                             {'id': 'preserve'},
+                             {'id': 'receive'},
+                             {'id': 'retract'},
+                             {'id': 'verify'},
+                             {'id': 'prepublish'},
+                             {'id': 'publish'},
+                             {'id': 'republish'},
+                             {'id': 'cancel'},
+                             {'id': 'reinstate'}],
+             'custom_actions': [],
+             'columns': ['getRequestID',
+                         'samplingRoundTemplate',
+                         'getSample',
+                         'Priority',
+                         'getDateSampled',
+                         'state_title']},
+            {'id': 'sample_due',
+             'title': _('Due'),
+             'contentFilter': {'review_state': ('to_be_sampled',
+                                                'to_be_preserved',
+                                                'sample_due'),
+                               'sort_on': 'created',
+                               'sort_order': 'reverse'},
+             'transitions': [{'id': 'sample'},
+                             {'id': 'preserve'},
+                             {'id': 'receive'},
+                             {'id': 'cancel'},
+                             {'id': 'reinstate'}],
+             'custom_actions': [],
+             'columns': ['getRequestID',
+                         'samplingRoundTemplate',
+                         'getSample',
+                         'Priority',
+                         'getDateSampled',
+                         'state_title']},
+           {'id': 'sample_received',
+             'title': _('Received'),
+             'contentFilter': {'review_state': 'sample_received',
+                               'sort_on': 'created',
+                               'sort_order': 'reverse'},
+             'transitions': [{'id': 'prepublish'},
+                             {'id': 'cancel'},
+                             {'id': 'reinstate'}],
+             'custom_actions': [],
+             'columns': ['getRequestID',
+                         'samplingRoundTemplate',
+                         'getSample',
+                         'Priority',
+                         'getDateSampled',
+                         'state_title']},
+            {'id': 'to_be_verified',
+             'title': _('To be verified'),
+             'contentFilter': {'review_state': 'to_be_verified',
+                               'sort_on': 'created',
+                               'sort_order': 'reverse'},
+             'transitions': [{'id': 'retract'},
+                             {'id': 'verify'},
+                             {'id': 'prepublish'},
+                             {'id': 'cancel'},
+                             {'id': 'reinstate'}],
+             'custom_actions': [],
+             'columns': ['getRequestID',
+                         'samplingRoundTemplate',
+                         'getSample',
+                         'Priority',
+                         'getDateSampled',
+                         'state_title']},
+            {'id': 'verified',
+             'title': _('Verified'),
+             'contentFilter': {'review_state': 'verified',
+                               'sort_on': 'created',
+                               'sort_order': 'reverse'},
+             'transitions': [{'id': 'publish'}],
+             'custom_actions': [],
+             'columns': ['getRequestID',
+                         'samplingRoundTemplate',
+                         'getSample',
+                         'Priority',
+                         'getDateSampled',
+                         'state_title']},
+            {'id': 'published',
+             'title': _('Published'),
+             'contentFilter': {'review_state': ('published', 'invalid'),
+                               'sort_on': 'created',
+                               'sort_order': 'reverse'},
+             'transitions': [{'id': 'republish'}],
+             'custom_actions': [],
+             'columns': ['getRequestID',
+                         'samplingRoundTemplate',
+                         'getSample',
+                         'Priority',
+                         'getDateSampled',
+                         'state_title']},
+            {'id': 'cancelled',
+             'title': _('Cancelled'),
+             'contentFilter': {'cancellation_state': 'cancelled',
+                               'review_state': ('to_be_sampled', 'to_be_preserved',
+                                                'sample_due', 'sample_received',
+                                                'to_be_verified', 'attachment_due',
+                                                'verified', 'published'),
+                               'sort_on': 'created',
+                               'sort_order': 'reverse'},
+             'transitions': [{'id': 'reinstate'}],
+             'custom_actions': [],
+             'columns': ['samplingRoundTemplate',
+                         'getRequestID',
+                        'getSample',
+                        'Priority',
+                        'getDateSampled',
+                        'state_title']},
+            {'id': 'invalid',
+             'title': _('Invalid'),
+             'contentFilter': {'review_state': 'invalid',
+                               'sort_on': 'created',
+                               'sort_order': 'reverse'},
+             'transitions': [],
+             'custom_actions': [],
+             'columns': ['getRequestID',
+                         'samplingRoundTemplate',
+                         'getSample',
+                         'Priority',
+                         'getDateSampled',
+                         'state_title']},
+            {'id': 'assigned',
+             'title': "<img title='%s'\
+                       src='%s/++resource++bika.lims.images/assigned.png'/>" % (
+                       t(_("Assigned")), self.portal_url),
+             'contentFilter': {'worksheetanalysis_review_state': 'assigned',
+                               'review_state': ('sample_received', 'to_be_verified',
+                                                'attachment_due', 'verified',
+                                                'published'),
+                               'sort_on': 'created',
+                               'sort_order': 'reverse'},
+             'transitions': [{'id': 'retract'},
+                             {'id': 'verify'},
+                             {'id': 'prepublish'},
+                             {'id': 'publish'},
+                             {'id': 'republish'},
+                             {'id': 'cancel'},
+                             {'id': 'reinstate'}],
+             'custom_actions': [],
+             'columns': ['getRequestID',
+                         'samplingRoundTemplate',
+                         'getSample',
+                         'Priority',
+                         'getDateSampled',
+                         'state_title']},
+            {'id': 'unassigned',
+             'title': "<img title='%s'\
+                       src='%s/++resource++bika.lims.images/unassigned.png'/>" % (
+                       t(_("Unassigned")), self.portal_url),
+             'contentFilter': {'worksheetanalysis_review_state': 'unassigned',
+                               'review_state': ('sample_received', 'to_be_verified',
+                                                'attachment_due', 'verified',
+                                                'published'),
+                               'sort_on': 'created',
+                               'sort_order': 'reverse'},
+             'transitions': [{'id': 'receive'},
+                             {'id': 'retract'},
+                             {'id': 'verify'},
+                             {'id': 'prepublish'},
+                             {'id': 'publish'},
+                             {'id': 'republish'},
+                             {'id': 'cancel'},
+                             {'id': 'reinstate'}],
+             'custom_actions': [],
+             'columns': ['getRequestID',
+                         'samplingRoundTemplate',
+                         'getSample',
+                         'Priority',
+                         'getDateSampled',
+                         'state_title']},
+            ]
 
     def contentsMethod(self, contentFilter):
-        bc = getToolByName(self.context, 'portal_catalog')
-        import pdb;pdb.set_trace()
+        pc = getToolByName(self.context, 'portal_catalog')
         if 'SamplingRoundUID' not in contentFilter.keys():
             contentFilter['SamplingRoundUID'] = self.context.UID()
-        return bc(contentFilter)
+        return pc(contentFilter)
 
     def __call__(self):
         self.context_actions = {}
@@ -37,3 +244,17 @@ class AnalysisRequestsView(_ARV, _ARAV):
                     + self.context.UID() + "&ar_count=" + str(num_art),
                 'icon': '++resource++bika.lims.images/add.png'}
         return super(AnalysisRequestsView, self).__call__()
+
+    def folderitems(self, full_objects=True):
+        items = _ARV.folderitems(self, full_objects)
+        for x in range(len(items)):
+            if 'obj' not in items[x]:
+                continue
+            obj = items[x]['obj']
+            srTemplateUID = obj.getSamplingRound().sr_template \
+                if obj.getSamplingRound().sr_template else ''
+            # Getting the sampling round object
+            catalog = getToolByName(self.context, 'uid_catalog')
+            srTemplateObj = catalog(UID=srTemplateUID)[0].getObject()
+            items[x]['samplingRoundTemplate'] = srTemplateObj.title
+        return items
