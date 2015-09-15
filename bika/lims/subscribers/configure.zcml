@@ -45,5 +45,10 @@
       handler="bika.lims.subscribers.bikasetup.BikaSetupModifiedEventHandler"
     />
 
+    <subscriber
+        for="bika.lims.content.samplinground.ISamplingRound
+           zope.lifecycleevent.interfaces.IObjectAddedEvent"
+      handler="bika.lims.subscribers.samplinground.SamplingRoundAddedEventHandler"
+    />
 
  </configure>

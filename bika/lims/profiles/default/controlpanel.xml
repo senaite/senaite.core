@@ -293,4 +293,13 @@
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
+ <configlet title="Sampling Rounds" action_id="bika_samplingrounds"
+    appId="bika.lims" category="bika" condition_expr=""
+    icon_expr="string:++resource++bika.lims.images/batch.png"
+    url_expr="string:$portal_url/bika_setup/bika_samplingrounds"
+    visible="True"
+    i18n:attributes="title">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
 </object>

@@ -70,6 +70,9 @@ window.bika.lims.controllers =  {
     ".portaltype-client.template-base_edit":
         ['ClientEditView'],
 
+    // Client Sampling Rounds
+    ".template-bika-lims-content-samplingsround.portaltype-client":
+        ['ClientSamplingRoundAddEditView'],
 
     // Reference Samples
     ".portaltype-referencesample.template-analyses":

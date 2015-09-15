@@ -261,6 +261,14 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <browser:page
+      for="bika.lims.controlpanel.bika_samplingrounds.ISamplingRounds"
+      name="folder_view"
+      class=".bika_samplingrounds.SamplingRoundsView"
+      permission="bika.lims.ManageBika"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
     <!-- For autocomplete dropdown -->
     <browser:page
       for="*"

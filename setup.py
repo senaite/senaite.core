@@ -61,6 +61,9 @@ setup(name='bika.lims',
           'WeasyPrint==0.19.2',
           'collective.progressbar',
           'z3c.unconfigure==1.0.1',
+          'plone.app.dexterity',
+          'plone.app.relationfield',
+          'plone.app.referenceablebehavior',
       ],
       extras_require={
           'test': [

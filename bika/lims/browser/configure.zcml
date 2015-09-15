@@ -43,6 +43,7 @@
 
   <include package=".analysisrequest"/>
   <include package=".batch"/>
+  <include package=".samplinground"/>
   <include package=".worksheet"/>
 
   <include package=".fields"/>

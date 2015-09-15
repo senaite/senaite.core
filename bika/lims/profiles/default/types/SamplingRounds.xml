@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<object name="SamplingRounds"
+   meta_type="Dexterity FTI"
+   i18n:domain="bika.lims" xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+
+  <!-- Basic metadata -->
+  <property name="title" i18n:translate="">Sampling Rounds</property>
+  <property name="description"
+    i18n:translate="">Show all the sampling rounds registered in the system</property>
+  <property name="icon_expr">string:${portal_url}/folder_icon.png</property>
+  <property name="factory">bika.lims.controlpanel.bika_samplingrounds</property>
+  <property name="global_allow">True</property>
+  <property name="filter_content_types">True</property>
+  <property name="allowed_content_types">
+      <element value="SamplingRound" />
+  </property>
+  <property name="allow_discussion">False</property>
+
+  <!-- schema and class used for content items -->
+  <property name="schema">bika.lims.controlpanel.bika_samplingrounds.ISamplingRounds</property>
+  <property name="klass">bika.lims.controlpanel.bika_samplingrounds.SamplingRounds</property>
+
+  <property name="behaviors">
+     <element value="plone.app.content.interfaces.INameFromTitle" />
+   </property>
+
+  <!-- View information -->
+  <property name="link_target"></property>
+  <property name="immediate_view">view</property>
+  <property name="default_view">view</property>
+  <property name="view_methods">
+   <element value="view"/>
+  </property>
+  <property name="default_view_fallback">False</property>
+  <property name="add_permission">cmf.AddPortalContent</property>
+
+
+  <!-- Method aliases -->
+  <alias from="(Default)" to="folder_view"/>
+  <alias from="view" to="folder_view"/>
+  <alias from="edit" to="folder_view"/>
+
+  <!-- Actions -->
+  <action title="View" action_id="view" category="object" condition_expr=""
+    url_expr="string:${object_url}/" visible="False">
+    <permission value="View" />
+  </action>
+  <action title="Edit" action_id="edit" category="object" condition_expr=""
+    url_expr="string:${object_url}/edit" visible="False">
+    <permission value="Modify portal content" />
+  </action>
+</object>

@@ -913,7 +913,6 @@ class BikaListingView(BrowserView):
                         value = value()
                     results_dict[key] = value
             results.append(results_dict)
-
         return results
 
     def contents_table(self, table_only = False):

@@ -55,6 +55,12 @@ def BatchUID(instance):
     if batch:
         return batch.UID()
 
+@indexer(IAnalysisRequest)
+def SamplingRoundUID(instance):
+    sr = instance.getSamplingRound()
+    if sr:
+        return sr.UID()
+
 schema = BikaSchema.copy() + Schema((
     StringField(
         'RequestID',
@@ -273,6 +279,38 @@ schema = BikaSchema.copy() + Schema((
             catalog_name='bika_catalog',
             base_query={'review_state': 'open',
                         'cancellation_state': 'active'},
+            showOn=True,
+        ),
+    ),
+    ReferenceField(
+        'SamplingRound',
+        allowed_types=('SamplingRound',),
+        relationship='AnalysisRequestSamplingRound',
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
+        widget=ReferenceWidget(
+            label = _("Sampling Round"),
+            size=20,
+            render_own_label=True,
+            visible={'edit': 'visible',
+                     'view': 'visible',
+                     'add': 'edit',
+                     'header_table': 'visible',
+                     'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
+                     'to_be_sampled':     {'view': 'visible', 'edit': 'visible'},
+                     'sampled':           {'view': 'visible', 'edit': 'visible'},
+                     'to_be_preserved':   {'view': 'visible', 'edit': 'visible'},
+                     'sample_due':        {'view': 'visible', 'edit': 'visible'},
+                     'sample_received':   {'view': 'visible', 'edit': 'visible'},
+                     'attachment_due':    {'view': 'visible', 'edit': 'visible'},
+                     'to_be_verified':    {'view': 'visible', 'edit': 'visible'},
+                     'verified':          {'view': 'visible', 'edit': 'visible'},
+                     'published':         {'view': 'visible', 'edit': 'invisible'},
+                     'invalid':           {'view': 'visible', 'edit': 'invisible'},
+                     },
+            catalog_name='portal_catalog',
+            base_query={},
             showOn=True,
         ),
     ),
@@ -1904,6 +1942,16 @@ class AnalysisRequest(BaseFolder):
                 result.append(analyses[analysis_key])
         return result
 
+    def getSamplingRoundUID(self):
+        """
+        Obtains the sampling round UID
+        :return: a UID
+        """
+        if self.getSamplingRound():
+            return self.getSamplingRound().UID()
+        else:
+            return ''
+
     def setResultsRange(self, value=None):
         """Sets the spec values for this AR.
         1 - Client specs where (spec.Title) matches (ar.SampleType.Title)
@@ -2202,6 +2250,28 @@ class AnalysisRequest(BaseFolder):
             sets = adv if 'hidden' in adv[0] else []
 
         return sets[0] if sets else {'uid': uid}
+
+    def getPartitions(self):
+        """
+        This functions returns the partitions from the analysis request's analyses
+        :return: a list with the full partition objects
+        """
+        analyses = self.getRequestedAnalyses()
+        partitions = []
+        for analysis in analyses:
+            partitions.append(analysis.getSamplePartition())
+        return partitions
+
+    def getContainers(self):
+        """
+        This functions returns the containers from the analysis request's analyses
+        :return: a list with the full partition objects
+        """
+        partitions = self.getPartitions()
+        containers = []
+        for partition in partitions:
+            containers.append(partition.getContainer())
+        return containers
 
     def isAnalysisServiceHidden(self, uid):
         """ Checks if the analysis service that match with the uid

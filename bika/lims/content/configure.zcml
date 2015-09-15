@@ -9,8 +9,11 @@
     <adapter name="BatchDate" factory=".batch.BatchDate" />
     <adapter name="Priority" factory=".analysisrequest.Priority" />
     <adapter name="BatchUID" factory=".analysisrequest.BatchUID" />
+    <adapter name="SamplingRoundUID" factory=".analysisrequest.SamplingRoundUID" />
     <adapter name="Priority" factory=".analysis.Priority" />
     <adapter name="Priority" factory=".worksheet.Priority" />
+    <adapter name="analysisRequestTemplates" factory=".samplinground.analysisRequestTemplates" />
+    <adapter name="samplingRoundSamplingDate" factory=".samplinground.samplingRoundSamplingDate" />
 
     <subscriber
       for="bika.lims.interfaces.IPricelist

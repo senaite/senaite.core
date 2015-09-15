@@ -73,8 +73,8 @@ function AnalysisRequestAddByCol() {
         form_submit()
 
         fix_table_layout();
-
-    }
+        from_sampling_round();
+    };
 
     // Form management, and utility functions //////////////////////////////////
     /* form_init - load time form config
@@ -169,7 +169,7 @@ function AnalysisRequestAddByCol() {
             for (arnum = 0; arnum < nr_ars; arnum++) {
                 filter_by_client(arnum)
             }
-        }, 250)
+        }, 250);
     }
 
     function state_set(arnum, fieldname, value) {
@@ -180,6 +180,80 @@ function AnalysisRequestAddByCol() {
             // console.log("arnum=" + arnum + ", fieldname=" + fieldname + ", value=" + value)
             bika.lims.ar_add.state[arnum_i][fieldname] = value
         }
+    }
+
+    function from_sampling_round(){
+        // Checking if the request comes from a sampling round
+        var sPageURL = decodeURIComponent(window.location.search.substring(1)),
+        sURLVariables = sPageURL.split('&'),
+        sParameterName;
+        for (var i = 0; i < sURLVariables.length; i++) {
+            sParameterName = sURLVariables[i].split('=');
+            if (sParameterName[0] === 'samplinground') {
+                // If the request comes from a sampling round, we have to set up the form with the sampling round info
+                var samplinground_UID = sParameterName[1];
+                setupSamplingRoundInfo(samplinground_UID);
+            }
+        }
+    }
+
+    function setupSamplingRoundInfo(samplinground_UID){
+        /**
+         * This function sets up the sampling round information such as the sampling round to use and the
+         * different analysis request templates needed.
+         * :samplinground_uid: a string with the sampling round uid
+         */
+        var request_data = {
+            catalog_name: "portal_catalog",
+            portal_type: "SamplingRound",
+            UID: samplinground_UID,
+            include_fields: ["Title", "UID", "analysisRequestTemplates", "samplingRoundSamplingDate"]
+        };
+        window.bika.lims.jsonapi_read(request_data, function (data) {
+            if (data.objects.length > 0) {
+                var spec = data.objects[0];
+                // Selecting the sampling round
+                var sr = $('input[id^="SamplingRound-"]');
+                // Filling out and halting the sampling round fields
+                sr.attr('uid', spec['UID'])
+                    .val(spec['Title'])
+                    .attr('uid_check', spec['UID'])
+                    .attr('val_check', spec['Title'])
+                    .attr('disabled','disabled');
+                $('[id^="SamplingRound-"][id$="_uid"]').val(spec['UID']);
+                // Filling out and halting the analysis request templates fields
+                var ar_templates = $('input[id^="Template-"]:visible');
+                ar_templates.each(function(index, element){
+                    $(element).attr('uid', spec['analysisRequestTemplates'][index][1])
+                    .val(spec['analysisRequestTemplates'][index][0])
+                    .attr('uid_check', spec['analysisRequestTemplates'][index][1])
+                    .attr('val_check', spec['analysisRequestTemplates'][index][1])
+                    .attr('disabled','disabled');
+                    $('input#Template-' + index + '_uid').val(spec['analysisRequestTemplates'][index][1]);
+                    template_set(index);
+                });
+                // Writing the sampling date
+                $('input[id^="SamplingDate-"]:visible').val(spec['samplingRoundSamplingDate']);
+                // Hiding all fields which depends on the sampling round
+                var to_disable = ['SampleType', 'Specification', 'SamplePoint', 'ReportDryMatter', 'Sample', 'Batch',
+                    'SubGroup', 'SamplingDate', 'Composite', 'Profiles', 'DefaultContainerType', 'AdHoc'];
+                for (var i=0; to_disable.length > i; i++) {
+                    $('tr[fieldname="' + to_disable[i] + '"]').hide();
+                }
+                // Hiding prices
+                $('table.add tfoot').hide();
+                // Hding not needed services
+                $('th.collapsed').hide();
+                // Disabling service checkboxes
+                setTimeout(function () {
+                    // Some function enables the services checkboxes with a lot of delay caused by AJAX, so we
+                    // need this setTimeout
+                    $('input[selector^="bika_analysisservices"]').attr("disabled", true);
+                    $('input[selector^="ar."][type="checkbox"]').attr("disabled", true);
+                    $('input.min, input.max, input.error').attr("disabled", true);
+                }, 1000);
+            }
+        });
     }
 
     function filter_combogrid(element, filterkey, filtervalue, querytype) {
