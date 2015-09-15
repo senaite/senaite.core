@@ -2,6 +2,7 @@
 ------------------
 LIMS-1547: AR Templates tab inside Sampling Round Template
 LIMS-1561: Editing a Sampling Round
+LIMS-1558: Creating Sampling Rounds
 LIMS-1965: Modified default navtree order for new installations
 LIMS-1987: AR Invoice tab should not be shown if pricing is toggled off
 LIMS-1523: Site Error when transitioning AR from 'Manage Analyses' or 'Log' tab
