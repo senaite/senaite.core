@@ -168,7 +168,7 @@ class ISamplingRound(model.Schema):
 
         num_sample_points = schema.Int(
                 title=_(u"Number of Sample Points"),
-                description=_(u"the total number of Containers included in the Round."),
+                description=_(u"the total number of Sample Points defined in the Round."),
                 required=False,
                 readonly=True,
                 )
@@ -225,7 +225,7 @@ class SamplingRound(Item):
         ar_brains = self.getAnalysisRequests()
         containers = []
         for ar_brain in ar_brains:
-            containers.append(ar_brain.getObject().getContainers())
+            containers += ar_brain.getObject().getContainers()
         return len(containers)
 
     def getAnalysisRequests(self):
@@ -235,7 +235,7 @@ class SamplingRound(Item):
         pc = getToolByName(api.portal.get(), 'portal_catalog')
         contentFilter = {'portal_type': 'AnalysisRequest',
                          'cancellation_state': 'active',
-                         'getSamplingRoundUID': self.UID()}
+                         'SamplingRoundUID': self.UID()}
         return pc(contentFilter)
 
     def getAnalysisRequestTemplates(self):

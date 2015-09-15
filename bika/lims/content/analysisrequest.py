@@ -2253,13 +2253,14 @@ class AnalysisRequest(BaseFolder):
 
     def getPartitions(self):
         """
-        This functions returns the partitions from the analysis request's analyses
+        This functions returns the partitions from the analysis request's analyses.
         :return: a list with the full partition objects
         """
         analyses = self.getRequestedAnalyses()
         partitions = []
         for analysis in analyses:
-            partitions.append(analysis.getSamplePartition())
+            if analysis.getSamplePartition() not in partitions:
+                partitions.append(analysis.getSamplePartition())
         return partitions
 
     def getContainers(self):
@@ -2270,7 +2271,8 @@ class AnalysisRequest(BaseFolder):
         partitions = self.getPartitions()
         containers = []
         for partition in partitions:
-            containers.append(partition.getContainer())
+            if partition.getContainer():
+                containers.append(partition.getContainer())
         return containers
 
     def isAnalysisServiceHidden(self, uid):

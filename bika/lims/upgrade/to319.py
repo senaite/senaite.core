@@ -23,6 +23,7 @@ def upgrade(tool):
     setup.runImportStepFromProfile('profile-bika.lims:default', 'factorytool')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'controlpanel')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'catalog')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'propertiestool')
     # important info about upgrade steps in
     # http://stackoverflow.com/questions/7821498/is-there-a-good-reference-list-for-the-names-of-the-genericsetup-import-steps
     setup.runImportStepFromProfile('profile-bika.lims:default', 'skins')
@@ -50,7 +51,13 @@ def upgrade(tool):
         logger.info("SamplingRounds not created")
     # Install Products.DataGridField
     qi.installProducts(['Products.DataGridField'])
-
+    # add new types not to list in nav
+    # SamplingRound
+    portal_properties = getToolByName(portal, 'portal_properties')
+    ntp = getattr(portal_properties, 'navtree_properties')
+    types = list(ntp.getProperty('metaTypesNotToList'))
+    types.append("SamplingRound")
+    ntp.manage_changeProperties(MetaTypesNotToQuery=types)
     return True
 
 def multipleAnalysisProfiles(portal):
