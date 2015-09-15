@@ -5,6 +5,7 @@ LIMS-1561: Editing a Sampling Round
 LIMS-1965: Modified default navtree order for new installations
 LIMS-1987: AR Invoice tab should not be shown if pricing is toggled off
 LIMS-1523: Site Error when transitioning AR from 'Manage Analyses' or 'Log' tab
+LIMS-1970: Analyses with AR Specifications not displayed properly in AR Add form
 LIMS-1397: Fix Client Title accessor to prevent catalog error when data is imported
 LIMS-1996: On new system with no instrument data is difficult to get going.
 LIMS-2005: Click on Validations tab of Instruments it give error

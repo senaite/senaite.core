@@ -153,6 +153,9 @@ class AnalysisServicesView(ASV):
                 kw = obj.getKeyword()
                 for arnum in range(self.ar_count):
                     key = 'ar.%s' % arnum
+                    # If AR Specification fields are enabled, these should
+                    # not be allowed to wrap inside the cell:
+                    items[x]['class'][key] = 'nowrap'
                     # checked or not:
                     selected = self._get_selected_items(form_key=key)
                     items[x][key] = item in selected
