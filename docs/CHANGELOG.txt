@@ -1,5 +1,6 @@
 3.1.9 (unreleased)
 ------------------
+LIMS-1545: Add "Composite Y/N" checkbox on AR Template
 LIMS-1547: AR Templates tab inside Sampling Round Template
 LIMS-1561: Editing a Sampling Round
 LIMS-1558: Creating Sampling Rounds

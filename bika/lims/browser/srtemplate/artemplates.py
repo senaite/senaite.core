@@ -82,7 +82,7 @@ class AnalysisRequestTemplatesView(BikaListingView):
              'columns': ['title',
                          'SamplePoint',
                          'SampleType',
-                         #'Composite',
+                         'Composite',
                          'ContainerTitle',
                          'ContainerVolume',
                          'Preservation',
@@ -95,7 +95,7 @@ class AnalysisRequestTemplatesView(BikaListingView):
              'columns': ['title',
                          'SamplePoint',
                          'SampleType',
-                         #'Composite',
+                         'Composite',
                          'ContainerTitle',
                          'ContainerVolume',
                          'Preservation',
@@ -107,7 +107,7 @@ class AnalysisRequestTemplatesView(BikaListingView):
              'columns': ['title',
                          'SamplePoint',
                          'SampleType',
-                         #'Composite',
+                         'Composite',
                          'ContainerTitle',
                          'ContainerVolume',
                          'Preservation',
@@ -175,6 +175,10 @@ class AnalysisRequestTemplatesView(BikaListingView):
                     (obj.getSampleType().absolute_url(), item['SampleType'])
             else:
                 item['SampleType'] = ''
+            item['Composite'] = obj.getComposite()
+            img_url = '<img src="'+self.portal_url+'/++resource++bika.lims.images/ok.png"/>'
+            item['replace']['Composite'] = img_url if obj.getComposite() else ' '
+
             partitions = obj.getPartitions()
             for partition in partitions:
                 c_item = item.copy()

@@ -235,14 +235,22 @@ function AnalysisRequestAddByCol() {
                 // Writing the sampling date
                 $('input[id^="SamplingDate-"]:visible').val(spec['samplingRoundSamplingDate']);
                 // Hiding all fields which depends on the sampling round
-                var to_disable = ['SampleType', 'Specification', 'SamplePoint', 'ReportDryMatter', 'Sample', 'Batch',
+                var to_disable = ['Specification', 'SamplePoint', 'ReportDryMatter', 'Sample', 'Batch',
                     'SubGroup', 'SamplingDate', 'Composite', 'Profiles', 'DefaultContainerType', 'AdHoc'];
                 for (var i=0; to_disable.length > i; i++) {
                     $('tr[fieldname="' + to_disable[i] + '"]').hide();
                 }
+                var sampleTypes = $('input[id^="SampleType-"]');
+                sampleTypes.each(function(index, element){
+                        // We have to hide the field
+                        if ($(element).attr('uid')){
+                            $(element).attr('disabled','disabled')
+                        }
+                    }
+                );
                 // Hiding prices
                 $('table.add tfoot').hide();
-                // Hding not needed services
+                // Hiding not needed services
                 $('th.collapsed').hide();
                 // Disabling service checkboxes
                 setTimeout(function () {
@@ -1048,6 +1056,15 @@ function AnalysisRequestAddByCol() {
         }
     }
 
+    function composite_selected(arnum) {
+        $("input#Composite-" + arnum)
+          .live('change', function (event, item) {
+                template_unset(arnum);
+                // Removing composite bindings
+                $("input#Composite-" + arnum).unbind()
+                })
+    }
+
     function template_selected() {
         $("tr[fieldname='Template'] td[arnum] input[type='text']")
           .live('selected copy', function (event, item) {
@@ -1063,11 +1080,11 @@ function AnalysisRequestAddByCol() {
     }
 
     function template_set(arnum) {
-        var d = $.Deferred()
-        uncheck_all_services(arnum)
+        var d = $.Deferred();
+        uncheck_all_services(arnum);
         var td = $("tr[fieldname='Template'] " +
-                   "td[arnum='" + arnum + "'] ")
-        var title = $(td).find("input[type='text']").val()
+                   "td[arnum='" + arnum + "'] ");
+        var title = $(td).find("input[type='text']").val();
         var request_data = {
             catalog_name: "bika_setup_catalog",
             title: title,
@@ -1077,11 +1094,12 @@ function AnalysisRequestAddByCol() {
                 "SamplePoint",
                 "SamplePointUID",
                 "ReportDryMatter",
+                "Composite",
                 "AnalysisProfile",
                 "Partitions",
                 "Analyses",
                 "Prices"]
-        }
+        };
         window.bika.lims.jsonapi_read(request_data, function (data) {
 
             var template = data.objects[0]
@@ -1130,7 +1148,16 @@ function AnalysisRequestAddByCol() {
             else {
                 defs.push(expand_services_bika_listing(arnum, template['service_data']))
             }
-
+            // Set the composite checkbox if needed
+            td = $("tr[fieldname='Composite'] td[arnum='" + arnum + "']");
+            if (template['Composite']) {
+                $(td).find("input[type='checkbox']").attr("checked", true);
+                state_set(arnum, 'Composite', template['Composite']);
+                composite_selected(arnum)
+            }
+            else{
+                $(td).find("input[type='checkbox']").attr("checked", false);
+            }
             // Call $.when with all deferreds
             $.when.apply(null, defs).then(function () {
                 // Dry Matter checkbox.  drymatter_set will calculate it's
