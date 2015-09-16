@@ -82,7 +82,7 @@ class AnalysisRequestTemplatesView(BikaListingView):
              'columns': ['title',
                          'SamplePoint',
                          'SampleType',
-                         #'Composite',
+                         'Composite',
                          'ContainerTitle',
                          'ContainerVolume',
                          'Preservation',
@@ -95,7 +95,7 @@ class AnalysisRequestTemplatesView(BikaListingView):
              'columns': ['title',
                          'SamplePoint',
                          'SampleType',
-                         #'Composite',
+                         'Composite',
                          'ContainerTitle',
                          'ContainerVolume',
                          'Preservation',
@@ -107,7 +107,7 @@ class AnalysisRequestTemplatesView(BikaListingView):
              'columns': ['title',
                          'SamplePoint',
                          'SampleType',
-                         #'Composite',
+                         'Composite',
                          'ContainerTitle',
                          'ContainerVolume',
                          'Preservation',
@@ -175,6 +175,10 @@ class AnalysisRequestTemplatesView(BikaListingView):
                     (obj.getSampleType().absolute_url(), item['SampleType'])
             else:
                 item['SampleType'] = ''
+            if obj.getComposite():
+                item['Composite'] = 'Y'
+            else:
+                item['Composite'] = 'N'
             partitions = obj.getPartitions()
             for partition in partitions:
                 c_item = item.copy()
