@@ -119,7 +119,6 @@ class ReferenceWidget(StringWidget):
         # portal_type: use field allowed types
         field = context.Schema().getField(fieldName)
         allowed_types = getattr(field, 'allowed_types', None)
-
         allowed_types_method = getattr(field, 'allowed_types_method', None)
         if allowed_types_method:
             meth = getattr(context, allowed_types_method)

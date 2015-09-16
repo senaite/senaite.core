@@ -134,7 +134,8 @@ class AnalysisServicesView(BikaListingView):
             _('Add'):
                 {'url': 'createObject?type_name=AnalysisService',
                  'icon': '++resource++bika.lims.images/add.png'}}
-        self.icon = self.portal_url + "/++resource++bika.lims.images/analysisservice_big.png"
+        self.icon = self.portal_url + \
+            "/++resource++bika.lims.images/analysisservice_big.png"
         self.title = self.context.translate(_("Analysis Services"))
         self.show_sort_column = False
         self.show_select_row = False
@@ -193,11 +194,11 @@ class AnalysisServicesView(BikaListingView):
                          'MaxTimeAllowed',
                          'DuplicateVariation',
                          'Calculation',
-             ],
+                         ],
              'custom_actions': [{'id': 'duplicate',
                                  'title': _('Duplicate'),
                                  'url': 'copy'}, ]
-            },
+             },
             {'id': 'inactive',
              'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
@@ -215,11 +216,11 @@ class AnalysisServicesView(BikaListingView):
                          'MaxTimeAllowed',
                          'DuplicateVariation',
                          'Calculation',
-             ],
+                         ],
              'custom_actions': [{'id': 'duplicate',
                                  'title': _('Duplicate'),
                                  'url': 'copy'}, ]
-            },
+             },
             {'id': 'all',
              'title': _('All'),
              'contentFilter': {},
@@ -236,11 +237,11 @@ class AnalysisServicesView(BikaListingView):
                          'MaxTimeAllowed',
                          'DuplicateVariation',
                          'Calculation',
-             ],
+                         ],
              'custom_actions': [{'id': 'duplicate',
                                  'title': _('Duplicate'),
                                  'url': 'copy'}, ]
-            },
+             },
         ]
 
     def folderitems(self):
@@ -251,7 +252,13 @@ class AnalysisServicesView(BikaListingView):
             if 'obj' not in items[x]:
                 continue
             obj = items[x]['obj']
+
+            # Although these should be automatically inserted when bika_listing
+            # searches the schema for fields that match columns, it is still
+            # not harmful to be explicit:
             items[x]['Keyword'] = obj.getKeyword()
+            items[x]['CommercialID'] = obj.getCommercialID()
+            items[x]['ProtocolID'] = obj.getProtocolID()
 
             cat = obj.getCategoryTitle()
             # Category (upper C) is for display column value
@@ -262,36 +269,32 @@ class AnalysisServicesView(BikaListingView):
                 if cat not in self.categories:
                     self.categories.append(cat)
 
-            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                                           (items[x]['url'], items[x]['Title'])
+            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % (
+                items[x]['url'], items[x]['Title'])
 
             instrument = obj.getInstrument()
             items[x]['Instrument'] = instrument and instrument.Title() or ''
-            items[x]['replace'][
-                'Instrument'] = instrument and "<a href='%s'>%s</a>" % \
-                                               (
-                                                   instrument.absolute_url() + "/edit",
-                                                   instrument.Title()) or ''
+            if instrument:
+                items[x]['replace']['Instrument'] = "<a href='%s'>%s</a>" % (
+                    instrument.absolute_url() + "/edit", instrument.Title())
 
-            items[x][
-                'Department'] = obj.getDepartment() and obj.getDepartment().Title() or ''
+            items[x]['Department'] = obj.getDepartment().Title() \
+                if obj.getDepartment() else ''
 
             calculation = obj.getCalculation()
             items[x]['Calculation'] = calculation and calculation.Title()
-            items[x]['replace'][
-                'Calculation'] = calculation and "<a href='%s'>%s</a>" % \
-                                                 (
-                                                     calculation.absolute_url() + "/edit",
-                                                     calculation.Title()) or ''
+            if calculation:
+                items[x]['replace']['Calculation'] = "<a href='%s'>%s</a>" % (
+                    calculation.absolute_url() + "/edit", calculation.Title())
 
             items[x]['Unit'] = obj.getUnit() and obj.getUnit() or ''
-            items[x]['Price'] = "%s.%02d" % (obj.Price)
+            items[x]['Price'] = "%s.%02d" % obj.Price
 
             method = obj.getMethod()
             items[x]['Method'] = method and method.Title() or ''
-            items[x]['replace']['Method'] = method and "<a href='%s'>%s</a>" % \
-                                                       (method.absolute_url(),
-                                                        method.Title()) or ''
+            if method:
+                items[x]['replace']['Method'] = "<a href='%s'>%s</a>" % (
+                    method.absolute_url(), method.Title())
 
             maxtime = obj.MaxTimeAllowed
             maxtime_string = ""
@@ -312,18 +315,19 @@ class AnalysisServicesView(BikaListingView):
                 items[x]['DuplicateVariation'] = ""
 
             after_icons = ''
+            ipath = "++resource++bika.lims.images"
             if obj.getAccredited():
-                after_icons += "<img src='++resource++bika.lims.images/accredited.png' title='%s'>" % (
-                    _("Accredited"))
+                after_icons += "<img src='%s/accredited.png' title='%s'>" % (
+                    ipath, _("Accredited"))
             if obj.getReportDryMatter():
-                after_icons += "<img src='++resource++bika.lims.images/dry.png' title='%s'>" % (
-                    _("Can be reported as dry matter"))
+                after_icons += "<img src='%s/dry.png' title='%s'>" % (
+                    ipath, _("Can be reported as dry matter"))
             if obj.getAttachmentOption() == 'r':
-                after_icons += "<img src='++resource++bika.lims.images/attach_reqd.png' title='%s'>" % (
-                    _("Attachment required"))
+                after_icons += "<img src='%s/attach_reqd.png' title='%s'>" % (
+                    ipath, _("Attachment required"))
             if obj.getAttachmentOption() == 'n':
-                after_icons += "<img src='++resource++bika.lims.images/attach_no.png' title='%s'>" % (
-                    _('Attachment not permitted'))
+                after_icons += "<img src='%s/attach_no.png' title='%s'>" % (
+                    ipath, _('Attachment not permitted'))
             if after_icons:
                 items[x]['after']['Title'] = after_icons
 

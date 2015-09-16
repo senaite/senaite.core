@@ -96,17 +96,11 @@ class SamplingRoundsView(BikaListingView):
 
 
 class ISamplingRounds(model.Schema):
-    """A conference program. Programs can contain Sessions.
+    """ A Sampling Rounds container.
     """
-
-# Custom content-type class; objects created for this content type will
-# be instances of this class. Use this class to add content-type specific
-# methods and properties. Put methods that are mainly useful for rendering
-# in separate view classes.
 
 
 class SamplingRounds(Container):
     implements(ISamplingRounds)
-    # Add your class methods and properties here
     displayContentsTab = False
     pass
