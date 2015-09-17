@@ -9,6 +9,8 @@ from zope.schema.vocabulary import SimpleVocabulary
 from Products.CMFCore.utils import getToolByName
 from zope.schema.interfaces import IContextSourceBinder
 from datetime import date
+from bika.lims.workflow import doActionFor
+from bika.lims.workflow import skip
 
 # I implemented it here because following this example
 # (http://docs.plone.org/external/plone.app.dexterity/docs/advanced/vocabularies.html#named-vocabularies)
@@ -253,3 +255,19 @@ class SamplingRound(Item):
             if len(art_obj) != 0:
                 l.append((art_obj[0].Title, art_uid))
         return l
+
+    def workflow_script_cancel(self):
+        """
+        When the round is cancelled, all its associated Samples and ARs are cancelled by the system.
+        """
+        if skip(self, "cancel"):
+            return
+        self.reindexObject(idxs=["cancellation_state", ])
+        # deactivate all analysis requests in this sampling round.
+        analysis_requests = self.getAnalysisRequests()
+        for ar in analysis_requests:
+            ar_obj = ar.getObject()
+            workflow = getToolByName(self, 'portal_workflow')
+            if workflow.getInfoFor(ar_obj, 'cancellation_state') != 'cancelled':
+                doActionFor(ar.getObject(), 'cancel')
+                doActionFor(ar.getObject().getSample(), 'cancel')
