@@ -54,7 +54,7 @@ function ClientSamplingRoundAddEditView() {
             if (data.objects && data.objects.length > 0) {
                 var ob = data.objects[0];
                 sampler = ob['Sampler'];
-                department = ob['Department'];
+                department = ob['Department_uid'];
                 samp_freq = ob['SamplingDaysFrequency'];
                 instructions = ob['Instructions'];
                 artemplates_uids = ob['ARTemplates_uid'];
