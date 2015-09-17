@@ -257,6 +257,9 @@ class SamplingRound(Item):
         return l
 
     def workflow_script_cancel(self):
+        """
+        When the round is cancelled, all its associated Samples and ARs are cancelled by the system.
+        """
         if skip(self, "cancel"):
             return
         self.reindexObject(idxs=["cancellation_state", ])
@@ -267,3 +270,4 @@ class SamplingRound(Item):
             workflow = getToolByName(self, 'portal_workflow')
             if workflow.getInfoFor(ar_obj, 'cancellation_state') != 'cancelled':
                 doActionFor(ar.getObject(), 'cancel')
+                doActionFor(ar.getObject().getSample(), 'cancel')
