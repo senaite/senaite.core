@@ -7,7 +7,7 @@ class EditForm(edit.DefaultEditForm):
     """
     def __call__(self):
         # Checking current user permissions
-        if self.context.hasUserEditPermission():
+        if self.context.hasUserAddEditPermission():
             return edit.DefaultEditForm.__call__(self)
         else:
             raise Unauthorized

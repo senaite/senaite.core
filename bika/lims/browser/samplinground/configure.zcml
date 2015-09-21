@@ -3,12 +3,19 @@
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="bika">
-<!-- Maybe the permission field can be removed since it is defined in types/SamplingRound.xml -->
+
     <browser:page
       for="bika.lims.content.samplinground.ISamplingRound"
       name="edit"
       class=".edit.EditForm"
       permission="cmf.ModifyPortalContent"
+    />
+
+    <browser:page
+      for="bika.lims.content.samplinground.ISamplingRound"
+      name="add"
+      class=".add.AddForm"
+      permission="cmf.AddPortalContent"
     />
 
     <browser:page
