@@ -11,24 +11,22 @@ Id:,open,,,,,,,,,,,,,,
 Title:,Open,,,,,,,,,,,,,,
 Description:,The Sampling Round can be edited and Analysis Requests can be attached,,,,,,,,,,,,,,
 Transitions,"close",,,,,,,,,,,,,,
-Permissions,Acquire,Owner,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,RegulatoryInspector,Publisher,Reader,Editor,Contributor,Anonymous
-View,N,N,Y,Y,Y,Y,N,N,Y,Y,N,N,N,N,N
-BIKA: Edit SamplingRound,N,N,Y,Y,Y,N,N,N,N,N,N,N,N,N,N
-BIKA: Close SamplingRound,N,N,Y,Y,Y,N,N,N,N,N,N,N,N,N,N
-BIKA: Reopen SamplingRound,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Add Analysis Request,N,N,Y,Y,Y,N,N,N,N,N,N,N,N,N,N
-Modify portal content,N,N,Y,Y,Y,N,N,N,N,N,N,N,N,N,N
+Permissions,Acquire,Owner,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,RegulatoryInspector,Publisher,Reviewer,Authenticated,Anonymous,Client
+View,N,Y,Y,Y,Y,Y,N,N,Y,Y,N,N,N,N,Y
+BIKA: Close SamplingRound,N,Y,Y,Y,Y,N,N,N,N,N,N,N,N,N,Y
+BIKA: Reopen SamplingRound,N,Y,N,N,N,N,N,N,N,N,N,N,N,N,Y
+BIKA: Add Analysis Request,N,Y,Y,Y,Y,N,N,N,N,N,N,N,N,N,Y
+"Modify portal content",N,Y,Y,Y,Y,N,N,N,N,N,N,N,N,N,Y
 ,,,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,,,
 Id:,closed,,,,,,,,,,,,,,
 Title:,Closed,,,,,,,,,,,,,,
 Description:,The SamplingRound can't be edited and Analysis Requests cannot be attached,,,,,,,,,,,,,,
 Transitions,open,,,,,,,,,,,,,,
-Permissions,Acquire,Owner,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,RegulatoryInspector,Publisher,Reader,Editor,Contributor,Anonymous
-View,N,N,Y,Y,Y,N,N,N,N,Y,N,N,N,N,N
-BIKA: Edit SamplingRound,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+Permissions,Acquire,Owner,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,RegulatoryInspector,Publisher,Reviewer,Authenticated,Anonymous,Client
+View,N,Y,Y,Y,Y,Y,N,N,Y,Y,N,N,N,N,Y
 BIKA: Close SamplingRound,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Reopen SamplingRound,N,N,Y,Y,Y,N,N,N,N,N,N,N,N,N,N
+BIKA: Reopen SamplingRound,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Add Analysis Request,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 Modify portal content,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,,,,,,
