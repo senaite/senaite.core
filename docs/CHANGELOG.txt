@@ -1,5 +1,6 @@
 3.1.9 (unreleased)
 ------------------
+LIMS-1549: Sampling Round Templates privileges and permissions
 LIMS-1564: Cancelling a Sampling Round
 LIMS-2020: Add Sampling Round - Department not available for selection
 LIMS-1545: Add "Composite Y/N" checkbox on AR Template
