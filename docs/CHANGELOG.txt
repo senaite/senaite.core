@@ -1,5 +1,6 @@
 3.1.9 (unreleased)
 ------------------
+LIMS-1544: Add "File attachment" field on Sample Point
 LIMS-1949: Enviromental conditions
 LIMS-1549: Sampling Round Templates privileges and permissions
 LIMS-1564: Cancelling a Sampling Round
