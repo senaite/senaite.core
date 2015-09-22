@@ -272,7 +272,7 @@ class AnalysisRequestsView(_ARV, _ARAV):
             srTemplateUID = obj.getSamplingRound().sr_template if obj.getSamplingRound().sr_template else ''
             # Getting the sampling round object
             catalog = getToolByName(self.context, 'uid_catalog')
-            srTemplateObj = catalog(UID=srTemplateUID)[0].getObject()
+            srTemplateObj = catalog(UID=srTemplateUID)[0].getObject() if catalog(UID=srTemplateUID) else None
             # Getting the partitions and creating a row per partition
             partitions = obj.getPartitions()
             for part in partitions:
@@ -281,8 +281,8 @@ class AnalysisRequestsView(_ARV, _ARAV):
                 item['replace'] = items[x]['replace'].copy()
                 item['partition'] = part.id
                 item['replace']['partition'] = "<a href='%s'>%s</a>" % (part.absolute_url(), item['partition'])
+                item['samplingRoundTemplate'] = srTemplateObj.title if srTemplateObj else ''
                 if srTemplateObj:
-                    item['samplingRoundTemplate'] = srTemplateObj.title
                     item['replace']['samplingRoundTemplate'] = \
                         "<a href='%s'>%s</a>" % (srTemplateObj.absolute_url, item['samplingRoundTemplate'])
                 new_items.append(item)
