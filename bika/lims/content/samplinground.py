@@ -156,6 +156,11 @@ class ISamplingRound(model.Schema):
                 required=True
                 )
 
+        environmental_conditions = schema.TextLine(
+                title=_(u"Environmental conditions"),
+                required=False
+                )
+
         instructions = schema.Text(
                 title=_(u"Instructions"),
                 required=False

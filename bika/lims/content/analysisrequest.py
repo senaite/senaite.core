@@ -873,6 +873,32 @@ schema = BikaSchema.copy() + Schema((
             showOn=True,
         ),
     ),
+    StringField(
+        'EnvironmentalConditions',
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
+        widget=StringWidget(
+            label=_("Environmental conditions when the sample has been taken"),
+            visible={'edit': 'visible',
+                     'view': 'visible',
+                     'add': 'edit',
+                     'header_table': 'prominent',
+                     'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
+                     'to_be_sampled':     {'view': 'visible', 'edit': 'visible'},
+                     'sampled':           {'view': 'visible', 'edit': 'visible'},
+                     'to_be_preserved':   {'view': 'visible', 'edit': 'visible'},
+                     'sample_received':   {'view': 'visible', 'edit': 'visible'},
+                     'attachment_due':    {'view': 'visible', 'edit': 'visible'},
+                     'to_be_verified':    {'view': 'visible', 'edit': 'visible'},
+                     'verified':          {'view': 'visible', 'edit': 'invisible'},
+                     'published':         {'view': 'visible', 'edit': 'invisible'},
+                     'invalid':           {'view': 'visible', 'edit': 'invisible'},
+                     },
+            render_own_label=True,
+            size=20,
+        ),
+    ),
     ReferenceField(
         'DefaultContainerType',
         allowed_types = ('ContainerType',),
@@ -2141,6 +2167,22 @@ class AnalysisRequest(BaseFolder):
         if sample:
             return sample.getSampleCondition()
         return self.Schema().getField('SampleCondition').get(self)
+
+    security.declarePublic('setEnvironmentalConditions')
+
+    def setEnvironmentalConditions(self, value):
+        sample = self.getSample()
+        if sample and value:
+            sample.setEnvironmentalConditions(value)
+        self.Schema()['EnvironmentalConditions'].set(self, value)
+
+    security.declarePublic('getEnvironmentalConditions')
+
+    def getEnvironmentalConditions(self):
+        sample = self.getSample()
+        if sample:
+            return sample.getEnvironmentalConditions()
+        return self.Schema().getField('EnvironmentalConditions').get(self)
 
     security.declarePublic('setComposite')
 
