@@ -61,6 +61,12 @@ schema = BikaSchema.copy() + Schema((
                 "method could be selected here."),
         ),
     ),
+    BooleanField('SecuritySealIntact',
+        default = True,
+        widget = BooleanWidget(
+            label=_("Security Seal Intact Y/N"),
+        ),
+    ),
 ))
 schema['description'].widget.visible = True
 schema['description'].schemata = 'default'

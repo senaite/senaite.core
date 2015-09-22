@@ -52,6 +52,10 @@ class SamplePartitionsView(BikaListingView):
                           'sortable':False},
             'getContainer': {'title': _('Container'),
                              'sortable':False},
+            'SecuritySealIntact': {'title': _('Security Seal Intact'),
+                                   'type': "boolean",
+                                   'allow_edit': True,
+                                   'sortable': False},
             'getPreservation': {'title': _('Preservation'),
                                 'sortable':False},
 ##            'getSampler': {'title': _('Sampler'),
@@ -78,6 +82,7 @@ class SamplePartitionsView(BikaListingView):
              'contentFilter':{},
              'columns': ['PartTitle',
                          'getContainer',
+                         'SecuritySealIntact',
                          'getPreservation',
 ##                         'getSampler',
 ##                         'getDateSampled',
@@ -176,7 +181,7 @@ class SamplePartitionsView(BikaListingView):
                 item['getContainer'] = container and container.UID() or ''
             else:
                 item['getContainer'] = container and container.Title() or ''
-
+            item['SecuritySealIntact'] = container.getSecuritySealIntact() if container else True
             preservation = part.getPreservation()
             if self.allow_edit:
                 item['getPreservation'] = preservation and preservation.UID() or ''
@@ -203,7 +208,7 @@ class SamplePartitionsView(BikaListingView):
 
             # inline edits for Container and Preservation
             if self.allow_edit:
-                item['allow_edit'] = ['getContainer', 'getPreservation']
+                item['allow_edit'] = ['getContainer', 'getPreservation', 'SecuritySealIntact']
             item['choices']['getPreservation'] = preservations
             item['choices']['getContainer'] = containers
 

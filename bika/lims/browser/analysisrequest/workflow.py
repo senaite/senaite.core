@@ -81,6 +81,16 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 Preservation=form['getPreservation'][0][part_uid],
             )
             part.reindexObject()
+            # Adding the Security Seal Intact checkbox's value to the container object
+            container_uid = form['getContainer'][0][part_uid]
+            uc = getToolByName(self.context, 'uid_catalog')
+            container_obj = uc(UID=container_uid)[0].getObject()
+            if form.get('SecuritySealIntact', ''):
+                value = True if form['SecuritySealIntact'][part_uid] == 'on' else False
+            else:
+                # When SecuritySealIntact is not selected it isn't in the form dict
+                value = False
+            container_obj.setSecuritySealIntact(value)
         objects = WorkflowAction._get_selected_items(self)
         if not objects:
             message = _("No items have been selected")
