@@ -54,7 +54,7 @@
   <action title="Edit"
           action_id="edit"
           category="object"
-          condition_expr=""
+          condition_expr="python: object.hasUserAddEditPermission()"
           url_expr="string:${object_url}/edit"
           visible="True">
     <permission value="Modify portal content" />
