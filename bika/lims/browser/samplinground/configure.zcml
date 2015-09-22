@@ -6,6 +6,20 @@
 
     <browser:page
       for="bika.lims.content.samplinground.ISamplingRound"
+      name="edit"
+      class=".edit.EditForm"
+      permission="cmf.ModifyPortalContent"
+    />
+
+    <browser:page
+      for="bika.lims.content.samplinground.ISamplingRound"
+      name="add"
+      class=".add.AddForm"
+      permission="cmf.AddPortalContent"
+    />
+
+    <browser:page
+      for="bika.lims.content.samplinground.ISamplingRound"
       name="analysisrequests"
       class="bika.lims.browser.samplinground.analysisrequests.AnalysisRequestsView"
       permission="zope2.View"

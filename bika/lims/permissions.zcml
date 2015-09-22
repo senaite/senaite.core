@@ -140,7 +140,6 @@
 
 # SamplingRound specific permissions
 # ----------------------------------------------
-<permission id="bika.lims.EditSamplingRound" title="BIKA: Edit SamplingRound"/>
 <permission id="bika.lims.CloseSamplingRound" title="BIKA: Close SamplingRound"/>
 <permission id="bika.lims.ReopenSamplingRound" title="BIKA: Reopen SamplingRound"/>
 
