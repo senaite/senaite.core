@@ -64,7 +64,7 @@ schema = BikaSchema.copy() + Schema((
         'SampleTypeTitle',
         expression="[o.Title() for o in context.getSampleTypes()]",
         widget = ComputedWidget(
-            visibile=False,
+            visible=False,
         )
     ),
     BooleanField('Composite',
@@ -76,6 +76,11 @@ schema = BikaSchema.copy() + Schema((
                 "and put together from more than one sub sample, e.g. several surface "
                 "samples from a dam mixed together to be a representative sample for the dam. "
                 "The default, unchecked, indicates 'grab' samples"),
+        ),
+    ),
+    FileField('AttachmentFile',
+        widget = FileWidget(
+            label=_("Attachment"),
         ),
     ),
 ))
