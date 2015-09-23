@@ -4,6 +4,7 @@ LIMS-1760: Customised AR Import spreadsheets (refactored, support importing to B
 LIMS-1930: AssertionError: Having an orphan size, higher than batch size is undefined
 LIMS-1818: Instrument Interface. Eltra CS-2000
 LIMS-1817: Instrument Interface. Rigaku Supermini XRF
+LIMS-2037: Gracefully anticipate missing analysis workflow history
 
 3.1.8.1 (2015-06-23)
 --------------------

@@ -1013,7 +1013,12 @@ class Analysis(BaseContent):
         # Check for self-submitted Analysis.
         user_id = getSecurityManager().getUser().getId()
         self_submitted = False
-        review_history = workflow.getInfoFor(self, "review_history")
+        try:
+            # https://jira.bikalabs.com/browse/LIMS-2037;
+            # Sometimes the workflow history is inexplicably missing!
+            review_history = workflow.getInfoFor(self, "review_history")
+        except WorkflowException:
+            return True
         review_history = self.reverseList(review_history)
         for event in review_history:
             if event.get("action") == "submit":
