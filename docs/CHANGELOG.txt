@@ -6,6 +6,8 @@ LIMS-1930: AssertionError: Having an orphan size, higher than batch size is unde
 
 3.1.8.1 (2015-06-23)
 --------------------
+LIMS-1806: Instrument Interface. AQ2. Seal Analytical - Error
+LIMS-1760: Customised AR Import spreadsheets (refactored, support importing to Batch)
 Fix portlets.xml for Plone 4.3.6 compatibility
 
 

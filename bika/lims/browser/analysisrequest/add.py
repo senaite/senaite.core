@@ -107,30 +107,40 @@ class SecondaryARSampleInfo(BrowserView):
     def __call__(self):
         uid = self.request.get('Sample_uid', False)
         if not uid:
-            return []
-        uc = getToolByName(self.context, "uid_catalog")
+            return {}
+        uc = getToolByName(self.context, 'uid_catalog')
         proxies = uc(UID=uid)
         if not proxies:
-            return []
+            return {}
         sample = proxies[0].getObject()
         sample_schema = sample.Schema()
         sample_fields = dict([(f.getName(), f) for f in sample_schema.fields()])
         ar_schema = self.context.Schema()
-        ar_fields = [f.getName() for f in ar_schema.fields()
-                     if f.widget.isVisible(self.context, 'secondary') == 'disabled']
-        ret = []
-        for fieldname in ar_fields:
+        ar_fields = dict([(f.getName(), f) for f in ar_schema.fields()
+                          if f.widget.isVisible(self.context,
+                                                'secondary') == 'disabled'])
+        ret = {}
+        for fieldname in ar_fields.keys():
+            uid = False
             if fieldname in sample_fields:
+                # Always try to retrieve field value from the Sample as most
+                # secondary fields are sample-bound.
                 fieldvalue = sample_fields[fieldname].getAccessor(sample)()
-                if fieldvalue is None:
-                    fieldvalue = ''
-                if hasattr(fieldvalue, 'Title'):
-                    fieldvalue = fieldvalue.Title()
-                if hasattr(fieldvalue, 'year'):
-                    fieldvalue = fieldvalue.strftime(self.date_format_short)
-            else:
+            elif fieldname in ar_fields:
+                # Some, eg "Client", are only available as conveniences
+                # on the AR.
+                fieldvalue = ar_fields[fieldname].getAccessor(self.context)()
+            if fieldvalue is None:
                 fieldvalue = ''
-            ret.append([fieldname, fieldvalue])
+            if hasattr(fieldvalue, 'UID'):
+                uid = fieldvalue.UID()
+            if uid:
+                ret[fieldname + '_uid'] = uid
+            if hasattr(fieldvalue, 'Title'):
+                fieldvalue = fieldvalue.Title()
+            if hasattr(fieldvalue, 'year'):
+                fieldvalue = fieldvalue.strftime(self.date_format_short)
+            ret[fieldname] = fieldvalue
         return json.dumps(ret)
 
 
@@ -213,7 +223,7 @@ class ajaxAnalysisRequestSubmit():
                 # This one is still special.
                 if field in ['RequestID']:
                     continue
-                    # And these are not required if this is a secondary AR
+                # And these are not required if this is a secondary AR
                 if ar.get('Sample', '') != '' and field in [
                     'SamplingDate',
                     'SampleType'

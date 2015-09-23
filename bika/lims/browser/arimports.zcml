@@ -4,7 +4,7 @@
     xmlns:i18n="http://namespaces.zope.org/i18n"
     i18n_domain="bika">
 
-  <browser:page
+    <browser:page
       for="bika.lims.interfaces.IARImportFolder"
       name="arimports"
       class="bika.lims.browser.arimports.ARImportsView"
@@ -27,6 +27,5 @@
       permission="bika.lims.ManageARImport"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
-
 
 </configure>
