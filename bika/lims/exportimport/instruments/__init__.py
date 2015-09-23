@@ -29,7 +29,6 @@ __all__ = ['abaxis.vetscan.vs2',
            'alere.pima.cd4',
            'beckmancoulter.access.model2',
            'biodrop.ulite.ulite',
-           'eltra.cs.cs2000',
            'foss.fiastar.fiastar',
            'foss.winescan.auto',
            'foss.winescan.ft120',
@@ -44,9 +43,9 @@ __all__ = ['abaxis.vetscan.vs2',
            'sysmex.xs.i500',
            'sysmex.xs.i1000',
            'scilvet.abc.plus',
-           'thermoscientific.multiskan.go'
            'sealanalytical.aq2.aq2',
            'tescan.tima.tima',
+           'thermoscientific.multiskan.go',
            ]
 
 
