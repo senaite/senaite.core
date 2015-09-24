@@ -297,6 +297,8 @@ class AnalysisRequestsView(_ARV, _ARAV):
                     item['securitySealIntact'] = part.getContainer().getSecuritySealIntact()
                     item['replace']['securitySealIntact'] = img_url \
                         if part.getContainer().getSecuritySealIntact() else ' '
+                else:
+                    item['securitySealIntact'] = ' '
                 item['replace']['partition'] = "<a href='%s'>%s</a>" % (part.absolute_url(), item['partition'])
                 item['samplingRoundTemplate'] = srTemplateObj.title if srTemplateObj else ''
                 if srTemplateObj:
