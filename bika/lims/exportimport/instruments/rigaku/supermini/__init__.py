@@ -1,26 +1,27 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-""" Seal Analytics AQ2
+""" Rigaku Supermini
 """
-from datetime import datetime
 from bika.lims.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter, InstrumentCSVResultsFileParser
 
 
-class SealAnalyticsAQ2CSVParser(InstrumentCSVResultsFileParser):
+class RigakuSuperminiCSVParser(InstrumentCSVResultsFileParser):
     def __init__(self, csv):
         InstrumentCSVResultsFileParser.__init__(self, csv)
         self._columns = []  # The different columns names
-        self._linedata = {}  # The line with the data
         self._end_header = False
+        # This list contains all the rows without interesting data
+        self.extrainfolist = ['Number', 'Average', 'Maximum', 'Minimum', 'Range', 'Std dev.',
+                              'RSD(%)']
 
     def _parseline(self, line):
         sline = line.split(',')
         if len(sline) > 0 and not self._end_header:
-            self._columns = sline
+            self._columns = sline[4:]
             self._end_header = True
-            return 0
+            return 1
         elif sline > 0 and self._end_header:
             self.parse_data_line(sline)
         else:
@@ -34,24 +35,27 @@ class SealAnalyticsAQ2CSVParser(InstrumentCSVResultsFileParser):
         :return: the number of rows to jump and parse the next data line or return the code error -1
         """
         # if there are less values founded than headers, it's an error
-        if len(sline) != len(self._columns):
+        if len(sline[4:]) != len(self._columns):
             self.err("One data line has the wrong number of items")
             return -1
-        rawdict = {}
-        for idx, result in enumerate(sline):
-            rawdict[self._columns[idx]] = result
 
-        resid = rawdict['Sample ID']
-        rawdict['DefaultResult'] = 'Result'
-        rawdict['Remarks'] = rawdict['Sample Details']
-        del rawdict['Sample Details']
-        name = rawdict['Test Name']
-        del rawdict['Test Name']
-        self._addRawResult(resid, {name: rawdict}, False)
+        resid = sline[0]
+        analysis = {}
+        date = sline[3]
+        if sline[0] in self.extrainfolist:
+            return 0
+        for idx, result in enumerate(sline[4:]):
+            if result != '':
+                analysis[self._columns[idx]] = {
+                    'result': result,
+                    'DefaultResult': 'result',
+                    'DateTime': date,
+                }
+        self._addRawResult(resid, analysis, False)
         return 0
 
 
-class SealAnalyticsAQ2Importer(AnalysisResultsImporter):
+class RigakuSuperminiImporter(AnalysisResultsImporter):
     def __init__(self, parser, context, idsearchcriteria, override,
                  allowed_ar_states=None, allowed_analysis_states=None,
                  instrument_uid=None):

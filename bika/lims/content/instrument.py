@@ -360,8 +360,8 @@ class Instrument(ATFolder):
         return self.isOutOfDate() == False \
                 and self.isQCValid() == True \
                 and self.getDisposeUntilNextCalibrationTest() == False \
-                and self.isValidationInProgress == False \
-                and self.isCalibrationInProgress == False \
+                and self.isValidationInProgress() == False \
+                and self.isCalibrationInProgress() == False
 
     def getLatestReferenceAnalyses(self):
         """ Returns a list with the latest Reference analyses performed

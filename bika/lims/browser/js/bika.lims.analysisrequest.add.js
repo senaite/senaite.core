@@ -569,40 +569,59 @@ function AnalysisRequestAddView() {
 			// var Sample_uid = $("input[name^='ar\\."+column+"\\."+fieldName+"_uid']").val();
 			// Install the handler which will undo the changes I am about to make
 			$(this).blur(function(){
-				if($(this).val() === ""){
-					// clear and un-disable everything
-					var disabled_elements = $("[ar_add_column_widget] [id*='ar_"+column+"']:disabled");
-					$.each(disabled_elements, function(x,disabled_element){
-						$(disabled_element).prop("disabled", false);
-						if($(disabled_element).attr("type") == "checkbox"){
-							$(disabled_element).prop("checked", false);
-						} else {
-							$(disabled_element).val("");
+				if ($(this).val() === "") {
+					// apply this to all disabled elements
+					var disabled_elements = $("[ar_add_column_widget] [id*='ar_" + column + "']:disabled");
+					$.each(disabled_elements, function (x, element) {
+						// enable element
+						$(element).prop("disabled", false);
+						// re-set element value
+						if ($(element).attr("type") == "checkbox") {
+							$(element).removeAttr("checked")
+						}
+						else {
+							$(element).val("");
 						}
 					});
 				}
 			});
 			// Then populate and disable sample fields
-			$.getJSON(window.location.href.replace("/ar_add","") + "/secondary_ar_sample_info",
-					  {
-						  "Sample_uid": $(this).attr("uid"),
-						  "_authenticator": $("input[name='_authenticator']").val()},
-					  function(data){
-						  for (var x = data.length - 1; x >= 0; x--) {
-							  var fieldname = data[x][0];
-							  var fieldvalue = data[x][1];
-							  var uid_element = $("#ar_"+column+"_"+fieldname+"_uid");
-							  $(uid_element).val("");
-							  var sample_element = $("#ar_"+column+"_"+fieldname);
-							  $(sample_element).val("").prop("disabled", true);
-							  if($(sample_element).attr("type") == "checkbox" && fieldvalue){
-								  $(sample_element).prop("checked", true);
-							  } else {
-								  $(sample_element).val(fieldvalue);
-							  }
+			$.getJSON(window.location.href.replace("/ar_add", "") + "/secondary_ar_sample_info",
+			  {
+				  "Sample_uid": $(this).attr("uid"),
+				  "_authenticator": $("input[name='_authenticator']").val()
+			  }, function (data) {
+				  var element;
+				  for (var fieldname in data) {
+					  // skip fieldnames ending in _uid; we don't care, because when a sample
+					  // is selected, the sample values are directly copied in the submit handler
+					  if (fieldname.search("_uid") > -1) {
+						  continue
+					  }
+					  var fieldvalue = data[fieldname]
+					  // Discover the matching element.
+					  element = $("#ar_" + column + "_" + fieldname);
+					  // if it's not present, skip it
+					  if (!element) {
+						  continue
+					  }
+					  // Checkboxes are handled specially
+					  if ($(element).attr("type") == "checkbox") {
+						  if (fieldvalue) {
+							  $(element).prop("checked", true);
+						  }
+						  else {
+							  $(element).removeAttr("checked");
 						  }
 					  }
-			);
+					  else {
+						  // Other elements get the string value stuck right into them
+						  $(element).val(fieldvalue);
+					  }
+					  // whatever kind of element it is; disable it.
+					  $(element).prop("disabled", true);
+				  }
+			  });
 		}
 
 		// Selected a Specification

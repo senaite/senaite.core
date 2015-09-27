@@ -455,6 +455,7 @@ schema = BikaSchema.copy() + Schema((
                      'view': 'visible',
                      'add': 'edit',
                      'header_table': 'visible',
+                     'secondary': 'disabled',
                      'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
                      'to_be_sampled':     {'view': 'visible', 'edit': 'invisible'},
                      'sampled':           {'view': 'visible', 'edit': 'invisible'},

@@ -1,7 +1,7 @@
 import os
 from setuptools import setup, find_packages
 
-version = '3.1.8.1'
+version = '3.1.8.2'
 
 
 def read(*rnames):
@@ -23,7 +23,7 @@ setup(name='bika.lims',
       classifiers=[
           "Framework :: Plone",
           "Programming Language :: Python",
-          "Development Status :: 5 - Production/Stable",
+          "Development Status :: 5 - Production/Stable", 
           "Environment :: Web Environment",
           "Intended Audience :: Information Technology",
           "Intended Audience :: Science/Research",
