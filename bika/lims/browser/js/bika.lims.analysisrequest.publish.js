@@ -44,7 +44,7 @@ function AnalysisRequestPublishView() {
             e.preventDefault();
             var anchor = $(this).attr('href');
             var offset = $(anchor).first().offset().top - 20;
-            $('html,body').animate({scrollTop: offset},'slow');
+            $('html,body').animate({scrollTop: offset},'fast');
         });
 
         $('#sel_format').change(function(e) {
@@ -69,10 +69,12 @@ function AnalysisRequestPublishView() {
             $('#ar_publish_container #report .ar_publish_body').each(function(){
                 var rephtml = $(this).clone().wrap('<div>').parent().html();
                 var repstyle = $('#report-style').clone().wrap('<div>').parent().html();
+                // We want this sincronously because we don't want to
+                // flood WeasyPrint
                 $.ajax({
                     url: url,
                     type: 'POST',
-                    async: true,
+                    async: false,
                     data: { "publish":1,
                             "id":$(this).attr('id'),
                             "uid":$(this).attr('uid'),
