@@ -1,4 +1,4 @@
-3.1.8.2 (2015-09-23)
+3.1.8.2 (2015-09-27)
 --------------------
 LIMS-1996: On new system with no instrument data is difficult to get going.
 LIMS-1760: Customised AR Import spreadsheets (refactored, support importing to Batch)
@@ -6,6 +6,7 @@ LIMS-1930: AssertionError: Having an orphan size, higher than batch size is unde
 LIMS-1818: Instrument Interface. Eltra CS-2000
 LIMS-1817: Instrument Interface. Rigaku Supermini XRF
 LIMS-2037: Gracefully anticipate missing analysis workflow history
+LIMS-2035: Prevent Weasyprint flooding due to asyncronous publish
 
 3.1.8.1 (2015-06-23)
 --------------------
