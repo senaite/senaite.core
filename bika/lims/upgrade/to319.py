@@ -59,6 +59,10 @@ def upgrade(tool):
     types = list(ntp.getProperty('metaTypesNotToList'))
     types.append("SamplingRound")
     ntp.manage_changeProperties(MetaTypesNotToQuery=types)
+
+    # Resort Invoices and AR Imports (LIMS-1908) in navigation bar
+    portal.moveObjectToPosition('invoices', portal.objectIds().index('supplyorders'))
+    portal.moveObjectToPosition('arimports', portal.objectIds().index('referencesamples'))
     return True
 
 def multipleAnalysisProfiles(portal):
