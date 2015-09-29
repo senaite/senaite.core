@@ -116,7 +116,7 @@ schema = BikaSchema.copy() + Schema((
 
 ))
 
-schema['title'].widget.label = 'Asset Number'
+schema['title'].widget.label = 'Task ID'
 
 
 class InstrumentCalibration(BaseFolder):
@@ -124,7 +124,7 @@ class InstrumentCalibration(BaseFolder):
     schema = schema
     displayContentsTab = False
 
-    _at_rename_after_creation = True
+    _at_rename_after_creation = False
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
