@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from time import time
 from AccessControl import ModuleSecurityInfo, allow_module
 from bika.lims import logger
 from bika.lims.browser import BrowserView
@@ -12,13 +11,18 @@ from plone.registry.interfaces import IRegistry
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
+from socket import timeout
+from time import time
+from weasyprint import HTML, CSS
 from zope.component import queryUtility
 from zope.i18n import translate
 from zope.i18n.locales import locales
+
 import App
 import Globals
 import os
 import re
+import tempfile
 import urllib2
 
 ModuleSecurityInfo('email.Utils').declarePublic('formataddr')
@@ -347,44 +351,55 @@ def isnumber(s):
 
 
 def createPdf(htmlreport, outfile=None, css=None, images={}):
-    debug_mode = App.config.getConfiguration().debug_mode
-    # XXX css must be a local file - urllib fails under robotframework tests.
+    """create a PDF from some HTML.
+    htmlreport: rendered html
+    outfile: pdf filename; if supplied, caller is responsible for creating
+             and removing it.
+    css: remote URL of css file to download
+    images: A dictionary containing possible URLs (keys) and local filenames
+            (values) with which they may to be replaced during rendering.
+    # WeasyPrint will attempt to retrieve images directly from the URL
+    # referenced in the HTML report, which may refer back to a single-threaded
+    # (and currently occupied) zeoclient, hanging it.  All image source
+    # URL's referenced in htmlreport should be local files.
+    """
+    # A list of files that should be removed after PDF is written
+    cleanup = []
     css_def = ''
     if css:
         if css.startswith("http://") or css.startswith("https://"):
             # Download css file in temp dir
             u = urllib2.urlopen(css)
-            _cssfile = Globals.INSTANCE_HOME + '/var/' + tmpID() + '.css'
+            _cssfile = tempfile.mktemp(suffix='.css')
             localFile = open(_cssfile, 'w')
             localFile.write(u.read())
             localFile.close()
+            cleanup.append(_cssfile)
         else:
             _cssfile = css
         cssfile = open(_cssfile, 'r')
         css_def = cssfile.read()
-    if not outfile:
-        outfile = Globals.INSTANCE_HOME + "/var/" + tmpID() + ".pdf"
 
-    # WeasyPrint default's URL fetcher seems that doesn't support urls
-    # like at_download/AttachmentFile (without mime, header, etc.).
-    # Need to copy them to the temp file and replace occurences in the
-    # HTML report
+    htmlreport = to_utf8(htmlreport)
+
     for (key, val) in images.items():
         htmlreport = htmlreport.replace(key, val)
-    from weasyprint import HTML, CSS
-    import os
-    if css:
-        HTML(string=htmlreport, encoding='utf-8').write_pdf(outfile,
-            stylesheets=[CSS(string=css_def)])
-    else:
-        HTML(string=htmlreport, encoding='utf-8').write_pdf(outfile)
 
-    if debug_mode:
-        htmlfilepath = Globals.INSTANCE_HOME + "/var/" + tmpID() + ".html"
-        htmlfile = open(htmlfilepath, 'w')
-        htmlfile.write(htmlreport)
-        htmlfile.close()
-    return open(outfile, 'rb').read();
+    # render
+    htmlreport = to_utf8(htmlreport)
+    renderer = HTML(string=htmlreport, encoding='utf-8')
+    pdf_fn = outfile if outfile else tempfile.mktemp(suffix=".pdf")
+    if css:
+        renderer.write_pdf(pdf_fn, stylesheets=[CSS(string=css_def)])
+    else:
+        renderer.write_pdf(pdf_fn)
+    # return file data
+    pdf_data = open(pdf_fn, "rb").read()
+    if outfile is None:
+        os.remove(pdf_fn)
+    for fn in cleanup:
+        os.remove(fn)
+    return pdf_data
 
 def attachPdf(mimemultipart, pdfreport, filename=None):
     part = MIMEBase('application', "pdf")
