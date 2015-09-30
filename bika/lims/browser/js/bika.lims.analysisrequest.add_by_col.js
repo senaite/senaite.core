@@ -1654,10 +1654,12 @@ function AnalysisRequestAddByCol() {
             }
             $.ajax({url: url, data: options})
               .done(function (data) {
-                        $("[form_id='" + form_id + "'] tr[data-ajax_category='" + cat_title + "']").replaceWith(data)
-                        $(element).removeClass("collapsed").addClass("expanded")
-                        def.resolve()
-                    })
+                    // LIMS-1970 Analyses from AR Add form not displayed properly
+                    var rows = $("<table>"+data+"</table>").find("tr");
+                    $("[form_id='" + form_id + "'] tr[data-ajax_category='" + cat_title + "']").replaceWith(rows);
+                    $(element).removeClass("collapsed").addClass("expanded");
+                    def.resolve();
+                })
         }
         else {
             // When ajax_categories are disabled, all cat items exist as TR elements:
