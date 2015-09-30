@@ -23,7 +23,7 @@ setup(name='bika.lims',
       classifiers=[
           "Framework :: Plone",
           "Programming Language :: Python",
-          "Development Status :: 5 - Production/Stable",
+          "Development Status :: 5 - Production/Stable", 
           "Environment :: Web Environment",
           "Intended Audience :: Information Technology",
           "Intended Audience :: Science/Research",

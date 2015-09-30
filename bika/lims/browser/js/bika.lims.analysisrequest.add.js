@@ -7,8 +7,6 @@ function AnalysisRequestAddView() {
 
     that.load = function () {
 
-
     }
 
 }
-

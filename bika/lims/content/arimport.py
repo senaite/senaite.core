@@ -33,6 +33,9 @@ from zope import event
 from zope.event import notify
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implements
+
+from bika.lims.browser.widgets import ReferenceWidget as bReferenceWidget
+
 import sys
 import transaction
 
@@ -117,7 +120,7 @@ Batch = ReferenceField(
     'Batch',
     allowed_types=('Batch',),
     relationship='ARImportBatch',
-    widget=ReferenceWidget(
+    widget=bReferenceWidget(
         label=_('Batch'),
         visible=True,
         catalog_name='bika_catalog',
