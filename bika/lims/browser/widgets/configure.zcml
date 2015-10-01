@@ -12,4 +12,13 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <!-- AJAX call to obtain theAnalysis services -->
+    <browser:page
+      for="*"
+      name="reference_results_widget_view"
+      class="bika.lims.browser.widgets.referenceresultswidget.ReferenceResultsView"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
 </configure>

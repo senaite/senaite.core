@@ -17,7 +17,7 @@ class ReferenceResultsView(BikaListingView):
         dict(ReferenceResultsField value)
     """
 
-    def __init__(self, context, request, fieldvalue, allow_edit):
+    def __init__(self, context, request, fieldvalue=[], allow_edit=True):
         BikaListingView.__init__(self, context, request)
         self.context_actions = {}
         self.contentFilter = {'review_state': 'impossible_state'}
@@ -30,6 +30,9 @@ class ReferenceResultsView(BikaListingView):
         self.pagesize = 999999
         self.allow_edit = allow_edit
         self.show_categories = True
+        self.ajax_categories = True
+        self.ajax_categories_url = self.context.absolute_url() + "/reference_results_widget_view"
+        self.category_index = 'getCategoryTitle'
         # self.expand_all_categories = False
 
         self.referenceresults = {}
