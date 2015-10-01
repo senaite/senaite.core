@@ -1,5 +1,6 @@
 3.1.9 (unreleased)
 ------------------
+LIMS-2049: Displaying lists doesn't work as expected in 319
 LIMS-1908: Navigation tree order
 LIMS-1543: Add "Security Seal Intact Y/N" checkbox for partition container
 LIMS-1544: Add "File attachment" field on Sample Point
