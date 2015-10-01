@@ -241,14 +241,16 @@ function BikaListingTableView() {
 				// (TODO does this work?)
 				options['review_state'] = $('.review_state_selector a.selected')[0].id
 			}
-			$.ajax({url: url, data: options})
-			  .done(function (data) {
-						$("[form_id='" + form_id + "'] tr[data-ajax_category='" + cat_title + "']")
-						  .replaceWith(data)
-						$(element).removeClass("collapsed").addClass("expanded")
-						def.resolve()
-					})
-		}
+            $.ajax({url: url, data: options})
+                .done(function (data) {
+                    // The same as: LIMS-1970 Analyses from AR Add form not displayed properly
+                    var rows = $("<table>"+data+"</table>").find("tr");
+                    $("[form_id='" + form_id + "'] tr[data-ajax_category='" + cat_title + "']")
+                        .replaceWith(rows);
+                    $(element).removeClass("collapsed").addClass("expanded");
+                    def.resolve()
+                })
+        }
 		else {
 			// When ajax_categories are disabled, all cat items exist as TR elements:
 			$(element).parent().nextAll("tr[cat='" + $(element).attr("cat") + "']").toggle(true)
