@@ -373,6 +373,7 @@ Table cells for each column from in review_state's column list.
                 allow_edit python:view.bika_listing.allow_edit \
                                 and item.get('edit_condition', {}).get(column, True)">
         <tr tal:attributes="class item/table_row_class;
+                            cat python:item.get('category', 'None');
                             id string:folder-contents-item-${item/uid};
                             uid item/uid;">
            <td tal:attributes="class string:${item/state_class} result"></td>
