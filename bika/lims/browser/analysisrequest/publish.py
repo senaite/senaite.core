@@ -148,6 +148,10 @@ class AnalysisRequestPublishView(BrowserView):
                 content = content_file.read()
         return content
 
+    def isSingleARTemplate(self):
+        seltemplate = self.request.form.get('template', self._DEFAULT_TEMPLATE)
+        return not seltemplate.lower().startswith('multi')
+
     def isQCAnalysesVisible(self):
         """ Returns if the QC Analyses must be displayed
         """
