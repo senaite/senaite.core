@@ -6,11 +6,11 @@ from Products.Archetypes.BaseContent import BaseContent
 from bika.lims.upgrade import stub
 from bika.lims import logger
 
+
 def upgrade(tool):
     """Upgrade step required for Bika LIMS 3.1.9
     """
     portal = aq_parent(aq_inner(tool))
-    typestool = getToolByName(portal, 'portal_types')
     # Adding new feature multiple profiles per Analysis Request
     multipleAnalysisProfiles(portal)
     setup = portal.portal_setup
@@ -39,31 +39,13 @@ def upgrade(tool):
     # Migrations
 
     LIMS1546(portal)
-    # If Sampling rounds folder is not created yet, we should create it
-    if not portal['bika_setup'].get('bika_samplingrounds'):
-        typestool.constructContent(type_name="SamplingRounds",
-                                   container=portal['bika_setup'],
-                                   id='bika_samplingrounds',
-                                   title='Sampling Rounds')
-    obj = portal['bika_setup']['bika_samplingrounds']
-    obj.unmarkCreationFlag()
-    obj.reindexObject()
-    if not portal['bika_setup'].get('bika_samplingrounds'):
-        logger.info("SamplingRounds not created")
-    # Install Products.DataGridField
-    qi.installProducts(['Products.DataGridField'])
-    # add new types not to list in nav
-    # SamplingRound
-    portal_properties = getToolByName(portal, 'portal_properties')
-    ntp = getattr(portal_properties, 'navtree_properties')
-    types = list(ntp.getProperty('metaTypesNotToList'))
-    types.append("SamplingRound")
-    ntp.manage_changeProperties(MetaTypesNotToQuery=types)
+    LIMS1558(portal)
 
     # Resort Invoices and AR Imports (LIMS-1908) in navigation bar
     portal.moveObjectToPosition('invoices', portal.objectIds().index('supplyorders'))
     portal.moveObjectToPosition('arimports', portal.objectIds().index('referencesamples'))
     return True
+
 
 def multipleAnalysisProfiles(portal):
     """
@@ -91,3 +73,40 @@ def LIMS1546(portal):
     for obj in portal.bika_setup.bika_srtemplates.objectValues():
         obj.unmarkCreationFlag()
         obj.reindexObject()
+
+
+def LIMS1558(portal):
+    """Setting Sampling rounds stuff
+    """
+    # Setting departments and ARtemplates to portal_catalog
+    at = getToolByName(portal, 'archetype_tool')
+    at.setCatalogsByType('Department', ['bika_setup_catalog', "portal_catalog", ])
+    at.setCatalogsByType('ARTemplate', ['bika_setup_catalog', 'portal_catalog'])
+    for obj in portal.bika_setup.bika_departments.objectValues():
+        obj.unmarkCreationFlag()
+        obj.reindexObject()
+    for obj in portal.bika_setup.bika_artemplates.objectValues():
+        obj.unmarkCreationFlag()
+        obj.reindexObject()
+    # If Sampling rounds folder is not created yet, we should create it
+    typestool = getToolByName(portal, 'portal_types')
+    qi = portal.portal_quickinstaller
+    if not portal['bika_setup'].get('bika_samplingrounds'):
+        typestool.constructContent(type_name="SamplingRounds",
+                                   container=portal['bika_setup'],
+                                   id='bika_samplingrounds',
+                                   title='Sampling Rounds')
+    obj = portal['bika_setup']['bika_samplingrounds']
+    obj.unmarkCreationFlag()
+    obj.reindexObject()
+    if not portal['bika_setup'].get('bika_samplingrounds'):
+        logger.info("SamplingRounds not created")
+    # Install Products.DataGridField
+    qi.installProducts(['Products.DataGridField'])
+    # add new types not to list in nav
+    # SamplingRound
+    portal_properties = getToolByName(portal, 'portal_properties')
+    ntp = getattr(portal_properties, 'navtree_properties')
+    types = list(ntp.getProperty('metaTypesNotToList'))
+    types.append("SamplingRound")
+    ntp.manage_changeProperties(MetaTypesNotToQuery=types)
