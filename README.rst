@@ -1,7 +1,7 @@
 Bika LIMS
 =========
 
-v3.1.9 (unreleased)
+v3.1.9 (2015-10-8)
 
 The meaning of Gaob
 -------------------
