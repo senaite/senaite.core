@@ -8,13 +8,13 @@
             tal:define="items python:view.failed['out-of-date'];"
             tal:condition="python: len(items) > 0">
          <div class="portlet-alert-item" tal:condition="python:len(items) > 0">
-            <p i18n:translate="instrument_qc_out_of_date" class="title" tal:condition="python:len(items) == 1">
-                <span i18n:name="nr_failed" tal:content="python:len(items)"/>
-                Instrument's calibration certificate expired:
+            <p class="title" tal:condition="python:len(items) == 1">
+                <span tal:content="python:len(items)"/>
+                <span i18n:translate="">Instrument's calibration certificate expired:</span>
             </p>
-            <p i18n:translate="instruments_qc_out_of_date" class="title" tal:condition="python:len(items) > 1">
-                <span i18n:name="nr_failed" tal:content="python:len(items)"/>
-                Instruments' calibration certificates expired:
+            <p class="title" tal:condition="python:len(items) > 1">
+                <span tal:content="python:len(items)"/>
+                <span i18n:translate="">Instruments' calibration certificates expired:</span>
             </p>
             <p tal:content="structure python:', '.join([i['link'] for i in items])"/>
         </div>
@@ -24,13 +24,13 @@
             tal:define="items python:view.failed['qc-fail'];"
             tal:condition="python: len(items) > 0">
         <div class="portlet-alert-item" tal:condition="python:len(items) > 0">
-            <p i18n:translate="instrument_qc_failed" class="title" tal:condition="python:len(items) == 1">
-                <span i18n:name="nr_disabled" tal:content="python:len(items)"/>
-                Instrument disabled until successful calibration:
+            <p class="title" tal:condition="python:len(items) == 1">
+                <span tal:content="python:len(items)"/>
+                <span i18n:translate="">Instrument disabled until successful calibration:</span>
             </p>
-            <p i18n:translate="instruments_qc_failed" class="title" tal:condition="python:len(items) > 1">
-                <span i18n:name="nr_disabled" tal:content="python:len(items)"/>
-                Instruments disabled until successful calibration:
+            <p class="title" tal:condition="python:len(items) > 1">
+                <span tal:content="python:len(items)"/>
+                <span i18n:translate="">Instruments disabled until successful calibration:</span>
             </p>
             <p tal:content="structure python:', '.join([i['link'] for i in items])"/>
         </div>
@@ -40,13 +40,13 @@
             tal:define="items python:view.failed['next-test'];"
             tal:condition="python: len(items) > 0">
         <div class="portlet-alert-item" tal:condition="python:len(items) > 0">
-            <p i18n:translate="instruments_qc_disposed" class="title" tal:condition="python:len(items) == 1">
-                <span i18n:name="nr_failed" tal:content="python:len(items)"/>
-                Instrument disposed until new calibration tests being done:
+            <p class="title" tal:condition="python:len(items) == 1">
+                <span tal:content="python:len(items)"/>
+                <span i18n:translate="">Instrument disposed until new calibration tests being done:</span>
             </p>
-            <p i18n:translate="instruments_qc_disposed" class="title" tal:condition="python:len(items) > 1">
-                <span i18n:name="nr_failed" tal:content="python:len(items)"/>
-                Instruments disposed until new calibration tests being done:
+            <p class="title" tal:condition="python:len(items) > 1">
+                <span tal:content="python:len(items)"/>
+                <span i18n:translate="">Instruments disposed until new calibration tests being done:</span>
             </p>
             <p tal:content="structure python:', '.join([i['link'] for i in items])"/>
         </div>
@@ -56,13 +56,13 @@
             tal:define="items python:view.failed['validation'];"
             tal:condition="python: len(items) > 0">
         <div class="portlet-alert-item" tal:condition="python:len(items) > 0">
-            <p i18n:translate="instruments_qc_unvalidated" class="title" tal:condition="python:len(items) == 1">
-                <span i18n:name="nr_failed" tal:content="python:len(items)"/>
-                Instrument in validation progress:
+            <p class="title" tal:condition="python:len(items) == 1">
+                <span tal:content="python:len(items)"/>
+                <span i18n:translate="">Instrument in validation progress:</span>
             </p>
-            <p i18n:translate="instruments_qc_unvalidated" class="title" tal:condition="python:len(items) > 1">
-                <span i18n:name="nr_failed" tal:content="python:len(items)"/>
-                Instruments in validation progress:
+            <p lass="title" tal:condition="python:len(items) > 1">
+                <span tal:content="python:len(items)"/>
+                <span i18n:translate="">Instruments in validation progress:</span>
             </p>
             <p tal:content="structure python:', '.join([i['link'] for i in items])"/>
         </div>
@@ -72,13 +72,13 @@
             tal:define="items python:view.failed['calibration'];"
             tal:condition="python: len(items) > 0">
         <div class="portlet-alert-item" tal:condition="python:len(items) > 0">
-            <p i18n:translate="instruments_qc_uncalibrated" class="title" tal:condition="python:len(items) == 1">
-                <span i18n:name="nr_failed" tal:content="python:len(items)"/>
-                Instrument in calibration progress:
+            <p class="title" tal:condition="python:len(items) == 1">
+                <span tal:content="python:len(items)"/>
+                <span i18n:translate="">Instrument in calibration progress:</span>
             </p>
-            <p i18n:translate="instruments_qc_uncalibrated" class="title" tal:condition="python:len(items) > 1">
-                <span i18n:name="nr_failed" tal:content="python:len(items)"/>
-                Instruments in calibration progress:
+            <p class="title" tal:condition="python:len(items) > 1">
+                <span tal:content="python:len(items)"/>
+                <span i18n:translate="">Instruments in calibration progress:</span>
             </p>
             <p tal:content="structure python:', '.join([i['link'] for i in items])"/>
         </div>
