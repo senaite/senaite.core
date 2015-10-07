@@ -49,7 +49,7 @@
 <permission id="bika.lims.ManageWorksheets" title="BIKA: Manage Worksheets"/>
 <permission id="bika.lims.ManageAnalysisRequests" title="BIKA: Manage Analysis Requests"/>
 <permission id="bika.lims.ManageSamples" title="BIKA: Manage Samples"/>
-<permission id="bika.lims.ManageSuppliers" title="BIKA: Manage Suppliers"/>
+<permission id="bika.lims.ManageSuppliers" title="BIKA: Manage Reference Suppliers"/>
 <permission id="bika.lims.ManageReference" title="BIKA: Manage Reference"/>
 <permission id="bika.lims.ManagePricelists" title="BIKA: Manage Pricelists"/>
 <permission id="bika.lims.PostInvoiceBatch" title="BIKA: Post Invoice batch"/>
