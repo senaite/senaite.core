@@ -381,20 +381,6 @@ def createPdf(htmlreport, outfile=None, css=None, images={}):
 
     htmlreport = to_utf8(htmlreport)
 
-    # copy IMG sources to local files and modify htmlreport
-    # for match in re.finditer("""\<img.*\>""", htmlreport, re.I):
-    #     remote_url = re.sub("""(<img.*src.*['"])([^'"]*)(['"])(.*)""", "\\2", match.group(), re.I)
-    #     try:
-    #         u = urllib2.urlopen(remote_url, timeout=5)
-    #     except timeout:
-    #         continue
-    #     ext = remote_url.split('.')[-1]
-    #     fn = tempfile.mktemp(suffix="."+ext)
-    #     fd = open(fn, "wb")
-    #     fd.write(u.read())
-    #     fd.close()
-    #     htmlreport.replace(remote_url, fn)
-    #     cleanup.append(fn)
     for (key, val) in images.items():
         htmlreport = htmlreport.replace(key, val)
 

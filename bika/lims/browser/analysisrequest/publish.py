@@ -696,16 +696,6 @@ class AnalysisRequestPublishView(BrowserView):
 
         # Create the pdf report (will always be attached to the AR)
         # we must supply the file ourself so that createPdf leaves it alone.
-        # This version replaces 'attachment' links; probably not required,
-        # so it's repeated below, without these localise_images.
-        # cleanup, results_html_for_pdf = self.localise_images(results_html)
-        # pdf_fn = tempfile.mktemp(suffix=".pdf")
-        # pdf_report = createPdf(htmlreport=results_html_for_pdf, outfile=pdf_fn)
-        # for fn in cleanup:
-        #     os.remove(fn)
-
-        # Create the pdf report (will always be attached to the AR)
-        # we must supply the file ourself so that createPdf leaves it alone.
         pdf_fn = tempfile.mktemp(suffix=".pdf")
         pdf_report = createPdf(htmlreport=results_html, outfile=pdf_fn)
 
