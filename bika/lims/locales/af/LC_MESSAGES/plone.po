@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
 "POT-Creation-Date: 2012-10-20 09:21+0000\n"
-"PO-Revision-Date: 2014-12-17 16:57+0000\n"
-"Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>\n"
-"Language-Team: Afrikaans (http://www.transifex.com/projects/p/bika-lims/language/af/)\n"
+"PO-Revision-Date: 2015-06-11 08:18+0000\n"
+"Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
+"Language-Team: Afrikaans (http://www.transifex.com/bikalabs/bika-lims/language/af/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -181,13 +181,14 @@ msgstr "Berekening"
 msgid "Calculations"
 msgstr "Berekeninge"
 
+#
+# File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
+msgid "Calibration Certificates"
+msgstr ""
+
 # File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
 msgid "Calibrations"
 msgstr "Kalibrasies"
-
-# File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
-msgid "Certificates"
-msgstr "Sertifikate"
 
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 msgid "Client"
@@ -235,6 +236,11 @@ msgstr "Afdeling"
 msgid "Departments"
 msgstr "Afdelings"
 
+#
+# File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
+msgid "Documents"
+msgstr ""
+
 # File: bika.lims/bika/lims/profiles/default/types/DuplicateAnalysis.xml,
 # line: -1
 msgid "Duplicate Analysis"
@@ -247,6 +253,11 @@ msgstr "Epos pryslys"
 # File: bika.lims/bika/lims/profiles/default/types/Worksheet.xml, line: -1
 msgid "Export"
 msgstr "Uitvoer"
+
+#
+# File: bika.lims/bika/lims/profiles/default/types/InvoiceBatch.xml, line: -1
+msgid "Export Batch To CSV"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
 msgid "Extracts"
@@ -277,10 +288,6 @@ msgstr "Instrument tipes"
 # File: bika.lims/bika/lims/profiles/default/types/Instruments.xml, line: -1
 msgid "Instruments"
 msgstr "Instrumente"
-
-# File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
-msgid "Internal Calibration Tests"
-msgstr "Interne Kalibrasie toetse"
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
 # -1
@@ -415,6 +422,11 @@ msgstr "Produktiwiteit"
 msgid "Published results"
 msgstr "Gepubliseerde resultate"
 
+#
+# File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
+msgid "QC Results"
+msgstr ""
+
 # File: bika.lims/bika/lims/profiles/default/types/ReportFolder.xml, line: -1
 msgid "Quality Control"
 msgstr "Kwaliteitsbeheer"
@@ -478,15 +490,6 @@ msgstr "Verslae"
 # -1
 msgid "Results not requested"
 msgstr "Uitslae nie versoek"
-
-# File: bika.lims/bika/lims/profiles/default/types/SRTemplate.xml, line: -1
-msgid "SR Template"
-msgstr "MR Templaat"
-
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/SRTemplates.xml, line: -1
-msgid "SR Templates"
-msgstr "MR Template"
 
 # File: bika.lims/bika/lims/profiles/default/types/Sample.xml, line: -1
 msgid "Sample"
@@ -565,8 +568,19 @@ msgstr "Monsterafwyking"
 msgid "Sampling Deviations"
 msgstr "Monsterafwykings"
 
+#
+# File: bika.lims/bika/lims/profiles/default/types/SRTemplate.xml, line: -1
+msgid "Sampling Round Template"
+msgstr ""
+
 msgid "Sampling Round Templates"
 msgstr "Monster rondte templaat"
+
+#
+# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
+# File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
+msgid "Sampling Rounds"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
 msgid "Schedule"
@@ -584,6 +598,13 @@ msgstr "Klein plakkertjie"
 # -1
 msgid "Sticker"
 msgstr "Plakker"
+
+#
+# File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line: -1
+# File: bika.lims/bika/lims/profiles/default/types/Sample.xml, line: -1
+# File: bika.lims/bika/lims/profiles/default/types/SamplePartition.xml, line: -1
+msgid "Stickers preview"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/StorageLocation.xml, line:
 # -1

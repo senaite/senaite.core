@@ -117,10 +117,12 @@ msgstr ""
 msgid "Calculations"
 msgstr ""
 
-msgid "Calibrations"
+#
+# File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
+msgid "Calibration Certificates"
 msgstr ""
 
-msgid "Certificates"
+msgid "Calibrations"
 msgstr ""
 
 msgid "Client"
@@ -155,6 +157,11 @@ msgstr ""
 msgid "Departments"
 msgstr ""
 
+#
+# File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
+msgid "Documents"
+msgstr ""
+
 msgid "Duplicate Analysis"
 msgstr ""
 
@@ -162,6 +169,11 @@ msgid "Email pricelist"
 msgstr ""
 
 msgid "Export"
+msgstr ""
+
+#
+# File: bika.lims/bika/lims/profiles/default/types/InvoiceBatch.xml, line: -1
+msgid "Export Batch To CSV"
 msgstr ""
 
 msgid "Extracts"
@@ -180,9 +192,6 @@ msgid "Instrument Types"
 msgstr ""
 
 msgid "Instruments"
-msgstr ""
-
-msgid "Internal Calibration Tests"
 msgstr ""
 
 msgid "Invoice"
@@ -266,6 +275,11 @@ msgstr ""
 msgid "Published results"
 msgstr ""
 
+#
+# File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
+msgid "QC Results"
+msgstr ""
+
 msgid "Quality Control"
 msgstr ""
 
@@ -305,12 +319,6 @@ msgid "Reports"
 msgstr ""
 
 msgid "Results not requested"
-msgstr ""
-
-msgid "SR Template"
-msgstr ""
-
-msgid "SR Templates"
 msgstr ""
 
 msgid "Sample"
@@ -362,7 +370,18 @@ msgid "Sampling Deviations"
 msgstr ""
 
 #
+# File: bika.lims/bika/lims/profiles/default/types/SRTemplate.xml, line: -1
+msgid "Sampling Round Template"
+msgstr ""
+
+#
 msgid "Sampling Round Templates"
+msgstr ""
+
+#
+# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
+# File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
+msgid "Sampling Rounds"
 msgstr ""
 
 msgid "Schedule"
@@ -372,6 +391,13 @@ msgid "Small Sticker"
 msgstr ""
 
 msgid "Sticker"
+msgstr ""
+
+#
+# File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line: -1
+# File: bika.lims/bika/lims/profiles/default/types/Sample.xml, line: -1
+# File: bika.lims/bika/lims/profiles/default/types/SamplePartition.xml, line: -1
+msgid "Stickers preview"
 msgstr ""
 
 msgid "Storage Location"

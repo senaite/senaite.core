@@ -4,14 +4,15 @@
 # campbell_bika <campbell@bikalabs.com>, 2012
 # Carlos Javier García Quintana <garciaquintana_carlos@yahoo.com.mx>, 2013
 # Carlos Javier García Quintana <garciaquintana_carlos@yahoo.com.mx>, 2013
+# Fernando Sánchez <nando@liberorbis.com>, 2015
 # Jordi Puiggené <jordi.puiggene@gmail.com>, 2012
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
 "POT-Creation-Date: 2012-10-20 09:21+0000\n"
-"PO-Revision-Date: 2014-12-17 16:57+0000\n"
-"Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>\n"
-"Language-Team: Spanish (Peru) (http://www.transifex.com/projects/p/bika-lims/language/es_PE/)\n"
+"PO-Revision-Date: 2015-06-22 04:53+0000\n"
+"Last-Translator: Fernando Sánchez <nando@liberorbis.com>\n"
+"Language-Team: Spanish (Peru) (http://www.transifex.com/bikalabs/bika-lims/language/es_PE/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -27,7 +28,7 @@ msgstr "AR Imports"
 
 # File: bika.lims/bika/lims/profiles/default/types/ARPriorities.xml, line: -1
 msgid "AR Priorities"
-msgstr ""
+msgstr "Prioridades AR"
 
 # File: bika.lims/bika/lims/profiles/default/types/ARTemplate.xml, line: -1
 msgid "AR Template"
@@ -41,7 +42,7 @@ msgstr "Plantillas de solicitud de análisis"
 
 # File: bika.lims/bika/lims/profiles/default/types/ARReport.xml, line: -1
 msgid "ARReport"
-msgstr ""
+msgstr "Reporte AR"
 
 # File: bika.lims/bika/lims/profiles/default/types/Worksheet.xml, line: -1
 msgid "Add Analyses"
@@ -183,13 +184,14 @@ msgstr "Cálculo"
 msgid "Calculations"
 msgstr "Cálculos"
 
+#
+# File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
+msgid "Calibration Certificates"
+msgstr ""
+
 # File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
 msgid "Calibrations"
 msgstr "Calibraciones"
-
-# File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
-msgid "Certificates"
-msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 msgid "Client"
@@ -237,6 +239,11 @@ msgstr "Departamento"
 msgid "Departments"
 msgstr "Departamentos"
 
+#
+# File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
+msgid "Documents"
+msgstr ""
+
 # File: bika.lims/bika/lims/profiles/default/types/DuplicateAnalysis.xml,
 # line: -1
 msgid "Duplicate Analysis"
@@ -249,6 +256,11 @@ msgstr "Lista de precios por correo electrónico"
 # File: bika.lims/bika/lims/profiles/default/types/Worksheet.xml, line: -1
 msgid "Export"
 msgstr "Exportar"
+
+#
+# File: bika.lims/bika/lims/profiles/default/types/InvoiceBatch.xml, line: -1
+msgid "Export Batch To CSV"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
 msgid "Extracts"
@@ -279,10 +291,6 @@ msgstr "Tipos de Instrumento"
 # File: bika.lims/bika/lims/profiles/default/types/Instruments.xml, line: -1
 msgid "Instruments"
 msgstr "Equipos"
-
-# File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
-msgid "Internal Calibration Tests"
-msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
 # -1
@@ -402,7 +410,7 @@ msgstr "Precios"
 # File: bika.lims/bika/lims/profiles/default/types/Invoice.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/SupplyOrder.xml, line: -1
 msgid "Print"
-msgstr ""
+msgstr "Imprimir"
 
 # File: bika.lims/bika/lims/profiles/default/types/Pricelist.xml, line: -1
 msgid "Print pricelist"
@@ -415,6 +423,11 @@ msgstr "Productividad"
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
 # -1
 msgid "Published results"
+msgstr "Resultados publicados"
+
+#
+# File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
+msgid "QC Results"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/ReportFolder.xml, line: -1
@@ -423,7 +436,7 @@ msgstr "Control de calidad"
 
 # File: bika.lims/bika/lims/profiles/default/types/QueryFolder.xml, line: -1
 msgid "Queries"
-msgstr ""
+msgstr "Consultas"
 
 # File: bika.lims/bika/lims/profiles/default/types/Query.xml, line: -1
 msgid "Query"
@@ -465,7 +478,7 @@ msgstr "Valores de referencia"
 # File: bika.lims/bika/lims/profiles/default/types/RejectAnalysis.xml, line:
 # -1
 msgid "Reject Analysis"
-msgstr ""
+msgstr "Análisis rechazado"
 
 # File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Report.xml, line: -1
@@ -481,15 +494,6 @@ msgstr "Informes"
 msgid "Results not requested"
 msgstr "No se han solicitado resultados"
 
-# File: bika.lims/bika/lims/profiles/default/types/SRTemplate.xml, line: -1
-msgid "SR Template"
-msgstr ""
-
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/SRTemplates.xml, line: -1
-msgid "SR Templates"
-msgstr ""
-
 # File: bika.lims/bika/lims/profiles/default/types/Sample.xml, line: -1
 msgid "Sample"
 msgstr "Muestra"
@@ -497,13 +501,13 @@ msgstr "Muestra"
 # File: bika.lims/bika/lims/profiles/default/types/SampleCondition.xml, line:
 # -1
 msgid "Sample Condition"
-msgstr ""
+msgstr "Condición de muestra"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/SampleConditions.xml, line:
 # -1
 msgid "Sample Conditions"
-msgstr ""
+msgstr "Condiciones de muestra"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/SampleMatrices.xml, line:
@@ -567,7 +571,18 @@ msgstr "Desviación en el muestreo"
 msgid "Sampling Deviations"
 msgstr "Desviaciones en el muestreo"
 
+#
+# File: bika.lims/bika/lims/profiles/default/types/SRTemplate.xml, line: -1
+msgid "Sampling Round Template"
+msgstr ""
+
 msgid "Sampling Round Templates"
+msgstr ""
+
+#
+# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
+# File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
+msgid "Sampling Rounds"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
@@ -587,25 +602,32 @@ msgstr "Etiqueta pequeña"
 msgid "Sticker"
 msgstr "Etiqueta"
 
+#
+# File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line: -1
+# File: bika.lims/bika/lims/profiles/default/types/Sample.xml, line: -1
+# File: bika.lims/bika/lims/profiles/default/types/SamplePartition.xml, line: -1
+msgid "Stickers preview"
+msgstr ""
+
 # File: bika.lims/bika/lims/profiles/default/types/StorageLocation.xml, line:
 # -1
 msgid "Storage Location"
-msgstr ""
+msgstr "Ubicación de almacén"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/StorageLocations.xml, line:
 # -1
 msgid "Storage Locations"
-msgstr ""
+msgstr "Ubicaciones de Almacén"
 
 # File: bika.lims/bika/lims/profiles/default/types/SubGroup.xml, line: -1
 msgid "Sub-group"
-msgstr ""
+msgstr "Sub Grupo"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/SubGroups.xml, line: -1
 msgid "Sub-groups"
-msgstr ""
+msgstr "Sub-grupos"
 
 # File: bika.lims/bika/lims/profiles/default/types/Supplier.xml, line: -1
 msgid "Supplier"
@@ -624,7 +646,7 @@ msgstr "Pedido de proveedor"
 # File: bika.lims/bika/lims/profiles/default/types/SupplyOrderFolder.xml,
 # line: -1
 msgid "Supply Orders"
-msgstr ""
+msgstr "Ordenes de Suministro"
 
 # File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
 msgid "Validations"
@@ -826,7 +848,7 @@ msgid "open_transition_title"
 msgstr "Open"
 
 msgid "plone_manual_test"
-msgstr "Plone Manual Test"
+msgstr "Prueba manual de Plone"
 
 # File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
 # -1
