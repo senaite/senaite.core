@@ -9,7 +9,7 @@ class FrontPageView(BrowserView):
     def __call__(self):
         todashboard = False
         mtool=getToolByName(self.context, 'portal_membership')
-        if not mtool.isAnonymousUser():
+        if not mtool.isAnonymousUser() and self.context.bika_setup.getDashboardByDefault():
             # If authenticated user with labman role,
             # display the Main Dashboard view
             pm = getToolByName(self.context, "portal_membership")
