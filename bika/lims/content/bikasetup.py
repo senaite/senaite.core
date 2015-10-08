@@ -417,6 +417,14 @@ schema = BikaFolderSchema.copy() + Schema((
             format='select',
         )
     ),
+    BooleanField('DashboardByDefault',
+        schemata = "Analyses",
+        default = True,
+        widget = BooleanWidget(
+            label=_("Use Dashboard as default front page"),
+            description=_("Select this to activate the dashboard as a default front page.")
+        ),
+    ),
     StringField('AutoPrintStickers',
         schemata = "Stickers",
         vocabulary = STICKER_AUTO_OPTIONS,
