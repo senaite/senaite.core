@@ -73,10 +73,10 @@
 
   <javascript authenticated="False"
               id="++resource++bika.lims.js/thirdparty/d3/d3.js"
-              cacheable="True"
+              cacheable="False"
               compression="safe"
               conditionalcomment=""
-              cookable="True"
+              cookable="False"
               enabled="on"
               expression=""
               inline="False"

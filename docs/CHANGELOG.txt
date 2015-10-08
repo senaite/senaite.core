@@ -1,5 +1,6 @@
 3.1.9 (2015-10-8)
 ------------------
+LIMS-2068: LIMS-2068 Urgent. Analysis Catgories don't expand
 LIMS-1875: Able to deactivate instruments and reference samples without logging in
 LIMS-2049: Displaying lists doesn't work as expected in 319
 LIMS-1908: Navigation tree order
