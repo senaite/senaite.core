@@ -81,6 +81,12 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 Preservation=form['getPreservation'][0][part_uid],
             )
             part.reindexObject()
+            # Adding the Security Seal Intact checkbox's value to the container object
+            container_uid = form['getContainer'][0][part_uid]
+            uc = getToolByName(self.context, 'uid_catalog')
+            container_obj = uc(UID=container_uid)[0].getObject()
+            value = form.get('setSecuritySealIntact', {}).get(part_uid, '') == 'on'
+            container_obj.setSecuritySealIntact(value)
         objects = WorkflowAction._get_selected_items(self)
         if not objects:
             message = _("No items have been selected")
@@ -241,7 +247,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         if trans and 'receive' in self.context.bika_setup.getAutoPrintStickers():
             transitioned = [item.id for item in items]
             tmpl = self.context.bika_setup.getAutoStickerTemplate()
-            q = "/sticker?template=%s&items=" % tmpl
+            q = "/sticker?autoprint=1&template=%s&items=" % tmpl
             q += ",".join(transitioned)
             self.request.response.redirect(self.context.absolute_url() + q)
         elif trans:
@@ -276,6 +282,26 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         # check that the form values match the database
         # save them if not.
         for uid, result in self.request.form.get('Result', [{}])[0].items():
+            # Do not save data for analyses that are not selected.
+            if uid not in selected_analyses:
+                continue
+            analysis = selected_analyses[uid]
+            # never save any part of rows with empty result values.
+            # https://jira.bikalabs.com/browse/LIMS-1944:
+            if not result:
+                continue
+            # ignore result if analysis object no longer exists
+            if not analysis:
+                continue
+            # Prevent saving data if the analysis is already transitioned
+            if not checkPermission(EditResults, analysis):
+                title = safe_unicode(analysis.getService().Title())
+                msgid = _('Result for ${analysis} could not be saved because '
+                          'it was already submitted by another user.',
+                          mapping={'analysis': title})
+                message = safe_unicode(t(msgid))
+                self.context.plone_utils.addPortalMessage(message)
+                continue
             # if the AR has ReportDryMatter set, get dry_result from form.
             dry_result = ''
             if hasattr(self.context, 'getReportDryMatter') \
@@ -284,13 +310,6 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                     if uid == k:
                         dry_result = v
                         break
-            if uid in selected_analyses:
-                analysis = selected_analyses[uid]
-            else:
-                analysis = rc.lookupObject(uid)
-            if not analysis:
-                # ignore result if analysis object no longer exists
-                continue
             results[uid] = result
             interimFields = item_data[uid]
             if len(interimFields) > 0:
@@ -527,7 +546,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             return
         url = self.context.absolute_url() + "/portal_factory/" + \
             "AnalysisRequest/Request new analyses/ar_add" + \
-            "?col_count={0}".format(len(objects)) + \
+            "?ar_count={0}".format(len(objects)) + \
             "&copy_from={0}".format(",".join(objects.keys()))
         self.request.response.redirect(url)
         return

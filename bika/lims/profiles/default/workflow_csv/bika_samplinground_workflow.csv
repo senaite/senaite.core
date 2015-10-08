@@ -1,0 +1,51 @@
+[Workflow],,,,,,,,,,,,,,,
+Id:,bika_samplinground_workflow,,,,,,,,,,,,,,
+Title:,Bika SamplingRound Workflow,,,,,,,,,,,,,,
+Description:,,,,,,,,,,,,,,,
+Initial state:,open,,,,,,,,,,,,,,
+Type:,Workflow,,,,,,,,,,,,,,
+State variable:,review_state,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,
+[State],,,,,,,,,,,,,,,
+Id:,open,,,,,,,,,,,,,,
+Title:,Open,,,,,,,,,,,,,,
+Description:,The Sampling Round can be edited and Analysis Requests can be attached,,,,,,,,,,,,,,
+Transitions,"close",,,,,,,,,,,,,,
+Permissions,Acquire,Owner,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,RegulatoryInspector,Publisher,Reviewer,Authenticated,Anonymous,Client
+View,N,Y,Y,Y,Y,Y,N,N,Y,Y,N,N,N,N,Y
+BIKA: Close SamplingRound,N,Y,Y,Y,Y,N,N,N,N,N,N,N,N,N,Y
+BIKA: Reopen SamplingRound,N,Y,N,N,N,N,N,N,N,N,N,N,N,N,Y
+BIKA: Add Analysis Request,N,Y,Y,Y,Y,N,N,N,N,N,N,N,N,N,Y
+"Modify portal content",N,Y,Y,Y,Y,N,N,N,N,N,N,N,N,N,Y
+Add portal content,N,Y,Y,Y,Y,N,N,N,N,N,N,N,N,N,Y
+,,,,,,,,,,,,,,,
+[State],,,,,,,,,,,,,,,
+Id:,closed,,,,,,,,,,,,,,
+Title:,Closed,,,,,,,,,,,,,,
+Description:,The SamplingRound can't be edited and Analysis Requests cannot be attached,,,,,,,,,,,,,,
+Transitions,open,,,,,,,,,,,,,,
+Permissions,Acquire,Owner,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,RegulatoryInspector,Publisher,Reviewer,Authenticated,Anonymous,Client
+View,N,Y,Y,Y,Y,Y,N,N,Y,Y,N,N,N,N,Y
+BIKA: Close SamplingRound,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Reopen SamplingRound,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Add Analysis Request,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+Modify portal content,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+Add portal content,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+,,,,,,,,,,,,,,,
+[Transition],,,,,,,,,,,,,,,
+Id:,open,,,,,,,,,,,,,,
+Title:,Open,,,,,,,,,,,,,,
+Description:,"Used to retract a SamplingRound to 'open' state",,,,,,,,,,,,,,
+Target state:,open,,,,,,,,,,,,,,
+Trigger:,User,,,,,,,,,,,,,,
+Guard permission:,BIKA: Reopen SamplingRound,,,,,,,,,,,,,,
+Guard expression:,"python:here.workflow_guard_open() if hasattr(here, 'workflow_guard_open') else True",,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,
+[Transition],,,,,,,,,,,,,,,
+Id:,close,,,,,,,,,,,,,,
+Title:,Close,,,,,,,,,,,,,,
+Description:,Close the SamplingRound, removing it from default views,,,,,,,,,,,,,,
+Target state:,closed,,,,,,,,,,,,,,
+Trigger:,User,,,,,,,,,,,,,,
+Guard permission:,BIKA: Close SamplingRound,,,,,,,,,,,,,,
+Guard expression:,"python:here.workflow_guard_close() if hasattr(here, 'workflow_guard_close') else True",,,,,,,,,,,,,,

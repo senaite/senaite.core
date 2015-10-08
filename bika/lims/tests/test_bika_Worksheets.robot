@@ -1,15 +1,19 @@
 *** Settings ***
 
-Library          Selenium2Library  timeout=5  implicit_wait=0.2
-Library          String
-Resource         keywords.txt
-Library          bika.lims.testing.Keywords
-Resource         plone/app/robotframework/selenium.robot
-Resource         plone/app/robotframework/saucelabs.robot
-Variables        plone/app/testing/interfaces.py
-Variables        bika/lims/tests/variables.py
-Suite Setup      Start browser
-Suite Teardown   Close All Browsers
+Library         BuiltIn
+Library         Selenium2Library  timeout=5  implicit_wait=0.2
+Library         String
+Resource        keywords.txt
+Library         bika.lims.testing.Keywords
+Resource        plone/app/robotframework/selenium.robot
+Library         Remote  ${PLONEURL}/RobotRemote
+Variables       plone/app/testing/interfaces.py
+Variables       bika/lims/tests/variables.py
+
+Suite Setup     Start browser
+Suite Teardown  Close All Browsers
+
+Library          DebugLibrary
 
 *** Variables ***
 
@@ -19,7 +23,9 @@ Test Worksheets
     [Documentation]   Worksheets
     ...  Groups analyses together for data entry, instrument interfacing,
     ...  and workflow transition cascades.
-    Log in              test_labmanager  test_labmanager
+    Enable autologin as  LabManager
+    Set autologin username   test_labmanager
+    Disable stickers
     Create AnalysisRequests
     Create Reference Samples
     Create Worksheet
@@ -44,11 +50,13 @@ Test Worksheets
     Submit results quickly
     Add Duplicate: Submit, verify, and check that alerts persist
     Test Retraction
-    Log out
-    Log in   test_labmanager1   test_labmanager1
+    Disable autologin
+    Enable autologin as  LabManager
+    Set autologin username   test_labmanager1
     Verify all
-    Log out
-    Log in   test_labmanager   test_labmanager
+    Disable autologin
+    Enable autologin as  LabManager
+    Set autologin username   test_labmanager
 
 
 
@@ -58,24 +66,16 @@ Create AnalysisRequests
     [Documentation]     Add and receive some ARs.
     ...                 H2O-0001-R01  Bore
     ...                 H2O-0002-R01  Bruma
-    @{time} =                   Get Time        year month day hour min sec
-    Go to                       ${PLONEURL}/clients/client-1
-    Wait until page contains element    css=body.portaltype-client
-    Click Link                  Add
-    Wait until page contains    Request new analyses
-    Select from dropdown        ar_0_Contact                Rita
-    Select from dropdown        ar_1_Contact                Rita
-    sleep  1
-    Select from dropdown        ar_0_Template               Bore
-    Select from dropdown        ar_1_Template               Bruma
-    sleep  1
-    Select Date                 ar_0_SamplingDate           @{time}[2]
-    Select Date                 ar_1_SamplingDate           @{time}[2]
-    sleep  1
-    Set Selenium Timeout        30
+    given an ar add form in client-1 with columns layout and 2 ars
+    I select Rita from the Contact combogrid in column 0
+    I select Rita from the Contact combogrid in column 1
+    I select Bore from the Template combogrid in column 0
+    I select Bruma from the Template combogrid in column 1
+    Select Date  SamplingDate-0  1
+    Select Date  SamplingDate-1  1
+    set selenium timeout  10
     Click Button                Save
     Wait until page contains    created
-    Set Selenium Timeout        10
     Select checkbox             analysisrequests_select_all
     Click element               receive_transition
     Wait until page contains    saved

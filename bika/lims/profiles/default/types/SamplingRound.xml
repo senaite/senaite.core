@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<object name="SamplingRound"
+   meta_type="Dexterity FTI"
+   i18n:domain="bika.lims" xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+
+  <!-- Basic metadata -->
+  <property name="title" i18n:translate="">Sampling Round</property>
+  <property name="description"
+    i18n:translate="">A sampling round object</property>
+  <property name="icon_expr">string:${portal_url}/document_icon.png</property>
+  <property name="factory">bika.lims.content.samplingsround</property>
+  <property name="global_allow">False</property>
+  <property name="filter_content_types">True</property>
+  <property name="allowed_content_types" >
+      <element value="ARTemplate" />
+      <element value="AnalysisRequest"/>
+  </property>
+  <property name="allow_discussion">False</property>
+
+  <!-- schema and class used for content items -->
+  <property name="schema">bika.lims.content.samplinground.ISamplingRound</property>
+  <property name="klass">bika.lims.content.samplinground.SamplingRound</property>
+
+  <property name="behaviors">
+     <element value="plone.app.content.interfaces.INameFromTitle" />
+   </property>
+
+  <!-- View information -->
+  <property name="link_target"></property>
+  <property name="immediate_view">analysisrequests</property>
+  <property name="default_view">view</property>
+  <property name="view_methods">
+   <element value="view"/>
+  </property>
+  <property name="default_view_fallback">False</property>
+  <property name="add_permission">cmf.AddPortalContent</property>
+
+
+  <!-- Method aliases -->
+  <alias from="(Default)" to="(dynamic view)" />
+  <alias from="view" to="(selected layout)" />
+  <alias from="edit" to="@@edit" />
+  <alias from="sharing" to="@@sharing" />
+
+  <!-- Actions -->
+  <action title="View"
+          action_id="view"
+          category="object"
+          condition_expr=""
+          url_expr="string:${object_url}/"
+          visible="True">
+    <permission value="View" />
+  </action>
+  <action title="Edit"
+          action_id="edit"
+          category="object"
+          condition_expr="python: object.hasUserAddEditPermission()"
+          url_expr="string:${object_url}/edit"
+          visible="True">
+    <permission value="Modify portal content" />
+  </action>
+
+  <action title="Analysis Requests"
+         action_id="analysisrequests"
+         category="object"
+         condition_expr=""
+         icon_expr="string:${portal_url}/++resource++bika.lims.images/analyissrequest.png"
+         link_target=""
+         url_expr="string:${object_url}/analysisrequests"
+         i18n:attributes="title"
+         i18n:domain="plone"
+         visible="True">
+  <permission value="View"/>
+ </action>
+
+    <!-- enabled behaviors -->
+    <!-- This allow references between archetypes and dexterity content types. -->
+    <property name="behaviors">
+        <element value="plone.app.referenceablebehavior.referenceable.IReferenceable" />
+    </property>
+</object>

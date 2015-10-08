@@ -638,7 +638,7 @@ class BikaGenerator:
         addIndex(bc, 'getExpiryDate', 'DateIndex')
         addIndex(bc, 'getInvoiced', 'FieldIndex')
         addIndex(bc, 'getPreserver', 'FieldIndex')
-        addIndex(bc, 'getProfileTitle', 'FieldIndex')
+        addIndex(bc, 'getProfilesTitle', 'FieldIndex')
         addIndex(bc, 'getReferenceDefinitionUID', 'FieldIndex')
         addIndex(bc, 'getRequestID', 'FieldIndex')
         addIndex(bc, 'getSampleID', 'FieldIndex')
@@ -674,7 +674,7 @@ class BikaGenerator:
         addColumn(bc, 'getClientSampleID')
         addColumn(bc, 'getContactTitle')
         addColumn(bc, 'getClientTitle')
-        addColumn(bc, 'getProfileTitle')
+        addColumn(bc, 'getProfilesTitle')
         addColumn(bc, 'getSamplePointTitle')
         addColumn(bc, 'getSampleTypeTitle')
         addColumn(bc, 'getAnalysisCategory')
@@ -698,7 +698,7 @@ class BikaGenerator:
             pass
 
         at = getToolByName(portal, 'archetype_tool')
-        at.setCatalogsByType('Department', ['bika_setup_catalog', ])
+        at.setCatalogsByType('Department', ['bika_setup_catalog', "portal_catalog", ])
         at.setCatalogsByType('Container', ['bika_setup_catalog', ])
         at.setCatalogsByType('ContainerType', ['bika_setup_catalog', ])
         at.setCatalogsByType('AnalysisCategory', ['bika_setup_catalog', ])

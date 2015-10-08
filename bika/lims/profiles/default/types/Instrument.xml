@@ -52,7 +52,7 @@
   <permission value="Modify portal content"/>
  </action>
 
- <action title="Internal Calibration Tests"
+ <action title="QC Results"
          action_id="referenceanalyses"
          category="object"
          url_expr="string:${object_url}/referenceanalyses"
@@ -62,7 +62,18 @@
     <permission value="Modify portal content"/>
  </action>
 
- <action title="Certificates"
+ <action title="Calibrations"
+        action_id="calibrations"
+        category="object"
+        condition_expr=""
+        icon_expr="string:${portal_url}/images/instrumentcalibration.png"
+        url_expr="string:${object_url}/calibrations"
+        i18n:attributes="title"
+        visible="True">
+    <permission value="Modify portal content"/>
+ </action>
+
+ <action title="Calibration Certificates"
          action_id="certifications"
          category="object"
          url_expr="string:${object_url}/certifications"
@@ -94,17 +105,6 @@
     <permission value="Modify portal content"/>
  </action>
 
- <action title="Calibrations"
-        action_id="calibrations"
-        category="object"
-        condition_expr=""
-        icon_expr="string:${portal_url}/images/instrumentcalibration.png"
-        url_expr="string:${object_url}/calibrations"
-        i18n:attributes="title"
-        visible="True">
-    <permission value="Modify portal content"/>
- </action>
-
   <action title="Schedule"
         action_id="schedule"
         category="object"
@@ -117,7 +117,7 @@
   </action>
 
   <action title="Documents"
-        action_id="multifile"
+        action_id="instrumentmultifile"
         category="object"
         condition_expr=""
         icon_expr="string:${portal_url}/images/instrumentcertification.png"

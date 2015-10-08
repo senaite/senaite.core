@@ -1,7 +1,7 @@
 import os
 from setuptools import setup, find_packages
 
-version = '3.1.8.2'
+version = '3.1.9'
 
 
 def read(*rnames):
@@ -61,6 +61,9 @@ setup(name='bika.lims',
           'WeasyPrint==0.19.2',
           'collective.progressbar',
           'z3c.unconfigure==1.0.1',
+          'plone.app.dexterity',
+          'plone.app.relationfield',
+          'plone.app.referenceablebehavior',
       ],
       extras_require={
           'test': [
@@ -70,6 +73,8 @@ setup(name='bika.lims',
               'plone.app.robotframework',
               'Products.PloneTestCase',
               'robotframework-debuglibrary',
+              'plone.resource',
+              'plone.app.textfield',
           ]
       },
       entry_points="""

@@ -1,5 +1,6 @@
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _, logger
+from bika.lims.config import *
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.utils import t, tmpID, changeWorkflowState
 from bika.lims.utils import to_utf8 as _c
@@ -73,6 +74,10 @@ schema = BikaSchema.copy() + Schema((
             label=_("Remarks"),
             append_only=True,
         ),
+    ),
+    StringField('ResultsLayout',
+        default = '1',
+        vocabulary = WORKSHEET_LAYOUT_OPTIONS,
     ),
 ),
 )
@@ -557,6 +562,17 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         self.getField('Instrument').set(self, instrument)
         return total
+
+    def getAnalystName(self):
+        """ Returns the name of the currently assigned analyst
+        """
+        mtool = getToolByName(self, 'portal_membership')
+        analyst = self.getAnalyst().strip()
+        analyst_member = mtool.getMemberById(analyst)
+        if analyst_member != None:
+            return analyst_member.getProperty('fullname')
+        else:
+            return analyst
 
     def workflow_script_submit(self):
         # Don't cascade. Shouldn't be submitting WSs directly for now,

@@ -49,7 +49,7 @@
 <permission id="bika.lims.ManageWorksheets" title="BIKA: Manage Worksheets"/>
 <permission id="bika.lims.ManageAnalysisRequests" title="BIKA: Manage Analysis Requests"/>
 <permission id="bika.lims.ManageSamples" title="BIKA: Manage Samples"/>
-<permission id="bika.lims.ManageSuppliers" title="BIKA: Manage Suppliers"/>
+<permission id="bika.lims.ManageSuppliers" title="BIKA: Manage Reference Suppliers"/>
 <permission id="bika.lims.ManageReference" title="BIKA: Manage Reference"/>
 <permission id="bika.lims.ManagePricelists" title="BIKA: Manage Pricelists"/>
 <permission id="bika.lims.PostInvoiceBatch" title="BIKA: Post Invoice batch"/>
@@ -137,5 +137,10 @@
 <permission id="bika.lims.EditBatch" title="BIKA: Edit Batch"/>
 <permission id="bika.lims.CloseBatch" title="BIKA: Close Batch"/>
 <permission id="bika.lims.ReopenBatch" title="BIKA: Reopen Batch"/>
+
+# SamplingRound specific permissions
+# ----------------------------------------------
+<permission id="bika.lims.CloseSamplingRound" title="BIKA: Close SamplingRound"/>
+<permission id="bika.lims.ReopenSamplingRound" title="BIKA: Reopen SamplingRound"/>
 
 </configure>

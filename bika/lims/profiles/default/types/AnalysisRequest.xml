@@ -89,7 +89,7 @@
  <action title="Invoice"
          action_id="invoice"
          category="object"
-         condition_expr=""
+         condition_expr="python:here.bika_setup.getShowPrices()"
          url_expr="string:${object_url}/invoice"
          i18n:attributes="title"
          visible="True">
@@ -135,7 +135,7 @@
          condition_expr=""
          icon_expr="string:${object_url}/++resource++bika.lims.images/sticker_large.png"
          link_target=""
-         url_expr="string:${object_url}/sticker?template=bika.lims:sticker_large.pt"
+         url_expr="string:${object_url}/sticker?autoprint=1&amp;size=large"
          i18n:attributes="title"
          visible="True">
      <permission value="View"/>
@@ -147,11 +147,20 @@
          condition_expr=""
          icon_expr="string:${object_url}/++resource++bika.lims.images/sticker_small.png"
          link_target=""
-         url_expr="string:${object_url}/sticker?template=bika.lims:sticker_small.pt"
+         url_expr="string:${object_url}/sticker?autoprint=1&amp;size=small"
          i18n:attributes="title"
          visible="True">
      <permission value="View"/>
  </action>
-
-
+ <action title="Stickers preview"
+         action_id="sticker_preview"
+         category="document_actions"
+         condition_expr=""
+         icon_expr="string:${object_url}/++resource++bika.lims.images/sticker_preview.png"
+         link_target="Stickers preview"
+         url_expr="string:${object_url}/sticker"
+         i18n:attributes="title"
+         visible="True">
+     <permission value="View"/>
+ </action>
 </object>

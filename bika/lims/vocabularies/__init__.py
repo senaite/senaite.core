@@ -7,11 +7,15 @@ from bika.lims.utils import to_utf8
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
+from pkg_resources import resource_filename
+from plone.resource.utils import iterDirectoriesOfType
 from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.vocabulary import SimpleTerm
 from zope.schema.vocabulary import SimpleVocabulary
 from zope.site.hooks import getSite
 
+import os
+import glob
 
 
 class CatalogVocabulary(object):
@@ -385,7 +389,6 @@ AnalysisRequestWorkflowStateVocabularyFactory = \
 
 
 class ARPrioritiesVocabulary(BikaContentVocabulary):
-
     def __init__(self):
         BikaContentVocabulary.__init__(self,
                                        ['bika_setup/bika_arpriorities', ],

@@ -1,0 +1,30 @@
+<configure
+    xmlns="http://namespaces.zope.org/zope"
+    xmlns:browser="http://namespaces.zope.org/browser"
+    xmlns:i18n="http://namespaces.zope.org/i18n"
+    i18n_domain="bika">
+
+    <browser:page
+      for="bika.lims.content.samplinground.ISamplingRound"
+      name="edit"
+      class=".edit.EditForm"
+      permission="cmf.ModifyPortalContent"
+    />
+
+    <browser:page
+      for="bika.lims.content.samplinground.ISamplingRound"
+      name="add"
+      class=".add.AddForm"
+      permission="cmf.AddPortalContent"
+    />
+
+    <browser:page
+      for="bika.lims.content.samplinground.ISamplingRound"
+      name="analysisrequests"
+      class="bika.lims.browser.samplinground.analysisrequests.AnalysisRequestsView"
+      permission="zope2.View"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+
+</configure>

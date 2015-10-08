@@ -10,6 +10,7 @@ from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.ATExtensions.field.records import RecordsField
 from Products.CMFCore.utils import getToolByName
 from bika.lims import PMF, bikaMessageFactory as _
+from bika.lims.interfaces import IARTemplate
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
 from bika.lims.browser.widgets import ARTemplatePartitionsWidget
 from bika.lims.browser.widgets import ARTemplateAnalysesWidget
@@ -73,6 +74,13 @@ schema = BikaSchema.copy() + Schema((
         expression="context.Schema()['SampleType'].get(context) and context.Schema()['SampleType'].get(context).UID() or ''",
         widget=ComputedWidget(
             visible=False,
+        ),
+    ),
+    BooleanField('Composite',
+        default=False,
+        widget=BooleanWidget(
+            label=_("Composite"),
+            description=_("It's a composite sample"),
         ),
     ),
     BooleanField('ReportDryMatter',
@@ -194,6 +202,7 @@ class ARTemplate(BaseContent):
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
+    implements(IARTemplate)
 
     _at_rename_after_creation = True
     def _renameAfterCreation(self, check_auto_id=False):

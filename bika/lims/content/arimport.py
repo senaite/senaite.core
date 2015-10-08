@@ -39,8 +39,6 @@ from bika.lims.browser.widgets import ReferenceWidget as bReferenceWidget
 import sys
 import transaction
 
-
-
 _p = MessageFactory(u"plone")
 
 OriginalFile = FileField(
@@ -105,7 +103,7 @@ Contact = ReferenceField(
     default_method='getContactUIDForUser',
     referenceClass=HoldingReference,
     vocabulary_display_path_bound=sys.maxint,
-    widget=bReferenceWidget(
+    widget=ReferenceWidget(
         label=_('Primary Contact'),
         size=20,
         visible=True,

@@ -21,6 +21,7 @@ from sealanalytical.aq2 import aq2
 from horiba.jobinyvon import icp
 from abaxis.vetscan import vs2
 from scilvet.abc import plus
+from eltra.cs import cs2000
 from rigaku.supermini import wxrf
 
 __all__ = ['abaxis.vetscan.vs2',
@@ -29,6 +30,7 @@ __all__ = ['abaxis.vetscan.vs2',
            'alere.pima.cd4',
            'beckmancoulter.access.model2',
            'biodrop.ulite.ulite',
+           'eltra.cs.cs2000',
            'foss.fiastar.fiastar',
            'foss.winescan.auto',
            'foss.winescan.ft120',

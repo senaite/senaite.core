@@ -543,4 +543,13 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Upgrade to Bika LIMS 3.1.9"
+        description=""
+        source="318"
+        destination="319"
+        handler="bika.lims.upgrade.to319.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+        
 </configure>

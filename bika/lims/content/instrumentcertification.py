@@ -11,10 +11,11 @@ from Products.CMFCore import permissions
 
 schema = BikaSchema.copy() + Schema((
 
-    StringField('AssetNumber',
+    StringField('TaskID',
         widget = StringWidget(
-            label=_("Asset Number"),
-        ),
+            label=_("Task ID"),
+            description=_("The instrument's ID in the lab's asset register"),
+        )
     ),
 
     ReferenceField('Instrument',

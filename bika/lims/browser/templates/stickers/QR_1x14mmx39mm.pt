@@ -1,0 +1,30 @@
+<!--
+    Default template used to render one QR small sticker
+
+    To retrieve the item, use view.current_item, that will return an array with
+    the following structure:
+
+    [analysis_request_object, sample_object, sample_partition_object]
+
+    Although sample_object (position 1 in the array) will never be None,
+    analysis_request_object can be None when
+    a) The user requested to render stickers for samples (instead of ARs) or
+    b) The user requested to render stickers for sample partitions or
+    c) The user requested to render stickers for reference samples.
+
+    If c), both analysis_request_object and sample_partition_object will be None
+-->
+<tal:sticker define="
+    item              view/current_item;
+    ar_id             python:item[0].getId() if item[0] else '';
+    sample            python:item[1];
+    client_sample_id  python:sample.getClientSampleID();">
+
+    <div class='qrcode'
+         data-size="36"
+         tal:attributes="data-code ar_id"></div>
+
+    <!-- Analysis request's other info -->
+    <div class="requestid" tal:content="ar_id" tal:condition="ar_id"></div>
+    <div class="clientsampleid" tal:content="client_sample_id"></div>
+</tal:sticker>

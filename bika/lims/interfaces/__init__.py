@@ -267,17 +267,32 @@ class IInstrumentTypes(Interface):
 
 
 class IAnalysisSpecs(Interface):
+    ""
+
+
+class IAnalysisProfile(Interface):
+    ""
+
+
+class IAnalysisProfile(Interface):
 
     ""
 
 
 class IAnalysisProfiles(Interface):
+    ""
+
+
+class IARTemplate(Interface):
+    ""
+
+
+class IARTemplate(Interface):
 
     ""
 
 
 class IARTemplates(Interface):
-
     ""
 
 
@@ -350,6 +365,8 @@ class ISRTemplates(Interface):
 
     ""
 
+class ISamplingRoundTemplate(Interface):
+    ""
 
 class ISupplier(Interface):
 

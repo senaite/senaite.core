@@ -17,6 +17,7 @@ from Products.Archetypes import PloneMessageFactory as PMF
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import implements
+from decimal import Decimal
 
 import plone, App
 
@@ -97,10 +98,12 @@ class InvoiceView(BrowserView):
         #       <td tal:content="view/datePublished"></td>
         #   </tal:published>
         #</tr>
-
-        # Retrieve required data from analyses collection
         analyses = []
-        for analysis in context.getRequestedAnalyses():
+        profiles = []
+        # Retrieve required data from analyses collection
+        all_analyses, all_profiles, analyses_from_profiles = context.getServicesAndProfiles()
+        # Relating category with solo analysis
+        for analysis in all_analyses:
             service = analysis.getService()
             categoryName = service.getCategory().Title()
             # Find the category
@@ -118,13 +121,69 @@ class InvoiceView(BrowserView):
                 'priceVat': "%.2f" % analysis.getVATAmount(),
                 'priceTotal': "%.2f" % analysis.getTotalPrice(),
             })
+        # Relating analysis services with their profiles
+        # We'll take the analysis contained on each profile
+        for profile in all_profiles:
+            # If profile's checkbox "Use Analysis Profile Price" is enabled, only the profile price will be displayed.
+            # Otherwise each analysis will display its own price.
+            pservices = []
+            if profile.getUseAnalysisProfilePrice():
+                # We have to use the profiles price only
+                for pservice in profile.getService():
+                    pservices.append({
+                               'title': pservice.Title(),
+                               'price': None,
+                               'priceVat': None,
+                               'priceTotal': None,
+                               })
+                profiles.append({'name': profile.title,
+                                 'price': profile.getAnalysisProfilePrice(),
+                                 'priceVat': profile.getVATAmount(),
+                                 'priceTotal': profile.getTotalPrice(),
+                                 'analyses': pservices})
+            else:
+                # We need the analyses prices instead of profile price
+                for pservice in profile.getService():
+                    # We want the analysis instead of the service, because we want the price for the client
+                    # (for instance the bulk price)
+                    panalysis = self._getAnalysisForProfileService(pservice.getKeyword(), analyses_from_profiles)
+                    pservices.append({
+                                     'title': pservice.Title(),
+                                     'price': panalysis.getPrice() if panalysis else pservice.getPrice(),
+                                     'priceVat': "%.2f" % panalysis.getVATAmount() if panalysis
+                                                                                   else pservice.getVATAmount(),
+                                     'priceTotal': "%.2f" % panalysis.getTotalPrice() if panalysis
+                                                                                   else pservice.getTotalPrice(),
+                                     })
+                profiles.append({'name': profile.title,
+                                 'price': None,
+                                 'priceVat': None,
+                                 'priceTotal': None,
+                                 'analyses': pservices})
         self.analyses = analyses
-        # Get totals
+        self.profiles = profiles
+        # Get subtotals
         self.subtotal = context.getSubtotal()
+        self.subtotalVATAmount = "%.2f" % context.getSubtotalVATAmount()
+        self.subtotalTotalPrice = "%.2f" % context.getSubtotalTotalPrice()
+        # Get totals
+        self.memberDiscount = Decimal(context.getDefaultMemberDiscount())
+        self.discountAmount = context.getDiscountAmount()
         self.VATAmount = "%.2f" % context.getVATAmount()
         self.totalPrice = "%.2f" % context.getTotalPrice()
         # Render the template
         return self.template()
+
+    def _getAnalysisForProfileService(self, service_keyword, analyses):
+        """
+        This function gets the analysis object from the analyses list using the keyword 'service_keyword'
+        :service_keyword: a service keyword
+        :analyses: a list of analyses
+        """
+        for analysis in analyses:
+            if service_keyword == analysis.getService().getKeyword():
+                return analysis
+        return 0
 
     def getPriorityIcon(self):
         priority = self.context.getPriority()

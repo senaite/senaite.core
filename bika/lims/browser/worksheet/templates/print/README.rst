@@ -35,7 +35,7 @@ Worksheet's dictionary structure example
                 'accredited': True,
                 'address': '<div>Number 4, First Street</div><div>Little Town</div><div>Western Province</div><div>7195</div><div>South Africa</div>',
                 'confidence': 95,
-                'logo': 'http://localhost:8090/Plone/logo_print.jpg',
+                'logo': 'http://localhost:8090/Plone/logo_print.png',
                 'obj': <Laboratory at /Plone/bika_setup/laboratory>,
                 'title': 'Bika \xcf\x84est Lab',
                 'url': 'http://www.bikalims.org/'},

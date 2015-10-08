@@ -8,7 +8,7 @@
       for="bika.lims.interfaces.ISupplier"
       name="contacts"
       class="bika.lims.browser.supplier.ContactsView"
-      permission="zope.Public"
+      permission="bika.lims.ManageSuppliers"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
     
@@ -16,7 +16,7 @@
       for="bika.lims.interfaces.ISupplier"
       name="base_view"
       class="bika.lims.browser.supplier.ReferenceSamplesView"
-      permission="zope.Public"
+      permission="bika.lims.ManageSuppliers"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
     
@@ -24,7 +24,7 @@
       for="bika.lims.interfaces.ISupplier"
       name="instruments"
       class="bika.lims.browser.supplier.SupplierInstrumentsView"
-      permission="zope.Public"
+      permission="bika.lims.ManageSuppliers"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 

@@ -1,0 +1,95 @@
+<form name="bika_listing_form" method="post" action="workflow_action"
+    i18n:domain="bika"
+    tal:attributes="id view/bika_listing/form_id"
+    tal:define="
+        form_id view/bika_listing/form_id;
+        review_state_id python:request.get(form_id+'_review_state', 'default');
+        review_state python:[t for t in view.bika_listing.review_states
+                            if t['id'] == review_state_id];
+        review_state python:review_state and review_state[0]
+                            or view.bika_listing.review_states[0];
+        toggle_cols python:dict([(col, view.bika_listing.columns[col])
+                                for col in view.bika_listing.columns.keys()
+                                if col in review_state['columns']]);
+        sm python:modules['AccessControl'].getSecurityManager();
+        EditAnalyses python:sm.checkPermission('BIKA: Edit analyses', context);
+        ViewResults python:sm.checkPermission('BIKA: View Results', context);
+        tabindex view/tabindex;
+        user python:sm.getUser();
+        roles python:user.getRoles();
+        nr_cols python:len(review_state['columns']);
+        nr_cols python:view.bika_listing.show_select_column and nr_cols + 1 or nr_cols;
+        nr_cols python:view.bika_listing.show_sort_column and nr_cols + 1 or nr_cols;
+        nr_cols python:str(nr_cols);">
+
+<input tal:replace="structure context/@@authenticator/authenticator"/>
+<input type="hidden" name="submitted" value="1"/>
+<input type="hidden" name="form_id" tal:attributes="value form_id"/>
+<input type="hidden" name="view_url" tal:attributes="value view/bika_listing/view_url"/>
+<input type="hidden" name="portal_type" tal:attributes="value view/context/portal_type"/>
+<input type="hidden" name="item_data" id="item_data"
+    tal:attributes="value python:hasattr(view.bika_listing, 'json_interim_fields') and
+                                view.bika_listing.json_interim_fields or []"/>
+
+<table
+    tal:attributes="class python:'bika-listing-table bika-listing-table-transposed';
+                    form_id form_id"
+    i18n:attributes="summary summary_content_listing;"
+    tal:define="rows python:[r for r in view.rows_headers if r.get('hidden', False) == False];"
+    summary="Content listing">
+
+    <tbody class="item-listing-tbody" tal:condition="view/items">
+        <tr tal:repeat="row rows">
+            <th><span tal:content="structure row/title"></span></th>
+            <tal:analysis repeat="position view/positions">
+                <tal:cell define="cellhtml python:view.render_row_cell(row, position)">
+                    <td tal:condition="python:cellhtml"
+                        tal:attributes="class python:'%s %s' % (view.current_item.get('table_row_class',''), view.current_item.get('state_class'));"
+                        tal:content="structure cellhtml"></td>
+                    <td tal:condition="python:not cellhtml" class="filled-cell"></td>
+                </tal:cell>
+            </tal:analysis>
+        </tr>
+    </tbody>
+    <tfoot>
+        <!-- Workflow actions -->
+        <tr>
+            <td class="noborder"
+                tal:attributes="colspan python:len(view.positions)"
+                tal:condition="python:view.bika_listing.show_workflow_action_buttons">
+                <tal:selected_uids repeat="item view/items">
+                    <input type="hidden" name="uids:list"
+                        tal:attributes="value item/uid">
+                </tal:selected_uids>
+                <table>
+                    <tr class="noborder" tal:condition="python:len(rows) > 0">
+                        <td class="workflow_actions">
+                            <span class="workflow_action_buttons"
+                                tal:define="actions view/bika_listing/get_workflow_actions;
+                                            exclude_actions python:['unassign',];
+                                            actions python:[a for a in actions if a.get('id','') not in exclude_actions];">
+                                <span tal:omit-tag="python:True" tal:repeat="action actions"
+                                    tal:condition="view/bika_listing/show_workflow_action_buttons">
+                                    <input
+                                        type="hidden"
+                                        tal:attributes="name action/title;
+                                                        value action/id;"/>
+                                    <input
+                                        class="context workflow_action_button action_button allowMultiSubmit"
+                                        type="submit"
+                                        name="workflow_action_button"
+                                        tal:attributes="
+                                            id python:action['id']+'_transition';
+                                            transition action/id;
+                                            value action/title;
+                                            url python:action.get('url', '');"/>
+                                </span>
+                            </span>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </tfoot>
+</table>
+</form>

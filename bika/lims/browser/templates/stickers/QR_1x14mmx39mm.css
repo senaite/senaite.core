@@ -1,0 +1,12 @@
+/*  Heights */
+.sticker {
+    padding-top:       8mm;
+    padding-bottom:    8mm;
+    height:           21mm; /* Total height =  37mm */
+    width:            14mm;
+    font-family: Helvetica, Arial;
+    font-size:6pt;
+    text-align:center;
+}
+div.requestid { padding-top: 2mm; line-height: 4mm;}
+div.clientsampleid { line-height: 4mm;}

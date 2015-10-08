@@ -1,43 +1,52 @@
-from smtplib import SMTPServerDisconnected, SMTPRecipientsRefused
 from bika.lims import bikaMessageFactory as _, t
-from bika.lims.utils import to_utf8, formatDecimalMark, format_supsub
-from bika.lims.utils.analysis import format_uncertainty
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IResultOutOfRange
-from bika.lims.utils import to_utf8, encode_header, createPdf, attachPdf
 from bika.lims.utils import isnumber
+from bika.lims.utils import to_utf8, encode_header, createPdf, attachPdf
+from bika.lims.utils import to_utf8, formatDecimalMark, format_supsub
+from bika.lims.utils.analysis import format_uncertainty
+from bika.lims.vocabularies import getARReportTemplates
 from DateTime import DateTime
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.Utils import formataddr
 from operator import itemgetter
 from os.path import join
+from plone.registry.interfaces import IRegistry
+from plone.resource.utils import iterDirectoriesOfType, queryResourceDirectory
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.utils import safe_unicode, _createObjectByType
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from plone.resource.utils import iterDirectoriesOfType, queryResourceDirectory
-from zope.component import getAdapters
-import glob, os, sys, traceback
-import urllib2
+from smtplib import SMTPServerDisconnected, SMTPRecipientsRefused
+from zope.component import getAdapters, getUtility
+
 import App
+import glob, os, sys, traceback
 import Globals
+import re
+import tempfile
+import urllib2
 
 class AnalysisRequestPublishView(BrowserView):
     template = ViewPageTemplateFile("templates/analysisrequest_publish.pt")
     _ars = []
     _current_ar_index = 0
-    _DEFAULT_TEMPLATE = 'default.pt'
     _publish = False
-    _images = {}
 
     def __init__(self, context, request, publish=False):
         super(AnalysisRequestPublishView, self).__init__(context, request)
         self._publish = publish
         self._ars = [self.context]
+
+    @property
+    def _DEFAULT_TEMPLATE(self):
+        registry = getUtility(IRegistry)
+        return registry.get(
+            'bika.lims.analysisrequest.default_arreport_template', 'default.pt')
 
     def __call__(self):
         if self.context.portal_type == 'AnalysisRequest':
@@ -67,22 +76,7 @@ class AnalysisRequestPublishView(BrowserView):
     def getAvailableFormats(self):
         """ Returns the available formats found in templates/reports
         """
-        this_dir = os.path.dirname(os.path.abspath(__file__))
-        templates_dir = os.path.join(this_dir, 'templates/reports')
-        tempath = '%s/%s' % (templates_dir, '*.pt')
-        templates = [t.split('/')[-1] for t in glob.glob(tempath)]
-        out = []
-        for template in templates:
-            out.append({'id': template, 'title': template[:-3]})
-        for templates_resource in iterDirectoriesOfType('reports'):
-            prefix = templates_resource.__name__
-            templates = [tpl for tpl in templates_resource.listDirectory() if tpl.endswith('.pt')]
-            for template in templates:
-                out.append({
-                    'id': '{0}:{1}'.format(prefix, template),
-                    'title': '{0} ({1})'.format(template[:-3], prefix),
-                })
-        return out
+        return getARReportTemplates()
 
     def getAnalysisRequests(self):
         """ Returns a dict with the analysis requests to manage
@@ -394,7 +388,7 @@ class AnalysisRequestPublishView(BrowserView):
                 'accredited': lab.getLaboratoryAccredited(),
                 'accreditation_body': to_utf8(lab.getAccreditationBody()),
                 'accreditation_logo': lab.getAccreditationBodyLogo(),
-                'logo': "%s/logo_print.jpg" % portal.absolute_url()}
+                'logo': "%s/logo_print.png" % portal.absolute_url()}
 
     def _contact_data(self, ar):
         data = {}
@@ -635,26 +629,40 @@ class AnalysisRequestPublishView(BrowserView):
             for dept in departments[mngr]:
                 if final_depts:
                     final_depts += ', '
-                final_depts += dept
+                final_depts += to_utf8(dept)
             managers['dict'][mngr]['departments'] = final_depts
 
         return managers
 
 
-    def renderImage(self, attachment):
-        af = attachment.getAttachmentFile()
-        filename = af.filename
-        fileurl = attachment.absolute_url() + "/at_download/AttachmentFile"
-        # WeasyPrint default's URL fetcher seems that doesn't support urls
-        # like at_download/AttachmentFile (without mime, header, etc.).
-        # Need to copy the image to the temp file and replace occurences
-        # in the HTML report later
-        outfilename = Globals.INSTANCE_HOME + '/var/' + filename
-        outfile = open(outfilename, 'wb')
-        outfile.write(str(af.data))
-        outfile.close()
-        self._images[fileurl] = "file://"+outfilename
-        return attachment.absolute_url() + "/at_download/AttachmentFile"
+    def localise_images(self, htmlreport):
+        """WeasyPrint will attempt to retrieve attachments directly from the URL
+        referenced in the HTML report, which may refer back to a single-threaded
+        (and currently occupied) zeoclient, hanging it.  All "attachments"
+        using urls ending with at_download/AttachmentFile must be converted
+        to local files.
+
+        Returns a list of files which were created, and a modified copy
+        of htmlreport.
+        """
+        cleanup = []
+
+        _htmltext = to_utf8(htmlreport)
+        # first regular image tags
+        for match in re.finditer("""http.*at_download\/AttachmentFile""", _htmltext, re.I):
+            url = match.group()
+            att_path = url.replace(self.portal_url+"/", "")
+            attachment = self.portal.unrestrictedTraverse(att_path)
+            af = attachment.getAttachmentFile()
+            filename = af.filename
+            extension = "."+filename.split(".")[-1]
+            outfile, outfilename = tempfile.mkstemp(suffix=extension)
+            outfile = open(outfilename, 'wb')
+            outfile.write(str(af.data))
+            outfile.close()
+            _htmltext.replace(url, outfilename)
+            cleanup.append(outfilename)
+        return cleanup, _htmltext
 
     def publishFromPOST(self):
         html = self.request.form.get('html')
@@ -679,19 +687,23 @@ class AnalysisRequestPublishView(BrowserView):
             if not ar.getAnalyses(review_state=allowed_states):
                 return []
 
-        # SMTP errors are silently ignored if server is in debug mode
+        # HTML written to debug file
         debug_mode = App.config.getConfiguration().debug_mode
-        # PDF and HTML files are written to disk if server is in debug mode
-        out_path = join(Globals.INSTANCE_HOME, 'var') if debug_mode \
-            else None
-        out_fn = to_utf8(ar.Title())
-
-        if out_path:
-            open(join(out_path, out_fn + ".html"), "w").write(results_html)
+        if debug_mode:
+            tmp_fn = tempfile.mktemp(suffix=".html")
+            logger.debug("Writing HTML for %s to %s" % (ar.Title(), tmp_fn))
+            open(tmp_fn, "wb").write(results_html)
 
         # Create the pdf report (will always be attached to the AR)
-        pdf_outfile = join(out_path, out_fn + ".pdf") if out_path else None
-        pdf_report = createPdf(htmlreport=results_html, outfile=pdf_outfile, images=self._images)
+        # we must supply the file ourself so that createPdf leaves it alone.
+        pdf_fn = tempfile.mktemp(suffix=".pdf")
+        pdf_report = createPdf(htmlreport=results_html, outfile=pdf_fn)
+
+        # PDF written to debug file
+        if debug_mode:
+            logger.debug("Writing PDF for %s to %s" % (ar.Title(), pdf_fn))
+        else:
+            os.remove(pdf_fn)
 
         recipients = []
         contact = ar.getContact()
@@ -749,7 +761,7 @@ class AnalysisRequestPublishView(BrowserView):
             if len(to) > 0:
                 # Send the email to the managers
                 mime_msg['To'] = ','.join(to)
-                attachPdf(mime_msg, pdf_report, out_fn)
+                attachPdf(mime_msg, pdf_report, pdf_fn)
 
                 try:
                     host = getToolByName(ar, 'MailHost')
@@ -783,15 +795,23 @@ class AnalysisRequestPublishView(BrowserView):
 
             # Attach the pdf to the email if requested
             if pdf_report and 'pdf' in recip.get('pubpref'):
-                attachPdf(mime_msg, pdf_report, out_fn)
+                attachPdf(mime_msg, pdf_report, pdf_fn)
 
             # For now, I will simply ignore mail send under test.
             if hasattr(self.portal, 'robotframework'):
                 continue
 
+            msg_string = mime_msg.as_string()
+
+            # content of outgoing email written to debug file
+            if debug_mode:
+                tmp_fn = tempfile.mktemp(suffix=".email")
+                logger.debug("Writing MIME message for %s to %s" % (ar.Title(), tmp_fn))
+                open(tmp_fn, "wb").write(msg_string)
+
             try:
                 host = getToolByName(ar, 'MailHost')
-                host.send(mime_msg.as_string(), immediate=True)
+                host.send(msg_string, immediate=True)
             except SMTPServerDisconnected as msg:
                 logger.warn("SMTPServerDisconnected: %s." % msg)
             except SMTPRecipientsRefused as msg:

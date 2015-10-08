@@ -38,8 +38,18 @@
 
 <!-- Split the report by department -->
 <tal:department repeat="dept python:view.getAnalysisRequestObj().getDepartments()">
-<!-- Report header -->
-<div id="section-header">
+    
+<!--
+    Page Header
+    A div element with the class "page-header" will be placed on the
+    top of the report, within the top margin area. This element
+    will be displayed on each page.
+
+    Page numbering
+    For the number of page, use the "page-current-num" class.
+    For the total count, use the "page-total-count" class.
+-->
+<div id="section-header" class='page-header'>
     <div id='barcode-container'>
         <div id='ariddept'
             tal:define="deptidx repeat/dept/number"
@@ -57,6 +67,10 @@
             <img tal:attributes="src laboratory/logo"/>
         </a>
     </div>
+</div>
+
+<!-- Address and Lab info -->
+<div id="section-info">
     <div id="accreditation-logo"
         tal:condition="python:laboratory['accredited']==True">
         <img tal:condition="laboratory/accreditation_logo"
@@ -64,10 +78,6 @@
         <img tal:condition="not:laboratory/accreditation_logo"
              tal:attributes="src string:${portal/url}/++resource++bika.lims.images/AccreditationBodyLogo.png"/>
     </div>
-</div>
-
-<!-- Address and Lab info -->
-<div id="section-info">
     <table>
         <tr>
             <td id="client-info">
@@ -125,11 +135,10 @@
 <div id="section-alert" tal:condition="python:analysisrequest['prepublish']==True and analysisrequest['invalid']==False">
     <h1 i18n:translate="">Provisional report</h1>
 </div>
-
-<h1><span i18n:translate="">Department</span>: <span tal:content="dept/title"></span></h1>
 <!-- Summary section -->
 <div id="section-summary">
-    <h1 i18n:translate="">Summary</h1>
+    <h1><span i18n:translate="">Department</span>: <span tal:content="dept/title"></span></h1>
+    <h2 i18n:translate="">Summary</h2>
     <table>
         <tr>
             <td class="label" i18n:translate="">Request ID</td>
@@ -239,7 +248,7 @@
                     <span class="result" tal:content="structure analysis/formatted_result">23</span>
                     <span class="units" tal:content="structure analysis/formatted_unit|nothing"></span>
                 </td>
-                <td class="dryresult" tal:condition="python: reportdrymatter and analysis/resultdm">
+                <td class="dryresult" tal:condition="python: reportdrymatter and getattr(analysis, 'resultdm', None)">
                     <span tal:content="structure string:${analysis/resultdm}  ${analysis/formatted_unit|nothing}">23</span>
                 </td>
                 <td class="specs">
@@ -275,7 +284,7 @@
 </div>
 
 <!-- Results interpretation section -->
-<div id="resultsinterpretation"
+<div id="section-resultsinterpretation"
     tal:define="ri analysisrequest/resultsinterpretationdepts"
     tal:condition="python: ri and (ri.get('') or ri.get(dept.Title()))">
     <h1 i18n:translate="">Results interpretation</h1>
@@ -337,44 +346,47 @@
 </div>
 
 <!-- Signatures section -->
-<table id="section-signatures">
-    <td tal:define="mngr_info analysisrequest/managers;
-                     mngr_ids python:mngr_info['ids'];
-                     managers python:mngr_info['dict'];"
-         tal:repeat="manager mngr_ids"
-         class="manager-info">
-         <tal:manager tal:define="rownum repeat/manager/number;
-                         email python:managers[manager]['email'];
-                         jobtitle python:managers[manager]['job_title'];
-                         phone python:managers[manager]['phone'];
-                         department python:managers[manager]['departments'];
-                         signature python:managers[manager]['signature'];"
-                      condition="python: department == dept.Title()">
+<div id="section-signatures">
+    <table>
+        <td tal:define="mngr_info analysisrequest/managers;
+                         mngr_ids python:mngr_info['ids'];
+                         managers python:mngr_info['dict'];"
+             tal:repeat="manager mngr_ids"
+             class="manager-info">
+             <tal:manager tal:define="rownum repeat/manager/number;
+                             email python:managers[manager]['email'];
+                             jobtitle python:managers[manager]['job_title'];
+                             phone python:managers[manager]['phone'];
+                             department python:managers[manager]['departments'];
+                             signature python:managers[manager]['signature'];"
+                          condition="python: department == dept.Title()">
 
-            <img tal:condition="signature"
-                 tal:attributes="src string:${signature}" style="height:75px"/>
-            <br/>
-            <span class="manager-fullname" tal:content="python:managers[manager]['name']">Joe Blogs</span>
-            <br tal:condition="jobtitle">
-            <span class="manager-jobtitle"
-                tal:condition="jobtitle"
-                tal:content="jobtitle"></span>
-            <br tal:condition="email"/>
-            <span class="manager-email" tal:condition="email">
-                <a tal:attributes="href string:mailto:${email}"
-                   tal:content="email">a@b.com</a>
-            </span>
-            <br tal:condition="phone"/>
-            <span class="manager-phone"
-                tal:content="phone"
-                tal:condition="phone">011 555 1112</span>
-            <br/>
-            <span class="manager-department" tal:content="department">Chemistry</span>
-            <span tal:condition="python: rownum % 3 == 0"
-                  tal:replace="structure python:'</tr>'"></span>
-        </tal:manager>
-    </td>
-</table>
+                <img tal:condition="signature"
+                     tal:attributes="src string:${signature}" style="height:75px"/>
+                <br/>
+                <span class="manager-salutation" tal:content="python:managers[manager]['salutation']">Ms.</span>&nbsp;
+                <span class="manager-fullname" tal:content="python:managers[manager]['name']">Joe Blogs</span>
+                <br tal:condition="jobtitle">
+                <span class="manager-jobtitle"
+                    tal:condition="jobtitle"
+                    tal:content="jobtitle"></span>
+                <br tal:condition="email"/>
+                <span class="manager-email" tal:condition="email">
+                    <a tal:attributes="href string:mailto:${email}"
+                       tal:content="email">a@b.com</a>
+                </span>
+                <br tal:condition="phone"/>
+                <span class="manager-phone"
+                    tal:content="phone"
+                    tal:condition="phone">011 555 1112</span>
+                <br/>
+                <span class="manager-department" tal:content="department">Chemistry</span>
+                <span tal:condition="python: rownum % 3 == 0"
+                      tal:replace="structure python:'</tr>'"></span>
+            </tal:manager>
+        </td>
+    </table>
+</div>
 
 <!-- Discreeter section -->
 <div id="section-discreeter">
@@ -388,10 +400,45 @@
          tal:condition="confidence_level" i18n:translate="">Test results are at a <tal:block replace="confidence_level" i18n:name="lab_confidence"/>% confidence level</div>
     <div tal:condition="python:contact.get('pubpref','') != '' and 'email' in contact['pubpref']" i18n:translate="">Methods of analysis available by clicking on the 'Request' link</div>
 </div>
+
+<!--
+    Page footer
+    A div element with the class "page-footer" will be placed in the
+    bottom of the report, within the bottom margin area. This element
+    will be displayed on each page.
+
+    Page numbering
+    For the number of page, use the "page-current-num" class.
+    For the total count, use the "page-total-count" class.
+-->
 <div class='page-footer'>
-    <div class="clearfix"></div>
-    <div class="footer" tal:content="structure analysisrequest/footer"></div>
-    <div class="clearfix"></div>
+    <table>
+        <tr>
+            <td class='footer-discreeter'>
+                <div class="footer" tal:content="structure analysisrequest/footer"></div>
+                <div class="page-number">Page <span class="page-current-num"></span> of <span class="page-total-count"></span></div>
+            </td>
+            <td class='barcode-container'>
+                <div class='barcode'
+                        data-code='code128'
+                        data-showHRI='false'
+                        data-barHeight='12'
+                        data-addQuietZone='true'
+                        tal:attributes="data-id analysisrequest/id">
+                </div>
+            </td>
+        </tr>
+    </table>
 </div>
+
+<!--
+    Manual break ("manual-page-break" css class)
+    We want to report to be splitted by departments.
+
+    Restart page count ("restart-page-count" css class)
+    We want the number of pages to restart after the current page
+-->
+<div class='manual-page-break restart-page-count'></div>
+
 </tal:department>
 </tal:report>

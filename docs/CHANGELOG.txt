@@ -1,3 +1,63 @@
+3.1.9 (2015-10-8)
+------------------
+LIMS-2068: LIMS-2068 Urgent. Analysis Catgories don't expand
+LIMS-1875: Able to deactivate instruments and reference samples without logging in
+LIMS-2049: Displaying lists doesn't work as expected in 319
+LIMS-1908: Navigation tree order
+LIMS-1543: Add "Security Seal Intact Y/N" checkbox for partition container
+LIMS-1544: Add "File attachment" field on Sample Point
+LIMS-1949: Enviromental conditions
+LIMS-1549: Sampling Round Templates privileges and permissions
+LIMS-1564: Cancelling a Sampling Round
+LIMS-2020: Add Sampling Round - Department not available for selection
+LIMS-1545: Add "Composite Y/N" checkbox on AR Template
+LIMS-1547: AR Templates tab inside Sampling Round Template
+LIMS-1561: Editing a Sampling Round
+LIMS-1558: Creating Sampling Rounds
+LIMS-1965: Modified default navtree order for new installations
+LIMS-1987: AR Invoice tab should not be shown if pricing is toggled off
+LIMS-1523: Site Error when transitioning AR from 'Manage Analyses' or 'Log' tab
+LIMS-1970: Analyses with AR Specifications not displayed properly in AR Add form
+LIMS-1969: AR Add error when "Categorise analysis services" is disabled
+LIMS-1397: Fix Client Title accessor to prevent catalog error when data is imported
+LIMS-1996: On new system with no instrument data is difficult to get going.
+LIMS-2005: Click on Validations tab of Instruments it give error
+LIMS-1806: Instrument Interface. AQ2. Seal Analytical - Error
+LIMS-2002: Error creating Analysis Requests from batch.
+LIMS-1996: On new system with no instrument data it is difficult to get going. The warnings could be confusing
+LIMS-1312: Transposed Worksheet view, ARs in columns
+LIMS-1760: Customised AR Import spreadsheets (refactored, support importing to Batch)
+LIMS-1548: Client-specific Sampling Round Templates
+LIMS-1546: Sampling Round Template Creation and Edit view
+LIMS-1944: Prevent concurrent form submissions from clobbering each other's results
+LIMS-1930: AssertionError: Having an orphan size, higher than batch size is undefined
+LIMS-1959: Not possible to create an AR
+LIMS-1956: Error upgrading to 319
+LIMS-1934: Hyperlinks in invoices
+LIMS-1943: Stickers preview and custom stickers templates support
+LIMS-1855: Small Sticker layout. QR-code capabilities
+LIMS-1627: Pricing per Analysis Profile
+HEALTH-279: AS IDs to be near top of page. Columns in AS list
+LIMS-1625: Instrument tab titles and headers do not correspond
+LIMS-1924: Instrument tab very miss-titled. Internal Calibration Tests
+LIMS-1922: Instrument out of date typo and improvement
+HEALTH-175: Supplier does not resolve on Instrument view page
+LIMS-1887: uniquefield validator doesn't work properly
+LIMS-1869: Not possible to create an Analysis Request
+LIMS-1867: Auto-header, auto-footer and auto-pagination in results reports
+LIMS-1743: Reports: ISO (A4) or ANSI (letter) pdf report size
+LIMS-1695: Invoice export function missing
+LIMS-1812: Use asynchronous requests for expanding categories in listings
+LIMS-1811: Refactor AR Add form Javascript, and related code.
+LIMS-1818: Instrument Interface. Eltra CS-2000
+LIMS-1817: Instrument Interface. Rigaku Supermini XRF
+- New System Dashboard for LabManagers and Admins
+
+3.1.8.3 (2015-10-01)
+--------------------
+LIMS-1755: PDF writer should be using a world-writeable tmp location
+LIMS-2041: Resolve ${analysis_keyword) in instrument import alert.
+
 3.1.8.2 (2015-09-27)
 --------------------
 LIMS-1996: On new system with no instrument data is difficult to get going.
@@ -16,6 +76,11 @@ Fix portlets.xml for Plone 4.3.6 compatibility
 
 3.1.8 (2015-06-03)
 ------------------
+LIMS-1923: Typo InstrumentCalibration
+HEALTH-287: Hyperlink in Instrument messages
+LIMS-1929: Translation error on Instrument Document page
+LIMS-1928 Asset Number on Instruments' Certificate tab should use Instrument's default
+LIMS-1929: Translation error on Instrument Document page
 LIMS-1773: Instrument. Thermo Fisher ELISA Spectrophotometer
 LIMS-1697: Error updating bika.lims 317 to 318 via quickinstaller
 LIMS-1820: QC Graphs DateTime's X-Axis not well sorted
@@ -760,4 +825,3 @@ http://plone.org/documentation/manual/upgrade-guide
  - Added CHANGES.txt and README.txt
  - Added windows batch script for ID server
    (scripts/start-id-server.bat)
-

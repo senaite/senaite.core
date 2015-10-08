@@ -1,5 +1,6 @@
 *** Settings ***
 
+Resource   keywords_analysisrequest.txt
 Documentation    Generally useful keywords for Bika tests.
 ...              To include this file, use this:
 ...              *** settings ***
@@ -7,6 +8,7 @@ Documentation    Generally useful keywords for Bika tests.
 
 
 *** Keywords ***
+
 Start browser
 #    Open browser  ${PLONEURL}/login_form
     Open browser  ${PLONEURL}/login_form   browser=chrome
@@ -105,30 +107,6 @@ Shleep
     Log  Sleeping ${amount}: ${comment}  WARN
     sleep  ${amount}
 
-Simple AR Creation
-    [Documentation]  Create a. simple AR
-    [Arguments]  ${Client}
-    ...          ${Contact}
-    ...          ${SampleType}
-    ...          ${ASCategory}
-    ...          ${ASTitle}
-    @{time} =                   Get Time        year month day hour min sec
-    go to                       ${PLONEURL}/clients/
-    click link                  ${Client}
-    Wait until page contains element    css=body.portaltype-client
-    click link                  link=Add
-    Select from dropdown        ar_0_Contact                ${Contact}
-    SelectDate                  ar_0_SamplingDate           @{time}[2]
-    Select from dropdown        ar_0_SampleType             ${SampleType}
-    Set Selenium Timeout        30
-    click element               xpath=.//th[@id="cat_lab_${ASCategory}"]
-    Select checkbox             xpath=//input[@title='${ASTitle}']
-    Click Button                Save
-    Wait until page contains    created
-    ${ar_id} =                  Get text      //dl[contains(@class, 'portalMessage')][2]/dd
-    ${ar_id} =                  Set Variable  ${ar_id.split()[2]}
-    [Return]                    ${ar_id}
-
 Create a contact
     [Documentation]  Function to create a contact from a client.
     [Arguments]  ${Client}
@@ -154,7 +132,7 @@ Enable Sampling Workflow
 Wait For Ajax
     Wait for Condition   return window.jQuery.active == 0;
 
-Disable Print Page
+Disable stickers
     [Documentation]  Disable the print page after create an AR.
     Go to            ${PLONEURL}/bika_setup/edit
     click element    fieldsetlegend-stickers

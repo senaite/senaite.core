@@ -59,6 +59,7 @@ a blank order form in ${client_id}
 I enter ${nr} for product ${product_title}
     [Documentation]  Simply input the value for this product
     input text   xpath=.//input[@data-product_title='${product_title}']   ${nr}
+    press key    xpath=.//input[@data-product_title='${product_title}']   \t
 
 I submit the new order
     [Documentation]  Save the order and wait for the submission to complete

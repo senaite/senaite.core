@@ -31,6 +31,7 @@ AddSamplePartition = 'BIKA: Add SamplePartition'
 AddSamplePoint = 'BIKA: Add SamplePoint'
 AddStorageLocation = 'BIKA: Add StorageLocation'
 AddSamplingDeviation = 'BIKA: Add SamplingDeviation'
+AddSamplingRound = 'BIKA: Add SamplingRound'
 AddSRTemplate = 'BIKA: Add SRTemplate'
 AddSubGroup = 'BIKA: Add Sub-group'
 AddQuery = 'BIKA: Add Query'
@@ -55,6 +56,7 @@ ADD_CONTENT_PERMISSIONS = {
     'SampleMatrix': AddSampleMatrix,
     'SamplePartition': AddSamplePartition,
     'SamplingDeviation': AddSamplingDeviation,
+    'SamplingRound': AddSamplingRound,
     'SubGroup': AddSubGroup,
     'Query': AddQuery,
 }
@@ -150,6 +152,11 @@ EditClient = 'BIKA: Edit Client'
 EditBatch = 'BIKA: Edit Batch'
 CloseBatch = 'BIKA: Close Batch'
 ReopenBatch = 'BIKA: Reopen Batch'
+
+# Sampling Round permissions
+# --------------------------
+CloseSamplingRound = 'BIKA: Close SamplingRound'
+ReopenSamplingRound = 'BIKA: Reopen SamplingRound'
 
 # Manage AR Imports
 # ----------------------------------------------

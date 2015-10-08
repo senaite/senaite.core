@@ -1,0 +1,160 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<metal:block use-macro="context/global_defines/macros/defines" />
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      tal:attributes="lang default_language|default;
+                      xml:lang default_language|default;"
+      i18n:domain="bika"
+      tal:define="portal_state context/@@plone_portal_state;
+                  portal_url portal_state/portal_url;
+                  plone_view context/@@plone;
+                  portal portal_state/portal;
+                  portal_type python:context.portal_type;
+                  anchor_self python:('Client','AnalysisRequest', 'AnalysisRequestsFolder', 'Batch');
+                  goback_url  python:context.absolute_url() if portal_type in anchor_self else context.aq_parent.absolute_url();">
+<head>
+    <div tal:replace="structure provider:plone.resourceregistries.scripts" />
+    <!-- Generic style -->
+    <style type="text/css">
+        body {
+            background-color: #efefef;
+            margin: 0;
+            padding: 0;
+        }
+        #sticker-preview-header {
+            font-family:Helvetica, Arial;
+            font-size:0.9em;
+            background-color: #dcdcdc;
+            box-shadow: 1px 1px 1px #ccc;
+            margin: 0 0 40px;
+            padding: 10px;
+            text-align: center;
+        }
+        #sticker-preview-header .options-line {
+            padding:0 0 10px 0;
+        }
+        #sticker-preview-header select {
+            margin-left: 10px;
+            padding: 0 5px;
+        }
+        #sticker-preview-header #sticker-buttons input {
+            text-align:center;
+            width:30mm;
+            margin:0 2mm;
+            background-color: #aaa;
+            border-radius: 5px;
+            color: #fff;
+            font-family: Helvetica,Arial;
+            font-size: 9pt;
+            font-weight: bold;
+            padding: 4px 15px;
+            text-decoration: none;
+            text-shadow: 1px 1px 1px #999;
+            text-transform: uppercase;
+            border:none;
+            cursor:pointer;
+        }
+        #sticker-preview-header #sticker-buttons input:hover {
+              background-color: #bbb;
+              text-shadow: 1px 1px 1px #aaa;
+        }
+        .sticker {
+            margin:0 auto;
+            background-color:#fff;
+            border-bottom: 1px dotted #cdcdcd;
+            box-shadow: 1px 2px 5px #cdcdcd;
+        }
+
+        @media print {
+            body {background-color:#fff;}
+            #sticker-preview-header {display:none !important;}
+            #stickers-wrapper { margin:0;}
+            .sticker {
+              margin:0;
+              border:none;
+              box-shadow:none;
+              border-bottom:none;
+            }
+        }
+    </style>
+    <script type="text/javascript">
+        $(function(){
+            $('#print-button').click(function(e) {
+                e.preventDefault();
+                window.print();
+            });
+            $('#cancel-button').click(function(e) {
+                e.preventDefault();
+                window.location = $(this).attr('data-url');
+            });
+            $('select#template').change(function(e) {
+                reload($('select#template').val());
+            });
+
+            /**
+             * Re-loads the stickers preview by using the template specified
+             */
+            function reload(template) {
+                var baseurl = $('body').attr('data-itemsurl');
+                $('#stickers-wrapper').fadeTo('fast', 0.4);
+                $.ajax({
+                    url: baseurl,
+                    type: 'POST',
+                    async: true,
+                    data: {"template": template}
+                })
+                .always(function(data) {
+                    var htmldata = data;
+                    htmldata = $(htmldata).find('#stickers-wrapper').html();
+                    $('#stickers-wrapper').html(htmldata);
+                    $('#stickers-wrapper').fadeTo('fast', 1);
+                    // reload barcoding
+                    bika.lims.BarcodeUtils.load();
+                });
+            }
+        });
+    </script>
+</head>
+<body tal:attributes="onload        python:'this.print()' if view.request.get('autoprint', False) else '';
+                      data-itemsurl python:view.getItemsURL();">
+    <div id='sticker-preview-wrapper'>
+        <!-- Header of the preview. This will never be printed.
+             Container with preview options and buttons --->
+        <div id="sticker-preview-header">
+            <div id='options-handler'>
+                <div class='options-line'>
+                    <label for="template" i18n:translate="">Template</label>
+                    <select id="template" name="template">
+                    <tal:formats tal:repeat="tpl python:view.getAvailableTemplates()">
+                          <option selected
+                                  tal:attributes="value tpl/id"
+                                  tal:content="tpl/title"
+                                  tal:condition="tpl/selected"></option>
+                          <option tal:attributes="value tpl/id"
+                                  tal:content="tpl/title"
+                                  tal:condition="not:tpl/selected"></option>
+                    </tal:formats>
+                    </select>
+                </div>
+            </div>
+            <div id='sticker-buttons'>
+                <input type="button" id='cancel-button' value="Go back"
+                       tal:attributes="data-url goback_url;"/>
+                <input type="button" id='print-button' value="Print"/>
+            </div>
+        </div>
+
+        <!-- Container where all the stickers are embedded. -->
+        <div id="stickers-wrapper">
+            <style id='stickers-style' type="text/css" tal:content="structure python:view.getSelectedTemplateCSS()"></style>
+            <tal:sticker tal:repeat="sticker view/items">
+            <div class='sticker'
+                 tal:content='structure python:view.renderItem()'></div>
+            </tal:sticker>
+        </div>
+    </div>
+</body>
+</html>

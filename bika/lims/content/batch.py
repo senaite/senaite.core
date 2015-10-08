@@ -243,7 +243,7 @@ class Batch(ATFolder):
     def getContactTitle(self):
         return ""
 
-    def getProfileTitle(self):
+    def getProfilesTitle(self):
         return ""
 
     def getAnalysisCategory(self):

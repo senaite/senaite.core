@@ -15,7 +15,7 @@ window.bika.lims.controllers =  {
         ['CommonUtils'],
 
     // Barcode utils
-    ".barcode":
+    ".barcode, .qrcode":
         ['BarcodeUtils'],
 
     // Calculation utils
@@ -49,6 +49,9 @@ window.bika.lims.controllers =  {
     ".portaltype-analysisservice.template-base_edit":
         ['AnalysisServiceEditView'],
 
+    // Analysis Profile
+    ".portaltype-analysisprofile.template-base_edit":
+        ['AnalysisProfileEditView'],
 
     // Instruments
     ".portaltype-instrument.template-referenceanalyses":
@@ -67,6 +70,9 @@ window.bika.lims.controllers =  {
     ".portaltype-client.template-base_edit":
         ['ClientEditView'],
 
+    // Client Sampling Rounds
+    ".template-bika-lims-content-samplingsround.portaltype-client":
+        ['ClientSamplingRoundAddEditView'],
 
     // Reference Samples
     ".portaltype-referencesample.template-analyses":
@@ -100,8 +106,16 @@ window.bika.lims.controllers =  {
     ".portaltype-analysisrequest.template-analyses":
         ['AnalysisRequestAnalysesView'],
 
-    ".portaltype-analysisrequest.template-ar_add":
-        ['AnalysisRequestAddView'],
+	// Common and utilities for AR Add forms
+	".portaltype-analysisrequest.template-ar_add": ['AnalysisRequestAddView'],
+
+	// the file "bika.lims.analysisrequest.add_by_row.js itself is included
+	// from ar_add_by_row.pt
+	".analysisrequest_add_by_row": ['AnalysisRequestAddByRow'],
+
+	// the file "bika.lims.analysisrequest.add_by_col.js itself is included
+	// from ar_add_by_row.pt
+	".analysisrequest_add_by_col": ['AnalysisRequestAddByCol'],
 
     "#ar_publish_container":
         ['AnalysisRequestPublishView'],

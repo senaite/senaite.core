@@ -10,7 +10,8 @@
       <metal:block define-slot="title">
         <h1
             tal:condition="python:context.checkCreationFlag()">
-      <img tal:attributes="src python:'%s/%s'%(context.portal_url(), context.icon().replace('.png', '_big.png'))"/>
+      <img tal:attributes="src python:'%s/%s'%(context.portal_url(), context.icon().replace('.png', '_big.png'))"
+              tal:condition="python: hasattr(context, 'icon') and context.icon()"/>
           <span i18n:translate="heading_add_item">
 			Add
 			<span i18n:name="itemtype"
@@ -47,11 +48,11 @@
     <dt i18n:translate="">
         Info
     </dt>
-    <dd i18n:translate="">
+    <dd i18n:translate="label_edit_default_view_container">
         You are editing the default view of a container. If you wanted to edit the container itself,
        <a href=""
           i18n:name="go_here"
-          i18n:translate=""
+          i18n:translate="label_edit_default_view_container_go_here"
           tal:attributes="href string:${context/aq_inner/aq_parent/absolute_url}/edit">go here</a>.
     </dd>
 </dl>

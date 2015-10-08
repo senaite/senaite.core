@@ -17,10 +17,11 @@ class ReferenceResultsView(BikaListingView):
         dict(ReferenceResultsField value)
     """
 
-    def __init__(self, context, request, fieldvalue, allow_edit):
+    def __init__(self, context, request, fieldvalue=[], allow_edit=True):
         BikaListingView.__init__(self, context, request)
         self.context_actions = {}
-        self.contentFilter = {'review_state': 'impossible_state'}
+        self.contentFilter = {'inactive_state': 'active',
+                              'sort_on': 'sortable_title'}
         self.base_url = self.context.absolute_url()
         self.view_url = self.base_url
         self.show_sort_column = False
@@ -30,6 +31,9 @@ class ReferenceResultsView(BikaListingView):
         self.pagesize = 999999
         self.allow_edit = allow_edit
         self.show_categories = True
+        self.ajax_categories = True
+        self.ajax_categories_url = self.context.absolute_url() + "/reference_results_widget_view"
+        self.category_index = 'getCategoryTitle'
         # self.expand_all_categories = False
 
         self.referenceresults = {}
@@ -57,8 +61,8 @@ class ReferenceResultsView(BikaListingView):
     def folderitems(self):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         self.categories = []
-        services = bsc(portal_type='AnalysisService',
-                       sort_on='sortable_title')
+        self.contentFilter['portal_type'] = 'AnalysisService'
+        services = bsc(self.contentFilter)
         items = []
         for service in services:
             service = service.getObject()
