@@ -1,0 +1,196 @@
+/* IMPORTANT NOTE
+ * Do not use margins, use padding instead
+ */
+
+#report {
+    font: 9pt Arial, Verdana, serif;
+}
+
+#report h1 { font-size:1.4em; }
+#report h2 { font-size:1.2em; }
+#report h3 { font-size:1.1em; }
+
+#report h1,
+#report h2,
+#report h3 {
+    font-weight:bold;
+    padding-bottom:5px !important;
+}
+
+#report table {
+    width: 100%;
+}
+
+#report table tr td,
+#report table tr th {
+    text-align:left;
+    vertical-align:top;
+}
+#report .label {
+    font-weight:bold;
+    padding-right: 10px;
+}
+#report .outofrange,
+#report .outofrange a {
+    font-weight:bold;
+    color:#d40000;
+}
+#report .units,
+#report .units sub,
+#report .units sup {
+    color:#777;
+    font-weight:normal;
+    font-style:italic;
+}
+#report .units sub,
+#report .units sup {
+    font-size:7pt;
+}
+
+#report table#section-header{
+    border-bottom:1px solid #000;
+}
+
+#report table#section-header,
+#report table#section-info {
+    
+}
+#report table#section-header td#accreditation-logo {
+    width:80mm;
+}
+#report table#section-info td#lab-info {
+    width:80mm;
+}
+#report #section-alert {
+    padding:20px;
+    border:1px solid #CDCDCD;
+    background-color:#ffffff;
+    margin:0px;
+}
+#report #section-alert h1 {
+    font-size:1em;
+    margin:0px;
+    padding:0;
+    border:none;
+    color:#d40000;
+}
+#report #section-results,
+#report #section-qcresults,
+#report #section-resultsinterpretation {
+    padding-top:20px;
+}
+#report #section-summary table tr td,
+#report #section-results table tr td,
+#report #section-qcresults table tr td {
+    padding-left:5px;
+}
+#report #section-summary tr td {
+    border-left-width: 0px;
+    border-bottom:1px solid #ccc;
+}
+#report #section-summary tr td.label {
+    width:60mm;
+}
+#report #section-results table thead tr th,
+#report #section-qcresults table thead tr th {
+    padding-right:10px;
+}
+#report #section-results table thead tr th span,
+#report #section-qcresults table thead tr th span {
+    display:block;
+    border-bottom:1px solid #000;
+    line-height:1.6;
+}
+#report #section-results .result {
+    width:100px;
+}
+#report #section-results .specs {
+    width:200px;
+    text-align:center;
+    padding-right:10px;
+}
+#report #section-results .outofrange {
+    width:10px;
+}
+#report #section-results .remarks {
+    font-size: 0.9em;
+    padding: 0 400px 15px 3px;
+    color: #555;
+}
+#report #section-qcresults .result {
+    width:60px;
+}
+#report #section-qcresults .specs {
+    width:100px;
+    text-align:center;
+    padding-right:10px;
+}
+#report #section-qcresults .worksheet {
+    width:80px;
+}
+#report #section-qcresults .refsample {
+    width:200px;
+}
+#report #section-qcresults .outofrange {
+    width:10px;
+}
+
+#report #section-attachments ul {
+    list-style-type:none;
+    margin:0px;
+    padding:0px;
+    margin-bottom:20px;
+}
+#report #section-attachments table#analysis-attachments td {
+    padding-right:20px;
+}
+#report #section-signatures {
+    padding:10mm 0 5mm;
+}
+#section-discreeter {
+    color:#444;
+}
+#section-discreeter * {
+    font-size:0.9em;
+}
+#section-discreeter ol {
+    margin:0;
+    padding: 0 0 0 15px;
+}
+#report .page-footer .barcode-container {
+    text-align:right;
+}
+#report .barcode {
+    float: right;
+}
+#report #ariddept {
+    font-size: 10px;
+    overflow: auto;
+    padding: 0 10px 5px;
+    text-align: right;
+}
+#report div#section-info td {
+    vertical-align: top;
+}
+#report div#section-info td a {
+    text-decoration: none;
+}
+#report div#section-info table {
+    width: 100%;
+}
+#report img.accredited-ico {
+    vertical-align:bottom;
+    padding-right:5px;
+}
+#report .category_comments {
+    color: #333;
+    font-size: 11px;
+    line-height: 130%;
+    padding: 10px 15px 15px;
+}
+
+#report .page-footer table {
+    border-top: 1px solid #aaaaaa;
+    padding: 5px 0;
+    width: 100%;
+}
