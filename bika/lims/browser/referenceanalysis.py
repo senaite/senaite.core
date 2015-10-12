@@ -244,3 +244,4 @@ class AnalysesRetractedListReport(BrowserView):
         except SMTPRecipientsRefused as msg:
             raise WorkflowException(str(msg))
 
+

@@ -142,3 +142,4 @@ class PublishView(BrowserView):
             setheader('Content-Type', 'application/pdf')
             setheader("Content-Disposition", "attachment;filename=\"%s\"" % fn)
             self.request.RESPONSE.write(pdf)
+

@@ -15,9 +15,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
 "POT-Creation-Date: 2012-10-20 09:21+0000\n"
-"PO-Revision-Date: 2014-12-17 16:57+0000\n"
-"Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>\n"
-"Language-Team: Spanish (http://www.transifex.com/projects/p/bika-lims/language/es/)\n"
+"PO-Revision-Date: 2015-06-11 08:18+0000\n"
+"Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
+"Language-Team: Spanish (http://www.transifex.com/bikalabs/bika-lims/language/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -189,13 +189,14 @@ msgstr "Cálculo"
 msgid "Calculations"
 msgstr "Cálculos"
 
+#
+# File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
+msgid "Calibration Certificates"
+msgstr ""
+
 # File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
 msgid "Calibrations"
 msgstr "Calibraciones"
-
-# File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
-msgid "Certificates"
-msgstr "Certificados"
 
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 msgid "Client"
@@ -243,6 +244,11 @@ msgstr "Departamento"
 msgid "Departments"
 msgstr "Departamentos"
 
+#
+# File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
+msgid "Documents"
+msgstr ""
+
 # File: bika.lims/bika/lims/profiles/default/types/DuplicateAnalysis.xml,
 # line: -1
 msgid "Duplicate Analysis"
@@ -255,6 +261,11 @@ msgstr "Lista de precios por correo electrónico"
 # File: bika.lims/bika/lims/profiles/default/types/Worksheet.xml, line: -1
 msgid "Export"
 msgstr "Exportar"
+
+#
+# File: bika.lims/bika/lims/profiles/default/types/InvoiceBatch.xml, line: -1
+msgid "Export Batch To CSV"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
 msgid "Extracts"
@@ -285,10 +296,6 @@ msgstr "Tipos de equipo"
 # File: bika.lims/bika/lims/profiles/default/types/Instruments.xml, line: -1
 msgid "Instruments"
 msgstr "Equipos"
-
-# File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
-msgid "Internal Calibration Tests"
-msgstr "Calibración interna"
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
 # -1
@@ -423,6 +430,11 @@ msgstr "Productividad"
 msgid "Published results"
 msgstr "Resultados publicados"
 
+#
+# File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
+msgid "QC Results"
+msgstr ""
+
 # File: bika.lims/bika/lims/profiles/default/types/ReportFolder.xml, line: -1
 msgid "Quality Control"
 msgstr "Control de calidad"
@@ -486,15 +498,6 @@ msgstr "Informes"
 # -1
 msgid "Results not requested"
 msgstr "No se han solicitado resultados"
-
-# File: bika.lims/bika/lims/profiles/default/types/SRTemplate.xml, line: -1
-msgid "SR Template"
-msgstr "Plantilla de rondas de muestreo"
-
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/SRTemplates.xml, line: -1
-msgid "SR Templates"
-msgstr "Plantillas de rondas de muestreo"
 
 # File: bika.lims/bika/lims/profiles/default/types/Sample.xml, line: -1
 msgid "Sample"
@@ -573,8 +576,19 @@ msgstr "Desviación en el muestreo"
 msgid "Sampling Deviations"
 msgstr "Desviaciones en el muestreo"
 
+#
+# File: bika.lims/bika/lims/profiles/default/types/SRTemplate.xml, line: -1
+msgid "Sampling Round Template"
+msgstr ""
+
 msgid "Sampling Round Templates"
 msgstr "Plantillas de rondas de muestreo"
+
+#
+# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
+# File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
+msgid "Sampling Rounds"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
 msgid "Schedule"
@@ -592,6 +606,13 @@ msgstr "Etiqueta pequeña"
 # -1
 msgid "Sticker"
 msgstr "Etiqueta"
+
+#
+# File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line: -1
+# File: bika.lims/bika/lims/profiles/default/types/Sample.xml, line: -1
+# File: bika.lims/bika/lims/profiles/default/types/SamplePartition.xml, line: -1
+msgid "Stickers preview"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/StorageLocation.xml, line:
 # -1
