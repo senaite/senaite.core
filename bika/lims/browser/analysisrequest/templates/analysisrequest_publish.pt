@@ -233,14 +233,16 @@
             tal:content='structure python:view.getReportTemplate()'></div>
         </tal:ar>
         </tal:singlearreport>
-          
+
         <tal:multiarreport condition="python:not view.isSingleARTemplate()">
         <!--
           Multi-AR template. ARs grouped by client.
           The templates from this type must be able to render multiples ARs, so
           each report will contain a bunch of ARs from the same client
         -->
-          Load here the multi-AR template
+        <tal:argroup tal:repeat="i python:range(view.getGroupedAnalysisRequestsCount())">
+        <div tal:content='structure python:view.getGroupedReportTemplate()'></div>
+        </tal:argroup>
         </tal:multiarreport>
         </div>
     </div>

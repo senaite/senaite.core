@@ -53,7 +53,7 @@
 
 #report table#section-header,
 #report table#section-info {
-    
+
 }
 #report table#section-header td#accreditation-logo {
     width:80mm;
@@ -193,4 +193,13 @@
     border-top: 1px solid #aaaaaa;
     padding: 5px 0;
     width: 100%;
+}
+
+#report #ar-grid td {
+  border:1px solid #cdcdcd;
+  padding:3px;
+}
+#report #ar-grid td.blank-row {
+  border: 0 none;
+  padding: 10px;
 }
