@@ -1318,7 +1318,7 @@ function AnalysisRequestAddByCol() {
                               // must protect itself against non-existing form elements
                               if (!element) {
                                   console.log('Selector #' + fieldname + '-' + arnum + ' not present in form')
-                                  return
+                                  continue
                               }
                               // here we go
                               switch (element.type) {
