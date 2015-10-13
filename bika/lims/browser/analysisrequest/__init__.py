@@ -3,7 +3,7 @@ from bika.lims.jsonapi import get_include_fields
 from bika.lims.jsonapi import load_brain_metadata
 from bika.lims.jsonapi import load_field_values
 from bika.lims.utils import dicts_to_dict
-from bika.lims.interfaces import IAnalysisRequest
+from bika.lims.interfaces import IAnalysisRequest, IClient, IBatch
 from bika.lims.interfaces import IFieldIcons
 from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.permissions import *
@@ -16,6 +16,7 @@ from Products.Archetypes import PloneMessageFactory as PMF
 from plone.app.layout.globals.interfaces import IViewView
 from plone.registry.interfaces import IRegistry
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.interfaces import IPloneSiteRoot
 from zope.component import adapts
 from zope.component import getAdapters
 from zope.component import queryUtility
@@ -87,10 +88,21 @@ class ReferenceWidgetVocabulary(DefaultReferenceWidgetVocabulary):
         if 'portal_type' in base_query \
         and (base_query['portal_type'] == 'Sample'
              or base_query['portal_type'][0] == 'Sample'):
-            base_query['getClientUID'] = self.context.aq_parent.UID()
-            self.request['base_query'] = json.dumps(base_query)
+            client_uid = self.get_client_uid()
+            if client_uid:
+                base_query['getClientUID'] = client_uid
+                self.request['base_query'] = json.dumps(base_query)
         return DefaultReferenceWidgetVocabulary.__call__(self)
 
+    def get_client_uid(self):
+        instance = self.context.aq_parent
+        while not IPloneSiteRoot.providedBy(instance):
+            if IClient.providedBy(instance):
+                return instance.UID()
+            if IBatch.providedBy(instance):
+                client = instance.getClient()
+                if client:
+                    return client.UID()
 
 class JSONReadExtender(object):
 
