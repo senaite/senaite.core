@@ -3,7 +3,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaFolderSchema
-from bika.lims.interfaces import IBatch
+from bika.lims.interfaces import IBatch, IClient
 from bika.lims.workflow import skip, BatchState, StateFlow, getCurrentState,\
     CancellationState
 from bika.lims.browser.widgets import DateTimeWidget
@@ -232,7 +232,9 @@ class Batch(ATFolder):
         client = self.Schema().getField('Client').get(self)
         if client:
             return client
-        return client
+        client = self.context.aq_parent
+        if IClient.providedBy(client):
+            return client
 
     def getClientTitle(self):
         client = self.getClient()
