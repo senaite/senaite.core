@@ -20,7 +20,9 @@ Creating secondary AR inside Client Batch, should only show Client's samples
   Simple AR Creation  client-1  Rita  Water  Metals  Calcium
   Execute transition receive on item H2O-0001-R01 in ARList
   Given an ar add form in client-1 with columns layout and 1 ars
-   debug
-   When I select H20 from the Sample combogrid in column 0
+   When I select H2O-0001 from the Sample combogrid in column 0
+   Then xpath should match x times   .//input[@disabled]   12
+   # We only check that the twelve fields are disabled; assuming that their
+   # values are correct.
 
 *** Keywords ***
