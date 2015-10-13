@@ -1301,7 +1301,9 @@ function AnalysisRequestAddByCol() {
                       '_authenticator': $('input[name="_authenticator"]').val()
                   },
                   function (data) {
-                      $.each(data, function (fieldname, fieldvalue) {
+                      for (var i = 0; i < data.length; i++) {
+                          var fieldname = data[i][0];
+                          var fieldvalue = data[i][1];
                           if (fieldname.search('_uid') > -1) {
                               // If this fieldname ends with _uid, then we consider it a reference,
                               // and set the HTML elements accordingly
@@ -1312,7 +1314,6 @@ function AnalysisRequestAddByCol() {
                           }
                           // This
                           else {
-
                               var element = $('#' + fieldname + '-' + arnum)[0]
                               // In cases where the schema has been made weird, this JS
                               // must protect itself against non-existing form elements
@@ -1345,9 +1346,8 @@ function AnalysisRequestAddByCol() {
                               }
                               state_set(arnum, fieldname, fieldvalue)
                           }
-                      })
-                  }
-        )
+                      }
+                  })
     }
 
 
