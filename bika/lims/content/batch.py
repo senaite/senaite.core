@@ -232,7 +232,7 @@ class Batch(ATFolder):
         client = self.Schema().getField('Client').get(self)
         if client:
             return client
-        client = self.context.aq_parent
+        client = self.aq_parent
         if IClient.providedBy(client):
             return client
 
