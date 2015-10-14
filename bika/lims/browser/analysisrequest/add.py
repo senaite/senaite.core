@@ -327,6 +327,8 @@ class SecondaryARSampleInfo(BrowserView):
                 if fieldvalue is None:
                     fieldvalue = ''
                 if hasattr(fieldvalue, 'Title'):
+                    # Must store UID for referencefields.
+                    ret.append([fieldname + '_uid', fieldvalue.UID()])
                     fieldvalue = fieldvalue.Title()
                 if hasattr(fieldvalue, 'year'):
                     fieldvalue = fieldvalue.strftime(self.date_format_short)
