@@ -120,11 +120,26 @@
         width:100%;
         min-width:640px;
     }
+    .bar-chart .axis path,
+    .bar-chart .axis line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+    .bar-chart .bar {
+      fill: steelblue;
+    }
     .bar-chart g.legend {
         font-size: 0.8em;
     }
     .bar-chart .x.axis {
-        font-size: 0.8em;
+        font-size: 0.75em;
+    }
+    .bar-chart .x.axis path {
+      display: none;
+    }
+    .bar-chart .y.axis {
+        font-size: 0.75em;
     }
     .bar-chart .graph-text-bar {
         border:1px solid red;
@@ -134,14 +149,173 @@
       padding:10px;
       font-size:1.2em;
     }
+    .toggle-barchart {
+        padding: 5px 0 10px;
+        text-align: left;
+    }
+    .toggle-barchart a {
+        background-color: #dcdcdc;
+        border-radius: 5px;
+        color: #333;
+        padding: 5px 10px;
+    }
 </style>
 <script>
     (function( $ ) {
     $(document).ready(function(){
-        loadCharts();
+        loadPieCharts();
+        loadBarCharts();
     });
 
-    function loadCharts() {
+    function loadBarCharts() {
+        $('.bar-chart').each(function(e){
+            var id = $(this).attr('id');
+            var vis = readCookie('visible.'+id);
+            if (vis == 1) {
+                $('#'+id).show();
+                $('#'+id).addClass('loaded');
+                loadBarChart(id);
+            }
+        });
+
+        $('div.toggle-barchart a').click(function(e) {
+            e.preventDefault();
+            var barchartid = $(this).attr('target-id');
+            if ($('#'+barchartid).is(":visible")) {
+                createCookie('visible.'+barchartid, 0);
+                $('#'+barchartid).hide();
+            } else {
+                createCookie('visible.'+barchartid, 1);
+                $('#'+barchartid).show();
+                if (!$('#'+barchartid).hasClass('loaded')) {
+                    loadBarChart(barchartid);
+                    $('#'+barchartid).addClass('loaded');
+                }
+            }
+        });
+    }
+
+    function loadBarChart(id) {
+        var container = $('#'+id);
+        var data = $.parseJSON($(container).attr('data'));
+        if (data.length == 0) {
+            $(container).hide();
+            return;
+        }
+        var margin = {top: 10, right: 120, bottom: 50, left: 50},
+            width = $(container).innerWidth() - margin.left - margin.right,
+            height = 200 - margin.top - margin.bottom;
+
+        var x = d3.scale.ordinal().rangeRoundBands([0, width], .1);
+        var y = d3.scale.linear().range([height, 0]);
+        var color = d3.scale.category20c();
+        color.domain(d3.keys(data[0]).filter(function(key) { return key !== "date"; }));
+
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom")
+            .ticks(10);
+        var yAxis = d3.svg.axis()
+            .scale(y)
+            .orient("left")
+            .tickFormat(d3.format(".2s"));
+
+        var svg = d3.select("#"+id).append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+          .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+        var statusNames = d3.keys(data[0]).filter(function(key) {
+            return key !== "date";
+        });
+        data.forEach(function(d) {
+            var y0=0;
+            d.statuses=color.domain().map(function(name) {
+                return {name: name, y0: y0, y1:y0 += +d[name]};
+            });
+            d.total = d.statuses[d.statuses.length - 1].y1;
+        });
+
+        x.domain(data.map(function(d) { return d.date;}));
+        y.domain([0, d3.max(data, function(d) { return d.total; })]);
+
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis)
+        .selectAll("text")
+          .style("text-anchor", "end")
+          .style("font-size", "9px")
+          .attr("dx", "-.8em")
+          .attr("dy", "-.55em")
+          .attr("transform", "rotate(-90)" );
+
+        svg.append("g")
+          .attr("class", "y axis")
+          .call(yAxis);
+
+        var state = svg.selectAll(".state")
+            .data(data)
+            .enter()
+            .append("g")
+                .attr("class", "g")
+                .attr("transform", function(d) { return "translate(" + x(d.date) + ",0)"; });
+
+        state.selectAll("rect")
+            .data(function(d) { return d.statuses; })
+            .enter()
+            .append("rect")
+                .attr("width", x.rangeBand())
+                .attr("y", function(d) { return y(d.y1); })
+                .attr("height", function(d) { return y(d.y0) - y(d.y1); })
+                .attr("data-date",function(d) { return d.x; })
+                .attr("data-value", function(d) { return d.y1-d.y0; })
+                .attr("data-name", function(d) { return d.name; })
+                .style("fill", function(d) { return color(d.name); })
+                .on("mouseout", function() {
+                    d3.select(this.parentNode.children[this.parentNode.children.length-1])
+                    .remove();
+                })
+                .on("mouseover",  function() {
+                    var date = d3.select(this).attr('data-date');
+                    var name = d3.select(this).attr('data-name');
+                    var val = name+": "+d3.select(this).attr('data-value');
+                    var y = d3.select(this).attr('y');
+                    var x = d3.select(this).attr('x');
+                    d3.select(this.parentNode)
+                        .append("text")
+                            .attr("fill", "#333")
+                            .style("font-size", "10px")
+                            .style("font-weight", "bold")
+                            .attr("x", x)
+                            .attr("y", 0)
+                            .attr("class", "graph-text-bar")
+                            .text(val);
+                });
+
+        var legend = svg.selectAll(".legend")
+                .data(statusNames.slice().reverse())
+                .enter().append("g")
+                    .attr("class", "legend")
+                    .attr("transform", function(d, i) {
+                        return "translate(0," + i * 12 + ")";
+                    });
+
+        legend.append("rect")
+          .attr("x", width + 15)
+          .attr("width", 6)
+          .attr("height", 6)
+          .style("fill", color);
+
+        legend.append("text")
+          .attr("x", width + 30)
+          .attr("y", 0)
+          .attr("dy", "6")
+          .text(function(d) { return d; })
+    }
+
+    function loadPieCharts() {
         $('.pie-chart').each(function(e) {
             var id = $(this).attr('id');
             var data = $.parseJSON($(this).attr('data'));
@@ -170,120 +344,7 @@
                 .style("fill", function(d, i) { return color(i); })
                 .attr("d", arc);
         });
-
-        $('.bar-chart').each(function(e) {
-            var id = $(this).attr('id');
-            var data = $.parseJSON($(this).attr('data'));
-            if (data.length == 0) {
-                $(this).hide();
-                return;
-            }
-            var margin = {top: 10, right: 120, bottom: 30, left: 20},
-                width = $(this).innerWidth() - margin.left - margin.right,
-                height = 100 - margin.top - margin.bottom;
-
-            var x0 = d3.scale.ordinal().rangeRoundBands([0, width], 0);
-            var x1 = d3.scale.ordinal();
-            var y = d3.scale.linear().range([height, 0]);
-            var color = d3.scale.category10();
-            color.domain(d3.keys(data[0]).filter(function(key) { return key !== "date"; }));
-            
-            var parseDate = d3.time.format("%Y-%m-%d").parse;
-            var xAxis = d3.svg.axis()
-                .scale(x0)
-                .orient("bottom");
-            
-            var yAxis = d3.svg.axis()
-                .scale(y)
-                .orient("left")
-                .tickFormat(d3.format(".2s"));
-
-            var svg = d3.select("#"+id).append("svg")
-                .attr("width", width + margin.left + margin.right)
-                .attr("height", height + margin.top + margin.bottom)
-              .append("g")
-                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-            var statusNames = d3.keys(data[0]).filter(function(key) {
-                return key !== "date";
-            });
-            data.forEach(function(d) {
-                d.statuses = statusNames.map(function(name) {
-                    return {name: name, value: +d[name], date: d.date};
-                });
-            });
-
-            x0.domain(data.map(function(d) { return d.date; }));
-            x1.domain(statusNames).rangeRoundBands([0, x0.rangeBand()]);
-            y.domain([0, d3.max(data, function(d) { return d3.max(d.statuses, function(d) { return d.value; }); })]);
-              
-            svg.append("g")
-                .attr("class", "x axis")
-                .attr("transform", "translate(0," + height + ")")
-                .call(xAxis)
-
-            var state = svg.selectAll(".state")
-                .data(data)
-                .enter()
-                .append("g")
-                    .attr("class", "g")
-                    .attr("transform", function(d) { return "translate(" + x0(d.date) + ",0)"; });
-
-            state.selectAll("rect")
-                .data(function(d) { return d.statuses; })
-                .enter()
-                .append("rect")
-                    .attr("width", x1.rangeBand())
-                    .attr("x", function(d) { return x1(d.name); })
-                    .attr("y", function(d) { return y(d.value); })
-                    .attr("height", function(d) { return height - y(d.value); })
-                    .attr("data-date",function(d) { return d.date; })
-                    .attr("data-value", function(d) { return d.value; })
-                    .attr("data-name", function(d) { return d.name; })
-                    .style("fill", function(d) { return color(d.name); })
-                    .on("mouseout", function() {
-                        d3.select(this.parentNode.children[this.parentNode.children.length-1])
-                        .remove();
-                    })
-                    .on("mouseover",  function() {
-                        var date = d3.select(this).attr('data-date');
-                        var name = d3.select(this).attr('data-name');
-                        var val = d3.select(this).attr('data-value');
-                        var y = d3.select(this).attr('y');
-                        var x = d3.select(this).attr('x');
-                        d3.select(this.parentNode)
-                            .append("text")
-                                .attr("fill", "#333")
-                                .style("font-size", "10px")
-                                .style("font-weight", "bold")
-                                .attr("x", x)
-                                .attr("y", 0)
-                                .attr("class", "graph-text-bar")
-                                .text(val);
-                    });
-
-            var legend = svg.selectAll(".legend")
-                    .data(statusNames.slice().reverse())
-                    .enter().append("g")
-                        .attr("class", "legend")
-                        .attr("transform", function(d, i) {
-                            return "translate(0," + i * 12 + ")";
-                        });
-
-            legend.append("rect")
-              .attr("x", width + 15)
-              .attr("width", 6)
-              .attr("height", 6)
-              .style("fill", color);
-
-            legend.append("text")
-              .attr("x", width + 30)
-              .attr("y", 0)
-              .attr("dy", "6")
-              .text(function(d) { return d; })
-          });
       }
-    
     }(jQuery));
 </script>
 
@@ -309,12 +370,17 @@
         <tal:barchart_panels repeat="panel python:[p for p in section.get('panels',[]) if p.get('type','')=='bar-chart-panel']">
         <div tal:attributes="class python:'dashboard-bargraph-panel-wrapper %s' % panel.get('class', '');"
              tal:define='itemnum repeat/panel/number;'>
+            <div class="toggle-barchart" tal:condition="python:panel.get('data','[]')!='[]'">
+                <a tal:attributes='target-id python:"bar-chart-%s-%s" % (section["id"],itemnum);'
+                   href="#" i8n:translate="">Show/hide timeline summary</a>
+            </div>
             <div class='bar-chart'
                 tal:attributes='id python:"bar-chart-%s-%s" % (section["id"],itemnum);
-                                data panel/data;'></div>
+                                data panel/data;'
+                style='display:none'></div>
         </div>
         </tal:barchart_panels>
-        
+
         <!-- Simple panels -->
         <tal:simple_panels repeat="panel python:[p for p in section.get('panels',[]) if p.get('type','')=='simple-panel']">
         <div tal:define="num panel/number;
