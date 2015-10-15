@@ -1,3 +1,7 @@
+3.1.10 (unreleased)
+-------------------
+LIMS-1933: Regression: Selecting secondary AR in client batches, fails.
+
 3.1.9 (2015-10-8)
 ------------------
 LIMS-2068: LIMS-2068 Urgent. Analysis Catgories don't expand
@@ -57,6 +61,8 @@ LIMS-1817: Instrument Interface. Rigaku Supermini XRF
 --------------------
 LIMS-1755: PDF writer should be using a world-writeable tmp location
 LIMS-2041: Resolve ${analysis_keyword) in instrument import alert.
+LIMS-2041: Resolve translation syntax error in instrument import alert
+LIMS-1933: Secondary Sample selection in Client Batches does not locate samples
 
 3.1.8.2 (2015-09-27)
 --------------------
