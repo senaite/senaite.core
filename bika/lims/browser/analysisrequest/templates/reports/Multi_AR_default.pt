@@ -108,22 +108,24 @@
       <tr>
         <th i18n:translate="" colspan="5">Sample ID</th>
         <tal:ar repeat="ar ars">
-        <td tal:content="python:ar.getSample().id"
-            tal:attributes="id ar/id;uid ar/UID;"></td>
+        <td tal:attributes="id ar/id;uid ar/UID;" class="sampleid">
+          <a tal:attributes="href python:ar.getSample().absolute_url()"
+             tal:content="python:ar.getSample().id"></a>
+        </td>
         </tal:ar>
       </tr>
       <!-- Sample Type -->
       <tr>
         <th i18n:translate="" colspan="5">Sample Type</th>
         <tal:ar repeat="ar ars">
-        <td tal:content="python:ar.getSample().getSampleType().title"></td>
+        <td class="sampletype" tal:content="python:ar.getSample().getSampleType().title"></td>
         </tal:ar>
       </tr>
       <!-- Sample Point -->
       <tr>
         <th i18n:translate="" colspan="5">Sample Point</th>
         <tal:ar repeat="ar ars">
-        <td tal:content="python:ar.getSample().getSamplePointTitle()"></td>
+        <td class="samplepoint" tal:content="python:ar.getSample().getSamplePointTitle()"></td>
         </tal:ar>
       </tr>
 
@@ -141,15 +143,15 @@
       </tr>
       <tal:cats repeat="cat python:sorted(transposed.keys())">
       <tr>
-        <td tal:content="cat" tal:attributes="rowspan python:len(transposed[cat].keys())+1"></td>
+        <td class="category" tal:content="cat" tal:attributes="rowspan python:len(transposed[cat].keys())+1"></td>
       </tr>
       <tr tal:repeat="service python:sorted(transposed[cat].keys())">
-        <td tal:content="service"></td>
+        <td class="service" tal:content="service"></td>
         <td></td>
-        <td tal:content="python:transposed[cat][service]['service'].getUnit()"></td>
-        <td tal:content="python:transposed[cat][service]['service'].getMethod().title if transposed[cat][service]['service'].getMethod() else ''"></td>
+        <td class="unit" tal:content="python:transposed[cat][service]['service'].getUnit()"></td>
+        <td class="method" tal:content="python:transposed[cat][service]['service'].getMethod().title if transposed[cat][service]['service'].getMethod() else ''"></td>
         <tal:ar repeat="ar ars">
-        <td tal:content="python:transposed[cat][service]['ars'].get(ar.id,'')"></td>
+        <td class="result" tal:content="python:transposed[cat][service]['ars'].get(ar.id,'')"></td>
         </tal:ar>
       </tr>
       </tal:cats>
