@@ -1,0 +1,74 @@
+/* IMPORTANT NOTE
+ * Do not use margins, use padding instead
+ */
+
+#report {
+    font: 9pt Arial, Verdana, serif;
+}
+
+#report h1 { font-size:1.4em; }
+#report h2 { font-size:1.2em; }
+#report h3 { font-size:1.1em; }
+
+#report h1,
+#report h2,
+#report h3 {
+    font-weight:bold;
+    padding-bottom:5px !important;
+}
+
+#report table {
+    width: 100%;
+}
+
+#report table tr td,
+#report table tr th {
+    text-align:left;
+    vertical-align:top;
+}
+#report .label {
+    font-weight:bold;
+    padding-right: 10px;
+}
+#report .outofrange,
+#report .outofrange a {
+    font-weight:bold;
+    color:#d40000;
+}
+#report .units,
+#report .units sub,
+#report .units sup {
+    color:#777;
+    font-weight:normal;
+    font-style:italic;
+}
+#report .units sub,
+#report .units sup {
+    font-size:7pt;
+}
+#report .page-footer table {
+    border-top: 1px solid #aaaaaa;
+    padding: 5px 0;
+    width: 100%;
+}
+#report #ar-grid th {
+    padding: 5px 5px 5px 0;
+}
+#report #ar-grid td {
+  border:1px solid #cdcdcd;
+  padding:3px;
+}
+#report #ar-grid td.blank-row {
+  border: 0 none;
+  padding: 10px;
+}
+#report #ar-grid td.sampleid,
+#report #ar-grid td.sampletype,
+#report #ar-grid td.samplepoint,
+#report #ar-grid td.result {
+  text-align:center;
+}
+#report #ar-grid td.sampleid {
+  font-weight:bold;
+  text-align:center;
+}

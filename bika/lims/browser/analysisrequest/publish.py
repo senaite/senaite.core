@@ -34,7 +34,9 @@ import urllib2
 class AnalysisRequestPublishView(BrowserView):
     template = ViewPageTemplateFile("templates/analysisrequest_publish.pt")
     _ars = []
+    _arsbyclient = []
     _current_ar_index = 0
+    _current_arsbyclient_index = 0
     _publish = False
 
     def __init__(self, context, request, publish=False):
@@ -61,6 +63,16 @@ class AnalysisRequestPublishView(BrowserView):
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
 
+        # Group ARs by client
+        groups = {}
+        for ar in self._ars:
+            idclient = ar.aq_parent.id
+            if idclient not in groups:
+                groups[idclient] = [ar]
+            else:
+                groups[idclient].append(ar)
+        self._arsbyclient = [group for group in groups.values()]
+
         # Do publish?
         if self.request.form.get('publish', '0') == '1':
             self.publishFromPOST()
@@ -81,22 +93,35 @@ class AnalysisRequestPublishView(BrowserView):
     def getAnalysisRequests(self):
         """ Returns a dict with the analysis requests to manage
         """
-        return self._ars;
+        return self._ars
 
     def getAnalysisRequestsCount(self):
         """ Returns the number of analysis requests to manage
         """
-        return len(self._ars);
+        return len(self._ars)
+
+    def getGroupedAnalysisRequestsCount(self):
+        """ Returns the number of groups of analysis requests to manage when
+            a multi-ar template is selected. The ARs are grouped by client
+        """
+        return len(self._arsbyclient)
 
     def getAnalysisRequestObj(self):
         """ Returns the analysis request objects to be managed
         """
         return self._ars[self._current_ar_index]
 
-    def getAnalysisRequest(self):
-        """ Returns the dict for the currently managed analysis request
+    def getAnalysisRequest(self, analysisrequest=None):
+        """ Returns the dict for the Analysis Request specified. If no AR set,
+            returns the current analysis request
         """
-        return self._ar_data(self._ars[self._current_ar_index])
+        return self._ar_data(analysisrequest) if analysisrequest \
+                else self._ar_data(self._ars[self._current_ar_index])
+
+    def getAnalysisRequestGroup(self):
+        """ Returns the current analysis request group to be managed
+        """
+        return self._arsbyclient[self._current_arsbyclient_index]
 
     def _nextAnalysisRequest(self):
         """ Move to the next analysis request
@@ -104,10 +129,15 @@ class AnalysisRequestPublishView(BrowserView):
         if self._current_ar_index < len(self._ars):
             self._current_ar_index += 1
 
-    def getReportTemplate(self):
-        """ Returns the html template for the current ar and moves to
-            the next ar to be processed. Uses the selected template
-            specified in the request ('template' parameter)
+    def _nextAnalysisRequestGroup(self):
+        """ Move to the next analysis request group
+        """
+        if self._current_arsbyclient_index < len(self._arsbyclient):
+            self._current_arsbyclient_index += 1
+
+    def _renderTemplate(self):
+        """ Returns the html template to be rendered in accordance with the
+            template specified in the request ('template' parameter)
         """
         templates_dir = 'templates/reports'
         embedt = self.request.form.get('template', self._DEFAULT_TEMPLATE)
@@ -116,14 +146,37 @@ class AnalysisRequestPublishView(BrowserView):
             templates_dir = queryResourceDirectory('reports', prefix).directory
             embedt = template
         embed = ViewPageTemplateFile(os.path.join(templates_dir, embedt))
+        return embedt, embed(self)
+
+    def getReportTemplate(self):
+        """ Returns the html template for the current ar and moves to
+            the next ar to be processed. Uses the selected template
+            specified in the request ('template' parameter)
+        """
         reptemplate = ""
+        embedt = ""
         try:
-            reptemplate = embed(self)
+            embedt, reptemplate = self._renderTemplate()
         except:
             tbex = traceback.format_exc()
             arid = self._ars[self._current_ar_index].id
             reptemplate = "<div class='error-report'>%s - %s '%s':<pre>%s</pre></div>" % (arid, _("Unable to load the template"), embedt, tbex)
         self._nextAnalysisRequest()
+        return reptemplate
+
+    def getGroupedReportTemplate(self):
+        """ Returns the html template for the current group of ARs and moves to
+            the next group to be processed. Uses the selected template
+            specified in the request ('template' parameter)
+        """
+        reptemplate = ""
+        embedt = ""
+        try:
+            embedt, reptemplate = self._renderTemplate()
+        except:
+            tbex = traceback.format_exc()
+            reptemplate = "<div class='error-report'>%s '%s':<pre>%s</pre></div>" % (_("Unable to load the template"), embedt, tbex)
+        self._nextAnalysisRequestGroup()
         return reptemplate
 
     def getReportStyle(self):
@@ -147,6 +200,10 @@ class AnalysisRequestPublishView(BrowserView):
             with open(path, 'r') as content_file:
                 content = content_file.read()
         return content
+
+    def isSingleARTemplate(self):
+        seltemplate = self.request.form.get('template', self._DEFAULT_TEMPLATE)
+        return not seltemplate.lower().startswith('multi')
 
     def isQCAnalysesVisible(self):
         """ Returns if the QC Analyses must be displayed
@@ -931,3 +988,52 @@ class AnalysisRequestPublishView(BrowserView):
         else:
             subject = t(_('Analysis results'))
         return subject, tot_line
+
+    def getAnaysisBasedTransposedMatrix(self, ars):
+        """ Returns a dict with the following structure:
+            {'category_1_name':
+                {'service_1_title':
+                    {'service_1_uid':
+                        {'service': <AnalysisService-1>,
+                         'ars': {'ar1_id': [<Analysis (for as-1)>,
+                                           <Analysis (for as-1)>],
+                                 'ar2_id': [<Analysis (for as-1)>]
+                                },
+                        },
+                    },
+                {'service_2_title':
+                     {'service_2_uid':
+                        {'service': <AnalysisService-2>,
+                         'ars': {'ar1_id': [<Analysis (for as-2)>,
+                                           <Analysis (for as-2)>],
+                                 'ar2_id': [<Analysis (for as-2)>]
+                                },
+                        },
+                    },
+                ...
+                },
+            }
+        """
+        analyses = {}
+        for ar in ars:
+            ans = [an.getObject() for an in ar.getAnalyses()]
+            for an in ans:
+                service = an.getService()
+                cat = service.getCategoryTitle()
+                if cat not in analyses:
+                    analyses[cat] = {
+                        service.title: {
+                            'service': service,
+                            'ars': {ar.id: an.getFormattedResult()}
+                        }
+                    }
+                elif service.title not in analyses[cat]:
+                    analyses[cat][service.title] = {
+                        'service': service,
+                        'ars': {ar.id: an.getFormattedResult()}
+                    }
+                else:
+                    d = analyses[cat][service.title]
+                    d['ars'][ar.id] = an.getFormattedResult()
+                    analyses[cat][service.title]=d
+        return analyses

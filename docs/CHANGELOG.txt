@@ -1,5 +1,6 @@
 3.1.10 (unreleased)
 -------------------
+LIMS-1832: New Results Template, COA. Multiple ARs in columns
 LIMS-1933: Regression: Selecting secondary AR in client batches, fails.
 
 3.1.9 (2015-10-8)
