@@ -1,6 +1,7 @@
 3.1.10 (unreleased)
 -------------------
 LIMS-1933: Regression: Selecting secondary AR in client batches, fails.
+- Dashboard: replace multi-bar charts by stacked-bar charts
 
 3.1.9 (2015-10-8)
 ------------------
