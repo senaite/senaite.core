@@ -808,7 +808,7 @@ class BikaListingView(BrowserView):
             # avoid creating unnecessary info for items outside the current
             # batch;  only the path is needed for the "select all" case...
             # we only take allowed items into account
-            if not show_all and not start <= i < end:
+            if not show_all and not (start <= i <= end):
                 results.append(dict(path = path, uid = uid))
                 continue
 
