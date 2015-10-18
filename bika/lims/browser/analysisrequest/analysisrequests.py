@@ -519,7 +519,7 @@ class AnalysisRequestsView(BikaListingView):
 
         # Call the folderitem method from the base class
         item = BikaListingView.folderitem(self, obj, item, index)
-        if item == None:
+        if not item:
             return None
 
         member = self.mtool.getAuthenticatedMember()

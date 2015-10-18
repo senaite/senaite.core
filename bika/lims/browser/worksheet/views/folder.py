@@ -255,6 +255,8 @@ class FolderView(BikaListingView):
 
         # Call the folderitem method from the base class
         item = BikaListingView.folderitem(self, obj, item, index)
+        if not item:
+            return None
 
         item['CreationDate'] = self.ulocalized_time(obj.creation_date)
         item['Analyst'] = obj.getAnalyst().strip()
