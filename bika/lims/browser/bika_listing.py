@@ -711,13 +711,18 @@ class BikaListingView(BrowserView):
         """
         return []
 
+    def isItemAllowed(self, obj):
+        """ return if the item can be added to the items list.
+        """
+        return True
+
     def folderitem(self, obj, item, index):
         """ Service triggered each time an item is iterated in folderitems.
             The use of this service prevents the extra-loops in child objects.
-            obj: the instance of the class to be foldered
-            item: dict containing the properties of the object to be used by
+            :obj: the instance of the class to be foldered
+            :item: dict containing the properties of the object to be used by
                 the template
-            index: current index of the item
+            :index: current index of the item
         """
         return item
 
@@ -809,6 +814,12 @@ class BikaListingView(BrowserView):
 
             # This item must be rendered, we need the object instead of a brain
             obj = obj.getObject() if hasattr(obj, 'getObject') else obj
+
+            # check if the item must be rendered or not (prevents from
+            # doing it later in folderitems) and dealing with paging
+            if not self.isItemAllowed(obj):
+                continue
+
             title = obj.Title()
             description = obj.Description()
             icon = plone_layout.getIcon(obj)
