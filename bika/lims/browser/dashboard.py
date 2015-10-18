@@ -46,15 +46,15 @@ class DashboardView(BrowserView):
             # Daily
             self.date_from = DateTime()
             self.date_to = DateTime() + 1
-            # For time-evolution data, load last 15 days
-            self.min_date = self.date_from - 15
+            # For time-evolution data, load last 30 days
+            self.min_date = self.date_from - 30
         elif (self.periodicity == 'm'):
             # Monthly
             today = datetime.date.today()
             self.date_from = DateTime(today.year, today.month, 1)
             self.date_to = DateTime(today.year, today.month, monthrange(today.year, today.month)[1], 23, 59, 59)
-            # For time-evolution data, load last year
-            min_year = today.year if today.month == 12 else today.year - 1
+            # For time-evolution data, load last two years
+            min_year = today.year - 1 if today.month == 12 else today.year - 2
             min_month = 1 if today.month == 12 else today.month
             self.min_date = DateTime(min_year, min_month, 1)
         elif (self.periodicity == 'q'):
@@ -63,8 +63,8 @@ class DashboardView(BrowserView):
             m = (((today.month-1)/3)*3)+1
             self.date_from = DateTime(today.year, m, 1)
             self.date_to = DateTime(today.year, m+2, monthrange(today.year, m+2)[1], 23, 59, 59)
-            # For time-evolution data, load last three years
-            min_year = today.year - 2 if today.month == 12 else today.year - 3
+            # For time-evolution data, load last four years
+            min_year = today.year - 4 if today.month == 12 else today.year - 5
             self.min_date = DateTime(min_year, m, 1)
         elif (self.periodicity == 'b'):
             # Biannual
@@ -72,16 +72,16 @@ class DashboardView(BrowserView):
             m = (((today.month-1)/6)*6)+1
             self.date_from = DateTime(today.year, m, 1)
             self.date_to = DateTime(today.year, m+5, monthrange(today.year, m+5)[1], 23, 59, 59)
-            # For time-evolution data, load last six years
-            min_year = today.year - 5 if today.month == 12 else today.year - 6
+            # For time-evolution data, load last ten years
+            min_year = today.year - 10 if today.month == 12 else today.year - 11
             self.min_date = DateTime(min_year, m, 1)
         elif (self.periodicity == 'y'):
             # Yearly
             today = datetime.date.today()
             self.date_from = DateTime(today.year, 1, 1)
             self.date_to = DateTime(today.year, 12, 31, 23, 59, 59)
-            # For time-evolution data, load last six years
-            min_year = today.year - 11 if today.month == 12 else today.year - 12
+            # For time-evolution data, load last 15 years
+            min_year = today.year - 15 if today.month == 12 else today.year - 16
             self.min_date = DateTime(min_year, 1, 1)
         else:
             # weekly
@@ -89,9 +89,9 @@ class DashboardView(BrowserView):
             year, weeknum, dow = today.isocalendar()
             self.date_from = DateTime() - dow
             self.date_to = self.date_from + 7
-            # For time-evolution data, load last three months
-            min_year = today.year if today.month > 2 else today.year - 1
-            min_month = today.month - 2 if today.month > 2 else (today.month - 2)+12
+            # For time-evolution data, load last six months
+            min_year = today.year if today.month > 6 else today.year - 1
+            min_month = today.month - 6 if today.month > 6 else (today.month - 6)+12
             self.min_date = DateTime(min_year, min_month, 1)
 
         self.date_range = {'query': (self.date_from, self.date_to), 'range': 'min:max'}
@@ -255,27 +255,7 @@ class DashboardView(BrowserView):
             except:
                 pass
 
-            created = ar.created()
-            if self.periodicity == 'y':
-                created = created.year()
-            elif self.periodicity == 'b':
-                m = (((created.month()-1)/6)*6)+1
-                created = '%s-%s' % (created.year(), m)
-            elif self.periodicity == 'q':
-                m = (((created.month()-1)/3)*3)+1
-                created = '%s-%s' % (created.year(), m)
-            elif self.periodicity == 'm':
-                created = '%s-%s' % (created.year(), created.month())
-            elif self.periodicity == 'w':
-                d = (((created.day()-1)/7)*7)+1
-                year, weeknum, dow = created.asdatetime().isocalendar()
-                created = created - dow
-                created = '%s-%s-%s' % (created.year(), created.month(), created.day())
-            else:
-                created = '%s-%s-%s' % (created.year(), created.month(), created.day())
-
-            #created = '%s-%s-%s' % (created.year(), created.month(), created.day())
-
+            created = self._getDateStr(self.periodicity, ar.created())
             state = 'sample_due' if state in ['to_be_sampled', 'to_be_preserved'] else state
             state = 'sample_received' if state in ['assigned', 'attachment_due'] else state
             if (len(outevo) > 0 and outevo[-1]['date'] == created):
@@ -371,24 +351,7 @@ class DashboardView(BrowserView):
             except:
                 pass
 
-            created = ws.created()
-            if self.periodicity == 'y':
-                created = created.year()
-            elif self.periodicity == 'b':
-                m = (((created.month()-1)/6)*6)+1
-                created = '%s-%s' % (created.year(), m)
-            elif self.periodicity == 'q':
-                m = (((created.month()-1)/3)*3)+1
-                created = '%s-%s' % (created.year(), m)
-            elif self.periodicity == 'm':
-                created = '%s-%s' % (created.year(), created.month())
-            elif self.periodicity == 'w':
-                d = (((created.day()-1)/7)*7)+1
-                year, weeknum, dow = created.asdatetime().isocalendar()
-                created = created - dow
-                created = '%s-%s-%s' % (created.year(), created.month(), created.day())
-            else:
-                created = '%s-%s-%s' % (created.year(), created.month(), created.day())
+            created = self._getDateStr(self.periodicity, ws.created())
 
             if (len(outevo) > 0 and outevo[-1]['date'] == created):
                 key = state if _(state) in outevo[-1] else 'other_status'
@@ -411,7 +374,27 @@ class DashboardView(BrowserView):
                     'class':        'informative',
                     'description':  _('Evolution of Worksheets'),
                     'data':         json.dumps(outevo)})
-        
+
         return {'id': 'worksheets',
                 'title': _('Worksheets'),
                 'panels': out}
+
+    def _getDateStr(self, period, created):
+        if period == 'y':
+            created = created.year()
+        elif period == 'b':
+            m = (((created.month()-1)/6)*6)+1
+            created = '%s-%s' % (str(created.year())[2:], str(m).zfill(2))
+        elif period == 'q':
+            m = (((created.month()-1)/3)*3)+1
+            created = '%s-%s' % (str(created.year())[2:], str(m).zfill(2))
+        elif period == 'm':
+            created = '%s-%s' % (str(created.year())[2:], str(created.month()).zfill(2))
+        elif period == 'w':
+            d = (((created.day()-1)/7)*7)+1
+            year, weeknum, dow = created.asdatetime().isocalendar()
+            created = created - dow
+            created = '%s-%s-%s' % (str(created.year())[2:], str(created.month()).zfill(2), str(created.day()).zfill(2))
+        else:
+            created = '%s-%s-%s' % (str(created.year())[2:], str(created.month()).zfill(2), str(created.day()).zfill(2))
+        return created
