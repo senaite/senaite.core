@@ -203,6 +203,7 @@ class AnalysisRequestPublishView(BrowserView):
 
     def isSingleARTemplate(self):
         seltemplate = self.request.form.get('template', self._DEFAULT_TEMPLATE)
+        seltemplate = seltemplate.split(':')[-1].strip()
         return not seltemplate.lower().startswith('multi')
 
     def isQCAnalysesVisible(self):

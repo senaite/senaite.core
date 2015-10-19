@@ -19,7 +19,6 @@
                         argroup python:view.getAnalysisRequestGroup();
                         arspage python:[argroup[i:i+num_ars_per_page] for i in range(0,len(argroup),num_ars_per_page)];">
 
-<div class="ar_publish_body">
   <tal:page_iter repeat="ars arspage">
   <tal:page tal:define="
       firstar         python:ars[0];
@@ -188,5 +187,4 @@
   <div class='manual-page-break restart-page-count'></div>
   </tal:page>
   </tal:page_iter>
-</div>
 </tal:report>

@@ -219,6 +219,7 @@
                 }
             }
         </style>
+
         <div id='report'>
 
         <tal:singlearreport condition="python:view.isSingleARTemplate()">
@@ -241,7 +242,7 @@
           each report will contain a bunch of ARs from the same client
         -->
         <tal:argroup tal:repeat="i python:range(view.getGroupedAnalysisRequestsCount())">
-        <div tal:content='structure python:view.getGroupedReportTemplate()'></div>
+        <div tal:content='structure python:view.getGroupedReportTemplate()' class="ar_publish_body"></div>
         </tal:argroup>
         </tal:multiarreport>
         </div>
