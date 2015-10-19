@@ -23,8 +23,15 @@
                     <label for="sel_format" i18n:translate="">Template</label>
                     <select id="sel_format" name="sel_format">
                         <tal:formats tal:repeat="format python:view.getAvailableFormats()">
+                            <tal:format define="current python:request.get('template', view._DEFAULT_TEMPLATE);">
+                            <option selected
+                                    tal:attributes="value python:format['id']"
+                                    tal:content="python:format['title']"
+                                    tal:condition="python:format['id']==current"></option>
                             <option tal:attributes="value python:format['id']"
-                                    tal:content="python:format['title']"></option>
+                                    tal:content="python:format['title']"
+                                    tal:condition="python:format['id']!=current"></option>
+                            </tal:format>
                         </tal:formats>
                     </select>
                     <a href='#' id='sel_format_info'><img tal:attributes='src python:portal.absolute_url()+"/++resource++bika.lims.images/info.png";'/></a>
