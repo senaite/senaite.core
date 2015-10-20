@@ -123,6 +123,12 @@ class AnalysisRequestPublishView(BrowserView):
         """
         return self._arsbyclient[self._current_arsbyclient_index]
 
+    def getAnalysisRequestGroupData(self):
+        """ Returns an array that contains the dicts (ar_data) for each
+            analysis request from the current group
+        """
+        return [self._ar_data(ar) for ar in self.getAnalysisRequestGroup()]
+
     def _nextAnalysisRequest(self):
         """ Move to the next analysis request
         """
