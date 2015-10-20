@@ -725,9 +725,13 @@ class AnalysisRequestPublishView(BrowserView):
     def publishFromPOST(self):
         html = self.request.form.get('html')
         style = self.request.form.get('style')
-        uid = self.request.form.get('uid')
-        reporthtml = "<html><head>%s</head><body><div id='report'>%s</body></html>" % (style, html);
-        return self.publishFromHTML(uid, safe_unicode(reporthtml).encode('utf-8'));
+        uids = self.request.form.get('uid').split(':')
+        reporthtml = "<html><head>%s</head><body><div id='report'>%s</body></html>" % (style, html)
+        publishedars = []
+        for uid in uids:
+            ars = self.publishFromHTML(uid, safe_unicode(reporthtml).encode('utf-8'))
+            publishedars.extend(ars)
+        return publishedars
 
     def publishFromHTML(self, aruid, results_html):
         # The AR can be published only and only if allowed
