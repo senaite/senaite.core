@@ -716,6 +716,16 @@ class BikaListingView(BrowserView):
         """
         return True
 
+    def folderitem(self, obj, item, index):
+        """ Service triggered each time an item is iterated in folderitems.
+            The use of this service prevents the extra-loops in child objects.
+            :obj: the instance of the class to be foldered
+            :item: dict containing the properties of the object to be used by
+                the template
+            :index: current index of the item
+        """
+        return item
+
     def folderitems(self, full_objects = False):
         """
         >>> portal = layer['portal']
@@ -780,31 +790,36 @@ class BikaListingView(BrowserView):
         else:
             brains = self.contentsMethod(self.contentFilter)
 
+        # idx increases one unit each time an object is added to the 'items'
+        # dictionary to be returned. Note that if the item is not rendered,
+        # the idx will not increase.
+        idx = 0
         results = []
         self.page_start_index = 0
-        current_index = -1
         for i, obj in enumerate(brains):
             # we don't know yet if it's a brain or an object
             path = hasattr(obj, 'getPath') and obj.getPath() or \
                  "/".join(obj.getPhysicalPath())
 
-            if hasattr(obj, 'getObject'):
-                obj = obj.getObject()
+            # If obj is a brain don't retrieve the object and get the UID
+            # from the brain. Object retrieval is resources-consuming
+            uid = obj.UID if hasattr(obj, 'getObject') else obj.UID()
+
+            # avoid creating unnecessary info for items outside the current
+            # batch;  only the path is needed for the "select all" case...
+            # we only take allowed items into account
+            if not show_all and not (start <= i <= end):
+                results.append(dict(path = path, uid = uid))
+                continue
+
+            # This item must be rendered, we need the object instead of a brain
+            obj = obj.getObject() if hasattr(obj, 'getObject') else obj
 
             # check if the item must be rendered or not (prevents from
             # doing it later in folderitems) and dealing with paging
             if not self.isItemAllowed(obj):
                 continue
 
-            # avoid creating unnecessary info for items outside the current
-            # batch;  only the path is needed for the "select all" case...
-            # we only take allowed items into account
-            current_index += 1
-            if not show_all and not (start <= current_index <= end):
-                results.append(dict(path = path, uid = obj.UID()))
-                continue
-
-            uid = obj.UID()
             title = obj.Title()
             description = obj.Description()
             icon = plone_layout.getIcon(obj)
@@ -912,7 +927,14 @@ class BikaListingView(BrowserView):
                     if callable(value):
                         value = value()
                     results_dict[key] = value
-            results.append(results_dict)
+
+            # The item basics filled. Delegate additional actions to folderitem
+            # service. folderitem service is frequently overriden by child objects
+            item = self.folderitem(obj, results_dict, idx)
+            if item:
+                results.append(item)
+                idx+=1
+
         return results
 
     def contents_table(self, table_only = False):

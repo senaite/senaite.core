@@ -513,183 +513,191 @@ class AnalysisRequestsView(BikaListingView):
                         'state_title']},
             ]
 
-    def folderitems(self, full_objects=False):
-        workflow = getToolByName(self.context, "portal_workflow")
-        items = BikaListingView.folderitems(self)
-        mtool = getToolByName(self.context, 'portal_membership')
-        member = mtool.getAuthenticatedMember()
+    def folderitem(self, obj, item, index):
+        # Additional info from AnalysisRequest to be added in the item generated
+        # by default by bikalisting.
+
+        # Call the folderitem method from the base class
+        item = BikaListingView.folderitem(self, obj, item, index)
+        if not item:
+            return None
+
+        member = self.mtool.getAuthenticatedMember()
         roles = member.getRoles()
         hideclientlink = 'RegulatoryInspector' in roles \
             and 'Manager' not in roles \
             and 'LabManager' not in roles \
             and 'LabClerk' not in roles
 
-        for x in range(len(items)):
-            if 'obj' not in items[x]:
-                continue
-            obj = items[x]['obj']
-            sample = obj.getSample()
+        sample = obj.getSample()
+        url = obj.absolute_url()
+        if getSecurityManager().checkPermission(EditResults, obj):
+            url += "/manage_results"
 
-            if getSecurityManager().checkPermission(EditResults, obj):
-                url = obj.absolute_url() + "/manage_results"
-            else:
-                url = obj.absolute_url()
+        item['Client'] = obj.aq_parent.Title()
+        if (hideclientlink == False):
+            item['replace']['Client'] = "<a href='%s'>%s</a>" % \
+                (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
+        item['Creator'] = self.user_fullname(obj.Creator())
+        item['getRequestID'] = obj.getRequestID()
+        item['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
+             (url, item['getRequestID'])
+        item['getSample'] = sample
+        item['replace']['getSample'] = \
+            "<a href='%s'>%s</a>" % (sample.absolute_url(), sample.Title())
 
-            items[x]['Client'] = obj.aq_parent.Title()
-            if (hideclientlink is False):
-                items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
-                    (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
-            items[x]['Creator'] = self.user_fullname(obj.Creator())
-            items[x]['getRequestID'] = obj.getRequestID()
-            items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
-                 (url, items[x]['getRequestID'])
-            items[x]['getSample'] = sample
-            items[x]['replace']['getSample'] = \
-                "<a href='%s'>%s</a>" % (sample.absolute_url(), sample.Title())
+        item['replace']['getProfilesTitle'] = ", ".join(
+            [p.Title() for p in obj.getProfiles()])
 
-            items[x]['replace']['getProfilesTitle'] = ", ".join(
-                [p.Title() for p in obj.getProfiles()])
+        analysesnum = obj.getAnalysesNum()
+        if analysesnum:
+            item['getAnalysesNum'] = str(analysesnum[0]) + '/' + str(analysesnum[1])
+        else:
+            item['getAnalysesNum'] = ''
 
-            if obj.getAnalysesNum():
-                items[x]['getAnalysesNum'] = str(obj.getAnalysesNum()[0]) + '/' + str(obj.getAnalysesNum()[1])
-            else:
-                items[x]['getAnalysesNum'] = ''
+        batch = obj.getBatch()
+        if batch:
+            item['BatchID'] = batch.getBatchID()
+            item['replace']['BatchID'] = "<a href='%s'>%s</a>" % \
+                 (batch.absolute_url(), item['BatchID'])
+        else:
+            item['BatchID'] = ''
 
-            batch = obj.getBatch()
-            if batch:
-                items[x]['BatchID'] = batch.getBatchID()
-                items[x]['replace']['BatchID'] = "<a href='%s'>%s</a>" % \
-                     (batch.absolute_url(), items[x]['BatchID'])
-            else:
-                items[x]['BatchID'] = ''
+        val = obj.Schema().getField('SubGroup').get(obj)
+        item['SubGroup'] = val.Title() if val else ''
 
-            val = obj.Schema().getField('SubGroup').get(obj)
-            items[x]['SubGroup'] = val.Title() if val else ''
+        samplingdate = obj.getSample().getSamplingDate()
+        item['SamplingDate'] = self.ulocalized_time(samplingdate, long_format=1)
+        item['getDateReceived'] = self.ulocalized_time(obj.getDateReceived())
+        item['getDatePublished'] = self.ulocalized_time(obj.getDatePublished())
 
-            samplingdate = obj.getSample().getSamplingDate()
-            items[x]['SamplingDate'] = self.ulocalized_time(samplingdate, long_format=1)
-            items[x]['getDateReceived'] = self.ulocalized_time(obj.getDateReceived())
-            items[x]['getDatePublished'] = self.ulocalized_time(obj.getDatePublished())
+        deviation = sample.getSamplingDeviation()
+        item['SamplingDeviation'] = deviation and deviation.Title() or ''
+        priority = obj.getPriority()
+        item['Priority'] = '' # priority.Title()
 
-            deviation = sample.getSamplingDeviation()
-            items[x]['SamplingDeviation'] = deviation and deviation.Title() or ''
-            priority = obj.getPriority()
-            items[x]['Priority'] = '' # priority.Title()
+        item['getStorageLocation'] = sample.getStorageLocation() and sample.getStorageLocation().Title() or ''
+        item['AdHoc'] = sample.getAdHoc() and True or ''
 
-            items[x]['getStorageLocation'] = sample.getStorageLocation() and sample.getStorageLocation().Title() or ''
-            items[x]['AdHoc'] = sample.getAdHoc() and True or ''
+        after_icons = ""
+        state = self.workflow.getInfoFor(obj, 'worksheetanalysis_review_state')
+        if state == 'assigned':
+            after_icons += "<img src='%s/++resource++bika.lims.images/worksheet.png' title='%s'/>" % \
+                (self.portal_url, t(_("All analyses assigned")))
+        if self.workflow.getInfoFor(obj, 'review_state') == 'invalid':
+            after_icons += "<img src='%s/++resource++bika.lims.images/delete.png' title='%s'/>" % \
+                (self.portal_url, t(_("Results have been withdrawn")))
+        if obj.getLate():
+            after_icons += "<img src='%s/++resource++bika.lims.images/late.png' title='%s'>" % \
+                (self.portal_url, t(_("Late Analyses")))
+        if samplingdate > DateTime():
+            after_icons += "<img src='%s/++resource++bika.lims.images/calendar.png' title='%s'>" % \
+                (self.portal_url, t(_("Future dated sample")))
+        if obj.getInvoiceExclude():
+            after_icons += "<img src='%s/++resource++bika.lims.images/invoice_exclude.png' title='%s'>" % \
+                (self.portal_url, t(_("Exclude from invoice")))
+        if sample.getSampleType().getHazardous():
+            after_icons += "<img src='%s/++resource++bika.lims.images/hazardous.png' title='%s'>" % \
+                (self.portal_url, t(_("Hazardous")))
+        if after_icons:
+            item['after']['getRequestID'] = after_icons
 
-            after_icons = ""
-            state = workflow.getInfoFor(obj, 'worksheetanalysis_review_state')
-            if state == 'assigned':
-                after_icons += "<img src='%s/++resource++bika.lims.images/worksheet.png' title='%s'/>" % \
-                    (self.portal_url, t(_("All analyses assigned")))
-            if workflow.getInfoFor(obj, 'review_state') == 'invalid':
-                after_icons += "<img src='%s/++resource++bika.lims.images/delete.png' title='%s'/>" % \
-                    (self.portal_url, t(_("Results have been withdrawn")))
-            if obj.getLate():
-                after_icons += "<img src='%s/++resource++bika.lims.images/late.png' title='%s'>" % \
-                    (self.portal_url, t(_("Late Analyses")))
-            if samplingdate > DateTime():
-                after_icons += "<img src='%s/++resource++bika.lims.images/calendar.png' title='%s'>" % \
-                    (self.portal_url, t(_("Future dated sample")))
-            if obj.getInvoiceExclude():
-                after_icons += "<img src='%s/++resource++bika.lims.images/invoice_exclude.png' title='%s'>" % \
-                    (self.portal_url, t(_("Exclude from invoice")))
-            if sample.getSampleType().getHazardous():
-                after_icons += "<img src='%s/++resource++bika.lims.images/hazardous.png' title='%s'>" % \
-                    (self.portal_url, t(_("Hazardous")))
-            if after_icons:
-                items[x]['after']['getRequestID'] = after_icons
+        item['Created'] = self.ulocalized_time(obj.created())
 
-            items[x]['Created'] = self.ulocalized_time(obj.created())
+        contact = obj.getContact()
+        if contact:
+            item['ClientContact'] = contact.Title()
+            item['replace']['ClientContact'] = "<a href='%s'>%s</a>" % \
+                (contact.absolute_url(), contact.Title())
+        else:
+            item['ClientContact'] = ""
 
-            contact = obj.getContact()
-            if contact:
-                items[x]['ClientContact'] = contact.Title()
-                items[x]['replace']['ClientContact'] = "<a href='%s'>%s</a>" % \
-                    (contact.absolute_url(), contact.Title())
-            else:
-                items[x]['ClientContact'] = ""
-
-            SamplingWorkflowEnabled = sample.getSamplingWorkflowEnabled()
-            if SamplingWorkflowEnabled and not samplingdate > DateTime():
-                datesampled = self.ulocalized_time(sample.getDateSampled())
-                if not datesampled:
-                    datesampled = self.ulocalized_time(
-                        DateTime(),
-                        long_format=1)
-                    items[x]['class']['getDateSampled'] = 'provisional'
-                sampler = sample.getSampler().strip()
-                if sampler:
-                    items[x]['replace']['getSampler'] = self.user_fullname(sampler)
-                if 'Sampler' in member.getRoles() and not sampler:
-                    sampler = member.id
-                    items[x]['class']['getSampler'] = 'provisional'
-            else:
-                datesampled = ''
-                sampler = ''
-            items[x]['getDateSampled'] = datesampled
-            items[x]['getSampler'] = sampler
-
-            # sampling workflow - inline edits for Sampler and Date Sampled
-            checkPermission = self.context.portal_membership.checkPermission
-            state = workflow.getInfoFor(obj, 'review_state')
-            if state == 'to_be_sampled' \
-                    and checkPermission(SampleSample, obj) \
-                    and not samplingdate > DateTime():
-                items[x]['required'] = ['getSampler', 'getDateSampled']
-                items[x]['allow_edit'] = ['getSampler', 'getDateSampled']
-                samplers = getUsers(sample, ['Sampler', 'LabManager', 'Manager'])
-                username = member.getUserName()
-                users = [({'ResultValue': u, 'ResultText': samplers.getValue(u)})
-                         for u in samplers]
-                items[x]['choices'] = {'getSampler': users}
-                Sampler = sampler and sampler or \
-                    (username in samplers.keys() and username) or ''
-                items[x]['getSampler'] = Sampler
-
-            # These don't exist on ARs
-            # XXX This should be a list of preservers...
-            items[x]['getPreserver'] = ''
-            items[x]['getDatePreserved'] = ''
-
-            # inline edits for Preserver and Date Preserved
-            checkPermission = self.context.portal_membership.checkPermission
-            if checkPermission(PreserveSample, obj):
-                items[x]['required'] = ['getPreserver', 'getDatePreserved']
-                items[x]['allow_edit'] = ['getPreserver', 'getDatePreserved']
-                preservers = getUsers(obj, ['Preserver', 'LabManager', 'Manager'])
-                username = member.getUserName()
-                users = [({'ResultValue': u, 'ResultText': preservers.getValue(u)})
-                         for u in preservers]
-                items[x]['choices'] = {'getPreserver': users}
-                preserver = username in preservers.keys() and username or ''
-                items[x]['getPreserver'] = preserver
-                items[x]['getDatePreserved'] = self.ulocalized_time(
+        SamplingWorkflowEnabled = sample.getSamplingWorkflowEnabled()
+        if SamplingWorkflowEnabled and not samplingdate > DateTime():
+            datesampled = self.ulocalized_time(sample.getDateSampled())
+            if not datesampled:
+                datesampled = self.ulocalized_time(
                     DateTime(),
                     long_format=1)
-                items[x]['class']['getPreserver'] = 'provisional'
-                items[x]['class']['getDatePreserved'] = 'provisional'
+                item['class']['getDateSampled'] = 'provisional'
+            sampler = sample.getSampler().strip()
+            if sampler:
+                item['replace']['getSampler'] = self.user_fullname(sampler)
+            if 'Sampler' in member.getRoles() and not sampler:
+                sampler = member.id
+                item['class']['getSampler'] = 'provisional'
+        else:
+            datesampled = ''
+            sampler = ''
+        item['getDateSampled'] = datesampled
+        item['getSampler'] = sampler
 
-            # Submitting user may not verify results
-            if items[x]['review_state'] == 'to_be_verified' and \
-               not checkPermission(VerifyOwnResults, obj):
-                self_submitted = False
-                try:
-                    review_history = list(workflow.getInfoFor(obj, 'review_history'))
-                    review_history.reverse()
-                    for event in review_history:
-                        if event.get('action') == 'submit':
-                            if event.get('actor') == member.getId():
-                                self_submitted = True
-                            break
-                    if self_submitted:
-                        items[x]['after']['state_title'] = \
-                             "<img src='++resource++bika.lims.images/submitted-by-current-user.png' title='%s'/>" % \
-                             t(_("Cannot verify: Submitted by current user"))
-                except Exception:
-                    pass
+        # sampling workflow - inline edits for Sampler and Date Sampled
+        checkPermission = self.context.portal_membership.checkPermission
+        state = self.workflow.getInfoFor(obj, 'review_state')
+        if state == 'to_be_sampled' \
+                and checkPermission(SampleSample, obj) \
+                and not samplingdate > DateTime():
+            item['required'] = ['getSampler', 'getDateSampled']
+            item['allow_edit'] = ['getSampler', 'getDateSampled']
+            samplers = getUsers(sample, ['Sampler', 'LabManager', 'Manager'])
+            username = member.getUserName()
+            users = [({'ResultValue': u, 'ResultText': samplers.getValue(u)})
+                     for u in samplers]
+            item['choices'] = {'getSampler': users}
+            Sampler = sampler and sampler or \
+                (username in samplers.keys() and username) or ''
+            item['getSampler'] = Sampler
+
+        # These don't exist on ARs
+        # XXX This should be a list of preservers...
+        item['getPreserver'] = ''
+        item['getDatePreserved'] = ''
+
+        # inline edits for Preserver and Date Preserved
+        checkPermission = self.context.portal_membership.checkPermission
+        if checkPermission(PreserveSample, obj):
+            item['required'] = ['getPreserver', 'getDatePreserved']
+            item['allow_edit'] = ['getPreserver', 'getDatePreserved']
+            preservers = getUsers(obj, ['Preserver', 'LabManager', 'Manager'])
+            username = member.getUserName()
+            users = [({'ResultValue': u, 'ResultText': preservers.getValue(u)})
+                     for u in preservers]
+            item['choices'] = {'getPreserver': users}
+            preserver = username in preservers.keys() and username or ''
+            item['getPreserver'] = preserver
+            item['getDatePreserved'] = self.ulocalized_time(
+                DateTime(),
+                long_format=1)
+            item['class']['getPreserver'] = 'provisional'
+            item['class']['getDatePreserved'] = 'provisional'
+
+        # Submitting user may not verify results
+        if item['review_state'] == 'to_be_verified' and \
+           not checkPermission(VerifyOwnResults, obj):
+            self_submitted = False
+            try:
+                review_history = list(self.workflow.getInfoFor(obj, 'review_history'))
+                review_history.reverse()
+                for event in review_history:
+                    if event.get('action') == 'submit':
+                        if event.get('actor') == member.getId():
+                            self_submitted = True
+                        break
+                if self_submitted:
+                    item['after']['state_title'] = \
+                         "<img src='++resource++bika.lims.images/submitted-by-current-user.png' title='%s'/>" % \
+                         t(_("Cannot verify: Submitted by current user"))
+            except Exception:
+                pass
+
+        return item
+
+    def folderitems(self, full_objects=False):
+        self.workflow = getToolByName(self.context, "portal_workflow")
+        self.mtool = getToolByName(self.context, 'portal_membership')
+
+        items = BikaListingView.folderitems(self)
 
         # Hide Preservation/Sampling workflow actions if the edit columns
         # are not displayed.
