@@ -654,6 +654,7 @@ class Instruments(WorksheetImporter):
     def Import(self):
         folder = self.context.bika_setup.bika_instruments
         bsc = getToolByName(self.context, 'bika_setup_catalog')
+        pc = getToolByName(self.context, 'portal_catalog')
         for row in self.get_rows(3):
             if ('Type' not in row
                 or 'Supplier' not in row
@@ -679,9 +680,11 @@ class Instruments(WorksheetImporter):
             instrumenttype = self.get_object(bsc, 'InstrumentType', title=row.get('Type'))
             manufacturer = self.get_object(bsc, 'Manufacturer', title=row.get('Brand'))
             supplier = self.get_object(bsc, 'Supplier', getName=row.get('Supplier', ''))
+            method = self.get_object(pc, 'Method', getName=row.get('Method'))
             obj.setInstrumentType(instrumenttype)
             obj.setManufacturer(manufacturer)
             obj.setSupplier(supplier)
+            obj.setMethod(method)
 
             # Attaching the instrument's photo
             if row.get('Photo', None):
@@ -1157,14 +1160,17 @@ class Methods(WorksheetImporter):
 
     def Import(self):
         folder = self.context.methods
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
         for row in self.get_rows(3):
             if row['title']:
+                calculation = self.get_object(bsc, 'Calculation', row.get('Calculation_title'))
                 obj = _createObjectByType("Method", folder, tmpID())
-
                 obj.edit(
                     title=row['title'],
                     description=row.get('description', ''),
                     Instructions=row.get('Instructions', ''),
+                    ManualEntryOfResults=row.get('ManualEntryOfResults', True),
+                    Calculation=calculation,
                     MethodID=row.get('MethodID', ''),
                     Accredited=row.get('Accredited', True),
                 )
@@ -1326,6 +1332,58 @@ class Analysis_Services(WorksheetImporter):
         if bucket:
             self.write_bucket(bucket)
 
+    def get_methods(self, service_title, default_method):
+        """ Return an array of objects of the type Method in accordance to the
+            methods listed in the 'AnalysisService Methods' sheet and service
+            set in the parameter service_title.
+            If default_method is set, it will be included in the returned
+            array.
+        """
+        return self.get_relations(service_title,
+                                default_instrument,
+                                'Method',
+                                'portal_catalog',
+                                'AnalysisService Methods',
+                                'Method_title')
+
+    def get_instruments(self, service_title, default_instrument):
+        """ Return an array of objects of the type Instrument in accordance to
+            the instruments listed in the 'AnalysisService Instruments' sheet
+            and service set in the parameter 'service_title'.
+            If default_instrument is set, it will be included in the returned
+            array.
+        """
+        return self.get_relations(service_title,
+                                default_instrument,
+                                'Instrument',
+                                'bika_setup_catalog',
+                                'AnalysisService Instruments',
+                                'Instrument_title')
+
+    def get_relations(self, service_title, default_obj, obj_type, catalog_name, sheet_name, column):
+        """ Return an array of objects of the specified type in accordance to
+            the object titles defined in the sheet specified in 'sheet_name' and
+            service set in the paramenter 'service_title'.
+            If a default_obj is set, it will be included in the returned array.
+        """
+        out_objects = [default_obj] if default_obj else []
+        cat = getToolByName(self.context, catalog_name)
+        worksheet = self.workbook.get_sheet_by_name(sheet_name)
+        if not worksheet:
+            return out_objects
+        for row in self.get_rows(3, worksheet=worksheet):
+            row_as_title = row.get('Service_title')
+            if not row_as_title:
+                return out_objects
+            elif row_as_title != service_title:
+                continue
+            obj = self.get_object(cat, obj_type, row.get(column))
+            if obj:
+                if default_obj and default_obj.UID() == obj.UID():
+                    continue
+                out_objects.append(obj)
+        return out_objects
+
     def write_bucket(self, bucket):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         for service_uid, uncertainties in bucket.items():
@@ -1338,24 +1396,84 @@ class Analysis_Services(WorksheetImporter):
         self.load_interim_fields()
         folder = self.context.bika_setup.bika_analysisservices
         bsc = getToolByName(self.context, 'bika_setup_catalog')
+        pc = getToolByName(self.context, 'portal_catalog')
         for row in self.get_rows(3):
             if not row['title']:
                 continue
 
             obj = _createObjectByType("AnalysisService", folder, tmpID())
             MTA = {
-                'days': int(row['MaxTimeAllowed_days'] and row['MaxTimeAllowed_days'] or 0),
-                'hours': int(row['MaxTimeAllowed_hours'] and row['MaxTimeAllowed_hours'] or 0),
-                'minutes': int(row['MaxTimeAllowed_minutes'] and row['MaxTimeAllowed_minutes'] or 0),
+                'days': int(row.get('MaxTimeAllowed_days',0)),
+                'hours': int(row.get('MaxTimeAllowed_hours',0)),
+                'minutes': int(row.get('MaxTimeAllowed_minutes',0)),
             }
             category = self.get_object(bsc, 'AnalysisCategory', row.get('AnalysisCategory_title'))
             department = self.get_object(bsc, 'Department', row.get('Department_title'))
-            methods = self.get_object(bsc, 'Method', row.get('Methods'))
-            instruments = self.get_object(bsc, 'Instrument', row.get('Instrument_title'))
-            deferred_calc = self.get_object(bsc, 'Calculation', row.get('Calculation_title'))
             container = self.get_object(bsc, 'Container', row.get('Container_title'))
             preservation = self.get_object(bsc, 'Preservation', row.get('Preservation_title'))
             priority = self.get_object(bsc, 'ARPriority', row.get('Priority_title'))
+
+            # Analysis Service - Method considerations:
+            # One Analysis Service can have 0 or n Methods associated (field
+            # 'Methods' from the Schema).
+            # If the Analysis Service has at least one method associated, then
+            # one of those methods can be set as the defualt method (field
+            # '_Method' from the Schema).
+            #
+            # To make it easier, if a DefaultMethod is declared in the
+            # Analysis_Services spreadsheet, but the same AS has no method
+            # associated in the Analysis_Service_Methods spreadsheet, then make
+            # the assumption that the DefaultMethod set in the former has to be
+            # associated to the AS although the relation is missing.
+            defaultmethod = self.get_object(pc, 'Method', row.get('DefaultMethod_title'))
+            methods = self.get_methods(row['title'], defaultmethod)
+            if not defaultmethod and methods:
+                defaultmethod = methods[0]
+
+            # Analysis Service - Instrument considerations:
+            # By default, an Analysis Services will be associated automatically
+            # with several Instruments due to the Analysis Service - Methods
+            # relation (an Instrument can be assigned to a Method and one Method
+            # can have zero or n Instruments associated). There is no need to
+            # set this assignment directly, the AnalysisService object will
+            # find those instruments.
+            # Besides this 'automatic' behavior, an Analysis Service can also
+            # have 0 or n Instruments manually associated ('Instruments' field).
+            # In this case, the attribute 'AllowInstrumentEntryOfResults' should
+            # be set to True.
+            #
+            # To make it easier, if a DefaultInstrument is declared in the
+            # Analysis_Services spreadsheet, but the same AS has no instrument
+            # associated in the AnalysisService_Instruments spreadsheet, then
+            # make the assumption the DefaultInstrument set in the former has
+            # to be associated to the AS although the relation is missing and
+            # the option AllowInstrumentEntryOfResults will be set to True.
+            defaultinstrument = self.get_object(bsc, 'Instrument', row.get('DefaultInstrument_title'))
+            instruments = self.get_instruments(row['title'], defaultinstrument)
+            allowinstrentry = True if instruments else False
+            if not defaultinstrument and instruments:
+                defaultinstrument = instruments[0]
+
+            # The manual entry of results can only be set to false if the value
+            # for the attribute "InstrumentEntryOfResults" is False.
+            allowmanualentry = True if not allowinstrentry else row.get('ManualEntryOfResults', True)
+
+            # Analysis Service - Calculation considerations:
+            # By default, the AnalysisService will use the Calculation associated
+            # to the Default Method (the field "UseDefaultCalculation"==True).
+            # If the Default Method for this AS doesn't have any Calculation
+            # associated and the field "UseDefaultCalculation" is True, no
+            # Calculation will be used for this AS ("_Calculation" field is
+            # reserved and should not be set directly).
+            #
+            # To make it easier, if a Calculation is set by default in the
+            # spreadsheet, then assume the UseDefaultCalculation has to be set
+            # to False.
+            deferredcalculation = self.get_object(bsc, 'Calculation', row.get('Calculation_title'))
+            usedefaultcalculation = False if deferredcalculation else True
+            _calculation = deferredcalculation if deferredcalculation else \
+                            (defaultmethod.getCalculation() if defaultmethod else None)
+
             obj.edit(
                 title=row['title'],
                 ShortTitle=row.get('ShortTitle', row['title']),
@@ -1372,10 +1490,14 @@ class Analysis_Services(WorksheetImporter):
                 Price="%02f" % Float(row['Price']),
                 BulkPrice="%02f" % Float(row['BulkPrice']),
                 VAT="%02f" % Float(row['VAT']),
-                Methods=[methods],
-                InstrumentEntryOfResults=True if instruments != '' else '',
-                Instruments=[instruments] if instruments != '' else '',
-                DeferredCalculation=deferred_calc,
+                _Method=defaultmethod,
+                Methods=methods,
+                ManualEntryOfResults=allowmanualentry,
+                InstrumentEntryOfResults=allowinstrentry,
+                Instruments=instruments,
+                _Calculation=_calculation,
+                UseDefaultCalculation=usedefaultcalculation,
+                DeferredCalculation=defaultcalculation,
                 DuplicateVariation="%02f" % Float(row['DuplicateVariation']),
                 Accredited=self.to_bool(row['Accredited']),
                 InterimFields=hasattr(self, 'service_interims') and self.service_interims.get(
