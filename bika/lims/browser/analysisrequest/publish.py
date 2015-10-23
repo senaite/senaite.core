@@ -123,6 +123,12 @@ class AnalysisRequestPublishView(BrowserView):
         """
         return self._arsbyclient[self._current_arsbyclient_index]
 
+    def getAnalysisRequestGroupData(self):
+        """ Returns an array that contains the dicts (ar_data) for each
+            analysis request from the current group
+        """
+        return [self._ar_data(ar) for ar in self.getAnalysisRequestGroup()]
+
     def _nextAnalysisRequest(self):
         """ Move to the next analysis request
         """
@@ -203,6 +209,7 @@ class AnalysisRequestPublishView(BrowserView):
 
     def isSingleARTemplate(self):
         seltemplate = self.request.form.get('template', self._DEFAULT_TEMPLATE)
+        seltemplate = seltemplate.split(':')[-1].strip()
         return not seltemplate.lower().startswith('multi')
 
     def isQCAnalysesVisible(self):
@@ -724,9 +731,13 @@ class AnalysisRequestPublishView(BrowserView):
     def publishFromPOST(self):
         html = self.request.form.get('html')
         style = self.request.form.get('style')
-        uid = self.request.form.get('uid')
-        reporthtml = "<html><head>%s</head><body><div id='report'>%s</body></html>" % (style, html);
-        return self.publishFromHTML(uid, safe_unicode(reporthtml).encode('utf-8'));
+        uids = self.request.form.get('uid').split(':')
+        reporthtml = "<html><head>%s</head><body><div id='report'>%s</body></html>" % (style, html)
+        publishedars = []
+        for uid in uids:
+            ars = self.publishFromHTML(uid, safe_unicode(reporthtml).encode('utf-8'))
+            publishedars.extend(ars)
+        return publishedars
 
     def publishFromHTML(self, aruid, results_html):
         # The AR can be published only and only if allowed
