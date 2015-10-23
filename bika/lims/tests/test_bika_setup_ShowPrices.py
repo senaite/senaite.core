@@ -64,6 +64,23 @@ class Test_ShowPrices(BikaFunctionalTestCase):
             self.fail('ShowPrices is False, but the Invoice tab does appear '
                       'in an AnalysisRequest view page!')
 
+    def test_ar_add_by_cols(self):
+        url = self.portal.clients['client-1'].absolute_url() + \
+              "/portal_factory/AnalysisRequest/x/ar_add?layout=columns"
+        browser = self.getBrowser()
+        self.portal.bika_setup.setShowPrices(True)
+        transaction.commit()
+        browser.open(url)
+        if browser.contents.find('subtotal') == -1:
+            self.fail('ShowPrices is True, but the AR-Add columns form '
+                      'does not contain price rows')
+        self.portal.bika_setup.setShowPrices(False)
+        transaction.commit()
+        browser.open(url)
+        if browser.contents.find('subtotal') > -1:
+            self.fail('ShowPrices is False, but the AR-Add columns form '
+                      'still contains price rows')
+
 
 def test_suite():
     suite = unittest.TestSuite()

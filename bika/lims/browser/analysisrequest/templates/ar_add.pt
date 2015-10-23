@@ -33,7 +33,6 @@
         currencies                python:modules['zope.i18n.locales'].locales.getLocale('en').numbers.currencies;
         currency                  python:context.bika_setup.getCurrency();
         checkPermission           nocall: context/portal_membership/checkPermission;
-        ShowPrices                python: context.bika_setup.getShowPrices();
         tabindex                  view/tabindex;
         partitionable             view/partitioned_services;
         prominentfields           python:view.get_fields_with_visibility('prominent', mode='header_table');

@@ -87,7 +87,7 @@
 
         <!-- Prices -->
 
-        <tfoot tal:condition="ShowPrices">
+        <tfoot tal:condition="view/ShowPrices">
 
             <tr tal:condition="view/getMemberDiscountApplies">
                 <th class="topborder" colspan="2">
