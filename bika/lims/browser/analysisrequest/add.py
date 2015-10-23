@@ -212,6 +212,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
 
     def __call__(self):
         self.request.set('disable_border', 1)
+        self.ShowPrices = self.context.bika_setup.getShowPrices()
         if 'ajax_category_expand' in self.request.keys():
             cat = self.request.get('cat')
             asv = AnalysisServicesView(self.context,
