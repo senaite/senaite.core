@@ -145,8 +145,6 @@ Total price excl Tax,,,,,,,,,,,,,,
         arimport.setOriginalFile("""
 Header,      File name,  Client name,  Client ID, Contact,     CC Names - Report, CC Emails - Report, CC Names - Invoice, CC Emails - Invoice, No of Samples, Client Order Number, Client Reference,,
 Header Data, test1.csv,  Happy Hills,  HH,        Rita Mohale,                  ,                   ,                    ,                    , 10,            HHPO-001,                            ,,
-Batch Header, id,       title,     description,    ClientBatchID, ClientBatchComment, BatchLabels, ReturnSampleToClient,,,
-Batch Data,   B15-0123, New Batch, Optional descr, CC 201506,     Just a batch,                  , TRUE                ,,,
 Samples,    ClientSampleID,    SamplingDate,DateSampled,SamplePoint,SampleMatrix,SampleType,ContainerType,ReportDryMatter,Priority,Total number of Analyses or Profiles,Price excl Tax,ECO,SAL,COL,TAS,MicroBio,Properties
 Analysis price,,,,,,,,,,,,,,
 "Total Analyses or Profiles",,,,,,,,,,,,,9,,,
@@ -161,13 +159,11 @@ Total price excl Tax,,,,,,,,,,,,,,
         arimport.setErrors([])
         arimport.save_header_data()
         arimport.save_sample_data()
-        arimport.create_or_reference_batch()
         errors = arimport.getErrors()
         if errors:
             self.fail("Unexpected errors while saving data: " + str(errors))
         transaction.commit()
         browser = self.getBrowser(loggedIn=True)
-        getc = lambda b, k, v: b.getControl("%s_SampleData_%s" % (k, v))
         browser.open(arimport.absolute_url() + "/edit")
         content = browser.contents
         re.match('\<option selected\=\"selected\" value\=\"\d+\"\>Toilet\<\/option\>', content)
@@ -180,6 +176,39 @@ Total price excl Tax,,,,,,,,,,,,,,
         #
         if len(re.findall('\<.*checked.*ReportDry', content)) != 2:
             self.fail("Should be two False DryMatters, and two True")
+
+
+    def test_LIMS_2081_post_edit_fails_validation_gracefully(self):
+        pc = getToolByName(self.portal, 'portal_catalog')
+        workflow = getToolByName(self.portal, 'portal_workflow')
+        arimport = self.addthing(self.client, 'ARImport')
+        arimport.unmarkCreationFlag()
+        arimport.setFilename("test1.csv")
+        arimport.setOriginalFile("""
+Header,      File name,  Client name,  Client ID, Contact,     CC Names - Report, CC Emails - Report, CC Names - Invoice, CC Emails - Invoice, No of Samples, Client Order Number, Client Reference,,
+Header Data, test1.csv,  Happy Hills,  HH,        Rita Mohale,                  ,                   ,                    ,                    , 10,            HHPO-001,                            ,,
+Samples,    ClientSampleID,    SamplingDate,DateSampled,SamplePoint,SampleMatrix,SampleType,ContainerType,ReportDryMatter,Priority,Total number of Analyses or Profiles,Price excl Tax,ECO,SAL,COL,TAS,MicroBio,Properties
+Analysis price,,,,,,,,,,,,,,
+"Total Analyses or Profiles",,,,,,,,,,,,,9,,,
+Total price excl Tax,,,,,,,,,,,,,,
+"Sample 1", HHS14001,          3/9/2014,    3/9/2014,   ,     ,     Water,     Cup,          0,              Normal,  1,                                   0,             0,0,0,0,0,1
+        """)
+
+        # check that values are saved without errors
+        arimport.setErrors([])
+        arimport.save_header_data()
+        arimport.save_sample_data()
+        arimport.create_or_reference_batch()
+        errors = arimport.getErrors()
+        if errors:
+            self.fail("Unexpected errors while saving data: " + str(errors))
+        transaction.commit()
+        browser = self.getBrowser(loggedIn=True)
+        browser.open(arimport.absolute_url() + "/edit")
+        browser.getControl(name="ClientReference").value = 'test_reference'
+        browser.getControl(name="form.button.save").click()
+        if 'test_reference' not in browser.contents:
+            self.fail('Failed to modify ARImport object (Client Reference)')
 
 
 def test_suite():
