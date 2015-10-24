@@ -3,6 +3,7 @@
 - Dashboard: replace multi-bar charts by stacked-bar charts
 LIMS-1933: Regression: Selecting secondary AR in client batches, fails.
 LIMS-2075: Ensure hiding of pricing information when disabled in site-setup
+LIMS-2080: Correctly interpret default (empty) values in ARImport CSV file
 
 3.1.9 (2015-10-8)
 ------------------
