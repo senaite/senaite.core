@@ -541,18 +541,22 @@ class ARImport(BaseFolder):
 
             # ContainerType - not part of sample or AR schema
             if 'ContainerType' in row:
-                obj = self.lookup(('ContainerType',),
-                                  Title=row['ContainerType'])
-                if obj:
-                    gridrow['ContainerType'] = obj[0].UID
+                title = row['ContainerType']
+                if title:
+                    obj = self.lookup(('ContainerType',),
+                                      Title=row['ContainerType'])
+                    if obj:
+                        gridrow['ContainerType'] = obj[0].UID
                 del (row['ContainerType'])
 
             if 'SampleMatrix' in row:
                 # SampleMatrix - not part of sample or AR schema
-                obj = self.lookup(('SampleMatrix',),
-                                  Title=row['SampleMatrix'])
-                if obj:
-                    gridrow['SampleMatrix'] = obj[0].UID
+                title = row['SampleMatrix']
+                if title:
+                    obj = self.lookup(('SampleMatrix',),
+                                      Title=row['SampleMatrix'])
+                    if obj:
+                        gridrow['SampleMatrix'] = obj[0].UID
                 del (row['SampleMatrix'])
 
             # match against sample schema
@@ -561,12 +565,13 @@ class ARImport(BaseFolder):
                     continue
                 if k in sample_schema:
                     del (row[k])
-                    try:
-                        value = self.munge_field_value(sample_schema, row_nr, k,
-                                                       v)
-                        gridrow[k] = str(value)
-                    except ValueError as e:
-                        errors.append(e.message)
+                    if v:
+                        try:
+                            value = self.munge_field_value(
+                                sample_schema, row_nr, k, v)
+                            gridrow[k] = value
+                        except ValueError as e:
+                            errors.append(e.message)
 
             # match against ar schema
             for k, v in row.items():
@@ -574,11 +579,13 @@ class ARImport(BaseFolder):
                     continue
                 if k in ar_schema:
                     del (row[k])
-                    try:
-                        value = self.munge_field_value(ar_schema, row_nr, k, v)
-                        gridrow[k] = str(value)
-                    except ValueError as e:
-                        errors.append(e.message)
+                    if v:
+                        try:
+                            value = self.munge_field_value(
+                                ar_schema, row_nr, k, v)
+                            gridrow[k] = value
+                        except ValueError as e:
+                            errors.append(e.message)
 
             # Count and remove Keywords and Profiles from the list
             gridrow['Analyses'] = []
@@ -683,6 +690,7 @@ class ARImport(BaseFolder):
         field = schema[fieldname]
         if field.type == 'boolean':
             value = str(value).strip().lower()
+            value = '' if value in ['0', 'no', 'false', 'none'] else '1'
             return value
         if field.type == 'reference':
             value = str(value).strip()
@@ -704,7 +712,7 @@ class ARImport(BaseFolder):
             except:
                 raise ValueError('Row %s: value is invalid (%s=%s)' % (
                     row_nr, fieldname, value))
-        return value
+        return str(value)
 
     def validate_headers(self):
         """Validate headers fields from schema
@@ -883,7 +891,7 @@ class ARImport(BaseFolder):
             if brains:
                 services.add(brains[0].UID)
             else:
-                self.error("Invalid analysis specified: %s"%val)
+                self.error("Invalid analysis specified: %s" % val)
         return list(services)
 
     def get_row_profile_services(self, row):
@@ -903,7 +911,7 @@ class ARImport(BaseFolder):
                 for service in objects[0].getService():
                     services.add(service.UID())
             else:
-                self.error("Invalid profile specified: %s"%val)
+                self.error("Invalid profile specified: %s" % val)
         return list(services)
 
     def get_row_container(self, row):
