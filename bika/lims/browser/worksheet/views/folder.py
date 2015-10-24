@@ -223,10 +223,40 @@ class FolderView(BikaListingView):
         ]
 
     def __call__(self):
+        self.wf = getToolByName(self, 'portal_workflow')
+        self.rc = getToolByName(self, REFERENCE_CATALOG)
+        self.pm = getToolByName(self.context, "portal_membership")
+
         if not self.isManagementAllowed():
             # The current has no prvileges to manage WS.
             # Remove the add button
             self.context_actions = {}
+
+        self.member = self.pm.getAuthenticatedMember()
+        roles = self.member.getRoles()
+        self.restrict_results = 'Manager' not in roles \
+                and 'LabManager' not in roles \
+                and 'LabClerk' not in roles \
+                and 'RegulatoryInspector' not in roles \
+                and self.context.bika_setup.getRestrictWorksheetUsersAccess()
+        if self.restrict_results == True:
+            # Remove 'Mine' button and hide 'Analyst' column
+            del self.review_states[1] # Mine
+            self.columns['Analyst']['toggle'] = False
+
+        self.can_manage = self.pm.checkPermission(ManageWorksheets, self.context)
+        self.selected_state = self.request.get("%s_review_state"%self.form_id,
+                                                'default')
+
+        self.analyst_choices = []
+        for a in self.analysts:
+            self.analyst_choices.append({'ResultValue': a,
+                                         'ResultText': self.analysts.getValue(a)})
+
+        self.allow_edit = self.isEditionAllowed()
+
+        # Default value for this attr
+        self.can_reassign = False
 
         return super(FolderView, self).__call__()
 
@@ -359,36 +389,6 @@ class FolderView(BikaListingView):
         return item
 
     def folderitems(self):
-        self.wf = getToolByName(self, 'portal_workflow')
-        self.rc = getToolByName(self, REFERENCE_CATALOG)
-        self.pm = getToolByName(self.context, "portal_membership")
-
-        self.member = self.pm.getAuthenticatedMember()
-        roles = self.member.getRoles()
-        self.restrict_results = 'Manager' not in roles \
-                and 'LabManager' not in roles \
-                and 'LabClerk' not in roles \
-                and 'RegulatoryInspector' not in roles \
-                and self.context.bika_setup.getRestrictWorksheetUsersAccess()
-
-        if self.restrict_results == True:
-            # Remove 'Mine' button and hide 'Analyst' column
-            del self.review_states[1] # Mine
-            self.columns['Analyst']['toggle'] = False
-
-        self.can_manage = self.pm.checkPermission(ManageWorksheets, self.context)
-        self.selected_state = self.request.get("%s_review_state"%self.form_id,
-                                                'default')
-
-        self.analyst_choices = []
-        for a in self.analysts:
-            self.analyst_choices.append({'ResultValue': a,
-                                         'ResultText': self.analysts.getValue(a)})
-
-        self.allow_edit = self.isEditionAllowed()
-
-        # Render items
-        self.can_reassign = False
         items = BikaListingView.folderitems(self)
 
         # can_reassigned value is assigned in folderitem(obj,item,index) function

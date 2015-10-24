@@ -693,11 +693,29 @@ class AnalysisRequestsView(BikaListingView):
 
         return item
 
-    def folderitems(self, full_objects=False):
+    @property
+    def copy_to_new_allowed(self):
+        mtool = getToolByName(self.context, 'portal_membership')
+        if mtool.checkPermission(ManageAnalysisRequests, self.context) \
+            or mtool.checkPermission(ModifyPortalContent, self.context):
+            return True
+        return False
+
+    def __call__(self):
         self.workflow = getToolByName(self.context, "portal_workflow")
         self.mtool = getToolByName(self.context, 'portal_membership')
 
-        items = BikaListingView.folderitems(self)
+        # Only "BIKA: ManageAnalysisRequests" may see the copy to new button.
+        # elsewhere it is hacked in where required.
+        if self.copy_to_new_allowed:
+            review_states = []
+            for review_state in self.review_states:
+                review_state.get('custom_actions', []).extend(
+                    [{'id': 'copy_to_new',
+                      'title': _('Copy to new'),
+                      'url': 'workflow_action?action=copy_to_new'}, ])
+                review_states.append(review_state)
+            self.review_states = review_states
 
         # Hide Preservation/Sampling workflow actions if the edit columns
         # are not displayed.
@@ -720,26 +738,4 @@ class AnalysisRequestsView(BikaListingView):
             new_states.append(state)
         self.review_states = new_states
 
-        return items
-
-    @property
-    def copy_to_new_allowed(self):
-        mtool = getToolByName(self.context, 'portal_membership')
-        if mtool.checkPermission(ManageAnalysisRequests, self.context) \
-            or mtool.checkPermission(ModifyPortalContent, self.context):
-            return True
-        return False
-
-    def __call__(self):
-        # Only "BIKA: ManageAnalysisRequests" may see the copy to new button.
-        # elsewhere it is hacked in where required.
-        if self.copy_to_new_allowed:
-            review_states = []
-            for review_state in self.review_states:
-                review_state.get('custom_actions', []).extend(
-                    [{'id': 'copy_to_new',
-                      'title': _('Copy to new'),
-                      'url': 'workflow_action?action=copy_to_new'}, ])
-                review_states.append(review_state)
-            self.review_states = review_states
         return super(AnalysisRequestsView, self).__call__()
