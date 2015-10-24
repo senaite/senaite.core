@@ -112,7 +112,7 @@
             </tr>
             <tr>
                 <th tal:attributes="colspan python:len(ars)+1"
-                    i8n:translate=""
+                    i18n:translate=""
                     class="analyses">Analyses</th>
             </tr>
             <tr tal:repeat="antitle anstitles">
