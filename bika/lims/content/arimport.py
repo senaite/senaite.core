@@ -2,6 +2,7 @@ from AccessControl import ClassSecurityInfo
 import csv
 from DateTime.DateTime import DateTime
 from Products.Archetypes.event import ObjectInitializedEvent
+from Products.CMFCore.WorkflowCore import WorkflowException
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import ulocalized_time
 from bika.lims.config import PROJECTNAME
@@ -271,7 +272,10 @@ class ARImport(BaseFolder):
     def at_post_edit_script(self):
         super(ARImport, self).at_post_edit_script()
         workflow = getToolByName(self, 'portal_workflow')
-        workflow.doActionFor(self, 'validate')
+        try:
+            workflow.doActionFor(self, 'validate')
+        except WorkflowException:
+            pass
 
     def workflow_script_import(self):
         """Create objects from valid ARImport
