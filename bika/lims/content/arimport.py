@@ -270,12 +270,10 @@ class ARImport(BaseFolder):
                 self.absolute_url()))
 
     def at_post_edit_script(self):
-        super(ARImport, self).at_post_edit_script()
         workflow = getToolByName(self, 'portal_workflow')
-        try:
+        trans_ids = [t['id'] for t in workflow.getTransitionsFor(self)]
+        if 'validate' in trans_ids:
             workflow.doActionFor(self, 'validate')
-        except WorkflowException:
-            pass
 
     def workflow_script_import(self):
         """Create objects from valid ARImport
