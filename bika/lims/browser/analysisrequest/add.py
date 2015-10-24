@@ -142,7 +142,9 @@ class AnalysisServicesView(ASV):
         # the item count before choosing to render the table at all.
         if not self.ar_add_items:
             bs = self.context.bika_setup
-            # The parent folder can be a client or a batch, but we need the client
+            # The parent folder can be a client or a batch, but we need the
+            # client.  It is possible that this will be None!  This happens
+            # when the AR is inside a batch, and the batch has no Client set.
             client = self.context.aq_parent if self.context.aq_parent.portal_type == 'Client'\
                 else self.context.aq_parent.getClient()
             items = super(AnalysisServicesView, self).folderitems()
@@ -175,12 +177,16 @@ class AnalysisServicesView(ASV):
                     # bika_listing_table_items.pt which allows them to be
                     # inserted into as attributes on <TR>.  TAL has this flaw;
                     # that attributes cannot be dynamically inserted.
-                    items[x]['price'] = obj.getBulkPrice() if client.getBulkDiscount() else obj.getPrice()
+                    # XXX five.zpt should fix this.  we must test five.zpt!
+                    items[x]['price'] = obj.getBulkPrice() \
+                        if client and client.getBulkDiscount() \
+                        else obj.getPrice()
                     items[x]['vat_percentage'] = obj.getVAT()
 
                     # place a clue for the JS to recognize that these are
                     # AnalysisServices being selected here (service_selector
                     # bika_listing):
+                    # XXX five.zpt should fix this.  we must test five.zpt!
                     poc = items[x]['obj'].getPointOfCapture()
                     items[x]['table_row_class'] = \
                         'service_selector bika_listing ' + poc
