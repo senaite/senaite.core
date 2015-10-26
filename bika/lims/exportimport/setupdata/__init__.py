@@ -1547,12 +1547,12 @@ class Analysis_Specifications(WorksheetImporter):
         bsc = getToolByName(self.context, "bika_setup_catalog")
         service = bsc(
             portal_type="AnalysisService",
-            title=row["service"]
+            title=safe_unicode(row["service"])
         )
         if not service:
             service = bsc(
                 portal_type="AnalysisService",
-                getKeyword=row["service"]
+                getKeyword=safe_unicode(row["service"])
             )
         service = service[0].getObject()
         return service
@@ -1589,12 +1589,12 @@ class Analysis_Specifications(WorksheetImporter):
                 if parent == "lab":
                     folder = self.context.bika_setup.bika_analysisspecs
                 else:
-                    proxy = pc(portal_type="Client", getName=parent)[0]
+                    proxy = pc(portal_type="Client", getName=safe_unicode(parent))[0]
                     folder = proxy.getObject()
                 st = bucket[parent][title]["sampletype"]
                 resultsrange = bucket[parent][title]["resultsrange"]
                 if st:
-                    st_uid = bsc(portal_type="SampleType", title=st)[0].UID
+                    st_uid = bsc(portal_type="SampleType", title=safe_unicode(st))[0].UID
                 obj = _createObjectByType("AnalysisSpec", folder, tmpID())
                 obj.edit(title=title)
                 obj.setResultsRange(resultsrange)
