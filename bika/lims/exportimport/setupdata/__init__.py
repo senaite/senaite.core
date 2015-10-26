@@ -702,7 +702,7 @@ class Instruments(WorksheetImporter):
             instrumenttype = self.get_object(bsc, 'InstrumentType', title=row.get('Type'))
             manufacturer = self.get_object(bsc, 'Manufacturer', title=row.get('Brand'))
             supplier = self.get_object(bsc, 'Supplier', getName=row.get('Supplier', ''))
-            method = self.get_object(pc, 'Method', getName=row.get('Method'))
+            method = self.get_object(pc, 'Method', title=row.get('Method'))
             obj.setInstrumentType(instrumenttype)
             obj.setManufacturer(manufacturer)
             obj.setSupplier(supplier)
