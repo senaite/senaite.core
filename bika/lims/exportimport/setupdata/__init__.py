@@ -135,10 +135,13 @@ class WorksheetImporter:
 
     def get_file_data(self, filename):
         if filename:
-            path = resource_filename(
-                self.dataset_project,
-                "setupdata/%s/%s" % (self.dataset_name, filename))
-            file_data = open(path, "rb").read()
+            try:
+                path = resource_filename(
+                    self.dataset_project,
+                    "setupdata/%s/%s" % (self.dataset_name, filename))
+                file_data = open(path, "rb").read()
+            except:
+                file_data = None
         else:
             file_data = None
         return file_data
@@ -334,8 +337,6 @@ class Lab_Contacts(WorksheetImporter):
                 continue
 
             obj = _createObjectByType("LabContact", folder, tmpID())
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
             Fullname = row['Firstname'] + " " + row.get('Surname', '')
             obj.edit(
                 title=Fullname,
@@ -344,10 +345,15 @@ class Lab_Contacts(WorksheetImporter):
                 Surname=row.get('Surname', ''),
                 JobTitle=row.get('JobTitle', ''),
                 Username=row.get('Username', ''),
-                Signature=self.get_file_data(row.get('Signature', None))
             )
+            obj.unmarkCreationFlag()
+            renameAfterCreation(obj)
             self.fill_contactfields(row, obj)
             self.fill_addressfields(row, obj)
+
+            signature = self.get_file_data(row.get('Signature', None))
+            if signature:
+                obj.setSignature(signature)
 
             if row['Department_title']:
                 self.defer(src_obj=obj,
