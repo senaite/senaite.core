@@ -165,6 +165,28 @@ class WorksheetImporter:
         else:
             return False
 
+    def to_int(self, value, default=0):
+        """ Converts a value o a int. Returns default if the conversion fails.
+        """
+        try:
+            return int(value)
+        except ValueError:
+            try:
+                return int(default)
+            except:
+                return 0
+
+    def to_float(self, value, default=0):
+        """ Converts a value o a float. Returns default if the conversion fails.
+        """
+        try:
+            return float(value)
+        except ValueError:
+            try:
+                return float(default)
+            except:
+                return 0.0
+
     def defer(self, **kwargs):
         self.lsd.deferred.append(kwargs)
 
@@ -1340,7 +1362,7 @@ class Analysis_Services(WorksheetImporter):
             array.
         """
         return self.get_relations(service_title,
-                                default_instrument,
+                                default_method,
                                 'Method',
                                 'portal_catalog',
                                 'AnalysisService Methods',
@@ -1403,9 +1425,9 @@ class Analysis_Services(WorksheetImporter):
 
             obj = _createObjectByType("AnalysisService", folder, tmpID())
             MTA = {
-                'days': int(row.get('MaxTimeAllowed_days',0)),
-                'hours': int(row.get('MaxTimeAllowed_hours',0)),
-                'minutes': int(row.get('MaxTimeAllowed_minutes',0)),
+                'days': self.to_int(row.get('MaxTimeAllowed_days',0),0),
+                'hours': self.to_int(row.get('MaxTimeAllowed_hours',0),0),
+                'minutes': self.to_int(row.get('MaxTimeAllowed_minutes',0),0),
             }
             category = self.get_object(bsc, 'AnalysisCategory', row.get('AnalysisCategory_title'))
             department = self.get_object(bsc, 'Department', row.get('Department_title'))
@@ -1486,10 +1508,10 @@ class Analysis_Services(WorksheetImporter):
                 AttachmentOption=row.get('Attachment', '')[0].lower() if row.get('Attachment', '') else 'p',
                 Unit=row['Unit'] and row['Unit'] or None,
                 Precision=row['Precision'] and str(row['Precision']) or '0',
-                ExponentialFormatPrecision=row.get('ExponentialFormatPrecision', '7'),
-                LowerDetectionLimit=row.get('LowerDetectionLimit', '0.0'),
-                UpperDetectionLimit=row.get('UpperDetectionLimit', '1000000000'),
-                DetectionLimitSelector=self.to_bool(row.get('DetectionLimitSelector'),0),
+                ExponentialFormatPrecision=str(self.to_int(row.get('ExponentialFormatPrecision',7),7)),
+                LowerDetectionLimit='%06f' % self.to_float(row.get('LowerDetectionLimit', '0.0'), 0),
+                UpperDetectionLimit='%06f' % self.to_float(row.get('UpperDetectionLimit', '1000000000.0'), 1000000000.0),
+                DetectionLimitSelector=self.to_bool(row.get('DetectionLimitSelector',0)),
                 MaxTimeAllowed=MTA,
                 Price="%02f" % Float(row['Price']),
                 BulkPrice="%02f" % Float(row['BulkPrice']),
@@ -1501,7 +1523,7 @@ class Analysis_Services(WorksheetImporter):
                 Instruments=instruments,
                 _Calculation=_calculation,
                 UseDefaultCalculation=usedefaultcalculation,
-                DeferredCalculation=defaultcalculation,
+                DeferredCalculation=deferredcalculation,
                 DuplicateVariation="%02f" % Float(row['DuplicateVariation']),
                 Accredited=self.to_bool(row['Accredited']),
                 InterimFields=hasattr(self, 'service_interims') and self.service_interims.get(
@@ -1513,8 +1535,6 @@ class Analysis_Services(WorksheetImporter):
                 CommercialID=row.get('CommercialID', ''),
                 ProtocolID=row.get('ProtocolID', '')
             )
-            if deferred_calc:
-                obj.setUseDefaultCalculation(False)
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
         self.load_result_options()
