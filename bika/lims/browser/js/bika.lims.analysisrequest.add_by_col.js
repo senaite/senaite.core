@@ -1307,10 +1307,10 @@ function AnalysisRequestAddByCol() {
                           if (fieldname.search('_uid') > -1) {
                               // If this fieldname ends with _uid, then we consider it a reference,
                               // and set the HTML elements accordingly
+                              fieldname = fieldname.split('_uid')[0];
                               var element = $('#' + fieldname + '-' + arnum)[0]
-                              var uid_element = $('#' + fieldname + '-' + arnum + '_uid')[0]
-                              element.attr('uid', fieldvalue)
-                              uid_element.val(uid)
+                              $(element).attr('uid', fieldvalue)
+                              $(element).val(fieldvalue)
                           }
                           // This
                           else {
