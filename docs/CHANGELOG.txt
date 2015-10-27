@@ -6,6 +6,7 @@ LIMS-2075: Ensure hiding of pricing information when disabled in site-setup
 LIMS-2081: AR Batch Import WorkflowException after edit
 LIMS-2106: Attribute error when creating AR inside batch with no client.
 LIMS-2080: Correctly interpret default (empty) values in ARImport CSV file
+LIMS-2116: JSONAPI throws an UnicodeDecodeError
 
 3.1.9 (2015-10-8)
 ------------------
