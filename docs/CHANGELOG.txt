@@ -1,6 +1,7 @@
 3.1.10 (unreleased)
 -------------------
 - Dashboard: replace multi-bar charts by stacked-bar charts
+LIMS-2117: Analysis Categories don't expand on Analysis Specification creation
 LIMS-1933: Regression: Selecting secondary AR in client batches, fails.
 LIMS-2075: Ensure hiding of pricing information when disabled in site-setup
 LIMS-2081: AR Batch Import WorkflowException after edit

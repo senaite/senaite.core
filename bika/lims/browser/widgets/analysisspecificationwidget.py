@@ -16,10 +16,11 @@ class AnalysisSpecificationView(BikaListingView):
         Analysis Specification.
     """
 
-    def __init__(self, context, request, fieldvalue, allow_edit):
+    def __init__(self, context, request, fieldvalue=[], allow_edit=True):
         BikaListingView.__init__(self, context, request)
         self.context_actions = {}
-        self.contentFilter = {'review_state' : 'impossible_state'}
+        self.contentFilter = {'inactive_state': 'active',
+                              'sort_on': 'sortable_title'}
         self.context_actions = {}
         self.base_url = self.context.absolute_url()
         self.view_url = self.base_url
@@ -31,6 +32,9 @@ class AnalysisSpecificationView(BikaListingView):
         self.allow_edit = allow_edit
         self.show_categories = True
         # self.expand_all_categories = False
+        self.ajax_categories = True
+        self.ajax_categories_url = self.context.absolute_url() + "/analysis_spec_widget_view"
+        self.category_index = 'getCategoryTitle'
 
         self.specsresults = {}
         for specresults in fieldvalue:
@@ -70,8 +74,8 @@ class AnalysisSpecificationView(BikaListingView):
         # Analysis Services retrieval and custom item creation
         items = []
         workflow = getToolByName(self.context, 'portal_workflow')
-        services = bsc(portal_type = "AnalysisService",
-                       sort_on = "sortable_title")
+        self.contentFilter['portal_type'] = 'AnalysisService'
+        services = bsc(self.contentFilter)
         for service in services:
             service = service.getObject();
             cat = service.getCategoryTitle()
