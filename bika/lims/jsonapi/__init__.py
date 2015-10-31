@@ -1,6 +1,7 @@
 from Products.Archetypes.config import TOOL_NAME
 from Products.CMFCore.utils import getToolByName
 from zExceptions import BadRequest
+from bika.lims.utils import safe_unicode
 import json
 import Missing
 import sys, traceback
@@ -73,18 +74,21 @@ def load_field_values(instance, include_fields):
             print traceback.format_exc()
 
         if val:
-            if field.type == "blob":
+            if field.type == "blob" or field.type == 'file':
                 continue
             # I put the UID of all references here in *_uid.
             if field.type == 'reference':
                 if type(val) in (list, tuple):
                     ret[fieldname + "_uid"] = [v.UID() for v in val]
-                    val = [v.Title() for v in val]
+                    val = [safe_unicode(v.Title()) for v in val]
                 else:
                     ret[fieldname + "_uid"] = val.UID()
-                    val = val.Title()
-            if field.type == 'boolean':
+                    val = safe_unicode(val.Title())
+            elif field.type == 'boolean':
                 val = True if val else False
+            elif field.type == 'text':
+                val = safe_unicode(val)
+
         try:
             json.dumps(val)
         except:
