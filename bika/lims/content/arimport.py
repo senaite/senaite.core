@@ -287,6 +287,8 @@ class ARImport(BaseFolder):
         bar = ProgressBar(self, self.REQUEST, title, description)
         notify(InitialiseProgressBar(bar))
 
+        profiles = [x.getObject() for x in bsc(portal_type='AnalysisProfile')]
+
         gridrows = self.schema['SampleData'].get(self)
         row_cnt = 0
         for therow in gridrows:
@@ -318,13 +320,16 @@ class ARImport(BaseFolder):
                     containers = container.getContainers()
                 # XXX And so we must calculate the best container for this partition
                 part.edit(Container=containers[0])
-            # Profiles are titles, convert them to UIDs.
+
+            # Profiles are titles, profile keys, or UIDS: convert them to UIDs.
             newprofiles = []
             for title in row['Profiles']:
-                brains = bsc(portal_type='AnalysisProfile', title=title)
-                for brain in brains:
-                    newprofiles.append(brain.UID)
+                objects = [x for x in profiles
+                           if title in (x.getProfileKey(), x.UID(), x.Title())]
+                for obj in objects:
+                    newprofiles.append(obj.UID())
             row['Profiles'] = newprofiles
+
             # BBB in bika.lims < 3.1.9, only one profile is permitted
             # on an AR.  The services are all added, but only first selected
             # profile name is stored.
@@ -900,11 +905,8 @@ class ARImport(BaseFolder):
         services = set()
         profiles = [x.getObject() for x in bsc(portal_type='AnalysisProfile')]
         for val in row.get('Profiles', []):
-            objects = [x for x in profiles if x.getProfileKey() == val]
-            if not objects:
-                objects = [x for x in profiles if x.Title() == val]
-            if not objects:
-                objects = [x for x in profiles if x.UID() == val]
+            objects = [x for x in profiles
+                       if val in (x.getProfileKey(), x.UID(), x.Title())]
             if objects:
                 for service in objects[0].getService():
                     services.add(service.UID())
