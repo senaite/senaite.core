@@ -1,6 +1,7 @@
 3.1.10 (unreleased)
 -------------------
 - Dashboard: replace multi-bar charts by stacked-bar charts
+LIMS-1906: Spaces should be stripped out of the keywords coming from the Instrument
 LIMS-2117: Analysis Categories don't expand on Analysis Specification creation
 LIMS-1933: Regression: Selecting secondary AR in client batches, fails.
 LIMS-2075: Ensure hiding of pricing information when disabled in site-setup
@@ -9,6 +10,7 @@ LIMS-2106: Attribute error when creating AR inside batch with no client.
 LIMS-2080: Correctly interpret default (empty) values in ARImport CSV file
 LIMS-2115: Error rises when saving a Calculation
 LIMS-2116: JSONAPI throws an UnicodeDecodeError
+LIMS-2114: AR Import with Profiles, no Analyses are created
 
 3.1.9 (2015-10-8)
 ------------------

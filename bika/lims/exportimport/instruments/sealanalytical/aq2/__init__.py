@@ -39,13 +39,13 @@ class SealAnalyticsAQ2CSVParser(InstrumentCSVResultsFileParser):
             return -1
         rawdict = {}
         for idx, result in enumerate(sline):
-            rawdict[self._columns[idx]] = result
+            rawdict[self._columns[idx]] = result.replace(' ', '')
 
-        resid = rawdict['Sample ID']
+        resid = rawdict['Sample ID'].replace('.', '')
         rawdict['DefaultResult'] = 'Result'
         rawdict['Remarks'] = rawdict['Sample Details']
         del rawdict['Sample Details']
-        name = rawdict['Test Name']
+        name = rawdict['Test Name'].replace('.', '')
         del rawdict['Test Name']
         self._addRawResult(resid, {name: rawdict}, False)
         return 0

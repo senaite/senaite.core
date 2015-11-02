@@ -210,7 +210,6 @@ Total price excl Tax,,,,,,,,,,,,,,
         if 'test_reference' not in browser.contents:
             self.fail('Failed to modify ARImport object (Client Reference)')
 
-
 def test_suite():
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestARImports))
