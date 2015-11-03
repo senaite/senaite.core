@@ -28,4 +28,14 @@
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
+
+    <browser:page
+      for="*"
+      name="ajax_services_expand_category"
+      class="bika.lims.browser.widgets.serviceswidget.AJAXCategoryExpand"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+
 </configure>
