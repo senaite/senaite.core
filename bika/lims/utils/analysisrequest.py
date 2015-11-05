@@ -1,62 +1,72 @@
 from Products.CMFCore.utils import getToolByName
-from bika.lims.interfaces import ISample
+from bika.lims.interfaces import ISample, IAnalysisService, IAnalysis
+from bika.lims import logger
 from bika.lims.utils import tmpID
 from bika.lims.utils.sample import create_sample
 from bika.lims.utils.samplepartition import create_samplepartition
 from bika.lims.workflow import doActionFor
+from plone import api
 from Products.CMFPlone.utils import _createObjectByType
 
 
 def create_analysisrequest(
-    context,
-    request,
-    values,
-    analyses=[],
-    partitions=None,
-    specifications=None,
-    prices=None
-):
+        context,
+        request,
+        values,  # {field: value, ...}
+        analyses=[],
+        # uid, service or analysis; list of uids, services or analyses
+        partitions=None,
+        # list of dictionaries with container, preservation etc)
+        specifications=None,
+        prices=None):
+    """This is meant for general use and should do everything necessary to
+    create and initialise the AR and it's requirements.
+    XXX The ar-add form's ajaxAnalysisRequestSubmit should be calling this.
+    """
     # Gather neccesary tools
     workflow = getToolByName(context, 'portal_workflow')
     bc = getToolByName(context, 'bika_catalog')
 
     # Create new sample or locate the existing for secondary AR
-    if values.get('Sample'):
+    if not values.get('Sample', False):
+        secondary = False
+        workflow_enabled = context.bika_setup.getSamplingWorkflowEnabled()
+        sample = create_sample(context, request, values)
+    else:
         secondary = True
         if ISample.providedBy(values['Sample']):
             sample = values['Sample']
         else:
-            sample = bc(UID=values['Sample'])[0].getObject()
+            brains = bc(UID=values['Sample'])
+            if brains:
+                sample = brains[0].getObject()
+        if not sample:
+            raise RuntimeError(
+                "create_analysisrequest No sample. values=%s" % values)
         workflow_enabled = sample.getSamplingWorkflowEnabled()
-    else:
-        secondary = False
-        workflow_enabled = context.bika_setup.getSamplingWorkflowEnabled()
-        sample = create_sample(context, request, values)
 
     # Create the Analysis Request
     ar = _createObjectByType('AnalysisRequest', context, tmpID())
+    # Set some required fields manually before processForm is called
     ar.setSample(sample)
-
-    # processform renames the sample, this requires values to contain the Sample.
     values['Sample'] = sample
     ar.processForm(REQUEST=request, values=values)
-
     # Object has been renamed
     ar.edit(RequestID=ar.getId())
 
     # Set initial AR state
-    workflow_action = 'sampling_workflow' if workflow_enabled \
-        else 'no_sampling_workflow'
-    workflow.doActionFor(ar, workflow_action)
+    action = '{0}sampling_workflow'.format('' if workflow_enabled else 'no_')
+    workflow.doActionFor(ar, action)
 
     # Set analysis request analyses
-    analyses = ar.setAnalyses(analyses, prices=prices, specs=specifications)
+    service_uids = _resolve_items_to_service_uids(analyses)
+    analyses = ar.setAnalyses(service_uids, prices=prices, specs=specifications)
 
     if secondary:
         # Only 'sample_due' and 'sample_recieved' samples can be selected
         # for secondary analyses
-        doActionFor(ar, 'sample')
-        doActionFor(ar, 'sample_due')
+        api.content.transition(obj=ar, to_state='sampled')
+        api.content.transition(obj=ar, to_state='sample_due')
         sample_state = workflow.getInfoFor(sample, 'review_state')
         if sample_state == 'sample_received':
             doActionFor(ar, 'receive')
@@ -64,14 +74,15 @@ def create_analysisrequest(
         for analysis in ar.getAnalyses(full_objects=1):
             doActionFor(analysis, 'sample')
             doActionFor(analysis, 'sample_due')
-            analysis_transition_ids = [t['id'] for t in workflow.getTransitionsFor(analysis)]
+            analysis_transition_ids = [t['id'] for t in
+                                       workflow.getTransitionsFor(analysis)]
             if 'receive' in analysis_transition_ids and sample_state == 'sample_received':
                 doActionFor(analysis, 'receive')
 
     if not secondary:
         # Create sample partitions
         if not partitions:
-            partitions = [{'services':analyses}]
+            partitions = [{'services': analyses}]
         for n, partition in enumerate(partitions):
             # Calculate partition id
             partition_prefix = sample.getId() + "-P"
@@ -116,3 +127,51 @@ def create_analysisrequest(
 
     # Return the newly created Analysis Request
     return ar
+
+
+def _resolve_items_to_service_uids(items):
+    portal = api.portal.get()
+    # We need to send a list of service UIDS to setAnalyses function.
+    # But we may have received one, or a list of:
+    #   AnalysisService instances
+    #   Analysis instances
+    #   service titles
+    #   service UIDs
+    #   service Keywords
+    service_uids = []
+    # Maybe only a single item was passed
+    if type(items) not in (list, tuple):
+        items = [items, ]
+    for item in items:
+        uid = False
+        # service objects
+        if IAnalysisService.providedBy(item):
+            uid = item.UID()
+            service_uids.append(uid)
+        # Analysis objects (shortcut for eg copying analyses from other AR)
+        if IAnalysis.providedBy(item):
+            uid = item.getService().UID()
+            service_uids.append(uid)
+        # Maybe object UID.
+        bsc = getToolByName(portal, 'bika_setup_catalog')
+        brains = bsc(UID=item)
+        if brains:
+            uid = brains[0].UID
+            service_uids.append(uid)
+        # Maybe service Title
+        bsc = getToolByName(portal, 'bika_setup_catalog')
+        brains = bsc(portal_type='AnalysisService', title=item)
+        if brains:
+            uid = brains[0].UID
+            service_uids.append(uid)
+        # Maybe service Title
+        bsc = getToolByName(portal, 'bika_setup_catalog')
+        brains = bsc(portal_type='AnalysisService', getKeyword=item)
+        if brains:
+            uid = brains[0].UID
+            service_uids.append(uid)
+        if not uid:
+            raise RuntimeError(
+                str(item) + " should be the UID, title, keyword "
+                            " or title of an AnalysisService.")
+    return service_uids
