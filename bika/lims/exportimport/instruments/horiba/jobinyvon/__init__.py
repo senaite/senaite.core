@@ -7,6 +7,8 @@ from datetime import datetime
 from bika.lims.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter, InstrumentCSVResultsFileParser
 
+import re
+
 
 class HoribaJobinYvonCSVParser(InstrumentCSVResultsFileParser):
     def __init__(self, csv):
@@ -50,13 +52,16 @@ class HoribaJobinYvonCSVParser(InstrumentCSVResultsFileParser):
         :return: the number of rows to jump and parse the next data line or return the code error -1
         """
         values = {'Remarks': ''}
-        name = ''
+        keyword = ''
         test_line = ''
         for idx, result in enumerate(sline):
+            # Last line has a print-date on it; ignore this.
+            if result.lower().find('print date') > -1:
+                continue
+            # Remove all special chars and and spaces:
+            # This is the AnalysisService Keyword.
             if self._columns[idx] == 'LineName':
-                # It's the analysis name
-                name = result.split(' ')[0]
-                test_line = result.split(' ')[1]
+                keyword = re.sub(r'\W', '', result)
             elif self._columns[idx] == 'Cc':
                 values['Concentration'] = sline[idx+2]
             elif self._columns[idx] == 'SD':
@@ -70,7 +75,7 @@ class HoribaJobinYvonCSVParser(InstrumentCSVResultsFileParser):
         values['DateTime'] = self._date
         values['Method'] = self._method
         values['TestLine'] = test_line
-        self._addRawResult(self._resid, {name: values}, False)
+        self._addRawResult(self._resid, {keyword: values}, False)
         return 0
 
     def csvDate2BikaDate(self, DateTime):
