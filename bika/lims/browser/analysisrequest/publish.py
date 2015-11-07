@@ -563,8 +563,7 @@ class AnalysisRequestPublishView(BrowserView):
         andict['formatted_uncertainty'] = format_uncertainty(analysis, analysis.getResult(), decimalmark=decimalmark, sciformat=int(scinot))
 
         # Return specs of current analysis
-        analysis_specs = analysis.getSpecification().getResultsRangeDict().get(analysis.id)
-        andict['specs_dict'] = analysis_specs
+        andict['specs_dict'] = analysis.getSpecification().getResultsRangeDict().get(analysis.id)
 
         # Out of range?
         if specs:
