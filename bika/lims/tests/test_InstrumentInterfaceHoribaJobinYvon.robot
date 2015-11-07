@@ -22,22 +22,38 @@ ${ClientSampleId} =  QC 350 PPM
 
 *** Test Cases ***
 
+
+LIMS-2042 import ICP csv using entire linename for Keyword
+    Enable autologin as  LabManager
+    set autologin username  test_labmanager
+    ${PATH_TO_TEST} =  run keyword  resource_filename
+    ${cat_uid} =  getUID  catalog_name=bika_setup_catalog  portal_type=AnalysisCategory  title=Metals
+    ${service_uid} =  createObject   bika_setup/bika_analysisservices  AnalysisService  s1  title=AL396152  Keyword=Al396152  Category=${cat_uid}
+    debug
+    ${st_uid} =  getUID  catalog_name=bika_setup_catalog  portal_type=SampleType  title=Bran
+    ${sp_uid} =  getUID  catalog_name=bika_setup_catalog  portal_type=SamplePoint  title=Mill
+    ${ar_uid} =  createAR  /clients/client-1  analyses=${service_uid}  SampleType=${st_uid}  SamplePoint=${sp_uid}
+    doActionFor  ${ar_uid}  receive
+    # import file
+    Import Instrument File     Horiba Jobin-Yvon - ICP  ${PATH_TO_TEST}/files/ICPlimstest.csv
+    page should not contain    Service keyword Al396152 not found
+
 ICP csv file
     [Documentation]  Firts we have to create the AS to match the
     ...              analysis in the file. Then we have to create the AR
     ...              and tranistion it. Finally qe can import the results.
+    Enable autologin as  LabManager
+    set autologin username  test_labmanager
     ${PATH_TO_TEST} =           run keyword   resource_filename
-    Disable stickers
-    Create Analysis Service  ${ASId}  ${ASTitle}
+    ${cat_uid} =  getUID  catalog_name=bika_setup_catalog  portal_type=AnalysisCategory  title=Metals
+    ${service_uid} =  createObject   bika_setup/bika_analysisservices  AnalysisService  s1  title=Ni221647  Keyword=Ni221647  Category=${cat_uid}
     Import Instrument File     Horiba Jobin-Yvon - ICP  ${PATH_TO_TEST}/files/ICPlimstest.csv
-    page should not contain    Serice keyword ${ASId} not found
+    page should not contain    Service keyword Ni221647 not found
 
 *** Keywords ***
 
 Start browser
-    Open browser                        ${PLONEURL}/login_form  chrome
-    Log in                              test_labmanager         test_labmanager
-    Wait until page contains            You are now logged in
+    Open browser                        ${PLONEURL}  chrome
     Set selenium speed                  ${SELENIUM_SPEED}
 
 Create Analysis Service

@@ -340,7 +340,7 @@ class AnalysisResultsImporter(Logger):
         rawacodes = self._parser.getAnalysisKeywords()
         exclude = self.getKeywordsToBeExcluded()
         for acode in rawacodes:
-            if acode in exclude:
+            if acode in exclude or not acode:
                 continue
             service = self.bsc(getKeyword=acode)
             if not service:

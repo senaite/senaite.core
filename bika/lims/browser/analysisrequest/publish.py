@@ -626,6 +626,9 @@ class AnalysisRequestPublishView(BrowserView):
         andict['formatted_specs'] = formatDecimalMark(fs, decimalmark)
         andict['formatted_uncertainty'] = format_uncertainty(analysis, analysis.getResult(), decimalmark=decimalmark, sciformat=int(scinot))
 
+        # Return specs of current analysis
+        andict['specs_dict'] = analysis.getSpecification().getResultsRangeDict().get(analysis.id)
+
         # Out of range?
         if specs:
             adapters = getAdapters((analysis, ), IResultOutOfRange)
