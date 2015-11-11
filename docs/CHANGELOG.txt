@@ -1,6 +1,7 @@
 3.1.10 (unreleased)
 -------------------
 - Dashboard: replace multi-bar charts by stacked-bar charts
+WINE-76: WineScan FT120 Import warnings incorrect?
 LIMS-1906: Spaces should be stripped out of the keywords coming from the Instrument
 LIMS-2117: Analysis Categories don't expand on Analysis Specification creation
 LIMS-1933: Regression: Selecting secondary AR in client batches, fails.

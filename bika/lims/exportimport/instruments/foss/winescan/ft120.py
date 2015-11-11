@@ -133,15 +133,18 @@ class WinescanFT120CSVParser(WinescanCSVParser):
                 # 2/11/2005 13:33 PM
                 from datetime import datetime
                 dtobj = datetime.strptime(dtstr, '%d/%m/%Y %H:%M %p')
-                values['DateTime'] = {'DateTime': dtobj.strftime("%Y%m%d %H:%M:%S"),
-                                      'DefaultValue': 'DateTime'};
+                dateTime = dtobj.strftime("%Y%m%d %H:%M:%S")
             except:
                 pass
             del values['Date']
             del values['Time']
 
-        values['Calibration'] = {'Calibration': self._calibration,
-                                 'DefaultValue': 'Calibration'}
+        # Adding the date, time and calibration inside each analysis service result.
+        # I'm adding the calibration number here because it is the way we can avoid
+        # WINE-76 easly
+        for keyword in values.keys():
+            values[keyword]['DateTime'] = dateTime
+            values[keyword]['Calibration'] = self._calibration
 
         # First, we must find if already exists a row with results for
         # the same date, in order to take into account replicas, Mean
@@ -174,7 +177,8 @@ class WinescanFT120CSVParser(WinescanCSVParser):
         outrows = []
         target = {}
         for row in rows:
-            dtrow = row.get('Calibration', {}).get('Calibration',0)
+            # We are getting the rows' calibration. It was saved inside each row
+            dtrow = row[row.keys()[0]].get('Calibration',0)
             if dtrow == calidx:
                 target = row
             else:
