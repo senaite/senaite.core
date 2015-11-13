@@ -47,6 +47,8 @@ class InvoiceView(BrowserView):
         self.symbol = locale.numbers.currencies[self.currency].symbol
         # Get an available client address in a preferred order
         self.clientAddress = None
+        # A list with the items and its invoice values to render in template
+        self.items = []
         addresses = (
             client.getBillingAddress(),
             client.getPostalAddress(),
@@ -58,15 +60,20 @@ class InvoiceView(BrowserView):
                 break
         # Gather the line items
         items = context.invoice_lineitems
-        self.items = [{
-            'invoiceDate': self.ulocalized_time(item['ItemDate']),
-            'description': item['ItemDescription'],
-            'orderNo': item['OrderNumber'],
-            'orderNoURL': item['AnalysisRequest'].absolute_url(),
-            'subtotal': item['Subtotal'],
-            'VATAmount': item['VATAmount'],
-            'total': item['Total'],
-        } for item in items]
+        for item in items:
+            invoice_data = {
+                'invoiceDate': self.ulocalized_time(item.get('ItemDate', '')),
+                'description': item.get('ItemDescription', ''),
+                'orderNo': item.get('OrderNumber', ''),
+                'subtotal': item.get('Subtotal', ''),
+                'VATAmount': item.get('VATAmount', ''),
+                'total': item.get('Total', ''),
+            }
+            if item.get('AnalysisRequest', ''):
+                    invoice_data['orderNoURL'] = item['AnalysisRequest'].absolute_url()
+            elif item.get('SupplyOrder', ''):
+                    invoice_data['orderNoURL'] = item['SupplyOrder'].absolute_url()
+            self.items.append(invoice_data)
         # Render the template
         return self.template()
 
