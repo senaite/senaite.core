@@ -14,7 +14,8 @@ class WinescanCSVParser(InstrumentCSVResultsFileParser):
 
     def _parseline(self, line):
         # Sample Id,,,Ash,Ca,Ethanol,ReducingSugar,VolatileAcid,TotalAcid
-        if line.startswith('Sample Id'):
+        # Sometimes it is: Id,,,Ash,Ca,Ethanol,ReducingSugar,VolatileAcid,TotalAcid
+        if line.startswith('Sample Id') or line.startswith('ID'):
             self.currentheader = [token.strip() for token in line.split(',')]
             return 0
 
