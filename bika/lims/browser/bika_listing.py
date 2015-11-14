@@ -402,6 +402,7 @@ class BikaListingView(BrowserView):
 
         self.translate = self.context.translate
         self.show_all = False
+        self.show_more = False
         self.limit_from = 0
 
     @property
