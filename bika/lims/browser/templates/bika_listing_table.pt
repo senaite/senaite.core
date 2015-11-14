@@ -8,7 +8,11 @@ displayed when ajax requests the table. </tal:comment>
     tal:omit-tag="table_only"
     tal:define="
         form_id view/bika_listing/form_id;
-        table_only python:(hasattr(view, 'table_only') and view.table_only)
+        rows_only python:(hasattr(view, 'rows_only') and view.rows_only)
+                        or (hasattr(view.bika_listing, 'rows_only') and view.bika_listing.rows_only)
+                        or view.request.get('rows_only','') == form_id;
+        table_only python:rows_only
+                        or (hasattr(view, 'table_only') and view.table_only)
                         or (hasattr(view.bika_listing, 'table_only') and view.bika_listing.table_only)
                         or view.request.get('table_only','') == form_id;
         nosortclass view/get_nosort_class;
@@ -95,6 +99,7 @@ XXX This should use form_id </tal:comment>
                                 view.bika_listing.json_interim_fields or []"/>
 <table
     summary="Content listing"
+    tal:omit-tag="python:rows_only"
     tal:attributes="class python:'bika-listing-table';
                     form_id view/bika_listing/form_id"
     i18n:attributes="summary summary_content_listing;"
@@ -102,9 +107,9 @@ XXX This should use form_id </tal:comment>
         columns view/bika_listing/columns;
         column_list python:review_state['columns']" style="margin-bottom:0px;">
 
-    <thead>
+    <thead tal:condition="python:not rows_only">
 
-    <tr style="border:none !important;" tal:condition="python:len(view.bika_listing.review_states) > 1">
+    <tr style="border:none !important;" tal:condition="python:len(view.bika_listing.review_states) > 1 and not rows_only">
 <tal:comment replace="nothing">***************
 Workflow review state selector
 ********************************</tal:comment>
@@ -149,7 +154,7 @@ filter search
 <tal:comment replace="nothing">***************
 Colum Headers
 ********************************</tal:comment>
-    <tr tal:condition="view/items">
+    <tr tal:condition="python:view.items and not rows_only">
         <th class="nosort column"
             id="foldercontents-order-column"
             tal:condition="view/bika_listing/show_sort_column"/>
@@ -189,6 +194,7 @@ Colum Headers
 
     <tbody class="item-listing-tbody"
         tal:condition="view/items"
+        tal:omit-tag="rows_only"
         tal:define="selected_cats python: view.bika_listing.selected_cats(view.batch);
                 restricted_cats python:view.bika_listing.restricted_cats(view.batch)">
 
@@ -212,7 +218,7 @@ Colum Headers
         </tal:cats>
     </tbody>
 
-<tfoot tal:condition="python: view.bika_listing.show_table_footer if hasattr(view.bika_listing, 'show_table_footer') else True">
+<tfoot tal:condition="python: not rows_only and (view.bika_listing.show_table_footer if hasattr(view.bika_listing, 'show_table_footer') else True)">
 
 <tr>
 <td class="noborder"
@@ -254,7 +260,7 @@ Workflow Actions
                           condition="python:view.bika_listing.show_more">
             <a tal:attributes="
                 href           python:view.bika_listing.GET_url(pagesize=next_pagesize,limit_from=limit_from);
-                data-ajax-url  python:'%s&table_only=%s' % (view.bika_listing.GET_url(pagesize=pagesize,limit_from=next_limit_from),form_id);"
+                data-ajax-url  python:'%s&rows_only=%s' % (view.bika_listing.GET_url(pagesize=pagesize,limit_from=next_limit_from),form_id);"
                class="bika_listing_show_more"
                i18n:translate="">Show more</a>
             </tal:showmore>

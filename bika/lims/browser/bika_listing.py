@@ -432,6 +432,7 @@ class BikaListingView(BrowserView):
 
         Request parameters:
         <form_id>_limit_from:       index of the first item to display
+        <form_id>_rows_only:        returns only the rows
         <form_id>_sort_on:          list items are sorted on this key
         <form_id>_manual_sort_on:   no index - sort with python
         <form_id>_pagesize:         number of items
@@ -464,9 +465,11 @@ class BikaListingView(BrowserView):
         # If table_only specifies another form_id, then we abort.
         # this way, a single table among many can request a redraw,
         # and only it's content will be rendered.
-        if form_id not in self.request.get('table_only', form_id):
+        if form_id not in self.request.get('table_only', form_id) \
+            or form_id not in self.request.get('rows_only', form_id):
             return ''
 
+        self.rows_only = self.request.get('rows_only','') == form_id
         self.limit_from = int(self.request.get(form_id + '_limit_from',0))
 
         # contentFilter is expected in every self.review_state.
@@ -668,8 +671,9 @@ class BikaListingView(BrowserView):
             # - get nice formatted category contents (tr rows only)
             return self.rendered_items()
 
-        if self.request.get('table_only', '') == self.form_id:
-            return self.contents_table(table_only=self.request.get('table_only'))
+        if self.request.get('table_only', '') == self.form_id \
+            or self.request.get('rows_only', '') == self.form_id:
+            return self.contents_table(table_only=self.form_id)
         else:
             return self.template()
 
