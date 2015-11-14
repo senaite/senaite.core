@@ -262,7 +262,8 @@ Workflow Actions
             &nbsp;&nbsp;
             <a tal:attributes="
                 href           python:view.bika_listing.GET_url(pagesize=next_pagesize,limit_from=limit_from);
-                data-ajax-url  python:'%s&rows_only=%s' % (view.bika_listing.GET_url(pagesize=pagesize,limit_from=next_limit_from),form_id);"
+                data-ajax-url  python:'%s&rows_only=%s' % (view.bika_listing.GET_url(pagesize=pagesize,limit_from=next_limit_from),form_id);
+                data-form-id   python:form_id;"
                class="bika_listing_show_more"
                i18n:translate="">Show more</a>
             </tal:showmore>

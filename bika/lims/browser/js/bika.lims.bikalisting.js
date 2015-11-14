@@ -21,6 +21,8 @@ function BikaListingTableView() {
 		workflow_action_button_click()
 		column_toggle_context_menu()
 		column_toggle_context_menu_selection()
+		// Experimental
+		// show_more_clicked();
 
 		$('*').click(function () {
 			if ($(".tooltip").length > 0) {
@@ -28,6 +30,22 @@ function BikaListingTableView() {
 			}
 		})
 
+	}
+
+	function show_more_clicked() {
+		$('a.bika_listing_show_more').click(function(e){
+			e.preventDefault();
+			var url = $(this).attr('data-ajax-url');
+			var formid = $(this).attr('data-form-id');
+			$.ajax(url)
+				.done(function(data) {
+					var xmld = $.parseXML(data);
+					var htmlcontent = xmld.children[0].children[0].innerHTML;
+					$('table.bika-listing-table[form_id="'+formid+'"] tbody.item-listing-tbody').append(htmlcontent);
+				})
+				.always(function() {
+				});
+		});
 	}
 
 	function column_header_clicked() {
