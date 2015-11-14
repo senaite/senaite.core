@@ -434,6 +434,7 @@ class BikaListingView(BrowserView):
         accordingly.  Setup AdvancedQuery or catalog contentFilter.
 
         Request parameters:
+        <form_id>_f:                index of the first item to display
         <form_id>_sort_on:          list items are sorted on this key
         <form_id>_manual_sort_on:   no index - sort with python
         <form_id>_pagesize:         number of items
@@ -470,6 +471,7 @@ class BikaListingView(BrowserView):
         if form_id not in self.request.get('table_only', form_id):
             return ''
 
+        self.limit_from = int(self.request.get(form_id + '_limit_from', 0))
 
         # contentFilter is expected in every self.review_state.
         for k, v in self.review_state['contentFilter'].items():
@@ -643,7 +645,7 @@ class BikaListingView(BrowserView):
                 if k.startswith(self.form_id + "_") and not "uids" in k:
                     query[k] = v
         # override from self attributes
-        for x in "pagenumber", "pagesize", "review_state", "sort_order", "sort_on":
+        for x in "pagenumber", "pagesize", "review_state", "sort_order", "sort_on", "limit_from":
             if str(getattr(self, x, None)) != 'None':
                 # I don't understand why on AR listing, getattr(self,x)
                 # is a dict, but this line will resolve LIMS-1420
@@ -763,11 +765,6 @@ class BikaListingView(BrowserView):
         else:
             show_all = False
 
-        pagenumber = int(self.request.get('pagenumber', 1) or 1)
-        pagesize = self.pagesize
-        start = (pagenumber - 1) * pagesize
-        end = start + pagesize - 1
-
         if (hasattr(self, 'And') and self.And) \
            or (hasattr(self, 'Or') and self.Or):
             # if contentsMethod is capable, we do an AdvancedQuery.
@@ -795,7 +792,14 @@ class BikaListingView(BrowserView):
         # the idx will not increase.
         idx = 0
         results = []
+
+        self.show_more = False
+
+        # FUCK
+        # pagenumber
+
         self.page_start_index = 0
+        brains = brains[self.limit_from:]
         for i, obj in enumerate(brains):
             # we don't know yet if it's a brain or an object
             path = hasattr(obj, 'getPath') and obj.getPath() or \
@@ -808,9 +812,10 @@ class BikaListingView(BrowserView):
             # avoid creating unnecessary info for items outside the current
             # batch;  only the path is needed for the "select all" case...
             # we only take allowed items into account
-            if not show_all and not (start <= i <= end):
-                results.append(dict(path = path, uid = uid))
-                continue
+            if not show_all and i >= self.pagesize:
+                # Maximum number of items to be shown reached!
+                self.show_more = True
+                break
 
             # This item must be rendered, we need the object instead of a brain
             obj = obj.getObject() if hasattr(obj, 'getObject') else obj

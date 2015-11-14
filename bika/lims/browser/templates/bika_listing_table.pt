@@ -244,87 +244,19 @@ Workflow Actions
                 </span>
             </span>
         </td>
-<tal:comment replace="nothing">***************
-Batching
-********************************</tal:comment>
-        <td class="batching"
-            style="text-align:right">
-            <tal:batching
-                tal:define="batch view/batch"
-                condition="python:batch.multiple_pages and not view.show_all">
-                <span class="previous"
-                tal:condition="batch/has_previous">
-                    <a href=""
-                    tal:attributes="href python:view.bika_listing.GET_url(pagenumber=batch.previouspage)">
-                    &laquo;
-                    <span i18n:domain="plone" i18n:translate="">
-                        Previous
-                        <span i18n:domain="plone" i18n:name="number" tal:omit-tag="" tal:content="batch/pagesize">n</span>
-                        items
-                    </span>
-                    </a>
-                </span>
-                <!-- Link to first -->
-                <span tal:condition="batch/show_link_to_first">
-                    <a href="" tal:attributes="href python:view.bika_listing.GET_url(pagenumber=1)">1</a>
-                    <span tal:condition="batch/second_page_not_in_navlist" tal:omit-tag="">
-                    ...
-                    </span>
-                </span>
-                <!-- Pagelist with links to previous pages for quick navigation -->
-                <span tal:repeat="pagenumber batch/previous_pages" tal:omit-tag="" >
-                <a href="" tal:content="pagenumber" tal:attributes="href python:view.bika_listing.GET_url(pagenumber=pagenumber)"/>
-                </span>
-                <!-- Current page -->
-                <span tal:condition="batch/navlist" tal:omit-tag="">
-                    [<span tal:content="batch/pagenumber">Current page number</span>]
-                </span>
-                <!-- Pagelist with links to next pages for quick navigation -->
-                <span tal:repeat="pagenumber batch/next_pages" tal:omit-tag="" >
-                <a href="" tal:content="pagenumber" tal:attributes="href python:view.bika_listing.GET_url(pagenumber=pagenumber)"/>
-                </span>
-                <!-- Link to last -->
-                <span tal:condition="batch/show_link_to_last">
-                    <span tal:condition="batch/before_last_page_not_in_navlist" tal:omit-tag="">
-                    ...
-                    </span>
-                    <a href=""
-                    tal:attributes="href python:view.bika_listing.GET_url(pagenumber=batch.lastpage)"
-                    tal:content="string:${batch/lastpage}">3457</a>
-                </span>
-                <span class="next"
-                    tal:condition="batch/has_next">
-                    <a href=""
-                    tal:attributes="href python:view.bika_listing.GET_url(pagenumber=batch.nextpage)">
-                    <span i18n:domain="plone" i18n:translate="">
-                        Next
-                        <span i18n:domain="plone" i18n:name="number" tal:omit-tag="" tal:content="string:${batch/next_item_count}">n</span>
-                        items
-                    </span>
-                    &raquo;
-                    </a>
-                </span>
-            </tal:batching>
-        </td>
-    </tr>
-    <tr class="noborder">
-        <td class="batching" colspan="2" style="text-align:right">
-            <tal:batching
-                tal:define="batch view/batch"
-                condition="python:batch.multiple_pages and not view.show_all and view.bika_listing.pagesize != 0">
-                <span class="pagesize_selector noborder"
-                    style="vertical-align:top !important"
-                    style="text-align:right">
-                    <select class="pagesize">
-                        <option value="10" tal:attributes="selected python:int(view.bika_listing.pagesize) == 10 and 'selected' or ''">10</option>
-                        <option value="25" tal:attributes="selected python:int(view.bika_listing.pagesize) == 25 and 'selected' or ''">25</option>
-                        <option value="50" tal:attributes="selected python:int(view.bika_listing.pagesize) == 50 and 'selected' or ''">50</option>
-                        <option value="100" tal:attributes="selected python:int(view.bika_listing.pagesize) == 100 and 'selected' or ''">100</option>
-                    </select>
-                    <span class="discreet"
-                        i18n:domain="bika" i18n:translate="">Items per page</span>
-                </span>
-            </tal:batching>
+        <td class="batching" style="text-align:right">
+            <tal:showmore define="pagesize        python:view.bika_listing.pagesize;
+                                  limit_from      python:view.bika_listing.limit_from;
+                                  limit_to        python:pagesize+limit_from-1;
+                                  next_limit_from python:pagesize+limit_from;
+                                  next_pagesize   python:pagesize+next_limit_from;"
+                          condition="python:view.bika_listing.show_more">
+            <a tal:attributes="
+                href           python:view.bika_listing.GET_url(pagesize=next_pagesize,limit_from=limit_from);
+                data-ajax-url  python:view.bika_listing.GET_url(pagesize=pagesize,limit_from=next_limit_from,table_only='true');"
+               class="bika_listing_show_more"
+               i18n:translate="">Show more</a>
+            </tal:showmore>
         </td>
     </tr>
 </table>
