@@ -546,5 +546,9 @@ table.bika-listing-table-transposed tbody tr td div.interim-title {
 table.bika-listing-table-transposed table.worksheet-position tbody tr {
     border:none;
 }
+#content td.batching a.bika_listing_show_more {
+    background-color: #fff !important;
+    color: #205c90 !important;
+    padding: 4px 10px;
+}
 /* </dtml-with> */
-
