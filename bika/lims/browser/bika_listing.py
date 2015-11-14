@@ -267,7 +267,7 @@ class BikaListingView(BrowserView):
     show_column_toggles = True
 
     # setting pagesize to 0 specifically disables the batch size dropdown.
-    pagesize = 30
+    pagesize = 20
 
     # select checkbox is normally called uids:list
     # if table_only is set then the context form tag might require

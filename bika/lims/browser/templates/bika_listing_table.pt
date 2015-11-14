@@ -251,7 +251,7 @@ Workflow Actions
             </span>
         </td>
         <td class="batching" style="text-align:right">
-            <span tal:content="python:len(view.items)"></span>&nbsp;<span i8n:translate="">Items</span>
+            <span class='number-items' tal:content="python:len(view.items)"></span>&nbsp;<span i8n:translate="">Items</span>
             <tal:showmore define="pagesize        python:view.bika_listing.pagesize;
                                   limit_from      python:view.bika_listing.limit_from;
                                   limit_to        python:pagesize+limit_from-1;
@@ -262,7 +262,9 @@ Workflow Actions
             &nbsp;&nbsp;
             <a tal:attributes="
                 href           python:view.bika_listing.GET_url(pagesize=next_pagesize,limit_from=limit_from);
-                data-ajax-url  python:'%s&rows_only=%s' % (view.bika_listing.GET_url(pagesize=pagesize,limit_from=next_limit_from),form_id);
+                data-ajax-url  python:'%s&rows_only=%s' % (view.bika_listing.GET_url(pagesize=pagesize),form_id);
+                data-pagesize  python:pagesize;
+                data-limitfrom python:next_limit_from;
                 data-form-id   python:form_id;"
                class="bika_listing_show_more"
                i18n:translate="">Show more</a>
