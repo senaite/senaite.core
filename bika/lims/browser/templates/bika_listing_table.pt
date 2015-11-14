@@ -249,11 +249,12 @@ Workflow Actions
                                   limit_from      python:view.bika_listing.limit_from;
                                   limit_to        python:pagesize+limit_from-1;
                                   next_limit_from python:pagesize+limit_from;
-                                  next_pagesize   python:pagesize+next_limit_from;"
+                                  next_pagesize   python:pagesize+next_limit_from;
+                                  form_id         python:view.bika_listing.form_id;"
                           condition="python:view.bika_listing.show_more">
             <a tal:attributes="
                 href           python:view.bika_listing.GET_url(pagesize=next_pagesize,limit_from=limit_from);
-                data-ajax-url  python:view.bika_listing.GET_url(pagesize=pagesize,limit_from=next_limit_from,table_only='true');"
+                data-ajax-url  python:'%s&table_only=%s' % (view.bika_listing.GET_url(pagesize=pagesize,limit_from=next_limit_from),form_id);"
                class="bika_listing_show_more"
                i18n:translate="">Show more</a>
             </tal:showmore>

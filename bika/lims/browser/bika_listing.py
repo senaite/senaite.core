@@ -269,9 +269,6 @@ class BikaListingView(BrowserView):
     # setting pagesize to 0 specifically disables the batch size dropdown.
     pagesize = 25
 
-    # On first load, pagenumber=1 probably makes the most sense.
-    pagenumber = 1
-
     # select checkbox is normally called uids:list
     # if table_only is set then the context form tag might require
     # these to have a different name=FieldName:list.
@@ -434,11 +431,10 @@ class BikaListingView(BrowserView):
         accordingly.  Setup AdvancedQuery or catalog contentFilter.
 
         Request parameters:
-        <form_id>_f:                index of the first item to display
+        <form_id>_limit_from:       index of the first item to display
         <form_id>_sort_on:          list items are sorted on this key
         <form_id>_manual_sort_on:   no index - sort with python
         <form_id>_pagesize:         number of items
-        <form_id>_pagenumber:       page number
         <form_id>_filter:           A string, will be regex matched against
                                     indexes in <form_id>_filter_indexes
         <form_id>_filter_indexes:   list of index names which will be searched
@@ -471,7 +467,7 @@ class BikaListingView(BrowserView):
         if form_id not in self.request.get('table_only', form_id):
             return ''
 
-        self.limit_from = int(self.request.get(form_id + '_limit_from', 0))
+        self.limit_from = int(self.request.get(form_id + '_limit_from',0))
 
         # contentFilter is expected in every self.review_state.
         for k, v in self.review_state['contentFilter'].items():
@@ -519,11 +515,6 @@ class BikaListingView(BrowserView):
         self.request.set('pagesize', self.pagesize)
         # and we want to make our choice remembered in bika_listing also
         self.request.set(self.form_id + '_pagesize', self.pagesize)
-
-        # pagenumber
-        self.pagenumber = int(self.request.get(form_id + '_pagenumber', self.pagenumber))
-        # Plone's batching wants this variable:
-        self.request.set('pagenumber', self.pagenumber)
 
         # index filters.
         self.And = []
@@ -645,7 +636,7 @@ class BikaListingView(BrowserView):
                 if k.startswith(self.form_id + "_") and not "uids" in k:
                     query[k] = v
         # override from self attributes
-        for x in "pagenumber", "pagesize", "review_state", "sort_order", "sort_on", "limit_from":
+        for x in "pagesize", "review_state", "sort_order", "sort_on", "limit_from":
             if str(getattr(self, x, None)) != 'None':
                 # I don't understand why on AR listing, getattr(self,x)
                 # is a dict, but this line will resolve LIMS-1420
@@ -740,7 +731,7 @@ class BikaListingView(BrowserView):
 
         >>> browser = layer['getBrowser'](portal, loggedIn=True, username=SITE_OWNER_NAME, password=SITE_OWNER_PASSWORD)
         >>> browser.open(portal_url+"/bika_setup/bika_sampletypes/folder_view?",
-        ... "list_pagesize=10&list_review_state=default&list_pagenumber=2")
+        ... "list_pagesize=10&list_review_state=default")
         >>> browser.contents
         '...Water...'
         """
@@ -792,13 +783,7 @@ class BikaListingView(BrowserView):
         # the idx will not increase.
         idx = 0
         results = []
-
         self.show_more = False
-
-        # FUCK
-        # pagenumber
-
-        self.page_start_index = 0
         brains = brains[self.limit_from:]
         for i, obj in enumerate(brains):
             # we don't know yet if it's a brain or an object
@@ -1066,8 +1051,6 @@ class BikaListingTable(tableview.Table):
             mso = self.bika_listing.manual_sort_on
             if type(mso) in (list, tuple):
                 self.bika_listing.manual_sort_on = mso[0]
-            psi = self.bika_listing.page_start_index
-            psi = psi and psi or 0
             # We do a sort of the current page using self.manual_sort_on, here
             page = folderitems[psi:psi+self.pagesize]
             page.sort(lambda x,y:cmp(x.get(self.bika_listing.manual_sort_on, ''),
@@ -1075,11 +1058,6 @@ class BikaListingTable(tableview.Table):
 
             if self.bika_listing.sort_order[0] in ['d','r']:
                 page.reverse()
-
-            folderitems = folderitems[:psi] \
-                + page \
-                + folderitems[psi+self.pagesize:]
-
 
         tableview.Table.__init__(self,
                                  bika_listing.request,
