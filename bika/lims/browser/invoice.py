@@ -65,14 +65,16 @@ class InvoiceView(BrowserView):
                 'invoiceDate': self.ulocalized_time(item.get('ItemDate', '')),
                 'description': item.get('ItemDescription', ''),
                 'orderNo': item.get('OrderNumber', ''),
-                'subtotal': item.get('Subtotal', ''),
-                'VATAmount': item.get('VATAmount', ''),
-                'total': item.get('Total', ''),
+                'subtotal': '%0.2f' % item.get('Subtotal', ''),
+                'VATAmount': '%0.2f' % item.get('VATAmount', ''),
+                'total': '%0.2f' % item.get('Total', ''),
             }
             if item.get('AnalysisRequest', ''):
                     invoice_data['orderNoURL'] = item['AnalysisRequest'].absolute_url()
             elif item.get('SupplyOrder', ''):
                     invoice_data['orderNoURL'] = item['SupplyOrder'].absolute_url()
+            else:
+                invoice_data['orderNoURL'] = ''
             self.items.append(invoice_data)
         # Render the template
         return self.template()
