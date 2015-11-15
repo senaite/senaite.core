@@ -1,6 +1,7 @@
 3.1.10 (unreleased)
 -------------------
 - Dashboard: replace multi-bar charts by stacked-bar charts
+LIMS-2071: Can't generate Invoice Batch/Monthly Statements
 WINE-71: Instrument. BBK WS export to FIA fails
 WINE-72: Instrument. BBK WineScan Auto Import fails
 WINE-58: Instrument. BBK FIAStar import fails
