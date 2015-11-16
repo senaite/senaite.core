@@ -4,6 +4,7 @@
 WINE-71: Instrument. BBK WS export to FIA fails
 WINE-72: Instrument. BBK WineScan Auto Import fails
 WINE-58: Instrument. BBK FIAStar import fails
+WINE-76: WineScan FT120 Import warnings incorrect?
 LIMS-1906: Spaces should be stripped out of the keywords coming from the Instrument
 LIMS-2117: Analysis Categories don't expand on Analysis Specification creation
 LIMS-1933: Regression: Selecting secondary AR in client batches, fails.
