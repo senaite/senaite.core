@@ -267,7 +267,7 @@ class BikaListingView(BrowserView):
     show_column_toggles = True
 
     # setting pagesize to 0 specifically disables the batch size dropdown.
-    pagesize = 20
+    pagesize = 30
 
     # select checkbox is normally called uids:list
     # if table_only is set then the context form tag might require
@@ -792,21 +792,17 @@ class BikaListingView(BrowserView):
         self.show_more = False
         brains = brains[self.limit_from:]
         for i, obj in enumerate(brains):
-            # we don't know yet if it's a brain or an object
-            path = hasattr(obj, 'getPath') and obj.getPath() or \
-                 "/".join(obj.getPhysicalPath())
-
-            # If obj is a brain don't retrieve the object and get the UID
-            # from the brain. Object retrieval is resources-consuming
-            uid = obj.UID if hasattr(obj, 'getObject') else obj.UID()
-
             # avoid creating unnecessary info for items outside the current
             # batch;  only the path is needed for the "select all" case...
             # we only take allowed items into account
-            if not show_all and i >= self.pagesize:
+            if not show_all and idx >= self.pagesize:
                 # Maximum number of items to be shown reached!
                 self.show_more = True
                 break
+
+            # we don't know yet if it's a brain or an object
+            path = hasattr(obj, 'getPath') and obj.getPath() or \
+                 "/".join(obj.getPhysicalPath())
 
             # This item must be rendered, we need the object instead of a brain
             obj = obj.getObject() if hasattr(obj, 'getObject') else obj
@@ -816,6 +812,7 @@ class BikaListingView(BrowserView):
             if not self.isItemAllowed(obj):
                 continue
 
+            uid = obj.UID()
             title = obj.Title()
             description = obj.Description()
             icon = plone_layout.getIcon(obj)
