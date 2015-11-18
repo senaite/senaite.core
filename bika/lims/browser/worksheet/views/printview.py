@@ -407,16 +407,11 @@ class PrintView(BrowserView):
             uid = analysis.getServiceUID()
             specs = analysis.aq_parent.getResultsRangeDict().get(uid, {})
 
-        elif analysis.portal_type == 'DuplicateAnalysis':
-            specs = analysis.getAnalysisSpecs();
-
         else:
-            ar = analysis.aq_parent
-            specs = ar.getPublicationSpecification()
-            if not specs or keyword not in specs.getResultsRangeDict():
-                specs = analysis.getAnalysisSpecs()
-            specs = specs.getResultsRangeDict().get(keyword, {}) \
-                    if specs else {}
+            # Get the specs directly from the analysis. The getResultsRange
+            # function already takes care about which are the specs to be used:
+            # AR, client or lab.
+            specs = analysis.getResultsRange()
 
         andict['specs'] = specs
         scinot = self.context.bika_setup.getScientificNotationReport()

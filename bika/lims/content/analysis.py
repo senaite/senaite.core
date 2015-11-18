@@ -533,15 +533,15 @@ class Analysis(BaseContent):
                 rr = an.aq_parent.getResultsRange()
                 rr = [r for r in rr if r.get('keyword', '') == an.getKeyword()]
                 rr = rr[0] if rr and len(rr) > 0 else {}
-            if specification == 'ar' or rr:
+                if rr:
+                    rr['uid'] = self.UID()
+        if not rr:
+            # Let's try to retrieve the specs from client and/or lab
+            specs = an.getAnalysisSpecs(specification)
+            rr = specs.getResultsRangeDict() if specs else {}
+            rr = rr.get(an.getKeyword(), {}) if rr else {}
+            if rr:
                 rr['uid'] = self.UID()
-                return rr
-
-        specs = an.getAnalysisSpecs(specification)
-        rr = specs.getResultsRangeDict() if specs else {}
-        rr = rr.get(an.getKeyword(), {}) if rr else {}
-        if rr:
-            rr['uid'] = self.UID()
         return rr
 
     def getAnalysisSpecs(self, specification=None):
@@ -1500,4 +1500,3 @@ class Analysis(BaseContent):
 
 
 atapi.registerType(Analysis, PROJECTNAME)
-
