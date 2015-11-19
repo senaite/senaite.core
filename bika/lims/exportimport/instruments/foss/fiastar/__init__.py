@@ -43,8 +43,8 @@ class FOSSFIAStarCSVParser(InstrumentCSVResultsFileParser):
         for idx, result in enumerate(sline):
             rawdict[self._columns[idx]] = result
         # Getting resid
-        resid = rawdict['List name']
-        del rawdict['List name']
+        resid = rawdict['Sample name']
+        del rawdict['Sample name']
         # Getting date
         rawdict['DateTime'] = self.csvDate2BikaDate(rawdict['Date'], rawdict['Time'])
         del rawdict['Date']
@@ -59,7 +59,9 @@ class FOSSFIAStarCSVParser(InstrumentCSVResultsFileParser):
         del rawdict['Error/Warning']
 
         rawdict['DefaultResult'] = 'Concentration'
-        self._addRawResult(resid, {rawdict['Sample name']: rawdict}, False)
+        self._addRawResult(resid,
+                          {rawdict['Parameter'].replace(' ', ''): rawdict},
+                           False)
         return 0
 
     def csvDate2BikaDate(self, date, time):

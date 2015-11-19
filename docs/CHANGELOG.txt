@@ -3,8 +3,11 @@
 LIMS-1832: New Results Template, COA. Multiple ARs in columns
 LIMS-1933: Regression: Selecting secondary AR in client batches, fails.
 - Dashboard: replace multi-bar charts by stacked-bar charts
+LIMS-2071: Can't generate Invoice Batch/Monthly Statements
 WINE-71: Instrument. BBK WS export to FIA fails
 WINE-72: Instrument. BBK WineScan Auto Import fails
+WINE-58: Instrument. BBK FIAStar import fails
+WINE-76: WineScan FT120 Import warnings incorrect?
 LIMS-1906: Spaces should be stripped out of the keywords coming from the Instrument
 LIMS-2117: Analysis Categories don't expand on Analysis Specification creation
 LIMS-1933: Regression: Selecting secondary AR in client batches, fails.
@@ -15,6 +18,8 @@ LIMS-2080: Correctly interpret default (empty) values in ARImport CSV file
 LIMS-2115: Error rises when saving a Calculation
 LIMS-2116: JSONAPI throws an UnicodeDecodeError
 LIMS-2114: AR Import with Profiles, no Analyses are created
+LIMS-2132: Reference Analyses got the same ID
+LIMS-2133: Once in a while, specs var is going empty in results reports
 
 3.1.9 (2015-10-8)
 ------------------
