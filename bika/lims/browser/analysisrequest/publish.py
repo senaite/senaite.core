@@ -222,6 +222,19 @@ class AnalysisRequestPublishView(BrowserView):
         """
         return self.request.form.get('hvisible', '0').lower() in ['true', '1']
 
+    def explode_data(self, data, padding=''):
+        out = ''
+        for k,v in data.items():
+            if type(v) is dict:
+                pad = '%s&nbsp;&nbsp;&nbsp;&nbsp;' % padding
+                exploded = self.explode_data(v,pad)
+                out = "%s<br/>%s'%s':{%s}" % (out, padding, str(k), exploded)
+            elif type(v) is list:
+                out = "%s<br/>%s'%s':[]" % (out, padding, str(k))
+            elif type(v) is str:
+                out = "%s<br/>%s'%s':''" % (out, padding, str(k))
+        return out
+
     def _ar_data(self, ar, excludearuids=[]):
         """ Creates an ar dict, accessible from the view and from each
             specific template.
