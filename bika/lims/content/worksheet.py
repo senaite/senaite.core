@@ -22,6 +22,7 @@ from Products.ATExtensions.ateapi import RecordsField
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode, _createObjectByType
 from zope.interface import implements
+import re
 
 @indexer(IWorksheet)
 def Priority(instance):
@@ -214,17 +215,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                     highest_existing_position = pos
             position = highest_existing_position + 1
 
-        postfix = 1
-        for refa in reference.getReferenceAnalyses():
-            grid = refa.getReferenceAnalysesGroupID()
-            try:
-                cand = int(grid.split('-')[2])
-                if cand >= postfix:
-                    postfix = cand + 1
-            except:
-                pass
-        postfix = str(postfix).zfill(int(3))
-        refgid = '%s-%s' % (reference.id, postfix)
+        # LIMS-2132 Reference Analyses got the same ID
+        refgid = self.nextReferenceAnalysesGroupID(reference)
+
         for service_uid in service_uids:
             # services with dependents don't belong in references
             service = rc.lookupObject(service_uid)
@@ -253,8 +246,23 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 self.getAnalyses() + [ref_analysis, ])
             workflow.doActionFor(ref_analysis, 'assign')
 
-    security.declareProtected(EditWorksheet, 'addDuplicateAnalyses')
+    def nextReferenceAnalysesGroupID(self, reference):
+        """ Returns the next ReferenceAnalysesGroupID for the given reference
+            sample. Gets the last reference analysis registered in the system
+            for the specified reference sample and increments in one unit the
+            suffix.
+        """
+        bac = getToolByName(reference, 'bika_analysis_catalog')
+        ids = bac.Indexes['getReferenceAnalysesGroupID'].uniqueValues()
+        prefix = reference.id+"-"
+        rr = re.compile("^"+prefix+"[\d+]+$")
+        ids = [int(i.split(prefix)[1]) for i in ids if rr.match(i)]
+        ids.sort()
+        _id = ids[-1] if ids else 0
+        suffix = str(_id+1).zfill(int(3))
+        return '%s%s' % (prefix, suffix)
 
+    security.declareProtected(EditWorksheet, 'addDuplicateAnalyses')
     def addDuplicateAnalyses(self, src_slot, dest_slot):
         """ add duplicate analyses to worksheet
         """
