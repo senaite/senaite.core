@@ -21,6 +21,11 @@ LIMS-2114: AR Import with Profiles, no Analyses are created
 - Replacement of pagination by 'Show more' in tables makes the app faster
 LIMS-2132: Reference Analyses got the same ID
 LIMS-2133: Once in a while, specs var is going empty in results reports
+LIMS-2136: Site Error on AR Verification
+LIMS-2121: Fix possible Horiba ICP csv handling errors
+LIMS-2042: Improving Horiba ICP to avoid Element Symbols as keywords
+LIMS-2123: Analysis Categories don't expand in Worksheet Templates
+LIMS-1993: Existing Sample look-up for AR Create in Batch does not work
 
 3.1.9 (2015-10-8)
 ------------------

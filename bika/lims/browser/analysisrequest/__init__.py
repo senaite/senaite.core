@@ -179,7 +179,7 @@ class mailto_link_from_contacts:
             if contact:
                 mailto = "<a href='mailto:%s'>%s</a>" % (
                     contact.getEmailAddress(), contact.getFullname())
-            ret.append(mailto)
+                ret.append(mailto)
         return ",".join(ret)
 
 
