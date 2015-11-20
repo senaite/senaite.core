@@ -87,6 +87,20 @@ class BikaTestCase(unittest.TestCase):
         '''Changes the user's permissions.'''
         context.manage_role(role, permissions)
 
+    def getBrowser(self, loggedIn=True):
+        """ instantiate and return a testbrowser for convenience """
+        browser = Browser(self.portal)
+        browser.addHeader('Accept-Language', 'en-US')
+        browser.handleErrors = False
+        if loggedIn:
+            browser.open(self.portal.absolute_url())
+            browser.getControl('Login Name').value = TEST_USER_NAME
+            browser.getControl('Password').value = TEST_USER_PASSWORD
+            browser.getControl('Log in').click()
+            self.assertTrue('You are now logged in' in browser.contents)
+        return browser
+
+
 class BikaSimpleTestCase(Functional, BikaTestCase):
 
     layer = BIKA_SIMPLE_TESTING
@@ -109,17 +123,3 @@ class BikaFunctionalTestCase(Functional, BikaTestCase):
         self.request = self.layer['request']
         self.request['ACTUAL_URL'] = self.portal.absolute_url()
         setRoles(self.portal, TEST_USER_ID, ['LabManager', 'Member'])
-
-    def getBrowser(self, loggedIn=True):
-        """ instantiate and return a testbrowser for convenience """
-        browser = Browser(self.portal)
-        browser.addHeader('Accept-Language', 'en-US')
-        browser.handleErrors = False
-        if loggedIn:
-            browser.open(self.portal.absolute_url())
-            browser.getControl('Login Name').value = TEST_USER_NAME
-            browser.getControl('Password').value = TEST_USER_PASSWORD
-            browser.getControl('Log in').click()
-            self.assertTrue('You are now logged in' in browser.contents)
-        return browser
-

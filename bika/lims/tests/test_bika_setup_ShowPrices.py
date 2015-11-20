@@ -2,7 +2,7 @@
 all be hidden.
 """
 from bika.lims.testing import BIKA_SIMPLE_FIXTURE
-from bika.lims.tests.base import BikaFunctionalTestCase
+from bika.lims.tests.base import BikaSimpleTestCase
 from bika.lims.utils import tmpID
 from DateTime.DateTime import DateTime
 from plone.app.testing import login, logout
@@ -18,8 +18,7 @@ except ImportError:  # Python 2.7
     import unittest
 
 
-class Test_ShowPrices(BikaFunctionalTestCase):
-    layer = BIKA_SIMPLE_FIXTURE
+class Test_ShowPrices(BikaSimpleTestCase):
 
     def addthing(self, folder, portal_type, **kwargs):
         thing = _createObjectByType(portal_type, folder, tmpID())
@@ -36,7 +35,9 @@ class Test_ShowPrices(BikaFunctionalTestCase):
         contact = self.addthing(self.client, 'Contact', Firstname='Rita', Lastname='Mohale')
         container = self.addthing(self.portal.bika_setup.bika_containers, 'Container', title='Bottle', capacity="10ml")
         sampletype = self.addthing(self.portal.bika_setup.bika_sampletypes, 'SampleType', title='Water', Prefix='H2O')
-        service = self.addthing(self.portal.bika_setup.bika_analysisservices, 'AnalysisService', title='Ecoli', Keyword='ECO')
+        service = self.addthing(
+            self.portal.bika_setup.bika_analysisservices,
+            'AnalysisService', title='Ecoli', Keyword='ECO', Accredited=True)
         # Create Sample with single partition
         sample = self.addthing(self.client, 'Sample', SampleType=sampletype)
         part = self.addthing(sample, 'SamplePartition', Container=container)
@@ -80,6 +81,22 @@ class Test_ShowPrices(BikaFunctionalTestCase):
         if browser.contents.find('subtotal') > -1:
             self.fail('ShowPrices is False, but the AR-Add columns form '
                       'still contains price rows')
+
+    def test_accreditation_page(self):
+        url = self.portal.absolute_url() + "/accreditation"
+        browser = self.getBrowser()
+        self.portal.bika_setup.setShowPrices(True)
+        transaction.commit()
+        browser.open(url)
+        if browser.contents.find('Price') == -1:
+            self.fail('ShowPrices is True, but the accreditation screen does '
+                      'not contain price column')
+        self.portal.bika_setup.setShowPrices(False)
+        transaction.commit()
+        browser.open(url)
+        if browser.contents.find('subtotal') > -1:
+            self.fail('ShowPrices is False, but the accreditation screen still '
+                      'includes price column')
 
 
 def test_suite():
