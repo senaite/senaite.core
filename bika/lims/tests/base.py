@@ -21,7 +21,6 @@ import unittest
 
 
 class MockMailHost(_MMH):
-
     def send(self, *kwargs):
         logger.log("***Message***")
         logger.log("From: {0}".format(kwargs['mfrom']))
@@ -32,7 +31,6 @@ class MockMailHost(_MMH):
 
 
 class BikaTestCase(unittest.TestCase):
-
     def setUp(self):
         super(BikaTestCase, self).setUp()
 
@@ -87,29 +85,6 @@ class BikaTestCase(unittest.TestCase):
         '''Changes the user's permissions.'''
         context.manage_role(role, permissions)
 
-class BikaSimpleTestCase(Functional, BikaTestCase):
-
-    layer = BIKA_SIMPLE_TESTING
-
-    def setUp(self):
-        super(BikaSimpleTestCase, self).setUp()
-        self.app = self.layer['app']
-        self.portal = self.layer['portal']
-        self.request = self.layer['request']
-        self.request['ACTUAL_URL'] = self.portal.absolute_url()
-        setRoles(self.portal, TEST_USER_ID, ['LabManager', 'Member'])
-
-class BikaFunctionalTestCase(Functional, BikaTestCase):
-    layer = BIKA_FUNCTIONAL_TESTING
-
-    def setUp(self):
-        super(BikaFunctionalTestCase, self).setUp()
-        self.app = self.layer['app']
-        self.portal = self.layer['portal']
-        self.request = self.layer['request']
-        self.request['ACTUAL_URL'] = self.portal.absolute_url()
-        setRoles(self.portal, TEST_USER_ID, ['LabManager', 'Member'])
-
     def getBrowser(self, loggedIn=True):
         """ instantiate and return a testbrowser for convenience """
         browser = Browser(self.portal)
@@ -123,3 +98,26 @@ class BikaFunctionalTestCase(Functional, BikaTestCase):
             self.assertTrue('You are now logged in' in browser.contents)
         return browser
 
+
+class BikaSimpleTestCase(Functional, BikaTestCase):
+    layer = BIKA_SIMPLE_TESTING
+
+    def setUp(self):
+        super(BikaSimpleTestCase, self).setUp()
+        self.app = self.layer['app']
+        self.portal = self.layer['portal']
+        self.request = self.layer['request']
+        self.request['ACTUAL_URL'] = self.portal.absolute_url()
+        setRoles(self.portal, TEST_USER_ID, ['LabManager', 'Member'])
+
+
+class BikaFunctionalTestCase(Functional, BikaTestCase):
+    layer = BIKA_FUNCTIONAL_TESTING
+
+    def setUp(self):
+        super(BikaFunctionalTestCase, self).setUp()
+        self.app = self.layer['app']
+        self.portal = self.layer['portal']
+        self.request = self.layer['request']
+        self.request['ACTUAL_URL'] = self.portal.absolute_url()
+        setRoles(self.portal, TEST_USER_ID, ['LabManager', 'Member'])
