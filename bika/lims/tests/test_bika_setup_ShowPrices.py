@@ -50,6 +50,10 @@ class Test_ShowPrices(BikaSimpleTestCase):
         self.profile = self.addthing(
             self.portal.bika_setup.bika_analysisprofiles,
             'AnalysisProfile', title='Profile', Service=[service,])
+        self.template = self.addthing(
+            self.portal.bika_setup.bika_artemplates,
+            'AnalysisProfile', title='Template',
+            Analyses=[{'partition': 'part-1', 'service_uid': service.UID()}])
         # Create Sample with single partition
         sample = self.addthing(
             self.client,
@@ -132,6 +136,22 @@ class Test_ShowPrices(BikaSimpleTestCase):
         if browser.contents.find('409') > -1:
             self.fail('ShowPrices is True, but profile analyses widget still '
                       'includes price column')
+
+    def test_artemplate_analyses_list(self):
+        url = self.template.absolute_url()
+        browser = self.getBrowser()
+        self.portal.bika_setup.setShowPrices(True)
+        transaction.commit()
+        browser.open(url)
+        if browser.contents.find('409') == -1:
+            self.fail('ShowPrices is True, but AR Template analyses widget '
+                      'does not contain price column')
+        self.portal.bika_setup.setShowPrices(False)
+        transaction.commit()
+        browser.open(url)
+        if browser.contents.find('409') > -1:
+            self.fail('ShowPrices is True, but AR Template analyses widget '
+                      'still includes price column')
 
 
 def test_suite():
