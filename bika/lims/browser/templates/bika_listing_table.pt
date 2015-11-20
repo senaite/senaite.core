@@ -251,7 +251,13 @@ Workflow Actions
             </span>
         </td>
         <td class="batching" style="text-align:right">
-            <span class='number-items' tal:content="python:len(view.items)"></span>&nbsp;<span i8n:translate="">Items</span>
+
+            <span class='number-items' i18n:domain="bika" i18n:translate="" tal:condition="python:len(view.items) != 1">
+                <span i18n:name="nr_items" tal:replace="python:len(view.items)"/> Items
+            </span>
+            <span class='number-items' i18n:translate="" tal:condition="python:len(view.items) == 1">
+                <span i18n:name="nr_items" tal:replace="python:len(view.items)"/> Item
+            </span>
             <tal:showmore define="pagesize        python:view.bika_listing.pagesize;
                                   limit_from      python:view.bika_listing.limit_from;
                                   limit_to        python:pagesize+limit_from-1;
