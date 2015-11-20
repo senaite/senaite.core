@@ -23,6 +23,7 @@ LIMS-2121: Fix possible Horiba ICP csv handling errors
 LIMS-2042: Improving Horiba ICP to avoid Element Symbols as keywords
 LIMS-2123: Analysis Categories don't expand in Worksheet Templates
 LIMS-1993: Existing Sample look-up for AR Create in Batch does not work
+LIMS-2124: QR missing on sticker preview
 
 3.1.9 (2015-10-8)
 ------------------
