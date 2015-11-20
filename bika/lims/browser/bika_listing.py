@@ -477,35 +477,52 @@ class BikaListingView(BrowserView):
         # contentFilter is expected in every self.review_state.
         for k, v in self.review_state['contentFilter'].items():
             self.contentFilter[k] = v
+
         # sort on
         self.sort_on = self.request.get(form_id + '_sort_on', None)
-        # manual_sort_on: only sort the current batch of items
-        # this is a compromise for sorting without column indexes
-        self.manual_sort_on = None
-        if self.sort_on \
-           and self.sort_on in self.columns.keys() \
-           and self.columns[self.sort_on].get('index', None):
-            idx = self.columns[self.sort_on].get('index', self.sort_on)
-            self.contentFilter['sort_on'] = idx
-        else:
-            if self.sort_on:
-                self.manual_sort_on = self.sort_on
-                if 'sort_on' in self.contentFilter:
-                    del self.contentFilter['sort_on']
+        self.sort_order = self.request.get(form_id + '_sort_order', 'ascending')
+        self.manual_sort_on = self.request.get(form_id + '_manual_sort_on', None)
 
-        # sort order
-        self.sort_order = self.request.get(form_id + '_sort_order', '')
-        if self.sort_order:
-            self.contentFilter['sort_order'] = self.sort_order
-        else:
-            if 'sort_order' not in self.contentFilter:
-                self.sort_order = 'ascending'
-                self.contentFilter['sort_order'] = 'ascending'
-                self.request.set(form_id+'_sort_order', 'ascending')
+        if self.sort_on:
+            if self.sort_on in self.columns.keys():
+               if self.columns[self.sort_on].get('index', None):
+                   self.request.set(form_id+'_sort_on', self.sort_on)
+                   # The column can be sorted directly using an index
+                   idx = self.columns[self.sort_on]['index']
+                   self.sort_on = idx
+                   # Don't sort manually!
+                   self.manual_sort_on = None
+               else:
+                   # The column must be manually sorted using python
+                   self.manual_sort_on = self.sort_on
             else:
-                self.sort_order = self.contentFilter['sort_order']
+                # We cannot sort for a column that doesn't exist!
+                self.sort_on = None
+
         if self.manual_sort_on:
-            del self.contentFilter['sort_order']
+            self.manual_sort_on = self.manual_sort_on[0] \
+                                if type(self.manual_sort_on) in (list, tuple) \
+                                else self.manual_sort_on
+            if self.manual_sort_on not in self.columns.keys():
+                # We cannot sort for a column that doesn't exist!
+                self.manual_sort_on = None
+        else:
+            self.request.set(form_id+'_manual_sort_on', self.sort_on)
+
+        if self.sort_on or self.manual_sort_on:
+            # By default, if sort_on is set, sort the items ASC
+            # Trick to allow 'descending' keyword instead of 'reverse'
+            self.sort_order = 'reverse' if self.sort_order \
+                                        and self.sort_order[0] in ['d','r'] \
+                                        else 'ascending'
+        else:
+            # By default, sort on created
+            self.sort_order = 'reverse'
+            self.sort_on = 'created'
+
+        self.contentFilter['sort_order'] = self.sort_order
+        if not self.manual_sort_on:
+            self.contentFilter['sort_on'] = self.sort_on
 
         # pagesize
         pagesize = self.request.get(form_id + '_pagesize', self.pagesize)
@@ -928,6 +945,13 @@ class BikaListingView(BrowserView):
                 results.append(item)
                 idx+=1
 
+            # Need manual_sort?
+            # Note that the order has already been set in contentFilter, so
+            # there is no need to reverse
+            if self.manual_sort_on:
+                results.sort(lambda x,y:cmp(x.get(self.manual_sort_on, ''),
+                                         y.get(self.manual_sort_on, '')))
+
         return results
 
     def contents_table(self, table_only = False):
@@ -1048,19 +1072,6 @@ class BikaListingTable(tableview.Table):
             self.pagesize = len(folderitems)
         bika_listing.items = folderitems
         self.hide_hidden_attributes()
-
-        if hasattr(self.bika_listing, 'manual_sort_on') \
-           and self.bika_listing.manual_sort_on:
-            mso = self.bika_listing.manual_sort_on
-            if type(mso) in (list, tuple):
-                self.bika_listing.manual_sort_on = mso[0]
-            # We do a sort of the current page using self.manual_sort_on, here
-            page = folderitems[psi:psi+self.pagesize]
-            page.sort(lambda x,y:cmp(x.get(self.bika_listing.manual_sort_on, ''),
-                                     y.get(self.bika_listing.manual_sort_on, '')))
-
-            if self.bika_listing.sort_order[0] in ['d','r']:
-                page.reverse()
 
         tableview.Table.__init__(self,
                                  bika_listing.request,
