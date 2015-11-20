@@ -1,7 +1,13 @@
+3.2.1 (unreleased)
+------------------
+LIMS-1832: New Results Template, COA. Multiple ARs in columns
+LIMS-2148: Unable to sort Bika Listing tables
+- Replacement of pagination by 'Show more' in tables makes the app faster
+- Add Bika LIMS TAL report reference in reports preview
+- Simplify instrument interface creation for basic CSV files
+
 3.1.10 (unreleased)
 -------------------
-LIMS-1832: New Results Template, COA. Multiple ARs in columns
-LIMS-1933: Regression: Selecting secondary AR in client batches, fails.
 - Dashboard: replace multi-bar charts by stacked-bar charts
 LIMS-2071: Can't generate Invoice Batch/Monthly Statements
 WINE-71: Instrument. BBK WS export to FIA fails
@@ -18,7 +24,6 @@ LIMS-2080: Correctly interpret default (empty) values in ARImport CSV file
 LIMS-2115: Error rises when saving a Calculation
 LIMS-2116: JSONAPI throws an UnicodeDecodeError
 LIMS-2114: AR Import with Profiles, no Analyses are created
-- Replacement of pagination by 'Show more' in tables makes the app faster
 LIMS-2132: Reference Analyses got the same ID
 LIMS-2133: Once in a while, specs var is going empty in results reports
 LIMS-2136: Site Error on AR Verification
@@ -26,7 +31,6 @@ LIMS-2121: Fix possible Horiba ICP csv handling errors
 LIMS-2042: Improving Horiba ICP to avoid Element Symbols as keywords
 LIMS-2123: Analysis Categories don't expand in Worksheet Templates
 LIMS-1993: Existing Sample look-up for AR Create in Batch does not work
-LIMS-2148: Unable to sort Bika Listing tables
 
 3.1.9 (2015-10-8)
 ------------------
