@@ -2,11 +2,6 @@
 
     <label for='data_file'>File</label>&nbsp;
     <input type="file" name="data_file" id="data_file"/>
-    &nbsp;&nbsp;
-    <label for='format'>Format</label>&nbsp;
-    <select name="format" id="format">
-        <option value='csv'>CSV</option>
-    </select>
     <p></p>
     <h3>Advanced options</h3>
     <table cellpadding="0" cellspacing="0">
@@ -40,8 +35,11 @@
                     </tal:options>
                 </select>
                 <p i18n:translate="" style='color: #3F3F3F;font-size: 0.87em;'>
-                    If the system doesn't find any match (AnalysisRequest, Sample, Reference Analysis or Duplicate), it will use the record's identifier to find matches with Reference Sample IDs. If a Reference Sample ID is found, the system will automatically create a Calibration Test (Reference Analysis) and will link it to the selected Instrument above.<br/>
-                    If no instrument selected, any Calibration Test will be created for orphan IDs.
+                    If the system doesn't find any match (AnalysisRequest, Sample, Reference Analysis or Duplicate),
+                    it will use the record's identifier to find matches with Reference Sample IDs.
+                    If a Reference Sample ID is found, the system will automatically create a
+                    Calibration Test (Reference Analysis) and will link it to the instrument selected below.<br/>
+                    If no instrument selected, no Calibration Test will be created for orphan IDs.
                 </p>
             </td>
         </tr>
