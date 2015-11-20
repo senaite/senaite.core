@@ -71,4 +71,11 @@
       provides="bika.lims.interfaces.IReferenceWidgetVocabulary"
     />
 
+    <adapter
+      factory=".widgetvisibility.HideARPriceFields"
+      provides="bika.lims.interfaces.IATWidgetVisibility"
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="HideARPriceFields"
+    />
+
 </configure>

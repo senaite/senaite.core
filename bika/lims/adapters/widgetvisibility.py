@@ -147,3 +147,22 @@ class OptionalFieldsWidgetVisibility(object):
         if field.getName() in hiddenattributes:
             state = "hidden"
         return state
+
+class HideARPriceFields(object):
+    """Hide related fields in ARs when ShowPrices is disabled
+    """
+    implements(IATWidgetVisibility)
+
+    def __init__(self, context):
+        self.context = context
+        self.sort = 3
+
+    def __call__(self, context, mode, field, default):
+        fields = ['InvoiceExclude']
+        ShowPrices = context.bika_setup.getShowPrices()
+        state = default if default else 'invisible'
+        fieldName = field.getName()
+        if fieldName in fields and not ShowPrices:
+            state = 'invisible'
+        print "returning %s for %s" % (state, fieldName)
+        return state

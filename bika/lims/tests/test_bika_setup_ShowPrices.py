@@ -52,7 +52,7 @@ class Test_ShowPrices(BikaSimpleTestCase):
             'AnalysisProfile', title='Profile', Service=[service,])
         self.template = self.addthing(
             self.portal.bika_setup.bika_artemplates,
-            'AnalysisProfile', title='Template',
+            'ARTemplate', title='Template',
             Analyses=[{'partition': 'part-1', 'service_uid': service.UID()}])
         # Create Sample with single partition
         sample = self.addthing(
@@ -98,12 +98,18 @@ class Test_ShowPrices(BikaSimpleTestCase):
         if browser.contents.find('subtotal') == -1:
             self.fail('ShowPrices is True, but the AR-Add columns form '
                       'does not contain price rows')
+        if browser.contents.find('Exclude') == -1:
+            self.fail('ShowPrices is True, but the AR-Add columns form '
+                      'does not contain Invoice Exclude field')
         self.portal.bika_setup.setShowPrices(False)
         transaction.commit()
         browser.open(url)
         if browser.contents.find('subtotal') > -1:
             self.fail('ShowPrices is False, but the AR-Add columns form '
                       'still contains price rows')
+        if browser.contents.find('Exclude') > -1:
+            self.fail('ShowPrices is True, but the AR-Add columns form still'
+                      'shows the Invoice Exclude field')
 
     def test_accreditation_page(self):
         url = self.portal.absolute_url() + "/accreditation"
