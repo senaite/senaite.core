@@ -8,7 +8,11 @@ displayed when ajax requests the table. </tal:comment>
     tal:omit-tag="table_only"
     tal:define="
         form_id view/bika_listing/form_id;
-        table_only python:(hasattr(view, 'table_only') and view.table_only)
+        rows_only python:(hasattr(view, 'rows_only') and view.rows_only)
+                        or (hasattr(view.bika_listing, 'rows_only') and view.bika_listing.rows_only)
+                        or view.request.get('rows_only','') == form_id;
+        table_only python:rows_only
+                        or (hasattr(view, 'table_only') and view.table_only)
                         or (hasattr(view.bika_listing, 'table_only') and view.bika_listing.table_only)
                         or view.request.get('table_only','') == form_id;
         nosortclass view/get_nosort_class;
@@ -95,6 +99,7 @@ XXX This should use form_id </tal:comment>
                                 view.bika_listing.json_interim_fields or []"/>
 <table
     summary="Content listing"
+    tal:omit-tag="python:rows_only"
     tal:attributes="class python:'bika-listing-table';
                     form_id view/bika_listing/form_id"
     i18n:attributes="summary summary_content_listing;"
@@ -102,9 +107,9 @@ XXX This should use form_id </tal:comment>
         columns view/bika_listing/columns;
         column_list python:review_state['columns']" style="margin-bottom:0px;">
 
-    <thead>
+    <thead tal:condition="python:not rows_only">
 
-    <tr style="border:none !important;" tal:condition="python:len(view.bika_listing.review_states) > 1">
+    <tr style="border:none !important;" tal:condition="python:len(view.bika_listing.review_states) > 1 and not rows_only">
 <tal:comment replace="nothing">***************
 Workflow review state selector
 ********************************</tal:comment>
@@ -149,7 +154,7 @@ filter search
 <tal:comment replace="nothing">***************
 Colum Headers
 ********************************</tal:comment>
-    <tr tal:condition="view/items">
+    <tr tal:condition="python:view.items and not rows_only">
         <th class="nosort column"
             id="foldercontents-order-column"
             tal:condition="view/bika_listing/show_sort_column"/>
@@ -189,6 +194,7 @@ Colum Headers
 
     <tbody class="item-listing-tbody"
         tal:condition="view/items"
+        tal:omit-tag="rows_only"
         tal:define="selected_cats python: view.bika_listing.selected_cats(view.batch);
                 restricted_cats python:view.bika_listing.restricted_cats(view.batch)">
 
@@ -212,7 +218,7 @@ Colum Headers
         </tal:cats>
     </tbody>
 
-<tfoot tal:condition="python: view.bika_listing.show_table_footer if hasattr(view.bika_listing, 'show_table_footer') else True">
+<tfoot tal:condition="python: not rows_only and (view.bika_listing.show_table_footer if hasattr(view.bika_listing, 'show_table_footer') else True)">
 
 <tr>
 <td class="noborder"
@@ -244,87 +250,31 @@ Workflow Actions
                 </span>
             </span>
         </td>
-<tal:comment replace="nothing">***************
-Batching
-********************************</tal:comment>
-        <td class="batching"
-            style="text-align:right">
-            <tal:batching
-                tal:define="batch view/batch"
-                condition="python:batch.multiple_pages and not view.show_all">
-                <span class="previous"
-                tal:condition="batch/has_previous">
-                    <a href=""
-                    tal:attributes="href python:view.bika_listing.GET_url(pagenumber=batch.previouspage)">
-                    &laquo;
-                    <span i18n:domain="plone" i18n:translate="">
-                        Previous
-                        <span i18n:domain="plone" i18n:name="number" tal:omit-tag="" tal:content="batch/pagesize">n</span>
-                        items
-                    </span>
-                    </a>
-                </span>
-                <!-- Link to first -->
-                <span tal:condition="batch/show_link_to_first">
-                    <a href="" tal:attributes="href python:view.bika_listing.GET_url(pagenumber=1)">1</a>
-                    <span tal:condition="batch/second_page_not_in_navlist" tal:omit-tag="">
-                    ...
-                    </span>
-                </span>
-                <!-- Pagelist with links to previous pages for quick navigation -->
-                <span tal:repeat="pagenumber batch/previous_pages" tal:omit-tag="" >
-                <a href="" tal:content="pagenumber" tal:attributes="href python:view.bika_listing.GET_url(pagenumber=pagenumber)"/>
-                </span>
-                <!-- Current page -->
-                <span tal:condition="batch/navlist" tal:omit-tag="">
-                    [<span tal:content="batch/pagenumber">Current page number</span>]
-                </span>
-                <!-- Pagelist with links to next pages for quick navigation -->
-                <span tal:repeat="pagenumber batch/next_pages" tal:omit-tag="" >
-                <a href="" tal:content="pagenumber" tal:attributes="href python:view.bika_listing.GET_url(pagenumber=pagenumber)"/>
-                </span>
-                <!-- Link to last -->
-                <span tal:condition="batch/show_link_to_last">
-                    <span tal:condition="batch/before_last_page_not_in_navlist" tal:omit-tag="">
-                    ...
-                    </span>
-                    <a href=""
-                    tal:attributes="href python:view.bika_listing.GET_url(pagenumber=batch.lastpage)"
-                    tal:content="string:${batch/lastpage}">3457</a>
-                </span>
-                <span class="next"
-                    tal:condition="batch/has_next">
-                    <a href=""
-                    tal:attributes="href python:view.bika_listing.GET_url(pagenumber=batch.nextpage)">
-                    <span i18n:domain="plone" i18n:translate="">
-                        Next
-                        <span i18n:domain="plone" i18n:name="number" tal:omit-tag="" tal:content="string:${batch/next_item_count}">n</span>
-                        items
-                    </span>
-                    &raquo;
-                    </a>
-                </span>
-            </tal:batching>
-        </td>
-    </tr>
-    <tr class="noborder">
-        <td class="batching" colspan="2" style="text-align:right">
-            <tal:batching
-                tal:define="batch view/batch"
-                condition="python:batch.multiple_pages and not view.show_all and view.bika_listing.pagesize != 0">
-                <span class="pagesize_selector noborder"
-                    style="vertical-align:top !important"
-                    style="text-align:right">
-                    <select class="pagesize">
-                        <option value="10" tal:attributes="selected python:int(view.bika_listing.pagesize) == 10 and 'selected' or ''">10</option>
-                        <option value="25" tal:attributes="selected python:int(view.bika_listing.pagesize) == 25 and 'selected' or ''">25</option>
-                        <option value="50" tal:attributes="selected python:int(view.bika_listing.pagesize) == 50 and 'selected' or ''">50</option>
-                        <option value="100" tal:attributes="selected python:int(view.bika_listing.pagesize) == 100 and 'selected' or ''">100</option>
-                    </select>
-                    <span class="discreet"
-                        i18n:domain="bika" i18n:translate="">Items per page</span>
-                </span>
-            </tal:batching>
+        <td class="batching" style="text-align:right">
+
+            <span class='number-items' i18n:domain="bika" i18n:translate="" tal:condition="python:len(view.items) != 1">
+                <span i18n:name="nr_items" tal:replace="python:len(view.items)"/> Items
+            </span>
+            <span class='number-items' i18n:translate="" tal:condition="python:len(view.items) == 1">
+                <span i18n:name="nr_items" tal:replace="python:len(view.items)"/> Item
+            </span>
+            <tal:showmore define="pagesize        python:view.bika_listing.pagesize;
+                                  limit_from      python:view.bika_listing.limit_from;
+                                  limit_to        python:pagesize+limit_from-1;
+                                  next_limit_from python:pagesize+limit_from;
+                                  next_pagesize   python:pagesize+next_limit_from;
+                                  form_id         python:view.bika_listing.form_id;"
+                          condition="python:view.bika_listing.show_more">
+            &nbsp;&nbsp;
+            <a tal:attributes="
+                href           python:view.bika_listing.GET_url(pagesize=next_pagesize,limit_from=limit_from);
+                data-ajax-url  python:'%s&rows_only=%s' % (view.bika_listing.GET_url(pagesize=pagesize),form_id);
+                data-pagesize  python:pagesize;
+                data-limitfrom python:next_limit_from;
+                data-form-id   python:form_id;"
+               class="bika_listing_show_more"
+               i18n:translate="">Show more</a>
+            </tal:showmore>
         </td>
     </tr>
 </table>

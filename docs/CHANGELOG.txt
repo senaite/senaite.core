@@ -18,6 +18,7 @@ LIMS-2080: Correctly interpret default (empty) values in ARImport CSV file
 LIMS-2115: Error rises when saving a Calculation
 LIMS-2116: JSONAPI throws an UnicodeDecodeError
 LIMS-2114: AR Import with Profiles, no Analyses are created
+- Replacement of pagination by 'Show more' in tables makes the app faster
 LIMS-2132: Reference Analyses got the same ID
 LIMS-2133: Once in a while, specs var is going empty in results reports
 
