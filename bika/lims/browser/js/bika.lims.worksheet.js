@@ -449,6 +449,7 @@ function WorksheetManageResultsView() {
                 // Is manual entry allowed for this method?
                 var request_data = {
                     catalog_name: "uid_catalog",
+                    include_fields: "Title,ManualEntryOfResultsViewField",
                     UID: muid
                 };
                 window.bika.lims.jsonapi_read(request_data, function(data) {

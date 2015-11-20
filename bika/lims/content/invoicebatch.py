@@ -77,11 +77,14 @@ class InvoiceBatch(BaseFolder):
                 lineitem['ItemDate'] = item.getDatePublished()
                 lineitem['OrderNumber'] = item.getRequestID()
                 lineitem['AnalysisRequest'] = item
+                lineitem['SupplyOrder'] = ''
                 description = get_invoice_item_description(item)
                 lineitem['ItemDescription'] = description
             elif item.portal_type == 'SupplyOrder':
                 lineitem['ItemDate'] = item.getDateDispatched()
                 lineitem['OrderNumber'] = item.getOrderNumber()
+                lineitem['AnalysisRequest'] = ''
+                lineitem['SupplyOrder'] = item
                 description = get_invoice_item_description(item)
                 lineitem['ItemDescription'] = description
             lineitem['Subtotal'] = item.getSubtotal()

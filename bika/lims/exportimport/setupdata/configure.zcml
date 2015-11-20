@@ -87,6 +87,12 @@
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
 
     <adapter
+      name="Methods"
+      factory="bika.lims.exportimport.setupdata.Methods"
+      provides="bika.lims.interfaces.ISetupDataImporter"
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
+
+    <adapter
       name="Instrument_Types"
       factory="bika.lims.exportimport.setupdata.Instrument_Types"
       provides="bika.lims.interfaces.ISetupDataImporter"
@@ -177,20 +183,14 @@
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
 
     <adapter
-      name="Methods"
-      factory="bika.lims.exportimport.setupdata.Methods"
+      name="Calculations"
+      factory="bika.lims.exportimport.setupdata.Calculations"
       provides="bika.lims.interfaces.ISetupDataImporter"
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
 
     <adapter
       name="Sampling_Deviations"
       factory="bika.lims.exportimport.setupdata.Sampling_Deviations"
-      provides="bika.lims.interfaces.ISetupDataImporter"
-      for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
-
-    <adapter
-      name="Calculations"
-      factory="bika.lims.exportimport.setupdata.Calculations"
       provides="bika.lims.interfaces.ISetupDataImporter"
       for="Products.CMFPlone.interfaces.IPloneSiteRoot"/>
 
