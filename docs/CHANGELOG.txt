@@ -29,6 +29,7 @@ LIMS-409: ShowPrices setting was getting ignored in some contexts
 LIMS-2062: Cancelled ARs no longer appear in analysisrequest folder listings
 LIMS-2076: Cancelled batches appear in listing views
 LIMS-2154: Hide inactive ARs from BatchBook view
+LIMS-2134: Inactive services appear in AR Create
 
 3.1.9 (2015-10-8)
 ------------------
