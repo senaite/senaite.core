@@ -2,7 +2,7 @@ from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import logger
 from bika.lims.content.analysis import Analysis
 from bika.lims.testing import BIKA_SIMPLE_FIXTURE
-from bika.lims.tests.base import BikaFunctionalTestCase
+from bika.lims.tests.base import BikaSimpleTestCase
 from bika.lims.utils import tmpID
 from bika.lims.workflow import doActionFor
 from plone.app.testing import login, logout
@@ -19,8 +19,7 @@ except ImportError:  # Python 2.7
     import unittest
 
 
-class TestARImports(BikaFunctionalTestCase):
-    layer = BIKA_SIMPLE_FIXTURE
+class TestARImports(BikaSimpleTestCase):
 
     def addthing(self, folder, portal_type, **kwargs):
         thing = _createObjectByType(portal_type, folder, tmpID())
@@ -34,7 +33,7 @@ class TestARImports(BikaFunctionalTestCase):
         login(self.portal, TEST_USER_NAME)
         self.client = self.addthing(self.portal.clients, 'Client',
                                     title='Happy Hills', ClientID='HH')
-        self.addthing(self.client, 'Contact', Firstname='Rita',
+        self.addthing(self.client, 'Contact', Firstname='Rita Mohale',
                       Lastname='Mohale')
         self.addthing(self.portal.bika_setup.bika_sampletypes, 'SampleType',
                       title='Water', Prefix='H2O')
@@ -120,7 +119,10 @@ Total price excl Tax,,,,,,,,,,,,,,
                 'Importation failed!  %s.Errors: %s' % (arimport.id, errors))
 
         bc = getToolByName(self.portal, 'bika_catalog')
-        l = len(bc(portal_type='AnalysisRequest'))
+        ars = bc(portal_type='AnalysisRequest')
+        if not ars[0].getObject().getContact():
+            self.fail('No Contact imported into ar.Contact field.')
+        l = len(ars)
         if l != 4:
             self.fail('4 AnalysisRequests were not created!  We found %s' % l)
         l = len(bc(portal_type='Sample'))
