@@ -78,4 +78,11 @@
       name="HideARPriceFields"
     />
 
+    <adapter
+      factory=".widgetvisibility.HideClientDiscountFields"
+      provides="bika.lims.interfaces.IATWidgetVisibility"
+      for="bika.lims.interfaces.IClient"
+      name="HideClientDiscountFields"
+    />
+
 </configure>

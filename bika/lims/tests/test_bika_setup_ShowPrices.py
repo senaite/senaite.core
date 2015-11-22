@@ -159,6 +159,22 @@ class Test_ShowPrices(BikaSimpleTestCase):
             self.fail('ShowPrices is True, but AR Template analyses widget '
                       'still includes price column')
 
+    def test_client_discount_fields(self):
+        url = self.clients['client-1'].absolute_url() + "/edit"
+        browser = self.getBrowser()
+        self.portal.bika_setup.setShowPrices(True)
+        transaction.commit()
+        browser.open(url)
+        if browser.contents.find('Discount') == -1:
+            self.fail('ShowPrices is True, but Client edit page does not '
+                      'contain Discount fields')
+        self.portal.bika_setup.setShowPrices(False)
+        transaction.commit()
+        browser.open(url)
+        if browser.contents.find('Discount') > -1:
+            self.fail('ShowPrices is True, but Client edit page still '
+                      'contains Discount fields')
+
 
 def test_suite():
     suite = unittest.TestSuite()

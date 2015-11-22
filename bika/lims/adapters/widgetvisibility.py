@@ -164,5 +164,23 @@ class HideARPriceFields(object):
         fieldName = field.getName()
         if fieldName in fields and not ShowPrices:
             state = 'invisible'
-        print "returning %s for %s" % (state, fieldName)
+        return state
+
+class HideClientDiscountFields(object):
+    """Hide related fields in ARs when ShowPrices is disabled
+    """
+    implements(IATWidgetVisibility)
+
+    def __init__(self, context):
+        self.context = context
+        self.sort = 3
+
+    def __call__(self, context, mode, field, default):
+        fields = ['BulkDiscount', 'MemberDiscountApplies']
+        ShowPrices = context.bika_setup.getShowPrices()
+        state = default if default else 'invisible'
+        fieldName = field.getName()
+        print fieldName, fieldName in fields and not ShowPrices
+        if fieldName in fields and not ShowPrices:
+            state = 'invisible'
         return state
