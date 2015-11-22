@@ -256,7 +256,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         ids = bac.Indexes['getReferenceAnalysesGroupID'].uniqueValues()
         prefix = reference.id+"-"
         rr = re.compile("^"+prefix+"[\d+]+$")
-        ids = [int(i.split(prefix)[1]) for i in ids if rr.match(i)]
+        ids = [int(i.split(prefix)[1]) for i in ids if i and rr.match(i)]
         ids.sort()
         _id = ids[-1] if ids else 0
         suffix = str(_id+1).zfill(int(3))

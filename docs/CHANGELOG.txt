@@ -31,6 +31,7 @@ LIMS-2076: Cancelled batches appear in listing views
 LIMS-2154: Hide inactive ARs from BatchBook view
 LIMS-2134: Inactive services appear in AR Create
 LIMS-2139: WS Blank and Control Selection renderes whole page
+LIMS-2156: Ignore blank index values when calculating ReferenceAnalysesGroupID
 
 3.1.9 (2015-10-8)
 ------------------
