@@ -76,6 +76,14 @@ function AnalysisRequestAddByCol() {
         from_sampling_round();
     };
 
+    /*
+     * Exposes the filter_combogrid method publicly.
+     * Accessible through window.bika.lims.AnalysisRequestAddByCol.filter_combogrid
+     */
+    that.filter_combogrid = function(element, filterkey, filtervalue, querytype) {
+        filter_combogrid(element,filterkey,filtervalue,querytype);
+    };
+
     // Form management, and utility functions //////////////////////////////////
     /* form_init - load time form config
      * state_set - should be used when setting fields in the state var
@@ -298,7 +306,6 @@ function AnalysisRequestAddByCol() {
         options.url = options.url + "&discard_empty=" + $.toJSON($.parseJSON($(element).attr("combogrid_options"))['discard_empty'])
         options.force_all = "false"
         $(element).combogrid(options)
-        $(element).addClass("has_combogrid_widget")
         $(element).attr("search_query", "{}")
     }
 
