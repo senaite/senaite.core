@@ -27,7 +27,7 @@ LIMS-2124: QR missing on sticker preview
 LIMS-2147: Add ARImport schema fields when creating ARs
 LIMS-409: ShowPrices setting was getting ignored in some contexts
 LIMS-2062: Cancelled ARs no longer appear in analysisrequest folder listings
-
+LIMS-2076: Cancelled batches appear in listing views
 
 3.1.9 (2015-10-8)
 ------------------
