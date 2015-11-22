@@ -21,6 +21,7 @@ import unittest
 
 
 class MockMailHost(_MMH):
+
     def send(self, *kwargs):
         logger.log("***Message***")
         logger.log("From: {0}".format(kwargs['mfrom']))
@@ -31,6 +32,7 @@ class MockMailHost(_MMH):
 
 
 class BikaTestCase(unittest.TestCase):
+
     def setUp(self):
         super(BikaTestCase, self).setUp()
 
@@ -100,6 +102,7 @@ class BikaTestCase(unittest.TestCase):
 
 
 class BikaSimpleTestCase(Functional, BikaTestCase):
+
     layer = BIKA_SIMPLE_TESTING
 
     def setUp(self):
@@ -109,7 +112,6 @@ class BikaSimpleTestCase(Functional, BikaTestCase):
         self.request = self.layer['request']
         self.request['ACTUAL_URL'] = self.portal.absolute_url()
         setRoles(self.portal, TEST_USER_ID, ['LabManager', 'Member'])
-
 
 class BikaFunctionalTestCase(Functional, BikaTestCase):
     layer = BIKA_FUNCTIONAL_TESTING

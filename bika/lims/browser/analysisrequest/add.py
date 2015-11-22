@@ -50,6 +50,7 @@ class AnalysisServicesView(ASV):
         super(AnalysisServicesView, self).__init__(context, request)
 
         self.contentFilter['getPointOfCapture'] = poc
+        self.contentFilter['inactive_state'] = 'active'
 
         if category:
             self.contentFilter['getCategoryTitle'] = category

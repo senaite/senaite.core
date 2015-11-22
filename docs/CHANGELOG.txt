@@ -33,7 +33,14 @@ LIMS-2123: Analysis Categories don't expand in Worksheet Templates
 LIMS-1993: Existing Sample look-up for AR Create in Batch does not work
 LIMS-2124: QR missing on sticker preview
 LIMS-2147: Add ARImport schema fields when creating ARs
-
+LIMS-409: ShowPrices setting was getting ignored in some contexts
+LIMS-2062: Cancelled ARs no longer appear in analysisrequest folder listings
+LIMS-2076: Cancelled batches appear in listing views
+LIMS-2154: Hide inactive ARs from BatchBook view
+LIMS-2134: Inactive services appear in AR Create
+LIMS-2139: WS Blank and Control Selection renderes whole page
+LIMS-2156: Ignore blank index values when calculating ReferenceAnalysesGroupID
+LIMS-2157: Cancelled ARs appear in AR listing inside Batches
 
 3.1.9 (2015-10-8)
 ------------------

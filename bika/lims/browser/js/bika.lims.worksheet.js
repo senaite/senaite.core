@@ -180,7 +180,7 @@ function WorksheetAddQCAnalysesView() {
           control_type = 'b';
         }
 
-        url = window.location.href
+        url = window.location.href.split("?")[0]
             .replace("/add_blank", "")
             .replace("/add_control", "") + "/getWorksheetReferences"
         element = $("#worksheet_add_references");
