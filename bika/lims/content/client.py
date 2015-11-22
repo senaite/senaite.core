@@ -34,8 +34,6 @@ schema = Organisation.schema.copy() + atapi.Schema((
         write_permission = ManageClients,
         widget = atapi.BooleanWidget(
             label=_("Bulk discount applies"),
-            visible={'edit': True,
-                     'view': True}
         ),
     ),
     atapi.BooleanField('MemberDiscountApplies',
@@ -43,8 +41,6 @@ schema = Organisation.schema.copy() + atapi.Schema((
         write_permission = ManageClients,
         widget = atapi.BooleanWidget(
             label=_("Member discount applies"),
-            visible={'edit': True,
-                     'view': True}
         ),
     ),
     atapi.LinesField('EmailSubject',

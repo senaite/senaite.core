@@ -180,7 +180,6 @@ class HideClientDiscountFields(object):
         ShowPrices = context.bika_setup.getShowPrices()
         state = default if default else 'invisible'
         fieldName = field.getName()
-        print fieldName, fieldName in fields and not ShowPrices
         if fieldName in fields and not ShowPrices:
             state = 'invisible'
         return state

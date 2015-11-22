@@ -140,7 +140,7 @@ class Test_ShowPrices(BikaSimpleTestCase):
         transaction.commit()
         browser.open(url)
         if browser.contents.find('409') > -1:
-            self.fail('ShowPrices is True, but profile analyses widget still '
+            self.fail('ShowPrices is False, but profile analyses widget still '
                       'includes price column')
 
     def test_artemplate_analyses_list(self):
@@ -156,24 +156,46 @@ class Test_ShowPrices(BikaSimpleTestCase):
         transaction.commit()
         browser.open(url)
         if browser.contents.find('409') > -1:
-            self.fail('ShowPrices is True, but AR Template analyses widget '
+            self.fail('ShowPrices is False, but AR Template analyses widget '
                       'still includes price column')
 
     def test_client_discount_fields(self):
-        url = self.clients['client-1'].absolute_url() + "/edit"
+        url = self.portal.clients['client-1'].absolute_url() + "/edit"
         browser = self.getBrowser()
         self.portal.bika_setup.setShowPrices(True)
         transaction.commit()
         browser.open(url)
-        if browser.contents.find('Discount') == -1:
+        if browser.contents.find('discount') == -1:
             self.fail('ShowPrices is True, but Client edit page does not '
                       'contain Discount fields')
         self.portal.bika_setup.setShowPrices(False)
         transaction.commit()
         browser.open(url)
-        if browser.contents.find('Discount') > -1:
-            self.fail('ShowPrices is True, but Client edit page still '
+        if browser.contents.find('discount') > -1:
+            self.fail('ShowPrices is False, but Client edit page still '
                       'contains Discount fields')
+
+    def test_analysisservice_fields(self):
+        bs = self.portal.bika_setup
+        listing_url = bs.bika_analysisservices.absolute_url()
+        service_url = bs.bika_analysisservices.objectValues()[0].absolute_url()
+        browser = self.getBrowser()
+        self.portal.bika_setup.setShowPrices(True)
+        transaction.commit()
+        browser.open(listing_url)
+        if browser.contents.find('409') == -1:
+            self.fail('ShowPrices is True, but Service listing view does not '
+                      'contain Price fields')
+        self.portal.bika_setup.setShowPrices(False)
+        transaction.commit()
+        browser.open(listing_url)
+        if browser.contents.find('409') > -1:
+            self.fail('ShowPrices is False, but Service listing view still '
+                      'contains Price fields')
+        browser.open(service_url)
+        if browser.contents.find('Price') == -1:
+            self.fail('Service edit form must always contain Price field, even '
+                      ' when ShowPrices is disabled.')
 
 
 def test_suite():
