@@ -85,6 +85,9 @@ class AccreditationView(AnalysisServicesView):
             },
         ]
 
+        if not self.context.bika_setup.getShowPrices():
+            self.review_states[0]['columns'].remove('Price')
+
     def selected_cats(self, items):
         """return a list of all categories with accredited services
         """

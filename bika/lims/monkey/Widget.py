@@ -1,15 +1,29 @@
 from bika.lims.interfaces import IATWidgetVisibility
 from types import DictType
-
+from plone import api
 from Acquisition import aq_base
 from zope.component import getAdapters
 
 _marker = []
 
+# Products.Archetypes.Schema.Schemata#editableFields
+def editableFields(self, instance, visible_only=False):
+    """Returns a list of editable fields for the given instance
+    """
+    ret = []
+    portal = api.portal.get_tool('portal_url').getPortalObject()
+    for field in self.fields():
+        if field.writeable(instance, debug=False) and    \
+               (not visible_only or
+                field.widget.isVisible(
+                    instance, mode='edit', field=field) != 'invisible') and \
+                field.widget.testCondition(instance.aq_parent, portal, instance):
+            ret.append(field)
+    return ret
+
+# Products.Archetypes.Widget.TypesWidget#isVisible
 def isVisible(self, instance, mode='view', default=None, field=None):
     """decide if a field is visible in a given mode -> 'state'.
-    see Products.Archetypes.Widget.TypesWidget#isVisible for details about the
-    default behaviour.
     """
 
     # First get the original value, to use as our default
