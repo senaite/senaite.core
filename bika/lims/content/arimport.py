@@ -343,6 +343,10 @@ class ARImport(BaseFolder):
             batch = self.schema['Batch'].get(self)
             if batch:
                 row['Batch'] = batch
+            # Add AR fields from schema into this row's data
+            row['ClientReference'] = self.getClientReference()
+            row['ClientOrderNumber'] = self.getClientOrderNumber()
+            row['Contact'] = self.getContact()
             # Create AR
             ar = _createObjectByType("AnalysisRequest", client, tmpID())
             ar.setSample(sample)
@@ -422,6 +426,10 @@ class ARImport(BaseFolder):
         contact = [c for c in contacts if c.Title() == v]
         if contact:
             self.schema['Contact'].set(self, contact)
+        else:
+            self.error("Specified contact '%s' does not exist; using '%s'"%
+                       (v, contacts[0].Title()))
+            self.schema['Contact'].set(self, contacts[0])
         del (headers['Contact'])
 
         # CCContacts
