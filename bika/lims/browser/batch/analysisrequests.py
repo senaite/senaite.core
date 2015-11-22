@@ -20,7 +20,7 @@ class AnalysisRequestsView(_ARV, _ARAV):
         super(AnalysisRequestsView, self).__init__(context, request)
 
     def contentsMethod(self, contentFilter):
-        return self.context.getAnalysisRequests()
+        return self.context.getAnalysisRequests(**contentFilter)
 
     def __call__(self):
         self.context_actions = {}
