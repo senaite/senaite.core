@@ -2,6 +2,11 @@
 
     <label for='data_file'>File</label>&nbsp;
     <input type="file" name="data_file" id="data_file"/>
+    &nbsp;&nbsp;
+    <label for='format'>Format</label>&nbsp;
+    <select name="format" id="format">
+        <option value='csv'>CSV</option>
+    </select>
     <p></p>
     <h3>Advanced options</h3>
     <table cellpadding="0" cellspacing="0">
