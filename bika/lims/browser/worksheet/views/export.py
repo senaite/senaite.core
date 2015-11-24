@@ -31,8 +31,7 @@ class ExportView(BrowserView):
         exim = exim.lower()
 
         # search instruments module for 'exim' module
-        module = instruments.getExim(exim) if instruments.getExim(exim) else None
-        if not(module and hasattr(module, 'Export')):
+        if not instruments.getExim(exim):
             self.context.plone_utils.addPortalMessage(
                 _("Instrument exporter not found"), 'error')
             self.request.RESPONSE.redirect(self.context.absolute_url())
