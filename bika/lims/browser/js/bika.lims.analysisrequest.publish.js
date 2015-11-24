@@ -132,6 +132,18 @@ function AnalysisRequestPublishView() {
         $('#margin-left').change(function(e) {
             applyMarginAndReload($(this), 3);
         });
+
+        var p = d3.select("body").selectAll("p")
+    .data([4, 8, 15, 16, 23, 42])
+    .text(function(d) { return d; });
+
+// Enter…
+p.enter().append("p")
+    .text(function(d) { return d; });
+
+// Exit…
+p.exit().remove();
+
     }
 
     function applyMarginAndReload(element, idx) {
@@ -229,7 +241,7 @@ function AnalysisRequestPublishView() {
         $('#margin-right').val(dim.marginRight);
         $('#margin-bottom').val(dim.marginBottom);
         $('#margin-left').val(dim.marginLeft);
-        
+
         var layout_style =
             '@page { size:  ' + dim.size + ' !important;' +
             '        width:  ' + dim.width + 'mm !important;' +
