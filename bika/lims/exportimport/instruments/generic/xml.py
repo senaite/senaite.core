@@ -22,4 +22,3 @@ def Import(context, request):
 
     results = {'errors': errors, 'log': logs}
     return json.dumps(results)
-

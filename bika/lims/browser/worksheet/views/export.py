@@ -31,13 +31,13 @@ class ExportView(BrowserView):
         exim = exim.lower()
 
         # search instruments module for 'exim' module
-        if not hasattr(instruments, exim):
+        if not instruments.getExim(exim):
             self.context.plone_utils.addPortalMessage(
                 _("Instrument exporter not found"), 'error')
             self.request.RESPONSE.redirect(self.context.absolute_url())
             return
 
-        exim = getattr(instruments, exim)
+        exim = instruments.getExim(exim)
         exporter = exim.Export(self.context, self.request)
         data = exporter(self.context.getAnalyses())
         pass
