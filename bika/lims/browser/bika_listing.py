@@ -313,6 +313,11 @@ class BikaListingView(BrowserView):
 
     show_table_footer = True
 
+    # Sort with JS when a column does not have an index associated.
+    # It's not useful if the table is paginated since
+    # it only searches visible items
+    manual_sort_on = None
+
     # Column definitions:
     #
     # The keys of the columns dictionary must all exist in all
