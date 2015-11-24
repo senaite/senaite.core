@@ -70,6 +70,7 @@ class HoribaJobinYvonCSVParser(InstrumentCSVResultsFileParser):
             it = self._generate(line)
             reader = csv.DictReader(it, fieldnames=self.headers)
             values = reader.next()
+            values['DefaultResult'] = 'ResidualError'
             values['LineName'] = re.sub(r'\W', '', values['LineName'])
             values['Concentration'] = values['Cc']
             values['StandardDeviation'] = values['SD']
