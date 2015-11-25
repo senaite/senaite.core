@@ -42,6 +42,7 @@ function RangeGraph() {
 
         var color_range = (inrange || inshoulder) ? "#a8d6cf" : "#cdcdcd";
         var color_dot = inrange ? "#279989" : (inshoulder ? "#ffae00" : "#ff0000");
+        var color_shoulder = (inrange || inshoulder) ? "#d9e9e6" : "#dcdcdc";
 
         var x = d3.scale.linear()
             .domain([x_min, x_max])
@@ -75,7 +76,7 @@ function RangeGraph() {
             .attr("y", bar_y)
             .attr("width", x(range_min)-x(range_min_shoulder))
             .attr("height", bar_height)
-            .style("fill", "#d9e9e6");
+            .style("fill", color_shoulder);
 
         // Out-of-range right
         chart.append("rect")
@@ -96,14 +97,13 @@ function RangeGraph() {
             .attr("height", bar_height)
             .style("fill", color_range);
 
-
         // Right shoulder
         chart.append("rect")
             .attr("x", x(range_max))
             .attr("y", bar_y)
             .attr("width", x(range_max_shoulder)-x(range_max))
             .attr("height", bar_height)
-            .style("fill", "#d9e9e6");
+            .style("fill", color_shoulder);
 
         // Min shoulder line
       /*  chart.append("rect")
