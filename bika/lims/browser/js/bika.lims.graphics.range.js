@@ -50,6 +50,7 @@ function RangeGraph() {
 
         var chart = d3.select(canvas)
             .append("svg")
+            .attr("xmlns", "http://www.w3.org/2000/svg")
             .attr("width", width + (radius*2))
             .attr("height", height)
           .append("g")

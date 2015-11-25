@@ -170,6 +170,14 @@ function AnalysisRequestPublishView() {
         });
     }
 
+    function convert_svgs() {
+        $('svg').each(function(e) {
+            var svg = $("<div />").append($(this).clone()).html();
+            var img = window.bika.lims.CommonUtils.svgToImage(svg);
+            $(this).replaceWith(img);
+        });
+    }
+
     /**
      * Re-load the report view in accordance to the values set in the
      * options panel (report format, pagesize, QC visible, etc.)
@@ -200,6 +208,7 @@ function AnalysisRequestPublishView() {
             load_barcodes();
             load_layout();
             window.bika.lims.RangeGraph.load();
+            convert_svgs();
         });
     }
 
