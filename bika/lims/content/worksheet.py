@@ -353,6 +353,11 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         services = wst.getService()
         wst_service_uids = [s.UID() for s in services]
 
+        wst_slots = [row['pos'] for row in wstlayout if row['type'] == 'a']
+        ws_slots = [row['position'] for row in layout if row['type'] == 'a']
+        nr_slots = len(wst_slots) - len(ws_slots)
+        positions = [pos for pos in wst_slots if pos not in ws_slots]
+
         analyses = bac(portal_type='Analysis',
                        getServiceUID=wst_service_uids,
                        review_state='sample_received',
@@ -360,28 +365,24 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                        cancellation_state = 'active',
                        sort_on='getDueDate')
 
-        # collect analyses from the first X ARs.
-        ar_analyses = {}  # ar_uid : [analyses]
-        ars = []  # for sorting
-
-        wst_slots = [row['pos'] for row in wstlayout if row['type'] == 'a']
-        ws_slots = [row['position'] for row in layout if row['type'] == 'a']
-        nr_slots = len(wst_slots) - len(ws_slots)
+        # ar_analyses is used to group analyses by AR.
+        ar_analyses = {}
         instr = self.getInstrument() if self.getInstrument() else wst.getInstrument()
-        for analysis in analyses:
-            if instr and analysis.getObject().isInstrumentAllowed(instr) == False:
+        for brain in analyses:
+            analysis = brain.getObject()
+            if instr and brain.getObject().isInstrumentAllowed(instr) is False:
                 # Exclude those analyses for which the ws selected
                 # instrument is not allowed
                 continue
-            ar = analysis.getRequestID
-            if ar in ar_analyses:
-                ar_analyses[ar].append(analysis.getObject())
+            ar_id = brain.getRequestID
+            if ar_id in ar_analyses:
+                ar_analyses[ar_id].append(analysis)
             else:
                 if len(ar_analyses.keys()) < nr_slots:
-                    ars.append(ar)
-                    ar_analyses[ar] = [analysis.getObject(), ]
+                    ar_analyses[ar_id] = [analysis, ]
 
-        positions = [pos for pos in wst_slots if pos not in ws_slots]
+        # Add analyses, sorted by AR ID
+        ars = ar_analyses.keys()
         for ar in ars:
             for analysis in ar_analyses[ar]:
                 self.addAnalysis(analysis, position=positions[ars.index(ar)])
