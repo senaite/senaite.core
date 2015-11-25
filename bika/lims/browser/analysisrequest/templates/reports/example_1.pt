@@ -266,14 +266,14 @@
                     <span tal:replace="python:'*' if analysis['outofrange']==True else ''"></span>
                 </td>
                 <td class="specs-graphs"
-                    tal:define="rr python:specifications.get('resultsrange',{}).get(analysis.get('keyword'),{});
-                                min python: str(rr.get('min',0));
+                    tal:define="rr analysis/specs;
+                                min python: str(rr.get('min',0)).replace(',','.');
                                 min python: min if min else 0;
-                                max python: str(rr.get('max',0));
+                                max python: str(rr.get('max',0)).replace(',','.');
                                 max python: max if max else 0;
-                                err python: str(rr.get('error',0));
+                                err python: str(rr.get('error',0)).replace(',','.');
                                 err python: err if err else 0;
-                                res python: str(analysis.get('result',0));
+                                res python: str(analysis.get('result',0)).replace(',','.');
                                 res python: res if res else 0;
                                 dataspecs python: '[%s,%s,%s,%s]' % (res,min,max,err);"
                     tal:condition="rr">
