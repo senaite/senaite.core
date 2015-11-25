@@ -70,11 +70,12 @@ class HoribaJobinYvonCSVParser(InstrumentCSVResultsFileParser):
             it = self._generate(line)
             reader = csv.DictReader(it, fieldnames=self.headers)
             values = reader.next()
-            values['LineName'] = re.sub(r'\W', '', values['LineName'])
-            values['Concentration'] = values['Cc']
-            values['StandardDeviation'] = values['SD']
-            values['ResidualError'] = values['RSD']
-            values['NetIntensity'] = values['Net_Intensity'].split('/')
+            values['DefaultResult'] = 'ResidualError'
+            values['LineName'] = re.sub(r'\W', '', values['LineName'].strip())
+            values['Concentration'] = values['Cc'].strip()
+            values['StandardDeviation'] = values['SD'].strip()
+            values['ResidualError'] = values['RSD'].strip()
+            values['NetIntensity'] = values['Net_Intensity'].strip().split('/')
             values['Remarks'] = ''
             values['TestLine'] = ''
             self._addRawResult(self._resid, {values['LineName']: values}, False)

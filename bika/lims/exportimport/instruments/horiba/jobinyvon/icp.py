@@ -26,6 +26,17 @@ class Importer:
             return self.ret()
         parser = HoribaJobinYvonICPCSVParser(infile)
 
+        # Load the most suitable parser according to file extension/options/etc...
+        format = self.request.form['format']
+        parser = None
+        if not hasattr(infile, 'filename'):
+            self.errors.append(_("No file selected"))
+        elif format == 'csv':
+            parser = HoribaJobinYvonCSVParser(infile)
+        else:
+            self.errors.append(t(_("Unrecognized file format ${format}",
+                                   mapping={"format": format})))
+
         if parser:
 
             ar_states = self.get_allowed_ar_states()
@@ -103,6 +114,7 @@ class Importer:
         else:
             sam = ['getRequestID', 'getSampleID', 'getClientSampleID']
         return sam
+
 
 Import = Importer()
 
