@@ -7,15 +7,18 @@ function RangeGraph() {
 
     that.load = function() {
         $(".range-chart").each(function(e) {
+          var width = Number($(this).css('width').replace(/[^\d\.\-]/g, ''));
           loadRangeChart($(this).get(0),
-              $('.range-chart').css('width'),
+              width,
               $.parseJSON($(this).attr('data-specs')));
         });
     }
 
-    function loadRangeChart(canvas, width, data) {
+    function loadRangeChart(canvas, wdth, data) {
+        var width = wdth;
         var radius = width*0.03;
         var height = radius*2;
+        width -= radius*2;
 
         var result = data[0];
         var range_min = data[1];
