@@ -34,6 +34,7 @@ LIMS-2139: WS Blank and Control Selection renderes whole page
 LIMS-2156: Ignore blank index values when calculating ReferenceAnalysesGroupID
 LIMS-2157: Cancelled ARs appear in AR listing inside Batches
 LIMS-2042: Horiba ICP: Missing 'DefaultResult' for imported rows
+LIMS-2030: Assign ARs in alphabetical ID order to WS
 
 3.1.9 (2015-10-8)
 ------------------
