@@ -591,8 +591,11 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         for an in analyses:
             try:
                 nan = _createObjectByType("Analysis", newar, an.getKeyword())
-            except:
-                import pdb; pdb.set_trace()
+            except Exception as e:
+                from bika.lims import logger
+                logger.warn('Cannot create analysis %s inside %s (%s)'%
+                            an.getService().Title(), newar, e)
+                continue
             nan.setService(an.getService())
             nan.setCalculation(an.getCalculation())
             nan.setInterimFields(an.getInterimFields())
