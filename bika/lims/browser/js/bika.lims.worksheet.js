@@ -612,6 +612,5 @@ function WorksheetManageResultsView() {
                 });
             }
         });
-        $('table.bika-listing-table select.listing_select_entry[field="Method"]').change();
     }
 }
