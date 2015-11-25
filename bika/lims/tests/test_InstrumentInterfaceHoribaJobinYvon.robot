@@ -22,7 +22,7 @@ ${ClientSampleId} =  QC 350 PPM
 *** Test Cases ***
 
 
-LIMS-2042 import ICP csv using entire linename for Keyword
+Test import Horiba Jobin Yvon ICP csv
     Enable autologin as  LabManager
     set autologin username  test_labmanager
     ${PATH_TO_TEST} =  run keyword  resource_filename
@@ -34,19 +34,10 @@ LIMS-2042 import ICP csv using entire linename for Keyword
     do action for  ${ar_uid}  receive
     # import file
     Import Instrument File     Horiba Jobin-Yvon - ICP  ${PATH_TO_TEST}/files/ICPlimstest.csv
-    page should not contain    Service keyword Al396152 not found
-
-ICP csv file
-    [Documentation]  Firts we have to create the AS to match the
-    ...              analysis in the file. Then we have to create the AR
-    ...              and tranistion it. Finally qe can import the results.
-    Enable autologin as  LabManager
-    set autologin username  test_labmanager
-    ${PATH_TO_TEST} =           run keyword   resource_filename
-    ${cat_uid} =  Get UID  catalog_name=bika_setup_catalog  portal_type=AnalysisCategory  title=Metals
-    ${service_uid} =  Create Object   bika_setup/bika_analysisservices  AnalysisService  s1  title=Ni221647  Keyword=Ni221647  Category=${cat_uid}
-    Import Instrument File     Horiba Jobin-Yvon - ICP  ${PATH_TO_TEST}/files/ICPlimstest.csv
-    page should not contain    Service keyword Ni221647 not found
+    page should contain        Service keyword Ni221647 not found
+    page should contain        Import finished successfully: 1 ARs and 1 results updated
+    go to    ${PLONEURL}/clients/client-1/BR-0001-R01/manage_results
+    textfield value should be        css=[selector="Result_Al396152"]  0.1337
 
 *** Keywords ***
 
