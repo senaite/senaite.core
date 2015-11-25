@@ -382,7 +382,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                     ar_analyses[ar_id] = [analysis, ]
 
         # Add analyses, sorted by AR ID
-        ars = ar_analyses.keys()
+        ars = sorted(ar_analyses.keys())
         for ar in ars:
             for analysis in ar_analyses[ar]:
                 self.addAnalysis(analysis, position=positions[ars.index(ar)])
