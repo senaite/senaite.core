@@ -6,15 +6,14 @@ function RangeGraph() {
     var that = this;
 
     that.load = function() {
+        $(".range-chart").each(function(e) {
+          loadRangeChart($(this).get(0),
+              $('.range-chart').css('width'),
+              $.parseJSON($(this).attr('data-specs')));
+        });
+    }
 
-      $(".range-chart").each(function(e) {
-        loadRangeChart($(this).get(0),
-            $('.range-chart').css('width'),
-            $.parseJSON($(this).attr('data-specs')));
-      });
-
-      function loadRangeChart(canvas, width, data) {
-
+    function loadRangeChart(canvas, width, data) {
         var radius = width*0.03;
         var height = radius*2;
 

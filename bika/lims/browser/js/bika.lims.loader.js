@@ -122,7 +122,7 @@ window.bika.lims.controllers =  {
 	".analysisrequest_add_by_col": ['AnalysisRequestAddByCol'],
 
     "#ar_publish_container":
-        ['AnalysisRequestPublishView'],
+        ['AnalysisRequestPublishView', 'RangeGraph'],
 
     // Supply Orders
     ".portaltype-supplyorder.template-base_edit":
