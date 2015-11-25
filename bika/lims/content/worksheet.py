@@ -357,13 +357,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                        getServiceUID=wst_service_uids,
                        review_state='sample_received',
                        worksheetanalysis_review_state='unassigned',
-                       cancellation_state = 'active')
-        sortedans = []
-        for an in analyses:
-            sortedans.append({'uid': an.UID,
-                              'duedate': an.getObject().getDueDate() or (DateTime() + 365),
-                              'brain': an});
-        sortedans.sort(key=itemgetter('duedate'), reverse=False)
+                       cancellation_state = 'active',
+                       sort_on='getDueDate')
+
         # collect analyses from the first X ARs.
         ar_analyses = {}  # ar_uid : [analyses]
         ars = []  # for sorting
@@ -372,8 +368,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         ws_slots = [row['position'] for row in layout if row['type'] == 'a']
         nr_slots = len(wst_slots) - len(ws_slots)
         instr = self.getInstrument() if self.getInstrument() else wst.getInstrument()
-        for analysis in sortedans:
-            analysis = analysis['brain']
+        for analysis in analyses:
             if instr and analysis.getObject().isInstrumentAllowed(instr) == False:
                 # Exclude those analyses for which the ws selected
                 # instrument is not allowed
