@@ -17,7 +17,7 @@ class InvoiceFolderContentsView(BikaListingView):
         self.catalog = "portal_catalog"
         self.contentFilter = {'portal_type': 'InvoiceBatch'}
         self.icon = self.portal_url + "/++resource++bika.lims.images/invoice_big.png"
-        self.title = self.context.translate(_("Invoices"))
+        self.title = self.context.translate(_("Statements"))
         self.description = ""
         self.show_sort_column = False
         self.show_select_row = False
