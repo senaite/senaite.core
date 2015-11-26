@@ -27,7 +27,8 @@ class AnalysisRequestsView(BikaListingView):
         self.contentFilter = {'portal_type': 'AnalysisRequest',
                               'sort_on': 'created',
                               'sort_order': 'reverse',
-                              'path': {"query": "/", "level": 0}
+                              'path': {"query": "/", "level": 0},
+                              'cancellation_state': 'active',
                               }
 
         self.context_actions = {}
@@ -136,9 +137,8 @@ class AnalysisRequestsView(BikaListingView):
         self.review_states = [
             {'id': 'default',
              'title': _('Active'),
-             'contentFilter': {'cancellation_state': 'active',
-                              'sort_on': 'created',
-                              'sort_order': 'reverse'},
+             'contentFilter': {'sort_on': 'created',
+                               'sort_order': 'reverse'},
              'transitions': [{'id': 'sample'},
                              {'id': 'preserve'},
                              {'id': 'receive'},
@@ -353,10 +353,16 @@ class AnalysisRequestsView(BikaListingView):
             {'id': 'cancelled',
              'title': _('Cancelled'),
              'contentFilter': {'cancellation_state': 'cancelled',
-                               'review_state': ('to_be_sampled', 'to_be_preserved',
-                                                'sample_due', 'sample_received',
-                                                'to_be_verified', 'attachment_due',
-                                                'verified', 'published'),
+                               'review_state': (
+                                   'sample_registered',
+                                   'to_be_sampled',
+                                   'to_be_preserved',
+                                   'sample_due',
+                                   'sample_received',
+                                   'to_be_verified',
+                                   'attachment_due',
+                                   'verified',
+                                   'published'),
                                'sort_on': 'created',
                                'sort_order': 'reverse'},
              'transitions': [{'id': 'reinstate'}],

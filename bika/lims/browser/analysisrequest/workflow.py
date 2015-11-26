@@ -583,8 +583,19 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         newar.setMemberDiscount(ar.getMemberDiscount())
         # Set the results for each AR analysis
         ans = ar.getAnalyses(full_objects=True)
-        for an in ans:
-            nan = _createObjectByType("Analysis", newar, an.getKeyword())
+        # If a whole AR is retracted and contains retracted Analyses, these
+        # retracted analyses won't be created/shown in the new AR
+        workflow = getToolByName(self, "portal_workflow")
+        analyses = [x for x in ans
+                if workflow.getInfoFor(x, "review_state") not in ("retracted")]
+        for an in analyses:
+            try:
+                nan = _createObjectByType("Analysis", newar, an.getKeyword())
+            except Exception as e:
+                from bika.lims import logger
+                logger.warn('Cannot create analysis %s inside %s (%s)'%
+                            an.getService().Title(), newar, e)
+                continue
             nan.setService(an.getService())
             nan.setCalculation(an.getCalculation())
             nan.setInterimFields(an.getInterimFields())

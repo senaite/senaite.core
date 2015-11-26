@@ -1,10 +1,9 @@
-*** Settings ***
+ *** Settings ***
 
 Library         BuiltIn
 Library         Selenium2Library  timeout=5  implicit_wait=0.2
 Library         String
 Resource        keywords.txt
-Library         bika.lims.testing.Keywords
 Resource        plone/app/robotframework/selenium.robot
 Library         Remote  ${PLONEURL}/RobotRemote
 Variables       plone/app/testing/interfaces.py
@@ -22,22 +21,28 @@ ${ClientSampleId} =  QC 350 PPM
 
 *** Test Cases ***
 
-ICP csv file
-    [Documentation]  Firts we have to create the AS to match the
-    ...              analysis in the file. Then we have to create the AR
-    ...              and tranistion it. Finally qe can import the results.
-    ${PATH_TO_TEST} =           run keyword   resource_filename
-    Disable stickers
-    Create Analysis Service  ${ASId}  ${ASTitle}
+
+Test import Horiba Jobin Yvon ICP csv
+    Enable autologin as  LabManager
+    set autologin username  test_labmanager
+    ${PATH_TO_TEST} =  run keyword  resource_filename
+    ${cat_uid} =  Get UID  catalog_name=bika_setup_catalog  portal_type=AnalysisCategory  title=Metals
+    ${service_uid} =  Create Object   bika_setup/bika_analysisservices  AnalysisService  s1  title=AL396152  Keyword=Al396152  Category=${cat_uid}
+    ${st_uid} =  Get UID  catalog_name=bika_setup_catalog  portal_type=SampleType  title=Bran
+    ${sp_uid} =  Get UID  catalog_name=bika_setup_catalog  portal_type=SamplePoint  title=Mill
+    ${ar_uid} =  Create AR  /clients/client-1  analyses=${service_uid}  SampleType=${st_uid}  SamplePoint=${sp_uid}
+    do action for  ${ar_uid}  receive
+    # import file
     Import Instrument File     Horiba Jobin-Yvon - ICP  ${PATH_TO_TEST}/files/ICPlimstest.csv
-    page should not contain    Serice keyword ${ASId} not found
+    page should contain        Service keyword Ni221647 not found
+    page should contain        Import finished successfully: 1 ARs and 1 results updated
+    go to    ${PLONEURL}/clients/client-1/BR-0001-R01/manage_results
+    textfield value should be        css=[selector="Result_Al396152"]  0.1337
 
 *** Keywords ***
 
 Start browser
-    Open browser                        ${PLONEURL}/login_form  chrome
-    Log in                              test_labmanager         test_labmanager
-    Wait until page contains            You are now logged in
+    Open browser                        ${PLONEURL}  chrome
     Set selenium speed                  ${SELENIUM_SPEED}
 
 Create Analysis Service

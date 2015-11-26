@@ -529,24 +529,17 @@ class AnalysisRequestPublishView(BrowserView):
                             if analysis.portal_type == 'Analysis' \
                             else '%s - %s' % (analysis.aq_parent.id, analysis.aq_parent.Title())
 
-        # Which analysis specs must be used?
-        # Try first with those defined at AR Publish Specs level
         if analysis.portal_type == 'ReferenceAnalysis':
             # The analysis is a Control or Blank. We might use the
             # reference results instead other specs
             uid = analysis.getServiceUID()
             specs = analysis.aq_parent.getResultsRangeDict().get(uid, {})
 
-        elif analysis.portal_type == 'DuplicateAnalysis':
-            specs = analysis.getAnalysisSpecs();
-
         else:
-            ar = analysis.aq_parent
-            specs = ar.getPublicationSpecification()
-            if not specs or keyword not in specs.getResultsRangeDict():
-                specs = analysis.getAnalysisSpecs()
-            specs = specs.getResultsRangeDict().get(keyword, {}) \
-                    if specs else {}
+            # Get the specs directly from the analysis. The getResultsRange
+            # function already takes care about which are the specs to be used:
+            # AR, client or lab.
+            specs = analysis.getResultsRange()
 
         andict['specs'] = specs
         scinot = self.context.bika_setup.getScientificNotationReport()

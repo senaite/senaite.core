@@ -115,18 +115,18 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         ),
     ),
 
-    #TODO: To be removed?
     StringField('DataInterface',
-        vocabulary = "getDataInterfacesList",
-        widget = ReferenceWidget(
+        vocabulary = "getExportDataInterfacesList",
+        widget = SelectionWidget(
             checkbox_bound = 0,
             label=_("Data Interface"),
-            description=_("Select an Import/Export interface for this instrument."),
-            visible = False,
+            description=_("Select an Export interface for this instrument."),
+            format='select',
+            default='',
+            visible = True,
         ),
     ),
 
-    #TODO: To be removed?
     RecordsField('DataInterfaceOptions',
         type = 'interfaceoptions',
         subfields = ('Key','Value'),
@@ -245,14 +245,17 @@ schema.moveField('InstrumentTypeName', before='ManufacturerName')
 schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 
-def getDataInterfaces(context):
+def getDataInterfaces(context, export_only=False):
     """ Return the current list of data interfaces
     """
     from bika.lims.exportimport import instruments
     exims = []
     for exim_id in instruments.__all__:
         exim = instruments.getExim(exim_id)
-        exims.append((exim_id, exim.title))
+        if export_only and not hasattr(exim, 'Export'):
+            pass
+        else:
+            exims.append((exim_id, exim.title))
     exims.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
     exims.insert(0, ('', t(_('None'))))
     return DisplayList(exims)
@@ -282,8 +285,8 @@ class Instrument(ATFolder):
     def Title(self):
         return to_utf8(safe_unicode(self.title))
 
-    def getDataInterfacesList(self):
-        return getDataInterfaces(self)
+    def getExportDataInterfacesList(self):
+        return getDataInterfaces(self, export_only=True)
 
     def getScheduleTaskTypesList(self):
         return getMaintenanceTypes(self)

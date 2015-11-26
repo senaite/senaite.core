@@ -5,6 +5,7 @@ from bika.lims.workflow import doActionFor
 import plone
 
 from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analysisrequest import AnalysisRequestViewView
 from bika.lims.browser.bika_listing import BikaListingView
@@ -49,6 +50,7 @@ class AnalysisServicesView(ASV):
         super(AnalysisServicesView, self).__init__(context, request)
 
         self.contentFilter['getPointOfCapture'] = poc
+        self.contentFilter['inactive_state'] = 'active'
 
         if category:
             self.contentFilter['getCategoryTitle'] = category
@@ -524,8 +526,39 @@ def create_analysisrequest(context, request, values):
         else 'no_sampling_workflow'
     workflow.doActionFor(ar, workflow_action)
 
+
+    # We need to send a list of service UIDS to setAnalyses function.
+    # But we may have received a list of titles, list of UIDS,
+    # list of keywords or list of service objects!
+    service_uids = []
+    for obj in values['Analyses']:
+        uid = False
+        # service objects
+        if hasattr(obj, 'portal_type') and obj.portal_type == 'AnalysisService':
+            uid = obj.UID()
+        # Analysis objects (shortcut for eg copying analyses from other AR)
+        elif hasattr(obj, 'portal_type') and obj.portal_type == 'Analysis':
+            uid = obj.getService()
+        # Maybe already UIDs.
+        if not uid:
+            bsc = getToolByName(context, 'bika_setup_catalog')
+            brains = bsc(portal_type='AnalysisService', UID=obj)
+            if brains:
+                uid = brains[0].UID
+        # Maybe already UIDs.
+        if not uid:
+            bsc = getToolByName(context, 'bika_setup_catalog')
+            brains = bsc(portal_type='AnalysisService', title=obj)
+            if brains:
+                uid = brains[0].UID
+        if uid:
+            service_uids.append(uid)
+        else:
+            logger.info("In analysisrequest.add.create_analysisrequest: cannot "
+                        "find uid of this service: %s" % obj)
+
     # Set analysis request analyses
-    ar.setAnalyses(values['Analyses'],
+    ar.setAnalyses(service_uids,
                    prices=values.get("Prices", []),
                    specs=values.get('ResultsRange', []))
     analyses = ar.getAnalyses(full_objects=True)

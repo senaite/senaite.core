@@ -66,6 +66,9 @@ class ARTemplateAnalysesView(BikaListingView):
              },
         ]
 
+        if not self.context.bika_setup.getShowPrices():
+            self.review_states[0]['columns'].remove('Price')
+
         self.fieldvalue = fieldvalue
         self.selected = [x['service_uid'] for x in fieldvalue]
 

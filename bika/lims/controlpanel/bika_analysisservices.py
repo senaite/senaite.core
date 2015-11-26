@@ -244,6 +244,10 @@ class AnalysisServicesView(BikaListingView):
              },
         ]
 
+        if not self.context.bika_setup.getShowPrices():
+            for i in range(len(self.review_states)):
+                self.review_states[i]['columns'].remove('Price')
+
     def folderitems(self):
 
         items = BikaListingView.folderitems(self)

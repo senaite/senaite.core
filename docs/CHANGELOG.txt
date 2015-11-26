@@ -1,6 +1,12 @@
 3.1.10 (unreleased)
 -------------------
 - Dashboard: replace multi-bar charts by stacked-bar charts
+LIMS-1989: Retracting a published AR fails if one or more ASs has been retracted before publishing
+LIMS-2071: Can't generate Invoice Batch/Monthly Statements
+WINE-71: Instrument. BBK WS export to FIA fails
+WINE-72: Instrument. BBK WineScan Auto Import fails
+WINE-58: Instrument. BBK FIAStar import fails
+WINE-76: WineScan FT120 Import warnings incorrect?
 LIMS-1906: Spaces should be stripped out of the keywords coming from the Instrument
 LIMS-2117: Analysis Categories don't expand on Analysis Specification creation
 LIMS-1933: Regression: Selecting secondary AR in client batches, fails.
@@ -11,6 +17,25 @@ LIMS-2080: Correctly interpret default (empty) values in ARImport CSV file
 LIMS-2115: Error rises when saving a Calculation
 LIMS-2116: JSONAPI throws an UnicodeDecodeError
 LIMS-2114: AR Import with Profiles, no Analyses are created
+LIMS-2132: Reference Analyses got the same ID
+LIMS-2133: Once in a while, specs var is going empty in results reports
+LIMS-2136: Site Error on AR Verification
+LIMS-2121: Fix possible Horiba ICP csv handling errors
+LIMS-2042: Improving Horiba ICP to avoid Element Symbols as keywords
+LIMS-2123: Analysis Categories don't expand in Worksheet Templates
+LIMS-1993: Existing Sample look-up for AR Create in Batch does not work
+LIMS-2124: QR missing on sticker preview
+LIMS-2147: Add ARImport schema fields when creating ARs
+LIMS-409: ShowPrices setting was getting ignored in some contexts
+LIMS-2062: Cancelled ARs no longer appear in analysisrequest folder listings
+LIMS-2076: Cancelled batches appear in listing views
+LIMS-2154: Hide inactive ARs from BatchBook view
+LIMS-2134: Inactive services appear in AR Create
+LIMS-2139: WS Blank and Control Selection renderes whole page
+LIMS-2156: Ignore blank index values when calculating ReferenceAnalysesGroupID
+LIMS-2157: Cancelled ARs appear in AR listing inside Batches
+LIMS-2042: Horiba ICP: Missing 'DefaultResult' for imported rows
+LIMS-2030: Assign ARs in alphabetical ID order to WS
 
 3.1.9 (2015-10-8)
 ------------------

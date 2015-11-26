@@ -6,6 +6,7 @@ from Products.Archetypes.utils import shasattr
 from Products.CMFCore.utils import getToolByName
 from archetypes.referencebrowserwidget import utils
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser import BrowserView
 from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import POINTS_OF_CAPTURE
@@ -17,21 +18,35 @@ class ServicesView(BikaListingView):
     """ bika listing to display a list of services.
     field must be a <reference field> containing <AnalysisService> objects.
     """
-    def __init__(self, context, request, field):
+    def __init__(self, context, request, field=None, category=None):
         BikaListingView.__init__(self, context, request)
-        self.selected = [o.UID() for o in getattr(field, field.accessor)()]
+        if field:
+            self.selected = [o.UID() for o in getattr(field, field.accessor)()]
+        else:
+            self.selected = []
+        self.category = category if category else None
         self.context_actions = {}
         self.catalog = "bika_setup_catalog"
         self.contentFilter = {'review_state': 'impossible_state'}
         self.base_url = self.context.absolute_url()
         self.view_url = self.base_url
-        self.show_categories = True
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_all_checkbox = False
         self.show_select_column = True
         self.pagesize = 999999
         self.form_id = 'serviceswidget'
+
+        self.show_categories = False
+        self.categories = []
+        self.do_cats = self.context.bika_setup.getCategoriseAnalysisServices()
+        if self.do_cats:
+            self.show_categories = True
+            self.expand_all_categories = False
+            self.ajax_categories = True
+            self.category_index = 'getCategoryTitle'
+            self.ajax_categories_url = context.absolute_url() + \
+                                       "/ajax_services_expand_category"
 
         self.columns = {
             'Service': {'title': _('Service')},
@@ -53,12 +68,14 @@ class ServicesView(BikaListingView):
         ]
 
     def folderitems(self):
-        self.categories = []
         checkPermission = self.context.portal_membership.checkPermission
         catalog = getToolByName(self.context, self.catalog)
-        services = catalog(portal_type = 'AnalysisService',
-                           inactive_state = 'active',
-                           sort_on = 'sortable_title')
+        contentFilter = {'portal_type': 'AnalysisService',
+                         'inactive_state': 'active',
+                         'sort_on': 'sortable_title'}
+        if self.ajax_categories and self.category:
+             contentFilter[self.category_index] = self.category
+        services = catalog(contentFilter)
         items = []
         for service in services:
             service = service.getObject()
@@ -123,12 +140,23 @@ class ServicesWidget(TypesWidget):
         """
         services = ServicesView(self, self.REQUEST, field)
         services.show_select_column = show_select_column
-        services.select_checkbox_name = field.getName()
         return services.contents_table(table_only=True)
+
+    def process_form(self, instance, field, form, empty_marker=None,
+                     emptyReturnsMarker=False, validating=True):
+        service_uids = form.get('uids', [])
+        return service_uids, {}
+
 
 registerWidget(ServicesWidget,
                title = 'Analysis Services',
                description = ('Categorised AnalysisService selector.'),
                )
 
-#registerPropertyType('default_search_index', 'string', ServicesWidget)
+class AJAXCategoryExpand(BrowserView):
+
+    def __call__(self):
+        if 'ajax_category_expand' in self.request.keys():
+            cat = self.request.get('cat')
+            asv = ServicesView(self.context, self.request, category=cat)
+            return asv.rendered_items()
