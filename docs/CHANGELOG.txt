@@ -2,6 +2,7 @@
 ------------------
 LIMS-1832: New Results Template, COA. Multiple ARs in columns
 LIMS-2148: Unable to sort Bika Listing tables
+LIMS-1774: Shiny graphs for result ranges
 - Replacement of pagination by 'Show more' in tables makes the app faster
 - Add Bika LIMS TAL report reference in reports preview
 - Simplify instrument interface creation for basic CSV files
