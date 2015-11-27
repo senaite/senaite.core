@@ -295,7 +295,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
             except ValueError:
                 # non-float
                 Result['formatted_result'] = Result['result']
-
+        Result['result_str'] = str(Result['result'])
         # calculate Dry Matter result
         # if parent is not an AR, it's never going to be calculable
         dm = hasattr(analysis.aq_parent, 'getReportDryMatter') and \

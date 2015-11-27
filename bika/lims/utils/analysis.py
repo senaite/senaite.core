@@ -261,7 +261,9 @@ def format_numeric_result(analysis, result, decimalmark='.', sciformat=1):
             else:
                 res = float(result)/(10**sig_digits)
                 res = float(str("%%.%sf" % (sig_digits-1)) % res)
-            res = int(res) if res.is_integer() else res
+            # We have to check if formatted is an integer using "'.' in formatted"
+            # because ".is_integer" doesn't work with X.0
+            res = int(res) if '.' not in res else res
             if sciformat == 2:
                 # ax10^b or ax10^-b
                 formatted = "%s%s%s%s" % (res,"x10^",sign,sig_digits)
@@ -282,6 +284,7 @@ def format_numeric_result(analysis, result, decimalmark='.', sciformat=1):
         prec = analysis.getPrecision(result)
         prec = prec if prec else ''
         formatted = str("%%.%sf" % prec) % result
-        formatted = str(int(float(formatted))) if float(formatted).is_integer() else formatted
-
+        # We have to check if formatted is an integer using "'.' in formatted"
+        # because ".is_integer" doesn't work with X.0
+        formatted = str(int(float(formatted))) if '.' not in formatted else formatted
     return formatDecimalMark(formatted, decimalmark)
