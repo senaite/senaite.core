@@ -37,6 +37,8 @@ LIMS-2156: Ignore blank index values when calculating ReferenceAnalysesGroupID
 LIMS-2157: Cancelled ARs appear in AR listing inside Batches
 LIMS-2042: Horiba ICP: Missing 'DefaultResult' for imported rows
 LIMS-2030: Assign ARs in alphabetical ID order to WS
+LIMS-2067: Prevent initial method/instrument query for each analysis
+WINE-82: Ignore invalid entry in Sample field during AR creation
 
 3.1.9 (2015-10-8)
 ------------------
