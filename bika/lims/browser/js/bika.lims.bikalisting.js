@@ -41,22 +41,25 @@ function BikaListingTableView() {
 			url = url.replace('_limit_from=','_olf=');
 			url += '&'+formid+"_limit_from="+limit_from;
 			$('#'+formid+' a.bika_listing_show_more').fadeOut();
+			var tbody = $('table.bika-listing-table[form_id="'+formid+'"] tbody.item-listing-tbody')
 			$.ajax(url)
 				.done(function(data) {
 					try {
-						var xmld = $.parseXML(data);
-						if (xmld.children.length > 0 && xmld.children[0].children.length > 0) {
-							var htmlcontent = xmld.children[0].children[0].innerHTML;
-							$('table.bika-listing-table[form_id="'+formid+'"] tbody.item-listing-tbody').append(htmlcontent);
-							$('#'+formid+' a.bika_listing_show_more').attr('data-limitfrom', limit_from+pagesize);
-						}
+						// We must surround <tr> inside valid TABLE tags before extracting
+						var rows = $('<html><table>'+data+'</table></html>').find('tr')
+						// Then we can simply append the rows to existing TBODY.
+						$(tbody).append(rows)
+						// Increase limit_from so that next iteration uses correct start point
+						$('#'+formid+' a.bika_listing_show_more').attr('data-limitfrom', limit_from+pagesize);
 					}
 					catch (e) {
 						$('#' + formid + ' a.bika_listing_show_more').hide();
+						console.log(e);
 					}
-								  }).fail(function () {
+				}).fail(function () {
 					$('#'+formid+' a.bika_listing_show_more').hide();
-    		}).always(function() {
+					console.log("bika_listing_show_more failed");
+    			}).always(function() {
 					var numitems = $('table.bika-listing-table[form_id="'+formid+'"] tbody.item-listing-tbody tr').length;
 					$('#'+formid+' span.number-items').html(numitems);
 					if (numitems % pagesize == 0) {
