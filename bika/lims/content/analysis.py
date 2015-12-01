@@ -941,8 +941,7 @@ class Analysis(BaseContent):
             uncertainty = self.getUncertainty(result)
             if uncertainty == 0:
                 return 1
-            significant_digit = get_significant_digits(uncertainty)
-            return 0 if significant_digit > 0 else abs(significant_digit)
+            return get_significant_digits(uncertainty)
         else:
             return serv.getPrecision(result)
 

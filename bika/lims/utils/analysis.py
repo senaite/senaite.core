@@ -38,9 +38,18 @@ def get_significant_digits(numeric_value):
     Returns the precision for a given floatable value.
     If value is None or not floatable, returns None.
     Will return positive values if the result is below 0 and will
-    return 0 or positive values if the result is above 0.
+    return 0 values if the result is above 0.
     :param numeric_value: the value to get the precision from
     :return: the numeric_value's precision
+            Examples:
+            numeric_value     Returns
+            0               0
+            0.22            1
+            1.34            0
+            0.0021          3
+            0.013           2
+            2               0
+            22              0
     """
     try:
         numeric_value = float(numeric_value)
@@ -48,7 +57,8 @@ def get_significant_digits(numeric_value):
         return None
     if numeric_value == 0:
         return 0
-    return int(math.floor(math.log10(abs(numeric_value))))
+    significant_digit = int(math.floor(math.log10(abs(numeric_value))))
+    return 0 if significant_digit > 0 else abs(significant_digit)
 
 
 def format_uncertainty(analysis, result, decimalmark='.', sciformat=1):
