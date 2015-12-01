@@ -1,7 +1,6 @@
 from datetimewidget import DateTimeWidget
 from durationwidget import DurationWidget
 from partitionsetupwidget import PartitionSetupWidget
-from querywidget import QueryWidget
 from recordswidget import RecordsWidget
 from referenceresultswidget import ReferenceResultsWidget
 from referencewidget import ReferenceWidget
