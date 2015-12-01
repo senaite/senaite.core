@@ -185,6 +185,7 @@ schema = BikaSchema.copy() + Schema((
         expression = 'context.isInstrumentValid()'
     ),
     FixedPointField('Uncertainty',
+        precision=10,
         widget=DecimalWidget(
             label = _("Uncertainty"),
         ),
