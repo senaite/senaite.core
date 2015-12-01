@@ -1242,7 +1242,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
             # https://jira.bikalabs.com/browse/LIMS-1334
             if uncertainty == 0:
                 return 1
-             return get_significant_digits(uncertainty)
+            return get_significant_digits(uncertainty)
         return None
 
 
