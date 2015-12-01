@@ -1,6 +1,7 @@
 3.1.10 (unreleased)
 -------------------
 - Dashboard: replace multi-bar charts by stacked-bar charts
+LIMS-1917: Inconsistencies related to significant digits in uncertainties
 LIMS-1989: Retracting a published AR fails if one or more ASs has been retracted before publishing
 LIMS-2071: Can't generate Invoice Batch/Monthly Statements
 WINE-71: Instrument. BBK WS export to FIA fails
