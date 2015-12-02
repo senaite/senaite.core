@@ -31,7 +31,7 @@ from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysis, IDuplicateAnalysis, IReferenceAnalysis, \
-    IRoutineAnalysis
+    IRoutineAnalysis, ISamplePrepWorkflow
 from bika.lims.interfaces import IReferenceSample
 from bika.lims.utils import changeWorkflowState, formatDecimalMark
 from bika.lims.utils import drop_trailing_zeros_decimal
@@ -197,7 +197,7 @@ schema = BikaSchema.copy() + Schema((
 
 
 class Analysis(BaseContent):
-    implements(IAnalysis)
+    implements(IAnalysis, ISamplePrepWorkflow)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
