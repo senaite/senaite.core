@@ -185,6 +185,7 @@ schema = BikaSchema.copy() + Schema((
         expression = 'context.isInstrumentValid()'
     ),
     FixedPointField('Uncertainty',
+        precision=10,
         widget=DecimalWidget(
             label = _("Uncertainty"),
         ),
@@ -940,7 +941,7 @@ class Analysis(BaseContent):
             uncertainty = self.getUncertainty(result)
             if uncertainty == 0:
                 return 1
-            return abs(get_significant_digits(uncertainty))
+            return get_significant_digits(uncertainty)
         else:
             return serv.getPrecision(result)
 
