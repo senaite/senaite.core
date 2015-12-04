@@ -2448,6 +2448,14 @@ class AnalysisRequest(BaseFolder):
                 return False
         return True
 
+    def guard_sample_prep_transition(self):
+        sample = self.getSample()
+        return sample.guard_sample_prep_transition()
+
+    def guard_sample_prep_complete_transition(self):
+        sample = self.getSample()
+        return sample.guard_sample_prep_complete_transition()
+
     def workflow_script_receive(self):
         if skip(self, "receive"):
             return

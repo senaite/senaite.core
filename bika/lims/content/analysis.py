@@ -983,6 +983,14 @@ class Analysis(BaseContent):
             return False
         return True
 
+    def guard_sample_prep_transition(self):
+        sample = self.aq_parent.getSample()
+        return sample.guard_sample_prep_transition()
+
+    def guard_sample_prep_complete_transition(self):
+        sample = self.aq_parent.getSample()
+        return sample.guard_sample_prep_complete_transition()
+
     def guard_receive_transition(self):
         workflow = getToolByName(self, "portal_workflow")
         if workflow.getInfoFor(self, "cancellation_state", "active") == "cancelled":

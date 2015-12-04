@@ -272,6 +272,30 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
         ),
     ),
+    StringField('PreparationWorkflow',
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
+        vocabulary='getPreparationWorkflows',
+        acquire=True,
+        widget=SelectionWidget(
+            format="select",
+            label=_("Preparation Workflow"),
+            visible={'edit': 'visible',
+                     'view': 'visible',
+                     'header_table': 'visible',
+                     'sample_registered': {'view': 'visible', 'edit': 'visible'},
+                     'to_be_sampled':     {'view': 'visible', 'edit': 'invisible'},
+                     'sampled':           {'view': 'visible', 'edit': 'invisible'},
+                     'to_be_preserved':   {'view': 'visible', 'edit': 'invisible'},
+                     'sample_due':        {'view': 'visible', 'edit': 'invisible'},
+                     'sample_received':   {'view': 'visible', 'edit': 'invisible'},
+                     'expired':           {'view': 'visible', 'edit': 'invisible'},
+                     'disposed':          {'view': 'visible', 'edit': 'invisible'},
+                     },
+            render_own_label=True,
+        ),
+    ),
     ReferenceField('SamplingDeviation',
         vocabulary_display_path_bound = sys.maxsize,
         allowed_types = ('SamplingDeviation',),
@@ -868,6 +892,15 @@ class Sample(BaseFolder, HistoryAwareMixin):
                 return False
         return True
 
+    def guard_sample_prep_transition(self):
+        """Allow the sampleprep automatic transition to fire.
+        """
+        if not isBasicTransitionAllowed(self):
+            return False
+        if self.getPreparationWorkflow():
+            return True
+        return False
+
     def guard_sample_prep_complete_transition(self):
         """ This relies on user created workflow.  This function must
         defend against user errors.
@@ -896,7 +929,14 @@ class Sample(BaseFolder, HistoryAwareMixin):
             return False
         except AssertionError:
             logger.warn("'%s': cannot get 'sampleprep_review_state'" %
-                        sp_wf_name)
+                        sampleprep_wf_name)
             return False
+
+        # get state from workflow - error = allow transition
+        # get possible exit transitions for state: error = allow transition
+        transitions = sp_wf
+        if len(transitions) > 0:
+            return False
+        return True
 
 atapi.registerType(Sample, PROJECTNAME)

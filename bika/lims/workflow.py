@@ -206,10 +206,12 @@ def SamplePrepTransitionEventHandler(instance, event):
     If the final state's ID is not found in the AR workflow, the AR will be
     transitioned to 'sample_received'.
     """
-    # creation doesn't have a 'transition'
     if not event.transition:
+        # creation doesn't have a 'transition'
         return
+
     if not event.new_state.getTransitions():
+        # Is this the final (No exit transitions) state?
         wftool = getToolByName(instance, 'portal_workflow')
         primary_wf_name = list(ToolWorkflowChain(instance, wftool))[0]
         primary_wf = wftool.getWorkflowById(primary_wf_name)
