@@ -16,7 +16,6 @@
   <include file="batchfolder.zcml"/>
   <include file="bika_listing.zcml"/>
   <include file="calcs.zcml"/>
-  <include file="client.zcml"/>
   <include file="clientfolder.zcml"/>
   <include file="invoicefolder.zcml"/>
   <include file="invoicebatch.zcml"/>
@@ -43,6 +42,7 @@
 
   <include package=".analysisrequest"/>
   <include package=".batch"/>
+  <include package=".client"/>
   <include package=".samplinground"/>
   <include package=".srtemplate"/>
   <include package=".worksheet"/>
