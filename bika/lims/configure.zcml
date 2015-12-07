@@ -29,7 +29,6 @@
   <include package=".jsonapi" />
   <include package=".locales" />
   <include package=".monkey" />
-  <include package=".querystring" />
   <include package=".search" />
   <include package=".subscribers" />
   <include package=".vocabularies" />
