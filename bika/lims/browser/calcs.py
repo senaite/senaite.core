@@ -82,7 +82,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
         mapping = {}
 
         # values to be returned to form for this UID
-        Result = {'uid': uid, 'result': form_result}
+        Result = {'uid': uid, 'result': form_result, 'result_str': self.value}
         try:
             Result['result'] = float(form_result)
         except:
@@ -295,7 +295,6 @@ class ajaxCalculateAnalysisEntry(BrowserView):
             except ValueError:
                 # non-float
                 Result['formatted_result'] = Result['result']
-
         # calculate Dry Matter result
         # if parent is not an AR, it's never going to be calculable
         dm = hasattr(analysis.aq_parent, 'getReportDryMatter') and \
