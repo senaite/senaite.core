@@ -1,5 +1,6 @@
 3.1.10 (unreleased)
 -------------------
+- Updated Plone to 4.3.7
 - Dashboard: replace multi-bar charts by stacked-bar charts
 LIMS-2071: Can't generate Invoice Batch/Monthly Statements
 WINE-71: Instrument. BBK WS export to FIA fails
