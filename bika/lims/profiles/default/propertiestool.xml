@@ -66,8 +66,6 @@
     <element value="LogEntry"/>
     <element value="Manufacturer"/>
     <element value="Method"/>
-    <element value="Query"/>
-    <element value="QueryFolder"/>
     <element value="SRTemplate"/>
     <element value="Supplier"/>
     <element value="SupplyOrder"/>
