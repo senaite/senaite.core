@@ -11,5 +11,4 @@ pricelists,PricelistFolder
 supplyorders,SupplyOrderFolder
 bika_setup,BikaSetup
 reports,ReportFolder
-queries,QueryFolder
 invoices,InvoiceFolder

@@ -1218,6 +1218,8 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         1.34            0
         0.0021          3
         0.013           2
+        2               0
+        22              0
 
         For further details, visit
         https://jira.bikalabs.com/browse/LIMS-1334
@@ -1240,7 +1242,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
             # https://jira.bikalabs.com/browse/LIMS-1334
             if uncertainty == 0:
                 return 1
-            return abs(get_significant_digits(uncertainty))
+            return get_significant_digits(uncertainty)
         return None
 
 

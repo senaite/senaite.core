@@ -1,7 +1,7 @@
 import sys
 import inspect
 
-from generic import xml
+#from generic import xml
 from agilent.masshunter import quantitative
 from foss.fiastar import fiastar
 from foss.winescan import auto
@@ -34,7 +34,7 @@ __all__ = ['abaxis.vetscan.vs2',
            'foss.fiastar.fiastar',
            'foss.winescan.auto',
            'foss.winescan.ft120',
-           'generic.xml',
+           #'generic.xml',
            'horiba.jobinyvon.icp',
            'rigaku.supermini.wxrf',
            'rochecobas.taqman.model48',
@@ -56,5 +56,4 @@ def getExim(exim_id):
     members = [obj for name, obj in inspect.getmembers(currmodule) \
                if hasattr(obj, '__name__') \
                and obj.__name__.endswith(exim_id)]
-
-    return members[0]
+    return members[0] if len(members)>0 else None

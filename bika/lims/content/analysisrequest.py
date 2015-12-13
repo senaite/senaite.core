@@ -880,7 +880,7 @@ schema = BikaSchema.copy() + Schema((
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
         widget=StringWidget(
-            label=_("Environmental conditions when the sample has been taken"),
+            label=_("Environmental conditions"),
             visible={'edit': 'visible',
                      'view': 'visible',
                      'add': 'edit',

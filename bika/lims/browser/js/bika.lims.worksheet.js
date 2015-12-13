@@ -433,7 +433,7 @@ function WorksheetManageResultsView() {
             var selectedinstr = $(instrselector).val();
             var m_manualentry = true;
             var s_instrentry  = false;
-            var qc_analysis = $(this).closest('tr,td').hasClass('qc-analysis');
+            var qc_analysis = $(this).closest('tr').hasClass('qc-analysis');
             $(instrselector).find('option').remove();
             $(instrselector).prop('disabled', false);
             $('img.alert-instruments-invalid[uid="'+auid+'"]').remove();
@@ -449,7 +449,8 @@ function WorksheetManageResultsView() {
                 // Is manual entry allowed for this method?
                 var request_data = {
                     catalog_name: "uid_catalog",
-                    UID: muid
+                    UID: muid,
+                    include_fields: ['ManualEntryOfResultsViewField', 'Title']
                 };
                 window.bika.lims.jsonapi_read(request_data, function(data) {
                     method = (data.objects && data.objects.length > 0) ? data.objects[0] : null;
@@ -465,7 +466,8 @@ function WorksheetManageResultsView() {
                     // Has the Analysis Service the 'Allow Instrument Entry of Results' enabled?
                     var request_data = {
                         catalog_name: "uid_catalog",
-                        UID: suid
+                        UID: suid,
+                        include_fields: ['InstrumentEntryOfResults']
                     };
                     window.bika.lims.jsonapi_read(request_data, function(asdata) {
                         service = (asdata.objects && asdata.objects.length > 0) ? asdata.objects[0] : null;
@@ -610,6 +612,5 @@ function WorksheetManageResultsView() {
                 });
             }
         });
-        $('table.bika-listing-table select.listing_select_entry[field="Method"]').change();
     }
 }
