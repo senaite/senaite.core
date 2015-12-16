@@ -178,9 +178,9 @@ function AnalysisRequestAddByCol() {
                 filter_by_client(arnum)
             }
         }, 250);
-        /** If client only has one contect, and the analysis request commes from
+        /** If client only has one contect, and the analysis request comes from
           * a client, then Auto-complete first Contact field.
-          * If client only has one contect, and the analysis request commes from
+          * If client only has one contect, and the analysis request comes from
           * a batch, then Auto-complete all Contact field.
           */
         var uid = $($("tr[fieldname='Client'] input")[0]).attr("uid");
