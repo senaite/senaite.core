@@ -195,7 +195,8 @@ function AnalysisRequestAddByCol() {
              * window.location.pathname.split('batches') should not be splitted
              * in 2 parts
              */
-            if (data.total_objects == 1 &&
+            if (data.success &&
+                data.total_objects == 1 &&
                 window.location.pathname.split('batches').length < 2) {
                 var contact = data.objects[0];
                 $('input#Contact-0')
@@ -211,7 +212,8 @@ function AnalysisRequestAddByCol() {
              * window.location.pathname.split('batches') should be splitted in
              * 2 parts
              */
-            else if (data.total_objects == 1 &&
+            else if (data.success &&
+                data.total_objects == 1 &&
                 window.location.pathname.split('batches').length == 2) {
                 var nr_ars = parseInt($("#ar_count").val(), 10);
                 var contact = data.objects[0];
