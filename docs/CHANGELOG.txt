@@ -2,6 +2,7 @@
 -------------------
 - Updated Plone to 4.3.7
 - Dashboard: replace multi-bar charts by stacked-bar charts
+HEALTH-410: AR Create. Auto-complete Contact field if only 1
 LIMS-1917: Inconsistencies related to significant digits in uncertainties
 LIMS-2143: Statements vs Invoices
 LIMS-1989: Retracting a published AR fails if one or more ASs has been retracted before publishing

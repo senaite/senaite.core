@@ -178,7 +178,29 @@ function AnalysisRequestAddByCol() {
                 filter_by_client(arnum)
             }
         }, 250);
-    }
+        // If client only has one contect, Auto-complete first Contact field
+        var uid = $($("tr[fieldname='Client'] input")[0]).attr("uid");
+        var request_data = {
+            catalog_name: "portal_catalog",
+            portal_type: "Contact",
+            getParentUID: uid,
+            inactive_state: "active"
+        };
+        window.bika.lims.jsonapi_read(request_data, function (data) {
+            console.log('hello world');
+            if (data.total_objects == 1) {
+                var contact = data.objects[0];
+                $('input#Contact-0')
+                    .attr('uid', contact['UID'])
+                    .val(contact['Title'])
+                    .attr('uid_check', contact['UID'])
+                    .attr('val_check', contact['UID']);
+                $('#Contact-0_uid').val(contact['UID']);
+                state_set(0, 'Contact', contact['UID']);
+                cc_contacts_set(0);
+            };
+        });
+    };
 
     function state_set(arnum, fieldname, value) {
         /* Use this function to set values in the state variable.
