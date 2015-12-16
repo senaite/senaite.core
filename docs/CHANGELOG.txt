@@ -2,6 +2,7 @@
 -------------------
 - Updated Plone to 4.3.7
 - Dashboard: replace multi-bar charts by stacked-bar charts
+LIMS-2177: template_set error when no template has been selected
 HEALTH-410: AR Create. Auto-complete Contact field if only 1
 LIMS-1917: Inconsistencies related to significant digits in uncertainties
 LIMS-2143: Statements vs Invoices
