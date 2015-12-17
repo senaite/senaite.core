@@ -1109,87 +1109,89 @@ function AnalysisRequestAddByCol() {
         };
         window.bika.lims.jsonapi_read(request_data, function (data) {
 
-            var template = data.objects[0]
-            var td
+            if (data.success && data.objects.length > 0){
+                var template = data.objects[0]
+                var td
 
-            // set SampleType
-            td = $("tr[fieldname='SampleType'] td[arnum='" + arnum + "']")
-            $(td).find("input[type='text']")
-              .val(template['SampleType'])
-              .attr("uid", template['SampleTypeUID'])
-            $(td).find("input[id$='_uid']")
-              .val(template['SampleTypeUID'])
-            state_set(arnum, 'SampleType', template['SampleTypeUID'])
-
-            // set Specification from selected SampleType
-            set_spec_from_sampletype(arnum)
-
-            // set SamplePoint
-            td = $("tr[fieldname='SamplePoint'] td[arnum='" + arnum + "']")
-            $(td).find("input[type='text']")
-              .val(template['SamplePoint'])
-              .attr("uid", template['SamplePointUID'])
-            $(td).find("input[id$='_uid']")
-              .val(template['SamplePointUID'])
-            state_set(arnum, 'SamplePoint', template['SamplePointUID'])
-
-            // Set the ARTemplate's AnalysisProfile
-            td = $("tr[fieldname='Profile'] td[arnum='" + arnum + "']")
-            if (template['AnalysisProfile']) {
+                // set SampleType
+                td = $("tr[fieldname='SampleType'] td[arnum='" + arnum + "']")
                 $(td).find("input[type='text']")
-                  .val(template['AnalysisProfile'])
-                  .attr("uid", template['AnalysisProfileUID'])
+                  .val(template['SampleType'])
+                  .attr("uid", template['SampleTypeUID'])
                 $(td).find("input[id$='_uid']")
-                  .val(template['AnalysisProfileUID'])
-                state_set(arnum, 'Profile', template['AnalysisProfileUID'])
-            }
-            else {
-                profiles_unset_all(arnum)
-            }
+                  .val(template['SampleTypeUID'])
+                state_set(arnum, 'SampleType', template['SampleTypeUID'])
 
-            // Set the services from the template into the form
-            var defs = []
-            if ($('#singleservice').length > 0) {
-                defs.push(expand_services_singleservice(arnum, template['service_data']))
-            }
-            else {
-                defs.push(expand_services_bika_listing(arnum, template['service_data']))
-            }
-            // Set the composite checkbox if needed
-            td = $("tr[fieldname='Composite'] td[arnum='" + arnum + "']");
-            if (template['Composite']) {
-                $(td).find("input[type='checkbox']").attr("checked", true);
-                state_set(arnum, 'Composite', template['Composite']);
-                composite_selected(arnum)
-            }
-            else{
-                $(td).find("input[type='checkbox']").attr("checked", false);
-            }
-            // Call $.when with all deferreds
-            $.when.apply(null, defs).then(function () {
-                // Dry Matter checkbox.  drymatter_set will calculate it's
-                // dependencies and select them, and apply specs
-                td = $("tr[fieldname='ReportDryMatter'] td[arnum='" + arnum + "']")
-                if (template['ReportDryMatter']) {
-                    $(td).find("input[type='checkbox']").attr("checked", true)
-                    drymatter_set(arnum, true)
-                }
-                // Now apply the Template's partition information to the form.
-                // If the template doesn't specify partition information,
-                // calculate it like normal.
-                if (template['Partitions']) {
-                    // Stick the current template's partition setup into the state
-                    // though it were sent there by a the deps calculating ajax
-                    state_set(arnum, 'Partitions', template['Partitions'])
+                // set Specification from selected SampleType
+                set_spec_from_sampletype(arnum)
+
+                // set SamplePoint
+                td = $("tr[fieldname='SamplePoint'] td[arnum='" + arnum + "']")
+                $(td).find("input[type='text']")
+                  .val(template['SamplePoint'])
+                  .attr("uid", template['SamplePointUID'])
+                $(td).find("input[id$='_uid']")
+                  .val(template['SamplePointUID'])
+                state_set(arnum, 'SamplePoint', template['SamplePointUID'])
+
+                // Set the ARTemplate's AnalysisProfile
+                td = $("tr[fieldname='Profile'] td[arnum='" + arnum + "']")
+                if (template['AnalysisProfile']) {
+                    $(td).find("input[type='text']")
+                      .val(template['AnalysisProfile'])
+                      .attr("uid", template['AnalysisProfileUID'])
+                    $(td).find("input[id$='_uid']")
+                      .val(template['AnalysisProfileUID'])
+                    state_set(arnum, 'Profile', template['AnalysisProfileUID'])
                 }
                 else {
-                    // ajax request to calculate the partitions from the form
-                    partnrs_calc(arnum)
+                    profiles_unset_all(arnum)
                 }
-                _partition_indicators_set(arnum)
-                d.resolve()
-            })
-        })
+
+                // Set the services from the template into the form
+                var defs = []
+                if ($('#singleservice').length > 0) {
+                    defs.push(expand_services_singleservice(arnum, template['service_data']))
+                }
+                else {
+                    defs.push(expand_services_bika_listing(arnum, template['service_data']))
+                }
+                // Set the composite checkbox if needed
+                td = $("tr[fieldname='Composite'] td[arnum='" + arnum + "']");
+                if (template['Composite']) {
+                    $(td).find("input[type='checkbox']").attr("checked", true);
+                    state_set(arnum, 'Composite', template['Composite']);
+                    composite_selected(arnum)
+                }
+                else{
+                    $(td).find("input[type='checkbox']").attr("checked", false);
+                }
+                // Call $.when with all deferreds
+                $.when.apply(null, defs).then(function () {
+                    // Dry Matter checkbox.  drymatter_set will calculate it's
+                    // dependencies and select them, and apply specs
+                    td = $("tr[fieldname='ReportDryMatter'] td[arnum='" + arnum + "']")
+                    if (template['ReportDryMatter']) {
+                        $(td).find("input[type='checkbox']").attr("checked", true)
+                        drymatter_set(arnum, true)
+                    }
+                    // Now apply the Template's partition information to the form.
+                    // If the template doesn't specify partition information,
+                    // calculate it like normal.
+                    if (template['Partitions']) {
+                        // Stick the current template's partition setup into the state
+                        // though it were sent there by a the deps calculating ajax
+                        state_set(arnum, 'Partitions', template['Partitions'])
+                    }
+                    else {
+                        // ajax request to calculate the partitions from the form
+                        partnrs_calc(arnum)
+                    }
+                    _partition_indicators_set(arnum)
+                    d.resolve()
+                })
+            }
+        });
         return d.promise()
     }
 
