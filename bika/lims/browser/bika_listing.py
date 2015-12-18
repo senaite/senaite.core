@@ -107,8 +107,10 @@ class WorkflowAction:
         return selected_items
 
     def workflow_action_default(self, action, came_from):
-        if came_from == 'workflow_action':
-            # jsonapi, I believe, ends up here.
+        if came_from in ['workflow_action', 'edit']:
+            # If a single item was acted on we will create the item list
+            # manually from this item itself.  Otherwise, bika_listing will
+            # pass a list of selected items in the requyest.
             items = [self.context, ]
         else:
             # normal bika_listing.
