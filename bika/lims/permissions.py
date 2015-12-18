@@ -34,7 +34,6 @@ AddSamplingDeviation = 'BIKA: Add SamplingDeviation'
 AddSamplingRound = 'BIKA: Add SamplingRound'
 AddSRTemplate = 'BIKA: Add SRTemplate'
 AddSubGroup = 'BIKA: Add Sub-group'
-AddQuery = 'BIKA: Add Query'
 
 # Default Archetypes Add Permission
 ADD_CONTENT_PERMISSION = AddPortalContent
@@ -58,7 +57,6 @@ ADD_CONTENT_PERMISSIONS = {
     'SamplingDeviation': AddSamplingDeviation,
     'SamplingRound': AddSamplingRound,
     'SubGroup': AddSubGroup,
-    'Query': AddQuery,
 }
 
 # Very Old permissions:
