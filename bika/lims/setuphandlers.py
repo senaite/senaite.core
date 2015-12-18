@@ -56,7 +56,6 @@ class BikaGenerator:
                        'supplyorders',
                        'worksheets',
                        'reports',
-                       'queries',
                        'arimports',
                        ):
             try:
@@ -208,7 +207,6 @@ class BikaGenerator:
         mp(AddSamplingDeviation, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
         mp(AddSRTemplate, ['Manager', 'Owner', 'LabManager'], 0)
         mp(AddSubGroup, ['Manager', 'LabManager', 'LabClerk'], 0)
-        mp(AddQuery, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 0)
 
         mp(permissions.AddPortalContent, ['Manager', 'Owner', 'LabManager'], 1)
         mp(permissions.ListFolderContents, ['Manager', 'Owner'], 1)
@@ -370,17 +368,6 @@ class BikaGenerator:
         mp('ATContentTypes: Add Image', ['Manager', 'Labmanager', 'LabClerk', 'Member', ], 0)
         mp('ATContentTypes: Add File', ['Manager', 'Labmanager', 'LabClerk', 'Member', ], 0)
         portal.reports.reindexObject()
-
-        # /queries folder permissions
-        mp = portal.queries.manage_permission
-        mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', ], 0)
-        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk'], 0)
-        mp('Access contents information', ['Manager', 'LabManager', 'LabClerk', 'Owner'], 0)
-        mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Owner'], 0)
-        mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Owner'], 0)
-        mp('ATContentTypes: Add Image', ['Manager', 'Labmanager', 'LabClerk'], 0)
-        mp('ATContentTypes: Add File', ['Manager', 'Labmanager', 'LabClerk'], 0)
-        portal.queries.reindexObject()
 
         # /invoices folder permissions
         mp = portal.invoices.manage_permission
