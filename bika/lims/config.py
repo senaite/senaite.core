@@ -22,11 +22,6 @@ VERSIONABLE_TYPES = ('AnalysisService',
 PUBLICATION_PREFS = DisplayList((
     ('email', _('Email')),
     ('pdf', _('PDF')),
-# https://github.com/bikalabs/Bika-LIMS/issues/713
-#    ('fax', _('Fax')),
-#    ('file', _('File')),
-#    ('print', _('Print')),
-#    ('sms', _('SMS')),
 ))
 
 POINTS_OF_CAPTURE = DisplayList((
