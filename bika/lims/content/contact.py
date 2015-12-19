@@ -12,12 +12,13 @@ from bika.lims.config import ManageClients, PUBLICATION_PREFS, PROJECTNAME
 from bika.lims.content.person import Person
 from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.interfaces import IContact
+from zope.component import getAdapters
 from zope.interface import implements
 from bika.lims.utils import isActive
 
 schema = Person.schema.copy() + Schema((
     LinesField('PublicationPreference',
-        vocabulary = PUBLICATION_PREFS,
+        vocabulary = 'getPublicationPrefs',
         schemata = 'Publication preference',
         widget = MultiSelectionWidget(
             label=_("Publication preference"),
@@ -88,5 +89,11 @@ class Contact(Person):
 
     def getParentUID(self):
         return self.aq_parent.UID();
+
+    def getPublicationPrefs(self):
+        pubprefs = PUBLICATION_PREFS
+        for name, adapter in getAdapters((self.context, ), ICustomPubPref):
+            pubprefs.add(adapter(result))
+        return pubprefs
 
 atapi.registerType(Contact, PROJECTNAME)

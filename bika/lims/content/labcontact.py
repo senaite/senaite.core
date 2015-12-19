@@ -11,13 +11,14 @@ from bika.lims.content.person import Person
 from bika.lims.config import PUBLICATION_PREFS, PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
+from zope.component import getAdapters
 from zope.interface import implements
 from bika.lims.interfaces import ILabContact
 import sys
 
 schema = Person.schema.copy() + Schema((
     LinesField('PublicationPreference',
-        vocabulary = PUBLICATION_PREFS,
+        vocabulary = 'getPublicationPrefs',
         default = 'email',
         schemata = 'Publication preference',
         widget = MultiSelectionWidget(
@@ -88,5 +89,11 @@ class LabContact(Person):
             items.append((o.UID(), o.Title()))
         items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
+
+    def getPublicationPrefs(self):
+        pubprefs = PUBLICATION_PREFS
+        for name, adapter in getAdapters((self.context, ), ICustomPubPref):
+            pubprefs.add(adapter(result))
+        return pubprefs
 
 registerType(LabContact, PROJECTNAME)
