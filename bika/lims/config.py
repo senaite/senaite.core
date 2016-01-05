@@ -19,11 +19,6 @@ VERSIONABLE_TYPES = ('AnalysisService',
                      'WorksheetTemplate',
                      )
 
-PUBLICATION_PREFS = DisplayList((
-    ('email', _('Email')),
-    ('pdf', _('PDF')),
-))
-
 POINTS_OF_CAPTURE = DisplayList((
     ('field', _('Field Analyses')),
     ('lab', _('Lab Analyses')),
