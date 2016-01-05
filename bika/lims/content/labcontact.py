@@ -8,17 +8,18 @@ from Products.CMFPlone.utils import safe_unicode
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from bika.lims.content.person import Person
-from bika.lims.config import PUBLICATION_PREFS, PROJECTNAME
+from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from zope.component import getAdapters
 from zope.interface import implements
 from bika.lims.interfaces import ILabContact
+from bika.lims.vocabularies import CustomPubPrefVocabularyFactory
 import sys
 
 schema = Person.schema.copy() + Schema((
     LinesField('PublicationPreference',
-        vocabulary = 'getPublicationPrefs',
+        vocabulary_factory = 'bika.lims.vocabularies.CustomPubPrefVocabularyFactory',
         default = 'email',
         schemata = 'Publication preference',
         widget = MultiSelectionWidget(
@@ -89,11 +90,5 @@ class LabContact(Person):
             items.append((o.UID(), o.Title()))
         items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
-
-    def getPublicationPrefs(self):
-        pubprefs = PUBLICATION_PREFS
-        for name, adapter in getAdapters((self.context, ), ICustomPubPref):
-            pubprefs.add(adapter(result))
-        return pubprefs
 
 registerType(LabContact, PROJECTNAME)
