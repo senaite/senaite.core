@@ -34,7 +34,6 @@ AddSamplingDeviation = 'BIKA: Add SamplingDeviation'
 AddSamplingRound = 'BIKA: Add SamplingRound'
 AddSRTemplate = 'BIKA: Add SRTemplate'
 AddSubGroup = 'BIKA: Add Sub-group'
-AddQuery = 'BIKA: Add Query'
 
 # Default Archetypes Add Permission
 ADD_CONTENT_PERMISSION = AddPortalContent
@@ -58,7 +57,6 @@ ADD_CONTENT_PERMISSIONS = {
     'SamplingDeviation': AddSamplingDeviation,
     'SamplingRound': AddSamplingRound,
     'SubGroup': AddSubGroup,
-    'Query': AddQuery,
 }
 
 # Very Old permissions:
@@ -146,6 +144,12 @@ EditSamplePartition = 'BIKA: Edit Sample Partition'
 # ----------------------------------------------
 # Allows access to 'Edit' and 'Contacts' tabs from Client View
 EditClient = 'BIKA: Edit Client'
+
+# Manage Supply Orders
+# ----------------------------------------------
+# Allows access to 'Supply Orders' tab in Client context
+ManageSupplyOrders = 'BIKA: Manage Supply Orders'
+
 
 # Batch-specific permissions
 # ----------------------------------------------
