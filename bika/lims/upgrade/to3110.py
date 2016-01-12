@@ -5,6 +5,8 @@ from bika.lims.permissions import AddMultifile
 from Products.Archetypes.BaseContent import BaseContent
 from bika.lims.upgrade import stub
 from bika.lims import logger
+from Products.CMFCore import permissions
+from bika.lims.permissions import *
 
 
 def upgrade(tool):
@@ -35,5 +37,28 @@ def upgrade(tool):
     logger.info("Upgrading Bika LIMS: %s -> %s" % (ufrom, '319'))
 
     # Migrations
+    WINE119SupplyOrderPermissions(portal)
 
     return True
+
+
+def WINE119SupplyOrderPermissions(portal):
+    """LabClerk requires access to Supply Orders.
+    """
+    # AddSupplyOrder permission granted globally
+    mp = portal.manage_permission
+    mp(AddSupplyOrder, ['Manager', 'LabManager', 'Owner', 'LabClerk'], 0)
+
+    # Relax permissions of /supplyorders folder
+    mp = portal.supplyorders.manage_permission
+    mp(CancelAndReinstate, ['Manager', 'LabManager', 'Owner', 'LabClerk'], 0)
+    mp(permissions.ListFolderContents, ['LabClerk', ''], 1)
+    mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'Owner', 'LabClerk'], 0)
+    mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
+    mp(permissions.View, ['Manager', 'LabManager', 'LabClerk'], 0)
+    portal.supplyorders.reindexObject()
+
+    # AddSupplyOrder permission granted for specific clients
+    for obj in portal.clients.objectValues():
+        mp = obj.manage_permission
+        mp(ManageSupplyOrders, ['Manager', 'LabManager', 'Owner', 'LabClerk'], 0)
