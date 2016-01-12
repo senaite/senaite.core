@@ -2,7 +2,7 @@
 from Acquisition import aq_get
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
-from bika.lims.interfaces import IDisplayListVocabulary
+from bika.lims.interfaces import IDisplayListVocabulary, ICustomPubPref
 from bika.lims.utils import to_utf8
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
@@ -12,6 +12,7 @@ from plone.resource.utils import iterDirectoriesOfType
 from zope.schema.interfaces import IVocabularyFactory
 from zope.schema.vocabulary import SimpleTerm
 from zope.schema.vocabulary import SimpleVocabulary
+from zope.component import getAdapters
 from zope.site.hooks import getSite
 
 import os
@@ -483,3 +484,17 @@ class StickerTemplatesVocabulary(object):
 
 
 ARReportTemplatesVocabularyFactory = ARReportTemplatesVocabulary()
+
+class CustomPubPrefVocabulary(object):
+    implements(IVocabularyFactory)
+
+    def __call__(self, context):
+        items = [
+            (_('Email'),'email'),
+            (_('PDF'), 'pdf')
+        ]
+        for name, item in getAdapters((context, ), ICustomPubPref):
+            items.append(item)
+        return SimpleVocabulary.fromItems(items)
+
+CustomPubPrefVocabularyFactory = CustomPubPrefVocabulary()

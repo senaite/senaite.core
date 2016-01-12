@@ -661,3 +661,7 @@ class IHeaderTableFieldRenderer(Interface):
         """
         Accepts an Archetypes Field, returns HTML.
         """
+
+class ICustomPubPref(Interface):
+
+    ""

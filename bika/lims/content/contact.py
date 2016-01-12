@@ -8,16 +8,18 @@ from Products.Archetypes.public import *
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims.config import ManageClients, PUBLICATION_PREFS, PROJECTNAME
+from bika.lims.config import ManageClients, PROJECTNAME
 from bika.lims.content.person import Person
 from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.interfaces import IContact
+from zope.component import getAdapters
 from zope.interface import implements
 from bika.lims.utils import isActive
+from bika.lims.vocabularies import CustomPubPrefVocabularyFactory
 
 schema = Person.schema.copy() + Schema((
     LinesField('PublicationPreference',
-        vocabulary = PUBLICATION_PREFS,
+        vocabulary_factory = 'bika.lims.vocabularies.CustomPubPrefVocabularyFactory',
         schemata = 'Publication preference',
         widget = MultiSelectionWidget(
             label=_("Publication preference"),
