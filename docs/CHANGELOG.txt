@@ -4,6 +4,7 @@
 - Dashboard: replace multi-bar charts by stacked-bar charts
 LIMS-2177: template_set error when no template has been selected
 HEALTH-410: AR Create. Auto-complete Contact field if only 1
+LIMS-2175: "NaN" is shown automatically for result fields that have AS with "LDL" enabled and then an error is shown after submitting a result
 LIMS-1917: Inconsistencies related to significant digits in uncertainties
 LIMS-2143: Statements vs Invoices
 LIMS-1989: Retracting a published AR fails if one or more ASs has been retracted before publishing

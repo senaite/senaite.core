@@ -200,7 +200,12 @@ function CalculationUtils() {
                         if (result.result_str.indexOf(".") > -1){
                             decimals = result.result_str.split('.')[1].length;
                         }
-                        var result_with_decimals = parseFloat(result.result_str).toFixed(decimals)
+                        if (result.result_str == ""){
+                            var result_with_decimals = ""
+                        };
+                        else {
+                            var result_with_decimals = parseFloat(result.result_str).toFixed(decimals)
+                        };
                         $("input[uid='"+result.uid+"']").filter("input[field='Result']").val(result_with_decimals);
 
                         $('[type="hidden"]').filter("[field='ResultDM']").filter("[uid='"+result.uid+"']").val(result.dry_result);
