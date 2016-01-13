@@ -205,8 +205,9 @@
                         </tal:options>
                     </select>
                 </tal:edit>
-                <tal:view condition="python:not allow_edit">
-                    <span tal:content="python:item.get('formatted_result', item[column])"
+                <tal:view condition="python:not allow_edit"
+                    tal:define="val python:item.get(column, '')">
+                    <span tal:content="python:item.get('formatted_result', val)"
                           tal:attributes="class python:item.get('state_class') + ' result'"/>
                     <!-- String result -->
                     <tal:stringresult tal:condition="python:field_type=='string'">
@@ -221,7 +222,7 @@
                                 objectId string:${item/id};
                                 field python:column;
                                 name python:column == view.bika_listing.select_checkbox_name and '%s_column_value.%s:records'%(column, item['uid']) or '%s.%s:records'%(column, item['uid']);
-                                value python:item[column];"/>
+                                value val;"/>
                     </tal:stringresult>
                     <!-- Choices result -->
                     <tal:choicesresult condition="python:field_type=='choices' and column in item['choices']">
@@ -230,7 +231,7 @@
                             tal:attributes="
                                 uid string:${item/uid};
                                 field python:column;
-                                value python:item[column];
+                                value val;
                                 as_uid string:${item/service_uid|nothing};
                                 name string:${column}.${item/uid}:records"/>
                     </tal:choicesresult>
@@ -243,22 +244,23 @@
                 tal:content="structure python:item.get('Unit', '')"/>
 
             <!-- Uncertainty -->
-            <span tal:content="python:item.get('Uncertainty')"/>
+            <span tal:content="python:item.get('Uncertainty', '')"/>
 
             <!-- Retested? -->
             <input
                 type="checkbox"
-                tal:condition="python:not allow_edit and item.get('retested')"
+                tal:condition="python:not allow_edit and item.get('retested', '')"
                 disabled="disabled"
                 tal:attributes="
                     selector string:retested_${item/id};
                     class item/state_class;
-                    checked python:item.get('retested') and 'yes' or '';"/>
+                    checked python:item.get('retested', '') and 'yes' or '';"/>
         </tal:result>
-        <tal:meta_field condition="python:column not in ['Result', 'Attachments']">
+        <tal:meta_field condition="python:column not in ['Result', 'Attachments']"
+            tal:define="val python:item.get(column, '')">
             <!-- String field -->
             <span tal:condition="python:field_type == 'string'"
-                  tal:content="python:item[column] if item[column] is not None else ''"
+                  tal:content="python:val if val else ''"
                   tal:attributes="class item/state_class"/>
 
             <!-- Boolean field -->
@@ -272,15 +274,15 @@
                         uid string:${item/uid};
                         id python:'%s-%s' % (item['uid'], column);
                         name string:${column}.${item/uid}:record:ignore-empty;
-                        checked python:item.get(column) and 'yes' or '';"/>
+                        checked python:val and 'yes' or '';"/>
                 <input
                     type="checkbox"
-                    tal:condition="python:not allow_edit and item.get(column)"
+                    tal:condition="python:not allow_edit and val"
                     disabled="disabled"
                     tal:attributes="
                         selector string:${column}_${item/id};
                         class item/state_class;
-                        checked python:item.get(column) and 'yes' or '';"/>
+                        checked python:val and 'yes' or '';"/>
             </tal:boolean_field>
         </tal:meta_field>
     </tal:notreplace>

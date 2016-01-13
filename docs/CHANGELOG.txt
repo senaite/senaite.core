@@ -48,6 +48,7 @@ WINE-82: Ignore invalid entry in Sample field during AR creation
 LIMS-1717: Workflow transitions in edit context do not take effect
 WINE-111: Do not attempt formatting of 'nan' analysis result values
 WINE-114: Some users cannot view published ARs (unauthorised)
+WINE-122: Transposed worksheet layout failed while rendering empty slots
 
 3.1.9 (2015-10-8)
 ------------------
