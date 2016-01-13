@@ -20,6 +20,7 @@ from bika.lims.permissions import ManageWorksheets
 from bika.lims.utils import getUsers, tmpID, t
 from bika.lims.utils import to_utf8 as _c
 
+import logging
 import plone
 import json
 import zope
@@ -327,6 +328,11 @@ class FolderView(BikaListingView):
             ws_services = {}
             for slot in [s for s in layout if s['type'] == 'a']:
                 analysis = rc.lookupObject(slot['analysis_uid'])
+                if not analysis:
+                    error = "Analysis with uid '%s' NOT FOUND in Reference Catalog.\n Worksheet: '%s'. Layout: '%s'" % \
+                            (slot['analysis_uid'], obj, layout)
+                    logging.info(error)
+                    continue
                 service = analysis.getService()
                 title = service.Title()
                 if title not in ws_services:
