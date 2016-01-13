@@ -251,6 +251,10 @@ def format_numeric_result(analysis, result, decimalmark='.', sciformat=1):
     except ValueError:
         return result
 
+    # continuing with 'nan' result will cause formatting to fail.
+    if math.isnan(result):
+        return result
+
     service = analysis.getService()
     # Scientific notation?
     # Get the default precision for scientific notation

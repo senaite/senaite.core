@@ -13,6 +13,7 @@ LIMS-1774: Shiny graphs for result ranges
 - Dashboard: replace multi-bar charts by stacked-bar charts
 LIMS-2177: template_set error when no template has been selected
 HEALTH-410: AR Create. Auto-complete Contact field if only 1
+LIMS-2175: "NaN" is shown automatically for result fields that have AS with "LDL" enabled and then an error is shown after submitting a result
 LIMS-1917: Inconsistencies related to significant digits in uncertainties
 LIMS-2143: Statements vs Invoices
 LIMS-1989: Retracting a published AR fails if one or more ASs has been retracted before publishing
@@ -54,6 +55,10 @@ LIMS-2167: Cannot assign a QC analysis to an invalid instrument
 LIMS-2067: Prevent initial method/instrument query for each analysis
 WINE-82: Ignore invalid entry in Sample field during AR creation
 LIMS-1717: Workflow transitions in edit context do not take effect
+WINE-111: Do not attempt formatting of 'nan' analysis result values
+WINE-114: Some users cannot view published ARs (unauthorised)
+WINE-122: Transposed worksheet layout failed while rendering empty slots
+LIMS-2149: Missing analyses can cause error accessing worksheet
 
 3.1.9 (2015-10-8)
 ------------------

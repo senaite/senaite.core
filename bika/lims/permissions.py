@@ -145,6 +145,12 @@ EditSamplePartition = 'BIKA: Edit Sample Partition'
 # Allows access to 'Edit' and 'Contacts' tabs from Client View
 EditClient = 'BIKA: Edit Client'
 
+# Manage Supply Orders
+# ----------------------------------------------
+# Allows access to 'Supply Orders' tab in Client context
+ManageSupplyOrders = 'BIKA: Manage Supply Orders'
+
+
 # Batch-specific permissions
 # ----------------------------------------------
 EditBatch = 'BIKA: Edit Batch'

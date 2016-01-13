@@ -190,7 +190,7 @@
          url_expr="string:${object_url}/orders"
          i18n:attributes="title"
          visible="True">
-    <permission value="Modify portal content"/>
+    <permission value="BIKA: Manage Supply Orders"/>
  </action>
 
  <action title="Edit"
