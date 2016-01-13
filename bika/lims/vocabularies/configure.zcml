@@ -65,4 +65,9 @@
     name="bika.lims.vocabularies.ARReportTemplates"
     />
 
+  <utility
+    component="bika.lims.vocabularies.CustomPubPrefVocabularyFactory"
+    name="bika.lims.vocabularies.CustomPubPrefVocabularyFactory"
+    />
+
 </configure>
