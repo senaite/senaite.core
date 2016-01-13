@@ -49,6 +49,7 @@ LIMS-1717: Workflow transitions in edit context do not take effect
 WINE-111: Do not attempt formatting of 'nan' analysis result values
 WINE-114: Some users cannot view published ARs (unauthorised)
 WINE-122: Transposed worksheet layout failed while rendering empty slots
+LIMS-2149: Missing analyses can cause error accessing worksheet
 
 3.1.9 (2015-10-8)
 ------------------
