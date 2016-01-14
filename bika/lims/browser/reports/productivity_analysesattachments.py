@@ -73,7 +73,7 @@ class Report(BrowserView):
         for a_proxy in attachments:
             attachment = a_proxy.getObject()
             attachment_file = attachment.getAttachmentFile()
-            icon = attachment_file.getBestIcon()
+            icon = attachment_file.icon
             filename = attachment_file.filename
             filesize = attachment_file.get_size()
             filesize = filesize / 1024
