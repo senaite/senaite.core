@@ -13,13 +13,13 @@ language of the world's first people.
 Installation
 ------------
 
-* `Installing Bika LIMS <https://github.com/bikalabs/Bika-LIMS/wiki/Bika-LIMS-Installation>`_
+* `Installing Bika LIMS <https://github.com/bikalabs/bika.lims/wiki/Bika-LIMS-Installation>`_
 
 Documentation
 -------------
 
 * `User Manual <http://demo.bikalabs.com/knowledge-centre/manual/bika-3-user-manual>`_
-* `GitHub Wiki <http://github.com/bikalabs/Bika-LIMS/wiki>`_
+* `GitHub Wiki <http://github.com/bikalabs/bika.lims/wiki>`_
 
 Feedback and support
 --------------------
@@ -29,4 +29,4 @@ Feedback and support
 * LIMS design List: `lims-design <https://groups.google.com/forum/?hl=en#%21forum/bika-design>`_
 * Issue Tracker: `http://jira.bikalabs.com/ <http://jira.bikalabs.com>`_
 * IRC: `irc://freenode.net/#bika <irc://freenode.net/#bika>`_
-
+* Slack: `bikalims.slack.com <http://slackin.bikalims.org>`_
