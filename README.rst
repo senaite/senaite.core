@@ -29,4 +29,4 @@ Feedback and support
 * LIMS design List: `lims-design <https://groups.google.com/forum/?hl=en#%21forum/bika-design>`_
 * Issue Tracker: `http://jira.bikalabs.com/ <http://jira.bikalabs.com>`_
 * IRC: `irc://freenode.net/#bika <irc://freenode.net/#bika>`_
-
+* Slack: `bikalims.slack.com <http://slackin.bikalims.org>`_
