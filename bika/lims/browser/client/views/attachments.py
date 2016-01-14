@@ -60,7 +60,7 @@ class ClientAttachmentsView(BikaListingView):
             obj = items[x]['obj']
             obj_url = obj.absolute_url()
             file = obj.getAttachmentFile()
-            icon = file.getBestIcon()
+            icon = file.icon
 
             items[x]['AttachmentFile'] = file.filename()
             items[x]['AttachmentType'] = obj.getAttachmentType().Title()

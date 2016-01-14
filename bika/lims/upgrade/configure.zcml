@@ -552,12 +552,21 @@
         sortkey="1"
         profile="bika.lims:default"/>
 
-<genericsetup:upgradeStep
-        title="Upgrade to Bika LIMS 3.1.10"
-        description=""
-        source="319"
-        destination="3110"
-        handler="bika.lims.upgrade.to3110.upgrade"
-        sortkey="1"
-        profile="bika.lims:default"/>
+ <genericsetup:upgradeStep
+         title="Upgrade to Bika LIMS 3.1.10"
+         description=""
+         source="319"
+         destination="3110"
+         handler="bika.lims.upgrade.to3110.upgrade"
+         sortkey="1"
+         profile="bika.lims:default"/>
+
+ <genericsetup:upgradeStep
+         title="Upgrade to Bika LIMS 3.1.11"
+         description=""
+         source="3110"
+         destination="3111"
+         handler="bika.lims.upgrade.to3111.upgrade"
+         sortkey="1"
+         profile="bika.lims:default"/>
 </configure>
