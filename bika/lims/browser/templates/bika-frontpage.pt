@@ -102,7 +102,7 @@
             <ul>
                 <li>
                     <a class="external-link"
-                       href="https://github.com/bikalabs/Bika-LIMS/tree/develop">
+                       href="https://github.com/bikalabs/bika.lims">
                         Source repository
                     </a>
                 </li>
@@ -145,6 +145,14 @@
                    href="http://webchat.freenode.net?channels=bika"
                    id="ch-url-anchor">
                     irc://freenode.net/#bika
+                </a>
+            </p>
+
+            <p>Slack team chat:
+                <a class="external-link"
+                   href="http://slackin.bikalims.org"
+                   id="ch-url-anchor">
+                    http://slackin.bikalims.org (bikalims.slack.com)
                 </a>
             </p>
 

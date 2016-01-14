@@ -177,7 +177,7 @@ class ReportHistoryView(BikaListingView):
             obj = items[x]['obj']
             obj_url = obj.absolute_url()
             file = obj.getReportFile()
-            icon = file.getBestIcon()
+            icon = file.icon
 
             items[x]['Client'] = ''
             client = obj.getClient()
