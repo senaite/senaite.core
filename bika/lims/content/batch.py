@@ -82,8 +82,8 @@ schema = BikaFolderSchema.copy() + Schema((
             base_query={'inactive_state': 'active'},
             showOn=True,
             colModel=[{'columnName': 'UID', 'hidden': True},
-                      {'columnName': 'ClientID', 'width': '20', 'label': _('Client ID')},
-                      {'columnName': 'Title', 'width': '80', 'label': _('Title')}
+                      {'columnName': 'Title', 'width': '60', 'label': _('Title')},
+                      {'columnName': 'ClientID', 'width': '20', 'label': _('Client ID')}
                      ],
       ),
     ),
