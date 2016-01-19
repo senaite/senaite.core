@@ -108,7 +108,6 @@ class AnalysisRequestsView(BikaListingView):
                                'input_class': 'datepicker_nofuture',
                                'input_width': '10'},
             'getDateVerified': {'title': _('Date Verified'),
-                                'index': 'getDateVerified',
                                 'input_width': '10'},
             'getSampler': {'title': _('Sampler'),
                            'toggle': SamplingWorkflowEnabled},
