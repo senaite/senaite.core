@@ -117,7 +117,7 @@
                   filename file/filename | nothing;
                   thissize file/get_size | python:file and len(file) or 0;
                   filesize python:test((thissize < 1024), '%sb' %(thissize), '%sKb' %(thissize / 1024));
-                  icon file/getBestIcon | nothing;
+                  icon file/icon | nothing;
                   mimetype python:here.lookupMime(file.getContentType())">
                   <img tal:condition="icon" src=""
                      tal:attributes="src string:${here/portal_url}/images/$icon"/>
@@ -340,7 +340,7 @@
                <tal:attachment
                   tal:define="file python:attachment.getAttachmentFile();
                   filename file/filename | nothing;
-                  icon file/getBestIcon | nothing;">
+                  icon file/icon | nothing;">
                   <img tal:condition="icon" src=""
                      tal:attributes="src string:${here/portal_url}/images/$icon"/>
                   <a href=""  title="Click to download"

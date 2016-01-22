@@ -1,4 +1,8 @@
-3.1.10 (unreleased)
+3.1.11 (unreleased)
+-------------------
+WINE-125: Client users receive unauthorized when viewing some published ARs
+
+3.1.10 (2016-01-13)
 -------------------
 - Updated Plone to 4.3.7
 - Dashboard: replace multi-bar charts by stacked-bar charts
@@ -48,6 +52,10 @@ WINE-82: Ignore invalid entry in Sample field during AR creation
 LIMS-1717: Workflow transitions in edit context do not take effect
 WINE-111: Do not attempt formatting of 'nan' analysis result values
 WINE-114: Some users cannot view published ARs (unauthorised)
+WINE-122: Transposed worksheet layout failed while rendering empty slots
+LIMS-2149: Missing analyses can cause error accessing worksheet
+LIMS-1521: Date verified column for AR lists
+LIMS-2015: Column spacing on Client look-up
 
 3.1.9 (2015-10-8)
 ------------------
