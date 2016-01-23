@@ -1,0 +1,16 @@
+<html xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal" i18n:domain="bika">
+    <metal:view_macro define-macro="view"
+       tal:define="innerJoin field/innerJoin;
+             outerJoin field/outerJoin;
+             subfieldViews python:field.getSubfieldViews(here,innerJoin)"
+       tal:replace="structure python:outerJoin.join(subfieldViews)" />
+
+    <metal:define define-macro="edit"
+       tal:define="addr python:request.form.get(fieldName, accessor());">
+
+       <fieldset>
+           <div><span>hola caracola</span></div>
+       </fieldset>
+    </metal:define>
+    </html>
