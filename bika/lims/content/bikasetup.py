@@ -11,6 +11,7 @@ from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.interfaces import IBikaSetup
 from bika.lims.interfaces import IHaveNoBreadCrumbs
 from bika.lims.browser.widgets import DurationWidget
+from bika.lims.browser.widgets import RejectionWidget
 from bika.lims.browser.fields import DurationField
 from bika.lims.vocabularies import getStickerTemplates as _getStickerTemplates
 from plone.app.folder import folder
@@ -551,7 +552,13 @@ schema = BikaFolderSchema.copy() + Schema((
         widget = StringWidget(
             label=_("ID Server URL"),
             description=_("The full URL: http://URL/path:port")
-
+        ),
+    ),
+    RecordsField('RejectionReasons',
+        schemata = "Analyses",
+        widget = RejectionWidget(
+            label=_("Sample Rejection"),
+            description = _("Here you can define whether you want to use the sample rejection and define rejection reasons.")
         ),
     ),
 ))
