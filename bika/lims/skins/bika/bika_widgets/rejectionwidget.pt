@@ -1,16 +1,53 @@
 <html xmlns:tal="http://xml.zope.org/namespaces/tal"
-    xmlns:metal="http://xml.zope.org/namespaces/metal" i18n:domain="bika">
+     xmlns:metal="http://xml.zope.org/namespaces/metal" i18n:domain="bika">
     <metal:view_macro define-macro="view"
-       tal:define="innerJoin field/innerJoin;
+        tal:define="innerJoin field/innerJoin;
              outerJoin field/outerJoin;
              subfieldViews python:field.getSubfieldViews(here,innerJoin)"
-       tal:replace="structure python:outerJoin.join(subfieldViews)" />
+        tal:replace="structure python:outerJoin.join(subfieldViews)" />
 
     <metal:define define-macro="edit"
-       tal:define="addr python:request.form.get(fieldName, accessor());">
-
-       <fieldset>
-           <div><span>hola caracola</span></div>
-       </fieldset>
+        tal:define="addr python:request.form.get(fieldName, accessor());">
+        <!-- Label and description -->
+        <label tal:attributes="for fieldName">
+            <span i18n:translate="" tal:replace="python:widget.Label(here)">
+            </span>
+            <span tal:attributes="id python: fieldName + '_help'"
+                 class="formHelp"
+                 tal:content="python:widget.Description(here)"></span>
+        </label>
+        <!-- Checkbox -->
+        <input type="checkbox"
+            tal:attributes="
+                name string:${fieldName}.checkbox:records:ignore_empty;
+                id string:${fieldName}-checkbox;"/>
+                <!--checked python:context.getIsRejectionSet()"/-->
+        <!-- input text boxes and delete buttons-->
+        <input type="text"
+            name=""
+            value=""
+            size="30"
+            tabindex="#"
+            tal:attributes="
+                class string:records_inputstring;
+                name string:${fieldName}.textfield:records:ignore_empty;
+                id string:${fieldName}-textfield;"/>
+        <!-- delete -->
+        <img class="rw_deletebtn"
+            tal:attributes="
+                    id string:delete-box;
+                    src string:${portal/absolute_url}/++resource++bika.lims.images/delete.png"/>
+        <input
+            type="button"
+            class="context"
+            value="More"
+            tal:attributes="id string:${fieldName}_more;
+                           tabindex tabindex/next|nothing"
+            i18n:attributes="value" />
+<div>
+<p tal:content="addr"></p>
+<p tal:content="python: widget.Label(here)"></p>
+<p tal:content="fieldName"></p>
+</div>
     </metal:define>
     </html>
