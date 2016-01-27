@@ -1,7 +1,7 @@
 jQuery(function($){
     $(document).ready(function(){
         hide_show_options();
-        $('input[type="checkbox"]').bind("change", function () {
+        $('input.rejectionwidget-checkbox').bind("change", function () {
             hide_show_options();
         });
         rejectionwidget_loadEventHandlers();
@@ -10,14 +10,16 @@ jQuery(function($){
 
 function hide_show_options() {
     // Hide/show the rejection options divisions depending on the checkbox status
-    var checkbox = $('input[type="checkbox"]').attr('checked');
+    var checkbox = $('input.rejectionwidget-checkbox').attr('checked');
     if (checkbox == "checked") {
         // Showing the options-set
         $('div.options-set').show();
+        $("input[id$='_more']").show();
     }
     else{
         // Hide the options-set
         $('div.options-set').hide();
+        $("input[id$='_more']").hide();
     }
 }
 function rejectionwidget_loadEventHandlers() {
