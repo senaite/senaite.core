@@ -23,20 +23,24 @@
                 id string:${fieldName}-checkbox;"/>
                 <!--checked python:context.getIsRejectionSet()"/-->
         <!-- input text boxes and delete buttons-->
-        <input type="text"
-            name=""
-            value=""
-            size="30"
-            tabindex="#"
-            tal:attributes="
-                class string:records_inputstring;
-                name string:${fieldName}.textfield:records:ignore_empty;
-                id string:${fieldName}-textfield;"/>
-        <!-- delete -->
-        <img class="rw_deletebtn"
-            tal:attributes="
-                    id string:delete-box;
-                    src string:${portal/absolute_url}/++resource++bika.lims.images/delete.png"/>
+        <div class="options-set" id="options-set">
+            <div class="option-set"
+                tal:attributes="id string:${fieldName}-option-1">
+                <input type="text"
+                    name=""
+                    value=""
+                    size="30"
+                    tabindex="#"
+                    tal:attributes="
+                        class string:records_inputstring;
+                        name string:${fieldName}.textfield:records:ignore_empty;
+                        id string:${fieldName}-textfield-1;"/>
+                <!-- delete -->
+                <img class="rej_deletebtn"
+                    tal:attributes="
+                            src string:${portal/absolute_url}/++resource++bika.lims.images/delete.png"/>
+            </div>
+        </div>
         <input
             type="button"
             class="context"
