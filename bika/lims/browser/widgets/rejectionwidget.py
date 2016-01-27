@@ -13,6 +13,11 @@ class RejectionWidget(TypesWidget):
 
     security = ClassSecurityInfo()
 
+    def getSortKeys(self,keys):
+        # return the option's keys in sorted in order to obtain a sorted set of
+        # options
+        return sorted(keys)
+
 
 registerWidget(RejectionWidget,
                title = 'Rejection Widget',
