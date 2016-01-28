@@ -56,7 +56,7 @@ WINE-122: Transposed worksheet layout failed while rendering empty slots
 LIMS-2149: Missing analyses can cause error accessing worksheet
 LIMS-1521: Date verified column for AR lists
 LIMS-2015: Column spacing on Client look-up
-
+LIMS-1807: Validation for Start Date - End Date relationship
 3.1.9 (2015-10-8)
 ------------------
 LIMS-2068: LIMS-2068 Urgent. Analysis Catgories don't expand

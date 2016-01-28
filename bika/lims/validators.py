@@ -6,8 +6,8 @@ from Products.CMFCore.utils import getToolByName
 from Products.validation import validation
 from Products.validation.interfaces.IValidator import IValidator
 from zope.interface import implements
+from datetime import datetime
 import string
-
 import re
 
 
@@ -46,6 +46,31 @@ class UniqueFieldValidator:
         return True
 
 validation.register(UniqueFieldValidator())
+
+
+class InvoiceBatch_EndDate_Validator:
+
+    """ Verifies that the End Date is after the Start Date """
+
+    implements(IValidator)
+    name = "invoicebatch_EndDate_validator"
+
+    def __call__(self, value, *args, **kwargs):
+        instance = kwargs['instance']
+        startdate = instance.getBatchStartDate()
+        # request = kwargs.get('REQUEST', {})
+        # form = request.get('form', {})
+        enddate = value
+        startdate = startdate.strftime('%Y-%m-%d %H:%M')
+        
+        translate = getToolByName(instance, 'translation_service').translate
+        
+        if not enddate >= startdate:
+            msg = _("Start date must be before End Date")
+            return to_utf8(translate(msg))
+        return True
+
+validation.register(InvoiceBatch_EndDate_Validator())
 
 
 class ServiceKeywordValidator:
