@@ -32,11 +32,17 @@ function rejectionwidget_loadEventHandlers() {
         var option = $(all_optionset[all_optionset.length-1]).clone();
         // after cloning, make sure the new element's IDs are unique
         var input = $(option).find("input[id^='"+fieldname+"']");
-        var ID = $(input).attr('id');
-        var prefix = ID.split("-")[0] + "-" + ID.split("-")[1];
-        // New id
-        var nr = parseInt(ID.split("-")[2]) + 1;
-        $(input).attr('id', prefix + "-" + nr).val('');
+        var input_ID = $(input).attr('id');
+        var input_name = $(input).attr('name');
+        var option_ID = $(option).attr('id');
+        var input_id_prefix = input_ID.split("-")[0] + "-" + input_ID.split("-")[1];
+        var input_name_prefix = input_name.split("-")[0];
+        var option_prefix = option_ID.split("-")[0] + "-" + option_ID.split("-")[1];
+        // New id for input and div
+        var nr = parseInt(input_ID.split("-")[2]) + 1;
+        $(input).attr('id', input_id_prefix + "-" + nr).val('');
+        $(input).attr('name', input_name_prefix + "-" + nr + ":records:ignore_empty").val('');
+        $(option).attr('id', option_prefix + "-" + nr).val('');
         $(option).appendTo($(optionsset));
     });
     // Remove an option div
