@@ -157,15 +157,15 @@
                   analyses python:[a for a in analyses if a.getService().getAttachmentOption() in ['p', 'r'] and a.getReviewState() not in ['retracted']];
                   sort_on python:(('id', 'nocase', 'asc'),);
                   analyses python:sequence.sort(analyses, sort_on);
-                  a python:[a for a in analyses if a.portal_type == 'Analysis'];
+                  a_analyses python:[a for a in analyses if a.portal_type == 'Analysis'];
                   bc python:[a for a in analyses if a.portal_type == 'ReferenceAnalysis'];
-                  b python:[a for a in bc if a.aq_parent.getBlank()];
-                  c python:[a for a in bc if not a.aq_parent.getBlank()];
-                  d python:[a for a in analyses if a.portal_type == 'DuplicateAnalysis'];">
+                  b_analyses python:[a for a in bc if a.aq_parent.getBlank()];
+                  c_analyses python:[a for a in bc if not a.aq_parent.getBlank()];
+                  d_analyses python:[a for a in analyses if a.portal_type == 'DuplicateAnalysis'];">
                   <tr>
                      <td>
                         <span i18n:translate="">Attachment Type</span>
-                        &nbsp&nbsp&nbsp&nbsp
+                        &nbsp;
                      </td>
                      <td>
                         <span tal:condition="analyses"
@@ -194,25 +194,25 @@
                                  <option selected="selected"
                                     tal:condition="ar_attach_allowed"
                                     tal:attributes="value python:None"></option>
-                                 <tal:a tal:repeat="item a">
+                                 <tal:a tal:repeat="item a_analyses">
                                     <option tal:attributes="value item/UID;"
                                        tal:content="item/Title"></option>
                                  </tal:a>
-                                 <tal:b tal:repeat="item b">
+                                 <tal:b tal:repeat="item b_analyses">
                                     <option tal:attributes="value item/UID;">
                                        <span tal:content="item/Title"/>
                                        &nbsp;
                                        <span i18n:translate="">(Blank)</span>
                                     </option>
                                  </tal:b>
-                                 <tal:c tal:repeat="item c">
+                                 <tal:c tal:repeat="item c_analyses">
                                     <option tal:attributes="value item/UID;">
                                        <span tal:content="item/Title"/>
                                        &nbsp;
                                        <span i18n:translate="">(Control)</span>
                                     </option>
                                  </tal:c>
-                                 <tal:d tal:repeat="item d">
+                                 <tal:d tal:repeat="item d_analyses">
                                     <option tal:attributes="value item/UID;">
                                        <span tal:content="item/Title"/>
                                        &nbsp;
