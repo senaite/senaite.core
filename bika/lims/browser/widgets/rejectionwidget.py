@@ -15,7 +15,13 @@ class RejectionWidget(TypesWidget):
 
     def getSortKeys(self,keys):
         # return the option's keys in sorted in order to obtain a sorted set of
-        # options
+        # options.
+        # checkbox object isn't an option
+        if 'checkbox' in keys:
+            keys.remove('checkbox')
+        if len(keys) == 0:
+            # Doing that in order to get one blank textfield
+            keys = ['blank']
         return sorted(keys)
 
 
