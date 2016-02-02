@@ -70,6 +70,10 @@ class InvoiceBatchInvoicesView(BikaListingView):
             )
             item['replace']['id'] = number_link
             item['client'] = obj.getClient().Title()
+            item['replace']['client'] = "<a href='%s'>%s</a>" % (
+                obj.getClient().absolute_url(), obj.getClient().Title()
+            )
+
             item['invoicedate'] = self.ulocalized_time(obj.getInvoiceDate())
             item['subtotal'] = currency(obj.getSubtotal())
             item['vatamount'] = currency(obj.getVATAmount())
