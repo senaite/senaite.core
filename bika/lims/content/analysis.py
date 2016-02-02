@@ -49,6 +49,13 @@ def Priority(instance):
     if priority:
         return priority.getSortKey()
 
+@indexer(IAnalysis)
+def sortable_title_with_sort_key(instance):
+    sort_key = instance.getService().getSortKey()
+    if sort_key:
+        return "{:010.3f}{}".format(sort_key, instance.getService().Title())
+    return instance.getService().Title()
+
 schema = BikaSchema.copy() + Schema((
     HistoryAwareReferenceField('Service',
         required=1,

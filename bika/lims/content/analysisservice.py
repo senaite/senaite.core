@@ -4,6 +4,7 @@ import sys
 
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
+from plone.indexer import indexer
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.ATExtensions.Extensions.utils import makeDisplayList
 from Products.ATExtensions.ateapi import RecordField, RecordsField
@@ -13,7 +14,8 @@ from Products.Archetypes.public import DisplayList, ReferenceField, \
     BooleanWidget, StringField, SelectionWidget, \
     FixedPointField, DecimalWidget, IntegerField, \
     IntegerWidget, StringWidget, BaseContent, \
-    Schema, registerType, MultiSelectionWidget
+    Schema, registerType, MultiSelectionWidget, \
+    FloatField, DecimalWidget
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
@@ -191,6 +193,13 @@ registerField(PartitionSetupField, title="", description="")
 # # XXX When you modify this schema, be sure to edit the list of fields
 ## to duplicate, in bika_analysisservices.py.
 
+@indexer(IAnalysisService)
+def sortable_title_with_sort_key(instance):
+    sort_key = instance.getSortKey()
+    if sort_key:
+        return "{:010.3f}{}".format(sort_key, instance.Title())
+    return instance.Title()
+
 schema = BikaSchema.copy() + Schema((
     StringField('ShortTitle',
                 schemata="Description",
@@ -200,6 +209,14 @@ schema = BikaSchema.copy() + Schema((
                         "If text is entered here, it is used instead of the "
                         "title when the service is listed in column headings. "
                         "HTML formatting is allowed.")
+                ),
+    ),
+    FloatField('SortKey',
+                schemata="Description",
+                validators=('SortKeyValidator',),
+                widget=DecimalWidget(
+                    label = _("Sort Key"),
+                    description = _("Float value from 0.0 - 1000.0 indicating the sort order. Duplicate values are ordered alphabetically."),
                 ),
     ),
     BooleanField('ScientificName',
@@ -926,7 +943,8 @@ schema['title'].validators = ()
 # Update the validation layer after change the validator in runtime
 schema['title']._validationLayer()
 schema.moveField('ShortTitle', after='title')
-schema.moveField('CommercialID', after='ShortTitle')
+schema.moveField('SortKey', after='ShortTitle')
+schema.moveField('CommercialID', after='SortKey')
 schema.moveField('ProtocolID', after='CommercialID')
 
 
