@@ -14,22 +14,32 @@ class InvoiceBatchInvoicesView(BikaListingView):
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_all_checkbox = False
-        self.show_select_column = False
+        self.show_select_column = True
         self.pagesize = 25
         request.set('disable_border', 1)
         self.context_actions = {}
         self.columns = {
-            'id': {'title': _('Invoice Number')},
-            'client': {'title': _('Client')},
-            'email': {'title': _('Email Address')},
-            'phone': {'title': _('Phone')},
-            'invoicedate': {'title': _('Invoice Date')},
-            'startdate': {'title': _('Start Date')},
-            'enddate': {'title': _('End Date')},
-            'subtotal': {'title': _('Subtotal')},
-            'vatamount': {'title': _('VAT')},
-            'total': {'title': _('Total')},
-        }
+            'id': {'title': _('Invoice Number'),
+                'toggle': True },
+            'client': {'title': _('Client'),
+                'toggle': True},
+            'email': {'title': _('Email Address'),
+                'toggle': False},
+            'phone': {'title': _('Phone'),
+                'toggle': False},
+            'invoicedate': {'title': _('Invoice Date'),
+                'toggle': True},
+            'startdate': {'title': _('Start Date'),
+                'toggle': False},
+            'enddate': {'title': _('End Date'),
+                'toggle': False},
+            'subtotal': {'title': _('Subtotal'),
+                'toggle': False},
+            'vatamount': {'title': _('VAT'),
+                'toggle': False},
+            'total': {'title': _('Total'),
+                'toggle': True},
+            }
         self.review_states = [
             {
                 'id': 'default',
