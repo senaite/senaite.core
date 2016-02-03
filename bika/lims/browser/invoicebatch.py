@@ -21,7 +21,11 @@ class InvoiceBatchInvoicesView(BikaListingView):
         self.columns = {
             'id': {'title': _('Invoice Number')},
             'client': {'title': _('Client')},
+            'email': {'title': _('Email Address')},
+            'phone': {'title': _('Phone')},
             'invoicedate': {'title': _('Invoice Date')},
+            'startdate': {'title': _('Start Date')},
+            'enddate': {'title': _('End Date')},
             'subtotal': {'title': _('Subtotal')},
             'vatamount': {'title': _('VAT')},
             'total': {'title': _('Total')},
@@ -35,7 +39,11 @@ class InvoiceBatchInvoicesView(BikaListingView):
                 'columns': [
                     'id',
                     'client',
+                    'email',
+                    'phone',
                     'invoicedate',
+                    'startdate',
+                    'enddate',
                     'subtotal',
                     'vatamount',
                     'total',
@@ -73,8 +81,14 @@ class InvoiceBatchInvoicesView(BikaListingView):
             item['replace']['client'] = "<a href='%s'>%s</a>" % (
                 obj.getClient().absolute_url(), obj.getClient().Title()
             )
-
+            item['email'] = obj.getClient().getEmailAddress()
+            item['replace']['email'] = "<a href='%s'>%s</a>" % (
+                'mailto:%s' % obj.getClient().getEmailAddress(), obj.getClient().getEmailAddress()
+            )
+            item['phone'] = obj.getClient().getPhone()
             item['invoicedate'] = self.ulocalized_time(obj.getInvoiceDate())
+            item['startdate'] = self.ulocalized_time(obj.getBatchStartDate())
+            item['enddate'] = self.ulocalized_time(obj.getBatchEndDate())
             item['subtotal'] = currency(obj.getSubtotal())
             item['vatamount'] = currency(obj.getVATAmount())
             item['total'] = currency(obj.getTotal())
