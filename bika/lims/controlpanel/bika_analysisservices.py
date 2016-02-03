@@ -174,6 +174,9 @@ class AnalysisServicesView(BikaListingView):
                              'toggle': True},
             'ProtocolID': {'title': _('Protocol ID'),
                            'toggle': True},
+            'SortKey': {'title': _('Sort Key'),
+                           'index': 'sortKey',
+                           'toggle': False},
         }
 
         self.review_states = [
@@ -194,6 +197,7 @@ class AnalysisServicesView(BikaListingView):
                          'MaxTimeAllowed',
                          'DuplicateVariation',
                          'Calculation',
+                         'SortKey',
                          ],
              'custom_actions': [{'id': 'duplicate',
                                  'title': _('Duplicate'),
@@ -252,6 +256,10 @@ class AnalysisServicesView(BikaListingView):
 
         items = BikaListingView.folderitems(self)
 
+        bsc = getToolByName(self.context, "bika_setup_catalog")
+        analysis_categories = bsc(portal_type="AnalysisCategory", sort_on="sortable_title")
+        analysis_categories_order = dict([(b.Title, "{:04}".format(a)) for a, b in enumerate(analysis_categories)])
+
         for x in range(len(items)):
             if 'obj' not in items[x]:
                 continue
@@ -263,15 +271,17 @@ class AnalysisServicesView(BikaListingView):
             items[x]['Keyword'] = obj.getKeyword()
             items[x]['CommercialID'] = obj.getCommercialID()
             items[x]['ProtocolID'] = obj.getProtocolID()
+            items[x]['SortKey'] = obj.getSortKey()
 
             cat = obj.getCategoryTitle()
+            cat_order = analysis_categories_order.get(cat)
             # Category (upper C) is for display column value
             items[x]['Category'] = cat
             if self.do_cats:
                 # category is for bika_listing to groups entries
                 items[x]['category'] = cat
-                if cat not in self.categories:
-                    self.categories.append(cat)
+                if (cat, cat_order) not in self.categories:
+                    self.categories.append((cat, cat_order))
 
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % (
                 items[x]['url'], items[x]['Title'])
@@ -335,7 +345,10 @@ class AnalysisServicesView(BikaListingView):
             if after_icons:
                 items[x]['after']['Title'] = after_icons
 
-        self.categories.sort()
+        if self.do_cats:
+            self.categories = map(lambda x: x[0], sorted(self.categories, key=lambda x: x[1]))
+        else:
+            self.categories.sort()
         return items
 
 

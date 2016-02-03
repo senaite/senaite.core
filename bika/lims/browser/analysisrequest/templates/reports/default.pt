@@ -208,7 +208,7 @@
     <h1 i18n:translate="">Results</h1>
     <tal:poc tal:repeat="poc python:categanalyses.keys()">
     <h2 tal:content="poc"></h2>
-    <tal:cat tal:repeat="cat python:sorted(categanalyses.get(poc,{}).keys())">
+    <tal:cat tal:repeat="cat python:view.sorted_by_sort_key(categanalyses.get(poc,{}).keys())">
     <table>
         <thead>
             <tr>

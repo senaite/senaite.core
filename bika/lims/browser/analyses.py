@@ -270,6 +270,8 @@ class AnalysesView(BikaListingView):
     def folderitems(self):
         rc = getToolByName(self.context, REFERENCE_CATALOG)
         bsc = getToolByName(self.context, 'bika_setup_catalog')
+        analysis_categories = bsc(portal_type="AnalysisCategory", sort_on="sortable_title")
+        analysis_categories_order = dict([(b.Title, "{:04}".format(a)) for a, b in enumerate(analysis_categories)])
         workflow = getToolByName(self.context, 'portal_workflow')
         mtool = getToolByName(self.context, 'portal_membership')
         checkPermission = mtool.checkPermission
@@ -325,9 +327,10 @@ class AnalysesView(BikaListingView):
 
             if self.show_categories:
                 cat = obj.getService().getCategoryTitle()
+                cat_order = analysis_categories_order.get(cat)
                 items[i]['category'] = cat
-                if cat not in self.categories:
-                    self.categories.append(cat)
+                if (cat, cat_order) not in self.categories:
+                    self.categories.append((cat, cat_order))
 
             # Check for InterimFields attribute on our object,
             interim_fields = hasattr(obj, 'getInterimFields') \
@@ -809,7 +812,10 @@ class AnalysesView(BikaListingView):
                 new_states.append(state)
             self.review_states = new_states
 
-        self.categories.sort()
+        if self.show_categories:
+            self.categories = map(lambda x: x[0], sorted(self.categories, key=lambda x: x[1]))
+        else:
+            self.categories.sort()
 
         # self.json_specs = json.dumps(self.specs)
         self.json_interim_fields = json.dumps(self.interim_fields)

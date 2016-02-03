@@ -950,3 +950,27 @@ country_dic = {
     "TR": [26,"Turkey"],
     "TN": [24,"Tunisia"],
     "GB": [22,"United Kingdom"]}
+
+class SortKeyValidator:
+    """ Check for out of range values.
+    """
+
+    implements(IValidator)
+    name = "SortKeyValidator"
+
+    def __call__(self, value, *args, **kwargs):
+        instance = kwargs['instance']
+        translate = getToolByName(instance, 'translation_service').translate
+        try:
+            value = float(value)
+        except:
+            msg = _("Validation failed: value must be float")
+            return to_utf8(translate(msg))
+
+        if value < 0 or value > 1000:
+            msg = _("Validation failed: value must be between 0 and 1000")
+            return to_utf8(translate(msg))
+
+        return True
+
+validation.register(SortKeyValidator())
