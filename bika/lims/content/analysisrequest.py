@@ -24,6 +24,7 @@ from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.widgets import DateTimeWidget, DecimalWidget
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.browser.widgets import SelectionWidget
+from bika.lims.browser.widgets import RejectionWidget
 from bika.lims.workflow import skip, isBasicTransitionAllowed
 from bika.lims.workflow import doActionFor
 from decimal import Decimal
@@ -574,6 +575,30 @@ schema = BikaSchema.copy() + Schema((
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
             showOn=True,
+        ),
+    ),
+    RecordsField('RejectionReasons',
+        widget = RejectionWidget(
+            label=_("Sample Rejection"),
+            description = _("Set the Sample Rejection workflow and the reasons"),
+            render_own_label=False,
+            visible={'edit': 'visible',
+                     'view': 'visible',
+                     'add': 'edit',
+                     'secondary': 'disabled',
+                     'header_table': 'visible',
+                     'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
+                     'to_be_sampled':     {'view': 'visible', 'edit': 'visible'},
+                     'sampled':           {'view': 'visible', 'edit': 'visible'},
+                     'to_be_preserved':   {'view': 'visible', 'edit': 'visible'},
+                     'sample_due':        {'view': 'visible', 'edit': 'visible'},
+                     'sample_received':   {'view': 'visible', 'edit': 'visible'},
+                     'attachment_due':    {'view': 'visible', 'edit': 'visible'},
+                     'to_be_verified':    {'view': 'visible', 'edit': 'visible'},
+                     'verified':          {'view': 'visible', 'edit': 'visible'},
+                     'published':         {'view': 'visible', 'edit': 'invisible'},
+                     'invalid':           {'view': 'visible', 'edit': 'invisible'},
+                     },
         ),
     ),
     ReferenceField(
