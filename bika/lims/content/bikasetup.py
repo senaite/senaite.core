@@ -625,5 +625,17 @@ class BikaSetup(folder.ATFolder):
         items.sort(lambda x,y: cmp(x[1], y[1]))
         return items
 
+    def isRejectionWorkflowEnabled(self):
+        """Return true if the rejection workflow is enabled (its checkbox is set)
+        """
+        widget = self.getRejectionReasons()
+        # widget will be something like:
+        # [{'checkbox': u'on', 'textfield-2': u'b', 'textfield-1': u'c', 'textfield-0': u'a'}]
+        if len(widget) > 0:
+            checkbox = widget[0].get('checkbox', False)
+            return True if checkbox == 'on' else False
+        else:
+            return False
+
 
 registerType(BikaSetup, PROJECTNAME)
