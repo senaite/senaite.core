@@ -587,6 +587,7 @@ schema = BikaSchema.copy() + Schema((
                      'published':         {'view': 'visible', 'edit': 'invisible'},
                      'invalid':           {'view': 'visible', 'edit': 'invisible'},
                      },
+            visibility_guard="self.context.bika_setup.isRejectionWorkflowEnabled()"
         ),
     ),
     ReferenceField(
