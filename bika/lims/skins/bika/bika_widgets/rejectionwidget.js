@@ -1,44 +1,40 @@
 jQuery(function($){
     $(document).ready(function(){
-        var columns = parseInt($('input#ar_count').attr('value'));
-        for (var i=0;i<columns;i++){
-            hide_show_other(i)
+        var widgets = $('div.RejectionWidget');
+        for (var i=0;i < widgets.length;i++){
+            hide_show_other($(widgets[i]))
+            hide_show_options($(widgets[i]));
         };
-        $('input.rejectionwidget-checkbox-other').bind("change", function () {
-            var column = $(this).closest('td').attr('arnum');
-            hide_show_other(column);
+        $('input.rejectionwidget-checkbox-other').bind("change copy", function () {
+            hide_show_other($(this).closest('div.RejectionWidget'));
         });
-        for (var i=0;i<columns;i++){
-            hide_show_options(i)
-        };
-        $('input.rejectionwidget-checkbox').bind("change", function () {
-            var column = $(this).closest('td').attr('arnum');
-            hide_show_options(column);
+        $('input.rejectionwidget-checkbox').bind("change copy", function () {
+            hide_show_options($(this).closest('div.RejectionWidget'));
         });
     });
 });
 
-function hide_show_options(column) {
+function hide_show_options(div_widget) {
     // Hide/show the rejection options divisions depending on the checkbox status
-    var checkbox = $('td[arnum="'+column+'"] input.rejectionwidget-checkbox').attr('checked');
+    var checkbox = $(div_widget).find('.rejectionwidget-checkbox').attr('checked');
     if (checkbox == "checked") {
         // Showing the options-set
-        $('td[arnum="'+column+'"] div.options-set').show();
+        $(div_widget).find('div.options-set').show();
     }
     else{
         // Hide the options-set
-        $('td[arnum="'+column+'"] div.options-set').hide();
+        $(div_widget).find('div.options-set').hide();
     }
 };
-function hide_show_other(column) {
+function hide_show_other(div_widget) {
     // Hide/show the "other" text field option depending on the checkbox status
-    var checkbox = $('td[arnum="'+column+'"] input.rejectionwidget-checkbox-other').attr('checked');
+    var checkbox = $(div_widget).find('.rejectionwidget-checkbox-other').attr('checked');
     if (checkbox == "checked") {
         // Showing the options-set
-        $('td[arnum="'+column+'"] div.options-set input.rejectionwidget-input-other').show();
+        $(div_widget).find('.rejectionwidget-input-other').show();
     }
     else{
         // Hide the options-set
-        $('td[arnum="'+column+'"] div.options-set input.rejectionwidget-input-other').hide();
+        $(div_widget).find('.rejectionwidget-input-other').hide();
     }
 }
