@@ -155,6 +155,24 @@ function AnalysisRequestAddByCol() {
                 e = $(div).find('[type="hidden"]')[0]
                 $(e).attr('name', $(e).attr('name') + '-' + arnum + ':boolean:default')
             }
+            if ($(div).hasClass('RejectionWidget')) {
+                // chechbox
+                e = $(div).find('input[id="RejectionReasons.checkbox"]')[0]
+                $(e).attr('id', fieldname + '.checkbox-' + arnum)
+                $(e).attr('name', fieldname + '.checkbox-' + arnum)
+                // multiple selection
+                e = $(div).find('select[id="RejectionReasons.multiselection"]')[0]
+                $(e).attr('id', fieldname + '.multiselection-' + arnum)
+                $(e).attr('name', fieldname + '.multiselection-' + arnum)
+                // Other checkbox
+                e = $(div).find('input[id="RejectionReasons.checkbox.other"]')[0]
+                $(e).attr('id', fieldname + '.checkbox.other-' + arnum)
+                $(e).attr('name', fieldname + '.checkbox.other-' + arnum)
+                // Other input
+                e = $(div).find('input[id="RejectionReasons.textfield.other"]')[0]
+                $(e).attr('id', fieldname + '.textfield.other-' + arnum)
+                $(e).attr('name', fieldname + '.textfield.other-' + arnum)
+            }
             // then change the ID of the containing div itself
             $(div).attr('id', 'archetypes-fieldname-' + fieldname + '-' + arnum)
         })
@@ -581,14 +599,49 @@ function AnalysisRequestAddByCol() {
                     $(e).trigger('copy')
                 }
             }
+            // The rejection widget contains different field types
+            else if ($(td1).find('.RejectionWidget').length > 0) {
+                var checkbox = $(td1).find('.rejectionwidget-checkbox').prop('checked');
+                for (var arnum = 1; arnum < nr_ars; arnum++) {
+                    td = $(tr).find('td[arnum="' + arnum + '"]')[0];
+                    e = $(td).find('.rejectionwidget-checkbox')[0];
+                    if (checkbox) {
+                        $(e).attr('checked', true);
+                    }
+                    else {
+                        $(e).removeAttr('checked');
+                    }
+                    $(e).trigger('copy');
+                };
+                var checkbox_other = $(td1).find('.rejectionwidget-checkbox-other').prop('checked');
+                for (var arnum = 1; arnum < nr_ars; arnum++) {
+                    td = $(tr).find('td[arnum="' + arnum + '"]')[0];
+                    e = $(td).find('.rejectionwidget-checkbox-other')[0];
+                    if (checkbox_other) {
+                        $(e).attr('checked', true);
+                    }
+                    else {
+                        $(e).removeAttr('checked');
+                    }
+                    $(e).trigger('copy');
+                };
+                var input_other = $(td1).find('.rejectionwidget-input-other').val();
+                for (var arnum = 1; arnum < nr_ars; arnum++) {
+                    td = $(tr).find('td[arnum="' + arnum + '"]')[0];
+                    e = $(td).find('.rejectionwidget-input-other')[0];
+                    $(e).val(input_other);
+                    $(e).trigger('copy');
+                };
+                var multiselect = $(td1).find('.rejectionwidget-multiselect');
+            }
             // select element
             else if ($(td1).find('select').length > 0) {
-                var val1 = $(td1).find('select').val()
+                var input = $(td1).find('.rejectionwidget-input-other').val();
                 for (var arnum = 1; arnum < nr_ars; arnum++) {
-                    td = $(tr).find('td[arnum="' + arnum + '"]')[0]
-                    e = $(td).find('select')[0]
-                    $(e).val(val1)
-                    $(e).trigger('copy')
+                    td = $(tr).find('td[arnum="' + arnum + '"]')[0];
+                    e = $(td).find('.rejectionwidget-input-other')[0];
+                    $(e).val(input);
+                    $(e).trigger('copy');
                 }
             }
             // text input

@@ -17,37 +17,47 @@
                  class="formHelp"
                  tal:content="python:widget.Description(here)"></span>
         </label>
-        <!-- Checkbox -->
-        <input type="checkbox"
-            class="rejectionwidget-checkbox"
-            tal:attributes="
-                name string:${fieldName}.checkbox:records:ignore_empty;
-                id string:${fieldName}-checkbox;"/>
-        <!-- Options set multiselect list + others checkbox and inputs -->
-        <div class="options-set" id="options-set">
-            <!-- multi-select selection -->
-            <select tal:define="list python:widget.rejectionOptionsList();"
-                multiple="multiple"
+        <div id="archetypes-fieldname-RejectionWidget"
+            class="field RejectionWidget ">
+            <!-- Checkbox -->
+            <input type="checkbox"
                 tal:attributes="
-                    name string:${fieldName}:records:list;
-                    id string:${fieldName};">
-                <option
-                    tal:repeat="item list"
+                    name string:${fieldName}.checkbox:records;
+                    id string:${fieldName}.checkbox;"
+                class="rejectionwidget-checkbox"/>
+            <!-- Options set multiselect list + others checkbox and inputs -->
+            <div class="options-set" id="options-set">
+                <!-- multi-select selection -->
+                <select tal:define="list python:widget.rejectionOptionsList();"
+                    multiple="multiple"
                     tal:attributes="
-                        value python:item;"
-                    tal:content="python: item"
-                    i18n:translate=""/>
-            </select>
-            <!-- Other Checkbox -->
-            <label i18n:translate="">
-                <input type="checkbox"
-                class="rejectionwidget-checkbox-other"/>
-                Other
-            </label>
-            <input type="text"
-                class="rejectionwidget-input-other"
-                size="20"
-                tabindex="#"/>
+                        name string:${fieldName}.multiselection:records:list;
+                        id string:${fieldName}.multiselection;"
+                        class="rejectionwidget-multiselect">
+                    <option
+                        tal:repeat="item list"
+                        tal:attributes="
+                            value python:item;"
+                        tal:content="python: item"
+                        i18n:translate=""/>
+                </select>
+                <!-- Other Checkbox -->
+                <label i18n:translate="">
+                    <input type="checkbox"
+                        tal:attributes="
+                            name string:${fieldName}.checkbox.other:records;
+                            id string:${fieldName}.checkbox.other;"
+                        class="rejectionwidget-checkbox-other"/>
+                    Other
+                </label>
+                <input type="text"
+                    tal:attributes="
+                        name string:${fieldName}.textfield.other:records;
+                        id string:${fieldName}.textfield.other;"
+                    size="20"
+                    tabindex="#"
+                    class="rejectionwidget-input-other"/>
+            </div>
         </div>
     </metal:define>
     <div metal:define-macro="search">
