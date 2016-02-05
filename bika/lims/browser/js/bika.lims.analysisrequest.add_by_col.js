@@ -632,7 +632,17 @@ function AnalysisRequestAddByCol() {
                     $(e).val(input_other);
                     $(e).trigger('copy');
                 };
-                var multiselect = $(td1).find('.rejectionwidget-multiselect');
+                var select_options = $(td1).find('.rejectionwidget-multiselect').find('option');
+                for (var i=0;select_options.length>i; i++){
+                    var option = select_options[i];
+                    var value = $(option).val();
+                    var selected = option.selected;
+                    for (var arnum = 1; arnum < nr_ars; arnum++) {
+                        td = $(tr).find('td[arnum="' + arnum + '"]')[0];
+                        e = $(td).find('.rejectionwidget-multiselect option[value="' + value + '"]');
+                        $(e).attr('selected', selected);
+                    };
+                }
             }
             // select element
             else if ($(td1).find('select').length > 0) {
