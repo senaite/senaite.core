@@ -117,8 +117,11 @@ class BatchFolderContentsView(BikaListingView):
             items[x]['Title'] = title
             items[x]['replace']['Title'] = "<a href='%s/%s'>%s</a>" % (items[x]['url'], 'analysisrequests', title)
 
-            items[x]['Client'] = obj.getClient().Title()
-            items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % ( obj.getClient().absolute_url(), obj.getClient().Title())
+            if obj.getClient():
+                items[x]['Client'] = obj.getClient().Title()
+                items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % ( obj.getClient().absolute_url(), obj.getClient().Title())
+            else
+                items[x]['Client'] = ''
 
             date = obj.Schema().getField('BatchDate').get(obj)
             if callable(date):

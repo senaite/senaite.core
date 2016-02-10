@@ -87,15 +87,21 @@ class InvoiceBatchInvoicesView(BikaListingView):
                 item['url'], obj.getId()
             )
             item['replace']['id'] = number_link
-            item['client'] = obj.getClient().Title()
-            item['replace']['client'] = "<a href='%s'>%s</a>" % (
-                obj.getClient().absolute_url(), obj.getClient().Title()
-            )
-            item['email'] = obj.getClient().getEmailAddress()
-            item['replace']['email'] = "<a href='%s'>%s</a>" % (
-                'mailto:%s' % obj.getClient().getEmailAddress(), obj.getClient().getEmailAddress()
-            )
-            item['phone'] = obj.getClient().getPhone()
+            
+            if obj.getCllient():
+                item['client'] = obj.getClient().Title()
+                item['replace']['client'] = "<a href='%s'>%s</a>" % (
+                    obj.getClient().absolute_url(), obj.getClient().Title()
+                )
+
+                item['email'] = obj.getClient().getEmailAddress()
+                item['replace']['email'] = "<a href='%s'>%s</a>" % (
+                    'mailto:%s' % obj.getClient().getEmailAddress(), obj.getClient().getEmailAddress()
+                )
+                item['phone'] = obj.getClient().getPhone()
+            else:
+                item['client'] = ''
+            
             item['invoicedate'] = self.ulocalized_time(obj.getInvoiceDate())
             item['startdate'] = self.ulocalized_time(obj.getBatchStartDate())
             item['enddate'] = self.ulocalized_time(obj.getBatchEndDate())
