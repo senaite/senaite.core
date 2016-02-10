@@ -45,6 +45,7 @@ function AnalysisRequestAddByCol() {
          */
         checkbox_change()
         referencewidget_change()
+        rejectionwidget_change();
         select_element_change()
         textinput_change()
         copybutton_selected()
@@ -485,6 +486,7 @@ function AnalysisRequestAddByCol() {
          * The checkboxes used to select analyses are handled separately.
          */
         $('tr[fieldname] input[type="checkbox"]')
+            .not('[class^="rejectionwidget-checkbox"]')
             .live('change copy', function () {
                 checkbox_change_handler(this)
             })
@@ -527,6 +529,52 @@ function AnalysisRequestAddByCol() {
             })
     }
 
+    function rejectionwidget_change_handler(element, item) {
+        // It goes to the upper element of the widget and gets all the values
+        // to be soted in state variable
+        var td = $(element).closest('td');
+        // Init variables
+        var ch_val=false,multi_val = [],other_ch_val=false,other_val='',option;
+        // Getting each value deppending on the checkbox status
+        ch_val = $(td).find('.rejectionwidget-checkbox').prop('checked');
+        if (ch_val){
+            // Getting the selected options and adding a the list
+            var selected_options = $(td).find('.rejectionwidget-multiselect').find('option');
+            for (var i=0;selected_options.length>i; i++){
+                option = selected_options[i];
+                if (option.selected){
+                    multi_val.push($(option).val());
+                }
+            };
+            other_ch_val = $(td).find('.rejectionwidget-checkbox-other').prop('checked');
+            if (other_ch_val){
+                other_val = $(td).find('.rejectionwidget-input-other').val();
+            }
+        };
+        // Gathering all values and writting them to the "global" variable state
+        var rej_widget_state = {
+            checkbox:ch_val,
+            selected:multi_val,
+            checkbox_other:other_ch_val,
+            other:other_val
+        };
+        var fieldname = $(element).parents('[fieldname]').attr('fieldname');
+        var arnum = get_arnum(element);
+        state_set(arnum, fieldname, rej_widget_state);
+    };
+
+    function rejectionwidget_change() {
+        // Deals with the changes in rejection widgets and register the values to
+        // the state variable as a dictionary.
+        $('tr[fieldname] input.rejectionwidget-checkbox,' +
+        'tr[fieldname] select.rejectionwidget-multiselect,' +
+        'tr[fieldname] input.rejectionwidget-checkbox-other,' +
+        'tr[fieldname] input.rejectionwidget-input-other')
+            .live('change copy select', function (event, item) {
+                rejectionwidget_change_handler(this, item)
+            })
+    };
+
     function select_element_change_handler(element) {
         var arnum = get_arnum(element)
         var fieldname = $(element).parents('[fieldname]').attr('fieldname')
@@ -538,6 +586,7 @@ function AnalysisRequestAddByCol() {
         /* Generic state-setter for SELECT inputs
          */
         $('tr[fieldname] select')
+            .not('[class^="rejectionwidget-multiselect"]')
             .live('change copy', function (event, item) {
                 select_element_change_handler(this)
             })
@@ -558,6 +607,7 @@ function AnalysisRequestAddByCol() {
         /* Generic state-setter for SELECT inputs
          */
         $('tr[fieldname] input[type="text"]')
+            .not('[class^="rejectionwidget-input"]')
             .not("#singleservice")
             .not(".referencewidget")
             .live('change copy', function () {
@@ -641,6 +691,7 @@ function AnalysisRequestAddByCol() {
                         td = $(tr).find('td[arnum="' + arnum + '"]')[0];
                         e = $(td).find('.rejectionwidget-multiselect option[value="' + value + '"]');
                         $(e).attr('selected', selected);
+                        $(td).find('select.rejectionwidget-multiselect').trigger('copy');
                     };
                 }
             }
@@ -2409,7 +2460,7 @@ function AnalysisRequestAddByCol() {
                    }
                })
         // other field values which are handled similarly:
-        $.each($('td[arnum] input[type="text"], td[arnum] input.referencewidget'),
+        $.each($('td[arnum] input[type="text"], td[arnum] input.referencewidget').not('[class^="rejectionwidget-input"]'),
                function (i, e) {
                    var arnum = $(e).parents("[arnum]").attr("arnum")
                    var fieldname = $(e).parents("[fieldname]").attr("fieldname")
@@ -2419,7 +2470,7 @@ function AnalysisRequestAddByCol() {
                    state_set(arnum, fieldname, value)
                })
         // checkboxes inside ar_add_widget table.
-        $.each($('[ar_add_ar_widget] input[type="checkbox"]'),
+        $.each($('[ar_add_ar_widget] input[type="checkbox"]').not('[class^="rejectionwidget-checkbox"]'),
                function (i, e) {
                    var arnum = get_arnum(e)
                    var fieldname = $(e).parents("[fieldname]").attr("fieldname")
@@ -2427,7 +2478,7 @@ function AnalysisRequestAddByCol() {
                    state_set(arnum, fieldname, value)
                })
         // select widget values
-        $.each($('td[arnum] select'),
+        $.each($('td[arnum] select').not('[class^="rejectionwidget-multiselect"]'),
                function (i, e) {
                    var arnum = get_arnum(e)
                    var fieldname = $(e).parents("[fieldname]").attr("fieldname")
