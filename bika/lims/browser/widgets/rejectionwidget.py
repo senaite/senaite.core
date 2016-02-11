@@ -41,6 +41,28 @@ class RejectionWidget(TypesWidget):
             items.append(reject_reasons[key])
         return items
 
+    def isRejectionEnabled(self, d):
+        """
+        'd' is a dictionary with the stored data in the widget like:
+        {u'selected': [u'a', u'b'], u'checkbox': True, u'other': 'dsadas', u'checkbox_other': True}
+        Return whether the checkbox of the widget is enabled or not
+        """
+        return d['checkbox'] if 'checkbox' in d.keys() else False
+
+    def getRejectionReasons(self,d):
+        """
+        'd' is a dictionary with the stored data in the widget like:
+        {u'selected': [u'a', u'b'], u'checkbox': True, u'other': 'dsadas', u'checkbox_other': True}
+        Returns a string with the options both from selected and input items
+        """
+        keys = d.keys()
+        reasons = []
+        if 'selected' in keys:
+            reasons += d['selected']
+        if 'other' in keys:
+            reasons.append(d['other'])
+        return ', '.join(reasons)
+
 registerWidget(RejectionWidget,
                title = "Rejection Widget",
                description = ('Widget to choose rejection reasons and set the rejection workflow'),
