@@ -101,6 +101,8 @@ class InvoiceBatchInvoicesView(BikaListingView):
                 item['phone'] = obj.getClient().getPhone()
             else:
                 item['client'] = ''
+                item['email'] = ''
+                item['phone'] = ''
             
             item['invoicedate'] = self.ulocalized_time(obj.getInvoiceDate())
             item['startdate'] = self.ulocalized_time(obj.getBatchStartDate())
