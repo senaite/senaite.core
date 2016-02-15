@@ -34,7 +34,7 @@ BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit Sample,N,N,Y,Y,N,N,N,N,Y,Y,N,Y
 BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Receive Sample,N,N,N,N,N,N,N,N,N,N,N,N
-"BIKA: Sample Sample",N,N,Y,N,N,N,N,N,N,Y,N,Y
+BIKA: Sample Sample,N,N,Y,N,N,N,N,N,N,Y,N,Y
 View,N,N,Y,Y,N,N,N,Y,Y,Y,N,Y
 Modify portal content,N,N,Y,Y,N,N,N,Y,Y,Y,N,N
 ,,,,,,,,,,,,
@@ -135,6 +135,15 @@ BIKA: Receive Sample,N,N,N,N,N,N,N,N,N,N,N,N
 View,N,N,Y,N,N,N,N,N,N,Y,N,N
 Modify portal content,N,N,Y,N,N,N,N,N,N,Y,N,N
 ,,,,,,,,,,,,
+[State],,,,,,,,,,,,
+Id:,rejected,,,,,,,,,,,
+Title:,rejected,,,,,,,,,,,
+Description:,,,,,,,,,,,,
+Transitions,,,,,,,,,,,,
+Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler
+View,N,N,Y,Y,N,N,N,Y,Y,Y,N,Y
+Modify portal content,N,N,Y,Y,N,N,N,Y,Y,Y,N,N
+,,,,,,,,,,,,
 [Transition],,,,,,,,,,,,
 Id:,auto_no_preservation_required,,,,,,,,,,,
 Title:,,,,,,,,,,,,
@@ -228,6 +237,13 @@ Id:,to_be_preserved,,,,,,,,,,,
 Title:,,,,,,,,,,,,
 Description:,to_be_preserved,,,,,,,,,,,
 Target state:,to_be_preserved,,,,,,,,,,,
+Trigger:,User,,,,,,,,,,,
+,,,,,,,,,,,,
+[Transition],,,,,,,,,,,,
+Id:,reject,,,,,,,,,,,
+Title:,,,,,,,,,,,,
+Description:,reject,,,,,,,,,,,
+Target state:,rejected,,,,,,,,,,,
 Trigger:,User,,,,,,,,,,,
 ,,,,,,,,,,,,
 [Transition],,,,,,,,,,,,
