@@ -88,7 +88,7 @@ class InvoiceBatchInvoicesView(BikaListingView):
             )
             item['replace']['id'] = number_link
             
-            if obj.getCllient():
+            if obj.getClient():
                 item['client'] = obj.getClient().Title()
                 item['replace']['client'] = "<a href='%s'>%s</a>" % (
                     obj.getClient().absolute_url(), obj.getClient().Title()
