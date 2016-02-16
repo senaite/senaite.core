@@ -247,7 +247,7 @@ BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Results not requested,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit AR Contact,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,N,N
-Modify portal content,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N
+Modify portal content,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,,,,,
 [Transition],,,,,,,,,,,,,,
 Id:,attach,,,,,,,,,,,,,
