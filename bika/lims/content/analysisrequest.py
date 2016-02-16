@@ -2520,5 +2520,16 @@ class AnalysisRequest(BaseFolder):
         for analysis in analyses:
             doActionFor(analysis.getObject(), 'cancel')
 
+    def workflow_script_reject(self):
+        workflow = getToolByName(self, 'portal_workflow')
+        sample = self.getSample()
+        self.reindexObject(idxs=["review_state", ])
+        import pdb; pdb.set_trace()
+        if workflow.getInfoFor(sample, 'review_state') != 'rejected':
+            workflow.doActionFor(sample, "reject")
+        # deactivate all analyses in this AR.
+        analyses = self.getAnalyses()
+        for analysis in analyses:
+            doActionFor(analysis.getObject(), 'reject')
 
 atapi.registerType(AnalysisRequest, PROJECTNAME)
