@@ -3,7 +3,9 @@
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t, getUsers
+from Products.ATExtensions.field import RecordsField
 from bika.lims.browser.widgets.datetimewidget import DateTimeWidget
+from bika.lims.browser.widgets import RejectionWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import ISample
@@ -527,6 +529,32 @@ schema = BikaSchema.copy() + Schema((
             append_only=True,
         ),
     ),
+    RecordsField('RejectionReasons',
+        widget = RejectionWidget(
+            label=_("Sample Rejection"),
+            description = _("Set the Sample Rejection workflow and the reasons"),
+            render_own_label=False,
+            visible={'edit': 'invisible',
+                     'view': 'visible',
+                     'add': 'edit',
+                     'secondary': 'disabled',
+                     'header_table': 'visible',
+                     'sample_registered': {'view': 'invisible', 'edit': 'invisible', 'add': 'edit'},
+                     'to_be_sampled':     {'view': 'invisible', 'edit': 'invisible'},
+                     'sampled':           {'view': 'invisible', 'edit': 'invisible'},
+                     'to_be_preserved':   {'view': 'invisible', 'edit': 'invisible'},
+                     'sample_due':        {'view': 'invisible', 'edit': 'invisible'},
+                     'sample_received':   {'view': 'invisible', 'edit': 'invisible'},
+                     'attachment_due':    {'view': 'invisible', 'edit': 'invisible'},
+                     'to_be_verified':    {'view': 'invisible', 'edit': 'invisible'},
+                     'verified':          {'view': 'invisible', 'edit': 'invisible'},
+                     'published':         {'view': 'invisible', 'edit': 'invisible'},
+                     'invalid':           {'view': 'invisible', 'edit': 'invisible'},
+                     'rejected':          {'view': 'visible', 'edit': 'invisible'},
+                     },
+            visibility_guard="self.context.bika_setup.isRejectionWorkflowEnabled()"
+        ),
+    ),
     ###ComputedField('Priority',
     ###    expression = 'context.getPriority() or None',
     ###    widget = ComputedWidget(
@@ -858,6 +886,8 @@ class Sample(BaseFolder, HistoryAwareMixin):
         workflow = getToolByName(self, 'portal_workflow')
         for ar in self.getAnalysisRequests():
             if workflow.getInfoFor(ar, 'review_state') != 'rejected':
+                # Setting the rejection reasons in ar
+                ar.setRejectionReasons(self.getRejectionReasons())
                 workflow.doActionFor(ar, "reject")
         parts = self.objectValues('SamplePartition')
         for part in parts:
@@ -872,7 +902,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
         # Can't do anything to the object if it's cancelled
         if not isBasicTransitionAllowed(self):
             return False
-        # check if any related ARs have field analyses with no result.
+        # check if any related ARs have fields analyses with no result.
         for ar in self.getAnalysisRequests():
             field_analyses = ar.getAnalyses(getPointOfCapture='field',
                                             full_objects=True)
