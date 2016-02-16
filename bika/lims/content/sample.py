@@ -894,7 +894,6 @@ class Sample(BaseFolder, HistoryAwareMixin):
 
     def workflow_script_reject(self):
         workflow = getToolByName(self, 'portal_workflow')
-        import pdb; pdb.set_trace()
         for ar in self.getAnalysisRequests():
             if workflow.getInfoFor(ar, 'review_state') != 'rejected':
                 workflow.doActionFor(ar, "reject")

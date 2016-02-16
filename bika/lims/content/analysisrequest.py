@@ -2634,7 +2634,6 @@ class AnalysisRequest(BaseFolder):
         workflow = getToolByName(self, 'portal_workflow')
         sample = self.getSample()
         self.reindexObject(idxs=["review_state", ])
-        import pdb; pdb.set_trace()
         if workflow.getInfoFor(sample, 'review_state') != 'rejected':
             workflow.doActionFor(sample, "reject")
         # deactivate all analyses in this AR.

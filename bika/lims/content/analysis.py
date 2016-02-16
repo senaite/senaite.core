@@ -1396,7 +1396,6 @@ class Analysis(BaseContent):
         # DuplicateAnalysis doesn't have analysis_workflow.
         if self.portal_type == "DuplicateAnalysis":
             return
-        import pdb; pdb.set_trace()
         workflow = getToolByName(self, "portal_workflow")
         self.reindexObject(idxs=["orksheetanalysis_review_state", ])
         self.reindexObject(idxs=["review_state", ])
