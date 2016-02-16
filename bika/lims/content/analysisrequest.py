@@ -2635,6 +2635,8 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         self.reindexObject(idxs=["review_state", ])
         if workflow.getInfoFor(sample, 'review_state') != 'rejected':
+            # Setting the rejection reasons in sample
+            sample.setRejectionReasons(self.getRejectionReasons())
             workflow.doActionFor(sample, "reject")
         # deactivate all analyses in this AR.
         analyses = self.getAnalyses()
