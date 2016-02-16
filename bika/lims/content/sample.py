@@ -875,6 +875,17 @@ class Sample(BaseFolder, HistoryAwareMixin):
                 if ar_state == 'active':
                     workflow.doActionFor(ar, 'cancel')
 
+    def workflow_script_reject(self):
+        workflow = getToolByName(self, 'portal_workflow')
+        import pdb; pdb.set_trace()
+        for ar in self.getAnalysisRequests():
+            if workflow.getInfoFor(ar, 'review_state') != 'rejected':
+                workflow.doActionFor(ar, "reject")
+        parts = self.objectValues('SamplePartition')
+        for part in parts:
+            if workflow.getInfoFor(part, 'review_state') != 'rejected':
+                workflow.doActionFor(part, "reject")
+
     def guard_receive_transition(self):
         """Prevent the receive transition from being available:
         - if object is cancelled

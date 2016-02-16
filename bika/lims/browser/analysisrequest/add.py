@@ -639,6 +639,10 @@ def create_analysisrequest(context, request, values):
                 state = workflow.getInfoFor(part, 'review_state')
                 if state == 'to_be_preserved':
                     workflow.doActionFor(part, 'preserve')
-
+    # Once the ar is fully created, check if there are rejection reasons
+    reject_field = values.get('RejectionReasons', '')
+    import pdb; pdb.set_trace()
+    if reject_field and reject_field.get('checkbox', False):
+        doActionFor(ar, 'reject')
     # Return the newly created Analysis Request
     return ar
