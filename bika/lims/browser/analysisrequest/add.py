@@ -641,7 +641,6 @@ def create_analysisrequest(context, request, values):
                     workflow.doActionFor(part, 'preserve')
     # Once the ar is fully created, check if there are rejection reasons
     reject_field = values.get('RejectionReasons', '')
-    import pdb; pdb.set_trace()
     if reject_field and reject_field.get('checkbox', False):
         doActionFor(ar, 'reject')
     # Return the newly created Analysis Request
