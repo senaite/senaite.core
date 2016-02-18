@@ -1193,4 +1193,39 @@ body.template-ar_add table.listing.analysisrequest.add {
 body.template-ar_add table.th.column {
     text-align:center;
 }
+
+div#semioverlay {
+    display:none;
+    position:absolute;
+    top:0;
+    bottom:0;
+    left:0;
+    right:0;
+    z-index:1000;
+    background-color:#ffffff;
+    opacity:0.8;
+    padding-top:10%;
+    text-align:center;
+}
+
+div#semioverlay div.semioverlay-content {
+    background-color: #efefef;
+    border-image: none;
+    border-radius: 5px 5px 0 0;
+    border: 1px solid #999;
+    border-width:1px 1px 0 1px;
+    box-shadow: 1px 2px 2px 1px #dcdcdc;
+    margin: 0 25%;
+    padding: 20px;
+}
+div#semioverlay div.semioverlay-buttons {
+    background-color: #efefef;
+    border-image: none;
+    border-radius: 0px 0px 5px 5px;
+    border: 1px solid #999;
+    border-width:0px 1px 1px 1px;
+    box-shadow: 1px 2px 2px 1px #dcdcdc;
+    margin: 0 25%;
+    padding: 20px;
+}
 </dtml-with>
