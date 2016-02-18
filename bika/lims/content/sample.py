@@ -564,18 +564,18 @@ schema = BikaSchema.copy() + Schema((
                      'add': 'edit',
                      'secondary': 'disabled',
                      'header_table': 'visible',
-                     'sample_registered': {'view': 'invisible', 'edit': 'invisible', 'add': 'edit'},
-                     'to_be_sampled':     {'view': 'invisible', 'edit': 'invisible'},
-                     'sampled':           {'view': 'invisible', 'edit': 'invisible'},
-                     'to_be_preserved':   {'view': 'invisible', 'edit': 'invisible'},
-                     'sample_due':        {'view': 'invisible', 'edit': 'invisible'},
-                     'sample_received':   {'view': 'invisible', 'edit': 'invisible'},
-                     'attachment_due':    {'view': 'invisible', 'edit': 'invisible'},
-                     'to_be_verified':    {'view': 'invisible', 'edit': 'invisible'},
-                     'verified':          {'view': 'invisible', 'edit': 'invisible'},
-                     'published':         {'view': 'invisible', 'edit': 'invisible'},
-                     'invalid':           {'view': 'invisible', 'edit': 'invisible'},
-                     'rejected':          {'view': 'visible', 'edit': 'invisible'},
+                     'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
+                     'to_be_sampled':     {'view': 'visible', 'edit': 'visible'},
+                     'sampled':           {'view': 'visible', 'edit': 'visible'},
+                     'to_be_preserved':   {'view': 'visible', 'edit': 'visible'},
+                     'sample_due':        {'view': 'visible', 'edit': 'visible'},
+                     'sample_received':   {'view': 'visible', 'edit': 'visible'},
+                     'attachment_due':    {'view': 'visible', 'edit': 'visible'},
+                     'to_be_verified':    {'view': 'visible', 'edit': 'visible'},
+                     'verified':          {'view': 'visible', 'edit': 'visible'},
+                     'published':         {'view': 'visible', 'edit': 'visible'},
+                     'invalid':           {'view': 'visible', 'edit': 'visible'},
+                     'rejected':          {'view': 'visible', 'edit': 'visible'},
                      },
             visibility_guard="self.context.bika_setup.isRejectionWorkflowEnabled()"
         ),
@@ -793,6 +793,12 @@ class Sample(BaseFolder, HistoryAwareMixin):
         except:
             return 0
         return last_ar_number
+
+    def getSampleState(self):
+        """Returns the sample veiew_state
+        """
+        workflow = getToolByName(self, 'portal_workflow')
+        return workflow.getInfoFor(self, 'review_state')
 
     def getPreparationWorkflows(self):
         """Return a list of sample preparation workflows.  These are identified
