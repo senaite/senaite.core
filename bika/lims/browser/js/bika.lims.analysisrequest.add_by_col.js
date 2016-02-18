@@ -531,14 +531,14 @@ function AnalysisRequestAddByCol() {
 
     function rejectionwidget_change_handler(element, item) {
         // It goes to the upper element of the widget and gets all the values
-        // to be soted in state variable
+        // to be stored in the state variable
         var td = $(element).closest('td');
         // Init variables
         var ch_val=false,multi_val = [],other_ch_val=false,other_val='',option;
         // Getting each value deppending on the checkbox status
         ch_val = $(td).find('.rejectionwidget-checkbox').prop('checked');
         if (ch_val){
-            // Getting the selected options and adding a the list
+            // Getting the selected options and adding them to the list
             var selected_options = $(td).find('.rejectionwidget-multiselect').find('option');
             for (var i=0;selected_options.length>i; i++){
                 option = selected_options[i];

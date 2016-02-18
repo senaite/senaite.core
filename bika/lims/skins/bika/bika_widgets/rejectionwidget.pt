@@ -10,7 +10,7 @@
         </span>
         <span tal:condition="python: widget.isRejectionEnabled(dict)"
             tal:content="python:widget.getRejectionReasons(dict)">
-            Yes
+            Yes, unknown
         </span>
     </metal:view_macro>
 
@@ -34,7 +34,7 @@
                 tal:attributes="
                     name string:${fieldName}.checkbox:records;
                     id string:${fieldName}.checkbox;"
-                class="rejectionwidget-checkbox"/>
+                class="rejectionwidget-checkbox rejectionwidget-field"/>
             <!-- Options set multiselect list + others checkbox and inputs -->
             <div class="options-set" id="options-set">
                 <!-- multi-select selection -->
@@ -43,7 +43,7 @@
                     tal:attributes="
                         name string:${fieldName}.multiselection:records:list;
                         id string:${fieldName}.multiselection;"
-                        class="rejectionwidget-multiselect">
+                        class="rejectionwidget-multiselect rejectionwidget-field">
                     <option
                         tal:repeat="item list"
                         tal:attributes="
@@ -57,7 +57,7 @@
                         tal:attributes="
                             name string:${fieldName}.checkbox.other:records;
                             id string:${fieldName}.checkbox.other;"
-                        class="rejectionwidget-checkbox-other"/>
+                        class="rejectionwidget-checkbox-other rejectionwidget-field"/>
                     Other
                 </label>
                 <input type="text"
@@ -66,7 +66,7 @@
                         id string:${fieldName}.textfield.other;"
                     size="20"
                     tabindex="#"
-                    class="rejectionwidget-input-other"/>
+                    class="rejectionwidget-input-other rejectionwidget-field"/>
             </div>
         </div>
     </metal:define>

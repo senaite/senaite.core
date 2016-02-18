@@ -77,9 +77,129 @@ function AnalysisRequestViewView() {
                     }
                 }
             });
-        }
+        };
+        reject_widget_semioverlay_setup();
 
-    }
+    };
+
+    function reject_widget_semioverlay_setup() {
+        "use strict"
+        /*This function creates a hidden div element to insert the rejection
+          widget there while the analysis request state is not rejected yet.
+          So we can overlay the widget when the user clicks on the reject button.
+        */
+        if($('div#archetypes-fieldname-RejectionWidget').length > 0){
+            // binding a new click action to state's rejection button
+            $("a#workflow-transition-reject").unbind();
+            $("a#workflow-transition-reject").click(function(e){
+                // Overlays the rejection widget when the user tryes to reject the ar and
+                // defines all the ovelay functionalities
+                e.preventDefault();
+                $('#semioverlay').fadeIn(500);
+                $('input[id="RejectionReasons.checkbox"]').click().prop('disabled', true);
+            });
+            // Getting widget's td and label
+            var td = $('#archetypes-fieldname-RejectionWidget').parent('td');
+            var label = $(td).prev('td');
+            // Creating the div element
+            $('#content').prepend("<div id='semioverlay'><div class='semioverlay-content'></div><div class='semioverlay-buttons'><input type='button' name='semioverlay.reject' value='reject'/><input type='button' name='semioverlay.cancel' value='cancel'/></div></div>");
+            // Moving the widget there
+            $('#archetypes-fieldname-RejectionWidget').detach().prependTo('#semioverlay .semioverlay-content');
+            // hidding the widget's td and moving the label
+            $(td).hide();
+            $(label).detach().prependTo('.semioverlay-content');
+            // binding close actions
+            $("div#semioverlay input[name='semioverlay.cancel']").bind('click',
+                function(){
+                $('#semioverlay').fadeOut(500);
+                // Clear all data fields
+                $('input[id="RejectionReasons.checkbox"]').prop('checked', false).prop('disabled', false);
+                $('input[id="RejectionReasons.checkbox.other"]').prop('checked', false);
+                $('input[id="RejectionReasons.textfield.other"]').val('');
+                var options = $('.rejectionwidget-multiselect').find('option');
+                for (var i=0;options.length>i; i++){
+                    $(options[i]).attr('selected',false);
+                };
+            });
+            // binding reject actions
+            $("div#semioverlay input[name='semioverlay.reject']").bind('click',function(){
+                reject_ar();
+            });
+        }
+    };
+
+    function getRejectionWidgetValues(){
+        "use strict"
+        // Retuns the rejection reason widget's values in JSON format to
+        // be used in jsonapi's update function
+        var ch_val=0,multi_val = [],other_ch_val=0,other_val='',option;
+        ch_val = $('.rejectionwidget-checkbox').prop('checked');
+        if (ch_val){
+            ch_val=1;
+            var selected_options = $('.rejectionwidget-multiselect').find('option');
+            for (var i=0;selected_options.length>i; i++){
+                option = selected_options[i];
+                if (option.selected){
+                    multi_val.push($(option).val());
+                }
+            };
+            other_ch_val = $('.rejectionwidget-checkbox-other').prop('checked');
+            if (other_ch_val){
+                other_ch_val = 1
+                other_val = $('.rejectionwidget-input-other').val();
+            }
+            else{other_ch_val=0;};
+        };
+        // Gathering all values
+        var rej_widget_state = {
+            checkbox:ch_val,
+            selected:multi_val,
+            checkbox_other:other_ch_val,
+            other:other_val
+        };
+        return $.toJSON(rej_widget_state);
+    };
+
+    function reject_ar(){
+        "use strict"
+        // Makes all the steps needed to reject the ar
+        var requestdata = {}
+        //save the rejection widget's values
+        var ar_id =  window.location.href.split("/")[-1];
+        var url = window.location.href.replace('/base_view', '');
+        var obj_path = url.replace(window.portal_url, '');
+        var ar = $.trim($('.documentFirstHeading').text());
+        var redirect_state = $("a#workflow-transition-reject").attr('href');
+        // requestdata should has the format  {fieldname=fieldvalue}
+        requestdata['obj_path']= obj_path;
+        //fieldvalue data will be something like:
+        // [{'checkbox': u'on', 'textfield-2': u'b', 'textfield-1': u'c', 'textfield-0': u'a'}]
+        var fieldvalue = getRejectionWidgetValues();
+        requestdata['RejectionReasons'] = fieldvalue;
+        $.ajax({
+            type: "POST",
+            url: window.portal_url+"/@@API/update",
+            data: requestdata
+        })
+        .done(function(data) {
+            //trigger reject workflow action
+            if (data != null && data['success'] == true) {
+                bika.lims.SiteView.notificationPanel('Rejecting', "succeed");
+                window.location.href = redirect_state;
+            } else {
+                bika.lims.SiteView.notificationPanel('Error while rejection the analysis request', 'error');
+                var msg = '[bika.lims.analysisrequest.js] Error while rejection the analysis request';
+                console.warn(msg);
+                window.bika.lims.error(msg);
+            }
+        })
+        .fail(function(){
+            bika.lims.SiteView.notificationPanel('Error while rejection the analysis request','error');
+            var msg = '[bika.lims.analysisrequest.js] Error while rejection the analysis request';
+            console.warn(msg);
+            window.bika.lims.error(msg);
+        });
+    };
 
     function resultsinterpretation_move_below(){
         // By default show only the Results Interpretation for the whole AR, not Dept specific
@@ -154,14 +274,14 @@ function AnalysisRequestViewView() {
          * Set an event for each input field in the AR header. After write something in the input field and
          * focus out it, the event automatically saves the change.
          */
-        $("table.header_table input").not('[attr="referencewidget"').not('[type="hidden"]').each(function(i){
+        $("table.header_table input").not('[attr="referencewidget"').not('[type="hidden"]').not('.rejectionwidget-field').each(function(i){
             // Save input fields
             $(this).change(function () {
                 var pointer = this;
                 build_typical_save_request(pointer);
             });
         });
-        $("table.header_table select").not('[type="hidden"]').each(function(i) {
+        $("table.header_table select").not('[type="hidden"]').not('.rejectionwidget-field').each(function(i) {
             // Save select fields
             $(this).change(function () {
                 var pointer = this;
