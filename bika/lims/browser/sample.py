@@ -791,6 +791,8 @@ class doActionForSample(object):
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         action = self.request.get('workflow_action', '')
+        if action == 'reject' and not self.context.bika_setup.isRejectionWorkflowEnabled():
+            return json.dumps({"error":"true"})
         if action:
             doActionFor(self.context, action)
             return json.dumps({"success":"true"})
