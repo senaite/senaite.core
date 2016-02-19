@@ -134,6 +134,7 @@
                             var msg = '[bika.lims.analysisrequest.js] Error while updating object state';
                             console.warn(msg);
                             window.bika.lims.error(msg);
+                            $('#semioverlay input[name="semioverlay.cancel"]').click();
                         };
                     });
                 } else {
