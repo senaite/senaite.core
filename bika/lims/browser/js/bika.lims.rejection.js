@@ -12,7 +12,7 @@
                 var url = window.location.href.replace('/base_view','');
                 var autentification = $('input[name="_authenticator"]').val();
                 // we have to insert the state button
-                var dom_e = '<li><a id="workflow-transition-reject" class="" title="" href="' + url + '/content_status_modify?workflow_action=reject&_authenticator=' + autentification + '">Reject</li>"';
+                var dom_e = '<li><a id="workflow-transition-reject" class="" title="" href="' + url + '/doActionForSample?workflow_action=reject&_authenticator=' + autentification + '">Reject</li>"';
                 $(dom_e).prependTo($('#plone-contentmenu-workflow dd.actionMenuContent ul')[0]);
          };
          reject_widget_semioverlay_setup();
@@ -116,22 +116,43 @@
              data: requestdata
          })
          .done(function(data) {
-             //trigger reject workflow action
-             if (data !== null && data['success'] === true) {
-                 bika.lims.SiteView.notificationPanel('Rejecting', "succeed");
-                 window.location.href = redirect_state;
-             } else {
+            //trigger reject workflow action
+            if (data !== null && data['success'] === true) {
+                bika.lims.SiteView.notificationPanel('Rejecting', "succeed");
+                // the behaviour for samples is different
+                if($('body').hasClass('portaltype-sample')) {
+                    $.ajax({
+                        url: window.location.href + '/doActionForSample?workflow_action=reject',
+                        type: 'POST',
+                        dataType: "json",
+                    })
+                    .done(function(data2) {
+                        if (data2 != null && data2['success'] == "true") {
+                            window.location.href = window.location.href;
+                        } else {
+                            bika.lims.SiteView.notificationPanel('Error while updating object state', "error");
+                            var msg = '[bika.lims.analysisrequest.js] Error while updating object state';
+                            console.warn(msg);
+                            window.bika.lims.error(msg);
+                        };
+                    });
+                } else {
+                    $('#semioverlay input[name="semioverlay.cancel"]').click();
+                }
+            } else {
                  bika.lims.SiteView.notificationPanel('Error while rejection the analysis request', 'error');
                  var msg = '[bika.lims.analysisrequest.js] Error while rejection the analysis request';
                  console.warn(msg);
                  window.bika.lims.error(msg);
-             }
+                 $('#semioverlay input[name="semioverlay.cancel"]').click();
+            }
          })
          .fail(function(){
              bika.lims.SiteView.notificationPanel('Error while rejection the analysis request','error');
              var msg = '[bika.lims.analysisrequest.js] Error while rejection the analysis request';
              console.warn(msg);
              window.bika.lims.error(msg);
+             $('#semioverlay input[name="semioverlay.cancel"]').click();
          });
      }
  }

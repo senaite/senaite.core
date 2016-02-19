@@ -784,6 +784,19 @@ class SamplesView(BikaListingView):
 
         return items
 
+class doActionForSample(object):
+    """It should be called using the following format: .../doActionForSample?workflow_action=reject
+        The function will change the object state to the asked one
+    """
+    def __call__(self):
+        plone.protect.CheckAuthenticator(self.request)
+        action = self.request.get('workflow_action', '')
+        if action:
+            doActionFor(self.context, action)
+            return json.dumps({"success":"true"})
+        else:
+            return json.dumps({"error":"true"})
+
 
 class ajaxGetSampleTypeInfo(BrowserView):
     def __call__(self):
