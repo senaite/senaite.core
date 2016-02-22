@@ -253,4 +253,15 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
             if sample_c_state == 'active' and not active:
                 workflow.doActionFor(sample, 'cancel')
 
+    def workflow_script_reject(self):
+        workflow = getToolByName(self, 'portal_workflow')
+        sample = self.aq_parent
+        self.reindexObject(idxs=["review_state", ])
+        sample_r_state = workflow.getInfoFor(sample, 'review_state')
+        # if all sibling partitions are cancelled, cancel sample
+        not_rejected = [sp for sp in sample.objectValues("SamplePartition")
+                  if workflow.getInfoFor(sp, 'review_state') != 'rejected']
+        if sample_r_state != 'rejected':
+            workflow.doActionFor(sample, 'reject')
+
 registerType(SamplePartition, PROJECTNAME)

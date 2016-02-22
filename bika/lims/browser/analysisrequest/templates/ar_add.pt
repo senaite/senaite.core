@@ -11,6 +11,8 @@
                 tal:attributes="src python:portal.absolute_url() + '/bika_widgets/datetimewidget.js'"></script>
         <script type="text/javascript"
                 tal:attributes="src python:portal.absolute_url() + '/bika_widgets/referencewidget.js'"></script>
+        <script type="text/javascript"
+                tal:attributes="src python:portal.absolute_url() + '/bika_widgets/rejectionwidget.js'"></script>
         <link rel="stylesheet" type="text/css" media="all" href=""
                 tal:attributes="href string:${portal/absolute_url}/bika_widgets/referencewidget.css"/>
     </metal:block>

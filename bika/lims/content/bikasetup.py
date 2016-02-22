@@ -11,6 +11,7 @@ from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.interfaces import IBikaSetup
 from bika.lims.interfaces import IHaveNoBreadCrumbs
 from bika.lims.browser.widgets import DurationWidget
+from bika.lims.browser.widgets import RejectionWidgetSetup
 from bika.lims.browser.fields import DurationField
 from bika.lims.vocabularies import getStickerTemplates as _getStickerTemplates
 from plone.app.folder import folder
@@ -551,7 +552,13 @@ schema = BikaFolderSchema.copy() + Schema((
         widget = StringWidget(
             label=_("ID Server URL"),
             description=_("The full URL: http://URL/path:port")
-
+        ),
+    ),
+    RecordsField('RejectionReasons',
+        schemata = "Analyses",
+        widget = RejectionWidgetSetup(
+            label=_("Sample Rejection"),
+            description = _("Here you can define whether you want to use the sample rejection and define rejection reasons.")
         ),
     ),
 ))
@@ -617,6 +624,18 @@ class BikaSetup(folder.ATFolder):
         items = [(x['ISO'], x['Country']) for x in COUNTRIES]
         items.sort(lambda x,y: cmp(x[1], y[1]))
         return items
+
+    def isRejectionWorkflowEnabled(self):
+        """Return true if the rejection workflow is enabled (its checkbox is set)
+        """
+        widget = self.getRejectionReasons()
+        # widget will be something like:
+        # [{'checkbox': u'on', 'textfield-2': u'b', 'textfield-1': u'c', 'textfield-0': u'a'}]
+        if len(widget) > 0:
+            checkbox = widget[0].get('checkbox', False)
+            return True if checkbox == 'on' else False
+        else:
+            return False
 
 
 registerType(BikaSetup, PROJECTNAME)

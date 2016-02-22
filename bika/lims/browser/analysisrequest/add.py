@@ -274,7 +274,11 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         for field in schema.fields():
             isVisible = field.widget.isVisible
             v = isVisible(self.context, mode, default='invisible', field=field)
-            if v == visibility:
+            visibility_guard = True
+            # visibility_guard is a widget field defined in the schema in order to know the visibility of the widget when the field is related to a dynamically changing content such as workflows. For instance those fields related to the workflow will be displayed only if the workflow is enabled, otherwise they should not be shown.
+            if 'visibility_guard' in dir(field.widget):
+                visibility_guard = eval(field.widget.visibility_guard)
+            if v == visibility and visibility_guard:
                 fields.append(field)
         return fields
 
@@ -635,6 +639,9 @@ def create_analysisrequest(context, request, values):
                 state = workflow.getInfoFor(part, 'review_state')
                 if state == 'to_be_preserved':
                     workflow.doActionFor(part, 'preserve')
-
+    # Once the ar is fully created, check if there are rejection reasons
+    reject_field = values.get('RejectionReasons', '')
+    if reject_field and reject_field.get('checkbox', False):
+        doActionFor(ar, 'reject')
     # Return the newly created Analysis Request
     return ar

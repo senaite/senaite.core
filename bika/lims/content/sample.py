@@ -3,7 +3,9 @@
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t, getUsers
+from Products.ATExtensions.field import RecordsField
 from bika.lims.browser.widgets.datetimewidget import DateTimeWidget
+from bika.lims.browser.widgets import RejectionWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import ISample
@@ -63,6 +65,7 @@ schema = BikaSchema.copy() + Schema((
                      'sample_received':   {'view': 'visible', 'edit': 'visible'},
                      'expired':           {'view': 'visible', 'edit': 'invisible'},
                      'disposed':          {'view': 'visible', 'edit': 'invisible'},
+                     'rejected':          {'view': 'visible', 'edit': 'invisible'},
                      },
             render_own_label=True,
         ),
@@ -85,6 +88,7 @@ schema = BikaSchema.copy() + Schema((
                      'sample_received':   {'view': 'visible', 'edit': 'visible'},
                      'expired':           {'view': 'visible', 'edit': 'invisible'},
                      'disposed':          {'view': 'visible', 'edit': 'invisible'},
+                     'rejected':          {'view': 'visible', 'edit': 'invisible'},
                      },
             render_own_label=True,
         ),
@@ -125,6 +129,7 @@ schema = BikaSchema.copy() + Schema((
                      'sample_received':   {'view': 'visible', 'edit': 'invisible'},
                      'expired':           {'view': 'visible', 'edit': 'invisible'},
                      'disposed':          {'view': 'visible', 'edit': 'invisible'},
+                     'rejected':          {'view': 'visible', 'edit': 'invisible'},
                      },
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
@@ -160,6 +165,7 @@ schema = BikaSchema.copy() + Schema((
                      'sample_received':   {'view': 'visible', 'edit': 'invisible'},
                      'expired':           {'view': 'visible', 'edit': 'invisible'},
                      'disposed':          {'view': 'visible', 'edit': 'invisible'},
+                     'rejected':          {'view': 'visible', 'edit': 'invisible'},
                      },
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
@@ -196,6 +202,7 @@ schema = BikaSchema.copy() + Schema((
                      'sample_received':   {'view': 'visible', 'edit': 'visible'},
                      'expired':           {'view': 'visible', 'edit': 'visible'},
                      'disposed':          {'view': 'visible', 'edit': 'invisible'},
+                     'rejected':          {'view': 'visible', 'edit': 'invisible'},
                      },
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
@@ -223,6 +230,7 @@ schema = BikaSchema.copy() + Schema((
                      'sample_received':   {'view': 'visible', 'edit': 'invisible'},
                      'expired':           {'view': 'visible', 'edit': 'invisible'},
                      'disposed':          {'view': 'visible', 'edit': 'invisible'},
+                     'rejected':          {'view': 'visible', 'edit': 'invisible'},
                      },
             render_own_label=True,
         ),
@@ -246,6 +254,7 @@ schema = BikaSchema.copy() + Schema((
                      'sample_received':   {'view': 'visible', 'edit': 'invisible'},
                      'expired':           {'view': 'visible', 'edit': 'invisible'},
                      'disposed':          {'view': 'visible', 'edit': 'invisible'},
+                     'rejected':          {'view': 'visible', 'edit': 'invisible'},
                      },
             render_own_label=True,
         ),
@@ -267,6 +276,7 @@ schema = BikaSchema.copy() + Schema((
                      'sample_received':   {'view': 'visible', 'edit': 'invisible'},
                      'expired':           {'view': 'visible', 'edit': 'invisible'},
                      'disposed':          {'view': 'visible', 'edit': 'invisible'},
+                     'rejected':          {'view': 'visible', 'edit': 'invisible'},
                      },
             render_own_label=True,
         ),
@@ -293,6 +303,7 @@ schema = BikaSchema.copy() + Schema((
                      'sample_received':   {'view': 'visible', 'edit': 'invisible'},
                      'expired':           {'view': 'visible', 'edit': 'invisible'},
                      'disposed':          {'view': 'visible', 'edit': 'invisible'},
+                     'rejected':          {'view': 'visible', 'edit': 'invisible'},
                      },
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
@@ -321,6 +332,7 @@ schema = BikaSchema.copy() + Schema((
                      'sample_received':   {'view': 'visible', 'edit': 'invisible'},
                      'expired':           {'view': 'visible', 'edit': 'invisible'},
                      'disposed':          {'view': 'visible', 'edit': 'invisible'},
+                     'rejected':          {'view': 'visible', 'edit': 'invisible'},
                      },
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
@@ -348,6 +360,7 @@ schema = BikaSchema.copy() + Schema((
                      'verified':          {'view': 'visible', 'edit': 'invisible'},
                      'published':         {'view': 'visible', 'edit': 'invisible'},
                      'invalid':           {'view': 'visible', 'edit': 'invisible'},
+                     'rejected':          {'view': 'visible', 'edit': 'invisible'},
                      },
             render_own_label=True,
             size=20,
@@ -370,6 +383,7 @@ schema = BikaSchema.copy() + Schema((
                      'sample_received':   {'view': 'visible', 'edit': 'invisible'},
                      'expired':           {'view': 'visible', 'edit': 'invisible'},
                      'disposed':          {'view': 'visible', 'edit': 'invisible'},
+                     'rejected':          {'view': 'visible', 'edit': 'invisible'},
                      },
             render_own_label=True,
         ),
@@ -410,6 +424,7 @@ schema = BikaSchema.copy() + Schema((
                      'sample_received':   {'view': 'visible', 'edit': 'visible'},
                      'expired':           {'view': 'visible', 'edit': 'invisible'},
                      'disposed':          {'view': 'visible', 'edit': 'invisible'},
+                     'rejected':          {'view': 'visible', 'edit': 'invisible'},
                      },
             render_own_label=True,
         ),
@@ -431,6 +446,7 @@ schema = BikaSchema.copy() + Schema((
                      'sample_received':   {'view': 'invisible', 'edit': 'invisible'},
                      'expired':           {'view': 'visible', 'edit': 'invisible'},
                      'disposed':          {'view': 'visible', 'edit': 'invisible'},
+                     'rejected':          {'view': 'invisible', 'edit': 'invisible'},
                      },
             render_own_label=True,
         ),
@@ -449,6 +465,7 @@ schema = BikaSchema.copy() + Schema((
                      'sample_received':   {'view': 'visible', 'edit': 'invisible'},
                      'expired':           {'view': 'visible', 'edit': 'invisible'},
                      'disposed':          {'view': 'invisible', 'edit': 'invisible'},
+                     'rejected':          {'view': 'invisible', 'edit': 'invisible'},
                      },
             render_own_label=True,
         ),
@@ -470,6 +487,7 @@ schema = BikaSchema.copy() + Schema((
                      'sample_received':   {'view': 'invisible', 'edit': 'invisible'},
                      'expired':           {'view': 'invisible', 'edit': 'invisible'},
                      'disposed':          {'view': 'visible', 'edit': 'invisible'},
+                     'rejected':          {'view': 'invisible', 'edit': 'invisible'},
                      },
             render_own_label=True,
         ),
@@ -492,6 +510,7 @@ schema = BikaSchema.copy() + Schema((
                      'sample_received':   {'view': 'visible', 'edit': 'visible'},
                      'expired':           {'view': 'visible', 'edit': 'invisible'},
                      'disposed':          {'view': 'visible', 'edit': 'invisible'},
+                     'rejected':          {'view': 'visible', 'edit': 'invisible'},
                      },
            render_own_label=True,
         ),
@@ -508,6 +527,32 @@ schema = BikaSchema.copy() + Schema((
             macro="bika_widgets/remarks",
             label=_("Remarks"),
             append_only=True,
+        ),
+    ),
+    RecordsField('RejectionReasons',
+        widget = RejectionWidget(
+            label=_("Sample Rejection"),
+            description = _("Set the Sample Rejection workflow and the reasons"),
+            render_own_label=False,
+            visible={'edit': 'invisible',
+                     'view': 'visible',
+                     'add': 'edit',
+                     'secondary': 'disabled',
+                     'header_table': 'visible',
+                     'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
+                     'to_be_sampled':     {'view': 'visible', 'edit': 'visible'},
+                     'sampled':           {'view': 'visible', 'edit': 'visible'},
+                     'to_be_preserved':   {'view': 'visible', 'edit': 'visible'},
+                     'sample_due':        {'view': 'visible', 'edit': 'visible'},
+                     'sample_received':   {'view': 'visible', 'edit': 'visible'},
+                     'attachment_due':    {'view': 'visible', 'edit': 'visible'},
+                     'to_be_verified':    {'view': 'visible', 'edit': 'visible'},
+                     'verified':          {'view': 'visible', 'edit': 'visible'},
+                     'published':         {'view': 'visible', 'edit': 'visible'},
+                     'invalid':           {'view': 'visible', 'edit': 'visible'},
+                     'rejected':          {'view': 'visible', 'edit': 'visible'},
+                     },
+            visibility_guard="self.context.bika_setup.isRejectionWorkflowEnabled()"
         ),
     ),
     ###ComputedField('Priority',
@@ -724,6 +769,12 @@ class Sample(BaseFolder, HistoryAwareMixin):
             return 0
         return last_ar_number
 
+    def getSampleState(self):
+        """Returns the sample veiew_state
+        """
+        workflow = getToolByName(self, 'portal_workflow')
+        return workflow.getInfoFor(self, 'review_state')
+
     def workflow_script_receive(self):
         workflow = getToolByName(self, 'portal_workflow')
         self.setDateReceived(DateTime())
@@ -837,6 +888,18 @@ class Sample(BaseFolder, HistoryAwareMixin):
                 if ar_state == 'active':
                     workflow.doActionFor(ar, 'cancel')
 
+    def workflow_script_reject(self):
+        workflow = getToolByName(self, 'portal_workflow')
+        for ar in self.getAnalysisRequests():
+            if workflow.getInfoFor(ar, 'review_state') != 'rejected':
+                # Setting the rejection reasons in ar
+                ar.setRejectionReasons(self.getRejectionReasons())
+                workflow.doActionFor(ar, "reject")
+        parts = self.objectValues('SamplePartition')
+        for part in parts:
+            if workflow.getInfoFor(part, 'review_state') != 'rejected':
+                workflow.doActionFor(part, "reject")
+
     def guard_receive_transition(self):
         """Prevent the receive transition from being available:
         - if object is cancelled
@@ -845,7 +908,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
         # Can't do anything to the object if it's cancelled
         if not isBasicTransitionAllowed(self):
             return False
-        # check if any related ARs have field analyses with no result.
+        # check if any related ARs have fields analyses with no result.
         for ar in self.getAnalysisRequests():
             field_analyses = ar.getAnalyses(getPointOfCapture='field',
                                             full_objects=True)

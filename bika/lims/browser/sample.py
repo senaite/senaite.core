@@ -618,6 +618,31 @@ class SamplesView(BikaListingView):
                          'getDatePreserved',
                          'getPreserver',
                          'state_title']},
+            {'id':'rejected',
+             'title': _('Rejected'),
+             'contentFilter': {'review_state': 'rejected',
+                               'sort_order': 'reverse',
+                               'sort_on':'created'},
+             'transitions': [],
+             'columns': ['getSampleID',
+                         'Client',
+                         'Creator',
+                         'Created',
+                         'Requests',
+                         'getClientReference',
+                         'getClientSampleID',
+                         'getSampleTypeTitle',
+                         'getSamplePointTitle',
+                         'getStorageLocation',
+                         'SamplingDeviation',
+                         'AdHoc',
+                         'getSamplingDate',
+                         'DateReceived',
+                         'getDateSampled',
+                         'getSampler',
+                         'getDatePreserved',
+                         'getPreserver',
+                         'state_title']},
         ]
 
     def folderitems(self, full_objects = False):
@@ -758,6 +783,21 @@ class SamplesView(BikaListingView):
         self.review_states = new_states
 
         return items
+
+class doActionForSample(object):
+    """It should be called using the following format: .../doActionForSample?workflow_action=reject
+        The function will change the object state to the asked one
+    """
+    def __call__(self):
+        plone.protect.CheckAuthenticator(self.request)
+        action = self.request.get('workflow_action', '')
+        if action == 'reject' and not self.context.bika_setup.isRejectionWorkflowEnabled():
+            return json.dumps({"error":"true"})
+        if action:
+            doActionFor(self.context, action)
+            return json.dumps({"success":"true"})
+        else:
+            return json.dumps({"error":"true"})
 
 
 class ajaxGetSampleTypeInfo(BrowserView):
