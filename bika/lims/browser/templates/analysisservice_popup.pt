@@ -100,7 +100,7 @@
 				file method/MethodDocument;
 				filename python:getattr(file, 'filename', '');
                 filesize python:file.getObjSize();
-                icon file/getBestIcon | nothing;">
+                icon file/icon | nothing;">
 			<h5>
 				<img tal:attributes="src string:${portal_url}/++resource++bika.lims.images/attachment.png"/>
 				<span i18n:translate="">

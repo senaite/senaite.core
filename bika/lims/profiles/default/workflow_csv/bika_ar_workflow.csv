@@ -193,19 +193,19 @@ Id:,published,,,,,,,,,,,,,,
 Title:,Published,,,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,,,
 Transitions,"republish, retract_ar, reject",,,,,,,,,,,,,
-Permissions,Acquire,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,Publisher,Reviewer,RegulatoryInspector,Owner,Anonymous,Authenticated
-BIKA: Add Analysis,N,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Cancel and reinstate,N,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Edit AR,N,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: View Results,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,N,N
-BIKA: Manage Invoices,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Results not requested,N,Y,Y,N,Y,N,N,N,N,N,N,N,N,N
-BIKA: Edit AR Contact,N,N,N,N,N,N,N,N,N,N,N,N,N,N
-View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,N,N
-Modify portal content,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N
-,,,,,,,,,,,,,,
+Permissions,Acquire,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,Publisher,Reviewer,RegulatoryInspector,Owner,Client,Anonymous,Authenticated
+BIKA: Add Analysis,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Cancel and reinstate,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Edit AR,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: View Results,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N
+BIKA: Manage Invoices,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Results not requested,N,Y,Y,N,Y,N,N,N,N,N,N,N,N,N,N
+BIKA: Edit AR Contact,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N
+Modify portal content,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N
+,,,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,,
 Id:,invalid,,,,,,,,,,,,,
 Title:,Invalid,,,,,,,,,,,,,

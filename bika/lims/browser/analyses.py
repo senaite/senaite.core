@@ -567,7 +567,7 @@ class AnalysesView(BikaListingView):
                 if hasattr(obj, 'getAttachment'):
                     for attachment in obj.getAttachment():
                         af = attachment.getAttachmentFile()
-                        icon = af.getBestIcon()
+                        icon = af.icon
                         attachments += "<span class='attachment' attachment_uid='%s'>" % (attachment.UID())
                         if icon: attachments += "<img src='%s/%s'/>" % (self.portal_url, icon)
                         attachments += '<a href="%s/at_download/AttachmentFile"/>%s</a>' % (attachment.absolute_url(), af.filename)

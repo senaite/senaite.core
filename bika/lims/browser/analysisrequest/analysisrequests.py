@@ -4,6 +4,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import getUsers
+from bika.lims.workflow import getTransitionDate
 from bika.lims.permissions import *
 from bika.lims.utils import to_utf8, getUsers
 from DateTime import DateTime
@@ -106,6 +107,8 @@ class AnalysisRequestsView(BikaListingView):
                                'toggle': SamplingWorkflowEnabled,
                                'input_class': 'datepicker_nofuture',
                                'input_width': '10'},
+            'getDateVerified': {'title': _('Date Verified'),
+                                'input_width': '10'},
             'getSampler': {'title': _('Sampler'),
                            'toggle': SamplingWorkflowEnabled},
             'getDatePreserved': {'title': _('Date Preserved'),
@@ -176,6 +179,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getPreserver',
                         'getDateReceived',
                         'getAnalysesNum',
+                        'getDateVerified',
                         'state_title']},
             {'id': 'sample_due',
              'title': _('Due'),
@@ -214,6 +218,7 @@ class AnalysisRequestsView(BikaListingView):
                         'Priority',
                         'AdHoc',
                         'getAnalysesNum',
+                        'getDateVerified',
                         'state_title']},
            {'id': 'sample_received',
              'title': _('Received'),
@@ -248,6 +253,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getDatePreserved',
                         'getPreserver',
                         'getAnalysesNum',
+                        'getDateVerified',
                         'getDateReceived']},
             {'id': 'to_be_verified',
              'title': _('To be verified'),
@@ -284,6 +290,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getDatePreserved',
                         'getPreserver',
                         'getAnalysesNum',
+                        'getDateVerified',
                         'getDateReceived']},
             {'id': 'verified',
              'title': _('Verified'),
@@ -316,6 +323,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getDatePreserved',
                         'getPreserver',
                         'getAnalysesNum',
+                        'getDateVerified',
                         'getDateReceived']},
             {'id': 'published',
              'title': _('Published'),
@@ -349,6 +357,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getPreserver',
                         'getDateReceived',
                         'getAnalysesNum',
+                        'getDateVerified',
                         'getDatePublished']},
             {'id': 'cancelled',
              'title': _('Cancelled'),
@@ -393,6 +402,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getDateReceived',
                         'getDatePublished',
                         'getAnalysesNum',
+                        'getDateVerified',
                         'state_title']},
             {'id': 'invalid',
              'title': _('Invalid'),
@@ -426,6 +436,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getPreserver',
                         'getDateReceived',
                         'getAnalysesNum',
+                        'getDateVerified',
                         'getDatePublished']},
             {'id': 'assigned',
              'title': "<img title='%s'\
@@ -470,6 +481,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getPreserver',
                         'getDateReceived',
                         'getAnalysesNum',
+                        'getDateVerified',
                         'state_title']},
             {'id': 'unassigned',
              'title': "<img title='%s'\
@@ -516,6 +528,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getPreserver',
                         'getDateReceived',
                         'getAnalysesNum',
+                        'getDateVerified',
                         'state_title']},
             {'id': 'rejected',
              'title': _('Rejected'),
@@ -620,6 +633,7 @@ class AnalysisRequestsView(BikaListingView):
             items[x]['SamplingDate'] = self.ulocalized_time(samplingdate, long_format=1)
             items[x]['getDateReceived'] = self.ulocalized_time(obj.getDateReceived())
             items[x]['getDatePublished'] = self.ulocalized_time(obj.getDatePublished())
+            items[x]['getDateVerified'] = getTransitionDate(obj, 'verify')
 
             deviation = sample.getSamplingDeviation()
             items[x]['SamplingDeviation'] = deviation and deviation.Title() or ''
