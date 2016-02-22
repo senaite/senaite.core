@@ -15,6 +15,22 @@
                 var dom_e = '<li><a id="workflow-transition-reject" class="" title="" href="' + url + '/doActionForSample?workflow_action=reject&_authenticator=' + autentification + '">Reject</li>"';
                 $(dom_e).prependTo($('#plone-contentmenu-workflow dd.actionMenuContent ul')[0]);
          };
+         // If rejection workflow is disabled, hide the state link
+         var request_data = {
+             catalog_name: "portal_catalog",
+             portal_type: "BikaSetup",
+             include_fields: [
+                 "RejectionReasons"]
+         };
+         window.bika.lims.jsonapi_read(request_data, function (data) {
+             if (data.success &&
+                 data.total_objects > 0) {
+                 var reasons_state = data.objects[0]['RejectionReasons'][0]['checkbox'];
+                 if (reasons_state == undefined || reasons_state != 'on'){
+                     $('a#workflow-transition-reject').closest('li').hide();
+                 }
+             };
+         });
          reject_widget_semioverlay_setup();
      };
 
@@ -59,7 +75,7 @@
              });
              // binding reject actions
              $("div#semioverlay input[name='semioverlay.reject']").bind('click',function(){
-                 reject_ar();
+                 reject_ar_sample();
              });
          }
      }
@@ -96,9 +112,9 @@
          return $.toJSON(rej_widget_state);
      }
 
-     function reject_ar(){
+     function reject_ar_sample(){
          "use strict";
-         // Makes all the steps needed to reject the ar
+         // Makes all the steps needed to reject the ar or sample
          var requestdata = {};
          //save the rejection widget's values
          var url = window.location.href.replace('/base_view', '');
@@ -138,7 +154,9 @@
                         };
                     });
                 } else {
-                    $('#semioverlay input[name="semioverlay.cancel"]').click();
+                    // Redirecting to the same page using the rejection's url
+                    bika.lims.SiteView.notificationPanel('Rejecting', "succeed");
+                    window.location.href = redirect_state;
                 }
             } else {
                  bika.lims.SiteView.notificationPanel('Error while rejection the analysis request', 'error');
