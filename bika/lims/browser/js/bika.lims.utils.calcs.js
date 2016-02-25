@@ -201,7 +201,7 @@ function CalculationUtils() {
                             decimals = result.result_str.split('.')[1].length;
                         }
                         var result_with_decimals = ""
-                        if (result.result_str != ""){
+                        if (result.result_str != "" && result.result_str != ''){
                             result_with_decimals = parseFloat(result.result_str).toFixed(decimals)
                         };
                         $("input[uid='"+result.uid+"']").filter("input[field='Result']").val(result_with_decimals);
@@ -216,7 +216,7 @@ function CalculationUtils() {
                         $("span[uid='"+result.uid+"']").filter("span[field='formatted_result']").empty().append(result.formatted_result);
 
                         // check box
-                        if (results != '' && results != ""){
+                        if (result.result != '' && result.result != ""){
                             if ($("[id*='cb_"+result.uid+"']").prop("checked") == false) {
                                 $("[id*='cb_"+result.uid+"']").prop('checked', true);
                             }

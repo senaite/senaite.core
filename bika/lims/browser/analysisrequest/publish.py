@@ -561,7 +561,6 @@ class AnalysisRequestPublishView(BrowserView):
                 andict['previous_results'] = ", ".join([p['formatted_result'] for p in andict['previous'][-5:]])
 
             analyses.append(andict)
-        analyses.sort(lambda x, y: cmp(x.get('title').lower(), y.get('title').lower()))
         return analyses
 
     def _analysis_data(self, analysis, decimalmark=None):
@@ -1005,6 +1004,13 @@ class AnalysisRequestPublishView(BrowserView):
         else:
             subject = t(_('Analysis results'))
         return subject, tot_line
+
+    def sorted_by_sort_key(self, category_keys):
+        """ Sort categories via catalog lookup on title. """
+        bsc = getToolByName(self.context, "bika_setup_catalog")
+        analysis_categories = bsc(portal_type="AnalysisCategory", sort_on="sortable_title")
+        sort_keys = dict([(b.Title, "{:04}".format(a)) for a, b in enumerate(analysis_categories)])
+        return sorted(category_keys, key=lambda title, sk=sort_keys: sk.get(title))
 
     def getAnaysisBasedTransposedMatrix(self, ars):
         """ Returns a dict with the following structure:

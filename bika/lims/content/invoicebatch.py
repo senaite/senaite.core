@@ -27,6 +27,7 @@ schema = BikaSchema.copy() + Schema((
     DateTimeField('BatchEndDate',
         required=1,
         default_method='current_date',
+        validators = ('invoicebatch_EndDate_validator',),
         widget=CalendarWidget(
             label=_("End Date"),
         ),
@@ -35,7 +36,6 @@ schema = BikaSchema.copy() + Schema((
 )
 
 schema['title'].default = DateTime().strftime('%b %Y')
-
 
 class InvoiceBatch(BaseFolder):
 
