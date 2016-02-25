@@ -17,20 +17,17 @@ from zope.interface import alsoProvides
 
 def ObjectInitializedEventHandler(instance, event):
 
-    # This handler fires for DuplicateAnalysis because
-    # DuplicateAnalysis also provides IAnalysis.
-    # DuplicateAnalysis doesn't have analysis_workflow.
-    if instance.portal_type == "DuplicateAnalysis":
-        return
-
+    # This is the easiest place to assign IRoutineAnalysis,
+    # since other anlaysis types subclass Analysis.
+    # (noLongerProvides cannot un-provide interfaces on the class itself)
     if instance.portal_type == 'Analysis':
         alsoProvides(instance, IRoutineAnalysis)
 
-    workflow = getToolByName(instance, 'portal_workflow')
+    wf_tool = getToolByName(instance, 'portal_workflow')
 
     ar = instance.aq_parent
-    ar_state = workflow.getInfoFor(ar, 'review_state')
-    ar_ws_state = workflow.getInfoFor(ar, 'worksheetanalysis_review_state')
+    ar_state = wf_tool.getInfoFor(ar, 'review_state')
+    ar_ws_state = wf_tool.getInfoFor(ar, 'worksheetanalysis_review_state')
 
     # Set the state of the analysis depending on the state of the AR.
     if ar_state in ('sample_registered',
@@ -45,11 +42,11 @@ def ObjectInitializedEventHandler(instance, event):
         if 'workflow_skiplist' not in ar.REQUEST:
             ar.REQUEST['workflow_skiplist'] = []
         ar.REQUEST['workflow_skiplist'].append("retract all analyses")
-        workflow.doActionFor(ar, 'retract')
+        wf_tool.doActionFor(ar, 'retract')
         ar.REQUEST['workflow_skiplist'].remove("retract all analyses")
 
     if ar_ws_state == 'assigned':
-        workflow.doActionFor(ar, 'unassign')
+        wf_tool.doActionFor(ar, 'unassign')
         skip(ar, 'unassign', unskip=True)
 
     instance.updateDueDate()
@@ -58,14 +55,8 @@ def ObjectInitializedEventHandler(instance, event):
 
 def ObjectRemovedEventHandler(instance, event):
 
-    # This handler fires for DuplicateAnalysis because
-    # DuplicateAnalysis also provides IAnalysis.
-    # DuplicateAnalysis doesn't have analysis_workflow.
-    if instance.portal_type == "DuplicateAnalysis":
-        return
-
     # May need to promote the AR's review_state
-    #  if all other analyses are at a higher state than this one was.
+    # if all other analyses are at a higher state than this one was.
     workflow = getToolByName(instance, 'portal_workflow')
     ar = instance.aq_parent
     can_submit = True
