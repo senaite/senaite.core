@@ -927,9 +927,10 @@ class Analysis(BaseContent):
             # Drop trailing zeros from decimal
             udl = drop_trailing_zeros_decimal(udl)
             return formatDecimalMark('> %s' % udl, decimalmark)
-
         # Render numerical values
-        return formatDecimalMark(format_numeric_result(self, result, sciformat=sciformat), decimalmark=decimalmark)
+        return format_numeric_result(self, self.getResult(),
+                        decimalmark=decimalmark,
+                        sciformat=sciformat)
 
     def getPrecision(self, result=None):
         """
