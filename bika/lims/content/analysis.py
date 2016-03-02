@@ -439,10 +439,12 @@ class Analysis(BaseContent):
         return dep_analyses
 
     def setResult(self, value, **kw):
+        """ :value: must be a string
+        """
         # Always update ResultCapture date when this field is modified
         self.setResultCaptureDate(DateTime())
         # Only allow DL if manually enabled in AS
-        val = value
+        val = str(value)
         if val and (val.strip().startswith('>') or val.strip().startswith('<')):
             self.Schema().getField('DetectionLimitOperand').set(self, None)
             oper = '<' if val.strip().startswith('<') else '>'

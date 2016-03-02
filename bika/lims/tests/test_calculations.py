@@ -125,8 +125,8 @@ class TestCalculations(BikaFunctionalTestCase):
              'exresult': '10'
             },
         ]
+        # New formulas for precision testing
         self.formulas_precission = [
-            # New formulas for precision testing
             {'formula' : '[Ca]/[Mg]',
              'analyses': {'Ca':'10', 'Mg': '15'},
              'interims': {},
@@ -179,6 +179,111 @@ class TestCalculations(BikaFunctionalTestCase):
                      },
                 ],
             },
+            {'formula' : '[Ca]/[Mg]*[IN1]',
+             'analyses': {'Ca':'100', 'Mg': '20'},
+             'interims': {'IN1':'0.12'},
+             'test_fixed_precision': [
+                {'fixed_precision': 5,
+                 'expected_result': '0.60000',
+                },
+                {'fixed_precision': 2,
+                 'expected_result': '0.60'
+                },
+                {'fixed_precision': 1,
+                 'expected_result': '0.6'
+                },
+                {'fixed_precision': 0,
+                 'expected_result': '1'
+                },
+                {'fixed_precision': -1,
+                 'expected_result': '1'
+                },
+                {'fixed_precision': -5,
+                 'expected_result': '1'
+                },
+            ],
+            'test_uncertainties_precision':[
+                    {'uncertainties': [
+                            [ 0, 10, 0.1   ],
+                            [11, 20, 0.056 ],
+                        ],
+                        'analyses': [
+                            {'Ca': '12', 'Mg': '13'},
+                            {'Ca': '12', 'Mg': '13'},
+                        ],
+                        'expected_results': [
+                            '23.2',
+                            '32.3',
+                        ]
+                    },
+                    {'uncertainties': [
+                            [ 0, 10, 0.1   ],
+                            [11, 20, 0.056 ],
+                        ],
+                    'analyses': [
+                            {'Ca': '12', 'Mg': '13'},
+                            {'Ca': '12', 'Mg': '13'},
+                        ],
+                    'expected_results': [
+                            '23.2',
+                            '32.3',
+                        ],
+                     },
+                ],
+            },
+            {'formula' : '[Ca]/[Mg]',
+             'analyses': {'Ca':'10', 'Mg': 1},
+             'interims': {},
+             'test_fixed_precision': [
+                {'fixed_precision': 5,
+                 'expected_result': '10.00000',
+                },
+                {'fixed_precision': 2,
+                 'expected_result': '10.00'
+                },
+                {'fixed_precision': 1,
+                 'expected_result': '10.0'
+                },
+                {'fixed_precision': 0,
+                 'expected_result': '10'
+                },
+                {'fixed_precision': -1,
+                 'expected_result': '10'
+                },
+                {'fixed_precision': -5,
+                 'expected_result': '10'
+                },
+            ],
+            'test_uncertainties_precision':[
+                    {'uncertainties': [
+                            [ 0, 10, 0.1   ],
+                            [11, 20, 0.056 ],
+                        ],
+                        'analyses': [
+                            {'Ca': '12', 'Mg': '13'},
+                            {'Ca': '12', 'Mg': '13'},
+                        ],
+                        'expected_results': [
+                            '23.2',
+                            '32.3',
+                        ]
+                    },
+                    {'uncertainties': [
+                            [ 0, 10, 0.1   ],
+                            [11, 20, 0.056 ],
+                        ],
+                    'analyses': [
+                            {'Ca': '12', 'Mg': '13'},
+                            {'Ca': '12', 'Mg': '13'},
+                        ],
+                    'expected_results': [
+                            '23.2',
+                            '32.3',
+                        ],
+                     },
+                ],
+            },
+
         ]
 
     def tearDown(self):
@@ -312,7 +417,8 @@ class TestCalculations(BikaFunctionalTestCase):
                             strres = f['analyses'][key].replace(operator, '')
                             self.assertEqual(an.getResult(), str(float(strres)))
                         else:
-                            self.assertEqual(an.getResult(), f['analyses'][key])
+                            # The analysis' results have to be always strings
+                            self.assertEqual(an.getResult(), str(f['analyses'][key]))
                     elif key == self.calcservice.getKeyword():
                         calcanalysis = an
 
