@@ -12,6 +12,7 @@ LIMS-1774: Shiny graphs for result ranges
 -------------------
 WINE-125: Client users receive unauthorized when viewing some published ARs
 LIMS-1991: Sort Order for Analysis Categories and Services
+- WinescanCSVParser fix
 
 3.1.10 (2016-01-13)
 -------------------
