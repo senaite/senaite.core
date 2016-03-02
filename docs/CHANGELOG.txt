@@ -8,10 +8,17 @@ LIMS-1774: Shiny graphs for result ranges
 - Add Bika LIMS TAL report reference in reports preview
 - Simplify instrument interface creation for basic CSV files
 
+3.1.x Long Term Support (LTS)
+-----------------------------
+LIMS-2015: Column spacing on Client look-up
+LIMS-1807: Validation for Start Date - End date relationship while creating invoices and price lists
+LIMS-1991: Sort Order for Analysis Categories and Services
+LIMS-1521: Date verified column for AR lists
+LIMS-2194 Error when submitting a result
+
 3.1.11 (2016-01-25)
 -------------------
 WINE-125: Client users receive unauthorized when viewing some published ARs
-LIMS-1991: Sort Order for Analysis Categories and ServicesShould be:
 
 3.1.10 (2016-01-13)
 -------------------
