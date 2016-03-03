@@ -439,10 +439,12 @@ class Analysis(BaseContent):
         return dep_analyses
 
     def setResult(self, value, **kw):
+        """ :value: must be a string
+        """
         # Always update ResultCapture date when this field is modified
         self.setResultCaptureDate(DateTime())
         # Only allow DL if manually enabled in AS
-        val = value
+        val = str(value)
         if val and (val.strip().startswith('>') or val.strip().startswith('<')):
             self.Schema().getField('DetectionLimitOperand').set(self, None)
             oper = '<' if val.strip().startswith('<') else '>'
@@ -927,9 +929,10 @@ class Analysis(BaseContent):
             # Drop trailing zeros from decimal
             udl = drop_trailing_zeros_decimal(udl)
             return formatDecimalMark('> %s' % udl, decimalmark)
-
         # Render numerical values
-        return formatDecimalMark(format_numeric_result(self, result, sciformat=sciformat), decimalmark=decimalmark)
+        return format_numeric_result(self, self.getResult(),
+                        decimalmark=decimalmark,
+                        sciformat=sciformat)
 
     def getPrecision(self, result=None):
         """
