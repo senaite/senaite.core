@@ -1,5 +1,6 @@
 3.2.1 (unreleased)
 ------------------
+LIMS-2207: Indentation in analysisrequests.py
 LIMS-2208: WinescanCSVParser class instance variable misspelling
 LIMS-1832: New Results Template, COA. Multiple ARs in columns
 LIMS-2148: Unable to sort Bika Listing tables
@@ -12,13 +13,13 @@ LIMS-1774: Shiny graphs for result ranges
 -----------------------------
 LIMS-2015: Column spacing on Client look-up
 LIMS-1807: Validation for Start Date - End date relationship while creating invoices and price lists
-LIMS-1991: Sort Order for Analysis Categories and Services
 LIMS-1521: Date verified column for AR lists
 LIMS-2194 Error when submitting a result
 
 3.1.11 (2016-01-25)
 -------------------
 WINE-125: Client users receive unauthorized when viewing some published ARs
+LIMS-1991: Sort Order for Analysis Categories and Services
 
 3.1.10 (2016-01-13)
 -------------------
