@@ -297,6 +297,6 @@ def format_numeric_result(analysis, result, decimalmark='.', sciformat=1):
     else:
         # Decimal notation
         prec = analysis.getPrecision(result)
-        prec = prec if prec > 0 else 0
+        prec = prec if prec and prec > 0 else 0
         formatted = str("%%.%sf" % prec) % result
     return formatDecimalMark(formatted, decimalmark)
