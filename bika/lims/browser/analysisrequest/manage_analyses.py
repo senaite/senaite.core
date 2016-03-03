@@ -215,9 +215,9 @@ class AnalysisRequestAnalysesView(BikaListingView):
                 items[x]['Partition'] = part.Title()
                 spec = self.get_spec_from_ar(self.context,
                                              analysis.getService().getKeyword())
-                items[x]["min"] = spec["min"]
-                items[x]["max"] = spec["max"]
-                items[x]["error"] = spec["error"]
+                items[x]["min"] = spec.get("min",'')
+                items[x]["max"] = spec.get("max",'')
+                items[x]["error"] = spec.get("error",'')
                 # Add priority premium
                 items[x]['Price'] = analysis.getPrice()
                 priority = analysis.getPriority()
