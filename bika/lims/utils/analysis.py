@@ -244,7 +244,8 @@ def format_numeric_result(analysis, result, decimalmark='.', sciformat=1):
                       4. The sci notation has to be formatted as a·10^b
                       5. As 4, but with super html entity for exp
                       By default 1
-    :return: the formatted result
+    :result: should be a string to preserve the decimal precision.
+    :return: the formatted result as string
     """
     try:
         result = float(result)
@@ -296,9 +297,6 @@ def format_numeric_result(analysis, result, decimalmark='.', sciformat=1):
     else:
         # Decimal notation
         prec = analysis.getPrecision(result)
-        prec = prec if prec else ''
+        prec = prec if prec and prec > 0 else 0
         formatted = str("%%.%sf" % prec) % result
-        # We have to check if formatted is an integer using "'.' in formatted"
-        # because ".is_integer" doesn't work with X.0
-        formatted = str(int(float(formatted))) if '.' not in formatted else formatted
     return formatDecimalMark(formatted, decimalmark)

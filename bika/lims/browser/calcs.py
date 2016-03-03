@@ -82,7 +82,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
         mapping = {}
 
         # values to be returned to form for this UID
-        Result = {'uid': uid, 'result': form_result, 'result_str': self.value}
+        Result = {'uid': uid, 'result': form_result}
         try:
             Result['result'] = float(form_result)
         except:
