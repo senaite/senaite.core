@@ -13,6 +13,7 @@ LIMS-1774: Shiny graphs for result ranges
 3.1.x Long Term Support (LTS)
 -----------------------------
 LIMS-1917: Inconsistencies related to significant digits in uncertainties
+LIMS-2209: error in manage analyises
 LIMS-2015: Column spacing on Client look-up
 LIMS-1807: Validation for Start Date - End date relationship while creating invoices and price lists
 LIMS-1521: Date verified column for AR lists
