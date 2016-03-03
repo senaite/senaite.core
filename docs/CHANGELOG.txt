@@ -1,5 +1,6 @@
 3.2.1 (unreleased)
 ------------------
+LIMS-2091: Table Column Display options Everywhere
 LIMS-2207: Indentation in analysisrequests.py
 LIMS-2208: WinescanCSVParser class instance variable misspelling
 LIMS-1832: New Results Template, COA. Multiple ARs in columns
