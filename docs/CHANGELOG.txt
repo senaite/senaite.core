@@ -1,5 +1,6 @@
 3.1.x Long Term Support (LTS)
 -----------------------------
+LIMS-2209: error in manage analyises
 LIMS-2015: Column spacing on Client look-up
 LIMS-1807: Validation for Start Date - End date relationship while creating invoices and price lists
 LIMS-1991: Sort Order for Analysis Categories and Services
