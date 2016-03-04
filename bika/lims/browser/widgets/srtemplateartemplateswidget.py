@@ -18,6 +18,7 @@ class SRTemplateARTemplatesView(BikaListingView):
             'portal_type': 'ARTemplate',
             'sort_on': 'sortable_title',
             'inactive_state': 'active',
+            'getClientUID':context.aq_parent.aq_parent.UID()
         }
         self.context_actions = {}
         self.base_url = self.context.absolute_url()
