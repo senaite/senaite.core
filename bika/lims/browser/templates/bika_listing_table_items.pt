@@ -172,7 +172,7 @@ Table cells for each column from in review_state's column list.
         <tal:comment replace="nothing"><!-- view --></tal:comment>
         <span
             tal:condition="python:not allow_edit"
-            tal:content="python:item[column]['value']"
+            tal:content="python:item[column]['formatted_value']"
             tal:attributes="class item/state_class"/>
         <input
             type="hidden"

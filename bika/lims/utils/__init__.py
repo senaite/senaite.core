@@ -195,7 +195,9 @@ def formatDecimalMark(value, decimalmark='.'):
         if math.isnan(vvalue):
             return vvalue
     except ValueError:
-        return value
+        # if value looks like '< 20.5', the decimal mark would have to be changed
+        if not '<' in value and not '>' in value:
+            return value
     # We have to consider the possibility of working with decimals such as
     # X.000 where those decimals are important because of the precission
     # and significant digits matters
