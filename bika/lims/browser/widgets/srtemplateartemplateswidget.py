@@ -52,17 +52,18 @@ class SRTemplateARTemplatesView(BikaListingView):
     def folderitems(self):
         items = BikaListingView.folderitems(self)
         clientUID = self.context.aq_parent.aq_parent.UID()
+        out_items = []
         for item in items:
             if item['obj'].getClientUID() and item['obj'].getClientUID()!=clientUID:
                 # Only display client's and lab's arts
-                items.remove(item)
+                out_items.append(item)
             if not item.has_key('obj'): continue
             obj = item['obj']
             title_link = "<a href='%s'>%s</a>" % (item['url'], item['title'])
             item['replace']['Title'] = title_link
             item['selected'] = item['uid'] in self.selected
 
-        return items
+        return out_items
 
 
 class SRTemplateARTemplatesWidget(TypesWidget):
