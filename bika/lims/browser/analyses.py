@@ -12,6 +12,7 @@ from bika.lims.permissions import *
 from bika.lims.utils import isActive
 from bika.lims.utils import getUsers
 from bika.lims.utils import to_utf8
+from bika.lims.utils import formatDecimalMark
 from DateTime import DateTime
 from operator import itemgetter
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -310,6 +311,7 @@ class AnalysesView(BikaListingView):
         self.interim_columns = {}
         self.specs = {}
         show_methodinstr_columns = False
+        dmk = self.context.bika_setup.getResultsDecimalMark()
         for i, item in enumerate(items):
             # self.contentsMethod may return brains or objects.
             obj = hasattr(items[i]['obj'], 'getObject') and \
@@ -338,7 +340,7 @@ class AnalysesView(BikaListingView):
             # kick some pretty display values in.
             for x in range(len(interim_fields)):
                 interim_fields[x]['formatted_value'] = \
-                    format_numeric_result(obj, interim_fields[x]['value'])
+                    formatDecimalMark(interim_fields[x]['value'], dmk)
             self.interim_fields[obj.UID()] = interim_fields
             items[i]['service_uid'] = service.UID()
             items[i]['Service'] = service.Title()
@@ -584,7 +586,6 @@ class AnalysesView(BikaListingView):
             if can_view_result:
                 items[i]['Result'] = result
                 scinot = self.context.bika_setup.getScientificNotationResults()
-                dmk = self.context.bika_setup.getResultsDecimalMark()
                 items[i]['formatted_result'] = obj.getFormattedResult(sciformat=int(scinot),decimalmark=dmk)
 
                 # LIMS-1379 Allow manual uncertainty value input
