@@ -54,14 +54,15 @@ class SRTemplateARTemplatesView(BikaListingView):
         clientUID = self.context.aq_parent.aq_parent.UID()
         out_items = []
         for item in items:
+            if not item.has_key('obj'): continue
             if item['obj'].getClientUID() and item['obj'].getClientUID()!=clientUID:
                 # Only display client's and lab's arts
-                out_items.append(item)
-            if not item.has_key('obj'): continue
+                continue
             obj = item['obj']
             title_link = "<a href='%s'>%s</a>" % (item['url'], item['title'])
             item['replace']['Title'] = title_link
             item['selected'] = item['uid'] in self.selected
+            out_items.append(item)
 
         return out_items
 
