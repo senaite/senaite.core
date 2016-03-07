@@ -196,6 +196,8 @@ class TestManualUncertainty(BikaFunctionalTestCase):
         self.assertEqual(formatDecimalMark('1.34'), '1.34')
         self.assertEqual(formatDecimalMark('0.0021',decimalmark=','), '0,0021')
         self.assertEqual(formatDecimalMark('2'), '2')
+        self.assertEqual(formatDecimalMark('< 2.1', decimalmark=','),'< 2,1')
+        self.assertEqual(formatDecimalMark('> 2.1', decimalmark=','),'> 2,1')
 
 def test_suite():
     suite = unittest.TestSuite()
