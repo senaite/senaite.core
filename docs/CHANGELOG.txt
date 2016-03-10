@@ -1,5 +1,6 @@
 3.1.x Long Term Support (LTS)
 -----------------------------
+LIMS-2217: Specifications are not set in analyses on Analysis Request creation
 LIMS-2215: Decimal mark not working
 LIMS-2203: 'Comma' as decimal mark doesnt work
 LIMS-2212: Sampling round- Sampling round templates show all system analysis request templates
