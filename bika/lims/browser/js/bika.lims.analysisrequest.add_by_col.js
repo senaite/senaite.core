@@ -686,10 +686,10 @@ function AnalysisRequestAddByCol() {
         /* Configure handler for the selection of a Specification
          *
          */
-        $("[id*='_Specification']")
-            .live('selected copy',
-            function (event, item) {
-                var arnum = $(this).parents('td').attr('arnum')
+        $("tr[fieldname='Specification'] td[arnum] input[type='text']")
+            .live('selected copy', function (event, item) {
+                var arnum = get_arnum(this);
+                state_set(arnum, 'Specification', $(this).attr('uid'));
                 specification_refetch(arnum)
             })
             .each(function (i, e) {
@@ -769,7 +769,7 @@ function AnalysisRequestAddByCol() {
         var d = $.Deferred()
         var arnum_i = parseInt(arnum, 10)
         var state = bika.lims.ar_add.state[arnum_i]
-        var spec_uid = state['Specification_uid']
+        var spec_uid = state['Specification']
         if (!spec_uid) {
             d.resolve()
             return d.promise()
@@ -1667,6 +1667,7 @@ function AnalysisRequestAddByCol() {
                     var rows = $("<table>"+data+"</table>").find("tr");
                     $("[form_id='" + form_id + "'] tr[data-ajax_category='" + cat_title + "']").replaceWith(rows);
                     $(element).removeClass("collapsed").addClass("expanded");
+                    specification_apply();
                     def.resolve();
                 })
         }
