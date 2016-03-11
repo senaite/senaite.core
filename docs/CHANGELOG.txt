@@ -1,7 +1,16 @@
-3.1.11 (unreleased)
+3.1.x Long Term Support (LTS)
+-----------------------------
+LIMS-2209: error in manage analyises
+LIMS-1917: Inconsistencies related to significant digits in uncertainties
+LIMS-2015: Column spacing on Client look-up
+LIMS-1807: Validation for Start Date - End date relationship while creating invoices and price lists
+LIMS-1991: Sort Order for Analysis Categories and Services
+LIMS-1521: Date verified column for AR lists
+LIMS-2194 Error when submitting a result
+
+3.1.11 (2016-01-25)
 -------------------
 WINE-125: Client users receive unauthorized when viewing some published ARs
-LIMS-1991: Sort Order for Analysis Categories and Services
 
 3.1.10 (2016-01-13)
 -------------------

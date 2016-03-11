@@ -195,16 +195,7 @@ function CalculationUtils() {
                     // put result values in their boxes
                     for(i=0;i<$(data['results']).length;i++){
                         result = $(data['results'])[i];
-                        // We have to get the decimals because if they are .0, the will be ignored
-                        var decimals = 0;
-                        if (result.result_str.indexOf(".") > -1){
-                            decimals = result.result_str.split('.')[1].length;
-                        }
-                        var result_with_decimals = ""
-                        if (result.result_str != "" && result.result_str != ''){
-                            result_with_decimals = parseFloat(result.result_str).toFixed(decimals)
-                        };
-                        $("input[uid='"+result.uid+"']").filter("input[field='Result']").val(result_with_decimals);
+                         $("input[uid='"+result.uid+"']").filter("input[field='Result']").val(result.formatted_result);
 
                         $('[type="hidden"]').filter("[field='ResultDM']").filter("[uid='"+result.uid+"']").val(result.dry_result);
                         $($('[type="hidden"]').filter("[field='ResultDM']").filter("[uid='"+result.uid+"']").siblings()[0]).empty().append(result.dry_result);
