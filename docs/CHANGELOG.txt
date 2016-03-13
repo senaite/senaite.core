@@ -1,5 +1,6 @@
 3.1.x Long Term Support (LTS)
 -----------------------------
+LIMS-2216: Results below LDL are not displayed in reports
 LIMS-2217: Specifications are not set in analyses on Analysis Request creation
 LIMS-2218: Result is replaced by min or max specs when "<Min" or ">Max" fields are used
 LIMS-2215: Decimal mark not working
@@ -11,7 +12,7 @@ LIMS-2015: Column spacing on Client look-up
 LIMS-1807: Validation for Start Date - End date relationship while creating invoices and price lists
 LIMS-1991: Sort Order for Analysis Categories and Services
 LIMS-1521: Date verified column for AR lists
-LIMS-2194 Error when submitting a result
+LIMS-2194: Error when submitting a result
 
 3.1.11 (2016-01-25)
 -------------------
