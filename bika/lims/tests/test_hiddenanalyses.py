@@ -355,6 +355,7 @@ class TestHiddenAnalyses(BikaFunctionalTestCase):
                 if res < 0:
                     self.assertFalse('hidden' in ar.getAnalysisServiceSettings(services[i]))
                 else:
+                    # testing tests
                     self.assertTrue('hidden' in ar.getAnalysisServiceSettings(services[i]))
                 if abs(res) == 1:
                     self.assertTrue(ar.isAnalysisServiceHidden(services[i]))
