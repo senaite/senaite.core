@@ -70,7 +70,8 @@ class EasyQParser(InstrumentResultsFileParser):
 
             rawdict = row
             rawdict['DefaultResult'] = 'Value'
-            self._addRawResult(resid, {testname: rawdict}, False)
+            key = resid or serial
+            self._addRawResult(key, {testname: rawdict}, False)
 
 
 class EasyQImporter(AnalysisResultsImporter):
