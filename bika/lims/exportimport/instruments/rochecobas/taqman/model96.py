@@ -4,7 +4,6 @@
 import csv
 from DateTime import DateTime
 
-from datetime import datetime
 from bika.lims.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter, InstrumentResultsFileParser
 from bika.lims import bikaMessageFactory as _
@@ -22,7 +21,7 @@ class RocheCobasTaqmanRSFParser(InstrumentResultsFileParser):
         InstrumentResultsFileParser.__init__(self, rsf, 'CSV')
 
     def parse(self):
-        reader = csv.DictReader(self.getInputFile(), delimiter=',', quotechar='"')
+        reader = csv.DictReader(self.getInputFile(), delimiter=',')
 
         for n, row in enumerate(reader):
             resid = row.get("Sample ID", None)
@@ -64,6 +63,7 @@ class RocheCobasTaqmanImporter(AnalysisResultsImporter):
                                          allowed_ar_states,
                                          allowed_analysis_states,
                                          instrument_uid)
+
 
 def Import(context, request):
     """ Beckman Coulter Access 2 analysis results
@@ -115,13 +115,13 @@ def Import(context, request):
         elif sample == 'sample_clientsid':
             sam = ['getSampleID', 'getClientSampleID']
 
-        importer = RocheCobasTaqman96Importer(parser=parser,
-                                              context=context,
-                                              idsearchcriteria=sam,
-                                              allowed_ar_states=status,
-                                              allowed_analysis_states=None,
-                                              override=over,
-                                              instrument_uid=instrument)
+        importer = RocheCobasTaqmanImporter(parser=parser,
+                                            context=context,
+                                            idsearchcriteria=sam,
+                                            allowed_ar_states=status,
+                                            allowed_analysis_states=None,
+                                            override=over,
+                                            instrument_uid=instrument)
         tbex = ''
         try:
             importer.process()
@@ -136,11 +136,3 @@ def Import(context, request):
     results = {'errors': errors, 'log': logs, 'warns': warns}
 
     return json.dumps(results)
-
-class BeckmancoulterAccess2RSFParser(RocheCobasTaqmanRSFParser):
-    def getAttachmentFileType(self):
-        return "Roche Cobas Taqman 96"
-
-class RocheCobasTaqman96Importer(RocheCobasTaqmanImporter):
-    def getKeywordsToBeExcluded(self):
-        return []
