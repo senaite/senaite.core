@@ -24,6 +24,7 @@ from scilvet.abc import plus
 from eltra.cs import cs2000
 from rigaku.supermini import wxrf
 from myself import myinstrument
+from nuclisens import easyq
 
 __all__ = ['abaxis.vetscan.vs2',
            'agilent.masshunter.quantitative',
@@ -50,6 +51,7 @@ __all__ = ['abaxis.vetscan.vs2',
            'tescan.tima.tima',
            'thermoscientific.multiskan.go',
            'myself.myinstrument',
+           'nuclisens.easyq',
            ]
 
 
