@@ -2,7 +2,6 @@
 """ Roche Cobas Taqman 96
 """
 import csv
-from cStringIO import StringIO
 from DateTime import DateTime
 
 from datetime import datetime
@@ -20,11 +19,10 @@ class RocheCobasTaqmanRSFParser(InstrumentResultsFileParser):
     """ Parser for Roche Corbase Taqman 96
     """
     def __init__(self, rsf):
-        self.csv_file = StringIO(rsf.read())
         InstrumentResultsFileParser.__init__(self, rsf, 'CSV')
 
     def parse(self):
-        reader = csv.DictReader(self.csv_file, delimiter=',', quotechar='"')
+        reader = csv.DictReader(self.getInputFile(), delimiter=',', quotechar='"')
 
         for n, row in enumerate(reader):
             resid = row.get("Sample ID", None)
