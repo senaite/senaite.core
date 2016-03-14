@@ -1,5 +1,7 @@
 3.2.1 (unreleased)
 ------------------
+HEALTH-310: Implemented Nuclisens EasyQ instrument importer
+HEALTH-319: Instrument. Roche Cobas Taqman 96
 LIMS-2091: Table Column Display options Everywhere
 LIMS-2207: Indentation in analysisrequests.py
 LIMS-2208: WinescanCSVParser class instance variable misspelling
