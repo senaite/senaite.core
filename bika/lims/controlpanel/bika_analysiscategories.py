@@ -37,10 +37,13 @@ class AnalysisCategoriesView(BikaListingView):
                       'index': 'sortable_title'},
             'Description': {'title': _('Description'),
                             'index': 'description',
-                            'toggle': True},
+                            'toggle': False},
             'Department': {'title': _('Department'),
                            'index': 'getDepartmentTitle',
                            'toggle': True},
+            'SortKey': {'title': _('Sort Key'),
+                           'index': 'sortKey',
+                           'toggle': False},
         }
 
         self.review_states = [
@@ -48,7 +51,7 @@ class AnalysisCategoriesView(BikaListingView):
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': [{'id':'deactivate'}, ],
-             'columns': ['Title', 'Description', 'Department']},
+             'columns': ['Title', 'Description', 'Department', 'SortKey']},
             {'id':'inactive',
              'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
@@ -68,6 +71,7 @@ class AnalysisCategoriesView(BikaListingView):
             obj = items[x]['obj']
             items[x]['Description'] = obj.Description()
             items[x]['Department'] = obj.getDepartment() and obj.getDepartment().Title() or ''
+            items[x]['SortKey'] = obj.getSortKey()
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                (items[x]['url'], items[x]['Title'])
 

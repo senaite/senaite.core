@@ -224,7 +224,9 @@ class ARTemplate(BaseContent):
         return DisplayList(items)
 
     def getClientUID(self):
-        return self.aq_parent.UID()
+        if self.aq_parent.portal_type == 'Client':
+            return self.aq_parent.UID()
+        return ''
 
     def getAnalysisServiceSettings(self, uid):
         """ Returns a dictionary with the settings for the analysis

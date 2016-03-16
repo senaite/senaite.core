@@ -27,6 +27,10 @@ def create_analysisrequest(
     workflow = getToolByName(context, 'portal_workflow')
     bc = getToolByName(context, 'bika_catalog')
 
+    # It's necessary to modify these and we don't want to pollute the
+    # parent's data
+    values = values.copy()
+
     # Create new sample or locate the existing for secondary AR
     if not values.get('Sample', False):
         secondary = False

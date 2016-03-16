@@ -25,6 +25,7 @@ from smtplib import SMTPServerDisconnected, SMTPRecipientsRefused
 from zope.component import getAdapters, getUtility
 
 import App
+import cgi
 import glob, os, sys, traceback
 import Globals
 import re
@@ -484,7 +485,6 @@ class AnalysisRequestPublishView(BrowserView):
                 andict['previous_results'] = ", ".join([p['formatted_result'] for p in andict['previous'][-5:]])
 
             analyses.append(andict)
-        analyses.sort(lambda x, y: cmp(x.get('title').lower(), y.get('title').lower()))
         return analyses
 
     def _analysis_data(self, analysis, decimalmark=None):
@@ -543,7 +543,8 @@ class AnalysisRequestPublishView(BrowserView):
 
         andict['specs'] = specs
         scinot = self.context.bika_setup.getScientificNotationReport()
-        andict['formatted_result'] = analysis.getFormattedResult(specs=specs, sciformat=int(scinot), decimalmark=decimalmark)
+        fresult =  analysis.getFormattedResult(specs=specs, sciformat=int(scinot), decimalmark=decimalmark)
+        andict['formatted_result'] = cgi.escape(fresult);
 
         fs = ''
         if specs.get('min', None) and specs.get('max', None):
@@ -552,8 +553,8 @@ class AnalysisRequestPublishView(BrowserView):
             fs = '> %s' % specs['min']
         elif specs.get('max', None):
             fs = '< %s' % specs['max']
-        andict['formatted_specs'] = formatDecimalMark(fs, decimalmark)
-        andict['formatted_uncertainty'] = format_uncertainty(analysis, analysis.getResult(), decimalmark=decimalmark, sciformat=int(scinot))
+        andict['formatted_specs'] = cgi.escape(formatDecimalMark(fs, decimalmark))
+        andict['formatted_uncertainty'] = cgi.escape(format_uncertainty(analysis, analysis.getResult(), decimalmark=decimalmark, sciformat=int(scinot)))
 
         # Out of range?
         if specs:
@@ -924,3 +925,10 @@ class AnalysisRequestPublishView(BrowserView):
         else:
             subject = t(_('Analysis results'))
         return subject, tot_line
+
+    def sorted_by_sort_key(self, category_keys):
+        """ Sort categories via catalog lookup on title. """
+        bsc = getToolByName(self.context, "bika_setup_catalog")
+        analysis_categories = bsc(portal_type="AnalysisCategory", sort_on="sortable_title")
+        sort_keys = dict([(b.Title, "{:04}".format(a)) for a, b in enumerate(analysis_categories)])
+        return sorted(category_keys, key=lambda title, sk=sort_keys: sk.get(title))

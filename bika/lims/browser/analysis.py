@@ -29,8 +29,8 @@ class ResultOutOfRangeIcons(object):
                 continue
             spec = ret["spec_values"]
             rngstr = "{0} {1}, {2} {3}".format(
-                t(_("min")), str(spec['min']),
-                t(_("max")), str(spec['max']))
+                t(_("min")), str(spec.get('min','')),
+                t(_("max")), str(spec.get('max','')))
             if ret["out_of_range"]:
                 if ret["acceptable"]:
                     message = "{0} ({1})".format(
@@ -167,7 +167,7 @@ class ResultOutOfRange(object):
         if self.isOutOfShoulderRange(result, Min, Max, error):
             return True, True
         return True, False
-    
+
 class JSONReadExtender(object):
 
     """- Adds the specification from Analysis Request to Analysis in JSON response
@@ -182,7 +182,7 @@ class JSONReadExtender(object):
     def analysis_specification(self):
         ar = self.context.aq_parent
         rr = dicts_to_dict(ar.getResultsRange(),'keyword')
-        
+
         return rr[self.context.getService().getKeyword()]
 
     def __call__(self, request, data):
@@ -191,5 +191,3 @@ class JSONReadExtender(object):
         if not self.include_fields or "specification" in self.include_fields:
             data['specification'] = self.analysis_specification()
         return data
-
-

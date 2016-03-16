@@ -12,6 +12,7 @@ from bika.lims.permissions import *
 from bika.lims.utils import isActive
 from bika.lims.utils import getUsers
 from bika.lims.utils import to_utf8
+from bika.lims.utils import formatDecimalMark
 from DateTime import DateTime
 from operator import itemgetter
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -270,6 +271,8 @@ class AnalysesView(BikaListingView):
     def folderitems(self):
         rc = getToolByName(self.context, REFERENCE_CATALOG)
         bsc = getToolByName(self.context, 'bika_setup_catalog')
+        analysis_categories = bsc(portal_type="AnalysisCategory", sort_on="sortable_title")
+        analysis_categories_order = dict([(b.Title, "{:04}".format(a)) for a, b in enumerate(analysis_categories)])
         workflow = getToolByName(self.context, 'portal_workflow')
         mtool = getToolByName(self.context, 'portal_membership')
         checkPermission = mtool.checkPermission
@@ -308,6 +311,7 @@ class AnalysesView(BikaListingView):
         self.interim_columns = {}
         self.specs = {}
         show_methodinstr_columns = False
+        dmk = self.context.bika_setup.getResultsDecimalMark()
         for i, item in enumerate(items):
             # self.contentsMethod may return brains or objects.
             obj = hasattr(items[i]['obj'], 'getObject') and \
@@ -325,9 +329,10 @@ class AnalysesView(BikaListingView):
 
             if self.show_categories:
                 cat = obj.getService().getCategoryTitle()
+                cat_order = analysis_categories_order.get(cat)
                 items[i]['category'] = cat
-                if cat not in self.categories:
-                    self.categories.append(cat)
+                if (cat, cat_order) not in self.categories:
+                    self.categories.append((cat, cat_order))
 
             # Check for InterimFields attribute on our object,
             interim_fields = hasattr(obj, 'getInterimFields') \
@@ -335,7 +340,7 @@ class AnalysesView(BikaListingView):
             # kick some pretty display values in.
             for x in range(len(interim_fields)):
                 interim_fields[x]['formatted_value'] = \
-                    format_numeric_result(obj, interim_fields[x]['value'])
+                    formatDecimalMark(interim_fields[x]['value'], dmk)
             self.interim_fields[obj.UID()] = interim_fields
             items[i]['service_uid'] = service.UID()
             items[i]['Service'] = service.Title()
@@ -581,7 +586,6 @@ class AnalysesView(BikaListingView):
             if can_view_result:
                 items[i]['Result'] = result
                 scinot = self.context.bika_setup.getScientificNotationResults()
-                dmk = self.context.bika_setup.getResultsDecimalMark()
                 items[i]['formatted_result'] = obj.getFormattedResult(sciformat=int(scinot),decimalmark=dmk)
 
                 # LIMS-1379 Allow manual uncertainty value input
@@ -809,7 +813,10 @@ class AnalysesView(BikaListingView):
                 new_states.append(state)
             self.review_states = new_states
 
-        self.categories.sort()
+        if self.show_categories:
+            self.categories = map(lambda x: x[0], sorted(self.categories, key=lambda x: x[1]))
+        else:
+            self.categories.sort()
 
         # self.json_specs = json.dumps(self.specs)
         self.json_interim_fields = json.dumps(self.interim_fields)

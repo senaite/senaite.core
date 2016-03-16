@@ -1,7 +1,7 @@
 Bika LIMS
 =========
 
-v3.1.11 (unreleased)
+v3.1.x Long Term Support (LTS)
 
 The meaning of Gaob
 -------------------

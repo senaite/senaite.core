@@ -82,7 +82,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
         mapping = {}
 
         # values to be returned to form for this UID
-        Result = {'uid': uid, 'result': form_result, 'result_str': self.value}
+        Result = {'uid': uid, 'result': form_result}
         try:
             Result['result'] = float(form_result)
         except:
@@ -267,34 +267,12 @@ class ajaxCalculateAnalysisEntry(BrowserView):
             specs = analysis.getResultsRange()
 
         # format result
-        belowmin = False
-        abovemax = False
-        hidemin = specs.get('hidemin', '')
-        hidemax = specs.get('hidemax', '')
-        if Result.get('result', ''):
-            fresult = Result['result']
-            try:
-                belowmin = hidemin and fresult < float(hidemin) or False
-            except ValueError:
-                belowmin = False
-                pass
-            try:
-                abovemax = hidemax and fresult > float(hidemax) or False
-            except ValueError:
-                abovemax = False
-                pass
-
-        if belowmin is True:
-            Result['formatted_result'] = '< %s' % hidemin
-        elif abovemax is True:
-            Result['formatted_result'] = '> %s' % hidemax
-        else:
-            try:
-                Result['formatted_result'] = format_numeric_result(analysis,
-                                                                   Result['result'])
-            except ValueError:
-                # non-float
-                Result['formatted_result'] = Result['result']
+        try:
+            Result['formatted_result'] = format_numeric_result(analysis,
+                                                               Result['result'])
+        except ValueError:
+            # non-float
+            Result['formatted_result'] = Result['result']
         # calculate Dry Matter result
         # if parent is not an AR, it's never going to be calculable
         dm = hasattr(analysis.aq_parent, 'getReportDryMatter') and \
