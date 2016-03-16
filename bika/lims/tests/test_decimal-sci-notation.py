@@ -182,6 +182,8 @@ class Test_DecimalSciNotation(BikaFunctionalTestCase):
                           'SamplingDate': '2015-01-01',
                           'SampleType': sampletype.UID()}
                 ar = create_analysisrequest(client, {}, values, [s.UID()])
+                wf = getToolByName(ar, 'portal_workflow')
+                wf.doActionFor(ar, 'receive')
                 an = ar.getAnalyses()[0].getObject()
                 prevm = m;
             an.setResult(m[3])
