@@ -25,6 +25,7 @@ from smtplib import SMTPServerDisconnected, SMTPRecipientsRefused
 from zope.component import getAdapters, getUtility
 
 import App
+import cgi
 import glob, os, sys, traceback
 import Globals
 import re
@@ -619,7 +620,8 @@ class AnalysisRequestPublishView(BrowserView):
 
         andict['specs'] = specs
         scinot = self.context.bika_setup.getScientificNotationReport()
-        andict['formatted_result'] = analysis.getFormattedResult(specs=specs, sciformat=int(scinot), decimalmark=decimalmark)
+        fresult =  analysis.getFormattedResult(specs=specs, sciformat=int(scinot), decimalmark=decimalmark)
+        andict['formatted_result'] = cgi.escape(fresult);
 
         fs = ''
         if specs.get('min', None) and specs.get('max', None):
@@ -628,8 +630,8 @@ class AnalysisRequestPublishView(BrowserView):
             fs = '> %s' % specs['min']
         elif specs.get('max', None):
             fs = '< %s' % specs['max']
-        andict['formatted_specs'] = formatDecimalMark(fs, decimalmark)
-        andict['formatted_uncertainty'] = format_uncertainty(analysis, analysis.getResult(), decimalmark=decimalmark, sciformat=int(scinot))
+        andict['formatted_specs'] = cgi.escape(formatDecimalMark(fs, decimalmark))
+        andict['formatted_uncertainty'] = cgi.escape(format_uncertainty(analysis, analysis.getResult(), decimalmark=decimalmark, sciformat=int(scinot)))
 
         # Out of range?
         if specs:

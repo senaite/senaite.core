@@ -264,7 +264,7 @@ class TestHiddenAnalyses(BikaFunctionalTestCase):
         ar.setAnalysisServicesSettings([])
 
         # AR with profile with no changes
-        values['Profile'] = self.analysisprofile.UID()
+        values['Profiles'] = self.analysisprofile.UID()
         ar = create_analysisrequest(client, request, values, services)
         self.assertFalse('hidden' in ar.getAnalysisServiceSettings(services[0]))
         self.assertFalse(ar.getAnalysisServiceSettings(services[1]).get('hidden'))
@@ -284,7 +284,7 @@ class TestHiddenAnalyses(BikaFunctionalTestCase):
 
         # AR with template with no changes
         values['Template'] = self.artemplate
-        del values['Profile']
+        del values['Profiles']
         ar = create_analysisrequest(client, request, values, services)
         self.assertFalse('hidden' in ar.getAnalysisServiceSettings(services[0]))
         self.assertFalse(ar.getAnalysisServiceSettings(services[1]).get('hidden'))
@@ -303,7 +303,7 @@ class TestHiddenAnalyses(BikaFunctionalTestCase):
         self.assertFalse('hidden' in ar.getAnalysisServiceSettings(uid))
 
         # AR with profile, with changes
-        values['Profile'] = self.analysisprofile.UID()
+        values['Profiles'] = self.analysisprofile.UID()
         del values['Template']
         matrix = [[2, 1,-2],  # AS = Not set
                   [2, 1,-2],  # AS = False
@@ -335,7 +335,7 @@ class TestHiddenAnalyses(BikaFunctionalTestCase):
 
         # AR with template, with changes
         values['Template'] = self.artemplate.UID()
-        del values['Profile']
+        del values['Profiles']
         matrix = [[2, 1,-2],  # AS = Not set
                   [2, 1,-2],  # AS = False
                   [2, 1,-1]]
@@ -355,6 +355,7 @@ class TestHiddenAnalyses(BikaFunctionalTestCase):
                 if res < 0:
                     self.assertFalse('hidden' in ar.getAnalysisServiceSettings(services[i]))
                 else:
+                    # testing tests
                     self.assertTrue('hidden' in ar.getAnalysisServiceSettings(services[i]))
                 if abs(res) == 1:
                     self.assertTrue(ar.isAnalysisServiceHidden(services[i]))
