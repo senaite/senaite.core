@@ -37,8 +37,8 @@ def get_significant_digits(numeric_value):
     """
     Returns the precision for a given floatable value.
     If value is None or not floatable, returns None.
-    Will return positive values if the result is below 0 and will
-    return 0 values if the result is above 0.
+    Will return positive values if the result is below 1 and will
+    return 0 values if the result is above or equal to 1.
     :param numeric_value: the value to get the precision from
     :return: the numeric_value's precision
             Examples:
@@ -60,6 +60,70 @@ def get_significant_digits(numeric_value):
     significant_digit = int(math.floor(math.log10(abs(numeric_value))))
     return 0 if significant_digit > 0 else abs(significant_digit)
 
+def _format_decimal_or_sci(result, precision, threshold, sciformat):
+    # Current result's precision is above the threshold?
+    sig_digits = get_significant_digits(result)
+
+    # Note that if result < 1, sig_digits > 0. Otherwise, sig_digits = 0
+    # Eg:
+    #       result = 0.2   -> sig_digit = 1
+    #                0.002 -> sig_digit = 3
+    #                0     -> sig_digit = 0
+    #                2     -> sig_digit = 0
+    # See get_significant_digits signature for further details!
+    #
+    # Also note if threshold is negative, the result will always be expressed
+    # in scientific notation:
+    # Eg.
+    #       result=12345, threshold=-3, sig_digit=0 -> 1.2345e4 = 1.2345·10⁴
+    #
+    # So, if sig_digits is > 0, the power must be expressed in negative
+    # Eg.
+    #      result=0.0012345, threshold=3, sig_digit=3 -> 1.2345e-3=1.2345·10-³
+    sci = sig_digits >= threshold and abs(threshold) > 0
+    sign = '-' if sig_digits > 0 else ''
+    if threshold < 0:
+        # Negative threshold, need to check if the number of non-decimal
+        # positions is above the threshold
+        sig_digits = int(math.log(abs(float(result)),10)) if abs(float(result)) >= 10 else 0
+        sci = sig_digits > 0
+
+    formatted = ''
+    if sci:
+        if sign:
+            # 0.0012345 -> 1.2345
+            res = float(result)*(10**sig_digits)
+        else:
+            # Non-decimal positions
+            # 123.45 -> 1.2345
+            res = float(result)/(10**sig_digits)
+        res = int(res) if res.is_integer() else res
+
+        # Scientific notation
+        if sciformat == 2:
+            # ax10^b or ax10^-b
+            formatted = "%s%s%s%s" % (res,"x10^",sign,sig_digits)
+        elif sciformat == 3:
+            # ax10<super>b</super> or ax10<super>-b</super>
+            formatted = "%s%s%s%s%s" % (res,"x10<sup>",sign,sig_digits,"</sup>")
+        elif sciformat == 4:
+            # ax10^b or ax10^-b
+            formatted = "%s%s%s%s" % (res,"·10^",sign,sig_digits)
+        elif sciformat == 5:
+            # ax10<super>b</super> or ax10<super>-b</super>
+            formatted = "%s%s%s%s%s" % (res,"·10<sup>",sign,sig_digits,"</sup>")
+        else:
+            # Default format: aE^+b
+            sig_digits = "%02d" % sig_digits
+            formatted = "%s%s%s%s" % (res,"e",sign,sig_digits)
+    else:
+        # Decimal notation
+        prec = precision if precision and precision > 0 else 0
+        formatted = str("%%.%sf" % prec) % result
+        if float(formatted) == 0 and '-' in formatted:
+            # We don't want things like '-0.00'
+            formatted = formatted.replace('-','')
+    return formatted
 
 def format_uncertainty(analysis, result, decimalmark='.', sciformat=1):
     """
@@ -146,48 +210,8 @@ def format_uncertainty(analysis, result, decimalmark='.', sciformat=1):
     # Scientific notation?
     # Get the default precision for scientific notation
     threshold = service.getExponentialFormatPrecision()
-    # Current result precision is above the threshold?
-    sig_digits = get_significant_digits(result)
-    negative = sig_digits < 0
-    sign = '-' if negative else ''
-    sig_digits = abs(sig_digits)
-    sci = sig_digits >= threshold and sig_digits > 0
-
-    formatted = ''
-    if sci:
-        # Scientific notation
-        # 3.2014E+4
-        if negative == True:
-            res = float(uncertainty)*(10**sig_digits)
-        else:
-            res = float(uncertainty)/(10**sig_digits)
-            res = float(str("%%.%sf" % (sig_digits-1)) % res)
-        res = int(res) if res.is_integer() else res
-
-        if sciformat in [2,3,4,5]:
-            if sciformat == 2:
-                # ax10^b or ax10^-b
-                formatted = "%s%s%s%s" % (res,"x10^",sign,sig_digits)
-            elif sciformat == 3:
-                # ax10<super>b</super> or ax10<super>-b</super>
-                formatted = "%s%s%s%s%s" % (res,"x10<sup>",sign,sig_digits,"</sup>")
-            elif sciformat == 4:
-                # ax10^b or ax10^-b
-                formatted = "%s%s%s%s" % (res,"·10^",sign,sig_digits)
-            elif sciformat == 5:
-                # ax10<super>b</super> or ax10<super>-b</super>
-                formatted = "%s%s%s%s%s" % (res,"·10<sup>",sign,sig_digits,"</sup>")
-        else:
-            # Default format: aE^+b
-            sig_digits = "%02d" % sig_digits
-            formatted = "%s%s%s%s" % (res,"e",sign,sig_digits)
-            #formatted = str("%%.%se" % sig_digits) % uncertainty
-    else:
-        # Decimal notation
-        prec = analysis.getPrecision(result)
-        prec = prec if prec else ''
-        formatted = str("%%.%sf" % prec) % uncertainty
-
+    precision = analysis.getPrecision(result)
+    formatted = _format_decimal_or_sci(uncertainty, precision, threshold, sciformat)
     return formatDecimalMark(formatted, decimalmark)
 
 
@@ -260,43 +284,6 @@ def format_numeric_result(analysis, result, decimalmark='.', sciformat=1):
     # Scientific notation?
     # Get the default precision for scientific notation
     threshold = service.getExponentialFormatPrecision()
-    # Current result precision is above the threshold?
-    sig_digits = get_significant_digits(result)
-    negative = sig_digits < 0
-    sign = '-' if negative else ''
-    sig_digits = abs(sig_digits)
-    sci = sig_digits >= threshold
-
-    formatted = ''
-    if sci:
-        # Scientific notation
-        if sciformat in [2,3,4,5]:
-            if negative == True:
-                res = float(result)*(10**sig_digits)
-            else:
-                res = float(result)/(10**sig_digits)
-                res = float(str("%%.%sf" % (sig_digits-1)) % res)
-            # We have to check if formatted is an integer using "'.' in formatted"
-            # because ".is_integer" doesn't work with X.0
-            res = int(res) if '.' not in res else res
-            if sciformat == 2:
-                # ax10^b or ax10^-b
-                formatted = "%s%s%s%s" % (res,"x10^",sign,sig_digits)
-            elif sciformat == 3:
-                # ax10<super>b</super> or ax10<super>-b</super>
-                formatted = "%s%s%s%s%s" % (res,"x10<sup>",sign,sig_digits,"</sup>")
-            elif sciformat == 4:
-                # ax10^b or ax10^-b
-                formatted = "%s%s%s%s" % (res,"·10^",sign,sig_digits)
-            elif sciformat == 5:
-                # ax10<super>b</super> or ax10<super>-b</super>
-                formatted = "%s%s%s%s%s" % (res,"·10<sup>",sign,sig_digits,"</sup>")
-        else:
-            # Default format: aE^+b
-            formatted = str("%%.%se" % sig_digits) % result
-    else:
-        # Decimal notation
-        prec = analysis.getPrecision(result)
-        prec = prec if prec and prec > 0 else 0
-        formatted = str("%%.%sf" % prec) % result
+    precision = analysis.getPrecision(result)
+    formatted = _format_decimal_or_sci(result, precision, threshold, sciformat)
     return formatDecimalMark(formatted, decimalmark)
