@@ -80,23 +80,27 @@ def _format_decimal_or_sci(result, precision, threshold, sciformat):
     # So, if sig_digits is > 0, the power must be expressed in negative
     # Eg.
     #      result=0.0012345, threshold=3, sig_digit=3 -> 1.2345e-3=1.2345·10-³
-    sci = sig_digits >= threshold and abs(threshold) > 0
+    sci = sig_digits >= threshold and abs(threshold) > 0 and sig_digits <= precision
     sign = '-' if sig_digits > 0 else ''
-    if threshold < 0:
-        # Negative threshold, need to check if the number of non-decimal
+    if sig_digits == 0 and abs(threshold) > 0 and abs(int(float(result))) > 0:
+        # Number >= 1, need to check if the number of non-decimal
         # positions is above the threshold
         sig_digits = int(math.log(abs(float(result)),10)) if abs(float(result)) >= 10 else 0
-        sci = sig_digits > 0
+        sci = sig_digits >= abs(threshold)
 
     formatted = ''
     if sci:
+        # First, cut the extra decimals according to the precision
+        prec = precision if precision and precision > 0 else 0
+        nresult = str("%%.%sf" % prec) % result
+
         if sign:
             # 0.0012345 -> 1.2345
-            res = float(result)*(10**sig_digits)
+            res = float(nresult)*(10**sig_digits)
         else:
             # Non-decimal positions
             # 123.45 -> 1.2345
-            res = float(result)/(10**sig_digits)
+            res = float(nresult)/(10**sig_digits)
         res = int(res) if res.is_integer() else res
 
         # Scientific notation
