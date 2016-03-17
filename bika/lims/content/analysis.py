@@ -40,6 +40,7 @@ from bika.lims.workflow import skip
 from bika.lims.workflow import doActionFor
 from decimal import Decimal
 from zope.interface import implements
+import cgi
 import datetime
 import math
 
@@ -835,7 +836,7 @@ class Analysis(BaseContent):
             if self.getInstrument() else self.getDefaultInstrument()
         return instr.getMethod() if instr else None
 
-    def getFormattedResult(self, specs=None, decimalmark='.', sciformat=1):
+    def getFormattedResult(self, specs=None, decimalmark='.', sciformat=1, html=True):
         """Formatted result:
         1. If the result is a detection limit, returns '< LDL' or '> UDL'
         2. Print ResultText of matching ResultOptions
@@ -857,6 +858,8 @@ class Analysis(BaseContent):
                           4. The sci notation has to be formatted as a·10^b
                           5. As 4, but with super html entity for exp
                           By default 1
+        :param html: if true, returns an string with the special characters
+            escaped: e.g: '<' and '>' (LDL and UDL for results like < 23.4).
         """
         result = self.getResult()
 
@@ -866,7 +869,8 @@ class Analysis(BaseContent):
             try:
                 res = float(result) # required, check if floatable
                 res = drop_trailing_zeros_decimal(res)
-                return formatDecimalMark('%s %s' % (dl, res), decimalmark)
+                hdl = cgi.escape(dl) if html else dl
+                return formatDecimalMark('%s %s' % (hdl, res), decimalmark)
             except:
                 logger.warn("The result for the analysis %s is a "
                             "detection limit, but not floatable: %s" %
@@ -908,11 +912,13 @@ class Analysis(BaseContent):
 
         # 4.1. If result is below min and hidemin enabled, return '<min'
         if belowmin:
-            return formatDecimalMark('< %s' % hidemin, decimalmark)
+            fdm = formatDecimalMark('< %s' % hidemin, decimalmark)
+            return fdm.replace('< ', '&lt; ', 1) if html else fdm
 
         # 4.2. If result is above max and hidemax enabled, return '>max'
         if abovemax:
-            return formatDecimalMark('> %s' % hidemax, decimalmark)
+            fdm = formatDecimalMark('> %s' % hidemax, decimalmark)
+            return fdm.replace('> ', '&gt; ', 1) if html else fdm
 
         # Below Lower Detection Limit (LDL)?
         ldl = self.getLowerDetectionLimit()
@@ -920,7 +926,8 @@ class Analysis(BaseContent):
             # LDL must not be formatted according to precision, etc.
             # Drop trailing zeros from decimal
             ldl = drop_trailing_zeros_decimal(ldl)
-            return formatDecimalMark('< %s' % ldl, decimalmark)
+            fdm = formatDecimalMark('< %s' % ldl, decimalmark)
+            return fdm.replace('< ', '&lt; ', 1) if html else fdm
 
         # Above Upper Detection Limit (UDL)?
         udl = self.getUpperDetectionLimit()
@@ -928,7 +935,9 @@ class Analysis(BaseContent):
             # UDL must not be formatted according to precision, etc.
             # Drop trailing zeros from decimal
             udl = drop_trailing_zeros_decimal(udl)
-            return formatDecimalMark('> %s' % udl, decimalmark)
+            fdm = formatDecimalMark('> %s' % udl, decimalmark)
+            return fdm.replace('> ', '&gt; ', 1) if html else fdm
+
         # Render numerical values
         return format_numeric_result(self, self.getResult(),
                         decimalmark=decimalmark,
