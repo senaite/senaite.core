@@ -38,7 +38,7 @@ class RejectionWidget(TypesWidget):
         # Building the list with the values only because the keys are not needed any more
         items = []
         for key in sorted_keys:
-            items.append(reject_reasons[key])
+            items.append(reject_reasons[key].strip())
         return items
 
     def isRejectionEnabled(self, dd):
