@@ -197,7 +197,7 @@ def formatDecimalMark(value, decimalmark='.'):
     except ValueError:
         # if value looks like '< 20.5', the decimal mark would have to be changed
         if value and value[:1] in ['<','>']:
-            fdm = formatDecimalMark(value[1:].strip())
+            fdm = formatDecimalMark(value[1:].strip(), decimalmark)
             return '%s %s' % (value[:1], fdm)
         else:
             return value
