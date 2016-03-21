@@ -1193,7 +1193,7 @@ body.template-ar_add table.listing.analysisrequest.add {
 body.template-ar_add table.th.column {
     text-align:center;
 }
-
+/*Rejection overlay CSS*/
 div#semioverlay {
     display:none;
     position:absolute;
@@ -1209,7 +1209,7 @@ div#semioverlay {
 }
 
 div#semioverlay div.semioverlay-content {
-    background-color: #efefef;
+    background-color: #D8D8D8;
     border-image: none;
     border-radius: 5px 5px 0 0;
     border: 1px solid #999;
@@ -1219,7 +1219,7 @@ div#semioverlay div.semioverlay-content {
     padding: 20px;
 }
 div#semioverlay div.semioverlay-buttons {
-    background-color: #efefef;
+    background-color: #D8D8D8;
     border-image: none;
     border-radius: 0px 0px 5px 5px;
     border: 1px solid #999;
@@ -1227,5 +1227,15 @@ div#semioverlay div.semioverlay-buttons {
     box-shadow: 1px 2px 2px 1px #dcdcdc;
     margin: 0 25%;
     padding: 20px;
+}
+.rejectionwidget-multiselect.rejectionwidget-field{
+    background-color: #E8E8E8;
+}
+div#semioverlay div.semioverlay-content input{
+    background-color: #E8E8E8;
+}
+div#semioverlay div.semioverlay-buttons input{
+    background-color: #e0e0e0;
+    font-size: 16px
 }
 </dtml-with>
