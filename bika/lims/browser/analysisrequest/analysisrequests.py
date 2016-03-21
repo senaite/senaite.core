@@ -600,7 +600,7 @@ class AnalysisRequestsView(BikaListingView):
                         'state_title']},
             {'id': 'rejected',
              'title': _('Rejected'),
-             'contentFilter': {'rejection_state': 'rejected',
+             'contentFilter': {'review_state': 'rejected',
                                'sort_on': 'created',
                                'sort_order': 'reverse'},
              'transitions': [],
