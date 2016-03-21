@@ -869,8 +869,9 @@ class Analysis(BaseContent):
             try:
                 res = float(result) # required, check if floatable
                 res = drop_trailing_zeros_decimal(res)
+                fdm = formatDecimalMark(res, decimalmark)
                 hdl = cgi.escape(dl) if html else dl
-                return formatDecimalMark('%s %s' % (hdl, res), decimalmark)
+                return '%s %s' % (hdl, fdm)
             except:
                 logger.warn("The result for the analysis %s is a "
                             "detection limit, but not floatable: %s" %
