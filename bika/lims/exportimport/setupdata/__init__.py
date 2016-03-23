@@ -487,7 +487,7 @@ class Client_Contacts(WorksheetImporter):
                                )
             ## Create Plone user
             username = safe_unicode(row['Username']).encode('utf-8')
-            password = safe_unicode(row['Password']).decode('utf-8')
+            password = safe_unicode(row['Password']).encode('utf-8')
             if(username):
                 try:
                     member = self.context.portal_registration.addMember(
