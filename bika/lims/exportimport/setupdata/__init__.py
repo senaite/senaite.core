@@ -1777,6 +1777,10 @@ class Reference_Samples(WorksheetImporter):
                 continue
             service = self.get_object(bsc, 'AnalysisService',
                                       row.get('AnalysisService_title'))
+            if not service:
+                warning = "Unable to load a reference sample result. Service %s not found."
+                logger.warning(warning, sheetname)
+                continue
             results.append({
                     'uid': service.UID(),
                     'result': row['result'],
