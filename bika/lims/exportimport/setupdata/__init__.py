@@ -1468,6 +1468,8 @@ class Analysis_Profiles(WorksheetImporter):
             return
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         for row in self.get_rows(3, worksheet=worksheet):
+            if not row.get('Profile','') or not row.get('Service',''):
+                continue
             if row['Profile'] not in self.profile_services.keys():
                 self.profile_services[row['Profile']] = []
             # Here we match againts Keyword or Title.
