@@ -28,6 +28,19 @@ class RecordsWidget(ATRecordsWidget):
         if key in instance.REQUEST:
             return instance.REQUEST[key], {}
         value = form.get(field.getName(), empty_marker)
+        # When a recordswidget's visibility is defined as hidden
+        # '...visible={'view': 'hidden', 'edit': 'hidden'},...' the template
+        # displays it as an input field with the attribute 'value' as a string
+        # 'value="[{:},{:}]"'. This makes the system save the content of the
+        # widget as the string instead of a dictionary inside a list, so we
+        # need to check if the variable contains a python object as a string.
+        if value and value is not empty_marker and isinstance(value, str):
+            import ast
+            try:
+                value = ast.literal_eval(form.get(field.getName()))
+            except:
+                # cannot resolve string as a list!
+                return empty_marker
 
         if not value:
             return value, {}
