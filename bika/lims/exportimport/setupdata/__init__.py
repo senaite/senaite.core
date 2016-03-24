@@ -1410,6 +1410,10 @@ class Analysis_Services(WorksheetImporter):
             count += 1
             service = self.get_object(bsc, 'AnalysisService',
                                       row.get('Service_title'))
+            if not service:
+                warning = "Unable to load an Analysis Service uncertainty. Service '%s' not found." % row.get('Service_title')
+                logger.warning(warning)
+                continue
             service_uid = service.UID()
             if service_uid not in bucket:
                 bucket[service_uid] = []
