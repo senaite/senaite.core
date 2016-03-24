@@ -10,8 +10,8 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
 from zope.interface import implements
 from pkg_resources import resource_filename
-import datetime, os.path
-
+import datetime
+import os.path
 import re
 import transaction
 
@@ -31,13 +31,13 @@ def check_for_required_columns(name, data, required):
             raise Exception(t(message))
 
 
-
 def Float(thing):
     try:
         f = float(thing)
     except ValueError:
         f = 0.0
     return f
+
 
 def read_file(path):
     if os.path.isfile(path):
@@ -431,6 +431,18 @@ class Lab_Contacts(WorksheetImporter):
                     self.context.clients.manage_setLocalRoles(
                         username, ['Owner', ])
 
+        # Now we have the lab contacts registered, try to assign the managers
+        # to each department if required
+        sheet = self.workbook.get_sheet_by_name("Lab Departments")
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        for row in self.get_rows(3, sheet):
+            if row['title'] and row['LabContact_Username']:
+                dept = self.get_object(bsc, "Department", row.get('title'))
+                if dept and not dept.getManager():
+                    username = safe_unicode(row['LabContact_Username']).encode('utf-8')
+                    exists = [o.getObject() for o in bsc(portal_type="LabContact") if o.getObject().getUsername()==username]
+                    if exists:
+                        dept.setManager(exists[0].UID())
 
 class Lab_Departments(WorksheetImporter):
 
@@ -448,12 +460,12 @@ class Lab_Departments(WorksheetImporter):
                     if contact.getUsername() == row['LabContact_Username']:
                         manager = contact
                         break
+                if manager:
+                    obj.setManager(manager.UID())
                 else:
                     message = "Department: lookup of '%s' in LabContacts/Username failed." % row[
                         'LabContact_Username']
                     logger.info(message)
-                if manager:
-                    obj.setManager(manager.UID())
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
 
