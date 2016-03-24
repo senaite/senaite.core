@@ -328,32 +328,46 @@ class Lab_Contacts(WorksheetImporter):
         portal_groups = getToolByName(self.context, 'portal_groups')
         portal_registration = getToolByName(
             self.context, 'portal_registration')
-
+        rownum = 2
         for row in self.get_rows(3):
-
-            # Create LabContact
-
-            if not row['Firstname']:
+            rownum+=1
+            if not row.get('Firstname',None):
                 continue
 
+            # Username already exists?
+            username = row.get('Username','')
+            fullname = ('%s %s' % (row['Firstname'], row.get('Surname', ''))).strip()
+            if username:
+                username = safe_unicode(username).encode('utf-8')
+                bsc = getToolByName(self.context, 'bika_setup_catalog')
+                exists = [o.getObject() for o in bsc(portal_type="LabContact") if o.getObject().getUsername()==username]
+                if exists:
+                    error = "Lab Contact: username '{0}' in row {1} already exists. This contact will be omitted.".format(username, str(rownum))
+                    logger.error(error)
+                    continue
+
+            # Is there a signature file defined? Try to get the file first.
+            signature = None
+            if row.get('Signature'):
+                signature = self.get_file_data(row['Signature'])
+                if not signature:
+                    warning = "Lab Contact: Cannot load the signature file '{0}' for user '{1}'. The contact will be created, but without a signature image".format(row['Signature'], username)
+                    logger.warning(warning)
+
             obj = _createObjectByType("LabContact", folder, tmpID())
-            Fullname = row['Firstname'] + " " + row.get('Surname', '')
             obj.edit(
-                title=Fullname,
+                title=fullname,
                 Salutation=row.get('Salutation', ''),
                 Firstname=row['Firstname'],
                 Surname=row.get('Surname', ''),
                 JobTitle=row.get('JobTitle', ''),
                 Username=row.get('Username', ''),
+                Signature=signature
             )
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
             self.fill_contactfields(row, obj)
             self.fill_addressfields(row, obj)
-
-            signature = self.get_file_data(row.get('Signature', None))
-            if signature:
-                obj.setSignature(signature)
 
             if row['Department_title']:
                 self.defer(src_obj=obj,
@@ -364,25 +378,47 @@ class Lab_Contacts(WorksheetImporter):
                            )
 
             # Create Plone user
+            if not row['Username']:
+                warn = "Lab Contact: No username defined for user '{0}' in row {1}. Contact created, but without access credentials.".format(fullname, str(rownum))
+                logger.warning(warn)
+            if not row.get('EmailAddress', ''):
+                warn = "Lab Contact: No Email defined for user '{0}' in row {1}. Contact created, but without access credentials.".format(fullname, str(rownum))
+                logger.warning(warn)
 
-            username = safe_unicode(row['Username']).encode('utf-8')
-            if(row['Username']):
-                member = portal_registration.addMember(
-                    username,
-                    row['Password'],
-                    properties={
-                        'username': username,
-                        'email': row['EmailAddress'],
-                        'fullname': Fullname}
-                )
+            if(row['Username'] and row.get('EmailAddress','')):
+                username = safe_unicode(row['Username']).encode('utf-8')
+                passw = row['Password']
+                if not passw:
+                    warn = "Lab Contact: No password defined for user '{0}' in row {1}. Password established automatically to '{3}'".format(username, str(rownum), username)
+                    logger.warning(warn)
+                    passw = username
+
+                try:
+                    member = portal_registration.addMember(
+                        username,
+                        passw,
+                        properties={
+                            'username': username,
+                            'email': row['EmailAddress'],
+                            'fullname': fullname}
+                    )
+                except:
+                    error = "Unable to create a Plone user for user '{0}'. Login already in use?".format(username)
+                    logger.error(error)
+                    continue
+
                 groups = row.get('Groups', '')
-                if groups:
-                    group_ids = [g.strip() for g in groups.split(',')]
-                    # Add user to all specified groups
-                    for group_id in group_ids:
-                        group = portal_groups.getGroupById(group_id)
-                        if group:
-                            group.addMember(username)
+                if not groups:
+                    warn = "Lab Contact: No groups defined for user '{0}' in row {1}. Group established automatically to 'Analysts'".format(username, str(rownum))
+                    logger.warning(warn)
+                    groups = 'Analysts'
+
+                group_ids = [g.strip() for g in groups.split(',')]
+                # Add user to all specified groups
+                for group_id in group_ids:
+                    group = portal_groups.getGroupById(group_id)
+                    if group:
+                        group.addMember(username)
                 roles = row.get('Roles', '')
                 if roles:
                     role_ids = [r.strip() for r in roles.split(',')]
