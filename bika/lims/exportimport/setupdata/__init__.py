@@ -402,9 +402,8 @@ class Lab_Contacts(WorksheetImporter):
                             'email': row['EmailAddress'],
                             'fullname': fullname}
                     )
-                except:
-                    error = "Unable to create a Plone user for user '{0}'. Login already in use?".format(username)
-                    logger.error(error)
+                except Exception as msg:
+                    logger.error("Client Contact: Error adding user (%s): %s" % (msg, username))
                     continue
 
                 groups = row.get('Groups', '')
@@ -1342,6 +1341,19 @@ class Calculations(WorksheetImporter):
                            )
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
+
+        # Now we have the calculations registered, try to assign default calcs
+        # to methods
+        sheet = self.workbook.get_sheet_by_name("Methods")
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        for row in self.get_rows(3, sheet):
+            if row['title'] and row['Calculation_title']:
+                meth = self.get_object(bsc, "Method", row.get('title'))
+                if meth and not meth.getCalculation():
+                    calctit = safe_unicode(row['Calculation_title']).encode('utf-8')
+                    calc = self.get_object(bsc, "Calculation", calctit)
+                    if calc:
+                        meth.setCalculation(calc.UID())
 
 
 class Analysis_Services(WorksheetImporter):
