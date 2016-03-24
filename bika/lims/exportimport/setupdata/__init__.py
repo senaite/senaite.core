@@ -121,6 +121,10 @@ class WorksheetImporter:
                     value = ''
                 if isinstance(value, unicode):
                     value = value.encode('utf-8')
+                # Strip any space, \t, \n, or \r characters from the left-hand
+                # side, right-hand side, or both sides of the string
+                if isinstance(value, str):
+                    value = value.strip(' \t\n\r')
                 new_row.append(value)
             row = dict(zip(headers, new_row))
 
