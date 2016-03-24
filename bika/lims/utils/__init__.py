@@ -189,15 +189,6 @@ def formatDecimalMark(value, decimalmark='.'):
         ::value:: is a string
         ::return:: is a string with the decimal mark if needed
     """
-    try:
-        vvalue = float(value)
-        # continuing with 'nan' result will cause formatting to failself
-        if math.isnan(vvalue):
-            return vvalue
-    except ValueError:
-        # if value looks like '< 20.5', the decimal mark would have to be changed
-        if not '<' in value and not '>' in value:
-            return value
     # We have to consider the possibility of working with decimals such as
     # X.000 where those decimals are important because of the precission
     # and significant digits matters
@@ -207,13 +198,9 @@ def formatDecimalMark(value, decimalmark='.'):
     # strings for results
     rawval = str(value)
     try:
-        if decimalmark == ',':
-            rawval = rawval.replace('.', '[comma]')
-            rawval = rawval.replace(',', '.')
-            rawval = rawval.replace('[comma]', ',')
+        return decimalmark.join(rawval.split('.'))
     except:
-        pass
-    return rawval
+        return rawval
 
 
 # encode_header function copied from roundup's rfc2822 package.
