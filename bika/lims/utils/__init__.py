@@ -189,19 +189,6 @@ def formatDecimalMark(value, decimalmark='.'):
         ::value:: is a string
         ::return:: is a string with the decimal mark if needed
     """
-    try:
-        vvalue = float(value)
-        # continuing with 'nan' result will cause formatting to failself
-        if math.isnan(vvalue):
-            return vvalue
-    except ValueError:
-        # if value looks like '< 20.5', the decimal mark would have to be changed
-        if value and value[:1] in ['<','>']:
-            fdm = formatDecimalMark(value[1:].strip(), decimalmark)
-            return '%s %s' % (value[:1], fdm)
-        else:
-            return value
-
     # We have to consider the possibility of working with decimals such as
     # X.000 where those decimals are important because of the precission
     # and significant digits matters
