@@ -75,6 +75,10 @@ class AnalysisRequestsView(BikaListingView):
             'SubGroup': {'title': _('Sub-group')},
             'Client': {'title': _('Client'),
                        'toggle': True},
+            'Province': {'title': _('Province'),
+                       'toggle': True},
+            'District': {'title': _('Province'),
+                       'toggle': True},
             'getClientReference': {'title': _('Client Ref'),
                                    'index': 'getClientReference',
                                    'toggle': True},
@@ -158,6 +162,8 @@ class AnalysisRequestsView(BikaListingView):
                         'BatchID',
                         'SubGroup',
                         'Client',
+                        'Province',
+                        'District',
                         'Creator',
                         'Created',
                         'getClientOrderNumber',
@@ -195,6 +201,8 @@ class AnalysisRequestsView(BikaListingView):
                         'BatchID',
                         'SubGroup',
                         'Client',
+                        'Province',
+                        'District',
                         'getProfilesTitle',
                         'getTemplateTitle',
                         'Creator',
@@ -228,6 +236,8 @@ class AnalysisRequestsView(BikaListingView):
                         'BatchID',
                         'SubGroup',
                         'Client',
+                        'Province',
+                        'District',
                         'getProfilesTitle',
                         'getTemplateTitle',
                         'Creator',
@@ -267,6 +277,8 @@ class AnalysisRequestsView(BikaListingView):
                         'BatchID',
                         'SubGroup',
                         'Client',
+                        'Province',
+                        'District',
                         'getProfilesTitle',
                         'getTemplateTitle',
                         'Creator',
@@ -302,6 +314,8 @@ class AnalysisRequestsView(BikaListingView):
                         'BatchID',
                         'SubGroup',
                         'Client',
+                        'Province',
+                        'District',
                         'getProfilesTitle',
                         'getTemplateTitle',
                         'Creator',
@@ -339,6 +353,8 @@ class AnalysisRequestsView(BikaListingView):
                         'BatchID',
                         'SubGroup',
                         'Client',
+                        'Province',
+                        'District',
                         'getProfilesTitle',
                         'getTemplateTitle',
                         'Creator',
@@ -372,6 +388,8 @@ class AnalysisRequestsView(BikaListingView):
                         'BatchID',
                         'SubGroup',
                         'Client',
+                        'Province',
+                        'District',
                         'getProfilesTitle',
                         'getTemplateTitle',
                         'Creator',
@@ -405,6 +423,8 @@ class AnalysisRequestsView(BikaListingView):
                         'BatchID',
                         'SubGroup',
                         'Client',
+                        'Province',
+                        'District',
                         'getProfilesTitle',
                         'getTemplateTitle',
                         'Creator',
@@ -449,6 +469,8 @@ class AnalysisRequestsView(BikaListingView):
                         'BatchID',
                         'SubGroup',
                         'Client',
+                        'Province',
+                        'District',
                         'getProfilesTitle',
                         'getTemplateTitle',
                         'Creator',
@@ -484,6 +506,8 @@ class AnalysisRequestsView(BikaListingView):
                         'BatchID',
                         'SubGroup',
                         'Client',
+                        'Province',
+                        'District',
                         'getProfilesTitle',
                         'getTemplateTitle',
                         'Creator',
@@ -529,6 +553,8 @@ class AnalysisRequestsView(BikaListingView):
                         'BatchID',
                         'SubGroup',
                         'Client',
+                        'Province',
+                        'District',
                         'getProfilesTitle',
                         'getTemplateTitle',
                         'Creator',
@@ -575,6 +601,8 @@ class AnalysisRequestsView(BikaListingView):
                         'BatchID',
                         'SubGroup',
                         'Client',
+                        'Province',
+                        'District',
                         'getProfilesTitle',
                         'getTemplateTitle',
                         'Creator',
@@ -610,6 +638,8 @@ class AnalysisRequestsView(BikaListingView):
                         'BatchID',
                         'SubGroup',
                         'Client',
+                        'Province',
+                        'District',
                         'getProfilesTitle',
                         'getTemplateTitle',
                         'Creator',
@@ -656,7 +686,13 @@ class AnalysisRequestsView(BikaListingView):
             else:
                 url = obj.absolute_url()
 
-            items[x]['Client'] = obj.aq_parent.Title()
+            # get the Client
+            client = obj.getClient()
+            items[x]['Client'] = client.Title()
+            # extract province and district
+            items[x]['Province'] = client.getProvince()
+            items[x]['District'] = client.getDistrict()
+
             if (hideclientlink is False):
                 items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
                     (obj.aq_parent.absolute_url(), obj.aq_parent.Title())

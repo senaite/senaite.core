@@ -16,7 +16,8 @@ class ClientAnalysisRequestsView(AnalysisRequestsView):
             "level": 0}
         review_states = []
         for review_state in self.review_states:
-            review_state['columns'].remove('Client')
+            # keep the Client Column
+            # review_state['columns'].remove('Client')
             review_states.append(review_state)
         self.review_states = review_states
 
