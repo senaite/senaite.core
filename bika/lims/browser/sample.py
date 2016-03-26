@@ -427,6 +427,10 @@ class SamplesView(BikaListingView):
                             'index':'getSampleID'},
             'Client': {'title': _("Client"),
                        'toggle': True,},
+            'Province': {'title': _('Province'),
+                       'toggle': True},
+            'District': {'title': _('Province'),
+                       'toggle': True},
             'Creator': {'title': PMF('Creator'),
                         'index': 'Creator',
                         'toggle': True},
@@ -482,6 +486,8 @@ class SamplesView(BikaListingView):
                                'sort_on':'created'},
              'columns': ['getSampleID',
                          'Client',
+                         'Province',
+                         'District',
                          'Creator',
                          'Created',
                          'Requests',
@@ -508,6 +514,8 @@ class SamplesView(BikaListingView):
                                'sort_order': 'reverse'},
              'columns': ['getSampleID',
                          'Client',
+                         'Province',
+                         'District',
                          'Creator',
                          'Created',
                          'Requests',
@@ -531,6 +539,8 @@ class SamplesView(BikaListingView):
                               'sort_on':'created'},
              'columns': ['getSampleID',
                          'Client',
+                         'Province',
+                         'District',
                          'Creator',
                          'Created',
                          'Requests',
@@ -554,6 +564,8 @@ class SamplesView(BikaListingView):
                               'sort_on':'created'},
              'columns': ['getSampleID',
                          'Client',
+                         'Province',
+                         'District',
                          'Creator',
                          'Created',
                          'Requests',
@@ -577,6 +589,8 @@ class SamplesView(BikaListingView):
                               'sort_on':'created'},
              'columns': ['getSampleID',
                          'Client',
+                         'Province',
+                         'District',
                          'Creator',
                          'Created',
                          'Requests',
@@ -601,6 +615,8 @@ class SamplesView(BikaListingView):
              'transitions': [{'id':'reinstate'}, ],
              'columns': ['getSampleID',
                          'Client',
+                         'Province',
+                         'District',
                          'Creator',
                          'Created',
                          'Requests',
@@ -626,6 +642,8 @@ class SamplesView(BikaListingView):
              'transitions': [],
              'columns': ['getSampleID',
                          'Client',
+                         'Province',
+                         'District',
                          'Creator',
                          'Created',
                          'Requests',
@@ -666,10 +684,19 @@ class SamplesView(BikaListingView):
             items[x]['replace']['Requests'] = ",".join(
                 ["<a href='%s'>%s</a>" % (o.absolute_url(), o.Title())
                  for o in obj.getAnalysisRequests()])
-            items[x]['Client'] = obj.aq_parent.Title()
+
+            # get the Client
+            client = obj.aq_inner.aq_parent
+            items[x]['Client'] = client.Title()
+            # extract province and district
+            items[x]['Province'] = client.getProvince()
+            items[x]['District'] = client.getDistrict()
+
+            # render client link
             if hideclientlink == False:
                 items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
-                    (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
+                    (client.absolute_url(), client.Title())
+
             items[x]['Creator'] = self.user_fullname(obj.Creator())
 
             items[x]['DateReceived'] = self.ulocalized_time(obj.getDateReceived())
