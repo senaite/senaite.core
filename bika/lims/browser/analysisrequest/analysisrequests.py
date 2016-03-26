@@ -77,7 +77,7 @@ class AnalysisRequestsView(BikaListingView):
                        'toggle': True},
             'Province': {'title': _('Province'),
                        'toggle': True},
-            'District': {'title': _('Province'),
+            'District': {'title': _('District'),
                        'toggle': True},
             'getClientReference': {'title': _('Client Ref'),
                                    'index': 'getClientReference',
