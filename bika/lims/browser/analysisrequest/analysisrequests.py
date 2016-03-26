@@ -687,15 +687,17 @@ class AnalysisRequestsView(BikaListingView):
                 url = obj.absolute_url()
 
             # get the Client
-            client = obj.getClient()
+            client = obj.aq_inner.aq_parent
             items[x]['Client'] = client.Title()
             # extract province and district
             items[x]['Province'] = client.getProvince()
             items[x]['District'] = client.getDistrict()
 
+            # render client link
             if (hideclientlink is False):
                 items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
-                    (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
+                    (client.absolute_url(), client.Title())
+
             items[x]['Creator'] = self.user_fullname(obj.Creator())
             items[x]['getRequestID'] = obj.getRequestID()
             items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
