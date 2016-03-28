@@ -10,8 +10,8 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
 from zope.interface import implements
 from pkg_resources import resource_filename
-import datetime, os.path
-
+import datetime
+import os.path
 import re
 import transaction
 
@@ -31,13 +31,13 @@ def check_for_required_columns(name, data, required):
             raise Exception(t(message))
 
 
-
 def Float(thing):
     try:
         f = float(thing)
     except ValueError:
         f = 0.0
     return f
+
 
 def read_file(path):
     if os.path.isfile(path):
@@ -121,6 +121,10 @@ class WorksheetImporter:
                     value = ''
                 if isinstance(value, unicode):
                     value = value.encode('utf-8')
+                # Strip any space, \t, \n, or \r characters from the left-hand
+                # side, right-hand side, or both sides of the string
+                if isinstance(value, str):
+                    value = value.strip(' \t\n\r')
                 new_row.append(value)
             row = dict(zip(headers, new_row))
 
@@ -135,10 +139,13 @@ class WorksheetImporter:
 
     def get_file_data(self, filename):
         if filename:
-            path = resource_filename(
-                self.dataset_project,
-                "setupdata/%s/%s" % (self.dataset_name, filename))
-            file_data = open(path, "rb").read()
+            try:
+                path = resource_filename(
+                    self.dataset_project,
+                    "setupdata/%s/%s" % (self.dataset_name, filename))
+                file_data = open(path, "rb").read()
+            except:
+                file_data = None
         else:
             file_data = None
         return file_data
@@ -164,6 +171,28 @@ class WorksheetImporter:
             return True
         else:
             return False
+
+    def to_int(self, value, default=0):
+        """ Converts a value o a int. Returns default if the conversion fails.
+        """
+        try:
+            return int(value)
+        except ValueError:
+            try:
+                return int(default)
+            except:
+                return 0
+
+    def to_float(self, value, default=0):
+        """ Converts a value o a float. Returns default if the conversion fails.
+        """
+        try:
+            return float(value)
+        except ValueError:
+            try:
+                return float(default)
+            except:
+                return 0.0
 
     def defer(self, **kwargs):
         self.lsd.deferred.append(kwargs)
@@ -303,27 +332,44 @@ class Lab_Contacts(WorksheetImporter):
         portal_groups = getToolByName(self.context, 'portal_groups')
         portal_registration = getToolByName(
             self.context, 'portal_registration')
-
+        rownum = 2
         for row in self.get_rows(3):
-
-            # Create LabContact
-
-            if not row['Firstname']:
+            rownum+=1
+            if not row.get('Firstname',None):
                 continue
 
+            # Username already exists?
+            username = row.get('Username','')
+            fullname = ('%s %s' % (row['Firstname'], row.get('Surname', ''))).strip()
+            if username:
+                username = safe_unicode(username).encode('utf-8')
+                bsc = getToolByName(self.context, 'bika_setup_catalog')
+                exists = [o.getObject() for o in bsc(portal_type="LabContact") if o.getObject().getUsername()==username]
+                if exists:
+                    error = "Lab Contact: username '{0}' in row {1} already exists. This contact will be omitted.".format(username, str(rownum))
+                    logger.error(error)
+                    continue
+
+            # Is there a signature file defined? Try to get the file first.
+            signature = None
+            if row.get('Signature'):
+                signature = self.get_file_data(row['Signature'])
+                if not signature:
+                    warning = "Lab Contact: Cannot load the signature file '{0}' for user '{1}'. The contact will be created, but without a signature image".format(row['Signature'], username)
+                    logger.warning(warning)
+
             obj = _createObjectByType("LabContact", folder, tmpID())
-            obj.unmarkCreationFlag()
-            renameAfterCreation(obj)
-            Fullname = row['Firstname'] + " " + row.get('Surname', '')
             obj.edit(
-                title=Fullname,
+                title=fullname,
                 Salutation=row.get('Salutation', ''),
                 Firstname=row['Firstname'],
                 Surname=row.get('Surname', ''),
                 JobTitle=row.get('JobTitle', ''),
                 Username=row.get('Username', ''),
-                Signature=self.get_file_data(row.get('Signature', None))
+                Signature=signature
             )
+            obj.unmarkCreationFlag()
+            renameAfterCreation(obj)
             self.fill_contactfields(row, obj)
             self.fill_addressfields(row, obj)
 
@@ -336,25 +382,46 @@ class Lab_Contacts(WorksheetImporter):
                            )
 
             # Create Plone user
+            if not row['Username']:
+                warn = "Lab Contact: No username defined for user '{0}' in row {1}. Contact created, but without access credentials.".format(fullname, str(rownum))
+                logger.warning(warn)
+            if not row.get('EmailAddress', ''):
+                warn = "Lab Contact: No Email defined for user '{0}' in row {1}. Contact created, but without access credentials.".format(fullname, str(rownum))
+                logger.warning(warn)
 
-            username = safe_unicode(row['Username']).encode('utf-8')
-            if(row['Username']):
-                member = portal_registration.addMember(
-                    username,
-                    row['Password'],
-                    properties={
-                        'username': username,
-                        'email': row['EmailAddress'],
-                        'fullname': Fullname}
-                )
+            if(row['Username'] and row.get('EmailAddress','')):
+                username = safe_unicode(row['Username']).encode('utf-8')
+                passw = row['Password']
+                if not passw:
+                    warn = "Lab Contact: No password defined for user '{0}' in row {1}. Password established automatically to '{3}'".format(username, str(rownum), username)
+                    logger.warning(warn)
+                    passw = username
+
+                try:
+                    member = portal_registration.addMember(
+                        username,
+                        passw,
+                        properties={
+                            'username': username,
+                            'email': row['EmailAddress'],
+                            'fullname': fullname}
+                    )
+                except Exception as msg:
+                    logger.error("Client Contact: Error adding user (%s): %s" % (msg, username))
+                    continue
+
                 groups = row.get('Groups', '')
-                if groups:
-                    group_ids = [g.strip() for g in groups.split(',')]
-                    # Add user to all specified groups
-                    for group_id in group_ids:
-                        group = portal_groups.getGroupById(group_id)
-                        if group:
-                            group.addMember(username)
+                if not groups:
+                    warn = "Lab Contact: No groups defined for user '{0}' in row {1}. Group established automatically to 'Analysts'".format(username, str(rownum))
+                    logger.warning(warn)
+                    groups = 'Analysts'
+
+                group_ids = [g.strip() for g in groups.split(',')]
+                # Add user to all specified groups
+                for group_id in group_ids:
+                    group = portal_groups.getGroupById(group_id)
+                    if group:
+                        group.addMember(username)
                 roles = row.get('Roles', '')
                 if roles:
                     role_ids = [r.strip() for r in roles.split(',')]
@@ -367,6 +434,18 @@ class Lab_Contacts(WorksheetImporter):
                     self.context.clients.manage_setLocalRoles(
                         username, ['Owner', ])
 
+        # Now we have the lab contacts registered, try to assign the managers
+        # to each department if required
+        sheet = self.workbook.get_sheet_by_name("Lab Departments")
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        for row in self.get_rows(3, sheet):
+            if row['title'] and row['LabContact_Username']:
+                dept = self.get_object(bsc, "Department", row.get('title'))
+                if dept and not dept.getManager():
+                    username = safe_unicode(row['LabContact_Username']).encode('utf-8')
+                    exists = [o.getObject() for o in bsc(portal_type="LabContact") if o.getObject().getUsername()==username]
+                    if exists:
+                        dept.setManager(exists[0].UID())
 
 class Lab_Departments(WorksheetImporter):
 
@@ -384,12 +463,12 @@ class Lab_Departments(WorksheetImporter):
                     if contact.getUsername() == row['LabContact_Username']:
                         manager = contact
                         break
+                if manager:
+                    obj.setManager(manager.UID())
                 else:
                     message = "Department: lookup of '%s' in LabContacts/Username failed." % row[
                         'LabContact_Username']
                     logger.info(message)
-                if manager:
-                    obj.setManager(manager.UID())
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
 
@@ -487,7 +566,7 @@ class Client_Contacts(WorksheetImporter):
                                )
             ## Create Plone user
             username = safe_unicode(row['Username']).encode('utf-8')
-            password = safe_unicode(row['Password']).decode('utf-8')
+            password = safe_unicode(row['Password']).encode('utf-8')
             if(username):
                 try:
                     member = self.context.portal_registration.addMember(
@@ -654,6 +733,7 @@ class Instruments(WorksheetImporter):
     def Import(self):
         folder = self.context.bika_setup.bika_instruments
         bsc = getToolByName(self.context, 'bika_setup_catalog')
+        pc = getToolByName(self.context, 'portal_catalog')
         for row in self.get_rows(3):
             if ('Type' not in row
                 or 'Supplier' not in row
@@ -679,9 +759,11 @@ class Instruments(WorksheetImporter):
             instrumenttype = self.get_object(bsc, 'InstrumentType', title=row.get('Type'))
             manufacturer = self.get_object(bsc, 'Manufacturer', title=row.get('Brand'))
             supplier = self.get_object(bsc, 'Supplier', getName=row.get('Supplier', ''))
+            method = self.get_object(pc, 'Method', title=row.get('Method'))
             obj.setInstrumentType(instrumenttype)
             obj.setManufacturer(manufacturer)
             obj.setSupplier(supplier)
+            obj.setMethod(method)
 
             # Attaching the instrument's photo
             if row.get('Photo', None):
@@ -1157,14 +1239,17 @@ class Methods(WorksheetImporter):
 
     def Import(self):
         folder = self.context.methods
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
         for row in self.get_rows(3):
             if row['title']:
+                calculation = self.get_object(bsc, 'Calculation', row.get('Calculation_title'))
                 obj = _createObjectByType("Method", folder, tmpID())
-
                 obj.edit(
                     title=row['title'],
                     description=row.get('description', ''),
                     Instructions=row.get('Instructions', ''),
+                    ManualEntryOfResults=row.get('ManualEntryOfResults', True),
+                    Calculation=calculation,
                     MethodID=row.get('MethodID', ''),
                     Accredited=row.get('Accredited', True),
                 )
@@ -1261,6 +1346,19 @@ class Calculations(WorksheetImporter):
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
 
+        # Now we have the calculations registered, try to assign default calcs
+        # to methods
+        sheet = self.workbook.get_sheet_by_name("Methods")
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        for row in self.get_rows(3, sheet):
+            if row['title'] and row['Calculation_title']:
+                meth = self.get_object(bsc, "Method", row.get('title'))
+                if meth and not meth.getCalculation():
+                    calctit = safe_unicode(row['Calculation_title']).encode('utf-8')
+                    calc = self.get_object(bsc, "Calculation", calctit)
+                    if calc:
+                        meth.setCalculation(calc.UID())
+
 
 class Analysis_Services(WorksheetImporter):
 
@@ -1312,6 +1410,10 @@ class Analysis_Services(WorksheetImporter):
             count += 1
             service = self.get_object(bsc, 'AnalysisService',
                                       row.get('Service_title'))
+            if not service:
+                warning = "Unable to load an Analysis Service uncertainty. Service '%s' not found." % row.get('Service_title')
+                logger.warning(warning)
+                continue
             service_uid = service.UID()
             if service_uid not in bucket:
                 bucket[service_uid] = []
@@ -1326,6 +1428,58 @@ class Analysis_Services(WorksheetImporter):
         if bucket:
             self.write_bucket(bucket)
 
+    def get_methods(self, service_title, default_method):
+        """ Return an array of objects of the type Method in accordance to the
+            methods listed in the 'AnalysisService Methods' sheet and service
+            set in the parameter service_title.
+            If default_method is set, it will be included in the returned
+            array.
+        """
+        return self.get_relations(service_title,
+                                default_method,
+                                'Method',
+                                'portal_catalog',
+                                'AnalysisService Methods',
+                                'Method_title')
+
+    def get_instruments(self, service_title, default_instrument):
+        """ Return an array of objects of the type Instrument in accordance to
+            the instruments listed in the 'AnalysisService Instruments' sheet
+            and service set in the parameter 'service_title'.
+            If default_instrument is set, it will be included in the returned
+            array.
+        """
+        return self.get_relations(service_title,
+                                default_instrument,
+                                'Instrument',
+                                'bika_setup_catalog',
+                                'AnalysisService Instruments',
+                                'Instrument_title')
+
+    def get_relations(self, service_title, default_obj, obj_type, catalog_name, sheet_name, column):
+        """ Return an array of objects of the specified type in accordance to
+            the object titles defined in the sheet specified in 'sheet_name' and
+            service set in the paramenter 'service_title'.
+            If a default_obj is set, it will be included in the returned array.
+        """
+        out_objects = [default_obj] if default_obj else []
+        cat = getToolByName(self.context, catalog_name)
+        worksheet = self.workbook.get_sheet_by_name(sheet_name)
+        if not worksheet:
+            return out_objects
+        for row in self.get_rows(3, worksheet=worksheet):
+            row_as_title = row.get('Service_title')
+            if not row_as_title:
+                return out_objects
+            elif row_as_title != service_title:
+                continue
+            obj = self.get_object(cat, obj_type, row.get(column))
+            if obj:
+                if default_obj and default_obj.UID() == obj.UID():
+                    continue
+                out_objects.append(obj)
+        return out_objects
+
     def write_bucket(self, bucket):
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         for service_uid, uncertainties in bucket.items():
@@ -1338,24 +1492,84 @@ class Analysis_Services(WorksheetImporter):
         self.load_interim_fields()
         folder = self.context.bika_setup.bika_analysisservices
         bsc = getToolByName(self.context, 'bika_setup_catalog')
+        pc = getToolByName(self.context, 'portal_catalog')
         for row in self.get_rows(3):
             if not row['title']:
                 continue
 
             obj = _createObjectByType("AnalysisService", folder, tmpID())
             MTA = {
-                'days': int(row['MaxTimeAllowed_days'] and row['MaxTimeAllowed_days'] or 0),
-                'hours': int(row['MaxTimeAllowed_hours'] and row['MaxTimeAllowed_hours'] or 0),
-                'minutes': int(row['MaxTimeAllowed_minutes'] and row['MaxTimeAllowed_minutes'] or 0),
+                'days': self.to_int(row.get('MaxTimeAllowed_days',0),0),
+                'hours': self.to_int(row.get('MaxTimeAllowed_hours',0),0),
+                'minutes': self.to_int(row.get('MaxTimeAllowed_minutes',0),0),
             }
             category = self.get_object(bsc, 'AnalysisCategory', row.get('AnalysisCategory_title'))
             department = self.get_object(bsc, 'Department', row.get('Department_title'))
-            methods = self.get_object(bsc, 'Method', row.get('Methods'))
-            instruments = self.get_object(bsc, 'Instrument', row.get('Instrument_title'))
-            deferred_calc = self.get_object(bsc, 'Calculation', row.get('Calculation_title'))
             container = self.get_object(bsc, 'Container', row.get('Container_title'))
             preservation = self.get_object(bsc, 'Preservation', row.get('Preservation_title'))
             priority = self.get_object(bsc, 'ARPriority', row.get('Priority_title'))
+
+            # Analysis Service - Method considerations:
+            # One Analysis Service can have 0 or n Methods associated (field
+            # 'Methods' from the Schema).
+            # If the Analysis Service has at least one method associated, then
+            # one of those methods can be set as the defualt method (field
+            # '_Method' from the Schema).
+            #
+            # To make it easier, if a DefaultMethod is declared in the
+            # Analysis_Services spreadsheet, but the same AS has no method
+            # associated in the Analysis_Service_Methods spreadsheet, then make
+            # the assumption that the DefaultMethod set in the former has to be
+            # associated to the AS although the relation is missing.
+            defaultmethod = self.get_object(pc, 'Method', row.get('DefaultMethod_title'))
+            methods = self.get_methods(row['title'], defaultmethod)
+            if not defaultmethod and methods:
+                defaultmethod = methods[0]
+
+            # Analysis Service - Instrument considerations:
+            # By default, an Analysis Services will be associated automatically
+            # with several Instruments due to the Analysis Service - Methods
+            # relation (an Instrument can be assigned to a Method and one Method
+            # can have zero or n Instruments associated). There is no need to
+            # set this assignment directly, the AnalysisService object will
+            # find those instruments.
+            # Besides this 'automatic' behavior, an Analysis Service can also
+            # have 0 or n Instruments manually associated ('Instruments' field).
+            # In this case, the attribute 'AllowInstrumentEntryOfResults' should
+            # be set to True.
+            #
+            # To make it easier, if a DefaultInstrument is declared in the
+            # Analysis_Services spreadsheet, but the same AS has no instrument
+            # associated in the AnalysisService_Instruments spreadsheet, then
+            # make the assumption the DefaultInstrument set in the former has
+            # to be associated to the AS although the relation is missing and
+            # the option AllowInstrumentEntryOfResults will be set to True.
+            defaultinstrument = self.get_object(bsc, 'Instrument', row.get('DefaultInstrument_title'))
+            instruments = self.get_instruments(row['title'], defaultinstrument)
+            allowinstrentry = True if instruments else False
+            if not defaultinstrument and instruments:
+                defaultinstrument = instruments[0]
+
+            # The manual entry of results can only be set to false if the value
+            # for the attribute "InstrumentEntryOfResults" is False.
+            allowmanualentry = True if not allowinstrentry else row.get('ManualEntryOfResults', True)
+
+            # Analysis Service - Calculation considerations:
+            # By default, the AnalysisService will use the Calculation associated
+            # to the Default Method (the field "UseDefaultCalculation"==True).
+            # If the Default Method for this AS doesn't have any Calculation
+            # associated and the field "UseDefaultCalculation" is True, no
+            # Calculation will be used for this AS ("_Calculation" field is
+            # reserved and should not be set directly).
+            #
+            # To make it easier, if a Calculation is set by default in the
+            # spreadsheet, then assume the UseDefaultCalculation has to be set
+            # to False.
+            deferredcalculation = self.get_object(bsc, 'Calculation', row.get('Calculation_title'))
+            usedefaultcalculation = False if deferredcalculation else True
+            _calculation = deferredcalculation if deferredcalculation else \
+                            (defaultmethod.getCalculation() if defaultmethod else None)
+
             obj.edit(
                 title=row['title'],
                 ShortTitle=row.get('ShortTitle', row['title']),
@@ -1368,14 +1582,22 @@ class Analysis_Services(WorksheetImporter):
                 AttachmentOption=row.get('Attachment', '')[0].lower() if row.get('Attachment', '') else 'p',
                 Unit=row['Unit'] and row['Unit'] or None,
                 Precision=row['Precision'] and str(row['Precision']) or '0',
+                ExponentialFormatPrecision=str(self.to_int(row.get('ExponentialFormatPrecision',7),7)),
+                LowerDetectionLimit='%06f' % self.to_float(row.get('LowerDetectionLimit', '0.0'), 0),
+                UpperDetectionLimit='%06f' % self.to_float(row.get('UpperDetectionLimit', '1000000000.0'), 1000000000.0),
+                DetectionLimitSelector=self.to_bool(row.get('DetectionLimitSelector',0)),
                 MaxTimeAllowed=MTA,
                 Price="%02f" % Float(row['Price']),
                 BulkPrice="%02f" % Float(row['BulkPrice']),
                 VAT="%02f" % Float(row['VAT']),
-                Methods=[methods],
-                InstrumentEntryOfResults=True if instruments != '' else '',
-                Instruments=[instruments] if instruments != '' else '',
-                DeferredCalculation=deferred_calc,
+                _Method=defaultmethod,
+                Methods=methods,
+                ManualEntryOfResults=allowmanualentry,
+                InstrumentEntryOfResults=allowinstrentry,
+                Instruments=instruments,
+                _Calculation=_calculation,
+                UseDefaultCalculation=usedefaultcalculation,
+                DeferredCalculation=deferredcalculation,
                 DuplicateVariation="%02f" % Float(row['DuplicateVariation']),
                 Accredited=self.to_bool(row['Accredited']),
                 InterimFields=hasattr(self, 'service_interims') and self.service_interims.get(
@@ -1387,8 +1609,6 @@ class Analysis_Services(WorksheetImporter):
                 CommercialID=row.get('CommercialID', ''),
                 ProtocolID=row.get('ProtocolID', '')
             )
-            if deferred_calc:
-                obj.setUseDefaultCalculation(False)
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
         self.load_result_options()
@@ -1401,12 +1621,12 @@ class Analysis_Specifications(WorksheetImporter):
         bsc = getToolByName(self.context, "bika_setup_catalog")
         service = bsc(
             portal_type="AnalysisService",
-            title=row["service"]
+            title=safe_unicode(row["service"])
         )
         if not service:
             service = bsc(
                 portal_type="AnalysisService",
-                getKeyword=row["service"]
+                getKeyword=safe_unicode(row["service"])
             )
         service = service[0].getObject()
         return service
@@ -1443,12 +1663,12 @@ class Analysis_Specifications(WorksheetImporter):
                 if parent == "lab":
                     folder = self.context.bika_setup.bika_analysisspecs
                 else:
-                    proxy = pc(portal_type="Client", getName=parent)[0]
+                    proxy = pc(portal_type="Client", getName=safe_unicode(parent))[0]
                     folder = proxy.getObject()
                 st = bucket[parent][title]["sampletype"]
                 resultsrange = bucket[parent][title]["resultsrange"]
                 if st:
-                    st_uid = bsc(portal_type="SampleType", title=st)[0].UID
+                    st_uid = bsc(portal_type="SampleType", title=safe_unicode(st))[0].UID
                 obj = _createObjectByType("AnalysisSpec", folder, tmpID())
                 obj.edit(title=title)
                 obj.setResultsRange(resultsrange)
@@ -1468,6 +1688,8 @@ class Analysis_Profiles(WorksheetImporter):
             return
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         for row in self.get_rows(3, worksheet=worksheet):
+            if not row.get('Profile','') or not row.get('Service',''):
+                continue
             if row['Profile'] not in self.profile_services.keys():
                 self.profile_services[row['Profile']] = []
             # Here we match againts Keyword or Title.
@@ -1775,6 +1997,10 @@ class Reference_Samples(WorksheetImporter):
                 continue
             service = self.get_object(bsc, 'AnalysisService',
                                       row.get('AnalysisService_title'))
+            if not service:
+                warning = "Unable to load a reference sample result. Service %s not found."
+                logger.warning(warning, sheetname)
+                continue
             results.append({
                     'uid': service.UID(),
                     'result': row['result'],
