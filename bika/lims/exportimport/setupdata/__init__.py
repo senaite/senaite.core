@@ -10,8 +10,8 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
 from zope.interface import implements
 from pkg_resources import resource_filename
-import datetime, os.path
-
+import datetime
+import os.path
 import re
 import transaction
 
@@ -31,13 +31,13 @@ def check_for_required_columns(name, data, required):
             raise Exception(t(message))
 
 
-
 def Float(thing):
     try:
         f = float(thing)
     except ValueError:
         f = 0.0
     return f
+
 
 def read_file(path):
     if os.path.isfile(path):
@@ -121,6 +121,10 @@ class WorksheetImporter:
                     value = ''
                 if isinstance(value, unicode):
                     value = value.encode('utf-8')
+                # Strip any space, \t, \n, or \r characters from the left-hand
+                # side, right-hand side, or both sides of the string
+                if isinstance(value, str):
+                    value = value.strip(' \t\n\r')
                 new_row.append(value)
             row = dict(zip(headers, new_row))
 
@@ -328,32 +332,46 @@ class Lab_Contacts(WorksheetImporter):
         portal_groups = getToolByName(self.context, 'portal_groups')
         portal_registration = getToolByName(
             self.context, 'portal_registration')
-
+        rownum = 2
         for row in self.get_rows(3):
-
-            # Create LabContact
-
-            if not row['Firstname']:
+            rownum+=1
+            if not row.get('Firstname',None):
                 continue
 
+            # Username already exists?
+            username = row.get('Username','')
+            fullname = ('%s %s' % (row['Firstname'], row.get('Surname', ''))).strip()
+            if username:
+                username = safe_unicode(username).encode('utf-8')
+                bsc = getToolByName(self.context, 'bika_setup_catalog')
+                exists = [o.getObject() for o in bsc(portal_type="LabContact") if o.getObject().getUsername()==username]
+                if exists:
+                    error = "Lab Contact: username '{0}' in row {1} already exists. This contact will be omitted.".format(username, str(rownum))
+                    logger.error(error)
+                    continue
+
+            # Is there a signature file defined? Try to get the file first.
+            signature = None
+            if row.get('Signature'):
+                signature = self.get_file_data(row['Signature'])
+                if not signature:
+                    warning = "Lab Contact: Cannot load the signature file '{0}' for user '{1}'. The contact will be created, but without a signature image".format(row['Signature'], username)
+                    logger.warning(warning)
+
             obj = _createObjectByType("LabContact", folder, tmpID())
-            Fullname = row['Firstname'] + " " + row.get('Surname', '')
             obj.edit(
-                title=Fullname,
+                title=fullname,
                 Salutation=row.get('Salutation', ''),
                 Firstname=row['Firstname'],
                 Surname=row.get('Surname', ''),
                 JobTitle=row.get('JobTitle', ''),
                 Username=row.get('Username', ''),
+                Signature=signature
             )
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
             self.fill_contactfields(row, obj)
             self.fill_addressfields(row, obj)
-
-            signature = self.get_file_data(row.get('Signature', None))
-            if signature:
-                obj.setSignature(signature)
 
             if row['Department_title']:
                 self.defer(src_obj=obj,
@@ -364,25 +382,46 @@ class Lab_Contacts(WorksheetImporter):
                            )
 
             # Create Plone user
+            if not row['Username']:
+                warn = "Lab Contact: No username defined for user '{0}' in row {1}. Contact created, but without access credentials.".format(fullname, str(rownum))
+                logger.warning(warn)
+            if not row.get('EmailAddress', ''):
+                warn = "Lab Contact: No Email defined for user '{0}' in row {1}. Contact created, but without access credentials.".format(fullname, str(rownum))
+                logger.warning(warn)
 
-            username = safe_unicode(row['Username']).encode('utf-8')
-            if(row['Username']):
-                member = portal_registration.addMember(
-                    username,
-                    row['Password'],
-                    properties={
-                        'username': username,
-                        'email': row['EmailAddress'],
-                        'fullname': Fullname}
-                )
+            if(row['Username'] and row.get('EmailAddress','')):
+                username = safe_unicode(row['Username']).encode('utf-8')
+                passw = row['Password']
+                if not passw:
+                    warn = "Lab Contact: No password defined for user '{0}' in row {1}. Password established automatically to '{3}'".format(username, str(rownum), username)
+                    logger.warning(warn)
+                    passw = username
+
+                try:
+                    member = portal_registration.addMember(
+                        username,
+                        passw,
+                        properties={
+                            'username': username,
+                            'email': row['EmailAddress'],
+                            'fullname': fullname}
+                    )
+                except Exception as msg:
+                    logger.error("Client Contact: Error adding user (%s): %s" % (msg, username))
+                    continue
+
                 groups = row.get('Groups', '')
-                if groups:
-                    group_ids = [g.strip() for g in groups.split(',')]
-                    # Add user to all specified groups
-                    for group_id in group_ids:
-                        group = portal_groups.getGroupById(group_id)
-                        if group:
-                            group.addMember(username)
+                if not groups:
+                    warn = "Lab Contact: No groups defined for user '{0}' in row {1}. Group established automatically to 'Analysts'".format(username, str(rownum))
+                    logger.warning(warn)
+                    groups = 'Analysts'
+
+                group_ids = [g.strip() for g in groups.split(',')]
+                # Add user to all specified groups
+                for group_id in group_ids:
+                    group = portal_groups.getGroupById(group_id)
+                    if group:
+                        group.addMember(username)
                 roles = row.get('Roles', '')
                 if roles:
                     role_ids = [r.strip() for r in roles.split(',')]
@@ -395,6 +434,18 @@ class Lab_Contacts(WorksheetImporter):
                     self.context.clients.manage_setLocalRoles(
                         username, ['Owner', ])
 
+        # Now we have the lab contacts registered, try to assign the managers
+        # to each department if required
+        sheet = self.workbook.get_sheet_by_name("Lab Departments")
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        for row in self.get_rows(3, sheet):
+            if row['title'] and row['LabContact_Username']:
+                dept = self.get_object(bsc, "Department", row.get('title'))
+                if dept and not dept.getManager():
+                    username = safe_unicode(row['LabContact_Username']).encode('utf-8')
+                    exists = [o.getObject() for o in bsc(portal_type="LabContact") if o.getObject().getUsername()==username]
+                    if exists:
+                        dept.setManager(exists[0].UID())
 
 class Lab_Departments(WorksheetImporter):
 
@@ -412,12 +463,12 @@ class Lab_Departments(WorksheetImporter):
                     if contact.getUsername() == row['LabContact_Username']:
                         manager = contact
                         break
+                if manager:
+                    obj.setManager(manager.UID())
                 else:
                     message = "Department: lookup of '%s' in LabContacts/Username failed." % row[
                         'LabContact_Username']
                     logger.info(message)
-                if manager:
-                    obj.setManager(manager.UID())
                 obj.unmarkCreationFlag()
                 renameAfterCreation(obj)
 
@@ -515,7 +566,7 @@ class Client_Contacts(WorksheetImporter):
                                )
             ## Create Plone user
             username = safe_unicode(row['Username']).encode('utf-8')
-            password = safe_unicode(row['Password']).decode('utf-8')
+            password = safe_unicode(row['Password']).encode('utf-8')
             if(username):
                 try:
                     member = self.context.portal_registration.addMember(
@@ -1295,6 +1346,19 @@ class Calculations(WorksheetImporter):
             obj.unmarkCreationFlag()
             renameAfterCreation(obj)
 
+        # Now we have the calculations registered, try to assign default calcs
+        # to methods
+        sheet = self.workbook.get_sheet_by_name("Methods")
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        for row in self.get_rows(3, sheet):
+            if row['title'] and row['Calculation_title']:
+                meth = self.get_object(bsc, "Method", row.get('title'))
+                if meth and not meth.getCalculation():
+                    calctit = safe_unicode(row['Calculation_title']).encode('utf-8')
+                    calc = self.get_object(bsc, "Calculation", calctit)
+                    if calc:
+                        meth.setCalculation(calc.UID())
+
 
 class Analysis_Services(WorksheetImporter):
 
@@ -1346,6 +1410,10 @@ class Analysis_Services(WorksheetImporter):
             count += 1
             service = self.get_object(bsc, 'AnalysisService',
                                       row.get('Service_title'))
+            if not service:
+                warning = "Unable to load an Analysis Service uncertainty. Service '%s' not found." % row.get('Service_title')
+                logger.warning(warning)
+                continue
             service_uid = service.UID()
             if service_uid not in bucket:
                 bucket[service_uid] = []
@@ -1620,6 +1688,8 @@ class Analysis_Profiles(WorksheetImporter):
             return
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         for row in self.get_rows(3, worksheet=worksheet):
+            if not row.get('Profile','') or not row.get('Service',''):
+                continue
             if row['Profile'] not in self.profile_services.keys():
                 self.profile_services[row['Profile']] = []
             # Here we match againts Keyword or Title.
@@ -1927,6 +1997,10 @@ class Reference_Samples(WorksheetImporter):
                 continue
             service = self.get_object(bsc, 'AnalysisService',
                                       row.get('AnalysisService_title'))
+            if not service:
+                warning = "Unable to load a reference sample result. Service %s not found."
+                logger.warning(warning, sheetname)
+                continue
             results.append({
                     'uid': service.UID(),
                     'result': row['result'],
