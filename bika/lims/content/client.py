@@ -191,6 +191,13 @@ class Client(Organisation):
             return self.Schema()['DecimalMark'].get(self)
         return self.bika_setup.getDecimalMark()
 
+    def getCountry(self, default=None):
+        """ Return the Country from the Physical or Postal Address
+        """
+        physical_address = self.getPhysicalAddress().get("country", default)
+        postal_address = self.getPostalAddress().get("country", default)
+        return physical_address or postal_address
+
     def getProvince(self, default=None):
         """ Return the Province from the Physical or Postal Address
         """
