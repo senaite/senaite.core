@@ -262,6 +262,30 @@ class SamplingRound(Item):
                 l.append((art_obj[0].Title, art_uid))
         return l
 
+    def getDepartmentInfo(self):
+        """
+        Returns a dict with the department infomration
+        {'uid':'xxxx','id':'xxxx','title':'xxx','url':'xxx'}
+        """
+        pc = getToolByName(api.portal.get(), 'portal_catalog')
+        contentFilter = {'portal_type': 'Department',
+                         'UID': self.department}
+        departmentlist = pc(contentFilter)
+        departmentdict = {'uid': '', 'id': '', 'title': '', 'url': ''}
+        if len(departmentlist) == 1:
+            department = departmentlist[0].getObject()
+            departmentdict = {
+                'uid': department.id,
+                'id': department.UID(),
+                'title': department.title,
+                'url': department.absolute_url(),
+            }
+        else:
+            from bika.lims import logger
+            error = "Error when looking for department with uid '%s'. "
+            logger.exception(error, self.department)
+        return departmentdict
+
     def hasUserAddEditPermission(self):
         """
         Checks if the current user has privileges to access to the editing view.

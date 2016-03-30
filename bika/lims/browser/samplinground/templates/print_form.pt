@@ -1,0 +1,29 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<metal:block use-macro="context/global_defines/macros/defines" />
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      tal:attributes="lang default_language|default;
+                      xml:lang default_language|default;"
+      i18n:domain="bika"
+      tal:define="portal_state context/@@plone_portal_state;
+                  portal_url portal_state/portal_url;
+                  plone_view context/@@plone;
+                  portal portal_state/portal;">
+<head>
+    <div tal:replace="structure provider:plone.resourceregistries.scripts" />
+</head>
+<body class="letter" data-layout="letter">
+    <style id='form-style' tal:content='structure python:view.getCSS()'></style>
+    <div id='sr_form_container'>
+        <div id='form'>
+            <div tal:attributes="id python:view.getSamplingRoundObj().id;
+                                uid python:view.getSamplingRoundObj().UID();"
+                class="sr_form_body"
+                tal:content='structure python:view.getFormTemplate()'></div>
+        </div>
+    </div>
+</body>
+</html>
