@@ -144,11 +144,12 @@
                 <!-- Calculated result field -->
                 <span
                     tal:attributes="
+                        class string:result;
                         field string:formatted_result;
                         uid item/uid;
                         objectId string:${item/id};
                         size input_width;"
-                    tal:content="python:item['formatted_result']"/>
+                    tal:content="structure python:item['formatted_result']"/>
                 <input
                     type="hidden"
                     tal:attributes="
@@ -207,7 +208,7 @@
                 </tal:edit>
                 <tal:view condition="python:not allow_edit"
                     tal:define="val python:item.get(column, '')">
-                    <span tal:content="python:item.get('formatted_result', val)"
+                    <span tal:content="structure python:item.get('formatted_result', val)"
                           tal:attributes="class python:item.get('state_class') + ' result'"/>
                     <!-- String result -->
                     <tal:stringresult tal:condition="python:field_type=='string'">
@@ -238,13 +239,15 @@
                 </tal:view>
             </tal:regular_result>
 
+            <!-- Uncertainty -->
+            <span class="result-uncertainty"
+            tal:content="python:'%s %s' % ('&plusmn;', item.get('Uncertainty', ''))"
+            tal:condition="python:item.get('Uncertainty', '')"/>
+
             <!-- Units -->
             <em class="discreet"
                 style="white-space:nowrap;"
                 tal:content="structure python:item.get('Unit', '')"/>
-
-            <!-- Uncertainty -->
-            <span tal:content="python:item.get('Uncertainty', '')"/>
 
             <!-- Retested? -->
             <input
