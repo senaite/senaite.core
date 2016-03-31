@@ -16,7 +16,7 @@
             <p tal:content="samplinground/description"></p>
         </div>
         <div id="samplinground-sr_template" class="samplinground-field">
-            <p class='label' i18n:translate="">Sampling templates</p>
+            <p class='label' i18n:translate="">Sampling round templates</p>
             <p tal:content="samplinground/sr_template"></p>
         </div>
         <div id="samplinground-sampler" class="samplinground-field">
@@ -65,5 +65,21 @@
             <p class='label' i18n:translate="">Containers</p>
             <p tal:content="samplinground/num_containers"></p>
         </div>
+    </div>
+    <!-- analysis request listed by Sample Partition/Container -->
+    <div id="sampling-round-data-entry"
+        tal:define="list view/getAnalysisRequestByPartitions">
+        <table>
+            <thead>
+                <tr>
+                    <th i18n:translate="" tal:repeat="column list">Request ID</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr tal:repeat="row list">
+                </tr>
+            </tbody>
+        </table>
+
     </div>
 </tal:form>

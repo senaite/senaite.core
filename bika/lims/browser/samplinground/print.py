@@ -52,3 +52,27 @@ class PrintForm(BrowserView):
                     'url': art_obj.absolute_url(),
                 })
         return arts_list
+
+    def getAnalysisRequestByPartitions(self):
+        """
+        Returns a list of dictionaries sorted by Sample Partition/Container
+        [{'requests and partition info'}, ...]
+        """
+        l = []
+        import pdb; pdb.set_trace()
+        ars = self.context.getAnalysisRequests()
+        for ar in ars:
+            partitions = ar.getPartitions()
+            for part in partitions:
+                row_info = {
+                    'sample_id': {
+                        'title': 'Sample ID'
+                        'value': ar.getSample().id},
+                    'sample_type': ar.getSampleType(),
+                    'sample_point': ar.getSamplePoint(),
+                    'ar_id': ar.id,
+                    'part_id': part.id,
+                    'securitySeal': part.getContainer().getSecuritySealIntact(),
+                }
+                l.append(row_info)
+        return l
