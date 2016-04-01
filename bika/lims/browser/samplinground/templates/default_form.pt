@@ -4,10 +4,13 @@
 <tal:form tal:define="samplinground python:view.getSamplingRoundObj()">
     <!-- Sampling round info goes to the header of the printed form-->
     <div id="sampling-round-info">
+        <h1>
+            <a tal:attributes="href python: samplinground.absolute_url()"
+               tal:content="samplinground/id"></a>
+        </h1>
         <!--Title and description-->
-        <div id="title-description">
+        <div id="title">
             <div id="samplinground-title" class="samplinground-field">
-                <p class='label' i18n:translate="">Sampling round title</p>
                 <p tal:content="samplinground/title"></p>
             </div>
         </div>
@@ -16,9 +19,12 @@
             <p tal:content="samplinground/description"></p>
         </div>
         <div id="samplinground-sr_template" class="samplinground-field">
-            <p class='label' i18n:translate="">Sampling round templates</p>
-            <p tal:content="samplinground/sr_template"></p>
-        </div>
+            <p class='label' i18n:translate="">Sampling round template</p>
+            <p tal:define="srt samplinground/getSRTemplateInfo">
+                <a tal:attributes="href srt/url">
+                    <span tal:content="srt/title"></span>
+                </a>
+            </p>        </div>
         <div id="samplinground-sampler" class="samplinground-field">
             <p class='label' i18n:translate="">Sampler</p>
             <p tal:content="samplinground/sampler"></p>
@@ -65,11 +71,12 @@
             <p class='label' i18n:translate="">Containers</p>
             <p tal:content="samplinground/num_containers"></p>
         </div>
+        <div class="clearfix">&nbsp;</div>
     </div>
     <!-- analysis request listed by Sample Partition/Container -->
     <div id="sampling-round-data-entry"
         tal:define="table view/getAnalysisRequestBySample">
-        <table>
+        <table class="samples-grid">
             <thead>
                 <tr>
                     <th i18n:translate=""
@@ -81,24 +88,29 @@
             <tal:rowsample repeat="row table/rows">
                 <tr>
                 <tal:rowcell repeat="column_id table/columns/column_order">
-                    <td style="border:1px solid #cdcdcd; padding:5px;"
-                        tal:condition="python: column_id not in ['analyses', 'sample_id'] and not row[column_id]['hidden']"
-                        tal:attributes="rowspan python:row[column_id]['rowspan']"
-                        tal:content="python: row[column_id]['value']">
+                    <td tal:condition="python: column_id not in ['analyses', 'partition'] and not row[column_id]['hidden']"
+                        tal:attributes="rowspan python:row[column_id]['rowspan'];
+                                        class python:column_id">
+                        <div class="table-text"
+                            tal:content="python: row[column_id]['value']">
+                        </div>
                     </td>
-                    <td tal:condition="python: column_id == 'analyses'">
+                    <td tal:condition="python: column_id == 'analyses'"
+                        class="analyses">
                         <span tal:content="python: row[column_id]['title']"></span>
                         <div class="data-input"></div>
                         <span tal:content="python: row[column_id]['units']"></span>
                     </td>
-                    <td tal:condition="python: column_id == 'sample_id'">
+                    <td tal:condition="python: column_id == 'partition' and not row[column_id]['hidden']"
+                        tal:attributes="rowspan python:row[column_id]['rowspan'];
+                                        class python:column_id">
                         <div class='barcode-container'>
                             <div
                                 tal:condition="python: not row[column_id]['hidden']"
                                 class='barcode'
                                 data-code='code128'
                                 data-showHRI='false'
-                                data-barHeight='15'
+                                data-barHeight='10'
                                 data-addQuietZone='true'
                                 tal:attributes="data-id python: row[column_id]['value']">
                             </div>

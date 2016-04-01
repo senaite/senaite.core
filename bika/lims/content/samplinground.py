@@ -286,6 +286,30 @@ class SamplingRound(Item):
             logger.exception(error, self.department)
         return departmentdict
 
+    def getSRTemplateInfo(self):
+        """
+        Returns a dict with the SRTemplate infomration
+        {'uid':'xxxx','id':'xxxx','title':'xxx','url':'xxx'}
+        """
+        pc = getToolByName(api.portal.get(), 'portal_catalog')
+        contentFilter = {'portal_type': 'SRTemplate',
+                         'UID': self.sr_template}
+        srt = pc(contentFilter)
+        srtdict = {'uid': '', 'id': '', 'title': '', 'url': ''}
+        if len(srt) == 1:
+            template = srt[0].getObject()
+            srtdict = {
+                'uid': template.id,
+                'id': template.UID(),
+                'title': template.title,
+                'url': template.absolute_url(),
+            }
+        else:
+            from bika.lims import logger
+            error = "Error when looking for sr template with uid '%s'. "
+            logger.exception(error, self.sr_template)
+        return srtdict
+
     def hasUserAddEditPermission(self):
         """
         Checks if the current user has privileges to access to the editing view.

@@ -1,3 +1,21 @@
+
+.barcode-container {
+    width:100%;
+}
+div.sr_form_body {
+    font-size:0.8em;
+}
+div.sr_form_body a {
+    color:#000;
+    text-decoration:none;
+}
+div.sr_form_body h1 {
+    padding-top:15px;
+    font-size:1.7em;
+}
+div#title{
+    font-size:1.5em;
+}
 .label {
     font-weight: bold;
 }
@@ -5,9 +23,36 @@
     padding: 10px;
     border: 1px solid #000;
 }
+.table-text {
+    position: relative;
+}
 .data-input{
     border: 1px solid #000;
+    height: 20px;
 }
-.barcode-container {
-    width:100%;
+table.samples-grid tr td {
+    vertical-align:top;
+    border: 1px solid #cdcdcd;
+    padding: 5px;
+}
+table thead th{
+    border: 1px solid #cdcdcd;
+    background-color: #808080;
+}
+
+#sampling-round-info div {
+    float: left;
+    font-size: 0.85em;
+    position: relative;
+    width: 150px;
+}
+p {
+    margin:0;
+    padding:0;
+}
+.clearfix {
+    clear:both;
+}
+#sampling-round-data-entry {
+    clear: both;
 }
