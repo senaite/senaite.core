@@ -629,7 +629,16 @@ function WorksheetManageResultsView() {
         });
 
         // Need to check if manual entry of results is allowed for each service
-        // and method selected
+        // and method selected. Although this makes the worksheet to be displayed
+        // slower, it is required for methods, instruments, and result entry
+        // validations in accordance with the service and method settings.
+        // TODO: To make it faster, we'll reduce the AJAX calls by storing the
+        //       data obtained from previous AJAX calls in a dictionary, so it
+        //       will not be required to retrieve from the server the data already
+        //       retrieved previously.
+        //       A further approach will be to include in the template as much
+        //       info as possible regarding to methods, services and instruemnts,
+        //       so no AJAX call will be required.
         $('table.bika-listing-table select.listing_select_entry[field="Method"]').change();
     }
 }
