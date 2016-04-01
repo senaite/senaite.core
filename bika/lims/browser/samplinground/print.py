@@ -60,8 +60,6 @@ class PrintForm(BrowserView):
         """
         # rows will contain the data for each html row
         rows = []
-        # total_analyses will be a list of index used to create the <tr>
-        total_analyses = []
         # columns will be used to sort and define the columns
         columns = {
             'column_order': [
@@ -85,69 +83,61 @@ class PrintForm(BrowserView):
         }
         ars = self.context.getAnalysisRequests()
         for ar in ars:
-            # Getting the partitions, containers and analyses
-            partitions_ids = []
-            containers_type = []
-            # analyses will contain the
-            analyses = []
-
             ar = ar.getObject()
+            arcell = False
+            numans = len(ar.getAnalyses())
             for part in ar.getPartitions():
-                partitions_ids.append(part.id)
+                partcell = False
                 container = part.getContainer().title \
                     if part.getContainer() else ''
-                containers_type.append(container)
-                for analysis in part.getAnalyses():
+                partans = part.getAnalyses()
+                numpartans = len(partans)
+                for analysis in partans:
                     service = analysis.getService()
-                    analyses.append({
-                        'title': service.title,
-                        'units': service.getUnit()
-                    })
-            row_info = {
-                'sample_id': {
-                    'rowspan': len(analyses),
-                    'colspan': 1,
-                    'value': ar.getSample().id,
-                    },
-                'sample_type': {
-                    'rowspan': len(analyses),
-                    'colspan': 1,
-                    'value': ar.getSampleType(),
-                    },
-                'sampling_point': {
-                    'rowspan': len(analyses),
-                    'colspan': 1,
-                    'value': ar.getSamplePoint(),
-                    },
-                'sampling_date': {
-                    'rowspan': len(analyses),
-                    'colspan': 1,
-                    'value': self.context.sampling_date,
-                    },
-                'partition': {
-                    'rowspan': len(analyses)-len(partitions_ids),
-                    'colspan': 1,
-                    'value': partitions_ids,
-                    },
-                'container': {
-                    'rowspan': len(analyses)-len(containers_type),
-                    'colspan': 1,
-                    'value': containers_type,
-                    },
-                'analyses': {
-                    'rowspan': 1,
-                    'colspan': 1,
-                    'value': analyses,
-                    },
-            }
-            rows.append(row_info)
-            total_analyses += analyses
+                    row = {
+                        'sample_id': {
+                            'hidden': True if arcell else False,
+                            'rowspan': numans,
+                            'value': ar.getSample().id,
+                            },
+                        'sample_type': {
+                            'hidden': True if arcell else False,
+                            'rowspan': numans,
+                            'value': ar.getSampleType().title,
+                            },
+                        'sampling_point': {
+                            'hidden': True if arcell else False,
+                            'rowspan': numans,
+                            'value': ar.getSamplePoint().title,
+                            },
+                        'sampling_date': {
+                            'hidden': True if arcell else False,
+                            'rowspan': numans,
+                            'value': self.context.sampling_date,
+                            },
+                        'partition': {
+                            'hidden': True if partcell else False,
+                            'rowspan': numpartans,
+                            'value': part.id,
+                            },
+                        'container': {
+                            'hidden': True if partcell else False,
+                            'rowspan': numpartans,
+                            'value': container,
+                            },
+                        'analyses': {
+                            'title': service.title,
+                            'units': service.getUnit(),
+                        },
+                    }
+                    rows.append(row)
+                    arcell = True
+                    partcell = True
+
         # table will contain the data that from where the html
         # will take the info
         table = {
             'columns': columns,
             'rows': rows,
-            'total_analyses': range(len(total_analyses))
         }
-        import pdb; pdb.set_trace()
         return table
