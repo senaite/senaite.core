@@ -548,7 +548,7 @@ function WorksheetManageResultsView() {
 
                                 } else {
                                     // All instruments found are invalid and manual entry not allowed
-                                    var title = _("Manual entry of results for method {methodname} is not allowed and no valid instruments found: ${invalid_list}",
+                                    var title = _("Manual entry of results for method ${methodname} is not allowed and no valid instruments found: ${invalid_list}",
                                                   {methodname:  method.Title, invalid_list:invalid.join(", ")});
                                     $(instrselector).parent().append('<img uid="'+auid+'" class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/exclamation.png" title="'+title+'")">');
                                     $('.interim input[uid="'+auid+'"]').prop('disabled', true);
