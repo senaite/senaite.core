@@ -68,15 +68,33 @@
     </div>
     <!-- analysis request listed by Sample Partition/Container -->
     <div id="sampling-round-data-entry"
-        tal:define="list view/getAnalysisRequestByPartitions">
+        tal:define="table view/getAnalysisRequestBySample">
         <table>
             <thead>
                 <tr>
-                    <th i18n:translate="" tal:repeat="column list">Request ID</th>
+                    <th i18n:translate=""
+                        tal:repeat="column_id table/columns/column_order"
+                        tal:content="python: table['columns']['titles'][column_id]"></th>
                 </tr>
             </thead>
             <tbody>
-                <tr tal:repeat="row list">
+                <tr tal:repeat="row_idx table/total_analyses">
+                    <tal:datarow repeat="column_id table/columns/column_order">
+                        <td style="border:1px solid #cdcdcd;padding:5px;"
+                            tal:define="rows table/rows"
+                             tal:attributes="
+                                rowspan python: rows[row_idx][column_id]['rowspan'];
+                                colspan python: rows[row_idx][column_id]['colspan'];
+                                "
+                            >
+                            <div tal:condition="python: column_id == 'analyses'">
+                                a
+                            </div>
+                            <div tal:condition="python: column_id != 'analyses'">
+                                b
+                            </div>
+                        </td>
+                    </tal:datarow>
                 </tr>
             </tbody>
         </table>

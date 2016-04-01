@@ -53,26 +53,101 @@ class PrintForm(BrowserView):
                 })
         return arts_list
 
-    def getAnalysisRequestByPartitions(self):
+    def getAnalysisRequestBySample(self):
         """
         Returns a list of dictionaries sorted by Sample Partition/Container
         [{'requests and partition info'}, ...]
         """
-        l = []
-        import pdb; pdb.set_trace()
+        # rows will contain the data for each html row
+        rows = []
+        # total_analyses will be a list of index used to create the <tr>
+        total_analyses = []
+        # columns will be used to sort and define the columns
+        columns = {
+            'column_order': [
+                'sample_id',
+                'sample_type',
+                'sampling_point',
+                'sampling_date',
+                'partition',
+                'container',
+                'analyses',
+                ],
+            'titles': {
+                'sample_id': 'Sample ID',
+                'sample_type': 'Sample Type',
+                'sampling_point': 'Sampling Point',
+                'sampling_date': 'Sampling Date',
+                'partition': 'Partition',
+                'container': 'Container',
+                'analyses': 'Analysis',
+            }
+        }
         ars = self.context.getAnalysisRequests()
         for ar in ars:
-            partitions = ar.getPartitions()
-            for part in partitions:
-                row_info = {
-                    'sample_id': {
-                        'title': 'Sample ID'
-                        'value': ar.getSample().id},
-                    'sample_type': ar.getSampleType(),
-                    'sample_point': ar.getSamplePoint(),
-                    'ar_id': ar.id,
-                    'part_id': part.id,
-                    'securitySeal': part.getContainer().getSecuritySealIntact(),
-                }
-                l.append(row_info)
-        return l
+            # Getting the partitions, containers and analyses
+            partitions_ids = []
+            containers_type = []
+            # analyses will contain the
+            analyses = []
+
+            ar = ar.getObject()
+            for part in ar.getPartitions():
+                partitions_ids.append(part.id)
+                container = part.getContainer().title \
+                    if part.getContainer() else ''
+                containers_type.append(container)
+                for analysis in part.getAnalyses():
+                    service = analysis.getService()
+                    analyses.append({
+                        'title': service.title,
+                        'units': service.getUnit()
+                    })
+            row_info = {
+                'sample_id': {
+                    'rowspan': len(analyses),
+                    'colspan': 1,
+                    'value': ar.getSample().id,
+                    },
+                'sample_type': {
+                    'rowspan': len(analyses),
+                    'colspan': 1,
+                    'value': ar.getSampleType(),
+                    },
+                'sampling_point': {
+                    'rowspan': len(analyses),
+                    'colspan': 1,
+                    'value': ar.getSamplePoint(),
+                    },
+                'sampling_date': {
+                    'rowspan': len(analyses),
+                    'colspan': 1,
+                    'value': self.context.sampling_date,
+                    },
+                'partition': {
+                    'rowspan': len(analyses)-len(partitions_ids),
+                    'colspan': 1,
+                    'value': partitions_ids,
+                    },
+                'container': {
+                    'rowspan': len(analyses)-len(containers_type),
+                    'colspan': 1,
+                    'value': containers_type,
+                    },
+                'analyses': {
+                    'rowspan': 1,
+                    'colspan': 1,
+                    'value': analyses,
+                    },
+            }
+            rows.append(row_info)
+            total_analyses += analyses
+        # table will contain the data that from where the html
+        # will take the info
+        table = {
+            'columns': columns,
+            'rows': rows,
+            'total_analyses': range(len(total_analyses))
+        }
+        import pdb; pdb.set_trace()
+        return table
