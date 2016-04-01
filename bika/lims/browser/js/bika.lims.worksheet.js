@@ -430,6 +430,7 @@ function WorksheetManageResultsView() {
             var auid = $(this).attr('uid');
             var suid = $(this).attr('as_uid');
             var instrselector = $('select.listing_select_entry[field="Instrument"][uid="'+auid+'"]');
+            var methodselector = $(this);
             var selectedinstr = $(instrselector).val();
             var m_manualentry = true;
             var s_instrentry  = false;
@@ -468,7 +469,8 @@ function WorksheetManageResultsView() {
                     window.bika.lims.jsonapi_read(request_data, function(asdata) {
                         service = (asdata.objects && asdata.objects.length > 0) ? asdata.objects[0] : null;
                         s_instrentry = service !== null ? service.InstrumentEntryOfResults : false;
-                        m_manualentry = (service !== null && m_manualentry) ? service.ManualEntryOfResults : m_manualentry;
+                        s_manualentry = service !== null ? service.ManualEntryOfresults : true;
+                        m_manualentry = m_manualentry ? s_manualentry : m_manualentry;
                         if (!s_instrentry) {
                             // The service doesn't allow instrument entry of results.
                             // Set instrument selector to None and hide it
@@ -476,6 +478,16 @@ function WorksheetManageResultsView() {
                             $(instrselector).val('');
                             $(instrselector).hide();
                             return;
+                        }
+
+                        // If manual entry is false for this analysis service, we can assume that only
+                        // instrument entry of results is allowed, so we don't want the user to be
+                        // able to select a "Non defined" method. His only option is to select an
+                        // instrument first. This prevents the user to introduce a result for an
+                        // analysis for which only instrument entry is allowed and only has one instrument
+                        // assigned witch, at the moment, is invalid.
+                        if (!s_manualentry && $(methodselector).find('option[value=""]').length > 0) {
+                            $(methodselector).find('option[value=""]').remove();
                         }
 
                         if (!m_manualentry) {
