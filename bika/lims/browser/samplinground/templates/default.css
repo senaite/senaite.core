@@ -5,3 +5,9 @@
     padding: 10px;
     border: 1px solid #000;
 }
+.data-input{
+    border: 1px solid #000;
+}
+.barcode-container {
+    width:100%;
+}

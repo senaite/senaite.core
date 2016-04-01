@@ -82,13 +82,20 @@
                 <tr>
                 <tal:rowcell repeat="column_id table/columns/column_order">
                     <td style="border:1px solid #cdcdcd; padding:5px;"
-                        tal:condition="python: column_id != 'analyses' and not row[column_id]['hidden']"
-                        tal:attributes="rowspan python:row[column_id]['rowspan']">
-                        <span tal:content="python: row[column_id]['value']"></span>
-                        <div
-                            tal:condition="python: column_id == 'sample_id'"
-                            class='barcode-container'>
-                            <div class='barcode'
+                        tal:condition="python: column_id not in ['analyses', 'sample_id'] and not row[column_id]['hidden']"
+                        tal:attributes="rowspan python:row[column_id]['rowspan']"
+                        tal:content="python: row[column_id]['value']">
+                    </td>
+                    <td tal:condition="python: column_id == 'analyses'">
+                        <span tal:content="python: row[column_id]['title']"></span>
+                        <div class="data-input"></div>
+                        <span tal:content="python: row[column_id]['units']"></span>
+                    </td>
+                    <td tal:condition="python: column_id == 'sample_id'">
+                        <div class='barcode-container'>
+                            <div
+                                tal:condition="python: not row[column_id]['hidden']"
+                                class='barcode'
                                 data-code='code128'
                                 data-showHRI='false'
                                 data-barHeight='15'
@@ -96,10 +103,6 @@
                                 tal:attributes="data-id python: row[column_id]['value']">
                             </div>
                         </div>
-                    </td>
-                    <td tal:condition="python: column_id == 'analyses'">
-                        <span tal:content="python: row[column_id]['title']"></span>
-                        <span tal:content="python: row[column_id]['units']"></span>
                     </td>
                 </tal:rowcell>
                 </tr>
