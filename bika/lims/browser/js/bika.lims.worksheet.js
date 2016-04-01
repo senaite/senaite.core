@@ -438,7 +438,7 @@ function WorksheetManageResultsView() {
             $(instrselector).prop('disabled', false);
             $('img.alert-instruments-invalid[uid="'+auid+'"]').remove();
             $('.interim input[uid="'+auid+'"]').prop('disabled', false);
-            $('.input[field="Result"][uid="'+auid+'"]').prop('disabled', false);
+            $('input[field="Result"][uid="'+auid+'"]').prop('disabled', false);
 
             if (muid != '') {
                 // Update the instruments selector, but only if the service has AllowInstrumentEntryOfResults enabled.
@@ -446,7 +446,7 @@ function WorksheetManageResultsView() {
                 // instruments are available for that Analysis Service, check if the method allows the manual entry
                 // of results.
 
-                // Is manual entry allowed for this method?
+                // Is manual entry allowed for this method and analysis?
                 var request_data = {
                     catalog_name: "uid_catalog",
                     UID: muid,
@@ -456,22 +456,19 @@ function WorksheetManageResultsView() {
                     method = (data.objects && data.objects.length > 0) ? data.objects[0] : null;
                     m_manualentry = (method != null) ? method.ManualEntryOfResultsViewField : true;
                     $('.interim input[uid="'+auid+'"]').prop('disabled', !m_manualentry);
-                    $('.input[field="Result"][uid="'+auid+'"]').prop('disabled', !m_manualentry);
-                    if (!m_manualentry) {
-                        // This method doesn't allow the manual entry of Results
-                        var title = _("Manual entry of results for method ${methodname} is not allowed", {methodname: method.Title});
-                        $('.input[field="Result"][uid="'+auid+'"]').parent().append('<img uid="'+auid+'" class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/warning.png" title="'+title+'")">');
-                    }
+                    $('input[field="Result"][uid="'+auid+'"]').prop('disabled', !m_manualentry);
 
-                    // Has the Analysis Service the 'Allow Instrument Entry of Results' enabled?
+                    // Has the Analysis Service the 'Allow Instrument Entry of Results'
+                    // and/or 'Allow manual entry of results' enabled?
                     var request_data = {
                         catalog_name: "uid_catalog",
                         UID: suid,
-                        include_fields: ['InstrumentEntryOfResults']
+                        include_fields: ['InstrumentEntryOfResults', 'ManualEntryOfResults']
                     };
                     window.bika.lims.jsonapi_read(request_data, function(asdata) {
                         service = (asdata.objects && asdata.objects.length > 0) ? asdata.objects[0] : null;
-                        s_instrentry = (service != null) ? service.InstrumentEntryOfResults : false;
+                        s_instrentry = service !== null ? service.InstrumentEntryOfResults : false;
+                        m_manualentry = (service !== null && m_manualentry) ? service.ManualEntryOfResults : m_manualentry;
                         if (!s_instrentry) {
                             // The service doesn't allow instrument entry of results.
                             // Set instrument selector to None and hide it
@@ -479,6 +476,12 @@ function WorksheetManageResultsView() {
                             $(instrselector).val('');
                             $(instrselector).hide();
                             return;
+                        }
+
+                        if (!m_manualentry) {
+                            // This method or service don't allow the manual entry of Results
+                            var title = _("Manual entry of results is not allowed");
+                            $('input[field="Result"][uid="'+auid+'"]').parent().append('<img uid="'+auid+'" class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/warning.png" title="'+title+'")">');
                         }
 
                         // Get the available instruments for this method and analysis service
@@ -537,7 +540,7 @@ function WorksheetManageResultsView() {
                                                   {methodname:  method.Title, invalid_list:invalid.join(", ")});
                                     $(instrselector).parent().append('<img uid="'+auid+'" class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/exclamation.png" title="'+title+'")">');
                                     $('.interim input[uid="'+auid+'"]').prop('disabled', true);
-                                    $('.input[field="Result"][uid="'+auid+'"]').prop('disabled', true);
+                                    $('input[field="Result"][uid="'+auid+'"]').prop('disabled', true);
                                 }
                             }
 
@@ -612,5 +615,9 @@ function WorksheetManageResultsView() {
                 });
             }
         });
+
+        // Need to check if manual entry of results is allowed for each service
+        // and method selected
+        $('table.bika-listing-table select.listing_select_entry[field="Method"]').change();
     }
 }
