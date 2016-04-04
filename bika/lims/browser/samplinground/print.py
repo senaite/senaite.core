@@ -142,13 +142,13 @@ class PrintForm(BrowserView):
                 'analyses',
                 ],
             'titles': {
-                'sample_id': 'Sample ID',
-                'sample_type': 'Sample Type',
-                'sampling_point': 'Sampling Point',
-                'sampling_date': 'Sampling Date',
-                'partition': 'Partition',
-                'container': 'Container',
-                'analyses': 'Analysis',
+                'sample_id': _('Sample ID'),
+                'sample_type': _('Sample Type'),
+                'sampling_point': _('Sampling Point'),
+                'sampling_date': _('Sampling Date'),
+                'partition': _('Partition'),
+                'container': _('Container'),
+                'analyses': _('Analysis'),
             }
         }
         ars = self.context.getAnalysisRequests()
