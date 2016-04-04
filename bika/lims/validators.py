@@ -1,3 +1,7 @@
+# -*- coding: utf-8 -*-
+
+import types
+
 from Acquisition import aq_parent
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
@@ -974,3 +978,38 @@ class SortKeyValidator:
         return True
 
 validation.register(SortKeyValidator())
+
+
+class InlineFieldValidator:
+    """ Inline Field Validator
+
+    calls a field function for validation
+    """
+
+    implements(IValidator)
+    name = "inline_field_validator"
+
+    def __call__(self, value, *args, **kwargs):
+        field = kwargs['field']
+        request = kwargs['REQUEST']
+        instance = kwargs['instance']
+
+        # extract the request values
+        data = request.get(field.getName())
+
+        # check if the field contains a callable
+        validator = getattr(field, self.name, None)
+
+        # validator is a callable
+        if callable(validator):
+            return validator(instance, request, field, data)
+
+        # validator is a string, check if the instance has a method with this name
+        if type(validator) in types.StringTypes:
+            instance_validator = getattr(instance, validator, None)
+            if callable(instance_validator):
+                return instance_validator(request, field, data)
+
+        return True
+
+validation.register(InlineFieldValidator())
