@@ -112,6 +112,15 @@
 <body class="letter" data-layout="letter">
     <div id='samplinground-printview-wrapper'>
         <div id='samplinground-printview-head'>
+            <div id='samplinground-printview-options'>
+                <label for="template" i18n:translate="">Available templates</label>
+                <select id="template" name ="template">
+                    <tal:templates tal:repeat="template python:view.getSRTemplates()">
+                        <option tal:attributes="value python:template['id']"
+                                tal:content="python:template['title']"></option>
+                    </tal:templates>
+                </select>
+            </div>
             <div id='buttons'>
                 <input type="button" id='cancel_button' i18n:translate="value" value="Cancel"/>&nbsp;&nbsp;
                 <input type="button" id='print_button' i18n:translate="value" value="Print"/>

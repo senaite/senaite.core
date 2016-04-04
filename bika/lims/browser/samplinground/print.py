@@ -2,26 +2,96 @@ from bika.lims import bikaMessageFactory as _, t
 from Products.CMFCore.utils import getToolByName
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from plone.resource.utils import iterDirectoriesOfType, queryResourceDirectory
+
 import os
+import glob
+
 
 class PrintForm(BrowserView):
     template = ViewPageTemplateFile("templates/print_form.pt")
     _DEFAULT_TEMPLATE = 'default_form.pt'
-    _TEMPLATES_DIR = 'templates'
+    _TEMPLATES_DIR = 'templates/print'
+    _TEMPLATES_ADDON_DIR = 'samplingrounds'
+    _current_sr_index = 0
+    _samplingrounds = []
 
     def __call__(self):
-        return self.template()
+        if self.context.portal_type == 'SamplingRound':
+            self._samplingrounds = [self.context]
+
+        elif self.context.portal_type == 'SamplingRounds' \
+            and self.request.get('items', ''):
+            uids = self.request.get('items').split(',')
+            uc = getToolByName(self.context, 'uid_catalog')
+            self._samplingrounds = [obj.getObject() for obj in uc(UID=uids)]
+
+        else:
+            # Warn and redirect to referer
+            logger.warning('PrintView: type not allowed: %s' %
+                            self.context.portal_type)
+            self.destination_url = self.request.get_header("referer",
+                                   self.context.absolute_url())
+
+        # Generate PDF?
+        if self.request.form.get('pdf', '0') == '1':
+            return self._flush_pdf()
+        else:
+            return self.template()
 
     def getSamplingRoundObj(self):
         """Returns the sampling round object
         """
         return self.context
 
-    def getFormTemplate(self):
-        """Returns the html template for the current sampling round
+    def getSRTemplates(self):
         """
+        Returns a DisplayList with the available templates found in
+        browser/samplingrpund/templates/
+        """
+        this_dir = os.path.dirname(os.path.abspath(__file__))
+        templates_dir = os.path.join(this_dir, self._TEMPLATES_DIR)
+        tempath = '%s/%s' % (templates_dir, '*.pt')
+        templates = [t.split('/')[-1] for t in glob.glob(tempath)]
+        out = []
+        for template in templates:
+            out.append({'id': template, 'title': template[:-3]})
+        for templates_resource in iterDirectoriesOfType(self._TEMPLATES_ADDON_DIR):
+            prefix = templates_resource.__name__
+            templates = [
+                tpl for tpl in templates_resource.listDirectory()
+                if tpl.endswith('.pt')
+                ]
+            for template in templates:
+                out.append({
+                    'id': '{0}:{1}'.format(prefix, template),
+                    'title': '{0} ({1})'.format(template[:-3], prefix),
+                })
+        return out
+
+    def getFormTemplate(self):
+        """Returns the current samplinground rendered with the template
+            specified in the request (param 'template').
+            Moves the iterator to the next samplinground available.
+        """
+        templates_dir = self._TEMPLATES_DIR
+        embedt = self.request.get('template', self._DEFAULT_TEMPLATE)
+        if embedt.find(':') >= 0:
+            prefix, embedt = embedt.split(':')
+            templates_dir = queryResourceDirectory(self._TEMPLATES_ADDON_DIR, prefix).directory
+        embed = ViewPageTemplateFile(os.path.join(templates_dir, embedt))
+        reptemplate = ""
+        try:
+            reptemplate = embed(self)
+        except:
+            tbex = traceback.format_exc()
+            wsid = self._samplingrounds[self._current_sr_index].id
+            reptemplate = "<div class='error-print'>%s - %s '%s':<pre>%s</pre></div>" % (wsid, _("Unable to load the template"), embedt, tbex)
+        if self._current_sr_index < len(self._samplingrounds):
+            self._current_sr_index += 1
+        return reptemplate
         # Using default for now
-        return ViewPageTemplateFile("templates/default_form.pt")(self)
+        return ViewPageTemplateFile("templates/print/default_form.pt")(self)
 
     def getCSS(self):
         """ Returns the css style to be used for the current template.
