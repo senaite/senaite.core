@@ -23,7 +23,7 @@ div#title{
     position: relative;
 }
 .data-input{
-    border: 1px solid #000;
+    border: 1px solid #cdcdcd;
     height: 20px;
 }
 table.samples-grid tr td {
@@ -35,15 +35,18 @@ table thead th{
     border: 1px solid #cdcdcd;
     background-color: #808080;
 }
-div.lab-logo {
-    float: right;
-    position: relative;
-}
 #sampling-round-info div {
     float: left;
     font-size: 0.85em;
     position: relative;
     width: 150px;
+}
+span.units {
+    font-size: 0.7em;
+}
+div.lab-logo {
+    float: right;
+    position: relative;
 }
 p {
     margin:0;

@@ -3,16 +3,16 @@
 -->
 <tal:form tal:define="samplinground python:view.getSamplingRoundObj()">
     <!-- Sampling round info goes to the header of the printed form-->
+    <div class='lab-logo'>
+        <a tal:attributes="href view/getLab">
+            <img tal:attributes="src view/getLogo"/>
+        </a>
+    </div>
     <div id="header">
         <h1>
             <a tal:attributes="href python: samplinground.absolute_url()"
                tal:content="samplinground/id"></a>
         </h1>
-        <div class='lab-logo'>
-            <a tal:attributes="href view/getLab">
-                <img tal:attributes="src view/getLogo"/>
-            </a>
-        </div>
         <div id="title">
             <div id="samplinground-title" class="samplinground-field">
                 <p tal:content="samplinground/title"></p>
@@ -105,7 +105,9 @@
                         class="analyses">
                         <span tal:content="python: row[column_id]['title']"></span>
                         <div class="data-input"></div>
-                        <span tal:content="python: row[column_id]['units']"></span>
+                        <span
+                            class="units"
+                            tal:content="python: row[column_id]['units']"></span>
                     </td>
                     <td tal:condition="python: column_id == 'partition' and not row[column_id]['hidden']"
                         tal:attributes="rowspan python:row[column_id]['rowspan'];

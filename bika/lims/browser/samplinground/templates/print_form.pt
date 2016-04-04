@@ -101,6 +101,10 @@
                 margin:none;
                 border:none;
             }
+            #samplinground-printview-head {
+                display:none;
+                visibility:hidden;
+            }
             @page {
                 size: auto;
                 margin: 0.7in 0.1in 1in 0.1in;
