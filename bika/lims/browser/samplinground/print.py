@@ -141,3 +141,10 @@ class PrintForm(BrowserView):
             'rows': rows,
         }
         return table
+
+    def getLab(self):
+        return self.context.bika_setup.laboratory.getLabURL()
+
+    def getLogo(self):
+        portal = self.context.portal_url.getPortalObject()
+        return "%s/logo_print.png" % portal.absolute_url()

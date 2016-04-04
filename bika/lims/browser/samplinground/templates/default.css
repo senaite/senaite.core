@@ -19,10 +19,6 @@ div#title{
 .label {
     font-weight: bold;
 }
-#sampling-round-info {
-    padding: 10px;
-    border: 1px solid #000;
-}
 .table-text {
     position: relative;
 }
@@ -39,7 +35,10 @@ table thead th{
     border: 1px solid #cdcdcd;
     background-color: #808080;
 }
-
+div.lab-logo {
+    float: right;
+    position: relative;
+}
 #sampling-round-info div {
     float: left;
     font-size: 0.85em;

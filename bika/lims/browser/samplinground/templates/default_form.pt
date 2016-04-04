@@ -3,17 +3,23 @@
 -->
 <tal:form tal:define="samplinground python:view.getSamplingRoundObj()">
     <!-- Sampling round info goes to the header of the printed form-->
-    <div id="sampling-round-info">
+    <div id="header">
         <h1>
             <a tal:attributes="href python: samplinground.absolute_url()"
                tal:content="samplinground/id"></a>
         </h1>
-        <!--Title and description-->
+        <div class='lab-logo'>
+            <a tal:attributes="href view/getLab">
+                <img tal:attributes="src view/getLogo"/>
+            </a>
+        </div>
         <div id="title">
             <div id="samplinground-title" class="samplinground-field">
                 <p tal:content="samplinground/title"></p>
             </div>
         </div>
+    </div>
+    <div id="sampling-round-info">
         <div id="samplinground-description">
             <p class='label' i18n:translate="">Description</p>
             <p tal:content="samplinground/description"></p>
