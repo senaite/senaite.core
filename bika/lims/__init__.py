@@ -116,6 +116,7 @@ def initialize(context):
     from content.worksheet import Worksheet
     from content.worksheetfolder import WorksheetFolder
     from content.worksheettemplate import WorksheetTemplate
+    from content.reflexrule import ReflexRule
 
     from controlpanel.bika_analysiscategories import AnalysisCategories
     from controlpanel.bika_analysisservices import AnalysisServices
@@ -146,6 +147,7 @@ def initialize(context):
     from controlpanel.bika_subgroups import SubGroups
     from controlpanel.bika_suppliers import Suppliers
     from controlpanel.bika_worksheettemplates import WorksheetTemplates
+    from controlpanel.bika_reflexrulefolder import ReflexRuleFolder
 
     content_types, constructors, ftis = process_types(
         listTypes(PROJECTNAME),

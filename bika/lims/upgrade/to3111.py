@@ -37,4 +37,32 @@ def upgrade(tool):
     wf = getToolByName(portal, 'portal_workflow')
     wf.updateRoleMappings()
 
+    reflex_rules(portal)
     return True
+
+
+def reflex_rules(portal):
+    at = getToolByName(portal, 'archetype_tool')
+    # If reflex rules folder is not created yet, we should create it
+    import pdb; pdb.set_trace()
+    typestool = getToolByName(portal, 'portal_types')
+    qi = portal.portal_quickinstaller
+    if not portal['bika_setup'].get('bika_reflexrulefolder'):
+        typestool.constructContent(type_name="ReflexRuleFolder",
+                                   container=portal['bika_setup'],
+                                   id='bika_reflexrulefolder',
+                                   title='Reflex Rules Folder')
+    obj = portal['bika_setup']['bika_reflexrulefolder']
+    obj.unmarkCreationFlag()
+    obj.reindexObject()
+    if not portal['bika_setup'].get('bika_reflexrulefolder'):
+        logger.info("ReflexRuleFolder not created")
+    # Install Products.DataGridField
+    qi.installProducts(['Products.DataGridField'])
+    # add new types not to list in nav
+    # ReflexRule
+    portal_properties = getToolByName(portal, 'portal_properties')
+    ntp = getattr(portal_properties, 'navtree_properties')
+    types = list(ntp.getProperty('metaTypesNotToList'))
+    types.append("ReflexRule")
+    ntp.manage_changeProperties(MetaTypesNotToQuery=types)
