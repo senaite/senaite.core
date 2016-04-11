@@ -1,7 +1,9 @@
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import BaseContent
+from Products.Archetypes import atapi
 from zope.interface import implements
+from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IReflexRule
@@ -23,3 +25,10 @@ class ReflexRule(BaseContent):
     implements(IReflexRule)
     security = ClassSecurityInfo()
     schema = schema
+    _at_rename_after_creation = True
+    
+    def _renameAfterCreation(self, check_auto_id=False):
+        from bika.lims.idserver import renameAfterCreation
+        renameAfterCreation(self)
+
+atapi.registerType(ReflexRule, PROJECTNAME)

@@ -44,7 +44,6 @@ def upgrade(tool):
 def reflex_rules(portal):
     at = getToolByName(portal, 'archetype_tool')
     # If reflex rules folder is not created yet, we should create it
-    import pdb; pdb.set_trace()
     typestool = getToolByName(portal, 'portal_types')
     qi = portal.portal_quickinstaller
     if not portal['bika_setup'].get('bika_reflexrulefolder'):
