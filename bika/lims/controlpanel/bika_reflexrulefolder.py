@@ -5,6 +5,7 @@ from Products.Archetypes import atapi
 from Products.CMFCore import permissions
 from zope.interface.declarations import implements
 from Products.ATContentTypes.content import schemata
+from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from bika.lims.permissions import ManageBika
 from bika.lims.config import PROJECTNAME
@@ -29,16 +30,9 @@ class ReflexRuleFolderView(BikaListingView):
         self.show_select_row = False
         self.show_select_column = True
         self.icon = self.portal_url +\
-            "/++resource++bika.lims.images/reflexrules_big.png"
+            "/++resource++bika.lims.images/reflexrule_big.png"
         self.title = self.context.translate(_("Reflex rules folder"))
         self.description = ""
-        self.context_actions = {
-            _('Add Reflex rule'): {
-                'url': 'createObject?type_name=ReflexRule',
-                'icon': '++resource++bika.lims.images/add.png'
-            }
-        }
-
         self.columns = {
             'Title': {
                 'title': _('Template'),
@@ -63,20 +57,30 @@ class ReflexRuleFolderView(BikaListingView):
     def __call__(self):
         mtool = getToolByName(self.context, 'portal_membership')
         if mtool.checkPermission(permissions.ModifyPortalContent, self.context):
-            self.context_actions[_('Add')] = {
+            self.context_actions[_('Add Reflex rule')] = {
                 'url': 'createObject?type_name=ReflexRule',
                 'icon': '++resource++bika.lims.images/add.png'
             }
         if not mtool.checkPermission(ManageBika, self.context):
             self.show_select_column = False
             self.review_states = [
-                {'id':'default',
+                {'id': 'default',
                  'title': _('All'),
-                 'contentFilter':{},
+                 'contentFilter': {},
                  'columns': ['Title']}
             ]
         return super(ReflexRuleFolderView, self).__call__()
 
+    # TODO use folderitem in develop!
+    def folderitems(self):
+        items = BikaListingView.folderitems(self)
+        for x in range(len(items)):
+            if 'obj' not in items[x]:
+                continue
+            obj = items[x]['obj']
+            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
+                (items[x]['url'], items[x]['Title'])
+        return items
 
 schema = ATFolderSchema.copy()
 
