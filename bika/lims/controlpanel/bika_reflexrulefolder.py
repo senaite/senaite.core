@@ -35,28 +35,34 @@ class ReflexRuleFolderView(BikaListingView):
         self.description = ""
         self.columns = {
             'Title': {
-                'title': _('Template'),
+                'title': _('Reflex Rule'),
                 'index': 'sortable_title'
             },
+            'Method': {
+                'title': _('Method'),
+                'index': 'sortable_title'
+            }
         }
         self.review_states = [
             {'id': 'default',
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
-             'columns': ['Title', ]},
+             'columns': ['Title', 'Method', ]},
             {'id': 'inactive',
              'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
-             'columns': ['Title', ]},
+             'columns': ['Title', 'Method', ]},
             {'id': 'all',
              'title': _('All'),
              'contentFilter': {},
-             'columns': ['Title', ]},
+             'columns': ['Title', 'Method', ]},
         ]
 
     def __call__(self):
         mtool = getToolByName(self.context, 'portal_membership')
-        if mtool.checkPermission(permissions.ModifyPortalContent, self.context):
+        if mtool.checkPermission(
+                permissions.ModifyPortalContent,
+                self.context):
             self.context_actions[_('Add Reflex rule')] = {
                 'url': 'createObject?type_name=ReflexRule',
                 'icon': '++resource++bika.lims.images/add.png'
@@ -80,6 +86,10 @@ class ReflexRuleFolderView(BikaListingView):
             obj = items[x]['obj']
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                 (items[x]['url'], items[x]['Title'])
+            method = items[x]['obj'].getMethod()
+            items[x]['Method'] = method.title
+            items[x]['replace']['Method'] = "<a href='%s'>%s</a>" % \
+                (method.absolute_url(), items[x]['Method'])
         return items
 
 schema = ATFolderSchema.copy()
