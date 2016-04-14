@@ -12,6 +12,7 @@ from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IReflexRule
+from bika.lims.browser.fields import ReflexRuleField
 import sys
 
 schema = BikaSchema.copy() + Schema((
@@ -38,7 +39,7 @@ schema = BikaSchema.copy() + Schema((
                 "service will be bind to."),
         )
     ),
-
+    ReflexRuleField('ReflexRules',),
 ))
 schema['description'].widget.visible = True
 schema['description'].widget.label = _("Description")
