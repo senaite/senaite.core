@@ -109,6 +109,7 @@ class BikaContentVocabulary(object):
                 xitems = [(t(item.Title()), item.Title()) for item in objects]
                 xitems = [SimpleTerm(i[1], i[1], i[0]) for i in xitems]
                 items += xitems
+        import pdb; pdb.set_trace()
         return SimpleVocabulary(items)
 
 
