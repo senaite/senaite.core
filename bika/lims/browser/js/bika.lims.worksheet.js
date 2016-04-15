@@ -364,7 +364,7 @@ function WorksheetManageResultsView() {
                 load_analysis_method_constraint(value, null);
             });
         }).fail(function() {
-            window.bika.lims.log("bika.lims.worksheet: Something went wrong whlie retrieving analysis-method-instrument constraints");
+            window.bika.lims.log("bika.lims.worksheet: Something went wrong while retrieving analysis-method-instrument constraints");
         });
     }
 
@@ -381,7 +381,7 @@ function WorksheetManageResultsView() {
             return;
         }
         constraints = andict[method_uid];
-        if (!constraints || constraints.length < 8) {
+        if (!constraints || constraints.length < 7) {
             return;
         }
         m_selector = $('select.listing_select_entry[field="Method"][uid="'+analysis_uid+'"]');
@@ -417,49 +417,49 @@ function WorksheetManageResultsView() {
 
         // Populate instruments list
         $(i_selector).find('option').remove();
-        console.log(constraints[8]);
-        if (constraints[8]) {
-            $.each(constraints[8], function(key, value) {
+        console.log(constraints[7]);
+        if (constraints[7]) {
+            $.each(constraints[7], function(key, value) {
                 console.log(key+ ": "+value);
                 $(i_selector).append('<option value="'+key+'">'+value+'</option>');
             });
         }
 
         // None option in instrument selector?
-        if (constraints[4] == 1) {
+        if (constraints[3] == 1) {
             $(i_selector).prepend('<option value="">'+_('None')+'</option>');
         }
 
         // Select the default instrument
-        $(i_selector).val(constraints[5]);
+        $(i_selector).val(constraints[4]);
 
         // Instrument selector visible?
-        if (constraints[3] === 0) {
+        if (constraints[2] === 0) {
             $(i_selector).hide();
-        } else if (constraints[3] == 1) {
+        } else if (constraints[2] == 1) {
             $(i_selector).show();
         }
 
         // Allow to edit results?
-        if (constraints[6] === 0) {
+        if (constraints[5] === 0) {
             $('.interim input[uid="'+analysis_uid+'"]').val('');
             $('input[field="Result"][uid="'+analysis_uid+'"]').val('');
             $('.interim input[uid="'+analysis_uid+'"]').prop('disabled', true);
             $('input[field="Result"][uid="'+analysis_uid+'"]').prop('disabled', true);
-        } else if (constraints[6] == 1) {
+        } else if (constraints[5] == 1) {
             $('.interim input[uid="'+analysis_uid+'"]').prop('disabled', false);
             $('input[field="Result"][uid="'+analysis_uid+'"]').prop('disabled', false);
         }
 
         // Info/Warn message?
         $('.alert-instruments-invalid[uid="'+analysis_uid+'"]').remove();
-        if (constraints[7] && constraints[7] !== '') {
-            $(i_selector).after('<img uid="'+analysis_uid+'" class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/warning.png" title="'+constraints[7]+'")">');
+        if (constraints[6] && constraints[6] !== '') {
+            $(i_selector).after('<img uid="'+analysis_uid+'" class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/warning.png" title="'+constraints[6]+'")">');
         }
 
 
         $('.amconstr[uid="'+analysis_uid+'"]').remove();
-        $(m_selector).before("<span style='font-weight:bold' class='amconstr' uid='"+analysis_uid+"'>"+constraints[11]+"</span>");
+        //$(m_selector).before("<span style='font-weight:bold' class='amconstr' uid='"+analysis_uid+"'>"+constraints[10]+"</span>");
     }
 
     function loadHeaderEventsHandlers() {
