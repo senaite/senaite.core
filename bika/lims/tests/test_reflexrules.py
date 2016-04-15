@@ -21,6 +21,77 @@ class TestReflexRules(BikaFunctionalTestCase):
     rules_list = []
     # A list with the created methods
     methods_list = []
+    # A list with the created analysis services
+    ans_list = []
+
+    def create_departments(self, department_data):
+        """
+        Creates a set of departments to be used in the tests
+        :department_data: [{
+                'title':'xxx',
+                },
+            ...]
+        """
+        folder = self.portal.bika_setup.bika_departments
+        for department_d in department_data:
+            _id = folder.invokeFactory('Department', id=tmpID())
+            dep = folder[_id]
+            dep.edit(
+                title=department_d['title'],
+                )
+            dep.unmarkCreationFlag()
+            renameAfterCreation(dep)
+            self.departments_list.append(dep)
+
+    def create_category(self, category_data):
+        """
+        Creates a set of analaysis categories to be used in the tests
+        :category_data: [{
+                'title':'xxx',
+                'Department': department object
+                },
+            ...]
+        """
+        folder = self.portal.bika_setup.bika_analysiscategories
+        for category_d in category_data:
+            _id = folder.invokeFactory('AnalysisCategory', id=tmpID())
+            cat = folder[_id]
+            cat.edit(
+                title=category_d['title'],
+                Department=category_d.get('Department', []),
+                )
+            cat.unmarkCreationFlag()
+            renameAfterCreation(cat)
+            self.categories_list.append(cat)
+
+    def create_analysisservices(self, as_data):
+        """
+        Creates a set of analaysis services to be used in the tests
+        :as_data: [{
+                'title':'xxx',
+                'ShortTitle':'xxx',
+                'Keyword': 'xxx',
+                'PointOfCapture': 'Lab',
+                'Category':category object,
+                'Methods': [methods object,],
+                },
+            ...]
+        """
+        folder = self.portal.bika_setup.bika_analysisservices
+        for as_d in as_data:
+            _id = folder.invokeFactory('AnalysisService', id=tmpID())
+            ans = folder[_id]
+            ans.edit(
+                title=as_d['title'],
+                ShortTitle=as_d.get('ShortTitle', ''),
+                Keyword=as_d.get('Keyword', ''),
+                PointOfCapture=as_d.get('PointOfCapture', 'Lab'),
+                Category=as_d.get('Category', ''),
+                Methods=as_d.get('Methods', []),
+                )
+            ans.unmarkCreationFlag()
+            renameAfterCreation(ans)
+            self.ans_list.append(ans)
 
     def create_methods(self, methods_data):
         """
@@ -65,11 +136,13 @@ class TestReflexRules(BikaFunctionalTestCase):
                     'There is need a method in order to create'
                     ' a reflex rule')
             method = rule_d.get('method')
+            rule = rule_d.get('ReflexRules')
             rule.edit(
                 title=rule_d.get('title', ''),
                 description=rule_d.get('description', ''),
                 )
             rule.setMethod(method.UID())
+            rule.setMethod(rule.UID())
             rule.unmarkCreationFlag()
             renameAfterCreation(rule)
             self.rules_list.append(rule)
@@ -79,6 +152,9 @@ class TestReflexRules(BikaFunctionalTestCase):
         login(self.portal, TEST_USER_NAME)
         self.rules_list = []
         self.methods_list = []
+        self.ans_list = []
+        self.categories_list = []
+        self.departments_list = []
 
     def tearDown(self):
         logout()
@@ -151,6 +227,54 @@ class TestReflexRules(BikaFunctionalTestCase):
         rule = self.rules_list[-1]
         self.assertEquals(rule.getMethod().UID(), self.methods_list[-1].UID())
 
+    def test_reflex_rule_set_analysisservice(self):
+        """
+        Testing the analysis service bind
+        """
+        department_data = [
+            {
+                'title': 'dep1',
+            }
+        ]
+        self.create_departments(department_data)
+        category_data = [{
+            'title': 'cat1',
+            'Department': self.departments_list[-1]
+            },
+        ]
+        self.create_category(category_data)
+        methods_data = [
+            {
+                'title': 'Method 1',
+                'description': 'A description',
+                'Instructions': 'An instruction',
+                'MethodID': 'm1',
+                'Accredited': 'True'
+            },
+        ]
+        self.create_methods(methods_data)
+        as_data = [{
+                'title': 'analysis service1',
+                'ShortTitle': 'as1',
+                'Keyword': 'as1',
+                'PointOfCapture': 'Lab',
+                'Category': self.categories_list[-1],
+                'Methods': self.methods_list[-1],
+                },
+        ]
+        self.create_analysisservices(as_data)
+        rules_data = [
+            {
+                'title': 'Rule MS',
+                'description': 'A description',
+                'method': self.methods_list[-1],
+                'ReflexRules': self.ans_list[-1]
+            },
+        ]
+        self.create_reflex_rules(rules_data)
+        import pdb; pdb.set_trace()
+        rule = self.rules_list[-1]
+        self.assertEquals(rule.getMethod().UID(), self.methods_list[-1].UID())
 
 def test_suite():
     suite = unittest.TestSuite()
