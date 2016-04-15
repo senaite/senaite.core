@@ -30,6 +30,7 @@ class ReflexRuleField(RecordsField):
             'analysisservice': DisplayList([('', '')]),
             },
         'widget': ReflexRuleWidget,
+        'subfield_validators': {'analysisservice': 'reflexrulevalidator', },
         })
     security = ClassSecurityInfo()
 
