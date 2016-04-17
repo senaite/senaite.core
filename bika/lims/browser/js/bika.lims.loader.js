@@ -78,6 +78,10 @@ window.bika.lims.controllers =  {
     ".template-bika-lims-content-samplingsround.portaltype-client":
         ['ClientSamplingRoundAddEditView'],
 
+    // Sampling Rounds PrintView
+    ".samplinground-print-form":
+        ['SamplingRoundtPrintView'],
+
     // Reference Samples
     ".portaltype-referencesample.template-analyses":
         ['ReferenceSampleAnalysesView'],
