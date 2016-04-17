@@ -1,5 +1,6 @@
 3.1.x Long Term Support (LTS)
 -----------------------------
+LIMS-1809: Typos. Perdiod an missing spaces
 LIMS-2221: Decimal mark doesn't work in Sci Notation
 LIMS-2219: Using a SciNotation diferent from 'aE+b / aE-b' throws an error
 LIMS-2220: Raw display of exponential notations in results manage views
