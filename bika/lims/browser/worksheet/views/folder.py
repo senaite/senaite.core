@@ -105,10 +105,10 @@ class FolderView(BikaListingView):
             'QC': {'title': _('QC'),
                    'sortable':False,
                    'toggle': False},
-            'QCTotals': {'title': _('QC Samples(Analyses)'),
+            'QCTotals': {'title': _('QC Samples (Analyses)'),
                    'sortable':False,
                    'toggle': False},
-            'RoutineTotals': {'title': _('Routine Samples(Analyses)'),
+            'RoutineTotals': {'title': _('Routine Samples (Analyses)'),
                    'sortable':False,
                    'toggle': False},
             'CreationDate': {'title': PMF('Date Created'),
@@ -296,7 +296,7 @@ class FolderView(BikaListingView):
 
             priority = obj.getPriority()
             items[x]['Priority'] = ''
-            
+
             instrument = obj.getInstrument()
             items[x]['Instrument'] = instrument and instrument.Title() or ''
 
