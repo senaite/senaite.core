@@ -136,13 +136,14 @@ class TestReflexRules(BikaFunctionalTestCase):
                     'There is need a method in order to create'
                     ' a reflex rule')
             method = rule_d.get('method')
-            rule = rule_d.get('ReflexRules')
+            reflexrule = rule_d.get('ReflexRules', [])
             rule.edit(
                 title=rule_d.get('title', ''),
                 description=rule_d.get('description', ''),
                 )
             rule.setMethod(method.UID())
-            rule.setMethod(rule.UID())
+            if reflexrule:
+                rule.setReflexRules([reflexrule, ])
             rule.unmarkCreationFlag()
             renameAfterCreation(rule)
             self.rules_list.append(rule)
@@ -272,9 +273,10 @@ class TestReflexRules(BikaFunctionalTestCase):
             },
         ]
         self.create_reflex_rules(rules_data)
-        import pdb; pdb.set_trace()
         rule = self.rules_list[-1]
-        self.assertEquals(rule.getMethod().UID(), self.methods_list[-1].UID())
+        self.assertTrue(
+            self.ans_list[-1].id in rule.getReflexRules()[0].keys())
+
 
 def test_suite():
     suite = unittest.TestSuite()
