@@ -51,7 +51,7 @@ class SampleTypesView(BikaListingView):
                           'toggle': True},
             'getMinimumVolume': {'title': _('Minimum Volume'),
                                  'toggle': True},
-            'RetentionPeriod': {'title': _('Retention Perdiod'),
+            'RetentionPeriod': {'title': _('Retention Period'),
                              'toggle': True},
             'SampleMatrix': {'title': _('SampleMatrix'),
                              'toggle': True},
@@ -66,39 +66,39 @@ class SampleTypesView(BikaListingView):
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': [{'id':'deactivate'}, ],
-             'columns': ['Title', 
-                         'Description', 
+             'columns': ['Title',
+                         'Description',
                          'getHazardous',
-                         'RetentionPeriod', 
-                         'SampleMatrix', 
-                         'ContainerType', 
-                         'getSamplePoints', 
-                         'getPrefix', 
+                         'RetentionPeriod',
+                         'SampleMatrix',
+                         'ContainerType',
+                         'getSamplePoints',
+                         'getPrefix',
                          'getMinimumVolume']},
             {'id':'inactive',
              'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': [{'id':'activate'}, ],
-             'columns': ['Title', 
-                         'Description', 
-                         'getHazardous', 
-                         'RetentionPeriod', 
-                         'SampleMatrix', 
-                         'ContainerType', 
-                         'getSamplePoints', 
-                         'getPrefix', 
+             'columns': ['Title',
+                         'Description',
+                         'getHazardous',
+                         'RetentionPeriod',
+                         'SampleMatrix',
+                         'ContainerType',
+                         'getSamplePoints',
+                         'getPrefix',
                          'getMinimumVolume']},
             {'id':'all',
              'title': _('All'),
              'contentFilter':{},
-             'columns': ['Title', 
-                         'Description', 
-                         'getHazardous', 
-                         'RetentionPeriod', 
-                         'SampleMatrix', 
-                         'ContainerType', 
-                         'getSamplePoints', 
-                         'getPrefix', 
+             'columns': ['Title',
+                         'Description',
+                         'getHazardous',
+                         'RetentionPeriod',
+                         'SampleMatrix',
+                         'ContainerType',
+                         'getSamplePoints',
+                         'getPrefix',
                          'getMinimumVolume']},
         ]
 
@@ -113,7 +113,7 @@ class SampleTypesView(BikaListingView):
 
             if obj.getRetentionPeriod():
                 items[x]['RetentionPeriod'] = "hours: " + str(obj.getRetentionPeriod()['hours']) + " minutes: " + str(obj.getRetentionPeriod()['minutes']) + " days: " + str(obj.getRetentionPeriod()['days'])
-                
+
             else:
                 items[x]['RetentionPeriod'] = ''
 
@@ -139,7 +139,7 @@ class SampleTypesView(BikaListingView):
                         SPLine += token.Title() + ", "
                         urlStr += "<a href='%s'>%s</a>" % (token.absolute_url(),token.Title())
                     items[x]['replace']['getSamplePoints'] = urlStr
-                    
+
                 else:
                     items[x]['getSamplePoints'] = obj.getSamplePoints()[0].Title()
                     items[x]['replace']['getSamplePoints'] = "<a href='%s'>%s</a>" % \
