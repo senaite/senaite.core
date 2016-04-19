@@ -19,3 +19,4 @@ from integer import IntegerWidget
 from decimal import DecimalWidget
 from rejectionwidgetsetup import RejectionWidgetSetup
 from rejectionwidget import RejectionWidget
+from reflexrulewidget import ReflexRuleWidget
