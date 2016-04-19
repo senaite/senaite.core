@@ -3,12 +3,10 @@ from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes.Registry import registerField
 from Products.Archetypes.interfaces import IVocabulary
 from Products.Archetypes.public import DisplayList
-from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.browser.widgets import ReflexRuleWidget
-import json
 
 
 class ReflexRuleField(RecordsField):
@@ -33,35 +31,6 @@ class ReflexRuleField(RecordsField):
         'subfield_validators': {'analysisservice': 'reflexrulevalidator', },
         })
     security = ClassSecurityInfo()
-
-    def getAnalysisServiceForMethod(self):
-        """
-        Return a json dict with the different analysis services related
-        to each method
-        """
-        # Getting all the matheods from the system
-        relations = {}
-        pc = getToolByName(self, 'portal_catalog')
-        methods = [obj.getObject() for obj in pc(
-                    portal_type='Method',
-                    inactive_state='active')]
-        for method in methods:
-            # Get the analysis related to each method
-            br = method.getBackReferences('AnalysisServiceMethods')
-            analysiservices = {}
-            for analysiservice in br:
-                analysiservices[analysiservice.UID()] = {
-                    'as_id': analysiservice.id,
-                    'as_title': analysiservice.Title(),
-                }
-            # Make the json dict
-            relations[method.UID()] = {
-                'method_id': method.id,
-                'method_tile': method.Title(),
-                'analysisservices': analysiservices,
-                'as_keys': analysiservices.keys(),
-            }
-        return json.dumps(relations)
 
 
 registerField(ReflexRuleField,

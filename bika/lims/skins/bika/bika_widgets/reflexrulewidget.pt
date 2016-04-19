@@ -45,8 +45,8 @@
 			values python:cached_values or values;
 			dummy python:values.sort();
 			i18n_domain field/widget/i18n_domain|context/i18n_domain|string:plone">
-    <div id="methods-analysis" style="display:none;visibility:hidden;"
-        tal:content="field/getAnalysisServiceForMethod">
+    <div id="rules-setup-data" style="display:none;visibility:hidden;"
+        tal:content="widget/getReflexRuleSetup">
     </div>
 	<table
 		tal:attributes="id string:${fieldName}_table"
