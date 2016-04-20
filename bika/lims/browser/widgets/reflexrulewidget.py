@@ -75,6 +75,18 @@ class ReflexRuleWidget(RecordsWidget):
             }
         return json.dumps(relations)
 
+    def getReflexRuleValue(self, idx=0, element=''):
+        """
+        Return the expected value saved
+        :idx: it is a integer with the position of the reflex rules set in the
+        widget's list
+        :element: a string with the elemen's name to obtain
+        """
+        rules_list = self.aq_parent.getReflexRules()
+        if len(rules_list) > idx:
+            return self.aq_parent.getReflexRules()[idx].get(element, '')
+        return ''
+
 registerWidget(
     ReflexRuleWidget,
     title="Reflex Rule Widget",
