@@ -18,17 +18,10 @@ class ReflexRuleField(RecordsField):
         'minimalSize': 0,
         'maximalSize': 9999,
         'type': 'ReflexRule',
-        'subfields': ('analysisservice',),
-        'required_subfields': ('analysisservice', ),
-        'subfield_labels': {'analysisservice': _('Analysis Service'), },
-        'subfield_types': {'analysisservice': 'selection', },
-        'subfield_sizes': {'analysisservice': 1, },
-        'subfield_validators': {},
-        'subfield_vocabularies': {
-            'analysisservice': DisplayList([('', '')]),
-            },
+        'subfields': ('rulesset',),
+        'subfield_labels': {'rulesset': _('Define a set of fields'), },
         'widget': ReflexRuleWidget,
-        'subfield_validators': {'analysisservice': 'reflexrulevalidator', },
+        'subfield_validators': {'rulesset': 'reflexrulevalidator', },
         })
     security = ClassSecurityInfo()
 

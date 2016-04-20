@@ -77,10 +77,12 @@ jQuery(function($){
         // Set the option to each analysis service select list using
         // the as_uids
         var ans = $('select[id^="ReflexRules-analysisservice-"]');
-        for (var i=0; ans.length > i; i++) {
-            $("select#" + ans[i].id +
-                " option[value='" + actions_list[i].analysisservice + "']")
-                .prop('selected', true);
+        if (actions_list.length !== 0){
+            for (var i=0; ans.length > i; i++) {
+                $("select#" + ans[i].id +
+                    " option[value='" + actions_list[i].analysisservice + "']")
+                    .prop('selected', true);
+            }
         }
     }
 

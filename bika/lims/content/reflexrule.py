@@ -36,13 +36,14 @@ schema = BikaSchema.copy() + Schema((
             format='select',
             description=_(
                 "Select the method which the rules for the analysis "
-                "service will be bind to."),
+                "service will be bound to."),
         )
     ),
     ReflexRuleField('ReflexRules',),
 ))
 schema['description'].widget.visible = True
 schema['description'].widget.label = _("Description")
+schema['description'].widget.description = _("")
 
 
 class ReflexRule(BaseContent):

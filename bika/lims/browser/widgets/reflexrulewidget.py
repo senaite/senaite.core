@@ -65,9 +65,12 @@ class ReflexRuleWidget(RecordsWidget):
             }
         # Get the data saved in the object
         relations['saved_actions'] = {
-            'method_uid': self.aq_parent.getMethod().UID(),
-            'method_id': self.aq_parent.getMethod().id,
-            'method_tile': self.aq_parent.getMethod().Title(),
+            'method_uid': self.aq_parent.getMethod().UID() if
+            self.aq_parent.getMethod() else '',
+            'method_id': self.aq_parent.getMethod().id if
+            self.aq_parent.getMethod() else '',
+            'method_tile': self.aq_parent.getMethod().Title() if
+            self.aq_parent.getMethod() else '',
             'actions': self.aq_parent.getReflexRules(),
             }
         return json.dumps(relations)
