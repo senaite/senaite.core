@@ -219,9 +219,7 @@ class ajaxGetMethodInstrumentConstraints(BrowserView):
             service = analysis.getService()
             suid = service.UID()
             refan = analysis.portal_type == 'ReferenceAnalysis'
-            dupan = analysis.portal_type == 'DuplicateAnalysis'
-            qcan = refan or dupan
-            cachedkey = "qc" if qcan else "re"
+            cachedkey = "qc" if refan else "re"
             if suid in cached_servs.get(cachedkey, []):
                 constraints[auid] = cached_servs[cachedkey][suid]
                 continue
@@ -270,7 +268,7 @@ class ajaxGetMethodInstrumentConstraints(BrowserView):
                 # p8: Methods allow the service's default instrument?
                 # p9: Default instrument valid?
                 premises = [
-                    "R" if analysis.portal_type != 'ReferenceAnalysis' else 'Q',
+                    "R" if not refan else 'Q',
                     "Y" if s_mentry else "N",
                     "Y" if s_ientry else "N",
                     "Y" if method else "N",
@@ -419,15 +417,15 @@ class ajaxGetMethodInstrumentConstraints(BrowserView):
                 }
                 targ = [v for k, v in matrix.items() if tprem.startswith(k)]
                 if not targ:
-                    targ = [[1, 1, 1, 1, '', 0, 'Key not found: %s' % tprem],]
+                    targ = [[1, 1, 1, 1, '', 0, 'Key not found: %s' % tprem], ]
                 targ = targ[0]
                 atitle = analysis.Title() if analysis else "None"
                 mtitle = method.Title() if method else "None"
                 instdi = {}
-                if qcan:
-                    instdi = {i.UID(): i.Title() for i in instrs} if instrs else {}
-                else:
-                    instdi = {i.UID(): i.Title() for i in v_instrobjs} if v_instrobjs else {}
+                if refan and instrs:
+                    instdi = {i.UID(): i.Title() for i in instrs}
+                elif not refan and v_instrobjs:
+                    instdi = {i.UID(): i.Title() for i in v_instrobjs}
                 targ += [instdi, mtitle, atitle, tprem]
                 constraints[auid][muid] = targ
                 cached_servs[cachedkey][suid][muid] = targ
