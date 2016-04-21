@@ -65,12 +65,27 @@ class ReflexRuleWidget(RecordsWidget):
             }
         # Get the data saved in the object
         relations['saved_actions'] = {
-            'method_uid': self.aq_parent.getMethod().UID(),
-            'method_id': self.aq_parent.getMethod().id,
-            'method_tile': self.aq_parent.getMethod().Title(),
+            'method_uid': self.aq_parent.getMethod().UID() if
+            self.aq_parent.getMethod() else '',
+            'method_id': self.aq_parent.getMethod().id if
+            self.aq_parent.getMethod() else '',
+            'method_tile': self.aq_parent.getMethod().Title() if
+            self.aq_parent.getMethod() else '',
             'actions': self.aq_parent.getReflexRules(),
             }
         return json.dumps(relations)
+
+    def getReflexRuleValue(self, idx=0, element=''):
+        """
+        Return the expected value saved
+        :idx: it is a integer with the position of the reflex rules set in the
+        widget's list
+        :element: a string with the elemen's name to obtain
+        """
+        rules_list = self.aq_parent.getReflexRules()
+        if len(rules_list) > idx:
+            return self.aq_parent.getReflexRules()[idx].get(element, '')
+        return ''
 
 registerWidget(
     ReflexRuleWidget,

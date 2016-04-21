@@ -26,6 +26,9 @@ jQuery(function($){
             setupdata = $.parseJSON($('#rules-setup-data').html());
             method_controller(setupdata);
         });
+        $('input[id^="ReflexRules-range"]').bind("change", function () {
+            range_controller(this);
+        });
     });
     function method_controller(setupdata){
         /**
@@ -50,24 +53,28 @@ jQuery(function($){
         }
         if (old_rules_selections[method] !== undefined &&
             old_rules_selections[method].length > 0) {
-            var ans_list = old_rules_selections[method];
-            for (i=1; ans_list.length > i; i++) {
+            var rules_list = old_rules_selections[method];
+            for (i=1; rules_list.length > i; i++) {
                 $('#ReflexRules_more').click();
             }
             // Selecting the option
-            set_ans_options(ans_list);
+            set_ans_options(rules_list);
         }
     }
 
     function save_old_method(){
         // Save the current rules to be retrived if there is the need
         var ans = $('select[id^="ReflexRules-analysisservice-"]');
+        var range0 = $('input[id^="ReflexRules-range0-"]');
+        var range1 = $('input[id^="ReflexRules-range1-"]');
         var list = [];
         for (var i=0; ans.length > i; i++){
-            var as = {
+            var items = {
                 analysisservice: ans[i].value,
+                range0: range0[i].value,
+                range1: range1[i].value,
             };
-            list.push(as);
+            list.push(items);
         }
         old_rules_selections[last_method] = list;
 
@@ -76,11 +83,18 @@ jQuery(function($){
     function set_ans_options(actions_list) {
         // Set the option to each analysis service select list using
         // the as_uids
+        var rules_set = $('tr.records_row_ReflexRules');
         var ans = $('select[id^="ReflexRules-analysisservice-"]');
-        for (var i=0; ans.length > i; i++) {
-            $("select#" + ans[i].id +
-                " option[value='" + actions_list[i].analysisservice + "']")
-                .prop('selected', true);
+        var range0 = $('input[id^="ReflexRules-range0-"]');
+        var range1 = $('input[id^="ReflexRules-range1-"]');
+        if (rules_set.length !== 0){
+            for (var i=0; rules_set.length > i; i++) {
+                $("select#" + ans[i].id +
+                    " option[value='" + actions_list[i].analysisservice + "']")
+                    .prop('selected', true);
+                $("input#" + range0[i].id).val(actions_list[i].range0);
+                $("input#" + range1[i].id).val(actions_list[i].range1);
+            }
         }
     }
 
@@ -101,6 +115,18 @@ jQuery(function($){
         var del_but = $('table#ReflexRules_table').find('.rw_deletebtn');
         if(del_but.length > 1) {
             $(del_but[del_but.length - 1]).trigger( "click" );
+        }
+    }
+
+    function range_controller(element){
+        /**
+        - range1 must be bigger than range0
+        */
+        var td = $(element).parent();
+        var range0 = td.find('[id^="ReflexRules-range0"]');
+        var range1 = td.find('[id^="ReflexRules-range1"]');
+        if ($(range0).val() > $(range1).val()) {
+            $(range1).val($(range0).val());
         }
     }
 });
