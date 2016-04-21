@@ -96,6 +96,7 @@
                     Expected Values: From
                 </span>
                 <input
+                    size=5
                     tal:attributes="
                         name string:${fieldName}.range0:records:ignore_empty;
                         id string:${fieldName}-range0-${repeat/idx/index};
@@ -106,6 +107,7 @@
                     To:
                 </span>
                 <input
+                    size=5
                     tal:attributes="
                         name string:${fieldName}.range1:records:ignore_empty;
                         id string:${fieldName}-range1-${repeat/idx/index};

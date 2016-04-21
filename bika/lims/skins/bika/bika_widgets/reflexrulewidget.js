@@ -26,6 +26,9 @@ jQuery(function($){
             setupdata = $.parseJSON($('#rules-setup-data').html());
             method_controller(setupdata);
         });
+        $('input[id^="ReflexRules-range"]').bind("change", function () {
+            range_controller(this);
+        });
     });
     function method_controller(setupdata){
         /**
@@ -112,6 +115,18 @@ jQuery(function($){
         var del_but = $('table#ReflexRules_table').find('.rw_deletebtn');
         if(del_but.length > 1) {
             $(del_but[del_but.length - 1]).trigger( "click" );
+        }
+    }
+
+    function range_controller(element){
+        /**
+        - range1 must be bigger than range0
+        */
+        var td = $(element).parent();
+        var range0 = td.find('[id^="ReflexRules-range0"]');
+        var range1 = td.find('[id^="ReflexRules-range1"]');
+        if ($(range0).val() > $(range1).val()) {
+            $(range1).val($(range0).val());
         }
     }
 });
