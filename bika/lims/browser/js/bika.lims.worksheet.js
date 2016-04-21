@@ -349,7 +349,7 @@ function WorksheetManageResultsView() {
 
     function initializeInstrumentsAndMethods() {
         var auids = [];
-        var dictuids = $.parseJSON($('#item_data').val());
+        var dictuids = $.parseJSON($('#lab_analyses #item_data, #analyses_form #item_data').val());
         $.each(dictuids, function(key, value) { auids.push(key); });
         $.ajax({
             url: window.portal_url + "/get_method_instrument_constraints",
