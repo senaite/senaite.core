@@ -212,21 +212,25 @@ class ajaxGetMethodInstrumentConstraints(BrowserView):
                       UID=rowuids)
         cached_servs = {}
         for analysis in analyses:
-            if not analysis or analysis.portal_type=='ReferenceAnalysis':
+            if not analysis:
                 continue
             analysis = analysis.getObject()
             auid = analysis.UID()
             service = analysis.getService()
             suid = service.UID()
-            if suid in cached_servs:
-                constraints[auid] = cached_servs[suid]
-                continue
-
             refan = analysis.portal_type == 'ReferenceAnalysis'
             dupan = analysis.portal_type == 'DuplicateAnalysis'
             qcan = refan or dupan
+            cachedkey = "qc" if qcan else "re"
+            if suid in cached_servs.get(cachedkey, []):
+                constraints[auid] = cached_servs[cachedkey][suid]
+                continue
+
+            if not cached_servs.get(cachedkey, None):
+                cached_servs[cachedkey] = {suid: {}}
+            else:
+                cached_servs[cachedkey][suid] = {}
             constraints[auid] = {}
-            cached_servs[suid] = {}
 
             # Analysis allows manual/instrument entry?
             s_mentry = service.getManualEntryOfResults()
@@ -294,6 +298,8 @@ class ajaxGetMethodInstrumentConstraints(BrowserView):
                 m6 = _("The method %s is not valid: only instrument entry for "
                        "this analysis is allowed, but the method has no "
                        "instrument assigned") % dmeth
+                m7 = _("Only instrument entry for this analysis is allowed, "
+                       "but there is no instrument assigned")
 
                 """
                 Matrix dict keys char positions: (True: Y, False: N)
@@ -325,7 +331,7 @@ class ajaxGetMethodInstrumentConstraints(BrowserView):
                     'RYYYYYYYN':  [1, 1, 1, 1, '',    1, ''],  # B2
                     'RYYYYYYNYY': [1, 1, 1, 1, diuid, 1, m1],  # B3
                     'RYYYYYYNYN': [1, 1, 1, 1, '',    1, m2],  # B4
-                    'RYYYYYYNNN': [1, 1, 1, 1, '',    1, m1],  # B5
+                    'RYYYYYYNN':  [1, 1, 1, 1, '',    1, m1],  # B5
                     'RYYYYYN':    [1, 1, 1, 1, '',    1, m3],  # B6
                     'RYYYYN':     [1, 1, 1, 1, '',    1, ''],  # B7
                     'RYYYNYYYY':  [1, 1, 1, 0, diuid, 1, ''],  # B8
@@ -339,16 +345,16 @@ class ajaxGetMethodInstrumentConstraints(BrowserView):
                     'RYYNYYYYN':  [1, 1, 1, 1, '',    1, ''],  # B16
                     'RYYNYYYNYY': [1, 1, 1, 1, diuid, 1, m1],  # B17
                     'RYYNYYYNYN': [1, 1, 1, 1, '',    1, m2],  # B18
-                    'RYYNYYYNNN': [1, 1, 1, 1, '',    1, m1],  # B19
+                    'RYYNYYYNN':  [1, 1, 1, 1, '',    1, m1],  # B19
                     'RYYNYYN':    [1, 1, 1, 1, '',    1, m3],  # B20
                     'RYYNYN':     [1, 1, 1, 1, '',    1, ''],  # B21
                     'RYNY':       [2, 0, 0, 0, '',    1, ''],  # B22
-                    'RYNN':       [0, 0, 1, 1, '',    1, ''],  # B23
+                    'RYNN':       [0, 0, 0, 0, '',    1, ''],  # B23
                     'RNYYYYYYY':  [3, 2, 1, 1, diuid, 1, ''],  # B24
                     'RNYYYYYYN':  [3, 2, 1, 1, '',    1, ''],  # B25
                     'RNYYYYYNYY': [3, 2, 1, 1, diuid, 1, m1],  # B26
                     'RNYYYYYNYN': [3, 2, 1, 1, '',    1, m2],  # B27
-                    'RNYYYYYNNN': [3, 2, 1, 1, '',    1, m1],  # B28
+                    'RNYYYYYNN':  [3, 2, 1, 1, '',    1, m1],  # B28
                     'RNYYYYN':    [3, 2, 1, 1, '',    1, m3],  # B29
                     'RNYYYN':     [3, 2, 1, 1, '',    0, m6],  # B30
                     'RNYYNYYYY':  [3, 2, 1, 0, diuid, 1, ''],  # B31
@@ -362,54 +368,54 @@ class ajaxGetMethodInstrumentConstraints(BrowserView):
                     'RNYNYYYYN':  [3, 1, 1, 0, fiuid, 1, ''],  # B39
                     'RNYNYYYNYY': [3, 1, 1, 0, diuid, 1, m1],  # B40
                     'RNYNYYYNYN': [3, 1, 1, 1, '',    0, m2],  # B41
-                    'RNYNYYYNNN': [3, 1, 1, 0, fiuid, 1, m1],  # B42
+                    'RNYNYYYNN':  [3, 1, 1, 0, fiuid, 1, m1],  # B42
                     'RNYNYYN':    [3, 1, 1, 0, '',    0, m3],  # B43
-                    'RNYNYN':     [3, 1, 1, 0, '',    0, m6],  # B44
+                    'RNYNYN':     [3, 1, 1, 0, '',    0, m7],  # B44
                     # QC Analyses
-                    'QYYYYYYYY':  [1, 1, 1, 1, diuid, 0, ''],  # C1
-                    'QYYYYYYYN':  [1, 1, 1, 1, diuid, 0, ''],  # C2
-                    'QYYYYYYNYY': [1, 1, 1, 1, diuid, 0, ''],  # C3
-                    'QYYYYYYNYN': [1, 1, 1, 1, diuid, 0, ''],  # C4
-                    'QYYYYYYNNN': [1, 1, 1, 1, diuid, 0, ''],  # C5
-                    'QYYYYYN':    [1, 1, 1, 1, diuid, 0, ''],  # C6
-                    'QYYYYN':     [1, 1, 1, 1, diuid, 0, ''],  # C7
-                    'QYYYNYYYY':  [1, 1, 1, 1, diuid, 0, ''],  # C8
-                    'QYYYNYYYN':  [1, 1, 1, 1, diuid, 0, ''],  # C9
-                    'QYYYNYYNYY': [1, 1, 1, 1, diuid, 0, ''],  # C10
-                    'QYYYNYYNYN': [1, 1, 1, 1, diuid, 0, ''],  # C11
-                    'QYYYNYYNN':  [1, 1, 1, 1, diuid, 0, ''],  # C12
-                    'QYYYNYN':    [1, 1, 1, 1, diuid, 0, ''],  # C13
-                    'QYYYNN':     [1, 1, 1, 1, diuid, 0, ''],  # C14
-                    'QYYNYYYYY':  [1, 1, 1, 1, diuid, 0, ''],  # C15
-                    'QYYNYYYYN':  [1, 1, 1, 1, diuid, 0, ''],  # C16
-                    'QYYNYYYNYY': [1, 1, 1, 1, diuid, 0, ''],  # C17
-                    'QYYNYYYNYN': [1, 1, 1, 1, diuid, 0, ''],  # C18
-                    'QYYNYYYNNN': [1, 1, 1, 1, diuid, 0, ''],  # C19
-                    'QYYNYYN':    [1, 1, 1, 1, diuid, 0, ''],  # C20
-                    'QYYNYN':     [1, 1, 1, 1, diuid, 0, ''],  # C21
-                    'QYNY':       [1, 1, 1, 1, diuid, 0, ''],  # C22
-                    'QYNN':       [1, 1, 1, 1, diuid, 0, ''],  # C23
-                    'QNYYYYYYY':  [1, 1, 1, 1, diuid, 0, ''],  # C24
-                    'QNYYYYYYN':  [1, 1, 1, 1, diuid, 0, ''],  # C25
-                    'QNYYYYYNYY': [1, 1, 1, 1, diuid, 0, ''],  # C26
-                    'QNYYYYYNYN': [1, 1, 1, 1, diuid, 0, ''],  # C27
-                    'QNYYYYYNNN': [1, 1, 1, 1, diuid, 0, ''],  # C28
-                    'QNYYYYN':    [1, 1, 1, 1, diuid, 0, ''],  # C29
-                    'QNYYYN':     [1, 1, 1, 1, diuid, 0, ''],  # C30
-                    'QNYYNYYYY':  [1, 1, 1, 1, diuid, 0, ''],  # C31
-                    'QNYYNYYYN':  [1, 1, 1, 1, diuid, 0, ''],  # C32
-                    'QNYYNYYNYY': [1, 1, 1, 1, diuid, 0, ''],  # C33
-                    'QNYYNYYNYN': [1, 1, 1, 1, diuid, 0, ''],  # C34
-                    'QNYYNYYNN':  [1, 1, 1, 1, diuid, 0, ''],  # C35
-                    'QNYYNYN':    [1, 1, 1, 1, diuid, 0, ''],  # C36
-                    'QNYYNN':     [1, 1, 1, 1, diuid, 0, ''],  # C37
-                    'QNYNYYYYY':  [1, 1, 1, 1, diuid, 0, ''],  # C38
-                    'QNYNYYYYN':  [1, 1, 1, 1, diuid, 0, ''],  # C39
-                    'QNYNYYYNYY': [1, 1, 1, 1, diuid, 0, ''],  # C40
-                    'QNYNYYYNYN': [1, 1, 1, 1, diuid, 0, ''],  # C41
-                    'QNYNYYYNNN': [1, 1, 1, 1, diuid, 0, ''],  # C42
-                    'QNYNYYN':    [1, 1, 1, 1, diuid, 0, ''],  # C43
-                    'QNYNYN':     [1, 1, 1, 1, diuid, 0, ''],  # C44
+                    'QYYYYYYYY':  [1, 1, 1, 1, diuid, 1, ''],  # C1
+                    'QYYYYYYYN':  [1, 1, 1, 1, '',    1, ''],  # C2
+                    'QYYYYYYNYY': [1, 1, 1, 1, diuid, 1, ''],  # C3
+                    'QYYYYYYNYN': [1, 1, 1, 1, diuid, 1, ''],  # C4
+                    'QYYYYYYNN':  [1, 1, 1, 1, '',    1, ''],  # C5
+                    'QYYYYYN':    [1, 1, 1, 1, '',    1, ''],  # C6
+                    'QYYYYN':     [1, 1, 1, 1, '',    1, ''],  # C7
+                    'QYYYNYYYY':  [1, 1, 1, 0, diuid, 1, ''],  # C8
+                    'QYYYNYYYN':  [1, 1, 1, 0, fiuid, 1, ''],  # C9
+                    'QYYYNYYNYY': [1, 1, 1, 0, diuid, 1, ''],  # C10
+                    'QYYYNYYNYN': [1, 1, 1, 0, diuid, 1, ''],  # C11
+                    'QYYYNYYNN':  [1, 1, 1, 0, fiuid, 1, ''],  # C12
+                    'QYYYNYN':    [1, 1, 1, 0, fiuid, 1, ''],  # C13
+                    'QYYYNN':     [1, 1, 1, 1, '',    0, m5],  # C14
+                    'QYYNYYYYY':  [1, 1, 1, 1, diuid, 1, ''],  # C15
+                    'QYYNYYYYN':  [1, 1, 1, 1, '',    1, ''],  # C16
+                    'QYYNYYYNYY': [1, 1, 1, 1, diuid, 1, ''],  # C17
+                    'QYYNYYYNYN': [1, 1, 1, 1, diuid, 1, ''],  # C18
+                    'QYYNYYYNN':  [1, 1, 1, 1, fiuid, 1, ''],  # C19
+                    'QYYNYYN':    [1, 1, 1, 1, diuid, 1, ''],  # C20
+                    'QYYNYN':     [1, 1, 1, 1, '',    1, ''],  # C21
+                    'QYNY':       [2, 0, 0, 0, '',    1, ''],  # C22
+                    'QYNN':       [0, 0, 0, 0, '',    1, ''],  # C23
+                    'QNYYYYYYY':  [3, 2, 1, 1, diuid, 1, ''],  # C24
+                    'QNYYYYYYN':  [3, 2, 1, 1, '',    1, ''],  # C25
+                    'QNYYYYYNYY': [3, 2, 1, 1, diuid, 1, ''],  # C26
+                    'QNYYYYYNYN': [3, 2, 1, 1, diuid, 1, ''],  # C27
+                    'QNYYYYYNN':  [3, 2, 1, 1, '',    1, ''],  # C28
+                    'QNYYYYN':    [3, 2, 1, 1, '',    1, ''],  # C29
+                    'QNYYYN':     [3, 2, 1, 1, '',    0, m6],  # C30
+                    'QNYYNYYYY':  [3, 2, 1, 0, diuid, 1, ''],  # C31
+                    'QNYYNYYYN':  [3, 2, 1, 0, fiuid, 1, ''],  # C32
+                    'QNYYNYYNYY': [3, 2, 1, 0, diuid, 1, ''],  # C33
+                    'QNYYNYYNYN': [3, 2, 1, 0, diuid, 1, ''],  # C34
+                    'QNYYNYYNN':  [3, 2, 1, 0, fiuid, 1, ''],  # C35
+                    'QNYYNYN':    [3, 2, 1, 0, fiuid, 1, ''],  # C36
+                    'QNYYNN':     [3, 2, 1, 1, '',    0, m5],  # C37
+                    'QNYNYYYYY':  [3, 1, 1, 0, diuid, 1, ''],  # C38
+                    'QNYNYYYYN':  [3, 1, 1, 0, fiuid, 1, ''],  # C39
+                    'QNYNYYYNYY': [3, 1, 1, 0, diuid, 1, ''],  # C40
+                    'QNYNYYYNYN': [3, 1, 1, 0, diuid, 1, ''],  # C41
+                    'QNYNYYYNN':  [3, 1, 1, 0, fiuid, 1, ''],  # C42
+                    'QNYNYYN':    [3, 1, 1, 0, fiuid, 1, ''],  # C43
+                    'QNYNYN':     [3, 1, 1, 1, '',    0, m7],  # C44
                 }
                 targ = [v for k, v in matrix.items() if tprem.startswith(k)]
                 if not targ:
@@ -417,9 +423,13 @@ class ajaxGetMethodInstrumentConstraints(BrowserView):
                 targ = targ[0]
                 atitle = analysis.Title() if analysis else "None"
                 mtitle = method.Title() if method else "None"
-                instdi = {i.UID(): i.Title() for i in v_instrobjs} if v_instrobjs else {}
+                instdi = {}
+                if qcan:
+                    instdi = {i.UID(): i.Title() for i in instrs} if instrs else {}
+                else:
+                    instdi = {i.UID(): i.Title() for i in v_instrobjs} if v_instrobjs else {}
                 targ += [instdi, mtitle, atitle, tprem]
                 constraints[auid][muid] = targ
-                cached_servs[suid][muid] = targ
+                cached_servs[cachedkey][suid][muid] = targ
 
         return json.dumps(constraints)

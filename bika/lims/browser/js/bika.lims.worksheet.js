@@ -459,7 +459,7 @@ function WorksheetManageResultsView() {
 
 
         $('.amconstr[uid="'+analysis_uid+'"]').remove();
-        //$(m_selector).before("<span style='font-weight:bold' class='amconstr' uid='"+analysis_uid+"'>"+constraints[10]+"</span>");
+        //$(m_selector).before("<span style='font-weight:bold;font-family:courier;font-size:1.4em;' class='amconstr' uid='"+analysis_uid+"'>"+constraints[10]+"&nbsp;&nbsp;</span>");
     }
 
     function loadHeaderEventsHandlers() {
