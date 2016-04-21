@@ -342,15 +342,38 @@ function WorksheetManageResultsView() {
         });
     }
 
-    // Stores the constraints regarding to methods and instrument assignments to
-    // each analysis. The variable is filled in initializeInstrumentsAndMethods
-    // and is used inside loadMethodEventHandlers
+    /**
+     * Stores the constraints regarding to methods and instrument assignments to
+     * each analysis. The variable is filled in initializeInstrumentsAndMethods
+     * and is used inside loadMethodEventHandlers.
+     */
     var mi_constraints = null;
 
+    /**
+     * Applies the rules and constraints to each analysis displayed in the
+     * manage results view regarding to methods, instruments and results.
+     * For example, this service is responsible of disabling the results field
+     * if the analysis has no valid instrument available for the selected
+     * method if the service don't allow manual entry of results. Another
+     * example is that this service is responsible of populating the list of
+     * instruments avialable for an analysis service when the user changes the
+     * method to be used.
+     * See docs/imm_results_entry_behavior.png for detailed information.
+     */
     function initializeInstrumentsAndMethods() {
         var auids = [];
+
+        /// Get all the analysis UIDs from this manage results table, cause
+        // we'll need them to retrieve all the IMM constraints/rules to be
+        // applied later.
         var dictuids = $.parseJSON($('#lab_analyses #item_data, #analyses_form #item_data').val());
         $.each(dictuids, function(key, value) { auids.push(key); });
+
+        // Retrieve all the rules/constraints to be applied for each analysis
+        // by using an ajax call. The json dictionary returned is assigned to
+        // the variable mi_constraints for further use.
+        // FUTURE: instead of an ajax call to retrieve the dictionary, embed
+        //  the dictionary in a div when the bika_listing template is rendered.
         $.ajax({
             url: window.portal_url + "/get_method_instrument_constraints",
             type: 'POST',
@@ -358,9 +381,10 @@ function WorksheetManageResultsView() {
                    'uids': $.toJSON(auids) },
             dataType: 'json'
         }).done(function(data) {
+            // Save the constraints in the m_constraints variable
             mi_constraints = data;
-            console.log(mi_constraints);
             $.each(auids, function(index, value) {
+                // Apply the constraints/rules to each analysis.
                 load_analysis_method_constraint(value, null);
             });
         }).fail(function() {
@@ -368,6 +392,18 @@ function WorksheetManageResultsView() {
         });
     }
 
+    /**
+     * Applies the constraints and rules to the specified analysis regarding to
+     * the method specified. If method is null, the function assumes the rules
+     * must apply for the currently selected method.
+     * The function uses the variable mi_constraints to find out which is the
+     * rule to be applied to the analysis and method specified.
+     * See initializeInstrumentsAndMethods() function for further information
+     * about the constraints and rules retrieval and assignment.
+     * @param {string} analysis_uid - The Analysis UID
+     * @param {string} method_uid - The Method UID. If null, uses the method
+     *  that is currently selected for the specified analysis.
+     */
     function load_analysis_method_constraint(analysis_uid, method_uid) {
         if (method_uid === null) {
             // Assume to load the constraints for the currently selected method
@@ -456,7 +492,6 @@ function WorksheetManageResultsView() {
         if (constraints[6] && constraints[6] !== '') {
             $(i_selector).after('<img uid="'+analysis_uid+'" class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/warning.png" title="'+constraints[6]+'")">');
         }
-
 
         $('.amconstr[uid="'+analysis_uid+'"]').remove();
         //$(m_selector).before("<span style='font-weight:bold;font-family:courier;font-size:1.4em;' class='amconstr' uid='"+analysis_uid+"'>"+constraints[10]+"&nbsp;&nbsp;</span>");
