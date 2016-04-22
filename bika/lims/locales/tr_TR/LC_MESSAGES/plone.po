@@ -294,6 +294,10 @@ msgstr "Cihazlar"
 msgid "Invoice"
 msgstr "Fatura"
 
+# File: bika.lims/bika/lims/profiles/default/types/InvoiceFolder.xml, line: -1
+msgid "Invoices"
+msgstr "Faturalar"
+
 # File: bika.lims/bika/lims/profiles/default/types/LabContact.xml, line: -1
 msgid "Lab Contact"
 msgstr "Lab Yetkilisi"
@@ -425,6 +429,14 @@ msgstr ""
 # File: bika.lims/bika/lims/profiles/default/types/ReportFolder.xml, line: -1
 msgid "Quality Control"
 msgstr "Kalite Kontrol"
+
+# File: bika.lims/bika/lims/profiles/default/types/QueryFolder.xml, line: -1
+msgid "Queries"
+msgstr "Sorgular"
+
+# File: bika.lims/bika/lims/profiles/default/types/Query.xml, line: -1
+msgid "Query"
+msgstr "Sorgu"
 
 # File: bika.lims/bika/lims/profiles/default/types/ReferenceAnalysis.xml,
 # line: -1
@@ -580,11 +592,6 @@ msgstr "Planlama"
 # -1
 msgid "Small Sticker"
 msgstr "Küçük Etiket"
-
-#
-# File: bika.lims/bika/lims/profiles/default/types/InvoiceFolder.xml, line: -1
-msgid "Statements"
-msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/ReferenceSample.xml, line:
 # -1
@@ -987,3 +994,4 @@ msgstr "Kaldır"
 #. Default: "Verify"
 msgid "verify_transition_title"
 msgstr "Doğrula"
+
