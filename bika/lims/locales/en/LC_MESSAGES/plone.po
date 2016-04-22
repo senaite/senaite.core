@@ -197,9 +197,6 @@ msgstr ""
 msgid "Invoice"
 msgstr ""
 
-msgid "Invoices"
-msgstr ""
-
 msgid "Lab Contact"
 msgstr ""
 
@@ -281,12 +278,6 @@ msgid "QC Results"
 msgstr ""
 
 msgid "Quality Control"
-msgstr ""
-
-msgid "Queries"
-msgstr ""
-
-msgid "Query"
 msgstr ""
 
 msgid "Reference Analysis"
@@ -388,6 +379,11 @@ msgid "Schedule"
 msgstr ""
 
 msgid "Small Sticker"
+msgstr ""
+
+#
+# File: bika.lims/bika/lims/profiles/default/types/InvoiceFolder.xml, line: -1
+msgid "Statements"
 msgstr ""
 
 msgid "Sticker"
@@ -653,4 +649,3 @@ msgstr "Remove"
 #. Default: "Verify"
 msgid "verify_transition_title"
 msgstr "Verify"
-

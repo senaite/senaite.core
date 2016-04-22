@@ -1,14 +1,15 @@
 #
 # Translators:
-# Lutz Kogel <lkogel@koluma.de>, 2015
+# Lutz Kogel <lkogel@koluma.de>, 2015-2016
 # Mabuse <mabuse@byom.de>, 2014
 # Mabuse <mabuse@byom.de>, 2014
+# Stefan Gruber <st.gruber@t-online.de>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
 "POT-Creation-Date: 2012-10-20 09:21+0000\n"
-"PO-Revision-Date: 2015-06-11 08:18+0000\n"
-"Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
+"PO-Revision-Date: 2016-04-08 11:36+0000\n"
+"Last-Translator: Lutz Kogel <lkogel@koluma.de>\n"
 "Language-Team: German (http://www.transifex.com/bikalabs/bika-lims/language/de/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -29,13 +30,13 @@ msgstr "Analyseauftrag - Prioritäten"
 
 # File: bika.lims/bika/lims/profiles/default/types/ARTemplate.xml, line: -1
 msgid "AR Template"
-msgstr "Analysenauftrag-Vorlage"
+msgstr "Analysenauftrag - Vorlage"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/ARTemplates.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 msgid "AR Templates"
-msgstr "Analysenauftrag-Vorlagen"
+msgstr "Analysenauftrag - Vorlagen"
 
 # File: bika.lims/bika/lims/profiles/default/types/ARReport.xml, line: -1
 msgid "ARReport"
@@ -47,7 +48,7 @@ msgstr "Analysen hinzufügen"
 
 # File: bika.lims/bika/lims/profiles/default/types/Worksheet.xml, line: -1
 msgid "Add Blank Reference"
-msgstr "Leeren Verweis hinzufügen"
+msgstr "Blindwert hinzufügen"
 
 # File: bika.lims/bika/lims/profiles/default/types/Worksheet.xml, line: -1
 msgid "Add Control Reference"
@@ -75,76 +76,76 @@ msgstr "Analyse"
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisCategories.xml,
 # line: -1
 msgid "Analysis Categories"
-msgstr "Analyse-Kategorien"
+msgstr "Analysen - Kategorien"
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisCategory.xml, line:
 # -1
 msgid "Analysis Category"
-msgstr "Analyse-Kategorie"
+msgstr "Analysen - Kategorie"
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisProfile.xml, line:
 # -1
 msgid "Analysis Profile"
-msgstr "Analyse-Profil"
+msgstr "Analysen - Profil"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisProfiles.xml, line:
 # -1
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 msgid "Analysis Profiles"
-msgstr "Analysen-Profile"
+msgstr "Analysen - Profile"
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
 # -1
 msgid "Analysis Request"
-msgstr "Analyseauftrag"
+msgstr "Analysenauftrag"
 
 # File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisRequestsFolder.xml,
 # line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Batch.xml, line: -1
 msgid "Analysis Requests"
-msgstr "Analyseaufträge"
+msgstr "Analysenaufträge"
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisService.xml, line:
 # -1
 msgid "Analysis Service"
-msgstr "Analyseleistung"
+msgstr "Analysenleistung"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisServices.xml, line:
 # -1
 msgid "Analysis Services"
-msgstr "Analyseleistungen"
+msgstr "Analysenleistungen"
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisSpec.xml, line: -1
 msgid "Analysis Specification"
-msgstr "Analyse-Spezifikation"
+msgstr "Analysen - Spezifikation"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisSpecs.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 msgid "Analysis Specifications"
-msgstr "Analyse-Spezifikationen"
+msgstr "Analysen - Spezifikationen"
 
 # File: bika.lims/bika/lims/profiles/default/types/Attachment.xml, line: -1
 msgid "Attachment"
-msgstr "Anhang"
+msgstr "Attachment"
 
 # File: bika.lims/bika/lims/profiles/default/types/AttachmentType.xml, line:
 # -1
 msgid "Attachment Type"
-msgstr "Anhangstyp"
+msgstr "Attachment - Typ"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/AttachmentTypes.xml, line:
 # -1
 msgid "Attachment Types"
-msgstr "Anhangstypen"
+msgstr "Attachment - Typen"
 
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 msgid "Attachments"
-msgstr "Anhänge"
+msgstr "Attachment"
 
 # File: bika.lims/bika/lims/profiles/default/types/Batch.xml, line: -1
 msgid "Batch"
@@ -156,12 +157,12 @@ msgstr "Batch Laborbuch"
 
 # File: bika.lims/bika/lims/profiles/default/types/BatchLabel.xml, line: -1
 msgid "Batch Label"
-msgstr "Batch Beschriftung"
+msgstr "Batch Etikett"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/BatchLabels.xml, line: -1
 msgid "Batch Labels"
-msgstr "Batch Beschriftungen"
+msgstr "Batch Etiketten"
 
 # File: bika.lims/bika/lims/profiles/default/types/BatchFolder.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
@@ -210,13 +211,13 @@ msgstr "Behälter"
 
 # File: bika.lims/bika/lims/profiles/default/types/ContainerType.xml, line: -1
 msgid "Container Type"
-msgstr "Behälter-Typ"
+msgstr "Behälter - Typ"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/ContainerTypes.xml, line:
 # -1
 msgid "Container Types"
-msgstr "Behälter-Typen"
+msgstr "Behälter - Typen"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Containers.xml, line: -1
@@ -295,27 +296,23 @@ msgstr "Geräte"
 msgid "Invoice"
 msgstr "Rechnung"
 
-# File: bika.lims/bika/lims/profiles/default/types/InvoiceFolder.xml, line: -1
-msgid "Invoices"
-msgstr "Rechnungen"
-
 # File: bika.lims/bika/lims/profiles/default/types/LabContact.xml, line: -1
 msgid "Lab Contact"
-msgstr "Labor-Kontakt"
+msgstr "Labor - Kontakt"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/LabContacts.xml, line: -1
 msgid "Lab Contacts"
-msgstr "Labor-Kontakte"
+msgstr "Labor - Kontakte"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 msgid "Lab Departments"
-msgstr "Labor-Abteilungen"
+msgstr "Labor - Abteilungen"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/LabProducts.xml, line: -1
 msgid "Lab Products"
-msgstr "Labor-Produkte"
+msgstr "Labor - Produkte"
 
 # File: bika.lims/bika/lims/profiles/default/types/Laboratory.xml, line: -1
 msgid "Laboratory"
@@ -356,7 +353,7 @@ msgstr "Analysen verwalten"
 # -1
 # File: bika.lims/bika/lims/profiles/default/types/Worksheet.xml, line: -1
 msgid "Manage Results"
-msgstr "Ertgebnisse verwalten"
+msgstr "Ergebnisse verwalten"
 
 # File: bika.lims/bika/lims/profiles/default/types/Manufacturer.xml, line: -1
 msgid "Manufacturer"
@@ -431,14 +428,6 @@ msgstr ""
 msgid "Quality Control"
 msgstr "Qualitätssicherung"
 
-# File: bika.lims/bika/lims/profiles/default/types/QueryFolder.xml, line: -1
-msgid "Queries"
-msgstr "Abfragen"
-
-# File: bika.lims/bika/lims/profiles/default/types/Query.xml, line: -1
-msgid "Query"
-msgstr "Abfrage"
-
 # File: bika.lims/bika/lims/profiles/default/types/ReferenceAnalysis.xml,
 # line: -1
 msgid "Reference Analysis"
@@ -447,13 +436,13 @@ msgstr "Referenzanalyse"
 # File: bika.lims/bika/lims/profiles/default/types/ReferenceDefinition.xml,
 # line: -1
 msgid "Reference Definition"
-msgstr "Referenz-Definition"
+msgstr "Referenz - Definition"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/ReferenceDefinitions.xml,
 # line: -1
 msgid "Reference Definitions"
-msgstr "Referenz-Definitionen"
+msgstr "Referenz - Definitionen"
 
 # File: bika.lims/bika/lims/profiles/default/types/ReferenceSample.xml, line:
 # -1
@@ -498,13 +487,13 @@ msgstr "Probe"
 # File: bika.lims/bika/lims/profiles/default/types/SampleCondition.xml, line:
 # -1
 msgid "Sample Condition"
-msgstr "Proben-Bedingung"
+msgstr "Proben -  Bedingung"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/SampleConditions.xml, line:
 # -1
 msgid "Sample Conditions"
-msgstr "Proben-Bedingungen"
+msgstr "Proben - Bedingungen"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/SampleMatrices.xml, line:
@@ -545,7 +534,7 @@ msgstr "Probentypen"
 
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 msgid "SamplePoints"
-msgstr "Probenpunkte"
+msgstr "Probenahmestellen"
 
 # File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Batch.xml, line: -1
@@ -560,13 +549,13 @@ msgstr "Probenordner"
 # File: bika.lims/bika/lims/profiles/default/types/SamplingDeviation.xml,
 # line: -1
 msgid "Sampling Deviation"
-msgstr "Probenahme-Abweichung"
+msgstr "Probenahme - Abweichung"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/SamplingDeviations.xml,
 # line: -1
 msgid "Sampling Deviations"
-msgstr "Probenahme-Abweichungen"
+msgstr "Probenahme - Abweichungen"
 
 #
 # File: bika.lims/bika/lims/profiles/default/types/SRTemplate.xml, line: -1
@@ -584,7 +573,7 @@ msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
 msgid "Schedule"
-msgstr "Fahrplan"
+msgstr "Zeitplan"
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
 # -1
@@ -593,6 +582,11 @@ msgstr "Fahrplan"
 # -1
 msgid "Small Sticker"
 msgstr "Kleiner Aufkleber"
+
+#
+# File: bika.lims/bika/lims/profiles/default/types/InvoiceFolder.xml, line: -1
+msgid "Statements"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/ReferenceSample.xml, line:
 # -1
@@ -661,13 +655,13 @@ msgstr "Arbeitsblatt"
 # File: bika.lims/bika/lims/profiles/default/types/WorksheetTemplate.xml,
 # line: -1
 msgid "Worksheet Template"
-msgstr "Arbeitsblatt-Vorlage"
+msgstr "Arbeitsblatt - Vorlage"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/WorksheetTemplates.xml,
 # line: -1
 msgid "Worksheet Templates"
-msgstr "Arbeitsblatt-Vorlagen"
+msgstr "Arbeitsblatt - Vorlagen"
 
 # File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/WorksheetFolder.xml, line:
@@ -703,7 +697,7 @@ msgstr "Zuweisen"
 # line: -1
 #. Default: "Add attachment"
 msgid "attach_transition_title"
-msgstr "Anhang hinzufügen"
+msgstr "Attachment hinzufügen"
 
 # File:
 # ../profiles/default/workflows/bika_cancellation_workflow/definition.xml,
@@ -767,13 +761,13 @@ msgid "invalidate_transition_title"
 msgstr "Ungültig machen"
 
 msgid "label_schema_AR Templates"
-msgstr "Analysenauftrag-Vorlagen"
+msgstr "Analysenauftrag - Vorlagen"
 
 msgid "label_schema_Accounting"
 msgstr "Abrechnung"
 
 msgid "label_schema_Address"
-msgstr "Addresse"
+msgstr "Adresse"
 
 msgid "label_schema_Analyses"
 msgstr "Analysen"
@@ -800,7 +794,7 @@ msgid "label_schema_ID Server"
 msgstr "ID Server"
 
 msgid "label_schema_Labels"
-msgstr "Labels"
+msgstr "Etiketten"
 
 msgid "label_schema_Layout"
 msgstr "Layout"
@@ -815,7 +809,7 @@ msgid "label_schema_Preferences"
 msgstr "Voreinstellungen"
 
 msgid "label_schema_Publication preference"
-msgstr "Publication preference"
+msgstr "bevorzugte Veröffentlichung"
 
 msgid "label_schema_Reference Values"
 msgstr "Referenzwerte"
@@ -824,7 +818,7 @@ msgid "label_schema_Result Options"
 msgstr "Ergebnis-Optionen"
 
 msgid "label_schema_Results Reports"
-msgstr "Ergebnisbericht"
+msgstr "Ergebnisberichte"
 
 msgid "label_schema_SR Templates"
 msgstr "SR Templates"
@@ -994,5 +988,4 @@ msgstr "Entfernen"
 # line: -1
 #. Default: "Verify"
 msgid "verify_transition_title"
-msgstr "Prüfen"
-
+msgstr "Überprüfen"

@@ -833,6 +833,12 @@ msgstr ""
 msgid "Analysis turnaround times over time"
 msgstr ""
 
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/content/arimportitem.py, line: 92
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/content/arimportitem.py, line: 92
+msgid "AnalysisProfile Request"
+msgstr ""
+
 # File: bika.lims/bika/lims/browser/analyses.py, line: 74
 # File: bika.lims/bika/lims/browser/batch/publish.py, line: 91
 # File:
@@ -849,6 +855,12 @@ msgstr ""
 # 72
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 67
 msgid "Any"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/arimports.py, line: 118
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/arimports.py, line: 118
+msgid "Applied"
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/templates/worksheet_manage_results.pt,
@@ -1046,12 +1058,31 @@ msgstr ""
 msgid "Before ${start_date}"
 msgstr ""
 
+#
+# File: bika.lims/bika/lims/browser/templates/dashboard.pt, line: 356
+msgid "Biannual"
+msgstr ""
+
 # File: bika.lims/bika/lims/content/arpriority.py, line: 33
 msgid "Big Icon"
 msgstr ""
 
+#
+# File: bika.lims/bika/lims/profiles.zcml, line: 11
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/profiles.zcml, line: 11
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/profiles.zcml, line: 11
+msgid "Bika LIMS"
+msgstr ""
+
 # File: bika.lims/bika/lims/monkey/controlpanel.py, line: 12
 msgid "Bika LIMS Configuration"
+msgstr ""
+
+#
+# File: bika.lims/bika/lims/browser/bika-frontpage.zcml, line: 22
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/bika-frontpage.zcml, line: 22
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/bika-frontpage.zcml, line: 22
+msgid "Bika LIMS front-page"
 msgstr ""
 
 # File: bika.lims/bika/lims/config.py, line: 92
@@ -1092,12 +1123,42 @@ msgstr ""
 msgid "By"
 msgstr ""
 
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/content/arimport.py, line: 123
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/content/arimport.py, line: 123
+msgid "CC Contact ID"
+msgstr ""
+
 # File: bika.lims/bika/lims/content/analysisrequest.py, line: 124
 msgid "CC Contacts"
 msgstr ""
 
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/content/arimport.py, line: 157
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/content/arimport.py, line: 157
+msgid "CC Email - Invoice"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/content/arimport.py, line: 152
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/content/arimport.py, line: 152
+msgid "CC Email - Report"
+msgstr ""
+
 # File: bika.lims/bika/lims/content/analysisrequest.py, line: 158
 msgid "CC Emails"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/content/arimport.py, line: 133
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/content/arimport.py, line: 133
+msgid "CCContact"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/stickers/sticker_large.pt, line: 81
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/stickers/sticker_large.pt, line: 81
+msgid "CSID"
 msgstr ""
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 775
@@ -1308,8 +1369,32 @@ msgstr ""
 msgid "Client"
 msgstr ""
 
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/content/arimport.py, line: 73
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/content/arimport.py, line: 73
+msgid "Client Address"
+msgstr ""
+
 # File: bika.lims/bika/lims/content/batch.py, line: 94
 msgid "Client Batch ID"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/content/arimport.py, line: 78
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/content/arimport.py, line: 78
+msgid "Client City"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/content/arimport.py, line: 118
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/content/arimport.py, line: 118
+msgid "Client Email"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/content/arimport.py, line: 68
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/content/arimport.py, line: 68
+msgid "Client Fax"
 msgstr ""
 
 # File: bika.lims/bika/lims/content/arimport.py, line: 84
@@ -1339,6 +1424,12 @@ msgstr ""
 msgid "Client Order Number"
 msgstr ""
 
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/content/arimport.py, line: 63
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/content/arimport.py, line: 63
+msgid "Client Phone"
+msgstr ""
+
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 76
 # File: bika.lims/bika/lims/browser/sample.py, line: 434
@@ -1350,6 +1441,12 @@ msgstr ""
 # File: bika.lims/bika/lims/content/analysisrequest.py, line: 695
 # File: bika.lims/bika/lims/content/query.py, line: 122
 msgid "Client Reference"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/content/arimportitem.py, line: 29
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/content/arimportitem.py, line: 29
+msgid "Client Remarks"
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
@@ -1452,6 +1549,12 @@ msgstr ""
 # bika.lims/bika/lims/browser/reports/selection_macros/select_contact.pt,
 # line: 4
 msgid "Contact"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/content/arimport.py, line: 89
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/content/arimport.py, line: 89
+msgid "Contact ID"
 msgstr ""
 
 # File: bika.lims/bika/lims/content/arimport.py, line: 94
@@ -1607,6 +1710,11 @@ msgstr ""
 msgid "DL"
 msgstr ""
 
+#
+# File: bika.lims/bika/lims/browser/templates/dashboard.pt, line: 352
+msgid "Daily"
+msgstr ""
+
 # File:
 # bika.lims/bika/lims/browser/reports/productivity_dailysamplesreceived.py,
 # line: 103
@@ -1641,6 +1749,12 @@ msgstr ""
 # File: bika.lims/bika/lims/browser/batchfolder.py, line: 39
 # File: bika.lims/bika/lims/browser/instrument.py, line: 532
 msgid "Date"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/content/arimport.py, line: 194
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/content/arimport.py, line: 194
+msgid "Date Applied"
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/reports/productivity_dataentrydaybook.py,
@@ -1723,8 +1837,19 @@ msgid "Date Sampled"
 msgstr ""
 
 #
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/arimports.py, line: 97
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/arimports.py, line: 97
+msgid "Date Submitted"
+msgstr ""
+
+#
 # File: bika.lims/bika/lims/browser/arimports.py, line: 62
 msgid "Date Validated"
+msgstr ""
+
+#
+# File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line: 110
+msgid "Date Verified"
 msgstr ""
 
 # File: bika.lims/bika/lims/content/instrumentcertification.py, line: 65
@@ -1948,6 +2073,18 @@ msgstr ""
 
 # File: bika.lims/bika/lims/content/storagelocation.py, line: 36
 msgid "Description of the site"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/stickers/sticker_large.pt, line: 88
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/stickers/sticker_large.pt, line: 88
+msgid "Deviation"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/analysisrequest/templates/ar_add.pt, line: 228
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/analysisrequest/templates/ar_add.pt, line: 228
+msgid "Discount"
 msgstr ""
 
 # File: bika.lims/bika/lims/content/pricelist.py, line: 36
@@ -2215,11 +2352,6 @@ msgstr ""
 msgid "Environmental conditions"
 msgstr ""
 
-#
-# File: bika.lims/bika/lims/content/analysisrequest.py, line: 883
-msgid "Environmental conditions when the sample has been taken"
-msgstr ""
-
 # File: bika.lims/bika/lims/browser/analysisrequest/workflow.py, line: 452
 msgid "Erroneus result publication from ${request_id}"
 msgstr ""
@@ -2351,6 +2483,12 @@ msgstr ""
 msgid "Firstname"
 msgstr ""
 
+#
+# File: bika.lims/bika/lims/content/analysiscategory.py, line: 59
+# File: bika.lims/bika/lims/content/analysisservice.py, line: 219
+msgid "Float value from 0.0 - 1000.0 indicating the sort order. Duplicate values are ordered alphabetically."
+msgstr ""
+
 # File: bika.lims/bika/lims/controlpanel/bika_calculations.py, line: 43
 msgid "Formula"
 msgstr ""
@@ -2387,6 +2525,13 @@ msgstr ""
 # File: bika.lims/bika/lims/browser/reports/templates/qualitycontrol.pt, line:
 # 106
 msgid "Generate report"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/stickers/sticker_large.pt, line: 143
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/stickers/sticker_small.pt, line: 90
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/stickers/sticker_large.pt, line: 143
+msgid "Go back"
 msgstr ""
 
 # File: bika.lims/bika/lims/content/person.py, line: 19
@@ -2528,6 +2673,12 @@ msgstr ""
 #
 # File: bika.lims/bika/lims/browser/templates/arimport_add.pt, line: 17
 msgid "Import Analysis Request Data"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/content/arimport.py, line: 36
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/content/arimport.py, line: 36
+msgid "Import Option"
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/arimports.py, line: 111
@@ -3244,6 +3395,11 @@ msgstr ""
 msgid "Modification date"
 msgstr ""
 
+#
+# File: bika.lims/bika/lims/browser/templates/dashboard.pt, line: 354
+msgid "Monthly"
+msgstr ""
+
 # File: bika.lims/bika/lims/skins/bika/portlet_late_analyses.pt, line: 59
 # File: bika.lims/bika/lims/skins/bika/portlet_pending_orders.pt, line: 54
 # File: bika.lims/bika/lims/skins/bika/portlet_sample_due.pt, line: 55
@@ -3385,6 +3541,12 @@ msgstr ""
 
 # File: bika.lims/bika/lims/controlpanel/bika_analysisservices.py, line: 117
 msgid "No new items were created."
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/content/arimportitem.py, line: 49
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/content/arimportitem.py, line: 49
+msgid "No of containers"
 msgstr ""
 
 # File:
@@ -3557,6 +3719,11 @@ msgstr ""
 msgid "Open"
 msgstr ""
 
+#
+# File: bika.lims/bika/lims/profiles.zcml, line: 11
+msgid "Open Source Web based Laboratory Information Management System suitable for all types of laboratories"
+msgstr ""
+
 # File: bika.lims/bika/lims/browser/templates/stickers/sticker_large.pt, line:
 # 83
 # File: bika.lims/bika/lims/browser/worksheet.py, line: 872
@@ -3589,6 +3756,12 @@ msgstr ""
 
 # File: bika.lims/bika/lims/content/instrumentcertification.py, line: 48
 msgid "Organization responsible of granting the calibration certificate"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/content/arimport.py, line: 50
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/content/arimport.py, line: 50
+msgid "Original File"
 msgstr ""
 
 #
@@ -3727,6 +3900,12 @@ msgstr ""
 # File: bika.lims/bika/lims/content/organisation.py, line: 49
 # File: bika.lims/bika/lims/content/person.py, line: 103
 msgid "Physical address"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/content/arimportitem.py, line: 54
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/content/arimportitem.py, line: 54
+msgid "Picking Slip"
 msgstr ""
 
 #
@@ -4015,6 +4194,11 @@ msgstr ""
 msgid "QC Sample ID"
 msgstr ""
 
+#
+# File: bika.lims/bika/lims/browser/worksheet/views/folder.py, line: 108
+msgid "QC Samples (Analyses)"
+msgstr ""
+
 # File: bika.lims/bika/lims/browser/worksheetfolder.py, line: 155
 msgid "QC Samples(Analyses)"
 msgstr ""
@@ -4029,8 +4213,19 @@ msgstr ""
 msgid "Quantity"
 msgstr ""
 
+#
+# File: bika.lims/bika/lims/browser/templates/dashboard.pt, line: 355
+msgid "Quarterly"
+msgstr ""
+
 # File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
 msgid "Query"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/content/arimport.py, line: 169
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/content/arimport.py, line: 169
+msgid "QuoteID"
 msgstr ""
 
 # File: bika.lims/bika/lims/content/analysisspec.py, line: 75
@@ -4048,6 +4243,12 @@ msgstr ""
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 741
 msgid "Range min"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/bika_listing_table.pt, line: 563
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/bika_listing_table.pt, line: 563
+msgid "Range remarks:"
 msgstr ""
 
 # File:
@@ -4224,6 +4425,12 @@ msgstr ""
 msgid "Remarks to take into account for maintenance process"
 msgstr ""
 
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/bika_listing_table.pt, line: 610
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/bika_listing_table.pt, line: 610
+msgid "Remarks:"
+msgstr ""
+
 # File: bika.lims/bika/lims/content/instrumentmaintenancetask.py, line: 143
 # File: bika.lims/bika/lims/content/instrumentscheduledtask.py, line: 87
 msgid "Repair"
@@ -4238,6 +4445,12 @@ msgstr ""
 # 23
 # File: bika.lims/bika/lims/content/report.py, line: 19
 msgid "Report"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/content/arimport.py, line: 147
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/content/arimport.py, line: 147
+msgid "Report Contact Names"
 msgstr ""
 
 # File: bika.lims/bika/lims/content/instrumentcalibration.py, line: 33
@@ -4465,6 +4678,11 @@ msgstr ""
 msgid "Review state"
 msgstr ""
 
+#
+# File: bika.lims/bika/lims/browser/worksheet/views/folder.py, line: 111
+msgid "Routine Samples (Analyses)"
+msgstr ""
+
 # File: bika.lims/bika/lims/browser/worksheetfolder.py, line: 158
 msgid "Routine Samples(Analyses)"
 msgstr ""
@@ -4502,6 +4720,12 @@ msgstr ""
 
 # File: bika.lims/bika/lims/controlpanel/bika_sampleconditions.py, line: 28
 msgid "Sample Conditions"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/content/arimportitem.py, line: 44
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/content/arimportitem.py, line: 44
+msgid "Sample Date"
 msgstr ""
 
 # File: bika.lims/bika/lims/skins/bika/portlet_sample_due.pt, line: 22
@@ -4794,6 +5018,11 @@ msgstr ""
 msgid "Select all items"
 msgstr ""
 
+#
+# File: bika.lims/bika/lims/content/instrument.py, line: 123
+msgid "Select an Export interface for this instrument."
+msgstr ""
+
 # File: bika.lims/bika/lims/content/instrument.py, line: 121
 msgid "Select an Import/Export interface for this instrument."
 msgstr ""
@@ -5001,6 +5230,11 @@ msgstr ""
 msgid "Show only selected categories in client views"
 msgstr ""
 
+#
+# File: bika.lims/bika/lims/browser/templates/dashboard.pt, line: 374
+msgid "Show/hide timeline summary"
+msgstr ""
+
 # File: bika.lims/bika/lims/content/labcontact.py, line: 29
 msgid "Signature"
 msgstr ""
@@ -5083,11 +5317,21 @@ msgstr ""
 msgid "Start Date"
 msgstr ""
 
+#
+# File: bika.lims/bika/lims/validators.py, line: 69
+msgid "Start date must be before End Date"
+msgstr ""
+
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 123
 # File: bika.lims/bika/lims/browser/arimports.py, line: 98
 # File: bika.lims/bika/lims/browser/batch/batchbook.py, line: 64
 msgid "State"
+msgstr ""
+
+#
+# File: bika.lims/bika/lims/browser/invoicefolder.py, line: 20
+msgid "Statements"
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/analyses.py, line: 78
@@ -5195,6 +5439,12 @@ msgstr ""
 
 # File: bika.lims/bika/lims/content/method.py, line: 37
 msgid "Technical description and instructions intended for analysts"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/content/arimport.py, line: 180
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/content/arimport.py, line: 180
+msgid "Temperature"
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
@@ -5795,6 +6045,11 @@ msgstr ""
 msgid "Unrecognized file format ${fileformat}"
 msgstr ""
 
+#
+# File: bika.lims/bika/lims/exportimport/instruments/horiba/jobinyvon/icp.py, line: 37
+msgid "Unrecognized file format ${format}"
+msgstr ""
+
 # File: bika.lims/bika/lims/content/labcontact.py, line: 30
 msgid "Upload a scanned signature to be used on printed analysis results reports. Ideal size is 250 pixels wide by 150 high"
 msgstr ""
@@ -6056,6 +6311,16 @@ msgstr ""
 msgid "Validation failed: title is required"
 msgstr ""
 
+#
+# File: bika.lims/bika/lims/validators.py, line: 971
+msgid "Validation failed: value must be between 0 and 1000"
+msgstr ""
+
+#
+# File: bika.lims/bika/lims/validators.py, line: 967
+msgid "Validation failed: value must be float"
+msgstr ""
+
 # File: bika.lims/bika/lims/content/instrumentvalidation.py, line: 19
 msgid "Validation report date"
 msgstr ""
@@ -6063,6 +6328,12 @@ msgstr ""
 # File: bika.lims/bika/lims/browser/instrument.py, line: 213
 # File: bika.lims/bika/lims/content/instrumentvalidation.py, line: 43
 msgid "Validator"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/arimports.py, line: 96
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/arimports.py, line: 96
+msgid "Validity"
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/templates/worksheet_manage_results.pt,
@@ -6103,6 +6374,11 @@ msgstr ""
 
 # File: bika.lims/bika/lims/content/supplier.py, line: 30
 msgid "Website."
+msgstr ""
+
+#
+# File: bika.lims/bika/lims/browser/templates/dashboard.pt, line: 353
+msgid "Weekly"
 msgstr ""
 
 # File: bika.lims/bika/lims/controlpanel/bika_instruments.py, line: 52
@@ -6155,6 +6431,11 @@ msgstr ""
 
 # File: bika.lims/bika/lims/validators.py, line: 850
 msgid "Wrong IBAN length by %s: %sshort by %i"
+msgstr ""
+
+#
+# File: bika.lims/bika/lims/browser/templates/dashboard.pt, line: 357
+msgid "Yearly"
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/analysisservice.py, line: 97
@@ -6286,12 +6567,108 @@ msgid "heading_arpriority"
 msgstr ""
 
 #
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arimport_add_form.pt, line: 15
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arimport_add_form.pt, line: 15
+#. Default: "Import Analysis Request Data"
+msgid "heading_import_ar"
+msgstr ""
+
+#
 # File: bika.lims/bika/lims/browser/dashboard.py, line: 291
 msgid "inactive"
 msgstr ""
 
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/instrument_qc_failures_viewlet.pt, line: 28
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/instrument_qc_failures_viewlet.pt, line: 28
+#. Default: "${nr_disabled} instrument disabled until successful calibration:"
+msgid "instrument_qc_failed"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/instrument_qc_failures_viewlet.pt, line: 12
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/instrument_qc_failures_viewlet.pt, line: 12
+#. Default: "${nr_failed} instrument is out-of-date:"
+msgid "instrument_qc_out_of_date"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/instrument_qc_failures_viewlet.pt, line: 44
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/instrument_qc_failures_viewlet.pt, line: 44
+#. Default: "${nr_failed} instruments disposed until new calibration tests being done:"
+msgid "instruments_qc_disposed"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/instrument_qc_failures_viewlet.pt, line: 32
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/instrument_qc_failures_viewlet.pt, line: 32
+#. Default: "${nr_disabled} instruments disabled until successful calibration:"
+msgid "instruments_qc_failed"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/instrument_qc_failures_viewlet.pt, line: 16
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/instrument_qc_failures_viewlet.pt, line: 16
+#. Default: "${nr_failed} instruments are out-of-date:"
+msgid "instruments_qc_out_of_date"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/instrument_qc_failures_viewlet.pt, line: 68
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/instrument_qc_failures_viewlet.pt, line: 68
+#. Default: "${nr_failed} instruments in calibration progress:"
+msgid "instruments_qc_uncalibrated"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/instrument_qc_failures_viewlet.pt, line: 56
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/instrument_qc_failures_viewlet.pt, line: 56
+#. Default: "${nr_failed} instruments in validation progress:"
+msgid "instruments_qc_unvalidated"
+msgstr ""
+
 # File: bika.lims/bika/lims/skins/bika/attachments.pt, line: 65
 msgid "keywords"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arimport_views.pt, line: 76
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arpriority_views.pt, line: 68
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arimport_views.pt, line: 76
+#. Default: "CC Emails - Invoice"
+msgid "label_CCEmailsInvoice"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arimport_views.pt, line: 69
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arpriority_views.pt, line: 62
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arimport_views.pt, line: 69
+#. Default: "CC Names - Report"
+msgid "label_CCNamesReport"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arimport_views.pt, line: 89
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arpriority_views.pt, line: 79
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arimport_views.pt, line: 89
+#. Default: "Client Reference"
+msgid "label_ClientReference"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arimport_views.pt, line: 229
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arpriority_views.pt, line: 192
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arimport_views.pt, line: 229
+#. Default: "Detail"
+msgid "label_Detail"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arimport_views.pt, line: 85
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arpriority_views.pt, line: 76
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arimport_views.pt, line: 85
+#. Default: "Order"
+msgid "label_OrderID"
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/templates/login_details.pt, line: 108
@@ -6299,11 +6676,240 @@ msgstr ""
 msgid "label_add_to_groups"
 msgstr ""
 
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arimport_views.pt, line: 160
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arpriority_views.pt, line: 138
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arimport_views.pt, line: 160
+#. Default: "Analyses"
+msgid "label_analyses"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arimport_views.pt, line: 49
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arpriority_views.pt, line: 45
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arimport_views.pt, line: 49
+#. Default: "CC"
+msgid "label_cc"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arimport_views.pt, line: 55
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arpriority_views.pt, line: 50
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arimport_views.pt, line: 55
+#. Default: "CC Contact ID"
+msgid "label_cccontactid"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arimport_views.pt, line: 65
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arpriority_views.pt, line: 59
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arimport_views.pt, line: 65
+#. Default: "CC Emails - Report"
+msgid "label_ccemails"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arimport_views.pt, line: 29
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arpriority_views.pt, line: 28
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arimport_views.pt, line: 29
+#. Default: "Client ID"
+msgid "label_clientid"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arimport_views.pt, line: 25
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arpriority_views.pt, line: 25
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arimport_views.pt, line: 25
+#. Default: "Client"
+msgid "label_clientname"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arimport_views.pt, line: 152
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arpriority_views.pt, line: 129
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arimport_views.pt, line: 152
+#. Default: "Client Ref"
+msgid "label_clientref"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arimport_views.pt, line: 153
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arpriority_views.pt, line: 130
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arimport_views.pt, line: 153
+#. Default: "Client Sid"
+msgid "label_clientsid"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arimport_views.pt, line: 35
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arpriority_views.pt, line: 33
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arimport_views.pt, line: 35
+#. Default: "Contact Name"
+msgid "label_contact"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arimport_views.pt, line: 41
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arpriority_views.pt, line: 38
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arimport_views.pt, line: 41
+#. Default: "Contact ID"
+msgid "label_contactid"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arimport_views.pt, line: 157
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arpriority_views.pt, line: 134
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arimport_views.pt, line: 157
+#. Default: "Container Type"
+msgid "label_containertype"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arimport_views.pt, line: 119
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arpriority_views.pt, line: 104
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arimport_views.pt, line: 119
+#. Default: "Date applied"
+msgid "label_dateapplied"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arimport_views.pt, line: 114
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arpriority_views.pt, line: 100
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arimport_views.pt, line: 114
+#. Default: "Date imported"
+msgid "label_dateimported"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arimport_views.pt, line: 97
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arpriority_views.pt, line: 85
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arimport_views.pt, line: 97
+#. Default: "File name"
+msgid "label_filename"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arimport_add_form.pt, line: 58
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arimport_add_form.pt, line: 58
+#. Default: "Select Analysis request data file"
+msgid "label_import_ar_file"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arimport_add_form.pt, line: 35
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arimport_add_form.pt, line: 35
+#. Default: "Import option"
+msgid "label_import_option"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arpriority_views.pt, line: 137
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arpriority_views.pt, line: 137
+#. Default: "Order ID"
+msgid "label_orderid"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arimport_views.pt, line: 156
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arpriority_views.pt, line: 133
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arimport_views.pt, line: 156
+#. Default: "Picking slip"
+msgid "label_pickingslip"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arimport_views.pt, line: 159
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arpriority_views.pt, line: 136
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arimport_views.pt, line: 159
+#. Default: "Priority"
+msgid "label_priority"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arimport_views.pt, line: 162
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arpriority_views.pt, line: 140
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arimport_views.pt, line: 162
+#. Default: "Profile"
+msgid "label_profile"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arimport_views.pt, line: 262
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arpriority_views.pt, line: 223
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arimport_views.pt, line: 262
+#. Default: "Remarks"
+msgid "label_remarks"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arimport_views.pt, line: 158
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arpriority_views.pt, line: 135
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arimport_views.pt, line: 158
+#. Default: "Report as DM"
+msgid "label_report_dry_matter"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arimport_views.pt, line: 150
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arpriority_views.pt, line: 127
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arimport_views.pt, line: 150
+#. Default: "Request ID"
+msgid "label_requestid"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arimport_views.pt, line: 154
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arpriority_views.pt, line: 131
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arimport_views.pt, line: 154
+#. Default: "Sample Date"
+msgid "label_sampledate"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arimport_views.pt, line: 147
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arpriority_views.pt, line: 124
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arimport_views.pt, line: 147
+#. Default: "Sample"
+msgid "label_samplename"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arimport_views.pt, line: 131
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arpriority_views.pt, line: 114
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arimport_views.pt, line: 131
+#. Default: "Sample Point"
+msgid "label_samplepoint"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arimport_views.pt, line: 155
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arpriority_views.pt, line: 132
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arimport_views.pt, line: 155
+#. Default: "Sample type"
+msgid "label_sampletype"
+msgstr ""
+
 # File:
 # bika.lims/bika/lims/browser/reports/selection_macros/select_analysisspecification.pt,
 # line: 3
 #. Default: "Specification"
 msgid "label_specification"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arimport_views.pt, line: 103
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arpriority_views.pt, line: 90
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arimport_views.pt, line: 103
+#. Default: "Status"
+msgid "label_status"
+msgstr ""
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arimport_views.pt, line: 164
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/arpriority_views.pt, line: 142
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/arimport_views.pt, line: 164
+#. Default: "Valid"
+msgid "label_valid"
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/analysis.py, line: 33
@@ -6448,4 +7054,3 @@ msgstr ""
 # File: bika.lims/bika/lims/browser/dashboard.py, line: 289
 msgid "verified"
 msgstr ""
-

@@ -9,7 +9,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
 "POT-Creation-Date: 2012-10-20 09:21+0000\n"
-"PO-Revision-Date: 2015-06-11 08:18+0000\n"
+"PO-Revision-Date: 2016-01-23 02:27+0000\n"
 "Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
 "Language-Team: Portuguese (Brazil) (http://www.transifex.com/bikalabs/bika-lims/language/pt_BR/)\n"
 "MIME-Version: 1.0\n"
@@ -297,10 +297,6 @@ msgstr "Instrumentos"
 msgid "Invoice"
 msgstr "Faturas"
 
-# File: bika.lims/bika/lims/profiles/default/types/InvoiceFolder.xml, line: -1
-msgid "Invoices"
-msgstr "Faturas"
-
 # File: bika.lims/bika/lims/profiles/default/types/LabContact.xml, line: -1
 msgid "Lab Contact"
 msgstr "Lab Contatos"
@@ -432,14 +428,6 @@ msgstr ""
 # File: bika.lims/bika/lims/profiles/default/types/ReportFolder.xml, line: -1
 msgid "Quality Control"
 msgstr "Controle de qualidade"
-
-# File: bika.lims/bika/lims/profiles/default/types/QueryFolder.xml, line: -1
-msgid "Queries"
-msgstr "Pesquisas"
-
-# File: bika.lims/bika/lims/profiles/default/types/Query.xml, line: -1
-msgid "Query"
-msgstr "Pesquisa"
 
 # File: bika.lims/bika/lims/profiles/default/types/ReferenceAnalysis.xml,
 # line: -1
@@ -595,6 +583,11 @@ msgstr "Programação"
 # -1
 msgid "Small Sticker"
 msgstr "Etiqueta pequena"
+
+#
+# File: bika.lims/bika/lims/profiles/default/types/InvoiceFolder.xml, line: -1
+msgid "Statements"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/ReferenceSample.xml, line:
 # -1
@@ -997,4 +990,3 @@ msgstr "Remover"
 #. Default: "Verify"
 msgid "verify_transition_title"
 msgstr "Verificar"
-

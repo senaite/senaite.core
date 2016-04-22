@@ -1,5 +1,6 @@
 #
 # Translators:
+# Camila Barreto <kmila.barreto@gmail.com>, 2016
 # Cesar Brod <cesar@brod.com.br>, 2012
 # Cesar Brod <cesar@brod.com.br>, 2012
 # Cesar Brod <cesar@brod.com.br>, 2012
@@ -7,7 +8,7 @@
 # Renato Cruz <renato@baktron.com.br>, 2013
 # emidio j g balcon1 <emidio98@hotmail.com>, 2013
 # emidio j g balcon1 <emidio98@hotmail.com>, 2013
-# Frederico Ribeiro <freddy.boc@gmail.com>, 2013-2014
+# Frederico Ribeiro <freddy.boc@gmail.com>, 2013-2014,2016
 # Irapuan Coleto Bottosso <ibottosso@gmail.com>, 2014-2015
 # Laboratório Clínico Veterinário, 2014
 # Laboratório Clínico Veterinário, 2014
@@ -15,14 +16,15 @@
 # PabloBF <pablobusattof@gmail.com>, 2014
 # PabloBF <pablobusattof@gmail.com>, 2014
 # Renato Cruz <renato@baktron.com.br>, 2013,2015
+# Renato Cruz <renatorlcruz@gmail.com>, 2015
 # Wesley Gabriel de Oliveira Leal <wesleygabriel@gmail.com>, 2013
 # Wesley Gabriel de Oliveira Leal <wesleygabriel@gmail.com>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
 "POT-Creation-Date: 2012-01-01 23:11+0000\n"
-"PO-Revision-Date: 2015-06-11 08:47+0000\n"
-"Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
+"PO-Revision-Date: 2016-01-23 02:29+0000\n"
+"Last-Translator: Camila Barreto <kmila.barreto@gmail.com>\n"
 "Language-Team: Portuguese (Brazil) (http://www.transifex.com/bikalabs/bika-lims/language/pt_BR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -40,7 +42,7 @@ msgstr "${contact_fullname} pode entrar no sistema LIMS usando ${contact_usernam
 
 # File: bika.lims/bika/lims/browser/analysisrequest/workflow.py, line: 224
 msgid "${items} are missing Preserver or Date Preserved"
-msgstr "${items} está faltando preservação ou data de preservação"
+msgstr "${items} está faltando Preservação ou Data de Preservação"
 
 # File: bika.lims/bika/lims/browser/client.py, line: 132
 msgid "${items} are waiting for preservation."
@@ -61,11 +63,11 @@ msgstr "${items} foram criados com sucesso."
 
 # File: bika.lims/bika/lims/browser/client.py, line: 198
 msgid "${items}: partitions are waiting to be received."
-msgstr "${items}: partições estão aguardando seu recebimento."
+msgstr "${items}: partições estão aguardando recebimento."
 
 # File: bika.lims/bika/lims/browser/analysisrequest/workflow.py, line: 228
 msgid "${item} is missing Preserver or Preservation Date"
-msgstr "${item} carece de preservação ou de data de preservação."
+msgstr "${item} está faltando Preservação ou Data de Preservação."
 
 # File: bika.lims/bika/lims/browser/client.py, line: 140
 msgid "${item} is waiting for preservation."
@@ -82,7 +84,7 @@ msgstr "${item} foi criado com sucesso."
 
 # File: bika.lims/bika/lims/browser/client.py, line: 201
 msgid "${item}: ${part} is waiting to be received."
-msgstr "${item}: ${part} está aguardando para ser recebido."
+msgstr "${item}: ${part} está aguardando recebimento."
 
 # File:
 # bika.lims/bika/lims/browser/reports/templates/productivity_samplereceivedvsreported.pt,
@@ -101,7 +103,7 @@ msgstr "% Erro"
 # bika.lims/bika/lims/browser/reports/templates/productivity_analysesperformedpertotal.pt,
 # line: 99
 msgid "% Performed"
-msgstr "%Performance"
+msgstr "%Realizado"
 
 # File:
 # bika.lims/bika/lims/browser/reports/templates/productivity_analysesperdepartment.pt,
@@ -110,7 +112,7 @@ msgstr "%Performance"
 # bika.lims/bika/lims/browser/reports/templates/productivity_analysesperformedpertotal.pt,
 # line: 101
 msgid "% Published"
-msgstr "Publicado"
+msgstr "% Publicado"
 
 # File: bika.lims/bika/lims/exportimport/setupdata/__init__.py, line: 29
 msgid "%s has no '%s' column."
@@ -118,7 +120,7 @@ msgstr "%s não possui coluna '%s'"
 
 # File: bika.lims/bika/lims/skins/bika/attachments.pt, line: 60
 msgid "&nbsp;"
-msgstr ""
+msgstr "&nbsp;"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 341
 msgid "'Classic' indicates importing analysis requests per sample and analysis service selection. With 'Profiles', analysis profile keywords are used to select multiple analysis services together"
@@ -135,7 +137,7 @@ msgstr "(Controle)"
 
 # File: bika.lims/bika/lims/skins/bika/attachments.pt, line: 219
 msgid "(Duplicate)"
-msgstr "(Duplicado)"
+msgstr "(Duplicata)"
 
 # File: bika.lims/bika/lims/content/referencesample.py, line: 187
 msgid "(Hazardous)"
@@ -226,10 +228,10 @@ msgid "< Min"
 msgstr "< mín."
 
 msgid "<p>${service} requires the following services to be selected:</p><br/><p>${deps}</p><br/><p>Do you want to apply these selections now?</p>"
-msgstr ""
+msgstr "<p>${service} exige a seleção dos seguintes serviços:</p><br/><p>${deps}</p><br/><p>Você deseja aplicar estas seleções agora?</p>"
 
 msgid "<p>The following services depend on ${service}, and will be unselected if you continue:</p><br/><p>${deps}</p><br/><p>Do you want to remove these selections now?</p>"
-msgstr ""
+msgstr "<p>Os seguintes serviços dependem de ${service}, e serão removidos se você continuar:</p><br/><p>${deps}</p><br/><p>Você deseja remover estas seleções agora?</p>"
 
 # File: bika.lims/bika/lims/browser/widgets/analysisspecificationwidget.py,
 # line: 45
@@ -375,11 +377,11 @@ msgstr "Adicionar Referência de Controle"
 
 # File: bika.lims/bika/lims/browser/worksheet.py, line: 1167
 msgid "Add Duplicate"
-msgstr "Adicionar Cópia"
+msgstr "Adicionar Duplicata"
 
 # File: bika.lims/bika/lims/controlpanel/bika_analysisprofiles.py, line: 35
 msgid "Add Profile"
-msgstr "Adicionar perfil"
+msgstr "Adicionar Perfil"
 
 # worksheet.js
 msgid "Add Remark"
@@ -388,11 +390,11 @@ msgstr "Adicionar Observações"
 # File: bika.lims/bika/lims/controlpanel/bika_artemplates.py, line: 36
 # File: bika.lims/bika/lims/controlpanel/bika_srtemplates.py, line: 37
 msgid "Add Template"
-msgstr "Adicionar Modelo"
+msgstr "Adicionar Padrão"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 319
 msgid "Add a remarks field to all analyses"
-msgstr "Adiciona campo de marcação  pra todas análises"
+msgstr "Adiciona campo de observação para todas as análises"
 
 # File: bika.lims/bika/lims/browser/batch/analysisrequests.py, line: 34
 msgid "Add new"
@@ -400,7 +402,7 @@ msgstr "Adicionar novo"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/workflow.py, line: 485
 msgid "Additional remarks:"
-msgstr "Observações adicionais"
+msgstr "Observações adicionais:"
 
 # File: bika.lims/bika/lims/content/storagelocation.py, line: 82
 # File: bika.lims/bika/lims/skins/bika/bika_widgets/addresswidget.pt, line:
@@ -420,7 +422,7 @@ msgstr "Relatórios Administrativos"
 # File: bika.lims/bika/lims/browser/reports/selection_macros/__init__.py,
 # line: 162
 msgid "After ${end_date}"
-msgstr "Depois ${end_date}"
+msgstr "Após ${end_date}"
 
 # File: bika.lims/bika/lims/browser/instrument.py, line: 531
 # File: bika.lims/bika/lims/content/instrumentcertification.py, line: 47
@@ -435,7 +437,7 @@ msgstr "Todas"
 
 # File: bika.lims/bika/lims/browser/accreditation.py, line: 54
 msgid "All Accredited analysis services are listed here."
-msgstr "Todos os serviços certificados de análises são listados aqui"
+msgstr "Todos os serviços de análises Certificadas estão listados aqui."
 
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 583
@@ -456,11 +458,11 @@ msgstr "Permitir que balconistas criem e editem clientes"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 315
 msgid "Allow Manual Detection Limit input"
-msgstr ""
+msgstr "Permitir entrada manual de Limite de Detecção "
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 90
 msgid "Allow access to worksheets only to assigned analysts"
-msgstr "Permitir acesso a formulários de trabalho apenas para analistas especificados "
+msgstr "Permitir acesso a planilhas de trabalho apenas para analistas designados"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 379
 msgid "Allow instrument entry of results"
@@ -472,15 +474,15 @@ msgstr "Permitir entrada manual de resultados"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 800
 msgid "Allow manual uncertainty value input"
-msgstr ""
+msgstr "Permitir entrada manual de valor de incerteza "
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 316
 msgid "Allow the analyst to manually replace the default Detection Limits (LDL and UDL) on results entry views"
-msgstr ""
+msgstr "Permitir que o analista possa substituir manualmente os Limites de Detecção padrão (LDL e HDL) na visualização da entrada de resultados"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 801
 msgid "Allow the analyst to manually replace the default uncertainty value."
-msgstr ""
+msgstr "Permitir que o analista possa substituir manualmente o valor de incerteza padrão"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 562
 msgid "Alternative Calculation"
@@ -488,7 +490,7 @@ msgstr "Cálculo alternativo"
 
 # File: bika.lims/bika/lims/content/client.py, line: 66
 msgid "Always expand the selected categories in client views"
-msgstr "Sempre expanda as categorias selecionadas em visualizações do cliente"
+msgstr "Sempre expandir as categorias selecionadas nas visualizações do cliente"
 
 # File: bika.lims/bika/lims/browser/reports/administration_arsnotinvoiced.py,
 # line: 67
@@ -501,7 +503,7 @@ msgstr "Um tipo de item (ex.: Evento)"
 
 # File: bika.lims/bika/lims/profiles/default/registry.xml, line: -1
 msgid "An item's workflow state (e.g.published)"
-msgstr "Estado de fluxo de trabalho de um item (e.g.publicado)"
+msgstr "Estado de fluxo de trabalho de um item (ex.: Publicado)"
 
 # File:
 # bika.lims/bika/lims/browser/analysisrequest/templates/analysisrequest_analyses.pt,
@@ -519,7 +521,7 @@ msgstr "Análises"
 # bika.lims/bika/lims/browser/reports/qualitycontrol_resultspersamplepoint.py,
 # line: 300
 msgid "Analyses in error shoulder range"
-msgstr "Análise no limiar do erro"
+msgstr "Análises no limite da margem de erro"
 
 # File:
 # bika.lims/bika/lims/browser/reports/qualitycontrol_analysesoutofrange.py,
@@ -537,7 +539,7 @@ msgstr "Análises fora do intervalo"
 # bika.lims/bika/lims/browser/reports/productivity_analysesperservice.py,
 # line: 29
 msgid "Analyses per analysis service"
-msgstr "Procurar por serviço de análise"
+msgstr "Análises por serviço de análise"
 
 # File:
 # bika.lims/bika/lims/browser/reports/productivity_analysespersampletype.py,
@@ -545,12 +547,12 @@ msgstr "Procurar por serviço de análise"
 # File: bika.lims/bika/lims/browser/reports/templates/productivity.pt, line:
 # 211
 msgid "Analyses per sample type"
-msgstr "Análise por tipo de amostra"
+msgstr "Análises por tipo de amostra"
 
 # File: bika.lims/bika/lims/browser/reports/templates/productivity.pt, line:
 # 165
 msgid "Analyses per service"
-msgstr "Análise por serviço"
+msgstr "Análises por serviço"
 
 # File: bika.lims/bika/lims/browser/reports/templates/productivity.pt, line:
 # 415
@@ -558,20 +560,20 @@ msgstr "Análise por serviço"
 # bika.lims/bika/lims/browser/reports/templates/productivity_analysesperformedpertotal.pt,
 # line: 77
 msgid "Analyses performed and published as % of total"
-msgstr "Análises feitas e publicadas como % o  do total"
+msgstr "Análises feitas e publicadas como % do total"
 
 # File:
 # bika.lims/bika/lims/browser/reports/productivity_analysesperformedpertotal.py,
 # line: 190
 msgid "Analyses performed as % of total"
-msgstr "Análises feitas como % o do total"
+msgstr "Análises feitas como % do total"
 
 # File: bika.lims/bika/lims/browser/reports/templates/administration.pt, line:
 # 91
 # File: bika.lims/bika/lims/browser/reports/templates/productivity.pt, line:
 # 160
 msgid "Analyses related reports"
-msgstr "Relatório de análises repetidas"
+msgstr "Laudos de Análises relacionadas"
 
 # File: bika.lims/bika/lims/browser/reports/templates/qualitycontrol.pt, line:
 # 37
@@ -582,13 +584,13 @@ msgstr "Análises repetidas"
 # bika.lims/bika/lims/browser/reports/qualitycontrol_analysesoutofrange.py,
 # line: 27
 msgid "Analyses results out of specified range"
-msgstr "Resultados das análises fora dos limites especificados."
+msgstr "Resultados de Análises fora dos intervalos especificados"
 
 # File:
 # bika.lims/bika/lims/browser/reports/qualitycontrol_analysesrepeated.py,
 # line: 25
 msgid "Analyses retested"
-msgstr "Análise retestada"
+msgstr "Análises retestadas"
 
 # File:
 # bika.lims/bika/lims/browser/reports/productivity_analysesperdepartment.py,
@@ -599,7 +601,7 @@ msgstr "Análise retestada"
 # bika.lims/bika/lims/browser/reports/templates/productivity_analysesperdepartment.pt,
 # line: 77
 msgid "Analyses summary per department"
-msgstr "Análise por departamento"
+msgstr "Índice de Análises por departamento"
 
 # File:
 # bika.lims/bika/lims/browser/reports/qualitycontrol_analysesrepeated.py,
@@ -617,7 +619,7 @@ msgstr "Análises"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 365
 msgid "Analysis Attachment Option"
-msgstr "Opção de Anexo de Análise"
+msgstr "Opção de Anexo da Análise"
 
 # File: bika.lims/bika/lims/controlpanel/bika_analysiscategories.py, line: 28
 msgid "Analysis Categories"
@@ -648,7 +650,7 @@ msgstr "Perfis de Análises"
 # 17
 # File: bika.lims/bika/lims/profiles/default/registry.xml, line: -1
 msgid "Analysis Request"
-msgstr "Pedido de análise"
+msgstr "Pedido de Análise"
 
 # File: bika.lims/bika/lims/config.py, line: 78
 msgid "Analysis Request ID"
@@ -660,11 +662,11 @@ msgstr "Importação de Pedidos de Análise"
 
 # File: bika.lims/bika/lims/controlpanel/bika_arpriorities.py, line: 39
 msgid "Analysis Request Priorities"
-msgstr "Prioridades de Requisição de análise"
+msgstr "Prioridades de Requisição de Análise"
 
 # File: bika.lims/bika/lims/config.py, line: 68
 msgid "Analysis Request Specifications"
-msgstr "Especificações de Requisição de análise"
+msgstr "Especificações de Requisição de Análise"
 
 #
 # File: bika.lims/bika/lims/content/samplinground.py, line: 171
@@ -722,7 +724,7 @@ msgstr "Serviços de Análises"
 
 # File: bika.lims/bika/lims/content/analysisrequest.py, line: 515
 msgid "Analysis Specification"
-msgstr "Especificação de análise"
+msgstr "Especificação de Análise"
 
 # File: bika.lims/bika/lims/browser/client.py, line: 530
 # File: bika.lims/bika/lims/controlpanel/bika_analysisspecs.py, line: 30
@@ -733,7 +735,7 @@ msgstr "Especificações de Análises"
 # bika.lims/bika/lims/browser/reports/productivity_analysesperdepartment.py,
 # line: 39
 msgid "Analysis State"
-msgstr "Analisar estado"
+msgstr "Estado da Análise"
 
 # File: bika.lims/bika/lims/content/worksheettemplate.py, line: 24
 msgid "Analysis Type"
@@ -743,7 +745,7 @@ msgstr "Tipo de Análise"
 # bika.lims/bika/lims/browser/reports/selection_macros/select_analysiscategory.pt,
 # line: 2
 msgid "Analysis category"
-msgstr "Categoria de análise"
+msgstr "Categoria da análise"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/add.py, line: 441
 msgid "Analysis request ${AR} was successfully created."
@@ -763,25 +765,25 @@ msgstr "Requisições de Análises ${ARs} criadas com sucesso."
 # File: bika.lims/bika/lims/browser/reports/templates/productivity.pt, line:
 # 254
 msgid "Analysis requests and analyses"
-msgstr "Pedidos de análise e análises"
+msgstr "Pedidos de Análise e Análises"
 
 # File: bika.lims/bika/lims/browser/reports/productivity_analysesperclient.py,
 # line: 49
 # File: bika.lims/bika/lims/browser/reports/templates/productivity.pt, line:
 # 264
 msgid "Analysis requests and analyses per client"
-msgstr "Pedidos de análise e análises por cliente"
+msgstr "Pedidos de Análise e Análises por cliente"
 
 # File: bika.lims/bika/lims/browser/reports/administration_arsnotinvoiced.py,
 # line: 25
 # File: bika.lims/bika/lims/browser/reports/templates/administration.pt, line:
 # 94
 msgid "Analysis requests not invoiced"
-msgstr "Pedidos de análise não faturados"
+msgstr "Pedidos de Análise não faturados"
 
 # File: bika.lims/bika/lims/profiles/default/registry.xml, line: -1
 msgid "Analysis requests will be selected if any of their analyses have this analysis service selected."
-msgstr "Solicitações de analises será selecionada se alguma de suas analises tenha tido este serviço de analise selecionado"
+msgstr "Solicitações de Análises serão selecionadas se alguma de suas análises tiver este serviço de analise selecionado"
 
 # File: bika.lims/bika/lims/profiles/default/registry.xml, line: -1
 msgid "Analysis requests will be selected if any of their analyses' services are in this category."
@@ -810,7 +812,7 @@ msgstr "Resultados de análises por local de amostragem e serviço de análise"
 # File: bika.lims/bika/lims/browser/reports/templates/qualitycontrol.pt, line:
 # 30
 msgid "Analysis results out of lab or client specified range Note that this may take several minutes"
-msgstr "Resultados de análise estão fora da variação especificada pelo cliente ou pelo laboratório. Observação: isto pode demorar vários minutos"
+msgstr "Resultados da análise estão fora da margem especificada pelo cliente ou pelo laboratório. Observação: isto pode demorar vários minutos"
 
 # File:
 # bika.lims/bika/lims/browser/reports/productivity_analysesperservice.py,
@@ -850,6 +852,10 @@ msgstr "Tempos de processamento das análises"
 msgid "Analysis turnaround times over time"
 msgstr "Tempos de processamento das análises excedidos"
 
+# File: bika.lims/bika/lims/content/arimportitem.py, line: 92
+msgid "AnalysisProfile Request"
+msgstr "Requerimento de PerfilDeAnálise"
+
 # File: bika.lims/bika/lims/browser/analyses.py, line: 74
 # File: bika.lims/bika/lims/browser/batch/publish.py, line: 91
 # File:
@@ -868,6 +874,10 @@ msgstr "Análise deve ser especificada."
 msgid "Any"
 msgstr "Qualquer"
 
+# File: bika.lims/bika/lims/browser/arimports.py, line: 118
+msgid "Applied"
+msgstr "Submetido"
+
 # File: bika.lims/bika/lims/browser/templates/worksheet_manage_results.pt,
 # line: 136
 msgid "Apply"
@@ -884,12 +894,12 @@ msgstr "Aplicar largura"
 
 # File: bika.lims/bika/lims/content/instrumentcertification.py, line: 103
 msgid "Approved by"
-msgstr ""
+msgstr "Aprovado por"
 
 # File: bika.lims/bika/lims/content/instrument.py, line: 181
 # File: bika.lims/bika/lims/content/instrumentcertification.py, line: 16
 msgid "Asset Number"
-msgstr ""
+msgstr "Número de ativos"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 427
@@ -987,7 +997,7 @@ msgstr "Log-off Automático"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 410
 msgid "Automatic sticker printing"
-msgstr ""
+msgstr "Impressão automática de etiquetas"
 
 # File:
 # bika.lims/bika/lims/browser/analysisrequest/templates/analysisrequest_publish.pt,
@@ -1015,7 +1025,7 @@ msgstr "Média atrasada"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/add.py, line: 366
 msgid "Badly formed state: ${errmsg}"
-msgstr ""
+msgstr "Má formação de estado: ${errmsg}"
 
 # File: bika.lims/bika/lims/content/organisation.py, line: 91
 msgid "Bank branch"
@@ -1028,7 +1038,7 @@ msgstr "Nome do Banco"
 # File: bika.lims/bika/lims/browser/templates/instrument_referenceanalyses.pt,
 # line: 35
 msgid "Basis"
-msgstr ""
+msgstr "Principio básico"
 
 # File:
 # bika.lims/bika/lims/browser/reports/templates/productivity_dataentrydaybook.pt,
@@ -1061,15 +1071,34 @@ msgstr "Direção"
 # File: bika.lims/bika/lims/browser/reports/selection_macros/__init__.py,
 # line: 159
 msgid "Before ${start_date}"
-msgstr "Antes ${start_date}"
+msgstr "Antes de ${start_date}"
+
+#
+# File: bika.lims/bika/lims/browser/templates/dashboard.pt, line: 356
+msgid "Biannual"
+msgstr ""
 
 # File: bika.lims/bika/lims/content/arpriority.py, line: 33
 msgid "Big Icon"
 msgstr "Ícone grande"
 
+#
+# File: bika.lims/bika/lims/profiles.zcml, line: 11
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/profiles.zcml, line: 11
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/profiles.zcml, line: 11
+msgid "Bika LIMS"
+msgstr ""
+
 # File: bika.lims/bika/lims/monkey/controlpanel.py, line: 12
 msgid "Bika LIMS Configuration"
 msgstr "Configuração Bika LIMS"
+
+#
+# File: bika.lims/bika/lims/browser/bika-frontpage.zcml, line: 22
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/bika-frontpage.zcml, line: 22
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/bika-frontpage.zcml, line: 22
+msgid "Bika LIMS front-page"
+msgstr ""
 
 # File: bika.lims/bika/lims/config.py, line: 92
 # File: bika.lims/bika/lims/content/organisation.py, line: 61
@@ -1109,13 +1138,34 @@ msgstr "Telefone Comercial"
 msgid "By"
 msgstr "Por"
 
+# File: bika.lims/bika/lims/content/arimport.py, line: 123
+msgid "CC Contact ID"
+msgstr "ID de contato CC"
+
 # File: bika.lims/bika/lims/content/analysisrequest.py, line: 124
 msgid "CC Contacts"
 msgstr "Contatos CC"
 
+# File: bika.lims/bika/lims/content/arimport.py, line: 157
+msgid "CC Email - Invoice"
+msgstr "E-mail CC - fatura"
+
+# File: bika.lims/bika/lims/content/arimport.py, line: 152
+msgid "CC Email - Report"
+msgstr "E-mails CC - Laudo"
+
 # File: bika.lims/bika/lims/content/analysisrequest.py, line: 158
 msgid "CC Emails"
 msgstr "Emails em CC"
+
+# File: bika.lims/bika/lims/content/arimport.py, line: 133
+msgid "CCContact"
+msgstr "ContatoCC"
+
+# File: bika.lims/bika/lims/browser/templates/stickers/sticker_large.pt, line:
+# 81
+msgid "CSID"
+msgstr "CSID"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 775
 msgid "Calculate Precision from Uncertainties"
@@ -1162,7 +1212,7 @@ msgstr "Certificados de calibração"
 
 # File: bika.lims/bika/lims/content/instrumentcalibration.py, line: 34
 msgid "Calibration report date"
-msgstr ""
+msgstr "Data de calibração do relatório"
 
 # File: bika.lims/bika/lims/browser/instrument.py, line: 156
 # File: bika.lims/bika/lims/content/instrumentcalibration.py, line: 58
@@ -1255,7 +1305,7 @@ msgstr ""
 
 # File: bika.lims/bika/lims/content/method.py, line: 119
 msgid "Check if the method has been accredited"
-msgstr ""
+msgstr "Verifique se o método foi acreditado"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 618
 msgid "Check this box if the analysis service is included in the laboratory's schedule of accredited analyses"
@@ -1291,7 +1341,7 @@ msgstr "Escolha os valores de especificação padrões da RA"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 294
 msgid "Choose the default specifications used for all AR views to display alerts and notifications.  These will also be applied when an AR is published in permanent media, e.g. PDF."
-msgstr ""
+msgstr "Escolha as especificações padrão usado para todos os pontos de vista AR para exibir alertas e notificações. Estes também serão aplicadas quando um AR é publicado na imprensa permanente, por exemplo: PDF."
 
 # File: bika.lims/bika/lims/skins/bika/bika_widgets/addresswidget.pt, line: 99
 msgid "City"
@@ -1303,15 +1353,15 @@ msgstr "Clássico"
 
 # File: bika.lims/bika/lims/browser/referencesample.py, line: 210
 msgid "Click on Analysis Categories (against shaded background) to see Analysis Services in each category. Enter minimum and maximum values to indicate a valid results range. Any result outside this range will raise an alert. The % Error field allows for an % uncertainty to be considered when evaluating results against minimum and maximum values. A result out of range but still in range if the % error is taken into consideration, will raise a less severe alert."
-msgstr "Clique em Categorias de Análises (sobre o fundo sombreado) para ver os Serviços de Análise em cada categoria. Digite um valor mínimo e máximo para indicar a variação válida de resultados. Qualquer resultado fora desta variação irá gerar um alerta. O campo % Erro permite uma % de incerteza a ser considerada quando avaliando os resultados dentro dos valores mínimo e máximo. Um resultado fora da variação, mas ainda dentro da % de erro é levado em consideração, mas gerará um alerta menos severo."
+msgstr "Clique em Categorias de Análises (sobre o fundo sombreado) para ver os Serviços de Análise em cada categoria. Digite um valor mínimo e máximo para indicar a margem válida de resultados. Qualquer resultado fora desta margem irá gerar um alerta. O campo % Erro permite uma % de incerteza a ser considerada quando os resultados são avaliados contra valores mínimo e máximo. Um resultado fora da margem, mas ainda dentro da % de erro será levado em consideração, gerando um alerta menos severo."
 
 # File: bika.lims/bika/lims/content/referencedefinition.py, line: 28
 msgid "Click on Analysis Categories (against shaded backgroundto see Analysis Services in each category. Enter minimum and maximum values to indicate a valid results range. Any result outside this range will raise an alert. The % Error field allows for an % uncertainty to be considered when evaluating results against minimum and maximum values. A result out of range but still in range if the % error is taken into consideration, will raise a less severe alert."
-msgstr ""
+msgstr "Clique em Categorias de Análises (sobre o fundo sombreado) para ver os Serviços de Análise em cada categoria. Digite um valor mínimo e máximo para indicar a margem válida de resultados. Qualquer resultado fora desta margem irá gerar um alerta. O campo % Erro permite uma % de incerteza a ser considerada quando os resultados são avaliados contra valores mínimo e máximo. Um resultado fora da margem, mas ainda dentro da % de erro será levado em consideração, gerando um alerta menos severo."
 
 # File: bika.lims/bika/lims/content/analysisspec.py, line: 79
 msgid "Click on Analysis Categories (against shaded backgroundto see Analysis Services in each category. Enter minimum and maximum values to indicate a valid results range. Any result outside this range will raise an alert. The % Error field allows for an % uncertainty to be considered when evaluating results against minimum and maximum values. A result out of range but still in range if the % error is taken into consideration, will raise a less severe alert. If the result is below '< Min' the result will be shown as '< [min]'. The same applies for results above '> Max'"
-msgstr ""
+msgstr "Clique em Categorias de Análises (sobre o fundo sombreado) para ver os Serviços de Análise em cada categoria. Digite um valor mínimo e máximo para indicar a margem válida de resultados. Qualquer resultado fora desta margem irá gerar um alerta. O campo % Erro permite uma % de incerteza a ser considerada quando os resultados são avaliados contra valores mínimo e máximo. Um resultado fora da margem, mas ainda dentro da % de erro será levado em consideração, gerando um alerta menos severo. Se o resultado estiver abaixo de '< mín.', o resultado será exibido como '< [min]'. O mesmo se aplica para resultados acima de '> máx.'"
 
 # File: bika.lims/bika/lims/browser/templates/analysisservice_popup.pt, line:
 # 110
@@ -1325,9 +1375,25 @@ msgstr "Clique para baixar"
 msgid "Client"
 msgstr "Cliente"
 
+# File: bika.lims/bika/lims/content/arimport.py, line: 73
+msgid "Client Address"
+msgstr "Endereço do Cliente"
+
 # File: bika.lims/bika/lims/content/batch.py, line: 94
 msgid "Client Batch ID"
 msgstr "ID Cliente em lote"
+
+# File: bika.lims/bika/lims/content/arimport.py, line: 78
+msgid "Client City"
+msgstr "Cidade do Cliente"
+
+# File: bika.lims/bika/lims/content/arimport.py, line: 118
+msgid "Client Email"
+msgstr "Email do Cliente"
+
+# File: bika.lims/bika/lims/content/arimport.py, line: 68
+msgid "Client Fax"
+msgstr "Fax do Cliente"
 
 # File: bika.lims/bika/lims/content/arimport.py, line: 84
 # File: bika.lims/bika/lims/content/batch.py, line: 84
@@ -1337,7 +1403,7 @@ msgstr "ID do Cliente"
 
 # File: bika.lims/bika/lims/profiles/default/registry.xml, line: -1
 msgid "Client Landing Page"
-msgstr ""
+msgstr "Pagina inicial do Cliente"
 
 # File: bika.lims/bika/lims/content/arimport.py, line: 58
 # File: bika.lims/bika/lims/profiles/default/registry.xml, line: -1
@@ -1356,6 +1422,10 @@ msgstr "Pedido de Cliente"
 msgid "Client Order Number"
 msgstr "Número de ordem do cliente"
 
+# File: bika.lims/bika/lims/content/arimport.py, line: 63
+msgid "Client Phone"
+msgstr "Telefone do Cliente"
+
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 76
 # File: bika.lims/bika/lims/browser/sample.py, line: 434
@@ -1368,6 +1438,10 @@ msgstr "Referência de Cliente"
 # File: bika.lims/bika/lims/content/query.py, line: 122
 msgid "Client Reference"
 msgstr "Referência de Cliente"
+
+# File: bika.lims/bika/lims/content/arimportitem.py, line: 29
+msgid "Client Remarks"
+msgstr "Anotações de Cliente"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 79
@@ -1383,7 +1457,7 @@ msgid "Client Sample ID"
 msgstr "ID da Amostra do Cliente"
 
 #
-# File: bika.lims/bika/lims/browser/client.py, line: 910
+# File: bika.lims/bika/lims/browser/client/views/samplingrounds.py, line: 20
 msgid "Client Sampling Rounds"
 msgstr ""
 
@@ -1430,7 +1504,7 @@ msgstr "Comentários ou interpretação de resultados"
 # File: bika.lims/bika/lims/content/analysisprofile.py, line: 69
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 904
 msgid "Commercial ID"
-msgstr ""
+msgstr "ID do comercio"
 
 # File: bika.lims/bika/lims/browser/templates/stickers/sticker_large.pt, line:
 # 90
@@ -1470,6 +1544,10 @@ msgstr "Considerações"
 # line: 4
 msgid "Contact"
 msgstr "Contato"
+
+# File: bika.lims/bika/lims/content/arimport.py, line: 89
+msgid "Contact ID"
+msgstr "ID do Contato"
 
 # File: bika.lims/bika/lims/content/arimport.py, line: 94
 # File: bika.lims/bika/lims/profiles/default/registry.xml, line: -1
@@ -1590,7 +1668,7 @@ msgid "Created by:"
 msgstr "Criado por:"
 
 #
-# File: bika.lims/bika/lims/content/arimport.py, line: 284
+# File: bika.lims/bika/lims/content/arimport.py, line: 286
 msgid "Creating and initialising objects"
 msgstr ""
 
@@ -1622,6 +1700,11 @@ msgstr "Marca decimal padrão"
 # File: bika.lims/bika/lims/browser/analyses.py, line: 81
 # File: bika.lims/bika/lims/browser/worksheet.py, line: 406
 msgid "DL"
+msgstr "DL"
+
+#
+# File: bika.lims/bika/lims/browser/templates/dashboard.pt, line: 352
+msgid "Daily"
 msgstr ""
 
 # File:
@@ -1659,6 +1742,10 @@ msgstr "Entrada de dados no diário"
 # File: bika.lims/bika/lims/browser/instrument.py, line: 532
 msgid "Date"
 msgstr "Data"
+
+# File: bika.lims/bika/lims/content/arimport.py, line: 194
+msgid "Date Applied"
+msgstr "Data da solicitação"
 
 # File: bika.lims/bika/lims/browser/reports/productivity_dataentrydaybook.py,
 # line: 28
@@ -1739,9 +1826,18 @@ msgstr "Data do Pedido"
 msgid "Date Sampled"
 msgstr "Data da Amostra"
 
+# File: bika.lims/bika/lims/browser/arimports.py, line: 97
+msgid "Date Submitted"
+msgstr "Data de Envio"
+
 #
 # File: bika.lims/bika/lims/browser/arimports.py, line: 62
 msgid "Date Validated"
+msgstr ""
+
+#
+# File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line: 110
+msgid "Date Verified"
 msgstr ""
 
 # File: bika.lims/bika/lims/content/instrumentcertification.py, line: 65
@@ -1786,11 +1882,11 @@ msgstr "Dias"
 
 # File: bika.lims/bika/lims/content/instrument.py, line: 87
 msgid "De-activate until next calibration test"
-msgstr ""
+msgstr "Desativar até a próxima calibração"
 
 # File: bika.lims/bika/lims/content/client.py, line: 108
 msgid "Decimal mark to use in the reports from this Client."
-msgstr "Marca decimal para uso nos reportes deste cliente."
+msgstr "Marca decimal para uso nos Laudos deste cliente."
 
 msgid "Default"
 msgstr "Padrão"
@@ -1873,7 +1969,7 @@ msgstr "Período padrão de retenção de amostra"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 181
 msgid "Default scientific notation format for reports"
-msgstr "Formato de notação científica padrão para relatórios"
+msgstr "Formato de notação científica padrão para laudos"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 400
 msgid "Default scientific notation format for results"
@@ -1889,7 +1985,7 @@ msgstr "EspecPadrRA_descricao"
 
 # File: bika.lims/bika/lims/content/method.py, line: 27
 msgid "Define an identifier code for the method. It must be unique."
-msgstr ""
+msgstr "Definir um código identificador para o método. Ele deve ser exclusivo."
 
 # File: bika.lims/bika/lims/content/calculation.py, line: 30
 msgid "Define interim fields such as vessel mass, dilution factors, should your calculation require them. The field title specified here will be used as column headers and field descriptors where the interim fields are displayed. If 'Apply wide' is enabled the field ill be shown in a selection box on the top of the worksheet, allowing to apply a specific value to all the corresponding fields on the sheet."
@@ -1905,7 +2001,7 @@ msgstr "Defina a precisão quando convertendo valores para notação exponencial
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 443
 msgid "Define the prefixes for the unique sequential IDs the system issues for objects. In the 'Padding' field, indicate with how many leading zeros the numbers must be padded. E.g. a prefix of WS for worksheets with padding of 4, will see them numbered from WS-0001 to WS-9999. Sequence Start indicates the number from which the next ID should start. This is set only if it is greater than existing id numbers. Note that the gap created by jumping IDs cannot be refilled. NB: Note that samples and analysis requests are prefixed with sample type abbreviations and are not configured in this table - their padding can be set in the specified fields below"
-msgstr ""
+msgstr "Definir os prefixos para as identificações sequenciais exclusivos, os problemas de sistema para objetos. No campo 'Preenchimento', indicam com quantos zeros à esquerda os números devem ser preenchidos. Por exemplo. um prefixo de WS para planilhas com estofamento de 4, vai vê-los numeradas de WS-0001 e WS-9999. Sequência de início indica o número a partir do qual o próximo ID deve começar. Isso é definido somente se for maior do que os números de identificação existentes. Note-se que o fosso criado por IDs de salto não pode ser recarregado. NB: Note-se que as amostras e os pedidos de análise são prefixados com o tipo de amostra abreviaturas e não estão configurados no presente quadro - seu preenchimento pode ser definido nos campos especificados abaixo"
 
 # File: bika.lims/bika/lims/content/query.py, line: 38
 msgid "Define the search terms for the items you want to list by choosing what to match on. The list of results will be dynamically updated."
@@ -1967,6 +2063,17 @@ msgstr "Descrição da prateleira"
 msgid "Description of the site"
 msgstr "Descrição do sítio"
 
+# File: bika.lims/bika/lims/browser/templates/stickers/sticker_large.pt, line:
+# 88
+msgid "Deviation"
+msgstr "Desvio"
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/analysisrequest/templates/ar_add.pt, line: 228
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/analysisrequest/templates/ar_add.pt, line: 228
+msgid "Discount"
+msgstr ""
+
 # File: bika.lims/bika/lims/content/pricelist.py, line: 36
 msgid "Discount %"
 msgstr "Desconto %"
@@ -1981,7 +2088,7 @@ msgstr "Mostrar Valor"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 297
 msgid "Display a Detection Limit selector"
-msgstr ""
+msgstr "Mostrar seletor de limite de detecção"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 112
 msgid "Display an alert on new releases of Bika LIMS"
@@ -2016,24 +2123,28 @@ msgstr "Documento"
 #
 # File: bika.lims/bika/lims/browser/multifile.py, line: 37
 # File: bika.lims/bika/lims/content/multifile.py, line: 16
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/instrument.py, line: 630
 msgid "Document ID"
 msgstr ""
 
 #
 # File: bika.lims/bika/lims/browser/multifile.py, line: 40
 # File: bika.lims/bika/lims/content/multifile.py, line: 36
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/instrument.py, line: 633
 msgid "Document Location"
 msgstr ""
 
 #
 # File: bika.lims/bika/lims/browser/multifile.py, line: 41
 # File: bika.lims/bika/lims/content/multifile.py, line: 44
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/instrument.py, line: 634
 msgid "Document Type"
 msgstr ""
 
 #
 # File: bika.lims/bika/lims/browser/multifile.py, line: 39
 # File: bika.lims/bika/lims/content/multifile.py, line: 30
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/instrument.py, line: 632
 msgid "Document Version"
 msgstr ""
 
@@ -2189,7 +2300,7 @@ msgstr "Digite um valor percentual, exemplo: 14.0"
 
 # File: bika.lims/bika/lims/content/analysisprofile.py, line: 90
 msgid "Enter percentage value eg. 14.0. This percentage is applied on the Analysis Profile only, overriding the systems VAT"
-msgstr ""
+msgstr "Digite um valor percentual , ex:14,0. Este percentual é aplicado somente ao perfil de analises, sobrepondo o VAT do sistema"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 161
 msgid "Enter percentage value eg. 14.0. This percentage is applied system wide but can be overwrittem on individual items"
@@ -2228,13 +2339,9 @@ msgid "Environmental Conditions"
 msgstr ""
 
 #
+# File: bika.lims/bika/lims/content/analysisrequest.py, line: 883
 # File: bika.lims/bika/lims/content/samplinground.py, line: 161
 msgid "Environmental conditions"
-msgstr ""
-
-#
-# File: bika.lims/bika/lims/content/analysisrequest.py, line: 883
-msgid "Environmental conditions when the sample has been taken"
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/analysisrequest/workflow.py, line: 452
@@ -2242,17 +2349,17 @@ msgid "Erroneus result publication from ${request_id}"
 msgstr "Publicação de resultado errôneo para ${request_id}"
 
 #
-# File: bika.lims/bika/lims/content/arimport.py, line: 202
+# File: bika.lims/bika/lims/content/arimport.py, line: 203
 msgid "Errors"
 msgstr ""
 
 #
-# File: bika.lims/bika/lims/browser/dashboard.py, line: 299
+# File: bika.lims/bika/lims/browser/dashboard.py, line: 279
 msgid "Evolution of Analysis Requests"
 msgstr ""
 
 #
-# File: bika.lims/bika/lims/browser/dashboard.py, line: 410
+# File: bika.lims/bika/lims/browser/dashboard.py, line: 373
 msgid "Evolution of Worksheets"
 msgstr ""
 
@@ -2269,7 +2376,7 @@ msgstr "Resultado Esperado"
 
 # File: bika.lims/bika/lims/content/referencesample.py, line: 141
 msgid "Expected Values"
-msgstr "Resultado esperado"
+msgstr "Valores Esperados"
 
 # File: bika.lims/bika/lims/browser/referencesample.py, line: 342
 # File: bika.lims/bika/lims/browser/sample.py, line: 546
@@ -2290,14 +2397,14 @@ msgstr "Precisão do formato exponencial"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 307
 msgid "Exponential format threshold"
-msgstr "Precisão do formato exponencial"
+msgstr "Limite do formato exponencial"
 
 # File: Profile, line: -1
 # File: description, line: -1
 # File: in, line: -1
 # File: configure.zcml, line: -1
 msgid "Extension profile for the Bika LIMS"
-msgstr ""
+msgstr "Perfil de extensão para o Bika LIMS"
 
 # File: bika.lims/bika/lims/browser/clientfolder.py, line: 42
 # File: bika.lims/bika/lims/browser/supplier.py, line: 184
@@ -2348,6 +2455,8 @@ msgstr "Arquivos anexos para resultados, ex.: fotos de microscópio, serão incl
 
 #
 # File: bika.lims/bika/lims/content/multifile.py, line: 24
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/content/multifile.py, line: 24
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/content/multifile.py, line: 24
 msgid "File upload "
 msgstr ""
 
@@ -2367,6 +2476,12 @@ msgstr "Encontre itens que foram faturados."
 # File: bika.lims/bika/lims/content/person.py, line: 25
 msgid "Firstname"
 msgstr "Primeiro Nome"
+
+#
+# File: bika.lims/bika/lims/content/analysiscategory.py, line: 59
+# File: bika.lims/bika/lims/content/analysisservice.py, line: 219
+msgid "Float value from 0.0 - 1000.0 indicating the sort order. Duplicate values are ordered alphabetically."
+msgstr ""
 
 # File: bika.lims/bika/lims/controlpanel/bika_calculations.py, line: 43
 msgid "Formula"
@@ -2404,11 +2519,18 @@ msgstr "Amostra datada no futuro"
 # File: bika.lims/bika/lims/browser/reports/templates/qualitycontrol.pt, line:
 # 106
 msgid "Generate report"
-msgstr "Gerar Relatório"
+msgstr "Emitir Laudo"
+
+# File: bika.lims/bika/lims/browser/templates/stickers/sticker_large.pt, line:
+# 143
+# File: bika.lims/bika/lims/browser/templates/stickers/sticker_small.pt, line:
+# 90
+msgid "Go back"
+msgstr "Voltar"
 
 # File: bika.lims/bika/lims/content/person.py, line: 19
 msgid "Greeting title eg. Mr, Mrs, Dr"
-msgstr "Título de saudação, como Sr, Sra, Dr"
+msgstr "Título de saudação, como Sr, Sra, Srta, Dr"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 275
 msgid "Group analysis services by category in the LIMS tables, helpful when the list is long"
@@ -2418,7 +2540,7 @@ msgstr "Agrupar serviços de análise por categoria nas tabelas de LIMS, útil q
 # bika.lims/bika/lims/browser/reports/selection_macros/select_groupingperiod.pt,
 # line: 4
 msgid "Group by"
-msgstr "Grupo de"
+msgstr "Agrupar por"
 
 # File:
 # bika.lims/bika/lims/browser/reports/productivity_analysesperdepartment.py,
@@ -2427,7 +2549,7 @@ msgstr "Grupo de"
 # bika.lims/bika/lims/browser/reports/productivity_analysesperformedpertotal.py,
 # line: 45
 msgid "Grouping period"
-msgstr "Grupo periódico"
+msgstr "Período de agrupamento"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 598
@@ -2445,7 +2567,7 @@ msgstr "Perigoso"
 # File: bika.lims/bika/lims/browser/widgets/artemplateanalyseswidget.py, line:
 # 76
 msgid "Hidden"
-msgstr ""
+msgstr "Oculto"
 
 # File: bika.lims/bika/lims/browser/fields/interimfieldsfield.py, line: 24
 msgid "Hidden Field"
@@ -2457,7 +2579,7 @@ msgstr "Horas"
 
 # File: bika.lims/bika/lims/content/supplier.py, line: 49
 msgid "IBN"
-msgstr ""
+msgstr "IBN"
 
 # File: bika.lims/bika/lims/browser/bika_listing.py, line: 347
 # File: bika.lims/bika/lims/browser/referencesample.py, line: 100
@@ -2478,23 +2600,23 @@ msgstr "Servidor de ID indisponível"
 
 # File: bika.lims/bika/lims/browser/templates/plone-addsite.pt, line: 54
 msgid "IMPORTANT: Don't use \"Bika\" or \"BIKA\" as the instance name, this is a reserved namespace. If you get \"Site Error\" citing \"AttributeError: adapters\", this is the most likely cause."
-msgstr ""
+msgstr "IMPORTANTE: Não use \"Bika\" ou \"BIKA\" como um nome de instância, este nome esta reservado. Se você receber \"Site Error\" citando \"AttributeError: adapters\", esta é a causa mais provável."
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 491
 msgid "If 'Allow instrument entry of results' is selected, the method from the default instrument will be used. Otherwise, only the methods selected above will be displayed."
-msgstr ""
+msgstr "Se \"Permitir entrada instrumental de resultados\" estiver selecionado, o método padrão a ser usado será o método definido no Instrumento padrão. Caso contrário, apenas os métodos acima selecionados serão exibidos."
 
 # File: bika.lims/bika/lims/content/samplepoint.py, line: 46
 msgid "If a sample is taken periodically at this sample point, enter frequency here, e.g. weekly"
-msgstr ""
+msgstr "Se a amostra é coletada periodicamente neste local de amostragem, insira a frequência aqui, por exemplo: semanal"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 298
 msgid "If checked, a selection list will be displayed next to the analysis' result field in results entry views. By using this selector, the analyst will be able to set the value as a Detection Limit (LDL or UDL) instead of a regular result"
-msgstr ""
+msgstr "Se marcada, uma lista de seleção será exibida ao lado do campo resultado de análise, na entrada de resultados. Ao utilizar este seletor, o analista será capaz de definir o valor como um limite de detecção (LDL, HDL), em vez de um resultado normal"
 
 # File: bika.lims/bika/lims/content/instrument.py, line: 88
 msgid "If checked, the instrument will be unavailable until the next valid calibration was performed. This checkbox will automatically be unchecked."
-msgstr ""
+msgstr "Se selecionado, o instrumento estará indisponível até a próxima calibração válida ser realizada. Esta caixa de seleção será automaticamente desmarcada."
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 210
 msgid "If enabled, the name of the analysis will be written in italics."
@@ -2502,15 +2624,15 @@ msgstr "Se acionado, o nome da análise vai ser escrito em itálico."
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 892
 msgid "If enabled, this analysis and its results will not be displayed by default in reports. This setting can be overrided in Analysis Profile and/or Analysis Request"
-msgstr ""
+msgstr "Se ativado, esta análise e seus resultados não serão exibidos por padrão nos laudos. Essa configuração pode ser alterada em Análise de Perfil e/ou Pedido de Análise "
 
 # File: bika.lims/bika/lims/content/batch.py, line: 192
 msgid "If no Title value is entered, the Batch ID will be used."
-msgstr "Se nenhum valor de titulo for usado , o ID do lote será usado"
+msgstr "Se nenhum valor de titulo for usado, o ID do lote será usado"
 
 # File: bika.lims/bika/lims/content/method.py, line: 105
 msgid "If required, select a calculation for the The analysis services linked to this method. Calculations can be configured under the calculations item in the LIMS set-up"
-msgstr "Se requerido, selecione um cálculo para os serviços de análise ligados a este método. Os cálculos podem ser configuradas no item cálculos das configurações do LIMS."
+msgstr "Se solicitado, selecione um cálculo para os serviços de análise ligados a este método. Os cálculos podem ser configuradas no item cálculos das configurações do LIMS."
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 563
 msgid "If required, select a calculation for the analysis here. Calculations can be configured under the calculations item in the LIMS set-up"
@@ -2518,11 +2640,11 @@ msgstr "Caso necessário, selecione um cálculo para a análise aqui. Cálculos 
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 199
 msgid "If text is entered here, it is used instead of the title when the service is listed in column headings. HTML formatting is allowed."
-msgstr ""
+msgstr "Se o texto for inserido aqui, ele é usado em vez do título quando o serviço for listado em títulos de coluna. Formatação HTML é permitido."
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 203
 msgid "If there are previous results for a service in the same batch of Analysis Requests, they will be displayed in the report."
-msgstr ""
+msgstr "Se não houver resultados anteriores para um serviço no mesmo lote de pedidos de análise, elas serão exibidas no laudo."
 
 # File: bika.lims/bika/lims/content/container.py, line: 59
 msgid "If this container is pre-preserved, then the preservation method could be selected here."
@@ -2530,11 +2652,11 @@ msgstr "Caso este recipiente seja pré-preservado, o método de preservação po
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 100
 msgid "If unchecked, analysts and lab clerks will be able to manage Worksheets, too. If the users have restricted access only to those worksheets for which they are assigned, this option will be checked and readonly."
-msgstr ""
+msgstr "Se desmarcado, os analistas e funcionários de laboratório serão capazes de gerenciar planilhas também. Se os usuários possuem acesso restrito apenas às planilhas para o qual são designados, esta opção será marcada e apenas para leitura."
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 91
 msgid "If unchecked, analysts will have access to all worksheets."
-msgstr ""
+msgstr "Se desmarcado, os analistas terão acesso a todas as planilhas."
 
 # File: bika.lims/bika/lims/browser/arimports.py, line: 93
 # File: bika.lims/bika/lims/browser/templates/arimport_add_form.pt, line: 62
@@ -2547,13 +2669,17 @@ msgstr "Importar"
 msgid "Import Analysis Request Data"
 msgstr ""
 
+# File: bika.lims/bika/lims/content/arimport.py, line: 36
+msgid "Import Option"
+msgstr "Opção de Importação"
+
 # File: bika.lims/bika/lims/browser/arimports.py, line: 111
 msgid "Imported"
 msgstr "Importado"
 
 # File: bika.lims/bika/lims/content/instrument.py, line: 100
 msgid "In-lab calibration procedure"
-msgstr "O-lab procedimento de calibração"
+msgstr "Procedimento de calibração no laboratório"
 
 # File: bika.lims/bika/lims/controlpanel/bika_arpriorities.py, line: 67
 # File: bika.lims/bika/lims/controlpanel/bika_subgroups.py, line: 56
@@ -2562,7 +2688,7 @@ msgstr "Inativo"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 202
 msgid "Include Previous Results From Batch"
-msgstr ""
+msgstr "Incluir Resultados Anteriores do Lote"
 
 # File: bika.lims/bika/lims/content/batch.py, line: 151
 msgid "Include all analysis requests belonging to the selected objects."
@@ -2582,15 +2708,15 @@ msgstr "Incluir o ano no prefixo do ID"
 
 # File: bika.lims/bika/lims/validators.py, line: 855
 msgid "Incorrect IBAN number: %s"
-msgstr ""
+msgstr "Número IBAN incorreto: %s"
 
 # File: bika.lims/bika/lims/validators.py, line: 816
 msgid "Incorrect NIB number: %s"
-msgstr ""
+msgstr "Número NIB incorreto: %s"
 
 # File: bika.lims/bika/lims/browser/calcs.py, line: 51
 msgid "Indeterminate result"
-msgstr "resultado Indeterminado"
+msgstr "Resultado indeterminado"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 335
 msgid "Indicates whether file attachments, e.g. microscope images, are required for this analysis and whether file upload function will be available for it on data capturing screens"
@@ -2601,7 +2727,7 @@ msgstr "Informações"
 
 # File: bika.lims/bika/lims/content/batch.py, line: 150
 msgid "Inherit From"
-msgstr ""
+msgstr "Herdado de"
 
 # File: bika.lims/bika/lims/browser/fields/historyawarereferencefield.py,
 # line: 88
@@ -2612,23 +2738,23 @@ msgstr "Revisão inicial"
 
 # File: bika.lims/bika/lims/browser/templates/plone-addsite.pt, line: 188
 msgid "Install"
-msgstr ""
+msgstr "Instalar"
 
 # File: bika.lims/bika/lims/browser/templates/plone-addsite.pt, line: 13
 msgid "Install a Bika Distribution"
-msgstr ""
+msgstr "Instalar uma distribuição Bika"
 
 # File: bika.lims/bika/lims/content/instrument.py, line: 213
 msgid "Installation Certificate"
-msgstr ""
+msgstr "Certificado de Instalação"
 
 # File: bika.lims/bika/lims/content/instrument.py, line: 214
 msgid "Installation certificate upload"
-msgstr ""
+msgstr "Upload de certificado de Instalação"
 
 # File: bika.lims/bika/lims/content/instrument.py, line: 205
 msgid "InstallationDate"
-msgstr ""
+msgstr "Data de instalação"
 
 # File: bika.lims/bika/lims/content/srtemplate.py, line: 25
 msgid "Instructions"
@@ -2636,11 +2762,11 @@ msgstr "Instruções"
 
 # File: bika.lims/bika/lims/content/instrument.py, line: 101
 msgid "Instructions for in-lab regular calibration routines intended for analysts"
-msgstr "Instruções para rotinas de laboratório de calibração regulares destinados a analistas"
+msgstr "Instruções para rotinas de calibração regulares no laboratório destinados a analistas"
 
 # File: bika.lims/bika/lims/content/instrument.py, line: 111
 msgid "Instructions for regular preventive and maintenance routines intended for analysts"
-msgstr "Instruções para preventiva regular e rotinas de manutenção destinado a analistas"
+msgstr "Instruções para rotinas de prevenção e manutenção regulares destinados a analistas"
 
 # File: bika.lims/bika/lims/browser/accreditation.py, line: 65
 # File: bika.lims/bika/lims/browser/analyses.py, line: 70
@@ -2650,10 +2776,12 @@ msgstr "Instrumento"
 
 # File: bika.lims/bika/lims/browser/instrument.py, line: 148
 msgid "Instrument Calibrations"
-msgstr "Instrumento de validação"
+msgstr "Calibrações de Instrumento"
 
 #
 # File: bika.lims/bika/lims/browser/instrument.py, line: 614
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/instrument.py, line: 626
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/instrument.py, line: 626
 msgid "Instrument Files"
 msgstr ""
 
@@ -2663,24 +2791,26 @@ msgstr "Importação do Instrumento"
 
 # File: bika.lims/bika/lims/browser/instrument.py, line: 48
 msgid "Instrument Maintenance"
-msgstr "Instrumento de manutenção"
+msgstr "Manutenção do Instrumento"
 
 # File: bika.lims/bika/lims/browser/instrument.py, line: 265
 msgid "Instrument Scheduled Tasks"
-msgstr "Instrumento Agenda de Tarefas"
+msgstr "Agenda de Tarefas do Instrumento"
 
 #
 # File: bika.lims/bika/lims/content/instrument.py, line: 178
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/content/instrument.py, line: 177
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/content/instrument.py, line: 177
 msgid "Instrument Type"
 msgstr ""
 
 # File: bika.lims/bika/lims/controlpanel/bika_instrumenttypes.py, line: 29
 msgid "Instrument Types"
-msgstr "Tipo de instrumento"
+msgstr "Tipo de Instrumento"
 
 # File: bika.lims/bika/lims/browser/instrument.py, line: 205
 msgid "Instrument Validations"
-msgstr "Instrumento de validação"
+msgstr "Validação de Instrumento"
 
 #
 # File: bika.lims/bika/lims/browser/templates/instrument_qc_failures_viewlet.pt, line: 29
@@ -2702,7 +2832,7 @@ msgstr "Exportador para o instrumento não encontrado"
 
 # File: bika.lims/bika/lims/browser/worksheet.py, line: 274
 msgid "Instrument failed reference test"
-msgstr ""
+msgstr "Instrumento falhou no teste de referência"
 
 # File: bika.lims/bika/lims/browser/worksheet.py, line: 1464
 msgid "Instrument has no data interface selected"
@@ -2785,7 +2915,7 @@ msgstr "Instrumentos inválidos não serão mostrados: ${invalid_list}"
 
 # File: bika.lims/bika/lims/validators.py, line: 267
 msgid "Invalid wildcards found: ${wildcards}"
-msgstr ""
+msgstr "Caracteres inválidos encontrados: $ {} wildcards"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/invoice.py, line: 30
 msgid "Invoice"
@@ -2844,7 +2974,7 @@ msgstr "Itens a serem incluídos nas linhas de título do email"
 # File: bika.lims/bika/lims/content/instrumentcertification.py, line: 91
 # File: bika.lims/bika/lims/content/instrumentvalidation.py, line: 80
 msgid "Job Title"
-msgstr ""
+msgstr "Cargo"
 
 # File: bika.lims/bika/lims/content/person.py, line: 92
 msgid "Job title"
@@ -2991,7 +3121,7 @@ msgstr "Carregado"
 
 # File: bika.lims/bika/lims/content/instrument.py, line: 189
 msgid "Location"
-msgstr ""
+msgstr "Localização"
 
 # File: bika.lims/bika/lims/content/storagelocation.py, line: 47
 msgid "Location Code"
@@ -3021,6 +3151,8 @@ msgstr "Local onde a amostra foi coletada"
 
 #
 # File: bika.lims/bika/lims/content/multifile.py, line: 37
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/content/multifile.py, line: 37
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/content/multifile.py, line: 37
 msgid "Location where the document set is shelved"
 msgstr ""
 
@@ -3056,7 +3188,7 @@ msgstr "Número do lote"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 247
 msgid "Lower Detection Limit (LDL)"
-msgstr ""
+msgstr "Limite de detecção mais baixo (LDL)"
 
 # File: bika.lims/bika/lims/config.py, line: 91
 msgid "Mailing address"
@@ -3105,7 +3237,7 @@ msgid "Manual entry of results for method ${methodname} is not allowed"
 msgstr "Inserir resultados manuais para o método ${methodname} não é permitido"
 
 msgid "Manual entry of results for method {methodname} is not allowed and no valid instruments found: ${invalid_list}"
-msgstr "Entrada manual de resultados para o método {methodname} não é permitida e nenhum instrumento válido foi encontrado: {$invalid_list}"
+msgstr "Entrada manual de resultados para o método {methodname} não é permitida e nenhum instrumento válido foi encontrado: ${invalid_list}"
 
 # File: bika.lims/bika/lims/browser/supplier.py, line: 49
 # File: bika.lims/bika/lims/browser/templates/referencesample_sticker.pt,
@@ -3181,7 +3313,7 @@ msgstr "Documento do Método"
 
 # File: bika.lims/bika/lims/content/method.py, line: 26
 msgid "Method ID"
-msgstr ""
+msgstr "ID Método"
 
 # File: bika.lims/bika/lims/content/method.py, line: 35
 #. Default: "Instructions"
@@ -3261,6 +3393,11 @@ msgstr "Modelo"
 msgid "Modification date"
 msgstr "Data de modificação"
 
+#
+# File: bika.lims/bika/lims/browser/templates/dashboard.pt, line: 354
+msgid "Monthly"
+msgstr ""
+
 # File: bika.lims/bika/lims/skins/bika/portlet_late_analyses.pt, line: 59
 # File: bika.lims/bika/lims/skins/bika/portlet_pending_orders.pt, line: 54
 # File: bika.lims/bika/lims/skins/bika/portlet_sample_due.pt, line: 55
@@ -3273,7 +3410,7 @@ msgstr "Mais de um instrumento pode fazer um serviço de análise. Os instrument
 
 # File: bika.lims/bika/lims/content/supplier.py, line: 39
 msgid "NIB"
-msgstr ""
+msgstr "NIB"
 
 # File: bika.lims/bika/lims/browser/clientfolder.py, line: 39
 # File: bika.lims/bika/lims/content/analysisrequest.py, line: 108
@@ -3339,13 +3476,13 @@ msgstr "Nenhuma análise foi adicionada para esta planilha."
 # bika.lims/bika/lims/exportimport/instruments/lifetechnologies/qubit/qubit.py,
 # line: 34
 msgid "No analysis selected"
-msgstr ""
+msgstr "Sem análise selecionada"
 
 # File:
 # bika.lims/bika/lims/exportimport/instruments/thermoscientific/multiskan/go.py,
 # line: 33
 msgid "No analysis service selected"
-msgstr ""
+msgstr "Sem serviço de análise selecionada"
 
 # File:
 # bika.lims/bika/lims/browser/reports/qualitycontrol_referenceanalysisqc.py,
@@ -3404,6 +3541,10 @@ msgstr "Nenhum item selecionado"
 msgid "No new items were created."
 msgstr "Nenhum item novo foi criado"
 
+# File: bika.lims/bika/lims/content/arimportitem.py, line: 49
+msgid "No of containers"
+msgstr "Número de recipientes"
+
 # File:
 # bika.lims/bika/lims/browser/reports/qualitycontrol_referenceanalysisqc.py,
 # line: 50
@@ -3412,7 +3553,7 @@ msgstr "Nenhuma amostra de referência foi selecionada"
 
 # File: bika.lims/bika/lims/browser/reports/__init__.py, line: 221
 msgid "No report specified in request"
-msgstr ""
+msgstr "Nenhum laudo especificado no pedido"
 
 # File:
 # bika.lims/bika/lims/browser/reports/productivity_dailysamplesreceived.py,
@@ -3454,7 +3595,7 @@ msgstr "Não definido"
 # File: bika.lims/bika/lims/browser/worksheet/templates/worksheet_print.pt,
 # line: 128
 msgid "Num columns"
-msgstr ""
+msgstr "Número de colunas"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 128
@@ -3496,7 +3637,7 @@ msgstr "Número de análises"
 # bika.lims/bika/lims/browser/reports/qualitycontrol_analysesoutofrange.py,
 # line: 218
 msgid "Number of analyses out of range for period"
-msgstr "Número de análises fora da variação para o período"
+msgstr "Número de análises fora da margem por período"
 
 # File:
 # bika.lims/bika/lims/browser/reports/productivity_analysesperservice.py,
@@ -3524,7 +3665,7 @@ msgid "Number of analysis requested and published per department and expresed as
 msgstr "Número de análises publicadas e expressas como a porcentagem do total de análises realizadas"
 
 #
-# File: bika.lims/bika/lims/browser/client.py, line: 921
+# File: bika.lims/bika/lims/browser/client/views/samplingrounds.py, line: 31
 # File: bika.lims/bika/lims/controlpanel/bika_samplingrounds.py, line: 40
 msgid "Number of containers"
 msgstr ""
@@ -3539,7 +3680,7 @@ msgid "Number of samples"
 msgstr "Número de amostras"
 
 #
-# File: bika.lims/bika/lims/browser/client.py, line: 918
+# File: bika.lims/bika/lims/browser/client/views/samplingrounds.py, line: 28
 # File: bika.lims/bika/lims/controlpanel/bika_samplingrounds.py, line: 38
 msgid "Number of sampling points"
 msgstr ""
@@ -3561,7 +3702,7 @@ msgid "Only lab managers can create and manage worksheets"
 msgstr "Somente gerentes de laboratório podem criar e editar carta controle"
 
 msgid "Only the analyses for which the selected instrument is allowed will be added automatically."
-msgstr "Somente as análises para o  instrumento selecionado é permitido será adicionado automaticamente. "
+msgstr "Somente as análises permitidas para o instrumento selecionado serão adicionadas automaticamente. "
 
 # File: bika.lims/bika/lims/browser/templates/worksheet_manage_results.pt,
 # line: 134
@@ -3573,6 +3714,11 @@ msgstr "Somente para campos vazios ou iguais a zero"
 # File: bika.lims/bika/lims/browser/worksheetfolder.py, line: 213
 msgid "Open"
 msgstr "Abrir"
+
+#
+# File: bika.lims/bika/lims/profiles.zcml, line: 11
+msgid "Open Source Web based Laboratory Information Management System suitable for all types of laboratories"
+msgstr ""
 
 # File: bika.lims/bika/lims/browser/templates/stickers/sticker_large.pt, line:
 # 83
@@ -3608,8 +3754,12 @@ msgstr "Pedidos: ${orders}"
 msgid "Organization responsible of granting the calibration certificate"
 msgstr "Organização responsável por conceder o certificado de calibração"
 
+# File: bika.lims/bika/lims/content/arimport.py, line: 50
+msgid "Original File"
+msgstr "Arquivo original"
+
 #
-# File: bika.lims/bika/lims/content/arimport.py, line: 54
+# File: bika.lims/bika/lims/content/arimport.py, line: 55
 msgid "Original Filename"
 msgstr ""
 
@@ -3633,7 +3783,7 @@ msgid "PDF"
 msgstr "PDF"
 
 msgid "Parent"
-msgstr ""
+msgstr "Pai"
 
 # File: bika.lims/bika/lims/browser/analyses.py, line: 63
 # File: bika.lims/bika/lims/browser/analysisrequest/manage_analyses.py, line:
@@ -3689,7 +3839,7 @@ msgstr "Performance"
 # File: bika.lims/bika/lims/content/instrumentcalibration.py, line: 89
 # File: bika.lims/bika/lims/content/instrumentvalidation.py, line: 74
 msgid "Performed by"
-msgstr ""
+msgstr "Performace por"
 
 # File: bika.lims/bika/lims/browser/reports/selection_macros/select_period.pt,
 # line: 5
@@ -3734,17 +3884,21 @@ msgstr "Celular"
 
 # File: bika.lims/bika/lims/content/instrument.py, line: 197
 msgid "Photo image file"
-msgstr ""
+msgstr "Arquivo de foto imagem"
 
 # File: bika.lims/bika/lims/content/instrument.py, line: 198
 msgid "Photo of the instrument"
-msgstr ""
+msgstr "Foto do instrumento"
 
 # File: bika.lims/bika/lims/config.py, line: 90
 # File: bika.lims/bika/lims/content/organisation.py, line: 49
 # File: bika.lims/bika/lims/content/person.py, line: 103
 msgid "Physical address"
 msgstr "Endereço físico"
+
+# File: bika.lims/bika/lims/content/arimportitem.py, line: 54
+msgid "Picking Slip"
+msgstr "Escolher deslizamento"
 
 #
 # File: bika.lims/bika/lims/skins/bika/validate_integrity.cpy, line: 20
@@ -3761,7 +3915,7 @@ msgstr "Por favor, especifique aqui as preservações que diferem do tipo padrã
 
 # File: bika.lims/bika/lims/content/laboratory.py, line: 75
 msgid "Please upload the logo you are authorised to use on your website and results reports by your accreditation body. Maximum size is 175 x 175 pixels."
-msgstr "Por favor, faça o upload o logotipo que você está autorizado a usar, por seu órgão certificador, em seu site e em relatórios com os resultados. O tamanho máximo é 175 x 175 pixels."
+msgstr "Por favor, faça o upload o logotipo que você está autorizado a usar, por seu órgão certificador, em seu site e em laudos com os resultados. O tamanho máximo é 175 x 175 pixels."
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 630
 msgid "Point of Capture"
@@ -3793,7 +3947,7 @@ msgstr "Precisão em números decimais"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 776
 msgid "Precision as the number of significant digits according to the uncertainty. The decimal position will be given by the first number different from zero in the uncertainty, at that position the system will round up the uncertainty and results. For example, with a result of 5.243 and an uncertainty of 0.22, the system will display correctly as 5.2+-0.2. If no uncertainty range is set for the result, the system will use the fixed precision set."
-msgstr ""
+msgstr "Precisão como o número de algarismos significativos de acordo com a incerteza. A posição decimal será dada pelo primeiro número diferente de zero na incerteza, nessa posição o sistema arredondará a incerteza e resultados. Por exemplo, com um resultado de 5,243 e uma incerteza de 0,22, o sistema irá exibir corretamente como 5,2+-0.2. Se nenhuma margem de incerteza for definida para o resultado, o sistema usará o conjunto de precisão fixo."
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 172
 msgid "Preferred decimal mark for reports."
@@ -3810,11 +3964,11 @@ msgstr ""
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 182
 msgid "Preferred scientific notation format for reports"
-msgstr ""
+msgstr "Preferência de notação científica padrão para laudos"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 401
 msgid "Preferred scientific notation format for results"
-msgstr ""
+msgstr "Preferência de notação científica para formatação resultados"
 
 # File: bika.lims/bika/lims/controlpanel/bika_sampletypes.py, line: 50
 msgid "Prefix"
@@ -3830,7 +3984,7 @@ msgstr "Premium"
 
 # File: bika.lims/bika/lims/content/instrumentcertification.py, line: 85
 msgid "Prepared by"
-msgstr ""
+msgstr "Preparado por"
 
 # File: bika.lims/bika/lims/browser/sample.py, line: 55
 # File: bika.lims/bika/lims/browser/templates/stickers/sticker_large.pt, line:
@@ -3899,7 +4053,7 @@ msgid "Pricelists"
 msgstr "Listas de preço"
 
 #
-# File: bika.lims/bika/lims/content/arimport.py, line: 107
+# File: bika.lims/bika/lims/content/arimport.py, line: 108
 msgid "Primary Contact"
 msgstr ""
 
@@ -3910,7 +4064,7 @@ msgstr ""
 # File: bika.lims/bika/lims/browser/templates/worksheet_manage_results.pt,
 # line: 82
 msgid "Print"
-msgstr "Impressaõ"
+msgstr "Impressão"
 
 # File: bika.lims/bika/lims/browser/reports/templates/report_frame.pt, line:
 # 40
@@ -3938,7 +4092,7 @@ msgstr "Relatórios de Produtividade"
 
 # File: bika.lims/bika/lims/browser/templates/plone-overview.pt, line: 28
 msgid "Professional Open Source LIMS/LIS"
-msgstr ""
+msgstr "LIMS/LIS Profissional de Código Aberto"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 125
@@ -3974,7 +4128,7 @@ msgstr "Proforma (ainda não faturado)"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 913
 msgid "Protocol ID"
-msgstr ""
+msgstr "ID de Protocolo"
 
 # File:
 # bika.lims/bika/lims/browser/reports/templates/productivity_dataentrydaybook.pt,
@@ -4032,9 +4186,14 @@ msgstr "Análises do CQ"
 msgid "QC Sample ID"
 msgstr "ID da amostra do CQ"
 
+#
+# File: bika.lims/bika/lims/browser/worksheet/views/folder.py, line: 108
+msgid "QC Samples (Analyses)"
+msgstr ""
+
 # File: bika.lims/bika/lims/browser/worksheetfolder.py, line: 155
 msgid "QC Samples(Analyses)"
-msgstr ""
+msgstr "Amostra QC(Análises)"
 
 # File: bika.lims/bika/lims/browser/reports/templates/qualitycontrol.pt, line:
 # 9
@@ -4046,9 +4205,18 @@ msgstr "Relatórios de Controle de Qualidade"
 msgid "Quantity"
 msgstr "Quantidade"
 
+#
+# File: bika.lims/bika/lims/browser/templates/dashboard.pt, line: 355
+msgid "Quarterly"
+msgstr ""
+
 # File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
 msgid "Query"
 msgstr "Pesquisa"
+
+# File: bika.lims/bika/lims/content/arimport.py, line: 169
+msgid "QuoteID"
+msgstr "ID do Orçamento"
 
 # File: bika.lims/bika/lims/content/analysisspec.py, line: 75
 msgid "Range Comment"
@@ -4066,6 +4234,12 @@ msgstr "Variação máxima"
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 741
 msgid "Range min"
 msgstr "Variação mínima"
+
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/bika_listing_table.pt, line: 563
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/bika_listing_table.pt, line: 563
+msgid "Range remarks:"
+msgstr ""
 
 # File:
 # bika.lims/bika/lims/browser/reports/qualitycontrol_analysesoutofrange.py,
@@ -4115,7 +4289,7 @@ msgstr "Recipientes"
 # bika.lims/bika/lims/browser/analysisrequest/templates/analysisrequest_publish.pt,
 # line: 34
 msgid "Refer to <a target=\"_blank\" href=\"https://github.com/bikalabs/Bika-LIMS/wiki/Creating-new-report-templates\">Creating new report templates</a> documentation from Bika LIMS wiki to get more or add your own report templates."
-msgstr ""
+msgstr "Referência em <a target=\"_blank\" href=\"https://github.com/bikalabs/Bika-LIMS/wiki/Creating-new-report-templates\">Criando novo modelo de laudo</a> documentação wiki de Bika LIMS para obter mais ou adicionar os seus próprios modelos de laudos."
 
 # File: bika.lims/bika/lims/browser/templates/referencesample_sticker.pt,
 # line: 46
@@ -4217,7 +4391,7 @@ msgstr "Registro"
 
 # File: bika.lims/bika/lims/browser/duplicateanalysis.py, line: 29
 msgid "Relative percentage difference, ${variation_here} %, is out of valid range (${variation} %))"
-msgstr ""
+msgstr "Porcentagem de diferença relativa, ${variation_here} %, está fora da margem (${variation} %))"
 
 # File: bika.lims/bika/lims/browser/batch/publish.py, line: 107
 # File: bika.lims/bika/lims/content/analysisprofile.py, line: 49
@@ -4241,6 +4415,12 @@ msgstr "Observações a considerar antes da calibração"
 msgid "Remarks to take into account for maintenance process"
 msgstr "Observações a considerar para o processo de manutênção"
 
+#
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/browser/templates/bika_listing_table.pt, line: 610
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/browser/templates/bika_listing_table.pt, line: 610
+msgid "Remarks:"
+msgstr ""
+
 # File: bika.lims/bika/lims/content/instrumentmaintenancetask.py, line: 143
 # File: bika.lims/bika/lims/content/instrumentscheduledtask.py, line: 87
 msgid "Repair"
@@ -4255,22 +4435,26 @@ msgstr "Análises repetidas"
 # 23
 # File: bika.lims/bika/lims/content/report.py, line: 19
 msgid "Report"
-msgstr "Relatório"
+msgstr "Laudo"
+
+# File: bika.lims/bika/lims/content/arimport.py, line: 147
+msgid "Report Contact Names"
+msgstr "Nomes de contato do Laudo"
 
 # File: bika.lims/bika/lims/content/instrumentcalibration.py, line: 33
 # File: bika.lims/bika/lims/content/instrumentvalidation.py, line: 18
 msgid "Report Date"
-msgstr ""
+msgstr "Data de emissão"
 
 # File: bika.lims/bika/lims/content/instrumentcalibration.py, line: 103
 # File: bika.lims/bika/lims/content/instrumentvalidation.py, line: 88
 msgid "Report ID"
-msgstr ""
+msgstr "ID do Laudo"
 
 # File: bika.lims/bika/lims/browser/reports/__init__.py, line: 145
 # File: bika.lims/bika/lims/content/report.py, line: 24
 msgid "Report Type"
-msgstr "Tipo de relatório "
+msgstr "Tipo deLaudo"
 
 # File: bika.lims/bika/lims/content/analysisrequest.py, line: 916
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 325
@@ -4281,7 +4465,7 @@ msgstr "Reportar como Matéria Seca"
 # File: bika.lims/bika/lims/content/instrumentcalibration.py, line: 104
 # File: bika.lims/bika/lims/content/instrumentvalidation.py, line: 89
 msgid "Report identification number"
-msgstr ""
+msgstr "Número de identificação do Laudo"
 
 # File: bika.lims/bika/lims/browser/reports/templates/administration.pt, line:
 # 97
@@ -4291,29 +4475,29 @@ msgstr "Relatório de requisições de análises publicadas que não foram fatur
 # File: bika.lims/bika/lims/browser/reports/templates/productivity.pt, line:
 # 418
 msgid "Report tables between a period of time the number of analyses published and expressed as a percentage of all analyses performed."
-msgstr "Relatório tabelas entre um período de tempo que o número de análises publicada e expressa como uma percentagem de todas as análises realizadas."
+msgstr "Emitir tabelas do número de análises publicadas em um período de tempo, expresso como uma percentagem de todas as análises realizadas."
 
 # File: bika.lims/bika/lims/browser/reports/templates/productivity.pt, line:
 # 132
 msgid "Report tables between a period of time the number of samples received and results reported for them with differences between the two"
-msgstr "Tabela de resultados entre o período de tempo, número de amostras recebidas e resultados para elas com as diferenças entre ambas"
+msgstr "Emitir tabela de resultados do número de amostras recebidas em um período de tempo, com resultados das diferenças entre ambas"
 
 # File: bika.lims/bika/lims/browser/reports/templates/productivity.pt, line:
 # 485
 msgid "Report tables of Analysis Requests and totals submitted between a period of time"
-msgstr "Tabelas de Resultados de Análises Solicitadas e totais submetidos entre um período de tempo"
+msgstr "Emitir tabelas de Resultados de Análises Solicitadas e totais submetidos entre um período de tempo"
 
 # File: bika.lims/bika/lims/content/report.py, line: 25
 msgid "Report type"
-msgstr "Tipo de relatório"
+msgstr "Tipo de Laudo"
 
 # File: bika.lims/bika/lims/content/instrumentcertification.py, line: 117
 msgid "Report upload"
-msgstr ""
+msgstr "Upload de Laudo"
 
 # File: bika.lims/bika/lims/browser/reports/__init__.py, line: 110
 msgid "Reports"
-msgstr "Relatórios"
+msgstr "Laudos"
 
 # File: bika.lims/bika/lims/browser/reports/administration_arsnotinvoiced.py,
 # line: 63
@@ -4364,7 +4548,7 @@ msgstr "Volume Requerido"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/add.py, line: 405
 msgid "Required fields have no values: ${field_names}"
-msgstr ""
+msgstr "Campos requeridos estão sem valor: ${field_names}"
 
 # File: bika.lims/bika/lims/content/client.py, line: 80
 msgid "Restrict categories"
@@ -4398,20 +4582,20 @@ msgstr ""
 # File: bika.lims/bika/lims/browser/analysis.py, line: 37
 # File: bika.lims/bika/lims/browser/referenceanalysis.py, line: 50
 msgid "Result in shoulder range"
-msgstr "Resultado na faixa do ombro"
+msgstr "Resultado no limite do intervalo"
 
 # File: bika.lims/bika/lims/browser/analysis.py, line: 43
 # File: bika.lims/bika/lims/browser/referenceanalysis.py, line: 55
 msgid "Result out of range"
-msgstr "Resultado fora da variação"
+msgstr "Resultado fora do intervalo"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 308
 msgid "Result values with at least this number of significant digits are displayed in scientific notation using the letter 'e' to indicate the exponent.  The precision can be configured in individual Analysis Services."
-msgstr ""
+msgstr "Valores de resultado com pelo menos esse número de dígitos significativos são exibidos em notação científica com a letra 'e' para indicar o expoente. A precisão pode ser configurado em Serviços de análises individuais"
 
 # File: bika.lims/bika/lims/content/analysisrequest.py, line: 1249
 msgid "Results Interpreation"
-msgstr ""
+msgstr "Interpretação de Resultados"
 
 # File: bika.lims/bika/lims/content/analysisrequest.py, line: 1237
 msgid "Results Interpretation"
@@ -4430,7 +4614,7 @@ msgstr "Resultados têm sido retirados"
 # bika.lims/bika/lims/browser/analysisrequest/templates/analysisrequest_view.pt,
 # line: 123
 msgid "Results interpretation"
-msgstr ""
+msgstr "Interpretação de resultados"
 
 #
 # File: bika.lims/bika/lims/browser/dashboard.py, line: 195
@@ -4472,7 +4656,7 @@ msgstr "Análises retratadas"
 
 # File: bika.lims/bika/lims/browser/instrument.py, line: 441
 msgid "Retraction report unavailable"
-msgstr ""
+msgstr "Relatório de retratação indisponível"
 
 # File: bika.lims/bika/lims/browser/instrument.py, line: 433
 msgid "Retractions"
@@ -4482,17 +4666,22 @@ msgstr "Retratações"
 msgid "Review state"
 msgstr "Revisão do estado"
 
+#
+# File: bika.lims/bika/lims/browser/worksheet/views/folder.py, line: 111
+msgid "Routine Samples (Analyses)"
+msgstr ""
+
 # File: bika.lims/bika/lims/browser/worksheetfolder.py, line: 158
 msgid "Routine Samples(Analyses)"
-msgstr ""
+msgstr "Amostras de rotina (análise)"
 
 # File: bika.lims/bika/lims/controlpanel/bika_srtemplates.py, line: 34
 msgid "SR Templates"
-msgstr ""
+msgstr "Modelos de SR"
 
 # File: bika.lims/bika/lims/content/supplier.py, line: 59
 msgid "SWIFT code."
-msgstr ""
+msgstr "Código SWIFT"
 
 # File: bika.lims/bika/lims/content/person.py, line: 17
 #. Default: "Title"
@@ -4521,6 +4710,10 @@ msgstr "Condição da amostra"
 msgid "Sample Conditions"
 msgstr "Condições da amostra"
 
+# File: bika.lims/bika/lims/content/arimportitem.py, line: 44
+msgid "Sample Date"
+msgstr "Data da Amostra"
+
 # File: bika.lims/bika/lims/skins/bika/portlet_sample_due.pt, line: 22
 msgid "Sample Due"
 msgstr "Amostras pendentes"
@@ -4540,7 +4733,7 @@ msgstr "Lacunas para o ID da Amostra"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 479
 msgid "Sample ID Sequence Start"
-msgstr ""
+msgstr "Iniciar sequência de ID de amostra"
 
 # File: bika.lims/bika/lims/controlpanel/bika_samplematrices.py, line: 32
 msgid "Sample Matrices"
@@ -4618,7 +4811,7 @@ msgstr "Local de amostragem"
 # File: bika.lims/bika/lims/browser/reports/templates/productivity.pt, line:
 # 95
 msgid "Sample related reports"
-msgstr "Relatório de resultados de amostras"
+msgstr "Laudos de amostras relacionadas"
 
 # File: bika.lims/bika/lims/browser/reports/administration_arsnotinvoiced.py,
 # line: 64
@@ -4664,12 +4857,12 @@ msgstr "Amostras deste tipo devem ser tratadas como perigosas"
 # bika.lims/bika/lims/browser/reports/templates/productivity_samplereceivedvsreported.pt,
 # line: 18
 msgid "Samples received vs. reported"
-msgstr "Amostras recebidas vs relatadas"
+msgstr "Amostras recebidas vs reportadas"
 
 # File: bika.lims/bika/lims/browser/reports/templates/productivity.pt, line:
 # 129
 msgid "Samples received vs. samples reported"
-msgstr "Amostras recebidas vs amostras relatadas"
+msgstr "Amostras recebidas vs amostras reportadas"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/publish.py, line: 903
 msgid "Samples: ${samples}"
@@ -4779,11 +4972,11 @@ msgstr ""
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 411
 msgid "Select 'Register' if you want stickers to be automatically printed when new ARs or sample records are created. Select 'Receive' to print stickers when ARs or Samples are received. Select 'None' to disable automatic printing"
-msgstr ""
+msgstr "Selecione 'Registrar' se você quiser que as etiquetas sejam automaticamente impressas quando novas RAs ou registros de amostras sejam criados. Selecione 'Receber' para imprimir etiquetas quando RAs ou Amostras são recebidos. Selecione 'Nenhum' para desabilitar a impressão automática"
 
 # File: bika.lims/bika/lims/content/srtemplate.py, line: 37
 msgid "Select AR Templates to include"
-msgstr ""
+msgstr "Selecione Modelo AR para incluir"
 
 # File: bika.lims/bika/lims/exportimport/dataimport.py, line: 50
 msgid "Select a data interface"
@@ -4811,6 +5004,11 @@ msgstr "Selecione uma amostra para ciar uma RA secundária"
 msgid "Select all items"
 msgstr "Selecionar todos os itens"
 
+#
+# File: bika.lims/bika/lims/content/instrument.py, line: 123
+msgid "Select an Export interface for this instrument."
+msgstr ""
+
 # File: bika.lims/bika/lims/content/instrument.py, line: 121
 msgid "Select an Import/Export interface for this instrument."
 msgstr "Selecione uma interface de Importação/Exportação para este instrumento."
@@ -4825,7 +5023,7 @@ msgstr "Selecionar Analista"
 
 # File: bika.lims/bika/lims/exportimport/import.pt, line: 60
 msgid "Select existing file"
-msgstr "Selecione o arquivo"
+msgstr "Selecione arquivo existente"
 
 # File: bika.lims/bika/lims/content/analysisrequest.py, line: 945
 msgid "Select if analyses to be excluded from invoice"
@@ -4883,7 +5081,7 @@ msgstr "Selecione o recipiente padrão a ser usado por este serviço de análise
 
 # File: bika.lims/bika/lims/profiles/default/registry.xml, line: -1
 msgid "Select the default landing page. This is used when a Client user logs into the system, or when a client is selected from the client folder listing."
-msgstr ""
+msgstr "Seleccione a página inicial padrão. Isso é usado quando um usuário cliente registra no sistema, ou quando um cliente é selecionado a partir da listagem pasta do cliente."
 
 # File: bika.lims/bika/lims/content/worksheettemplate.py, line: 61
 msgid "Select the preferred instrument"
@@ -4923,7 +5121,7 @@ msgstr ""
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 423
 msgid "Select which sticker to print when automatic sticker printing is enabled"
-msgstr ""
+msgstr "Selecione qual etiqueta imprimir quando a impressão automática estiver habilitada."
 
 # File: bika.lims/bika/lims/browser/templates/pricelist_email_form.pt, line:
 # 63
@@ -4984,15 +5182,15 @@ msgstr "Configurar as especificações de resultado do serviço de análise do l
 
 # File: bika.lims/bika/lims/content/storagelocation.py, line: 71
 msgid "Shelf Code"
-msgstr ""
+msgstr "Código de prateleira"
 
 # File: bika.lims/bika/lims/content/storagelocation.py, line: 77
 msgid "Shelf Description"
-msgstr ""
+msgstr "Descrição de prateleira"
 
 # File: bika.lims/bika/lims/content/storagelocation.py, line: 65
 msgid "Shelf Title"
-msgstr ""
+msgstr "Título da prateleira"
 
 # File: bika.lims/bika/lims/config.py, line: 93
 msgid "Shipping address"
@@ -5000,13 +5198,13 @@ msgstr "Endereço de entrega"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 198
 msgid "Short title"
-msgstr "Titulo curto"
+msgstr "Titulo abreviado"
 
 # File:
 # bika.lims/bika/lims/browser/analysisrequest/templates/analysisrequest_publish.pt,
 # line: 31
 msgid "Show Hidden Analyses"
-msgstr ""
+msgstr "Mostrar Análise Oculta"
 
 # File:
 # bika.lims/bika/lims/browser/analysisrequest/templates/analysisrequest_publish.pt,
@@ -5017,6 +5215,11 @@ msgstr "Mostrar Análises do CQ"
 # File: bika.lims/bika/lims/content/client.py, line: 81
 msgid "Show only selected categories in client views"
 msgstr "Mostre apenas as categorias selecionadas em visualizações do cliente"
+
+#
+# File: bika.lims/bika/lims/browser/templates/dashboard.pt, line: 374
+msgid "Show/hide timeline summary"
+msgstr ""
 
 # File: bika.lims/bika/lims/content/labcontact.py, line: 29
 msgid "Signature"
@@ -5043,7 +5246,7 @@ msgstr "Tamanho"
 
 # ../browser/js/attachments.js
 msgid "Slot"
-msgstr ""
+msgstr "Escaninho"
 
 # File: bika.lims/bika/lims/content/arpriority.py, line: 27
 msgid "Small Icon"
@@ -5058,7 +5261,7 @@ msgstr ""
 # 85
 # File: bika.lims/bika/lims/browser/worksheet.py, line: 832
 msgid "Some analyses use out-of-date or uncalibrated instruments. Results edition not allowed"
-msgstr ""
+msgstr "Algumas análises estão desatualizadas ou instrumentos não calibrados. Edição resultados não permitidos"
 
 # File: bika.lims/bika/lims/content/arpriority.py, line: 15
 # File: bika.lims/bika/lims/content/subgroup.py, line: 15
@@ -5092,7 +5295,7 @@ msgstr "Especifique o tamanho da Planilha, por exemplo, em correspondência com 
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 751
 msgid "Specify the uncertainty value for a given range, e.g. for results in a range with minimum of 0 and maximum of 10, where the uncertainty value is 0.5 - a result of 6.67 will be reported as 6.67 +- 0.5. You can also specify the uncertainty value as a percentage of the result value, by adding a '%' to the value entered in the 'Uncertainty Value' column, e.g. for results in a range with minimum of 10.01 and a maximum of 100, where the uncertainty value is 2% - a result of 100 will be reported as 100 +- 2. Please ensure successive ranges are continuous, e.g. 0.00 - 10.00 is followed by 10.01 - 20.00, 20.01 - 30 .00 etc."
-msgstr ""
+msgstr "Especifique um valor de incerteza para uma determinada variação, por exemplo, em uma variação de 0 a 10, onde o valor de incerteza é 0,5 - um resultado de 6,67 será reportado como 6,67 +- 0,5. Você também pode especificar o valor de incerteza como uma porcentagem do valor do resultado, adicionando um '%' no valor encontrado na coluna \"incerteza de Valor\", exemplo: para resultados entre um intervalo mínimo de 10,01 e máximo de 100, onde o valor de incerteza é 2% - um resultado de 100 será reportado como 100 +- 2. Por favor, certifique-se de que variações sucessivas são contínuas, por exemplo 0,00 - 10,00 é seguido de 10,01 - 20,00; 20,01 - 30,00 e assim por diante."
 
 # File: bika.lims/bika/lims/browser/invoicefolder.py, line: 30
 # File: bika.lims/bika/lims/browser/pricelist.py, line: 38
@@ -5100,12 +5303,22 @@ msgstr ""
 msgid "Start Date"
 msgstr "Data inicial"
 
+#
+# File: bika.lims/bika/lims/validators.py, line: 69
+msgid "Start date must be before End Date"
+msgstr ""
+
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 123
 # File: bika.lims/bika/lims/browser/arimports.py, line: 98
 # File: bika.lims/bika/lims/browser/batch/batchbook.py, line: 64
 msgid "State"
 msgstr "Estado"
+
+#
+# File: bika.lims/bika/lims/browser/invoicefolder.py, line: 20
+msgid "Statements"
+msgstr ""
 
 # File: bika.lims/bika/lims/browser/analyses.py, line: 78
 # File:
@@ -5118,7 +5331,7 @@ msgstr "Estado"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 422
 msgid "Sticker templates"
-msgstr ""
+msgstr "Modelos de adesivos"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 90
@@ -5144,7 +5357,7 @@ msgstr "Subgrupos"
 
 # File: bika.lims/bika/lims/content/subgroup.py, line: 16
 msgid "Subgroups are sorted with this key in group views"
-msgstr ""
+msgstr "Subgrupos são classificadas com esta tecla em grupos vistos"
 
 # File: bika.lims/bika/lims/exportimport/import.pt, line: 54
 msgid "Submit"
@@ -5152,10 +5365,10 @@ msgstr "Submeter"
 
 # File: bika.lims/bika/lims/exportimport/import.pt, line: 47
 msgid "Submit a valid Open XML (.XLSX) file containing Bika setup records to continue."
-msgstr ""
+msgstr "Enviar um arquivo válido Open XML (.xlsx) contendo registros de configuração do BIka para continuar."
 
 #
-# File: bika.lims/bika/lims/content/arimport.py, line: 283
+# File: bika.lims/bika/lims/content/arimport.py, line: 285
 msgid "Submitting AR Import"
 msgstr ""
 
@@ -5214,6 +5427,10 @@ msgstr "Tipo de Tarefa"
 msgid "Technical description and instructions intended for analysts"
 msgstr "Descrição técnica e instruções a serem seguidas por analistas"
 
+# File: bika.lims/bika/lims/content/arimport.py, line: 180
+msgid "Temperature"
+msgstr "Temperatura"
+
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 132
 # File: bika.lims/bika/lims/browser/worksheetfolder.py, line: 141
@@ -5227,7 +5444,7 @@ msgstr "A seleção do Perfil de Análise para este modelo"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 459
 msgid "The Analysis Service can be performed by using more than one Method. The methods selected here are displayed in the Analysis Request creation view for its selection when this Analaysis Service is selected. Only methods with 'Allow manual entry of results' enabled are displayed."
-msgstr ""
+msgstr "O serviço de análise pode ser executado através de mais de um método. Os métodos selecionados aqui são exibidos na visualização de criação de requisição de análise para seleção dele quando este serviço de análise estiver selecionado. Somente métodos com 'Permitir entrada manual de resultados' habilitado são exibidos."
 
 # File: bika.lims/bika/lims/content/analysisrequest.py, line: 67
 msgid "The ID assigned to the client's request by the lab"
@@ -5243,11 +5460,11 @@ msgstr "O endereço web do Laboratório"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 248
 msgid "The Lower Detection Limit is the lowest value to which the measured parameter can be measured using the specified testing methodology. Results entered which are less than this value will be reported as < LDL"
-msgstr ""
+msgstr "O limite inferior de detecção é o menor valor para o qual o parâmetro medido pode ser medido usando a metodologia de teste especificado. Resultados encontrados que são inferiores a este valor será relatado como < LDL (Menor limite de detecção)"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 264
 msgid "The Upper Detection Limit is the highest value to which the measured parameter can be measured using the specified testing methodology. Results entered which are greater than this value will be reported as > UDL"
-msgstr ""
+msgstr "O limite inferior de detecção é o menor valor para o qual o parâmetro medido pode ser medido usando a metodologia de teste especificado. Resultados encontrados que são superiores a este valor será relatado como > UDL (Maior limite de detecção)"
 
 # File: bika.lims/bika/lims/content/laboratory.py, line: 60
 msgid "The accreditation standard that applies, e.g. ISO 17025"
@@ -5287,7 +5504,7 @@ msgstr "A categoria da análise a qual este serviço pertence"
 
 # File: bika.lims/bika/lims/content/instrument.py, line: 206
 msgid "The date the instrument was installed"
-msgstr ""
+msgstr "A data o instrumento foi instalado"
 
 #
 # File: bika.lims/bika/lims/content/samplinground.py, line: 155
@@ -5296,7 +5513,7 @@ msgstr ""
 
 # File: bika.lims/bika/lims/content/client.py, line: 99
 msgid "The decimal mark selected in Bika Setup will be used."
-msgstr ""
+msgstr "O marcador decimal nas configurações Bika serão usados."
 
 #
 # File: bika.lims/bika/lims/content/samplinground.py, line: 134
@@ -5321,7 +5538,7 @@ msgstr "A altura ou profundidade na qual a amostra deve ser obtida"
 
 # File: bika.lims/bika/lims/content/instrument.py, line: 182
 msgid "The instrument's ID in the lab's asset register"
-msgstr ""
+msgstr "ID do instrumento no registro de ativos do laboratório"
 
 # File: bika.lims/bika/lims/content/instrument.py, line: 62
 msgid "The instrument's model number"
@@ -5368,7 +5585,7 @@ msgstr "O mínimo volume de amostra necessário para a análise, exemplo '10 ml'
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 480
 msgid "The number from which the next id should start. This is set only if it is greater than existing id numbers. Note that the resultant gap between IDs cannot be filled."
-msgstr ""
+msgstr "O número a partir do qual o próximo id deve começar. Isso é definido somente se for maior do que os números de identificação existentes. Note-se que a diferença resultante entre a ID  não pode ser preenchido."
 
 # File: bika.lims/bika/lims/browser/reports/templates/productivity.pt, line:
 # 168
@@ -5418,16 +5635,16 @@ msgstr "O período no qual amostras não preservadas deste tipo podem ser mantid
 
 # File: bika.lims/bika/lims/content/instrumentcertification.py, line: 104
 msgid "The person at the supplier who approved the certificate"
-msgstr ""
+msgstr "A pessoa do fornecedor que aprovou o certificado"
 
 # File: bika.lims/bika/lims/content/instrumentcalibration.py, line: 90
 # File: bika.lims/bika/lims/content/instrumentvalidation.py, line: 75
 msgid "The person at the supplier who performed the task"
-msgstr ""
+msgstr "A pessoa do fornecedor que executou a tarefa"
 
 # File: bika.lims/bika/lims/content/instrumentcertification.py, line: 86
 msgid "The person at the supplier who prepared the certificate"
-msgstr ""
+msgstr "A pessoa do fornecedor que aprovou o certificado"
 
 # File: bika.lims/bika/lims/profiles/default/registry.xml, line: -1
 msgid "The person that created an item"
@@ -5439,7 +5656,7 @@ msgstr "O preço cobrado a clientes qualificados para descontos por volume"
 
 # File: bika.lims/bika/lims/content/analysisprofile.py, line: 70
 msgid "The profile's commercial ID for accounting purposes."
-msgstr ""
+msgstr "ID comercial do perfil para fins contábeis."
 
 # File: bika.lims/bika/lims/content/analysisprofile.py, line: 26
 msgid "The profile's keyword is used to uniquely identify it in import files. It has to be unique, and it may not be the same as any Calculation Interim field ID."
@@ -5459,11 +5676,11 @@ msgstr "Os resultados das análises de campo que são capturados no local de amo
 
 # File: bika.lims/bika/lims/content/instrument.py, line: 190
 msgid "The room and location where the instrument is installed"
-msgstr ""
+msgstr "A sala e local onde os instrumentos estão instalados"
 
 # File: bika.lims/bika/lims/content/method.py, line: 54
 msgid "The selected instruments have support for this method. Use the Instrument edit view to assign the method to a specific instrument"
-msgstr ""
+msgstr "Os instrumentos selecionados têm suporte para este método. Use a visualização de editar instrumento para designar o método para um instrumento específico"
 
 # File: bika.lims/bika/lims/content/instrument.py, line: 69
 msgid "The serial number that uniquely identifies the instrument"
@@ -5471,11 +5688,11 @@ msgstr "O número de série que identifica, de forma única, o instrumento."
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 914
 msgid "The service's analytical protocol ID"
-msgstr ""
+msgstr "ID de protocolo de serviço analítico"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 905
 msgid "The service's commercial ID for accounting purposes"
-msgstr ""
+msgstr "ID serviço do perfil para fins contábeis."
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 353
 msgid "The system wide default configuration to indicate whether file attachments are required, permitted or not per analysis request"
@@ -5537,7 +5754,7 @@ msgstr "Estes resultados tem sido retirados e estão aqui listados para propósi
 # File: bika.lims/bika/lims/browser/analysisrequest/results_not_requested.py,
 # line: 41
 msgid "This Analysis Request has been generated automatically due to the retraction of the Analysis Request ${retracted_request_id}."
-msgstr ""
+msgstr "Este pedido de análise foi gerado automaticamente devido à retratação da requisição de análise ${retracted_request_id}."
 
 # File: bika.lims/bika/lims/browser/analysisrequest/log.py, line: 26
 # File: bika.lims/bika/lims/browser/analysisrequest/published_results.py,
@@ -5545,7 +5762,7 @@ msgstr ""
 # File: bika.lims/bika/lims/browser/analysisrequest/results_not_requested.py,
 # line: 31
 msgid "This Analysis Request has been withdrawn and is shown for trace-ability purposes only. Retest: ${retest_child_id}."
-msgstr ""
+msgstr "Esta requisição de análise foi retirada e é exibida somente para propósito de rastreabilidade. ${retest_child_id}."
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 1321
 msgid "This Analysis Service cannot be activated because it's calculation is inactive."
@@ -5572,27 +5789,27 @@ msgstr ""
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 229
 msgid "This text will be appended to results reports."
-msgstr "Este texto será incluído nos relatórios de resultados"
+msgstr "Este texto será incluído nos Laudos"
 
 # File: bika.lims/bika/lims/content/laboratory.py, line: 27
 msgid "This value is reported at the bottom of all published results"
-msgstr "Este valor é reportado ao final dos resultados publicados"
+msgstr "Este valor é reportado no final dos Laudos publicados"
 
 # ../browser/js/client.js
 msgid "This will remove all existing client analysis specifications and create copies of all lab specifications. Are you sure you want to do this?"
-msgstr ""
+msgstr "Isto irá remover todas as especificações existentes para a análise do cliente e criar cópias de todas as especificações do laboratório. Você tem certeza de que quer fazer isto?"
 
 # File: bika.lims/bika/lims/browser/worksheet.py, line: 1037
 msgid "This worksheet has been created to replace the rejected worksheet at ${ws_id}"
-msgstr ""
+msgstr "Essa planilha foi criada para substituir a planilha rejeitada em $ {} WSID"
 
 # File: bika.lims/bika/lims/browser/worksheet.py, line: 1030
 msgid "This worksheet has been rejected.  The replacement worksheet is ${ws_id}"
-msgstr ""
+msgstr "Essa planilha foi rejeitada. A planilha de substituição é a de R $ {} ws_id"
 
 # File: bika.lims/bika/lims/exportimport/import.pt, line: 56
 msgid "Tip. Attached documents will not be loaded unless they are present in the instance."
-msgstr ""
+msgstr "Dica. Documentos anexados não serão carregados a menos que eles estão presentes na instância."
 
 # File: bika.lims/bika/lims/browser/batchfolder.py, line: 36
 # File: bika.lims/bika/lims/browser/bika_listing.py, line: 348
@@ -5628,7 +5845,7 @@ msgstr "A Ser Amostrado"
 
 # File: bika.lims/bika/lims/content/analysiscategory.py, line: 22
 msgid "To be displayed below each Analysis Category section on results reports."
-msgstr ""
+msgstr "A ser exibido abaixo de cada seção de Categoria de Análise nos Laudos."
 
 #
 # File: bika.lims/bika/lims/browser/dashboard.py, line: 161
@@ -5736,6 +5953,8 @@ msgstr "Erro de tipo"
 
 #
 # File: bika.lims/bika/lims/content/multifile.py, line: 45
+# File: bika.lims/build/lib.linux-x86_64-2.6/bika/lims/content/multifile.py, line: 45
+# File: bika.lims/build/lib.linux-x86_64-2.7/bika/lims/content/multifile.py, line: 45
 msgid "Type of document (e.g. user manual, instrument specifications, image, ...)"
 msgstr ""
 
@@ -5756,7 +5975,7 @@ msgstr "Não foi possível carregar o template"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/workflow.py, line: 508
 msgid "Unable to send an email to alert lab client contacts that the Analysis Request has been retracted: ${error}"
-msgstr ""
+msgstr "Incapaz de enviar um e-mail para alertar os contatos dos clientes do laboratório que a requisição de análise foi retratada: ${error}"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 471
@@ -5788,7 +6007,7 @@ msgstr "Unidade"
 
 # File: bika.lims/bika/lims/validators.py, line: 843
 msgid "Unknown IBAN country %s"
-msgstr ""
+msgstr "IBAN países desconhecidos %s"
 
 # File:
 # bika.lims/bika/lims/browser/reports/templates/productivity_samplereceivedvsreported.pt,
@@ -5812,17 +6031,22 @@ msgstr "Formato do arquivo não reconhecido ${file_format}"
 msgid "Unrecognized file format ${fileformat}"
 msgstr "Formato do arquivo não reconhecido ${fileformat}"
 
+#
+# File: bika.lims/bika/lims/exportimport/instruments/horiba/jobinyvon/icp.py, line: 37
+msgid "Unrecognized file format ${format}"
+msgstr ""
+
 # File: bika.lims/bika/lims/content/labcontact.py, line: 30
 msgid "Upload a scanned signature to be used on printed analysis results reports. Ideal size is 250 pixels wide by 150 high"
-msgstr "Faça o upload de uma assinatura digitalizada a ser usada em relatórios impressos de resultados de análises. O tamanho ideal é 250 pixels de largura por 150 pixels de altura"
+msgstr "Faça o upload de uma assinatura digitalizada a ser usada em Laudos impressos. O tamanho ideal é 250 pixels de largura por 150 pixels de altura"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 263
 msgid "Upper Detection Limit (UDL)"
-msgstr ""
+msgstr "Limite de detecção mais baixo (UDL)"
 
 # File: bika.lims/bika/lims/content/analysisprofile.py, line: 111
 msgid "Use Analysis Profile Price"
-msgstr ""
+msgstr "Use Perfil de Análise de Preço"
 
 #
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 424
@@ -6073,14 +6297,28 @@ msgstr "Validação falhou: segundos devem ser numéricos"
 msgid "Validation failed: title is required"
 msgstr "Validação falhou: título requerido"
 
+#
+# File: bika.lims/bika/lims/validators.py, line: 971
+msgid "Validation failed: value must be between 0 and 1000"
+msgstr ""
+
+#
+# File: bika.lims/bika/lims/validators.py, line: 967
+msgid "Validation failed: value must be float"
+msgstr ""
+
 # File: bika.lims/bika/lims/content/instrumentvalidation.py, line: 19
 msgid "Validation report date"
-msgstr ""
+msgstr "Data de validação do relatório"
 
 # File: bika.lims/bika/lims/browser/instrument.py, line: 213
 # File: bika.lims/bika/lims/content/instrumentvalidation.py, line: 43
 msgid "Validator"
-msgstr "Validado"
+msgstr "Validador"
+
+# File: bika.lims/bika/lims/browser/arimports.py, line: 96
+msgid "Validity"
+msgstr "Validade"
 
 # File: bika.lims/bika/lims/browser/templates/worksheet_manage_results.pt,
 # line: 129
@@ -6120,6 +6358,11 @@ msgstr "Endereço web para o órgão de certificação"
 
 # File: bika.lims/bika/lims/content/supplier.py, line: 30
 msgid "Website."
+msgstr "Website."
+
+#
+# File: bika.lims/bika/lims/browser/templates/dashboard.pt, line: 353
+msgid "Weekly"
 msgstr ""
 
 # File: bika.lims/bika/lims/controlpanel/bika_instruments.py, line: 52
@@ -6128,15 +6371,15 @@ msgstr "Semanas para expirar"
 
 # File: bika.lims/bika/lims/content/analysisprofile.py, line: 112
 msgid "When it's set, the system uses the analysis profile's price to quote and the system's VAT is overridden by the analysis profile's specific VAT"
-msgstr ""
+msgstr "Quando definido, o sistema usa o preço do perfil de análise para cotar, e o IVA do sistema é substituído pelo IVA específico do perfil de análise"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 607
 msgid "When the results of duplicate analyses on worksheets, carried out on the same sample, differ with more than this percentage, an alert is raised"
-msgstr "Quando os resultados de uma análise duplicada em planilhas, feitas a partir de uma mesma amostra, diferirem em mais do que este percentual, um alerta será gerado"
+msgstr "Quando os resultados de análises em duplicata nas planilhas, feitas a partir de uma mesma amostra, diferirem em mais do que este percentual, um alerta será gerado"
 
 # File: bika.lims/bika/lims/validators.py, line: 260
 msgid "Wildcards for interims are not allowed: ${wildcards}"
-msgstr ""
+msgstr "Caracteres para interinos não são permitidos: ${wildcards}"
 
 # File: bika.lims/bika/lims/content/instrumentcalibration.py, line: 78
 # File: bika.lims/bika/lims/content/instrumentmaintenancetask.py, line: 83
@@ -6159,7 +6402,7 @@ msgstr "Planilha"
 
 # File: bika.lims/bika/lims/content/worksheettemplate.py, line: 29
 msgid "Worksheet Layout"
-msgstr "Leioute da Planilha"
+msgstr "Layout da Planilha"
 
 # File: bika.lims/bika/lims/controlpanel/bika_worksheettemplates.py, line: 32
 msgid "Worksheet Templates"
@@ -6172,6 +6415,11 @@ msgstr "Planilhas"
 
 # File: bika.lims/bika/lims/validators.py, line: 850
 msgid "Wrong IBAN length by %s: %sshort by %i"
+msgstr "Tamanho de IBAN errado por %s: %s muito curto por %i"
+
+#
+# File: bika.lims/bika/lims/browser/templates/dashboard.pt, line: 357
+msgid "Yearly"
 msgstr ""
 
 # File: bika.lims/bika/lims/browser/analysisservice.py, line: 97
@@ -6181,15 +6429,15 @@ msgstr "Sim"
 
 # File: bika.lims/bika/lims/browser/worksheetfolder.py, line: 42
 msgid "You do not have sufficient privileges to manage worksheets."
-msgstr ""
+msgstr "Você não tem privilégios suficientes para gerenciar planilhas."
 
 # File: bika.lims/bika/lims/browser/worksheet.py, line: 363
 msgid "You do not have sufficient privileges to view the worksheet ${worksheet_title}."
-msgstr ""
+msgstr "Você não tem privilegios suficientes para ver as planilhas ${worksheet_title}."
 
 # File: bika.lims/bika/lims/content/analysisrequest.py, line: 188
 msgid "You must assign this request to a client"
-msgstr "Você deve designar esta requisição para um cliente"
+msgstr "Você deve designar esta requisição a um cliente"
 
 # File: bika.lims/bika/lims/browser/worksheet.py, line: 1457
 msgid "You must select an instrument"
@@ -6198,12 +6446,12 @@ msgstr "Você deve selecionar um instrumento"
 # File: bika.lims/bika/lims/exportimport/instruments/sysmex/xs/i500.py, line:
 # 58
 msgid "You should introduce a default result key."
-msgstr ""
+msgstr "Você deve introduzir uma chave de resultado padrão."
 
 # File: bika.lims/bika/lims/browser/reports/administration_usershistory.py,
 # line: 116
 msgid "action"
-msgstr "Ação"
+msgstr "ação"
 
 # File: bika.lims/bika/lims/browser/templates/referencesample_view.pt, line:
 # 131
@@ -6212,20 +6460,20 @@ msgstr "ativar"
 
 # File: bika.lims/bika/lims/skins/bika/attachments.pt, line: 64
 msgid "analysis"
-msgstr ""
+msgstr "análises"
 
 # File:
 # bika.lims/bika/lims/browser/analysisrequest/templates/analysisrequest_publish.pt,
 # line: 38
 msgid "analysis requests selected"
-msgstr "serviços de análises selecionado"
+msgstr "serviços de análises selecionados"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/publish.py, line: 910
 msgid "and others"
 msgstr "e outros"
 
 #
-# File: bika.lims/bika/lims/browser/dashboard.py, line: 400
+# File: bika.lims/bika/lims/browser/dashboard.py, line: 363
 msgid "attachment_due"
 msgstr ""
 
@@ -6233,17 +6481,19 @@ msgstr ""
 #. the ISO 17025 standard. Bika is Open Source, flexible and allows
 #. customisations to your lab's specific requirements."
 #. Default: "The Bika LIMS workflow fits all lab disciplines, conforming to the ISO 17025 standard. Bika is Open Source, flexible and allows customisations to your lab's specific requirements."
+#, fuzzy
 msgid "bika-frontpage-description"
-msgstr ""
+msgstr "bika-descrição-paginainicial"
 
 # File: bika.lims/bika/lims/browser/templates/bika-frontpage.pt, line: 9
 #. ${version}"
 #. Default: "<img src=\"${DYNAMIC_CONTENT}\" /> Welcome to Bika LIMS ${version} ${DYNAMIC_CONTENT}"
+#, fuzzy
 msgid "bika-frontpage-title"
-msgstr ""
+msgstr "bika-titulo-paginainicial"
 
 msgid "bika_manual_test"
-msgstr "Bika Manual Test"
+msgstr "Teste manual do Bika"
 
 # File: bika.lims/bika/lims/content/calculation.py, line: 61
 #. an analysis using this calculation is displayed.</p><p>To enter a
@@ -6261,7 +6511,7 @@ msgstr "descrição_da_fórmula_de_cálculo"
 # File: bika.lims/bika/lims/browser/reports/administration_usershistory.py,
 # line: 143
 msgid "comment"
-msgstr "Comentário"
+msgstr "comentário"
 
 # File: bika.lims/bika/lims/browser/batch/publish.py, line: 113
 msgid "datalines"
@@ -6303,19 +6553,266 @@ msgstr "desativar"
 msgid "heading_arpriority"
 msgstr "cabecalho_prioridadera"
 
+# File: bika.lims/bika/lims/browser/templates/arimport_add_form.pt, line: 15
+#. Default: "Import Analysis Request Data"
+msgid "heading_import_ar"
+msgstr "cabecalho_importar_ra"
+
 #
-# File: bika.lims/bika/lims/browser/dashboard.py, line: 291
+# File: bika.lims/bika/lims/browser/dashboard.py, line: 271
 msgid "inactive"
 msgstr ""
 
+# File:
+# bika.lims/bika/lims/browser/templates/instrument_qc_failures_viewlet.pt,
+# line: 28
+#. Default: "${nr_disabled} instrument disabled until successful calibration:"
+msgid "instrument_qc_failed"
+msgstr "instrumento_qc_falhou"
+
+# File:
+# bika.lims/bika/lims/browser/templates/instrument_qc_failures_viewlet.pt,
+# line: 12
+#. Default: "${nr_failed} instrument is out-of-date:"
+msgid "instrument_qc_out_of_date"
+msgstr "instrumento_qc_desatualizado"
+
+# File:
+# bika.lims/bika/lims/browser/templates/instrument_qc_failures_viewlet.pt,
+# line: 44
+#. being done:"
+#. Default: "${nr_failed} instruments disposed until new calibration tests being done:"
+#, fuzzy
+msgid "instruments_qc_disposed"
+msgstr "instrumentos_qc_fechado"
+
+# File:
+# bika.lims/bika/lims/browser/templates/instrument_qc_failures_viewlet.pt,
+# line: 32
+#. calibration:"
+#. Default: "${nr_disabled} instruments disabled until successful calibration:"
+#, fuzzy
+msgid "instruments_qc_failed"
+msgstr "instrumentos_qc_falhou"
+
+# File:
+# bika.lims/bika/lims/browser/templates/instrument_qc_failures_viewlet.pt,
+# line: 16
+#. Default: "${nr_failed} instruments are out-of-date:"
+msgid "instruments_qc_out_of_date"
+msgstr "instrumentos_qc_desatualizados"
+
+# File:
+# bika.lims/bika/lims/browser/templates/instrument_qc_failures_viewlet.pt,
+# line: 68
+#. Default: "${nr_failed} instruments in calibration progress:"
+msgid "instruments_qc_uncalibrated"
+msgstr "instrumentos_qc_descalibrados"
+
+# File:
+# bika.lims/bika/lims/browser/templates/instrument_qc_failures_viewlet.pt,
+# line: 56
+#. Default: "${nr_failed} instruments in validation progress:"
+msgid "instruments_qc_unvalidated"
+msgstr "intrumentos_qc_invalidos"
+
 # File: bika.lims/bika/lims/skins/bika/attachments.pt, line: 65
 msgid "keywords"
-msgstr ""
+msgstr "palavras-chave"
+
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 76
+# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 68
+#. Default: "CC Emails - Invoice"
+msgid "label_CCEmailsInvoice"
+msgstr "etiqueta_emailsCCfatura"
+
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 69
+# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 62
+#. Default: "CC Names - Report"
+msgid "label_CCNamesReport"
+msgstr "etiqueta_RelatorioNomesCC"
+
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 89
+# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 79
+#. Default: "Client Reference"
+msgid "label_ClientReference"
+msgstr "etiqueta_ReferenciaCliente"
+
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 229
+# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 192
+#. Default: "Detail"
+msgid "label_Detail"
+msgstr "etiqueta_Detalhe"
+
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 85
+# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 76
+#. Default: "Order"
+msgid "label_OrderID"
+msgstr "etiqueta_OrdenarID"
 
 # File: bika.lims/bika/lims/browser/templates/login_details.pt, line: 108
 #. Default: "Add to the following groups:"
 msgid "label_add_to_groups"
 msgstr "adiciona_rótulo_para_grupos"
+
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 160
+# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 138
+#. Default: "Analyses"
+msgid "label_analyses"
+msgstr "etiqueta_analises"
+
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 49
+# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 45
+#. Default: "CC"
+msgid "label_cc"
+msgstr "etiqueta_cc"
+
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 55
+# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 50
+#. Default: "CC Contact ID"
+msgid "label_cccontactid"
+msgstr "etiqueta_idcontatocc"
+
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 65
+# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 59
+#. Default: "CC Emails - Report"
+msgid "label_ccemails"
+msgstr "etiqueta_emailscc"
+
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 29
+# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 28
+#. Default: "Client ID"
+msgid "label_clientid"
+msgstr "etiqueta_idclientes"
+
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 25
+# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 25
+#. Default: "Client"
+msgid "label_clientname"
+msgstr "eitiqueta_nomecliente"
+
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 152
+# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 129
+#. Default: "Client Ref"
+msgid "label_clientref"
+msgstr "etiqueta_refcliente"
+
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 153
+# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 130
+#. Default: "Client Sid"
+msgid "label_clientsid"
+msgstr "etiqueta_idcliente"
+
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 35
+# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 33
+#. Default: "Contact Name"
+msgid "label_contact"
+msgstr "etiqueta_contato"
+
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 41
+# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 38
+#. Default: "Contact ID"
+msgid "label_contactid"
+msgstr "etiqueta_idcontato"
+
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 157
+# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 134
+#. Default: "Container Type"
+msgid "label_containertype"
+msgstr "etiqueta_tiporecipiente"
+
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 119
+# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 104
+#. Default: "Date applied"
+msgid "label_dateapplied"
+msgstr "etiqueta_dataaplicacao"
+
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 114
+# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 100
+#. Default: "Date imported"
+msgid "label_dateimported"
+msgstr "etiqueta_dataimportacao"
+
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 97
+# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 85
+#. Default: "File name"
+msgid "label_filename"
+msgstr "etiqueta_nomearquivo"
+
+# File: bika.lims/bika/lims/browser/templates/arimport_add_form.pt, line: 58
+#. Default: "Select Analysis request data file"
+msgid "label_import_ar_file"
+msgstr "etiqueta_importar_arquivo_ra"
+
+# File: bika.lims/bika/lims/browser/templates/arimport_add_form.pt, line: 35
+#. Default: "Import option"
+msgid "label_import_option"
+msgstr "etiqueta_opcao_importacao"
+
+# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 137
+#. Default: "Order ID"
+msgid "label_orderid"
+msgstr "etiqueta_ordenarid"
+
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 156
+# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 133
+#. Default: "Picking slip"
+msgid "label_pickingslip"
+msgstr "etiqueta_escolherdeslizamento"
+
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 159
+# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 136
+#. Default: "Priority"
+msgid "label_priority"
+msgstr "etiqueta_prioridade"
+
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 162
+# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 140
+#. Default: "Profile"
+msgid "label_profile"
+msgstr "etiqueta_perfil"
+
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 262
+# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 223
+#. Default: "Remarks"
+msgid "label_remarks"
+msgstr "etiqueta_observacoes"
+
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 158
+# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 135
+#. Default: "Report as DM"
+msgid "label_report_dry_matter"
+msgstr "etiqueta_reportar_materia_seca"
+
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 150
+# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 127
+#. Default: "Request ID"
+msgid "label_requestid"
+msgstr "etiqueta_requisitarid"
+
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 154
+# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 131
+#. Default: "Sample Date"
+msgid "label_sampledate"
+msgstr "etiqueta_dataamostra"
+
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 147
+# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 124
+#. Default: "Sample"
+msgid "label_samplename"
+msgstr "etiqueta_nomeamostra"
+
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 131
+# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 114
+#. Default: "Sample Point"
+msgid "label_samplepoint"
+msgstr "etiqueta_localamostragem"
+
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 155
+# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 132
+#. Default: "Sample type"
+msgid "label_sampletype"
+msgstr "etiqueta_tipoamostra"
 
 # File:
 # bika.lims/bika/lims/browser/reports/selection_macros/select_analysisspecification.pt,
@@ -6323,6 +6820,18 @@ msgstr "adiciona_rótulo_para_grupos"
 #. Default: "Specification"
 msgid "label_specification"
 msgstr "especificação_do_rótulo"
+
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 103
+# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 90
+#. Default: "Status"
+msgid "label_status"
+msgstr "etiqueta_situacao"
+
+# File: bika.lims/bika/lims/browser/templates/arimport_views.pt, line: 164
+# File: bika.lims/bika/lims/browser/templates/arpriority_views.pt, line: 142
+#. Default: "Valid"
+msgid "label_valid"
+msgstr "etiqueta_valido"
 
 # File: bika.lims/bika/lims/browser/analysis.py, line: 33
 # File: bika.lims/bika/lims/browser/referenceanalysis.py, line: 44
@@ -6336,19 +6845,20 @@ msgstr "mínimo"
 
 # File: bika.lims/bika/lims/skins/bika/attachments.pt, line: 61
 msgid "name"
-msgstr ""
+msgstr "nome"
 
 # File: bika.lims/bika/lims/browser/templates/new_version.pt, line: 16
 #. current version is ${current_version}. ${click_here} to disable
 #. notifications about new releases."
 #. Default: "Version ${new_version} was released on ${new_date}, and your current version is ${current_version}. ${click_here} to disable notifications about new releases."
+#, fuzzy
 msgid "new_version_available_description"
-msgstr ""
+msgstr "descricao_nova_versao_disponivel"
 
 # File: bika.lims/bika/lims/browser/templates/new_version.pt, line: 8
 #. Default: "New Bika LIMS release available"
 msgid "new_version_available_title"
-msgstr ""
+msgstr "titulo_nova_versao_disponivel"
 
 #
 # File: bika.lims/bika/lims/browser/dashboard.py, line: 151
@@ -6356,17 +6866,17 @@ msgid "of"
 msgstr ""
 
 #
-# File: bika.lims/bika/lims/browser/dashboard.py, line: 398
+# File: bika.lims/bika/lims/browser/dashboard.py, line: 361
 msgid "open"
 msgstr ""
 
 #
-# File: bika.lims/bika/lims/browser/dashboard.py, line: 292
+# File: bika.lims/bika/lims/browser/dashboard.py, line: 272
 msgid "other_status"
 msgstr ""
 
 #
-# File: bika.lims/bika/lims/browser/dashboard.py, line: 290
+# File: bika.lims/bika/lims/browser/dashboard.py, line: 270
 msgid "published"
 msgstr ""
 
@@ -6379,28 +6889,28 @@ msgid "repeatperiod"
 msgstr "repetirperíodo"
 
 #
-# File: bika.lims/bika/lims/browser/dashboard.py, line: 286
+# File: bika.lims/bika/lims/browser/dashboard.py, line: 266
 msgid "sample_due"
 msgstr ""
 
 #
-# File: bika.lims/bika/lims/browser/dashboard.py, line: 287
+# File: bika.lims/bika/lims/browser/dashboard.py, line: 267
 msgid "sample_received"
 msgstr ""
 
 # File: bika.lims/bika/lims/skins/bika/attachments.pt, line: 63
 msgid "size"
-msgstr ""
+msgstr "tamanho"
 
 # File: bika.lims/bika/lims/browser/templates/bika_listing_table.pt, line: 96
 #. Default: "Content listing"
 msgid "summary_content_listing"
-msgstr "Listagem_sumária_de_conteúdo"
+msgstr "listagem_sumária_de_conteúdo"
 
 # File: bika.lims/bika/lims/browser/templates/plone-addsite.pt, line: 72
 #. Default: "Bika"
 msgid "text_default_site_title"
-msgstr ""
+msgstr "texto_padrao_titulo_site"
 
 #
 # File: bika.lims/bika/lims/content/samplinground.py, line: 179
@@ -6429,13 +6939,13 @@ msgid "to"
 msgstr "para"
 
 #
-# File: bika.lims/bika/lims/browser/dashboard.py, line: 288
+# File: bika.lims/bika/lims/browser/dashboard.py, line: 268
 msgid "to_be_verified"
 msgstr ""
 
 # File: bika.lims/bika/lims/skins/bika/attachments.pt, line: 62
 msgid "type"
-msgstr ""
+msgstr "tipo"
 
 # File: bika.lims/bika/lims/content/instrumentscheduledtask.py, line: 102
 msgid "until"
@@ -6446,13 +6956,14 @@ msgstr "até"
 #. ${backup_instructions_link}, and then ${click_here} to perform the
 #. upgrade."
 #. Default: "Your current database profile version is ${installed_version}, and the version installed on disk is ${new_version}. Please remember to ${backup_instructions_link}, and then ${click_here} to perform the upgrade."
+#, fuzzy
 msgid "upgrade_available_description"
-msgstr ""
+msgstr "descricao_atualizacao_disponivel"
 
 # File: bika.lims/bika/lims/browser/templates/new_version.pt, line: 25
 #. Default: "Upgrade step available"
 msgid "upgrade_available_title"
-msgstr ""
+msgstr "titulo_atualizacao_disponivel"
 
 # File:
 # bika.lims/bika/lims/browser/analysisrequest/templates/analysisrequest_publish.pt,
@@ -6463,7 +6974,6 @@ msgid "value"
 msgstr "valor"
 
 #
-# File: bika.lims/bika/lims/browser/dashboard.py, line: 289
+# File: bika.lims/bika/lims/browser/dashboard.py, line: 269
 msgid "verified"
 msgstr ""
-

@@ -296,10 +296,6 @@ msgstr "Equips"
 msgid "Invoice"
 msgstr "Factura"
 
-# File: bika.lims/bika/lims/profiles/default/types/InvoiceFolder.xml, line: -1
-msgid "Invoices"
-msgstr "Factures"
-
 # File: bika.lims/bika/lims/profiles/default/types/LabContact.xml, line: -1
 msgid "Lab Contact"
 msgstr "Contacte del laboratori"
@@ -431,14 +427,6 @@ msgstr ""
 # File: bika.lims/bika/lims/profiles/default/types/ReportFolder.xml, line: -1
 msgid "Quality Control"
 msgstr "Control de qualitat"
-
-# File: bika.lims/bika/lims/profiles/default/types/QueryFolder.xml, line: -1
-msgid "Queries"
-msgstr "Consultes"
-
-# File: bika.lims/bika/lims/profiles/default/types/Query.xml, line: -1
-msgid "Query"
-msgstr "Consulta"
 
 # File: bika.lims/bika/lims/profiles/default/types/ReferenceAnalysis.xml,
 # line: -1
@@ -594,6 +582,11 @@ msgstr "Programació"
 # -1
 msgid "Small Sticker"
 msgstr "Etiqueta petita"
+
+#
+# File: bika.lims/bika/lims/profiles/default/types/InvoiceFolder.xml, line: -1
+msgid "Statements"
+msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/ReferenceSample.xml, line:
 # -1
@@ -996,4 +989,3 @@ msgstr "Remove"
 #. Default: "Verify"
 msgid "verify_transition_title"
 msgstr "Verify"
-
