@@ -199,6 +199,12 @@ class JSONReadExtender(object):
 class ajaxGetMethodInstrumentConstraints(BrowserView):
 
     def __call__(self):
+        """
+            Returns a json dictionary with the constraints and rules for
+            methods, instruments and results to be applied to each of the
+            analyses specified in the request (an array of uids).
+            See docs/imm_results_entry_behaviour.png for further details
+        """
         constraints = {}
         try:
             plone.protect.CheckAuthenticator(self.request)
