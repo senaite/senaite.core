@@ -101,7 +101,7 @@
                         name string:${fieldName}.range0:records:ignore_empty;
                         id string:${fieldName}-range0-${repeat/idx/index};
                         tabindex tabindex/next|nothing;
-                        value python:widget.getReflexRuleValue(idx,'range0');"
+                        value python:widget.getReflexRuleElement(idx,'range0');"
                         i18n:domain="python:i18n_domain">
                 <span i18n:translate="" class="reflex_rule_text">
                     To:
@@ -112,8 +112,46 @@
                         name string:${fieldName}.range1:records:ignore_empty;
                         id string:${fieldName}-range1-${repeat/idx/index};
                         tabindex tabindex/next|nothing;
-                        value python:widget.getReflexRuleValue(idx,'range1');"
+                        value python:widget.getReflexRuleElement(idx,'range1');"
                         i18n:domain="python:i18n_domain">
+                <div
+                    class="actions-set"
+                    tal:attributes="
+                        name string:${fieldName}.actionsset:records:ignore_empty;
+                        id string:${fieldName}-actionsset-${repeat/idx/index};">
+                    <div
+                        tal:define="action_rows python:widget.getReflexRuleElement(idx,'actions');"
+                        tal:repeat="action_row action_rows"
+                        class="action">
+                        <select
+                            tal:define="act_row_idx python:action_row['act_row_idx']"
+                            tal:attributes="
+                                name string:${fieldName}.action-${act_row_idx}:records:ignore_empty;
+                                id string:${fieldName}-action-${repeat/idx/index}-${act_row_idx};
+                                tabindex tabindex/next|nothing;"
+                                i18n:domain="python:i18n_domain">
+                            <option
+                                tal:repeat="option widget/getActionVoc"
+                                tal:content="python:option"
+                                tal:attributes="
+                                    value python: option;
+                                    selected python:'selected' if option==action_row['action'] else None"
+                                i18n:translate=""/>
+                        </select>
+                        <!-- delete action-->
+                        <img tal:condition="widget/allowDelete"
+                            class="action_deletebtn"
+                            tal:attributes="
+                                id string:delete-action-${repeat/idx/index};
+                                src string:${portal/absolute_url}/++resource++bika.lims.images/delete.png"/>
+                    </div>
+                    <input
+                        type="button"
+                        class="context"
+                        value="More"
+                        tal:attributes="id string:${fieldName}_action_more;tabindex tabindex/next|nothing"
+                        i18n:attributes="value"/>
+                </div>
             </tal:block>
         </td>
         <td>
