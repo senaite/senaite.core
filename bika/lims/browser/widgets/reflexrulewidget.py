@@ -39,7 +39,8 @@ class ReflexRuleWidget(RecordsWidget):
                      emptyReturnsMarker=False):
         """
         Gets the values from the ReflexRule section and returns them in the
-        correct way to be saved:
+        correct way to be saved.
+        So the function will return a list of dictionaries:
         [
             {'range1': 'X', 'range0': 'X', 'analysisservice': '<as_uid>', 'value': '',
                 'actions':[{'action':'<action_name>', 'act_row_idx':'X'},
@@ -57,66 +58,70 @@ class ReflexRuleWidget(RecordsWidget):
         # 'value' is a list which will be saved
         value = []
         # Building the actions list
-        for action_row in raw_data[0]:
-            value.append(self._format_actions_row(action_row))
+        for action_set in raw_data[0]:
+            value.append(self._format_actions_set(action_set))
         return value, {}
 
-    def _build_actions_list(self, action_row):
+    def _format_actions_set(self, action_set):
         """
-        This function gets a raw action row with the following format:
+        This function gets a set of actions with the following format:
         {'analysisservice': '<as_uid>',
         'value': '',
         'range1': '3',
         'range0': '1',
         'action-1': 'replace',
-        'action-0': 'replace'}
+        'action-0': 'duplicate',
+        ...}
 
-        and returns a formatted row like this one:
+        and returns a formatted set with the actions sorted like this one:
         {'range1': '3', 'range0': '1', 'analysisservice': '<as_uid>', 'value': '',
             'actions':[
-                {'action':'replace', 'act_row_idx':'0'},
+                {'action':'duplicate', 'act_row_idx':'0'},
                 {'action':'replace', 'act_row_idx':'1'}
             ]
         }
         """
-        keys = action_row.keys()
+        keys = action_set.keys()
         # 'formatted_action_row' is the dict which will be added in the
         # 'value' list
-        formatted_action_row = {}
-        # Filling the
+        formatted_action_set = {}
         # Filling the dict with the none action values
         for key in keys:
             if key.startswith('action-'):
                 pass
             else:
-                formatted_action_row[key] = action_row[key]
+                formatted_action_set[key] = action_set[key]
         # Adding the actions list to the final dictionary
-        formatted_action_row['actions'] = self._get_sorted_actions_list(
-            keys, action_row
+        formatted_action_set['actions'] = self._get_sorted_actions_list(
+            keys, action_set
         )
-        return formatted_action_row
+        return formatted_action_set
 
-    def _get_sorted_actions_list(self, keys_list, raw_dict):
+    def _get_sorted_actions_list(self, keys_list, action_set):
         """
-        This function takes advantatge of the yet sorted 'keys_list'
-        and returns a list of dictionaries with the actions from the raw_dict
-        following the keys_list order.
+        This function takes advantatge of the yet filtered 'keys_list'
+        and returns a list of dictionaries with the actions from the action_set.
         :keys_list: is a list with the keys starting with 'action-' in the
-            'raw_dict' sorted by its index.
-        :raw_dict: is the dict representing an actions set
+            'action_set'.
+        :action_set: is the dict representing a set of actions.
         """
+        # actions_dicts_l is the final list which will contain the the
+        # dictionaries from raw_index that start with 'action-'.
+        # The dictionaries will be sorted by its index
         actions_dicts_l = []
+        # a_count is a counter which is incremented every time a new action is
+        # added to the list, so we can give it a index.
         a_count = 0
-        # a_keys_list will contain the keys starting with 'action-' but sorted
+        # actions_list will contain the keys starting with 'action-' but sorted
         # by their index
-        actions_list = self._get_sorted_action_keys(keys)
+        actions_list = self._get_sorted_action_keys(keys_list)
         for key in actions_list:
             # Building the action dict
             action_dict = {
-                'action': raw_dict[key], 'act_row_idx': a_count}
+                'action': action_set[key], 'act_row_idx': a_count}
             # Saves the action as a new dict inside the actions list
             actions_dicts_l.append(action_dict)
-            a_cont += 1
+            a_count += 1
         return actions_dicts_l
 
     def _get_sorted_action_keys(self, keys_list):
@@ -129,7 +134,8 @@ class ReflexRuleWidget(RecordsWidget):
         for key in keys_list:
             if key.startswith('action-'):
                 action_list.append(key)
-        return action_list.sort()
+        action_list.sort()
+        return action_list
 
     def getReflexRuleSetup(self):
         """
@@ -246,8 +252,13 @@ class ReflexRuleWidget(RecordsWidget):
         """
         rules_list = self.aq_parent.getReflexRules()
         if len(rules_list) > idx:
-            return rules_list[idx].get(element, [{'action':'<action_name1>', 'act_row_idx':'0'},{'action':'<action_name>2', 'act_row_idx':'1'}])
-        return ''
+            value = rules_list[idx].get(element, '')
+            if element == 'actions' and value == '':
+                return [{'action': '', 'act_row_idx': '0'}, ]
+            else:
+                return value
+        return [
+            {'action': '', 'act_row_idx': '0'}] if element == 'actions' else ''
 
 registerWidget(
     ReflexRuleWidget,
