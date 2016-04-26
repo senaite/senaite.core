@@ -114,6 +114,7 @@
                         tabindex tabindex/next|nothing;
                         value python:widget.getReflexRuleElement(idx,'range1');"
                         i18n:domain="python:i18n_domain">
+                <!-- Reflex action rules list -->
                 <div
                     class="actions-set"
                     tal:attributes="
@@ -142,14 +143,13 @@
                         <img tal:condition="widget/allowDelete"
                             class="action_deletebtn"
                             tal:attributes="
-                                id string:delete-action-${repeat/idx/index};
                                 src string:${portal/absolute_url}/++resource++bika.lims.images/delete.png"/>
                     </div>
                     <input
                         type="button"
-                        class="context"
+                        class="context addnew"
                         value="More"
-                        tal:attributes="id string:${fieldName}_action_more;tabindex tabindex/next|nothing"
+                        tal:attributes="id string:${fieldName}_action_addnew;tabindex tabindex/next|nothing"
                         i18n:attributes="value"/>
                 </div>
             </tal:block>
@@ -159,7 +159,6 @@
             <img tal:condition="widget/allowDelete"
                 class="rw_deletebtn"
                 tal:attributes="
-                    id string:delete-row-${repeat/idx/index};
                     src string:${portal/absolute_url}/++resource++bika.lims.images/delete.png"/>
 
             <!-- Hidden fields -->
@@ -181,7 +180,7 @@
         class="context"
         value="More"
         tal:condition="python: field.showMore(values)"
-        tal:attributes="id string:${fieldName}_more;tabindex tabindex/next|nothing"
+        tal:attributes="id string:${fieldName}_addnew;tabindex tabindex/next|nothing"
         i18n:attributes="value" />
     </fieldset>
 </tal:block>
