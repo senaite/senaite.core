@@ -14,7 +14,7 @@ jQuery(function($){
                 });
             var del_buts = $('table#ReflexRules_table').find('.rw_deletebtn');
             for (var i=0; del_buts.length > i; i++) {
-                $(del_but[i]).trigger( "click" );
+                $(del_buts[i]).trigger( "click" );
             }
             setupdata = $.parseJSON($('#rules-setup-data').html());
             method_controller(setupdata);
