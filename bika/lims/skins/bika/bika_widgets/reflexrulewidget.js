@@ -1,28 +1,21 @@
 jQuery(function($){
-    /** A variable to save the old selection to improve user exp
-     It format will be:
-     {'method-0':[{'analysisservice':'xas_uidx'}, {...}, ...], 'method-1':[...], ...}
-     */
-    var old_rules_selections = {};
-    // This variable saves the last method uid selected. Must be updated
-    // every time the user selects another method.
-    var last_method = '';
     $(document).ready(function(){
         // This will be a variable to be used everywhere
         var setupdata = $.parseJSON($('#rules-setup-data').html());
-        last_method = $('select[id="Method"]').find(":selected").attr('value');
         method_controller(setupdata);
-        remove_last_rule();
-        setup(setupdata);
+        remove_last_rule_set();
+        setup_addnew_buttons();
+        setup_del_action_button();
         $('select#Method').bind("change", function () {
-            save_old_method();
             // Updates the new method
-            last_method = $('select[id="Method"]')
-                .find(":selected").attr('value');
             $.each($('table#ReflexRules_table').find('.rw_deletebtn'),
                 function(index, element){
                     $(element).trigger( "click" );
                 });
+            var del_buts = $('table#ReflexRules_table').find('.rw_deletebtn');
+            for (var i=0; del_buts.length > i; i++) {
+                $(del_buts[i]).trigger( "click" );
+            }
             setupdata = $.parseJSON($('#rules-setup-data').html());
             method_controller(setupdata);
         });
@@ -51,61 +44,9 @@ jQuery(function($){
                 '">' + ass[ass_keys[i]].as_title + '</option>'
             );
         }
-        if (old_rules_selections[method] !== undefined &&
-            old_rules_selections[method].length > 0) {
-            var rules_list = old_rules_selections[method];
-            for (i=1; rules_list.length > i; i++) {
-                $('#ReflexRules_more').click();
-            }
-            // Selecting the option
-            set_ans_options(rules_list);
-        }
     }
 
-    function save_old_method(){
-        // Save the current rules to be retrived if there is the need
-        var ans = $('select[id^="ReflexRules-analysisservice-"]');
-        var range0 = $('input[id^="ReflexRules-range0-"]');
-        var range1 = $('input[id^="ReflexRules-range1-"]');
-        var list = [];
-        for (var i=0; ans.length > i; i++){
-            var items = {
-                analysisservice: ans[i].value,
-                range0: range0[i].value,
-                range1: range1[i].value,
-            };
-            list.push(items);
-        }
-        old_rules_selections[last_method] = list;
-
-    }
-
-    function set_ans_options(actions_list) {
-        // Set the option to each analysis service select list using
-        // the as_uids
-        var rules_set = $('tr.records_row_ReflexRules');
-        var ans = $('select[id^="ReflexRules-analysisservice-"]');
-        var range0 = $('input[id^="ReflexRules-range0-"]');
-        var range1 = $('input[id^="ReflexRules-range1-"]');
-        if (rules_set.length !== 0){
-            for (var i=0; rules_set.length > i; i++) {
-                $("select#" + ans[i].id +
-                    " option[value='" + actions_list[i].analysisservice + "']")
-                    .prop('selected', true);
-                $("input#" + range0[i].id).val(actions_list[i].range0);
-                $("input#" + range1[i].id).val(actions_list[i].range1);
-            }
-        }
-    }
-
-    function setup(setupdata) {
-        // This function retrives the data contained in the reflex rule
-        // object and fill up the fields
-        var actions_list = setupdata.saved_actions.actions;
-        set_ans_options(actions_list);
-    }
-
-    function remove_last_rule(){
+    function remove_last_rule_set(){
         /**
         This function deletes the lates rule. It is useful to avoid user
         confusions when they open the rule's view.
@@ -128,5 +69,107 @@ jQuery(function($){
         if ($(range0).val() > $(range1).val()) {
             $(range1).val($(range0).val());
         }
+    }
+
+    function setup_addnew_buttons(){
+        /**
+        Bind the process trigged after clicking on a 'more' button
+        */
+        $("input[id$='_addnew']").click(function(i,e){
+            if ($(this).attr("id").split("_")[1] == "action"){
+                // The process to add a new action row
+                add_action_row(this);
+            }
+            else{
+                // The process to add a whole new action set
+                add_action_set(this);
+            }
+        });
+    }
+
+    function add_action_row(element){
+        /**
+        This function defines the process to add a new action row
+        */
+        var row = $(element).prev('div').clone();
+        var found = $(row).find("input, select");
+        for (var i = found.length - 1; i >= 0; i--) {
+            var prefix, nr;
+            var ID = found[i].id;
+            prefix = ID.split("-")[0] + "-" + ID.split("-")[1];
+            var sufix = parseInt(ID.split("-")[3]) + 1;
+            nr = ID.split("-")[2];
+            $(found[i]).attr('id', prefix + "-" + nr + "-" + sufix);
+        }
+        // clear values
+        for(i=0; i<$(row).children().length; i++){
+            var td = $(row).children()[i];
+            var input = $(td).find('input').not('.addnew');
+            $(input).val('');
+            var sel_options = $(td).find(":selected");
+            $(sel_options).prop("selected", false);
+        }
+        $(row).insertBefore(element);
+    }
+
+    function add_action_set(element){
+        /**
+        This function defines the process to add a new whole action set
+        */
+        var fieldname = $(element).attr("id").split("_")[0];
+        var table = $('#'+fieldname+"_table");
+        var rows = $(".records_row_"+fieldname);
+        // clone last row
+        var row = $(rows[rows.length-1]).clone();
+        // after cloning, make sure the new element's IDs are unique
+        var found = $(row).find(
+                "input[id^='"+fieldname+"']," +
+                "select[id^='"+fieldname+"']");
+        for (var ii = found.length - 1; ii >= 0; ii--) {
+            var prefix, nr;
+            var ID = found[ii].id;
+            if (ID.split('-').length == 4){
+                // It is an action row
+                prefix = ID.split("-")[0] + "-" + ID.split("-")[1];
+                var sufix = ID.split("-")[3];
+                nr = parseInt(ID.split("-")[2]) + 1;
+                $(found[ii]).attr('id', prefix + "-" + nr + "-" + sufix);
+            }
+            else if (ID.split('-').length == 3) {
+                // It is not an action row
+                prefix = ID.split("-")[0] + "-" + ID.split("-")[1];
+                nr = parseInt(ID.split("-")[2]) + 1;
+                $(found[ii]).attr('id', prefix + "-" + nr);
+            }
+        }
+        // clear values
+        for(var i=0; i<$(row).children().length; i++){
+            var td = $(row).children()[i];
+            var input = $(td).find('input').not('.addnew');
+            $(input).val('');
+            var sel_options = $(td).find(":selected");
+            $(sel_options).prop("selected", false);
+        }
+        // Binding the controllers
+        $(row)
+            .find('input[id^="ReflexRules-range"]')
+            .bind("change", function () {
+                range_controller(element);
+                setup_del_action_button();
+            });
+        $(row).appendTo($(table));
+    }
+
+    function setup_del_action_button(){
+        /**
+        This function defines the process to do after clicking on the
+        delete button of an action row
+        */
+        $(".action_deletebtn").live('click', function(i,e){
+            var div = $(this).parent();
+            var siblings = $(div).siblings();
+            if (siblings.length < 2) return;
+            $(this).parent().remove();
+        });
     }
 });

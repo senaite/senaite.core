@@ -1,0 +1,7 @@
+tr.records_row_ReflexRules{
+    border: 1px solid #CECECE;
+}
+.action_deletebtn {
+    border: 0;
+    cursor: pointer;
+}
