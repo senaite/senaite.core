@@ -120,7 +120,6 @@ class ReflexRule(BaseContent):
         action_sets = self.getExpectedValuesAndRules(as_uid)
         r = []
         # Checking if the there are rules for this result
-        import pdb; pdb.set_trace()
         for action_set in action_sets:
             # It is a discrete value
             exp_val = action_set.get('expected_values', '')

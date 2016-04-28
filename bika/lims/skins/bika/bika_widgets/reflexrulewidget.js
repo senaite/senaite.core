@@ -94,12 +94,21 @@ jQuery(function($){
         var row = $(element).prev('div').clone();
         var found = $(row).find("input, select");
         for (var i = found.length - 1; i >= 0; i--) {
+            // Increment the index id
             var prefix, nr;
             var ID = found[i].id;
             prefix = ID.split("-")[0] + "-" + ID.split("-")[1];
             var sufix = parseInt(ID.split("-")[3]) + 1;
             nr = ID.split("-")[2];
             $(found[i]).attr('id', prefix + "-" + nr + "-" + sufix);
+            // Increment the name id
+            var name = found[i].name;
+            prefix = name.split(":")[0];
+            sufix = name.split(":")[1] + ":" + name.split(":")[2];
+            var prefix_name = prefix.split('-')[0];
+            var prefix_idx = parseInt(prefix.split('-')[1]) + 1;
+            prefix = prefix_name + "-" + prefix_idx;
+            $(found[i]).attr('name', prefix + ":" + sufix);
         }
         // clear values
         for(i=0; i<$(row).children().length; i++){
@@ -118,11 +127,11 @@ jQuery(function($){
         */
         var fieldname = $(element).attr("id").split("_")[0];
         var table = $('#'+fieldname+"_table");
-        var rows = $(".records_row_"+fieldname);
-        // clone last row
-        var row = $(rows[rows.length-1]).clone();
+        var sets = $(".records_row_"+fieldname);
+        // clone last set of actions
+        var set = $(sets[sets.length-1]).clone();
         // after cloning, make sure the new element's IDs are unique
-        var found = $(row).find(
+        var found = $(set).find(
                 "input[id^='"+fieldname+"']," +
                 "select[id^='"+fieldname+"']");
         for (var ii = found.length - 1; ii >= 0; ii--) {
@@ -143,21 +152,24 @@ jQuery(function($){
             }
         }
         // clear values
-        for(var i=0; i<$(row).children().length; i++){
-            var td = $(row).children()[i];
+        for(var i=0; i<$(set).children().length; i++){
+            var td = $(set).children()[i];
             var input = $(td).find('input').not('.addnew');
             $(input).val('');
             var sel_options = $(td).find(":selected");
             $(sel_options).prop("selected", false);
         }
+        $(set).appendTo($(table));
         // Binding the controllers
-        $(row)
+        $(set)
             .find('input[id^="ReflexRules-range"]')
             .bind("change", function () {
                 range_controller(element);
                 setup_del_action_button();
             });
-        $(row).appendTo($(table));
+        $(set).find("input[id$='_action_addnew']").click(function(i,e){
+            add_action_row(this);
+        });
     }
 
     function setup_del_action_button(){
