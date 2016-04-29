@@ -216,7 +216,7 @@ jQuery(function($){
             .bind("change", function (element) {
                 var setupdata = $.parseJSON($('#rules-setup-data').html());
                 analysiservice_change(element.target, setupdata);
-            });
+            }).trigger("change");
     }
 
     function setup_del_action_button(){
@@ -250,6 +250,7 @@ jQuery(function($){
                 // Write the options
                 analysiservice_change(element, setupdata);
             }
+            else{analysiservice_change(element, setupdata);}
         });
         // Select the option
         rules = $.parseJSON($('#rules-setup-data')
