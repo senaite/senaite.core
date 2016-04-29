@@ -41,14 +41,14 @@ class ReflexRuleWidget(RecordsWidget):
         Gets the values from the ReflexRule section and returns them in the
         correct way to be saved.
         So the function will return a list of dictionaries:
-        [
-            {'range1': 'X', 'range0': 'X', 'analysisservice': '<as_uid>', 'value': '',
-                'actions':[{'action':'<action_name>', 'act_row_idx':'X'},
-                          {'action':'<action_name>', 'act_row_idx':'X'}
-                    ]
-            },
-            ...
-        ]
+        [{
+        'range1': 'X', 'range0': 'X',
+        'discreteresult': 'X',
+        'analysisservice': '<as_uid>', 'value': '',
+            'actions':[{'action':'<action_name>', 'act_row_idx':'X'},
+                      {'action':'<action_name>', 'act_row_idx':'X'}
+                ]
+        }, ...]
         """
         if field.getName() != 'ReflexRules':
             return RecordsWidget.process_form(
@@ -69,12 +69,17 @@ class ReflexRuleWidget(RecordsWidget):
         'value': '',
         'range1': '3',
         'range0': '1',
+        'discreteresult': '1',
         'action-1': 'replace',
         'action-0': 'duplicate',
         ...}
 
         and returns a formatted set with the actions sorted like this one:
-        {'range1': '3', 'range0': '1', 'analysisservice': '<as_uid>', 'value': '',
+        {
+        'range1': '3', 'range0': '1',
+        'analysisservice': '<as_uid>',
+        'discreteresult': '1',
+        'value': '',
             'actions':[
                 {'action':'duplicate', 'act_row_idx':'0'},
                 {'action':'replace', 'act_row_idx':'1'}
@@ -145,18 +150,25 @@ class ReflexRuleWidget(RecordsWidget):
         - The current saved data
         the functions returns:
         {'<method_uid>': {'analysisservices': {'<as_uid>': {'as_id': '<as_id>',
-                                                            'as_title':'<as_title>'}
+                                                            'as_title':'<as_title>',
+                                                            'resultoptions': [,,]}
                                                '<as_uid>': {'as_id': '<as_id>',
-                                                            'as_title':'<as_title>'}
+                                                            'as_title':'<as_title>',
+                                                            'resultoptions': [
+                                                                {'ResultText': 'Failed', 'ResultValue': '1', 'value': ''},
+                                                                ...
+                                                            ]}
                                             },
                           'as_keys': ['<as_uid>', '<as_uid>'],
                           'method_id': '<method_id>',
                           'method_tile': '<method_tile>'
                           },
         '<method_uid>': {'analysisservices': {'<as_uid>': {'as_id': '<as_id>',
-                                                            'as_title':'<as_title>'}
+                                                            'as_title':'<as_title>',
+                                                            'resultoptions': [,,]}
                                                '<as_uid>': {'as_id': '<as_id>',
-                                                            'as_title':'<as_title>'}
+                                                            'as_title':'<as_title>',
+                                                            'resultoptions': [,,]}
                                             },
                           'as_keys': ['<as_uid>', '<as_uid>'],
                           'method_id': '<method_id>',
@@ -165,7 +177,8 @@ class ReflexRuleWidget(RecordsWidget):
          'saved_actions': {'rules': [{'analysisservice': '<as_uid>',
                                         'range0': 'xx',
                                         'range1': 'xx',
-                                        'value': ''
+                                        'value': '',
+                                        'discreteresult': 'X'
                                     }],
                            'method_id': '<method_uid>',
                            'method_tile': '<method_tile>',
@@ -180,13 +193,17 @@ class ReflexRuleWidget(RecordsWidget):
                     portal_type='Method',
                     inactive_state='active')]
         for method in methods:
-            # Get the analysis related to each method
+            # Get the analysis services related to each method
             br = method.getBackReferences('AnalysisServiceMethods')
             analysiservices = {}
             for analysiservice in br:
                 analysiservices[analysiservice.UID()] = {
                     'as_id': analysiservice.id,
                     'as_title': analysiservice.Title(),
+                    'resultoptions':
+                        analysiservice.getResultOptions()
+                        if analysiservice.getResultOptions()
+                        else [],
                 }
             # Make the json dict
             relations[method.UID()] = {
@@ -224,17 +241,17 @@ class ReflexRuleWidget(RecordsWidget):
 
         The widget is going to return a list like this:
         [
-            {'range1': 'X', 'range0': '1', 'analysisservice': '<as_uid>', 'value': '',
+            {'discreteresult': 'X', 'analysisservice': '<as_uid>', 'value': '',
                 'actions':[{'action':'<action_name>', 'act_row_idx':'X'},
                           {'action':'<action_name>', 'act_row_idx':'X'}
                     ]
             },
-            {'range1': 'X', 'range0': '1', 'analysisservice': '<as_uid>', 'value': '',
+            {'range1': 'X', 'range0': 'X', 'analysisservice': '<as_uid>', 'value': '',
                 'actions':[{'action':'<action_name>', 'act_row_idx':'X'},
                           {'action':'<action_name>', 'act_row_idx':'X'}
                     ]
             },
-            {'range1': 'X', 'range0': '1', 'analysisservice': '<as_uid>', 'value': '',
+            {'range1': 'X', 'range0': 'X', 'analysisservice': '<as_uid>', 'value': '',
                 'actions':[{'action':'<action_name>', 'act_row_idx':'X'},
                           {'action':'<action_name>', 'act_row_idx':'X'}
                     ]
