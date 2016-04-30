@@ -49,6 +49,10 @@ jQuery(function($){
                 '">' + ass[ass_keys[i]].as_title + '</option>'
             );
         }
+        var as_dom = $('select[id^="ReflexRules-analysisservice-"]');
+        $.each(as_dom,function(index, element){
+            $(element).trigger("change");
+        });
     }
 
     function analysiservice_change(as, setupdata){
@@ -238,6 +242,7 @@ jQuery(function($){
         values fields. It also selects the saved option if the expected result
         is discrete
         */
+        // Select the option
         var rules = $.parseJSON($('#rules-setup-data')
             .html()).saved_actions.rules;
         var ass = $('select[id^="ReflexRules-analysisservice-"]');
@@ -252,9 +257,6 @@ jQuery(function($){
             }
             else{analysiservice_change(element, setupdata);}
         });
-        // Select the option
-        rules = $.parseJSON($('#rules-setup-data')
-            .html()).saved_actions.rules;
         for (var i=0; rules.length > i; i++){
             var discrete = rules[i].discreteresult;
             var ops = $(ass[i]).siblings('.resultoptioncontainer select option');
