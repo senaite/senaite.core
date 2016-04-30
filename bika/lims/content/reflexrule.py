@@ -101,7 +101,7 @@ class ReflexRule(BaseContent):
             elif action_set.get('analysisservice', '') == as_uid and\
                     not(action_set.get('range0', '')):
                 l.append({
-                    'expected_values': (action_set.get('discrete', '')),
+                    'expected_values': action_set.get('resultoption', ''),
                     'actions': action_set.get('actions', [])
                     })
             else:
@@ -121,9 +121,9 @@ class ReflexRule(BaseContent):
         r = []
         # Checking if the there are rules for this result
         for action_set in action_sets:
-            # It is a discrete value
+            # It is a discrete value in string shape
             exp_val = action_set.get('expected_values', '')
-            if not(isnumber(result)) and len(exp_val) == 1 and \
+            if isnumber(result) and type(exp_val) == type(str()) and \
                     exp_val == result:
                 r.append(action_set.get('actions', {}))
             # It is a range of values
