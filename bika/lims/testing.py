@@ -171,9 +171,18 @@ class Keywords(object):
 class RemoteKeywords(Keywords, RemoteLibrary):
 
 
-    def write_at_field_values(self, obj, **kwargs):
+    def write_at_field_values(self, obj_or_path, **kwargs):
         """Write valid field values from kwargs into the object's AT fields.
+        obj_id_path could be an object or a path to an object, relative to the
+        portal root.  This makes the keyword much easier to use directly from
+        within a robot test.
         """
+        portal = api.portal.get()
+        if isinstance(obj_or_path, basestring):
+            obj = portal.restrictedTraverse(obj_or_path)
+        else:
+            obj = obj_or_path
+
         uc = getToolByName(obj, 'uid_catalog')
         schema = obj.Schema()
         # fields contains all schema-valid field values from the request.

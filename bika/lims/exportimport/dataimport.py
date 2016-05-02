@@ -86,7 +86,17 @@ class ajaxGetImportTemplate(BrowserView):
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         exim = self.request.get('exim').replace(".", "/")
-        return ViewPageTemplateFile("instruments/%s_import.pt" % exim)(self)
+        # If a specific template for this instrument doesn't exist yet,
+        # use the default template for instrument results file import located
+        # at bika/lims/exportimport/instruments/instrument.pt
+        import os.path
+        instrpath = os.path.join("exportimport", "instruments")
+        templates_dir = resource_filename("bika.lims", instrpath)
+        fname = "%s/%s_import.pt" % (templates_dir, exim)
+        if os.path.isfile(fname):
+            return ViewPageTemplateFile("instruments/%s_import.pt" % exim)(self)
+        else:
+            return ViewPageTemplateFile("instruments/instrument.pt")(self)
 
     def getInstruments(self):
         bsc = getToolByName(self, 'bika_setup_catalog')

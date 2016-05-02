@@ -25,7 +25,7 @@ class WinescanCSVParser(InstrumentCSVResultsFileParser):
             resid = splitted[0]
             if not resid:
                 self.err("No Sample ID found", numline=self.num_line)
-                self.currentHeader = None
+                self.currentheader = None
                 return 0
 
             duplicated = []
@@ -82,7 +82,7 @@ class WinescanCSVParser(InstrumentCSVResultsFileParser):
 
             # add result
             self._addRawResult(resid, outvals, True)
-            self.currentHeader = None
+            self.currentheader = None
             return 0
 
         self.err("No header found")

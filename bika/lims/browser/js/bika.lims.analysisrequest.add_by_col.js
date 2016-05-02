@@ -178,7 +178,58 @@ function AnalysisRequestAddByCol() {
                 filter_by_client(arnum)
             }
         }, 250);
-    }
+        /** If client only has one contect, and the analysis request comes from
+          * a client, then Auto-complete first Contact field.
+          * If client only has one contect, and the analysis request comes from
+          * a batch, then Auto-complete all Contact field.
+          */
+        var uid = $($("tr[fieldname='Client'] input")[0]).attr("uid");
+        var request_data = {
+            catalog_name: "portal_catalog",
+            portal_type: "Contact",
+            getParentUID: uid,
+            inactive_state: "active"
+        };
+        window.bika.lims.jsonapi_read(request_data, function (data) {
+            /** If the analysis request comes from a client
+             * window.location.pathname.split('batches') should not be splitted
+             * in 2 parts
+             */
+            if (data.success &&
+                data.total_objects == 1 &&
+                window.location.pathname.split('batches').length < 2) {
+                var contact = data.objects[0];
+                $('input#Contact-0')
+                    .attr('uid', contact['UID'])
+                    .val(contact['Title'])
+                    .attr('uid_check', contact['UID'])
+                    .attr('val_check', contact['UID']);
+                $('#Contact-0_uid').val(contact['UID']);
+                state_set(0, 'Contact', contact['UID']);
+                cc_contacts_set(0);
+            }
+            /** If the analysis request comes from a batch
+             * window.location.pathname.split('batches') should be splitted in
+             * 2 parts
+             */
+            else if (data.success &&
+                data.total_objects == 1 &&
+                window.location.pathname.split('batches').length == 2) {
+                var nr_ars = parseInt($("#ar_count").val(), 10);
+                var contact = data.objects[0];
+                $('input[id^="Contact-"]')
+                    .attr('uid', contact['UID'])
+                    .val(contact['Title'])
+                    .attr('uid_check', contact['UID'])
+                    .attr('val_check', contact['UID']);
+                $('[id^="Contact-"][id$="_uid"]').val(contact['UID']);
+                for (var i=0; i<nr_ars; i++){
+                    state_set(i, 'Contact', contact['UID']);
+                    cc_contacts_set(i);
+                }
+            };
+        });
+    };
 
     function state_set(arnum, fieldname, value) {
         /* Use this function to set values in the state variable.

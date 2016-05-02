@@ -21,6 +21,7 @@ function BikaListingTableView() {
 		workflow_action_button_click()
 		column_toggle_context_menu()
 		column_toggle_context_menu_selection()
+		show_more_clicked();
 
 		$('*').click(function () {
 			if ($(".tooltip").length > 0) {
@@ -28,6 +29,44 @@ function BikaListingTableView() {
 			}
 		})
 
+	}
+
+	function show_more_clicked() {
+		$('a.bika_listing_show_more').click(function(e){
+			e.preventDefault();
+			var formid = $(this).attr('data-form-id');
+			var pagesize = parseInt($(this).attr('data-pagesize'));
+			var url = $(this).attr('data-ajax-url');
+			var limit_from = parseInt($(this).attr('data-limitfrom'));
+			url = url.replace('_limit_from=','_olf=');
+			url += '&'+formid+"_limit_from="+limit_from;
+			$('#'+formid+' a.bika_listing_show_more').fadeOut();
+			var tbody = $('table.bika-listing-table[form_id="'+formid+'"] tbody.item-listing-tbody')
+			$.ajax(url)
+				.done(function(data) {
+					try {
+						// We must surround <tr> inside valid TABLE tags before extracting
+						var rows = $('<html><table>'+data+'</table></html>').find('tr')
+						// Then we can simply append the rows to existing TBODY.
+						$(tbody).append(rows)
+						// Increase limit_from so that next iteration uses correct start point
+						$('#'+formid+' a.bika_listing_show_more').attr('data-limitfrom', limit_from+pagesize);
+					}
+					catch (e) {
+						$('#' + formid + ' a.bika_listing_show_more').hide();
+						console.log(e);
+					}
+				}).fail(function () {
+					$('#'+formid+' a.bika_listing_show_more').hide();
+					console.log("bika_listing_show_more failed");
+    			}).always(function() {
+					var numitems = $('table.bika-listing-table[form_id="'+formid+'"] tbody.item-listing-tbody tr').length;
+					$('#'+formid+' span.number-items').html(numitems);
+					if (numitems % pagesize == 0) {
+						$('#'+formid+' a.bika_listing_show_more').show();
+					}
+				});
+		});
 	}
 
 	function column_header_clicked() {

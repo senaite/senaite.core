@@ -18,16 +18,16 @@
       handler="bika.lims.subscribers.objectmodified.ObjectModifiedEventHandler"
     />
 
-    <!-- Newly created analyses -->
+    <!-- Newly created analyses (applies to routine analyses only) -->
     <subscriber
-      for="bika.lims.interfaces.IAnalysis
+      for="bika.lims.interfaces.IRoutineAnalysis
            Products.Archetypes.interfaces.IObjectInitializedEvent"
       handler="bika.lims.subscribers.analysis.ObjectInitializedEventHandler"
     />
 
-    <!-- Deleted analyses -->
+    <!-- Deleted analyses (applies to routine analyses only) -->
     <subscriber
-      for="bika.lims.interfaces.IAnalysis
+      for="bika.lims.interfaces.IRoutineAnalysis
            zope.lifecycleevent.interfaces.IObjectRemovedEvent"
       handler="bika.lims.subscribers.analysis.ObjectRemovedEventHandler"
     />

@@ -213,7 +213,9 @@ class InstrumentCSVResultsFileParser(InstrumentResultsFileParser):
                 continue
 
             line = line.strip()
-            jump = self._parseline(line)
+            jump = 0
+            if line:
+                jump = self._parseline(line)
 
         self.log(
             "End of file reached successfully: ${total_objects} objects, "
@@ -223,6 +225,10 @@ class InstrumentCSVResultsFileParser(InstrumentResultsFileParser):
                      "total_results":self.getResultsTotalCount()}
         )
         return True
+
+    def splitLine(self, line):
+        sline = line.split(',')
+        return [token.strip() for token in sline]
 
     def _parseline(self, line):
         """ Parses a line from the input CSV file and populates rawresults
@@ -428,7 +434,7 @@ class AnalysisResultsImporter(Logger):
                            if analysis.getKeyword() == acode]
 
                     if len(ans) > 1:
-                        self.err("More than one analyses found for ${object_id} and ${analysis_keyword}",
+                        self.err("More than one analysis found for ${object_id} and ${analysis_keyword}",
                                  mapping={"object_id": objid,
                                           "analysis_keyword": acode})
                         continue
@@ -623,10 +629,10 @@ class AnalysisResultsImporter(Logger):
             # Look from reference analyses
             analyses = self._getZODBAnalysesFromReferenceAnalyses(objid,
                         self._priorizedsearchcriteria)
-        else:
+        if (len(analyses) == 0):
             # Look from ar and derived
             analyses = self._getZODBAnalysesFromAR(objid,
-                        self._priorizedsearchcriteria,
+                        '',
                         searchcriteria,
                         allowed_ar_states)
 
