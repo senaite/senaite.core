@@ -45,8 +45,10 @@ class ReflexRuleWidget(RecordsWidget):
         'range1': 'X', 'range0': 'X',
         'discreteresult': 'X',
         'analysisservice': '<as_uid>', 'value': '',
-            'actions':[{'action':'<action_name>', 'act_row_idx':'X'},
-                      {'action':'<action_name>', 'act_row_idx':'X'}
+            'actions':[{'action':'<action_name>', 'act_row_idx':'X',
+                        'otherWS':Bool,},
+                      {'action':'<action_name>', 'act_row_idx':'X',
+                        'otherWS':Bool,},
                 ]
         }, ...]
         """
@@ -72,6 +74,7 @@ class ReflexRuleWidget(RecordsWidget):
         'discreteresult': '1',
         'action-1': 'repeat',
         'action-0': 'duplicate',
+        'otherWS-1': 'on',
         ...}
 
         and returns a formatted set with the actions sorted like this one:
@@ -81,8 +84,8 @@ class ReflexRuleWidget(RecordsWidget):
         'discreteresult': '1',
         'value': '',
             'actions':[
-                {'action':'duplicate', 'act_row_idx':'0'},
-                {'action':'repeat', 'act_row_idx':'1'}
+                {'action':'duplicate', 'act_row_idx':'0', 'otherWS': True,},
+                {'action':'repeat', 'act_row_idx':'1', 'otherWS': False,},
             ]
         }
         """
@@ -90,9 +93,9 @@ class ReflexRuleWidget(RecordsWidget):
         # 'formatted_action_row' is the dict which will be added in the
         # 'value' list
         formatted_action_set = {}
-        # Filling the dict with the none action values
+        # Filling the dict with the values that aren't actions
         for key in keys:
-            if key.startswith('action-'):
+            if key.startswith('action-') or key.startswith('otherWS-'):
                 pass
             else:
                 formatted_action_set[key] = action_set[key]
@@ -106,8 +109,8 @@ class ReflexRuleWidget(RecordsWidget):
         """
         This function takes advantatge of the yet filtered 'keys_list'
         and returns a list of dictionaries with the actions from the action_set.
-        :keys_list: is a list with the keys starting with 'action-' in the
-            'action_set'.
+        :keys_list: is a list with the keys starting with 'action-' or
+        'otherWS-' in the 'action_set'.
         :action_set: is the dict representing a set of actions.
         """
         # actions_dicts_l is the final list which will contain the the
@@ -121,9 +124,16 @@ class ReflexRuleWidget(RecordsWidget):
         # by their index
         actions_list = self._get_sorted_action_keys(keys_list)
         for key in actions_list:
+            # Getting the key of otherWS element
+            otherWS_key = 'otherWS-'+str(a_count)
+            # Getting the value of otherWS checkbox
+            otherWS = True if otherWS_key in keys_list \
+                and action_set[otherWS_key] == 'on' else False
             # Building the action dict
             action_dict = {
-                'action': action_set[key], 'act_row_idx': a_count}
+                'action': action_set[key],
+                'act_row_idx': a_count,
+                'otherWS': otherWS}
             # Saves the action as a new dict inside the actions list
             actions_dicts_l.append(action_dict)
             a_count += 1
@@ -178,7 +188,8 @@ class ReflexRuleWidget(RecordsWidget):
                                         'range0': 'xx',
                                         'range1': 'xx',
                                         'value': '',
-                                        'discreteresult': 'X'
+                                        'discreteresult': 'X',
+                                        'otherWS': Bool,
                                     }],
                            'method_id': '<method_uid>',
                            'method_tile': '<method_tile>',
@@ -236,24 +247,30 @@ class ReflexRuleWidget(RecordsWidget):
         Returns the expected value saved in the object.
         :idx: it is an integer with the position of the reflex rules set in the
         widget's list.
-        :element: a string with the elemen's name to obtain:
+        :element: a string with the name of the element to obtain:
             'range0/1', 'actions', 'analysisservice',
 
         The widget is going to return a list like this:
         [
             {'discreteresult': 'X', 'analysisservice': '<as_uid>', 'value': '',
-                'actions':[{'action':'<action_name>', 'act_row_idx':'X'},
-                          {'action':'<action_name>', 'act_row_idx':'X'}
+                'actions':[{'action':'<action_name>', 'act_row_idx':'X',
+                            'otherWS': Bool},
+                          {'action':'<action_name>', 'act_row_idx':'X',
+                            'otherWS': Bool}
                     ]
             },
             {'range1': 'X', 'range0': 'X', 'analysisservice': '<as_uid>', 'value': '',
-                'actions':[{'action':'<action_name>', 'act_row_idx':'X'},
-                          {'action':'<action_name>', 'act_row_idx':'X'}
+                'actions':[{'action':'<action_name>', 'act_row_idx':'X',
+                            'otherWS': Bool},
+                          {'action':'<action_name>', 'act_row_idx':'X',
+                            'otherWS': Bool}
                     ]
             },
             {'range1': 'X', 'range0': 'X', 'analysisservice': '<as_uid>', 'value': '',
-                'actions':[{'action':'<action_name>', 'act_row_idx':'X'},
-                          {'action':'<action_name>', 'act_row_idx':'X'}
+                'actions':[{'action':'<action_name>', 'act_row_idx':'X',
+                            'otherWS': Bool},
+                          {'action':'<action_name>', 'act_row_idx':'X',
+                            'otherWS': Bool}
                     ]
             },
         ]
@@ -271,11 +288,29 @@ class ReflexRuleWidget(RecordsWidget):
         if len(rules_list) > idx:
             value = rules_list[idx].get(element, '')
             if element == 'actions' and value == '':
-                return [{'action': '', 'act_row_idx': '0'}, ]
+                return [{'action': '', 'act_row_idx': '0', 'otherWS': False}, ]
             else:
                 return value
-        return [
-            {'action': '', 'act_row_idx': '0'}] if element == 'actions' else ''
+        return [{
+                'action': '', 'act_row_idx': '0',
+                'otherWS': False
+                }] if element == 'actions' else ''
+
+    def getReflexRuleActionElement(self, set_idx=0, row_idx=0, element=''):
+        """
+        Returns the expected value saved in the action list object.
+        :set_idx: it is an integer with the position of the reflex rules set
+        in the widget's list.
+        :row_idx: is an integer with the numer of the row from the set
+        :element: a string with the name of the element of the action to
+            obtain: 'action', 'act_row_idx', 'otherWS',
+        """
+        if isinstance(set_idx, str):
+            set_idx = int(set_idx)
+        if isinstance(row_idx, str):
+            row_idx = int(row_idx)
+        actions = self.getReflexRuleElement(idx=set_idx, element='actions')
+        return actions[row_idx].get(element, '')
 
 registerWidget(
     ReflexRuleWidget,

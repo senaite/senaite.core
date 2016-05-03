@@ -141,6 +141,7 @@
                         tal:define="action_rows python:widget.getReflexRuleElement(idx,'actions');"
                         tal:repeat="action_row action_rows"
                         class="action">
+                        <!-- Action selector -->
                         <select
                             tal:define="act_row_idx python:action_row['act_row_idx']"
                             tal:attributes="
@@ -156,9 +157,18 @@
                                     selected python:'selected' if option==action_row['action'] else None"
                                 i18n:translate=""/>
                         </select>
+                        <!-- Other worksheet checkbox -->
+                        <input type="checkbox"
+                            tal:define="act_row_idx python:action_row['act_row_idx']"
+                            tal:attributes="
+                                name string:${fieldName}.otherWS-${act_row_idx}:records:ignore_empty;
+                                id string:${fieldName}-otherWS-${repeat/idx/index}-${act_row_idx};
+                                checked python:'checked' if widget.getReflexRuleActionElement(idx,act_row_idx,'otherWS') else ''">
+                        <span i18n:translate="" class="reflex_rule_text">
+                            To other worksheet
+                        </span>
                         <!-- delete action-->
-                        <img tal:condition="widget/allowDelete"
-                            class="action_deletebtn"
+                        <img class="action_deletebtn"
                             tal:attributes="
                                 src string:${portal/absolute_url}/++resource++bika.lims.images/delete.png"/>
                     </div>
