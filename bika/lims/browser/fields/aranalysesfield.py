@@ -72,8 +72,7 @@ class ARAnalysesField(ObjectField):
 
     security.declarePrivate('set')
 
-    def set(self, instance, service_uids, prices=None,
-            specs=None, repeat=False, **kwargs):
+    def set(self, instance, service_uids, prices=None, specs=None, **kwargs):
         """Set the 'Analyses' field value, by creating and removing Analysis
         objects from the AR.
 
@@ -89,8 +88,6 @@ class ARAnalysesField(ObjectField):
             key = AnalysisService UID
             value = dictionary: defined in ResultsRange field definition
 
-        repeat: variable is used to add more than one analysis with the
-            same analysis service
         """
         if not service_uids:
             return
@@ -151,7 +148,7 @@ class ARAnalysesField(ObjectField):
                 interim_fields.append(v)
 
             # create the analysis if it doesn't exist
-            if shasattr(instance, keyword) and not(repeat):
+            if shasattr(instance, keyword):
                 analysis = instance._getOb(keyword)
             else:
                 analysis = create_analysis(
