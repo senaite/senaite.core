@@ -154,7 +154,6 @@ def doReflexRuleAction(base, action_row):
         # If the analysis has been retracted yet, just duplicate it
         workflow = getToolByName(base, "portal_workflow")
         state = workflow.getInfoFor(base, 'review_state')
-        import pdb; pdb.set_trace()
         if action.get('action', '') == 'repeat' and state != 'retracted':
             # Repeat an analysis consist on cancel it and then create a new
             # analysis with the same analysis service used for the canceled
