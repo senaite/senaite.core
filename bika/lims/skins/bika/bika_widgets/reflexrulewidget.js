@@ -4,6 +4,7 @@ jQuery(function($){
         var setupdata = $.parseJSON($('#rules-setup-data').html());
         method_controller(setupdata);
         remove_last_rule_set();
+        setup_as_and_discrete_results(setupdata);
         setup_addnew_buttons();
         setup_del_action_button();
         $('select#Method').bind("change", function () {
@@ -22,7 +23,12 @@ jQuery(function($){
         $('input[id^="ReflexRules-range"]').bind("change", function () {
             range_controller(this);
         });
+        $('select[id^="ReflexRules-analysisservice-"]')
+            .bind("change", function () {
+                analysiservice_change(this, setupdata);
+            });
     });
+
     function method_controller(setupdata){
         /**
         This function updates the options in every rule
@@ -38,11 +44,50 @@ jQuery(function($){
         // Create an option for each analysis service obtained for
         // the current method
         for (var i=0; ass_keys.length > i; i++){
-            // Write the old values if the user selects the previous method again
             $('select[id^="ReflexRules-analysisservice-"]').append(
                 '<option value="' + ass_keys[i] +
                 '">' + ass[ass_keys[i]].as_title + '</option>'
             );
+        }
+        var as_dom = $('select[id^="ReflexRules-analysisservice-"]');
+        $.each(as_dom,function(index, element){
+            $(element).trigger("change");
+        });
+    }
+
+    function analysiservice_change(as, setupdata){
+        /**
+        This function hides/shows the expected result fields accordingly with
+        the analysis service. It also loads the available options for discrete
+        expected results.
+        */
+        var method = $('select[id="Method"]').find(":selected").attr('value');
+        //Check if the selected analysis service has discrete rules
+        var as_uid = $(as).find(":selected").attr('value');
+        var as_info = setupdata[method].analysisservices[as_uid];
+        var resultoptions = as_info.resultoptions;
+        if(resultoptions.length > 0){
+            // If the analysis service has discrete values, lets hide the range
+            // inputs and display the result selector with all the possible
+            // results for the analysis service
+            $(as).siblings('.rangecontainer').hide().find('input').val('');
+            $(as).siblings('.resultoptioncontainer').show();
+            // Write the different options
+            var select = $(as).siblings('.resultoptioncontainer').find('select');
+            for (var i=0; resultoptions.length > i; i++){
+                $(select).append(
+                    '<option value="' + resultoptions[i].ResultValue +
+                    '">' + resultoptions[i].ResultText + '</option>'
+                );
+            }
+        }
+        else{
+            // If the analysis service has normal values, lets hide the discrete
+            // values selector and remove its options
+            $(as).siblings('.resultoptioncontainer').hide();
+            $(as).siblings('.rangecontainer').show();
+            var opts = $(as).siblings('.resultoptioncontainer').find('option');
+            $(opts).remove();
         }
     }
 
@@ -94,12 +139,21 @@ jQuery(function($){
         var row = $(element).prev('div').clone();
         var found = $(row).find("input, select");
         for (var i = found.length - 1; i >= 0; i--) {
+            // Increment the index id
             var prefix, nr;
             var ID = found[i].id;
             prefix = ID.split("-")[0] + "-" + ID.split("-")[1];
             var sufix = parseInt(ID.split("-")[3]) + 1;
             nr = ID.split("-")[2];
             $(found[i]).attr('id', prefix + "-" + nr + "-" + sufix);
+            // Increment the name id
+            var name = found[i].name;
+            prefix = name.split(":")[0];
+            sufix = name.split(":")[1] + ":" + name.split(":")[2];
+            var prefix_name = prefix.split('-')[0];
+            var prefix_idx = parseInt(prefix.split('-')[1]) + 1;
+            prefix = prefix_name + "-" + prefix_idx;
+            $(found[i]).attr('name', prefix + ":" + sufix);
         }
         // clear values
         for(i=0; i<$(row).children().length; i++){
@@ -118,11 +172,11 @@ jQuery(function($){
         */
         var fieldname = $(element).attr("id").split("_")[0];
         var table = $('#'+fieldname+"_table");
-        var rows = $(".records_row_"+fieldname);
-        // clone last row
-        var row = $(rows[rows.length-1]).clone();
+        var sets = $(".records_row_"+fieldname);
+        // clone last set of actions
+        var set = $(sets[sets.length-1]).clone();
         // after cloning, make sure the new element's IDs are unique
-        var found = $(row).find(
+        var found = $(set).find(
                 "input[id^='"+fieldname+"']," +
                 "select[id^='"+fieldname+"']");
         for (var ii = found.length - 1; ii >= 0; ii--) {
@@ -143,21 +197,30 @@ jQuery(function($){
             }
         }
         // clear values
-        for(var i=0; i<$(row).children().length; i++){
-            var td = $(row).children()[i];
+        for(var i=0; i<$(set).children().length; i++){
+            var td = $(set).children()[i];
             var input = $(td).find('input').not('.addnew');
             $(input).val('');
             var sel_options = $(td).find(":selected");
             $(sel_options).prop("selected", false);
         }
+        $(set).appendTo($(table));
         // Binding the controllers
-        $(row)
+        $(set)
             .find('input[id^="ReflexRules-range"]')
             .bind("change", function () {
                 range_controller(element);
                 setup_del_action_button();
             });
-        $(row).appendTo($(table));
+        $(set).find("input[id$='_action_addnew']").click(function(i,e){
+            add_action_row(this);
+        });
+        $(set)
+            .find('select[id^="ReflexRules-analysisservice-"]')
+            .bind("change", function (element) {
+                var setupdata = $.parseJSON($('#rules-setup-data').html());
+                analysiservice_change(element.target, setupdata);
+            }).trigger("change");
     }
 
     function setup_del_action_button(){
@@ -171,5 +234,33 @@ jQuery(function($){
             if (siblings.length < 2) return;
             $(this).parent().remove();
         });
+    }
+
+    function setup_as_and_discrete_results(setupdata){
+        /**
+        This function checks each analysis service and shows/hides the expected
+        values fields. It also selects the saved option if the expected result
+        is discrete
+        */
+        // Select the option
+        var rules = $.parseJSON($('#rules-setup-data')
+            .html()).saved_actions.rules;
+        var ass = $('select[id^="ReflexRules-analysisservice-"]');
+        $.each(ass,function(index, element){
+            // Select the analysis service
+            if (rules[index] !== undefined){
+                var as = rules[index].analysisservice;
+                $(element).find('option[value="'+ as + '"]')
+                    .prop("selected", true);
+                // Write the options
+                analysiservice_change(element, setupdata);
+            }
+            else{analysiservice_change(element, setupdata);}
+        });
+        for (var i=0; rules.length > i; i++){
+            var discrete = rules[i].discreteresult;
+            var ops = $(ass[i]).siblings('.resultoptioncontainer select option');
+            $(ops).find('[value="'+ discrete + '"]').prop("selected", true);
+        }
     }
 });

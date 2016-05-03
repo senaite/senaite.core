@@ -21,7 +21,6 @@ from Products.CMFPlone.utils import safe_unicode, _createObjectByType
 from Products.CMFEditions.ArchivistTool import ArchivistRetrieveError
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
-from bika.lims import logger
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.fields import InterimFieldsField
@@ -38,6 +37,7 @@ from bika.lims.utils import drop_trailing_zeros_decimal
 from bika.lims.utils.analysis import get_significant_digits
 from bika.lims.workflow import skip
 from bika.lims.workflow import doActionFor
+from bika.lims.content.reflexrule import doReflexRuleAction
 from decimal import Decimal
 from zope.interface import implements
 import datetime
@@ -1131,7 +1131,26 @@ class Analysis(BaseContent):
                             can_submit = False
                 if can_submit:
                     workflow.doActionFor(dependent, "submit")
-
+        # Check out if the analysis has any reflex rule bound to it.
+        # First we have get the analysis' method because the Reflex Rule
+        # objects are related to a method.
+        a_result = self.getResult()
+        a_method = self.getMethod()
+        # After getting the analysis' method we have to get all Reflex Rules
+        # related to that method.
+        if a_method:
+            all_rrs = a_method.getBackReferences('ReflexRuleMethod')
+            # Once we have all the Reflex Rules with the same method as the
+            # analysis has, it is time to get the rules that are bound to the
+            # same analysis service that is using the analysis.
+            rrs = []
+            for rule in all_rrs:
+                # Getting the rules to be done from the reflex rule taking
+                # in consideration the analysis service and the result
+                action_row = rule.getRules(self.getServiceUID(), a_result)
+                # Once we have the rules, the system has to execute its
+                # instructions if the result has the expected result.
+                doReflexRuleAction(self, action_row)
         # If all analyses in this AR have been submitted
         # escalate the action to the parent AR
         if not skip(ar, "submit", peek=True):
@@ -1199,9 +1218,9 @@ class Analysis(BaseContent):
         # Rename the analysis to make way for it's successor.
         # Support multiple retractions by renaming to *-0, *-1, etc
         parent = self.aq_parent
-        analyses = [x for x in parent.objectValues("Analysis")
-                    if x.getId().startswith(self.id)]
         kw = self.getKeyword()
+        analyses = [x for x in parent.objectValues("Analysis")
+                    if x.getId().startswith(kw)]
         # LIMS-1290 - Analyst must be able to retract, which creates a new Analysis.
         parent._verifyObjectPaste = str   # I cancel the permission check with this.
         parent.manage_renameObject(kw, "{0}-{1}".format(kw, len(analyses)))
