@@ -167,6 +167,27 @@
                         <span i18n:translate="" class="reflex_rule_text">
                             To other worksheet
                         </span>
+                        <!-- Action selector -->
+                        <div class="analyist-section">
+                            <span i18n:translate="" class="reflex_rule_text">
+                                Select the analysit
+                            </span>
+                            <select
+                                tal:define="act_row_idx python:action_row['act_row_idx']"
+                                tal:attributes="
+                                    name string:${fieldName}.analyst-${act_row_idx}:records:ignore_empty;
+                                    id string:${fieldName}-analyst-${repeat/idx/index}-${act_row_idx};
+                                    tabindex tabindex/next|nothing;"
+                                    i18n:domain="python:i18n_domain">
+                                <option
+                                    tal:repeat="option widget/getAnalysts"
+                                    tal:content="python:option"
+                                    tal:attributes="
+                                        value python: option;
+                                        selected python:'selected' if option==action_row.get('analyist', '') else None"
+                                    i18n:translate=""/>
+                            </select>
+                        </div>
                         <!-- delete action-->
                         <img class="action_deletebtn"
                             tal:attributes="

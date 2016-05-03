@@ -6,6 +6,7 @@ from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from zope.schema.vocabulary import SimpleVocabulary
 from zope.schema.vocabulary import SimpleTerm
+from bika.lims.utils import getUsers
 from bika.lims.browser.widgets import RecordsWidget
 import json
 
@@ -46,9 +47,9 @@ class ReflexRuleWidget(RecordsWidget):
         'discreteresult': 'X',
         'analysisservice': '<as_uid>', 'value': '',
             'actions':[{'action':'<action_name>', 'act_row_idx':'X',
-                        'otherWS':Bool,},
+                        'otherWS':Bool, 'analyist': '<analyst_id>'},
                       {'action':'<action_name>', 'act_row_idx':'X',
-                        'otherWS':Bool,},
+                        'otherWS':Bool, 'analyist': '<analyst_id>'},
                 ]
         }, ...]
         """
@@ -62,6 +63,7 @@ class ReflexRuleWidget(RecordsWidget):
         # Building the actions list
         for action_set in raw_data[0]:
             value.append(self._format_actions_set(action_set))
+        import pdb; pdb.set_trace()
         return value, {}
 
     def _format_actions_set(self, action_set):
@@ -75,6 +77,7 @@ class ReflexRuleWidget(RecordsWidget):
         'action-1': 'repeat',
         'action-0': 'duplicate',
         'otherWS-1': 'on',
+        'analyist-0': 'sussan1'
         ...}
 
         and returns a formatted set with the actions sorted like this one:
@@ -84,8 +87,10 @@ class ReflexRuleWidget(RecordsWidget):
         'discreteresult': '1',
         'value': '',
             'actions':[
-                {'action':'duplicate', 'act_row_idx':'0', 'otherWS': True,},
-                {'action':'repeat', 'act_row_idx':'1', 'otherWS': False,},
+                {'action':'duplicate', 'act_row_idx':'0',
+                    'otherWS': True, 'analyist': 'sussan1'},
+                {'action':'repeat', 'act_row_idx':'1',
+                    'otherWS': False, 'analyist': ''},
             ]
         }
         """
@@ -95,7 +100,8 @@ class ReflexRuleWidget(RecordsWidget):
         formatted_action_set = {}
         # Filling the dict with the values that aren't actions
         for key in keys:
-            if key.startswith('action-') or key.startswith('otherWS-'):
+            if key.startswith('action-') or key.startswith('otherWS-')\
+                    or key.startswith('analyist-'):
                 pass
             else:
                 formatted_action_set[key] = action_set[key]
@@ -108,7 +114,8 @@ class ReflexRuleWidget(RecordsWidget):
     def _get_sorted_actions_list(self, keys_list, action_set):
         """
         This function takes advantatge of the yet filtered 'keys_list'
-        and returns a list of dictionaries with the actions from the action_set.
+        and returns a list of dictionaries with the actions from the
+        action_set.
         :keys_list: is a list with the keys starting with 'action-' or
         'otherWS-' in the 'action_set'.
         :action_set: is the dict representing a set of actions.
@@ -124,16 +131,21 @@ class ReflexRuleWidget(RecordsWidget):
         # by their index
         actions_list = self._get_sorted_action_keys(keys_list)
         for key in actions_list:
-            # Getting the key of otherWS element
+            # Getting the key for otherWS element
             otherWS_key = 'otherWS-'+str(a_count)
-            # Getting the value of otherWS checkbox
+            # Getting the value for otherWS checkbox
             otherWS = True if otherWS_key in keys_list \
                 and action_set[otherWS_key] == 'on' else False
+            # Getting the key for analyist element
+            analyist_key = 'analyist-'+str(a_count)
+            # Getting the value for analyist
+            analyist = action_set.get(analyist_key, '')
             # Building the action dict
             action_dict = {
                 'action': action_set[key],
                 'act_row_idx': a_count,
-                'otherWS': otherWS}
+                'otherWS': otherWS,
+                'analyist': analyist}
             # Saves the action as a new dict inside the actions list
             actions_dicts_l.append(action_dict)
             a_count += 1
@@ -159,37 +171,43 @@ class ReflexRuleWidget(RecordsWidget):
         - Relations between methods and analysis services options.
         - The current saved data
         the functions returns:
-        {'<method_uid>': {'analysisservices': {'<as_uid>': {'as_id': '<as_id>',
-                                                            'as_title':'<as_title>',
-                                                            'resultoptions': [,,]}
-                                               '<as_uid>': {'as_id': '<as_id>',
-                                                            'as_title':'<as_title>',
-                                                            'resultoptions': [
-                                                                {'ResultText': 'Failed', 'ResultValue': '1', 'value': ''},
-                                                                ...
-                                                            ]}
-                                            },
-                          'as_keys': ['<as_uid>', '<as_uid>'],
-                          'method_id': '<method_id>',
-                          'method_tile': '<method_tile>'
-                          },
-        '<method_uid>': {'analysisservices': {'<as_uid>': {'as_id': '<as_id>',
-                                                            'as_title':'<as_title>',
-                                                            'resultoptions': [,,]}
-                                               '<as_uid>': {'as_id': '<as_id>',
-                                                            'as_title':'<as_title>',
-                                                            'resultoptions': [,,]}
-                                            },
-                          'as_keys': ['<as_uid>', '<as_uid>'],
-                          'method_id': '<method_id>',
-                          'method_tile': '<method_tile>'
-                          },
+        {'<method_uid>': {
+            'analysisservices': {
+                '<as_uid>': {'as_id': '<as_id>',
+                            'as_title':'<as_title>',
+                            'resultoptions': [,,]}
+                '<as_uid>': {'as_id': '<as_id>',
+                            'as_title':'<as_title>',
+                            'resultoptions': [{
+                                'ResultText': 'Failed',
+                                'ResultValue': '1', 'value': ''},
+                                ...
+                            ]}
+            },
+          'as_keys': ['<as_uid>', '<as_uid>'],
+          'method_id': '<method_id>',
+          'method_tile': '<method_tile>'
+          },
+        '<method_uid>': {
+            'analysisservices': {
+                '<as_uid>': {'as_id': '<as_id>',
+                            'as_title':'<as_title>',
+                            'resultoptions': [,,]}
+               '<as_uid>': {'as_id': '<as_id>',
+                            'as_title':'<as_title>',
+                            'resultoptions': [,,]}
+            },
+          'as_keys': ['<as_uid>', '<as_uid>'],
+          'method_id': '<method_id>',
+          'method_tile': '<method_tile>'
+          },
          'saved_actions': {'rules': [{'analysisservice': '<as_uid>',
                                         'range0': 'xx',
                                         'range1': 'xx',
                                         'value': '',
                                         'discreteresult': 'X',
                                         'otherWS': Bool,
+                                        'analyist': '<analyst_id>'
                                     }],
                            'method_id': '<method_uid>',
                            'method_tile': '<method_tile>',
@@ -252,26 +270,29 @@ class ReflexRuleWidget(RecordsWidget):
 
         The widget is going to return a list like this:
         [
-            {'discreteresult': 'X', 'analysisservice': '<as_uid>', 'value': '',
-                'actions':[{'action':'<action_name>', 'act_row_idx':'X',
-                            'otherWS': Bool},
-                          {'action':'<action_name>', 'act_row_idx':'X',
-                            'otherWS': Bool}
-                    ]
+            {'discreteresult': 'X',
+            'analysisservice': '<as_uid>', 'value': '',
+            'actions':[{'action':'<action_name>', 'act_row_idx':'X',
+                        'otherWS': Bool, 'analyist': '<analyst_id>'},
+                      {'action':'<action_name>', 'act_row_idx':'X',
+                        'otherWS': Bool, 'analyist': '<analyst_id>'}
+                ]
             },
-            {'range1': 'X', 'range0': 'X', 'analysisservice': '<as_uid>', 'value': '',
-                'actions':[{'action':'<action_name>', 'act_row_idx':'X',
-                            'otherWS': Bool},
-                          {'action':'<action_name>', 'act_row_idx':'X',
-                            'otherWS': Bool}
-                    ]
+            {'range1': 'X', 'range0': 'X',
+            'analysisservice': '<as_uid>', 'value': '',
+            'actions':[{'action':'<action_name>', 'act_row_idx':'X',
+                        'otherWS': Bool, 'analyist': '<analyst_id>'},
+                      {'action':'<action_name>', 'act_row_idx':'X',
+                        'otherWS': Bool, 'analyist': '<analyst_id>'}
+                ]
             },
-            {'range1': 'X', 'range0': 'X', 'analysisservice': '<as_uid>', 'value': '',
-                'actions':[{'action':'<action_name>', 'act_row_idx':'X',
-                            'otherWS': Bool},
-                          {'action':'<action_name>', 'act_row_idx':'X',
-                            'otherWS': Bool}
-                    ]
+            {'range1': 'X', 'range0': 'X',
+            'analysisservice': '<as_uid>', 'value': '',
+            'actions':[{'action':'<action_name>', 'act_row_idx':'X',
+                        'otherWS': Bool, 'analyist': '<analyst_id>'},
+                      {'action':'<action_name>', 'act_row_idx':'X',
+                        'otherWS': Bool, 'analyist': '<analyst_id>'}
+                ]
             },
         ]
         - The list is the abstraction of the rules section in a Reflex
@@ -288,12 +309,13 @@ class ReflexRuleWidget(RecordsWidget):
         if len(rules_list) > idx:
             value = rules_list[idx].get(element, '')
             if element == 'actions' and value == '':
-                return [{'action': '', 'act_row_idx': '0', 'otherWS': False}, ]
+                return [{'action': '', 'act_row_idx': '0',
+                        'otherWS': False, 'analyist': ''}, ]
             else:
                 return value
         return [{
                 'action': '', 'act_row_idx': '0',
-                'otherWS': False
+                'otherWS': False, 'analyist': ''
                 }] if element == 'actions' else ''
 
     def getReflexRuleActionElement(self, set_idx=0, row_idx=0, element=''):
@@ -303,7 +325,7 @@ class ReflexRuleWidget(RecordsWidget):
         in the widget's list.
         :row_idx: is an integer with the numer of the row from the set
         :element: a string with the name of the element of the action to
-            obtain: 'action', 'act_row_idx', 'otherWS',
+            obtain: 'action', 'act_row_idx', 'otherWS', 'analyist'
         """
         if isinstance(set_idx, str):
             set_idx = int(set_idx)
@@ -311,6 +333,13 @@ class ReflexRuleWidget(RecordsWidget):
             row_idx = int(row_idx)
         actions = self.getReflexRuleElement(idx=set_idx, element='actions')
         return actions[row_idx].get(element, '')
+
+    def getAnalysts(self):
+        """
+        This function returns a displaylist with the available analysis
+        """
+        analysts = getUsers(self, ['Manager', 'LabManager', 'Analyst'])
+        return analysts.sortedByKey()
 
 registerWidget(
     ReflexRuleWidget,
