@@ -14,6 +14,9 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IReflexRule
 from bika.lims.browser.fields import ReflexRuleField
 from bika.lims.utils import isnumber
+from bika.lims.utils import changeWorkflowState
+from bika.lims import logger
+from bika.lims.workflow import doActionFor
 import sys
 
 schema = BikaSchema.copy() + Schema((
@@ -111,6 +114,7 @@ class ReflexRule(BaseContent):
     def getRules(self, as_uid, result):
         """
         This function returns a list of dictionaries with the rules to be done
+        for the analysis service.
         :as_uid: is the analysis service uid for the query.
         :result: the value of the result as string.
         :return: [{'action': 'duplicate', ...}, {,}, ...]
@@ -123,14 +127,14 @@ class ReflexRule(BaseContent):
         for action_set in action_sets:
             # It is a discrete value in string shape
             exp_val = action_set.get('expected_values', '')
-            if isnumber(result) and type(exp_val) == type(str()) and \
+            if isnumber(result) and isinstance(exp_val, str) and \
                     exp_val == result:
-                r.append(action_set.get('actions', {}))
+                r += action_set.get('actions', {})
             # It is a range of values
             elif isnumber(result) and len(exp_val) == 2 and \
                     float(exp_val[0]) <= float(result) and \
                     float(result) <= float(exp_val[1]):
-                r.append(action_set.get('actions', {}))
+                r += action_set.get('actions', {})
             else:
                 pass
         return r
@@ -140,10 +144,59 @@ atapi.registerType(ReflexRule, PROJECTNAME)
 
 def doReflexRuleAction(base, action_row):
     """
-    This function executes all the reflex rule actions in action_row using
+    This function executes all the reflex rule actions inside action_row using
     the object in the variable 'base' as the starting point
-    :base: a full object
-    :action_row: a list of dictionaries with the actions to do
+    :base: a full analysis object
+    :action_row: a list of dictionaries containing the actions to do
         [{'action': 'duplicate', ...}, {,}, ...]
     """
-    import pdb; pdb.set_trace()
+    for action in action_row:
+        # If the analysis has been retracted yet, just duplicate it
+        workflow = getToolByName(base, "portal_workflow")
+        state = workflow.getInfoFor(base, 'review_state')
+        import pdb; pdb.set_trace()
+        if action.get('action', '') == 'repeat' and state != 'retracted':
+            # Repeat an analysis consist on cancel it and then create a new
+            # analysis with the same analysis service used for the canceled
+            # one (always working with the same sample). It'll do a retract
+            # action
+            doActionFor(base, 'retract')
+        elif action.get('action', '') == 'duplicate' or state == 'retracted':
+            # Duplicate an analysis consist on creating a new analysis with
+            # the same analysis service for the same sample. It is used in
+            # order to reduce the error procedure probability because both
+            # results must be similar.
+            ar = base.aq_parent
+            kw = base.getKeyword()
+            # Rename the analysis to make way for it's successor.
+            # Support multiple duplicates by renaming to *-0, *-1, etc
+            # Getting the analysis service
+            analyses = [x for x in ar.objectValues("Analysis")
+                        if x.getId().startswith(kw)]
+            a_id = "{0}-{1}".format(kw, len(analyses))
+            # Create new analysis and copy values from current analysis
+            _id = ar.invokeFactory('Analysis', id=a_id)
+            analysis = ar[_id]
+            analysis.edit(
+                Service=base.getService(),
+                Calculation=base.getCalculation(),
+                InterimFields=base.getInterimFields(),
+                ResultDM=base.getResultDM(),
+                Retested=True,  # True
+                MaxTimeAllowed=base.getMaxTimeAllowed(),
+                DueDate=base.getDueDate(),
+                Duration=base.getDuration(),
+                ReportDryMatter=base.getReportDryMatter(),
+                Analyst=base.getAnalyst(),
+                Instrument=base.getInstrument(),
+                SamplePartition=base.getSamplePartition())
+            analysis.setDetectionLimitOperand(base.getDetectionLimitOperand())
+            analysis.setResult(base.getResult())
+            analysis.unmarkCreationFlag()
+            # zope.event.notify(ObjectInitializedEvent(analysis))
+            changeWorkflowState(analysis,
+                                "bika_analysis_workflow", "sample_received")
+        else:
+            logger.warn("Not known Reflex Rule action %s." %
+                        (action.get('action', '')))
+    return True

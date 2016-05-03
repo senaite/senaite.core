@@ -70,7 +70,7 @@ class ReflexRuleWidget(RecordsWidget):
         'range1': '3',
         'range0': '1',
         'discreteresult': '1',
-        'action-1': 'replace',
+        'action-1': 'repeat',
         'action-0': 'duplicate',
         ...}
 
@@ -82,7 +82,7 @@ class ReflexRuleWidget(RecordsWidget):
         'value': '',
             'actions':[
                 {'action':'duplicate', 'act_row_idx':'0'},
-                {'action':'replace', 'act_row_idx':'1'}
+                {'action':'repeat', 'act_row_idx':'1'}
             ]
         }
         """
@@ -229,7 +229,7 @@ class ReflexRuleWidget(RecordsWidget):
         Return the different action available
         """
         return DisplayList(
-            [('replace', 'Remplace'), ('duplicate', 'Duplicate')])
+            [('repeat', 'Repeat'), ('duplicate', 'Duplicate')])
 
     def getReflexRuleElement(self, idx=0, element=''):
         """
