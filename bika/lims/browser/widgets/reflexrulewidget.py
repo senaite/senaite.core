@@ -47,9 +47,9 @@ class ReflexRuleWidget(RecordsWidget):
         'discreteresult': 'X',
         'analysisservice': '<as_uid>', 'value': '',
             'actions':[{'action':'<action_name>', 'act_row_idx':'X',
-                        'otherWS':Bool, 'analyist': '<analyst_id>'},
+                        'otherWS':Bool, 'analyst': '<analyst_id>'},
                       {'action':'<action_name>', 'act_row_idx':'X',
-                        'otherWS':Bool, 'analyist': '<analyst_id>'},
+                        'otherWS':Bool, 'analyst': '<analyst_id>'},
                 ]
         }, ...]
         """
@@ -63,7 +63,6 @@ class ReflexRuleWidget(RecordsWidget):
         # Building the actions list
         for action_set in raw_data[0]:
             value.append(self._format_actions_set(action_set))
-        import pdb; pdb.set_trace()
         return value, {}
 
     def _format_actions_set(self, action_set):
@@ -77,7 +76,7 @@ class ReflexRuleWidget(RecordsWidget):
         'action-1': 'repeat',
         'action-0': 'duplicate',
         'otherWS-1': 'on',
-        'analyist-0': 'sussan1'
+        'analyst-0': 'sussan1'
         ...}
 
         and returns a formatted set with the actions sorted like this one:
@@ -88,9 +87,9 @@ class ReflexRuleWidget(RecordsWidget):
         'value': '',
             'actions':[
                 {'action':'duplicate', 'act_row_idx':'0',
-                    'otherWS': True, 'analyist': 'sussan1'},
+                    'otherWS': True, 'analyst': 'sussan1'},
                 {'action':'repeat', 'act_row_idx':'1',
-                    'otherWS': False, 'analyist': ''},
+                    'otherWS': False, 'analyst': ''},
             ]
         }
         """
@@ -101,7 +100,7 @@ class ReflexRuleWidget(RecordsWidget):
         # Filling the dict with the values that aren't actions
         for key in keys:
             if key.startswith('action-') or key.startswith('otherWS-')\
-                    or key.startswith('analyist-'):
+                    or key.startswith('analyst-'):
                 pass
             else:
                 formatted_action_set[key] = action_set[key]
@@ -136,16 +135,16 @@ class ReflexRuleWidget(RecordsWidget):
             # Getting the value for otherWS checkbox
             otherWS = True if otherWS_key in keys_list \
                 and action_set[otherWS_key] == 'on' else False
-            # Getting the key for analyist element
-            analyist_key = 'analyist-'+str(a_count)
-            # Getting the value for analyist
-            analyist = action_set.get(analyist_key, '')
+            # Getting the key for analyst element
+            analyst_key = 'analyst-'+str(a_count)
+            # Getting the value for analyst
+            analyst = action_set.get(analyst_key, '')
             # Building the action dict
             action_dict = {
                 'action': action_set[key],
                 'act_row_idx': a_count,
                 'otherWS': otherWS,
-                'analyist': analyist}
+                'analyst': analyst}
             # Saves the action as a new dict inside the actions list
             actions_dicts_l.append(action_dict)
             a_count += 1
@@ -207,7 +206,7 @@ class ReflexRuleWidget(RecordsWidget):
                                         'value': '',
                                         'discreteresult': 'X',
                                         'otherWS': Bool,
-                                        'analyist': '<analyst_id>'
+                                        'analyst': '<analyst_id>'
                                     }],
                            'method_id': '<method_uid>',
                            'method_tile': '<method_tile>',
@@ -273,25 +272,25 @@ class ReflexRuleWidget(RecordsWidget):
             {'discreteresult': 'X',
             'analysisservice': '<as_uid>', 'value': '',
             'actions':[{'action':'<action_name>', 'act_row_idx':'X',
-                        'otherWS': Bool, 'analyist': '<analyst_id>'},
+                        'otherWS': Bool, 'analyst': '<analyst_id>'},
                       {'action':'<action_name>', 'act_row_idx':'X',
-                        'otherWS': Bool, 'analyist': '<analyst_id>'}
+                        'otherWS': Bool, 'analyst': '<analyst_id>'}
                 ]
             },
             {'range1': 'X', 'range0': 'X',
             'analysisservice': '<as_uid>', 'value': '',
             'actions':[{'action':'<action_name>', 'act_row_idx':'X',
-                        'otherWS': Bool, 'analyist': '<analyst_id>'},
+                        'otherWS': Bool, 'analyst': '<analyst_id>'},
                       {'action':'<action_name>', 'act_row_idx':'X',
-                        'otherWS': Bool, 'analyist': '<analyst_id>'}
+                        'otherWS': Bool, 'analyst': '<analyst_id>'}
                 ]
             },
             {'range1': 'X', 'range0': 'X',
             'analysisservice': '<as_uid>', 'value': '',
             'actions':[{'action':'<action_name>', 'act_row_idx':'X',
-                        'otherWS': Bool, 'analyist': '<analyst_id>'},
+                        'otherWS': Bool, 'analyst': '<analyst_id>'},
                       {'action':'<action_name>', 'act_row_idx':'X',
-                        'otherWS': Bool, 'analyist': '<analyst_id>'}
+                        'otherWS': Bool, 'analyst': '<analyst_id>'}
                 ]
             },
         ]
@@ -310,12 +309,12 @@ class ReflexRuleWidget(RecordsWidget):
             value = rules_list[idx].get(element, '')
             if element == 'actions' and value == '':
                 return [{'action': '', 'act_row_idx': '0',
-                        'otherWS': False, 'analyist': ''}, ]
+                        'otherWS': False, 'analyst': ''}, ]
             else:
                 return value
         return [{
                 'action': '', 'act_row_idx': '0',
-                'otherWS': False, 'analyist': ''
+                'otherWS': False, 'analyst': ''
                 }] if element == 'actions' else ''
 
     def getReflexRuleActionElement(self, set_idx=0, row_idx=0, element=''):
@@ -325,7 +324,7 @@ class ReflexRuleWidget(RecordsWidget):
         in the widget's list.
         :row_idx: is an integer with the numer of the row from the set
         :element: a string with the name of the element of the action to
-            obtain: 'action', 'act_row_idx', 'otherWS', 'analyist'
+            obtain: 'action', 'act_row_idx', 'otherWS', 'analyst'
         """
         if isinstance(set_idx, str):
             set_idx = int(set_idx)
