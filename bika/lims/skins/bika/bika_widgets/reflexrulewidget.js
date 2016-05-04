@@ -7,6 +7,9 @@ jQuery(function($){
         setup_as_and_discrete_results(setupdata);
         setup_addnew_buttons();
         setup_del_action_button();
+        $.each($('div.action'), function(index, element){
+                otherWS_controller(element);
+            });
         $('select#Method').bind("change", function () {
             // Updates the new method
             $.each($('table#ReflexRules_table').find('.rw_deletebtn'),
@@ -27,6 +30,9 @@ jQuery(function($){
             .bind("change", function () {
                 analysiservice_change(this, setupdata);
             });
+        $('input[id^="ReflexRules-otherWS-"]').bind("change", function () {
+            otherWS_controller($(this).closest('div.action'));
+        });
     });
 
     function method_controller(setupdata){
@@ -134,6 +140,7 @@ jQuery(function($){
 
     function add_action_row(element){
         /**
+        :element: is the more(addnew) button
         This function defines the process to add a new action row
         */
         var row = $(element).prev('div').clone();
@@ -164,10 +171,15 @@ jQuery(function($){
             $(sel_options).prop("selected", false);
         }
         $(row).insertBefore(element);
+        // Binding the otherWS controller
+        $(row).bind("change", function () {
+            otherWS_controller(this);
+        });
     }
 
     function add_action_set(element){
         /**
+        :element: is the more(addnew) button
         This function defines the process to add a new whole action set
         */
         var fieldname = $(element).attr("id").split("_")[0];
@@ -261,6 +273,22 @@ jQuery(function($){
             var discrete = rules[i].discreteresult;
             var ops = $(ass[i]).siblings('.resultoptioncontainer select option');
             $(ops).find('[value="'+ discrete + '"]').prop("selected", true);
+        }
+    }
+
+    function otherWS_controller(action_div){
+        /**
+        This function hide/shows the selection of an analyst deppending on the
+        checkbox state
+        */
+        var checkbox = $(action_div).find('input[id^="ReflexRules-otherWS-"]').attr('checked');
+        if (checkbox == "checked") {
+            // Showing the analyst-section div
+            $(action_div).find('div.analyst-section').show();
+        }
+        else{
+            // Hide the options-set
+            $(action_div).find('div.analyst-section').hide();
         }
     }
 });
