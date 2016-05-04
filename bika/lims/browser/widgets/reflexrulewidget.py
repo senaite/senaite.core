@@ -16,6 +16,40 @@ except:
     # Plone < 4.3
     from zope.app.component.hooks import getSite
 
+# Writting the description for the widget
+description = """
+When the results become available, some samples may have to be added to the next available worksheet for reflex testing. These situations are caused by the indetermination of the result or by a failed test.
+
+The aim of this functionality is to create a logic capable of defining some determined actions after submitting a specific results.
+
+Basic usage:
+
+- Each reflex rule have to be bound to an analysis method using the drop-down list. Inside the reflex rule the user will be able to add actions for each analysis service belonging to the selected method.
+
+- For each analysis service the user can introduce a range of values or a discrete value. Then the user has to select from the drop-down list the action to be performed when the result for this analysis is within the range or has the same discrete value.
+
+- Using the 'more' button, it is possible to add more actions for the same result inside an analysis service or add new analysis services and results.
+
+- If there is an analysis service with a defined range and rules but the user wants to add another range and new rules for it, he/she haves to create a new set of rules for the analysis service and define the actions to be done for the new results.
+
+Worksheet behaviour:
+
+- After defining the rule, the user can set the check-box in order to define whether the new analysis has to be added in a different worksheet.
+
+- If the user doesn't select that option the new analysis will be added to the current worksheet (or without worksheet if the analysis does not belong to anyone).
+
+- If the check-box is set and the user doesn't select an analyst the system will look for an open worksheet and it will add the analysis to that worksheet, without caring about the analyst. If there are no open worksheets, the system will create a new worksheet with an analyst (chosen by the system).
+
+- If the check-box is set and the user defines an analyst, the system will look for the first worksheet assigned to the analyst. If there is no open worksheet for that analyst, the system will create a new worksheet assigned to the analyst.
+
+So far there are only two reflex actions: duplicate and replace.
+
+- Repeat an analysis means to cancel it and then create a new analysis with the same analysis service used for the canceled one (always working with the same sample).
+
+- Duplicate an analysis consist on creating a new analysis with the same analysis service for the same sample. It is used in order to reduce the error procedure probability because both results must be similar.
+
+- If there are more than one 'repeat' actions for the same result, the system will do a 'duplicate' instead of another 'repeat'.
+"""
 
 class ReflexRuleWidget(RecordsWidget):
     _properties = RecordsWidget._properties.copy()
@@ -28,9 +62,7 @@ class ReflexRuleWidget(RecordsWidget):
             "bika_widgets/recordswidget.css",
             "bika_widgets/reflexrulewidget.css",),
         'label': '',
-        'description':
-            'Add actions for each analysis service belonging to the'
-            ' selected method',
+        'description': description,
         'allowDelete': True,
     })
 

@@ -83,6 +83,9 @@
                 define="
                     value python:field.getSubfieldValue(values, idx, 'rulesset');">
                 <!-- Analysis Service selection -->
+                <span i18n:translate="" class="reflex_rule_text">
+                    Analysis service:
+                </span>
                 <select
                     tal:attributes="
                         name string:${fieldName}.analysisservice:records:ignore_empty;
@@ -132,6 +135,9 @@
                     </select>
                 </div>
                 <!-- Reflex action rules list -->
+                <label i18n:translate="" class="title">
+                    Actions:
+                </label>
                 <div
                     class="actions-set"
                     tal:attributes="
@@ -167,9 +173,9 @@
                                 id string:${fieldName}-otherWS-${repeat/idx/index}-${act_row_idx};
                                 checked python:'checked' if widget.getReflexRuleActionElement(idx,act_row_idx,'otherWS') else ''">
                         <span i18n:translate="" class="reflex_rule_text">
-                            To other worksheet
+                            To other worksheet.
                         </span>
-                        <!-- Action selector -->
+                        <!-- Analyst section -->
                         <div class="analyst-section">
                             <span i18n:translate="" class="reflex_rule_text">
                                 Select the analyst
