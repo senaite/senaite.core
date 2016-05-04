@@ -65,3 +65,16 @@ def reflex_rules(portal):
     types = list(ntp.getProperty('metaTypesNotToList'))
     types.append("ReflexRule")
     ntp.manage_changeProperties(MetaTypesNotToQuery=types)
+    pc = getToolByName(portal, 'portal_catalog')
+    addIndexAndColumn(pc, 'Analyst', 'FieldIndex')
+
+
+def addIndexAndColumn(catalog, index, indextype):
+    try:
+        catalog.addIndex(index, indextype)
+    except:
+        pass
+    try:
+        catalog.addColumn(index)
+    except:
+        pass

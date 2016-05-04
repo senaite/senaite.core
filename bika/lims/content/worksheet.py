@@ -31,6 +31,11 @@ def Priority(instance):
         return priority.getSortKey()
 
 
+@indexer(IWorksheet)
+def Analyst(instance):
+    return instance.getAnalyst()
+
+
 schema = BikaSchema.copy() + Schema((
     HistoryAwareReferenceField('WorksheetTemplate',
         allowed_types=('WorksheetTemplate',),
