@@ -284,7 +284,7 @@ jQuery(function($){
         var checkbox = $(action_div).find('input[id^="ReflexRules-otherWS-"]').attr('checked');
         if (checkbox == "checked") {
             // Showing the analyst-section div
-            $(action_div).find('div.analyst-section').show();
+            $(action_div).find('div.analyst-section').css('display', 'inline');
         }
         else{
             // Hide the options-set

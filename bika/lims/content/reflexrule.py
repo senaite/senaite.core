@@ -163,7 +163,7 @@ def doActionToAnalysis(base, action):
         doActionFor(base, 'retract')
         analysis = base.aq_parent.getAnalyses(
             sort_on='created',
-            sort_order='reverse')[0]
+            sort_order='reverse')[0].getObject()
     elif action.get('action', '') == 'duplicate' or state == 'retracted':
         # Duplicate an analysis consist on creating a new analysis with
         # the same analysis service for the same sample. It is used in

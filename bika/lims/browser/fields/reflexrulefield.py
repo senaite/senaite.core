@@ -19,7 +19,7 @@ class ReflexRuleField(RecordsField):
         'maximalSize': 9999,
         'type': 'ReflexRule',
         'subfields': ('rulesset',),
-        'subfield_labels': {'rulesset': _('Define a set of fields'), },
+        'subfield_labels': {'rulesset': _('Define the sets of actions'), },
         'widget': ReflexRuleWidget,
         'subfield_validators': {'rulesset': 'reflexrulevalidator', },
         })
