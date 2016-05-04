@@ -172,7 +172,7 @@
                         <!-- Action selector -->
                         <div class="analyst-section">
                             <span i18n:translate="" class="reflex_rule_text">
-                                Select the analysit
+                                Select the analyst
                             </span>
                             <select
                                 tal:define="
