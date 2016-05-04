@@ -15,6 +15,9 @@ from bika.lims.interfaces import IReflexRule
 from bika.lims.browser.fields import ReflexRuleField
 from bika.lims.utils import isnumber
 from bika.lims.utils import changeWorkflowState
+from bika.lims.utils import getUsers
+from bika.lims.utils import tmpID
+from bika.lims.idserver import renameAfterCreation
 from bika.lims import logger
 from bika.lims.workflow import doActionFor
 import sys
@@ -142,6 +145,87 @@ class ReflexRule(BaseContent):
 atapi.registerType(ReflexRule, PROJECTNAME)
 
 
+def doActionToAnalysis(base, action):
+    """
+    This functions executes the action against the analysis.
+    :base: a full analysis object. The new analyses will be cloned from it.
+    :action: a dictionary representing an action row.
+    :returns: the new analysis
+    """
+    # If the analysis has been retracted yet, just duplicate it
+    workflow = getToolByName(base, "portal_workflow")
+    state = workflow.getInfoFor(base, 'review_state')
+    if action.get('action', '') == 'repeat' and state != 'retracted':
+        # Repeat an analysis consist on cancel it and then create a new
+        # analysis with the same analysis service used for the canceled
+        # one (always working with the same sample). It'll do a retract
+        # action
+        doActionFor(base, 'retract')
+        analysis = base.aq_parent.getAnalyses(
+            sort_on='created',
+            sort_order='reverse')[0].getObject()
+    elif action.get('action', '') == 'duplicate' or state == 'retracted':
+        # Duplicate an analysis consist on creating a new analysis with
+        # the same analysis service for the same sample. It is used in
+        # order to reduce the error procedure probability because both
+        # results must be similar.
+        ar = base.aq_parent
+        kw = base.getKeyword()
+        # Rename the analysis to make way for it's successor.
+        # Support multiple duplicates by renaming to *-0, *-1, etc
+        # Getting the analysis service
+        analyses = [x for x in ar.objectValues("Analysis")
+                    if x.getId().startswith(kw)]
+        a_id = "{0}-{1}".format(kw, len(analyses))
+        # Create new analysis and copy values from current analysis
+        _id = ar.invokeFactory('Analysis', id=a_id)
+        analysis = ar[_id]
+        analysis.edit(
+            Service=base.getService(),
+            Calculation=base.getCalculation(),
+            InterimFields=base.getInterimFields(),
+            ResultDM=base.getResultDM(),
+            Retested=True,  # True
+            MaxTimeAllowed=base.getMaxTimeAllowed(),
+            DueDate=base.getDueDate(),
+            Duration=base.getDuration(),
+            ReportDryMatter=base.getReportDryMatter(),
+            Analyst=base.getAnalyst(),
+            Instrument=base.getInstrument(),
+            SamplePartition=base.getSamplePartition())
+        analysis.setDetectionLimitOperand(base.getDetectionLimitOperand())
+        analysis.setResult(base.getResult())
+        analysis.unmarkCreationFlag()
+        # zope.event.notify(ObjectInitializedEvent(analysis))
+        changeWorkflowState(analysis,
+                            "bika_analysis_workflow", "sample_received")
+    else:
+        logger.warn("Not known Reflex Rule action %s." %
+                    (action.get('action', '')))
+    return analysis
+
+
+def createWorksheet(base, analyst):
+    """
+    This function creates a new worksheet takeing advantatge of the analyst
+    variable. If there isn't an analyst definet, the system will puck up the
+    the first one obtained in a query.
+    """
+    if not(analyst):
+        # Get any analyst
+        analyst = getUsers(base, ['Manager', 'LabManager', 'Analyst'])[1]
+    folder = base.bika_setup.worksheets
+    _id = folder.invokeFactory('Worksheet', id=tmpID())
+    ws = folder[_id]
+    ws.unmarkCreationFlag()
+    new_ws_id = renameAfterCreation(ws)
+    ws.edit(
+        Number=new_ws_id,
+        Analyst=analyst,
+        )
+    return ws
+
+
 def doReflexRuleAction(base, action_row):
     """
     This function executes all the reflex rule actions inside action_row using
@@ -151,51 +235,38 @@ def doReflexRuleAction(base, action_row):
         [{'action': 'duplicate', ...}, {,}, ...]
     """
     for action in action_row:
-        # If the analysis has been retracted yet, just duplicate it
-        workflow = getToolByName(base, "portal_workflow")
-        state = workflow.getInfoFor(base, 'review_state')
-        if action.get('action', '') == 'repeat' and state != 'retracted':
-            # Repeat an analysis consist on cancel it and then create a new
-            # analysis with the same analysis service used for the canceled
-            # one (always working with the same sample). It'll do a retract
-            # action
-            doActionFor(base, 'retract')
-        elif action.get('action', '') == 'duplicate' or state == 'retracted':
-            # Duplicate an analysis consist on creating a new analysis with
-            # the same analysis service for the same sample. It is used in
-            # order to reduce the error procedure probability because both
-            # results must be similar.
-            ar = base.aq_parent
-            kw = base.getKeyword()
-            # Rename the analysis to make way for it's successor.
-            # Support multiple duplicates by renaming to *-0, *-1, etc
-            # Getting the analysis service
-            analyses = [x for x in ar.objectValues("Analysis")
-                        if x.getId().startswith(kw)]
-            a_id = "{0}-{1}".format(kw, len(analyses))
-            # Create new analysis and copy values from current analysis
-            _id = ar.invokeFactory('Analysis', id=a_id)
-            analysis = ar[_id]
-            analysis.edit(
-                Service=base.getService(),
-                Calculation=base.getCalculation(),
-                InterimFields=base.getInterimFields(),
-                ResultDM=base.getResultDM(),
-                Retested=True,  # True
-                MaxTimeAllowed=base.getMaxTimeAllowed(),
-                DueDate=base.getDueDate(),
-                Duration=base.getDuration(),
-                ReportDryMatter=base.getReportDryMatter(),
-                Analyst=base.getAnalyst(),
-                Instrument=base.getInstrument(),
-                SamplePartition=base.getSamplePartition())
-            analysis.setDetectionLimitOperand(base.getDetectionLimitOperand())
-            analysis.setResult(base.getResult())
-            analysis.unmarkCreationFlag()
-            # zope.event.notify(ObjectInitializedEvent(analysis))
-            changeWorkflowState(analysis,
-                                "bika_analysis_workflow", "sample_received")
+        # Do the action
+        analysis = doActionToAnalysis(base, action)
+        if action.get('otherWS', False):
+            # Adds the new analysis inside another worksheet.
+            # Checking if the actions defines an analyst
+            new_analyst = action.get('analyst', '')
+            pc = getToolByName(base, 'portal_catalog')
+            # If a new analyst is defined, add the analysis to the first
+            # analyst's worksheet
+            if new_analyst:
+                # Getting the last worksheet created for the analyst
+                wss = pc(
+                    portal_type='Worksheet',
+                    inactive_state='active',
+                    sort_on='created',
+                    sort_order='reverse',
+                    Analyst=new_analyst)
+            else:
+                # Getting the last worksheed created
+                wss = pc(portal_type='Worksheet', inactive_state='active')
+            if len(wss) > 0:
+                # Add the new analysis to the worksheet
+                wss[0].getObject().addAnalysis(analysis)
+            else:
+                # Create a new worksheet and add the analysis to it
+                ws = createWorksheet(base, new_analyst)
+                ws.addAnalysis(analysis)
         else:
-            logger.warn("Not known Reflex Rule action %s." %
-                        (action.get('action', '')))
+            # Getting the base's worksheet
+            wss = base.getBackReferences('WorksheetAnalysis')
+            if len(wss) > 0:
+                # If the old analysis belongs to a worksheet, add the new
+                # one to it
+                wss[0].addAnalysis(analysis)
     return True

@@ -834,6 +834,14 @@ class BikaGenerator:
         addColumn(bsc, 'getVATAmount')
         addColumn(bsc, 'getVolume')
 
+        # portal_catalog
+        pc = getToolByName(portal, 'portal_catalog', None)
+        if pc == None:
+            logger.warning('Could not find the portal_catalog tool.')
+            return
+        addIndex(pc, 'Analyst', 'FieldIndex')
+        addColumn(pc, 'Analyst')
+
     def setupTopLevelFolders(self, context):
         workflow = getToolByName(context, "portal_workflow")
         obj_id = 'arimports'
