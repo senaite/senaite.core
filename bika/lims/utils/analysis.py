@@ -336,8 +336,10 @@ def get_method_instrument_constraints(context, uids):
         dmuid = s_dmethod.UID() if s_dmethod else ''
         diuid = a_dinstrum.UID() if a_dinstrum else ''
 
-        # To take into account ASs with no method assigned by default
-        if s_mentry:
+        # To take into account ASs with no method assigned by default or
+        # ASs that have an instrument assigned by default that doesn't have
+        # a method associated.
+        if s_mentry or not s_dmethod:
             s_methods += [None]
 
         for method in s_methods:
@@ -345,9 +347,16 @@ def get_method_instrument_constraints(context, uids):
             m_mentry = method.isManualEntryOfResults() \
                        if method else True
 
-            # Instruments available for this method and analysis?
-            instrs = [i for i in method.getInstruments()
-                      if i.UID() in s_instrums] if method else []
+            instrs = []
+            if method:
+                # Instruments available for this method and analysis?
+                instrs = [i for i in method.getInstruments()
+                          if i.UID() in s_instrums]
+            else:
+                # What about instruments without a method assigned?
+                instrs = [i for i in service.getInstruments()
+                          if i.UID() in s_instrums and not i.getMethod()]
+
             instuids = [i.UID() for i in instrs]
             v_instrobjs = [i for i in instrs if i.isValid()]
             v_instrs = [i.UID() for i in v_instrobjs]
