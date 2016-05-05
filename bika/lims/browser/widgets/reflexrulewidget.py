@@ -18,38 +18,77 @@ except:
 
 # Writting the description for the widget
 description = """
-When the results become available, some samples may have to be added to the next available worksheet for reflex testing. These situations are caused by the indetermination of the result or by a failed test.
-
-The aim of this functionality is to create a logic capable of defining some determined actions after submitting a specific results.
-
+<p>
+When the results become available, some samples may have to be added to the
+ next available worksheet for reflex testing. These situations are caused by
+ the indetermination of the result or by a failed test.
+</p>
+<p>
+The aim of this functionality is to create a logic capable of defining some
+ determined actions after submitting a specific results.
+</p>
+<p>
 Basic usage:
+</p>
+<ul>
+<li>Each reflex rule have to be bound to an analysis method using the drop-down
+ list. Inside the reflex rule the user will be able to add actions for each
+ analysis service belonging to the selected method.</li>
 
-- Each reflex rule have to be bound to an analysis method using the drop-down list. Inside the reflex rule the user will be able to add actions for each analysis service belonging to the selected method.
+<li>For each analysis service the user can introduce a range of values or a
+ discrete value. Then the user has to select from the drop-down list the action
+ to be performed when the result for this analysis is within the range or
+ has the same discrete value.</li>
 
-- For each analysis service the user can introduce a range of values or a discrete value. Then the user has to select from the drop-down list the action to be performed when the result for this analysis is within the range or has the same discrete value.
+<li>Using the 'more' button, it is possible to add more actions for the same
+ result inside an analysis service or add new analysis services and results.
+</li>
 
-- Using the 'more' button, it is possible to add more actions for the same result inside an analysis service or add new analysis services and results.
+<li>If there is an analysis service with a defined range and rules but the user
+ wants to add another range and new rules for it, he/she haves to create a new
+ set of rules for the analysis service and define the actions to be done for
+ the new results.</li>
 
-- If there is an analysis service with a defined range and rules but the user wants to add another range and new rules for it, he/she haves to create a new set of rules for the analysis service and define the actions to be done for the new results.
-
+<li>The 'Max number of reflexions' input is used to define the maximum of times
+ that the same rule can be applied to the same analysis.</li>
+</ul>
+<p>
 Worksheet behaviour:
+</p>
+<ul>
+<li>After defining the rule, the user can set the check-box in order to define
+ whether the new analysis has to be added in a different worksheet.</li>
+<li>If the user doesn't select that option the new analysis will be added to
+ the current worksheet (or without worksheet if the analysis does not belong
+ to anyone).</li>
 
-- After defining the rule, the user can set the check-box in order to define whether the new analysis has to be added in a different worksheet.
+<li>If the check-box is set and the user doesn't select an analyst the system
+ will look for an open worksheet and it will add the analysis to that
+ worksheet, without caring about the analyst. If there are no open worksheets,
+ the system will create a new worksheet with an analyst (chosen by the system).
 
-- If the user doesn't select that option the new analysis will be added to the current worksheet (or without worksheet if the analysis does not belong to anyone).
-
-- If the check-box is set and the user doesn't select an analyst the system will look for an open worksheet and it will add the analysis to that worksheet, without caring about the analyst. If there are no open worksheets, the system will create a new worksheet with an analyst (chosen by the system).
-
-- If the check-box is set and the user defines an analyst, the system will look for the first worksheet assigned to the analyst. If there is no open worksheet for that analyst, the system will create a new worksheet assigned to the analyst.
-
+<li>If the check-box is set and the user defines an analyst, the system will
+ look for the first worksheet assigned to the analyst. If there is no open
+ worksheet for that analyst, the system will create a new worksheet assigned
+ to the analyst.
+</ul>
+<p>
 So far there are only two reflex actions: duplicate and replace.
+</p>
+<ul>
+<li>Repeat an analysis means to cancel it and then create a new analysis with
+ the same analysis service used for the canceled one (always working with the
+ same sample).</li>
 
-- Repeat an analysis means to cancel it and then create a new analysis with the same analysis service used for the canceled one (always working with the same sample).
+<li>Duplicate an analysis consist on creating a new analysis with the same
+ analysis service for the same sample. It is used in order to reduce the error
+ procedure probability because both results must be similar.</li>
 
-- Duplicate an analysis consist on creating a new analysis with the same analysis service for the same sample. It is used in order to reduce the error procedure probability because both results must be similar.
-
-- If there are more than one 'repeat' actions for the same result, the system will do a 'duplicate' instead of another 'repeat'.
+<li>If there are more than one 'repeat' actions for the same result, the system
+ will do a 'duplicate' instead of another 'repeat'.</li>
+</ul>
 """
+
 
 class ReflexRuleWidget(RecordsWidget):
     _properties = RecordsWidget._properties.copy()
@@ -108,7 +147,8 @@ class ReflexRuleWidget(RecordsWidget):
         'action-1': 'repeat',
         'action-0': 'duplicate',
         'otherWS-1': 'on',
-        'analyst-0': 'sussan1'
+        'analyst-0': 'sussan1',
+        'repetition_max': 2
         ...}
 
         and returns a formatted set with the actions sorted like this one:
@@ -116,6 +156,7 @@ class ReflexRuleWidget(RecordsWidget):
         'range1': '3', 'range0': '1',
         'analysisservice': '<as_uid>',
         'discreteresult': '1',
+        'repetition_max': 2
         'value': '',
             'actions':[
                 {'action':'duplicate', 'act_row_idx':'0',
@@ -215,6 +256,7 @@ class ReflexRuleWidget(RecordsWidget):
                                 ...
                             ]}
             },
+          'repetition_max': integer
           'as_keys': ['<as_uid>', '<as_uid>'],
           'method_id': '<method_id>',
           'method_tile': '<method_tile>'
@@ -228,6 +270,7 @@ class ReflexRuleWidget(RecordsWidget):
                             'as_title':'<as_title>',
                             'resultoptions': [,,]}
             },
+          'repetition_max': integer
           'as_keys': ['<as_uid>', '<as_uid>'],
           'method_id': '<method_id>',
           'method_tile': '<method_tile>'
@@ -239,6 +282,7 @@ class ReflexRuleWidget(RecordsWidget):
                                         'discreteresult': 'X',
                                         'otherWS': Bool,
                                         'analyst': '<analyst_id>'
+                                        'repetition_max': integer
                                     }],
                            'method_id': '<method_uid>',
                            'method_tile': '<method_tile>',
@@ -302,6 +346,7 @@ class ReflexRuleWidget(RecordsWidget):
         The widget is going to return a list like this:
         [
             {'discreteresult': 'X',
+            'repetition_max': integer,
             'analysisservice': '<as_uid>', 'value': '',
             'actions':[{'action':'<action_name>', 'act_row_idx':'X',
                         'otherWS': Bool, 'analyst': '<analyst_id>'},
@@ -311,6 +356,7 @@ class ReflexRuleWidget(RecordsWidget):
             },
             {'range1': 'X', 'range0': 'X',
             'analysisservice': '<as_uid>', 'value': '',
+            'repetition_max': integer,
             'actions':[{'action':'<action_name>', 'act_row_idx':'X',
                         'otherWS': Bool, 'analyst': '<analyst_id>'},
                       {'action':'<action_name>', 'act_row_idx':'X',
@@ -319,6 +365,7 @@ class ReflexRuleWidget(RecordsWidget):
             },
             {'range1': 'X', 'range0': 'X',
             'analysisservice': '<as_uid>', 'value': '',
+            'repetition_max': integer,
             'actions':[{'action':'<action_name>', 'act_row_idx':'X',
                         'otherWS': Bool, 'analyst': '<analyst_id>'},
                       {'action':'<action_name>', 'act_row_idx':'X',
@@ -342,6 +389,8 @@ class ReflexRuleWidget(RecordsWidget):
             if element == 'actions' and value == '':
                 return [{'action': '', 'act_row_idx': '0',
                         'otherWS': False, 'analyst': ''}, ]
+            elif element == 'repetition_max' and value == '':
+                return 2
             else:
                 return value
         return [{

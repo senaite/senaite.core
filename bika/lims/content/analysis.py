@@ -148,6 +148,28 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'AnalysisSamplePartition',
         referenceClass = HoldingReference,
     ),
+    # True if the analysis is created by a reflex rule
+    BooleanField(
+        'IsReflexAnalysis',
+        default=False,
+        required=0,
+    ),
+    # This field contains the analysis which has been reflected
+    # following a reflex rule
+    ReferenceField(
+        'ReflexAnalysisOf',
+        required=0,
+        allowed_types=('Analysis',),
+        relationship='AnalysisReflectedAnalysis',
+        referenceClass=HoldingReference,
+    ),
+    # Which is the Reflex Rule action that has created this analysis
+    StringField('ReflexRuleAction', required=0,),
+    # This field contains the number repetition level of this analysis.
+    # In order to prevent an infinite loop by a reflex rule action, the fields
+    # contains the number of times this analysis has been created again by
+    # a reflex rule action.
+    IntegerField('ReflexRuleActionLevel', required=0, default=0,),
     ComputedField('ClientUID',
         expression = 'context.aq_parent.aq_parent.UID()',
     ),
@@ -1147,7 +1169,9 @@ class Analysis(BaseContent):
             for rule in all_rrs:
                 # Getting the rules to be done from the reflex rule taking
                 # in consideration the analysis service and the result
-                action_row = rule.getRules(self.getServiceUID(), a_result)
+                action_row = rule.getRules(
+                    self.getServiceUID(), a_result,
+                    self.getReflexRuleActionLevel())
                 # Once we have the rules, the system has to execute its
                 # instructions if the result has the expected result.
                 doReflexRuleAction(self, action_row)
