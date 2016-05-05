@@ -143,7 +143,7 @@ jQuery(function($){
         :element: is the more(addnew) button
         This function defines the process to add a new action row
         */
-        var row = $(element).prev('div').clone();
+        var row = $(element).parent().find('.action').last().clone();
         var found = $(row).find("input, select");
         for (var i = found.length - 1; i >= 0; i--) {
             // Increment the index id
@@ -211,7 +211,9 @@ jQuery(function($){
         // clear values
         for(var i=0; i<$(set).children().length; i++){
             var td = $(set).children()[i];
-            var input = $(td).find('input').not('.addnew');
+            var input = $(td).find('input')
+                .not('.addnew')
+                .not('[id^=ReflexRules-repetition_max-]');
             $(input).val('');
             var sel_options = $(td).find(":selected");
             $(sel_options).prop("selected", false);

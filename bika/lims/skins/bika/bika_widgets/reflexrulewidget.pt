@@ -96,6 +96,19 @@
                         value=""
                         i18n:translate=""/>
                     </select>
+                <br/>
+                <!-- Max number of reflexions -->
+                <span i18n:translate="" class="reflex_rule_text">
+                    Max number of reflexions:
+                </span>
+                <input
+                    size=5
+                    tal:attributes="
+                        name string:${fieldName}.repetition_max:records:ignore_empty;
+                        id string:${fieldName}-repetition_max-${repeat/idx/index};
+                        tabindex tabindex/next|nothing;
+                        value python:widget.getReflexRuleElement(idx,'repetition_max');"
+                        i18n:domain="python:i18n_domain">
                 <!-- Range definition -->
                 <div class="rangecontainer">
                     <span i18n:translate="" class="reflex_rule_text">

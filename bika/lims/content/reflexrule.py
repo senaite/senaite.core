@@ -78,7 +78,7 @@ class ReflexRule(BaseContent):
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
-    def getExpectedValuesAndRules(self, as_uid):
+    def getExpectedValuesAndRules(self, as_uid, reflexed_times):
         """
         This function returns the expected values (even if they are discrete or
         not) and the rules defined for the analysis service.
@@ -87,6 +87,7 @@ class ReflexRule(BaseContent):
         :return: a list of dictionaries:
             [{
             'expected_values':(X,Y),
+            'repetition_max': '2',
             'actions': [{'action': 'duplicate', },
                         {,},
                         ...]
@@ -95,8 +96,14 @@ class ReflexRule(BaseContent):
         action_sets = self.getReflexRules()
         l = []
         for action_set in action_sets:
+            rep_max = 0
+            try:
+                rep_max = int(action_set.get('repetition_max', 0))
+            except:
+                pass
             if action_set.get('analysisservice', '') == as_uid and\
-                    action_set.get('range0', ''):
+                    action_set.get('range0', '') and\
+                    rep_max > reflexed_times:
                 l.append({
                     'expected_values': (
                         action_set.get('range0', ''),
@@ -105,7 +112,8 @@ class ReflexRule(BaseContent):
                     'actions': action_set.get('actions', [])
                     })
             elif action_set.get('analysisservice', '') == as_uid and\
-                    not(action_set.get('range0', '')):
+                    not(action_set.get('range0', '')) and\
+                    rep_max > reflexed_times:
                 l.append({
                     'expected_values': action_set.get('resultoption', ''),
                     'actions': action_set.get('actions', [])
@@ -114,17 +122,19 @@ class ReflexRule(BaseContent):
                 pass
         return l
 
-    def getRules(self, as_uid, result):
+    def getRules(self, as_uid, result, reflexed_times):
         """
         This function returns a list of dictionaries with the rules to be done
         for the analysis service.
         :as_uid: is the analysis service uid for the query.
         :result: the value of the result as string.
+        :reflexed_times: The number of times the base analysis
+        has been reflexed
         :return: [{'action': 'duplicate', ...}, {,}, ...]
         """
         # Getting a list with the rules and expected values related to the
         # analysis service
-        action_sets = self.getExpectedValuesAndRules(as_uid)
+        action_sets = self.getExpectedValuesAndRules(as_uid, reflexed_times)
         r = []
         # Checking if the there are rules for this result
         for action_set in action_sets:
@@ -162,8 +172,7 @@ def doActionToAnalysis(base, action):
         # action
         doActionFor(base, 'retract')
         analysis = base.aq_parent.getAnalyses(
-            sort_on='created',
-            sort_order='reverse')[0].getObject()
+            sort_on='created')[-1].getObject()
     elif action.get('action', '') == 'duplicate' or state == 'retracted':
         # Duplicate an analysis consist on creating a new analysis with
         # the same analysis service for the same sample. It is used in
@@ -200,8 +209,15 @@ def doActionToAnalysis(base, action):
         changeWorkflowState(analysis,
                             "bika_analysis_workflow", "sample_received")
     else:
-        logger.warn("Not known Reflex Rule action %s." %
-                    (action.get('action', '')))
+        logger.error(
+            "Not known Reflex Rule action %s." % (action.get('action', '')))
+        return 0
+    # Get the recreated time number
+    created_number = base.getReflexRuleActionLevel()
+    # Incrementing the creation time number
+    analysis.setReflexRuleActionLevel(created_number + 1)
+    analysis.setReflexRuleAction(action.get('action', ''))
+    analysis.setReflexAnalysisOf(base)
     return analysis
 
 
@@ -226,6 +242,57 @@ def createWorksheet(base, analyst):
     return ws
 
 
+def doWorksheetLogic(base, action, analysis):
+    """
+    This function checks if the actions contains worksheet actions.
+    If the action demands to add the new analysis to another worksheet, this
+    function will do it following the next rules:
+    - If an analyst is defined in the action, the system will try to add the
+    new analysis to the first worksheet of this analyst.
+    If no active worksheet is found for this analyst, the system will create a
+    new worksheet assigned to the defined analyst.
+    - If no analyst is defined the system will try to add the new analysis to
+    the last worksheet created, but if there are no active worksheets, a new
+    worksheet with any analyst will be created.
+
+    If the actions doesn't requires to add the new analysis to another
+    worksheet, the function will try to add the analysis to the same worksheet
+    as the base analysis.
+    """
+    if action.get('otherWS', False):
+        # Adds the new analysis inside another worksheet.
+        # Checking if the actions defines an analyst
+        new_analyst = action.get('analyst', '')
+        pc = getToolByName(base, 'portal_catalog')
+        # If a new analyst is defined, add the analysis to the first
+        # analyst's worksheet
+        if new_analyst:
+            # Getting the last worksheet created for the analyst
+            wss = pc(
+                portal_type='Worksheet',
+                inactive_state='active',
+                sort_on='created',
+                sort_order='reverse',
+                Analyst=new_analyst)
+        else:
+            # Getting the last worksheet created
+            wss = pc(portal_type='Worksheet', inactive_state='active')
+        if len(wss) > 0:
+            # Add the new analysis to the worksheet
+            wss[0].getObject().addAnalysis(analysis)
+        else:
+            # Create a new worksheet and add the analysis to it
+            ws = createWorksheet(base, new_analyst)
+            ws.addAnalysis(analysis)
+    else:
+        # Getting the base's worksheet
+        wss = base.getBackReferences('WorksheetAnalysis')
+        if len(wss) > 0:
+            # If the old analysis belongs to a worksheet, add the new
+            # one to it
+            wss[0].addAnalysis(analysis)
+
+
 def doReflexRuleAction(base, action_row):
     """
     This function executes all the reflex rule actions inside action_row using
@@ -237,36 +304,6 @@ def doReflexRuleAction(base, action_row):
     for action in action_row:
         # Do the action
         analysis = doActionToAnalysis(base, action)
-        if action.get('otherWS', False):
-            # Adds the new analysis inside another worksheet.
-            # Checking if the actions defines an analyst
-            new_analyst = action.get('analyst', '')
-            pc = getToolByName(base, 'portal_catalog')
-            # If a new analyst is defined, add the analysis to the first
-            # analyst's worksheet
-            if new_analyst:
-                # Getting the last worksheet created for the analyst
-                wss = pc(
-                    portal_type='Worksheet',
-                    inactive_state='active',
-                    sort_on='created',
-                    sort_order='reverse',
-                    Analyst=new_analyst)
-            else:
-                # Getting the last worksheed created
-                wss = pc(portal_type='Worksheet', inactive_state='active')
-            if len(wss) > 0:
-                # Add the new analysis to the worksheet
-                wss[0].getObject().addAnalysis(analysis)
-            else:
-                # Create a new worksheet and add the analysis to it
-                ws = createWorksheet(base, new_analyst)
-                ws.addAnalysis(analysis)
-        else:
-            # Getting the base's worksheet
-            wss = base.getBackReferences('WorksheetAnalysis')
-            if len(wss) > 0:
-                # If the old analysis belongs to a worksheet, add the new
-                # one to it
-                wss[0].addAnalysis(analysis)
+        # Working with the worksheetlogic
+        doWorksheetLogic(base, action, analysis)
     return True
