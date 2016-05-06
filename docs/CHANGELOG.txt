@@ -1,5 +1,6 @@
 3.2.1 (unreleased)
 ------------------
+HEALTH-568: TaqMan 96 Interface not working well
 HEALTH-567: Nuclicens Interface not working well
 HEALTH-360: Enforce State (Province) and District if Zimbabwe is selected
 HEALTH-364: Added country/province/district columns to client listing table
