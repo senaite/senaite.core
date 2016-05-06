@@ -56,19 +56,22 @@ class EasyQParser(InstrumentResultsFileParser):
         for n, row in enumerate(reader):
             resid = row.get("SampleID", None)
             serial = row.get("SerialNumber", None)
+            # Convert empty values as "Invalid"
+            value = row.get("Value", None) or "Invalid"
 
             # no resid and no serial
             if not any([resid, serial]):
                 self.err("Result identification not found.", numline=n)
                 continue
 
-            # get the test name
-            testname = row.get("Description", None)
+            # get the test name (should be "EasyQDirector")
+            testname = row.get("Product", "EasyQDirector")
             if testname is None:
                 self.err("Testname (Description) not found.", numline=n)
                 continue
 
             rawdict = row
+            rawdict["Value"] = value.rstrip(" cps/ml")
             rawdict['DefaultResult'] = 'Value'
             key = resid or serial
             self._addRawResult(key, {testname: rawdict}, False)
