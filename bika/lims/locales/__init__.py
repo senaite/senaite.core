@@ -8638,14 +8638,14 @@ STATES = [
  # https://jira.bikalabs.com/browse/HEALTH-364
  ['ZW', '01', 'Manicaland'],
  ['ZW', '02', 'Midlands'],
- ['ZW', '03', 'Mashonaland Central Province'],
+ ['ZW', '03', 'Mashonaland Central'],
  ['ZW', '04', 'Mashonaland East'],
  ['ZW', '05', 'Mashonaland West'],
  ['ZW', '06', 'Matabeleland North'],
  ['ZW', '07', 'Matabeleland South'],
  ['ZW', '08', 'Masvingo'],
  ['ZW', '09', 'Bulawayo'],
- ['ZW', '10', 'Harare Province']
+ ['ZW', '10', 'Harare'],
 ]
 
 DISTRICTS = [
@@ -40910,7 +40910,7 @@ DISTRICTS = [
  ['ZW', '02', 'Mberengwa'],
  ['ZW', '02', 'Shurugwi'],
  ['ZW', '02', 'Zvishavane'],
- # Mashonaland Central Province
+ # Mashonaland Central
  ['ZW', '03', 'Bindura'],
  ['ZW', '03', 'Centenary'],
  ['ZW', '03', 'Guruve'],
@@ -40966,7 +40966,9 @@ DISTRICTS = [
  # Bulawayo
  ['ZW', '09', 'Bulawayo'],
  # Harare Province
- ['ZW', '10', 'Chitungwiza']]
+ ['ZW', '10', 'Chitungwiza'],
+ ['ZW', '10', 'Harare'],
+ ]
 
 class ajaxGetCountries(BrowserView):
 
