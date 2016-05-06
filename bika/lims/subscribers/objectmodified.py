@@ -1,6 +1,7 @@
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore import permissions
-from bika.lims.permissions import ManageSupplyOrders
+from bika.lims.permissions import ManageSupplyOrders, ManageLoginDetails
+
 
 def ObjectModifiedEventHandler(obj, event):
     """ Various types need automation on edit.
