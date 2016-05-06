@@ -1604,9 +1604,12 @@ class AnalysisRequest(BaseFolder):
         analysis_profiles = []
         to_be_billed = []
         # Getting all analysis request analyses
-        for analysis in self.objectValues('Analysis'):
+        # Getting all analysis request analyses
+        ar_analyses = self.getAnalyses(cancellation_state='active',
+                                       full_objects=True)
+        for analysis in ar_analyses:
             review_state = workflow.getInfoFor(analysis, 'review_state', '')
-            if review_state != 'not_requested':
+            if review_state not in ('not_requested', 'retracted'):
                 analyses.append(analysis)
         # Getting analysis request profiles
         for profile in self.getProfiles():
