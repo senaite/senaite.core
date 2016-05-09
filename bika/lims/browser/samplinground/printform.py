@@ -47,7 +47,7 @@ class PrintForm(BrowserView):
     def getSRTemplates(self):
         """
         Returns a DisplayList with the available templates found in
-        browser/samplingrpund/templates/
+        browser/samplinground/templates/
         """
         this_dir = os.path.dirname(os.path.abspath(__file__))
         templates_dir = os.path.join(this_dir, self._TEMPLATES_DIR)
@@ -90,8 +90,6 @@ class PrintForm(BrowserView):
         if self._current_sr_index < len(self._samplingrounds):
             self._current_sr_index += 1
         return reptemplate
-        # Using default for now
-        return ViewPageTemplateFile("templates/print/default_form.pt")(self)
 
     def getCSS(self):
         """ Returns the css style to be used for the current template.

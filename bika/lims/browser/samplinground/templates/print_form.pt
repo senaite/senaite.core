@@ -126,8 +126,8 @@
                 </select>
             </div>
             <div id='buttons'>
-                <input type="button" id='cancel_button' i18n:translate="value" value="Cancel"/>&nbsp;&nbsp;
-                <input type="button" id='print_button' i18n:translate="value" value="Print"/>
+                <input type="button" id='cancel_button' i18n:translate="" value="Cancel"/>&nbsp;&nbsp;
+                <input type="button" id='print_button' i18n:translate="" value="Print"/>
             </div>
         </div>
 
