@@ -878,7 +878,7 @@ class AnalysisRequestPublishView(BrowserView):
 
             # Attach the pdf to the email if requested
             if pdf_report and 'pdf' in recip.get('pubpref'):
-                attachPdf(mime_msg, pdf_report, pdf_fn)
+                attachPdf(mime_msg, pdf_report, ar.id)
 
             # For now, I will simply ignore mail send under test.
             if hasattr(self.portal, 'robotframework'):

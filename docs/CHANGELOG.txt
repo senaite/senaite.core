@@ -18,6 +18,13 @@ LIMS-1774: Shiny graphs for result ranges
 3.1.11 (2016-04-22)
 -----------------------------
 LIMS-2181: An analysis is not stopped from using an invalid instrument
+3.1.12 (unreleased)
+-----------------------------
+HEALTH-569 Bar code printing not working on sample registration
+
+3.1.11 (2016-04-22)
+-----------------------------
+LIMS-2223: Saving a recordswidget as hidden fails
 LIMS-2225: Formatted results not displayed properly in Worksheet's transposed layout
 LIMS-2001: Duplicate for one analysis only
 LIMS-1809: Typos. Perdiod an missing spaces

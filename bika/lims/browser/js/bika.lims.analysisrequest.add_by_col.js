@@ -2455,11 +2455,11 @@ function AnalysisRequestAddByCol() {
                             window.bika.lims.portalMessage(msg)
                             window.scroll(0, 0)
                         }
-                        else if (data['labels']) {
+                        else if (data['stickers']) {
                             var destination = window.location.href.split("/portal_factory")[0]
-                            var ars = data['labels']
-                            var labelsize = data['labelsize']
-                            var q = "/sticker?size=" + labelsize + "&items=" + ars.join(",")
+                            var ars = data['stickers']
+                            var stickertemplate = data['stickertemplate']
+                            var q = "/sticker?autoprint=1&template=" + stickertemplate + "&items=" + ars.join(",")
                             window.location.replace(destination + q)
                         }
                         else {

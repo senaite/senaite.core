@@ -82,7 +82,7 @@ class EditView(BrowserView):
             context.supplyorder_lineitems = []
             # Process the order item data
             for prodid, qty in request.form.items():
-                if prodid.startswith('product_') and float(qty) > 0:
+                if prodid.startswith('product_') and qty and float(qty) > 0:
                     prodid = prodid.replace('product_', '')
                     product = setup.bika_labproducts[prodid]
                     context.supplyorder_lineitems.append(
