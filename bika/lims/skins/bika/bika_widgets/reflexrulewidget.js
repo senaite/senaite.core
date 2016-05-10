@@ -64,8 +64,8 @@ jQuery(function($){
     function analysiservice_change(as, setupdata){
         /**
         This function hides/shows the expected result fields accordingly with
-        the analysis service. It also loads the available options for discrete
-        expected results.
+        the analysis service. It also loads the available options for expected
+        discrete results.
         */
         var method = $('select[id="Method"]').find(":selected").attr('value');
         //Check if the selected analysis service has discrete rules
@@ -78,8 +78,10 @@ jQuery(function($){
             // results for the analysis service
             $(as).siblings('.rangecontainer').hide().find('input').val('');
             $(as).siblings('.resultoptioncontainer').show();
-            // Write the different options
+            // Delete old options
             var select = $(as).siblings('.resultoptioncontainer').find('select');
+            $(select).find('option').remove();
+            // Write the different options
             for (var i=0; resultoptions.length > i; i++){
                 $(select).append(
                     '<option value="' + resultoptions[i].ResultValue +
@@ -209,15 +211,14 @@ jQuery(function($){
             }
         }
         // clear values
-        for(var i=0; i<$(set).children().length; i++){
-            var td = $(set).children()[i];
-            var input = $(td).find('input')
-                .not('.addnew')
-                .not('[id^=ReflexRules-repetition_max-]');
-            $(input).val('');
-            var sel_options = $(td).find(":selected");
-            $(sel_options).prop("selected", false);
-        }
+        var td = $(set).children().first();
+        var input = $(td).find('input')
+            .not('.addnew')
+            .not('[id^=ReflexRules-repetition_max-]');
+        $(input).val('');
+        var sel_options = $(td).find(":selected");
+        $(sel_options).prop("selected", false);
+        // Adding the new set to the table
         $(set).appendTo($(table));
         // Binding the controllers
         $(set)
