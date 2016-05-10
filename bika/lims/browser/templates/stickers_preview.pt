@@ -61,6 +61,27 @@
               background-color: #bbb;
               text-shadow: 1px 1px 1px #aaa;
         }
+        #sticker-rule {
+            color: rgb(51, 51, 51);
+            height: 10mm;
+            margin: 0 auto;
+            overflow: hidden;
+            display:none;
+        }
+        .sticker-rule-tick,
+        .sticker-rule-tick-odd {
+            display:table-cell;
+            width:10mm;
+            min-width:10mm;
+            max-width:10mm;
+            font-size:6pt;
+        }
+        .sticker-rule-tick {
+            border-top:2px solid #666;
+        }
+        .sticker-rule-tick-odd {
+            border-top:1px dotted #666;
+        }
         .sticker {
             margin:0 auto;
             background-color:#fff;
@@ -78,6 +99,9 @@
               box-shadow:none;
               border-bottom:none;
             }
+            #sticker-rule {
+                display:none !important;
+            }
         }
     </style>
     <script type="text/javascript">
@@ -93,6 +117,9 @@
             $('select#template').change(function(e) {
                 reload($('select#template').val());
             });
+            var stickwidth = $('.sticker').first().width();
+            $('#sticker-rule').css({'width':stickwidth,'max-width':stickwidth});
+            $('#sticker-rule').fadeIn();
 
             /**
              * Re-loads the stickers preview by using the template specified
@@ -113,6 +140,9 @@
                     $('#stickers-wrapper').fadeTo('fast', 1);
                     // reload barcoding
                     bika.lims.BarcodeUtils.load();
+                    var stickwidth = $('.sticker').first().width();
+                    $('#sticker-rule').css({'width':stickwidth,'max-width':stickwidth});
+                    $('#sticker-rule').fadeIn();
                 });
             }
         });
@@ -150,10 +180,22 @@
         <!-- Container where all the stickers are embedded. -->
         <div id="stickers-wrapper">
             <style id='stickers-style' type="text/css" tal:content="structure python:view.getSelectedTemplateCSS()"></style>
-            <tal:sticker tal:repeat="sticker view/items">
+            <div id="sticker-rule">
+              <div style="font-size:6pt">mm</div>
+              <tal:tick repeat="mm python:[0,10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,210]">
+              <div tal:define="odd repeat/mm/odd;
+                               css python:'sticker-rule-tick-odd' if odd else 'sticker-rule-tick';"
+                   tal:attributes="class css"
+                   tal:content="mm"></div>
+              </tal:tick>
+            </div>
+            <tal:stickers repeat="sticker view/items">
+            <tal:sticker define="partid python:sticker[2].getId() if sticker else None;"
+                         condition="python:not partid or partid not in view.rendered_items">
             <div class='sticker'
                  tal:content='structure python:view.renderItem()'></div>
             </tal:sticker>
+            </tal:stickers>
         </div>
     </div>
 </body>
