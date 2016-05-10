@@ -49,14 +49,16 @@ def ObjectModifiedEventHandler(obj, event):
         mp(ManageLoginDetails, ['Manager', 'LabManager', 'LabClerk'], 0)
         # Verify that the Contact details are the same as the Plone user.
         contact_username = obj.Schema()['Username'].get(obj)
-        contact_email = obj.Schema()['EmailAddress'].get(obj)
-        contact_fullname = obj.Schema()['Fullname'].get(obj)
-        mt = getToolByName(obj, 'portal_membership')
-        member = mt.getMemberById(contact_username)
-        properties = {'username':contact_username,
-                      'email': contact_email,
-                      'fullname': contact_fullname}
-        member.setMemberProperties(properties)
+        if contact_username:
+            contact_email = obj.Schema()['EmailAddress'].get(obj)
+            contact_fullname = obj.Schema()['Fullname'].get(obj)
+            mt = getToolByName(obj, 'portal_membership')
+            member = mt.getMemberById(contact_username)
+            if member:
+                properties = {'username':contact_username,
+                              'email': contact_email,
+                              'fullname': contact_fullname}
+                member.setMemberProperties(properties)
 
     elif obj.portal_type == 'AnalysisCategory':
         for analysis in obj.getBackReferences('AnalysisServiceAnalysisCategory'):
