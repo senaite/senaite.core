@@ -218,6 +218,7 @@ def doActionToAnalysis(base, action):
     analysis.setReflexRuleActionLevel(created_number + 1)
     analysis.setReflexRuleAction(action.get('action', ''))
     analysis.setReflexAnalysisOf(base)
+    analysis.setResult('')
     return analysis
 
 
