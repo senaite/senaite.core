@@ -93,12 +93,26 @@ class PrintForm(BrowserView):
 
     def getCSS(self):
         """ Returns the css style to be used for the current template.
+            If the selected template is 'default.pt', this method will
+            return the content from 'default.css'. If no css file found
+            for the current template, returns empty string
         """
-        this_dir = os.path.dirname(os.path.abspath(__file__))
-        templates_dir = os.path.join(this_dir, self._TEMPLATES_DIR)
-        path = '%s/%s.css' % (templates_dir, 'default')
-        content_file = open(path, 'r')
-        return content_file.read()
+        template = self.request.get('template', self._DEFAULT_TEMPLATE)
+        content = ''
+        if template.find(':') >= 0:
+            prefix, template = template.split(':')
+            resource = queryResourceDirectory(
+                self._TEMPLATES_ADDON_DIR, prefix)
+            css = '{0}.css'.format(template[:-3])
+            if css in resource.listDirectory():
+                content = resource.readFile(css)
+        else:
+            this_dir = os.path.dirname(os.path.abspath(__file__))
+            templates_dir = os.path.join(this_dir, self._TEMPLATES_DIR)
+            path = '%s/%s.css' % (templates_dir, template[:-3])
+            with open(path, 'r') as content_file:
+                content = content_file.read()
+        return content
 
     def getAnalysisRequestTemplatesInfo(self):
         """

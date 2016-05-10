@@ -132,8 +132,8 @@
         </div>
 
 
-    <style id='form-style' tal:content='structure python:view.getCSS()'></style>
-    <div id='sr_form_container' class="samplinground-print-form">
+    <style id='report-style' tal:content='structure python:view.getCSS()'></style>
+    <div id='samplinground-printview' class="samplinground-print-form">
         <div id='form'>
             <div tal:attributes="id python:view.getSamplingRoundObj().id;
                                 uid python:view.getSamplingRoundObj().UID();"
