@@ -1144,7 +1144,6 @@ class Analysis(BaseContent):
         # objects are related to a method.
         a_result = self.getResult()
         a_method = self.getMethod()
-        import pdb; pdb.set_trace()
         # After getting the analysis' method we have to get all Reflex Rules
         # related to that method.
         if a_method:
