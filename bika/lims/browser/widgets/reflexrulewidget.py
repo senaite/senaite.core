@@ -78,7 +78,8 @@ So far there are only two reflex actions: duplicate and replace.
 <ul>
 <li>Repeat an analysis means to cancel it and then create a new analysis with
  the same analysis service used for the canceled one (always working with the
- same sample).</li>
+ same sample). Attention! It is no possible to repeat a verified analysis, only
+ a duplicate is allowed.</li>
 
 <li>Duplicate an analysis consist on creating a new analysis with the same
  analysis service for the same sample. It is used in order to reduce the error
@@ -116,6 +117,7 @@ class ReflexRuleWidget(RecordsWidget):
         [{
         'range1': 'X', 'range0': 'X',
         'discreteresult': 'X',
+        'trigger': 'xxx',
         'analysisservice': '<as_uid>', 'value': '',
             'actions':[{'action':'<action_name>', 'act_row_idx':'X',
                         'otherWS':Bool, 'analyst': '<analyst_id>'},
@@ -148,7 +150,8 @@ class ReflexRuleWidget(RecordsWidget):
         'action-0': 'duplicate',
         'otherWS-1': 'on',
         'analyst-0': 'sussan1',
-        'repetition_max': 2
+        'repetition_max': 2,
+        'trigger': 'submit',
         ...}
 
         and returns a formatted set with the actions sorted like this one:
@@ -156,7 +159,8 @@ class ReflexRuleWidget(RecordsWidget):
         'range1': '3', 'range0': '1',
         'analysisservice': '<as_uid>',
         'discreteresult': '1',
-        'repetition_max': 2
+        'repetition_max': 2,
+        'trigger': 'submit',
         'value': '',
             'actions':[
                 {'action':'duplicate', 'act_row_idx':'0',
@@ -282,7 +286,8 @@ class ReflexRuleWidget(RecordsWidget):
                                         'discreteresult': 'X',
                                         'otherWS': Bool,
                                         'analyst': '<analyst_id>'
-                                        'repetition_max': integer
+                                        'repetition_max': integer,
+                                        'trigger': 'xxx',
                                     }],
                            'method_id': '<method_uid>',
                            'method_tile': '<method_tile>',
@@ -335,6 +340,13 @@ class ReflexRuleWidget(RecordsWidget):
         return DisplayList(
             [('repeat', 'Repeat'), ('duplicate', 'Duplicate')])
 
+    def getTriggerVoc(self):
+        """
+        Return the triggeroptions for the rule
+        """
+        return DisplayList(
+            [('submit', 'After submit'), ('verify', 'After verify')])
+
     def getReflexRuleElement(self, idx=0, element=''):
         """
         Returns the expected value saved in the object.
@@ -348,6 +360,7 @@ class ReflexRuleWidget(RecordsWidget):
             {'discreteresult': 'X',
             'repetition_max': integer,
             'analysisservice': '<as_uid>', 'value': '',
+            'trigger': 'xxx',
             'actions':[{'action':'<action_name>', 'act_row_idx':'X',
                         'otherWS': Bool, 'analyst': '<analyst_id>'},
                       {'action':'<action_name>', 'act_row_idx':'X',
@@ -357,6 +370,7 @@ class ReflexRuleWidget(RecordsWidget):
             {'range1': 'X', 'range0': 'X',
             'analysisservice': '<as_uid>', 'value': '',
             'repetition_max': integer,
+            'trigger': 'xxx',
             'actions':[{'action':'<action_name>', 'act_row_idx':'X',
                         'otherWS': Bool, 'analyst': '<analyst_id>'},
                       {'action':'<action_name>', 'act_row_idx':'X',
@@ -366,6 +380,7 @@ class ReflexRuleWidget(RecordsWidget):
             {'range1': 'X', 'range0': 'X',
             'analysisservice': '<as_uid>', 'value': '',
             'repetition_max': integer,
+            'trigger': 'xxx',
             'actions':[{'action':'<action_name>', 'act_row_idx':'X',
                         'otherWS': Bool, 'analyst': '<analyst_id>'},
                       {'action':'<action_name>', 'act_row_idx':'X',

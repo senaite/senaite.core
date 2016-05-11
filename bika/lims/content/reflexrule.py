@@ -78,7 +78,7 @@ class ReflexRule(BaseContent):
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
-    def getExpectedValuesAndRules(self, as_uid, reflexed_times):
+    def getExpectedValuesAndRules(self, as_uid, reflexed_times, wf_action):
         """
         This function returns the expected values (even if they are discrete or
         not) and the rules defined for the analysis service.
@@ -88,6 +88,7 @@ class ReflexRule(BaseContent):
             [{
             'expected_values':(X,Y),
             'repetition_max': '2',
+            'wf_action': 'submit',
             'actions': [{'action': 'duplicate', },
                         {,},
                         ...]
@@ -103,6 +104,7 @@ class ReflexRule(BaseContent):
                 pass
             if action_set.get('analysisservice', '') == as_uid and\
                     action_set.get('range0', '') and\
+                    action_set.get('trigger', '') == wf_action and\
                     rep_max > reflexed_times:
                 l.append({
                     'expected_values': (
@@ -112,6 +114,7 @@ class ReflexRule(BaseContent):
                     'actions': action_set.get('actions', [])
                     })
             elif action_set.get('analysisservice', '') == as_uid and\
+                    action_set.get('trigger', '') == wf_action and\
                     not(action_set.get('range0', '')) and\
                     rep_max > reflexed_times:
                 l.append({
@@ -122,7 +125,7 @@ class ReflexRule(BaseContent):
                 pass
         return l
 
-    def getRules(self, as_uid, result, reflexed_times):
+    def getRules(self, as_uid, result, reflexed_times, wf_action):
         """
         This function returns a list of dictionaries with the rules to be done
         for the analysis service.
@@ -130,13 +133,17 @@ class ReflexRule(BaseContent):
         :result: the value of the result as string.
         :reflexed_times: The number of times the base analysis
         has been reflexed
+        :wf_action: it is the workflow action that the analysis is doing, we
+        have to act in consideration of the action_set 'trigger' variable
         :return: [{'action': 'duplicate', ...}, {,}, ...]
         """
         # Getting a list with the rules and expected values related to the
         # analysis service
-        action_sets = self.getExpectedValuesAndRules(as_uid, reflexed_times)
+        action_sets = self.getExpectedValuesAndRules(
+            as_uid, reflexed_times, wf_action)
         r = []
-        # Checking if the there are rules for this result
+        # Checking if the there are rules for this result and analysis
+        # state change
         for action_set in action_sets:
             # It is a discrete value in string shape
             exp_val = action_set.get('expected_values', '')

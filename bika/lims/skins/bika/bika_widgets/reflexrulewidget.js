@@ -7,9 +7,6 @@ jQuery(function($){
         setup_as_and_discrete_results(setupdata);
         setup_addnew_buttons();
         setup_del_action_button();
-        $.each($('div.action'), function(index, element){
-                otherWS_controller(element);
-            });
         $('select#Method').bind("change", function () {
             // Updates the new method
             $.each($('table#ReflexRules_table').find('.rw_deletebtn'),
@@ -26,10 +23,23 @@ jQuery(function($){
         $('input[id^="ReflexRules-range"]').bind("change", function () {
             range_controller(this);
         });
+        // Running the trigger controller
+        $.each($('select[id^="ReflexRules-trigger"]'), function(index, element){
+                trigger_controller(element);
+            });
+        // Binding the trigger controller
+        $('select[id^="ReflexRules-trigger"]').bind("change", function () {
+            trigger_controller(this);
+        });
         $('select[id^="ReflexRules-analysisservice-"]')
             .bind("change", function () {
                 analysiservice_change(this, setupdata);
             });
+        // Setting the ws stuff
+        $.each($('div.action'), function(index, element){
+                otherWS_controller(element);
+            });
+        // Binding the controller
         $('input[id^="ReflexRules-otherWS-"]').bind("change", function () {
             otherWS_controller($(this).closest('div.action'));
         });
@@ -121,6 +131,23 @@ jQuery(function($){
         var range1 = td.find('[id^="ReflexRules-range1"]');
         if ($(range0).val() > $(range1).val()) {
             $(range1).val($(range0).val());
+        }
+    }
+
+    function trigger_controller(element){
+        /**
+        If trigger option 'after verify' is selected, all action aptions
+        of the set must be halt at duplicate because a repeat action after
+        verifying the analysis has no sense.
+        */
+        var td = $(element).parent();
+        var action = td.find('[id^="ReflexRules-action-"]');
+        if ($(element).find(":selected").attr('value') == 'verify'){
+            // Remove the repeat option from actions
+            $(action).find("option[value='repeat']").remove();
+        }
+        else if ($(action).find("option[value='repeat']").length === 0) {
+            $(action).append('<option value="repeat">Repeat</option>');
         }
     }
 
@@ -224,9 +251,15 @@ jQuery(function($){
         $(set)
             .find('input[id^="ReflexRules-range"]')
             .bind("change", function () {
-                range_controller(element);
+                range_controller($(set).find('input[id^="ReflexRules-range"]'));
                 setup_del_action_button();
-            });
+        });
+        $(set)
+            .find('select[id^="ReflexRules-trigger"]')
+            .bind("change", function () {
+                trigger_controller(
+                        $(set).find('select[id^="ReflexRules-trigger"]'));
+        }).trigger("change");
         $(set).find("input[id$='_action_addnew']").click(function(i,e){
             add_action_row(this);
         });
