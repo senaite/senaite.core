@@ -1115,6 +1115,36 @@ class Analysis(BaseContent):
         self.updateDueDate()
         self.reindexObject()
 
+    def _reflex_rule_process(self, wf_action):
+        """
+        This function does all the reflex rule process.
+        :wf_action: is a variable containing a string with the workflow
+        action triggered
+        """
+        # Check out if the analysis has any reflex rule bound to it.
+        # First we have get the analysis' method because the Reflex Rule
+        # objects are related to a method.
+        a_result = self.getResult()
+        a_method = self.getMethod()
+        # After getting the analysis' method we have to get all Reflex Rules
+        # related to that method.
+        if a_method:
+            all_rrs = a_method.getBackReferences('ReflexRuleMethod')
+            # Once we have all the Reflex Rules with the same method as the
+            # analysis has, it is time to get the rules that are bound to the
+            # same analysis service that is using the analysis.
+            rrs = []
+            for rule in all_rrs:
+                # Getting the rules to be done from the reflex rule taking
+                # in consideration the analysis service, the result and
+                # the state change
+                action_row = rule.getRules(
+                    self.getServiceUID(), a_result,
+                    self.getReflexRuleActionLevel(), wf_action)
+                # Once we have the rules, the system has to execute its
+                # instructions if the result has the expected result.
+                doReflexRuleAction(self, action_row)
+
     def workflow_script_submit(self):
         # DuplicateAnalysis doesn't have analysis_workflow.
         if self.portal_type == "DuplicateAnalysis":
@@ -1153,28 +1183,8 @@ class Analysis(BaseContent):
                             can_submit = False
                 if can_submit:
                     workflow.doActionFor(dependent, "submit")
-        # Check out if the analysis has any reflex rule bound to it.
-        # First we have get the analysis' method because the Reflex Rule
-        # objects are related to a method.
-        a_result = self.getResult()
-        a_method = self.getMethod()
-        # After getting the analysis' method we have to get all Reflex Rules
-        # related to that method.
-        if a_method:
-            all_rrs = a_method.getBackReferences('ReflexRuleMethod')
-            # Once we have all the Reflex Rules with the same method as the
-            # analysis has, it is time to get the rules that are bound to the
-            # same analysis service that is using the analysis.
-            rrs = []
-            for rule in all_rrs:
-                # Getting the rules to be done from the reflex rule taking
-                # in consideration the analysis service and the result
-                action_row = rule.getRules(
-                    self.getServiceUID(), a_result,
-                    self.getReflexRuleActionLevel())
-                # Once we have the rules, the system has to execute its
-                # instructions if the result has the expected result.
-                doReflexRuleAction(self, action_row)
+        # Do all the reflex rules process
+        self._reflex_rule_process('submit')
         # If all analyses in this AR have been submitted
         # escalate the action to the parent AR
         if not skip(ar, "submit", peek=True):
@@ -1336,6 +1346,8 @@ class Analysis(BaseContent):
         if workflow.getInfoFor(self, 'cancellation_state', 'active') == "cancelled":
             return False
         self.reindexObject(idxs=["review_state", ])
+        # Do all the reflex rules process
+        self._reflex_rule_process('verify')
         # If all analyses in this AR are verified
         # escalate the action to the parent AR
         ar = self.aq_parent

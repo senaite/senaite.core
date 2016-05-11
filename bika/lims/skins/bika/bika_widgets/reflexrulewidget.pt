@@ -109,6 +109,26 @@
                         tabindex tabindex/next|nothing;
                         value python:widget.getReflexRuleElement(idx,'repetition_max');"
                         i18n:domain="python:i18n_domain">
+                <br/>
+                <!-- Define when the rule has to be triggered, after submit or after verify -->
+                <span i18n:translate="" class="reflex_rule_text">
+                    Trigger rule
+                </span>
+                <select
+                    tal:define="
+                        olist widget/getTriggerVoc"
+                    tal:attributes="
+                        name string:${fieldName}.trigger:records:ignore_empty;
+                        id string:${fieldName}-trigger-${repeat/idx/index};"
+                        i18n:domain="python:i18n_domain">
+                    <option
+                        tal:repeat="option olist"
+                        tal:content="python:olist.getValue(option)"
+                        tal:attributes="
+                            value python: option;
+                            selected python:'selected' if option==widget.getReflexRuleElement(idx,'trigger') else None"
+                        i18n:translate=""/>
+                </select>
                 <!-- Range definition -->
                 <div class="rangecontainer">
                     <span i18n:translate="" class="reflex_rule_text">
