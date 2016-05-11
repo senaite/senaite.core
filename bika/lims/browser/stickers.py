@@ -18,8 +18,10 @@ class Sticker(BrowserView):
     template = ViewPageTemplateFile("templates/stickers_preview.pt")
     item_index = 0
     current_item = None
+    rendered_items = []
 
     def __call__(self):
+        self.rendered_items = []
         bc = getToolByName(self.context, 'bika_catalog')
         items = self.request.get('items', '')
         if items:
@@ -120,6 +122,7 @@ class Sticker(BrowserView):
             bs_template = self.context.bika_setup.getLargeStickerTemplate()
         rq_template = self.request.get('template', bs_template)
         # Check if the template exists. If not, fallback to default's
+        prefix = ''
         if rq_template.find(':') >= 0:
             prefix, rq_template = rq_template.split(':')
             templates_dir = queryResourceDirectory('stickers', prefix).directory
@@ -128,7 +131,7 @@ class Sticker(BrowserView):
             templates_dir = os.path.join(this_dir, 'templates/stickers/')
         if not os.path.isfile(os.path.join(templates_dir, rq_template)):
             rq_template = 'Code_128_1x48mm.pt'
-        return rq_template
+        return '%s:%s' % (prefix, rq_template) if prefix else rq_template
 
     def getSelectedTemplateCSS(self):
         """ Looks for the CSS file from the selected template and return its
@@ -161,8 +164,10 @@ class Sticker(BrowserView):
             first item of the list.
         """
         if self.item_index == len(self.items):
-            self.item_index = 0;
+            self.item_index = 0
+            self.rendered_items = []
         self.current_item = self.items[self.item_index]
+        self.rendered_items.append(self.current_item[2].getId())
         self.item_index += 1
         return self.current_item
 
