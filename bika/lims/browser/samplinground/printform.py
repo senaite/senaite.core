@@ -6,6 +6,7 @@ from plone.resource.utils import iterDirectoriesOfType, queryResourceDirectory
 
 import os
 import glob
+import traceback
 
 
 class PrintForm(BrowserView):
