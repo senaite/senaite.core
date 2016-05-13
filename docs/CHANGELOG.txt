@@ -4,6 +4,7 @@ HEALTH-569 Bar code printing not working on sample registration
 
 3.1.11 (2016-04-22)
 -----------------------------
+LIMS-2252: Partitions not submitted when creating AR if the form is submitted before partitions are calculated
 LIMS-2223: Saving a recordswidget as hidden fails
 LIMS-2225: Formatted results not displayed properly in Worksheet's transposed layout
 LIMS-2001: Duplicate for one analysis only
