@@ -795,11 +795,6 @@ class AnalysisResultsImporter(Logger):
             analysis.setResult(res)
             if capturedate:
                 analysis.setResultCaptureDate(capturedate)
-            # execute 'submit' transition if analysis is in received state.
-            wf = analysis.portal_workflow
-            state = wf.getInfoFor(analysis, 'review_state')
-            if 'received' in state:
-                wf.doActionFor(analysis, 'submit')
             resultsaved = True
 
         elif resultsaved == False:
