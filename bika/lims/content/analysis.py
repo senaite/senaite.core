@@ -688,11 +688,14 @@ class Analysis(BaseContent):
         formula = formula.replace('[', '%(').replace(']', ')f')
         try:
             formula = eval("'%s'%%mapping" % formula,
-                               {"__builtins__": None,
+                               {"__builtins__": __builtins__,
                                 'math': math,
                                 'context': self},
                                {'mapping': mapping})
-            result = eval(formula)
+            result = eval(formula,
+                          {"__builtins__": __builtins__,
+                           'math': math,
+                           'context': self})
         except TypeError:
             self.setResult("NA")
             return True

@@ -206,12 +206,15 @@ class ajaxCalculateAnalysisEntry(BrowserView):
             formula = formula.replace('[', '%(').replace(']', ')f')
             try:
                 formula = eval("'%s'%%mapping" % formula,
-                               {"__builtins__": None,
+                               {"__builtins__": __builtins__,
                                 'math': math,
                                 'context': self.context},
                                {'mapping': mapping})
                 # calculate
-                result = eval(formula)
+                result = eval(formula,
+                              {"__builtins__": __builtins__,
+                               'math': math,
+                               'context': self})
                 Result['result'] = result
                 self.current_results[uid]['result'] = result
             except TypeError as e:
