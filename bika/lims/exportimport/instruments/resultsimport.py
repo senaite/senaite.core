@@ -339,7 +339,6 @@ class AnalysisResultsImporter(Logger):
         # Exclude non existing ACODEs
         acodes = []
         ancount = 0
-        arprocessed = []
         instprocessed = []
         importedars = {}
         importedinsts = {}
@@ -462,8 +461,6 @@ class AnalysisResultsImporter(Logger):
                         else:
                             ar = analysis.portal_type == 'Analysis' and analysis.aq_parent or None
                             if ar and ar.UID:
-                                # Set AR imported info
-                                arprocessed.append(ar.UID())
                                 importedar = ar.getRequestID() in importedars.keys() \
                                             and importedars[ar.getRequestID()] or []
                                 if acode not in importedar:
@@ -518,33 +515,6 @@ class AnalysisResultsImporter(Logger):
     #                                       mapping={"file_name": self._parser.getInputFile().filename,
     #                                                "request_id": ar.getRequestID()}))
                                 pass
-
-        # Calculate analysis dependencies
-        for aruid in arprocessed:
-            ar = self.bc(portal_type='AnalysisRequest',
-                         UID=aruid)
-            ar = ar[0].getObject()
-            analyses = ar.getAnalyses()
-            for analysis in analyses:
-                analysis = analysis.getObject()
-                if analysis.calculateResult(True, True):
-                    self.log(
-                        "${request_id} calculated result for '${analysis_keyword}': '${analysis_result}'",
-                        mapping={"request_id": ar.getRequestID(),
-                                 "analysis_keyword": analysis.getKeyword(),
-                                 "analysis_result": str(analysis.getResult())}
-                    )
-
-        # Not sure if there's any reason why ReferenceAnalyses have not
-        # defined the method calculateResult...
-        # Needs investigation.
-        #for instuid in instprocessed:
-        #    inst = self.bsc(portal_type='Instrument',UID=instuid)[0].getObject()
-        #    analyses = inst.getAnalyses()
-        #    for analysis in analyses:
-        #        if (analysis.calculateResult(True, True)):
-        #            self.log(_("%s calculated result for '%s': '%s'") %
-        #                 (inst.title, analysis.getKeyword(), str(analysis.getResult())))
 
         for arid, acodes in importedars.iteritems():
             acodesmsg = ["Analysis %s" % acod for acod in acodes]
