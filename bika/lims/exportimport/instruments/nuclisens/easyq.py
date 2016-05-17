@@ -71,9 +71,9 @@ class EasyQParser(InstrumentResultsFileParser):
             # HEALTH-567 correction factor for calculation
             # XXX HEALTH-567 Is this just for nmrl?
             if 'Plasma' in rawdict.get('Matrix', 'Other'):
-                rawdict['CorrectionFactor'] = 1  # report value as-is
+                rawdict['CF'] = 1  # report value as-is
             else:
-                rawdict['CorrectionFactor'] = 1.82  # report value * 1.82
+                rawdict['CF'] = 1.82  # report value * 1.82
 
             key = resid or serial
             testname = row.get("Product", "EasyQDirector")
@@ -91,11 +91,11 @@ class EasyQImporter(AnalysisResultsImporter):
         AnalysisResultsImporter.__init__(self,
                                          parser,
                                          context,
-                                         idsearchcriteria,
-                                         override,
-                                         allowed_ar_states,
-                                         allowed_analysis_states,
-                                         instrument_uid)
+                                         idsearchcriteria=['getSampleID', 'getRequestID', 'getClientSampleID'],
+                                         override=override,
+                                         allowed_ar_states=allowed_ar_states,
+                                         allowed_analysis_states=allowed_analysis_states,
+                                         instrument_uid=instrument_uid)
 
 
 def Import(context, request):
