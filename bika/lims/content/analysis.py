@@ -686,14 +686,9 @@ class Analysis(BaseContent):
                     return False
 
         # Calculate
-        formula = calc.getMinifiedFormula()
-        formula = formula.replace('[', '%(').replace(']', ')f')
+        formula = calc.getMappedFormula(self, mapping)
+
         try:
-            formula = eval("'%s'%%mapping" % formula,
-                               {"__builtins__": __builtins__,
-                                'math': math,
-                                'context': self},
-                               {'mapping': mapping})
             result = eval(formula,
                           {"__builtins__": __builtins__,
                            'math': math,
