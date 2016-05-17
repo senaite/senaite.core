@@ -728,7 +728,7 @@ class AnalysisResultsImporter(Logger):
                                   "interim_keyword": keyword,
                                   "result": str(res)
                          })
-                ninterim = interim
+                ninterim = interim.copy()
                 ninterim['value'] = res
                 interimsout.append(ninterim)
                 resultsaved = True
@@ -739,7 +739,7 @@ class AnalysisResultsImporter(Logger):
             elif values.get(title, '') or values.get(title, '') == 0:
                 res = values.get(title)
                 self.log("%s/'%s:%s': '%s'"%(objid, acode, title, str(res)))
-                ninterim = interim
+                ninterim = interim.copy()
                 ninterim['value'] = res
                 interimsout.append(ninterim)
                 resultsaved = True
