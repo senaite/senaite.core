@@ -646,13 +646,12 @@ class Analysis(BaseContent):
         # Add interims to mapping
         for i in interims:
             if 'keyword' not in i:
-                continue;
+                continue
             try:
                 ivalue = float(i['value'])
                 mapping[i['keyword']] = ivalue
-            except:
-                # Interim not float, abort
-                return False
+            except ValueError:
+                mapping[i['keyword']] = i['value']
 
         # Add dependencies results to mapping
         dependencies = self.getDependencies()
@@ -668,7 +667,10 @@ class Analysis(BaseContent):
                     return False
             if result:
                 try:
-                    result = float(str(result))
+                    try:
+                        result = float(str(result))
+                    except ValueError:
+                        pass
                     key = dependency.getKeyword()
                     ldl = dependency.getLowerDetectionLimit()
                     udl = dependency.getUpperDetectionLimit()
