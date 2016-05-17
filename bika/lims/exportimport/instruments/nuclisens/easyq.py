@@ -64,16 +64,19 @@ class EasyQParser(InstrumentResultsFileParser):
                 self.err("Result identification not found.", numline=n)
                 continue
 
-            # get the test name (should be "EasyQDirector")
-            testname = row.get("Product", "EasyQDirector")
-            if testname is None:
-                self.err("Testname (Description) not found.", numline=n)
-                continue
-
             rawdict = row
             rawdict["Value"] = value.rstrip(" cps/ml")
             rawdict['DefaultResult'] = 'Value'
+
+            # HEALTH-567 correction factor for calculation
+            # XXX HEALTH-567 Is this just for nmrl?
+            if 'Plasma' in rawdict.get('Matrix', 'Other'):
+                rawdict['CorrectionFactor'] = 1  # report value as-is
+            else:
+                rawdict['CorrectionFactor'] = 1.82  # report value * 1.82
+
             key = resid or serial
+            testname = row.get("Product", "EasyQDirector")
             self._addRawResult(key, {testname: rawdict}, False)
 
 
