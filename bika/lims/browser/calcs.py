@@ -132,19 +132,31 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                     break;
                 key = analysisvalues.get('keyword',dependency.getService().getKeyword())
 
+
                 # Analysis result
-                # All result mappings must be float, or they are ignored.
-                try:
-                    mapping[key] = float(analysisvalues.get('result'))
-                    mapping['%s.%s' % (key, 'RESULT')] = float(analysisvalues.get('result'))
-                    mapping['%s.%s' % (key, 'LDL')] = float(analysisvalues.get('ldl'))
-                    mapping['%s.%s' % (key, 'UDL')] = float(analysisvalues.get('udl'))
-                    mapping['%s.%s' % (key, 'BELOWLDL')] = int(analysisvalues.get('belowldl'))
-                    mapping['%s.%s' % (key, 'ABOVEUDL')] = int(analysisvalues.get('aboveudl'))
-                except:
-                    # If not floatable, then abort!
-                    unsatisfied = True
-                    break
+                # Try coerce values to float or int.
+                def tryfloat(x):
+                    try:
+                        return float(analysisvalues.get(x))
+                    except ValueError:
+                        return analysisvalues.get(x)
+                def tryint(x):
+                    try:
+                        return float(analysisvalues.get(x))
+                    except ValueError:
+                        return analysisvalues.get(x)
+
+                mapping[key] = tryfloat('result')
+                mapping['%s.%s' % (key, 'RESULT')] = tryfloat('result')
+                mapping['%s.%s' % (key, 'LDL')] = tryfloat('ldl')
+                mapping['%s.%s' % (key, 'UDL')] = tryfloat('udl')
+                mapping['%s.%s' % (key, 'BELOWLDL')] = tryfloat('belowldl')
+                mapping['%s.%s' % (key, 'ABOVEUDL')] = tryfloat('aboveudl')
+                mapping['%s.%s' % (key, 'RESULT')] = tryfloat('result')
+                mapping['%s.%s' % (key, 'LDL')] = tryfloat('ldl')
+                mapping['%s.%s' % (key, 'UDL')] = tryfloat('udl')
+                mapping['%s.%s' % (key, 'BELOWLDL')] = tryint('belowldl')
+                mapping['%s.%s' % (key, 'ABOVEUDL')] = tryint('aboveudl')
 
             if unsatisfied:
                 # unsatisfied means that one or more result on which we depend
@@ -164,7 +176,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                                              'result': '',
                                              'formatted_result': ''})
                         return None
-                    # All interims must be float, or they are ignored.
+                    # Try coerce values to float
                     try:
                         i['value'] = float(i['value'])
                     except:
