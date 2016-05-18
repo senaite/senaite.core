@@ -18,30 +18,107 @@ Library          DebugLibrary
 
 *** Test Cases ***
 
-
 Test Nuclisens EasyQ XLSX importer
     Enable autologin as  LabManager
     set autologin username  test_labmanager
     ${PATH_TO_TEST} =  run keyword  resource_filename
-    # We need a category so that we can create AnalysisServices.
-    ${cat_uid} =  Create Object    bika_setup/bika_analysiscategories  AnalysisCategory  c1  title=Viral
+    ${client_uid} =  Create Object   clients  Client   client1  title=Clienty mcClient-Face
+    ${cat_uid} =     Create Object   bika_setup/bika_analysiscategories  AnalysisCategory  c1  title=Viral
+    ${st_uid} =      Create Object   bika_setup/bika_sampletypes  SampleType  ST1  title=Sample Type   Prefix=S
+    ${Interims} =    Evaluate        [{'keyword':'CF', 'title':'Correction Factor', 'value':'', 'unit':'', 'hidden':False, 'wide':False}, {'keyword':'Matrix', 'title':'Matrix', 'value':'', 'unit':'', 'hidden':False, 'wide':False}, {'keyword':'Value', 'title':'Value', 'value':'', 'unit':'', 'hidden':False, 'wide':False}]
+    ${calc_uid} =    Create Object   bika_setup/bika_calculations   Calculation   VL   title=Viral Load   InterimFields=${Interims}    Formula="TND" if "TND" in str([Value]) else [Value] if [Matrix] == "Plasma" else ("<182" if str([Value]).startswith("<") or [Value] < 182 else [Value] * [CF])
+
     # We're only going to test the HIV service from the XLSX, because that's all that our sample file contains
-    ${service_uid} =  Create Object   bika_setup/bika_analysisservices  AnalysisService  s1  title=EasyQ HIV Service  Keyword=EasyQ HIV-1 v2.0  Category=${cat_uid}
-    # Let's make a Plasma sample type
-    ${st_uid} =  Create Object   bika_setup/bika_sampletypes  SampleType  ST1  title=Plasma   Prefix=PL
-    # And then create a new AR with just the one AnalysisService.
-    # We'll set the ClientSampleID to match the first valid result in the XLSX.
-    ${ar_uid} =  Create AR  /clients/client-1  analyses=${service_uid}  SampleType=${st_uid}   ClientSampleID=HRE043
-    # The AR and Sample must be received before any results can be added to it.
+    ${service_uid} =  Create Object   bika_setup/bika_analysisservices  AnalysisService  s1  title=EasyQ HIV Service   Keyword=EasyQDirector  Category=${cat_uid}    UseDefaultCalculation=False    DeferredCalculation=${calc_uid}
+
+    # And then create 16 new ARs.
+    # We'll set the ClientSampleID to match the SampleID from the xlsx
+    ${ar_uid} =  Create AR  /clients/client-1  analyses=${service_uid}  SampleType=${st_uid}   ClientSampleID=HRE1
     do action for  ${ar_uid}  receive
+    ${ar_uid} =  Create AR  /clients/client-1  analyses=${service_uid}  SampleType=${st_uid}   ClientSampleID=HRE2
+    do action for  ${ar_uid}  receive
+    ${ar_uid} =  Create AR  /clients/client-1  analyses=${service_uid}  SampleType=${st_uid}   ClientSampleID=HRE3
+    do action for  ${ar_uid}  receive
+    ${ar_uid} =  Create AR  /clients/client-1  analyses=${service_uid}  SampleType=${st_uid}   ClientSampleID=HRE4
+    do action for  ${ar_uid}  receive
+    ${ar_uid} =  Create AR  /clients/client-1  analyses=${service_uid}  SampleType=${st_uid}   ClientSampleID=HRE5
+    do action for  ${ar_uid}  receive
+    ${ar_uid} =  Create AR  /clients/client-1  analyses=${service_uid}  SampleType=${st_uid}   ClientSampleID=HRE6
+    do action for  ${ar_uid}  receive
+    ${ar_uid} =  Create AR  /clients/client-1  analyses=${service_uid}  SampleType=${st_uid}   ClientSampleID=HRE7
+    do action for  ${ar_uid}  receive
+    ${ar_uid} =  Create AR  /clients/client-1  analyses=${service_uid}  SampleType=${st_uid}   ClientSampleID=HRE8
+    do action for  ${ar_uid}  receive
+    ${ar_uid} =  Create AR  /clients/client-1  analyses=${service_uid}  SampleType=${st_uid}   ClientSampleID=HRE9
+    do action for  ${ar_uid}  receive
+    ${ar_uid} =  Create AR  /clients/client-1  analyses=${service_uid}  SampleType=${st_uid}   ClientSampleID=HRE10
+    do action for  ${ar_uid}  receive
+    ${ar_uid} =  Create AR  /clients/client-1  analyses=${service_uid}  SampleType=${st_uid}   ClientSampleID=HRE11
+    do action for  ${ar_uid}  receive
+    ${ar_uid} =  Create AR  /clients/client-1  analyses=${service_uid}  SampleType=${st_uid}   ClientSampleID=HRE12
+    do action for  ${ar_uid}  receive
+    ${ar_uid} =  Create AR  /clients/client-1  analyses=${service_uid}  SampleType=${st_uid}   ClientSampleID=HRE13
+    do action for  ${ar_uid}  receive
+    ${ar_uid} =  Create AR  /clients/client-1  analyses=${service_uid}  SampleType=${st_uid}   ClientSampleID=HRE14
+    do action for  ${ar_uid}  receive
+    ${ar_uid} =  Create AR  /clients/client-1  analyses=${service_uid}  SampleType=${st_uid}   ClientSampleID=HRE15
+    do action for  ${ar_uid}  receive
+    ${ar_uid} =  Create AR  /clients/client-1  analyses=${service_uid}  SampleType=${st_uid}   ClientSampleID=HRE16
+    do action for  ${ar_uid}  receive
+
     # import file
     Import Instrument File      Nuclisens EasyQ   ${PATH_TO_TEST}/files/nuclisens.xlsx
     # In the debug statement below, the browser pauses, and we can discover conditions to test for.
     # Only one AR and one result should have been imported!
-    page should contain        Import finished successfully: 1 ARs and 1 results updated
-    # And we must verify that the result is "710" (the 'cps/ml' part has been removed).
-    go to    ${PLONEURL}/clients/client-1/PL-0001-R01/manage_results
-    textfield value should be        css=[selector="Result_EasyQ HIV-1 v2.0"]  710 cps/ml
+    # These are uncalculated values from Value column, just verify they are
+    # as expected
+    page should contain   S-0001-R01 result for 'EasyQDirector:Value': '10'
+    page should contain   S-0002-R01 result for 'EasyQDirector:Value': '99'
+    page should contain   S-0003-R01 result for 'EasyQDirector:Value': '100'
+    page should contain   S-0004-R01 result for 'EasyQDirector:Value': '182'
+    page should contain   S-0005-R01 result for 'EasyQDirector:Value': '1000'
+    page should contain   S-0006-R01 result for 'EasyQDirector:Value': '<10'
+    page should contain   S-0007-R01 result for 'EasyQDirector:Value': '<100'
+    page should contain   S-0008-R01 result for 'EasyQDirector:Value': 'TND'
+    page should contain   S-0009-R01 result for 'EasyQDirector:Value': '<182'
+    page should contain   S-0010-R01 result for 'EasyQDirector:Value': '<182'
+    page should contain   S-0011-R01 result for 'EasyQDirector:Value': '331'
+    page should contain   S-0012-R01 result for 'EasyQDirector:Value': '1820'
+    page should contain   S-0013-R01 result for 'EasyQDirector:Value': '<10'
+    page should contain   S-0014-R01 result for 'EasyQDirector:Value': '<100'
+    page should contain   S-0015-R01 result for 'EasyQDirector:Value': 'TND'
+
+    # Then verify calculated results in the ARs
+    go to    ${PLONEURL}/clients/client-1/S-0001-R01/manage_results
+    element should contain   css=[field="formatted_result"]    10
+    go to    ${PLONEURL}/clients/client-1/S-0002-R01/manage_results
+    element should contain   css=[field="formatted_result"]    99
+    go to    ${PLONEURL}/clients/client-1/S-0003-R01/manage_results
+    element should contain   css=[field="formatted_result"]    100
+    go to    ${PLONEURL}/clients/client-1/S-0004-R01/manage_results
+    element should contain   css=[field="formatted_result"]    182
+    go to    ${PLONEURL}/clients/client-1/S-0005-R01/manage_results
+    element should contain   css=[field="formatted_result"]    1000
+    go to    ${PLONEURL}/clients/client-1/S-0006-R01/manage_results
+    element should contain   css=[field="formatted_result"]    <10
+    go to    ${PLONEURL}/clients/client-1/S-0007-R01/manage_results
+    element should contain   css=[field="formatted_result"]    <100
+    go to    ${PLONEURL}/clients/client-1/S-0008-R01/manage_results
+    element should contain   css=[field="formatted_result"]    TND
+    go to    ${PLONEURL}/clients/client-1/S-0009-R01/manage_results
+    element should contain   css=[field="formatted_result"]    <182
+    go to    ${PLONEURL}/clients/client-1/S-0010-R01/manage_results
+    element should contain   css=[field="formatted_result"]    <182
+    go to    ${PLONEURL}/clients/client-1/S-0011-R01/manage_results
+    element should contain   css=[field="formatted_result"]    331
+    go to    ${PLONEURL}/clients/client-1/S-0012-R01/manage_results
+    element should contain   css=[field="formatted_result"]    1820
+    go to    ${PLONEURL}/clients/client-1/S-0013-R01/manage_results
+    element should contain   css=[field="formatted_result"]    <182
+    go to    ${PLONEURL}/clients/client-1/S-0014-R01/manage_results
+    element should contain   css=[field="formatted_result"]    <182
+    go to    ${PLONEURL}/clients/client-1/S-0015-R01/manage_results
+    element should contain   css=[field="formatted_result"]    TND
 
 *** Keywords ***
 
