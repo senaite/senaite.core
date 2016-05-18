@@ -26,10 +26,10 @@ Test Nuclisens EasyQ XLSX importer
     ${cat_uid} =     Create Object   bika_setup/bika_analysiscategories  AnalysisCategory  c1  title=Viral
     ${st_uid} =      Create Object   bika_setup/bika_sampletypes  SampleType  ST1  title=Sample Type   Prefix=S
     ${Interims} =    Evaluate        [{'keyword':'CF', 'title':'Correction Factor', 'value':'', 'unit':'', 'hidden':False, 'wide':False}, {'keyword':'Matrix', 'title':'Matrix', 'value':'', 'unit':'', 'hidden':False, 'wide':False}, {'keyword':'Value', 'title':'Value', 'value':'', 'unit':'', 'hidden':False, 'wide':False}]
-    ${calc_uid} =    Create Object   bika_setup/bika_calculations   Calculation   VL   title=Viral Load   InterimFields=${Interims}    Formula="TND" if "TND" in str([Value]) else [Value] if [Matrix] == "Plasma" else ("<182" if str([Value]).startswith("<") or [Value] < 182 else [Value] * [CF])
+    ${calc_uid} =    Create Object   bika_setup/bika_calculations   Calculation   VL   title=Viral Load   InterimFields=${Interims}  Formula="TND" if "TND" in str([Value]) else [Value] if [Matrix] == "Plasma" else [Value] if str([Value]).startswith("<") else [Value] * [CF]
 
     # We're only going to test the HIV service from the XLSX, because that's all that our sample file contains
-    ${service_uid} =  Create Object   bika_setup/bika_analysisservices  AnalysisService  s1  title=EasyQ HIV Service   Keyword=EasyQDirector  Category=${cat_uid}    UseDefaultCalculation=False    DeferredCalculation=${calc_uid}
+    ${service_uid} =  Create Object   bika_setup/bika_analysisservices  AnalysisService  s1  title=EasyQ HIV Service   Keyword=EasyQDirector  Category=${cat_uid}    UseDefaultCalculation=False    DeferredCalculation=${calc_uid}   DetectionLimitSelector=True  AllowManualDetectionLimit=True
 
     # And then create 16 new ARs.
     # We'll set the ClientSampleID to match the SampleID from the xlsx
@@ -80,13 +80,15 @@ Test Nuclisens EasyQ XLSX importer
     page should contain   S-0006-R01 result for 'EasyQDirector:Value': '<10'
     page should contain   S-0007-R01 result for 'EasyQDirector:Value': '<100'
     page should contain   S-0008-R01 result for 'EasyQDirector:Value': 'TND'
-    page should contain   S-0009-R01 result for 'EasyQDirector:Value': '<182'
-    page should contain   S-0010-R01 result for 'EasyQDirector:Value': '<182'
-    page should contain   S-0011-R01 result for 'EasyQDirector:Value': '331'
-    page should contain   S-0012-R01 result for 'EasyQDirector:Value': '1820'
+    page should contain   S-0009-R01 result for 'EasyQDirector:Value': '10'
+    page should contain   S-0010-R01 result for 'EasyQDirector:Value': '100'
+    page should contain   S-0011-R01 result for 'EasyQDirector:Value': '182'
+    page should contain   S-0012-R01 result for 'EasyQDirector:Value': '1000'
     page should contain   S-0013-R01 result for 'EasyQDirector:Value': '<10'
     page should contain   S-0014-R01 result for 'EasyQDirector:Value': '<100'
     page should contain   S-0015-R01 result for 'EasyQDirector:Value': 'TND'
+
+    debug
 
     # Then verify calculated results in the ARs
     go to    ${PLONEURL}/clients/client-1/S-0001-R01/manage_results
@@ -100,31 +102,27 @@ Test Nuclisens EasyQ XLSX importer
     go to    ${PLONEURL}/clients/client-1/S-0005-R01/manage_results
     element should contain   css=[field="formatted_result"]    1000
     go to    ${PLONEURL}/clients/client-1/S-0006-R01/manage_results
-    element should contain   css=[field="formatted_result"]    <10
+    element should contain   css=[field="formatted_result"]    < 10
     go to    ${PLONEURL}/clients/client-1/S-0007-R01/manage_results
-    element should contain   css=[field="formatted_result"]    <100
+    element should contain   css=[field="formatted_result"]    < 100
     go to    ${PLONEURL}/clients/client-1/S-0008-R01/manage_results
     element should contain   css=[field="formatted_result"]    TND
     go to    ${PLONEURL}/clients/client-1/S-0009-R01/manage_results
-    element should contain   css=[field="formatted_result"]    <182
+    element should contain   css=[field="formatted_result"]    18
     go to    ${PLONEURL}/clients/client-1/S-0010-R01/manage_results
-    element should contain   css=[field="formatted_result"]    <182
+    element should contain   css=[field="formatted_result"]    182
     go to    ${PLONEURL}/clients/client-1/S-0011-R01/manage_results
     element should contain   css=[field="formatted_result"]    331
     go to    ${PLONEURL}/clients/client-1/S-0012-R01/manage_results
     element should contain   css=[field="formatted_result"]    1820
     go to    ${PLONEURL}/clients/client-1/S-0013-R01/manage_results
-    element should contain   css=[field="formatted_result"]    <182
+    element should contain   css=[field="formatted_result"]    < 10
     go to    ${PLONEURL}/clients/client-1/S-0014-R01/manage_results
-    element should contain   css=[field="formatted_result"]    <182
+    element should contain   css=[field="formatted_result"]    < 100
     go to    ${PLONEURL}/clients/client-1/S-0015-R01/manage_results
     element should contain   css=[field="formatted_result"]    TND
 
 *** Keywords ***
-
-Start browser
-    Open browser                        ${PLONEURL}  chrome
-    Set selenium speed                  ${SELENIUM_SPEED}
 
 Import Instrument File
     [Documentation]  Select the instrument and file type.
