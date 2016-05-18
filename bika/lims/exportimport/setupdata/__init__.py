@@ -129,7 +129,7 @@ class WorksheetImporter:
                 row[add_type] = {}
                 if add_type + "_Address" in row:
                     for key in ['Address', 'City', 'State', 'District', 'Zip', 'Country']:
-                        row[add_type][key] = str(row["%s_%s" % (add_type, key)])
+                        row[add_type][key] = str(row.get("%s_%s" % (add_type, key), ''))
 
             yield row
 
