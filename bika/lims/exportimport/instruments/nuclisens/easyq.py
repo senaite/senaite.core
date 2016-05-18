@@ -2,16 +2,17 @@
 """ Nuclisens EasyQ
 """
 import csv
-import types
-from cStringIO import StringIO
-from openpyxl import load_workbook
-
-from bika.lims.exportimport.instruments.resultsimport import \
-    AnalysisResultsImporter, InstrumentResultsFileParser
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 import json
 import traceback
+from cStringIO import StringIO
+
+import types
+from openpyxl import load_workbook
+
+from bika.lims import bikaMessageFactory as _
+from bika.lims.exportimport.instruments.resultsimport import \
+    AnalysisResultsImporter, InstrumentResultsFileParser
+from bika.lims.utils import t
 
 title = "Nuclisens EasyQ"
 
@@ -84,7 +85,17 @@ class EasyQImporter(AnalysisResultsImporter):
     """ Importer
     """
 
-    def __init__(self, parser, context, idsearchcriteria, override,
+    def _process_analysis(self, objid, analysis, values):
+        ret = AnalysisResultsImporter._process_analysis(self, objid, analysis,
+                                                         values)
+        # HEALTH-567
+        if values['Value'] and str(values['Value'])[0] in "<>":
+            analysis.setDetectionLimitOperand('<')
+            analysis.setResult(values['Value'])
+        return ret
+
+
+def __init__(self, parser, context, idsearchcriteria, override,
                  allowed_ar_states=None, allowed_analysis_states=None,
                  instrument_uid=None):
 
