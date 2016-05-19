@@ -237,7 +237,7 @@ class SamplingRound(Item):
         return len(containers)
 
     def getAnalysisRequests(self):
-        """ Return all the Analysis Requests linked to the Sampling Round
+        """ Return all the Analysis Request brains linked to the Sampling Round
         """
         # I have to get the catalog in this way because I can't do it with 'self'...
         pc = getToolByName(api.portal.get(), 'portal_catalog')
@@ -245,6 +245,29 @@ class SamplingRound(Item):
                          'cancellation_state': 'active',
                          'SamplingRoundUID': self.UID()}
         return pc(contentFilter)
+
+    def getFilteredAnalysisRequests(self, filter_content, full_obj=False):
+        """
+        Returns analysis request objects filtered by the filter variable.
+        :filter_content: is a dictionary like
+            {'review_state': ('published', 'invalid'),
+            'sort_on': 'created',
+            'sort_order': 'reverse'}
+        :full_obj: is a boolean. If true the function returns a list with a
+        whole analysis request objects
+        """
+        contents = []
+        keys = filter_content.keys()
+        pc = getToolByName(api.portal.get(), 'portal_catalog')
+        contentFilter = {'portal_type': 'AnalysisRequest',
+                         'cancellation_state': 'active',
+                         'SamplingRoundUID': self.UID()}
+        for key in keys:
+            contentFilter[key] = filter_content[key]
+        contents = pc(contentFilter)
+        if full_obj:
+            contents = [b.getObject() for b in contents]
+        return contents
 
     def getAnalysisRequestTemplates(self):
         """
