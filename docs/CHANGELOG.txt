@@ -1,5 +1,6 @@
 3.2.1 (unreleased)
 ------------------
+HEALTH-394: Sample sticker layout. 2 new sticker layouts, 2 stickers per row
 LIMS-2032: AS Methods initialise with 1st available Instrument (loading setup data)
 LIMS-2014: I can only select a Default Method for an AS if Manual results capture is on
 LIMS-2181: An analysis is not stopped from using an invalid instrument
