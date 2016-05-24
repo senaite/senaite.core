@@ -15,8 +15,8 @@ function SamplingRoundPrintView() {
                 margins:    [20, 20, 20, 20] },
 
         'letter': {
-                dimensions: [216, 279],
-                margins:    [20, 20, 12, 20] },
+                dimensions: [215.9, 279.4],
+                margins:    [20, 20, 20, 20] },
     };
 
     /**
@@ -59,7 +59,21 @@ function SamplingRoundPrintView() {
         });
         $('#print_button').click(function(e) {
             e.preventDefault();
-            window.print();
+            var url = window.location.href;
+            $('#sr_publish_container').animate({opacity:0.4}, 'slow');
+            var count = $('#sr_publish_container #report .report_body').length;
+            $('#sr_publish_container #report .report_body').each(function(){
+                var rephtml = $(this).clone().wrap('<div>').parent().html();
+                var repstyle = $('#report-style').clone().wrap('<div>').parent().html();
+                repstyle += $('#layout-style').clone().wrap('<div>').parent().html();
+                var form='<form action="'+url+'" name="form" method="post" style="display:none;">' +
+                    '<textarea name="html">' + rephtml + '</textarea/>' +
+                    '<input type="hidden" name="pdf" value="1" />' +
+                    '<textarea name="style">' +repstyle+ '</textarea>' +
+                    '</form>';
+                $('body').html(form);
+                document.forms.form.submit();
+            });
         });
     };
 
