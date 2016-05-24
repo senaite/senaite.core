@@ -205,18 +205,11 @@ window.bika.lims.loadControllers = function(all, controllerKeys) {
             controllers[key].forEach(function(js) {
                 if (all == true || $.inArray(key, controllerKeys) >= 0 || $.inArray(js, _bika_lims_loaded_js) < 0) {
                     console.debug('[bika.lims.loader] Loading '+js);
-                    try {
-                        obj = new window[js]();
-                        obj.load();
-                        // Register the object for further access
-                        window.bika.lims[js]=obj;
-                        _bika_lims_loaded_js.push(js);
-                    } catch (e) {
-                       // statements to handle any exceptions
-                       var msg = '[bika.lims.loader] Unable to load '+js+": "+ e.message +"\n"+e.stack;
-                       console.warn(msg);
-                       window.bika.lims.error(msg);
-                    }
+                    obj = new window[js]();
+                    obj.load();
+                    // Register the object for further access
+                    window.bika.lims[js]=obj;
+                    _bika_lims_loaded_js.push(js);
                 }
             });
         }
