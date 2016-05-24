@@ -16,7 +16,7 @@ from bika.lims.interfaces import IAnalysisRequestAddView, ISample
 from bika.lims.utils import getHiddenAttributesForClass, dicts_to_dict
 from bika.lims.utils import t
 from bika.lims.utils import tmpID
-from bika.lims.utils.analysisrequest import create_analysisrequest
+from bika.lims.utils.analysisrequest import create_analysisrequest as crar
 from magnitude import mg
 from plone.app.layout.globals.interfaces import IViewView
 from Products.Archetypes import PloneMessageFactory as PMF
@@ -443,7 +443,7 @@ class ajaxAnalysisRequestSubmit():
         ARs = []
         for arnum, state in valid_states.items():
             # Create the Analysis Request
-            ar = create_analysisrequest(
+            ar = crar(
                 portal_catalog(UID=state['Client'])[0].getObject(),
                 self.request,
                 state
@@ -469,3 +469,11 @@ class ajaxAnalysisRequestSubmit():
             })
         else:
             return json.dumps({'success': message})
+
+
+from bika.lims import deprecated
+@deprecated(comment="To be removed in 3.3",
+            replacement="bika.lims.utils.create_analysisrequest")
+
+def create_analysisrequest(context, request, values):
+    return crar(context, request, values)
