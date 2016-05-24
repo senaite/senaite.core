@@ -147,35 +147,55 @@
                 padding: 5px;
             }
             @media print {
+                a {
+                    text-decoration:none;
+                    color:#000;
+                }
+                div.sr_publish_page {
+                    border: none;
+                }
                 html {
                     background-color:#fff;
+                    margin:0 !important;
+                    padding:0 !important;
                 }
                 body {
-                    font: serif;
-                    font-size:10pt;
-                    max-width:7.6in;
-                    margin:0;
+                    padding:0 !important;
+                    margin:0 !important;
                 }
-                .page-break  {
-                    display: block;
+                .page-break, .page-break-after, .page-break-before{
+                    display: block !important;
+                    border:none !important;
+                    padding:0 !important;
+                    margin:0 !important;
+                    background-color:transparent !important;
+                }
+                div.page-break {
+                    page-break-after: always;
+                }
+                div.page-break-after {
+                    page-break-after: always;
+                }
+                div.page-break-before {
                     page-break-before: always;
-                    margin:none;
-                    border:none;
+                }
+                .page-footer {
+                    margin:0 !important;
+                    border:none !important;
+                    background-color:#ffffff;
                 }
                 #sr_publish_header {
                     display:none;
                     visibility:hidden;
                 }
-                @page {
-                    size: auto;
-                    margin: 0.7in 0.1in 1in 0.1in;
+                .page-footer.footer-invalid,
+                .page-header.header-invalid {
+                    display:none;
                 }
-
             }
         </style>
         <style id='report-style' tal:content='structure python:view.getCSS()'></style>
         <style id='layout-style'></style>
-        <!--div id='samplinground-printview' class="samplinground-print-form"-->
             <div id='report'>
                 <div tal:attributes="id python:view.getSamplingRoundObj().id;
                                     uid python:view.getSamplingRoundObj().UID();"

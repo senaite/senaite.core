@@ -191,7 +191,7 @@ class PrintForm(BrowserView):
                         'sampling_point': {
                             'hidden': True if arcell else False,
                             'rowspan': numans,
-                            'value': ar.getSamplePoint().title,
+                            'value': ar.getSamplePoint().title if ar.getSamplePoint() else '',
                             },
                         'sampling_date': {
                             'hidden': True if arcell else False,

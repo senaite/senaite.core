@@ -57,7 +57,11 @@ function SamplingRoundPrintView() {
         $('#cancel_button').click(function(e) {
             location.href=backurl;
         });
-    }
+        $('#print_button').click(function(e) {
+            e.preventDefault();
+            window.print();
+        });
+    };
 
     function get(name){
        if(name=(new RegExp('[?&]'+encodeURIComponent(name)+'=([^&]*)')).exec(location.search))
@@ -228,7 +232,7 @@ function SamplingRoundPrintView() {
             $(this).children('div:visible').each(function(z) {
 
                 // Is the first page?
-                if (elCurrent == null) {
+                if (elCurrent === null) {
                     // Add page header if required
                     $(header_html).insertBefore($(this));
                     topOffset = $(this).position().top;
@@ -354,7 +358,7 @@ function SamplingRoundPrintView() {
 var mmTopx = function(mm) {
     var px = parseFloat(mm*$('#my_mm').height());
     return px > 0 ? Math.ceil(px) : Math.floor(px);
-}
+};
 var pxTomm = function(px){
     var mm = parseFloat(px/$('#my_mm').height());
     return mm > 0 ? Math.floor(mm) : Math.ceil(mm);

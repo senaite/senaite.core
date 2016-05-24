@@ -105,6 +105,28 @@ class Samplers(object):
         return SimpleVocabulary(terms)
 
 
+class ClientContacts(object):
+    """Context source binder to provide a vocabulary of the client contacts.
+    """
+    implements(IContextSourceBinder)
+
+    def __call__(self, context):
+        container = context.aq_parent
+        terms = []
+        # Show only the client's
+        if container.portal_type == 'Client':
+            contacts = container.getContacts()
+            for cnt in contacts:
+                c_id = cnt.getId()
+                name = cnt.getFullname()
+                if not name:
+                    name = c_id
+                terms.append(
+                    SimpleVocabulary.createTerm(
+                        c_id, str(c_id), name))
+        return SimpleVocabulary(terms)
+
+
 class ISamplingRound(model.Schema):
         """A Sampling round interface
         """
@@ -172,6 +194,18 @@ class ISamplingRound(model.Schema):
             value_type=schema.Choice(
                 source=AnalysisRequestTemplates()
             )
+        )
+
+        client_contact = schema.Choice(
+            title=_(u'Client contact who coordinates with the lab'),
+            required=False,
+            source=ClientContacts()
+        )
+
+        client_contact_in_charge_at_sampling_time = schema.Choice(
+            title=_(u'Client contact in charge at sampling time'),
+            required=False,
+            source=ClientContacts()
         )
 
         num_sample_points = schema.Int(
@@ -246,29 +280,6 @@ class SamplingRound(Item):
                          'SamplingRoundUID': self.UID()}
         return pc(contentFilter)
 
-    def getFilteredAnalysisRequests(self, filter_content, full_obj=False):
-        """
-        Returns analysis request objects filtered by the filter variable.
-        :filter_content: is a dictionary like
-            {'review_state': ('published', 'invalid'),
-            'sort_on': 'created',
-            'sort_order': 'reverse'}
-        :full_obj: is a boolean. If true the function returns a list with a
-        whole analysis request objects
-        """
-        contents = []
-        keys = filter_content.keys()
-        pc = getToolByName(api.portal.get(), 'portal_catalog')
-        contentFilter = {'portal_type': 'AnalysisRequest',
-                         'cancellation_state': 'active',
-                         'SamplingRoundUID': self.UID()}
-        for key in keys:
-            contentFilter[key] = filter_content[key]
-        contents = pc(contentFilter)
-        if full_obj:
-            contents = [b.getObject() for b in contents]
-        return contents
-
     def getAnalysisRequestTemplates(self):
         """
         This functions builds a list of tuples with the object AnalysisRequestTemplates' uids and names.
@@ -332,6 +343,53 @@ class SamplingRound(Item):
             error = "Error when looking for sr template with uid '%s'. "
             logger.exception(error, self.sr_template)
         return srtdict
+
+    def getClientContact(self):
+        """
+        Returns info from the Client contact who coordinates with the lab
+        """
+        pc = getToolByName(api.portal.get(), 'portal_catalog')
+        contentFilter = {'portal_type': 'Contact',
+                         'id': self.client_contact}
+        cnt = pc(contentFilter)
+        cntdict = {'uid': '', 'id': '', 'fullname': '', 'url': ''}
+        if len(cnt) == 1:
+            cnt = cnt[0].getObject()
+            cntdict = {
+                'uid': cnt.id,
+                'id': cnt.UID(),
+                'fullname': cnt.getFullname(),
+                'url': cnt.absolute_url(),
+            }
+        else:
+            from bika.lims import logger
+            error = "Error when looking for contact with id '%s'. "
+            logger.exception(error, self.client_contact)
+        return cntdict
+
+    def getClientInChargeAtSamplingTime(self):
+        """
+        Returns info from the Client contact who is in charge at sampling time
+        """
+        pc = getToolByName(api.portal.get(), 'portal_catalog')
+        contentFilter = {'portal_type': 'Contact',
+                         'id': self.client_contact_in_charge_at_sampling_time}
+        cnt = pc(contentFilter)
+        cntdict = {'uid': '', 'id': '', 'fullname': '', 'url': ''}
+        if len(cnt) == 1:
+            cnt = cnt[0].getObject()
+            cntdict = {
+                'uid': cnt.id,
+                'id': cnt.UID(),
+                'fullname': cnt.getFullname(),
+                'url': cnt.absolute_url(),
+            }
+        else:
+            from bika.lims import logger
+            error = "Error when looking for contact with id '%s'. "
+            logger.exception(
+                error, self.client_contact_in_charge_at_sampling_time)
+        return cntdict
 
     def hasUserAddEditPermission(self):
         """
