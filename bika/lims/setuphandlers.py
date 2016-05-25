@@ -177,6 +177,11 @@ class BikaGenerator:
             portal_groups.addGroup('RegulatoryInspectors', title="Regulatory Inspectors",
                 roles=['Member', 'RegulatoryInspector'])
 
+        if 'SamplingCoordinators' not in portal_groups.listGroupIds():
+            portal_groups.addGroup(
+                'SamplingCoordinators', title="Sampling Coordinators",
+                roles=['Member', 'Analysit', 'Sampler', 'Preserver', 'Client'])
+
     def setupPermissions(self, portal):
         """ Set up some suggested role to permission mappings.
         """
@@ -874,4 +879,3 @@ def setupVarious(context):
     setup.runImportStepFromProfile(
             'profile-plone.app.jquery:default', 'jsregistry')
     # setup.runImportStepFromProfile('profile-plone.app.jquerytools:default', 'jsregistry')
-

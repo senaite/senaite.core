@@ -31,10 +31,19 @@ def upgrade(tool):
     # setup.runImportStepFromProfile('profile-bika.lims:default', 'catalog')
     # setup.runImportStepFromProfile('profile-bika.lims:default', 'propertiestool')
     # setup.runImportStepFromProfile('profile-bika.lims:default', 'skins')
-
+    create_samplingcoordinator(portal)
     """Update workflow permissions
     """
     wf = getToolByName(portal, 'portal_workflow')
     wf.updateRoleMappings()
 
     return True
+
+
+def create_samplingcoordinator(portal):
+    # Creates the new group
+    portal_groups = portal.portal_groups
+    if 'SamplingCoordinators' not in portal_groups.listGroupIds():
+        portal_groups.addGroup(
+            'SamplingCoordinators', title="Sampling Coordinators",
+            roles=['Member', 'Analysit', 'Sampler', 'Preserver', 'Client'])
