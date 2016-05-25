@@ -472,8 +472,8 @@ class ajaxAnalysisRequestSubmit():
 
 
 from bika.lims import deprecated
-@deprecated(comment="To be removed in 3.3",
-            replacement="bika.lims.utils.create_analysisrequest")
-
+@deprecated(comment="bika.lims.browser.analysisrequest.add."
+                    "create_analysisrequest is deprecated and will be removed "
+                    "in Bika LIMS 3.3", replacement=crar)
 def create_analysisrequest(context, request, values):
     return crar(context, request, values)
