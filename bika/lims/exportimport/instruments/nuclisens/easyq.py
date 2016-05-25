@@ -91,7 +91,6 @@ class EasyQImporter(AnalysisResultsImporter):
         # HEALTH-567
         if values['Value'] and str(values['Value'])[0] in "<>":
             analysis.setDetectionLimitOperand('<')
-            analysis.setResult(values['Value'])
         return ret
 
 

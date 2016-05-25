@@ -1,7 +1,7 @@
 *** Settings ***
 
 Library         BuiltIn
-Library         Selenium2Library  timeout=5  implicit_wait=0.2
+Library         Selenium2Library  timeout=5000  implicit_wait=0.2
 Library         String
 Resource        keywords.txt
 Resource        plone/app/robotframework/selenium.robot
@@ -26,7 +26,7 @@ Test Nuclisens EasyQ XLSX importer
     ${cat_uid} =     Create Object   bika_setup/bika_analysiscategories  AnalysisCategory  c1  title=Viral
     ${st_uid} =      Create Object   bika_setup/bika_sampletypes  SampleType  ST1  title=Sample Type   Prefix=S
     ${Interims} =    Evaluate        [{'keyword':'CF', 'title':'Correction Factor', 'value':'', 'unit':'', 'hidden':False, 'wide':False}, {'keyword':'Matrix', 'title':'Matrix', 'value':'', 'unit':'', 'hidden':False, 'wide':False}, {'keyword':'Value', 'title':'Value', 'value':'', 'unit':'', 'hidden':False, 'wide':False}]
-    ${calc_uid} =    Create Object   bika_setup/bika_calculations   Calculation   VL   title=Viral Load   InterimFields=${Interims}  Formula="TND" if "TND" in str([Value]) else [Value] if [Matrix] == "Plasma" else [Value] if str([Value]).startswith("<") else [Value] * [CF]
+    ${calc_uid} =    Create Object   bika_setup/bika_calculations   Calculation   VL   title=Viral Load   InterimFields=${Interims}  Formula="TND" if "TND" in str([Value]) else [Value] if [Matrix] == "Plasma" else " < 182" if (str([Value]).find("<") > -1 or [Value] < 182) else [Value] * [CF]
 
     # We're only going to test the HIV service from the XLSX, because that's all that our sample file contains
     ${service_uid} =  Create Object   bika_setup/bika_analysisservices  AnalysisService  s1  title=EasyQ HIV Service   Keyword=EasyQDirector  Category=${cat_uid}    UseDefaultCalculation=False    DeferredCalculation=${calc_uid}   DetectionLimitSelector=True  AllowManualDetectionLimit=True
@@ -68,7 +68,6 @@ Test Nuclisens EasyQ XLSX importer
 
     # import file
     Import Instrument File      Nuclisens EasyQ   ${PATH_TO_TEST}/files/nuclisens.xlsx
-    # In the debug statement below, the browser pauses, and we can discover conditions to test for.
     # Only one AR and one result should have been imported!
     # These are uncalculated values from Value column, just verify they are
     # as expected
@@ -88,7 +87,6 @@ Test Nuclisens EasyQ XLSX importer
     page should contain   S-0014-R01 result for 'EasyQDirector:Value': '<100'
     page should contain   S-0015-R01 result for 'EasyQDirector:Value': 'TND'
 
-    debug
 
     # Then verify calculated results in the ARs
     go to    ${PLONEURL}/clients/client-1/S-0001-R01/manage_results
@@ -116,9 +114,9 @@ Test Nuclisens EasyQ XLSX importer
     go to    ${PLONEURL}/clients/client-1/S-0012-R01/manage_results
     element should contain   css=[field="formatted_result"]    1820
     go to    ${PLONEURL}/clients/client-1/S-0013-R01/manage_results
-    element should contain   css=[field="formatted_result"]    < 10
+    element should contain   css=[field="formatted_result"]    < 182
     go to    ${PLONEURL}/clients/client-1/S-0014-R01/manage_results
-    element should contain   css=[field="formatted_result"]    < 100
+    element should contain   css=[field="formatted_result"]    < 182
     go to    ${PLONEURL}/clients/client-1/S-0015-R01/manage_results
     element should contain   css=[field="formatted_result"]    TND
 
