@@ -124,7 +124,8 @@ class BikaGenerator:
                      'Member',
                      'Reviewer',
                      'RegulatoryInspector',
-                     'Client'):
+                     'Client',
+                     'SamplingCoordinator'):
             if role not in portal.acl_users.portal_role_manager.listRoleIds():
                 portal.acl_users.portal_role_manager.addRole(role)
             # add roles to the portal
@@ -180,7 +181,7 @@ class BikaGenerator:
         if 'SamplingCoordinators' not in portal_groups.listGroupIds():
             portal_groups.addGroup(
                 'SamplingCoordinators', title="Sampling Coordinators",
-                roles=['Member', 'Analysit', 'Sampler', 'Preserver', 'Client'])
+                roles=['SamplingCoordinator'])
 
     def setupPermissions(self, portal):
         """ Set up some suggested role to permission mappings.
@@ -242,6 +243,7 @@ class BikaGenerator:
         mp(VerifyOwnResults, ['Manager', ], 1)
         mp(ViewRetractedAnalyses, ['Manager', 'LabManager', 'LabClerk', 'Analyst', ], 0)
 
+        mp(DefineSamplingSchedule, ['SamplingCoordinator'], 1)
         mp(SampleSample, ['Manager', 'LabManager', 'Sampler'], 0)
         mp(PreserveSample, ['Manager', 'LabManager', 'Preserver'], 0)
         mp(ReceiveSample, ['Manager', 'LabManager', 'LabClerk', 'Sampler'], 1)

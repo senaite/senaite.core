@@ -43,7 +43,14 @@ def upgrade(tool):
 def create_samplingcoordinator(portal):
     # Creates the new group
     portal_groups = portal.portal_groups
+    if 'SamplingCoordinator'\
+            not in portal.acl_users.portal_role_manager.listRoleIds():
+        portal.acl_users.portal_role_manager.addRole('SamplingCoordinator')
+    # add roles to the portal
+    portal._addRole('SamplingCoordinator')
     if 'SamplingCoordinators' not in portal_groups.listGroupIds():
         portal_groups.addGroup(
             'SamplingCoordinators', title="Sampling Coordinators",
-            roles=['Member', 'Analysit', 'Sampler', 'Preserver', 'Client'])
+            roles=['SamplingCoordinator'])
+    mp = portal.manage_permission
+    mp(DefineSamplingSchedule, ['SamplingCoordinator'], 1)
