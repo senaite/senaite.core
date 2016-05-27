@@ -521,7 +521,7 @@ schema = BikaSchema.copy() + Schema((
                 "Define the sampler supposed to do the sample in the scheduled"+
                 " date"),
             format='select',
-            label=_("Define the Sampler for the shceduled sampling"),
+            label=_("Define the Sampler for the scheduled sampling"),
             visible={'edit': 'visible',
                      'view': 'visible',
                      'header_table': 'visible',
@@ -2448,7 +2448,6 @@ class AnalysisRequest(BaseFolder):
         - if no date and samples have been defined
           and "sampling schedule" checkbox is set in bika_setup
         """
-        import pdb; pdb.set_trace()
         if self.bika_setup.ScheduleSamplingEnabled and\
                 isBasicTransitionAllowed(self):
             return True

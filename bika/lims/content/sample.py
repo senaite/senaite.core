@@ -268,7 +268,7 @@ schema = BikaSchema.copy() + Schema((
                 "Define the sampler supposed to do the sample in the scheduled"+
                 " date"),
             format='select',
-            label=_("Define the Sampler for the shceduled sampling"),
+            label=_("Define the Sampler for the scheduled sampling"),
             visible={'edit': 'visible',
                      'view': 'visible',
                      'header_table': 'visible',
