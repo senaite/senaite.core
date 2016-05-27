@@ -243,7 +243,7 @@ class BikaGenerator:
         mp(VerifyOwnResults, ['Manager', ], 1)
         mp(ViewRetractedAnalyses, ['Manager', 'LabManager', 'LabClerk', 'Analyst', ], 0)
 
-        mp(DefineSamplingSchedule, ['SamplingCoordinator'], 1)
+        mp(ScheduleSampling, ['SamplingCoordinator'], 1)
         mp(SampleSample, ['Manager', 'LabManager', 'Sampler'], 0)
         mp(PreserveSample, ['Manager', 'LabManager', 'Preserver'], 0)
         mp(ReceiveSample, ['Manager', 'LabManager', 'LabClerk', 'Sampler'], 1)

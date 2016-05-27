@@ -854,7 +854,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
                 return False
         return True
 
-    def guard_define_sampling_schedule_transition(self):
+    def guard_schedule_sampling_transition(self):
         """
         Prevent the transition if:
         - if the user isn't part of the sampling coordinators group
@@ -862,7 +862,8 @@ class Sample(BaseFolder, HistoryAwareMixin):
         - if no date and samples have been defined
           and "sampling schedule" checkbox is set in bika_setup
         """
-        if self.bika_setup.ScheduleSamplingEnabled:
+        if self.bika_setup.ScheduleSamplingEnabled and\
+                isBasicTransitionAllowed(self):
             return True
         return False
 

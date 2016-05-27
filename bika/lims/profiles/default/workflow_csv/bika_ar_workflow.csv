@@ -24,13 +24,13 @@ BIKA: Edit AR Contact,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Add Attachment,N,Y,Y,Y,N,Y,N,N,N,N,N,Y,Y,N,N,N
 View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,N
 Modify portal content,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
-BIKA: Define Sampling Schedule,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,,,,
 Id:,to_be_sampled,,,,,,,,,,,,,,,
 Title:,To Be Sampled,,,,,,,,,,,,,,,
 Description:,AR successfully created,,,,,,,,,,,,,,,
-Transitions,"sample, submit, define_sampling_schedule",,,,,,,,,,,,,,,
+Transitions,"sample, submit, schedule_sampling",,,,,,,,,,,,,,,
 Permissions,Acquire,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,Publisher,Reviewer,RegulatoryInspector,Owner,Client,Anonymous,Authenticated,SamplingCoordinator
 BIKA: Add Analysis,N,Y,Y,Y,N,Y,N,N,N,N,N,Y,N,N,N,N
 BIKA: Cancel and reinstate,N,Y,Y,Y,N,Y,N,N,N,N,N,Y,N,N,N,N
@@ -46,7 +46,7 @@ BIKA: Edit AR Contact,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Add Attachment,N,Y,Y,Y,N,Y,N,N,N,N,N,Y,Y,N,N,N
 View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,N
 Modify portal content,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
-BIKA: Define Sampling Schedule,N,N,Y,N,N,N,N,N,N,N,N,N,N,N,N,Y
+BIKA: Schedule Sampling,N,N,Y,N,N,N,N,N,N,N,N,N,N,N,N,Y
 ,,,,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,,,,
 Id:,sampling_scheduled,,,,,,,,,,,,,,,
@@ -68,7 +68,7 @@ BIKA: Edit AR Contact,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Add Attachment,N,Y,Y,Y,N,Y,N,N,N,N,N,Y,Y,N,N,N
 View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,N
 Modify portal content,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
-BIKA: Define Sampling Schedule,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,,,,
 Id:,sampled,,,,,,,,,,,,,,,
@@ -88,7 +88,7 @@ BIKA: Edit AR Contact,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Add Attachment,N,Y,Y,Y,N,Y,N,N,N,N,N,N,N,N,N,N
 View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,N
 Modify portal content,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
-BIKA: Define Sampling Schedule,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,,,,
 Id:,to_be_preserved,,,,,,,,,,,,,,,
@@ -110,7 +110,7 @@ BIKA: Edit AR Contact,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Add Attachment,N,Y,Y,Y,N,N,Y,N,N,N,N,N,N,N,N,N
 View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,N
 Modify portal content,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
-BIKA: Define Sampling Schedule,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,,,,
 Id:,sample_due,,,,,,,,,,,,,,,
@@ -132,7 +132,7 @@ BIKA: Edit AR Contact,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Add Attachment,N,Y,Y,Y,N,N,N,N,N,N,N,Y,Y,N,N,N
 View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,N
 Modify portal content,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
-BIKA: Define Sampling Schedule,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,,,,
 Id:,sample_received,,,,,,,,,,,,,,,
@@ -153,7 +153,7 @@ BIKA: Publish,N,Y,Y,N,N,N,N,N,Y,N,N,N,N,N,N,N
 BIKA: Add Attachment,N,Y,Y,Y,Y,N,N,N,N,N,N,N,N,N,N,N
 View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,N
 Modify portal content,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
-BIKA: Define Sampling Schedule,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,,,,
 Id:,attachment_due,,,,,,,,,,,,,,,
@@ -174,7 +174,7 @@ BIKA: Publish,N,Y,Y,N,N,N,N,N,Y,N,N,N,N,N,N,N
 BIKA: Add Attachment,N,Y,Y,N,Y,N,N,N,N,N,N,N,N,N,N,N
 View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,N
 Modify portal content,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
-BIKA: Define Sampling Schedule,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,,,,
 Id:,to_be_verified,,,,,,,,,,,,,,,
@@ -196,7 +196,7 @@ BIKA: Publish,N,Y,Y,N,N,N,N,N,Y,N,N,N,N,N,N,N
 BIKA: Add Attachment,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N,N
 View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,N
 Modify portal content,N,Y,Y,Y,N,N,N,Y,N,N,N,Y,N,N,N,N
-BIKA: Define Sampling Schedule,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,,,,
 Id:,verified,,,,,,,,,,,,,,,
@@ -217,7 +217,7 @@ BIKA: Publish,N,Y,Y,N,N,N,N,N,Y,N,N,N,N,N,N,N
 BIKA: Add Attachment,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N,N
 View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,N
 Modify portal content,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Define Sampling Schedule,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,,,,
 Id:,published,,,,,,,,,,,,,,,
@@ -236,7 +236,7 @@ BIKA: Results not requested,N,Y,Y,N,Y,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit AR Contact,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,N
 Modify portal content,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Define Sampling Schedule,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,,,,
 Id:,invalid,,,,,,,,,,,,,,,
@@ -255,7 +255,7 @@ BIKA: Results not requested,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,
 BIKA: Edit AR Contact,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,
 View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,N,N,N,
 Modify portal content,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N,
-BIKA: Define Sampling Schedule,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,
+BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,
 ,,,,,,,,,,,,,,,,
 [Transition],,,,,,,,,,,,,,,,
 Id:,attach,,,,,,,,,,,,,,,
@@ -369,13 +369,13 @@ Guard permission:,BIKA: Sample Sample,,,,,,,,,,,,,,,
 Guard expression:,python:here.guard_sample_transition(),,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,,,
 [Transition],,,,,,,,,,,,,,,,
-Id:,define_sampling_schedule,,,,,,,,,,,,,,,
-Title:,Define sampling schedule,,,,,,,,,,,,,,,
+Id:,schedule_sampling,,,,,,,,,,,,,,,
+Title:,Schedule Sampling,,,,,,,,,,,,,,,
 Description:,After the sampling coordinator defines the sampler and date,,,,,,,,,,,,,,,
 Target state:,sampling_scheduled,,,,,,,,,,,,,,,
 Trigger:,User,,,,,,,,,,,,,,,
-Guard permission:,BIKA: Define Sampling Schedule,,,,,,,,,,,,,,,
-Guard expression:,python:here.guard_define_sampling_schedule_transition(),,,,,,,,,,,,,,,
+Guard permission:,BIKA: Schedule Sampling,,,,,,,,,,,,,,,
+Guard expression:,python:here.guard_schedule_sampling_transition(),,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,,,
 [Transition],,,,,,,,,,,,,,,,
 Id:,sample_due,,,,,,,,,,,,,,,

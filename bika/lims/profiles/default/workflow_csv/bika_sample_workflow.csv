@@ -21,13 +21,13 @@ BIKA: Receive Sample,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Sample Sample,N,N,N,N,N,N,N,N,N,N,N,N,N
 View,N,N,Y,Y,N,N,N,Y,Y,Y,N,N,N
 Modify portal content,N,N,y,N,N,N,N,N,N,Y,N,N,N
-BIKA: Define Sampling Schedule,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,
 Id:,to_be_sampled,,,,,,,,,,,,
 Title:,To Be Sampled,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,
-Transitions,"sample, define_sampling_schedule",,,,,,,,,,,,
+Transitions,"sample, schedule_sampling",,,,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,SamplingCoordinator
 BIKA: Cancel and reinstate,N,N,Y,Y,N,N,N,N,Y,Y,N,N,N
 BIKA: Edit Field Results,N,N,Y,N,N,N,N,N,Y,Y,N,Y,N
@@ -38,7 +38,7 @@ BIKA: Receive Sample,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Sample Sample,N,N,Y,N,N,N,N,N,N,Y,N,Y,N
 View,N,N,Y,Y,N,N,N,Y,Y,Y,N,Y,N
 Modify portal content,N,N,Y,Y,N,N,N,Y,Y,Y,N,N,N
-BIKA: Define Sampling Schedule,N,N,Y,N,N,N,N,N,N,N,N,N,Y
+BIKA: Schedule Sampling,N,N,Y,N,N,N,N,N,N,N,N,N,Y
 ,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,
 Id:,sampling_scheduled,,,,,,,,,,,,
@@ -55,7 +55,7 @@ BIKA: Receive Sample,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Sample Sample,N,N,Y,N,N,N,N,N,N,Y,N,Y,N
 View,N,N,Y,Y,N,N,N,Y,Y,Y,N,Y,N
 Modify portal content,N,N,Y,Y,N,N,N,Y,Y,Y,N,N,N
-BIKA: Define Sampling Schedule,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,
 Id:,sampled,,,,,,,,,,,,
@@ -71,7 +71,7 @@ BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Receive Sample,N,N,N,N,N,N,N,N,N,N,N,N,N
 View,N,N,Y,Y,N,N,N,Y,Y,Y,N,Y,N
 Modify portal content,N,N,Y,Y,N,N,N,Y,Y,Y,N,N,N
-BIKA: Define Sampling Schedule,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,
 Id:,to_be_preserved,,,,,,,,,,,,
@@ -87,7 +87,7 @@ BIKA: Preserve Sample,N,N,Y,N,N,N,N,N,N,Y,Y,N,N
 BIKA: Receive Sample,N,N,N,N,N,N,N,N,N,N,N,N,N
 View,N,N,Y,Y,N,N,N,Y,Y,Y,N,Y,N
 Modify portal content,N,N,Y,Y,N,N,N,Y,Y,Y,N,N,N
-BIKA: Define Sampling Schedule,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,
 Id:,sample_received,,,,,,,,,,,,
@@ -103,7 +103,7 @@ BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Receive Sample,N,N,N,N,N,N,N,N,N,N,N,N,N
 View,N,N,Y,Y,N,N,N,Y,Y,Y,N,N,N
 Modify portal content,N,N,Y,Y,N,N,N,Y,Y,Y,N,N,N
-BIKA: Define Sampling Schedule,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,
 Id:,sample_due,,,,,,,,,,,,
@@ -119,7 +119,7 @@ BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Receive Sample,N,N,Y,N,N,N,N,N,Y,Y,N,N,N
 View,N,N,Y,Y,N,N,N,Y,Y,Y,N,Y,N
 Modify portal content,N,N,Y,Y,N,N,N,Y,Y,Y,N,N,N
-BIKA: Define Sampling Schedule,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,
 Id:,expired,,,,,,,,,,,,
@@ -135,7 +135,7 @@ BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Receive Sample,N,N,N,N,N,N,N,N,N,N,N,N,N
 View,N,N,Y,N,N,N,N,N,N,Y,N,N,N
 Modify portal content,N,N,Y,N,N,N,N,N,N,Y,N,N,N
-BIKA: Define Sampling Schedule,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,
 Id:,disposed,,,,,,,,,,,,
@@ -151,7 +151,7 @@ BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Receive Sample,N,N,N,N,N,N,N,N,N,N,N,N,N
 View,N,N,Y,N,N,N,N,N,N,Y,N,N,N
 Modify portal content,N,N,Y,N,N,N,N,N,N,Y,N,N,N
-BIKA: Define Sampling Schedule,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,,,,
 [Transition],,,,,,,,,,,,,
 Id:,auto_no_preservation_required,,,,,,,,,,,,
@@ -227,13 +227,13 @@ Guard permission:,BIKA: Sample Sample,,,,,,,,,,,,
 Guard expression:,python:here.guard_sample_transition(),,,,,,,,,,,,
 ,,,,,,,,,,,,,
 [Transition],,,,,,,,,,,,,
-Id:,define_sampling_schedule,,,,,,,,,,,,
-Title:,Define sampling schedule,,,,,,,,,,,,
+Id:,schedule_sampling,,,,,,,,,,,,
+Title:,Schedule Sampling,,,,,,,,,,,,
 Description:,After the sampling coordinator defines the sampler and date,,,,,,,,,,,,
 Target state:,sampling_scheduled,,,,,,,,,,,,
 Trigger:,User,,,,,,,,,,,,
-Guard permission:,BIKA: Define Sampling Schedule,,,,,,,,,,,,
-Guard expression:,python:here.guard_define_sampling_schedule_transition(),,,,,,,,,,,,
+Guard permission:,BIKA: Schedule Sampling,,,,,,,,,,,,
+Guard expression:,python:here.guard_schedule_sampling_transition(),,,,,,,,,,,,
 ,,,,,,,,,,,,,
 [Transition],,,,,,,,,,,,,
 Id:,sample_due,,,,,,,,,,,,

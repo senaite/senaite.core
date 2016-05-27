@@ -53,4 +53,4 @@ def create_samplingcoordinator(portal):
             'SamplingCoordinators', title="Sampling Coordinators",
             roles=['SamplingCoordinator'])
     mp = portal.manage_permission
-    mp(DefineSamplingSchedule, ['SamplingCoordinator'], 1)
+    mp(ScheduleSampling, ['SamplingCoordinator'], 1)
