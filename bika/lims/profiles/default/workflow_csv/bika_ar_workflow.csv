@@ -46,10 +46,10 @@ BIKA: Edit AR Contact,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Add Attachment,N,Y,Y,Y,N,Y,N,N,N,N,N,Y,Y,N,N,N
 View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,N
 Modify portal content,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
-BIKA: Schedule Sampling,N,N,Y,N,N,N,N,N,N,N,N,N,N,N,N,Y
+BIKA: Schedule Sampling,N,Y,N,N,N,N,N,N,N,N,N,N,N,N,N,Y
 ,,,,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,,,,
-Id:,sampling_scheduled,,,,,,,,,,,,,,,
+Id:,scheduled_sampling,,,,,,,,,,,,,,,
 Title:,Scheduled Sampling,,,,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,,,,
 Transitions,sample,,,,,,,,,,,,,,,
@@ -372,7 +372,7 @@ Guard expression:,python:here.guard_sample_transition(),,,,,,,,,,,,,,,
 Id:,schedule_sampling,,,,,,,,,,,,,,,
 Title:,Schedule Sampling,,,,,,,,,,,,,,,
 Description:,After the sampling coordinator defines the sampler and date,,,,,,,,,,,,,,,
-Target state:,sampling_scheduled,,,,,,,,,,,,,,,
+Target state:,scheduled_sampling,,,,,,,,,,,,,,,
 Trigger:,User,,,,,,,,,,,,,,,
 Guard permission:,BIKA: Schedule Sampling,,,,,,,,,,,,,,,
 Guard expression:,python:here.guard_schedule_sampling_transition(),,,,,,,,,,,,,,,
