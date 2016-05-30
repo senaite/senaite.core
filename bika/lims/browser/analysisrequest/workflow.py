@@ -631,14 +631,18 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         and "ScheduledSamplingSampler" are uncompleted.
         :return: bool
         """
-        if self.context.portal_type == 'Sample':
-            if self.context.getScheduledSamplingSampler() and\
-                self.context.getSamplingDate():
-                return True
-            else:
-                message = _(
-                    "'Sampling date' and 'Define the Sampler for the" +
-                    " scheduled sampling' must be completed in order to" +
-                    " schedule a sampling")
-                self.context.plone_utils.addPortalMessage(message, 'error')
-                return False
+        if self.context.getScheduledSamplingSampler() and\
+            self.context.getSamplingDate():
+            if self.context.portal_type == 'Sample':
+                # transact the related analysis requests
+                continue
+            elif self.context.portal_type == 'AnalysisRequest':
+                # transact the related sample
+            return True
+        else:
+            message = _(
+                "'Sampling date' and 'Define the Sampler for the" +
+                " scheduled sampling' must be completed in order to" +
+                " schedule a sampling")
+            self.context.plone_utils.addPortalMessage(message, 'error')
+            return False

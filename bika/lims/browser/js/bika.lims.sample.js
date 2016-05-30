@@ -9,7 +9,7 @@ function SampleView() {
         // Plone "Sample" transition is only available when Sampler and DateSampled
         // are completed
         $("#workflow-transition-sample").click(workflow_transition_sample);
-        // fires AR workflow transitions when using the
+        // fires AR workflow transitions when using the schedule samplign transition
         transition_schedule_sampling();
         // Trap the save button
         $("input[name='save']").click(save_header);
@@ -94,7 +94,7 @@ function SampleView() {
             else {
                 var message = "";
                 if (date === "" || date === undefined || date === null) {
-                    message = message + PMF('${name} is required, please correct.',
+                    message = message + PMF('${name} is required for this action, please correct.',
                                             {'name': _("Sampling Date")});
                 }
                 if (sampler === "" || sampler === undefined || sampler === null) {
@@ -109,6 +109,6 @@ function SampleView() {
                     window.bika.lims.portalMessage(message);
                 }
             }
-    });
+        });
     }
 }
