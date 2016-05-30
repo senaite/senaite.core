@@ -297,7 +297,7 @@ schema = BikaSchema.copy() + Schema((
                      'header_table': 'visible',
                      'sample_registered': {'view': 'visible', 'edit': 'visible'},
                      'to_be_sampled':     {'view': 'visible', 'edit': 'visible'},
-                     'scheduled_sampling': {'view': 'visible', 'edit': 'invisible'},
+                     'scheduled_sampling': {'view': 'visible', 'edit': 'visible'},
                      'sampled':           {'view': 'visible', 'edit': 'invisible'},
                      'to_be_preserved':   {'view': 'visible', 'edit': 'invisible'},
                      'sample_due':        {'view': 'visible', 'edit': 'invisible'},
@@ -882,6 +882,16 @@ class Sample(BaseFolder, HistoryAwareMixin):
                 ar_state = workflow.getInfoFor(ar, 'cancellation_state')
                 if ar_state == 'active':
                     workflow.doActionFor(ar, 'cancel')
+
+    def workflow_script_schedule_sampling(self):
+        """
+        This function runs all the needed process for that action
+        """
+        workflow = getToolByName(self, 'portal_workflow')
+        # transact the related analysis requests
+        ars = self.getAnalysisRequests()
+        for ar in ars:
+            doActionFor(ar, 'schedule_sampling')
 
     def guard_receive_transition(self):
         """Prevent the receive transition from being available:

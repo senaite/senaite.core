@@ -55,7 +55,7 @@ BIKA: Receive Sample,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Sample Sample,N,N,Y,N,N,N,N,N,N,Y,N,Y,N
 View,N,N,Y,Y,N,N,N,Y,Y,Y,N,Y,N
 Modify portal content,N,N,Y,Y,N,N,N,Y,Y,Y,N,N,N
-BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Schedule Sampling,N,N,Y,N,N,N,N,N,N,N,N,N,Y
 ,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,
 Id:,sampled,,,,,,,,,,,,

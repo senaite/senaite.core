@@ -84,6 +84,7 @@ function SampleView() {
         $('#workflow-transition-schedule_sampling').attr('href', new_url);
         // When user clicks on the transition
         $('#workflow-transition-schedule_sampling').click(function(){
+            e.preventDefault();
             var date = $("#SamplingDate").val();
             var sampler = $("#ScheduledSamplingSampler").val();
             if (date !== "" && date !== undefined && date !== null &&

@@ -526,8 +526,8 @@ schema = BikaSchema.copy() + Schema((
                      'view': 'visible',
                      'header_table': 'visible',
                      'sample_registered': {'view': 'invisible', 'edit': 'invisible'},
-                     'to_be_sampled':     {'view': 'invisible', 'edit': 'visible'},
-                     'scheduled_sampling': {'view': 'invisible', 'edit': 'visible'},
+                     'to_be_sampled':     {'view': 'visible', 'edit': 'visible'},
+                     'scheduled_sampling': {'view': 'visible', 'edit': 'visible'},
                      'sampled':           {'view': 'invisible', 'edit': 'invisible'},
                      'to_be_preserved':   {'view': 'invisible', 'edit': 'invisible'},
                      'sample_due':        {'view': 'invisible', 'edit': 'invisible'},
@@ -556,7 +556,7 @@ schema = BikaSchema.copy() + Schema((
                      'secondary': 'disabled',
                      'sample_registered': {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
                      'to_be_sampled':     {'view': 'visible', 'edit': 'visible'},
-                     'scheduled_sampling': {'view': 'visible', 'edit': 'invisible'},
+                     'scheduled_sampling': {'view': 'visible', 'edit': 'visible'},
                      'sampled':           {'view': 'visible', 'edit': 'invisible'},
                      'to_be_preserved':   {'view': 'visible', 'edit': 'invisible'},
                      'sample_due':        {'view': 'visible', 'edit': 'invisible'},
@@ -2295,6 +2295,23 @@ class AnalysisRequest(BaseFolder):
             return sample.getAdHoc()
         return self.Schema().getField('AdHoc').get(self)
 
+    security.declarePublic('setScheduledSamplingSampler')
+
+    def setScheduledSamplingSampler(self, value):
+        sample = self.getSample()
+        if sample and value:
+            sample.setScheduledSamplingSampler(value)
+        self.Schema()['ScheduledSamplingSampler'].set(self, value)
+
+    security.declarePublic('getScheduledSamplingSampler')
+
+    def getScheduledSamplingSampler(self):
+        sample = self.getSample()
+        if sample:
+            return sample.getScheduledSamplingSampler()
+        return self.Schema()\
+            .getField('ScheduledSamplingSampler').get(self)
+
     def getSamplers(self):
         return getUsers(self, ['LabManager', 'Sampler'])
 
@@ -2568,6 +2585,19 @@ class AnalysisRequest(BaseFolder):
         analyses = self.getAnalyses(cancellation_state='active')
         for analysis in analyses:
             doActionFor(analysis.getObject(), 'cancel')
+
+    def workflow_script_schedule_sampling(self):
+        """
+        This function runs all the needed process for that action
+        """
+        workflow = getToolByName(self, 'portal_workflow')
+        sample = self.getSample()
+        # We have to set the defined sampling date and sampler and
+        # produce a transition in it
+        if workflow.getInfoFor(sample, 'review_state') == \
+                'to_be_sampled':
+            # transact the related sample
+            doActionFor(sample, 'schedule_sampling')
 
 
 atapi.registerType(AnalysisRequest, PROJECTNAME)
