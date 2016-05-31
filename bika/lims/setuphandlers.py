@@ -243,7 +243,7 @@ class BikaGenerator:
         mp(VerifyOwnResults, ['Manager', ], 1)
         mp(ViewRetractedAnalyses, ['Manager', 'LabManager', 'LabClerk', 'Analyst', ], 0)
 
-        mp(ScheduleSampling, ['SamplingCoordinator'], 1)
+        mp(ScheduleSampling, ['Manager', 'SamplingCoordinator'], 0)
         mp(SampleSample, ['Manager', 'LabManager', 'Sampler'], 0)
         mp(PreserveSample, ['Manager', 'LabManager', 'Preserver'], 0)
         mp(ReceiveSample, ['Manager', 'LabManager', 'LabClerk', 'Sampler'], 1)
@@ -638,6 +638,7 @@ class BikaGenerator:
         addIndex(bc, 'getSamplePointTitle', 'FieldIndex')
         addIndex(bc, 'getSamplePointUID', 'FieldIndex')
         addIndex(bc, 'getSampler', 'FieldIndex')
+        addIndex(bc, 'getScheduledSamplingSampler', 'FieldIndex')
         addIndex(bc, 'getSampleTypeTitle', 'FieldIndex')
         addIndex(bc, 'getSampleTypeUID', 'FieldIndex')
         addIndex(bc, 'getSampleUID', 'FieldIndex')

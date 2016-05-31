@@ -463,6 +463,10 @@ class SamplesView(BikaListingView):
                                'input_width': '10'},
             'getSampler': {'title': _('Sampler'),
                            'toggle': SamplingWorkflowEnabled},
+            'getScheduledSamplingSampler': {
+                'title': _('Sampler for scheduled sampling'),
+                'toggle': self.context.bika_setup.getScheduleSamplingEnabled()
+                },
             'getDatePreserved': {'title': _('Date Preserved'),
                                  'toggle': user_is_preserver,
                                  'input_class': 'datepicker_nofuture',
@@ -493,16 +497,39 @@ class SamplesView(BikaListingView):
                          'SamplingDeviation',
                          'AdHoc',
                          'getSamplingDate',
+                         'getScheduledSamplingSampler',
                          'getDateSampled',
                          'getSampler',
                          'getDatePreserved',
                          'getPreserver',
                          'DateReceived',
                          'state_title']},
+            {'id': 'to_be_sampled',
+             'title': _('To be sampled'),
+             'contentFilter': {'review_state': ('to_be_sampled',
+                                                'scheduled_sampling'),
+                               'cancellation_state': 'active',
+                               'sort_on': 'created',
+                               'sort_order': 'reverse'},
+             'columns': ['getSampleID',
+                         'Client',
+                         'Requests',
+                         'getClientReference',
+                         'getClientSampleID',
+                         'getSamplingDate',
+                         'getScheduledSamplingSampler',
+                         'getDateSampled',
+                         'getSampler',
+                         'getPreserver',
+                         'getSampleTypeTitle',
+                         'getSamplePointTitle',
+                         'state_title'],
+             'transitions': [
+                {'id': 'schedule_sampling'}, {'id': 'sample'}],
+             },
             {'id':'sample_due',
              'title': _('Due'),
-             'contentFilter': {'review_state': ('to_be_sampled',
-                                                'to_be_preserved',
+             'contentFilter': {'review_state': ('to_be_preserved',
                                                 'sample_due'),
                                'sort_on':'created',
                                'sort_order': 'reverse'},
@@ -514,6 +541,8 @@ class SamplesView(BikaListingView):
                          'getClientReference',
                          'getClientSampleID',
                          'getSamplingDate',
+                         'getScheduledSamplingSampler',
+                         'getScheduledSamplingSampler',
                          'getDateSampled',
                          'getSampler',
                          'getDatePreserved',
@@ -542,6 +571,7 @@ class SamplesView(BikaListingView):
                          'SamplingDeviation',
                          'AdHoc',
                          'getSamplingDate',
+                         'getScheduledSamplingSampler',
                          'getDateSampled',
                          'getSampler',
                          'getDatePreserved',
@@ -565,6 +595,7 @@ class SamplesView(BikaListingView):
                          'SamplingDeviation',
                          'AdHoc',
                          'getSamplingDate',
+                         'getScheduledSamplingSampler',
                          'getDateSampled',
                          'getSampler',
                          'getDatePreserved',
@@ -588,6 +619,7 @@ class SamplesView(BikaListingView):
                          'SamplingDeviation',
                          'AdHoc',
                          'getSamplingDate',
+                         'getScheduledSamplingSampler',
                          'getDateSampled',
                          'getSampler',
                          'getDatePreserved',
@@ -612,6 +644,7 @@ class SamplesView(BikaListingView):
                          'SamplingDeviation',
                          'AdHoc',
                          'getSamplingDate',
+                         'getScheduledSamplingSampler',
                          'DateReceived',
                          'getDateSampled',
                          'getSampler',
@@ -694,25 +727,42 @@ class SamplesView(BikaListingView):
                 sampler = ''
             items[x]['getDateSampled'] = datesampled
             items[x]['getSampler'] = sampler
-
-            # sampling workflow - inline edits for Sampler and Date Sampled
+            # sampling workflow - inline edits for Sampler, Date Sampled and
+            # Scheduled Sampling Sampler
             checkPermission = self.context.portal_membership.checkPermission
             state = workflow.getInfoFor(obj, 'review_state')
-            if state == 'to_be_sampled' \
-                    and checkPermission(SampleSample, obj) \
-                    and not samplingdate > DateTime():
-                items[x]['required'] = ['getSampler', 'getDateSampled']
-                items[x]['allow_edit'] = ['getSampler', 'getDateSampled']
+            if state in ['to_be_sampled', 'scheduled_sampling']:
+                items[x]['required'] = []
+                items[x]['allow_edit'] = []
+                items[x]['choices'] = {}
                 samplers = getUsers(obj, ['Sampler', 'LabManager', 'Manager'])
-                getAuthenticatedMember = self.context.portal_membership.getAuthenticatedMember
-                username = getAuthenticatedMember().getUserName()
-                users = [({'ResultValue': u, 'ResultText': samplers.getValue(u)})
-                         for u in samplers]
-                items[x]['choices'] = {'getSampler': users}
-                Sampler = sampler and sampler or \
-                    (username in samplers.keys() and username) or ''
-                items[x]['getSampler'] = Sampler
-
+                users = [(
+                    {'ResultValue': u, 'ResultText': samplers.getValue(u)})
+                    for u in samplers]
+                # both situations
+                if checkPermission(SampleSample, obj) or\
+                        self._schedule_sampling_permissions():
+                    items[x]['required'].append('getSampler')
+                    items[x]['allow_edit'].append('getSampler')
+                    items[x]['choices']['getSampler'] = users
+                # sampling permissions
+                if checkPermission(SampleSample, obj):
+                    getAuthenticatedMember = self.context.\
+                        portal_membership.getAuthenticatedMember
+                    username = getAuthenticatedMember().getUserName()
+                    Sampler = sampler and sampler or \
+                        (username in samplers.keys() and username) or ''
+                    items[x]['required'].append('getDateSampled')
+                    items[x]['allow_edit'].append('getDateSampled')
+                    items[x]['getSampler'] = Sampler
+                # coordinator permissions
+                if self._schedule_sampling_permissions():
+                    items[x]['required'].append('getSamplingDate')
+                    items[x]['allow_edit'].append('getSamplingDate')
+                    items[x]['required'].append('getScheduledSamplingSampler')
+                    items[x]['allow_edit'].append(
+                        'getScheduledSamplingSampler')
+                    items[x]['choices']['getScheduledSamplingSampler'] = users
             # These don't exist on samples
             # the columns exist just to set "preserve" transition from lists.
             # XXX This should be a list of preservers...
@@ -738,10 +788,11 @@ class SamplesView(BikaListingView):
 
         # Hide Preservation/Sampling workflow actions if the edit columns
         # are not displayed.
+        # Hide schedule_sampling if user has no rights
         toggle_cols = self.get_toggle_cols()
         new_states = []
         for i,state in enumerate(self.review_states):
-            if state['id'] == self.review_state:
+            if state['id'] == self.review_state.get('id', ''):
                 if 'getSampler' not in toggle_cols \
                    or 'getDateSampled' not in toggle_cols:
                     if 'hide_transitions' in state:
@@ -754,10 +805,29 @@ class SamplesView(BikaListingView):
                         state['hide_transitions'].append('preserve')
                     else:
                         state['hide_transitions'] = ['preserve',]
+                # Check if the user has the rights to schedule samplings and
+                # the check-box 'ScheduleSamplingEnabled' in bikasetup is set
+                if self._schedule_sampling_permissions():
+                    # Show the workflow transition button 'schedule_sampling'
+                    pass
+                else:
+                    # Hiddes the button
+                    state['hide_transitions'] = ['schedule_sampling', ]
             new_states.append(state)
         self.review_states = new_states
 
         return items
+
+    def _schedule_sampling_permissions(self):
+        """
+        This function checks if all the 'schedule a sampling' conditions
+        are met
+        """
+        mtool = getToolByName(self.context, 'portal_membership')
+        member = mtool.getAuthenticatedMember()
+        roles = member.getRoles()
+        return self.context.bika_setup.getScheduleSamplingEnabled() and\
+            ('SamplingCoordinator' in roles or 'Manager' in roles)
 
 
 class ajaxGetSampleTypeInfo(BrowserView):

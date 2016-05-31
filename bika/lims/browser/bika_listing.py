@@ -981,7 +981,7 @@ class BikaListingView(BrowserView):
                 new_actions.append(action)
             else:
                 logger.warning("bad action in custom_actions: %s. (complete list: %s)."%(action,actions))
-
+        actions = new_actions
         # and these are removed
         if 'hide_transitions' in self.review_state:
             actions = [a for a in actions

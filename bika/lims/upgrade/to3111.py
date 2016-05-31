@@ -22,7 +22,7 @@ def upgrade(tool):
     http://stackoverflow.com/questions/7821498/is-there-a-good-reference-list-for-the-names-of-the-genericsetup-import-steps
     """
     setup = portal.portal_setup
-    # setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
     # setup.runImportStepFromProfile('profile-bika.lims:default', 'jsregistry')
     # setup.runImportStepFromProfile('profile-bika.lims:default', 'cssregistry')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'workflow-csv')
@@ -53,4 +53,8 @@ def create_samplingcoordinator(portal):
             'SamplingCoordinators', title="Sampling Coordinators",
             roles=['SamplingCoordinator'])
     mp = portal.manage_permission
-    mp(ScheduleSampling, ['SamplingCoordinator'], 1)
+    mp(ScheduleSampling, ['Manager', 'SamplingCoordinator'], 0)
+    # Add the index for the catalog
+    bc = getToolByName(portal, 'bika_catalog', None)
+    if 'getScheduledSamplingSampler' not in bc.indexes():
+        bc.addIndex('getScheduledSamplingSampler', 'FieldIndex')
