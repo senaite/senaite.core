@@ -4,10 +4,12 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
+from plone.resource.utils import iterDirectoriesOfType
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import EditSample
 from bika.lims import PMF
+from bika.lims import logger
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.browser.analyses import AnalysesView
@@ -28,8 +30,11 @@ from zope.component import queryUtility
 from zope.interface import implements
 from Products.ZCTextIndex.ParseTree import ParseError
 import json
+import os
+import glob
 import plone
 import urllib
+
 
 class SamplePartitionsView(BikaListingView):
     def __init__(self, context, request):
@@ -400,7 +405,15 @@ class SamplesView(BikaListingView):
                               'path': {'query': "/",
                                        'level': 0 }
                               }
-        self.context_actions = {}
+        # So far we will only print if the sampling workflow is activated
+        if self.context.bika_setup.getSamplingWorkflowEnabled():
+            self.context_actions = {
+                _('Print sample sheets'): {
+                    'url': 'print_sampling_sheets',
+                    'icon': '++resource++bika.lims.images/print_32.png'}
+                    }
+        else:
+                self.context_actions = {}
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
@@ -828,6 +841,131 @@ class SamplesView(BikaListingView):
         roles = member.getRoles()
         return self.context.bika_setup.getScheduleSamplingEnabled() and\
             ('SamplingCoordinator' in roles or 'Manager' in roles)
+
+
+class SamplesPrint(BrowserView):
+    """
+    This class manages all the logic needed to create a form which is going
+    to be printed.
+    The sampler will be able to print the form and take it to
+    the defined sampling points.
+    The class receives the samples selected in the SamplesView in order to
+    generate the form.
+    The system will gather field analysis services using the following pattern:
+
+    Sampler_1 - Client_1 - Date_1 - SamplingPoint_1 - Field_AS_1.1
+                                                    - Field_AS_1.2
+                                  - SamplingPoint_2 - Field_AS_2.1
+                         - Date_3 - SamplingPoint_1 - Field_AS_3.1
+              - Client_2 - Date_1 - SamplingPoint_1 - Field_AS_4.1
+
+    Sampler_2 - Client_1 - Date_1 - SamplingPoint_1 - Field_AS_5.1
+    """
+    template = ViewPageTemplateFile("templates/samples_print_form.pt")
+    _DEFAULT_TEMPLATE = 'default_form.pt'
+    _TEMPLATES_DIR = 'templates/samplesprint'
+    _TEMPLATES_ADDON_DIR = 'samples'
+    # selected samples
+    _samples = []
+
+    def __call__(self):
+        if self.context.portal_type == 'Samples' \
+                and self.request.get('items', ''):
+            uids = self.request.get('items').split(',')
+            uc = getToolByName(self.context, 'uid_catalog')
+            self._samples = [obj.getObject() for obj in uc(UID=uids)]
+
+        else:
+            # Warn and redirect to referer
+            logger.warning(
+                'PrintView: type not allowed: %s' % self.context.portal_type)
+            self.destination_url = self.request.get_header(
+                "referer", self.context.absolute_url())
+
+        # Do print?
+        if self.request.form.get('pdf', '0') == '1':
+            response = self.request.response
+            response.setHeader("Content-type", "application/pdf")
+            response.setHeader("Content-Disposition", "inline")
+            response.setHeader("filename", "temp.pdf")
+            return self.pdfFromPOST()
+        else:
+            return self.template()
+
+    def getAvailableTemplates(self):
+        """
+        Returns a DisplayList with the available templates found in
+        browser/templates/samplesprint
+        """
+        this_dir = os.path.dirname(os.path.abspath(__file__))
+        templates_dir = os.path.join(this_dir, self._TEMPLATES_DIR)
+        tempath = '%s/%s' % (templates_dir, '*.pt')
+        templates = [t.split('/')[-1] for t in glob.glob(tempath)]
+        out = []
+        for template in templates:
+            out.append({'id': template, 'title': template[:-3]})
+        for templates_resource in iterDirectoriesOfType(
+                self._TEMPLATES_ADDON_DIR):
+            prefix = templates_resource.__name__
+            templates = [
+                tpl for tpl in templates_resource.listDirectory()
+                if tpl.endswith('.pt')
+                ]
+            for template in templates:
+                out.append({
+                    'id': '{0}:{1}'.format(prefix, template),
+                    'title': '{0} ({1})'.format(template[:-3], prefix),
+                })
+        return out
+
+    def getCSS(self):
+        """ Returns the css style to be used for the current template.
+            If the selected template is 'default.pt', this method will
+            return the content from 'default.css'. If no css file found
+            for the current template, returns empty string
+        """
+        template = self.request.get('template', self._DEFAULT_TEMPLATE)
+        content = ''
+        if template.find(':') >= 0:
+            prefix, template = template.split(':')
+            resource = queryResourceDirectory(
+                self._TEMPLATES_ADDON_DIR, prefix)
+            css = '{0}.css'.format(template[:-3])
+            if css in resource.listDirectory():
+                content = resource.readFile(css)
+        else:
+            this_dir = os.path.dirname(os.path.abspath(__file__))
+            templates_dir = os.path.join(this_dir, self._TEMPLATES_DIR)
+            path = '%s/%s.css' % (templates_dir, template[:-3])
+            with open(path, 'r') as content_file:
+                content = content_file.read()
+        return content
+
+    def pdfFromPOST(self):
+        """
+        It returns the pdf with the printed form
+        """
+        html = self.request.form.get('html')
+        style = self.request.form.get('style')
+        reporthtml = "<html><head>%s</head><body><div id='report'>%s</body></html>" % (style, html)
+        return self.printFromHTML(safe_unicode(reporthtml).encode('utf-8'))
+
+    def printFromHTML(self, code_html):
+        """
+        Tis function generates a pdf file from the html
+        :code_html: the html to use to generate the pdf
+        """
+        # HTML written to debug file
+        debug_mode = App.config.getConfiguration().debug_mode
+        if debug_mode:
+            tmp_fn = tempfile.mktemp(suffix=".html")
+            open(tmp_fn, "wb").write(sr_html)
+
+        # Creates the pdf
+        # we must supply the file ourself so that createPdf leaves it alone.
+        pdf_fn = tempfile.mktemp(suffix=".pdf")
+        pdf_report = createPdf(htmlreport=sr_html, outfile=pdf_fn)
+        return pdf_report
 
 
 class ajaxGetSampleTypeInfo(BrowserView):

@@ -405,6 +405,28 @@
           inline="False"
           insert-after="*"/>
 
+  <javascript authenticated="False"
+          id="++resource++bika.lims.js/bika.lims.samples.print.js"
+          cacheable="True"
+          compression="safe"
+          conditionalcomment=""
+          cookable="True"
+          enabled="on"
+          expression=""
+          inline="False"
+          insert-after="*"/>
+
+  <javascript authenticated="False"
+          id="++resource++bika.lims.js/bika.lims.samples.js"
+          cacheable="True"
+          compression="safe"
+          conditionalcomment=""
+          cookable="True"
+          enabled="on"
+          expression=""
+          inline="False"
+          insert-after="*"/>
+
   <!-- Add javascripts ALWAYS BEFORE this one -->
   <javascript authenticated="False"
               id="++resource++bika.lims.js/bika.lims.loader.js"
