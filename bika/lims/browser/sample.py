@@ -869,12 +869,11 @@ class SamplesPrint(BrowserView):
     _samples = []
 
     def __call__(self):
-        if self.context.portal_type == 'Samples' \
+        if self.context.portal_type == 'SamplesFolder' \
                 and self.request.get('items', ''):
             uids = self.request.get('items').split(',')
             uc = getToolByName(self.context, 'uid_catalog')
             self._samples = [obj.getObject() for obj in uc(UID=uids)]
-
         else:
             # Warn and redirect to referer
             logger.warning(

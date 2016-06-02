@@ -38,7 +38,7 @@ function SamplesFolderView() {
         else {
             // Getting the url
             var href = $('a.context_action_link').attr('href');
-            href += "?samples=";
+            href += "?items=";
             // Add the uids in the url and redirect
             window.location.href = $('base').attr('href') + href + s_uids.join();
         }
