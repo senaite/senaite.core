@@ -1,0 +1,81 @@
+<!--
+    Default Samples form template for Bika LIMS
+-->
+<tal:form tal:define="samples python:view.getSortedFilteredSamples()">
+    <div class="header">
+        <div class='lab-logo'>
+            <a tal:attributes="href view/getLab">
+                <img tal:attributes="src view/getLogo"/>
+            </a>
+        </div>
+    </div>
+    <!-- samples listed by Partition/Container -->
+    <div id="samples-data-entry"
+        tal:define="
+            dictionaries view/getSortedFilteredSamples
+            samplers python:dictionaries.keys()">
+        <!-- Sampler sections -->
+        <div class="sampler_section"
+            tal:repeat="sampler_uid samplers">
+            <!-- Client sections -->
+            <div class="client_section"
+                tal:repeat="client_uid python:dictionaries[sampler_uid]">
+                <div class="dates_section"
+                    tal:repeat="date python:dictionaries[sampler_uid][client_uid]">
+                    <!-- table section -->
+                    <tal:table
+                        tal:define="tables python:dictionaries[sampler_uid][client_uid][date]">
+                    <table class="samples-grid"
+                        tal:repeat="table tables">
+                        <thead>
+                            <tr>
+                                <th i18n:translate=""
+                                    tal:repeat="column_id table/columns/column_order"
+                                    tal:content="python: table['columns']['titles'][column_id]"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        <tal:rowsample repeat="row table/rows">
+                            <tr>
+                            <tal:rowcell repeat="column_id table/columns/column_order">
+                                <td tal:condition="python: column_id not in ['analyses', 'partition'] and not row[column_id]['hidden']"
+                                    tal:attributes="rowspan python:row[column_id]['rowspan'];
+                                                    class python:column_id">
+                                    <div class="table-text"
+                                        tal:content="python: row[column_id]['value']">
+                                    </div>
+                                </td>
+                                <td tal:condition="python: column_id == 'analyses'"
+                                    class="analyses">
+                                    <span tal:content="python: row[column_id]['title']"></span>
+                                    <div class="data-input"></div>
+                                    <span
+                                        class="units"
+                                        tal:content="python: row[column_id]['units']"></span>
+                                </td>
+                                <td tal:condition="python: column_id == 'partition' and not row[column_id]['hidden']"
+                                    tal:attributes="rowspan python:row[column_id]['rowspan'];
+                                                    class python:column_id">
+                                    <div class='barcode-container'>
+                                        <div
+                                            tal:condition="python: not row[column_id]['hidden']"
+                                            class='barcode'
+                                            data-code='code128'
+                                            data-showHRI='false'
+                                            data-barHeight='10'
+                                            data-addQuietZone='true'
+                                            tal:attributes="data-id python: row[column_id]['value']">
+                                        </div>
+                                    </div>
+                                </td>
+                            </tal:rowcell>
+                            </tr>
+                        </tal:rowsample>
+                        </tbody>
+                    </table>
+                    </tal:table>
+                </div>
+            </div>
+        </div>
+    </div>
+</tal:form>

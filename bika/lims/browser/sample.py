@@ -34,6 +34,7 @@ import os
 import glob
 import plone
 import urllib
+import traceback
 
 
 class SamplePartitionsView(BikaListingView):
@@ -851,6 +852,8 @@ class SamplesPrint(BrowserView):
     the defined sampling points.
     The class receives the samples selected in the SamplesView in order to
     generate the form.
+    If no samples are selected, the system will get all the samples with the
+    states 'to_be_sampled' or 'scheduled_sampling'.
     The system will gather field analysis services using the following pattern:
 
     Sampler_1 - Client_1 - Date_1 - SamplingPoint_1 - Field_AS_1.1
@@ -866,14 +869,25 @@ class SamplesPrint(BrowserView):
     _TEMPLATES_DIR = 'templates/samplesprint'
     _TEMPLATES_ADDON_DIR = 'samples'
     # selected samples
-    _samples = []
+    _items = []
 
     def __call__(self):
-        if self.context.portal_type == 'SamplesFolder' \
-                and self.request.get('items', ''):
-            uids = self.request.get('items').split(',')
-            uc = getToolByName(self.context, 'uid_catalog')
-            self._samples = [obj.getObject() for obj in uc(UID=uids)]
+        if self.context.portal_type == 'SamplesFolder':
+            if self.request.get('items', ''):
+                uids = self.request.get('items').split(',')
+                uc = getToolByName(self.context, 'uid_catalog')
+                self._items = [obj.getObject() for obj in uc(UID=uids)]
+            else:
+                catalog = getToolByName(self.context, 'portal_catalog')
+                contentFilter = {
+                    'portal_type': 'Sample',
+                    'sort_on': 'created',
+                    'sort_order': 'reverse',
+                    'review_state': ['to_be_sampled', 'scheduled_sampling'],
+                    'path': {'query': "/", 'level': 0}
+                    }
+                brains = catalog(contentFilter)
+                self._items = [obj.getObject() for obj in brains]
         else:
             # Warn and redirect to referer
             logger.warning(
@@ -890,6 +904,163 @@ class SamplesPrint(BrowserView):
             return self.pdfFromPOST()
         else:
             return self.template()
+
+    def getSortedFilteredSamples(self):
+        """
+        This function returns all the samples sorted and filtered
+        This function returns a dictionary as:
+        {
+            sampler1:{
+                info:{,},
+                client1:{
+                    info:{,},
+                    date1:{
+                        [sample_tables]
+                    },
+                    no_date:{
+                        [sample_tables]
+                    }
+                }
+            }
+        }
+        """
+        samples = self._items
+        result = {}
+        for sample in samples:
+            # Getting the filter keys
+            sampler = sample.getSampler()
+            client_uid = sample.getClientUID()
+            date = \
+                self.ulocalized_time(sample.getSamplingDate(), long_format=1)\
+                if sample.getSamplingDate() else ''
+            # Filling the dictionary
+            if sampler.UID() in result.keys():
+                client_d = result[sampler.UID()].get(client_uid, {})
+                # Always writing the info again.
+                # Is it faster than doing a check every time?
+                client_d['info'] = {'name': sample.getClientTitle()}
+                if date:
+                    client_d[date] = client_d.get(date, []).append(
+                        _sample_table_builder(sample))
+                else:
+                    client['no_date'] = client_d.get('no_date', []).append(
+                        _sample_table_builder(sample))
+            else:
+                # This client isn't in the dict yet. Write the client dict
+                client_dict = {
+                    'info': {
+                        'name': sample.getClientTitle()
+                        },
+                    }
+                # If the sample has a sampling date, build the dictionary
+                # which emulates the table inside a list
+                if date:
+                    client_dict[date] = [_sample_table_builder(sample)]
+                else:
+                    client_dict['no_date'] = [_sample_table_builder(sample)]
+                # Adding the client dict inside the result dict
+                result[sampler.UID()] = {
+                    'info': {
+                        'obj': sampler,
+                        'id': sampler.id,
+                        'name': sampler.getName()
+                        },
+                    client_uid: client_dict
+                    }
+        return result
+
+    def _sample_table_builder(self, sample):
+        """
+        This function returns a list of dictionaries sorted by Sample
+        Partition/Container. It emulates the columns/rows of a table.
+        [{'requests and partition info'}, ...]
+        """
+        # rows will contain the data for each html row
+        rows = []
+        # columns will be used to sort and define the columns
+        columns = {
+            'column_order': [
+                'sample_id',
+                'sample_type',
+                'sampling_point',
+                'sampling_date',
+                'partition',
+                'container',
+                'analyses',
+                ],
+            'titles': {
+                'sample_id': _('Sample ID'),
+                'sample_type': _('Sample Type'),
+                'sampling_point': _('Sampling Point'),
+                'sampling_date': _('Sampling Date'),
+                'partition': _('Partition'),
+                'container': _('Container'),
+                'analyses': _('Analysis'),
+            }
+        }
+        ars = sample.getAnalysisRequests()
+        for ar in ars:
+            ar = ar.getObject()
+            arcell = False
+            numans = len(ar.getAnalyses())
+            for part in ar.getPartitions():
+                partcell = False
+                container = part.getContainer().title \
+                    if part.getContainer() else ''
+                partans = part.getAnalyses()
+                numpartans = len(partans)
+                for analysis in partans:
+                    service = analysis.getService()
+                    if service.getPointOfCapture() == 'field':
+                        row = {
+                            'sample_id': {
+                                'hidden': True if arcell else False,
+                                'rowspan': numans,
+                                'value': ar.getSample().id,
+                                },
+                            'sample_type': {
+                                'hidden': True if arcell else False,
+                                'rowspan': numans,
+                                'value': ar.getSampleType().title,
+                                },
+                            'sampling_point': {
+                                'hidden': True if arcell else False,
+                                'rowspan': numans,
+                                'value':
+                                    ar.getSamplePoint().title
+                                    if ar.getSamplePoint() else '',
+                                },
+                            'sampling_date': {
+                                'hidden': True if arcell else False,
+                                'rowspan': numans,
+                                'value': self.context.sampling_date,
+                                },
+                            'partition': {
+                                'hidden': True if partcell else False,
+                                'rowspan': numpartans,
+                                'value': part.id,
+                                },
+                            'container': {
+                                'hidden': True if partcell else False,
+                                'rowspan': numpartans,
+                                'value': container,
+                                },
+                            'analyses': {
+                                'title': service.title,
+                                'units': service.getUnit(),
+                            },
+                        }
+                        rows.append(row)
+                        arcell = True
+                        partcell = True
+
+        # table will contain the data that from where the html
+        # will take the info
+        table = {
+            'columns': columns,
+            'rows': rows,
+        }
+        return table
 
     def getAvailableTemplates(self):
         """
@@ -916,6 +1087,27 @@ class SamplesPrint(BrowserView):
                     'title': '{0} ({1})'.format(template[:-3], prefix),
                 })
         return out
+
+    def getFormTemplate(self):
+        """Returns the selected samples rendered using the template
+            specified in the request (param 'template').
+        """
+        templates_dir = self._TEMPLATES_DIR
+        embedt = self.request.get('template', self._DEFAULT_TEMPLATE)
+        if embedt.find(':') >= 0:
+            prefix, embedt = embedt.split(':')
+            templates_dir = queryResourceDirectory(
+                self._TEMPLATES_ADDON_DIR, prefix).directory
+        embed = ViewPageTemplateFile(os.path.join(templates_dir, embedt))
+        reptemplate = ""
+        try:
+            reptemplate = embed(self)
+        except:
+            tbex = traceback.format_exc()
+            reptemplate = \
+                "<div class='error-print'>%s '%s':<pre>%s</pre></div>" %\
+                (_("Unable to load the template"), embedt, tbex)
+        return reptemplate
 
     def getCSS(self):
         """ Returns the css style to be used for the current template.
@@ -965,6 +1157,47 @@ class SamplesPrint(BrowserView):
         pdf_fn = tempfile.mktemp(suffix=".pdf")
         pdf_report = createPdf(htmlreport=sr_html, outfile=pdf_fn)
         return pdf_report
+
+    def getSamplers(self):
+        """
+        Returns a dictionary of dictionaries with info about the samplers
+        defined in each sample.
+        {
+            'uid': {'id':'xxx', 'name':'xxx'},
+            'uid': {'id':'xxx', 'name':'xxx'}, ...}
+        """
+        samplers = {}
+        for sample in self._items:
+            sampler = sample.getSampler()
+            if sampler and sample.UID() not in samplers.keys():
+                samplers[sampler.UID()] = {
+                    'id': sampler.id,
+                    'name': sampler.getName()
+                }
+        return samplers
+
+    def getClients(self):
+        """
+        Returns a dictionary of dictionaries with info about the clients
+        related to the selected samples.
+        {
+            'uid': {'name':'xxx'},
+            'uid': {'name':'xxx'}, ...}
+        """
+        clients = {}
+        for sample in self._items:
+            if sample.getClientUID() not in clients.keys():
+                clients[sample.getClientUID()] = {
+                    'name': sample.getClientTitle()
+                }
+        return clients
+
+    def getLab(self):
+        return self.context.bika_setup.laboratory.getLabURL()
+
+    def getLogo(self):
+        portal = self.context.portal_url.getPortalObject()
+        return "%s/logo_print.png" % portal.absolute_url()
 
 
 class ajaxGetSampleTypeInfo(BrowserView):

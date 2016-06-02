@@ -35,6 +35,30 @@
                         <option value="letter" selected>Letter size (216 x 279mm)</option>
                     </select>
                 </div>
+                <div class='options-line'>
+                    <label for="sel_filter" i18n:translate="">Select the filter to apply</label>
+                    <select
+                        id="sel_sampler"
+                        name="sel_sampler"
+                        tal:define="
+                            samplers python:view.getSamplers();
+                            samplers_keys python:samplers.keys()">
+                        <option tal:repeat="sampler_key samplers_keys"
+                            value="python:samplers[sampler_key]['uid']"
+                            tal:content="python:samplers[sampler_key]['name']"/>
+                    </select>
+                    <select
+                        id="sel_client"
+                        name="sel_client"
+                        tal:define="
+                            clients python:view.getClients();
+                            clients_keys python:clients.keys()">
+                        <option tal:repeat="client_key clients_keys"
+                            value="python:clients[client_key]['uid']"
+                            tal:content="python:clients[client_key]['name']"/>
+                    </select>
+                    <input type="button" id='filter_button' i18n:translate="" value="Filter"/>
+                </div>
             </div>
             <div id='sr_publish_buttons'>
                 <input type="button" id='cancel_button' i18n:translate="" value="Cancel"/>&nbsp;&nbsp;
@@ -196,6 +220,11 @@
         </style>
         <style id='report-style' tal:content='structure python:view.getCSS()'></style>
         <style id='layout-style'></style>
+        <div id='report'>
+        <div
+            class="report_body"
+            tal:content='structure python:view.getFormTemplate()'></div>
+        </div>
         <div id="my_mm" style="height:1mm;display:none"></div>
     </div>
 </body>

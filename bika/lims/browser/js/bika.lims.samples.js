@@ -29,15 +29,12 @@ function SamplesFolderView() {
                 s_uids.push(uid);
             }
         });
+        // Getting the url
+        var href = $('a.context_action_link').attr('href');
         if (s_uids.length < 1) {
-            // give an error
-            var message = "At least one selected item in 'scheduled" +
-                " sampling' state or 'to be sampled' state is needed to print";
-            window.bika.lims.portalMessage(message);
+            window.location.href = $('base').attr('href') + href;
         }
         else {
-            // Getting the url
-            var href = $('a.context_action_link').attr('href');
             href += "?items=";
             // Add the uids in the url and redirect
             window.location.href = $('base').attr('href') + href + s_uids.join();
