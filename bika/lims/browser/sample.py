@@ -4,10 +4,14 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
+from Products.CMFPlone.utils import safe_unicode
+from plone.resource.utils import iterDirectoriesOfType
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import EditSample
 from bika.lims import PMF
+from bika.lims.utils import to_utf8, createPdf
+from bika.lims import logger
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.browser.analyses import AnalysesView
@@ -28,8 +32,14 @@ from zope.component import queryUtility
 from zope.interface import implements
 from Products.ZCTextIndex.ParseTree import ParseError
 import json
+import os
+import glob
 import plone
 import urllib
+import traceback
+import App
+import tempfile
+
 
 class SamplePartitionsView(BikaListingView):
     def __init__(self, context, request):
@@ -400,7 +410,15 @@ class SamplesView(BikaListingView):
                               'path': {'query': "/",
                                        'level': 0 }
                               }
-        self.context_actions = {}
+        # So far we will only print if the sampling workflow is activated
+        if self.context.bika_setup.getSamplingWorkflowEnabled():
+            self.context_actions = {
+                _('Print sample sheets'): {
+                    'url': 'print_sampling_sheets',
+                    'icon': '++resource++bika.lims.images/print_32.png'}
+                    }
+        else:
+                self.context_actions = {}
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_column = True
@@ -463,6 +481,10 @@ class SamplesView(BikaListingView):
                                'input_width': '10'},
             'getSampler': {'title': _('Sampler'),
                            'toggle': SamplingWorkflowEnabled},
+            'getScheduledSamplingSampler': {
+                'title': _('Sampler for scheduled sampling'),
+                'toggle': self.context.bika_setup.getScheduleSamplingEnabled()
+                },
             'getDatePreserved': {'title': _('Date Preserved'),
                                  'toggle': user_is_preserver,
                                  'input_class': 'datepicker_nofuture',
@@ -493,16 +515,39 @@ class SamplesView(BikaListingView):
                          'SamplingDeviation',
                          'AdHoc',
                          'getSamplingDate',
+                         'getScheduledSamplingSampler',
                          'getDateSampled',
                          'getSampler',
                          'getDatePreserved',
                          'getPreserver',
                          'DateReceived',
                          'state_title']},
+            {'id': 'to_be_sampled',
+             'title': _('To be sampled'),
+             'contentFilter': {'review_state': ('to_be_sampled',
+                                                'scheduled_sampling'),
+                               'cancellation_state': 'active',
+                               'sort_on': 'created',
+                               'sort_order': 'reverse'},
+             'columns': ['getSampleID',
+                         'Client',
+                         'Requests',
+                         'getClientReference',
+                         'getClientSampleID',
+                         'getSamplingDate',
+                         'getScheduledSamplingSampler',
+                         'getDateSampled',
+                         'getSampler',
+                         'getPreserver',
+                         'getSampleTypeTitle',
+                         'getSamplePointTitle',
+                         'state_title'],
+             'transitions': [
+                {'id': 'schedule_sampling'}, {'id': 'sample'}],
+             },
             {'id':'sample_due',
              'title': _('Due'),
-             'contentFilter': {'review_state': ('to_be_sampled',
-                                                'to_be_preserved',
+             'contentFilter': {'review_state': ('to_be_preserved',
                                                 'sample_due'),
                                'sort_on':'created',
                                'sort_order': 'reverse'},
@@ -514,6 +559,8 @@ class SamplesView(BikaListingView):
                          'getClientReference',
                          'getClientSampleID',
                          'getSamplingDate',
+                         'getScheduledSamplingSampler',
+                         'getScheduledSamplingSampler',
                          'getDateSampled',
                          'getSampler',
                          'getDatePreserved',
@@ -542,6 +589,7 @@ class SamplesView(BikaListingView):
                          'SamplingDeviation',
                          'AdHoc',
                          'getSamplingDate',
+                         'getScheduledSamplingSampler',
                          'getDateSampled',
                          'getSampler',
                          'getDatePreserved',
@@ -565,6 +613,7 @@ class SamplesView(BikaListingView):
                          'SamplingDeviation',
                          'AdHoc',
                          'getSamplingDate',
+                         'getScheduledSamplingSampler',
                          'getDateSampled',
                          'getSampler',
                          'getDatePreserved',
@@ -588,6 +637,7 @@ class SamplesView(BikaListingView):
                          'SamplingDeviation',
                          'AdHoc',
                          'getSamplingDate',
+                         'getScheduledSamplingSampler',
                          'getDateSampled',
                          'getSampler',
                          'getDatePreserved',
@@ -612,6 +662,7 @@ class SamplesView(BikaListingView):
                          'SamplingDeviation',
                          'AdHoc',
                          'getSamplingDate',
+                         'getScheduledSamplingSampler',
                          'DateReceived',
                          'getDateSampled',
                          'getSampler',
@@ -694,25 +745,42 @@ class SamplesView(BikaListingView):
                 sampler = ''
             items[x]['getDateSampled'] = datesampled
             items[x]['getSampler'] = sampler
-
-            # sampling workflow - inline edits for Sampler and Date Sampled
+            # sampling workflow - inline edits for Sampler, Date Sampled and
+            # Scheduled Sampling Sampler
             checkPermission = self.context.portal_membership.checkPermission
             state = workflow.getInfoFor(obj, 'review_state')
-            if state == 'to_be_sampled' \
-                    and checkPermission(SampleSample, obj) \
-                    and not samplingdate > DateTime():
-                items[x]['required'] = ['getSampler', 'getDateSampled']
-                items[x]['allow_edit'] = ['getSampler', 'getDateSampled']
+            if state in ['to_be_sampled', 'scheduled_sampling']:
+                items[x]['required'] = []
+                items[x]['allow_edit'] = []
+                items[x]['choices'] = {}
                 samplers = getUsers(obj, ['Sampler', 'LabManager', 'Manager'])
-                getAuthenticatedMember = self.context.portal_membership.getAuthenticatedMember
-                username = getAuthenticatedMember().getUserName()
-                users = [({'ResultValue': u, 'ResultText': samplers.getValue(u)})
-                         for u in samplers]
-                items[x]['choices'] = {'getSampler': users}
-                Sampler = sampler and sampler or \
-                    (username in samplers.keys() and username) or ''
-                items[x]['getSampler'] = Sampler
-
+                users = [(
+                    {'ResultValue': u, 'ResultText': samplers.getValue(u)})
+                    for u in samplers]
+                # both situations
+                if checkPermission(SampleSample, obj) or\
+                        self._schedule_sampling_permissions():
+                    items[x]['required'].append('getSampler')
+                    items[x]['allow_edit'].append('getSampler')
+                    items[x]['choices']['getSampler'] = users
+                # sampling permissions
+                if checkPermission(SampleSample, obj):
+                    getAuthenticatedMember = self.context.\
+                        portal_membership.getAuthenticatedMember
+                    username = getAuthenticatedMember().getUserName()
+                    Sampler = sampler and sampler or \
+                        (username in samplers.keys() and username) or ''
+                    items[x]['required'].append('getDateSampled')
+                    items[x]['allow_edit'].append('getDateSampled')
+                    items[x]['getSampler'] = Sampler
+                # coordinator permissions
+                if self._schedule_sampling_permissions():
+                    items[x]['required'].append('getSamplingDate')
+                    items[x]['allow_edit'].append('getSamplingDate')
+                    items[x]['required'].append('getScheduledSamplingSampler')
+                    items[x]['allow_edit'].append(
+                        'getScheduledSamplingSampler')
+                    items[x]['choices']['getScheduledSamplingSampler'] = users
             # These don't exist on samples
             # the columns exist just to set "preserve" transition from lists.
             # XXX This should be a list of preservers...
@@ -738,10 +806,11 @@ class SamplesView(BikaListingView):
 
         # Hide Preservation/Sampling workflow actions if the edit columns
         # are not displayed.
+        # Hide schedule_sampling if user has no rights
         toggle_cols = self.get_toggle_cols()
         new_states = []
         for i,state in enumerate(self.review_states):
-            if state['id'] == self.review_state:
+            if state['id'] == self.review_state.get('id', ''):
                 if 'getSampler' not in toggle_cols \
                    or 'getDateSampled' not in toggle_cols:
                     if 'hide_transitions' in state:
@@ -754,10 +823,431 @@ class SamplesView(BikaListingView):
                         state['hide_transitions'].append('preserve')
                     else:
                         state['hide_transitions'] = ['preserve',]
+                # Check if the user has the rights to schedule samplings and
+                # the check-box 'ScheduleSamplingEnabled' in bikasetup is set
+                if self._schedule_sampling_permissions():
+                    # Show the workflow transition button 'schedule_sampling'
+                    pass
+                else:
+                    # Hiddes the button
+                    state['hide_transitions'] = ['schedule_sampling', ]
             new_states.append(state)
         self.review_states = new_states
 
         return items
+
+    def _schedule_sampling_permissions(self):
+        """
+        This function checks if all the 'schedule a sampling' conditions
+        are met
+        """
+        mtool = getToolByName(self.context, 'portal_membership')
+        member = mtool.getAuthenticatedMember()
+        roles = member.getRoles()
+        return self.context.bika_setup.getScheduleSamplingEnabled() and\
+            ('SamplingCoordinator' in roles or 'Manager' in roles)
+
+
+class SamplesPrint(BrowserView):
+    """
+    This class manages all the logic needed to create a form which is going
+    to be printed.
+    The sampler will be able to print the form and take it to
+    the defined sampling points.
+    The class receives the samples selected in the SamplesView in order to
+    generate the form.
+    If no samples are selected, the system will get all the samples with the
+    states 'to_be_sampled' or 'scheduled_sampling'.
+    The system will gather field analysis services using the following pattern:
+
+    Sampler_1 - Client_1 - Date_1 - SamplingPoint_1 - Field_AS_1.1
+                                                    - Field_AS_1.2
+                                  - SamplingPoint_2 - Field_AS_2.1
+                         - Date_3 - SamplingPoint_1 - Field_AS_3.1
+              - Client_2 - Date_1 - SamplingPoint_1 - Field_AS_4.1
+
+    Sampler_2 - Client_1 - Date_1 - SamplingPoint_1 - Field_AS_5.1
+    """
+    template = ViewPageTemplateFile("templates/samples_print_form.pt")
+    _DEFAULT_TEMPLATE = 'default_form.pt'
+    _TEMPLATES_DIR = 'templates/samplesprint'
+    _TEMPLATES_ADDON_DIR = 'samples'
+    # selected samples
+    _items = []
+    _filter_sampler = ''
+    _filter_client = ''
+
+    def __call__(self):
+        if self.context.portal_type == 'SamplesFolder':
+            if self.request.get('items', ''):
+                uids = self.request.get('items').split(',')
+                uc = getToolByName(self.context, 'uid_catalog')
+                self._items = [obj.getObject() for obj in uc(UID=uids)]
+            else:
+                catalog = getToolByName(self.context, 'portal_catalog')
+                contentFilter = {
+                    'portal_type': 'Sample',
+                    'sort_on': 'created',
+                    'sort_order': 'reverse',
+                    'review_state': ['to_be_sampled', 'scheduled_sampling'],
+                    'path': {'query': "/", 'level': 0}
+                    }
+                brains = catalog(contentFilter)
+                self._items = [obj.getObject() for obj in brains]
+        else:
+            # Warn and redirect to referer
+            logger.warning(
+                'PrintView: type not allowed: %s \n' % self.context.portal_type)
+            self.destination_url = self.request.get_header(
+                "referer", self.context.absolute_url())
+        # setting the filters
+        self._filter_sampler = self.request.form.get('sampler', '')
+        self._filter_client = self.request.form.get('client', '')
+
+        # Do print?
+        if self.request.form.get('pdf', '0') == '1':
+            response = self.request.response
+            response.setHeader("Content-type", "application/pdf")
+            response.setHeader("Content-Disposition", "inline")
+            response.setHeader("filename", "temp.pdf")
+            return self.pdfFromPOST()
+        else:
+            return self.template()
+
+    def _rise_error(self):
+        """
+        Give the error missage
+        """
+        tbex = traceback.format_exc()
+        logger.error(
+            'An error occurred while rendering the view: %s' % tbex)
+        self.destination_url = self.request.get_header(
+            "referer", self.context.absolute_url())
+
+    def getSortedFilteredSamples(self):
+        """
+        This function returns all the samples sorted and filtered
+        This function returns a dictionary as:
+        {
+            sampler1:{
+                info:{,},
+                client1:{
+                    info:{,},
+                    date1:{
+                        [sample_tables]
+                    },
+                    no_date:{
+                        [sample_tables]
+                    }
+                }
+            }
+        }
+        """
+        samples = self._items
+        result = {}
+        for sample in samples:
+            pc = getToolByName(self, 'portal_catalog')
+            # Getting the filter keys
+            sampler_id = sample.getScheduledSamplingSampler()
+            sampler_brain = pc(
+                portal_type='LabContact', getUsername=sampler_id)
+            sampler_obj = sampler_brain[0].getObject()\
+                if sampler_brain else None
+            if sampler_obj:
+                sampler_uid = sampler_obj.UID()
+                sampler_name = sampler_obj.getFullname()
+            else:
+                sampler_uid = 'no_sampler'
+                sampler_name = ''
+            client_uid = sample.getClientUID()
+            # apply sampler filter
+
+            if (self._filter_sampler == '' or
+                    sampler_uid == self._filter_sampler) and \
+                (self._filter_client == '' or
+                    client_uid == self._filter_client):
+                date = \
+                    self.ulocalized_time(
+                        sample.getSamplingDate(), long_format=0)\
+                    if sample.getSamplingDate() else ''
+                # Filling the dictionary
+                if sampler_uid in result.keys():
+                    client_d = result[sampler_uid].get(client_uid, {})
+                    # Always write the info again.
+                    # Is it faster than doing a check every time?
+                    client_d['info'] = {'name': sample.getClientTitle()}
+                    if date:
+                        c_l = client_d.get(date, [])
+                        c_l.append(
+                            self._sample_table_builder(sample))
+                        client_d[date] = c_l
+                    else:
+                        c_l = client_d.get('no_date', [])
+                        c_l.append(
+                            self._sample_table_builder(sample))
+                        client_d[date] = c_l
+                else:
+                    # This sampler isn't in the dict yet.
+                    # Write the client dict
+                    client_dict = {
+                        'info': {
+                            'name': sample.getClientTitle()
+                            },
+                        }
+                    # If the sample has a sampling date, build the dictionary
+                    # which emulates the table inside a list
+                    if date:
+                        client_dict[date] = [
+                            self._sample_table_builder(sample)]
+                    else:
+                        client_dict['no_date'] = [
+                            self._sample_table_builder(sample)]
+                    # Adding the client dict inside the sampler dict
+                    result[sampler_uid] = {
+                        'info': {
+                            'obj': sampler_obj,
+                            'id': sampler_id,
+                            'name': sampler_name
+                            },
+                        client_uid: client_dict
+                        }
+        return result
+
+    def _sample_table_builder(self, sample):
+        """
+        This function returns a list of dictionaries sorted by Sample
+        Partition/Container. It emulates the columns/rows of a table.
+        [{'requests and partition info'}, ...]
+        """
+        # rows will contain the data for each html row
+        rows = []
+        # columns will be used to sort and define the columns
+        columns = {
+            'column_order': [
+                'sample_id',
+                'sample_type',
+                'sampling_point',
+                'sampling_date',
+                'partition',
+                'container',
+                'analyses',
+                ],
+            'titles': {
+                'sample_id': _('Sample ID'),
+                'sample_type': _('Sample Type'),
+                'sampling_point': _('Sampling Point'),
+                'sampling_date': _('Sampling Date'),
+                'partition': _('Partition'),
+                'container': _('Container'),
+                'analyses': _('Analysis'),
+            }
+        }
+        ars = sample.getAnalysisRequests()
+        for ar in ars:
+            arcell = False
+            numans = len(ar.getAnalyses())
+            for part in ar.getPartitions():
+                partcell = False
+                container = part.getContainer().title \
+                    if part.getContainer() else ''
+                partans = part.getAnalyses()
+                numpartans = len(partans)
+                for analysis in partans:
+                    service = analysis.getService()
+                    if service.getPointOfCapture() == 'field':
+                        row = {
+                            'sample_id': {
+                                'hidden': True if arcell else False,
+                                'rowspan': numans,
+                                'value': ar.getSample().id,
+                                },
+                            'sample_type': {
+                                'hidden': True if arcell else False,
+                                'rowspan': numans,
+                                'value': ar.getSampleType().title,
+                                },
+                            'sampling_point': {
+                                'hidden': True if arcell else False,
+                                'rowspan': numans,
+                                'value':
+                                    ar.getSamplePoint().title
+                                    if ar.getSamplePoint() else '',
+                                },
+                            'sampling_date': {
+                                'hidden': True if arcell else False,
+                                'rowspan': numans,
+                                'value':  self.ulocalized_time(sample.getSamplingDate(), long_format=0),
+                                },
+                            'partition': {
+                                'hidden': True if partcell else False,
+                                'rowspan': numpartans,
+                                'value': part.id,
+                                },
+                            'container': {
+                                'hidden': True if partcell else False,
+                                'rowspan': numpartans,
+                                'value': container,
+                                },
+                            'analyses': {
+                                'title': service.title,
+                                'units': service.getUnit(),
+                            },
+                        }
+                        rows.append(row)
+                        arcell = True
+                        partcell = True
+
+        # table will contain the data that from where the html
+        # will take the info
+        table = {
+            'columns': columns,
+            'rows': rows,
+        }
+        return table
+
+    def getAvailableTemplates(self):
+        """
+        Returns a DisplayList with the available templates found in
+        browser/templates/samplesprint
+        """
+        this_dir = os.path.dirname(os.path.abspath(__file__))
+        templates_dir = os.path.join(this_dir, self._TEMPLATES_DIR)
+        tempath = '%s/%s' % (templates_dir, '*.pt')
+        templates = [t.split('/')[-1] for t in glob.glob(tempath)]
+        out = []
+        for template in templates:
+            out.append({'id': template, 'title': template[:-3]})
+        for templates_resource in iterDirectoriesOfType(
+                self._TEMPLATES_ADDON_DIR):
+            prefix = templates_resource.__name__
+            templates = [
+                tpl for tpl in templates_resource.listDirectory()
+                if tpl.endswith('.pt')
+                ]
+            for template in templates:
+                out.append({
+                    'id': '{0}:{1}'.format(prefix, template),
+                    'title': '{0} ({1})'.format(template[:-3], prefix),
+                })
+        return out
+
+    def getFormTemplate(self):
+        """Returns the selected samples rendered using the template
+            specified in the request (param 'template').
+        """
+        templates_dir = self._TEMPLATES_DIR
+        embedt = self.request.get('template', self._DEFAULT_TEMPLATE)
+        if embedt.find(':') >= 0:
+            prefix, embedt = embedt.split(':')
+            templates_dir = queryResourceDirectory(
+                self._TEMPLATES_ADDON_DIR, prefix).directory
+        embed = ViewPageTemplateFile(os.path.join(templates_dir, embedt))
+        reptemplate = ""
+        try:
+            reptemplate = embed(self)
+        except:
+            tbex = traceback.format_exc()
+            reptemplate = \
+                "<div class='error-print'>%s '%s':<pre>%s</pre></div>" %\
+                (_("Unable to load the template"), embedt, tbex)
+        return reptemplate
+
+    def getCSS(self):
+        """ Returns the css style to be used for the current template.
+            If the selected template is 'default.pt', this method will
+            return the content from 'default.css'. If no css file found
+            for the current template, returns empty string
+        """
+        template = self.request.get('template', self._DEFAULT_TEMPLATE)
+        content = ''
+        if template.find(':') >= 0:
+            prefix, template = template.split(':')
+            resource = queryResourceDirectory(
+                self._TEMPLATES_ADDON_DIR, prefix)
+            css = '{0}.css'.format(template[:-3])
+            if css in resource.listDirectory():
+                content = resource.readFile(css)
+        else:
+            this_dir = os.path.dirname(os.path.abspath(__file__))
+            templates_dir = os.path.join(this_dir, self._TEMPLATES_DIR)
+            path = '%s/%s.css' % (templates_dir, template[:-3])
+            with open(path, 'r') as content_file:
+                content = content_file.read()
+        return content
+
+    def pdfFromPOST(self):
+        """
+        It returns the pdf with the printed form
+        """
+        html = self.request.form.get('html')
+        style = self.request.form.get('style')
+        reporthtml = "<html><head>%s</head><body><div id='report'>%s</body></html>" % (style, html)
+        return self.printFromHTML(safe_unicode(reporthtml).encode('utf-8'))
+
+    def printFromHTML(self, code_html):
+        """
+        Tis function generates a pdf file from the html
+        :code_html: the html to use to generate the pdf
+        """
+        # HTML written to debug file
+        debug_mode = App.config.getConfiguration().debug_mode
+        if debug_mode:
+            tmp_fn = tempfile.mktemp(suffix=".html")
+            open(tmp_fn, "wb").write(code_html)
+
+        # Creates the pdf
+        # we must supply the file ourself so that createPdf leaves it alone.
+        pdf_fn = tempfile.mktemp(suffix=".pdf")
+        pdf_report = createPdf(htmlreport=code_html, outfile=pdf_fn)
+        return pdf_report
+
+    def getSamplers(self):
+        """
+        Returns a dictionary of dictionaries with info about the samplers
+        defined in each sample.
+        {
+            'uid': {'id':'xxx', 'name':'xxx'},
+            'uid': {'id':'xxx', 'name':'xxx'}, ...}
+        """
+        samplers = {}
+        pc = getToolByName(self, 'portal_catalog')
+        for sample in self._items:
+            sampler_id = sample.getScheduledSamplingSampler()
+            sampler_brain = pc(
+                portal_type='LabContact', getUsername=sampler_id)
+            sampler_obj = sampler_brain[0].getObject()\
+                if sampler_brain else None
+            if sampler_obj and\
+                    sampler_obj.UID() not in samplers.keys():
+                samplers[sampler_obj.UID()] = {
+                    'uid': sampler_obj.UID(),
+                    'name': sampler_obj.getFullname(),
+                    'obj': sampler_obj
+                }
+        return samplers
+
+    def getClients(self):
+        """
+        Returns a dictionary of dictionaries with info about the clients
+        related to the selected samples.
+        {
+            'uid': {'name':'xxx'},
+            'uid': {'name':'xxx'}, ...}
+        """
+        clients = {}
+        for sample in self._items:
+            if sample.getClientUID() not in clients.keys():
+                clients[sample.getClientUID()] = {
+                    'name': sample.getClientTitle()
+                }
+        return clients
+
+    def getLab(self):
+        return self.context.bika_setup.laboratory.getLabURL()
+
+    def getLogo(self):
+        portal = self.context.portal_url.getPortalObject()
+        return "%s/logo_print.png" % portal.absolute_url()
 
 
 class ajaxGetSampleTypeInfo(BrowserView):

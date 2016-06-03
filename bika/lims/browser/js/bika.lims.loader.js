@@ -79,10 +79,12 @@ window.bika.lims.controllers =  {
         ['ReferenceSampleAnalysesView'],
 
 
-    // Samples
+    // Sample
     ".portaltype-sample":
         ['SampleView'],
-
+    // Samples fodler
+    ".portaltype-samplesfolder":
+        ['SamplesFolderView'],
 
     // Analysis Request Templates
     ".portaltype-artemplate.template-base_edit":
@@ -119,6 +121,10 @@ window.bika.lims.controllers =  {
 
     "#ar_publish_container":
         ['AnalysisRequestPublishView'],
+
+    // Samples PrintView
+     "#preview_container.samples_print_preview":
+         ['FormPrintView'],
 
     // Supply Orders
     ".portaltype-supplyorder.template-base_edit":

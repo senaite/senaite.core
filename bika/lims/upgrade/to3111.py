@@ -22,8 +22,8 @@ def upgrade(tool):
     http://stackoverflow.com/questions/7821498/is-there-a-good-reference-list-for-the-names-of-the-genericsetup-import-steps
     """
     setup = portal.portal_setup
-    # setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
-    # setup.runImportStepFromProfile('profile-bika.lims:default', 'jsregistry')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'jsregistry')
     # setup.runImportStepFromProfile('profile-bika.lims:default', 'cssregistry')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'workflow-csv')
     # setup.runImportStepFromProfile('profile-bika.lims:default', 'factorytool')
@@ -31,10 +31,30 @@ def upgrade(tool):
     # setup.runImportStepFromProfile('profile-bika.lims:default', 'catalog')
     # setup.runImportStepFromProfile('profile-bika.lims:default', 'propertiestool')
     # setup.runImportStepFromProfile('profile-bika.lims:default', 'skins')
-
+    create_samplingcoordinator(portal)
     """Update workflow permissions
     """
     wf = getToolByName(portal, 'portal_workflow')
     wf.updateRoleMappings()
 
     return True
+
+
+def create_samplingcoordinator(portal):
+    # Creates the new group
+    portal_groups = portal.portal_groups
+    if 'SamplingCoordinator'\
+            not in portal.acl_users.portal_role_manager.listRoleIds():
+        portal.acl_users.portal_role_manager.addRole('SamplingCoordinator')
+    # add roles to the portal
+    portal._addRole('SamplingCoordinator')
+    if 'SamplingCoordinators' not in portal_groups.listGroupIds():
+        portal_groups.addGroup(
+            'SamplingCoordinators', title="Sampling Coordinators",
+            roles=['SamplingCoordinator'])
+    mp = portal.manage_permission
+    mp(ScheduleSampling, ['Manager', 'SamplingCoordinator'], 0)
+    # Add the index for the catalog
+    bc = getToolByName(portal, 'bika_catalog', None)
+    if 'getScheduledSamplingSampler' not in bc.indexes():
+        bc.addIndex('getScheduledSamplingSampler', 'FieldIndex')

@@ -624,3 +624,22 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             ar.setChildAnalysisRequest(newar)
         newar.setParentAnalysisRequest(ar)
         return newar
+
+    def workflow_action_schedule_sampling(self):
+        """
+        This function prevent the transition if the fields "SamplingDate"
+        and "ScheduledSamplingSampler" are uncompleted.
+        :return: bool
+        """
+        if self.context.getScheduledSamplingSampler() and\
+                self.context.getSamplingDate():
+            doActionFor(self.context, 'schedule_sampling')
+            self.request.response.redirect(self.context.absolute_url())
+            return True
+        message = _(
+            "'Sampling date' and 'Define the Sampler for the" +
+            " scheduled sampling' must be completed and saved in order to" +
+            " schedule a sampling")
+        self.context.plone_utils.addPortalMessage(message, 'error')
+        self.request.response.redirect(self.context.absolute_url())
+        return False

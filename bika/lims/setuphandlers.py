@@ -124,7 +124,8 @@ class BikaGenerator:
                      'Member',
                      'Reviewer',
                      'RegulatoryInspector',
-                     'Client'):
+                     'Client',
+                     'SamplingCoordinator'):
             if role not in portal.acl_users.portal_role_manager.listRoleIds():
                 portal.acl_users.portal_role_manager.addRole(role)
             # add roles to the portal
@@ -176,6 +177,11 @@ class BikaGenerator:
         if 'RegulatoryInspectors' not in portal_groups.listGroupIds():
             portal_groups.addGroup('RegulatoryInspectors', title="Regulatory Inspectors",
                 roles=['Member', 'RegulatoryInspector'])
+
+        if 'SamplingCoordinators' not in portal_groups.listGroupIds():
+            portal_groups.addGroup(
+                'SamplingCoordinators', title="Sampling Coordinators",
+                roles=['SamplingCoordinator'])
 
     def setupPermissions(self, portal):
         """ Set up some suggested role to permission mappings.
@@ -237,6 +243,7 @@ class BikaGenerator:
         mp(VerifyOwnResults, ['Manager', ], 1)
         mp(ViewRetractedAnalyses, ['Manager', 'LabManager', 'LabClerk', 'Analyst', ], 0)
 
+        mp(ScheduleSampling, ['Manager', 'SamplingCoordinator'], 0)
         mp(SampleSample, ['Manager', 'LabManager', 'Sampler'], 0)
         mp(PreserveSample, ['Manager', 'LabManager', 'Preserver'], 0)
         mp(ReceiveSample, ['Manager', 'LabManager', 'LabClerk', 'Sampler'], 1)
@@ -631,6 +638,7 @@ class BikaGenerator:
         addIndex(bc, 'getSamplePointTitle', 'FieldIndex')
         addIndex(bc, 'getSamplePointUID', 'FieldIndex')
         addIndex(bc, 'getSampler', 'FieldIndex')
+        addIndex(bc, 'getScheduledSamplingSampler', 'FieldIndex')
         addIndex(bc, 'getSampleTypeTitle', 'FieldIndex')
         addIndex(bc, 'getSampleTypeUID', 'FieldIndex')
         addIndex(bc, 'getSampleUID', 'FieldIndex')
@@ -874,4 +882,3 @@ def setupVarious(context):
     setup.runImportStepFromProfile(
             'profile-plone.app.jquery:default', 'jsregistry')
     # setup.runImportStepFromProfile('profile-plone.app.jquerytools:default', 'jsregistry')
-
