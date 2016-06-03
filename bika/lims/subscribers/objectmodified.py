@@ -1,6 +1,7 @@
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore import permissions
-from bika.lims.permissions import ManageSupplyOrders
+from bika.lims.permissions import ManageSupplyOrders, ManageLoginDetails
+
 
 def ObjectModifiedEventHandler(obj, event):
     """ Various types need automation on edit.
@@ -41,9 +42,24 @@ def ObjectModifiedEventHandler(obj, event):
         mp('Access contents information', ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner'], 0)
 
     elif obj.portal_type == 'Contact':
+        # Contacts need to be given "Owner" local-role on their Client.
         mp = obj.manage_permission
         mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Owner', 'Analyst', 'Sampler', 'Preserver'], 0)
-        mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
+        mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner', 'LabClerk'], 0)
+        mp(ManageLoginDetails, ['Manager', 'LabManager', 'LabClerk'], 0)
+        # Verify that the Contact details are the same as the Plone user.
+        contact_username = obj.Schema()['Username'].get(obj)
+        if contact_username:
+            contact_email = obj.Schema()['EmailAddress'].get(obj)
+            contact_fullname = obj.Schema()['Fullname'].get(obj)
+            mt = getToolByName(obj, 'portal_membership')
+            member = mt.getMemberById(contact_username)
+            if member:
+                properties = {'username':contact_username,
+                              'email': contact_email,
+                              'fullname': contact_fullname}
+                member.setMemberProperties(properties)
+
     elif obj.portal_type == 'AnalysisCategory':
         for analysis in obj.getBackReferences('AnalysisServiceAnalysisCategory'):
             analysis.reindexObject(idxs=["getCategoryTitle", "getCategoryUID", ])

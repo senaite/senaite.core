@@ -1,6 +1,14 @@
-3.1.x Long Term Support (LTS)
+3.1.12 (unreleased)
 -----------------------------
+HEALTH-569 Bar code printing not working on sample registration
+
+3.1.11 (2016-04-22)
+-----------------------------
+LIMS-2252: Partitions not submitted when creating AR if the form is submitted before partitions are calculated
+LIMS-2223: Saving a recordswidget as hidden fails
 LIMS-2225: Formatted results not displayed properly in Worksheet's transposed layout
+LIMS-2001: Duplicate for one analysis only
+LIMS-1809: Typos. Perdiod an missing spaces
 LIMS-2221: Decimal mark doesn't work in Sci Notation
 LIMS-2219: Using a SciNotation diferent from 'aE+b / aE-b' throws an error
 LIMS-2220: Raw display of exponential notations in results manage views
@@ -17,9 +25,7 @@ LIMS-1807: Validation for Start Date - End date relationship while creating invo
 LIMS-1991: Sort Order for Analysis Categories and Services
 LIMS-1521: Date verified column for AR lists
 LIMS-2194: Error when submitting a result
-
-3.1.11 (2016-01-25)
--------------------
+LIMS-2169: Cannot start instance
 WINE-125: Client users receive unauthorized when viewing some published ARs
 
 3.1.10 (2016-01-13)
@@ -77,6 +83,7 @@ LIMS-2149: Missing analyses can cause error accessing worksheet
 LIMS-1521: Date verified column for AR lists
 LIMS-2015: Column spacing on Client look-up
 LIMS-1807: Validation for Start Date - End Date relationship
+
 3.1.9 (2015-10-8)
 ------------------
 LIMS-2068: LIMS-2068 Urgent. Analysis Catgories don't expand

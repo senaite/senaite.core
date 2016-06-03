@@ -2113,6 +2113,11 @@ function AnalysisRequestAddByCol() {
             sampletype: st_uid,
             _authenticator: $("input[name='_authenticator']").val()
         }
+
+        // HEALTH-593 Partitions not submitted when creating AR
+        // Disable the Add button until the partitions get calculated
+        $('input[name="save_button"]').prop('disabled', true);
+
         window.jsonapi_cache = window.jsonapi_cache || {}
         var cacheKey = $.param(request_data)
         if (typeof window.jsonapi_cache[cacheKey] === "undefined") {
@@ -2130,6 +2135,9 @@ function AnalysisRequestAddByCol() {
                                window.jsonapi_cache[cacheKey] = data
                                bika.lims.ar_add.state[arnum]['Partitions'] = data['parts']
                            }
+                           // HEALTH-593 Partitions not submitted when creating AR
+                           // Enable the Add button, partitions calculated
+                           $('input[name="save_button"]').prop('disabled', false);
                            d.resolve()
                        }
                    })
@@ -2137,6 +2145,9 @@ function AnalysisRequestAddByCol() {
         else {
             var data = window.jsonapi_cache[cacheKey]
             bika.lims.ar_add.state[arnum]['Partitions'] = data['parts']
+            // HEALTH-593 Partitions not submitted when creating AR
+            // Enable the Add button, partitions calculated
+            $('input[name="save_button"]').prop('disabled', false);
             d.resolve()
         }
         return d.promise()
@@ -2404,11 +2415,11 @@ function AnalysisRequestAddByCol() {
                             window.bika.lims.portalMessage(msg)
                             window.scroll(0, 0)
                         }
-                        else if (data['labels']) {
+                        else if (data['stickers']) {
                             var destination = window.location.href.split("/portal_factory")[0]
-                            var ars = data['labels']
-                            var labelsize = data['labelsize']
-                            var q = "/sticker?size=" + labelsize + "&items=" + ars.join(",")
+                            var ars = data['stickers']
+                            var stickertemplate = data['stickertemplate']
+                            var q = "/sticker?autoprint=1&template=" + stickertemplate + "&items=" + ars.join(",")
                             window.location.replace(destination + q)
                         }
                         else {
