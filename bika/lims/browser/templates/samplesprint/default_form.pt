@@ -18,15 +18,17 @@
             tal:repeat="sampler_uid python:dictionaries.keys()">
             <!-- Client sections -->
             <div class="client_section"
-                tal:repeat="client_uid python:dictionaries[sampler_uid]">
+                tal:repeat="client_uid python:dictionaries[sampler_uid].keys()">
                 <div class="dates_section"
-                    tal:repeat="date python:dictionaries[sampler_uid][client_uid]">
+                    tal:condition="python:client_uid!='info'"
+                    tal:repeat="date python:dictionaries[sampler_uid][client_uid].keys()">
                     <!-- table section -->
                     <tal:table
+                        tal:condition="python:date!='info'"
                         tal:define="tables python:dictionaries[sampler_uid][client_uid][date]">
                     <table class="samples-grid"
                         tal:repeat="table tables">
-                        <!--thead>
+                        <thead>
                             <tr>
                                 <th i18n:translate=""
                                     tal:repeat="column_id table/columns/column_order"
@@ -70,7 +72,7 @@
                             </tal:rowcell>
                             </tr>
                         </tal:rowsample>
-                    </tbody-->
+                    </tbody>
                     </table>
                     </tal:table>
                 </div>

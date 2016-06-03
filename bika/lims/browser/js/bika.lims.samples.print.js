@@ -1,7 +1,7 @@
 /**
  * Controller class for Samples Print View
  */
-function FormPrintViews() {
+function FormPrintView() {
     "use strict";
     var that = this;
     var referrer_cookie_name = '_pv';
@@ -123,7 +123,7 @@ function FormPrintViews() {
         })
         .always(function(data) {
             var htmldata = data;
-            cssdata = $(htmldata).find('#report-style').html();
+            var cssdata = $(htmldata).find('#report-style').html();
             $('#report-style').html(cssdata);
             htmldata = $(htmldata).find('#report').html();
             $('#report').html(htmldata);
