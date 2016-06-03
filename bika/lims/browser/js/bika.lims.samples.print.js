@@ -1,7 +1,7 @@
 /**
  * Controller class for Samples Print View
  */
-function FormPrintView() {
+function FormPrintViews() {
     "use strict";
     var that = this;
     var referrer_cookie_name = '_pv';

@@ -79,8 +79,8 @@ function SampleView() {
 
         TODO This should be using content_status_modify!  modifying the href
         is silly.*/
-        var url = $('#workflow-transition-schedule_sampling').attr('href');
-        var new_url = url.replace("content_status_modify", "workflow_action");
+        var old_url = $('#workflow-transition-schedule_sampling').attr('href');
+        var new_url = old_url.replace("content_status_modify", "workflow_action");
         $('#workflow-transition-schedule_sampling').attr('href', new_url);
         // When user clicks on the transition
         $('#workflow-transition-schedule_sampling').click(function(){

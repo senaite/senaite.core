@@ -891,7 +891,7 @@ class SamplesPrint(BrowserView):
         else:
             # Warn and redirect to referer
             logger.warning(
-                'PrintView: type not allowed: %s' % self.context.portal_type)
+                'PrintView: type not allowed: %s \n' % self.context.portal_type)
             self.destination_url = self.request.get_header(
                 "referer", self.context.absolute_url())
 
@@ -904,6 +904,16 @@ class SamplesPrint(BrowserView):
             return self.pdfFromPOST()
         else:
             return self.template()
+
+    def _rise_error(self):
+        """
+        Give the error missage
+        """
+        tbex = traceback.format_exc()
+        logger.error(
+            'An error occurred while rendering the view: %s' % tbex)
+        self.destination_url = self.request.get_header(
+            "referer", self.context.absolute_url())
 
     def getSortedFilteredSamples(self):
         """
@@ -927,26 +937,42 @@ class SamplesPrint(BrowserView):
         samples = self._items
         result = {}
         for sample in samples:
+            pc = getToolByName(self, 'portal_catalog')
             # Getting the filter keys
-            sampler = sample.getSampler()
+            sampler_id = sample.getScheduledSamplingSampler()
+            sampler_brain = pc(
+                portal_type='LabContact', getUsername=sampler_id)
+            sampler_obj = sampler_brain[0].getObject()\
+                if sampler_brain else None
+            if sampler_obj:
+                sampler_uid = sampler_obj.UID()
+                sampler_name = sampler_obj.getFullname() if sampler_obj else 'No sampler'
+            else:
+                sampler_uid = 'no_sampler'
+                sampler_name = ''
             client_uid = sample.getClientUID()
             date = \
                 self.ulocalized_time(sample.getSamplingDate(), long_format=1)\
                 if sample.getSamplingDate() else ''
             # Filling the dictionary
-            if sampler.UID() in result.keys():
-                client_d = result[sampler.UID()].get(client_uid, {})
-                # Always writing the info again.
+            if sampler_uid in result.keys():
+                client_d = result[sampler_uid].get(client_uid, {})
+                # Always write the info again.
                 # Is it faster than doing a check every time?
                 client_d['info'] = {'name': sample.getClientTitle()}
                 if date:
-                    client_d[date] = client_d.get(date, []).append(
-                        _sample_table_builder(sample))
+                    c_l = client_d.get(date, [])
+                    c_l.append(
+                        self._sample_table_builder(sample))
+                    client_d[date] = c_l
                 else:
-                    client['no_date'] = client_d.get('no_date', []).append(
-                        _sample_table_builder(sample))
+                    c_l = client_d.get('no_date', [])
+                    c_l.append(
+                        self._sample_table_builder(sample))
+                    client_d[date] = c_l
             else:
-                # This client isn't in the dict yet. Write the client dict
+                # This sampler isn't in the dict yet.
+                # Write the client dict
                 client_dict = {
                     'info': {
                         'name': sample.getClientTitle()
@@ -955,15 +981,17 @@ class SamplesPrint(BrowserView):
                 # If the sample has a sampling date, build the dictionary
                 # which emulates the table inside a list
                 if date:
-                    client_dict[date] = [_sample_table_builder(sample)]
+                    client_dict[date] = [
+                        self._sample_table_builder(sample)]
                 else:
-                    client_dict['no_date'] = [_sample_table_builder(sample)]
-                # Adding the client dict inside the result dict
-                result[sampler.UID()] = {
+                    client_dict['no_date'] = [
+                        self._sample_table_builder(sample)]
+                # Adding the client dict inside the sampler dict
+                result[sampler_uid] = {
                     'info': {
-                        'obj': sampler,
-                        'id': sampler.id,
-                        'name': sampler.getName()
+                        'obj': sampler_obj,
+                        'id': sampler_id,
+                        'name': sampler_name
                         },
                     client_uid: client_dict
                     }
@@ -1000,7 +1028,6 @@ class SamplesPrint(BrowserView):
         }
         ars = sample.getAnalysisRequests()
         for ar in ars:
-            ar = ar.getObject()
             arcell = False
             numans = len(ar.getAnalyses())
             for part in ar.getPartitions():
@@ -1033,7 +1060,7 @@ class SamplesPrint(BrowserView):
                             'sampling_date': {
                                 'hidden': True if arcell else False,
                                 'rowspan': numans,
-                                'value': self.context.sampling_date,
+                                'value': sample.getSamplingDate(),
                                 },
                             'partition': {
                                 'hidden': True if partcell else False,

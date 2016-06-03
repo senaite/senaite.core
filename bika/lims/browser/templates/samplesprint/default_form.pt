@@ -12,11 +12,10 @@
     <!-- samples listed by Partition/Container -->
     <div id="samples-data-entry"
         tal:define="
-            dictionaries view/getSortedFilteredSamples
-            samplers python:dictionaries.keys()">
+            dictionaries view/getSortedFilteredSamples">
         <!-- Sampler sections -->
         <div class="sampler_section"
-            tal:repeat="sampler_uid samplers">
+            tal:repeat="sampler_uid python:dictionaries.keys()">
             <!-- Client sections -->
             <div class="client_section"
                 tal:repeat="client_uid python:dictionaries[sampler_uid]">
@@ -27,7 +26,7 @@
                         tal:define="tables python:dictionaries[sampler_uid][client_uid][date]">
                     <table class="samples-grid"
                         tal:repeat="table tables">
-                        <thead>
+                        <!--thead>
                             <tr>
                                 <th i18n:translate=""
                                     tal:repeat="column_id table/columns/column_order"
@@ -71,7 +70,7 @@
                             </tal:rowcell>
                             </tr>
                         </tal:rowsample>
-                        </tbody>
+                    </tbody-->
                     </table>
                     </tal:table>
                 </div>
