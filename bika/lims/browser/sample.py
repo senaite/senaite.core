@@ -4,11 +4,13 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
+from Products.CMFPlone.utils import safe_unicode
 from plone.resource.utils import iterDirectoriesOfType
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import EditSample
 from bika.lims import PMF
+from bika.lims.utils import to_utf8, createPdf
 from bika.lims import logger
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
@@ -35,6 +37,8 @@ import glob
 import plone
 import urllib
 import traceback
+import App
+import tempfile
 
 
 class SamplePartitionsView(BikaListingView):
@@ -952,7 +956,7 @@ class SamplesPrint(BrowserView):
                 sampler_name = ''
             client_uid = sample.getClientUID()
             date = \
-                self.ulocalized_time(sample.getSamplingDate(), long_format=1)\
+                self.ulocalized_time(sample.getSamplingDate(), long_format=0)\
                 if sample.getSamplingDate() else ''
             # Filling the dictionary
             if sampler_uid in result.keys():
@@ -1060,7 +1064,7 @@ class SamplesPrint(BrowserView):
                             'sampling_date': {
                                 'hidden': True if arcell else False,
                                 'rowspan': numans,
-                                'value': sample.getSamplingDate(),
+                                'value': self.ulocalized_time(sample.getSamplingDate(), long_format=0),
                                 },
                             'partition': {
                                 'hidden': True if partcell else False,
@@ -1177,12 +1181,12 @@ class SamplesPrint(BrowserView):
         debug_mode = App.config.getConfiguration().debug_mode
         if debug_mode:
             tmp_fn = tempfile.mktemp(suffix=".html")
-            open(tmp_fn, "wb").write(sr_html)
+            open(tmp_fn, "wb").write(code_html)
 
         # Creates the pdf
         # we must supply the file ourself so that createPdf leaves it alone.
         pdf_fn = tempfile.mktemp(suffix=".pdf")
-        pdf_report = createPdf(htmlreport=sr_html, outfile=pdf_fn)
+        pdf_report = createPdf(htmlreport=code_html, outfile=pdf_fn)
         return pdf_report
 
     def getSamplers(self):
