@@ -55,6 +55,10 @@ function FormPrintView() {
             reloadReport();
         });
 
+        $('#filter_button').click(function(e) {
+            reloadReport();
+        });
+
         $('#sel_layout').change(function(e) {
             $('body').removeClass($('body').attr('data-layout'));
             $('body').attr('data-layout', $(this).val());
@@ -149,7 +153,9 @@ function FormPrintView() {
             url: url,
             type: 'POST',
             async: true,
-            data: { "template": template,}
+            data: { "template": template,
+                    "sampler": $("#sel_sampler option:selected").val(),
+                    "client": $("#sel_client option:selected").val()}
         })
         .always(function(data) {
             var htmldata = data;

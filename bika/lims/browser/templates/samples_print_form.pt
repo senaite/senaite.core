@@ -48,8 +48,9 @@
                         tal:define="
                             samplers python:view.getSamplers();
                             samplers_keys python:samplers.keys()">
+                        <option value="" i18n:translate="" selected></option>
                         <option tal:repeat="sampler_key samplers_keys"
-                            value="python:samplers[sampler_key]['uid']"
+                            tal:attributes="value sampler_key"
                             tal:content="python:samplers[sampler_key]['name']"/>
                     </select>
                     <select
@@ -58,8 +59,9 @@
                         tal:define="
                             clients python:view.getClients();
                             clients_keys python:clients.keys()">
+                        <option value="" i18n:translate="" selected></option>
                         <option tal:repeat="client_key clients_keys"
-                            value="python:clients[client_key]['uid']"
+                            tal:attributes="value client_key"
                             tal:content="python:clients[client_key]['name']"/>
                     </select>
                     <input type="button" id='filter_button' i18n:translate="" value="Filter"/>

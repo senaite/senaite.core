@@ -34,7 +34,12 @@
                             <thead>
                             <tr>
                             <th>
-                                <div tal:content="python:dictionaries[sampler_uid]['info']['name']">Sampler</div>
+                                <div
+                                    tal:condition="python:dictionaries[sampler_uid]['info']['name']"
+                                    tal:content="python:dictionaries[sampler_uid]['info']['name']">Sampler</div>
+                                <div
+                                    tal:condition="python:not(dictionaries[sampler_uid]['info']['name'])"
+                                    class="highlight">No sampler defined</div>
                             </th>
                             <th>
                                 <div tal:content="python:dictionaries[sampler_uid][client_uid]['info']['name']">Client</div>

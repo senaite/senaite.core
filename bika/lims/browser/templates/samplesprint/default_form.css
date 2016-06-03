@@ -69,6 +69,10 @@ p {
 .clearfix {
     clear:both;
 }
+.highlight {
+    font-weight: bold;
+    color: red;
+}
 #samples-round-data-entry {
     clear: both;
 }
