@@ -123,7 +123,7 @@ window.bika.lims.controllers =  {
         ['AnalysisRequestPublishView'],
 
     // Samples PrintView
-     "#form_print_container":
+     "#preview_container.samples_print_preview":
          ['FormPrintView'],
 
     // Supply Orders

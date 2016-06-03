@@ -4,23 +4,23 @@
 function FormPrintView() {
     "use strict";
     var that = this;
-    var referrer_cookie_name = '_pv';
+    var referrer_cookie_name = '_spv';
 
     // Allowed Paper sizes and default margins, in mm
     var papersize_default = "A4";
-    var default_margins = [20, 20, 20, 20];
+    var default_margins = [15, 10, 15, 10];
     var papersize = {
         'A4': {
                 dimensions: [210, 297],
-                margins:    [20, 20, 20, 20] },
+                margins:    [15, 10, 15, 10] },
 
         'letter': {
                 dimensions: [215.9, 279.4],
-                margins:    [20, 20, 20, 20] },
+                margins:    [15, 10, 15, 10] },
     };
 
     /**
-     * Entry-point method
+     * Entry-point method for AnalysisRequestPublishView
      */
     that.load = function() {
 
@@ -31,7 +31,7 @@ function FormPrintView() {
         reloadReport();
 
         // Store referrer in cookie in case it is lost due to a page reload
-        var cookiename = "samples.publish.view.referrer";
+        var cookiename = "samples.print.preview.referrer";
         var backurl = document.referrer;
         if (backurl) {
             createCookie(cookiename, backurl);
@@ -42,6 +42,14 @@ function FormPrintView() {
                 backurl = portal_url;
             }
         }
+
+        // Smooth scroll to content
+        $('#preview_container #preview_summary a[href^="#"]').click(function(e) {
+            e.preventDefault();
+            var anchor = $(this).attr('href');
+            var offset = $(anchor).first().offset().top - 20;
+            $('html,body').animate({scrollTop: offset},'fast');
+        });
 
         $('#sel_format').change(function(e) {
             reloadReport();
@@ -54,15 +62,12 @@ function FormPrintView() {
             reloadReport();
         });
 
-        $('#cancel_button').click(function(e) {
-            location.href=backurl;
-        });
         $('#print_button').click(function(e) {
             e.preventDefault();
             var url = window.location.href;
-            $('#form_print_container').animate({opacity:0.4}, 'slow');
-            var count = $('#form_print_container #report .report_body').length;
-            $('#form_print_container #report .report_body').each(function(){
+            $('#preview_container').animate({opacity:0.4}, 'slow');
+            var count = $('#preview_container #report .preview_body').length;
+            $('#preview_container #report .preview_body').each(function(){
                 var rephtml = $(this).clone().wrap('<div>').parent().html();
                 var repstyle = $('#report-style').clone().wrap('<div>').parent().html();
                 repstyle += $('#layout-style').clone().wrap('<div>').parent().html();
@@ -75,7 +80,40 @@ function FormPrintView() {
                 document.forms.form.submit();
             });
         });
-    };
+
+        $('#cancel_button').click(function(e) {
+            location.href=backurl;
+        });
+
+        $('#margin-top').change(function(e) {
+            applyMarginAndReload($(this), 0);
+        });
+        $('#margin-right').change(function(e) {
+            applyMarginAndReload($(this), 1);
+        });
+        $('#margin-bottom').change(function(e) {
+            applyMarginAndReload($(this), 2);
+        });
+        $('#margin-left').change(function(e) {
+            applyMarginAndReload($(this), 3);
+        });
+    }
+
+    function applyMarginAndReload(element, idx) {
+        var currentlayout = $('#sel_layout').val();
+        // Maximum margin (1/4 of the total width)
+        var maxmargin = papersize[currentlayout].dimensions[(idx+1) % 2]/4;
+        // Is this a valid whole number?
+        var margin = $(element).val();
+        var n = ~~Number(margin);
+        if (String(n) === margin && n >= 0 && n <= maxmargin) {
+            papersize[currentlayout].margins[idx] = n;
+            reloadReport();
+        } else {
+            // Not a number of out of bounds
+            $(element).val(papersize[currentlayout].margins[idx]);
+        }
+    }
 
     function get(name){
        if(name=(new RegExp('[?&]'+encodeURIComponent(name)+'=([^&]*)')).exec(location.search))
@@ -97,14 +135,6 @@ function FormPrintView() {
         });
     }
 
-    function convert_svgs() {
-        $('svg').each(function(e) {
-            var svg = $("<div />").append($(this).clone()).html();
-            var img = window.bika.lims.CommonUtils.svgToImage(svg);
-            $(this).replaceWith(img);
-        });
-    }
-
     /**
      * Re-load the report view in accordance to the values set in the
      * options panel (report format, pagesize, QC visible, etc.)
@@ -119,7 +149,7 @@ function FormPrintView() {
             url: url,
             type: 'POST',
             async: true,
-            data: { "template": template}
+            data: { "template": template,}
         })
         .always(function(data) {
             var htmldata = data;
@@ -130,7 +160,6 @@ function FormPrintView() {
             $('#report').fadeTo('fast', 1);
             load_barcodes();
             load_layout();
-            convert_svgs();
         });
     }
 
@@ -157,18 +186,23 @@ function FormPrintView() {
             height:       papersize[currentlayout].dimensions[1]-papersize[currentlayout].margins[0]-papersize[currentlayout].margins[2]
         };
 
+        $('#margin-top').val(dim.marginTop);
+        $('#margin-right').val(dim.marginRight);
+        $('#margin-bottom').val(dim.marginBottom);
+        $('#margin-left').val(dim.marginLeft);
+
         var layout_style =
             '@page { size:  ' + dim.size + ' !important;' +
             '        width:  ' + dim.width + 'mm !important;' +
             '        margin: 0mm '+dim.marginRight+'mm 0mm '+dim.marginLeft+'mm !important;';
         $('#layout-style').html(layout_style);
-        $('#form_print_container').css({'width':dim.width + 'mm', 'padding': '0mm '+dim.marginRight + 'mm 0mm '+dim.marginLeft +'mm '});
-        $('#publish_header').css('margin', '0mm -'+dim.marginRight + 'mm 0mm -' +dim.marginLeft+'mm');
-        $('div.report_body').css({'width': dim.width + 'mm', 'max-width': dim.width + 'mm', 'min-width': dim.width + 'mm'});
+        $('#preview_container').css({'width':dim.width + 'mm', 'padding': '0mm '+dim.marginRight + 'mm 0mm '+dim.marginLeft +'mm '});
+        $('#preview_header').css('margin', '0mm -'+dim.marginRight + 'mm 0mm -' +dim.marginLeft+'mm');
+        $('div.preview_body').css({'width': dim.width + 'mm', 'max-width': dim.width + 'mm', 'min-width': dim.width + 'mm'});
 
         // Iterate for each AR report and apply the dimensions, header,
         // footer, etc.
-        $('div.report_body').each(function(i) {
+        $('div.preview_body').each(function(i) {
 
             var arbody = $(this);
 
@@ -234,9 +268,9 @@ function FormPrintView() {
             //
             // IMPORTANT
             // Please note that only first-level div elements from
-            // within div.ar_publish_body are checked and will be
+            // within div.preview_body are checked and will be
             // treated as nob-breakable elements. So, if a div element
-            // from within a div.ar_publish_body is taller than the
+            // from within a div.preview_body is taller than the
             // maximum allowed height, that element will be omitted.
             // Further improvements may solve this and handle deeply
             // elements from the document, such as tables, etc. Other
@@ -257,7 +291,7 @@ function FormPrintView() {
                 // the maximum health, we use the element's position.
                 // This way, we will prevent underestimations due
                 // non-div elements or plain text directly set inside
-                // the div.ar_publish_body container, not wrapped by
+                // the div.preview_body container, not wrapped by
                 // other div element.
                 var elAbsTopPos = $(this).position().top;
                 var elRelTopPos = elAbsTopPos - topOffset;
@@ -325,7 +359,7 @@ function FormPrintView() {
             // Wrap all elements in pages
             var split_at = 'div.page-header';
             $(this).find(split_at).each(function() {
-                $(this).add($(this).nextUntil(split_at)).wrapAll("<div class='publish_page'/>");
+                $(this).add($(this).nextUntil(split_at)).wrapAll("<div class='preview_page'/>");
             });
 
             // Move headers and footers out of the wrapping and assign

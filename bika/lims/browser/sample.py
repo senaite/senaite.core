@@ -1064,7 +1064,7 @@ class SamplesPrint(BrowserView):
                             'sampling_date': {
                                 'hidden': True if arcell else False,
                                 'rowspan': numans,
-                                'value': self.ulocalized_time(sample.getSamplingDate(), long_format=0),
+                                'value':  self.ulocalized_time(sample.getSamplingDate(), long_format=0),
                                 },
                             'partition': {
                                 'hidden': True if partcell else False,
