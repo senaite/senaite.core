@@ -379,9 +379,15 @@ schema = BikaSchema.copy() + Schema((
                  schemata="Method",
                  default=True,
                  widget=BooleanWidget(
-                     label = _("Allow manual entry of results"),
-                     description=_("Select if the results for this Analysis "
-                                   "Service can be set manually."),
+                     label = _("Instrument assignment is not required"),
+                     description=_("Select if the results for tests of this "
+                                   "type of analysis can be set manually. "
+                                   "If selected, the user will be able to "
+                                   "set a result for a test of this type of "
+                                   "analysis in manage results view without "
+                                   "the need of selecting an instrument, "
+                                   "even though the method selected for the "
+                                   "test has instruments assigned."),
                  )
     ),
     # Allow/Disallow instrument entry of results
@@ -393,9 +399,15 @@ schema = BikaSchema.copy() + Schema((
                  schemata="Method",
                  default=False,
                  widget=BooleanWidget(
-                     label = _("Allow instrument entry of results"),
-                     description=_("Select if the results for this Analysis " + \
-                                   "Service can be set using an Instrument."),
+                     label = _("Instrument assignment is allowed"),
+                     description=_("Select if the results for tests of "
+                                   "this type of analysis can be set by "
+                                   "using an instrument. If disabled, no "
+                                   "instruments will be available for "
+                                   "tests of this type of analysis in "
+                                   "manage results view, even though "
+                                   "the method selected for the test has "
+                                   "instruments assigned."),
                  )
     ),
     # Instruments associated to the AS
@@ -415,12 +427,23 @@ schema = BikaSchema.copy() + Schema((
                    referenceClass=HoldingReference,
                    widget=MultiSelectionWidget(
                        label = _("Instruments"),
-                       description=_("More than one instrument can do an " + \
-                                     "Analysis Service. The instruments " + \
-                                     "selected here are displayed in the " + \
-                                     "Analysis Request creation view for its " + \
-                                     "selection when this Analysis Service is " + \
-                                     "selected."),
+                       description=_("More than one instrument can be "
+                                     "used in a test of this type of "
+                                     "analysis. A selection list "
+                                     "with the instruments selected here "
+                                     "is populated in the results manage "
+                                     "view for each test of this type of "
+                                     "analysis. The available instruments "
+                                     "in the selection list will change "
+                                     "in accordance with the method "
+                                     "selected by the user for that test "
+                                     "in the manage results view. "
+                                     "Although a method can have more "
+                                     "than one instrument assigned, the "
+                                     "selection list is only populated "
+                                     "with the instruments that are both "
+                                     "set here and allowed for the "
+                                     "selected method."),
                    )
     ),
     # Default instrument to be used.
@@ -443,6 +466,16 @@ schema = BikaSchema.copy() + Schema((
                                widget=SelectionWidget(
                                    format='select',
                                    label = _("Default Instrument"),
+                                   description = _("This is the instrument "
+                                       "the system will assign by default to "
+                                       "tests from this type of analysis in "
+                                       "manage results view. The method "
+                                       "associated to this instrument will be "
+                                       "assigned as the default method too."
+                                       "Note the instrument's method will "
+                                       "prevail over any of the methods "
+                                       "choosen if the 'Instrument assignment "
+                                       "is not required' option is enabled.")
                                ),
     ),
     # Returns the Default's instrument title. If no default instrument
@@ -473,14 +506,17 @@ schema = BikaSchema.copy() + Schema((
         referenceClass = HoldingReference,
         widget = MultiSelectionWidget(
             label = _("Methods"),
-            description = _("The Analysis Service can be performed by " + \
-                            "using more than one Method. The methods " + \
-                            "selected here are displayed in the " + \
-                            "Analysis Request creation view for its " + \
-                            "selection when this Analaysis Service " + \
-                            "is selected. Only methods with 'Allow " + \
-                            "manual entry of results' enabled are " + \
-                            "displayed."),
+            description = _("The tests of this type of analysis can be "
+                            "performed by using more than one method with the "
+                            "'Manual entry of results' option enabled. "
+                            "A selection list with the methods selected here "
+                            "is populated in the manage results view for each "
+                            "test of this type of analysis. Note that only "
+                            "methods with 'Allow manual entry' option enabled "
+                            "are displayed here; if you want the user to be "
+                            "able to assign a method that requires instrument "
+                            "entry, enable the 'Instrument assignment is "
+                            "allowed' option."),
         )
     ),
     # Default method to be used. This field is used in Analysis Service

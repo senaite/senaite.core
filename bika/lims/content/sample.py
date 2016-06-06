@@ -1,12 +1,13 @@
 """Sample represents a physical sample submitted for testing
 """
 from AccessControl import ClassSecurityInfo
-from bika.lims import bikaMessageFactory as _
+from Products.CMFCore.WorkflowCore import WorkflowException
+from bika.lims import bikaMessageFactory as _, logger
 from bika.lims.utils import t, getUsers
 from bika.lims.browser.widgets.datetimewidget import DateTimeWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import ISample
+from bika.lims.interfaces import ISample, ISamplePrepWorkflow
 from bika.lims.permissions import SampleSample
 from bika.lims.permissions import ScheduleSampling
 from bika.lims.workflow import doActionFor, isBasicTransitionAllowed
@@ -308,6 +309,30 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
         ),
     ),
+    StringField('PreparationWorkflow',
+        mode="rw",
+        read_permission=permissions.View,
+        write_permission=permissions.ModifyPortalContent,
+        vocabulary='getPreparationWorkflows',
+        acquire=True,
+        widget=SelectionWidget(
+            format="select",
+            label=_("Preparation Workflow"),
+            visible={'edit': 'visible',
+                     'view': 'visible',
+                     'header_table': 'visible',
+                     'sample_registered': {'view': 'visible', 'edit': 'visible'},
+                     'to_be_sampled':     {'view': 'visible', 'edit': 'invisible'},
+                     'sampled':           {'view': 'visible', 'edit': 'invisible'},
+                     'to_be_preserved':   {'view': 'visible', 'edit': 'invisible'},
+                     'sample_due':        {'view': 'visible', 'edit': 'invisible'},
+                     'sample_received':   {'view': 'visible', 'edit': 'invisible'},
+                     'expired':           {'view': 'visible', 'edit': 'invisible'},
+                     'disposed':          {'view': 'visible', 'edit': 'invisible'},
+                     },
+            render_own_label=True,
+        ),
+    ),
     ReferenceField('SamplingDeviation',
         vocabulary_display_path_bound = sys.maxsize,
         allowed_types = ('SamplingDeviation',),
@@ -571,7 +596,7 @@ schema['title'].required = False
 
 
 class Sample(BaseFolder, HistoryAwareMixin):
-    implements(ISample)
+    implements(ISample, ISamplePrepWorkflow)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -770,6 +795,19 @@ class Sample(BaseFolder, HistoryAwareMixin):
             return 0
         return last_ar_number
 
+    def getPreparationWorkflows(self):
+        """Return a list of sample preparation workflows.  These are identified
+        by scanning all workflow IDs for those beginning with "sampleprep".
+        """
+        wf = self.portal_workflow
+        ids = wf.getWorkflowIds()
+        sampleprep_ids = [wid for wid in ids if wid.startswith('sampleprep')]
+        prep_workflows = [['', ''],]
+        for workflow_id in sampleprep_ids:
+            workflow = wf.getWorkflowById(workflow_id)
+            prep_workflows.append([workflow_id, workflow.title])
+        return DisplayList(prep_workflows)
+
     def workflow_script_receive(self):
         workflow = getToolByName(self, 'portal_workflow')
         self.setDateReceived(DateTime())
@@ -908,6 +946,53 @@ class Sample(BaseFolder, HistoryAwareMixin):
             no_results = [a for a in field_analyses if a.getResult() == '']
             if no_results:
                 return False
+        return True
+
+    def guard_sample_prep_transition(self):
+        """Allow the sampleprep automatic transition to fire.
+        """
+        if not isBasicTransitionAllowed(self):
+            return False
+        if self.getPreparationWorkflow():
+            return True
+        return False
+
+    def guard_sample_prep_complete_transition(self):
+        """ This relies on user created workflow.  This function must
+        defend against user errors.
+
+        AR and Analysis guards refer to this one.
+
+        - If error is encountered, do not permit object to proceed.  Break
+          this rule carelessly and you may see recursive automatic workflows.
+
+        - If sampleprep workflow is badly configured, primary review_state
+          can get stuck in "sample_prep" forever.
+
+        """
+        wftool = getToolByName(self, 'portal_workflow')
+
+        try:
+            # get sampleprep workflow object.
+            sp_wf_name = self.getPreparationWorkflow()
+            sp_wf = wftool.getWorkflowById(sp_wf_name)
+            # get sampleprep_review state.
+            sp_review_state = wftool.getInfoFor(self, 'sampleprep_review_state')
+            assert sp_review_state
+        except WorkflowException as e:
+            logger.warn("guard_sample_prep_complete_transition: "
+                        "WorkflowException %s" % e)
+            return False
+        except AssertionError:
+            logger.warn("'%s': cannot get 'sampleprep_review_state'" %
+                        sampleprep_wf_name)
+            return False
+
+        # get state from workflow - error = allow transition
+        # get possible exit transitions for state: error = allow transition
+        transitions = sp_wf
+        if len(transitions) > 0:
+            return False
         return True
 
     def guard_schedule_sampling_transition(self):

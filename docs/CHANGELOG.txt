@@ -1,3 +1,24 @@
+3.2.1 (unreleased)
+------------------
+HEALTH-394: Sample sticker layout. 2 new sticker layouts, 2 stickers per row
+LIMS-2032: AS Methods initialise with 1st available Instrument (loading setup data)
+LIMS-2014: I can only select a Default Method for an AS if Manual results capture is on
+LIMS-2181: An analysis is not stopped from using an invalid instrument
+HEALTH-310: Implemented Nuclisens EasyQ instrument importer
+HEALTH-319: Instrument. Roche Cobas Taqman 96
+LIMS-2091: Table Column Display options Everywhere
+LIMS-2207: Indentation in analysisrequests.py
+LIMS-2208: WinescanCSVParser class instance variable misspelling
+LIMS-1832: New Results Template, COA. Multiple ARs in columns
+LIMS-2148: Unable to sort Bika Listing tables
+LIMS-1774: Shiny graphs for result ranges
+- Replacement of pagination by 'Show more' in tables makes the app faster
+- Add Bika LIMS TAL report reference in reports preview
+- Simplify instrument interface creation for basic CSV files
+
+3.1.11 (2016-04-22)
+-----------------------------
+LIMS-2181: An analysis is not stopped from using an invalid instrument
 3.1.12 (unreleased)
 -----------------------------
 HEALTH-569 Bar code printing not working on sample registration

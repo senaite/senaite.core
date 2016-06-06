@@ -2,11 +2,15 @@
 from Products.CMFCore.utils import getToolByName
 from bika.lims.jsonapi import get_include_fields
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser import BrowserView
 from bika.lims.utils import t, dicts_to_dict
+from bika.lims.utils.analysis import get_method_instrument_constraints
 from bika.lims.interfaces import IAnalysis, IResultOutOfRange, IJSONReadExtender
 from bika.lims.interfaces import IFieldIcons
 from bika.lims.utils import to_utf8
 from bika.lims.utils import dicts_to_dict
+import json
+import plone
 from zope.component import adapts, getAdapters
 from zope.interface import implements
 
@@ -191,3 +195,24 @@ class JSONReadExtender(object):
         if not self.include_fields or "specification" in self.include_fields:
             data['specification'] = self.analysis_specification()
         return data
+
+
+class ajaxGetMethodInstrumentConstraints(BrowserView):
+
+    def __call__(self):
+        """
+            Returns a json dictionary with the constraints and rules for
+            methods, instruments and results to be applied to each of the
+            analyses specified in the request (an array of uids).
+            See docs/imm_results_entry_behaviour.png for further details
+        """
+        constraints = {}
+        try:
+            plone.protect.CheckAuthenticator(self.request)
+        except Forbidden:
+            return json.dumps(constraints)
+
+        rowuids = self.request.get('uids', '[]')
+        rowuids = json.loads(rowuids)
+        constraints = get_method_instrument_constraints(self, rowuids)
+        return json.dumps(constraints)

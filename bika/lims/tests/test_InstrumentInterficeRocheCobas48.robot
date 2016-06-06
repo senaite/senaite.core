@@ -31,7 +31,7 @@ model48 RSF file
     Disable stickers
     Create Analysis Service  ${ASId}  ${ASTitle}
 
-    Import Instrument File     Roche Cobas Taqman 48  ${PATH_TO_TEST}/files/ResultData.rsf  ${input_identifier}
+    Import Instrument File     Roche Cobas - Taqman - 48  ${PATH_TO_TEST}/files/ResultData.rsf  ${input_identifier}
     page should not contain    Serice keyword ${ASId} not found
 
 *** Keywords ***

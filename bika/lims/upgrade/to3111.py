@@ -26,7 +26,7 @@ def upgrade(tool):
     setup.runImportStepFromProfile('profile-bika.lims:default', 'jsregistry')
     # setup.runImportStepFromProfile('profile-bika.lims:default', 'cssregistry')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'workflow-csv')
-    # setup.runImportStepFromProfile('profile-bika.lims:default', 'factorytool')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'factorytool')
     # setup.runImportStepFromProfile('profile-bika.lims:default', 'controlpanel')
     # setup.runImportStepFromProfile('profile-bika.lims:default', 'catalog')
     # setup.runImportStepFromProfile('profile-bika.lims:default', 'propertiestool')
