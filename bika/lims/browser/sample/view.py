@@ -300,9 +300,8 @@ class SamplesView(BikaListingView):
                          'state_title']},
         ]
 
-    def folderitems(self, full_objects = False):
+    def folderitem(self, obj, item, index):
         workflow = getToolByName(self.context, "portal_workflow")
-        items = BikaListingView.folderitems(self)
         mtool = getToolByName(self.context, 'portal_membership')
         member = mtool.getAuthenticatedMember()
         translate = self.context.translate
@@ -311,128 +310,130 @@ class SamplesView(BikaListingView):
             and 'Manager' not in roles \
             and 'LabManager' not in roles \
             and 'LabClerk' not in roles
+        if not item.has_key('obj'):
+            return item
+        obj = item['obj']
 
-        for x in range(len(items)):
-            if not items[x].has_key('obj'): continue
-            obj = items[x]['obj']
+        item['replace']['getSampleID'] = "<a href='%s'>%s</a>" % \
+            (item['url'], obj.getSampleID())
+        item['replace']['Requests'] = ",".join(
+            ["<a href='%s'>%s</a>" % (o.absolute_url(), o.Title())
+             for o in obj.getAnalysisRequests()])
+        item['Client'] = obj.aq_parent.Title()
+        if hideclientlink == False:
+            item['replace']['Client'] = "<a href='%s'>%s</a>" % \
+                (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
+        item['Creator'] = self.user_fullname(obj.Creator())
 
-            items[x]['replace']['getSampleID'] = "<a href='%s'>%s</a>" % \
-                (items[x]['url'], obj.getSampleID())
-            items[x]['replace']['Requests'] = ",".join(
-                ["<a href='%s'>%s</a>" % (o.absolute_url(), o.Title())
-                 for o in obj.getAnalysisRequests()])
-            items[x]['Client'] = obj.aq_parent.Title()
-            if hideclientlink == False:
-                items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
-                    (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
-            items[x]['Creator'] = self.user_fullname(obj.Creator())
+        item['DateReceived'] = self.ulocalized_time(obj.getDateReceived())
 
-            items[x]['DateReceived'] = self.ulocalized_time(obj.getDateReceived())
+        deviation = obj.getSamplingDeviation()
+        item['SamplingDeviation'] = deviation and deviation.Title() or ''
 
-            deviation = obj.getSamplingDeviation()
-            items[x]['SamplingDeviation'] = deviation and deviation.Title() or ''
+        item['getStorageLocation'] = obj.getStorageLocation() and obj.getStorageLocation().Title() or ''
+        item['AdHoc'] = obj.getAdHoc() and True or ''
 
-            items[x]['getStorageLocation'] = obj.getStorageLocation() and obj.getStorageLocation().Title() or ''
-            items[x]['AdHoc'] = obj.getAdHoc() and True or ''
+        item['Created'] = self.ulocalized_time(obj.created())
 
-            items[x]['Created'] = self.ulocalized_time(obj.created())
+        samplingdate = obj.getSamplingDate()
+        item['getSamplingDate'] = self.ulocalized_time(samplingdate, long_format=1)
 
-            samplingdate = obj.getSamplingDate()
-            items[x]['getSamplingDate'] = self.ulocalized_time(samplingdate, long_format=1)
+        after_icons = ''
+        if obj.getSampleType().getHazardous():
+            after_icons += "<img title='%s' " \
+                "src='%s/++resource++bika.lims.images/hazardous.png'>" % \
+                (t(_("Hazardous")),
+                 self.portal_url)
+        if obj.getSamplingDate() > DateTime():
+            after_icons += "<img title='%s' " \
+                "src='%s/++resource++bika.lims.images/calendar.png' >" % \
+                (t(_("Future dated sample")),
+                 self.portal_url)
+        if after_icons:
+            item['after']['getSampleID'] = after_icons
 
-            after_icons = ''
-            if obj.getSampleType().getHazardous():
-                after_icons += "<img title='%s' " \
-                    "src='%s/++resource++bika.lims.images/hazardous.png'>" % \
-                    (t(_("Hazardous")),
-                     self.portal_url)
-            if obj.getSamplingDate() > DateTime():
-                after_icons += "<img title='%s' " \
-                    "src='%s/++resource++bika.lims.images/calendar.png' >" % \
-                    (t(_("Future dated sample")),
-                     self.portal_url)
-            if after_icons:
-                items[x]['after']['getSampleID'] = after_icons
+        SamplingWorkflowEnabled =\
+            self.context.bika_setup.getSamplingWorkflowEnabled()
 
-            SamplingWorkflowEnabled =\
-                self.context.bika_setup.getSamplingWorkflowEnabled()
-
-            if not samplingdate > DateTime() \
-                    and SamplingWorkflowEnabled:
-                datesampled = self.ulocalized_time(obj.getDateSampled())
-                if not datesampled:
-                    datesampled = self.ulocalized_time(DateTime())
-                    items[x]['class']['getDateSampled'] = 'provisional'
-                sampler = obj.getSampler().strip()
-                if sampler:
-                    items[x]['replace']['getSampler'] = self.user_fullname(sampler)
-                if 'Sampler' in member.getRoles() and not sampler:
-                    sampler = member.id
-                    items[x]['class']['getSampler'] = 'provisional'
-            else:
-                datesampled = ''
-                sampler = ''
-            items[x]['getDateSampled'] = datesampled
-            items[x]['getSampler'] = sampler
-            # sampling workflow - inline edits for Sampler, Date Sampled and
-            # Scheduled Sampling Sampler
-            checkPermission = self.context.portal_membership.checkPermission
-            state = workflow.getInfoFor(obj, 'review_state')
-            if state in ['to_be_sampled', 'scheduled_sampling']:
-                items[x]['required'] = []
-                items[x]['allow_edit'] = []
-                items[x]['choices'] = {}
-                samplers = getUsers(obj, ['Sampler', 'LabManager', 'Manager'])
-                users = [(
-                    {'ResultValue': u, 'ResultText': samplers.getValue(u)})
-                    for u in samplers]
-                # both situations
-                if checkPermission(SampleSample, obj) or\
-                        self._schedule_sampling_permissions():
-                    items[x]['required'].append('getSampler')
-                    items[x]['allow_edit'].append('getSampler')
-                    items[x]['choices']['getSampler'] = users
-                # sampling permissions
-                if checkPermission(SampleSample, obj):
-                    getAuthenticatedMember = self.context.\
-                        portal_membership.getAuthenticatedMember
-                    username = getAuthenticatedMember().getUserName()
-                    Sampler = sampler and sampler or \
-                        (username in samplers.keys() and username) or ''
-                    items[x]['required'].append('getDateSampled')
-                    items[x]['allow_edit'].append('getDateSampled')
-                    items[x]['getSampler'] = Sampler
-                # coordinator permissions
-                if self._schedule_sampling_permissions():
-                    items[x]['required'].append('getSamplingDate')
-                    items[x]['allow_edit'].append('getSamplingDate')
-                    items[x]['required'].append('getScheduledSamplingSampler')
-                    items[x]['allow_edit'].append(
-                        'getScheduledSamplingSampler')
-                    items[x]['choices']['getScheduledSamplingSampler'] = users
-            # These don't exist on samples
-            # the columns exist just to set "preserve" transition from lists.
-            # XXX This should be a list of preservers...
-            items[x]['getPreserver'] = ''
-            items[x]['getDatePreserved'] = ''
-
-            # inline edits for Preserver and Date Preserved
-            checkPermission = self.context.portal_membership.checkPermission
-            if checkPermission(PreserveSample, obj):
-                items[x]['required'] = ['getPreserver', 'getDatePreserved']
-                items[x]['allow_edit'] = ['getPreserver', 'getDatePreserved']
-                preservers = getUsers(obj, ['Preserver', 'LabManager', 'Manager'])
-                getAuthenticatedMember = self.context.portal_membership.getAuthenticatedMember
+        if not samplingdate > DateTime() \
+                and SamplingWorkflowEnabled:
+            datesampled = self.ulocalized_time(obj.getDateSampled())
+            if not datesampled:
+                datesampled = self.ulocalized_time(DateTime())
+                item['class']['getDateSampled'] = 'provisional'
+            sampler = obj.getSampler().strip()
+            if sampler:
+                item['replace']['getSampler'] = self.user_fullname(sampler)
+            if 'Sampler' in member.getRoles() and not sampler:
+                sampler = member.id
+                item['class']['getSampler'] = 'provisional'
+        else:
+            datesampled = ''
+            sampler = ''
+        item['getDateSampled'] = datesampled
+        item['getSampler'] = sampler
+        # sampling workflow - inline edits for Sampler, Date Sampled and
+        # Scheduled Sampling Sampler
+        checkPermission = self.context.portal_membership.checkPermission
+        state = workflow.getInfoFor(obj, 'review_state')
+        if state in ['to_be_sampled', 'scheduled_sampling']:
+            item['required'] = []
+            item['allow_edit'] = []
+            item['choices'] = {}
+            samplers = getUsers(obj, ['Sampler', 'LabManager', 'Manager'])
+            users = [(
+                {'ResultValue': u, 'ResultText': samplers.getValue(u)})
+                for u in samplers]
+            # both situations
+            if checkPermission(SampleSample, obj) or\
+                    self._schedule_sampling_permissions():
+                item['required'].append('getSampler')
+                item['allow_edit'].append('getSampler')
+                item['choices']['getSampler'] = users
+            # sampling permissions
+            if checkPermission(SampleSample, obj):
+                getAuthenticatedMember = self.context.\
+                    portal_membership.getAuthenticatedMember
                 username = getAuthenticatedMember().getUserName()
-                users = [({'ResultValue': u, 'ResultText': preservers.getValue(u)})
-                         for u in preservers]
-                items[x]['choices'] = {'getPreserver': users}
-                preserver = username in preservers.keys() and username or ''
-                items[x]['getPreserver'] = preserver
-                items[x]['getDatePreserved'] = self.ulocalized_time(DateTime())
-                items[x]['class']['getPreserver'] = 'provisional'
-                items[x]['class']['getDatePreserved'] = 'provisional'
+                Sampler = sampler and sampler or \
+                    (username in samplers.keys() and username) or ''
+                item['required'].append('getDateSampled')
+                item['allow_edit'].append('getDateSampled')
+                item['getSampler'] = Sampler
+            # coordinator permissions
+            if self._schedule_sampling_permissions():
+                item['required'].append('getSamplingDate')
+                item['allow_edit'].append('getSamplingDate')
+                item['required'].append('getScheduledSamplingSampler')
+                item['allow_edit'].append(
+                    'getScheduledSamplingSampler')
+                item['choices']['getScheduledSamplingSampler'] = users
+        # These don't exist on samples
+        # the columns exist just to set "preserve" transition from lists.
+        # XXX This should be a list of preservers...
+        item['getPreserver'] = ''
+        item['getDatePreserved'] = ''
 
+        # inline edits for Preserver and Date Preserved
+        checkPermission = self.context.portal_membership.checkPermission
+        if checkPermission(PreserveSample, obj):
+            item['required'] = ['getPreserver', 'getDatePreserved']
+            item['allow_edit'] = ['getPreserver', 'getDatePreserved']
+            preservers = getUsers(obj, ['Preserver', 'LabManager', 'Manager'])
+            getAuthenticatedMember = self.context.portal_membership.getAuthenticatedMember
+            username = getAuthenticatedMember().getUserName()
+            users = [({'ResultValue': u, 'ResultText': preservers.getValue(u)})
+                     for u in preservers]
+            item['choices'] = {'getPreserver': users}
+            preserver = username in preservers.keys() and username or ''
+            item['getPreserver'] = preserver
+            item['getDatePreserved'] = self.ulocalized_time(DateTime())
+            item['class']['getPreserver'] = 'provisional'
+            item['class']['getDatePreserved'] = 'provisional'
+        return item
+
+    def folderitems(self, full_objects=False):
+        items = BikaListingView.folderitems(self, full_objects=False)
         # Hide Preservation/Sampling workflow actions if the edit columns
         # are not displayed.
         # Hide schedule_sampling if user has no rights
@@ -461,8 +462,7 @@ class SamplesView(BikaListingView):
                     # Hiddes the button
                     state['hide_transitions'] = ['schedule_sampling', ]
             new_states.append(state)
-        self.review_states = new_states
-
+            self.review_states = new_states
         return items
 
     def _schedule_sampling_permissions(self):
