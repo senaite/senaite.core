@@ -22,7 +22,7 @@ BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Results not requested,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit AR Contact,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Add Attachment,N,Y,Y,Y,N,Y,N,N,N,N,N,Y,Y,N,N,N
-View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,N
+View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,Y
 Modify portal content,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,,,,,,,
@@ -44,7 +44,7 @@ BIKA: Receive Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Results not requested,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit AR Contact,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Add Attachment,N,Y,Y,Y,N,Y,N,N,N,N,N,Y,Y,N,N,N
-View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,N
+View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,Y
 Modify portal content,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Schedule Sampling,N,Y,N,N,N,N,N,N,N,N,N,N,N,N,N,Y
 ,,,,,,,,,,,,,,,,
@@ -66,7 +66,7 @@ BIKA: Receive Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Results not requested,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit AR Contact,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Add Attachment,N,Y,Y,Y,N,Y,N,N,N,N,N,Y,Y,N,N,N
-View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,N
+View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,Y
 Modify portal content,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Schedule Sampling,N,Y,N,N,N,N,N,N,N,N,N,N,N,N,N,Y
 ,,,,,,,,,,,,,,,,
@@ -86,7 +86,7 @@ BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Results not requested,Y,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit AR Contact,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Add Attachment,N,Y,Y,Y,N,Y,N,N,N,N,N,N,N,N,N,N
-View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,N
+View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,Y
 Modify portal content,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,,,,,,,
@@ -108,10 +108,10 @@ BIKA: Receive Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Results not requested,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit AR Contact,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Add Attachment,N,Y,Y,Y,N,N,Y,N,N,N,N,N,N,N,N,N
-View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,N
+View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,Y
 Modify portal content,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
-Transitions,"prepublish, submit, sample_prep",,,,,,,,,,,,,
+Transitions,"prepublish, submit, sample_prep",,,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,,,,
 Id:,sample_due,,,,,,,,,,,,,,,
 Title:,Sample Due,,,,,,,,,,,,,,,
@@ -130,18 +130,18 @@ BIKA: Receive Sample,N,Y,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Results not requested,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit AR Contact,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Add Attachment,N,Y,Y,Y,N,N,N,N,N,N,N,Y,Y,N,N,N
-View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,N
+View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,Y
 Modify portal content,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,,,,
-Id:,sample_prep,,,,,,,,,,,,,,
-Title:,Sample Preparation,,,,,,,,,,,,,,
-Description:,A sample preparation workflow is in progress,,,,,,,,,,,,,,
-Transitions,"sample_prep_complete",,,,,,,,,,,,,
-Permissions,Acquire,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,Publisher,Reviewer,RegulatoryInspector,Owner,Client,Anonymous,Authenticated
-,,,,,,,,,,,,,,,
-[State],,,,,,,,,,,,,,,
+Id:,sample_prep,,,,,,,,,,,,,,,
+Title:,Sample Preparation,,,,,,,,,,,,,,,
+Description:,A sample preparation workflow is in progress,,,,,,,,,,,,,,,
+Transitions,sample_prep_complete,,,,,,,,,,,,,,,
+Permissions,Acquire,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,Publisher,Reviewer,RegulatoryInspector,Owner,Client,Anonymous,Authenticated,
+,,,,,,,,,,,,,,,,
+[State],,,,,,,,,,,,,,,,
 Id:,sample_received,,,,,,,,,,,,,,,
 Title:,Received,,,,,,,,,,,,,,,
 Description:,Sample is 'in the lab',,,,,,,,,,,,,,,
@@ -158,7 +158,7 @@ BIKA: Results not requested,N,Y,Y,N,Y,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit AR Contact,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Publish,N,Y,Y,N,N,N,N,N,Y,N,N,N,N,N,N,N
 BIKA: Add Attachment,N,Y,Y,Y,Y,N,N,N,N,N,N,N,N,N,N,N
-View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,N
+View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,Y
 Modify portal content,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,,,,,,,
@@ -179,7 +179,7 @@ BIKA: Results not requested,N,Y,Y,N,Y,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit AR Contact,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Publish,N,Y,Y,N,N,N,N,N,Y,N,N,N,N,N,N,N
 BIKA: Add Attachment,N,Y,Y,N,Y,N,N,N,N,N,N,N,N,N,N,N
-View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,N
+View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,Y
 Modify portal content,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,,,,,,,
@@ -201,7 +201,7 @@ BIKA: Edit AR Contact,N,Y,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Verify,N,Y,Y,N,N,N,N,Y,N,N,N,N,N,N,N,N
 BIKA: Publish,N,Y,Y,N,N,N,N,N,Y,N,N,N,N,N,N,N
 BIKA: Add Attachment,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N,N
-View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,N
+View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,Y
 Modify portal content,N,Y,Y,Y,N,N,N,Y,N,N,N,Y,N,N,N,N
 BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,,,,,,,
@@ -222,7 +222,7 @@ BIKA: Results not requested,N,Y,Y,N,Y,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit AR Contact,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Publish,N,Y,Y,N,N,N,N,N,Y,N,N,N,N,N,N,N
 BIKA: Add Attachment,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N,N
-View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,N
+View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,Y
 Modify portal content,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,,,,,,,
@@ -241,7 +241,7 @@ BIKA: Manage Invoices,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Results not requested,N,Y,Y,N,Y,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit AR Contact,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
-View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,N
+View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,Y
 Modify portal content,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,,,,,,,
@@ -260,7 +260,7 @@ BIKA: Manage Invoices,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,
 BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,
 BIKA: Results not requested,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,
 BIKA: Edit AR Contact,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,
-View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,N,N,N,
+View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,N,N,Y,
 Modify portal content,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N,
 BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,
 ,,,,,,,,,,,,,,,,
@@ -390,7 +390,7 @@ Title:,,,,,,,,,,,,,,,,
 Description:,sample_due,,,,,,,,,,,,,,,
 Target state:,sample_due,,,,,,,,,,,,,,,
 Trigger:,User,,,,,,,,,,,,,,,
-Guard expression:,python:here.guard_sample_due_transition(),,,,,,,,,,,,,
+Guard expression:,python:here.guard_sample_due_transition(),,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,,,
 [Transition],,,,,,,,,,,,,,,,
 Id:,sampling_workflow,,,,,,,,,,,,,,,
@@ -408,24 +408,24 @@ Target state:,to_be_verified,,,,,,,,,,,,,,,
 URL:,,,,,,,,,,,,,,,,
 Trigger:,User,,,,,,,,,,,,,,,
 Guard expression:,python:here.guard_submit_transition(),,,,,,,,,,,,,,,
-,,,,,,,,,,,,,,
-[Transition],,,,,,,,,,,,,,
-Id:,sample_prep,,,,,,,,,,,,,
-Title:,Sample Preparation,,,,,,,,,,,,,
-Description:,Sample Preparation,,,,,,,,,,,,,
-Target state:,sample_prep,,,,,,,,,,,,,
-URL:,,,,,,,,,,,,,,
-Trigger:,Automatic,,,,,,,,,,,,,
-Guard expression:,python:here.guard_sample_prep_transition(),,,,,,,,,,,,,
-,,,,,,,,,,,,,,
-[Transition],,,,,,,,,,,,,,
-Id:,sample_prep_complete,,,,,,,,,,,,,
-Title:,Sample Preparation Complete,,,,,,,,,,,,,
-Description:,Sample Preparation Complete,,,,,,,,,,,,,
-Target state:,sample_received,,,,,,,,,,,,,
-URL:,,,,,,,,,,,,,,
-Trigger:,Automatic,,,,,,,,,,,,,
-Guard expression:,python:here.guard_sample_prep_complete_transition(),,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+[Transition],,,,,,,,,,,,,,,,
+Id:,sample_prep,,,,,,,,,,,,,,,
+Title:,Sample Preparation,,,,,,,,,,,,,,,
+Description:,Sample Preparation,,,,,,,,,,,,,,,
+Target state:,sample_prep,,,,,,,,,,,,,,,
+URL:,,,,,,,,,,,,,,,,
+Trigger:,Automatic,,,,,,,,,,,,,,,
+Guard expression:,python:here.guard_sample_prep_transition(),,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+[Transition],,,,,,,,,,,,,,,,
+Id:,sample_prep_complete,,,,,,,,,,,,,,,
+Title:,Sample Preparation Complete,,,,,,,,,,,,,,,
+Description:,Sample Preparation Complete,,,,,,,,,,,,,,,
+Target state:,sample_received,,,,,,,,,,,,,,,
+URL:,,,,,,,,,,,,,,,,
+Trigger:,Automatic,,,,,,,,,,,,,,,
+Guard expression:,python:here.guard_sample_prep_complete_transition(),,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,,,
 [Transition],,,,,,,,,,,,,,,,
 Id:,to_be_preserved,,,,,,,,,,,,,,,

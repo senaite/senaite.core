@@ -2543,7 +2543,7 @@ class AnalysisRequest(BaseFolder):
         - if no date and samples have been defined
           and "sampling schedule" checkbox is set in bika_setup
         """
-        if self.bika_setup.ScheduleSamplingEnabled and\
+        if self.bika_setup.getScheduleSamplingEnabled() and\
                 isBasicTransitionAllowed(self):
             return True
         return False
