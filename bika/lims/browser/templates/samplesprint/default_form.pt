@@ -76,13 +76,16 @@
                                             tal:content="python: row[column_id]['value']">
                                         </div>
                                     </td>
-                                    <td tal:condition="python: column_id == 'analyses'"
+                                    <td tal:condition="python: column_id == 'analyses' and row[column_id]['title'] != ''"
                                         class="analyses">
                                         <span tal:content="python: row[column_id]['title']"></span>
                                         <div class="data-input"></div>
                                         <span
                                             class="units"
                                             tal:content="python: row[column_id]['units']"></span>
+                                    </td>
+                                    <td tal:condition="python: column_id == 'analyses' and row[column_id]['title'] == ''"
+                                        class="border:none;">                                        
                                     </td>
                                     <td tal:condition="python: column_id == 'partition' and not row[column_id]['hidden']"
                                         tal:attributes="rowspan python:row[column_id]['rowspan'];

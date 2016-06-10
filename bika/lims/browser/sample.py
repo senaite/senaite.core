@@ -1030,7 +1030,6 @@ class SamplesPrint(BrowserView):
                 'sampling_date',
                 'partition',
                 'container',
-                'analyses',
                 ],
             'titles': {
                 'sample_id': _('Sample ID'),
@@ -1043,6 +1042,7 @@ class SamplesPrint(BrowserView):
             }
         }
         ars = sample.getAnalysisRequests()
+        labans = False;
         for ar in ars:
             arcell = False
             numans = len(ar.getAnalyses())
@@ -1052,50 +1052,54 @@ class SamplesPrint(BrowserView):
                     if part.getContainer() else ''
                 partans = part.getAnalyses()
                 numpartans = len(partans)
-                for analysis in partans:
+                labpoc = [an for an in partans if an.getService().getPointOfCapture() == 'field']
+                labans = True if labans or len(labpoc) > 0 else labans
+                labpoc = [partans[0]] if len(labpoc) == 0 else labpoc
+                for analysis in labpoc:
                     service = analysis.getService()
-                    if service.getPointOfCapture() == 'field':
-                        row = {
-                            'sample_id': {
-                                'hidden': True if arcell else False,
-                                'rowspan': numans,
-                                'value': ar.getSample().id,
-                                },
-                            'sample_type': {
-                                'hidden': True if arcell else False,
-                                'rowspan': numans,
-                                'value': ar.getSampleType().title,
-                                },
-                            'sampling_point': {
-                                'hidden': True if arcell else False,
-                                'rowspan': numans,
-                                'value':
-                                    ar.getSamplePoint().title
-                                    if ar.getSamplePoint() else '',
-                                },
-                            'sampling_date': {
-                                'hidden': True if arcell else False,
-                                'rowspan': numans,
-                                'value':  self.ulocalized_time(sample.getSamplingDate(), long_format=0),
-                                },
-                            'partition': {
-                                'hidden': True if partcell else False,
-                                'rowspan': numpartans,
-                                'value': part.id,
-                                },
-                            'container': {
-                                'hidden': True if partcell else False,
-                                'rowspan': numpartans,
-                                'value': container,
-                                },
-                            'analyses': {
-                                'title': service.title,
-                                'units': service.getUnit(),
+                    row = {
+                        'sample_id': {
+                            'hidden': True if arcell else False,
+                            'rowspan': numans,
+                            'value': ar.getSample().id,
                             },
-                        }
-                        rows.append(row)
-                        arcell = True
-                        partcell = True
+                        'sample_type': {
+                            'hidden': True if arcell else False,
+                            'rowspan': numans,
+                            'value': ar.getSampleType().title,
+                            },
+                        'sampling_point': {
+                            'hidden': True if arcell else False,
+                            'rowspan': numans,
+                            'value':
+                                ar.getSamplePoint().title
+                                if ar.getSamplePoint() else '',
+                            },
+                        'sampling_date': {
+                            'hidden': True if arcell else False,
+                            'rowspan': numans,
+                            'value':  self.ulocalized_time(sample.getSamplingDate(), long_format=0),
+                            },
+                        'partition': {
+                            'hidden': True if partcell else False,
+                            'rowspan': numpartans,
+                            'value': part.id,
+                            },
+                        'container': {
+                            'hidden': True if partcell else False,
+                            'rowspan': numpartans,
+                            'value': container,
+                            },
+                        'analyses': {
+                            'title': service.title if service.getPointOfCapture() == 'field' else '',
+                            'units': service.getUnit() if service.getPointOfCapture() == 'field' else '',
+                        },
+                    }
+                    rows.append(row)
+                    arcell = True
+                    partcell = True
+        if labans:
+            columns['column_order'].append('analyses')
 
         # table will contain the data that from where the html
         # will take the info

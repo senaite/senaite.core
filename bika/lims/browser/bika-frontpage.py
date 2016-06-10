@@ -16,9 +16,12 @@ class FrontPageView(BrowserView):
             member = pm.getAuthenticatedMember()
             roles = member.getRoles()
             todashboard = 'Manager' in roles or 'LabManager' in roles
+            tosamples = 'Sampler' in roles or 'SampleCoordindator' in roles
 
         if todashboard == True:
             self.request.response.redirect(self.portal_url + "/bika-dashboard")
+        elif tosamples == True:
+            self.request.response.redirect(self.portal_url + "/samples?samples_review_state=to_be_sampled")
         else:
             self.set_versions()
             self.icon = self.portal_url + "/++resource++bika.lims.images/chevron_big.png"
