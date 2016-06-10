@@ -150,7 +150,7 @@ class DashboardView(BrowserView):
                     'number':       ars,
                     'total':        numars,
                     'legend':       _('of') + " " + str(numars) + ' (' + ratio +'%)',
-                    'link':         self.portal_url + '/analysisrequests?analysisrequests_review_state=to_be_sampled'})
+                    'link':         self.portal_url + '/samples?samples_review_state=to_be_sampled'})
 
         # Analysis Requests awaiting to be preserved
         review_state = ['to_be_preserved',]
@@ -184,7 +184,7 @@ class DashboardView(BrowserView):
                     'number':       ars,
                     'total':        numars,
                     'legend':       _('of') + " " + str(numars) + ' (' + ratio +'%)',
-                    'link':         self.portal_url + '/analysisrequests?analysisrequests_review_state=scheduled_sampling'})
+                    'link':         self.portal_url + '/samples?samples_review_state=to_be_sampled'})
 
         # Analysis Requests awaiting for reception
         review_state = ['sample_due',]
