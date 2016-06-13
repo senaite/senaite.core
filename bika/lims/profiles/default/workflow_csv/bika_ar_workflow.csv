@@ -34,18 +34,18 @@ Transitions,"sample, submit, schedule_sampling",,,,,,,,,,,,,,,
 Permissions,Acquire,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,Publisher,Reviewer,RegulatoryInspector,Owner,Client,Anonymous,Authenticated,SamplingCoordinator
 BIKA: Add Analysis,N,Y,Y,Y,N,Y,N,N,N,N,N,Y,N,N,N,N
 BIKA: Cancel and reinstate,N,Y,Y,Y,N,Y,N,N,N,N,N,Y,N,N,N,N
-BIKA: Edit AR,N,Y,Y,Y,N,Y,N,N,N,N,N,Y,N,N,N,N
+BIKA: Edit AR,N,Y,Y,Y,N,Y,N,N,N,N,N,Y,N,N,N,Y
 BIKA: Edit Field Results,N,Y,Y,N,N,Y,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: View Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Manage Invoices,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: Receive Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Receive Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,Y
 BIKA: Results not requested,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit AR Contact,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Add Attachment,N,Y,Y,Y,N,Y,N,N,N,N,N,Y,Y,N,N,N
 View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,Y
-Modify portal content,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
+Modify portal content,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,Y
 BIKA: Schedule Sampling,N,Y,N,N,N,N,N,N,N,N,N,N,N,N,N,Y
 ,,,,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,,,,
@@ -56,7 +56,7 @@ Transitions,sample,,,,,,,,,,,,,,,
 Permissions,Acquire,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,Publisher,Reviewer,RegulatoryInspector,Owner,Client,Anonymous,Authenticated,SamplingCoordinator
 BIKA: Add Analysis,N,Y,Y,Y,N,Y,N,N,N,N,N,Y,N,N,N,N
 BIKA: Cancel and reinstate,N,Y,Y,Y,N,Y,N,N,N,N,N,Y,N,N,N,N
-BIKA: Edit AR,N,Y,Y,Y,N,Y,N,N,N,N,N,Y,N,N,N,N
+BIKA: Edit AR,N,Y,Y,Y,N,Y,N,N,N,N,N,Y,N,N,N,Y
 BIKA: Edit Field Results,N,Y,Y,N,N,Y,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: View Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
@@ -67,7 +67,7 @@ BIKA: Results not requested,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit AR Contact,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Add Attachment,N,Y,Y,Y,N,Y,N,N,N,N,N,Y,Y,N,N,N
 View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,Y
-Modify portal content,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
+Modify portal content,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,Y
 BIKA: Schedule Sampling,N,Y,N,N,N,N,N,N,N,N,N,N,N,N,N,Y
 ,,,,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,,,,
@@ -123,7 +123,7 @@ BIKA: Cancel and reinstate,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Edit AR,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Edit Field Results,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: View Results,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,N,N,N,N,N
+BIKA: View Results,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,N,N,N,N,Y
 BIKA: Manage Invoices,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Receive Sample,N,Y,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N
@@ -193,7 +193,7 @@ BIKA: Add Analysis,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Cancel and reinstate,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit AR,N,Y,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit Results,N,Y,Y,N,Y,N,N,N,N,N,N,N,N,N,N,N
-BIKA: View Results,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,N,N,N,N,N
+BIKA: View Results,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,N,N,N,N,Y
 BIKA: Manage Invoices,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Results not requested,N,Y,Y,N,Y,N,N,N,N,N,N,N,N,N,N,N
@@ -215,7 +215,7 @@ BIKA: Add Analysis,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Cancel and reinstate,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit AR,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
-BIKA: View Results,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,N
+BIKA: View Results,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,Y
 BIKA: Manage Invoices,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Results not requested,N,Y,Y,N,Y,N,N,N,N,N,N,N,N,N,N,N
