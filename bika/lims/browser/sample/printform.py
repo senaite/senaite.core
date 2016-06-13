@@ -216,7 +216,7 @@ class SamplesPrint(BrowserView):
             for part in ar.getPartitions():
                 partcell = False
                 container = part.getContainer().title \
-                    if part.getContainer() else ''
+                    if part and part.getContainer() else ''
                 partans = part.getAnalyses()
                 numpartans = len(partans)
                 for analysis in partans:
