@@ -473,6 +473,8 @@ class SamplesView(BikaListingView):
                       'toggle': False},
             'getSamplingDate': {'title': _('Sampling Date'),
                                 'index':'getSamplingDate',
+                                'input_class': 'datepicker',
+                                'input_width': '10',
                                 'toggle': True},
             'getDateSampled': {'title': _('Date Sampled'),
                                'index':'getDateSampled',
