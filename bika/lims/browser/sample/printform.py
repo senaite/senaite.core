@@ -153,6 +153,7 @@ class SamplesPrint(BrowserView):
                         c_l.append(
                             self._sample_table_builder(sample))
                         client_d[date] = c_l
+                    result[sampler_uid][client_uid] = client_d
                 else:
                     # This sampler isn't in the dict yet.
                     # Write the client dict
