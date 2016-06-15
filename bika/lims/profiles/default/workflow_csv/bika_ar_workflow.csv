@@ -139,7 +139,7 @@ Id:,sample_prep,,,,,,,,,,,,,,,
 Title:,Sample Preparation,,,,,,,,,,,,,,,
 Description:,A sample preparation workflow is in progress,,,,,,,,,,,,,,,
 Transitions,sample_prep_complete,,,,,,,,,,,,,,,
-Permissions,Acquire,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,Publisher,Reviewer,RegulatoryInspector,Owner,Client,Anonymous,Authenticated,
+Permissions,Acquire,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,Publisher,Reviewer,RegulatoryInspector,Owner,Client,Anonymous,Authenticated,SamplingCoordinator
 ,,,,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,,,,
 Id:,sample_received,,,,,,,,,,,,,,,
