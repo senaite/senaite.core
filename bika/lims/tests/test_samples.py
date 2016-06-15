@@ -15,7 +15,7 @@ except ImportError: # Python 2.7
     import unittest
 
 
-class TestSamples(BikaFunctionalTestCase):
+class LIMS2242(BikaFunctionalTestCase):
     layer = BIKA_FUNCTIONAL_TESTING
 
     def setUp(self):
@@ -25,8 +25,14 @@ class TestSamples(BikaFunctionalTestCase):
         self.services = [servs['analysisservice-3'],
                          servs['analysisservice-6'],
                          servs['analysisservice-7']]
+        # Enabling the workflow
+        self.portal.bika_setup.setSamplingWorkflowEnabled(True)
+        self.portal.bika_setup.setScheduleSamplingEnabled(True)
 
     def tearDown(self):
+        # Enabling the workflow
+        self.portal.bika_setup.setSamplingWorkflowEnabled(False)
+        self.portal.bika_setup.setScheduleSamplingEnabled(False)
         logout()
         super(TestSamples, self).tearDown()
 
@@ -41,9 +47,6 @@ class TestSamples(BikaFunctionalTestCase):
         sampler = api.user.get(username='sampler1')
         coordinator = self.createUser('SamplingCoordinator', 'cord1')
         mtool = getToolByName(self.portal, 'portal_membership')
-        # Enabling the workflow
-        self.portal.bika_setup.setSamplingWorkflowEnabled(True)
-        self.portal.bika_setup.setScheduleSamplingEnabled(True)
         # Getting the client
         client = self.portal.clients['client-1']
         # Getting a sample type
