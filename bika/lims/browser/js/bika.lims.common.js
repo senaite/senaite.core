@@ -113,4 +113,8 @@ function CommonUtils() {
             }
         };
     }
+    that.svgToImage = function(svg) {
+        var url = 'data:image/svg+xml;base64,' + btoa(svg);
+        return '<img src="'+url+'"/>';
+    };
 }

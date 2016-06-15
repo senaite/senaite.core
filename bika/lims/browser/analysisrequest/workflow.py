@@ -19,6 +19,7 @@ from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode, _createObjectByType
+from bika.lims import interfaces
 
 import json
 import plone
@@ -631,43 +632,53 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         and "ScheduledSamplingSampler" are uncompleted.
         :return: bool
         """
-        situation = self.context
-        message = 'Not expecetd transition.'
-        if situation.portal_type == 'Sample':
-            # If we are trigering the action in a sample
-            if situation.getScheduledSamplingSampler() and\
-                situation.getSamplingDate():
-                doActionFor(situation, 'schedule_sampling')
-                self.request.response.redirect(situation.absolute_url())
-                return True
-            message = _(
-                "'Sampling date' and 'Define the Sampler for the" +
-                " scheduled sampling' must be completed and saved in order" +
-                " to schedule a sampling")
-        elif situation.portal_type == 'SamplesFolder':
-            # In Samples Folder we have to get each selected item
+        from bika.lims.utils.workflow import schedulesampling
+        message = 'Not expected transition.'
+        # In Samples Folder we have to get each selected item
+        if interfaces.ISamplesFolder.providedBy(self.context):
             select_objs = WorkflowAction._get_selected_items(self)
-            if select_objs:
-                # applay transition to each object
-                for key in select_objs.keys():
-                    sample = select_objs[key]
-                    sch_sampl = self.request.form.get(
-                        'getScheduledSamplingSampler', None)[0].get(key) if\
-                        self.request.form.get(
-                            'getScheduledSamplingSampler', None) else ''
-                    sampl_date = self.request.form.get(
-                        'getSamplingDate', None)[0].get(key) if\
-                        self.request.form.get(
-                            'getSamplingDate', None) else ''
-                    # set this values and trigger the wf action
-                    if sampl_date and sch_sampl:
-                        sample.setScheduledSamplingSampler(sch_sampl)
-                        sample.setSamplingDate(sampl_date)
-                        doActionFor(sample, 'schedule_sampling')
-                self.request.response.redirect(situation.absolute_url())
-                return True
-            message = _("No samples have been selected")
-        # In other situations
-        situation.plone_utils.addPortalMessage(message, 'info')
-        self.request.response.redirect(situation.absolute_url())
-        return False
+            message = _('Transition done.')
+            for key in select_objs.keys():
+                sample = select_objs[key]
+                # Getting the sampler
+                sch_sampl = self.request.form.get(
+                    'getScheduledSamplingSampler', None)[0].get(key) if\
+                    self.request.form.get(
+                        'getScheduledSamplingSampler', None) else ''
+                # Getting the date
+                sampl_date = self.request.form.get(
+                    'getSamplingDate', None)[0].get(key) if\
+                    self.request.form.get(
+                        'getSamplingDate', None) else ''
+                # Setting both values
+                sample.setScheduledSamplingSampler(sch_sampl)
+                sample.setSamplingDate(sampl_date)
+                # Transitioning the sample
+                success, errmsg = schedulesampling.doTransition(sample)
+                if errmsg == 'missing':
+                    message = _(
+                        "'Sampling date' and 'Define the Sampler for the" +
+                        " scheduled sampling' must be completed and saved " +
+                        "in order to schedule a sampling. Element: %s" %
+                        sample.getId())
+                elif errmsg == 'cant_trans':
+                    message = _(
+                        "The item %s can't be transitioned." % sample.getId())
+                else:
+                    message = _('Transition done.')
+                self.context.plone_utils.addPortalMessage(message, 'info')
+        else:
+            success, errmsg = schedulesampling.doTransition(self.context)
+            if errmsg == 'missing':
+                message = _(
+                    "'Sampling date' and 'Define the Sampler for the" +
+                    " scheduled sampling' must be completed and saved in " +
+                    "order to schedule a sampling.")
+            elif errmsg == 'cant_trans':
+                message = _("The item can't be transitioned.")
+            else:
+                message = _('Transition done.')
+            self.context.plone_utils.addPortalMessage(message, 'info')
+        # Reload the page in order to show the portal message
+        self.request.response.redirect(self.context.absolute_url())
+        return success

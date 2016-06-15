@@ -21,9 +21,16 @@
       for="bika.lims.interfaces.IAnalysis"
       factory="bika.lims.adapters.priorityicons.PriorityIcons"
     />
-    
-    <adapter 
+
+    <adapter
     factory="bika.lims.browser.analysis.JSONReadExtender"
     provides="bika.lims.interfaces.IJSONReadExtender" />
 
+    <browser:page
+      for="*"
+      name="get_method_instrument_constraints"
+      class="bika.lims.browser.analysis.ajaxGetMethodInstrumentConstraints"
+      permission="cmf.ModifyPortalContent"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
 </configure>

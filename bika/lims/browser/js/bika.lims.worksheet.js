@@ -342,25 +342,159 @@ function WorksheetManageResultsView() {
         });
     }
 
+    /**
+     * Stores the constraints regarding to methods and instrument assignments to
+     * each analysis. The variable is filled in initializeInstrumentsAndMethods
+     * and is used inside loadMethodEventHandlers.
+     */
+    var mi_constraints = null;
+
+    /**
+     * Applies the rules and constraints to each analysis displayed in the
+     * manage results view regarding to methods, instruments and results.
+     * For example, this service is responsible of disabling the results field
+     * if the analysis has no valid instrument available for the selected
+     * method if the service don't allow manual entry of results. Another
+     * example is that this service is responsible of populating the list of
+     * instruments avialable for an analysis service when the user changes the
+     * method to be used.
+     * See docs/imm_results_entry_behavior.png for detailed information.
+     */
     function initializeInstrumentsAndMethods() {
-        var instrumentsels = $('table.bika-listing-table select.listing_select_entry[field="Instrument"]');
-        $(instrumentsels).each(function() {
-            var sel = $(this).val();
-            if ($(this).find('option[value=""]').length > 0) {
-                $(this).find('option[value=""]').remove();
-                $(this).prepend('<option value="">'+_('None')+'</option>');
-            }
-            $(this).val(sel);
+        var auids = [];
+
+        /// Get all the analysis UIDs from this manage results table, cause
+        // we'll need them to retrieve all the IMM constraints/rules to be
+        // applied later.
+        var dictuids = $.parseJSON($('#lab_analyses #item_data, #analyses_form #item_data').val());
+        $.each(dictuids, function(key, value) { auids.push(key); });
+
+        // Retrieve all the rules/constraints to be applied for each analysis
+        // by using an ajax call. The json dictionary returned is assigned to
+        // the variable mi_constraints for further use.
+        // FUTURE: instead of an ajax call to retrieve the dictionary, embed
+        //  the dictionary in a div when the bika_listing template is rendered.
+        $.ajax({
+            url: window.portal_url + "/get_method_instrument_constraints",
+            type: 'POST',
+            data: {'_authenticator': $('input[name="_authenticator"]').val(),
+                   'uids': $.toJSON(auids) },
+            dataType: 'json'
+        }).done(function(data) {
+            // Save the constraints in the m_constraints variable
+            mi_constraints = data;
+            $.each(auids, function(index, value) {
+                // Apply the constraints/rules to each analysis.
+                load_analysis_method_constraint(value, null);
+            });
+        }).fail(function() {
+            window.bika.lims.log("bika.lims.worksheet: Something went wrong while retrieving analysis-method-instrument constraints");
         });
-        var methodsels = $('table.bika-listing-table select.listing_select_entry[field="Method"]');
-        $(methodsels).each(function() {
-            var sel = $(this).val();
-            if ($(this).find('option[value=""]').length > 0) {
-                $(this).find('option[value=""]').remove();
-                $(this).prepend('<option value="">'+_('Not defined')+'</option>');
+    }
+
+    /**
+     * Applies the constraints and rules to the specified analysis regarding to
+     * the method specified. If method is null, the function assumes the rules
+     * must apply for the currently selected method.
+     * The function uses the variable mi_constraints to find out which is the
+     * rule to be applied to the analysis and method specified.
+     * See initializeInstrumentsAndMethods() function for further information
+     * about the constraints and rules retrieval and assignment.
+     * @param {string} analysis_uid - The Analysis UID
+     * @param {string} method_uid - The Method UID. If null, uses the method
+     *  that is currently selected for the specified analysis.
+     */
+    function load_analysis_method_constraint(analysis_uid, method_uid) {
+        if (method_uid === null) {
+            // Assume to load the constraints for the currently selected method
+            muid = $('select.listing_select_entry[field="Method"][uid="'+analysis_uid+'"]').val();
+            muid = muid ? muid : '';
+            load_analysis_method_constraint(analysis_uid, muid);
+            return;
+        }
+        andict = mi_constraints[analysis_uid];
+        if (!andict) {
+            return;
+        }
+        constraints = andict[method_uid];
+        if (!constraints || constraints.length < 7) {
+            return;
+        }
+        m_selector = $('select.listing_select_entry[field="Method"][uid="'+analysis_uid+'"]');
+        i_selector = $('select.listing_select_entry[field="Instrument"][uid="'+analysis_uid+'"]');
+
+        // None option in method selector?
+        $(m_selector).find('option[value=""]').remove();
+        if (constraints[1] == 1) {
+            $(m_selector).prepend('<option value="">'+_('Not defined')+'</option>');
+        }
+
+        // Select the method
+        $(m_selector).val(method_uid);
+
+        // Method selector visible?
+        // 0: no, 1: yes, 2: label, 3: readonly
+        $(m_selector).prop('disabled', false);
+        $('.method-label[uid="'+analysis_uid+'"]').remove();
+        if (constraints[0] === 0) {
+            $(m_selector).hide();
+        } else if (constraints[0] == 1) {
+            $(m_selector).show();
+        } else if (constraints[0] == 2) {
+            if (andict.length > 1) {
+                $(m_selector).hide();
+                var method_name = $(m_selector).find('option[value="'+method_uid+'"]').innerHtml();
+                $(m_selector).after('<span class="method-label" uid="'+analysis_uid+'" href="#">'+method_name+'</span>');
             }
-            $(this).val(sel);
-        });
+        } else if (constraints[0] == 3) {
+            //$(m_selector).prop('disabled', true);
+            $(m_selector).show();
+        }
+
+        // Populate instruments list
+        $(i_selector).find('option').remove();
+        console.log(constraints[7]);
+        if (constraints[7]) {
+            $.each(constraints[7], function(key, value) {
+                console.log(key+ ": "+value);
+                $(i_selector).append('<option value="'+key+'">'+value+'</option>');
+            });
+        }
+
+        // None option in instrument selector?
+        if (constraints[3] == 1) {
+            $(i_selector).prepend('<option value="">'+_('None')+'</option>');
+        }
+
+        // Select the default instrument
+        $(i_selector).val(constraints[4]);
+
+        // Instrument selector visible?
+        if (constraints[2] === 0) {
+            $(i_selector).hide();
+        } else if (constraints[2] == 1) {
+            $(i_selector).show();
+        }
+
+        // Allow to edit results?
+        if (constraints[5] === 0) {
+            $('.interim input[uid="'+analysis_uid+'"]').val('');
+            $('input[field="Result"][uid="'+analysis_uid+'"]').val('');
+            $('.interim input[uid="'+analysis_uid+'"]').prop('disabled', true);
+            $('input[field="Result"][uid="'+analysis_uid+'"]').prop('disabled', true);
+        } else if (constraints[5] == 1) {
+            $('.interim input[uid="'+analysis_uid+'"]').prop('disabled', false);
+            $('input[field="Result"][uid="'+analysis_uid+'"]').prop('disabled', false);
+        }
+
+        // Info/Warn message?
+        $('.alert-instruments-invalid[uid="'+analysis_uid+'"]').remove();
+        if (constraints[6] && constraints[6] !== '') {
+            $(i_selector).after('<img uid="'+analysis_uid+'" class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/warning.png" title="'+constraints[6]+'")">');
+        }
+
+        $('.amconstr[uid="'+analysis_uid+'"]').remove();
+        //$(m_selector).before("<span style='font-weight:bold;font-family:courier;font-size:1.4em;' class='amconstr' uid='"+analysis_uid+"'>"+constraints[10]+"&nbsp;&nbsp;</span>");
     }
 
     function loadHeaderEventsHandlers() {
@@ -424,193 +558,9 @@ function WorksheetManageResultsView() {
      */
     function loadMethodEventHandlers() {
         $('table.bika-listing-table select.listing_select_entry[field="Method"]').change(function() {
-            var method = null;
-            var service = null;
-            var muid = $(this).val();
             var auid = $(this).attr('uid');
-            var suid = $(this).attr('as_uid');
-            var instrselector = $('select.listing_select_entry[field="Instrument"][uid="'+auid+'"]');
-            var selectedinstr = $(instrselector).val();
-            var m_manualentry = true;
-            var s_instrentry  = false;
-            var qc_analysis = $(this).closest('tr').hasClass('qc-analysis');
-            $(instrselector).find('option').remove();
-            $(instrselector).prop('disabled', false);
-            $('img.alert-instruments-invalid[uid="'+auid+'"]').remove();
-            $('.interim input[uid="'+auid+'"]').prop('disabled', false);
-            $('.input[field="Result"][uid="'+auid+'"]').prop('disabled', false);
-
-            if (muid != '') {
-                // Update the instruments selector, but only if the service has AllowInstrumentEntryOfResults enabled.
-                // Also, only update with those instruments available for the Analysis Service. If any of the method
-                // instruments are available for that Analysis Service, check if the method allows the manual entry
-                // of results.
-
-                // Is manual entry allowed for this method?
-                var request_data = {
-                    catalog_name: "uid_catalog",
-                    UID: muid,
-                    include_fields: ['ManualEntryOfResultsViewField', 'Title']
-                };
-                window.bika.lims.jsonapi_read(request_data, function(data) {
-                    method = (data.objects && data.objects.length > 0) ? data.objects[0] : null;
-                    m_manualentry = (method != null) ? method.ManualEntryOfResultsViewField : true;
-                    $('.interim input[uid="'+auid+'"]').prop('disabled', !m_manualentry);
-                    $('.input[field="Result"][uid="'+auid+'"]').prop('disabled', !m_manualentry);
-                    if (!m_manualentry) {
-                        // This method doesn't allow the manual entry of Results
-                        var title = _("Manual entry of results for method ${methodname} is not allowed", {methodname: method.Title});
-                        $('.input[field="Result"][uid="'+auid+'"]').parent().append('<img uid="'+auid+'" class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/warning.png" title="'+title+'")">');
-                    }
-
-                    // Has the Analysis Service the 'Allow Instrument Entry of Results' enabled?
-                    var request_data = {
-                        catalog_name: "uid_catalog",
-                        UID: suid,
-                        include_fields: ['InstrumentEntryOfResults']
-                    };
-                    window.bika.lims.jsonapi_read(request_data, function(asdata) {
-                        service = (asdata.objects && asdata.objects.length > 0) ? asdata.objects[0] : null;
-                        s_instrentry = (service != null) ? service.InstrumentEntryOfResults : false;
-                        if (!s_instrentry) {
-                            // The service doesn't allow instrument entry of results.
-                            // Set instrument selector to None and hide it
-                            $(instrselector).append("<option value=''>"+_("None")+"</option>");
-                            $(instrselector).val('');
-                            $(instrselector).hide();
-                            return;
-                        }
-
-                        // Get the available instruments for this method and analysis service
-                        $(instrselector).show();
-                        $.ajax({
-                            url: window.portal_url + "/get_method_service_instruments",
-                            type: 'POST',
-                            data: {'_authenticator': $('input[name="_authenticator"]').val(),
-                                   'muid': muid,
-                                   'suid': suid },
-                            dataType: 'json'
-                        }).done(function(idata) {
-                            var invalid = []
-                            var valid = false;
-
-                            // Populate the instrument selector with the instruments retrieved
-                            $.each(idata, function(index, value) {
-                                if (value['isvalid'] == true || qc_analysis == true) {
-                                    $(instrselector).append('<option value="'+value['uid']+'">'+value['title']+'</option>');
-                                    if (selectedinstr == value['uid']) {
-                                        $(instrselector).val(value['uid'])
-                                    }
-                                    valid = true;
-                                } else {
-                                    invalid.push(value['title'])
-                                }
-                            });
-
-                            if (!valid) {
-                                // There isn't any valid instrument found
-                                $(instrselector).append('<option value="">'+_('None')+'</option>');
-                                $(instrselector).val('');
-
-                            } else if (m_manualentry) {
-                                // Some valid instruments found and Manual Entry of Results allowed
-                                $(instrselector).prepend('<option value="">'+_('None')+'</option>');
-
-                            }
-
-                            if (invalid.length > 0) {
-                                // At least one instrument is invalid (out-of-date or qc-fail)
-
-                                if (valid) {
-                                    // At least one instrument valid found too
-                                    var title = _("Invalid instruments are not shown: ${invalid_list}", {invalid_list: invalid.join(", ")});
-                                    $(instrselector).parent().append('<img uid="'+auid+'" class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/warning.png" title="'+title+'")">');
-
-                                } else if (m_manualentry) {
-                                    // All instruments found are invalid, but manual entry is allowed
-                                    var title = _("No valid instruments found: ${invalid_list}", {invalid_list: invalid.join(", ")});
-                                    $(instrselector).parent().append('<img uid="'+auid+'" class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/exclamation.png" title="'+title+'")">');
-
-                                } else {
-                                    // All instruments found are invalid and manual entry not allowed
-                                    var title = _("Manual entry of results for method {methodname} is not allowed and no valid instruments found: ${invalid_list}",
-                                                  {methodname:  method.Title, invalid_list:invalid.join(", ")});
-                                    $(instrselector).parent().append('<img uid="'+auid+'" class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/exclamation.png" title="'+title+'")">');
-                                    $('.interim input[uid="'+auid+'"]').prop('disabled', true);
-                                    $('.input[field="Result"][uid="'+auid+'"]').prop('disabled', true);
-                                }
-                            }
-
-                        }).fail(function() {
-                            $(instrselector).append('<option value="">'+_('None')+'</option>');
-                            $(instrselector).val("");
-                            if (!m_manualentry) {
-                                var title = _("Unable to load instruments: ${invalid_list}", {invalid_list: invalid.join(", ")});
-                                $(instrselector).parent().append('<img uid="'+auid+'" class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/exclamation.png" title="'+title+'")">');
-                                $(instrselector).prop('disabled', true);
-                            } else {
-                                $(instrselector).prop('disabled', false);
-                            }
-                        });
-
-                    });
-                });
-
-            } else {
-                // No method selected. Which are the instruments assigned to the analysis service and without any method assigned?
-                $.ajax({
-                    url: window.portal_url + "/get_method_service_instruments",
-                    type: 'POST',
-                    data: {'_authenticator': $('input[name="_authenticator"]').val(),
-                           'muid': '0',
-                           'suid': suid },
-                    dataType: 'json'
-                }).done(function(idata) {
-                    var invalid = []
-                    var valid = false;
-
-                    // Populate the instrument selector with the instruments retrieved
-                    $.each(idata, function(index, value) {
-                        if (value['isvalid'] == true) {
-                            $(instrselector).append('<option value="'+value['uid']+'">'+value['title']+'</option>');
-                            if (selectedinstr == value['uid']) {
-                                $(instrselector).val(value['uid'])
-                            }
-                            valid = true;
-                        } else {
-                            invalid.push(value['title'])
-                        }
-                    });
-
-                    if (!valid) {
-                        // There isn't any valid instrument found
-                        $(instrselector).append('<option value="">'+_('None')+'</option>');
-                        $(instrselector).val('');
-                    } else {
-                        // Some valid instruments found and Manual Entry of Results allowed
-                        $(instrselector).prepend('<option value="">'+_('None')+'</option>');
-                    }
-
-                    if (invalid.length > 0) {
-                        // At least one instrument is invalid (out-of-date or qc-fail)
-                        if (valid) {
-                            // At least one instrument valid found too
-                            var title = _("Invalid instruments are not shown: ${invalid_list}", {invalid_list: invalid.join(", ")});
-                            $(instrselector).parent().append('<img uid="'+auid+'" class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/warning.png" title="'+title+'")">');
-                        } else {
-                            // All instruments found are invalid
-                            var title = _("No valid instruments found: ${invalid_list}", {invalid_list: invalid.join(", ")});
-                            $(instrselector).parent().append('<img uid="'+auid+'" class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/exclamation.png" title="'+title+'")">');
-                        }
-                    }
-                }).fail(function() {
-                    $(instrselector).append('<option value="">'+_('None')+'</option>');
-                    $(instrselector).val('');
-                    var title = _("Unable to load instruments: ${invalid_list}", {invalid_list: invalid.join(", ")});
-                    $(instrselector).parent().append('<img uid="'+auid+'" class="alert-instruments-invalid" src="'+window.portal_url+'/++resource++bika.lims.images/exclamation.png" title="'+title+'")">');
-                    $(instrselector).prop('disabled', true);
-                });
-            }
+            var muid = $(this).val();
+            load_analysis_method_constraint(auid, muid);
         });
     }
 }

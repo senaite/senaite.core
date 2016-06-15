@@ -85,7 +85,7 @@
                                             tal:content="python: row[column_id]['units']"></span>
                                     </td>
                                     <td tal:condition="python: column_id == 'analyses' and row[column_id]['title'] == ''"
-                                        class="border:none;">                                        
+                                        class="border:none;">
                                     </td>
                                     <td tal:condition="python: column_id == 'partition' and not row[column_id]['hidden']"
                                         tal:attributes="rowspan python:row[column_id]['rowspan'];

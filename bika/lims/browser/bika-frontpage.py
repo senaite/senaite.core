@@ -8,8 +8,8 @@ class FrontPageView(BrowserView):
 
     def __call__(self):
         todashboard = False
+        mtool=getToolByName(self.context, 'portal_membership')
         tosamples = False
-        mtool = getToolByName(self.context, 'portal_membership')
         if not mtool.isAnonymousUser() and self.context.bika_setup.getDashboardByDefault():
             # If authenticated user with labman role,
             # display the Main Dashboard view
@@ -17,7 +17,7 @@ class FrontPageView(BrowserView):
             member = pm.getAuthenticatedMember()
             roles = member.getRoles()
             todashboard = 'Manager' in roles or 'LabManager' in roles
-            tosamples = 'Sampler' in roles or 'SampleCoordindator' in roles
+            tosamples = 'Sampler' in roles or 'SampleCoordinator' in roles
 
         if todashboard == True:
             self.request.response.redirect(self.portal_url + "/bika-dashboard")
@@ -27,6 +27,7 @@ class FrontPageView(BrowserView):
             self.set_versions()
             self.icon = self.portal_url + "/++resource++bika.lims.images/chevron_big.png"
             return self.template()
+
 
     def set_versions(self):
         """Configure a list of product versions from portal.quickinstaller
