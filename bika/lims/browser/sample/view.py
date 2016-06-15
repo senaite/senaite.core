@@ -99,18 +99,21 @@ class SamplesView(BikaListingView):
                                   'toggle': False},
             'AdHoc': {'title': _('Ad-Hoc'),
                       'toggle': False},
-            'getSamplingDate': {'title': _('Sampling Date'),
-                                'index':'getSamplingDate',
+            'SamplingDate': {'title': _('Sampling Date'),
+                                'index': 'getSamplingDate',
+                                'input_class': 'datepicker autosave',
+                                'input_width': '10',
                                 'toggle': True},
-            'getDateSampled': {'title': _('Date Sampled'),
+            'DateSampled': {'title': _('Date Sampled'),
                                'index':'getDateSampled',
                                'toggle': SamplingWorkflowEnabled,
-                               'input_class': 'datepicker_nofuture',
+                               'input_class': 'datepicker_nofuture autosave',
                                'input_width': '10'},
             'getSampler': {'title': _('Sampler'),
                            'toggle': SamplingWorkflowEnabled},
             'getScheduledSamplingSampler': {
                 'title': _('Sampler for scheduled sampling'),
+                'input_class': 'autosave',
                 'toggle': self.context.bika_setup.getScheduleSamplingEnabled()
                 },
             'getDatePreserved': {'title': _('Date Preserved'),
@@ -143,9 +146,9 @@ class SamplesView(BikaListingView):
                          'getStorageLocation',
                          'SamplingDeviation',
                          'AdHoc',
-                         'getSamplingDate',
+                         'SamplingDate',
                          'getScheduledSamplingSampler',
-                         'getDateSampled',
+                         'DateSampled',
                          'getSampler',
                          'getDatePreserved',
                          'getPreserver',
@@ -163,9 +166,9 @@ class SamplesView(BikaListingView):
                          'Requests',
                          'getClientReference',
                          'getClientSampleID',
-                         'getSamplingDate',
+                         'SamplingDate',
                          'getScheduledSamplingSampler',
-                         'getDateSampled',
+                         'DateSampled',
                          'getSampler',
                          'getPreserver',
                          'getSampleTypeTitle',
@@ -187,10 +190,10 @@ class SamplesView(BikaListingView):
                          'Requests',
                          'getClientReference',
                          'getClientSampleID',
-                         'getSamplingDate',
+                         'SamplingDate',
                          'getScheduledSamplingSampler',
                          'getScheduledSamplingSampler',
-                         'getDateSampled',
+                         'DateSampled',
                          'getSampler',
                          'getDatePreserved',
                          'getPreserver',
@@ -217,9 +220,9 @@ class SamplesView(BikaListingView):
                          'getStorageLocation',
                          'SamplingDeviation',
                          'AdHoc',
-                         'getSamplingDate',
+                         'SamplingDate',
                          'getScheduledSamplingSampler',
-                         'getDateSampled',
+                         'DateSampled',
                          'getSampler',
                          'getDatePreserved',
                          'getPreserver',
@@ -241,9 +244,9 @@ class SamplesView(BikaListingView):
                          'getStorageLocation',
                          'SamplingDeviation',
                          'AdHoc',
-                         'getSamplingDate',
+                         'SamplingDate',
                          'getScheduledSamplingSampler',
-                         'getDateSampled',
+                         'DateSampled',
                          'getSampler',
                          'getDatePreserved',
                          'getPreserver',
@@ -265,9 +268,9 @@ class SamplesView(BikaListingView):
                          'getStorageLocation',
                          'SamplingDeviation',
                          'AdHoc',
-                         'getSamplingDate',
+                         'SamplingDate',
                          'getScheduledSamplingSampler',
-                         'getDateSampled',
+                         'DateSampled',
                          'getSampler',
                          'getDatePreserved',
                          'getPreserver',
@@ -290,10 +293,10 @@ class SamplesView(BikaListingView):
                          'getStorageLocation',
                          'SamplingDeviation',
                          'AdHoc',
-                         'getSamplingDate',
+                         'SamplingDate',
                          'getScheduledSamplingSampler',
                          'DateReceived',
-                         'getDateSampled',
+                         'DateSampled',
                          'getSampler',
                          'getDatePreserved',
                          'getPreserver',
@@ -336,7 +339,7 @@ class SamplesView(BikaListingView):
         item['Created'] = self.ulocalized_time(obj.created())
 
         samplingdate = obj.getSamplingDate()
-        item['getSamplingDate'] = self.ulocalized_time(samplingdate, long_format=1)
+        item['SamplingDate'] = self.ulocalized_time(samplingdate, long_format=1)
 
         after_icons = ''
         if obj.getSampleType().getHazardous():
@@ -360,7 +363,7 @@ class SamplesView(BikaListingView):
             datesampled = self.ulocalized_time(obj.getDateSampled())
             if not datesampled:
                 datesampled = self.ulocalized_time(DateTime())
-                item['class']['getDateSampled'] = 'provisional'
+                item['class']['DateSampled'] = 'provisional'
             sampler = obj.getSampler().strip()
             if sampler:
                 item['replace']['getSampler'] = self.user_fullname(sampler)
@@ -370,7 +373,7 @@ class SamplesView(BikaListingView):
         else:
             datesampled = ''
             sampler = ''
-        item['getDateSampled'] = datesampled
+        item['DateSampled'] = datesampled
         item['getSampler'] = sampler
         # sampling workflow - inline edits for Sampler, Date Sampled and
         # Scheduled Sampling Sampler
@@ -397,13 +400,13 @@ class SamplesView(BikaListingView):
                 username = getAuthenticatedMember().getUserName()
                 Sampler = sampler and sampler or \
                     (username in samplers.keys() and username) or ''
-                item['required'].append('getDateSampled')
-                item['allow_edit'].append('getDateSampled')
+                item['required'].append('DateSampled')
+                item['allow_edit'].append('DateSampled')
                 item['getSampler'] = Sampler
             # coordinator permissions
             if self._schedule_sampling_permissions():
-                item['required'].append('getSamplingDate')
-                item['allow_edit'].append('getSamplingDate')
+                item['required'].append('SamplingDate')
+                item['allow_edit'].append('SamplingDate')
                 item['required'].append('getScheduledSamplingSampler')
                 item['allow_edit'].append(
                     'getScheduledSamplingSampler')
@@ -413,7 +416,11 @@ class SamplesView(BikaListingView):
         # XXX This should be a list of preservers...
         item['getPreserver'] = ''
         item['getDatePreserved'] = ''
-
+        # Here we are defining the name of the content field represented by
+        # the column
+        item['field']['getSampler'] = 'Sampler'
+        item['field']['getScheduledSamplingSampler'] =\
+            'ScheduledSamplingSampler'
         # inline edits for Preserver and Date Preserved
         checkPermission = self.context.portal_membership.checkPermission
         if checkPermission(PreserveSample, obj):
@@ -442,7 +449,7 @@ class SamplesView(BikaListingView):
         for i,state in enumerate(self.review_states):
             if state['id'] == self.review_state.get('id', ''):
                 if 'getSampler' not in toggle_cols \
-                   or 'getDateSampled' not in toggle_cols:
+                   or 'DateSampled' not in toggle_cols:
                     if 'hide_transitions' in state:
                         state['hide_transitions'].append('sample')
                     else:
