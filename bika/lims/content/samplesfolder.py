@@ -1,5 +1,5 @@
 """SamplesFolder is a fake folder to live in the nav bar.  It has
-view from browser/samplesfolder.py wired to it.
+view from browser/sample.py/SamplesView wired to it.
 """
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi

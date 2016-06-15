@@ -7,13 +7,13 @@ from bika.lims.permissions import *
 
 
 def upgrade(tool):
-    """Upgrade step required for Bika LIMS 3.1.11
+    """Upgrade step required for Bika LIMS 3.2.0
     """
     portal = aq_parent(aq_inner(tool))
 
     qi = portal.portal_quickinstaller
     ufrom = qi.upgradeInfo('bika.lims')['installedVersion']
-    logger.info("Upgrading Bika LIMS: %s -> %s" % (ufrom, '3111'))
+    logger.info("Upgrading Bika LIMS: %s -> %s" % (ufrom, '3.1.11'))
 
     """Updated profile steps
     list of the generic setup import step names: portal.portal_setup.getSortedImportSteps() <---
@@ -24,19 +24,19 @@ def upgrade(tool):
     setup = portal.portal_setup
     setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'jsregistry')
-    # setup.runImportStepFromProfile('profile-bika.lims:default', 'cssregistry')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'cssregistry')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'workflow-csv')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'factorytool')
-    # setup.runImportStepFromProfile('profile-bika.lims:default', 'controlpanel')
-    # setup.runImportStepFromProfile('profile-bika.lims:default', 'catalog')
-    # setup.runImportStepFromProfile('profile-bika.lims:default', 'propertiestool')
-    # setup.runImportStepFromProfile('profile-bika.lims:default', 'skins')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'controlpanel')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'catalog')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'propertiestool')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'skins')
+    # Creating all the sampling coordinator roles, permissions and indexes
     create_samplingcoordinator(portal)
     """Update workflow permissions
     """
     wf = getToolByName(portal, 'portal_workflow')
     wf.updateRoleMappings()
-
     return True
 
 
@@ -55,6 +55,7 @@ def create_samplingcoordinator(portal):
     # permissions
     # to deal with permissions http://docs.plone.org/develop/plone/security/permissions.html#checking-if-the-logged-in-user-has-a-permission
     # Root permissions
+    # The last 0/1 regards the 'Acquire' column in the workflow's csv's
     mp = portal.manage_permission
     mp(AddSamplePartition, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler', 'SamplingCoordinator'], 1)
     mp(ManageARPriority, ['Manager', 'LabManager', 'LabClerk'], 1)

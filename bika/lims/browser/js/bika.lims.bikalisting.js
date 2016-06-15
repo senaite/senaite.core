@@ -22,6 +22,7 @@ function BikaListingTableView() {
 		column_toggle_context_menu()
 		column_toggle_context_menu_selection()
 		show_more_clicked();
+        autosave();
 
 		$('*').click(function () {
 			if ($(".tooltip").length > 0) {
@@ -518,4 +519,67 @@ function BikaListingTableView() {
 								 'left': tPosX
 							 })
 	}
+
+    function autosave() {
+        /*
+        This function looks for the column defined as 'autosave' and if
+        its value is true, the result of this input will be saved after each
+        change via ajax.
+        */
+        $('select.autosave, input.autosave').not('[type="hidden"]')
+            .each(function(i) {
+            // Save select fields
+            $(this).change(function () {
+                var pointer = this;
+                build_typical_save_request(pointer);
+            });
+        });
+    }
+    function build_typical_save_request(pointer) {
+        /**
+         * Build an array with the data to be saved for the typical data fields.
+         * @pointer is the object which has been modified and we want to save its new data.
+         */
+        var fieldvalue, fieldname, requestdata={}, uid, tr;
+        fieldvalue = $(pointer).val();
+        fieldname = $(pointer).attr('field');
+        tr = $(pointer).closest('tr');
+        uid = $(pointer).attr('uid');
+        requestdata[fieldname] = fieldvalue;
+        requestdata['obj_uid']= uid;
+        save_elements(requestdata, tr);
+    }
+    function save_elements(requestdata, tr) {
+        /**
+         * Given a dict with a fieldname and a fieldvalue, save this data via ajax petition.
+         * @requestdata should has the format  {fieldname=fieldvalue, uid=xxxx} ->  { ReportDryMatter=false, uid=xxx}.
+         */
+        var url = window.location.href.replace('/base_view', '');
+        // Staff for the notification
+        var name = $(tr).attr('title');
+        var anch =  "<a href='"+ url + "'>" + name + "</a>";
+        $.ajax({
+            type: "POST",
+            url: window.portal_url+"/@@API/update",
+            data: requestdata
+        })
+        .done(function(data) {
+            //success alert
+            if (data != null && data['success'] == true) {
+                bika.lims.SiteView.notificationPanel(anch + ': ' + name + ' updated successfully', "succeed");
+            } else {
+                bika.lims.SiteView.notificationPanel('Error while updating ' + name + ' for '+ anch, "error");
+                var msg = '[bika.lims.analysisrequest.js] Error while updating ' + name + ' for '+ ar;
+                console.warn(msg);
+                window.bika.lims.error(msg);
+            }
+        })
+        .fail(function(){
+            //error
+            bika.lims.SiteView.notificationPanel('Error while updating ' + name + ' for '+ anch, "error");
+            var msg = '[bika.lims.analysisrequest.js] Error while updating ' + name + ' for '+ ar;
+            console.warn(msg);
+            window.bika.lims.error(msg);
+        });
+    }
 }
