@@ -114,6 +114,6 @@ class LIMS2257(BikaFunctionalTestCase):
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestLimitDetections))
+    suite.addTest(unittest.makeSuite(LIMS2257))
     suite.layer = BIKA_FUNCTIONAL_TESTING
     return suite
