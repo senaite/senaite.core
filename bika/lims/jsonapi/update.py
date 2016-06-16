@@ -104,8 +104,8 @@ class Update(object):
             uc = getToolByName(self.context, 'uid_catalog')
             brain = uc(UID=self.request.get('obj_uid', ''))
             obj = brain[0].getObject() if brain else None
-        elif not self.request.get('obj_uid', ''):
-            obj_path = self.request('obj_path', '')
+        elif self.request.get('obj_path', ''):
+            obj_path = self.request['obj_path']
             site_path = request['PATH_INFO'].replace("/@@API/update", "")
             obj = context.restrictedTraverse(str(site_path + obj_path))
         if obj:
