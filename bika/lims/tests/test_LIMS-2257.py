@@ -15,11 +15,11 @@ except ImportError: # Python 2.7
     import unittest
 
 
-class LIMS2252(BikaFunctionalTestCase):
+class LIMS2257(BikaFunctionalTestCase):
     layer = BIKA_FUNCTIONAL_TESTING
 
     def setUp(self):
-        super(LIMS2252, self).setUp()
+        super(LIMS2257, self).setUp()
         login(self.portal, TEST_USER_NAME)
         servs = self.portal.bika_setup.bika_analysisservices
         self.services = [servs['analysisservice-3'],
@@ -34,7 +34,7 @@ class LIMS2252(BikaFunctionalTestCase):
         self.portal.bika_setup.setSamplingWorkflowEnabled(False)
         self.portal.bika_setup.setScheduleSamplingEnabled(False)
         logout()
-        super(LIMS2252, self).tearDown()
+        super(LIMS2257, self).tearDown()
 
     def test_group_samplingcoordinators_exist(self):
         """
