@@ -1488,6 +1488,15 @@ class AnalysisRequest(BaseFolder):
                 value.append(val)
         return value
 
+    def getAnalysisCategoryIDs(self):
+        proxies = self.getAnalyses(full_objects=True)
+        value = []
+        for proxy in proxies:
+            val = proxy.getService().getCategory().id
+            if val not in value:
+                value.append(val)
+        return value
+
     def getAnalysisService(self):
         proxies = self.getAnalyses(full_objects=True)
         value = []

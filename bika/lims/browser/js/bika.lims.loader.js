@@ -79,8 +79,8 @@ window.bika.lims.controllers =  {
         ['ClientSamplingRoundAddEditView'],
 
     // Sampling Rounds PrintView
-    ".samplinground-print-form":
-        ['SamplingRoundtPrintView'],
+    "#sr_publish_container":
+        ['SamplingRoundPrintView'],
 
     // Reference Samples
     ".portaltype-referencesample.template-analyses":
