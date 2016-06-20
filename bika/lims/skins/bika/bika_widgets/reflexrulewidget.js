@@ -81,31 +81,37 @@ jQuery(function($){
         //Check if the selected analysis service has discrete rules
         var as_uid = $(as).find(":selected").attr('value');
         var as_info = setupdata[method].analysisservices[as_uid];
-        var resultoptions = as_info.resultoptions;
-        if(resultoptions.length > 0){
-            // If the analysis service has discrete values, lets hide the range
-            // inputs and display the result selector with all the possible
-            // results for the analysis service
-            $(as).siblings('.rangecontainer').hide().find('input').val('');
-            $(as).siblings('.resultoptioncontainer').show();
-            // Delete old options
-            var select = $(as).siblings('.resultoptioncontainer').find('select');
-            $(select).find('option').remove();
-            // Write the different options
-            for (var i=0; resultoptions.length > i; i++){
-                $(select).append(
-                    '<option value="' + resultoptions[i].ResultValue +
-                    '">' + resultoptions[i].ResultText + '</option>'
-                );
-            }
+        if (as_info === undefined){
+            var _ = window.jarn.i18n.MessageFactory("bika");
+            window.bika.lims.portalMessage(_('An analysis service must be selected'));
         }
         else{
-            // If the analysis service has normal values, lets hide the discrete
-            // values selector and remove its options
-            $(as).siblings('.resultoptioncontainer').hide();
-            $(as).siblings('.rangecontainer').show();
-            var opts = $(as).siblings('.resultoptioncontainer').find('option');
-            $(opts).remove();
+            var resultoptions = as_info.resultoptions;
+            if(resultoptions.length > 0){
+                // If the analysis service has discrete values, lets hide the range
+                // inputs and display the result selector with all the possible
+                // results for the analysis service
+                $(as).siblings('.rangecontainer').hide().find('input').val('');
+                $(as).siblings('.resultoptioncontainer').show();
+                // Delete old options
+                var select = $(as).siblings('.resultoptioncontainer').find('select');
+                $(select).find('option').remove();
+                // Write the different options
+                for (var i=0; resultoptions.length > i; i++){
+                    $(select).append(
+                        '<option value="' + resultoptions[i].ResultValue +
+                        '">' + resultoptions[i].ResultText + '</option>'
+                    );
+                }
+            }
+            else{
+                // If the analysis service has normal values, lets hide the discrete
+                // values selector and remove its options
+                $(as).siblings('.resultoptioncontainer').hide();
+                $(as).siblings('.rangecontainer').show();
+                var opts = $(as).siblings('.resultoptioncontainer').find('option');
+                $(opts).remove();
+            }
         }
     }
 
