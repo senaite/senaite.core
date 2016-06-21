@@ -31,72 +31,9 @@ def upgrade(tool):
     # setup.runImportStepFromProfile('profile-bika.lims:default', 'catalog')
     # setup.runImportStepFromProfile('profile-bika.lims:default', 'propertiestool')
     # setup.runImportStepFromProfile('profile-bika.lims:default', 'skins')
-    create_samplingcoordinator(portal)
     """Update workflow permissions
     """
     wf = getToolByName(portal, 'portal_workflow')
     wf.updateRoleMappings()
 
     return True
-
-
-def create_samplingcoordinator(portal):
-    # Creates the new group
-    portal_groups = portal.portal_groups
-    if 'SamplingCoordinator'\
-            not in portal.acl_users.portal_role_manager.listRoleIds():
-        portal.acl_users.portal_role_manager.addRole('SamplingCoordinator')
-    # add roles to the portal
-    portal._addRole('SamplingCoordinator')
-    if 'SamplingCoordinators' not in portal_groups.listGroupIds():
-        portal_groups.addGroup(
-            'SamplingCoordinators', title="Sampling Coordinators",
-            roles=['SamplingCoordinator'])
-    # permissions
-    # to deal with permissions http://docs.plone.org/develop/plone/security/permissions.html#checking-if-the-logged-in-user-has-a-permission
-    # Root permissions
-    mp = portal.manage_permission
-    mp(AddSamplePartition, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler', 'SamplingCoordinator'], 1)
-    mp(ManageARPriority, ['Manager', 'LabManager', 'LabClerk'], 1)
-    mp(ManageAnalysisRequests, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'RegulatoryInspector', 'SamplingCoordinator'], 1)
-    mp(ManageSamples, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'RegulatoryInspector', 'SamplingCoordinator'], 1)
-    mp(ScheduleSampling, ['Manager', 'SamplingCoordinator'], 0)
-    mp(ReceiveSample, ['Manager', 'LabManager', 'LabClerk', 'Sampler', 'SamplingCoordinator'], 1)
-    mp(EditSample, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 1)
-    mp(ViewResults, ['Manager', 'LabManager', 'Analyst', 'Sampler', 'RegulatoryInspector', 'SamplingCoordinator'], 1)
-    mp(EditSamplePartition, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 1)
-    # /clients folder permissions
-    mp = portal.clients.manage_permission
-    mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'SamplingCoordinator'], 0)
-    mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Member', 'Analyst', 'Sampler', 'Preserver', 'SamplingCoordinator', 'SamplingCoordinator'], 0)
-    mp('Access contents information', ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 0)
-    portal.clients.reindexObject()
-    for obj in portal.clients.objectValues():
-        mp = obj.manage_permission
-        mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'SamplingCoordinator'], 0)
-        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Member', 'Analyst', 'Sampler', 'Preserver', 'SamplingCoordinator'], 0)
-        mp('Access contents information', ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 0)
-        obj.reindexObject()
-        for contact in portal.clients.objectValues('Contact'):
-            mp = contact.manage_permission
-            mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Owner', 'Analyst', 'Sampler', 'Preserver', 'SamplingCoordinator'], 0)
-            mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner', 'SamplingCoordinator'], 0)
-
-    # /analysisrequests folder permissions
-    mp = portal.analysisrequests.manage_permission
-    mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
-    mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
-    mp('Access contents information', ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
-    portal.analysisrequests.reindexObject()
-    # /samples folder permissions
-    mp = portal.samples.manage_permission
-    mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
-    mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'SamplingCoordinator'], 0)
-    mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
-    mp('Access contents information', ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
-    portal.analysisrequests.reindexObject()
-
-    # Add the index for the catalog
-    bc = getToolByName(portal, 'bika_catalog', None)
-    if 'getScheduledSamplingSampler' not in bc.indexes():
-        bc.addIndex('getScheduledSamplingSampler', 'FieldIndex')

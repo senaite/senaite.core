@@ -10,6 +10,7 @@
 
   <i18n:registerTranslations directory="locales" />
 
+
 <includeDependencies package="." />
 //  <include package="jarn.jsi18n" />
 //  <include package="plone.app.z3cform" />
@@ -18,6 +19,8 @@
 //  <include package="collective.monkeypatcher" />
 
   <five:registerPackage package="." initialize=".initialize" />
+
+  <include package="five.pt" />
 
   <include file="permissions.zcml" />
 

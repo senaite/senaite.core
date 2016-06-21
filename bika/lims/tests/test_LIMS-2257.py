@@ -15,20 +15,33 @@ except ImportError: # Python 2.7
     import unittest
 
 
-class TestSamples(BikaFunctionalTestCase):
+class LIMS2257(BikaFunctionalTestCase):
     layer = BIKA_FUNCTIONAL_TESTING
 
     def setUp(self):
-        super(TestSamples, self).setUp()
+        super(LIMS2257, self).setUp()
         login(self.portal, TEST_USER_NAME)
         servs = self.portal.bika_setup.bika_analysisservices
         self.services = [servs['analysisservice-3'],
                          servs['analysisservice-6'],
                          servs['analysisservice-7']]
+        # Enabling the workflow
+        self.portal.bika_setup.setSamplingWorkflowEnabled(True)
+        self.portal.bika_setup.setScheduleSamplingEnabled(True)
 
     def tearDown(self):
+        # Enabling the workflow
+        self.portal.bika_setup.setSamplingWorkflowEnabled(False)
+        self.portal.bika_setup.setScheduleSamplingEnabled(False)
         logout()
-        super(TestSamples, self).tearDown()
+        super(LIMS2257, self).tearDown()
+
+    def test_group_samplingcoordinators_exist(self):
+        """
+        Testing if the SamplingCoordinators group does exist
+        """
+        portal_groups = self.portal.portal_groups
+        self.assertIn('SamplingCoordinators', portal_groups.listGroupIds())
 
     def test_sample_workflow_action_schedule_sampling(self):
         """
@@ -40,10 +53,12 @@ class TestSamples(BikaFunctionalTestCase):
         pc = getToolByName(self.portal, 'portal_catalog')
         sampler = api.user.get(username='sampler1')
         coordinator = self.createUser('SamplingCoordinator', 'cord1')
+        # checking if the user belongs to the coordinators group
         mtool = getToolByName(self.portal, 'portal_membership')
-        # Enabling the workflow
-        self.portal.bika_setup.setSamplingWorkflowEnabled(True)
-        self.portal.bika_setup.setScheduleSamplingEnabled(True)
+        groups_tool = getToolByName(self.portal, 'portal_groups')
+        usr_groups = groups_tool.getGroupsByUserId('cord1')
+        self.assertIn(
+            'SamplingCoordinators', [group.id for group in usr_groups])
         # Getting the client
         client = self.portal.clients['client-1']
         # Getting a sample type
@@ -99,6 +114,6 @@ class TestSamples(BikaFunctionalTestCase):
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestLimitDetections))
+    suite.addTest(unittest.makeSuite(LIMS2257))
     suite.layer = BIKA_FUNCTIONAL_TESTING
     return suite

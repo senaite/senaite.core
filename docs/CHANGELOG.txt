@@ -1,5 +1,6 @@
 3.2.1 (unreleased)
 ------------------
+LIMS-1562: Using a Sample Round. Basic form and printed form
 HEALTH-394: Sample sticker layout. 2 new sticker layouts, 2 stickers per row
 LIMS-2032: AS Methods initialise with 1st available Instrument (loading setup data)
 LIMS-2014: I can only select a Default Method for an AS if Manual results capture is on
@@ -17,6 +18,7 @@ LIMS-1774: Shiny graphs for result ranges
 - Simplify instrument interface creation for basic CSV files
 - Scheduled sampling functionality added
 LIMS-2257: Scheduled sampling
+LIMS-2255: Switch to Chameleon (five.pt) for rendering TAL templates
 - Replacement of pagination by 'Show more' in tables makes the app faster
 - Add Bika LIMS TAL report reference in reports preview
 - Simplify instrument interface creation for basic CSV files

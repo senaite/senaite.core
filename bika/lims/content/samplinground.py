@@ -105,6 +105,28 @@ class Samplers(object):
         return SimpleVocabulary(terms)
 
 
+class ClientContacts(object):
+    """Context source binder to provide a vocabulary of the client contacts.
+    """
+    implements(IContextSourceBinder)
+
+    def __call__(self, context):
+        container = context.aq_parent
+        terms = []
+        # Show only the client's
+        if container.portal_type == 'Client':
+            contacts = container.getContacts()
+            for cnt in contacts:
+                c_id = cnt.getId()
+                name = cnt.getFullname()
+                if not name:
+                    name = c_id
+                terms.append(
+                    SimpleVocabulary.createTerm(
+                        c_id, str(c_id), name))
+        return SimpleVocabulary(terms)
+
+
 class ISamplingRound(model.Schema):
         """A Sampling round interface
         """
@@ -174,6 +196,18 @@ class ISamplingRound(model.Schema):
             )
         )
 
+        client_contact = schema.Choice(
+            title=_(u'Client contact who coordinates with the lab'),
+            required=False,
+            source=ClientContacts()
+        )
+
+        client_contact_in_charge_at_sampling_time = schema.Choice(
+            title=_(u'Client contact in charge at sampling time'),
+            required=False,
+            source=ClientContacts()
+        )
+
         num_sample_points = schema.Int(
                 title=_(u"Number of Sample Points"),
                 description=_(u"the total number of Sample Points defined in the Round."),
@@ -237,7 +271,7 @@ class SamplingRound(Item):
         return len(containers)
 
     def getAnalysisRequests(self):
-        """ Return all the Analysis Requests linked to the Sampling Round
+        """ Return all the Analysis Request brains linked to the Sampling Round
         """
         # I have to get the catalog in this way because I can't do it with 'self'...
         pc = getToolByName(api.portal.get(), 'portal_catalog')
@@ -309,6 +343,53 @@ class SamplingRound(Item):
             error = "Error when looking for sr template with uid '%s'. "
             logger.exception(error, self.sr_template)
         return srtdict
+
+    def getClientContact(self):
+        """
+        Returns info from the Client contact who coordinates with the lab
+        """
+        pc = getToolByName(api.portal.get(), 'portal_catalog')
+        contentFilter = {'portal_type': 'Contact',
+                         'id': self.client_contact}
+        cnt = pc(contentFilter)
+        cntdict = {'uid': '', 'id': '', 'fullname': '', 'url': ''}
+        if len(cnt) == 1:
+            cnt = cnt[0].getObject()
+            cntdict = {
+                'uid': cnt.id,
+                'id': cnt.UID(),
+                'fullname': cnt.getFullname(),
+                'url': cnt.absolute_url(),
+            }
+        else:
+            from bika.lims import logger
+            error = "Error when looking for contact with id '%s'. "
+            logger.exception(error, self.client_contact)
+        return cntdict
+
+    def getClientInChargeAtSamplingTime(self):
+        """
+        Returns info from the Client contact who is in charge at sampling time
+        """
+        pc = getToolByName(api.portal.get(), 'portal_catalog')
+        contentFilter = {'portal_type': 'Contact',
+                         'id': self.client_contact_in_charge_at_sampling_time}
+        cnt = pc(contentFilter)
+        cntdict = {'uid': '', 'id': '', 'fullname': '', 'url': ''}
+        if len(cnt) == 1:
+            cnt = cnt[0].getObject()
+            cntdict = {
+                'uid': cnt.id,
+                'id': cnt.UID(),
+                'fullname': cnt.getFullname(),
+                'url': cnt.absolute_url(),
+            }
+        else:
+            from bika.lims import logger
+            error = "Error when looking for contact with id '%s'. "
+            logger.exception(
+                error, self.client_contact_in_charge_at_sampling_time)
+        return cntdict
 
     def hasUserAddEditPermission(self):
         """

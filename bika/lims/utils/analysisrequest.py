@@ -4,25 +4,37 @@ from bika.lims import logger
 from bika.lims.utils import tmpID
 from bika.lims.utils.sample import create_sample
 from bika.lims.utils.samplepartition import create_samplepartition
+from Products.CMFCore.WorkflowCore import WorkflowException
 from bika.lims.workflow import doActionFor
 from plone import api
 from Products.CMFPlone.utils import _createObjectByType
 
 
-def create_analysisrequest(
-        context,
-        request,
-        values,  # {field: value, ...}
-        analyses=[],
-        # uid, service or analysis; list of uids, services or analyses
-        partitions=None,
-        # list of dictionaries with container, preservation etc)
-        specifications=None,
-        prices=None):
+def create_analysisrequest(context, request, values, analyses=None,
+                           partitions=None, specifications=None, prices=None):
     """This is meant for general use and should do everything necessary to
-    create and initialise the AR and it's requirements.
-    XXX The ar-add form's ajaxAnalysisRequestSubmit should be calling this.
+    create and initialise an AR and any other required auxilliary objects
+    (Sample, SamplePartition, Analysis...)
+
+    :param context:
+        The container in which the ARs will be created.
+    :param request:
+        The current Request object.
+    :param values:
+        a dict, where keys are AR|Sample schema field names.
+    :param analyses:
+        Analysis services list.  If specified, augments the values in
+        values['Analyses']. May consist of service objects, UIDs, or Keywords.
+    :param partitions:
+        A list of dictionaries, if specific partitions are required.  If not
+        specified, AR's sample is created with a single partition.
+    :param specifications:
+        These values augment those found in values['Specifications']
+    :param prices:
+        Allow different prices to be set for analyses.  If not set, prices
+        are read from the associated analysis service.
     """
+
     # Gather neccesary tools
     workflow = getToolByName(context, 'portal_workflow')
     bc = getToolByName(context, 'bika_catalog')
@@ -38,19 +50,12 @@ def create_analysisrequest(
         sample = create_sample(context, request, values)
     else:
         secondary = True
-        if ISample.providedBy(values['Sample']):
-            sample = values['Sample']
-        else:
-            brains = bc(UID=values['Sample'])
-            if brains:
-                sample = brains[0].getObject()
-        if not sample:
-            raise RuntimeError(
-                "create_analysisrequest No sample. values=%s" % values)
+        sample = get_sample_from_values(context, values)
         workflow_enabled = sample.getSamplingWorkflowEnabled()
 
     # Create the Analysis Request
     ar = _createObjectByType('AnalysisRequest', context, tmpID())
+
     # Set some required fields manually before processForm is called
     ar.setSample(sample)
     values['Sample'] = sample
@@ -66,22 +71,23 @@ def create_analysisrequest(
     service_uids = _resolve_items_to_service_uids(analyses)
     analyses = ar.setAnalyses(service_uids, prices=prices, specs=specifications)
 
+    # Continue to set the state of the AR
+    skip_receive = ['to_be_sampled', 'sample_due', 'sampled', 'to_be_preserved']
     if secondary:
         # Only 'sample_due' and 'sample_recieved' samples can be selected
         # for secondary analyses
-        api.content.transition(obj=ar, to_state='sampled')
-        api.content.transition(obj=ar, to_state='sample_due')
+        doActionFor(ar, 'sampled')
+        doActionFor(ar, 'sample_due')
         sample_state = workflow.getInfoFor(sample, 'review_state')
-        if sample_state == 'sample_received':
+        if sample_state not in skip_receive:
             doActionFor(ar, 'receive')
 
-        for analysis in ar.getAnalyses(full_objects=1):
-            doActionFor(analysis, 'sample')
-            doActionFor(analysis, 'sample_due')
-            analysis_transition_ids = [t['id'] for t in
-                                       workflow.getTransitionsFor(analysis)]
-            if 'receive' in analysis_transition_ids and sample_state == 'sample_received':
-                doActionFor(analysis, 'receive')
+    # Set the state of analyses we created.
+    for analysis in analyses:
+        doActionFor(analysis, 'sample_due')
+        analysis_state = workflow.getInfoFor(analysis, 'review_state')
+        if analysis_state not in skip_receive:
+            doActionFor(analysis, 'receive')
 
     if not secondary:
         # Create sample partitions
@@ -132,6 +138,23 @@ def create_analysisrequest(
     # Return the newly created Analysis Request
     return ar
 
+def get_sample_from_values(context, values):
+    """values may contain a UID or a direct Sample object.
+    """
+    if ISample.providedBy(values['Sample']):
+        sample = values['Sample']
+    else:
+        bc = getToolByName(context, 'bika_catalog')
+        brains = bc(UID=values['Sample'])
+        if brains:
+            sample = brains[0].getObject()
+        else:
+            raise RuntimeError(
+                "create_analysisrequest: invalid sample value provided. values=%s" % values)
+    if not sample:
+        raise RuntimeError(
+            "create_analysisrequest: invalid sample value provided. values=%s" % values)
+
 
 def _resolve_items_to_service_uids(items):
     portal = api.portal.get()
@@ -168,7 +191,7 @@ def _resolve_items_to_service_uids(items):
         if brains:
             uid = brains[0].UID
             service_uids.append(uid)
-        # Maybe service Title
+        # Maybe service Keyword
         bsc = getToolByName(portal, 'bika_setup_catalog')
         brains = bsc(portal_type='AnalysisService', getKeyword=item)
         if brains:
