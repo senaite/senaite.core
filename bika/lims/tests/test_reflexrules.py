@@ -32,6 +32,7 @@ class TestReflexRules(BikaFunctionalTestCase):
                 },
             ...]
         """
+        departments_list = []
         folder = self.portal.bika_setup.bika_departments
         for department_d in department_data:
             _id = folder.invokeFactory('Department', id=tmpID())
@@ -41,7 +42,8 @@ class TestReflexRules(BikaFunctionalTestCase):
                 )
             dep.unmarkCreationFlag()
             renameAfterCreation(dep)
-            self.departments_list.append(dep)
+            departments_list.append(dep)
+        return departments_list
 
     def create_category(self, category_data):
         """
@@ -53,6 +55,7 @@ class TestReflexRules(BikaFunctionalTestCase):
             ...]
         """
         folder = self.portal.bika_setup.bika_analysiscategories
+        categories_list = []
         for category_d in category_data:
             _id = folder.invokeFactory('AnalysisCategory', id=tmpID())
             cat = folder[_id]
@@ -62,7 +65,8 @@ class TestReflexRules(BikaFunctionalTestCase):
                 )
             cat.unmarkCreationFlag()
             renameAfterCreation(cat)
-            self.categories_list.append(cat)
+            categories_list.append(cat)
+        return categories_list
 
     def create_analysisservices(self, as_data):
         """
@@ -78,6 +82,7 @@ class TestReflexRules(BikaFunctionalTestCase):
             ...]
         """
         folder = self.portal.bika_setup.bika_analysisservices
+        ans_list = []
         for as_d in as_data:
             _id = folder.invokeFactory('AnalysisService', id=tmpID())
             ans = folder[_id]
@@ -91,7 +96,8 @@ class TestReflexRules(BikaFunctionalTestCase):
                 )
             ans.unmarkCreationFlag()
             renameAfterCreation(ans)
-            self.ans_list.append(ans)
+            ans_list.append(ans)
+        return ans_list
 
     def create_methods(self, methods_data):
         """
@@ -105,6 +111,7 @@ class TestReflexRules(BikaFunctionalTestCase):
             ...]
         """
         folder = self.portal.bika_setup.methods
+        methods_list = []
         for meth_d in methods_data:
             _id = folder.invokeFactory('Method', id=tmpID())
             meth = folder[_id]
@@ -117,7 +124,8 @@ class TestReflexRules(BikaFunctionalTestCase):
                 )
             meth.unmarkCreationFlag()
             renameAfterCreation(meth)
-            self.methods_list.append(meth)
+            methods_list.append(meth)
+        return methods_list
 
     def create_reflex_rules(self, rules_data):
         """
@@ -161,89 +169,25 @@ class TestReflexRules(BikaFunctionalTestCase):
         logout()
         super(TestReflexRules, self).tearDown()
 
-    def test_reflex_rule_creation_object(self):
+    def test_reflex_rule_set_get(self):
         """
-        Testing the object creation and workflow changes
+        Testing the analysis service bind and the set/get data from the widget
         """
-        # Creating the rules
-        methods_data = [
-            {
-                'title': 'Method C',
-                'description': 'A description',
-                'Instructions': 'An instruction',
-                'MethodID': 'mc',
-                'Accredited': 'True'
-            },
-        ]
-        self.create_methods(methods_data)
-        rules_data = [
-            {
-                'title': 'Rule C',
-                'description': 'A description',
-                'method': self.methods_list[-1]
-            },
-        ]
-
-        self.create_reflex_rules(rules_data)
-        # Getting the rule from the system
-        pc = getToolByName(self.portal, 'portal_catalog')
-        brains = pc(portal_type="ReflexRule")
-        self.assertEquals(len(brains), len(rules_data))
-        # Getting the rule from the folder
-        results = self.portal.bika_setup.bika_reflexrulefolder.items()
-        self.assertEquals(len(results), len(rules_data))
-        # Changeing state
-        for brain in brains:
-            obj = brain.getObject()
-            doActionFor(obj, 'deactivate')
-            self.assertEquals(
-                obj.portal_workflow.getInfoFor(obj, 'inactive_state'),
-                'inactive')
-        # Getting filtered rule
-        brains = pc(portal_type="ReflexRule", inactive_state='active')
-        self.assertEquals(len(brains), 0)
-
-    def test_reflex_rule_method_selection(self):
-        """
-        Testing the method bind
-        """
-        methods_data = [
-            {
-                'title': 'Method 1',
-                'description': 'A description',
-                'Instructions': 'An instruction',
-                'MethodID': 'm1',
-                'Accredited': 'True'
-            },
-        ]
-        self.create_methods(methods_data)
-        rules_data = [
-            {
-                'title': 'Rule MS',
-                'description': 'A description',
-                'method': self.methods_list[-1]
-            },
-        ]
-        self.create_reflex_rules(rules_data)
-        rule = self.rules_list[-1]
-        self.assertEquals(rule.getMethod().UID(), self.methods_list[-1].UID())
-
-    def test_reflex_rule_set_analysisservice(self):
-        """
-        Testing the analysis service bind
-        """
+        # Creating a department
         department_data = [
             {
                 'title': 'dep1',
             }
         ]
-        self.create_departments(department_data)
+        deps = self.create_departments(department_data)
+        # Creating a category
         category_data = [{
             'title': 'cat1',
-            'Department': self.departments_list[-1]
+            'Department': deps[0]
             },
         ]
-        self.create_category(category_data)
+        cats = self.create_category(category_data)
+        # Creating a method
         methods_data = [
             {
                 'title': 'Method 1',
@@ -253,23 +197,37 @@ class TestReflexRules(BikaFunctionalTestCase):
                 'Accredited': 'True'
             },
         ]
-        self.create_methods(methods_data)
+        meths = self.create_methods(methods_data)
+        # Creating an analysis service
         as_data = [{
                 'title': 'analysis service1',
                 'ShortTitle': 'as1',
                 'Keyword': 'as1',
                 'PointOfCapture': 'Lab',
-                'Category': self.categories_list[-1],
-                'Methods': self.methods_list[-1],
+                'Category': cats[0],
+                'Methods': meths,
                 },
         ]
-        self.create_analysisservices(as_data)
+        ans_list = self.create_analysisservices(as_data)
+        # Creating a rule
+        import pdb; pdb.set_trace()
+        rules = [{
+            'range1': 'X', 'range0': 'X',
+            'discreteresult': 'X',
+            'trigger': 'xxx',
+            'analysisservice': '<as_uid>', 'value': '',
+                'actions':[{'action':'<action_name>', 'act_row_idx':'X',
+                            'otherWS':Bool, 'analyst': '<analyst_id>'},
+                          {'action':'<action_name>', 'act_row_idx':'X',
+                            'otherWS':Bool, 'analyst': '<analyst_id>'},
+                    ]
+        },]
         rules_data = [
             {
                 'title': 'Rule MS',
                 'description': 'A description',
-                'method': self.methods_list[-1],
-                'ReflexRules': self.ans_list[-1]
+                'method': meths[0],
+                'ReflexRules': rules
             },
         ]
         self.create_reflex_rules(rules_data)
