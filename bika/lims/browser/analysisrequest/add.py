@@ -16,7 +16,7 @@ from bika.lims.interfaces import IAnalysisRequestAddView, ISample
 from bika.lims.utils import getHiddenAttributesForClass, dicts_to_dict
 from bika.lims.utils import t
 from bika.lims.utils import tmpID
-from bika.lims.utils.analysisrequest import create_analysisrequest
+from bika.lims.utils.analysisrequest import create_analysisrequest as crar
 from magnitude import mg
 from plone.app.layout.globals.interfaces import IViewView
 from Products.Archetypes import PloneMessageFactory as PMF
@@ -443,7 +443,7 @@ class ajaxAnalysisRequestSubmit():
         ARs = []
         for arnum, state in valid_states.items():
             # Create the Analysis Request
-            ar = create_analysisrequest(
+            ar = crar(
                 portal_catalog(UID=state['Client'])[0].getObject(),
                 self.request,
                 state
@@ -471,170 +471,9 @@ class ajaxAnalysisRequestSubmit():
             return json.dumps({'success': message})
 
 
-
+from bika.lims import deprecated
+@deprecated(comment="bika.lims.browser.analysisrequest.add."
+                    "create_analysisrequest is deprecated and will be removed "
+                    "in Bika LIMS 3.3", replacement=crar)
 def create_analysisrequest(context, request, values):
-    """Create an AR.
-
-    :param context the container in which the AR will be created (Client)
-    :param request the request object
-    :param values a dictionary containing fieldname/value pairs, which
-           will be applied.  Some fields will have specific code to handle them,
-           and others will be directly written to the schema.
-    :return the new AR instance
-
-    Special keys present (or required) in the values dict, which are not present
-    in the schema:
-
-        - Partitions: data about partitions to be created, and the
-                      analyses that are to be assigned to each.
-
-        - Prices: custom prices set in the HTML form.
-
-        - ResultsRange: Specification values entered in the HTML form.
-
-    """
-    # Gather neccesary tools
-    workflow = getToolByName(context, 'portal_workflow')
-    bc = getToolByName(context, 'bika_catalog')
-
-    # Create new sample or locate the existing for secondary AR
-    sample = False
-    if values['Sample']:
-        if ISample.providedBy(values['Sample']):
-            secondary = True
-            sample = values['Sample']
-            samplingworkflow_enabled = sample.getSamplingWorkflowEnabled()
-        else:
-            brains = bc(UID=values['Sample'])
-            if brains:
-                secondary = True
-                sample = brains[0].getObject()
-                samplingworkflow_enabled = sample.getSamplingWorkflowEnabled()
-    if not sample:
-        secondary = False
-        sample = create_sample(context, request, values)
-        samplingworkflow_enabled = context.bika_setup.getSamplingWorkflowEnabled()
-
-    # Create the Analysis Request
-    ar = _createObjectByType('AnalysisRequest', context, tmpID())
-    ar.setSample(sample)
-
-    # processform renames the sample, this requires values to contain the Sample.
-    values['Sample'] = sample
-    ar.processForm(REQUEST=request, values=values)
-
-    # Object has been renamed
-    ar.edit(RequestID=ar.getId())
-
-    # Set initial AR state
-    workflow_action = 'sampling_workflow' if samplingworkflow_enabled \
-        else 'no_sampling_workflow'
-    workflow.doActionFor(ar, workflow_action)
-
-
-    # We need to send a list of service UIDS to setAnalyses function.
-    # But we may have received a list of titles, list of UIDS,
-    # list of keywords or list of service objects!
-    service_uids = []
-    for obj in values['Analyses']:
-        uid = False
-        # service objects
-        if hasattr(obj, 'portal_type') and obj.portal_type == 'AnalysisService':
-            uid = obj.UID()
-        # Analysis objects (shortcut for eg copying analyses from other AR)
-        elif hasattr(obj, 'portal_type') and obj.portal_type == 'Analysis':
-            uid = obj.getService()
-        # Maybe already UIDs.
-        if not uid:
-            bsc = getToolByName(context, 'bika_setup_catalog')
-            brains = bsc(portal_type='AnalysisService', UID=obj)
-            if brains:
-                uid = brains[0].UID
-        # Maybe already UIDs.
-        if not uid:
-            bsc = getToolByName(context, 'bika_setup_catalog')
-            brains = bsc(portal_type='AnalysisService', title=obj)
-            if brains:
-                uid = brains[0].UID
-        if uid:
-            service_uids.append(uid)
-        else:
-            logger.info("In analysisrequest.add.create_analysisrequest: cannot "
-                        "find uid of this service: %s" % obj)
-
-    # Set analysis request analyses
-    ar.setAnalyses(service_uids,
-                   prices=values.get("Prices", []),
-                   specs=values.get('ResultsRange', []))
-    analyses = ar.getAnalyses(full_objects=True)
-
-    skip_receive = ['to_be_sampled', 'sample_due', 'sampled', 'to_be_preserved']
-    if secondary:
-        # Only 'sample_due' and 'sample_recieved' samples can be selected
-        # for secondary analyses
-        doActionFor(ar, 'sampled')
-        doActionFor(ar, 'sample_due')
-        sample_state = workflow.getInfoFor(sample, 'review_state')
-        if sample_state not in skip_receive:
-            doActionFor(ar, 'receive')
-
-    for analysis in analyses:
-        doActionFor(analysis, 'sample_due')
-        analysis_state = workflow.getInfoFor(analysis, 'review_state')
-        if analysis_state not in skip_receive:
-            doActionFor(analysis, 'receive')
-
-    if not secondary:
-        # Create sample partitions
-        partitions = []
-        for n, partition in enumerate(values['Partitions']):
-            # Calculate partition id
-            partition_prefix = sample.getId() + "-P"
-            partition_id = '%s%s' % (partition_prefix, n + 1)
-            partition['part_id'] = partition_id
-            # Point to or create sample partition
-            if partition_id in sample.objectIds():
-                partition['object'] = sample[partition_id]
-            else:
-                partition['object'] = create_samplepartition(
-                    sample,
-                    partition
-                )
-            # now assign analyses to this partition.
-            obj = partition['object']
-            for analysis in analyses:
-                if analysis.getService().UID() in partition['services']:
-                    analysis.setSamplePartition(obj)
-
-            partitions.append(partition)
-
-        # If Preservation is required for some partitions,
-        # and the SamplingWorkflow is disabled, we need
-        # to transition to to_be_preserved manually.
-        if not samplingworkflow_enabled:
-            to_be_preserved = []
-            sample_due = []
-            lowest_state = 'sample_due'
-            for p in sample.objectValues('SamplePartition'):
-                if p.getPreservation():
-                    lowest_state = 'to_be_preserved'
-                    to_be_preserved.append(p)
-                else:
-                    sample_due.append(p)
-            for p in to_be_preserved:
-                doActionFor(p, 'to_be_preserved')
-            for p in sample_due:
-                doActionFor(p, 'sample_due')
-            doActionFor(sample, lowest_state)
-            doActionFor(ar, lowest_state)
-
-        # Transition pre-preserved partitions
-        for p in partitions:
-            if 'prepreserved' in p and p['prepreserved']:
-                part = p['object']
-                state = workflow.getInfoFor(part, 'review_state')
-                if state == 'to_be_preserved':
-                    workflow.doActionFor(part, 'preserve')
-
-    # Return the newly created Analysis Request
-    return ar
+    return crar(context, request, values)
