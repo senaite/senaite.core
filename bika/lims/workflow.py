@@ -9,7 +9,6 @@ from bika.lims import logger
 from Products.CMFCore.interfaces import IContentish
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
-from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.interfaces import IWorkflowChain
 from Products.CMFPlone.workflow import ToolWorkflowChain
 from zope.component import adapts

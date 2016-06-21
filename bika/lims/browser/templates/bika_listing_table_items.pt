@@ -113,7 +113,7 @@ Table cells for each column from in review_state's column list.
                         and column in item['allow_edit']
                         and item.get('edit_condition', {}).get(column, True);
         required python:'required' in item and column in item['required'] or False;
-        field python: item['field'].get(column, '');
+        field python: item['field'].get(column, '') if item.get('field', '') else '';
         before python:column in item['before'] and
             item['before'][column] or '';
         after python:column in item['after'] and
