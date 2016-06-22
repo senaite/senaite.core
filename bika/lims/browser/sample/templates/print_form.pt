@@ -42,6 +42,7 @@
                 </div>
                 <div class='options-line'>
                     <label for="sel_filter" i18n:translate="">Select the filter to apply</label>
+                    <label for="sel_filter" i18n:translate="">Filter by sampler:</label>
                     <select
                         id="sel_sampler"
                         name="sel_sampler"
@@ -53,6 +54,7 @@
                             tal:attributes="value sampler_key"
                             tal:content="python:samplers[sampler_key]['name']"/>
                     </select>
+                    <label for="sel_filter" i18n:translate="">Filter by client:</label>
                     <select
                         id="sel_client"
                         name="sel_client"
@@ -64,6 +66,32 @@
                             tal:attributes="value client_key"
                             tal:content="python:clients[client_key]['name']"/>
                     </select>
+                    <br/>
+                    <!-- Defining a rang of dates -->
+                    <label for="sel_filter" i18n:translate="">Define a date range</label>
+                    <label for="sel_filter" i18n:translate="">Filter from:</label>
+                    <input type="date"
+                           class="datepicker"
+                           id="filter_date_from"
+                           size="10"
+                           tal:attributes="
+                                value python:view.ulocalized_time(
+                                    view.default_from_date(),
+                                    long_format=None,
+                                    time_only=False)"/>
+                    <label for="sel_filter" i18n:translate="">To:</label>
+                    <input type="text"
+                           class="datepicker"
+                           id="filter_date_to"
+                           size="10"
+                           tal:attributes="
+                                value python:view.ulocalized_time(
+                                    view.default_to_date(),
+                                    long_format=None,
+                                    time_only=False)"/>
+                    <label for="sel_filter" i18n:translate="">Disable the filtering by date</label>
+                    <input type="checkbox" id='disable_filter_by_date'/>
+                    <br/>
                     <input type="button" id='filter_button' i18n:translate="" value="Filter"/>
                 </div>
             </div>

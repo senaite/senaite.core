@@ -8,6 +8,9 @@ from bika.lims import logger
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.permissions import *
+from DateTime import DateTime
+import datetime
+from calendar import monthrange
 import os
 import glob
 import traceback
@@ -415,6 +418,54 @@ class SamplesPrint(BrowserView):
                     'name': sample.getClientTitle()
                 }
         return clients
+
+    def default_from_date(self):
+        """
+        Return the default min date in order to filter the samples.
+        Default will return a datetime.date object: <current_date> - 10d
+        """
+        default = 10
+        today = datetime.date.today()
+        day = today.day
+        month = today.month
+        year = today.year
+        # Checking if the day is correct after been computed
+        if (day - default) <= 0:
+            # substract a month
+            if (month-1) < 0:
+                year -= 1
+                month = 12
+            else:
+                month -= 1
+            month_max = monthrange(year=year, month=month)[1]
+            day = month_max + day - default
+        else:
+            day -= default
+        return DateTime(year, month, day)
+
+    def default_to_date(self):
+        """
+        Return the default max date in order to filter the samples.
+        Default will return a datetime object: <current_date> + 10d
+        """
+        default = 10
+        today = datetime.date.today()
+        day = today.day
+        month = today.month
+        year = today.year
+        # Checking if the day is correct after been computed
+        month_max = monthrange(year=year, month=month)[1]
+        if (day + default) > month_max:
+            # increase a month
+            if (month+1) > 12:
+                year += 1
+                month = 1
+            else:
+                month += 1
+                day = day + default - month_max
+        else:
+            day += default
+        return DateTime(year, month, day)
 
     def getLab(self):
         return self.context.bika_setup.laboratory.getLabURL()
