@@ -8,6 +8,10 @@ from bika.lims import logger
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.permissions import *
+from DateTime import DateTime
+from Products.CMFPlone.utils import safe_unicode
+import datetime
+from calendar import monthrange
 import os
 import glob
 import traceback
@@ -43,6 +47,9 @@ class SamplesPrint(BrowserView):
     _items = []
     _filter_sampler = ''
     _filter_client = ''
+    _filter_date_from = ''
+    _filter_date_to = ''
+    _avoid_filter_by_date = False
 
     def __call__(self):
         if self.context.portal_type == 'SamplesFolder':
@@ -70,7 +77,10 @@ class SamplesPrint(BrowserView):
         # setting the filters
         self._filter_sampler = self.request.form.get('sampler', '')
         self._filter_client = self.request.form.get('client', '')
-
+        self._filter_date_from = self.request.form.get('date_from', '')
+        self._filter_date_to = self.request.form.get('date_to', '')
+        self._avoid_filter_by_date = True if self.request.form.get(
+            'avoid_filter_by_date', False) == 'true' else False
         # Do print?
         if self.request.form.get('pdf', '0') == '1':
             response = self.request.response
@@ -111,6 +121,13 @@ class SamplesPrint(BrowserView):
         }
         """
         samples = self._items
+        if not(self._avoid_filter_by_date):
+            self._filter_date_from = \
+                self.ulocalized_time(self._filter_date_from) if\
+                self._filter_date_from else self.default_from_date()
+            self._filter_date_to =\
+                self.ulocalized_time(self._filter_date_to) if\
+                self._filter_date_to else self.default_to_date()
         result = {}
         for sample in samples:
             pc = getToolByName(self, 'portal_catalog')
@@ -127,16 +144,22 @@ class SamplesPrint(BrowserView):
                 sampler_uid = 'no_sampler'
                 sampler_name = ''
             client_uid = sample.getClientUID()
-            # apply sampler filter
-
-            if (self._filter_sampler == '' or
-                    sampler_uid == self._filter_sampler) and \
-                (self._filter_client == '' or
-                    client_uid == self._filter_client):
-                date = \
-                    self.ulocalized_time(
-                        sample.getSamplingDate(), long_format=0)\
-                    if sample.getSamplingDate() else ''
+            date = \
+                self.ulocalized_time(
+                    sample.getSamplingDate(), long_format=0)\
+                if sample.getSamplingDate() else ''
+            # Getting the sampler filter result
+            in_sampler_filter = self._filter_sampler == '' or\
+                sampler_uid == self._filter_sampler
+            # Getting the client filter result
+            in_client_filter = self._filter_client == '' or\
+                client_uid == self._filter_client
+            # Getting the date filter result
+            in_date_filter = self._avoid_filter_by_date or\
+                (date >= self.ulocalized_time(self._filter_date_from) and
+                    date <= self.ulocalized_time(self._filter_date_to))
+            # Apply filter
+            if in_sampler_filter and in_client_filter and in_date_filter:
                 # Filling the dictionary
                 if sampler_uid in result.keys():
                     client_d = result[sampler_uid].get(client_uid, {})
@@ -415,6 +438,54 @@ class SamplesPrint(BrowserView):
                     'name': sample.getClientTitle()
                 }
         return clients
+
+    def default_from_date(self):
+        """
+        Return the default min date in order to filter the samples.
+        Default will return a datetime.date object: <current_date> - 10d
+        """
+        default = 10
+        today = datetime.date.today()
+        day = today.day
+        month = today.month
+        year = today.year
+        # Checking if the day is correct after been computed
+        if (day - default) <= 0:
+            # substract a month
+            if (month-1) < 0:
+                year -= 1
+                month = 12
+            else:
+                month -= 1
+            month_max = monthrange(year=year, month=month)[1]
+            day = month_max + day - default
+        else:
+            day -= default
+        return DateTime(year, month, day)
+
+    def default_to_date(self):
+        """
+        Return the default max date in order to filter the samples.
+        Default will return a datetime object: <current_date> + 10d
+        """
+        default = 10
+        today = datetime.date.today()
+        day = today.day
+        month = today.month
+        year = today.year
+        # Checking if the day is correct after been computed
+        month_max = monthrange(year=year, month=month)[1]
+        if (day + default) > month_max:
+            # increase a month
+            if (month+1) > 12:
+                year += 1
+                month = 1
+            else:
+                month += 1
+                day = day + default - month_max
+        else:
+            day += default
+        return DateTime(year, month, day)
 
     def getLab(self):
         return self.context.bika_setup.laboratory.getLabURL()
