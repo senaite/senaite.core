@@ -46,6 +46,9 @@ class SamplesPrint(BrowserView):
     _items = []
     _filter_sampler = ''
     _filter_client = ''
+    _filter_date_from = ''
+    _filter_date_to = ''
+    _avoid_filter_by_date = False
 
     def __call__(self):
         if self.context.portal_type == 'SamplesFolder':
@@ -73,7 +76,10 @@ class SamplesPrint(BrowserView):
         # setting the filters
         self._filter_sampler = self.request.form.get('sampler', '')
         self._filter_client = self.request.form.get('client', '')
-
+        self._filter_date_from = self.request.form.get('date_from', '')
+        self._filter_date_to = self.request.form.get('date_to', '')
+        self._avoid_filter_by_date = True if self.request.form.get(
+            'avoid_filter_by_date', False) == 'true' else False
         # Do print?
         if self.request.form.get('pdf', '0') == '1':
             response = self.request.response
@@ -114,6 +120,13 @@ class SamplesPrint(BrowserView):
         }
         """
         samples = self._items
+        if not(self._avoid_filter_by_date):
+            self._filter_date_from = \
+                self.ulocalized_time(self._filter_date_from) if\
+                self._filter_date_from else self.default_from_date()
+            self._filter_date_to =\
+                self.ulocalized_time(self._filter_date_to) if\
+                self._filter_date_to else self.default_to_date()
         result = {}
         for sample in samples:
             pc = getToolByName(self, 'portal_catalog')
@@ -130,16 +143,22 @@ class SamplesPrint(BrowserView):
                 sampler_uid = 'no_sampler'
                 sampler_name = ''
             client_uid = sample.getClientUID()
-            # apply sampler filter
-
-            if (self._filter_sampler == '' or
-                    sampler_uid == self._filter_sampler) and \
-                (self._filter_client == '' or
-                    client_uid == self._filter_client):
-                date = \
-                    self.ulocalized_time(
-                        sample.getSamplingDate(), long_format=0)\
-                    if sample.getSamplingDate() else ''
+            date = \
+                self.ulocalized_time(
+                    sample.getSamplingDate(), long_format=0)\
+                if sample.getSamplingDate() else ''
+            # Getting the sampler filter result
+            in_sampler_filter = self._filter_sampler == '' or\
+                sampler_uid == self._filter_sampler
+            # Getting the client filter result
+            in_client_filter = self._filter_client == '' or\
+                client_uid == self._filter_client
+            # Getting the date filter result
+            in_date_filter = self._avoid_filter_by_date or\
+                (date > self.ulocalized_time(self._filter_date_from) and
+                    date < self.ulocalized_time(self._filter_date_to))
+            # Apply filter
+            if in_sampler_filter and in_client_filter and in_date_filter:
                 # Filling the dictionary
                 if sampler_uid in result.keys():
                     client_d = result[sampler_uid].get(client_uid, {})

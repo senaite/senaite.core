@@ -14,6 +14,7 @@
                   portal portal_state/portal;">
 <head>
     <div tal:replace="structure provider:plone.resourceregistries.scripts" />
+    <link media="screen" tal:attributes="href string:${portal_url}/++resource++jquery-ui-themes/sunburst/jqueryui.css" type="text/css" rel="stylesheet">
 </head>
 <body class="A4" data-layout="A4">
     <div id='preview_container' class="samples_print_preview">
@@ -78,6 +79,10 @@
                                 value python:view.ulocalized_time(
                                     view.default_from_date(),
                                     long_format=None,
+                                    time_only=False);
+                                default python:view.ulocalized_time(
+                                    view.default_from_date(),
+                                    long_format=None,
                                     time_only=False)"/>
                     <label for="sel_filter" i18n:translate="">To:</label>
                     <input type="text"
@@ -86,6 +91,10 @@
                            size="10"
                            tal:attributes="
                                 value python:view.ulocalized_time(
+                                    view.default_to_date(),
+                                    long_format=None,
+                                    time_only=False);
+                                default python:view.ulocalized_time(
                                     view.default_to_date(),
                                     long_format=None,
                                     time_only=False)"/>
@@ -173,6 +182,9 @@
                 border: 1px solid #bbb;
                 padding: 1px 2px;
                 width: 16px;
+            }
+            #preview_header #options_handler input.datepicker {
+                padding: 0;
             }
             #sel_format_info {
                 padding: 0 15px 0 5px;

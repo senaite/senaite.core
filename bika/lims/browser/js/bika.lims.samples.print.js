@@ -89,6 +89,12 @@ function FormPrintView() {
             location.href=backurl;
         });
 
+        $('#disable_filter_by_date').change(function(e) {
+            dateFilterController();
+        });
+        $('#filter_date_from, #filter_date_to').blur(function(e) {
+            dateFilterFromToController();
+        });
         $('#margin-top').change(function(e) {
             applyMarginAndReload($(this), 0);
         });
@@ -101,7 +107,7 @@ function FormPrintView() {
         $('#margin-left').change(function(e) {
             applyMarginAndReload($(this), 3);
         });
-    }
+    };
 
     function applyMarginAndReload(element, idx) {
         var currentlayout = $('#sel_layout').val();
@@ -155,7 +161,11 @@ function FormPrintView() {
             async: true,
             data: { "template": template,
                     "sampler": $("#sel_sampler option:selected").val(),
-                    "client": $("#sel_client option:selected").val()}
+                    "client": $("#sel_client option:selected").val(),
+                    "date_from": $("#filter_date_from").val(),
+                    "date_to": $("#filter_date_to").val(),
+                    "avoid_filter_by_date": $('#disable_filter_by_date').is(':checked')
+                }
         })
         .always(function(data) {
             var htmldata = data;
@@ -407,6 +417,29 @@ function FormPrintView() {
         });
         // Remove manual page breaks
         $('.manual-page-break').remove();
+    }
+
+    function dateFilterController(){
+        /* This function enable/disable the date pickers whether the checkbox
+        is set or not
+        */
+        if ($('#disable_filter_by_date').is(':checked')){
+            $('#filter_date_from, #filter_date_to')
+                .prop('disabled', true).val("");
+        }
+        else{
+            $('#filter_date_from')
+            .prop('disabled', false)
+            .val($('#filter_date_from').attr('default'));
+            $('#filter_date_to')
+            .prop('disabled', false)
+            .val($('#filter_date_to').attr('default'));
+        }
+    }
+    function dateFilterFromToController(){
+        if (new Date($('#filter_date_from').val()).getTime() > new Date($('#filter_date_to').val()).getTime()){
+            $('#filter_date_from').val($('#filter_date_to').val());
+        }
     }
 }
 var mmTopx = function(mm) {
