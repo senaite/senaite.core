@@ -80,36 +80,39 @@ function SampleView() {
         TODO This should be using content_status_modify!  modifying the href
         is silly.*/
         var old_url = $('#workflow-transition-schedule_sampling').attr('href');
-        var new_url = old_url.replace("content_status_modify", "workflow_action");
-        $('#workflow-transition-schedule_sampling').attr('href', new_url);
-        // When user clicks on the transition
-        $('#workflow-transition-schedule_sampling').click(function(){
-            e.preventDefault();
-            var date = $("#SamplingDate").val();
-            var sampler = $("#ScheduledSamplingSampler").val();
-            if (date !== "" && date !== undefined && date !== null &&
-                    sampler !== "" && sampler !== undefined &&
-                    sampler !== null) {
-                window.location.href = new_url;
-            }
-            else {
-                var message = "";
-                if (date === "" || date === undefined || date === null) {
-                    message = message + PMF('${name} is required for this action, please correct.',
-                                            {'name': _("Sampling Date")});
+        /*The addAnalysisRequest doesn't has the transition url*/
+        if(old_url){
+            var new_url = old_url.replace("content_status_modify", "workflow_action");
+            $('#workflow-transition-schedule_sampling').attr('href', new_url);
+            // When user clicks on the transition
+            $('#workflow-transition-schedule_sampling').click(function(){
+                e.preventDefault();
+                var date = $("#SamplingDate").val();
+                var sampler = $("#ScheduledSamplingSampler").val();
+                if (date !== "" && date !== undefined && date !== null &&
+                        sampler !== "" && sampler !== undefined &&
+                        sampler !== null) {
+                    window.location.href = new_url;
                 }
-                if (sampler === "" || sampler === undefined || sampler === null) {
-                    if (message !== "") {
-                        message = message + "<br/>";
+                else {
+                    var message = "";
+                    if (date === "" || date === undefined || date === null) {
+                        message = message + PMF('${name} is required for this action, please correct.',
+                                                {'name': _("Sampling Date")});
                     }
-                    message = message + PMF(
-                        '${name} is required, please correct.',
-                        {'name': _("'Define the Sampler for the shceduled'")});
+                    if (sampler === "" || sampler === undefined || sampler === null) {
+                        if (message !== "") {
+                            message = message + "<br/>";
+                        }
+                        message = message + PMF(
+                            '${name} is required, please correct.',
+                            {'name': _("'Define the Sampler for the shceduled'")});
+                    }
+                    if ( message !== "") {
+                        window.bika.lims.portalMessage(message);
+                    }
                 }
-                if ( message !== "") {
-                    window.bika.lims.portalMessage(message);
-                }
-            }
-        });
+            });
+        }
     }
 }
