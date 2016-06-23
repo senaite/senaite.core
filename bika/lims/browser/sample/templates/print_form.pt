@@ -85,7 +85,7 @@
                                     long_format=None,
                                     time_only=False)"/>
                     <label for="sel_filter" i18n:translate="">To:</label>
-                    <input type="text"
+                    <input type="date"
                            class="datepicker"
                            id="filter_date_to"
                            size="10"

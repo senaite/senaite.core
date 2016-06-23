@@ -92,8 +92,12 @@ function FormPrintView() {
         $('#disable_filter_by_date').change(function(e) {
             dateFilterController();
         });
-        $('#filter_date_from, #filter_date_to').blur(function(e) {
-            dateFilterFromToController();
+        $.datepicker.setDefaults($.datepicker.regional['']);
+        $('#filter_date_from, #filter_date_to').datepicker({
+            onSelect: function(dateText, inst) {
+                dateFilterFromToController();
+            },
+            dateFormat: 'yy-mm-dd'
         });
         $('#margin-top').change(function(e) {
             applyMarginAndReload($(this), 0);
@@ -437,8 +441,8 @@ function FormPrintView() {
         }
     }
     function dateFilterFromToController(){
-        if (new Date($('#filter_date_from').val()).getTime() > new Date($('#filter_date_to').val()).getTime()){
-            $('#filter_date_from').val($('#filter_date_to').val());
+        if ($("#filter_date_from").datepicker("getDate") > $("#filter_date_to").datepicker("getDate")){
+            $('#filter_date_from').datepicker("setDate", $('#filter_date_to').datepicker("getDate"));
         }
     }
 }

@@ -9,6 +9,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.permissions import *
 from DateTime import DateTime
+from Products.CMFPlone.utils import safe_unicode
 import datetime
 from calendar import monthrange
 import os
@@ -155,8 +156,8 @@ class SamplesPrint(BrowserView):
                 client_uid == self._filter_client
             # Getting the date filter result
             in_date_filter = self._avoid_filter_by_date or\
-                (date > self.ulocalized_time(self._filter_date_from) and
-                    date < self.ulocalized_time(self._filter_date_to))
+                (date >= self.ulocalized_time(self._filter_date_from) and
+                    date <= self.ulocalized_time(self._filter_date_to))
             # Apply filter
             if in_sampler_filter and in_client_filter and in_date_filter:
                 # Filling the dictionary
