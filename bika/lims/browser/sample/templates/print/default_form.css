@@ -28,6 +28,12 @@ div#title{
     border: 1px solid #cdcdcd;
     height: 20px;
 }
+table.samples-grid {
+    border-bottom: 1px solid black;
+}
+.table-cell {
+    display: table-cell;
+}
 table.header-form {
     width: 100%;
 }
@@ -44,20 +50,14 @@ table.samples-grid tr td {
     border: 1px solid #cdcdcd;
     padding: 5px;
 }
-table thead th{
-}
 table.set-info thead th{
     vertical-align:top;
-    padding: 5px;
     font-weight:bold;
     font-size:1.4em;
 }
 table.set-info {
     border-bottom: 1px solid #000;
         width: 100%
-}
-.set-info th:first-child {
-    padding-left: 0;
 }
 span.units {
     font-size: 0.7em;
