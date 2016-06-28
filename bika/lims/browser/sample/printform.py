@@ -91,6 +91,21 @@ class SamplesPrint(BrowserView):
         self.destination_url = self.request.get_header(
             "referer", self.context.absolute_url())
 
+    def _get_contacts_for_sample(self, sample, contacts_list):
+        """
+        This function returns the contacts defined in each analysis request.
+        :sample: a sample object
+        :old_list: A list with the contact names
+        Returns a sorted list with the complete names.
+        """
+        ars = sample.getAnalysisRequests()
+        for ar in ars:
+            contact = ar.getContactTitle()
+            if contact not in contacts_list:
+                contacts_list.append(contact)
+        contacts_list.sort()
+        return contacts_list
+
     def getSortedFilteredSamples(self):
         """
         This function returns all the samples sorted and filtered
@@ -140,11 +155,20 @@ class SamplesPrint(BrowserView):
                 # Filling the dictionary
                 if sampler_uid in result.keys():
                     client_d = result[sampler_uid].get(client_uid, {})
-                    # Always write the info again.
-                    # Is it faster than doing a check every time?
-                    client_d['info'] = {
-                        'name': sample.getClientTitle(),
-                        'id': sample.getClientReference()}
+                    if not client_d.keys():
+                        client_d['info'] = {
+                            'name': sample.getClientTitle(),
+                            'reference': sample.getClientReference(),
+                            # Contacts contains the client contacts selected in
+                            # each ar to the same client
+                            'contacts':
+                                self._get_contacts_for_sample(sample, [])
+                                }
+                    else:
+                        # Only update the contacts list
+                        contacts = self._get_contacts_for_sample(
+                            sample, client_d['info'].get('contacts', []))
+                        client_d['info']['contacts'] = contacts
                     if date:
                         c_l = client_d.get(date, [])
                         c_l.append(
@@ -162,7 +186,11 @@ class SamplesPrint(BrowserView):
                     client_dict = {
                         'info': {
                             'name': sample.getClientTitle(),
-                            'id': sample.getClientReference()
+                            'reference': sample.getClientReference(),
+                            # Contacts contains the client contacts selected in
+                            # each ar to the same client
+                            'contacts':
+                                self._get_contacts_for_sample(sample, [])
                             },
                         }
                     # If the sample has a sampling date, build the dictionary
