@@ -42,6 +42,10 @@ def create_analysisrequest(context, request, values, analyses=None,
     # It's necessary to modify these and we don't want to pollute the
     # parent's data
     values = values.copy()
+    analyses = analyses if analyses else values.get('Analyses', [])
+    if not analyses:
+        raise RuntimeError(
+                "create_analysisrequest: no analyses provided")
 
     # Create new sample or locate the existing for secondary AR
     if not values.get('Sample', False):

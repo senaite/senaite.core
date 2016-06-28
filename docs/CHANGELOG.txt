@@ -1,5 +1,6 @@
 3.2.1 (unreleased)
 ------------------
+LIMS-2261: Cannot create analysis request
 LIMS-1562: Using a Sample Round. Basic form and printed form
 HEALTH-394: Sample sticker layout. 2 new sticker layouts, 2 stickers per row
 LIMS-2032: AS Methods initialise with 1st available Instrument (loading setup data)
