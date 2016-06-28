@@ -33,20 +33,35 @@
                         <table class="set-info">
                             <thead>
                             <tr>
-                            <th>
-                                <div
-                                    tal:condition="python:dictionaries[sampler_uid]['info']['name']"
-                                    tal:content="python:dictionaries[sampler_uid]['info']['name']">Sampler</div>
-                                <div
-                                    tal:condition="python:not(dictionaries[sampler_uid]['info']['name'])"
-                                    class="highlight">No sampler defined</div>
-                            </th>
-                            <th>
-                                <div tal:content="python:dictionaries[sampler_uid][client_uid]['info']['name']">Client</div>
-                            </th>
-                            <th>
-                                <div tal:content="date">Date</div>
-                            </th>
+                                <th>
+                                    <div
+                                        tal:condition="python:dictionaries[sampler_uid]['info']['name']"
+                                        tal:content="python:dictionaries[sampler_uid]['info']['name']">Sampler</div>
+                                    <div
+                                        tal:condition="python:not(dictionaries[sampler_uid]['info']['name'])"
+                                        class="highlight">No sampler defined</div>
+                                </th>
+                                <th>
+                                    <table>
+                                    <td class="table-cell" tal:content="python:dictionaries[sampler_uid][client_uid]['info']['name']">Client</td>
+                                    <td
+                                    tal:condition="python:dictionaries[sampler_uid][client_uid]['info']['id']">-</td>
+                                    <td class="table-cell" tal:content="python:dictionaries[sampler_uid][client_uid]['info']['id']">Client</td>
+                                    </table>
+                                </th>
+                                <th rowspan="2">
+                                    <div tal:content="date">Date</div>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <label i18n:translate="">Signature</label>
+                                    <div class="data-input"></div>
+                                </th>
+                                <th>
+                                    <label i18n:translate="">Company contact</label>
+                                    <div class="data-input"></div>
+                                </th>
                             </tr>
                             </thead>
                         </table>
@@ -58,25 +73,26 @@
                     <div>
                         <table class="samples-grid"
                             tal:repeat="table tables">
+                            <tal:rowheader repeat="info_row table/columns/column_order">
                             <thead>
                                 <tr>
                                     <th i18n:translate=""
-                                        tal:repeat="column_id table/columns/column_order"
+                                        tal:repeat="column_id info_row"
                                         tal:content="python: table['columns']['titles'][column_id]"></th>
                                 </tr>
                             </thead>
                             <tbody>
                             <tal:rowsample repeat="row table/rows">
                                 <tr>
-                                <tal:rowcell repeat="column_id table/columns/column_order">
-                                    <td tal:condition="python: column_id not in ['analyses', 'partition'] and not row[column_id]['hidden']"
-                                        tal:attributes="rowspan python:row[column_id]['rowspan'];
+                                <tal:rowcell repeat="column_id info_row">
+                                    <td tal:condition="python: column_id not in ['analyses', 'partition'] and not row[column_id].get('hidden', '')"
+                                        tal:attributes="rowspan python:row[column_id].get('rowspan', '1');
                                                         class python:column_id">
                                         <div class="table-text"
                                             tal:content="python: row[column_id]['value']">
                                         </div>
                                     </td>
-                                    <td tal:condition="python: column_id == 'analyses' and row[column_id]['title'] != ''"
+                                    <td tal:condition="python: column_id == 'analyses' and row[column_id]['units'] != ''"
                                         class="analyses">
                                         <span tal:content="python: row[column_id]['title']"></span>
                                         <div class="data-input"></div>
@@ -84,8 +100,10 @@
                                             class="units"
                                             tal:content="python: row[column_id]['units']"></span>
                                     </td>
-                                    <td tal:condition="python: column_id == 'analyses' and row[column_id]['title'] == ''"
-                                        class="border:none;">
+                                    <td tal:condition="python: column_id == 'analyses' and row[column_id]['units'] == ''"
+                                        class="analyses">
+                                        <div class="table-text"
+                                            tal:content="python: row[column_id]['title']"></div>
                                     </td>
                                     <td tal:condition="python: column_id == 'partition' and not row[column_id]['hidden']"
                                         tal:attributes="rowspan python:row[column_id]['rowspan'];
@@ -106,6 +124,7 @@
                                 </tr>
                             </tal:rowsample>
                         </tbody>
+                        </tal:rowheader>
                         </table>
                     </div>
                     </tal:table>

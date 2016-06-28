@@ -447,7 +447,7 @@ class SamplesView(BikaListingView):
         toggle_cols = self.get_toggle_cols()
         new_states = []
         for i,state in enumerate(self.review_states):
-            if state['id'] == self.review_state.get('id', ''):
+            if state and self.review_state and state['id'] == self.review_state.get('id', ''):
                 if 'getSampler' not in toggle_cols \
                    or 'DateSampled' not in toggle_cols:
                     if 'hide_transitions' in state:

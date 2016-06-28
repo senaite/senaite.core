@@ -142,7 +142,9 @@ class SamplesPrint(BrowserView):
                     client_d = result[sampler_uid].get(client_uid, {})
                     # Always write the info again.
                     # Is it faster than doing a check every time?
-                    client_d['info'] = {'name': sample.getClientTitle()}
+                    client_d['info'] = {
+                        'name': sample.getClientTitle(),
+                        'id': sample.getClientReference()}
                     if date:
                         c_l = client_d.get(date, [])
                         c_l.append(
@@ -159,7 +161,8 @@ class SamplesPrint(BrowserView):
                     # Write the client dict
                     client_dict = {
                         'info': {
-                            'name': sample.getClientTitle()
+                            'name': sample.getClientTitle(),
+                            'id': sample.getClientReference()
                             },
                         }
                     # If the sample has a sampling date, build the dictionary
@@ -186,27 +189,46 @@ class SamplesPrint(BrowserView):
         This function returns a list of dictionaries sorted by Sample
         Partition/Container. It emulates the columns/rows of a table.
         [{'requests and partition info'}, ...]
+        The table contains only the info for one sample/ar.
         """
         # rows will contain the data for each html row
         rows = []
-        # columns will be used to sort and define the columns
+        # columns will be used to sort and define the columns. Each header row
+        # is a list itself.
         columns = {
             'column_order': [
-                'sample_id',
-                'sample_type',
-                'sampling_point',
-                'sampling_date',
-                'partition',
-                'container',
+                [
+                    'sample_id',
+                    'sample_type',
+                    'sampling_point',
+                    'date_sampled',
+                    'partition',
+                    'container',
+                    'analyses'],
+                [
+                    'temp',
+                    'amb_cond',
+                    'client_ref',
+                    'client_sample_id',
+                    'composite',
+                    'adhoc',
+                    'sample_cond']
                 ],
             'titles': {
                 'sample_id': _('Sample ID'),
                 'sample_type': _('Sample Type'),
                 'sampling_point': _('Sampling Point'),
-                'sampling_date': _('Sampling Date'),
+                'date_sampled': _('Date/Time Sampled'),
                 'partition': _('Partition'),
                 'container': _('Container'),
                 'analyses': _('Analysis'),
+                'temp': _('Temperature'),
+                'amb_cond': _('Ambiental Conditions'),
+                'client_ref': _('Client Reference'),
+                'client_sample_id': _('Client Sample ID'),
+                'composite': _('Composite'),
+                'adhoc': _('Ad-Hoc'),
+                'sample_cond': _('Sample Conditions'),
             }
         }
         ars = sample.getAnalysisRequests()
@@ -259,10 +281,10 @@ class SamplesPrint(BrowserView):
                                 ar.getSamplePoint().title
                                 if ar.getSamplePoint() else '',
                             },
-                        'sampling_date': {
+                        'date_sampled': {
                             'hidden': True if arcell else False,
                             'rowspan': numans,
-                            'value':  self.ulocalized_time(sample.getSamplingDate(), long_format=0),
+                            'value':  '',
                             },
                         'partition': {
                             'hidden': True if partcell else False,
@@ -276,11 +298,41 @@ class SamplesPrint(BrowserView):
                             },
                         'analyses': {
                             'title':
-                                service.title if
-                                service.getPointOfCapture() == 'field' else '',
+                                service.title,
                             'units':
                                 service.getUnit() if
                                 service.getPointOfCapture() == 'field' else '',
+                        },
+                        'temp': {
+                            'hidden': True if arcell else False,
+                            'value': '',
+                        },
+                        'amb_cond': {
+                            'hidden': True if arcell else False,
+                            'value': '',
+                        },
+                        'client_ref': {
+                            'hidden': True if arcell else False,
+                            'value': sample.getClientReference() if
+                                sample.getClientReference() else '',
+                        },
+                        'client_sample_id': {
+                            'hidden': True if arcell else False,
+                            'value': sample.getClientSampleID() if
+                                sample.getClientSampleID() else '',
+                        },
+                        'composite': {
+                            'hidden': True if arcell else False,
+                            'value': 'Yes' if ar.getComposite() else 'No',
+                        },
+                        'adhoc': {
+                            'hidden': True if arcell else False,
+                            'value': 'Yes' if ar.getAdHoc() else 'No',
+                            'rowspan': numans,
+                        },
+                        'sample_cond': {
+                            'hidden': True if arcell else False,
+                            'value': '',
                         },
                     }
                     rows.append(row)
@@ -289,7 +341,7 @@ class SamplesPrint(BrowserView):
                     arcell = True
                     partcell = True
 
-        # table will contain the data that from where the html
+        # table will contain the data from where the html
         # will take the info
         table = {
             'columns': columns,
