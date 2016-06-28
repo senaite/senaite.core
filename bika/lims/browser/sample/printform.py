@@ -101,6 +101,21 @@ class SamplesPrint(BrowserView):
         self.destination_url = self.request.get_header(
             "referer", self.context.absolute_url())
 
+    def _get_contacts_for_sample(self, sample, contacts_list):
+        """
+        This function returns the contacts defined in each analysis request.
+        :sample: a sample object
+        :old_list: A list with the contact names
+        Returns a sorted list with the complete names.
+        """
+        ars = sample.getAnalysisRequests()
+        for ar in ars:
+            contact = ar.getContactTitle()
+            if contact not in contacts_list:
+                contacts_list.append(contact)
+        contacts_list.sort()
+        return contacts_list
+
     def getSortedFilteredSamples(self):
         """
         This function returns all the samples sorted and filtered
@@ -163,9 +178,20 @@ class SamplesPrint(BrowserView):
                 # Filling the dictionary
                 if sampler_uid in result.keys():
                     client_d = result[sampler_uid].get(client_uid, {})
-                    # Always write the info again.
-                    # Is it faster than doing a check every time?
-                    client_d['info'] = {'name': sample.getClientTitle()}
+                    if not client_d.keys():
+                        client_d['info'] = {
+                            'name': sample.getClientTitle(),
+                            'reference': sample.getClientReference(),
+                            # Contacts contains the client contacts selected in
+                            # each ar to the same client
+                            'contacts':
+                                self._get_contacts_for_sample(sample, [])
+                                }
+                    else:
+                        # Only update the contacts list
+                        contacts = self._get_contacts_for_sample(
+                            sample, client_d['info'].get('contacts', []))
+                        client_d['info']['contacts'] = contacts
                     if date:
                         c_l = client_d.get(date, [])
                         c_l.append(
@@ -182,7 +208,12 @@ class SamplesPrint(BrowserView):
                     # Write the client dict
                     client_dict = {
                         'info': {
-                            'name': sample.getClientTitle()
+                            'name': sample.getClientTitle(),
+                            'reference': sample.getClientReference(),
+                            # Contacts contains the client contacts selected in
+                            # each ar to the same client
+                            'contacts':
+                                self._get_contacts_for_sample(sample, [])
                             },
                         }
                     # If the sample has a sampling date, build the dictionary
@@ -209,43 +240,78 @@ class SamplesPrint(BrowserView):
         This function returns a list of dictionaries sorted by Sample
         Partition/Container. It emulates the columns/rows of a table.
         [{'requests and partition info'}, ...]
+        The table contains only the info for one sample/ar.
         """
         # rows will contain the data for each html row
         rows = []
-        # columns will be used to sort and define the columns
+        # columns will be used to sort and define the columns. Each header row
+        # is a list itself.
         columns = {
             'column_order': [
-                'sample_id',
-                'sample_type',
-                'sampling_point',
-                'sampling_date',
-                'partition',
-                'container',
+                [
+                    'sample_id',
+                    'sample_type',
+                    'sampling_point',
+                    'date_sampled',
+                    'partition',
+                    'container',
+                    'analyses'],
+                [
+                    'temp',
+                    'amb_cond',
+                    'client_ref',
+                    'client_sample_id',
+                    'composite',
+                    'adhoc',
+                    'sample_cond']
                 ],
             'titles': {
                 'sample_id': _('Sample ID'),
                 'sample_type': _('Sample Type'),
                 'sampling_point': _('Sampling Point'),
-                'sampling_date': _('Sampling Date'),
+                'date_sampled': _('Date/Time Sampled'),
                 'partition': _('Partition'),
                 'container': _('Container'),
                 'analyses': _('Analysis'),
+                'temp': _('Temperature'),
+                'amb_cond': _('Ambiental Conditions'),
+                'client_ref': _('Client Reference'),
+                'client_sample_id': _('Client Sample ID'),
+                'composite': _('Composite'),
+                'adhoc': _('Ad-Hoc'),
+                'sample_cond': _('Sample Conditions'),
             }
         }
         ars = sample.getAnalysisRequests()
-        labans = False;
+        labans = False
+        # The form is divided by ar(samples).
         for ar in ars:
+            # Since the form is divided by ar, we need a marker to know if
+            # we are still inside the same ar or it is a new one. The fields
+            # related with the ar itself shouldn't be repeated each loop.
+            # arcell == analysis request cell
             arcell = False
+            # Getting the analyses for each analysis request (sample). This
+            # number will be used in order to set the height of the ar html row
             numans = len(ar.getAnalyses())
+            # We want a row per patition in order to draw the barcodes
             for part in ar.getPartitions():
+                # The same logic used for 'arcell':True qhen the row still
+                # belongs to the same partition
+                # partcell == partition cell
                 partcell = False
                 container = part.getContainer().title \
                     if part and part.getContainer() else ''
+                # Gettin the analyses linked to the partition
                 partans = part.getAnalyses()
+                # Getting the number of partitions. Needed to know the height
+                # of the partition row.
                 numpartans = len(partans)
+                # Getting the points of capture if needed
                 labpoc = [an for an in partans if an.getService().getPointOfCapture() == 'field']
                 labans = True if labans or len(labpoc) > 0 else labans
                 labpoc = [partans[0]] if len(labpoc) == 0 else labpoc
+                # for each analyses, build the structure
                 for analysis in labpoc:
                     service = analysis.getService()
                     row = {
@@ -266,10 +332,10 @@ class SamplesPrint(BrowserView):
                                 ar.getSamplePoint().title
                                 if ar.getSamplePoint() else '',
                             },
-                        'sampling_date': {
+                        'date_sampled': {
                             'hidden': True if arcell else False,
                             'rowspan': numans,
-                            'value':  self.ulocalized_time(sample.getSamplingDate(), long_format=0),
+                            'value':  '',
                             },
                         'partition': {
                             'hidden': True if partcell else False,
@@ -283,18 +349,50 @@ class SamplesPrint(BrowserView):
                             },
                         'analyses': {
                             'title':
-                                service.title if
-                                service.getPointOfCapture() == 'field' else '',
+                                service.title,
                             'units':
                                 service.getUnit() if
                                 service.getPointOfCapture() == 'field' else '',
                         },
+                        'temp': {
+                            'hidden': True if arcell else False,
+                            'value': '',
+                        },
+                        'amb_cond': {
+                            'hidden': True if arcell else False,
+                            'value': '',
+                        },
+                        'client_ref': {
+                            'hidden': True if arcell else False,
+                            'value': sample.getClientReference() if
+                                sample.getClientReference() else '',
+                        },
+                        'client_sample_id': {
+                            'hidden': True if arcell else False,
+                            'value': sample.getClientSampleID() if
+                                sample.getClientSampleID() else '',
+                        },
+                        'composite': {
+                            'hidden': True if arcell else False,
+                            'value': 'Yes' if ar.getComposite() else 'No',
+                        },
+                        'adhoc': {
+                            'hidden': True if arcell else False,
+                            'value': 'Yes' if ar.getAdHoc() else 'No',
+                            'rowspan': numans,
+                        },
+                        'sample_cond': {
+                            'hidden': True if arcell else False,
+                            'value': '',
+                        },
                     }
                     rows.append(row)
+                    # After the first iteration, we definitely are in a
+                    # analysis request and partition row
                     arcell = True
                     partcell = True
 
-        # table will contain the data that from where the html
+        # table will contain the data from where the html
         # will take the info
         table = {
             'columns': columns,
