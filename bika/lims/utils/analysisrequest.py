@@ -41,7 +41,10 @@ def create_analysisrequest(context, request, values, analyses=None,
     # It's necessary to modify these and we don't want to pollute the
     # parent's data
     values = values.copy()
-    analyses = analyses if analyses else values.get('Analyses', [])
+    analyses = analyses if analyses else []
+    anv = values['Analyses'] if values.get('Analyses', None) else []
+    analyses = anv + analyses
+
     if not analyses:
         raise RuntimeError(
                 "create_analysisrequest: no analyses provided")
@@ -173,35 +176,48 @@ def _resolve_items_to_service_uids(items):
     if type(items) not in (list, tuple):
         items = [items, ]
     for item in items:
-        uid = False
         # service objects
         if IAnalysisService.providedBy(item):
             uid = item.UID()
             service_uids.append(uid)
+            continue
+
         # Analysis objects (shortcut for eg copying analyses from other AR)
         if IAnalysis.providedBy(item):
             uid = item.getService().UID()
             service_uids.append(uid)
+            continue
+
+        # An object UID already there?
+        if (item in service_uids):
+            continue
+
         # Maybe object UID.
         bsc = getToolByName(portal, 'bika_setup_catalog')
         brains = bsc(UID=item)
         if brains:
             uid = brains[0].UID
             service_uids.append(uid)
+            continue
+
         # Maybe service Title
         bsc = getToolByName(portal, 'bika_setup_catalog')
         brains = bsc(portal_type='AnalysisService', title=item)
         if brains:
             uid = brains[0].UID
             service_uids.append(uid)
+            continue
+
         # Maybe service Keyword
         bsc = getToolByName(portal, 'bika_setup_catalog')
         brains = bsc(portal_type='AnalysisService', getKeyword=item)
         if brains:
             uid = brains[0].UID
             service_uids.append(uid)
-        if not uid:
-            raise RuntimeError(
-                str(item) + " should be the UID, title, keyword "
-                            " or title of an AnalysisService.")
-    return service_uids
+            continue
+
+        raise RuntimeError(
+            str(item) + " should be the UID, title, keyword "
+                        " or title of an AnalysisService.")
+
+    return list(set(service_uids))
