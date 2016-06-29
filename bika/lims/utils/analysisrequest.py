@@ -163,15 +163,22 @@ def get_sample_from_values(context, values):
 
 
 def _resolve_items_to_service_uids(items):
-    portal = api.portal.get()
-    # We need to send a list of service UIDS to setAnalyses function.
-    # But we may have received one, or a list of:
-    #   AnalysisService instances
-    #   Analysis instances
-    #   service titles
-    #   service UIDs
-    #   service Keywords
+    """ Returns a list of service uids without duplicates based on the items
+    :param items:
+        A list (or one object) of service-related info items. The list can be
+        heterogeneous and each item can be:
+        - Analysis Service instance
+        - Analysis instance
+        - Analysis Service title
+        - Analysis Service UID
+        - Analysis Service Keyword
+        If an item that doesn't match any of the criterias above is found, the
+        function will raise a RuntimeError
+    """
+    portal = None
+    bsc = None
     service_uids = []
+
     # Maybe only a single item was passed
     if type(items) not in (list, tuple):
         items = [items, ]
@@ -193,7 +200,8 @@ def _resolve_items_to_service_uids(items):
             continue
 
         # Maybe object UID.
-        bsc = getToolByName(portal, 'bika_setup_catalog')
+        portal = portal if portal else api.portal.get()
+        bsc = bsc if bsc else getToolByName(portal, 'bika_setup_catalog')
         brains = bsc(UID=item)
         if brains:
             uid = brains[0].UID
@@ -201,7 +209,6 @@ def _resolve_items_to_service_uids(items):
             continue
 
         # Maybe service Title
-        bsc = getToolByName(portal, 'bika_setup_catalog')
         brains = bsc(portal_type='AnalysisService', title=item)
         if brains:
             uid = brains[0].UID
@@ -209,7 +216,6 @@ def _resolve_items_to_service_uids(items):
             continue
 
         # Maybe service Keyword
-        bsc = getToolByName(portal, 'bika_setup_catalog')
         brains = bsc(portal_type='AnalysisService', getKeyword=item)
         if brains:
             uid = brains[0].UID
