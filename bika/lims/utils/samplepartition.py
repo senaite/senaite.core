@@ -33,6 +33,14 @@ def set_container_preservation(context, container, data):
 
 
 def create_samplepartition(context, data, analyses=[]):
+    """
+    This function creates a partition object.
+    :returns: a whole partition object
+    :data: is a dictionary with some important data to create the partition,
+    where the most important keys are: part_id and services
+    {'part_id':xx, 'container_uid', xxxx, 'services': xxxx, 'part_id':xxx, ...}
+    :analyses: A list of full object analyses
+    """
     partition = _createObjectByType('SamplePartition', context, data['part_id'])
     partition.unmarkCreationFlag()
     # Determine if the sampling workflow is enabled
@@ -72,7 +80,7 @@ def create_samplepartition(context, data, analyses=[]):
         for analysis in analyses:
             analysis.setSamplePartition(partition)
     # Perform the appropriate workflow action
-    workflow_action =  'sampling_workflow' if workflow_enabled \
+    workflow_action = 'sampling_workflow' if workflow_enabled \
         else 'no_sampling_workflow'
     context.portal_workflow.doActionFor(partition, workflow_action)
     # Return the created partition
