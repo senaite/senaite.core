@@ -32,7 +32,8 @@ class ClientAnalysisProfilesView(BikaListingView):
 
         self.columns = {
             'title': {'title': _('Title'),
-                      'index': 'sortable_title'},
+                      'index': 'sortable_title',
+                      'replace_url': 'absolute_url'},
             'Description': {'title': _('Description'),
                             'index': 'description'},
             'getProfileKey': {'title': _('Profile Key')},
@@ -63,8 +64,3 @@ class ClientAnalysisProfilesView(BikaListingView):
                 {'url': 'createObject?type_name=AnalysisProfile',
                  'icon': '++resource++bika.lims.images/add.png'}
         return super(ClientAnalysisProfilesView, self).__call__()
-
-    def folderitem(self, obj, item, index):
-        item['replace']['title'] = \
-            "<a href='%s'>%s</a>" % (item['url'], item['title'])
-        return item
