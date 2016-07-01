@@ -2,6 +2,7 @@
 ------------------
 LIMS-2261: Cannot create analysis request
 LIMS-1562: Using a Sample Round. Basic form and printed form
+LIMS-2266: Crating partitions through Add form, doesn't create partitions.
 HEALTH-394: Sample sticker layout. 2 new sticker layouts, 2 stickers per row
 LIMS-2032: AS Methods initialise with 1st available Instrument (loading setup data)
 LIMS-2014: I can only select a Default Method for an AS if Manual results capture is on
