@@ -37,17 +37,19 @@ def create_analysisrequest(context, request, values, analyses=None,
     # Gather neccesary tools
     workflow = getToolByName(context, 'portal_workflow')
     bc = getToolByName(context, 'bika_catalog')
-
+    # Analyses are analyses services
+    analyses_services = analyses
+    analyses = []
     # It's necessary to modify these and we don't want to pollute the
     # parent's data
     values = values.copy()
-    analyses = analyses if analyses else []
+    analyses_services = analyses_services if analyses_services else []
     anv = values['Analyses'] if values.get('Analyses', None) else []
-    analyses = anv + analyses
+    analyses_services = anv + analyses_services
 
-    if not analyses:
+    if not analyses_services:
         raise RuntimeError(
-                "create_analysisrequest: no analyses provided")
+                "create_analysisrequest: no analyses services provided")
 
     # Create new sample or locate the existing for secondary AR
     if not values.get('Sample', False):
@@ -74,9 +76,13 @@ def create_analysisrequest(context, request, values, analyses=None,
     workflow.doActionFor(ar, action)
 
     # Set analysis request analyses
-    service_uids = _resolve_items_to_service_uids(analyses)
-    analyses = ar.setAnalyses(service_uids, prices=prices, specs=specifications)
-
+    service_uids = _resolve_items_to_service_uids(analyses_services)
+    # processForm already has created the analyses, but here we create the
+    # analyses with specs and prices. This function, even it is called 'set',
+    # deletes the old analyses, so eventually we obtain the desired analyses.
+    ar.setAnalyses(service_uids, prices=prices, specs=specifications)
+    # Gettin the ar objects
+    analyses = ar.getAnalyses(full_objects=True)
     # Continue to set the state of the AR
     skip_receive = ['to_be_sampled', 'sample_due', 'sampled', 'to_be_preserved']
     if secondary:
@@ -98,7 +104,7 @@ def create_analysisrequest(context, request, values, analyses=None,
     if not secondary:
         # Create sample partitions
         if not partitions:
-            partitions = [{'services': analyses}]
+            partitions = [{'services': service_uids}]
         for n, partition in enumerate(partitions):
             # Calculate partition id
             partition_prefix = sample.getId() + "-P"
