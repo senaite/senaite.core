@@ -1,11 +1,15 @@
 from bika.lims import bikaMessageFactory as _, t
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
+from bika.lims.utils import to_utf8, createPdf
 from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone.resource.utils import iterDirectoriesOfType, queryResourceDirectory
-
+import App
+import tempfile
 import os
 import glob
+import traceback
 
 
 class PrintForm(BrowserView):
@@ -21,7 +25,7 @@ class PrintForm(BrowserView):
             self._samplingrounds = [self.context]
 
         elif self.context.portal_type == 'SamplingRounds' \
-            and self.request.get('items', ''):
+                and self.request.get('items', ''):
             uids = self.request.get('items').split(',')
             uc = getToolByName(self.context, 'uid_catalog')
             self._samplingrounds = [obj.getObject() for obj in uc(UID=uids)]
@@ -33,9 +37,13 @@ class PrintForm(BrowserView):
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
 
-        # Generate PDF?
+        # Do print?
         if self.request.form.get('pdf', '0') == '1':
-            return self._flush_pdf()
+            response = self.request.response
+            response.setHeader("Content-type", "application/pdf")
+            response.setHeader("Content-Disposition", "inline")
+            response.setHeader("filename", "temp.pdf")
+            return self.pdfFromPOST()
         else:
             return self.template()
 
@@ -47,7 +55,7 @@ class PrintForm(BrowserView):
     def getSRTemplates(self):
         """
         Returns a DisplayList with the available templates found in
-        browser/samplingrpund/templates/
+        browser/samplinground/templates/
         """
         this_dir = os.path.dirname(os.path.abspath(__file__))
         templates_dir = os.path.join(this_dir, self._TEMPLATES_DIR)
@@ -90,17 +98,29 @@ class PrintForm(BrowserView):
         if self._current_sr_index < len(self._samplingrounds):
             self._current_sr_index += 1
         return reptemplate
-        # Using default for now
-        return ViewPageTemplateFile("templates/print/default_form.pt")(self)
 
     def getCSS(self):
         """ Returns the css style to be used for the current template.
+            If the selected template is 'default.pt', this method will
+            return the content from 'default.css'. If no css file found
+            for the current template, returns empty string
         """
-        this_dir = os.path.dirname(os.path.abspath(__file__))
-        templates_dir = os.path.join(this_dir, self._TEMPLATES_DIR)
-        path = '%s/%s.css' % (templates_dir, 'default')
-        content_file = open(path, 'r')
-        return content_file.read()
+        template = self.request.get('template', self._DEFAULT_TEMPLATE)
+        content = ''
+        if template.find(':') >= 0:
+            prefix, template = template.split(':')
+            resource = queryResourceDirectory(
+                self._TEMPLATES_ADDON_DIR, prefix)
+            css = '{0}.css'.format(template[:-3])
+            if css in resource.listDirectory():
+                content = resource.readFile(css)
+        else:
+            this_dir = os.path.dirname(os.path.abspath(__file__))
+            templates_dir = os.path.join(this_dir, self._TEMPLATES_DIR)
+            path = '%s/%s.css' % (templates_dir, template[:-3])
+            with open(path, 'r') as content_file:
+                content = content_file.read()
+        return content
 
     def getAnalysisRequestTemplatesInfo(self):
         """
@@ -178,7 +198,7 @@ class PrintForm(BrowserView):
                         'sampling_point': {
                             'hidden': True if arcell else False,
                             'rowspan': numans,
-                            'value': ar.getSamplePoint().title,
+                            'value': ar.getSamplePoint().title if ar.getSamplePoint() else '',
                             },
                         'sampling_date': {
                             'hidden': True if arcell else False,
@@ -218,3 +238,29 @@ class PrintForm(BrowserView):
     def getLogo(self):
         portal = self.context.portal_url.getPortalObject()
         return "%s/logo_print.png" % portal.absolute_url()
+
+    def pdfFromPOST(self):
+        """
+        It returns the pdf for the sampling rounds printed
+        """
+        html = self.request.form.get('html')
+        style = self.request.form.get('style')
+        reporthtml = "<html><head>%s</head><body><div id='report'>%s</body></html>" % (style, html)
+        return self.printFromHTML(safe_unicode(reporthtml).encode('utf-8'))
+
+    def printFromHTML(self, sr_html):
+        """
+        Tis function generates a pdf file from the html
+        :sr_html: the html to use to generate the pdf
+        """
+        # HTML written to debug file
+        debug_mode = App.config.getConfiguration().debug_mode
+        if debug_mode:
+            tmp_fn = tempfile.mktemp(suffix=".html")
+            open(tmp_fn, "wb").write(sr_html)
+
+        # Creates the pdf
+        # we must supply the file ourself so that createPdf leaves it alone.
+        pdf_fn = tempfile.mktemp(suffix=".pdf")
+        pdf_report = createPdf(htmlreport=sr_html, outfile=pdf_fn)
+        return pdf_report

@@ -29,7 +29,7 @@
     <browser:page
       for="bika.lims.content.samplinground.ISamplingRound"
       name="sr_form_print"
-      class=".print.PrintForm"
+      class=".printform.PrintForm"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

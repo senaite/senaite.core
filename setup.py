@@ -64,6 +64,7 @@ setup(name='bika.lims',
           'plone.app.dexterity',
           'plone.app.relationfield',
           'plone.app.referenceablebehavior',
+          'five.pt',
       ],
       extras_require={
           'test': [

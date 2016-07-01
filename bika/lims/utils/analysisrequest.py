@@ -10,27 +10,47 @@ from plone import api
 from Products.CMFPlone.utils import _createObjectByType
 
 
-def create_analysisrequest(
-        context,
-        request,
-        values,  # {field: value, ...}
-        analyses=[],
-        # uid, service or analysis; list of uids, services or analyses
-        partitions=None,
-        # list of dictionaries with container, preservation etc)
-        specifications=None,
-        prices=None):
+def create_analysisrequest(context, request, values, analyses=None,
+                           partitions=None, specifications=None, prices=None):
     """This is meant for general use and should do everything necessary to
-    create and initialise the AR and it's requirements.
-    XXX The ar-add form's ajaxAnalysisRequestSubmit should be calling this.
+    create and initialise an AR and any other required auxilliary objects
+    (Sample, SamplePartition, Analysis...)
+
+    :param context:
+        The container in which the ARs will be created.
+    :param request:
+        The current Request object.
+    :param values:
+        a dict, where keys are AR|Sample schema field names.
+    :param analyses:
+        Analysis services list.  If specified, augments the values in
+        values['Analyses']. May consist of service objects, UIDs, or Keywords.
+    :param partitions:
+        A list of dictionaries, if specific partitions are required.  If not
+        specified, AR's sample is created with a single partition.
+    :param specifications:
+        These values augment those found in values['Specifications']
+    :param prices:
+        Allow different prices to be set for analyses.  If not set, prices
+        are read from the associated analysis service.
     """
+
     # Gather neccesary tools
     workflow = getToolByName(context, 'portal_workflow')
     bc = getToolByName(context, 'bika_catalog')
-
+    # Analyses are analyses services
+    analyses_services = analyses
+    analyses = []
     # It's necessary to modify these and we don't want to pollute the
     # parent's data
     values = values.copy()
+    analyses_services = analyses_services if analyses_services else []
+    anv = values['Analyses'] if values.get('Analyses', None) else []
+    analyses_services = anv + analyses_services
+
+    if not analyses_services:
+        raise RuntimeError(
+                "create_analysisrequest: no analyses services provided")
 
     # Create new sample or locate the existing for secondary AR
     if not values.get('Sample', False):
@@ -39,19 +59,12 @@ def create_analysisrequest(
         sample = create_sample(context, request, values)
     else:
         secondary = True
-        if ISample.providedBy(values['Sample']):
-            sample = values['Sample']
-        else:
-            brains = bc(UID=values['Sample'])
-            if brains:
-                sample = brains[0].getObject()
-        if not sample:
-            raise RuntimeError(
-                "create_analysisrequest No sample. values=%s" % values)
+        sample = get_sample_from_values(context, values)
         workflow_enabled = sample.getSamplingWorkflowEnabled()
 
     # Create the Analysis Request
     ar = _createObjectByType('AnalysisRequest', context, tmpID())
+
     # Set some required fields manually before processForm is called
     ar.setSample(sample)
     values['Sample'] = sample
@@ -64,30 +77,35 @@ def create_analysisrequest(
     workflow.doActionFor(ar, action)
 
     # Set analysis request analyses
-    service_uids = _resolve_items_to_service_uids(analyses)
-    analyses = ar.setAnalyses(service_uids, prices=prices, specs=specifications)
-
+    service_uids = _resolve_items_to_service_uids(analyses_services)
+    # processForm already has created the analyses, but here we create the
+    # analyses with specs and prices. This function, even it is called 'set',
+    # deletes the old analyses, so eventually we obtain the desired analyses.
+    ar.setAnalyses(service_uids, prices=prices, specs=specifications)
+    # Gettin the ar objects
+    analyses = ar.getAnalyses(full_objects=True)
+    # Continue to set the state of the AR
+    skip_receive = ['to_be_sampled', 'sample_due', 'sampled', 'to_be_preserved']
     if secondary:
         # Only 'sample_due' and 'sample_recieved' samples can be selected
         # for secondary analyses
-        api.content.transition(obj=ar, to_state='sampled')
-        api.content.transition(obj=ar, to_state='sample_due')
+        doActionFor(ar, 'sampled')
+        doActionFor(ar, 'sample_due')
         sample_state = workflow.getInfoFor(sample, 'review_state')
-        if sample_state == 'sample_received':
+        if sample_state not in skip_receive:
             doActionFor(ar, 'receive')
 
-        for analysis in ar.getAnalyses(full_objects=1):
-            doActionFor(analysis, 'sample')
-            doActionFor(analysis, 'sample_due')
-            analysis_transition_ids = [t['id'] for t in
-                                       workflow.getTransitionsFor(analysis)]
-            if 'receive' in analysis_transition_ids and sample_state == 'sample_received':
-                doActionFor(analysis, 'receive')
+    # Set the state of analyses we created.
+    for analysis in analyses:
+        doActionFor(analysis, 'sample_due')
+        analysis_state = workflow.getInfoFor(analysis, 'review_state')
+        if analysis_state not in skip_receive:
+            doActionFor(analysis, 'receive')
 
     if not secondary:
         # Create sample partitions
         if not partitions:
-            partitions = [{'services': analyses}]
+            partitions = [{'services': service_uids}]
         for n, partition in enumerate(partitions):
             # Calculate partition id
             partition_prefix = sample.getId() + "-P"
@@ -133,50 +151,86 @@ def create_analysisrequest(
     # Return the newly created Analysis Request
     return ar
 
+def get_sample_from_values(context, values):
+    """values may contain a UID or a direct Sample object.
+    """
+    if ISample.providedBy(values['Sample']):
+        sample = values['Sample']
+    else:
+        bc = getToolByName(context, 'bika_catalog')
+        brains = bc(UID=values['Sample'])
+        if brains:
+            sample = brains[0].getObject()
+        else:
+            raise RuntimeError(
+                "create_analysisrequest: invalid sample value provided. values=%s" % values)
+    if not sample:
+        raise RuntimeError(
+            "create_analysisrequest: invalid sample value provided. values=%s" % values)
+
 
 def _resolve_items_to_service_uids(items):
-    portal = api.portal.get()
-    # We need to send a list of service UIDS to setAnalyses function.
-    # But we may have received one, or a list of:
-    #   AnalysisService instances
-    #   Analysis instances
-    #   service titles
-    #   service UIDs
-    #   service Keywords
+    """ Returns a list of service uids without duplicates based on the items
+    :param items:
+        A list (or one object) of service-related info items. The list can be
+        heterogeneous and each item can be:
+        - Analysis Service instance
+        - Analysis instance
+        - Analysis Service title
+        - Analysis Service UID
+        - Analysis Service Keyword
+        If an item that doesn't match any of the criterias above is found, the
+        function will raise a RuntimeError
+    """
+    portal = None
+    bsc = None
     service_uids = []
+
     # Maybe only a single item was passed
     if type(items) not in (list, tuple):
         items = [items, ]
     for item in items:
-        uid = False
         # service objects
         if IAnalysisService.providedBy(item):
             uid = item.UID()
             service_uids.append(uid)
+            continue
+
         # Analysis objects (shortcut for eg copying analyses from other AR)
         if IAnalysis.providedBy(item):
             uid = item.getService().UID()
             service_uids.append(uid)
+            continue
+
+        # An object UID already there?
+        if (item in service_uids):
+            continue
+
         # Maybe object UID.
-        bsc = getToolByName(portal, 'bika_setup_catalog')
+        portal = portal if portal else api.portal.get()
+        bsc = bsc if bsc else getToolByName(portal, 'bika_setup_catalog')
         brains = bsc(UID=item)
         if brains:
             uid = brains[0].UID
             service_uids.append(uid)
+            continue
+
         # Maybe service Title
-        bsc = getToolByName(portal, 'bika_setup_catalog')
         brains = bsc(portal_type='AnalysisService', title=item)
         if brains:
             uid = brains[0].UID
             service_uids.append(uid)
-        # Maybe service Title
-        bsc = getToolByName(portal, 'bika_setup_catalog')
+            continue
+
+        # Maybe service Keyword
         brains = bsc(portal_type='AnalysisService', getKeyword=item)
         if brains:
             uid = brains[0].UID
             service_uids.append(uid)
-        if not uid:
-            raise RuntimeError(
-                str(item) + " should be the UID, title, keyword "
-                            " or title of an AnalysisService.")
-    return service_uids
+            continue
+
+        raise RuntimeError(
+            str(item) + " should be the UID, title, keyword "
+                        " or title of an AnalysisService.")
+
+    return list(set(service_uids))
