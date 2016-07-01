@@ -938,12 +938,28 @@ class BikaListingView(BrowserView):
                 if hasattr(obj, key):
                     # if the key is already in the results dict
                     # then we don't replace it's value
-                    if results_dict.has_key(key):
-                        continue
-                    value = getattr(obj, key)
-                    if callable(value):
-                        value = value()
-                    results_dict[key] = value
+                    if key not in results_dict:
+                        value = getattr(obj, key)
+                        if callable(value):
+                            value = value()
+                        results_dict[key] = value
+
+                    # Replace with an url?
+                    replace = self.columns[key].get('replace_url', None)
+                    if replace:
+                        attrobj = obj
+                        attrs = replace.split('.')
+                        for attr in attrs:
+                            if hasattr(attrobj, attr):
+                                attrobj = getattr(attrobj, attr)
+                                if callable(attrobj):
+                                    attrobj = attrobj()
+                            else:
+                                attrobj = None
+                                break
+                        if attrobj:
+                            results_dict['replace'][key] = \
+                                '<a href="%s">%s</a>' % (attrobj, value)
 
             # The item basics filled. Delegate additional actions to folderitem
             # service. folderitem service is frequently overriden by child objects

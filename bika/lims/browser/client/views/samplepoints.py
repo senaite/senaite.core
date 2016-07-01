@@ -30,7 +30,8 @@ class ClientSamplePointsView(BikaListingView):
 
         self.columns = {
             'title': {'title': _('Title'),
-                      'index': 'sortable_title'},
+                      'index': 'sortable_title',
+                      'replace_url': 'absolute_url'},
             'Description': {'title': _('Description'),
                             'index': 'description'},
         }
@@ -59,7 +60,3 @@ class ClientSamplePointsView(BikaListingView):
                 {'url': 'createObject?type_name=SamplePoint',
                  'icon': '++resource++bika.lims.images/add.png'}
         return super(ClientSamplePointsView, self).__call__()
-
-    def folderitem(self, obj, item, index):
-        item['replace']['title'] = \
-            "<a href='%s'>%s</a>" % (item['url'], item['title'])
