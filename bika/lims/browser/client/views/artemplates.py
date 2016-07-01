@@ -61,14 +61,8 @@ class ClientARTemplatesView(BikaListingView):
                  'icon': '++resource++bika.lims.images/add.png'}
         return super(ClientARTemplatesView, self).__call__()
 
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        for x in range(len(items)):
-            if not items[x].has_key('obj'):
-                continue
-            obj = items[x]['obj']
-            items[x]['title'] = obj.Title()
-            items[x]['replace']['title'] = \
-                "<a href='%s'>%s</a>" % (items[x]['url'], items[x]['title'])
-
-        return items
+    def folderitem(self, obj, item, index):
+        item['title'] = obj.Title()
+        item['replace']['title'] = \
+            "<a href='%s'>%s</a>" % (item['url'], item['title'])
+        return item
