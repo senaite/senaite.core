@@ -76,18 +76,13 @@ class ClientAnalysisSpecsView(BikaListingView):
                 #          'icon': '++resource++bika.lims.images/analysisspec.png'}
         return super(ClientAnalysisSpecsView, self).__call__()
 
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        for x in range(len(items)):
-            if not items[x].has_key('obj'):
-                continue
-            obj = items[x]['obj']
-            items[x]['Title'] = obj.Title()
-            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                                           (items[x]['url'], items[x]['Title'])
-            items[x]['SampleType'] = obj.getSampleType().Title() \
-                if obj.getSampleType() else ""
-        return items
+    def folderitem(self, obj, item, index):
+        item['Title'] = obj.Title()
+        item['replace']['Title'] = "<a href='%s'>%s</a>" % \
+                                   (item['url'], item['Title'])
+        item['SampleType'] = obj.getSampleType().Title() \
+            if obj.getSampleType() else ''
+        return item
 
 
 class SetSpecsToLabDefaults(BrowserView):
