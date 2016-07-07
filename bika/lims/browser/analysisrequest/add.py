@@ -1,6 +1,5 @@
 import json
 from bika.lims.utils.sample import create_sample
-from bika.lims.utils.samplepartition import create_samplepartition
 from bika.lims.workflow import doActionFor
 import plone
 

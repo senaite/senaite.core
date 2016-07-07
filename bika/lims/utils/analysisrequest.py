@@ -38,17 +38,19 @@ def create_analysisrequest(context, request, values, analyses=None,
     # Gather neccesary tools
     workflow = getToolByName(context, 'portal_workflow')
     bc = getToolByName(context, 'bika_catalog')
-
+    # Analyses are analyses services
+    analyses_services = analyses
+    analyses = []
     # It's necessary to modify these and we don't want to pollute the
     # parent's data
     values = values.copy()
-    analyses = analyses if analyses else []
+    analyses_services = analyses_services if analyses_services else []
     anv = values['Analyses'] if values.get('Analyses', None) else []
-    analyses = anv + analyses
+    analyses_services = anv + analyses_services
 
-    if not analyses:
+    if not analyses_services:
         raise RuntimeError(
-                "create_analysisrequest: no analyses provided")
+                "create_analysisrequest: no analyses services provided")
 
     # Create new sample or locate the existing for secondary AR
     if not values.get('Sample', False):
@@ -75,9 +77,13 @@ def create_analysisrequest(context, request, values, analyses=None,
     workflow.doActionFor(ar, action)
 
     # Set analysis request analyses
-    service_uids = _resolve_items_to_service_uids(analyses)
-    analyses = ar.setAnalyses(service_uids, prices=prices, specs=specifications)
-
+    service_uids = _resolve_items_to_service_uids(analyses_services)
+    # processForm already has created the analyses, but here we create the
+    # analyses with specs and prices. This function, even it is called 'set',
+    # deletes the old analyses, so eventually we obtain the desired analyses.
+    ar.setAnalyses(service_uids, prices=prices, specs=specifications)
+    # Gettin the ar objects
+    analyses = ar.getAnalyses(full_objects=True)
     # Continue to set the state of the AR
     skip_receive = ['to_be_sampled', 'sample_due', 'sampled', 'to_be_preserved']
     if secondary:
@@ -99,7 +105,7 @@ def create_analysisrequest(context, request, values, analyses=None,
     if not secondary:
         # Create sample partitions
         if not partitions:
-            partitions = [{'services': analyses}]
+            partitions = [{'services': service_uids}]
         for n, partition in enumerate(partitions):
             # Calculate partition id
             partition_prefix = sample.getId() + "-P"
@@ -164,15 +170,22 @@ def get_sample_from_values(context, values):
 
 
 def _resolve_items_to_service_uids(items):
-    portal = api.portal.get()
-    # We need to send a list of service UIDS to setAnalyses function.
-    # But we may have received one, or a list of:
-    #   AnalysisService instances
-    #   Analysis instances
-    #   service titles
-    #   service UIDs
-    #   service Keywords
+    """ Returns a list of service uids without duplicates based on the items
+    :param items:
+        A list (or one object) of service-related info items. The list can be
+        heterogeneous and each item can be:
+        - Analysis Service instance
+        - Analysis instance
+        - Analysis Service title
+        - Analysis Service UID
+        - Analysis Service Keyword
+        If an item that doesn't match any of the criterias above is found, the
+        function will raise a RuntimeError
+    """
+    portal = None
+    bsc = None
     service_uids = []
+
     # Maybe only a single item was passed
     if type(items) not in (list, tuple):
         items = [items, ]
@@ -194,7 +207,8 @@ def _resolve_items_to_service_uids(items):
             continue
 
         # Maybe object UID.
-        bsc = getToolByName(portal, 'bika_setup_catalog')
+        portal = portal if portal else api.portal.get()
+        bsc = bsc if bsc else getToolByName(portal, 'bika_setup_catalog')
         brains = bsc(UID=item)
         if brains:
             uid = brains[0].UID
@@ -202,7 +216,6 @@ def _resolve_items_to_service_uids(items):
             continue
 
         # Maybe service Title
-        bsc = getToolByName(portal, 'bika_setup_catalog')
         brains = bsc(portal_type='AnalysisService', title=item)
         if brains:
             uid = brains[0].UID
@@ -210,7 +223,6 @@ def _resolve_items_to_service_uids(items):
             continue
 
         # Maybe service Keyword
-        bsc = getToolByName(portal, 'bika_setup_catalog')
         brains = bsc(portal_type='AnalysisService', getKeyword=item)
         if brains:
             uid = brains[0].UID
