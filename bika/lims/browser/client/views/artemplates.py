@@ -31,7 +31,8 @@ class ClientARTemplatesView(BikaListingView):
 
         self.columns = {
             'title': {'title': _('Title'),
-                      'index': 'sortable_title'},
+                      'index': 'sortable_title',
+                      'replace_url': 'absolute_url'},
             'Description': {'title': _('Description'),
                             'index': 'description'},
         }
@@ -60,9 +61,3 @@ class ClientARTemplatesView(BikaListingView):
                 {'url': 'createObject?type_name=ARTemplate',
                  'icon': '++resource++bika.lims.images/add.png'}
         return super(ClientARTemplatesView, self).__call__()
-
-    def folderitem(self, obj, item, index):
-        item['title'] = obj.Title()
-        item['replace']['title'] = \
-            "<a href='%s'>%s</a>" % (item['url'], item['title'])
-        return item
