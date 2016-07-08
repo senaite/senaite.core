@@ -27,8 +27,6 @@ class ReflexRuleField(RecordsField):
         })
     security = ClassSecurityInfo()
 
-    security.declarePrivate('set')
-
     def _check_set_values(self, dic):
         """
         This function check if the dict values are correct. It doesn't look
@@ -94,7 +92,7 @@ class ReflexRuleField(RecordsField):
             logger.warn('actions must be a list.')
             return False
 
-    def set(self, instance, rules_list):
+    def set(self, instance, rules_list, **kwargs):
         """
         Set the reflexrule field.
         :rules_list: is a list of dictionaries with the following format:
@@ -119,6 +117,7 @@ class ReflexRuleField(RecordsField):
                 ]
         ...]
         """
+        import pdb; pdb.set_trace()
         final_list = []
         for d in rules_list:
             # Checking if all dictionary items are correct
