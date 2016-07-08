@@ -135,6 +135,7 @@ class TestReflexRules(BikaFunctionalTestCase):
         """
         # Creating a rule
         folder = self.portal.bika_setup.bika_reflexrulefolder
+        import pdb; pdb.set_trace()
         for rule_d in rules_data:
             _id = folder.invokeFactory('ReflexRule', id=tmpID())
             rule = folder[_id]
@@ -210,16 +211,18 @@ class TestReflexRules(BikaFunctionalTestCase):
         ]
         ans_list = self.create_analysisservices(as_data)
         # Creating a rule
-        import pdb; pdb.set_trace()
+        # analysis-service-3: Calcium (Ca)
+        servs = self.portal.bika_setup.bika_analysisservices
+        service = servs['analysisservice-3']
         rules = [{
-            'range1': 'X', 'range0': 'X',
-            'discreteresult': 'X',
-            'trigger': 'xxx',
-            'analysisservice': '<as_uid>', 'value': '',
-                'actions':[{'action':'<action_name>', 'act_row_idx':'X',
-                            'otherWS':Bool, 'analyst': '<analyst_id>'},
-                          {'action':'<action_name>', 'act_row_idx':'X',
-                            'otherWS':Bool, 'analyst': '<analyst_id>'},
+            'range1': '10', 'range0': '5',
+            'discreteresult': '',
+            'trigger': 'submit',
+            'analysisservice': service.UID(), 'value': '8',
+                'actions':[{'action':'repeat', 'act_row_idx':'1',
+                            'otherWS':True, 'analyst': 'analyst1'},
+                          {'action':'duplicate', 'act_row_idx':'2',
+                            'otherWS':False, 'analyst': 'analyst1'},
                     ]
         },]
         rules_data = [
