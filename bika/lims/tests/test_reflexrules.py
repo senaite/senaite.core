@@ -131,11 +131,26 @@ class TestReflexRules(BikaFunctionalTestCase):
         """
         Given a dict with raflex rules data, it creates the rules
         :rules_data: [{'title':'xxx','description':'xxx',
-            'method':method-obj},...]
+            'method':method-obj,
+            'ReflexRules': [{'actions': [
+                              {'act_row_idx': '1',
+                               'action': 'repeat',
+                               'analyst': 'analyst1',
+                               'otherWS': True},
+                              {'act_row_idx': '2',
+                               'action': 'duplicate',
+                               'analyst': 'analyst1',
+                               'otherWS': False}],
+                  'analysisservice': 'a9df45163f294b2288a369f43c6b0f95',
+                  'discreteresult': '',
+                  'range0': '5',
+                  'range1': '10',
+                  'trigger': 'submit',
+                  'value': '8'}],...]}
         """
         # Creating a rule
+        rules_list = []
         folder = self.portal.bika_setup.bika_reflexrulefolder
-        import pdb; pdb.set_trace()
         for rule_d in rules_data:
             _id = folder.invokeFactory('ReflexRule', id=tmpID())
             rule = folder[_id]
@@ -145,26 +160,22 @@ class TestReflexRules(BikaFunctionalTestCase):
                     'There is need a method in order to create'
                     ' a reflex rule')
             method = rule_d.get('method')
-            reflexrule = rule_d.get('ReflexRules', [])
+            reflexrules = rule_d.get('ReflexRules', [])
             rule.edit(
                 title=rule_d.get('title', ''),
                 description=rule_d.get('description', ''),
                 )
             rule.setMethod(method.UID())
-            if reflexrule:
-                rule.setReflexRules([reflexrule, ])
+            if reflexrules:
+                rule.setReflexRules(reflexrules)
             rule.unmarkCreationFlag()
             renameAfterCreation(rule)
-            self.rules_list.append(rule)
+            rules_list.append(rule)
+        return rules_list
 
     def setUp(self):
         super(TestReflexRules, self).setUp()
         login(self.portal, TEST_USER_NAME)
-        self.rules_list = []
-        self.methods_list = []
-        self.ans_list = []
-        self.categories_list = []
-        self.departments_list = []
 
     def tearDown(self):
         logout()
@@ -172,7 +183,8 @@ class TestReflexRules(BikaFunctionalTestCase):
 
     def test_reflex_rule_set_get(self):
         """
-        Testing the analysis service bind and the set/get data from the widget
+        Testing the analysis service bind and the simple set/get
+        data from the widget
         """
         # Creating a department
         department_data = [
@@ -211,14 +223,11 @@ class TestReflexRules(BikaFunctionalTestCase):
         ]
         ans_list = self.create_analysisservices(as_data)
         # Creating a rule
-        # analysis-service-3: Calcium (Ca)
-        servs = self.portal.bika_setup.bika_analysisservices
-        service = servs['analysisservice-3']
         rules = [{
             'range1': '10', 'range0': '5',
             'discreteresult': '',
             'trigger': 'submit',
-            'analysisservice': service.UID(), 'value': '8',
+            'analysisservice': ans_list[0].UID(), 'value': '8',
                 'actions':[{'action':'repeat', 'act_row_idx':'1',
                             'otherWS':True, 'analyst': 'analyst1'},
                           {'action':'duplicate', 'act_row_idx':'2',
@@ -233,10 +242,12 @@ class TestReflexRules(BikaFunctionalTestCase):
                 'ReflexRules': rules
             },
         ]
-        self.create_reflex_rules(rules_data)
-        rule = self.rules_list[-1]
+        rules_list = self.create_reflex_rules(rules_data)
+        rule = rules_list[-1]
         self.assertTrue(
-            self.ans_list[-1].id in rule.getReflexRules()[0].keys())
+            ans_list[-1].UID() == rule.getReflexRules()[0].get(
+                'analysisservice', '')
+            )
 
 
 def test_suite():
