@@ -171,6 +171,7 @@ def doActionToAnalysis(base, action):
     This functions executes the action against the analysis.
     :base: a full analysis object. The new analyses will be cloned from it.
     :action: a dictionary representing an action row.
+        [{'action': 'duplicate', ...}, {,}, ...]
     :returns: the new analysis
     """
     # If the analysis has been retracted yet, just duplicate it

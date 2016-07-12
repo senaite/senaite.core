@@ -5,8 +5,10 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims.testing import BIKA_FUNCTIONAL_TESTING
 from bika.lims.tests.base import BikaFunctionalTestCase
 from bika.lims.utils import tmpID
+from bika.lims.utils.analysisrequest import create_analysisrequest
 from bika.lims.workflow import doActionFor
 from bika.lims.idserver import renameAfterCreation
+from bika.lims.content.reflexrule import doReflexRuleAction
 import unittest
 try:
     import unittest2 as unittest
@@ -401,6 +403,87 @@ class TestReflexRules(BikaFunctionalTestCase):
         rule = rules_list[-1]
         # There must be a rule without reflex rules
         self.assertEqual(rule.getReflexRules(), [])
+
+    def test_reflex_rule_doReflexRuleAction(self):
+        """
+        Testing the doReflexRuleAction related functions over analysis.
+        """
+        # Creating a department
+        department_data = [
+            {
+                'title': 'dep2',
+            }
+        ]
+        deps = self.create_departments(department_data)
+        # Creating a category
+        category_data = [{
+            'title': 'cat2',
+            'Department': deps[0]
+            },
+        ]
+        cats = self.create_category(category_data)
+        # Creating a method
+        methods_data = [
+            {
+                'title': 'Method 2',
+                'description': 'A description',
+                'Instructions': 'An instruction',
+                'MethodID': 'm2',
+                'Accredited': 'True'
+            },
+        ]
+        meths = self.create_methods(methods_data)
+        # Creating an analysis service
+        as_data = [{
+                'title': 'analysis service1',
+                'ShortTitle': 'as1',
+                'Keyword': 'as1',
+                'PointOfCapture': 'Lab',
+                'Category': cats[0],
+                'Methods': meths,
+                },
+        ]
+        ans_list = self.create_analysisservices(as_data)
+        actions = [
+                  {'action':'duplicate', 'act_row_idx':'1',
+                    'otherWS':False, 'analyst': 'analyst1'},
+            ]
+        # Create an analysis Request
+        client = self.portal.clients['client-1']
+        sampletype = self.portal.bika_setup.bika_sampletypes['sampletype-1']
+        values = {'Client': client.UID(),
+                  'Contact': client.getContacts()[0].UID(),
+                  'SamplingDate': '2015-01-01',
+                  'SampleType': sampletype.UID()}
+        request = {}
+        ar = create_analysisrequest(client, request, values, ans_list)
+        wf = getToolByName(ar, 'portal_workflow')
+        wf.doActionFor(ar, 'receive')
+        # Set result
+        analysis = ar.getAnalyses(full_objects=True)[0]
+        analysis.setResult('8')
+        # Getting client analysis requests
+        pc = getToolByName(ar, 'portal_catalog')
+        contentFilter = {'portal_type': 'AnalysisRequest',
+                         'cancellation_state': 'active'}
+        analysisrequests = pc(contentFilter)
+        self.assertEqual(
+            len(analysisrequests[0].getObject().getAnalyses()), 1)
+        self.assertEqual(
+            analysisrequests[0].getObject().getAnalyses()[0].UID,
+            analysis.UID())
+        doReflexRuleAction(analysis, actions)
+        analysisrequests = pc(contentFilter)
+        self.assertEqual(
+            len(analysisrequests[0].getObject().getAnalyses()), 2)
+        self.assertEqual(
+            analysisrequests[0].getObject().getAnalyses()[0].UID,
+            analysis.UID()
+        )
+        self.assertNotEqual(
+            analysisrequests[0].getObject().getAnalyses()[1].UID,
+            analysis.UID()
+        )
 
 
 def test_suite():
