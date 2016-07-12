@@ -119,6 +119,7 @@ class DashboardView(BrowserView):
         # Analysis Requests
         active_rs = ['to_be_sampled',
                      'to_be_preserved',
+                     'scheduled_sampling',
                      'sample_due',
                      'sample_received',
                      'assigned',
@@ -134,7 +135,7 @@ class DashboardView(BrowserView):
                         cancellation_state=['active',],
                         created=self.base_date_range))
 
-        # Analysis Requests awaiting to be sampled
+        # Analysis Requests awaiting to be sampled or scheduled
         review_state = ['to_be_sampled',]
         ars = len(bc(portal_type="AnalysisRequest",
                      review_state=review_state,
@@ -149,7 +150,7 @@ class DashboardView(BrowserView):
                     'number':       ars,
                     'total':        numars,
                     'legend':       _('of') + " " + str(numars) + ' (' + ratio +'%)',
-                    'link':         self.portal_url + '/analysisrequests?analysisrequests_review_state=to_be_sampled'})
+                    'link':        self.portal_url + '/samples?samples_review_state=to_be_sampled'})
 
         # Analysis Requests awaiting to be preserved
         review_state = ['to_be_preserved',]
@@ -167,6 +168,23 @@ class DashboardView(BrowserView):
                     'total':        numars,
                     'legend':       _('of') + " " + str(numars) + ' (' + ratio +'%)',
                     'link':         self.portal_url + '/analysisrequests?analysisrequests_review_state=to_be_preserved'})
+
+        # Analysis Requests awaiting to be sampled
+        review_state = ['scheduled_sampling',]
+        ars = len(bc(portal_type="AnalysisRequest",
+                     review_state=review_state,
+                     cancellation_state=['active',]))
+        ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
+        ratio = str("%%.%sf" % 1) % ratio
+        msg = _("Scheduled sampling")
+        out.append({'type':         'simple-panel',
+                    'name':         _('Analysis Requests with scheduled sampling'),
+                    'class':        'informative',
+                    'description':  msg,
+                    'number':       ars,
+                    'total':        numars,
+                    'legend':       _('of') + " " + str(numars) + ' (' + ratio +'%)',
+                    'link':          self.portal_url + '/samples?samples_review_state=to_be_sampled'})
 
         # Analysis Requests awaiting for reception
         review_state = ['sample_due',]

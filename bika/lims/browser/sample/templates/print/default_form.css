@@ -1,0 +1,78 @@
+#report {
+    font: 7pt Arial, Verdana, serif;
+}
+.barcode-container {
+    width:100%;
+}
+div.report_body {
+    font-size:0.8em;
+}
+div.report_body a {
+    color:#000;
+    text-decoration:none;
+}
+div.report_body h1 {
+    padding-top:15px;
+    font-size:1.7em;
+}
+div#title{
+    font-size:1.5em;
+}
+.label {
+    font-weight: bold;
+}
+.table-text {
+    position: relative;
+}
+.data-input{
+    border: 1px solid #cdcdcd;
+    height: 20px;
+}
+table.samples-grid {
+    border-bottom: 1px solid black;
+}
+.table-cell {
+    display: table-cell;
+}
+table.header-form {
+    width: 100%;
+}
+div.header-name {
+    position: relative;
+    font-weight: bold;
+    font-size: 1.6em;
+}
+table.samples-grid {
+    width: 100%;
+}
+table.samples-grid tr td {
+    vertical-align:top;
+    border: 1px solid #cdcdcd;
+    padding: 5px;
+}
+table.set-info thead th{
+    vertical-align:top;
+    font-weight:bold;
+    font-size:1.4em;
+}
+table.set-info {
+    border-bottom: 1px solid #000;
+        width: 100%
+}
+span.units {
+    font-size: 0.7em;
+}
+p {
+    margin:0;
+    padding:0;
+}
+.clearfix {
+    clear:both;
+}
+.highlight {
+    font-weight: bold;
+    color: red;
+}
+#samples-round-data-entry {
+    clear: both;
+}

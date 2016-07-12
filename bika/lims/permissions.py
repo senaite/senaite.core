@@ -12,6 +12,7 @@ from Products.CMFCore.permissions import AddPortalContent
 # Add Permissions:
 # ----------------
 AddAnalysis = 'BIKA: Add Analysis'
+ScheduleSampling = 'BIKA: Schedule Sampling'
 AddAnalysisProfile = 'BIKA: Add AnalysisProfile'
 AddAnalysisRequest = 'BIKA: Add Analysis Request'
 AddAnalysisSpec = 'BIKA: Add AnalysisSpec'

@@ -32,7 +32,6 @@
   <include file="referenceanalysis.zcml"/>
   <include file="referencesample.zcml"/>
   <include file="pricelist.zcml"/>
-  <include file="sample.zcml"/>
   <include file="stickers.zcml"/>
   <include file="supplier.zcml"/>
   <include file="supplyorder.zcml"/>
@@ -45,6 +44,7 @@
   <include package=".client"/>
   <include package=".samplinground"/>
   <include package=".srtemplate"/>
+  <include package=".sample"/>
   <include package=".worksheet"/>
 
   <include package=".fields"/>

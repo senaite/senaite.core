@@ -4,6 +4,7 @@ from bika.lims import logger
 from bika.lims.utils import tmpID
 from bika.lims.utils.sample import create_sample
 from bika.lims.utils.samplepartition import create_samplepartition
+from Products.CMFCore.WorkflowCore import WorkflowException
 from bika.lims.workflow import doActionFor
 from plone import api
 from Products.CMFPlone.utils import _createObjectByType
