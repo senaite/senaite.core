@@ -124,7 +124,8 @@ class BikaGenerator:
                      'Member',
                      'Reviewer',
                      'RegulatoryInspector',
-                     'Client'):
+                     'Client',
+                     'SamplingCoordinator'):
             if role not in portal.acl_users.portal_role_manager.listRoleIds():
                 portal.acl_users.portal_role_manager.addRole(role)
             # add roles to the portal
@@ -177,6 +178,11 @@ class BikaGenerator:
             portal_groups.addGroup('RegulatoryInspectors', title="Regulatory Inspectors",
                 roles=['Member', 'RegulatoryInspector'])
 
+        if 'SamplingCoordinators' not in portal_groups.listGroupIds():
+            portal_groups.addGroup(
+                'SamplingCoordinators', title="Sampling Coordinators",
+                roles=['SamplingCoordinator'])
+
     def setupPermissions(self, portal):
         """ Set up some suggested role to permission mappings.
         """
@@ -201,7 +207,7 @@ class BikaGenerator:
         mp(AddPricelist, ['Manager', 'Owner', 'LabManager'], 1)
         mp(AddSample, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
         mp(AddSampleMatrix, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
-        mp(AddSamplePartition, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler'], 1)
+        mp(AddSamplePartition, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler', 'SamplingCoordinator'], 1)
         mp(AddSamplePoint, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
         mp(AddStorageLocation, ['Manager', 'Owner', 'LabManager', ], 1)
         mp(AddSamplingDeviation, ['Manager', 'Owner', 'LabManager', 'LabClerk'], 1)
@@ -222,13 +228,13 @@ class BikaGenerator:
         mp(DispatchOrder, ['Manager', 'LabManager', 'LabClerk'], 1)
         mp(ManageARImport, ['Manager', 'LabManager', 'LabClerk'], 1)
         mp(ManageARPriority, ['Manager', 'LabManager', 'LabClerk'], 1)
-        mp(ManageAnalysisRequests, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'RegulatoryInspector'], 1)
+        mp(ManageAnalysisRequests, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'RegulatoryInspector', 'SamplingCoordinator'], 1)
         mp(ManageBika, ['Manager', 'LabManager'], 1)
         mp(ManageClients, ['Manager', 'LabManager', 'LabClerk'], 1)
         mp(ManageLoginDetails, ['Manager', 'LabManager'], 1)
         mp(ManageReference, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(ManageSuppliers, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
-        mp(ManageSamples, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'RegulatoryInspector'], 1)
+        mp(ManageSamples, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'RegulatoryInspector', 'SamplingCoordinator'], 1)
         mp(ManageWorksheets, ['Manager', 'LabManager'], 1)
         mp(PostInvoiceBatch, ['Manager', 'LabManager', 'Owner'], 1)
 
@@ -237,9 +243,10 @@ class BikaGenerator:
         mp(VerifyOwnResults, ['Manager', ], 1)
         mp(ViewRetractedAnalyses, ['Manager', 'LabManager', 'LabClerk', 'Analyst', ], 0)
 
-        mp(SampleSample, ['Manager', 'LabManager', 'Sampler'], 0)
+        mp(ScheduleSampling, ['Manager', 'SamplingCoordinator'], 0)
+        mp(SampleSample, ['Manager', 'LabManager', 'Sampler', 'SamplingCoordinator'], 0)
         mp(PreserveSample, ['Manager', 'LabManager', 'Preserver'], 0)
-        mp(ReceiveSample, ['Manager', 'LabManager', 'LabClerk', 'Sampler'], 1)
+        mp(ReceiveSample, ['Manager', 'LabManager', 'LabClerk', 'Sampler', 'SamplingCoordinator'], 1)
         mp(ExpireSample, ['Manager', 'LabManager', 'LabClerk'], 1)
         mp(DisposeSample, ['Manager', 'LabManager', 'LabClerk'], 1)
         mp(ImportAnalysis, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
@@ -247,15 +254,15 @@ class BikaGenerator:
         mp(Retract, ['Manager', 'LabManager', 'Verifier'], 1)
         mp(Verify, ['Manager', 'LabManager', 'Verifier'], 1)
         mp(Publish, ['Manager', 'LabManager', 'Publisher'], 1)
-        mp(EditSample, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner'], 1)
-        mp(EditAR, ['Manager', 'LabManager', 'LabClerk', 'Sampler'], 1)
+        mp(EditSample, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 1)
+        mp(EditAR, ['Manager', 'LabManager', 'LabClerk', 'Sampler', 'SamplingCoordinator'], 1)
         mp(EditWorksheet, ['Manager', 'LabManager', 'Analyst'], 1)
         mp(ResultsNotRequested, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 1)
         mp(ManageInvoices, ['Manager', 'LabManager', 'Owner'], 1)
-        mp(ViewResults, ['Manager', 'LabManager', 'Analyst', 'Sampler', 'RegulatoryInspector'], 1)
+        mp(ViewResults, ['Manager', 'LabManager', 'Analyst', 'Sampler', 'RegulatoryInspector', 'SamplingCoordinator'], 1)
         mp(EditResults, ['Manager', 'LabManager', 'Analyst'], 1)
         mp(EditFieldResults, ['Manager', 'LabManager', 'Sampler'], 1)
-        mp(EditSamplePartition, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner'], 1)
+        mp(EditSamplePartition, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 1)
 
         mp('Access contents information', ['Authenticated'], 1)
         mp(permissions.View, ['Authenticated'], 1)
@@ -286,10 +293,10 @@ class BikaGenerator:
         # This means within a client, perms granted on Member role are available
         # in clients not our own, allowing sideways entry if we're not careful.
         mp = portal.clients.manage_permission
-        mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver'], 0)
-        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Member', 'Analyst', 'Sampler', 'Preserver'], 0)
+        mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'SamplingCoordinator'], 0)
+        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Member', 'Analyst', 'Sampler', 'Preserver', 'SamplingCoordinator', 'SamplingCoordinator'], 0)
         mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Owner'], 0)
-        mp('Access contents information', ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner'], 0)
+        mp('Access contents information', ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 0)
         mp(ManageClients, ['Manager', 'LabManager', 'LabClerk'], 0)
         mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Owner'], 0)
         mp(AddAnalysisSpec, ['Manager', 'LabManager', 'Owner'], 0)
@@ -297,16 +304,16 @@ class BikaGenerator:
 
         for obj in portal.clients.objectValues():
             mp = obj.manage_permission
-            mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver'], 0)
-            mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Member', 'Analyst', 'Sampler', 'Preserver'], 0)
+            mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'SamplingCoordinator'], 0)
+            mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Member', 'Analyst', 'Sampler', 'Preserver', 'SamplingCoordinator'], 0)
             mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
             mp(AddSupplyOrder, ['Manager', 'LabManager', 'Owner', 'LabClerk'], 0)
-            mp('Access contents information', ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner'], 0)
+            mp('Access contents information', ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 0)
             obj.reindexObject()
             for contact in portal.clients.objectValues('Contact'):
                 mp = contact.manage_permission
-                mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Owner', 'Analyst', 'Sampler', 'Preserver'], 0)
-                mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner'], 0)
+                mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Owner', 'Analyst', 'Sampler', 'Preserver', 'SamplingCoordinator'], 0)
+                mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner', 'SamplingCoordinator'], 0)
 
         # /worksheets folder permissions
         mp = portal.worksheets.manage_permission
@@ -331,10 +338,10 @@ class BikaGenerator:
         # /analysisrequests folder permissions
         mp = portal.analysisrequests.manage_permission
         mp(CancelAndReinstate, ['Manager', 'LabManager', 'LabClerk'], 0)
-        mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'RegulatoryInspector'], 0)
+        mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
         mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Analyst'], 0)
-        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'RegulatoryInspector'], 0)
-        mp('Access contents information', ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'RegulatoryInspector'], 0)
+        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
+        mp('Access contents information', ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
         mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
         portal.analysisrequests.reindexObject()
 
@@ -351,10 +358,10 @@ class BikaGenerator:
         # /samples folder permissions
         mp = portal.samples.manage_permission
         mp(CancelAndReinstate, ['Manager', 'LabManager', 'LabClerk'], 0)
-        mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'RegulatoryInspector'], 0)
-        mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler'], 0)
-        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'RegulatoryInspector'], 0)
-        mp('Access contents information', ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'RegulatoryInspector'], 0)
+        mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
+        mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'SamplingCoordinator'], 0)
+        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
+        mp('Access contents information', ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
         mp(permissions.DeleteObjects, ['Manager', 'LabManager', 'Owner'], 0)
         portal.samples.reindexObject()
 
@@ -631,6 +638,7 @@ class BikaGenerator:
         addIndex(bc, 'getSamplePointTitle', 'FieldIndex')
         addIndex(bc, 'getSamplePointUID', 'FieldIndex')
         addIndex(bc, 'getSampler', 'FieldIndex')
+        addIndex(bc, 'getScheduledSamplingSampler', 'FieldIndex')
         addIndex(bc, 'getSampleTypeTitle', 'FieldIndex')
         addIndex(bc, 'getSampleTypeUID', 'FieldIndex')
         addIndex(bc, 'getSampleUID', 'FieldIndex')
@@ -874,4 +882,3 @@ def setupVarious(context):
     setup.runImportStepFromProfile(
             'profile-plone.app.jquery:default', 'jsregistry')
     # setup.runImportStepFromProfile('profile-plone.app.jquerytools:default', 'jsregistry')
-
