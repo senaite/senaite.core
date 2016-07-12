@@ -84,6 +84,10 @@ class ReflexRule(BaseContent):
         not) and the rules defined for the analysis service.
         :as_uid: is the analysis service uid to obtain the rules and expected
             values from.
+        :reflexed_times: The number of times the base analysis
+            has been reflexed
+        :wf_action: it is the workflow action that the analysis is doing, we
+            have to act in consideration of the action_set 'trigger' variable
         :return: a list of dictionaries:
             [{
             'expected_values':(X,Y),
@@ -132,9 +136,9 @@ class ReflexRule(BaseContent):
         :as_uid: is the analysis service uid for the query.
         :result: the value of the result as string.
         :reflexed_times: The number of times the base analysis
-        has been reflexed
+            has been reflexed
         :wf_action: it is the workflow action that the analysis is doing, we
-        have to act in consideration of the action_set 'trigger' variable
+            have to act in consideration of the action_set 'trigger' variable
         :return: [{'action': 'duplicate', ...}, {,}, ...]
         """
         # Getting a list with the rules and expected values related to the
