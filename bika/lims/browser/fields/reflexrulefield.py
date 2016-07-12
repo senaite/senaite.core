@@ -35,6 +35,7 @@ class ReflexRuleField(RecordsField):
         [{
         'discreteresult': 'X',
         'trigger': 'xxx',
+        'repetition_max': 'x'/n,
         'analysisservice': '<as_uid>', 'value': '',
             'actions':[{'action':'<action_name>', 'act_row_idx':'X',
                         'otherWS':Bool, 'analyst': '<analyst_id>'},
@@ -45,6 +46,7 @@ class ReflexRuleField(RecordsField):
         {
         'range1': 'X', 'range0': 'X',
         'trigger': 'xxx',
+        'repetition_max': 'x'/n,
         'analysisservice': '<as_uid>', 'value': '',
             'actions':[{'action':'<action_name>', 'act_row_idx':'X',
                         'otherWS':Bool, 'analyst': '<analyst_id>'},
@@ -89,6 +91,7 @@ def _check_set_values(instance, dic):
     {
     'range1': 'X', 'range0': 'X', 'discreteresult': 'X',
     'trigger': 'xxx',
+    'repetition_max': '2'/n,
     'analysisservice': '<as_uid>', 'value': '',
         'actions':[{'action':'<action_name>', 'act_row_idx':'X',
                     'otherWS':Bool, 'analyst': '<analyst_id>'},
@@ -113,6 +116,7 @@ def _check_set_values(instance, dic):
               {'action':'<action_name>', 'act_row_idx':'X',
                 'otherWS':Bool, 'analyst': '<analyst_id>'},
         ]
+        :'repetition_max': integer or string representing an integer.
     <action_name> options are found in
     browser/widgets/reflexrulewidget.py/ReflexRuleWidget/getActionVoc
     so far.
@@ -123,6 +127,7 @@ def _check_set_values(instance, dic):
     trigger = dic.get('trigger', 'submit')
     analysisservice = dic.get('analysisservice', None)
     actions = dic.get('actions', [])
+    rep_max =  dic.get('repetition_max', '')
     if (not discreteresult and (not range0 or not range1)) or \
             (discreteresult and range0 and range1):
         logger.warn(_(
@@ -144,6 +149,18 @@ def _check_set_values(instance, dic):
         return False
     if type(actions) not in (list,):
         logger.warn('actions must be a list.')
+        return False
+    if type(rep_max) not in (str, int):
+        logger.warn(
+            'repetition_max must be an integer or a string '
+            'representing an integer.')
+        return False
+    try:
+        int(rep_max)
+    except ValueError:
+        logger.warn(
+            'repetition_max must be an integer or a string '
+            'representing an integer.')
         return False
     return True
     def set(self, instance, rules_list, **kwargs):
