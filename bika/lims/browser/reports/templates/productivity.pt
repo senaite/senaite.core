@@ -249,6 +249,53 @@
     </div>
 </li>
 
+<!-- Analysis result per sample -->
+<li>
+    <a href="#"
+       id="resultspersample_selector"
+       i18n:translate="">Results per sample</a>
+    <br/>
+    <span i18n:translate="">
+        Results per sample, analysis service and sample type
+    </span>
+    <div id="resultspersample" style="display:none"
+         class="criteria">
+        <form action="createreport" method="post"
+              name="productivity_resultspersample">
+            <input type="hidden" name="report_id"
+                   value="productivity_resultspersample"/>
+            <fieldset>
+                <legend i18n:translate="">Results per sample
+                </legend>
+                <tal:x content="
+                    structure python:view.selection_macros.select_client(
+                        multiselect=True,
+                        allow_blank=True)"/>
+                <tal:x content="
+                    structure python:view.selection_macros.select_sampletype(
+                         multiselect=True,
+                         allow_blank=True)"/>
+                <tal:x content="
+                    structure python:view.selection_macros.select_analysisservice(
+                        multiselect=True,
+                        allow_blank=False)"/>
+                <tal:x content="
+                    structure python:view.selection_macros.select_daterange(
+                        field_id='getDateSampled',
+                        field_title='Date Sampled')"/>
+                <tal:x content="
+                    structure python:view.selection_macros.select_output_format(
+                        formats=['PDF', 'CSV'])"/>
+            </fieldset>
+            <input tabindex=""
+                   class="searchButton"
+                   type="submit"
+                   name="submit"
+                   value="Generate report"
+                    i18n:attributes="value"/>
+        </form>
+    </div>
+</li>
 <!-- Analyses requests and analyses -->
 <li tal:condition="here/member_is_client">
     <a href="#" id="analysesperclient_selector"

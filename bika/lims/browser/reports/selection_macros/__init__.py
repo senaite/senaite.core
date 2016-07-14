@@ -299,6 +299,7 @@ class SelectionMacrosView(BrowserView):
 
     select_output_format_pt = ViewPageTemplateFile("select_output_format.pt")
 
-    def select_output_format(self, style=None):
+    def select_output_format(self, style=None, formats=['PDF', 'CSV']):
         self.style = style
+        self.output_formats = formats
         return self.select_output_format_pt()

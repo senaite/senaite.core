@@ -293,9 +293,9 @@ class SubmitForm(BrowserView):
             # required during error redirect: the report must have a copy of
             # additional_reports, because it is used as a surrogate view.
             Report.additional_reports = self.additional_reports
-        except ImportError:
+        except ImportError, e:
             message = "Report %s.Report not found (shouldn't happen)" % module
-            self.logger.error(message)
+            self.logger.error(str(e))
             self.context.plone_utils.addPortalMessage(message, 'error')
             return self.template()
 
@@ -317,7 +317,6 @@ class SubmitForm(BrowserView):
         # The report output gets pulled through report_frame.pt
         self.reportout = output['report_data']
         framed_output = self.frame_template()
-
         # this is the good part
         result = createPdf(framed_output)
 
