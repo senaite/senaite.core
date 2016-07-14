@@ -53,6 +53,16 @@
           </span>
                     </p>
 
+        <p>
+            <a href="#"
+               id="resultspersample_selector"
+               i18n:translate="">Results per sample</a>
+            <br/>
+            <span i18n:translate="">
+                Results per sample, analysis service and sample type
+            </span>
+        </p>
+
                     <p>
                         <a href="#"
                            id="referenceanalysisqc_selector"
@@ -180,6 +190,38 @@
                     </form>
                 </div>
 
+                <div id="resultspersample" style="display:none"
+                     class="criteria">
+                    <form action="createreport" method="post"
+                          name="qualitycontrol_resultspersample">
+                        <input type="hidden" name="report_id"
+                               value="qualitycontrol_resultspersample"/>
+                        <fieldset>
+                            <legend i18n:translate="">Results per sample
+                            </legend>
+                            <tal:x content="structure python:view.selection_macros.select_client(
+                                             multiselect=True,
+                                             allow_blank=True)"/>
+                            <tal:x content="structure python:view.selection_macros.select_sampletype(
+                                             multiselect=True,
+                                             allow_blank=True)"/>
+                            <tal:x content="structure python:view.selection_macros.select_analysisservice(
+                                             multiselect=True,
+                                             allow_blank=False)"/>
+                            <tal:x content="structure python:view.selection_macros.select_daterange(
+                                             field_id='getDateSampled',
+                                             field_title='Date Sampled')"/>
+                            <tal:x content="structure context/@@selection_macros/select_output_format"/>
+                        </fieldset>
+                        <input tabindex=""
+                               class="searchButton"
+                               type="submit"
+                               name="submit"
+                               value="Generate report"
+                                i18n:attributes="value"/>
+                    </form>
+                </div>
+
                 <div id="referenceanalysisqc" style="display:none"
                      class="criteria">
                     <form action="createreport" method="post"
@@ -230,4 +272,3 @@
 
 </body>
 </html>
-

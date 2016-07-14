@@ -111,8 +111,10 @@ class SelectionMacrosView(BrowserView):
 
     select_client_pt = ViewPageTemplateFile("select_client.pt")
 
-    def select_client(self, style=None):
+    def select_client(self, allow_blank=True, multiselect=False,style=None):
         self.style = style
+        self.allow_blank = allow_blank
+        self.multiselect = multiselect
         self.clients = self.pc(portal_type='Client', inactive_state='active',
                                sort_on='sortable_title')
         return self.select_client_pt()
