@@ -490,6 +490,23 @@ class BikaGenerator:
         zc_extras.index_type = 'Okapi BM25 Rank'
         zc_extras.lexicon_id = 'Lexicon'
 
+        pc = getToolByName(portal, 'portal_catalog', None)
+        if PostInvoiceBatch == None:
+            logger.warning('Could not find the portal_catalog tool.')
+            return
+        try:
+            pc.manage_addProduct['ZCTextIndex'].manage_addLexicon('Lexicon', 'Lexicon', elem)
+        except:
+            logger.warning('Could not add ZCTextIndex to portal_catalog')
+            pass
+
+        if 'getClientUID' not in pc.indexes():
+            pc.addIndex('getClientUID', 'FieldIndex')
+        if 'getSampleTypeUID' not in pc.indexes():
+            pc.addIndex('getSampleTypeUID', 'FieldIndex')
+        if 'getDateSampled' not in pc.indexes():
+            pc.addIndex('getDateSampled', 'FieldIndex')
+
         # bika_catalog
 
         bc = getToolByName(portal, 'bika_catalog', None)

@@ -281,8 +281,8 @@
                         allow_blank=False)"/>
                 <tal:x content="
                     structure python:view.selection_macros.select_daterange(
-                        field_id='getDateSampled',
-                        field_title='Date Sampled')"/>
+                        field_id='created',
+                        field_title='Creation date')"/>
                 <tal:x content="
                     structure python:view.selection_macros.select_output_format(
                         formats=['PDF', 'CSV'])"/>

@@ -44,13 +44,16 @@ class Report(BrowserView):
             parms.append(val['parms'])
 
         val = self.selection_macros.parse_analysisservice(self.request)
+        allowd_services_uids = []
         if val:
-            query[val['contentFilter'][0]] = val['contentFilter'][1]
+            # query[val['contentFilter'][0]] = val['contentFilter'][1]
+            # Lets get the analysis services uids list only.
+            allowd_services_uids = val['contentFilter'][1]
             parms.append(val['parms'])
 
         val = self.selection_macros.parse_daterange(self.request,
-                                                    'getDateSampled',
-                                                    'DateSampled')
+                                                    'created',
+                                                    'Created')
         if val:
             query[val['contentFilter'][0]] = val['contentFilter'][1]
             parms.append(val['parms'])
@@ -63,23 +66,25 @@ class Report(BrowserView):
                         _('Result')], }
         # and now lets do the actual report lines
         datalines = []
+        import pdb; pdb.set_trace()
         for sample_b in pc(query):
             sample = sample_b.getObject()
             analyses = []
             for ar in sample.getAnalysisRequests():
                 analyses += list(ar.getAnalyses(full_objects=True))
                 for analysis in analyses:
-                    dataline = []
-                    dataitem = {'value': sample.id}
-                    dataline.append(dataitem)
-                    dataitem = {'value': sample.getSampleType().Title()}
-                    dataline.append(dataitem)
-                    dataitem = {'value': analysis.Title()}
-                    dataline.append(dataitem)
-                    dataitem = {'value': analysis.getFormattedResult()}
-                    dataline.append(dataitem)
-                    count_all += 1
-                    datalines.append(dataline)
+                    if analysis.getServiceUID() in allowd_services_uids:
+                        dataline = []
+                        dataitem = {'value': sample.id}
+                        dataline.append(dataitem)
+                        dataitem = {'value': sample.getSampleType().Title()}
+                        dataline.append(dataitem)
+                        dataitem = {'value': analysis.Title()}
+                        dataline.append(dataitem)
+                        dataitem = {'value': analysis.getFormattedResult()}
+                        dataline.append(dataitem)
+                        count_all += 1
+                        datalines.append(dataline)
 
         # footer data
         footlines = []
