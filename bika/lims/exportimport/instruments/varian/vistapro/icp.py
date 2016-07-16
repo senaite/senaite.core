@@ -36,7 +36,7 @@ class VistaPROICPParser(InstrumentResultsFileParser):
             element = row.get("Element", "").split()[0]
 
             rawdict = row
-            rawdict['DefaultResult'] = 'Solution Label'
+            rawdict['DefaultResult'] = 'Soln Conc'
 
             self._addRawResult(resid, values={element: rawdict}, override=False)
 
