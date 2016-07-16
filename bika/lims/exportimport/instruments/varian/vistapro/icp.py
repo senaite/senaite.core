@@ -29,25 +29,16 @@ class VistaPROICPParser(InstrumentResultsFileParser):
         reader = csv.DictReader(self.getInputFile(), delimiter=',')
 
         for n, row in enumerate(reader):
-            resid = row.get("Solution Label", None)
 
-            # serial = row.get("SerialNumber", None)
+            resid = row.get("Solution Label", "").strip()
 
-            # # no resid and no serial
-            # if not any([resid, serial]):
-            #     self.err("Result identification not found.", numline=n)
-            #     continue
+            # Service Keyword
+            element = row.get("Element", "").split()[0]
 
-            # # get the test name
-            # testname = row.get("Description", None)
-            # if testname is None:
-            #     self.err("Testname (Description) not found.", numline=n)
-            #     continue
+            rawdict = row
+            rawdict['DefaultResult'] = 'Solution Label'
 
-            # rawdict = row
-            # rawdict['DefaultResult'] = 'Value'
-            # key = resid or serial
-            # self._addRawResult(key, {testname: rawdict}, False)
+            self._addRawResult(resid, values={element: rawdict}, override=False)
 
 
 class VistaPROICPImporter(AnalysisResultsImporter):
