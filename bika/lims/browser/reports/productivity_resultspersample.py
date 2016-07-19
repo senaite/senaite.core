@@ -72,7 +72,7 @@ class Report(BrowserView):
             for ar in sample.getAnalysisRequests():
                 analyses += list(ar.getAnalyses(full_objects=True))
                 for analysis in analyses:
-                    if analysis.getServiceUID() in allowd_services_uids:
+                    if allowd_services_uids == [] or analysis.getServiceUID() in allowd_services_uids:
                         dataline = []
                         dataitem = {'value': sample.id}
                         dataline.append(dataitem)
