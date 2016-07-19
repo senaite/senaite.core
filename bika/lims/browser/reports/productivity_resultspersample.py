@@ -66,7 +66,6 @@ class Report(BrowserView):
                         _('Result')], }
         # and now lets do the actual report lines
         datalines = []
-        import pdb; pdb.set_trace()
         for sample_b in pc(query):
             sample = sample_b.getObject()
             analyses = []
@@ -105,8 +104,10 @@ class Report(BrowserView):
 
         if self.request.get('output_format', '') == 'CSV':
             fieldnames = [
-                'Sample Type',
-                'Analyses',
+                _('Sample'),
+                _('Sample type'),
+                _('Analysis'),
+                _('Result'),
             ]
             output = StringIO.StringIO()
             dw = csv.DictWriter(output, extrasaction='ignore',

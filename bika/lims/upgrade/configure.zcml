@@ -561,6 +561,15 @@
          sortkey="1"
          profile="bika.lims:default"/>
 
+<genericsetup:upgradeStep
+        title="Upgrade pharmaway"
+        description="Update to set up the new report"
+        source="*"
+        handler="bika.lims.upgrade.pharmaway.upgrade"
+        sortkey="1"
+        profile="bika.lims:default"/>
+
+
  <genericsetup:upgradeStep
          title="Upgrade to Bika LIMS 3.1.11"
          description=""
