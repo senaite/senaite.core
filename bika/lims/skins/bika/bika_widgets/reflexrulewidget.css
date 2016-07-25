@@ -24,7 +24,6 @@ tr.records_row_ReflexRules td div {
 }
 
 tr.records_row_ReflexRules td div.analyst-section {
-    display: inline;
     padding-left:10px;
 }
 
@@ -35,4 +34,8 @@ tr.records_row_ReflexRules td:first-child input[type="button"] {
     cursor: pointer;
     font-size: 0.9em;
     margin-top: 10px;
+}
+
+div.inline {
+    display: inline;
 }

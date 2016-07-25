@@ -35,7 +35,10 @@ class ReflexRuleField(RecordsField):
         [{
         'discreteresult': 'X',
         'trigger': 'xxx',
-        'repetition_max': 'x'/n,
+        'fromlevel': '2',
+        'otherresultcondition': 'on',
+        'resultcondition': 'repeat',
+        'repetition_max': 'x'/integer,
         'analysisservice': '<as_uid>', 'value': '',
             'actions':[{'action':'<action_name>', 'act_row_idx':'X',
                         'otherWS':Bool, 'analyst': '<analyst_id>'},
@@ -46,7 +49,7 @@ class ReflexRuleField(RecordsField):
         {
         'range1': 'X', 'range0': 'X',
         'trigger': 'xxx',
-        'repetition_max': 'x'/n,
+        'repetition_max': 'x'/integer,
         'analysisservice': '<as_uid>', 'value': '',
             'actions':[{'action':'<action_name>', 'act_row_idx':'X',
                         'otherWS':Bool, 'analyst': '<analyst_id>'},
@@ -91,7 +94,10 @@ def _check_set_values(instance, dic):
     {
     'range1': 'X', 'range0': 'X', 'discreteresult': 'X',
     'trigger': 'xxx',
-    'repetition_max': '2'/n,
+    'fromlevel': '2',
+    'otherresultcondition': Bool,
+    'resultcondition': 'repeat',
+    'repetition_max': 'x'/integer,
     'analysisservice': '<as_uid>', 'value': '',
         'actions':[{'action':'<action_name>', 'act_row_idx':'X',
                     'otherWS':Bool, 'analyst': '<analyst_id>'},
@@ -126,6 +132,9 @@ def _check_set_values(instance, dic):
     discreteresult = dic.get('discreteresult', None)
     trigger = dic.get('trigger', 'submit')
     analysisservice = dic.get('analysisservice', None)
+    fromlevel = dic.get('fromlevel', '')
+    otherresultcondition = dic.get('otherresultcondition', '')
+    resultcondition = dic.get('resultcondition', '')
     actions = dic.get('actions', [])
     rep_max =  dic.get('repetition_max', '')
     if (not discreteresult and (not range0 or not range1)) or \
@@ -155,8 +164,25 @@ def _check_set_values(instance, dic):
             'repetition_max must be an integer or a string '
             'representing an integer.')
         return False
+    if type(fromlevel) not in (str, int):
+        logger.warn(
+            'repetition_max must be an integer or a string '
+            'representing an integer.')
+        return False
+    if type(otherresultcondition) not in (bool,):
+        logger.warn(
+            'otherresultcondition must be a boolean.')
+        return False
     try:
         int(rep_max)
+    except ValueError:
+        logger.warn(
+            'repetition_max must be an integer or a string '
+            'representing an integer.')
+        return False
+    try:
+        if fromlevel != '':
+            int(fromlevel)
     except ValueError:
         logger.warn(
             'repetition_max must be an integer or a string '
