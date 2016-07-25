@@ -149,6 +149,9 @@ class ReflexRuleWidget(RecordsWidget):
         'action-1': 'repeat',
         'action-0': 'duplicate',
         'otherWS-1': 'on',
+        'fromlevel': '2',
+        'otherresultcondition': 'on',
+        'resultcondition': 'repeat',
         'analyst-0': 'sussan1',
         'repetition_max': 2,
         'trigger': 'submit',
@@ -161,6 +164,9 @@ class ReflexRuleWidget(RecordsWidget):
         'discreteresult': '1',
         'repetition_max': 2,
         'trigger': 'submit',
+        'fromlevel': '2',
+        'otherresultcondition': True,
+        'resultcondition': 'repeat',
         'value': '',
             'actions':[
                 {'action':'duplicate', 'act_row_idx':'0',
@@ -179,6 +185,9 @@ class ReflexRuleWidget(RecordsWidget):
             if key.startswith('action-') or key.startswith('otherWS-')\
                     or key.startswith('analyst-'):
                 pass
+            elif key == 'otherresultcondition':
+                formatted_action_set[key] = True if action_set[key] == 'on'\
+                    else False
             else:
                 formatted_action_set[key] = action_set[key]
         # Adding the actions list to the final dictionary
@@ -337,8 +346,18 @@ class ReflexRuleWidget(RecordsWidget):
         """
         Return the different action available
         """
-        return DisplayList(
-            [('repeat', 'Repeat'), ('duplicate', 'Duplicate')])
+        return DisplayList([
+            ('repeat', 'Repeat'),
+            ('duplicate', 'Duplicate'),
+            ('setresult', 'Set result')])
+
+    def getDefiningResultTo(self):
+        """
+        Returns where we can define a result.
+        """
+        return DisplayList([
+            ('previous', 'Previous analysis'),
+            ('new', 'New analysis')])
 
     def getTriggerVoc(self):
         """
@@ -380,6 +399,9 @@ class ReflexRuleWidget(RecordsWidget):
             {'range1': 'X', 'range0': 'X',
             'analysisservice': '<as_uid>', 'value': '',
             'repetition_max': integer,
+            'fromlevel': '2',
+            'otherresultcondition': 'on',
+            'resultcondition': 'repeat',
             'trigger': 'xxx',
             'actions':[{'action':'<action_name>', 'act_row_idx':'X',
                         'otherWS': Bool, 'analyst': '<analyst_id>'},
@@ -431,7 +453,7 @@ class ReflexRuleWidget(RecordsWidget):
 
     def getAnalysts(self):
         """
-        This function returns a displaylist with the available analysis
+        This function returns a displaylist with the available analysts
         """
         analysts = getUsers(self, ['Manager', 'LabManager', 'Analyst'])
         return analysts.sortedByKey()
