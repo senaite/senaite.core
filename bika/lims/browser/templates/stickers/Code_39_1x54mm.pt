@@ -58,9 +58,7 @@
     <div class="analysisrequest-info">
         <table cellpadding="0" cellspacing="0" border="0">
             <tr>
-                <td style="text-align:center;" class="client-sample-id" tal:content="python:'%s: %s' % ('CSID', client_sample_id if client_sample_id else '---')"/>
-                <td class="preservation" tal:content="preservation"/>
-                <td class="sample-point" tal:content="sample_point"/>
+                <td class="client-sample-id" tal:content="python:'%s: %s' % ('CSID', client_sample_id if client_sample_id else '---')"/>
             </tr>
         </table>
     </div>
