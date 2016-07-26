@@ -250,10 +250,13 @@ jQuery(function($){
         $(row).insertBefore(element);
         // Binding the otherWS controller and the controller for specific
         // actions select
-        $(row).bind("change", function () {
-            otherWS_controller(this);
-            action_select_controller(this);
+        $(row).find('input[id^="ReflexRules-otherWS-"]').bind("change", function () {
+            otherWS_controller(row);
         });
+        $(row).find('select[id^="ReflexRules-action-"]').bind("change", function () {
+            action_select_controller(row);
+        });
+        $(row).find('select[id^="ReflexRules-action-"]').trigger('change');
     }
 
     function add_action_set(element){
@@ -361,6 +364,7 @@ jQuery(function($){
         var rules = $.parseJSON($('#rules-setup-data')
             .html()).saved_actions.rules;
         var ass = $('select[id^="ReflexRules-analysisservice-"]');
+        var action_sets = $('div.actions-set');
         $.each(ass,function(index, element){
             // Select the analysis service
             if (rules[index] !== undefined){
@@ -374,8 +378,21 @@ jQuery(function($){
         });
         for (var i=0; rules.length > i; i++){
             var discrete = rules[i].discreteresult;
-            var ops = $(ass[i]).siblings('.resultoptioncontainer select option');
-            $(ops).find('[value="'+ discrete + '"]').prop("selected", true);
+            $(ass[i]).siblings('div.resultoptioncontainer')
+                .find('select option[value="'+ discrete + '"]')
+                .prop("selected", true);
+            // Selecting the setresultdiscrete field values
+            var actions_saved = rules[i].actions;
+            var setresultdiscrete_fields = $(action_sets[i])
+                .find('select[id^="ReflexRules-setresultdiscrete-"]');
+            for (var ii=0; actions_saved.length > ii; ii++){
+                var setresultdiscrete_saved = actions_saved[ii].setresultdiscrete;
+                if (actions_saved[ii].setresultdiscrete !== undefined) {
+                    $(setresultdiscrete_fields[ii])
+                        .find('option[value="'+ actions_saved[ii].setresultdiscrete + '"]')
+                        .prop("selected", true);
+                }
+            }
         }
     }
 

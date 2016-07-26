@@ -71,7 +71,8 @@ class ReflexRuleField(RecordsField):
                     if type(action) not in (dict,):
                         logger.warn('Each action must be a dict.')
                         return False
-                    if action.get('action', '') not in ('repeat', 'duplicate'):
+                    if action.get('action', '') not in \
+                            ('repeat', 'duplicate', 'setresult'):
                         logger.warn(
                             'Action %s does not exist' %
                             action.get('action', ''))
@@ -100,7 +101,9 @@ def _check_set_values(instance, dic):
     'repetition_max': 'x'/integer,
     'analysisservice': '<as_uid>', 'value': '',
         'actions':[{'action':'<action_name>', 'act_row_idx':'X',
-                    'otherWS':Bool, 'analyst': '<analyst_id>'},
+                    'otherWS':Bool, 'analyst': '<analyst_id>',
+                    'setresultdiscrete': '1', 'setresulton': 'previous',
+                    'setresultvalue': 'number'},
                   {'action':'<action_name>', 'act_row_idx':'X',
                     'otherWS':Bool, 'analyst': '<analyst_id>'},
             ]
@@ -132,11 +135,11 @@ def _check_set_values(instance, dic):
     discreteresult = dic.get('discreteresult', None)
     trigger = dic.get('trigger', 'submit')
     analysisservice = dic.get('analysisservice', None)
-    fromlevel = dic.get('fromlevel', '')
-    otherresultcondition = dic.get('otherresultcondition', '')
+    fromlevel = dic.get('fromlevel', '0')
+    otherresultcondition = dic.get('otherresultcondition', False)
     resultcondition = dic.get('resultcondition', '')
     actions = dic.get('actions', [])
-    rep_max =  dic.get('repetition_max', '')
+    rep_max = dic.get('repetition_max', '0')
     if (not discreteresult and (not range0 or not range1)) or \
             (discreteresult and range0 and range1):
         logger.warn(_(
@@ -166,7 +169,7 @@ def _check_set_values(instance, dic):
         return False
     if type(fromlevel) not in (str, int):
         logger.warn(
-            'repetition_max must be an integer or a string '
+            'fromlevel must be an integer or a string '
             'representing an integer.')
         return False
     if type(otherresultcondition) not in (bool,):
