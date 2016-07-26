@@ -204,8 +204,8 @@
                     </span>
                     <select
                         tal:attributes="
-                            name string:${fieldName}.resultoption:records:ignore_empty;
-                            id string:${fieldName}-resultoption-${repeat/idx/index};
+                            name string:${fieldName}.discreteresult:records:ignore_empty;
+                            id string:${fieldName}-discreteresult-${repeat/idx/index};
                             tabindex tabindex/next|nothing;"
                             i18n:domain="python:i18n_domain">
                     </select>
@@ -245,12 +245,15 @@
                             <span i18n:translate="" class="reflex_rule_text">
                                 From:
                             </span>
+                            <!-- Define to which analysis the result should be
+                            set, to the previous one or the next one
+                            (repeating the analysis) -->
                             <select
                                 tal:define="
                                     act_row_idx python:action_row['act_row_idx'];
                                     olist widget/getDefiningResultTo"
                                 tal:attributes="
-                                    name string:${fieldName}.definediresulton-${act_row_idx}:records:ignore_empty;
+                                    name string:${fieldName}.setresulton-${act_row_idx}:records:ignore_empty;
                                     id string:${fieldName}-setresulton-${repeat/idx/index}-${act_row_idx};
                                     tabindex tabindex/next|nothing;"
                                     i18n:domain="python:i18n_domain">
@@ -265,6 +268,8 @@
                             <span i18n:translate="" class="reflex_rule_text">
                                 as:
                             </span>
+                            <!-- Define the value to the previous/next analysis
+                            when discrete values are needed -->
                             <select
                                 tal:define="
                                     act_row_idx python:action_row['act_row_idx'];"
@@ -274,12 +279,14 @@
                                     tabindex tabindex/next|nothing;"
                                     i18n:domain="python:i18n_domain">
                             </select>
+                            <!-- Define the value to the previous/next analysis
+                            when numeric values are needed -->
                             <input
                                 size="5"
                                 tal:define="
                                     act_row_idx python:action_row['act_row_idx'];"
                                 tal:attributes="
-                                    name string:${fieldName}.setresultvalue:records:ignore_empty;
+                                    name string:${fieldName}.setresultvalue-${act_row_idx}:records:ignore_empty;
                                     id string:${fieldName}-setresultvalue-${repeat/idx/index}-${act_row_idx};
                                     tabindex tabindex/next|nothing;
                                     value python:widget.getReflexRuleElement(idx,'range0');"
