@@ -23,6 +23,14 @@ jQuery(function($){
         $('input[id^="ReflexRules-range"]').bind("change", function () {
             range_controller(this);
         });
+        // Running the repetition max controller
+        $.each($('input[id^=ReflexRules-repetition_max-]'), function(index, element){
+                repmax_controller(element);
+            });
+        // Binding the trigger controller
+        $('input[id^=ReflexRules-repetition_max-]').bind("change", function () {
+            repmax_controller(this);
+        });
         // Running the trigger controller
         $.each($('select[id^="ReflexRules-trigger"]'), function(index, element){
                 trigger_controller(element);
@@ -182,6 +190,16 @@ jQuery(function($){
         }
     }
 
+    function repmax_controller(element){
+        /**
+        If repetition max is lower than 1, set as 1..
+        */
+        var number = $(element).val();
+        if (!$.isNumeric(number) || number < 1 ) {
+            $(element).val(1);
+        }
+    }
+
     function trigger_controller(element){
         /**
         If trigger option 'after verify' is selected, all action aptions
@@ -308,6 +326,12 @@ jQuery(function($){
                 range_controller($(set).find('input[id^="ReflexRules-range"]'));
                 setup_del_action_button();
         });
+        // Max repetition controller
+        $(set)
+            .find('input[id^=ReflexRules-repetition_max-]')
+            .bind("change", function () {
+                repmax_controller($(set).find('input[id^=ReflexRules-repetition_max-]'));
+        }).trigger("change");
         // Action trigger controller
         $(set)
             .find('select[id^="ReflexRules-trigger"]')
