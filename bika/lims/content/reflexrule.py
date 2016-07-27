@@ -209,13 +209,16 @@ def doActionToAnalysis(base, action):
         target_analysis = action.get('setresulton', '')
         result_value = action['setresultdiscrete'] if \
             action.get('setresultdiscrete', '') else action['setresultvalue']
-        if target_analysis == 'previous':
-            # Use the previous analysis (the base)
+        if target_analysis == 'original':
+            # Use the original analysis (the base)
             analysis = base
+            original = base.getOriginalReflexedAnalysis()
+            original.setResult(result_value)
         else:
+            # target_analysis == next
             # Create a new analysis
             analysis = duplicateAnalysis(base)
-        analysis.setResult(result_value)
+            analysis.setResult(result_value)
     else:
         logger.error(
             "Not known Reflex Rule action %s." % (action.get('action', '')))
@@ -225,8 +228,14 @@ def doActionToAnalysis(base, action):
     # Incrementing the creation time number
     analysis.setReflexRuleActionLevel(created_number + 1)
     analysis.setReflexRuleAction(action.get('action', ''))
-    analysis.seIsReflexAnalysis(True)
+    analysis.setIsReflexAnalysis(True)
     analysis.setReflexAnalysisOf(base)
+    # Setting the original reflected analysis
+    if base.getOriginalReflexedAnalysis():
+        analysis.setOriginalReflexedAnalysis(
+            base.getOriginalReflexedAnalysis())
+    else:
+        analysis.setOriginalReflexedAnalysis(base)
     return analysis
 
 

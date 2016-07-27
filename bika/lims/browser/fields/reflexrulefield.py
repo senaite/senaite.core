@@ -102,7 +102,7 @@ def _check_set_values(instance, dic):
     'analysisservice': '<as_uid>', 'value': '',
         'actions':[{'action':'<action_name>', 'act_row_idx':'X',
                     'otherWS':Bool, 'analyst': '<analyst_id>',
-                    'setresultdiscrete': '1', 'setresulton': 'previous',
+                    'setresultdiscrete': '1', 'setresulton': 'original',
                     'setresultvalue': 'number'},
                   {'action':'<action_name>', 'act_row_idx':'X',
                     'otherWS':Bool, 'analyst': '<analyst_id>'},
