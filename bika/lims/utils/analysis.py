@@ -8,6 +8,48 @@ from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFCore.utils import getToolByName
+from bika.lims.utils import changeWorkflowState
+
+
+def duplicateAnalysis(base):
+    """
+    Duplicate an analysis consist on creating a new analysis with
+    the same analysis service for the same sample. It is used in
+    order to reduce the error procedure probability because both
+    results must be similar.
+    :base: the analysis object used as the creation base.
+    """
+    ar = base.aq_parent
+    kw = base.getKeyword()
+    # Rename the analysis to make way for it's successor.
+    # Support multiple duplicates by renaming to *-0, *-1, etc
+    # Getting the analysis service
+    analyses = [x for x in ar.objectValues("Analysis")
+                if x.getId().startswith(kw)]
+    a_id = "{0}-{1}".format(kw, len(analyses))
+    # Create new analysis and copy values from current analysis
+    _id = ar.invokeFactory('Analysis', id=a_id)
+    analysis = ar[_id]
+    analysis.edit(
+        Service=base.getService(),
+        Calculation=base.getCalculation(),
+        InterimFields=base.getInterimFields(),
+        ResultDM=base.getResultDM(),
+        Retested=True,  # True
+        MaxTimeAllowed=base.getMaxTimeAllowed(),
+        DueDate=base.getDueDate(),
+        Duration=base.getDuration(),
+        ReportDryMatter=base.getReportDryMatter(),
+        Analyst=base.getAnalyst(),
+        Instrument=base.getInstrument(),
+        SamplePartition=base.getSamplePartition())
+    analysis.setDetectionLimitOperand(base.getDetectionLimitOperand())
+    analysis.setResult(base.getResult())
+    analysis.unmarkCreationFlag()
+    # zope.event.notify(ObjectInitializedEvent(analysis))
+    changeWorkflowState(analysis,
+                        "bika_analysis_workflow", "sample_received")
+    return analysis
 
 
 def create_analysis(context, service, keyword, interim_fields):

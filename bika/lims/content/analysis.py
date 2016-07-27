@@ -1016,6 +1016,16 @@ class Analysis(BaseContent):
         else:
             return ''
 
+    def setReflexAnalysisOf(self, analysis):
+        """ Sets the analysis that has been reflexed in order to create this
+        one, but if the analysis is the same as self, do nothing.
+        :analysis: an analysis object or UID
+        """
+        if analysis.UID() == self.UID():
+            pass
+        else:
+            self.Schema().getField('ReflexAnalysisOf').set(self, analysis)
+
     def guard_sample_transition(self):
         workflow = getToolByName(self, "portal_workflow")
         if workflow.getInfoFor(self, "cancellation_state", "active") == "cancelled":
@@ -1139,10 +1149,10 @@ class Analysis(BaseContent):
         :wf_action: is a variable containing a string with the workflow
         action triggered
         """
+        workflow = getToolByName(self, 'portal_workflow')
         # Check out if the analysis has any reflex rule bound to it.
         # First we have get the analysis' method because the Reflex Rule
         # objects are related to a method.
-        a_result = self.getResult()
         a_method = self.getMethod()
         # After getting the analysis' method we have to get all Reflex Rules
         # related to that method.
@@ -1153,12 +1163,12 @@ class Analysis(BaseContent):
             # same analysis service that is using the analysis.
             rrs = []
             for rule in all_rrs:
+                if workflow.getInfoFor(rule, 'inactive_state') == 'inactive':
+                    continue
                 # Getting the rules to be done from the reflex rule taking
                 # in consideration the analysis service, the result and
                 # the state change
-                action_row = rule.getRules(
-                    self.getServiceUID(), a_result,
-                    self.getReflexRuleActionLevel(), wf_action)
+                action_row = rule.getActionReflexRules(self, wf_action)
                 # Once we have the rules, the system has to execute its
                 # instructions if the result has the expected result.
                 doReflexRuleAction(self, action_row)

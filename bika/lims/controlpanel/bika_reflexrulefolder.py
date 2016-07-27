@@ -87,9 +87,9 @@ class ReflexRuleFolderView(BikaListingView):
             items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
                 (items[x]['url'], items[x]['Title'])
             method = items[x]['obj'].getMethod()
-            items[x]['Method'] = method.title
+            items[x]['Method'] = method.title if method else ''
             items[x]['replace']['Method'] = "<a href='%s'>%s</a>" % \
-                (method.absolute_url(), items[x]['Method'])
+                (method.absolute_url(), items[x]['Method']) if method else ''
         return items
 
 schema = ATFolderSchema.copy()
