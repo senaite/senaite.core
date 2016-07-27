@@ -225,6 +225,7 @@ def doActionToAnalysis(base, action):
     # Incrementing the creation time number
     analysis.setReflexRuleActionLevel(created_number + 1)
     analysis.setReflexRuleAction(action.get('action', ''))
+    analysis.seIsReflexAnalysis(True)
     analysis.setReflexAnalysisOf(base)
     return analysis
 
