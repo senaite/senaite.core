@@ -154,6 +154,14 @@ schema = BikaSchema.copy() + Schema((
         default=False,
         required=0,
     ),
+    # This field contains the original analysis which was reflected
+    ReferenceField(
+        'OriginalReflexedAnalysis',
+        required=0,
+        allowed_types=('Analysis',),
+        relationship='OriginalAnalysisReflectedAnalysis',
+        referenceClass=HoldingReference,
+    ),
     # This field contains the analysis which has been reflected
     # following a reflex rule
     ReferenceField(

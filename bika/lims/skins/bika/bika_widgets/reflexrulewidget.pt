@@ -246,7 +246,7 @@
                                 From:
                             </span>
                             <!-- Define to which analysis the result should be
-                            set, to the previous one or the next one
+                            set, to the original one or the next one
                             (repeating the analysis) -->
                             <select
                                 tal:define="
@@ -268,7 +268,7 @@
                             <span i18n:translate="" class="reflex_rule_text">
                                 as:
                             </span>
-                            <!-- Define the value to the previous/next analysis
+                            <!-- Define the value to the original/next analysis
                             when discrete values are needed -->
                             <select
                                 tal:define="
@@ -279,7 +279,7 @@
                                     tabindex tabindex/next|nothing;"
                                     i18n:domain="python:i18n_domain">
                             </select>
-                            <!-- Define the value to the previous/next analysis
+                            <!-- Define the value to the original/next analysis
                             when numeric values are needed -->
                             <input
                                 size="5"

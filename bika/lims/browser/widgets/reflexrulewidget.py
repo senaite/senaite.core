@@ -151,7 +151,7 @@ class ReflexRuleWidget(RecordsWidget):
         'otherWS-1': 'on',
         'fromlevel': '2',
         'setresultdiscrete-0': '1',
-        'setresulton-0': 'previous',
+        'setresulton-0': 'original',
         'setresultvalue': '2'
         'otherresultcondition': Bool,
         'resultcondition': 'repeat',
@@ -175,7 +175,7 @@ class ReflexRuleWidget(RecordsWidget):
             {'action':'duplicate', 'act_row_idx':'0',
                 'otherWS': True, 'analyst': 'sussan1',
                 'setresultdiscrete': '1', 'setresultvalue': '2',
-                'setresulton': 'previous'},
+                'setresulton': 'original'},
             {'action':'repeat', 'act_row_idx':'1',
                 'otherWS': False, 'analyst': '', ...},
         ]
@@ -380,7 +380,7 @@ class ReflexRuleWidget(RecordsWidget):
         Returns where we can define a result.
         """
         return DisplayList([
-            ('previous', 'Previous analysis'),
+            ('original', 'Original analysis'),
             ('new', 'New analysis')])
 
     def getTriggerVoc(self):
