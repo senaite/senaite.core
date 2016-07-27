@@ -139,7 +139,7 @@ def _check_set_values(instance, dic):
     otherresultcondition = dic.get('otherresultcondition', False)
     resultcondition = dic.get('resultcondition', '')
     actions = dic.get('actions', [])
-    rep_max = dic.get('repetition_max', '0')
+    rep_max = dic.get('repetition_max', '1')
     if (not discreteresult and (not range0 or not range1)) or \
             (discreteresult and range0 and range1):
         logger.warn(_(
@@ -170,10 +170,10 @@ def _check_set_values(instance, dic):
     if type(actions) not in (list,):
         logger.warn('actions must be a list.')
         return False
-    if type(rep_max) not in (str, int):
+    if type(rep_max) not in (str, int) or rep_max < 1:
         logger.warn(
-            'repetition_max must be an integer or a string '
-            'representing an integer.')
+            'repetition_max must be an integer > 0 or a string '
+            'representing an integer > 0.')
         return False
     if type(fromlevel) not in (str, int):
         logger.warn(

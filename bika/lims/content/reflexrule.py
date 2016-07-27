@@ -119,8 +119,7 @@ class ReflexRule(BaseContent):
             fromlevel = action_set.get('fromlevel', None)
             # Validate the analysis service
             if action_set.get('analysisservice', '') == as_uid and\
-                    action_set.get('trigger', '') == wf_action and\
-                    rep_max > reflexed_times:
+                    action_set.get('trigger', '') == wf_action:
                 # Getting the 'other conditions' validity
                 if (otherresultcondition and
                     resultcondition != analysis.getReflexRuleAction()) \
@@ -129,7 +128,7 @@ class ReflexRule(BaseContent):
                         int(fromlevel) != analysis.getReflexRuleActionLevel()):
                     continue
                 # Defining the result deppending on the analysis' result type
-                if action_set.get('range0', ''):
+                if action_set.get('range0', '') and rep_max > reflexed_times:
                     l.append({
                         'expected_values': (
                             action_set.get('range0', ''),
