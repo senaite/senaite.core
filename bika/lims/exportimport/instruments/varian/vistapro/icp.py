@@ -40,7 +40,7 @@ class VistaPROICPParser(InstrumentResultsFileParser):
             resid = row.get("Solution Label", "").strip()
 
             # Service Keyword
-            element = row.get("Element", "").split()[0]
+            element = row.get("Element", "").replace(" ", "").replace(".", "")
 
             rawdict = row
             rawdict['DefaultResult'] = 'Soln Conc'
