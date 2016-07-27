@@ -150,6 +150,14 @@ def _check_set_values(instance, dic):
             'discreteresult: %s, range0: %s, range1: %s'
             % (discreteresult, range0, range1)))
         return False
+    if range1 and not(isnumber(range1)):
+        logger.warn('The range must be a number. Now its value is: '
+                    '%s' % (range1))
+        return False
+    if range0 and not(isnumber(range0)):
+        logger.warn('The range must be a number. Now its value is: '
+                    '%s' % (range0))
+        return False
     if trigger not in ['submit', 'verify']:
         logger.warn('Only available triggers are "verify" or "submit". '
                     '%s has been introduced.' % (trigger))
