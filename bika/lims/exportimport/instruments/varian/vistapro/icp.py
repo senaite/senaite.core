@@ -3,7 +3,14 @@
 """
 import csv
 import logging
+from cStringIO import StringIO
 
+from DateTime import DateTime
+from Products.CMFCore.utils import getToolByName
+from plone.i18n.normalizer.interfaces import IIDNormalizer
+from zope.component import getUtility
+
+from bika.lims.browser import BrowserView
 from bika.lims.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter, InstrumentResultsFileParser
 from bika.lims import bikaMessageFactory as _
@@ -39,6 +46,16 @@ class VistaPROICPParser(InstrumentResultsFileParser):
             rawdict['DefaultResult'] = 'Soln Conc'
 
             self._addRawResult(resid, values={element: rawdict}, override=False)
+
+        self.log(
+            "End of file reached successfully: ${total_objects} objects, "
+            "${total_analyses} analyses, ${total_results} results",
+            mapping={"total_objects": self.getObjectsTotalCount(),
+                     "total_analyses": self.getAnalysesTotalCount(),
+                     "total_results": self.getResultsTotalCount()}
+        )
+
+        return True
 
 
 class VistaPROICPImporter(AnalysisResultsImporter):
@@ -129,3 +146,49 @@ def Import(context, request):
     results = {'errors': errors, 'log': logs, 'warns': warns}
 
     return json.dumps(results)
+
+
+class Export(BrowserView):
+    """ Writes workseet analyses to a CSV file that Vista-PRO can read.
+        Sends the CSV file to the response.
+    """
+
+    def __call__(self, analyses):
+
+        norm = getUtility(IIDNormalizer).normalize
+        instrument = self.context.getInstrument()
+        filename = '%s-%s.csv' % (self.context.getId(),
+                                  norm(instrument.getDataInterface()))
+
+        # create ram file
+        ramdisk = StringIO()
+        writer = csv.writer(ramdisk, delimiter=',')
+        assert(writer)
+
+        rows = []
+
+        for n, an in enumerate(analyses):
+            row = [n]
+            ar = an.aq_parent
+            sid = ar.getClientSampleID()
+
+            for nn, p in enumerate(sid.split("*")):
+                if nn == 0:
+                    row.append([p])
+                else:
+                    row.append(p)
+
+            rows.append(row)
+
+        writer.writerows(rows)
+
+        # write to ram file
+        result = ramdisk.getvalue()
+        ramdisk.close()
+
+        # stream ram file to browser
+        setheader = self.request.RESPONSE.setHeader
+        setheader('Content-Length', len(result))
+        setheader('Content-Type', 'text/comma-separated-values')
+        setheader('Content-Disposition', 'inline; filename=%s' % filename)
+        self.request.RESPONSE.write(result)
