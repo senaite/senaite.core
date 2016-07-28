@@ -564,13 +564,16 @@ schema = BikaFolderSchema.copy() + Schema((
                             "these objects.")
         ),
     ),
-    BooleanField('SendRejectionEmail',
+    BooleanField('NotifyOnRejection',
         schemata = "Analyses",
         default = False,
         widget = BooleanWidget(
-            label = _("Send an email notification to the Client when a Sample "
-                      "or Analysis Request is rejected.")
-        ))
+            label = _("Email notification on rejection"),
+            description =_("Select this to activate automatic notifications "
+                           "via email to the Client when a Sample or Analysis "
+                           "Request is rejected.")
+        ),
+    ),
 ))
 
 schema['title'].validators = ()
