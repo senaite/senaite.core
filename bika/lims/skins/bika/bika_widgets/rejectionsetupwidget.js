@@ -13,13 +13,11 @@ function hide_show_options() {
     var checkbox = $('input.rejectionwidget-checkbox').attr('checked');
     if (checkbox == "checked") {
         // Showing the options-set
-        $('div.options-set').show();
-        $("input[id$='_more']").show();
+        $('div.options-set-container').show();
     }
     else{
         // Hide the options-set
-        $('div.options-set').hide();
-        $("input[id$='_more']").hide();
+        $('div.options-set-container').hide();
     }
 }
 function rejectionwidget_loadEventHandlers() {
