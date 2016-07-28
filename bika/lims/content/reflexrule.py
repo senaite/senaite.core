@@ -17,6 +17,7 @@ from bika.lims.utils import isnumber
 from bika.lims.utils import getUsers
 from bika.lims.utils import tmpID
 from bika.lims.utils.analysis import duplicateAnalysis
+from bika.lims.utils import changeWorkflowState
 from bika.lims.idserver import renameAfterCreation
 from bika.lims import logger
 from bika.lims.workflow import doActionFor
@@ -136,7 +137,8 @@ class ReflexRule(BaseContent):
                             ),
                         'actions': action_set.get('actions', [])
                         })
-                elif not(action_set.get('range0', '')):
+                elif not(action_set.get('range0', ''))\
+                        and rep_max > reflexed_times:
                     l.append({
                         'expected_values': action_set.get('discreteresult', ''),
                         'actions': action_set.get('actions', [])
@@ -214,10 +216,12 @@ def doActionToAnalysis(base, action):
             original = base.getOriginalReflexedAnalysis()
             original.setResult(result_value)
         else:
-            # target_analysis == next
+            # target_analysis == 'next'
             # Create a new analysis
             analysis = duplicateAnalysis(base)
             analysis.setResult(result_value)
+            changeWorkflowState(analysis,
+                                "bika_analysis_workflow", "to_be_verified")
     else:
         logger.error(
             "Not known Reflex Rule action %s." % (action.get('action', '')))

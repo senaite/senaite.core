@@ -173,7 +173,7 @@ schema = BikaSchema.copy() + Schema((
         referenceClass=HoldingReference,
     ),
     # Which is the Reflex Rule action that has created this analysis
-    StringField('ReflexRuleAction', required=0,),
+    StringField('ReflexRuleAction', required=0, default=0),
     # This field contains the number repetition level of this analysis.
     # In order to prevent an infinite loop by a reflex rule action, the fields
     # contains the number of times this analysis has been created again by
