@@ -56,7 +56,7 @@
 
     <tr class="header">
         <tal:block repeat="key python:field.getSubfields()">
-            <th tal:condition="python:
+            <th colspan="2" tal:condition="python:
                 field.testSubfieldCondition(key,here,portal,template)
                 and (not hasattr(field, 'subfield_hidden')
                      or field.subfield_hidden.get(key, False) == False)">
@@ -78,7 +78,15 @@
         tal:attributes="class string:records_row_${fieldName}"
         tal:repeat="idx python:range(field.getEditSize(here))">
 
-        <td>
+        <td class="rulenumber">
+            <span i18n:translate="" class="reflex_rule_text">
+                Rule number:
+            </span>
+            <span class="reflex_rule_text"
+                tal:content="idx">#
+            </span>
+        </td>
+        <td class="rulescontainer">
             <tal:block
                 define="
                     value python:field.getSubfieldValue(values, idx, 'rulesset');">

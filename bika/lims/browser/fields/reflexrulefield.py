@@ -36,6 +36,7 @@ class ReflexRuleField(RecordsField):
         'discreteresult': 'X',
         'trigger': 'xxx',
         'fromlevel': '2',
+        'rulenumber': 'number',
         'otherresultcondition': 'on',
         'resultcondition': 'repeat',
         'repetition_max': 'x'/integer,
@@ -49,6 +50,7 @@ class ReflexRuleField(RecordsField):
         {
         'range1': 'X', 'range0': 'X',
         'trigger': 'xxx',
+        'rulenumber': 'number',
         'repetition_max': 'x'/integer,
         'analysisservice': '<as_uid>', 'value': '',
             'actions':[{'action':'<action_name>', 'act_row_idx':'X',
@@ -98,6 +100,7 @@ def _check_set_values(instance, dic):
     'fromlevel': '2',
     'otherresultcondition': Bool,
     'resultcondition': 'repeat',
+    'rulenumber': 'number',
     'repetition_max': 'x'/integer,
     'analysisservice': '<as_uid>', 'value': '',
         'actions':[{'action':'<action_name>', 'act_row_idx':'X',
@@ -138,6 +141,7 @@ def _check_set_values(instance, dic):
     fromlevel = dic.get('fromlevel', '0')
     otherresultcondition = dic.get('otherresultcondition', False)
     resultcondition = dic.get('resultcondition', '')
+    rulenum = dic.get('rulenumber', '')
     actions = dic.get('actions', [])
     rep_max = dic.get('repetition_max', '1')
     if (not discreteresult and (not range0 or not range1)) or \
@@ -174,6 +178,10 @@ def _check_set_values(instance, dic):
         logger.warn(
             'repetition_max must be an integer > 0 or a string '
             'representing an integer > 0.')
+        return False
+    if rulenum and not(isnumber(rulenum)):
+        logger.warn('The rule number be a number. Now its value is: '
+                    '%s' % (rulenum))
         return False
     if type(fromlevel) not in (str, int):
         logger.warn(

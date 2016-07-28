@@ -118,6 +118,7 @@ class ReflexRuleWidget(RecordsWidget):
         'range1': 'X', 'range0': 'X',
         'discreteresult': 'X',
         'trigger': 'xxx',
+        'rulenumber': 'number',
         'analysisservice': '<as_uid>', 'value': '',
             'actions':[{'action':'<action_name>', 'act_row_idx':'X',
                         'otherWS':Bool, 'analyst': '<analyst_id>', ...},
@@ -133,9 +134,14 @@ class ReflexRuleWidget(RecordsWidget):
             self, instance, field, form, empty_marker, emptyReturnsMarker)
         # 'value' is a list which will be saved
         value = []
+        rulenum = 0
         # Building the actions list
         for action_set in raw_data[0]:
-            value.append(self._format_actions_set(action_set))
+            d = self._format_actions_set(action_set)
+            # Adding the rule number
+            d['rulenumber'] = str(rulenum)
+            value.append(d)
+            rulenum += 1
         return value, {}
 
     def _format_actions_set(self, action_set):
@@ -404,6 +410,7 @@ class ReflexRuleWidget(RecordsWidget):
             'repetition_max': integer,
             'analysisservice': '<as_uid>', 'value': '',
             'trigger': 'xxx',
+            'rulenumber': 'number',
             'actions':[{'action':'<action_name>', 'act_row_idx':'X',
                         'otherWS': Bool, 'analyst': '<analyst_id>'},
                       {'action':'<action_name>', 'act_row_idx':'X',

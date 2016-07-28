@@ -8,6 +8,7 @@ from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.public import DisplayList
 from Products.Archetypes.public import ReferenceField
 from zope.interface import implements
+from datetime import datetime
 from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 from bika.lims.content.bikaschema import BikaSchema
@@ -93,6 +94,7 @@ class ReflexRule(BaseContent):
             'expected_values':(X,Y),
             'repetition_max': '2',
             'wf_action': 'submit',
+            'rulenumber': 'number',
             'actions': [{'action': 'duplicate', },
                         {,},
                         ...]
@@ -128,20 +130,26 @@ class ReflexRule(BaseContent):
                     (otherresultcondition and fromlevel and
                         int(fromlevel) != analysis.getReflexRuleActionLevel()):
                     continue
+                # From level and reflected time conditions
+                cond = int(fromlevel) == analysis.getReflexRuleActionLevel() \
+                    if otherresultcondition else rep_max > reflexed_times
                 # Defining the result deppending on the analysis' result type
-                if action_set.get('range0', '') and rep_max > reflexed_times:
+                import pdb; pdb.set_trace()
+                if action_set.get('range0', '') and cond:
                     l.append({
                         'expected_values': (
                             action_set.get('range0', ''),
                             action_set.get('range1', '')
                             ),
-                        'actions': action_set.get('actions', [])
+                        'actions': action_set.get('actions', []),
+                        'rulenumber': action_set.get('rulenumber', 0)
                         })
-                elif not(action_set.get('range0', ''))\
-                        and rep_max > reflexed_times:
+                elif not(action_set.get('range0', '')) and cond:
                     l.append({
-                        'expected_values': action_set.get('discreteresult', ''),
-                        'actions': action_set.get('actions', [])
+                        'expected_values': action_set.get(
+                            'discreteresult', ''),
+                        'actions': action_set.get('actions', []),
+                        'rulenumber': action_set.get('rulenumber', 0)
                         })
                 else:
                     pass
@@ -166,18 +174,22 @@ class ReflexRule(BaseContent):
         # Checking if the there are rules for this result and analysis
         # state change
         for action_set in action_sets:
-            # It is a discrete value in string shape
+            # It is a discrete value in string shape or
+            # it is a range of values
             exp_val = action_set.get('expected_values', '')
-            if isnumber(result) and isinstance(exp_val, str) and \
-                    exp_val == result:
-                r += action_set.get('actions', {})
-            # It is a range of values
-            elif isnumber(result) and len(exp_val) == 2 and \
-                    float(exp_val[0]) <= float(result) and \
-                    float(result) <= float(exp_val[1]):
-                r += action_set.get('actions', {})
-            else:
-                pass
+            if (isnumber(result) and isinstance(exp_val, str) and
+                exp_val == result)\
+                or\
+                (isnumber(result) and len(exp_val) == 2 and
+                    float(exp_val[0]) <= float(result) and
+                    float(result) <= float(exp_val[1])):
+                acts = action_set.get('actions', {})
+                # Adding the rule number inside each action row because we will
+                # need to get the rule number from a row action later.
+                for act in acts:
+                    act['rulenumber'] = action_set.get('rulenumber', '0')
+                    act['rulename'] = self.Title()
+                r += acts
         return r
 
 atapi.registerType(ReflexRule, PROJECTNAME)
@@ -194,6 +206,7 @@ def doActionToAnalysis(base, action):
     # If the analysis has been retracted yet, just duplicate it
     workflow = getToolByName(base, "portal_workflow")
     state = workflow.getInfoFor(base, 'review_state')
+    action_rule_name = ''
     if action.get('action', '') == 'repeat' and state != 'retracted':
         # Repeat an analysis consist on cancel it and then create a new
         # analysis with the same analysis service used for the canceled
@@ -202,18 +215,19 @@ def doActionToAnalysis(base, action):
         doActionFor(base, 'retract')
         analysis = base.aq_parent.getAnalyses(
             sort_on='created')[-1].getObject()
+        action_rule_name = 'Repited'
         analysis.setResult('')
     elif action.get('action', '') == 'duplicate' or state == 'retracted':
         analysis = duplicateAnalysis(base)
+        action_rule_name = 'Duplicated'
         analysis.setResult('')
     elif action.get('action', '') == 'setresult':
         target_analysis = action.get('setresulton', '')
         result_value = action['setresultdiscrete'] if \
             action.get('setresultdiscrete', '') else action['setresultvalue']
         if target_analysis == 'original':
-            # Use the original analysis (the base)
-            analysis = base
             original = base.getOriginalReflexedAnalysis()
+            analysis = original
             original.setResult(result_value)
         else:
             # target_analysis == 'next'
@@ -222,6 +236,7 @@ def doActionToAnalysis(base, action):
             analysis.setResult(result_value)
             changeWorkflowState(analysis,
                                 "bika_analysis_workflow", "to_be_verified")
+        action_rule_name = 'Result set'
     else:
         logger.error(
             "Not known Reflex Rule action %s." % (action.get('action', '')))
@@ -239,6 +254,19 @@ def doActionToAnalysis(base, action):
             base.getOriginalReflexedAnalysis())
     else:
         analysis.setOriginalReflexedAnalysis(base)
+    # Setting the remarks to base analysis
+    time = datetime.now().strftime('%Y-%m-%d %H:%M')
+    rule_num = action.get('rulenumber', 0)
+    rule_name = action.get('rulename', '')
+    base_remark = "Reflex rule number %s of '%s' applied at %s." % \
+        (rule_num, rule_name, time)
+    base_remark = base.getRemarks() + base_remark + '\n '
+    base.setRemarks(base_remark)
+    # Setting the remarks to base analysis
+    analysis_remark = "%s due to reflex rule number %s of '%s' at %s" % \
+        (action_rule_name, rule_num, rule_name, time)
+    analysis_remark = analysis.getRemarks() + analysis_remark + '\n '
+    analysis.setRemarks(analysis_remark)
     return analysis
 
 
