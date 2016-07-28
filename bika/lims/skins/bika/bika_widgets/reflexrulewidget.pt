@@ -79,11 +79,8 @@
         tal:repeat="idx python:range(field.getEditSize(here))">
 
         <td class="rulenumber">
-            <span i18n:translate="" class="reflex_rule_text">
-                Rule number:
-            </span>
             <span class="reflex_rule_text"
-                tal:content="idx">#
+                tal:content="python: '# %s' % (idx+1)">
             </span>
         </td>
         <td class="rulescontainer">

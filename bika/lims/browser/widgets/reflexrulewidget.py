@@ -134,7 +134,7 @@ class ReflexRuleWidget(RecordsWidget):
             self, instance, field, form, empty_marker, emptyReturnsMarker)
         # 'value' is a list which will be saved
         value = []
-        rulenum = 0
+        rulenum = 1
         # Building the actions list
         for action_set in raw_data[0]:
             d = self._format_actions_set(action_set)
