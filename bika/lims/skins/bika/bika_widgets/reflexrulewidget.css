@@ -8,7 +8,7 @@ tr.records_row_ReflexRules{
 #ReflexRules_table {
     width: 100%;
 }
-tr.records_row_ReflexRules td:first-child {
+tr.records_row_ReflexRules td.rulescontainer {
     width: 100%;
     padding:10px;
 }
