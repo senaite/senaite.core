@@ -31,6 +31,7 @@ from decimal import Decimal
 from zope.interface import implements
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t, getUsers, dicts_to_dict
+from bika.lims.utils.analysisrequest import notify_rejection
 
 from bika.lims.browser.fields import DateTimeField
 from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
@@ -2561,5 +2562,8 @@ class AnalysisRequest(BaseFolder):
         analyses = self.getAnalyses()
         for analysis in analyses:
             doActionFor(analysis.getObject(), 'reject')
+        if self.bika_setup.getNotifyOnRejection():
+            # Notify the Client about the Rejection.
+            notify_rejection(self)
 
 atapi.registerType(AnalysisRequest, PROJECTNAME)

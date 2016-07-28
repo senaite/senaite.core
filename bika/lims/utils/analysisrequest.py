@@ -1,13 +1,24 @@
 from Products.CMFCore.utils import getToolByName
+from bika.lims import bikaMessageFactory as _
 from bika.lims.interfaces import ISample, IAnalysisService, IAnalysis
 from bika.lims import logger
+from bika.lims.browser.analysisrequest.retract import AnalysisRequestRetractView
 from bika.lims.utils import tmpID
+from bika.lims.utils import to_utf8
+from bika.lims.utils import encode_header
+from bika.lims.utils import createPdf
+from bika.lims.utils import attachPdf
 from bika.lims.utils.sample import create_sample
 from bika.lims.utils.samplepartition import create_samplepartition
 from bika.lims.workflow import doActionFor
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.Utils import formataddr
+from os.path import join
 from plone import api
 from Products.CMFPlone.utils import _createObjectByType
-
+from smtplib import SMTPServerDisconnected, SMTPRecipientsRefused
+import tempfile
 
 def create_analysisrequest(
         context,
@@ -179,3 +190,64 @@ def _resolve_items_to_service_uids(items):
                 str(item) + " should be the UID, title, keyword "
                             " or title of an AnalysisService.")
     return service_uids
+
+def notify_rejection(analysisrequest):
+    """
+    Notifies via email that a given Analysis Request has been rejected. The
+    notification is sent to the Client contacts assigned to the Analysis
+    Request.
+
+    :param analysisrequest: Analysis Request to which the notification refers
+    :returns: true if success
+    :raises RuntimeError: the notification hasn't succeed.
+    """
+    from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+    tpl = ViewPageTemplateFile("../browser/analysisrequest/templates/analysisrequest_retract.pt")
+    tpl.context = analysisrequest
+    html = tpl.read()
+    pdf_fn = tempfile.mktemp(suffix=".pdf")
+    pdf = createPdf(htmlreport=html, outfile=pdf_fn)
+
+    # PDF written to debug file
+    if debug_mode:
+        logger.debug("Writing PDF for %s to %s" % (ar.Title(), pdf_fn))
+    else:
+        #os.remove(pdf_fn)
+        pass
+
+    # compose and send email.
+    mailto = []
+    arid = analysisrequest.getRequestID()
+    lab = analysisrequest.bika_setup.laboratory
+    mailfrom = formataddr((encode_header(lab.getName()), lab.getEmailAddress()))
+    mailsubject = _('Analysis Request %s has been rejected') % arid
+    contacts = analysisrequest.getContact() + analysisrequest.getCCContact()
+    for contact in contacts:
+        name = to_urf8(contact.getFullName())
+        email = to_utf8(contact.getEmailAddress())
+        mailto.append(formataddr((encode_header(name), email)))
+    mailto = ['jpuiggene@naralabs.com']
+    mime_msg = MIMEMultipart('related')
+    mime_msg['Subject'] = mailsubject
+    mime_msg['From'] = mailfrom
+    mime_msg['To'] = ','.join(mailto)
+    mime_msg.preamble = 'This is a multi-part MIME message.'
+    msg_txt = MIMEText(results_html, _subtype='html')
+    mime_msg.attach(msg_txt)
+
+    if pdf:
+        attachPdf(mime_msg, pdf, pdf_fn)
+
+    try:
+        host = getToolByName(ar, 'MailHost')
+        host.send(mime_msg.as_string(), immediate=True)
+    except SMTPServerDisconnected as msg:
+        logger.warn("SMTPServerDisconnected: %s." % msg)
+    except SMTPRecipientsRefused as msg:
+        raise WorkflowException(str(msg))
+
+
+
+
+
+    return True
