@@ -13,7 +13,7 @@ tr.records_row_ReflexRules td.rulescontainer {
     padding:10px;
 }
 tr.records_row_ReflexRules td:last-child {
-    background-color: #dcdcdc;
+    background-color: #efefef;
     padding: 5px;
     text-align: right;
     width: 40px;
@@ -38,4 +38,14 @@ tr.records_row_ReflexRules td:first-child input[type="button"] {
 
 div.inline {
     display: inline;
+}
+
+tr.records_row_ReflexRules td.rulenumber {
+    background-color: #efefef;
+    border-right: 1px solid #cdcdcd;
+    font-size: 1.2em;
+    font-weight: bold;
+    padding: 10px !important;
+    vertical-align: top;
+    white-space: nowrap;
 }

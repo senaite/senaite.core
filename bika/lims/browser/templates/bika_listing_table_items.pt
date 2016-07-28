@@ -444,6 +444,7 @@ Table cells for each column from in review_state's column list.
                     style="width:100%;display:block;"
                     autocomplete="off"
                     rows="1"
+                    tal:content="python:item.get('Remarks','')"
                     tal:condition="python:remarksedit==True"
                     tal:attributes="
                         class python:'listing_remarks';

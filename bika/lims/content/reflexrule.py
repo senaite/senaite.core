@@ -134,7 +134,6 @@ class ReflexRule(BaseContent):
                 cond = int(fromlevel) == analysis.getReflexRuleActionLevel() \
                     if otherresultcondition else rep_max > reflexed_times
                 # Defining the result deppending on the analysis' result type
-                import pdb; pdb.set_trace()
                 if action_set.get('range0', '') and cond:
                     l.append({
                         'expected_values': (
@@ -215,7 +214,7 @@ def doActionToAnalysis(base, action):
         doActionFor(base, 'retract')
         analysis = base.aq_parent.getAnalyses(
             sort_on='created')[-1].getObject()
-        action_rule_name = 'Repited'
+        action_rule_name = 'Repeated'
         analysis.setResult('')
     elif action.get('action', '') == 'duplicate' or state == 'retracted':
         analysis = duplicateAnalysis(base)
@@ -260,12 +259,12 @@ def doActionToAnalysis(base, action):
     rule_name = action.get('rulename', '')
     base_remark = "Reflex rule number %s of '%s' applied at %s." % \
         (rule_num, rule_name, time)
-    base_remark = base.getRemarks() + base_remark + '\n '
+    base_remark = base.getRemarks() + base_remark + '<br/> '
     base.setRemarks(base_remark)
     # Setting the remarks to base analysis
     analysis_remark = "%s due to reflex rule number %s of '%s' at %s" % \
         (action_rule_name, rule_num, rule_name, time)
-    analysis_remark = analysis.getRemarks() + analysis_remark + '\n '
+    analysis_remark = analysis.getRemarks() + analysis_remark + '<br/> '
     analysis.setRemarks(analysis_remark)
     return analysis
 
