@@ -31,6 +31,14 @@ jQuery(function($){
         $('input[id^=ReflexRules-repetition_max-]').bind("change", function () {
             repmax_controller(this);
         });
+        // Running the from level controller
+        $.each($('input[id^=ReflexRules-fromlevel-]'), function(index, element){
+            fromlevel_controller(element);
+            });
+        // Binding the from level controller
+        $('input[id^=ReflexRules-fromlevel-]').bind("change", function () {
+            fromlevel_controller(this);
+        });
         // Running the trigger controller
         $.each($('select[id^="ReflexRules-trigger"]'), function(index, element){
                 trigger_controller(element);
@@ -50,6 +58,9 @@ jQuery(function($){
         // Binding the othercondition controller
         $('input[id^="ReflexRules-otherresultcondition-"]').bind("change", function () {
             other_conditions_controller($(this));
+            fromlevel_controller(
+                    $(this).siblings('div.otherconditions')
+                        .find('input[id^="ReflexRules-fromlevel-"]'));
         });
         // Setting the ws and define result stuff
         $.each($('div.action'), function(index, element){
@@ -190,6 +201,27 @@ jQuery(function($){
         }
     }
 
+    function fromlevel_controller(element){
+        /**
+        If rep level is lower than 1, set as 1.
+        If a 'from level' is introduced, hide max number.
+        */
+        var number = $(element).val();
+        var repmax = $(element).parent()
+            .siblings('input[id^="ReflexRules-repetition_max-"]');
+        var other = $(element).parent()
+            .siblings('input[id^="ReflexRules-otherresultcondition-"]');
+        if (!$.isNumeric(number) && number < 1 ) {
+            $(element).val('');
+        }
+        if (number && $(other).is(':checked')) {
+            $(repmax).attr('disabled',true);
+        }
+        else {
+            $(repmax).attr('disabled',false);
+        }
+    }
+
     function repmax_controller(element){
         /**
         If repetition max is lower than 1, set as 1..
@@ -326,6 +358,12 @@ jQuery(function($){
                 range_controller($(set).find('input[id^="ReflexRules-range"]'));
                 setup_del_action_button();
         });
+        // from level controller
+        $(set)
+            .find('input[id^="ReflexRules-fromlevel-"]')
+            .bind("change", function () {
+                fromlevel_controller($(set).find('input[id^="ReflexRules-fromlevel-"]'));
+        });
         // Max repetition controller
         $(set)
             .find('input[id^=ReflexRules-repetition_max-]')
@@ -355,6 +393,9 @@ jQuery(function($){
             .find('input[id^="ReflexRules-otherresultcondition-"]')
             .bind("change", function (element) {
                 other_conditions_controller(element.target);
+                fromlevel_controller(
+                        $(element.target).siblings('div.otherconditions')
+                            .find('input[id^="ReflexRules-fromlevel-"]'));
             }).trigger("change");
         // Binding the otherWS controller and the controller for specific
         // actions select
