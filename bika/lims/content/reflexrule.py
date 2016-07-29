@@ -8,15 +8,17 @@ from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.public import DisplayList
 from Products.Archetypes.public import ReferenceField
 from zope.interface import implements
+from datetime import datetime
 from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IReflexRule
 from bika.lims.browser.fields import ReflexRuleField
 from bika.lims.utils import isnumber
-from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import getUsers
 from bika.lims.utils import tmpID
+from bika.lims.utils.analysis import duplicateAnalysis
+from bika.lims.utils import changeWorkflowState
 from bika.lims.idserver import renameAfterCreation
 from bika.lims import logger
 from bika.lims.workflow import doActionFor
@@ -78,85 +80,115 @@ class ReflexRule(BaseContent):
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
-    def getExpectedValuesAndRules(self, as_uid, reflexed_times, wf_action):
+    def getExpectedValuesAndRules(self, analysis, wf_action):
         """
         This function returns the expected values (even if they are discrete or
-        not) and the rules defined for the analysis service.
-        :as_uid: is the analysis service uid to obtain the rules and expected
-            values from.
+        not) and the rules defined for the analysis service, the number of
+        reflections and the 'other conditions' section.
+        :analysis: the analysis full object which we want to obtain the
+            rules for.
+        :wf_action: it is the workflow action that the analysis is doing, we
+            have to act in consideration of the action_set 'trigger' variable
         :return: a list of dictionaries:
             [{
             'expected_values':(X,Y),
             'repetition_max': '2',
             'wf_action': 'submit',
+            'rulenumber': 'number',
             'actions': [{'action': 'duplicate', },
                         {,},
                         ...]
             }, ...]
         """
+        # getting the analysis service uid for the query
+        as_uid = analysis.getServiceUID()
+        # The number of times the base analysis has been reflexed
+        reflexed_times = analysis.getReflexRuleActionLevel()
+        # Getting the action sets, those that contain action rows
         action_sets = self.getReflexRules()
         l = []
         for action_set in action_sets:
-            rep_max = 0
             try:
                 rep_max = int(action_set.get('repetition_max', 0))
-            except:
-                pass
+            except ValueError:
+                logger.warn(
+                    'repetition_max in %s should be an integer or a'
+                    ' string representing an integer.' % (self.Title))
+                rep_max = 0
+            # Getting the 'other conditions' stuff from the rule
+            otherresultcondition = action_set.get(
+                'otherresultcondition', False)
+            resultcondition = action_set.get('resultcondition', '')
+            fromlevel = action_set.get('fromlevel', None)
+            # Validate the analysis service
             if action_set.get('analysisservice', '') == as_uid and\
-                    action_set.get('range0', '') and\
-                    action_set.get('trigger', '') == wf_action and\
-                    rep_max > reflexed_times:
-                l.append({
-                    'expected_values': (
-                        action_set.get('range0', ''),
-                        action_set.get('range1', '')
-                        ),
-                    'actions': action_set.get('actions', [])
-                    })
-            elif action_set.get('analysisservice', '') == as_uid and\
-                    action_set.get('trigger', '') == wf_action and\
-                    not(action_set.get('range0', '')) and\
-                    rep_max > reflexed_times:
-                l.append({
-                    'expected_values': action_set.get('resultoption', ''),
-                    'actions': action_set.get('actions', [])
-                    })
-            else:
-                pass
+                    action_set.get('trigger', '') == wf_action:
+                # Getting the 'other conditions' validity
+                if (otherresultcondition and
+                    resultcondition != analysis.getReflexRuleAction()) \
+                    or \
+                    (otherresultcondition and fromlevel and
+                        int(fromlevel) != analysis.getReflexRuleActionLevel()):
+                    continue
+                # From level and reflected time conditions
+                cond = int(fromlevel) == analysis.getReflexRuleActionLevel() \
+                    if otherresultcondition else rep_max > reflexed_times
+                # Defining the result deppending on the analysis' result type
+                if action_set.get('range0', '') and cond:
+                    l.append({
+                        'expected_values': (
+                            action_set.get('range0', ''),
+                            action_set.get('range1', '')
+                            ),
+                        'actions': action_set.get('actions', []),
+                        'rulenumber': action_set.get('rulenumber', 0)
+                        })
+                elif not(action_set.get('range0', '')) and cond:
+                    l.append({
+                        'expected_values': action_set.get(
+                            'discreteresult', ''),
+                        'actions': action_set.get('actions', []),
+                        'rulenumber': action_set.get('rulenumber', 0)
+                        })
+                else:
+                    pass
         return l
 
-    def getRules(self, as_uid, result, reflexed_times, wf_action):
+    def getActionReflexRules(self, analysis, wf_action):
         """
         This function returns a list of dictionaries with the rules to be done
         for the analysis service.
-        :as_uid: is the analysis service uid for the query.
-        :result: the value of the result as string.
-        :reflexed_times: The number of times the base analysis
-        has been reflexed
+        :analysis: the analysis full object which we want to obtain the
+            rules for.
         :wf_action: it is the workflow action that the analysis is doing, we
-        have to act in consideration of the action_set 'trigger' variable
+            have to act in consideration of the action_set 'trigger' variable
         :return: [{'action': 'duplicate', ...}, {,}, ...]
         """
+        # the value of the analysis' result as string
+        result = analysis.getResult()
         # Getting a list with the rules and expected values related to the
         # analysis service
-        action_sets = self.getExpectedValuesAndRules(
-            as_uid, reflexed_times, wf_action)
+        action_sets = self.getExpectedValuesAndRules(analysis, wf_action)
         r = []
         # Checking if the there are rules for this result and analysis
         # state change
         for action_set in action_sets:
-            # It is a discrete value in string shape
+            # It is a discrete value in string shape or
+            # it is a range of values
             exp_val = action_set.get('expected_values', '')
-            if isnumber(result) and isinstance(exp_val, str) and \
-                    exp_val == result:
-                r += action_set.get('actions', {})
-            # It is a range of values
-            elif isnumber(result) and len(exp_val) == 2 and \
-                    float(exp_val[0]) <= float(result) and \
-                    float(result) <= float(exp_val[1]):
-                r += action_set.get('actions', {})
-            else:
-                pass
+            if (isnumber(result) and isinstance(exp_val, str) and
+                exp_val == result)\
+                or\
+                (isnumber(result) and len(exp_val) == 2 and
+                    float(exp_val[0]) <= float(result) and
+                    float(result) <= float(exp_val[1])):
+                acts = action_set.get('actions', {})
+                # Adding the rule number inside each action row because we will
+                # need to get the rule number from a row action later.
+                for act in acts:
+                    act['rulenumber'] = action_set.get('rulenumber', '0')
+                    act['rulename'] = self.Title()
+                r += acts
         return r
 
 atapi.registerType(ReflexRule, PROJECTNAME)
@@ -167,11 +199,13 @@ def doActionToAnalysis(base, action):
     This functions executes the action against the analysis.
     :base: a full analysis object. The new analyses will be cloned from it.
     :action: a dictionary representing an action row.
+        [{'action': 'duplicate', ...}, {,}, ...]
     :returns: the new analysis
     """
     # If the analysis has been retracted yet, just duplicate it
     workflow = getToolByName(base, "portal_workflow")
     state = workflow.getInfoFor(base, 'review_state')
+    action_rule_name = ''
     if action.get('action', '') == 'repeat' and state != 'retracted':
         # Repeat an analysis consist on cancel it and then create a new
         # analysis with the same analysis service used for the canceled
@@ -180,41 +214,28 @@ def doActionToAnalysis(base, action):
         doActionFor(base, 'retract')
         analysis = base.aq_parent.getAnalyses(
             sort_on='created')[-1].getObject()
+        action_rule_name = 'Repeated'
+        analysis.setResult('')
     elif action.get('action', '') == 'duplicate' or state == 'retracted':
-        # Duplicate an analysis consist on creating a new analysis with
-        # the same analysis service for the same sample. It is used in
-        # order to reduce the error procedure probability because both
-        # results must be similar.
-        ar = base.aq_parent
-        kw = base.getKeyword()
-        # Rename the analysis to make way for it's successor.
-        # Support multiple duplicates by renaming to *-0, *-1, etc
-        # Getting the analysis service
-        analyses = [x for x in ar.objectValues("Analysis")
-                    if x.getId().startswith(kw)]
-        a_id = "{0}-{1}".format(kw, len(analyses))
-        # Create new analysis and copy values from current analysis
-        _id = ar.invokeFactory('Analysis', id=a_id)
-        analysis = ar[_id]
-        analysis.edit(
-            Service=base.getService(),
-            Calculation=base.getCalculation(),
-            InterimFields=base.getInterimFields(),
-            ResultDM=base.getResultDM(),
-            Retested=True,  # True
-            MaxTimeAllowed=base.getMaxTimeAllowed(),
-            DueDate=base.getDueDate(),
-            Duration=base.getDuration(),
-            ReportDryMatter=base.getReportDryMatter(),
-            Analyst=base.getAnalyst(),
-            Instrument=base.getInstrument(),
-            SamplePartition=base.getSamplePartition())
-        analysis.setDetectionLimitOperand(base.getDetectionLimitOperand())
-        analysis.setResult(base.getResult())
-        analysis.unmarkCreationFlag()
-        # zope.event.notify(ObjectInitializedEvent(analysis))
-        changeWorkflowState(analysis,
-                            "bika_analysis_workflow", "sample_received")
+        analysis = duplicateAnalysis(base)
+        action_rule_name = 'Duplicated'
+        analysis.setResult('')
+    elif action.get('action', '') == 'setresult':
+        target_analysis = action.get('setresulton', '')
+        result_value = action['setresultdiscrete'] if \
+            action.get('setresultdiscrete', '') else action['setresultvalue']
+        if target_analysis == 'original':
+            original = base.getOriginalReflexedAnalysis()
+            analysis = original
+            original.setResult(result_value)
+        else:
+            # target_analysis == 'next'
+            # Create a new analysis
+            analysis = duplicateAnalysis(base)
+            analysis.setResult(result_value)
+            changeWorkflowState(analysis,
+                                "bika_analysis_workflow", "to_be_verified")
+        action_rule_name = 'Result set'
     else:
         logger.error(
             "Not known Reflex Rule action %s." % (action.get('action', '')))
@@ -224,8 +245,27 @@ def doActionToAnalysis(base, action):
     # Incrementing the creation time number
     analysis.setReflexRuleActionLevel(created_number + 1)
     analysis.setReflexRuleAction(action.get('action', ''))
+    analysis.setIsReflexAnalysis(True)
     analysis.setReflexAnalysisOf(base)
-    analysis.setResult('')
+    # Setting the original reflected analysis
+    if base.getOriginalReflexedAnalysis():
+        analysis.setOriginalReflexedAnalysis(
+            base.getOriginalReflexedAnalysis())
+    else:
+        analysis.setOriginalReflexedAnalysis(base)
+    # Setting the remarks to base analysis
+    time = datetime.now().strftime('%Y-%m-%d %H:%M')
+    rule_num = action.get('rulenumber', 0)
+    rule_name = action.get('rulename', '')
+    base_remark = "Reflex rule number %s of '%s' applied at %s." % \
+        (rule_num, rule_name, time)
+    base_remark = base.getRemarks() + base_remark + '<br/> '
+    base.setRemarks(base_remark)
+    # Setting the remarks to base analysis
+    analysis_remark = "%s due to reflex rule number %s of '%s' at %s" % \
+        (action_rule_name, rule_num, rule_name, time)
+    analysis_remark = analysis.getRemarks() + analysis_remark + '<br/> '
+    analysis.setRemarks(analysis_remark)
     return analysis
 
 

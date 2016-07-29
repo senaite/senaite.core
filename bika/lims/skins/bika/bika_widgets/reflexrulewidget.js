@@ -23,6 +23,22 @@ jQuery(function($){
         $('input[id^="ReflexRules-range"]').bind("change", function () {
             range_controller(this);
         });
+        // Running the repetition max controller
+        $.each($('input[id^=ReflexRules-repetition_max-]'), function(index, element){
+                repmax_controller(element);
+            });
+        // Binding the trigger controller
+        $('input[id^=ReflexRules-repetition_max-]').bind("change", function () {
+            repmax_controller(this);
+        });
+        // Running the from level controller
+        $.each($('input[id^=ReflexRules-fromlevel-]'), function(index, element){
+            fromlevel_controller(element);
+            });
+        // Binding the from level controller
+        $('input[id^=ReflexRules-fromlevel-]').bind("change", function () {
+            fromlevel_controller(this);
+        });
         // Running the trigger controller
         $.each($('select[id^="ReflexRules-trigger"]'), function(index, element){
                 trigger_controller(element);
@@ -35,14 +51,29 @@ jQuery(function($){
             .bind("change", function () {
                 analysiservice_change(this, setupdata);
             });
-        // Setting the ws stuff
+        // Setting up the otherconditions stuff
+        $.each($('input[id^="ReflexRules-otherresultcondition-"]'), function(index, element){
+                other_conditions_controller(element);
+            });
+        // Binding the othercondition controller
+        $('input[id^="ReflexRules-otherresultcondition-"]').bind("change", function () {
+            other_conditions_controller($(this));
+            fromlevel_controller(
+                    $(this).siblings('div.otherconditions')
+                        .find('input[id^="ReflexRules-fromlevel-"]'));
+        });
+        // Setting the ws and define result stuff
         $.each($('div.action'), function(index, element){
                 otherWS_controller(element);
+                action_select_controller(element);
             });
-        // Binding the controller
+        // Binding the controllers
         $('input[id^="ReflexRules-otherWS-"]').bind("change", function () {
             otherWS_controller($(this).closest('div.action'));
         });
+        $('select[id^="ReflexRules-action-"]').bind("change", function () {
+                action_select_controller($(this).closest('div.action'));
+            });
     });
 
     function method_controller(setupdata){
@@ -81,31 +112,67 @@ jQuery(function($){
         //Check if the selected analysis service has discrete rules
         var as_uid = $(as).find(":selected").attr('value');
         var as_info = setupdata[method].analysisservices[as_uid];
-        var resultoptions = as_info.resultoptions;
-        if(resultoptions.length > 0){
-            // If the analysis service has discrete values, lets hide the range
-            // inputs and display the result selector with all the possible
-            // results for the analysis service
-            $(as).siblings('.rangecontainer').hide().find('input').val('');
-            $(as).siblings('.resultoptioncontainer').show();
-            // Delete old options
-            var select = $(as).siblings('.resultoptioncontainer').find('select');
-            $(select).find('option').remove();
-            // Write the different options
-            for (var i=0; resultoptions.length > i; i++){
-                $(select).append(
-                    '<option value="' + resultoptions[i].ResultValue +
-                    '">' + resultoptions[i].ResultText + '</option>'
-                );
-            }
+        if (as_info === undefined){
+            var _ = window.jarn.i18n.MessageFactory("bika");
+            window.bika.lims.portalMessage(_('An analysis service must be selected'));
         }
         else{
-            // If the analysis service has normal values, lets hide the discrete
-            // values selector and remove its options
-            $(as).siblings('.resultoptioncontainer').hide();
-            $(as).siblings('.rangecontainer').show();
-            var opts = $(as).siblings('.resultoptioncontainer').find('option');
-            $(opts).remove();
+            var resultoptions = as_info.resultoptions;
+            if(resultoptions.length > 0){
+                // If the analysis service has discrete values, lets hide the range
+                // inputs and display the result selector with all the possible
+                // results for the analysis service
+                // "Expected results" section
+                $(as).siblings('.rangecontainer').hide().find('input').val('');
+                $(as).siblings('.resultoptioncontainer').show();
+                // Delete old options
+                var select = $(as).siblings('.resultoptioncontainer').find('select');
+                $(select).find('option').remove();
+                // Actions section
+                var select_actionset = $(as).siblings('div.actions-set')
+                    .find("select[id^='ReflexRules-setresultdiscrete']");
+                $(as).siblings('div.actions-set')
+                    .find("select[id^='ReflexRules-setresultdiscrete']")
+                    .show();
+                // Delete old options
+                $(as).siblings('div.actions-set')
+                    .find("select[id^='ReflexRules-setresultdiscrete'] option")
+                    .remove();
+                $(as).siblings('div.actions-set')
+                    .find("input[id^='ReflexRules-setresultvalue']")
+                    .hide().val('');
+                // Write the different options in both sites
+                for (var i=0; resultoptions.length > i; i++){
+                    $(select).append(
+                        '<option value="' + resultoptions[i].ResultValue +
+                        '">' + resultoptions[i].ResultText + '</option>'
+                    );
+                    $(select_actionset).append(
+                        '<option value="' + resultoptions[i].ResultValue +
+                        '">' + resultoptions[i].ResultText + '</option>'
+                    );
+                }
+            }
+            else{
+                // If the analysis service has normal values, lets hide the discrete
+                // values selector and remove its options
+                //Hide the "expected result" fields
+                $(as).siblings('.resultoptioncontainer').hide();
+                $(as).siblings('.rangecontainer').show();
+                var opts = $(as).siblings('.resultoptioncontainer').find('option');
+                $(opts).remove();
+                // Hide the fields in the action sections
+                $(as).siblings('div.actions-set')
+                    .find("select[id^='ReflexRules-setresultdiscrete']")
+                    .hide();
+                // Delete old options
+                $(as).siblings('div.actions-set')
+                    .find("select[id^='ReflexRules-setresultdiscrete'] option")
+                    .remove();
+                $(as).siblings('div.actions-set')
+                    .find("input[id^='ReflexRules-setresultvalue']")
+                    .show();
+            }
         }
     }
 
@@ -131,6 +198,37 @@ jQuery(function($){
         var range1 = td.find('[id^="ReflexRules-range1"]');
         if ($(range0).val() > $(range1).val()) {
             $(range1).val($(range0).val());
+        }
+    }
+
+    function fromlevel_controller(element){
+        /**
+        If rep level is lower than 1, set as 1.
+        If a 'from level' is introduced, hide max number.
+        */
+        var number = $(element).val();
+        var repmax = $(element).parent()
+            .siblings('input[id^="ReflexRules-repetition_max-"]');
+        var other = $(element).parent()
+            .siblings('input[id^="ReflexRules-otherresultcondition-"]');
+        if (!$.isNumeric(number) && number < 1 ) {
+            $(element).val('');
+        }
+        if (number && $(other).is(':checked')) {
+            $(repmax).attr('disabled',true);
+        }
+        else {
+            $(repmax).attr('disabled',false);
+        }
+    }
+
+    function repmax_controller(element){
+        /**
+        If repetition max is lower than 1, set as 1..
+        */
+        var number = $(element).val();
+        if (!$.isNumeric(number) || number < 1 ) {
+            $(element).val(1);
         }
     }
 
@@ -200,10 +298,15 @@ jQuery(function($){
             $(sel_options).prop("selected", false);
         }
         $(row).insertBefore(element);
-        // Binding the otherWS controller
-        $(row).bind("change", function () {
-            otherWS_controller(this);
+        // Binding the otherWS controller and the controller for specific
+        // actions select
+        $(row).find('input[id^="ReflexRules-otherWS-"]').bind("change", function () {
+            otherWS_controller(row);
         });
+        $(row).find('select[id^="ReflexRules-action-"]').bind("change", function () {
+            action_select_controller(row);
+        });
+        $(row).find('select[id^="ReflexRules-action-"]').trigger('change');
     }
 
     function add_action_set(element){
@@ -248,27 +351,59 @@ jQuery(function($){
         // Adding the new set to the table
         $(set).appendTo($(table));
         // Binding the controllers
+        // Range result controller
         $(set)
             .find('input[id^="ReflexRules-range"]')
             .bind("change", function () {
                 range_controller($(set).find('input[id^="ReflexRules-range"]'));
                 setup_del_action_button();
         });
+        // from level controller
+        $(set)
+            .find('input[id^="ReflexRules-fromlevel-"]')
+            .bind("change", function () {
+                fromlevel_controller($(set).find('input[id^="ReflexRules-fromlevel-"]'));
+        });
+        // Max repetition controller
+        $(set)
+            .find('input[id^=ReflexRules-repetition_max-]')
+            .bind("change", function () {
+                repmax_controller($(set).find('input[id^=ReflexRules-repetition_max-]'));
+        }).trigger("change");
+        // Action trigger controller
         $(set)
             .find('select[id^="ReflexRules-trigger"]')
             .bind("change", function () {
                 trigger_controller(
                         $(set).find('select[id^="ReflexRules-trigger"]'));
         }).trigger("change");
+        // "Add new" button controller
         $(set).find("input[id$='_action_addnew']").click(function(i,e){
             add_action_row(this);
         });
+        // Analysis service change controller
         $(set)
             .find('select[id^="ReflexRules-analysisservice-"]')
             .bind("change", function (element) {
                 var setupdata = $.parseJSON($('#rules-setup-data').html());
                 analysiservice_change(element.target, setupdata);
             }).trigger("change");
+        // "Other result condition" controller
+        $(set)
+            .find('input[id^="ReflexRules-otherresultcondition-"]')
+            .bind("change", function (element) {
+                other_conditions_controller(element.target);
+                fromlevel_controller(
+                        $(element.target).siblings('div.otherconditions')
+                            .find('input[id^="ReflexRules-fromlevel-"]'));
+            }).trigger("change");
+        // Binding the otherWS controller and the controller for specific
+        // actions select
+        $(td).find('div[id^="ReflexRules-actionsset-"] div.action')
+            .bind("change", function () {
+                otherWS_controller(this);
+                action_select_controller(this);
+            });
     }
 
     function setup_del_action_button(){
@@ -294,6 +429,7 @@ jQuery(function($){
         var rules = $.parseJSON($('#rules-setup-data')
             .html()).saved_actions.rules;
         var ass = $('select[id^="ReflexRules-analysisservice-"]');
+        var action_sets = $('div.actions-set');
         $.each(ass,function(index, element){
             // Select the analysis service
             if (rules[index] !== undefined){
@@ -307,8 +443,41 @@ jQuery(function($){
         });
         for (var i=0; rules.length > i; i++){
             var discrete = rules[i].discreteresult;
-            var ops = $(ass[i]).siblings('.resultoptioncontainer select option');
-            $(ops).find('[value="'+ discrete + '"]').prop("selected", true);
+            $(ass[i]).siblings('div.resultoptioncontainer')
+                .find('select option[value="'+ discrete + '"]')
+                .prop("selected", true);
+            // Selecting the setresultdiscrete field values
+            var actions_saved = rules[i].actions;
+            var setresultdiscrete_fields = $(action_sets[i])
+                .find('select[id^="ReflexRules-setresultdiscrete-"]');
+            for (var ii=0; actions_saved.length > ii; ii++){
+                var setresultdiscrete_saved = actions_saved[ii].setresultdiscrete;
+                if (actions_saved[ii].setresultdiscrete !== undefined) {
+                    $(setresultdiscrete_fields[ii])
+                        .find('option[value="'+ actions_saved[ii].setresultdiscrete + '"]')
+                        .prop("selected", true);
+                }
+            }
+        }
+    }
+
+    function other_conditions_controller(other_conditions_chk) {
+        /**
+        This function hides/shows and clean if necessary the other
+        condition inputs.
+        If the checkbox otherconditions is set, the other inputs have
+        to be shown
+        */
+        var checkbox = $(other_conditions_chk).attr('checked');
+        if (checkbox == "checked") {
+            // Showing the otherconditions div
+            $(other_conditions_chk)
+                .siblings('div.otherconditions')
+                .css('display', 'inline');
+        }
+        else{
+            // Hide the div
+            $(other_conditions_chk).siblings('div.otherconditions').hide();
         }
     }
 
@@ -325,6 +494,31 @@ jQuery(function($){
         else{
             // Hide the options-set
             $(action_div).find('div.analyst-section').hide();
+        }
+    }
+
+    function action_select_controller(action_div) {
+        /**
+        This function hide/shows the 'worksheet' section and 'defining analysis result' section deppending on the choosen action.
+        - If 'define result' action is selected, hides the to_other_worksheet div and shows the action_define_result div.
+        - If 'define result' action is NOT selected, shows the to_other_worksheet div and hides the action_define_result div.
+        */
+        var selection = $(action_div)
+            .find('select[id^="ReflexRules-action-"]')
+            .find(":selected").attr('value');
+        if (selection == "setresult") {
+            // Showing the analyst-section div
+            $(action_div).find('div.action_define_result').css('display', 'inline');
+            $(action_div).find('div.to_other_worksheet').hide();
+            $(action_div)
+                .find('div.to_other_worksheet')
+                .find('input[id^="ReflexRules-otherWS-"]')
+                .removeAttr("checked");
+        }
+        else{
+            // Hide the options-set
+            $(action_div).find('div.to_other_worksheet').css('display', 'inline');
+            $(action_div).find('div.action_define_result').hide();
         }
     }
 });

@@ -19,9 +19,7 @@ except:
 # Writting the description for the widget
 description = """
 <p>
-When the results become available, some samples may have to be added to the
- next available worksheet for reflex testing. These situations are caused by
- the indetermination of the result or by a failed test.
+When the results become available, some samples may have to be added to the next available worksheet for reflex testing or may be the result of a previous analysis should be changed. These situations are caused by the indetermination of the result or by a failed test.
 </p>
 <p>
 The aim of this functionality is to create a logic capable of defining some
@@ -33,7 +31,9 @@ Basic usage:
 <ul>
 <li>Each reflex rule have to be bound to an analysis method using the drop-down
  list. Inside the reflex rule the user will be able to add actions for each
- analysis service belonging to the selected method.</li>
+ analysis service belonging to the selected method. The user can specify which
+ was the reflex rule that generated the analysis and the times it has been
+ reflexed in order to improve the selection.</li>
 
 <li>For each analysis service the user can introduce a range of values or a
  discrete value. Then the user has to select from the drop-down list the action
@@ -70,10 +70,10 @@ Worksheet behaviour:
 <li>If the check-box is set and the user defines an analyst, the system will
  look for the first worksheet assigned to the analyst. If there is no open
  worksheet for that analyst, the system will create a new worksheet assigned
- to the analyst.
+ to the analyst.</li>
 </ul>
 <p>
-So far there are only two reflex actions: duplicate and replace.
+So far there are only three reflex actions: duplicate, replace and set result.
 </p>
 <ul>
 <li>Repeat an analysis means to cancel it and then create a new analysis with
@@ -87,6 +87,13 @@ So far there are only two reflex actions: duplicate and replace.
 
 <li>If there are more than one 'repeat' actions for the same result, the system
  will do a 'duplicate' instead of another 'repeat'.</li>
+
+<li>Set the result instruction gives to the analysis a final result depending
+ on the result obtained in the last analysis. It can work in two different
+ ways, for example you can set the result of the original analysis (the first
+ one) and this will change the result on the original one. If you select to
+ create a new analysis, it will repeat the analysis and will set the defined
+ result.</li>
 </ul>
 """
 
@@ -118,11 +125,12 @@ class ReflexRuleWidget(RecordsWidget):
         'range1': 'X', 'range0': 'X',
         'discreteresult': 'X',
         'trigger': 'xxx',
+        'rulenumber': 'number',
         'analysisservice': '<as_uid>', 'value': '',
             'actions':[{'action':'<action_name>', 'act_row_idx':'X',
-                        'otherWS':Bool, 'analyst': '<analyst_id>'},
+                        'otherWS':Bool, 'analyst': '<analyst_id>', ...},
                       {'action':'<action_name>', 'act_row_idx':'X',
-                        'otherWS':Bool, 'analyst': '<analyst_id>'},
+                        'otherWS':Bool, 'analyst': '<analyst_id>', ...},
                 ]
         }, ...]
         """
@@ -133,9 +141,14 @@ class ReflexRuleWidget(RecordsWidget):
             self, instance, field, form, empty_marker, emptyReturnsMarker)
         # 'value' is a list which will be saved
         value = []
+        rulenum = 1
         # Building the actions list
         for action_set in raw_data[0]:
-            value.append(self._format_actions_set(action_set))
+            d = self._format_actions_set(action_set)
+            # Adding the rule number
+            d['rulenumber'] = str(rulenum)
+            value.append(d)
+            rulenum += 1
         return value, {}
 
     def _format_actions_set(self, action_set):
@@ -149,6 +162,12 @@ class ReflexRuleWidget(RecordsWidget):
         'action-1': 'repeat',
         'action-0': 'duplicate',
         'otherWS-1': 'on',
+        'fromlevel': '2',
+        'setresultdiscrete-0': '1',
+        'setresulton-0': 'original',
+        'setresultvalue': '2'
+        'otherresultcondition': Bool,
+        'resultcondition': 'repeat',
         'analyst-0': 'sussan1',
         'repetition_max': 2,
         'trigger': 'submit',
@@ -161,29 +180,43 @@ class ReflexRuleWidget(RecordsWidget):
         'discreteresult': '1',
         'repetition_max': 2,
         'trigger': 'submit',
+        'fromlevel': '2',
+        'otherresultcondition': True,
+        'resultcondition': 'repeat',
         'value': '',
-            'actions':[
-                {'action':'duplicate', 'act_row_idx':'0',
-                    'otherWS': True, 'analyst': 'sussan1'},
-                {'action':'repeat', 'act_row_idx':'1',
-                    'otherWS': False, 'analyst': ''},
-            ]
+        'actions':[
+            {'action':'duplicate', 'act_row_idx':'0',
+                'otherWS': True, 'analyst': 'sussan1',
+                'setresultdiscrete': '1', 'setresultvalue': '2',
+                'setresulton': 'original'},
+            {'action':'repeat', 'act_row_idx':'1',
+                'otherWS': False, 'analyst': '', ...},
+        ]
         }
         """
         keys = action_set.keys()
         # 'formatted_action_row' is the dict which will be added in the
         # 'value' list
         formatted_action_set = {}
+        # Getting the action field names in order to filter the keys later.
+        # The names can be found in reflexrulewidget.pt inside the
+        # Reflex action rules list section.
+        exclude = [
+            'action-', 'otherWS-', 'analyst-', 'setresulton-',
+            'setresultdiscrete-', 'setresultvalue-']
+        action_keys = [k for k in keys if filter(k.startswith, exclude)]
         # Filling the dict with the values that aren't actions
         for key in keys:
-            if key.startswith('action-') or key.startswith('otherWS-')\
-                    or key.startswith('analyst-'):
+            if key in action_keys:
                 pass
+            elif key == 'otherresultcondition':
+                formatted_action_set[key] = True if action_set[key] == 'on'\
+                    else False
             else:
                 formatted_action_set[key] = action_set[key]
         # Adding the actions list to the final dictionary
         formatted_action_set['actions'] = self._get_sorted_actions_list(
-            keys, action_set
+            action_keys, action_set
         )
         return formatted_action_set
 
@@ -192,8 +225,8 @@ class ReflexRuleWidget(RecordsWidget):
         This function takes advantatge of the yet filtered 'keys_list'
         and returns a list of dictionaries with the actions from the
         action_set.
-        :keys_list: is a list with the keys starting with 'action-' or
-        'otherWS-' in the 'action_set'.
+        :keys_list: is a list with the keys belonging to the action
+            field names'.
         :action_set: is the dict representing a set of actions.
         """
         # actions_dicts_l is the final list which will contain the the
@@ -216,12 +249,25 @@ class ReflexRuleWidget(RecordsWidget):
             analyst_key = 'analyst-'+str(a_count)
             # Getting the value for analyst
             analyst = action_set.get(analyst_key, '')
+            # Getting in which analysis should has its result set
+            setresulton_key = 'setresulton-'+str(a_count)
+            setresulton = action_set.get(setresulton_key, '')
+            # Getting the discrete result to set
+            setresultdiscrete_key = 'setresultdiscrete-'+str(a_count)
+            setresultdiscrete = action_set.get(setresultdiscrete_key, '')
+            # Getting the numeric result to set
+            setresultvalue_key = 'setresultvalue-'+str(a_count)
+            setresultvalue = action_set.get(setresultvalue_key, '')
             # Building the action dict
             action_dict = {
                 'action': action_set[key],
                 'act_row_idx': a_count,
                 'otherWS': otherWS,
-                'analyst': analyst}
+                'analyst': analyst,
+                'setresulton': setresulton,
+                'setresultdiscrete': setresultdiscrete,
+                'setresultvalue': setresultvalue,
+                }
             # Saves the action as a new dict inside the actions list
             actions_dicts_l.append(action_dict)
             a_count += 1
@@ -337,8 +383,18 @@ class ReflexRuleWidget(RecordsWidget):
         """
         Return the different action available
         """
-        return DisplayList(
-            [('repeat', 'Repeat'), ('duplicate', 'Duplicate')])
+        return DisplayList([
+            ('repeat', 'Repeat'),
+            ('duplicate', 'Duplicate'),
+            ('setresult', 'Set result')])
+
+    def getDefiningResultTo(self):
+        """
+        Returns where we can define a result.
+        """
+        return DisplayList([
+            ('original', 'Original analysis'),
+            ('new', 'New analysis')])
 
     def getTriggerVoc(self):
         """
@@ -361,6 +417,7 @@ class ReflexRuleWidget(RecordsWidget):
             'repetition_max': integer,
             'analysisservice': '<as_uid>', 'value': '',
             'trigger': 'xxx',
+            'rulenumber': 'number',
             'actions':[{'action':'<action_name>', 'act_row_idx':'X',
                         'otherWS': Bool, 'analyst': '<analyst_id>'},
                       {'action':'<action_name>', 'act_row_idx':'X',
@@ -380,6 +437,9 @@ class ReflexRuleWidget(RecordsWidget):
             {'range1': 'X', 'range0': 'X',
             'analysisservice': '<as_uid>', 'value': '',
             'repetition_max': integer,
+            'fromlevel': '2',
+            'otherresultcondition': True,
+            'resultcondition': 'repeat',
             'trigger': 'xxx',
             'actions':[{'action':'<action_name>', 'act_row_idx':'X',
                         'otherWS': Bool, 'analyst': '<analyst_id>'},
@@ -431,7 +491,7 @@ class ReflexRuleWidget(RecordsWidget):
 
     def getAnalysts(self):
         """
-        This function returns a displaylist with the available analysis
+        This function returns a displaylist with the available analysts
         """
         analysts = getUsers(self, ['Manager', 'LabManager', 'Analyst'])
         return analysts.sortedByKey()
