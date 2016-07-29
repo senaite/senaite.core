@@ -264,9 +264,7 @@ def notify_rejection(analysisrequest):
     try:
         host = getToolByName(analysisrequest, 'MailHost')
         host.send(mime_msg.as_string(), immediate=True)
-    except SMTPServerDisconnected as msg:
-        logger.warn("SMTPServerDisconnected: %s." % msg)
-    except SMTPRecipientsRefused as msg:
-        raise WorkflowException(str(msg))
+    except:
+        pass
 
     return True
