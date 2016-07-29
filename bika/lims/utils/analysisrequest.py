@@ -1,8 +1,10 @@
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import _createObjectByType
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
-from bika.lims.interfaces import ISample, IAnalysisService, IAnalysis
 from bika.lims import logger
-from bika.lims.browser.analysisrequest.retract import AnalysisRequestRetractView
+from bika.lims.idserver import renameAfterCreation
+from bika.lims.interfaces import ISample, IAnalysisService, IAnalysis
 from bika.lims.utils import tmpID
 from bika.lims.utils import to_utf8
 from bika.lims.utils import encode_header
@@ -18,6 +20,7 @@ from os.path import join
 from plone import api
 from Products.CMFPlone.utils import _createObjectByType
 from smtplib import SMTPServerDisconnected, SMTPRecipientsRefused
+import os
 import tempfile
 
 def create_analysisrequest(
@@ -199,55 +202,71 @@ def notify_rejection(analysisrequest):
 
     :param analysisrequest: Analysis Request to which the notification refers
     :returns: true if success
-    :raises RuntimeError: the notification hasn't succeed.
     """
     from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-    tpl = ViewPageTemplateFile("../browser/analysisrequest/templates/analysisrequest_retract.pt")
+    tplbase = '../browser/analysisrequest/templates/'
+    arid = analysisrequest.getRequestID()
+
+    # This is the template to render for the pdf that will be either attached
+    # to the email and attached the the Analysis Request for further access
+    tpl = ViewPageTemplateFile(tplbase + '/analysisrequest_retract_pdf.pt')
     tpl.context = analysisrequest
-    html = tpl.read()
+    html = safe_unicode(tpl.read()).encode('utf-8')
+    filename = '%s-rejected' % arid
     pdf_fn = tempfile.mktemp(suffix=".pdf")
     pdf = createPdf(htmlreport=html, outfile=pdf_fn)
+    if pdf:
+        # Attach the pdf to the Analysis Request
+        attid = analysisrequest.aq_parent.generateUniqueId('Attachment')
+        att = _createObjectByType("Attachment", analysisrequest.aq_parent, tmpID())
+        att.setAttachmentFile(open(pdf_fn))
+        # Awkward workaround to rename the file
+        attf = att.getAttachmentFile()
+        attf.filename = '%s.pdf' % filename
+        att.setAttachmentFile(attf)
+        att.unmarkCreationFlag()
+        renameAfterCreation(att)
+        atts = analysisrequest.getAttachment() + [att] if \
+                analysisrequest.getAttachment() else [att]
+        atts = [a.UID() for a in atts]
+        analysisrequest.setAttachment(atts)
+        os.remove(pdf_fn)
 
-    # PDF written to debug file
-    if debug_mode:
-        logger.debug("Writing PDF for %s to %s" % (ar.Title(), pdf_fn))
-    else:
-        #os.remove(pdf_fn)
-        pass
+    # This is the message for the email's body
+    tpl = ViewPageTemplateFile(tplbase + '/analysisrequest_retract_mail.pt')
+    tpl.context = analysisrequest
+    html = safe_unicode(tpl.read()).encode('utf-8')
 
     # compose and send email.
     mailto = []
-    arid = analysisrequest.getRequestID()
     lab = analysisrequest.bika_setup.laboratory
     mailfrom = formataddr((encode_header(lab.getName()), lab.getEmailAddress()))
-    mailsubject = _('Analysis Request %s has been rejected') % arid
-    contacts = analysisrequest.getContact() + analysisrequest.getCCContact()
+    mailsubject = _('%s has been rejected') % arid
+    contacts = [analysisrequest.getContact()] + analysisrequest.getCCContact()
     for contact in contacts:
-        name = to_urf8(contact.getFullName())
+        name = to_utf8(contact.getFullname())
         email = to_utf8(contact.getEmailAddress())
-        mailto.append(formataddr((encode_header(name), email)))
-    mailto = ['jpuiggene@naralabs.com']
+        if email:
+            mailto.append(formataddr((encode_header(name), email)))
+
+    if not mailto:
+        return False
     mime_msg = MIMEMultipart('related')
     mime_msg['Subject'] = mailsubject
     mime_msg['From'] = mailfrom
     mime_msg['To'] = ','.join(mailto)
     mime_msg.preamble = 'This is a multi-part MIME message.'
-    msg_txt = MIMEText(results_html, _subtype='html')
+    msg_txt = MIMEText(html, _subtype='html')
     mime_msg.attach(msg_txt)
-
     if pdf:
-        attachPdf(mime_msg, pdf, pdf_fn)
+        attachPdf(mime_msg, pdf, filename)
 
     try:
-        host = getToolByName(ar, 'MailHost')
+        host = getToolByName(analysisrequest, 'MailHost')
         host.send(mime_msg.as_string(), immediate=True)
     except SMTPServerDisconnected as msg:
         logger.warn("SMTPServerDisconnected: %s." % msg)
     except SMTPRecipientsRefused as msg:
         raise WorkflowException(str(msg))
-
-
-
-
 
     return True
