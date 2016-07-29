@@ -31,6 +31,7 @@ from decimal import Decimal
 from zope.interface import implements
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t, getUsers, dicts_to_dict
+from bika.lims.utils.analysisrequest import notify_rejection
 
 from bika.lims.browser.fields import DateTimeField
 from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
@@ -2395,6 +2396,27 @@ class AnalysisRequest(BaseFolder):
                 raise ValueError('%s is not valid' % uid)
         return sets.get('hidden', False)
 
+    def getRejecter(self):
+        """
+        If the Analysis Request has been rejected, returns the user who did the
+        rejection. If it was not rejected or the current user has not enough
+        privileges to access to this information, returns None.
+        """
+        wtool = getToolByName(self, 'portal_workflow')
+        mtool = getToolByName(self, 'portal_membership')
+        review_history = None
+        try:
+            review_history = wtool.getInfoFor(self, 'review_history')
+        except:
+            return None
+        for items in review_history:
+            action = items.get('action')
+            if action != 'reject':
+                continue
+            actor = items.get('actor')
+            return mtool.getMemberById(actor)
+        return None
+
     def guard_unassign_transition(self):
         """Allow or disallow transition depending on our children's states
         """
@@ -2561,5 +2583,8 @@ class AnalysisRequest(BaseFolder):
         analyses = self.getAnalyses()
         for analysis in analyses:
             doActionFor(analysis.getObject(), 'reject')
+        if self.bika_setup.getNotifyOnRejection():
+            # Notify the Client about the Rejection.
+            notify_rejection(self)
 
 atapi.registerType(AnalysisRequest, PROJECTNAME)

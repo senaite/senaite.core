@@ -3,12 +3,12 @@ from Products.Archetypes.Registry import registerWidget
 from Products.Archetypes.Widget import TypesWidget
 
 
-class RejectionWidgetSetup(TypesWidget):
+class RejectionSetupWidget(TypesWidget):
     _properties = TypesWidget._properties.copy()
     _properties.update({
-        'macro': "bika_widgets/rejectionwidgetsetup",
-        'helper_js': ("bika_widgets/rejectionwidgetsetup.js",),
-        'helper_css': ("bika_widgets/rejectionwidgetsetup.css",),
+        'macro': "bika_widgets/rejectionsetupwidget",
+        'helper_js': ("bika_widgets/rejectionsetupwidget.js",),
+        'helper_css': ("bika_widgets/rejectionsetupwidget.css",),
     })
 
     security = ClassSecurityInfo()
@@ -25,7 +25,7 @@ class RejectionWidgetSetup(TypesWidget):
         return sorted(keys)
 
 
-registerWidget(RejectionWidgetSetup,
+registerWidget(RejectionSetupWidget,
                title = "Setup's Rejection Widget",
                description = ('Widget to define the rejection reasons'),
                )

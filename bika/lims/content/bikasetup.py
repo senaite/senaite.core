@@ -11,7 +11,7 @@ from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.interfaces import IBikaSetup
 from bika.lims.interfaces import IHaveNoBreadCrumbs
 from bika.lims.browser.widgets import DurationWidget
-from bika.lims.browser.widgets import RejectionWidgetSetup
+from bika.lims.browser.widgets import RejectionSetupWidget
 from bika.lims.browser.fields import DurationField
 from bika.lims.vocabularies import getStickerTemplates as _getStickerTemplates
 from plone.app.folder import folder
@@ -556,9 +556,22 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     RecordsField('RejectionReasons',
         schemata = "Analyses",
-        widget = RejectionWidgetSetup(
-            label=_("Sample Rejection"),
-            description = _("Here you can define whether you want to use the sample rejection and define rejection reasons.")
+        widget = RejectionSetupWidget(
+            label=_("Enable the rejection workflow"),
+            description = _("Select this to activate the rejection workflow "
+                            "for Samples and Analysis Requests. A 'Reject' "
+                            "option will be displayed in the actions menu for "
+                            "these objects.")
+        ),
+    ),
+    BooleanField('NotifyOnRejection',
+        schemata = "Analyses",
+        default = False,
+        widget = BooleanWidget(
+            label = _("Email notification on rejection"),
+            description =_("Select this to activate automatic notifications "
+                           "via email to the Client when a Sample or Analysis "
+                           "Request is rejected.")
         ),
     ),
 ))
