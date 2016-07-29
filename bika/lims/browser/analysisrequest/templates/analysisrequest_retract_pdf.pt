@@ -6,8 +6,8 @@
                   portal portal_url/getPortalObject;">
 <head>
 </head>
-<body>
-    <h1>Aquest és el PDF</h1>
+<body tal:define="ar python:view.context;">
+    <p tal:content="python:'The analysis request %s has been rejected because of the following reasons: ' % ar.getRequestID();"></p>
     <p>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut sodales justo quis erat eleifend elementum. Sed condimentum ante nunc, at viverra neque ultricies at. Mauris vel egestas nibh. Mauris pulvinar feugiat nibh, at ultrices velit. Nam ut rhoncus quam. Nullam sed venenatis tellus, ac sodales ipsum. Pellentesque aliquet arcu lacinia, tincidunt orci lacinia, laoreet justo. Maecenas iaculis volutpat euismod. Maecenas at scelerisque libero. Maecenas sed mattis purus. Pellentesque iaculis congue risus vitae semper. Phasellus accumsan magna enim, eu sollicitudin elit hendrerit eget. Etiam lorem tellus, ullamcorper ac lectus eget, vestibulum vehicula ante.
     </p>

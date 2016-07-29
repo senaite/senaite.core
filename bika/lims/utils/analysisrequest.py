@@ -236,6 +236,7 @@ def notify_rejection(analysisrequest):
     tpl = ViewPageTemplateFile(tplbase + '/analysisrequest_retract_mail.pt')
     tpl.context = analysisrequest
     html = safe_unicode(tpl.read()).encode('utf-8')
+    import pdb;pdb.set_trace();
 
     # compose and send email.
     mailto = []
