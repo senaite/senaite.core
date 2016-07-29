@@ -19,9 +19,7 @@ except:
 # Writting the description for the widget
 description = """
 <p>
-When the results become available, some samples may have to be added to the
- next available worksheet for reflex testing. These situations are caused by
- the indetermination of the result or by a failed test.
+When the results become available, some samples may have to be added to the next available worksheet for reflex testing or may be the result of a previous analysis should be changed. These situations are caused by the indetermination of the result or by a failed test.
 </p>
 <p>
 The aim of this functionality is to create a logic capable of defining some
@@ -33,7 +31,9 @@ Basic usage:
 <ul>
 <li>Each reflex rule have to be bound to an analysis method using the drop-down
  list. Inside the reflex rule the user will be able to add actions for each
- analysis service belonging to the selected method.</li>
+ analysis service belonging to the selected method. The user can specify which
+ was the reflex rule that generated the analysis and the times it has been
+ reflexed in order to improve the selection.</li>
 
 <li>For each analysis service the user can introduce a range of values or a
  discrete value. Then the user has to select from the drop-down list the action
@@ -70,10 +70,10 @@ Worksheet behaviour:
 <li>If the check-box is set and the user defines an analyst, the system will
  look for the first worksheet assigned to the analyst. If there is no open
  worksheet for that analyst, the system will create a new worksheet assigned
- to the analyst.
+ to the analyst.</li>
 </ul>
 <p>
-So far there are only two reflex actions: duplicate and replace.
+So far there are only three reflex actions: duplicate, replace and set result.
 </p>
 <ul>
 <li>Repeat an analysis means to cancel it and then create a new analysis with
@@ -87,6 +87,13 @@ So far there are only two reflex actions: duplicate and replace.
 
 <li>If there are more than one 'repeat' actions for the same result, the system
  will do a 'duplicate' instead of another 'repeat'.</li>
+
+<li>Set the result instruction gives to the analysis a final result depending
+ on the result obtained in the last analysis. It can work in two different
+ ways, for example you can set the result of the original analysis (the first
+ one) and this will change the result on the original one. If you select to
+ create a new analysis, it will repeat the analysis and will set the defined
+ result.</li>
 </ul>
 """
 
