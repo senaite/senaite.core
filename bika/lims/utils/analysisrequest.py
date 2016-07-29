@@ -3,6 +3,8 @@ from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.browser.analysisrequest.reject import AnalysisRequestRejectEmailView
+from bika.lims.browser.analysisrequest.reject import AnalysisRequestRejectPdfView
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import ISample, IAnalysisService, IAnalysis
 from bika.lims.utils import tmpID
@@ -203,15 +205,13 @@ def notify_rejection(analysisrequest):
     :param analysisrequest: Analysis Request to which the notification refers
     :returns: true if success
     """
-    from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-    tplbase = '../browser/analysisrequest/templates/'
     arid = analysisrequest.getRequestID()
 
     # This is the template to render for the pdf that will be either attached
     # to the email and attached the the Analysis Request for further access
-    tpl = ViewPageTemplateFile(tplbase + '/analysisrequest_retract_pdf.pt')
-    tpl.context = analysisrequest
-    html = safe_unicode(tpl.read()).encode('utf-8')
+    tpl = AnalysisRequestRejectPdfView(analysisrequest, analysisrequest.REQUEST)
+    html = tpl.template()
+    html = safe_unicode(html).encode('utf-8')
     filename = '%s-rejected' % arid
     pdf_fn = tempfile.mktemp(suffix=".pdf")
     pdf = createPdf(htmlreport=html, outfile=pdf_fn)
@@ -233,10 +233,9 @@ def notify_rejection(analysisrequest):
         os.remove(pdf_fn)
 
     # This is the message for the email's body
-    tpl = ViewPageTemplateFile(tplbase + '/analysisrequest_retract_mail.pt')
-    tpl.context = analysisrequest
-    html = safe_unicode(tpl.read()).encode('utf-8')
-    import pdb;pdb.set_trace();
+    tpl = AnalysisRequestRejectEmailView(analysisrequest, analysisrequest.REQUEST)
+    html = tpl.template()
+    html = safe_unicode(html).encode('utf-8')
 
     # compose and send email.
     mailto = []
