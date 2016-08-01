@@ -104,7 +104,10 @@ class Update(object):
         self.used("obj_path")
 
         site_path = request['PATH_INFO'].replace("/@@API/update", "")
-        obj = context.restrictedTraverse(str(site_path + obj_path))
+        # HACK to prevent traverse failing due to proxies
+        path = str(site_path + obj_path)
+        path = path.replace('VirtualHost/', '')
+        obj = context.restrictedTraverse(path)
 
         try:
             fields = set_fields_from_request(obj, request)
