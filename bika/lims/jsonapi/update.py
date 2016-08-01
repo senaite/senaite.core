@@ -106,7 +106,7 @@ class Update(object):
         site_path = request['PATH_INFO'].replace("/@@API/update", "")
         # HACK to prevent traverse failing due to proxies
         path = str(site_path + obj_path)
-        path = path.replace('VirtualHost/', '')
+        path = path.replace('VirtualHostBase/', '')
         obj = context.restrictedTraverse(path)
 
         try:
