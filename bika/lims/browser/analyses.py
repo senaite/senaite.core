@@ -731,7 +731,7 @@ class AnalysesView(BikaListingView):
                              (t(_("Cannot verify: Submitted by current user")))
                 except WorkflowException:
                     pass
-
+            after_icons = ''
             # add icon for assigned analyses in AR views
             if self.context.portal_type == 'AnalysisRequest':
                 obj = items[i]['obj']
@@ -741,11 +741,20 @@ class AnalysesView(BikaListingView):
                     br = obj.getBackReferences('WorksheetAnalysis')
                     if len(br) > 0:
                         ws = br[0]
-                        items[i]['after']['state_title'] = \
-                             "<a href='%s'><img src='++resource++bika.lims.images/worksheet.png' title='%s'/></a>" % \
-                             (ws.absolute_url(),
-                              t(_("Assigned to: ${worksheet_id}",
-                                  mapping={'worksheet_id': safe_unicode(ws.id)})))
+                        after_icons += "<a href='%s'><img src='++resource++bika.lims.images/worksheet.png' title='%s'/></a>" % \
+                        (ws.absolute_url(),
+                         t(_("Assigned to: ${worksheet_id}",
+                             mapping={'worksheet_id': safe_unicode(ws.id)})))
+            items[i]['after']['state_title'] = after_icons
+            after_icons = ''
+            if obj.getIsReflexAnalysis():
+                after_icons += "<img\
+                src='%s/++resource++bika.lims.images/reflexrule.png'\
+                title='%s'>" % (
+                    self.portal_url,
+                    t(_('It comes form a reflex rule'))
+                )
+            items[i]['after']['Service'] = after_icons
 
         # the TAL requires values for all interim fields on all
         # items, so we set blank values in unused cells
