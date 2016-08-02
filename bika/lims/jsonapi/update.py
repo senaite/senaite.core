@@ -103,8 +103,16 @@ class Update(object):
         obj_path = self.request['obj_path']
         self.used("obj_path")
 
-        site_path = request['PATH_INFO'].replace("/@@API/update", "")
-        obj = context.restrictedTraverse(str(site_path + obj_path))
+        obj = None
+        ppath = context.portal_url.getPortalObject().getPhysicalPath()
+        if ppath and len(ppath) > 1:
+            ppath = ppath[1]
+            obj = context.restrictedTraverse(ppath + obj_path)
+
+        if not obj:
+            ret['success'] = False
+            ret['fail'] = True
+            return ret
 
         try:
             fields = set_fields_from_request(obj, request)
