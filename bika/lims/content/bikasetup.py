@@ -258,6 +258,17 @@ schema = BikaFolderSchema.copy() + Schema((
             description=_("Select this to activate the sample collection workflow steps.")
         ),
     ),
+    BooleanField('ScheduleSamplingEnabled',
+        schemata = "Analyses",
+        default = False,
+        widget = BooleanWidget(
+            label=_("Enable the Schedule a Sampling functionality"),
+            description=_(
+                "Select this to allow a Sampling Coordinator to" +
+                " schedule a sampling. This functionality only takes effect" +
+                " when 'Sampling workflow' is active")
+        ),
+    ),
     BooleanField(
         'ShowPartitions',
         schemata = "Analyses",

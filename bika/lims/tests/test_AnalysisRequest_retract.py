@@ -41,10 +41,7 @@ class TestAnalysisRequestRetract(BikaFunctionalTestCase):
         request = {}
         ar = create_analysisrequest(client, request, values, service_uids)
         wf = getToolByName(ar, 'portal_workflow')
-        try:
-            wf.doActionFor(ar, 'receive')
-        except WorkflowException:
-            pass
+        wf.doActionFor(ar, 'receive')
 
         # Cheking if everything is going OK
         #import pdb; pdb.set_trace()

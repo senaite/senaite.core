@@ -345,6 +345,9 @@ class BikaListingView(BrowserView):
     # - sortable: if False, adds nosort class to this column.
     # - toggle: enable/disable column toggle ability.
     # - input_class: CSS class applied to input widget in edit mode
+    #               autosave: when js detects this variable as 'true',
+    #               the system will save the value after been
+    #               introduced via ajax.
     # - input_width: size attribute applied to input widget in edit mode
     columns = {
            'obj_type': {'title': _('Type')},
@@ -895,7 +898,14 @@ class BikaListingView(BrowserView):
 
                 # a list of names of fields that are compulsory (if editable)
                 required = [],
-
+                # a dict where the column name works as a key and the value is
+                # the name of the field related with the column. It is used
+                # when the name given to the column and the content field it
+                # represents diverges. bika_listing_table_items.pt defines an
+                # attribute for each item, this attribute is named 'field' and
+                # the system fills it taking advantage of this dictionary or
+                # the name of the column if it isn't defined in the dict.
+                field={},
                 # "before", "after" and replace: dictionary (key is column ID)
                 # A snippet of HTML which will be rendered
                 # before/after/instead of the table cell content.
@@ -1058,7 +1068,7 @@ class BikaListingView(BrowserView):
                 new_actions.append(action)
             else:
                 logger.warning("bad action in custom_actions: %s. (complete list: %s)."%(action,actions))
-
+        actions = new_actions
         # and these are removed
         if 'hide_transitions' in self.review_state:
             actions = [a for a in actions

@@ -1,0 +1,278 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<metal:block use-macro="context/global_defines/macros/defines" />
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      tal:attributes="lang default_language|default;
+                      xml:lang default_language|default;"
+      i18n:domain="bika"
+      tal:define="portal_state context/@@plone_portal_state;
+                  portal_url portal_state/portal_url;
+                  plone_view context/@@plone;
+                  portal portal_state/portal;">
+<head>
+    <div tal:replace="structure provider:plone.resourceregistries.scripts" />
+    <link media="screen" tal:attributes="href string:${portal_url}/++resource++jquery-ui-themes/sunburst/jqueryui.css" type="text/css" rel="stylesheet">
+</head>
+<body class="A4" data-layout="A4">
+    <div id='preview_container' class="samples_print_preview">
+        <div id="preview_header">
+            <div id='options_handler'>
+                <div class='options-line'>
+                    <label for="sel_format" i18n:translate="">Template</label>
+                    <select id="sel_format" name="sel_format">
+                        <tal:formats tal:repeat="template python:view.getAvailableTemplates()">
+                            <option tal:attributes="value python:template['id']"
+                                    tal:content="python:template['title']"></option>
+                        </tal:formats>
+                    </select>
+                    <label for="sel_layout" i18n:translate="">Layout</label>
+                    <select id="sel_layout" name="sel_layout">
+                        <option value="A4" selected>DIN-A4 (210 x 297 mm)</option>
+                        <option value="letter">Letter size (216 x 279mm)</option>
+                    </select>
+                </div>
+                <div class='options-line'>
+                    <label i18n:translate="">Margins (mm)</label>
+                    top: <input class='option-margin' id="margin-top" type="text"/>&nbsp;
+                    right: <input class='option-margin' id="margin-right" type="text"/>&nbsp;
+                    bottom: <input class='option-margin' id="margin-bottom" type="text"/>&nbsp;
+                    left: <input class='option-margin' id="margin-left" type="text"/>
+                </div>
+                <div class='options-line'>
+                    <label for="sel_filter" i18n:translate="">Select the filter to apply</label>
+                    <label for="sel_filter" i18n:translate="">Filter by sampler:</label>
+                    <select
+                        id="sel_sampler"
+                        name="sel_sampler"
+                        tal:define="
+                            samplers python:view.getSamplers();
+                            samplers_keys python:samplers.keys()">
+                        <option value="" i18n:translate="" selected></option>
+                        <option tal:repeat="sampler_key samplers_keys"
+                            tal:attributes="value sampler_key"
+                            tal:content="python:samplers[sampler_key]['name']"/>
+                    </select>
+                    <label for="sel_filter" i18n:translate="">Filter by client:</label>
+                    <select
+                        id="sel_client"
+                        name="sel_client"
+                        tal:define="
+                            clients python:view.getClients();
+                            clients_keys python:clients.keys()">
+                        <option value="" i18n:translate="" selected></option>
+                        <option tal:repeat="client_key clients_keys"
+                            tal:attributes="value client_key"
+                            tal:content="python:clients[client_key]['name']"/>
+                    </select>
+                    <br/>
+                    <!-- Defining a rang of dates -->
+                    <label for="sel_filter" i18n:translate="">Define a date range</label>
+                    <label for="sel_filter" i18n:translate="">Filter from:</label>
+                    <input type="date"
+                           class="datepicker"
+                           id="filter_date_from"
+                           size="10"
+                           tal:attributes="
+                                value python:view.ulocalized_time(
+                                    view.default_from_date(),
+                                    long_format=None,
+                                    time_only=False);
+                                default python:view.ulocalized_time(
+                                    view.default_from_date(),
+                                    long_format=None,
+                                    time_only=False)"/>
+                    <label for="sel_filter" i18n:translate="">To:</label>
+                    <input type="date"
+                           class="datepicker"
+                           id="filter_date_to"
+                           size="10"
+                           tal:attributes="
+                                value python:view.ulocalized_time(
+                                    view.default_to_date(),
+                                    long_format=None,
+                                    time_only=False);
+                                default python:view.ulocalized_time(
+                                    view.default_to_date(),
+                                    long_format=None,
+                                    time_only=False)"/>
+                    <label for="sel_filter" i18n:translate="">Disable the filtering by date</label>
+                    <input type="checkbox" id='disable_filter_by_date'/>
+                    <br/>
+                    <input type="button" id='filter_button' i18n:translate="" value="Filter"/>
+                </div>
+            </div>
+            <div id='preview_buttons'>
+                <input type="button" id='cancel_button' value="Cancel"/>&nbsp;&nbsp;
+                <input type="button" id='print_button' value="Print"/>
+            </div>
+        </div>
+        <style id='report-base-style'>
+            /** Report preview styling **/
+            html, body { margin: 0; }
+            html { background-color:#cdcdcd; }
+            body.A4 #preview_container { width: 210mm; }
+            body.letter #preview_container { width: 216mm; }
+            #report {
+                background-color:#ffffff;
+            }
+            div.preview_page {
+                border: 1px dashed #cdcdcd;
+            }
+            #preview_container {
+                margin:0 auto;
+                background-color:#fff;
+                padding:30px;
+            }
+            #preview_header {
+                margin:-30px -30px 30px -30px;
+                padding:10px 20px 20px 10px;
+                background-color: #dcdcdc;
+                border-bottom: 20px solid #CDCDCD;
+                font-size:11px;
+            }
+            #preview_header * {
+                font-family: Arial !important;
+                font-size:11.5px !important;
+            }
+            #preview_header #options_handler label {
+                padding:5px 10px 5px 10px;
+            }
+            #preview_header #options_handler input {
+                padding:5px 10px 0px;
+            }
+            #preview_header #preview_summary {
+                padding-left:10px;
+                padding-top:10px;
+            }
+            #preview_header #preview_buttons {
+                text-align:right;
+                padding-left:10px;
+                padding-top:10px;
+            }
+            #preview_header #preview_buttons input {
+                padding:4px 15px;
+                border:none;
+                color:#fff;
+                font-size:1.2em;
+                cursor:pointer;
+            }
+            #preview_header #preview_buttons input:hover {
+                opacity:0.8;
+                moz-opacity:0.8;
+                filter:alpha(opacity=80);
+                -webkit-transition: opacity 250ms ease-in-out;
+                -moz-transition: opacity 250ms ease-in-out;
+                -o-transition: opacity 250ms ease-in-out;
+                -ms-transition: opacity 250ms ease-in-out;
+                transition: opacity 250ms ease-in-out;
+            }
+            #preview_header #preview_buttons #cancel_button {
+                background-color:#666;
+            }
+            #preview_header #preview_buttons #print_button {
+                background-color:#0B486B;
+            }
+            #preview_header #options_handler div.options-line {
+                padding:0 0 10px 0;
+            }
+            #preview_header #options_handler input.option-margin {
+                border: 1px solid #bbb;
+                padding: 1px 2px;
+                width: 16px;
+            }
+            #preview_header #options_handler input.datepicker {
+                padding: 0;
+            }
+            #sel_format_info {
+                padding: 0 15px 0 5px;
+                outline:0;
+            }
+            #sel_format_info img {
+                vertical-align:middle;
+            }
+            #sel_format_info_pane {
+                background-color: #EFEFEF;
+                border-top: 1px solid #008000;
+                line-height: 1.5em;
+                margin: 10px -20px 10px -10px;
+                padding: 10px 20px;
+            }
+            .page-break {
+                background-color: #cdcdcd;
+                height: 20px;
+                margin: 0mm -30mm;
+            }
+            .clearfix {
+                clear:both !important;
+                margin:0 !important;
+                padding:0 !important;
+                height:0 !important;
+            }
+            .page-footer.footer-invalid,
+            .page-header.header-invalid {
+                border: 1px dotted red;
+                color: red;
+                padding: 5px;
+            }
+        </style>
+        <style id='report-style' tal:content='structure python:view.getCSS()'></style>
+        <style id='layout-style'></style>
+        <style id='layout-print'>
+            @media print {
+                a {
+                    text-decoration:none;
+                    color:#000;
+                }
+                div.preview_page {
+                    border: none;
+                }
+                html {
+                    background-color:#fff !important;
+                    margin:0 !important;
+                    padding:0 !important;
+                }
+                body {
+                    padding:0 !important;
+                    margin:0 !important;
+                }
+                .page-break, .page-break-after, .page-break-before {
+                    display: block !important;
+                    border:none !important;
+                    padding:0 !important;
+                    margin:0 !important;
+                    background-color:transparent !important;
+                }
+                div.page-break {
+                    page-break-after: always;
+                }
+                div.page-break-after {
+                    page-break-after: always;
+                }
+                div.page-break-before {
+                    page-break-before: always;
+                }
+                .page-footer {
+                    margin:0 !important;
+                    border:none !important;
+                    background-color:#ffffff;
+                }
+                #preview_header {
+                    display:none;
+                    visibility:hidden;
+                }
+                .page-footer.footer-invalid,
+                .page-header.header-invalid {
+                    display:none;
+                }
+            }
+        </style>
+        <div id='report'>
+-            <div class="preview_body" tal:content='structure python:view.getFormTemplate()'></div>
+        </div>
+    </div>
+    <div id="my_mm" style="height:1mm;display:none"></div>
+</body>
+</html>
