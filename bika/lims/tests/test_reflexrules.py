@@ -715,15 +715,20 @@ class TestReflexRules(BikaFunctionalTestCase):
         doReflexRuleAction(reflexed_analysis.getObject(), actions2)
         self.assertEqual(
             len(analysisrequests[0].getObject().getAnalyses()), 3)
-        reflexed_analysis_2 = analysisrequests[0].getObject()\
-            .getAnalyses()[2].getObject()
+        bac = getToolByName(self.portal, 'bika_analysis_catalog')
+        contentFilter_analysis = {
+            'portal_type': 'Analysis',
+            'sort_on': 'created'}
+        analyses = bac(contentFilter_analysis)
+        reflexed_analysis_2 = analyses[-1].getObject()
         # Checking the reflex rule fields in the created analysis
         self.assertTrue(reflexed_analysis_2.getIsReflexAnalysis())
         self.assertEqual(
             reflexed_analysis_2.getOriginalReflexedAnalysis().UID(),
             analysis.UID())
         self.assertEqual(
-            reflexed_analysis_2.getReflexRuleAction(), 'setresult')
+            reflexed_analysis_2.getReflexAnalysisOf().UID(),
+            analyses[-2].getObject().UID())
         self.assertEqual(
             reflexed_analysis_2.getReflexRuleActionLevel(), 2)
         self.assertEqual(
