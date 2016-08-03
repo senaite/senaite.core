@@ -62,9 +62,9 @@ class InvoiceBatch_EndDate_Validator:
         # form = request.get('form', {})
         enddate = value
         startdate = startdate.strftime('%Y-%m-%d %H:%M')
-        
+
         translate = getToolByName(instance, 'translation_service').translate
-        
+
         if not enddate >= startdate:
             msg = _("Start date must be before End Date")
             return to_utf8(translate(msg))
