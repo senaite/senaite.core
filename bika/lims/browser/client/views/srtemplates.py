@@ -1,6 +1,4 @@
-from bika.lims.permissions import AddSRTemplate
 from bika.lims.controlpanel.bika_srtemplates import SamplingRoundTemplatesView
-from Products.CMFCore.utils import getToolByName
 
 
 class ClientSamplingRoundTemplatesView(SamplingRoundTemplatesView):
