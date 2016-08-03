@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-
+from AccessControl import getSecurityManager
 from AccessControl import ModuleSecurityInfo, allow_module
 
 import math
@@ -553,3 +553,23 @@ def drop_trailing_zeros_decimal(num):
     """
     out = str(num)
     return out.rstrip('0').rstrip('.') if '.' in out else out
+
+def checkPermissions(permissions=[], obj=None):
+    """
+    Checks if a user has permissions for a given object.
+
+    Args:
+        permissions: The permissions the current user must be compliant with
+        obj: The object for which the permissions apply
+
+    Returns:
+        1 if the user complies with all the permissions for the given object.
+        Otherwise, it returns empty.
+    """
+    if not obj:
+        return False
+    sm = getSecurityManager()
+    for perm in permissions:
+        if not sm.checkPermission(perm, obj):
+            return ''
+    return True
