@@ -20,6 +20,7 @@ from bika.lims.subscribers import doActionFor
 from bika.lims.subscribers import skip
 from bika.lims.utils import isActive, getHiddenAttributesForClass
 from bika.lims.utils import to_utf8
+from bika.lims.utils import getFromString
 from operator import itemgetter
 from plone.app.content.browser import tableview
 from plone.app.content.browser.foldercontents import FolderContentsView, FolderContentsTable
@@ -39,6 +40,7 @@ import plone
 import re
 import transaction
 import urllib
+import types
 
 try:
     from plone.batching import Batch
@@ -949,41 +951,21 @@ class BikaListingView(BrowserView):
                 # then we don't replace it's value
                 value = results_dict.get(key, '')
                 if key not in results_dict:
-                    if hasattr(obj, key):
-                        value = getattr(obj, key)
-                        if callable(value):
-                            value = value()
+                    attrobj = getFromString(obj, key)
+                    value = attrobj if attrobj else value
 
                     # Custom attribute? Inspect to set the value
                     # for the current column dinamically
                     vattr = self.columns[key].get('attr', None)
                     if vattr:
-                        attrobj = obj
-                        attrs = vattr.split('.')
-                        for attr in attrs:
-                            if hasattr(attrobj, attr):
-                                attrobj = getattr(attrobj, attr)
-                                if callable(attrobj):
-                                    attrobj = attrobj()
-                            else:
-                                attrobj = None
-                                break
+                        attrobj = getFromString(obj, vattr)
                         value = attrobj if attrobj else value
                     results_dict[key] = value
 
                 # Replace with an url?
                 replace_url = self.columns[key].get('replace_url', None)
                 if replace_url:
-                    attrobj = obj
-                    attrs = replace_url.split('.')
-                    for attr in attrs:
-                        if hasattr(attrobj, attr):
-                            attrobj = getattr(attrobj, attr)
-                            if callable(attrobj):
-                                attrobj = attrobj()
-                        else:
-                            attrobj = None
-                            break
+                    attrobj = getFromString(obj, replace_url)
                     if attrobj:
                         results_dict['replace'][key] = \
                             '<a href="%s">%s</a>' % (attrobj, value)

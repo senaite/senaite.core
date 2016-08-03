@@ -26,6 +26,7 @@ import Globals
 import os
 import re
 import tempfile
+import types
 import urllib2
 
 ModuleSecurityInfo('email.Utils').declarePublic('formataddr')
@@ -573,3 +574,17 @@ def checkPermissions(permissions=[], obj=None):
         if not sm.checkPermission(perm, obj):
             return ''
     return True
+
+def getFromString(obj, string):
+    attrobj = obj
+    attrs = string.split('.')
+    for attr in attrs:
+        if hasattr(attrobj, attr):
+            attrobj = getattr(attrobj, attr)
+            if isinstance(attrobj, types.MethodType) \
+               and callable(attrobj):
+                attrobj = attrobj()
+        else:
+            attrobj = None
+            break
+    return attrobj if attrobj else None
