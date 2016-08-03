@@ -251,21 +251,78 @@ class TestReflexRules(BikaFunctionalTestCase):
             ans_list[-1].UID() == rule.getReflexRules()[0].get(
                 'analysisservice', '')
             )
+        # Create an analysis Request
+        client = self.portal.clients['client-1']
+        sampletype = self.portal.bika_setup.bika_sampletypes['sampletype-1']
+        values = {'Client': client.UID(),
+                  'Contact': client.getContacts()[0].UID(),
+                  'SamplingDate': '2015-01-01',
+                  'SampleType': sampletype.UID()}
+        request = {}
+        ar = create_analysisrequest(client, request, values, [ans_list[-1]])
+        wf = getToolByName(ar, 'portal_workflow')
+        wf.doActionFor(ar, 'receive')
+        # Getting the analysis
+        analysis = ar.getAnalyses(full_objects=True)[0]
         # Testing reflexrule content type public functions
-        result = rule.getExpectedValuesAndRules(
-            ans_list[-1].UID(), 0, 'submit')
+        result = rule.getExpectedValuesAndRules(analysis, 'submit')
         self.assertEqual(
             result[0]['actions'], rules[0]['actions']
         )
         self.assertEqual(result[0]['expected_values'], ('5', '10'))
-        result = rule.getExpectedValuesAndRules(
-            ans_list[-1].UID(), 6, 'submit')
+        # A result outside the range
+        analysis.setResult('11.3')
+        result = rule.getActionReflexRules(analysis, 'submit')
         self.assertEqual(
             result, []
         )
-        result = rule.getRules(ans_list[-1].UID(), 8, 0, 'submit')
+        # A result inside the range
+        analysis.setResult('6.7')
+        result = rule.getExpectedValuesAndRules(analysis, 'submit')
         self.assertEqual(
-            result, rules[0]['actions']
+            result[0]['actions'], rules[0]['actions']
+        )
+        result = rule.getActionReflexRules(analysis, 'submit')
+        expected_result = [{
+            'act_row_idx': '1',
+            'action': 'repeat',
+            'analyst': 'analyst1',
+            'otherWS': True,
+            'rulename': 'Rule MS',
+            'rulenumber': 0
+            }, {
+            'act_row_idx': '2',
+            'action': 'duplicate',
+            'analyst': 'analyst1',
+            'otherWS': False,
+            'rulename': 'Rule MS',
+            'rulenumber': 0}]
+        self.assertEqual(
+            result, expected_result
+        )
+        # Using a float
+        analysis.setResult(6.7)
+        result = rule.getExpectedValuesAndRules(analysis, 'submit')
+        self.assertEqual(
+            result[0]['actions'], expected_result
+        )
+        result = rule.getActionReflexRules(analysis, 'submit')
+        expected_result = [{
+            'act_row_idx': '1',
+            'action': 'repeat',
+            'analyst': 'analyst1',
+            'otherWS': True,
+            'rulename': 'Rule MS',
+            'rulenumber': 0
+            }, {
+            'act_row_idx': '2',
+            'action': 'duplicate',
+            'analyst': 'analyst1',
+            'otherWS': False,
+            'rulename': 'Rule MS',
+            'rulenumber': 0}]
+        self.assertEqual(
+            result, expected_result
         )
 
     def test_reflex_rule_set_get_wrong_data(self):
