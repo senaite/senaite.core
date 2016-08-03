@@ -107,6 +107,7 @@ class Update(object):
         ppath = context.portal_url.getPortalObject().getPhysicalPath()
         if ppath and len(ppath) > 1:
             ppath = ppath[1]
+            ppath = ppath if ppath.startswith('/') else '/' + ppath
             obj = context.restrictedTraverse(ppath + obj_path)
 
         if not obj:
