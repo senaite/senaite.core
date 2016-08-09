@@ -26,6 +26,7 @@ from eltra.cs import cs2000
 from rigaku.supermini import wxrf
 from myself import myinstrument
 from nuclisens import easyq
+from varian.vistapro import icp as vistapro_icp
 
 __all__ = ['abaxis.vetscan.vs2',
            'agilent.masshunter.quantitative',
@@ -54,6 +55,7 @@ __all__ = ['abaxis.vetscan.vs2',
            'thermoscientific.multiskan.go',
            'myself.myinstrument',
            'nuclisens.easyq',
+           'varian.vistapro.icp',
            ]
 
 
