@@ -1,5 +1,6 @@
 3.2.1 (unreleased)
 ------------------
+LIMS-2268: Instrument Interface. Vista Pro Simultaneous ICP, bi-directional CSV
 LIMS-2261: Cannot create analysis request
 LIMS-1562: Using a Sample Round. Basic form and printed form
 LIMS-2266: Crating partitions through Add form, doesn't create partitions.
