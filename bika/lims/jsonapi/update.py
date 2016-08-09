@@ -100,17 +100,28 @@ class Update(object):
             "error": True,
         }
         obj = None
+        # Find out if the object can be retrieved via UID or via
+        # traversing.
         if self.request.get('obj_uid', ''):
             uc = getToolByName(self.context, 'uid_catalog')
             brain = uc(UID=self.request.get('obj_uid', ''))
             obj = brain[0].getObject() if brain else None
-        elif self.request.get('obj_path', ''):
+        if self.request.get('obj_path', '') and not obj:
             obj_path = self.request['obj_path']
-            site_path = request['PATH_INFO'].replace("/@@API/update", "")
-            obj = context.restrictedTraverse(str(site_path + obj_path))
+            site_path = context.portal_url.getPortalObject().getPhysicalPath()
+            if site_path and isinstance(site_path, basestring):
+                obj = context.restrictedTraverse(site_path + obj_path)
+            elif site_path and len(site_path) > 1:
+                obj = context.restrictedTraverse(site_path[1] + obj_path)
+
         if obj:
             self.used('obj_uid')
             self.used('obj_path')
+        else:
+            ret['success'] = False
+            ret['error'] = True
+            return ret
+
         try:
             fields = set_fields_from_request(obj, request)
             for field in fields:
