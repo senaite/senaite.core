@@ -404,6 +404,12 @@ jQuery(function($){
                 otherWS_controller(this);
                 action_select_controller(this);
             });
+        if($(td).hasClass('rulenumber')){
+            var idx = $(td).find('input.rulenumber').attr('originalvalue');
+            var new_idx = parseInt(idx) + 1;
+            $(td).find('input.rulenumber').attr('originalvalue', new_idx);
+            $(td).find('span').html('# ' + new_idx);
+        }
     }
 
     function setup_del_action_button(){

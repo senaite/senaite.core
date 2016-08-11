@@ -19,38 +19,40 @@ except:
 # Writting the description for the widget
 description = """
 <p>
-When the results become available, some samples may have to be added to the next available worksheet for reflex testing or may be the result of a previous analysis should be changed. These situations are caused by the indetermination of the result or by a failed test.
+When the results become available, some samples may need to be added to the next available worksheet in order to retest it and confirm the result or maybe the result of a previous analysis should be changed depending on the result of the reflexed analysis. These situations can be caused by the indetermination of the result or by a failed test.
 </p>
 <p>
-The aim of this functionality is to create a logic capable of defining some
- determined actions after submitting a specific results.
+The aim of this functionality is to create a logic capable of defining some determined actions after submitting or verifying specific results.
 </p>
 <p>
 Basic usage:
 </p>
 <ul>
-<li>Each reflex rule have to be bound to an analysis method using the drop-down
- list. Inside the reflex rule the user will be able to add actions for each
- analysis service belonging to the selected method. The user can specify which
- was the reflex rule that generated the analysis and the times it has been
- reflexed in order to improve the selection.</li>
+<li>Each reflex rule have to be bound to an analysis method using the drop-down list. So, the actions defined inside that reflex rule will be triggered only if the analysis is submitted/verified using this method.
+ </li>
 
-<li>For each analysis service the user can introduce a range of values or a
- discrete value. Then the user has to select from the drop-down list the action
- to be performed when the result for this analysis is within the range or
- has the same discrete value.</li>
+<li>Inside the reflex rule the user will be able to add actions for each analysis service belonging to the selected method. In order to improve the flexibility of the system, the user can set some conditions over the analysis service. For instance, the user can restrict the trigger of the actions to only those analyses which a reflex rule has been applied to them. We can expand the restriction introducing the number of times an analysis have been reflexed.
+An example of the usage can be a lab that after submitting a result, if this is indeterminate, another test must be done (this is done using reflex rules). If the result is indeterminate two more time, the result of the first (original) analysis will be changed to negative instead of indeterminate.
+ </li>
 
-<li>Using the 'more' button, it is possible to add more actions for the same
- result inside an analysis service or add new analysis services and results.
+<li>For each analysis service the user can introduce a range of values or a discrete value depending on the result type of the selected analysis (Expected value/s). Then the user has to select from the drop-down list the action to be performed when the result for this analysis and the other conditions are met.
 </li>
 
-<li>If there is an analysis service with a defined range and rules but the user
- wants to add another range and new rules for it, he/she haves to create a new
- set of rules for the analysis service and define the actions to be done for
- the new results.</li>
+<li>"Do not apply the actions below if..." allows the system to set how many times this rule can be carried on over the same analysis.
+</li>
 
-<li>The 'Max number of reflexions' input is used to define the maximum of times
- that the same rule can be applied to the same analysis.</li>
+<li>"Apply the actions below" specifies when the rule has to be checked and carried on.
+</li>
+
+<li>Using the 'add action' button, is possible to add more actions for the same result inside an analysis service or add new analysis services and results.
+</li>
+
+<li>If there is an analysis service with a defined range and rules but the user wants to add another range and new rules for it, he/she haves to create a new set of rules for the analysis service and define the actions to be done for the new results.
+</li>
+
+<li>The rules will be ran top-down, so the rule number one will be ran first, and the same happens withs its actions.
+</li>
+
 </ul>
 <p>
 Worksheet behaviour:
@@ -401,7 +403,8 @@ class ReflexRuleWidget(RecordsWidget):
         Return the triggeroptions for the rule
         """
         return DisplayList(
-            [('submit', 'After submit'), ('verify', 'After verify')])
+            [('submit', 'on analysis submission'),
+            ('verify', 'on analysis verification')])
 
     def getReflexRuleElement(self, idx=0, element=''):
         """
