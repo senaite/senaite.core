@@ -1,22 +1,22 @@
 /**
- * Controller class for SamplingRound Print View
+ * Controller class for Samples Print View
  */
-function SamplingRoundPrintView() {
-
+function FormPrintView() {
+    "use strict";
     var that = this;
-    var referrer_cookie_name = '_srpv';
+    var referrer_cookie_name = '_spv';
 
     // Allowed Paper sizes and default margins, in mm
     var papersize_default = "A4";
-    var default_margins = [20, 20, 20, 20];
+    var default_margins = [15, 10, 15, 10];
     var papersize = {
         'A4': {
                 dimensions: [210, 297],
-                margins:    [20, 20, 20, 20] },
+                margins:    [15, 10, 15, 10] },
 
         'letter': {
                 dimensions: [215.9, 279.4],
-                margins:    [20, 20, 20, 20] },
+                margins:    [15, 10, 15, 10] },
     };
 
     /**
@@ -31,7 +31,7 @@ function SamplingRoundPrintView() {
         reloadReport();
 
         // Store referrer in cookie in case it is lost due to a page reload
-        var cookiename = "sr.publish.view.referrer";
+        var cookiename = "samples.print.preview.referrer";
         var backurl = document.referrer;
         if (backurl) {
             createCookie(cookiename, backurl);
@@ -43,7 +43,19 @@ function SamplingRoundPrintView() {
             }
         }
 
+        // Smooth scroll to content
+        $('#preview_container #preview_summary a[href^="#"]').click(function(e) {
+            e.preventDefault();
+            var anchor = $(this).attr('href');
+            var offset = $(anchor).first().offset().top - 20;
+            $('html,body').animate({scrollTop: offset},'fast');
+        });
+
         $('#sel_format').change(function(e) {
+            reloadReport();
+        });
+
+        $('#filter_button').click(function(e) {
             reloadReport();
         });
 
@@ -54,15 +66,12 @@ function SamplingRoundPrintView() {
             reloadReport();
         });
 
-        $('#cancel_button').click(function(e) {
-            location.href=backurl;
-        });
         $('#print_button').click(function(e) {
             e.preventDefault();
             var url = window.location.href;
-            $('#sr_publish_container').animate({opacity:0.4}, 'slow');
-            var count = $('#sr_publish_container #report .report_body').length;
-            $('#sr_publish_container #report .report_body').each(function(){
+            $('#preview_container').animate({opacity:0.4}, 'slow');
+            var count = $('#preview_container #report .preview_body').length;
+            $('#preview_container #report .preview_body').each(function(){
                 var rephtml = $(this).clone().wrap('<div>').parent().html();
                 var repstyle = $('#report-style').clone().wrap('<div>').parent().html();
                 repstyle += $('#layout-style').clone().wrap('<div>').parent().html();
@@ -75,7 +84,50 @@ function SamplingRoundPrintView() {
                 document.forms.form.submit();
             });
         });
+
+        $('#cancel_button').click(function(e) {
+            location.href=backurl;
+        });
+
+        $('#disable_filter_by_date').change(function(e) {
+            dateFilterController();
+        });
+        $.datepicker.setDefaults($.datepicker.regional['']);
+        $('#filter_date_from, #filter_date_to').datepicker({
+            onSelect: function(dateText, inst) {
+                dateFilterFromToController();
+            },
+            dateFormat: 'yy-mm-dd'
+        });
+        $('#margin-top').change(function(e) {
+            applyMarginAndReload($(this), 0);
+        });
+        $('#margin-right').change(function(e) {
+            applyMarginAndReload($(this), 1);
+        });
+        $('#margin-bottom').change(function(e) {
+            applyMarginAndReload($(this), 2);
+        });
+        $('#margin-left').change(function(e) {
+            applyMarginAndReload($(this), 3);
+        });
     };
+
+    function applyMarginAndReload(element, idx) {
+        var currentlayout = $('#sel_layout').val();
+        // Maximum margin (1/4 of the total width)
+        var maxmargin = papersize[currentlayout].dimensions[(idx+1) % 2]/4;
+        // Is this a valid whole number?
+        var margin = $(element).val();
+        var n = ~~Number(margin);
+        if (String(n) === margin && n >= 0 && n <= maxmargin) {
+            papersize[currentlayout].margins[idx] = n;
+            reloadReport();
+        } else {
+            // Not a number of out of bounds
+            $(element).val(papersize[currentlayout].margins[idx]);
+        }
+    }
 
     function get(name){
        if(name=(new RegExp('[?&]'+encodeURIComponent(name)+'=([^&]*)')).exec(location.search))
@@ -97,14 +149,6 @@ function SamplingRoundPrintView() {
         });
     }
 
-    function convert_svgs() {
-        $('svg').each(function(e) {
-            var svg = $("<div />").append($(this).clone()).html();
-            var img = window.bika.lims.CommonUtils.svgToImage(svg);
-            $(this).replaceWith(img);
-        });
-    }
-
     /**
      * Re-load the report view in accordance to the values set in the
      * options panel (report format, pagesize, QC visible, etc.)
@@ -119,18 +163,23 @@ function SamplingRoundPrintView() {
             url: url,
             type: 'POST',
             async: true,
-            data: { "template": template}
+            data: { "template": template,
+                    "sampler": $("#sel_sampler option:selected").val(),
+                    "client": $("#sel_client option:selected").val(),
+                    "date_from": $("#filter_date_from").val(),
+                    "date_to": $("#filter_date_to").val(),
+                    "avoid_filter_by_date": $('#disable_filter_by_date').is(':checked')
+                }
         })
         .always(function(data) {
             var htmldata = data;
-            cssdata = $(htmldata).find('#report-style').html();
+            var cssdata = $(htmldata).find('#report-style').html();
             $('#report-style').html(cssdata);
             htmldata = $(htmldata).find('#report').html();
             $('#report').html(htmldata);
             $('#report').fadeTo('fast', 1);
             load_barcodes();
             load_layout();
-            convert_svgs();
         });
     }
 
@@ -157,18 +206,23 @@ function SamplingRoundPrintView() {
             height:       papersize[currentlayout].dimensions[1]-papersize[currentlayout].margins[0]-papersize[currentlayout].margins[2]
         };
 
+        $('#margin-top').val(dim.marginTop);
+        $('#margin-right').val(dim.marginRight);
+        $('#margin-bottom').val(dim.marginBottom);
+        $('#margin-left').val(dim.marginLeft);
+
         var layout_style =
             '@page { size:  ' + dim.size + ' !important;' +
             '        width:  ' + dim.width + 'mm !important;' +
             '        margin: 0mm '+dim.marginRight+'mm 0mm '+dim.marginLeft+'mm !important;';
         $('#layout-style').html(layout_style);
-        $('#sr_publish_container').css({'width':dim.width + 'mm', 'padding': '0mm '+dim.marginRight + 'mm 0mm '+dim.marginLeft +'mm '});
-        $('#sr_publish_header').css('margin', '0mm -'+dim.marginRight + 'mm 0mm -' +dim.marginLeft+'mm');
-        $('div.report_body').css({'width': dim.width + 'mm', 'max-width': dim.width + 'mm', 'min-width': dim.width + 'mm'});
+        $('#preview_container').css({'width':dim.width + 'mm', 'padding': '0mm '+dim.marginRight + 'mm 0mm '+dim.marginLeft +'mm '});
+        $('#preview_header').css('margin', '0mm -'+dim.marginRight + 'mm 0mm -' +dim.marginLeft+'mm');
+        $('div.preview_body').css({'width': dim.width + 'mm', 'max-width': dim.width + 'mm', 'min-width': dim.width + 'mm'});
 
         // Iterate for each AR report and apply the dimensions, header,
         // footer, etc.
-        $('div.report_body').each(function(i) {
+        $('div.preview_body').each(function(i) {
 
             var arbody = $(this);
 
@@ -234,9 +288,9 @@ function SamplingRoundPrintView() {
             //
             // IMPORTANT
             // Please note that only first-level div elements from
-            // within div.ar_publish_body are checked and will be
+            // within div.preview_body are checked and will be
             // treated as nob-breakable elements. So, if a div element
-            // from within a div.ar_publish_body is taller than the
+            // from within a div.preview_body is taller than the
             // maximum allowed height, that element will be omitted.
             // Further improvements may solve this and handle deeply
             // elements from the document, such as tables, etc. Other
@@ -257,7 +311,7 @@ function SamplingRoundPrintView() {
                 // the maximum health, we use the element's position.
                 // This way, we will prevent underestimations due
                 // non-div elements or plain text directly set inside
-                // the div.ar_publish_body container, not wrapped by
+                // the div.preview_body container, not wrapped by
                 // other div element.
                 var elAbsTopPos = $(this).position().top;
                 var elRelTopPos = elAbsTopPos - topOffset;
@@ -325,7 +379,7 @@ function SamplingRoundPrintView() {
             // Wrap all elements in pages
             var split_at = 'div.page-header';
             $(this).find(split_at).each(function() {
-                $(this).add($(this).nextUntil(split_at)).wrapAll("<div class='sr_publish_page'/>");
+                $(this).add($(this).nextUntil(split_at)).wrapAll("<div class='preview_page'/>");
             });
 
             // Move headers and footers out of the wrapping and assign
@@ -367,6 +421,29 @@ function SamplingRoundPrintView() {
         });
         // Remove manual page breaks
         $('.manual-page-break').remove();
+    }
+
+    function dateFilterController(){
+        /* This function enable/disable the date pickers whether the checkbox
+        is set or not
+        */
+        if ($('#disable_filter_by_date').is(':checked')){
+            $('#filter_date_from, #filter_date_to')
+                .prop('disabled', true).val("");
+        }
+        else{
+            $('#filter_date_from')
+            .prop('disabled', false)
+            .val($('#filter_date_from').attr('default'));
+            $('#filter_date_to')
+            .prop('disabled', false)
+            .val($('#filter_date_to').attr('default'));
+        }
+    }
+    function dateFilterFromToController(){
+        if ($("#filter_date_from").datepicker("getDate") > $("#filter_date_to").datepicker("getDate")){
+            $('#filter_date_from').datepicker("setDate", $('#filter_date_to').datepicker("getDate"));
+        }
     }
 }
 var mmTopx = function(mm) {

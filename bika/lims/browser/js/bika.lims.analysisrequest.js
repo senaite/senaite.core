@@ -11,9 +11,12 @@ function AnalysisRequestView() {
     that.load = function() {
 
         // fires for all AR workflow transitions fired using the plone contentmenu workflow actions
-        $("a[id^='workflow-transition']").click(transition_with_publication_spec);
-
-    }
+        $("a[id^='workflow-transition']")
+            .not('#workflow-transition-schedule_sampling')
+            .click(transition_with_publication_spec);
+        // fires AR workflow transitions when using the schedule samplign transition
+        transition_schedule_sampling();
+    };
 
     function transition_with_publication_spec(event) {
         // Pass the Publication Spec UID (if present) into the WorkflowAction handler
@@ -25,9 +28,53 @@ function AnalysisRequestView() {
         if (element.length > 0) {
             href = href + "&PublicationSpecification=" + $(element).val();
         }
-        window.location.href = href
+        window.location.href = href;
     }
+    function transition_schedule_sampling(){
+        /* Force the transition to use the "workflow_action" url instead of content_status_modify. workflow_action triggers a class from
+        analysisrequest/workflow/AnalysisRequestWorkflowAction which manage
+        workflow_actions from analysisrequest/sample/samplepartition objects.
+        It is not possible to abort a transition using "workflow_script_*".
+        The recommended way is to set a guard instead.
 
+        The guard expression should be able to look up a view to facilitate more complex guard code, but when a guard returns False the transition isn't even listed as available. It is listed after saving the fields.
+
+        TODO This should be using content_status_modify!  modifying the href
+        is silly.*/
+        var url = $('#workflow-transition-schedule_sampling').attr('href');
+        if (url){
+            var new_url = url.replace("content_status_modify", "workflow_action");
+            $('#workflow-transition-schedule_sampling').attr('href', new_url);
+            // When user clicks on the transition
+            $('#workflow-transition-schedule_sampling').click(function(){
+                var date = $("#SamplingDate").val();
+                var sampler = $("#ScheduledSamplingSampler").val();
+                if (date !== "" && date !== undefined && date !== null &&
+                        sampler !== "" && sampler !== undefined &&
+                        sampler !== null) {
+                    window.location.href = new_url;
+                }
+                else {
+                    var message = "";
+                    if (date === "" || date === undefined || date === null) {
+                        message = message + PMF('${name} is required for this action, please correct.',
+                                                {'name': _("Sampling Date")});
+                    }
+                    if (sampler === "" || sampler === undefined || sampler === null) {
+                        if (message !== "") {
+                            message = message + "<br/>";
+                        }
+                        message = message + PMF(
+                            '${name} is required, please correct.',
+                            {'name': _("'Define the Sampler for the shceduled'")});
+                    }
+                    if ( message !== "") {
+                        window.bika.lims.portalMessage(message);
+                    }
+                }
+            });
+        }
+    }
 }
 
 /**

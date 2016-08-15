@@ -21,6 +21,14 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <browser:page
+      for="bika.lims.interfaces.ISamplesFolder"
+      name="print_sampling_sheets"
+      class="bika.lims.browser.sample.SamplesPrint"
+      permission="bika.lims.ManageSamples"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
     <!-- Workflow action button clicked for Sample -->
     <!-- Uses the workflow action in analysisrequest.py, since the
          forms are basically the same. -->

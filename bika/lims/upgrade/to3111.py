@@ -31,7 +31,6 @@ def upgrade(tool):
     setup.runImportStepFromProfile('profile-bika.lims:default', 'catalog')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'propertiestool')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'skins')
-
     """Update workflow permissions
     """
     wf = getToolByName(portal, 'portal_workflow')

@@ -113,6 +113,7 @@ Table cells for each column from in review_state's column list.
                         and column in item['allow_edit']
                         and item.get('edit_condition', {}).get(column, True);
         required python:'required' in item and column in item['required'] or False;
+        field python: item['field'].get(column, '') if item.get('field', '') else '';
         before python:column in item['before'] and
             item['before'][column] or '';
         after python:column in item['after'] and
@@ -167,7 +168,7 @@ Table cells for each column from in review_state's column list.
                 as_uid string:${item/service_uid|nothing};
                 st_uid string:${item/st_uid|nothing};
                 objectId string:${item/id};
-                field python:column;
+                field python:field if field else column;
                 value python:item[column]['value'];"/>
         <tal:comment replace="nothing"><!-- view --></tal:comment>
         <span
@@ -183,7 +184,7 @@ Table cells for each column from in review_state's column list.
                 uid string:${item/uid};
                 as_uid string:${item/service_uid|nothing};
                 st_uid string:${item/st_uid|nothing};
-                field python:column;
+                field python:field if field else column;
                 value python:item[column]['value'];"/>
         <tal:comment replace="nothing"><!-- unit for interim field--></tal:comment>
         <em tal:condition="python:'unit' in item[column]"
@@ -209,7 +210,7 @@ Table cells for each column from in review_state's column list.
                 as_uid string:${item/service_uid|nothing};
                 st_uid string:${item/st_uid|nothing};
                 objectId string:${item/id};
-                field python:column;
+                field python:field if field else column;
                 name python:column == view.bika_listing.select_checkbox_name and '%s_column_value.%s:records'%(column, item['uid']) or '%s.%s:records'%(column, item['uid']);
                 value python:item[column] if item[column] is not None else '';"/>
         <tal:comment replace="nothing"><!-- view --></tal:comment>
@@ -239,7 +240,7 @@ Table cells for each column from in review_state's column list.
                 as_uid string:${item/service_uid|nothing};
                 st_uid string:${item/st_uid|nothing};
                 objectId string:${item/id};
-                field python:column;
+                field python:field if field else column;
                 name python:column == view.bika_listing.select_checkbox_name and '%s_column_value.%s:records'%(column, item['uid']) or '%s.%s:records'%(column, item['uid']);
                 value python:item[column];"/>
     </span>
@@ -277,9 +278,10 @@ Table cells for each column from in review_state's column list.
         tal:condition="allow_edit"
         tal:attributes="
             selector string:${column}_${item/id};
-            class item/state_class;
+            class python: item.get('state_class', '') + ' '  + input_class;
             uid string:${item/uid};
             id python:'%s-%s' % (item['uid'], column);
+            field python:field if field else column;
             name string:${column}.${item/uid}:record:ignore-empty;
             checked python:item.get(column) and 'yes' or '';"/>
     <tal:comment replace="nothing"><!-- will not display if readonly and false --></tal:comment>
@@ -297,12 +299,13 @@ Table cells for each column from in review_state's column list.
 <span tal:omit-tag="python:True"
     tal:condition="python:field_type == 'choices'">
     <span tal:condition="python: allow_edit">
-        <select class="listing_select_entry" style="font-size: 100%"
+        <select style="font-size: 100%"
             tal:condition="python:column in item['choices']"
             tal:attributes="
                 selector string:${column}_${item/id};
                 tabindex tabindex/next;
-                field column;
+                class python:'listing_string_entry %s' % input_class;
+                field python:field if field else column;
                 name string:${column}.${item/uid}:records;
                 as_uid string:${item/service_uid|nothing};
                 uid item/uid;">
@@ -326,7 +329,7 @@ Table cells for each column from in review_state's column list.
                 tal:attributes="
                     as_uid string:${item/service_uid|nothing};
                     uid string:${item/uid};
-                    field python:column;
+                    field python:field if field else column;
                     value python:item[column];
                     name string:${column}.${item/uid}:records"/>
         </span>
@@ -391,9 +394,9 @@ Table cells for each column from in review_state's column list.
            <td tal:attributes="colspan python:int(nr_cols)-1;
                                 class string:${item/state_class} result"
                 style="padding-right:10px;padding-bottom:5px;">
-                <span i18n:translate="" style='color:#3f3f3f;font-size:0.95em;'>Range remarks:</span>&nbsp;
+                <span i18n:translate="">Range remarks:</span>&nbsp;
                 <textarea
-                    style="font-size: 0.9em;color:#3f3d3f;width:100%;display:block;"
+                    style="width:100%;display:block;"
                     autocomplete="off"
                     tal:condition="allow_edit"
                     tal:attributes="
@@ -409,7 +412,6 @@ Table cells for each column from in review_state's column list.
                         name string:${column}.${item/uid}:records"
                     tal:content="python:item[column]"></textarea>
                 <span
-                    style="font-size: 0.9em;color:#3f3f3f;"
                     autocomplete="off"
                     tal:condition="python:not allow_edit"
                     tal:content="python:item[column]['value']"/>
@@ -437,9 +439,9 @@ Table cells for each column from in review_state's column list.
             <td tal:attributes="colspan python:int(nr_cols)-1;
                                 class string:${item/state_class} result remarks"
                 style="padding-right:10px;padding-bottom:5px;">
-                <span i18n:translate="" style='color:#3f3f3f;font-size:0.95em;'>Remarks:</span>&nbsp;
+                <span i18n:translate="">Remarks:</span>&nbsp;
                 <textarea
-                    style="font-size: 0.9em;color:#3f3f3f;width:100%;display:block;"
+                    style="width:100%;display:block;"
                     autocomplete="off"
                     rows="1"
                     tal:condition="python:remarksedit==True"
@@ -452,7 +454,6 @@ Table cells for each column from in review_state's column list.
                         name string:Remarks.${item/uid}:records;
                         value python:item.get('Remarks', '');"></textarea>
                 <span
-                    style="font-size: 0.9em;color:#3f3f3f;"
                     autocomplete="off"
                     tal:condition="python:remarksedit==False"
                     tal:content="python:item.get('Remarks', '')"/>
