@@ -196,5 +196,3 @@ def mailto_link_from_ccemails(ccemails):
                 address, address)
             ret.append(mailto)
         return ",".join(ret)
-
-

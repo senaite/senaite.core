@@ -26,6 +26,7 @@ from smtplib import SMTPServerDisconnected, SMTPRecipientsRefused
 import os
 import tempfile
 
+
 def create_analysisrequest(context, request, values, analyses=None,
                            partitions=None, specifications=None, prices=None):
     """This is meant for general use and should do everything necessary to
@@ -163,9 +164,13 @@ def create_analysisrequest(context, request, values, analyses=None,
                 state = workflow.getInfoFor(part, 'review_state')
                 if state == 'to_be_preserved':
                     workflow.doActionFor(part, 'preserve')
-
+    # Once the ar is fully created, check if there are rejection reasons
+    reject_field = values.get('RejectionReasons', '')
+    if reject_field and reject_field.get('checkbox', False):
+        doActionFor(ar, 'reject')
     # Return the newly created Analysis Request
     return ar
+
 
 def get_sample_from_values(context, values):
     """values may contain a UID or a direct Sample object.
