@@ -667,7 +667,7 @@ schema = BikaSchema.copy() + Schema((
     # see setResultsRange below.
     RecordsField('ResultsRange',
          required=0,
-         type='analysisspec',
+         type='resultsrange',
          subfields=('keyword', 'min', 'max', 'error', 'hidemin', 'hidemax', 'rangecomment'),
          widget=ComputedWidget(visible=False),
     ),
