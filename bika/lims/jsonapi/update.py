@@ -107,6 +107,8 @@ class Update(object):
         ppath = context.portal_url.getPortalObject().getPhysicalPath()
         if ppath and len(ppath) > 1:
             ppath = ppath[1]
+            # If obj_path contains "?_authenticator=c707...", remove it
+            obj_path = obj_path.split('?')[0]
             obj = context.restrictedTraverse(ppath + obj_path)
 
         if not obj:
