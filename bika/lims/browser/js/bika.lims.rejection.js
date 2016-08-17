@@ -139,8 +139,10 @@
                 bika.lims.SiteView.notificationPanel('Rejecting', "succeed");
                 // the behaviour for samples is different
                 if($('body').hasClass('portaltype-sample')) {
+                    // We need to get the authentificator
+                    var autentification = $('input[name="_authenticator"]').val();
                     $.ajax({
-                        url: window.location.href + '/doActionForSample?workflow_action=reject',
+                        url: window.location.href + '/doActionForSample?workflow_action=reject&_authenticator=' + autentification,
                         type: 'POST',
                         dataType: "json",
                     })
