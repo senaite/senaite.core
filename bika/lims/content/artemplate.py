@@ -169,7 +169,7 @@ schema = BikaSchema.copy() + Schema((
     RecordsField('Analyses',
         schemata = 'Analyses',
         required = 0,
-        type = 'artemplate_analyses',
+        type = 'analyses',
         subfields = ('service_uid', 'partition'),
         subfield_labels = {'service_uid': _('Title'),
                            'partition': _('Partition')},
