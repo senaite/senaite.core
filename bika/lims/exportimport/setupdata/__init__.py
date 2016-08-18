@@ -2086,7 +2086,7 @@ class Reference_Samples(WorksheetImporter):
                      DateDisposed=row['DateDisposed']
                      )
             obj.setReferenceDefinition(ref_def)
-            obj.setReferenceManufacturer(ref_man)
+            obj.setManufacturer(ref_man)
             obj.unmarkCreationFlag()
 
             self.load_reference_sample_results(obj)

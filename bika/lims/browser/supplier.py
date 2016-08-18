@@ -130,8 +130,8 @@ class ReferenceSamplesView(BikaListingView):
                         and self.contentFilter['review_state'] == 'current':
                         continue
             items[x]['ID'] = obj.id
-            items[x]['Manufacturer'] = obj.getReferenceManufacturer() and \
-                 obj.getReferenceManufacturer().Title() or ''
+            items[x]['Manufacturer'] = obj.getManufacturer() and \
+                 obj.getManufacturer().Title() or ''
             items[x]['Definition'] = obj.getReferenceDefinition() and \
                  obj.getReferenceDefinition().Title() or ''
             items[x]['DateSampled'] = self.ulocalized_time(obj.getDateSampled())
