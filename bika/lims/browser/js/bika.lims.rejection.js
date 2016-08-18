@@ -29,57 +29,58 @@
                  if (reasons_state == undefined || reasons_state != 'on'){
                      $('a#workflow-transition-reject').closest('li').hide();
                  }
+                 else {
+                     // If rejection workflow is enabled, setup all the stuff
+                     reject_widget_semioverlay_setup();
+                 }
              };
          });
-         reject_widget_semioverlay_setup();
      };
 
      function reject_widget_semioverlay_setup() {
-         "use strict";
-         /*This function creates a hidden div element to insert the rejection
-           widget there while the analysis request state is not rejected yet.
-           So we can overlay the widget when the user clicks on the reject button.
-         */
-         if($('div#archetypes-fieldname-RejectionWidget').length > 0){
-             // binding a new click action to state's rejection button
-             $("a#workflow-transition-reject").unbind();
-             $("a#workflow-transition-reject").click(function(e){
-                 // Overlays the rejection widget when the user tryes to reject the ar and
-                 // defines all the ovelay functionalities
-                 e.preventDefault();
-                 //$('#semioverlay').fadeIn(500);
-                 $('#semioverlay').show();
-                 $('input[id="RejectionReasons.checkbox"]').click().prop('disabled', true);
-             });
-             // Getting widget's td and label
-             var td = $('#archetypes-fieldname-RejectionWidget').parent('td');
-             var label = "<div class='semioverlay-head'>"+$(td).prev('td').html().trim()+"</div>";
-             // Creating the div element
-             $('#content').prepend("<div id='semioverlay'><div class='semioverlay-back'></div><div class='semioverlay-panel'><div class='semioverlay-content'></div><div class='semioverlay-buttons'><input type='button' name='semioverlay.reject' value='reject'/><input type='button' name='semioverlay.cancel' value='cancel'/></div></div></div>");
-             // Moving the widget there
-             $('#archetypes-fieldname-RejectionWidget').detach().prependTo('#semioverlay .semioverlay-content');
-             // hidding the widget's td and moving the label
-             $(td).hide();
-             $(label).detach().insertBefore('.semioverlay-content');
-             // binding close actions
-             $("div#semioverlay input[name='semioverlay.cancel']").bind('click',
-                 function(){
-                 $('#semioverlay').hide();
-                 // Clear all data fields
-                 $('input[id="RejectionReasons.checkbox"]').prop('checked', false).prop('disabled', false);
-                 $('input[id="RejectionReasons.checkbox.other"]').prop('checked', false);
-                 $('input[id="RejectionReasons.textfield.other"]').val('');
-                 var options = $('.rejectionwidget-multiselect').find('option');
-                 for (var i=0;options.length>i; i++){
-                     $(options[i]).attr('selected',false);
-                 }
-             });
-             // binding reject actions
-             $("div#semioverlay input[name='semioverlay.reject']").bind('click',function(){
-                 $('div#semioverlay .semioverlay-panel').fadeOut();
-                 reject_ar_sample();
-             });
-         }
+        "use strict";
+        /*This function creates a hidden div element to insert the rejection
+          widget there while the analysis request state is not rejected yet.
+          So we can overlay the widget when the user clicks on the reject button.
+        */
+        // binding a new click action to state's rejection button
+        $("a#workflow-transition-reject").unbind();
+        $("a#workflow-transition-reject").click(function(e){
+            // Overlays the rejection widget when the user tryes to reject the ar and
+            // defines all the ovelay functionalities
+            e.preventDefault();
+            //$('#semioverlay').fadeIn(500);
+            $('#semioverlay').show();
+            $('input[id="RejectionReasons.checkbox"]').click().prop('disabled', true);
+        });
+        // Getting widget's td and label
+        var td = $('#archetypes-fieldname-RejectionWidget').parent('td');
+        var label = "<div class='semioverlay-head'>"+$(td).prev('td').html().trim()+"</div>";
+        // Creating the div element
+        $('#content').prepend("<div id='semioverlay'><div class='semioverlay-back'></div><div class='semioverlay-panel'><div class='semioverlay-content'></div><div lass='semioverlay-buttons'><input type='button' name='semioverlay.reject' value='reject'/><input type='button' name='semioverlay.cancel' value='cancel'/></div></div></div>");
+        // Moving the widget there
+        $('#archetypes-fieldname-RejectionWidget').detach().prependTo('#semioverlay .semioverlay-content');
+        // hidding the widget's td and moving the label
+        $(td).hide();
+        $(label).detach().insertBefore('.semioverlay-content');
+        // binding close actions
+        $("div#semioverlay input[name='semioverlay.cancel']").bind('click',
+            function(){
+            $('#semioverlay').hide();
+            // Clear all data fields
+            $('input[id="RejectionReasons.checkbox"]').prop('checked', false).prop('disabled', false);
+            $('input[id="RejectionReasons.checkbox.other"]').prop('checked', false);
+            $('input[id="RejectionReasons.textfield.other"]').val('');
+            var options = $('.rejectionwidget-multiselect').find('option');
+            for (var i=0;options.length>i; i++){
+                $(options[i]).attr('selected',false);
+            }
+        });
+        // binding reject actions
+        $("div#semioverlay input[name='semioverlay.reject']").bind('click',function(){
+            $('div#semioverlay .semioverlay-panel').fadeOut();
+            reject_ar_sample();
+        });
      }
 
      function getRejectionWidgetValues(){
@@ -119,7 +120,12 @@
          // Makes all the steps needed to reject the ar or sample
          var requestdata = {};
          //save the rejection widget's values
-         var url = window.location.href.replace('/base_view', '');
+         var url = window.location.href
+            .replace('/base_view', '')
+            .replace('/analyses', '')
+            .replace('/manage_results', '')
+            .replace('/not_requested', '')
+            .replace('/log', '');
          var obj_path = url.replace(window.portal_url, '');
          var redirect_state = $("a#workflow-transition-reject").attr('href');
          // requestdata should has the format  {fieldname=fieldvalue}

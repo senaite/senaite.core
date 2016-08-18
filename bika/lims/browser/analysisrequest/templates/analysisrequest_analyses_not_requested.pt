@@ -146,6 +146,21 @@
 		 <metal:widget use-macro="python:context.widget('Remarks', mode='edit')" />
 	</tal:remarks>
 
+    <tal:rejection define="
+        field python:context.Schema()['RejectionReasons'];
+        widget python:field.widget;
+        errors python:{};">
+        <table style="display: none;">
+            <td>
+                <span tal:replace="python:widget.label"/>
+            </td>
+            <td>
+                <metal:widget use-macro="python:context.widget('RejectionReasons', mode='edit')" />
+            </td>
+        </table>
+    </tal:rejection>
+
+
 </metal:content>
 </body>
 </html>
