@@ -382,14 +382,16 @@ class ReferenceSamplesView(BikaListingView):
                 # Check expiry date
                 from Products.ATContentTypes.utils import DT2dt
                 from datetime import datetime
-                expirydate = DT2dt(obj.getExpiryDate()).replace(tzinfo=None)
-                if (datetime.today() > expirydate):
-                    workflow.doActionFor(obj, 'expire')
-                    items[x]['review_state'] = 'expired'
-                    items[x]['obj'] = obj
-                    if 'review_state' in self.contentFilter \
-                        and self.contentFilter['review_state'] == 'current':
-                        continue
+                exdate = obj.getExpiryDate()
+                if exdate:
+                    expirydate = DT2dt(exdate).replace(tzinfo=None)
+                    if (datetime.today() > expirydate):
+                        workflow.doActionFor(obj, 'expire')
+                        items[x]['review_state'] = 'expired'
+                        items[x]['obj'] = obj
+                        if 'review_state' in self.contentFilter \
+                            and self.contentFilter['review_state'] == 'current':
+                            continue
 
             items[x]['ID'] = obj.id
             items[x]['replace']['Supplier'] = "<a href='%s'>%s</a>" % \
