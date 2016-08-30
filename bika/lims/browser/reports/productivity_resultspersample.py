@@ -58,10 +58,11 @@ class Report(BrowserView):
             query[val['contentFilter'][0]] = val['contentFilter'][1]
             parms.append(val['parms'])
 
-        formats = {'columns': 4,
+        formats = {'columns': 5,
                    'col_heads': [
-                        _('Sample'),
+                        _('Date'),
                         _('Sample type'),
+                        _('Storage location'),
                         _('Analysis'),
                         _('Result')], }
         # and now lets do the actual report lines
@@ -74,9 +75,17 @@ class Report(BrowserView):
                 for analysis in analyses:
                     if allowd_services_uids == [] or analysis.getServiceUID() in allowd_services_uids:
                         dataline = []
-                        dataitem = {'value': sample.id}
+                        date = sample.getDateSampled() if\
+                            sample.getDateSampled() else\
+                            sample.getDateReceived()
+                        dataitem = {
+                            'value': self.ulocalized_time(date)}
                         dataline.append(dataitem)
                         dataitem = {'value': sample.getSampleType().Title()}
+                        dataline.append(dataitem)
+                        location = sample.getStorageLocation().Title()\
+                            if sample.getStorageLocation() else ''
+                        dataitem = {'value': location}
                         dataline.append(dataitem)
                         dataitem = {'value': analysis.Title()}
                         dataline.append(dataitem)
@@ -104,8 +113,9 @@ class Report(BrowserView):
 
         if self.request.get('output_format', '') == 'CSV':
             fieldnames = [
-                _('Sample'),
+                _('Date'),
                 _('Sample type'),
+                _('Storage location'),
                 _('Analysis'),
                 _('Result'),
             ]
