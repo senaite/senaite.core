@@ -15,6 +15,7 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import ISampleType
 from magnitude import mg, MagnitudeError
 from zope.interface import implements
+from bika.lims.browser.widgets.referencewidget import ReferenceWidget as brw
 import json
 import plone
 import sys
@@ -82,8 +83,7 @@ schema = BikaSchema.copy() + Schema((
         allowed_types = ('SamplePoint',),
         vocabulary = 'SamplePointsVocabulary',
         relationship = 'SampleTypeSamplePoint',
-        widget = ReferenceWidget(
-            checkbox_bound = 0,
+        widget = brw(
             label=_("Sample Points"),
             description =_("The list of sample points from which this sample "
                            "type can be collected.  If no sample points are "

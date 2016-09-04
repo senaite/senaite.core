@@ -12,6 +12,7 @@ from bika.lims.browser.widgets import CoordinateWidget
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.widgets import DurationWidget
 from bika.lims import PMF, bikaMessageFactory as _
+from bika.lims.browser.widgets.referencewidget import ReferenceWidget as brw
 from zope.interface import implements
 import json
 import plone
@@ -52,8 +53,7 @@ schema = BikaSchema.copy() + Schema((
         allowed_types = ('SampleType',),
         vocabulary = 'SampleTypesVocabulary',
         relationship = 'SamplePointSampleType',
-        widget = ReferenceWidget(
-            checkbox_bound = 0,
+        widget = brw(
             label=_("Sample Types"),
             description =_("The list of sample types that can be collected "
                            "at this sample point.  If no sample types are "
