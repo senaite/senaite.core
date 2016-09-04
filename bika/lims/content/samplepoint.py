@@ -154,6 +154,11 @@ def SamplePoints(self, instance=None, allow_blank=True, lab_only=True):
         lab_path = instance.bika_setup.bika_samplepoints.getPhysicalPath()
         contentFilter['path'] = {"query": "/".join(lab_path), "level" : 0 }
     for sp in bsc(contentFilter):
-        items.append((sp.UID, sp.Title))
+        sp = sp.getObject()
+        if sp.aq_parent.portal_type == 'Client':
+            sp_title = "{}: {}".format(sp.aq_parent.Title(), sp.Title())
+        else:
+            sp_title = sp.Title()
+        items.append((sp.UID(), sp_title))
     items = allow_blank and [['','']] + list(items) or list(items)
     return DisplayList(items)

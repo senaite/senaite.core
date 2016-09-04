@@ -144,7 +144,7 @@ class SampleType(BaseContent, HistoryAwareMixin):
 
     def SamplePointsVocabulary(self):
         from bika.lims.content.samplepoint import SamplePoints
-        return SamplePoints(self, allow_blank=False)
+        return SamplePoints(self, allow_blank=False, lab_only=False)
 
     def setSamplePoints(self, value, **kw):
         """ For the moment, we're manually trimming the sampletype<>samplepoint
