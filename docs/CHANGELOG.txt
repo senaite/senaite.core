@@ -1,6 +1,7 @@
 3.2.1 (unreleased)
 ------------------
 LIMS-2298: Add filter in Clients list
+LIMS-2299: Add ui for editing ar_count in all analysisrequest lists
 LIMS-2268: Instrument Interface. Vista Pro Simultaneous ICP, bi-directional CSV
 LIMS-2261: Cannot create analysis request
 LIMS-1562: Using a Sample Round. Basic form and printed form
