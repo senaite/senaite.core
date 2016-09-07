@@ -210,7 +210,8 @@ class RemoteKeywords(Keywords, RemoteLibrary):
                     value = True
             elif fieldtype in [
                 'Products.ATExtensions.field.records.RecordsField',
-                'Products.ATExtensions.field.records.RecordField']:
+                'Products.ATExtensions.field.records.RecordField',
+                'bika.lims.browser.fields.referenceresultsfield.ReferenceResultsField']:
                 value = eval(value)
             if mutator:
                 mutator(value)
@@ -222,7 +223,7 @@ class RemoteKeywords(Keywords, RemoteLibrary):
         portal = api.portal.get()
         container = portal.restrictedTraverse(path.strip('/').split('/'))
         # create object
-        obj = _createObjectByType(portal_type, container, id, **kwargs)
+        obj = _createObjectByType(portal_type, container, id)
         obj.processForm(container.REQUEST, values=kwargs)
         self.write_at_field_values(obj, **kwargs)
         return obj.UID()
