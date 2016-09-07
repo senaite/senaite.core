@@ -100,7 +100,7 @@ class ReferenceAnalysesView(AnalysesView):
         self.columns = {
             'id': {'title': _('ID'), 'toggle':False},
             'getReferenceAnalysesGroupID': {'title': _('QC Sample ID'), 'toggle': True},
-            'Category': {'title': _('Category'), 'toggle':True},
+            'Category': {'title': _('Category'), 'toggle': True},
             'Service': {'title': _('Service'), 'toggle':True},
             'Worksheet': {'title': _('Worksheet'), 'toggle':True},
             'Method': {
@@ -141,61 +141,65 @@ class ReferenceAnalysesView(AnalysesView):
         ]
         self.anjson = {}
 
-    def folderitems(self):
-        items = super(ReferenceAnalysesView, self).folderitems()
-        items.sort(key=itemgetter('CaptureDate'), reverse=True)
-        outitems = []
-        for x in range(len(items)):
-            if not items[x].has_key('obj') or items[x]['Result'] == '':
+    def isItemAllowed(self, obj):
+        allowed = super(ReferenceAnalysesView, self).isItemAllowed(obj)
+        return allowed if not allowed else obj.getResult() != ''
+
+    def folderitem(self, obj, item, index):
+        item = super(ReferenceAnalysesView, self).folderitem(obj, item, index)
+        if not item:
+            return None
+        service = obj.getService()
+        item['Category'] = service.getCategoryTitle()
+        item['Service'] = service.Title()
+        item['Captured'] = self.ulocalized_time(obj.getResultCaptureDate())
+        brefs = obj.getBackReferences("WorksheetAnalysis")
+        item['Worksheet'] = brefs and brefs[0].Title() or ''
+
+        self.addToJSON(obj, service, item)
+
+    def addToJSON(self, analysis, service, item):
+        """ Adds an analysis item to the self.anjson dict that will be used
+            after the page is rendered to generate a QC Chart
+        """
+        parent = analysis.aq_parent
+        qcid = parent.id
+        serviceref = "%s (%s)" % (item['Service'], item['Keyword'])
+        trows = self.anjson.get(serviceref, {})
+        anrows = trows.get(qcid, [])
+        anid = '%s.%s' % (item['getReferenceAnalysesGroupID'], item['id'])
+        rr = parent.getResultsRangeDict()
+        uid = service.UID()
+        if uid in rr:
+            specs = rr.get(uid, None)
+            if not specs:
                 continue
-            obj = items[x]['obj']
-            service = obj.getService()
-            items[x]['id'] = obj.getId()
-            items[x]['Category'] = service.getCategoryTitle()
-            items[x]['Service'] = service.Title()
-            items[x]['Captured'] = self.ulocalized_time(obj.getResultCaptureDate())
-            brefs = obj.getBackReferences("WorksheetAnalysis")
-            items[x]['Worksheet'] = brefs and brefs[0].Title() or ''
+            try:
+                smin = float(specs.get('min', 0))
+                smax = float(specs.get('max', 0))
+                error = float(specs.get('error', 0))
+                target = float(specs.get('result', 0))
+                result = float(item['Result'])
+                error_amount = ((target / 100) * error) if target > 0 else 0
+                upper = smax + error_amount
+                lower = smin - error_amount
 
-            # Create json
-            qcid = obj.aq_parent.id;
-            serviceref = "%s (%s)" % (items[x]['Service'], items[x]['Keyword'])
-            trows = self.anjson.get(serviceref, {});
-            anrows = trows.get(qcid, []);
-            anid = '%s.%s' % (items[x]['getReferenceAnalysesGroupID'],
-                              items[x]['id'])
-            rr = obj.aq_parent.getResultsRangeDict()
-            uid = service.UID()
-            if uid in rr:
-                specs = rr[uid];
-                try:
-                    smin  = float(specs.get('min', 0))
-                    smax = float(specs.get('max', 0))
-                    error  = float(specs.get('error', 0))
-                    target = float(specs.get('result', 0))
-                    result = float(items[x]['Result'])
-                    error_amount = ((target / 100) * error) if target > 0 else 0
-                    upper  = smax + error_amount
-                    lower   = smin - error_amount
-
-                    anrow = { 'date': items[x]['CaptureDate'],
-                              'min': smin,
-                              'max': smax,
-                              'target': target,
-                              'error': error,
-                              'erroramount': error_amount,
-                              'upper': upper,
-                              'lower': lower,
-                              'result': result,
-                              'unit': items[x]['Unit'],
-                              'id': items[x]['uid'] }
-                    anrows.append(anrow);
-                    trows[qcid] = anrows;
-                    self.anjson[serviceref] = trows
-                except:
-                    pass
-            outitems.append(items[x])
-        return outitems
+                anrow = {'date': item['CaptureDate'],
+                         'min': smin,
+                         'max': smax,
+                         'target': target,
+                         'error': error,
+                         'erroramount': error_amount,
+                         'upper': upper,
+                         'lower': lower,
+                         'result': result,
+                         'unit': item['Unit'],
+                         'id': item['uid']}
+                anrows.append(anrow)
+                trows[qcid] = anrows
+                self.anjson[serviceref] = trows
+            except:
+                pass
 
     def get_analyses_json(self):
         return json.dumps(self.anjson)
@@ -400,7 +404,7 @@ class ReferenceSamplesView(BikaListingView):
                     item['obj'] = obj
 
         if self.contentFilter.get('review_state', '') \
-           and item.get('review_state','') == 'expired':
+           and item.get('review_state', '') == 'expired':
             # This item must be omitted from the list
             return None
 
