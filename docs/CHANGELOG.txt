@@ -2,6 +2,7 @@
 ------------------
 LIMS-2319: AR Add: Deleting a selected CC Contact corrupts the UID of reference widgets.
 LIMS-2325: Allow SampleTypes to be linked with Client Sample Points
+LIMS-2324: WS export to the LaChat Quick Chem FIA
 LIMS-2298: Add filter in Clients list
 LIMS-2299: Add ui for editing ar_count in all analysisrequest lists
 LIMS-2268: Instrument Interface. Vista Pro Simultaneous ICP, bi-directional CSV
