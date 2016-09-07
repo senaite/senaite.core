@@ -300,8 +300,7 @@ class ReferenceSamplesView(BikaListingView):
             'Title': {
                 'title': _('Title'),
                 'index': 'sortable_title',
-                'toggle':True,
-                },
+                'toggle':True},
             'Supplier': {
                 'title': _('Supplier'),
                 'toggle':True,
@@ -310,8 +309,8 @@ class ReferenceSamplesView(BikaListingView):
             'Manufacturer': {
                 'title': _('Manufacturer'),
                 'toggle': True,
-                'attr': 'getReferenceManufacturer.Title',
-                'replace_url': 'getReferenceManufacturer.absolute_url'},
+                'attr': 'getManufacturer.Title',
+                'replace_url': 'getManufacturer.absolute_url'},
             'Definition': {
                 'title': _('Reference Definition'),
                 'toggle':True,
@@ -391,15 +390,17 @@ class ReferenceSamplesView(BikaListingView):
     def folderitem(self, obj, item, index):
         if item.get('review_state', 'current') == 'current':
             # Check expiry date
-            expirydate = DT2dt(obj.getExpiryDate()).replace(tzinfo=None)
-            if (datetime.today() > expirydate):
-                # Trigger expiration
-                workflow.doActionFor(obj, 'expire')
-                item['review_state'] = 'expired'
-                item['obj'] = obj
+            exdate = obj.getExpiryDate()
+            if exdate:
+                expirydate = DT2dt(exdate).replace(tzinfo=None)
+                if (datetime.today() > expirydate):
+                    # Trigger expiration
+                    workflow.doActionFor(obj, 'expire')
+                    item['review_state'] = 'expired'
+                    item['obj'] = obj
 
         if self.contentFilter.get('review_state', '') \
-            and item.get('review_state','') == 'expired':
+           and item.get('review_state','') == 'expired':
             # This item must be omitted from the list
             return None
 
@@ -419,5 +420,5 @@ class ReferenceSamplesView(BikaListingView):
             src='%s/++resource++bika.lims.images/hazardous.png' \
             title='%s'>" % (self.portal_url, t(_('Hazardous')))
         item['replace']['ID'] = "<a href='%s/base_view'>%s</a>&nbsp;%s" % \
-             (item['url'], item['ID'], after_icons)
+            (item['url'], item['ID'], after_icons)
         return item

@@ -499,7 +499,7 @@ schema = BikaSchema.copy() + Schema((
         vocabulary='getSamplers',
         widget=BikaSelectionWidget(
             format='select',
-            label=_("Sampler who has sampled"),
+            label=_("Sampler"),
             # see SamplingWOrkflowWidgetVisibility
             visible={'edit': 'visible',
                      'view': 'visible',
@@ -527,11 +527,10 @@ schema = BikaSchema.copy() + Schema((
         write_permission=ScheduleSampling,
         vocabulary='getSamplers',
         widget=BikaSelectionWidget(
-            description=_(
-                "Define the sampler supposed to do the sample in the scheduled"+
-                " date"),
+            description=_("Define the sampler supposed to do the sample in "
+                          "the scheduled date"),
             format='select',
-            label=_("Define the Sampler for the scheduled sampling"),
+            label=_("Sampler for scheduled sampling"),
             visible={'edit': 'visible',
                      'view': 'visible',
                      'header_table': 'visible',
@@ -667,7 +666,7 @@ schema = BikaSchema.copy() + Schema((
     # see setResultsRange below.
     RecordsField('ResultsRange',
          required=0,
-         type='analysisspec',
+         type='resultsrange',
          subfields=('keyword', 'min', 'max', 'error', 'hidemin', 'hidemax', 'rangecomment'),
          widget=ComputedWidget(visible=False),
     ),

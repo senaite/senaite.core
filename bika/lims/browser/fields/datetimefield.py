@@ -52,7 +52,7 @@ class DateTimeField(DTF):
                 try:
                     val = DateTime(*list(val)[:-6])
                 except DateTimeError:
-                    val = None
+                    continue
                 if val.timezoneNaive():
                     # Use local timezone for tz naive strings
                     # see http://dev.plone.org/plone/ticket/10141
@@ -61,8 +61,13 @@ class DateTimeField(DTF):
                     val = DateTime(*parts)
                 break
             else:
-                logger.warning("DateTimeField failed to format date "
-                               "string '%s' with '%s'" % (value, fmtstr))
+                try:
+                    # The following will handle an rfc822 string.
+                    value = value.split(" +", 1)[0]
+                    val = DateTime(value)
+                except:
+                    logger.warning("DateTimeField failed to format date "
+                                   "string '%s' with '%s'" % (value, fmtstr))
 
         super(DateTimeField, self).set(instance, val, **kwargs)
 

@@ -1,5 +1,6 @@
 from AccessControl import getSecurityManager
 from Products.CMFCore.permissions import ModifyPortalContent
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
@@ -17,6 +18,8 @@ from zope.interface import implements
 class AnalysisRequestsView(BikaListingView):
     """Base for all lists of ARs
     """
+    template = ViewPageTemplateFile("templates/analysisrequests.pt")
+    ar_add = ViewPageTemplateFile("templates/ar_add.pt")
     implements(IViewView)
 
     def __init__(self, context, request):

@@ -54,11 +54,11 @@ schema = BikaSchema.copy() + Schema((
             description=_("Samples of this type should be treated as hazardous"),
         ),
     ),
-    ReferenceField('ReferenceManufacturer',
+    ReferenceField('Manufacturer',
         schemata = 'Description',
         allowed_types = ('Manufacturer',),
         relationship = 'ReferenceSampleManufacturer',
-        vocabulary = "getReferenceManufacturers",
+        vocabulary = "getManufacturers",
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
             checkbox_bound = 0,
@@ -200,7 +200,7 @@ class ReferenceSample(BaseFolder):
         items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
-    def getReferenceManufacturers(self):
+    def getManufacturers(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [('','')] + [(o.UID, o.Title) for o in
                                bsc(portal_type='Manufacturer',

@@ -47,7 +47,7 @@
 
         <tr>
             <th i18n:translate="">Manufacturer</th>
-            <td class="left" tal:content="python:context.getReferenceManufacturer() and context.getReferenceManufacturer().Title() or ''"/>
+            <td class="left" tal:content="python:context.getManufacturer() and context.getManufacturer().Title() or ''"/>
         </tr>
 
         <tr>

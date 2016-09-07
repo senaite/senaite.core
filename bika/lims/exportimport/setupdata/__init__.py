@@ -267,6 +267,10 @@ class WorksheetImporter:
             logger.info("More than one object found for %s" % contentFilter)
             return None
         elif len(brains) == 0:
+            if portal_type == 'AnalysisService':
+                brains = catalog(portal_type=portal_type, getKeyword=title)
+                if brains:
+                    return brains[0].getObject()
             logger.info("No objects found for %s" % contentFilter)
             return None
         else:
@@ -2086,7 +2090,7 @@ class Reference_Samples(WorksheetImporter):
                      DateDisposed=row['DateDisposed']
                      )
             obj.setReferenceDefinition(ref_def)
-            obj.setReferenceManufacturer(ref_man)
+            obj.setManufacturer(ref_man)
             obj.unmarkCreationFlag()
 
             self.load_reference_sample_results(obj)
