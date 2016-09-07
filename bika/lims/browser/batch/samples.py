@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from bika.lims.browser.sample import SamplesView as _SV
 from bika.lims.permissions import *
 from Products.CMFCore.utils import getToolByName

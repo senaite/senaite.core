@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 """
     AnalysisRequests often use the same configurations.
     ARTemplate includes all AR fields, including preset AnalysisProfile
