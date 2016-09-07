@@ -1,5 +1,6 @@
 3.2.1 (unreleased)
 ------------------
+LIMS-2319: AR Add: Deleting a selected CC Contact corrupts the UID of reference widgets.
 LIMS-2298: Add filter in Clients list
 LIMS-2268: Instrument Interface. Vista Pro Simultaneous ICP, bi-directional CSV
 LIMS-2261: Cannot create analysis request
