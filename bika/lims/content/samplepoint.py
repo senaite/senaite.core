@@ -12,6 +12,7 @@ from bika.lims.browser.widgets import CoordinateWidget
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.widgets import DurationWidget
 from bika.lims import PMF, bikaMessageFactory as _
+from bika.lims.browser.widgets.referencewidget import ReferenceWidget as brw
 from zope.interface import implements
 import json
 import plone
@@ -52,8 +53,7 @@ schema = BikaSchema.copy() + Schema((
         allowed_types = ('SampleType',),
         vocabulary = 'SampleTypesVocabulary',
         relationship = 'SamplePointSampleType',
-        widget = ReferenceWidget(
-            checkbox_bound = 0,
+        widget = brw(
             label=_("Sample Types"),
             description =_("The list of sample types that can be collected "
                            "at this sample point.  If no sample types are "
@@ -154,6 +154,11 @@ def SamplePoints(self, instance=None, allow_blank=True, lab_only=True):
         lab_path = instance.bika_setup.bika_samplepoints.getPhysicalPath()
         contentFilter['path'] = {"query": "/".join(lab_path), "level" : 0 }
     for sp in bsc(contentFilter):
-        items.append((sp.UID, sp.Title))
+        sp = sp.getObject()
+        if sp.aq_parent.portal_type == 'Client':
+            sp_title = "{}: {}".format(sp.aq_parent.Title(), sp.Title())
+        else:
+            sp_title = sp.Title()
+        items.append((sp.UID(), sp_title))
     items = allow_blank and [['','']] + list(items) or list(items)
     return DisplayList(items)
