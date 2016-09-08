@@ -63,7 +63,7 @@
     <browser:page
       for="bika.lims.interfaces.IAnalysisProfiles"
       name="folder_view"
-      class=".bika_analysisprofiles.ProfilesView"
+      class=".bika_analysisprofiles.AnalysisProfilesView"
       permission="bika.lims.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

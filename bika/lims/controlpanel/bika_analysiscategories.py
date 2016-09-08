@@ -1,40 +1,20 @@
-from AccessControl.SecurityInfo import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from Products.CMFCore.utils import getToolByName
-from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.controlpanel.bika_setupitems import BikaSetupItemsView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IAnalysisCategories
-from plone.app.content.browser.interfaces import IFolderContentsView
-from plone.app.layout.globals.interfaces import IViewView
 from plone.app.folder.folder import ATFolderSchema, ATFolder
 from zope.interface.declarations import implements
 from zope.interface import alsoProvides
 
 
-class AnalysisCategoriesView(BikaListingView):
-    """ Displays a list of Analysis Categories in a table.
-    """
-    implements(IFolderContentsView, IViewView)
+class AnalysisCategoriesView(BikaSetupItemsView):
 
     def __init__(self, context, request):
-        super(AnalysisCategoriesView, self).__init__(context, request)
+        super(AnalysisCategoriesView, self).__init__(
+            context, request, 'AnalysisCategory', 'category_big.png')
         self.title = self.context.translate(_("Analysis Categories"))
-        self.icon = self.portal_url + "/++resource++bika.lims.images/category_big.png"
-        self.show_select_column = True
-        self.catalog = 'bika_setup_catalog'
-        self.contentFilter = {
-            'portal_type': 'AnalysisCategory',
-            'sort_on': 'sortable_title'
-        }
-        self.context_actions = {
-            _('Add'): {
-                'url': 'createObject?type_name=AnalysisCategory',
-                'icon': '++resource++bika.lims.images/add.png'
-            }
-        }
         self.columns = {
             'Title': {
                 'title': _('Category'),
@@ -51,7 +31,6 @@ class AnalysisCategoriesView(BikaListingView):
                 'title': _('Department'),
                 'index': 'getDepartmentTitle',
                 'attr': 'getDepartmentTitle',
-                'toggle': True
             },
             'SortKey': {
                 'title': _('Sort Key'),
@@ -60,22 +39,9 @@ class AnalysisCategoriesView(BikaListingView):
                 'toggle': False
             },
         }
-        self.review_states = [
-            {'id': 'default',
-             'title': _('Active'),
-             'contentFilter': {'inactive_state': 'active'},
-             'transitions': [{'id': 'deactivate'}, ],
-             'columns': ['Title', 'Description', 'Department', 'SortKey']},
-            {'id': 'inactive',
-             'title': _('Dormant'),
-             'contentFilter': {'inactive_state': 'inactive'},
-             'transitions': [{'id': 'activate'}, ],
-             'columns': ['Title', 'Description', 'Department']},
-            {'id': 'all',
-             'title': _('All'),
-             'contentFilter': {},
-             'columns': ['Title', 'Description', 'Department']},
-        ]
+        for rs in self.review_states:
+            rs['columns'] += ['Department', 'SortKey']
+
 
 schema = ATFolderSchema.copy()
 class AnalysisCategories(ATFolder):
