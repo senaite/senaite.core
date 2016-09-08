@@ -838,7 +838,7 @@ class BikaListingView(BrowserView):
 
             # check if the item must be rendered or not (prevents from
             # doing it later in folderitems) and dealing with paging
-            if not self.isItemAllowed(obj):
+            if not obj or not self.isItemAllowed(obj):
                 continue
 
             uid = obj.UID()
