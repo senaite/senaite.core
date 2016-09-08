@@ -172,8 +172,6 @@ class ReferenceAnalysesView(AnalysesView):
         uid = service.UID()
         if uid in rr:
             specs = rr.get(uid, None)
-            if not specs:
-                continue
             try:
                 smin = float(specs.get('min', 0))
                 smax = float(specs.get('max', 0))
