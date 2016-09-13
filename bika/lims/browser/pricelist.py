@@ -3,7 +3,7 @@ from bika.lims.utils import t
 from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.interfaces import IPricelistFolder
-from bika.lims.permissions import AddPricelist, ManageBika
+from bika.lims.permissions import AddPricelist
 from DateTime import DateTime
 from email.Utils import formataddr
 from plone.app.content.browser.interfaces import IFolderContentsView
@@ -77,19 +77,6 @@ class PricelistsView(BikaListingView):
                 'icon': '++resource++bika.lims.images/add.png'
             }
         now = DateTime()
-        if not mtool.checkPermission(ManageBika, self.context):
-            self.show_select_column = False
-            self.review_states = [
-                {'id': 'default',
-                 'title': _('Active'),
-                 'contentFilter': {'getEffectiveDate': {'query': now,
-                                                     'range': 'max'},
-                                   'getExpirationDate': {'query': now,
-                                                      'range': 'min'},
-                                   'inactive_state': 'active'},
-                 'transitions': [{'id': 'deactivate'}, ],
-                 'columns': ['Title', 'getExpirationDate']},
-                ]
         return super(PricelistsView, self).__call__()
 
     def folderitems(self):
