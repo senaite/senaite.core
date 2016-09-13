@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 """Upgrades an instance from rc3.4 (1104) to v3 (3000)."""
 
 from Acquisition import aq_inner
