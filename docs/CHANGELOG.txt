@@ -1,5 +1,6 @@
 3.2.1 (unreleased)
 ------------------
+LIMS-2391: Use source analysis's sample ID in duplicate analysis IDs
 LIMS-2344: Fix some UI javascript failures when viewing ARs
 LIMS-2319: AR Add: Deleting a selected CC Contact corrupts the UID of reference widgets.
 LIMS-2325: Allow SampleTypes to be linked with Client Sample Points
