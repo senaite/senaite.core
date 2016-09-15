@@ -1,5 +1,6 @@
 3.2.1 (unreleased)
 ------------------
+LIMS-2391: Use source analysis's sample ID in duplicate analysis IDs
 LIMS-2351: Field analyses without results do not prevent Samples from being received
 LIMS-2366: Workflow. AR stays in Received state with all Analyses in To be Verifie
 LIMS-2384: ARImport: Workflow state of imported ARs and their Analyses not synchronised.
