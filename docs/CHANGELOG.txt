@@ -1,7 +1,12 @@
 3.2.1 (unreleased)
 ------------------
+LIMS-2351: Field analyses without results do not prevent Samples from being received
+LIMS-2366: Workflow. AR stays in Received state with all Analyses in To be Verifie
+LIMS-2384: ARImport: Workflow state of imported ARs and their Analyses not synchronised.
+LIMS-2369: Workflow. Sampler and Date Sampled should be compulsory
+LIMS-2355: Unable to view dormant/active filters in some bika_setup pages
 LIMS-2344: Fix some UI javascript failures when viewing ARs
-LIMS-2319: AR Add: Deleting a selected CC Contact corrupts the UID of reference widgets.
+LIMS-2319: AR Add: Deleting a selected CC Contact corrupts the UID of reference widgets
 LIMS-2325: Allow SampleTypes to be linked with Client Sample Points
 LIMS-2324: WS export to the LaChat Quick Chem FIA
 LIMS-2298: Add filter in Clients list

@@ -63,7 +63,7 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
                     else:
                         allstatus.append(status)
                 if len(allstatus) > 0:
-                    message = "General Retract Done"
+                    message = "General Retract Done.  Submit this AR manually."
                     self.context.plone_utils.addPortalMessage(message, 'warning')
 
             self.checkInstrumentsValidity()
