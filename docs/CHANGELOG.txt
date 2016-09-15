@@ -1,5 +1,6 @@
 3.2.1 (unreleased)
 ------------------
+LIMS-2394: Calculation failure in worksheets. TDS Calc misfires again.
 LIMS-2391: Use source analysis's sample ID in duplicate analysis IDs
 LIMS-2351: Field analyses without results do not prevent Samples from being received
 LIMS-2366: Workflow. AR stays in Received state with all Analyses in To be Verifie
