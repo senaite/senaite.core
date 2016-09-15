@@ -1,4 +1,8 @@
 #!/bin/bash
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 #
 # Original script by Inus Scheepers (inus@bikalabs.com),
 # Proxy handling and Fedora suppot added

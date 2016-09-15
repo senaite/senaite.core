@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from Acquisition import aq_parent, aq_inner, aq_base
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode

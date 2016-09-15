@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 """ LaChat QuickChem FIA
 """
 import csv
@@ -191,7 +197,7 @@ class Export(BrowserView):
             if row['type'] == 'a':
                 if 'a{}'.format(container.id) in used_ids:
                     continue
-                used_ids = 'a{}'.format(container.id)
+                used_ids.append('a{}'.format(container.id))
                 # col_a (sample id) has a weird format, but it matches
                 # the examples we are given, so it is true:
                 sample = container.getSample()
@@ -205,7 +211,7 @@ class Export(BrowserView):
                 refgid = analysis.getReferenceAnalysesGroupID()
                 if 'bcd{}'.format(refgid) in used_ids:
                     continue
-                used_ids = 'bcd{}'.format(refgid)
+                used_ids.append('bcd{}'.format(refgid))
                 col_b = refgid
                 col_c = str(row['position'])
                 col_d = ''

@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 """AnalysisRequestsFolder is a fake folder to live in the nav bar.  It has
 view from browser/analysisrequest.py wired to it.
 """

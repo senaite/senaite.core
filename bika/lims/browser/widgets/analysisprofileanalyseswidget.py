@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 # ../../skins/bika/bika_widgets/analysisprofileanalyseswidget.pt
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.Registry import registerWidget, registerPropertyType
