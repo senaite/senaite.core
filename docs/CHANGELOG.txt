@@ -1,5 +1,6 @@
 3.2.1 (unreleased)
 ------------------
+LIMS-2366: Workflow. AR stays in Received state with all Analyses in To be Verifie
 LIMS-2384: ARImport: Workflow state of imported ARs and their Analyses not synchronised.
 LIMS-2369: Workflow. Sampler and Date Sampled should be compulsory
 LIMS-2355: Unable to view dormant/active filters in some bika_setup pages
