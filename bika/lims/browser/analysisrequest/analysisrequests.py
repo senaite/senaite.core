@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from AccessControl import getSecurityManager
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -191,6 +196,7 @@ class AnalysisRequestsView(BikaListingView):
                                'sort_order': 'reverse'},
              'transitions': [{'id': 'sample'},
                              {'id': 'submit'},
+                             {'id': 'cancel'},
                             ],
              'custom_actions': [],
              'columns': ['getRequestID',
@@ -224,7 +230,9 @@ class AnalysisRequestsView(BikaListingView):
              'contentFilter': {'review_state': ('to_be_preserved',),
                                'sort_on': 'created',
                                'sort_order': 'reverse'},
-             'transitions': [{'id': 'preserve'},],
+             'transitions': [{'id': 'preserve'},
+                             {'id': 'cancel'},
+                             ],
              'custom_actions': [],
              'columns': ['getRequestID',
                         'getSample',
@@ -257,7 +265,9 @@ class AnalysisRequestsView(BikaListingView):
              'contentFilter': {'review_state': ('scheduled_sampling',),
                                'sort_on': 'created',
                                'sort_order': 'reverse'},
-             'transitions': [{'id': 'sample'},],
+             'transitions': [{'id': 'sample'},
+                             {'id': 'cancel'},
+                             ],
              'custom_actions': [],
              'columns': ['getRequestID',
                         'getSample',
@@ -401,7 +411,9 @@ class AnalysisRequestsView(BikaListingView):
              'contentFilter': {'review_state': 'verified',
                                'sort_on': 'created',
                                'sort_order': 'reverse'},
-             'transitions': [{'id': 'publish'}],
+             'transitions': [{'id': 'publish'},
+                             {'id': 'cancel'},
+                             ],
              'custom_actions': [],
              'columns': ['getRequestID',
                         'getSample',

@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 """Sample represents a physical sample submitted for testing
 """
 from AccessControl import ClassSecurityInfo
@@ -931,21 +936,11 @@ class Sample(BaseFolder, HistoryAwareMixin):
             doActionFor(ar, 'schedule_sampling')
 
     def guard_receive_transition(self):
-        """Prevent the receive transition from being available:
-        - if object is cancelled
-        - if any related ARs have field analyses with no result.
+        """Prevent the receive transition from being available if object
+        is cancelled
         """
         # Can't do anything to the object if it's cancelled
-        if not isBasicTransitionAllowed(self):
-            return False
-        # check if any related ARs have field analyses with no result.
-        for ar in self.getAnalysisRequests():
-            field_analyses = ar.getAnalyses(getPointOfCapture='field',
-                                            full_objects=True)
-            no_results = [a for a in field_analyses if a.getResult() == '']
-            if no_results:
-                return False
-        return True
+        return isBasicTransitionAllowed(self):
 
     def guard_sample_prep_transition(self):
         """Allow the sampleprep automatic transition to fire.

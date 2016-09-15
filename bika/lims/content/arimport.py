@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from AccessControl import ClassSecurityInfo
 import csv
 from DateTime.DateTime import DateTime
@@ -353,6 +358,7 @@ class ARImport(BaseFolder):
             ar.unmarkCreationFlag()
             ar.edit(**row)
             ar._renameAfterCreation()
+            ar.setAnalyses(list(newanalyses))
             for analysis in ar.getAnalyses(full_objects=True):
                 analysis.setSamplePartition(part)
             ar.at_post_create_script()
@@ -360,7 +366,6 @@ class ARImport(BaseFolder):
                 workflow.doActionFor(ar, 'sampling_workflow')
             else:
                 workflow.doActionFor(ar, 'no_sampling_workflow')
-            ar.setAnalyses(list(newanalyses))
             progress_index = float(row_cnt) / len(gridrows) * 100
             progress = ProgressState(self.REQUEST, progress_index)
             notify(UpdateProgressEvent(progress))

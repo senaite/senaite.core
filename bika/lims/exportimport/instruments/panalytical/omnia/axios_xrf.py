@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 """ PANalytical - Omnia Axios XRF
 """
 from bika.lims import bikaMessageFactory as _, t

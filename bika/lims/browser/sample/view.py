@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
 from bika.lims import PMF
@@ -469,7 +474,7 @@ class SamplesView(BikaListingView):
                     # Hiddes the button
                     state['hide_transitions'] = ['schedule_sampling', ]
             new_states.append(state)
-            self.review_states = new_states
+        self.review_states = new_states
         return items
 
     def _schedule_sampling_permissions(self):

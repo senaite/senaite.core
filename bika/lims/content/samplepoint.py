@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
@@ -122,6 +127,10 @@ class SamplePoint(BaseContent, HistoryAwareMixin):
         removed = existing and [s for s in existing if s not in value] or []
         added = value and [s for s in value if s not in existing] or []
         ret = self.Schema()['SampleTypes'].set(self, value)
+
+        # finally be sure that we aren't trying to set None values here.
+        removed = [x for x in removed if x]
+        added = [x for x in added if x]
 
         for st in removed:
             samplepoints = st.getSamplePoints()

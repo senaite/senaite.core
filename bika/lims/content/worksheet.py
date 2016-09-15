@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _, logger
 from bika.lims.config import *
@@ -229,7 +234,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
             # Set ReferenceAnalysesGroupID (same id for the analyses from
             # the same Reference Sample and same Worksheet)
-            # https://github.com/bikalabs/Bika-LIMS/issues/931
             ref_analysis.setReferenceAnalysesGroupID(refgid)
             ref_analysis.reindexObject(idxs=["getReferenceAnalysesGroupID"])
 
@@ -324,17 +328,16 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
             # Set ReferenceAnalysesGroupID (same id for the analyses from
             # the same Reference Sample and same Worksheet)
-            # https://github.com/bikalabs/Bika-LIMS/issues/931
             if not refgid and not analysis.portal_type == 'ReferenceAnalysis':
-                part = analysis.getSamplePartition().id
+                prefix = analysis.aq_parent.getSample().id
                 dups = [an.getReferenceAnalysesGroupID()
                         for an in self.getAnalyses()
                         if an.portal_type == 'DuplicateAnalysis'
-                            and an.getSamplePartition().id == part]
+                            and an.aq_parent.getSample().id == prefix]
                 dups = list(set(dups))
                 postfix = dups and len(dups) + 1 or 1
                 postfix = str(postfix).zfill(int(2))
-                refgid = '%s-D%s' % (part, postfix)
+                refgid = '%s-D%s' % (prefix, postfix)
             duplicate.setReferenceAnalysesGroupID(refgid)
             duplicate.reindexObject(idxs=["getReferenceAnalysesGroupID"])
 
