@@ -1,5 +1,6 @@
 3.2.1 (unreleased)
 ------------------
+LIMS-2394: Calculation failure in worksheets. TDS Calc misfires again.
 LIMS-2351: Field analyses without results do not prevent Samples from being received
 LIMS-2366: Workflow. AR stays in Received state with all Analyses in To be Verifie
 LIMS-2384: ARImport: Workflow state of imported ARs and their Analyses not synchronised.
