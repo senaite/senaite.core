@@ -333,7 +333,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 dups = [an.getReferenceAnalysesGroupID()
                         for an in self.getAnalyses()
                         if an.portal_type == 'DuplicateAnalysis'
-                            and an.getSamplePartition().id == prefix]
+                            and an.aq_parent.getSample().id == prefix]
                 dups = list(set(dups))
                 postfix = dups and len(dups) + 1 or 1
                 postfix = str(postfix).zfill(int(2))
