@@ -262,8 +262,8 @@ class ajaxCalculateAnalysisEntry(BrowserView):
         if analysis.portal_type == 'ReferenceAnalysis':
             # The analysis is a Control or Blank. We might use the
             # reference results instead other specs
-            uid = analysis.getServiceUID()
-            specs = analysis.aq_parent.getResultsRangeDict().get(uid, {})
+            _uid = analysis.getServiceUID()
+            specs = analysis.aq_parent.getResultsRangeDict().get(_uid, {})
 
         else:
             # Get the specs directly from the analysis. The getResultsRange
