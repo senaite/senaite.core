@@ -121,7 +121,8 @@ class AnalysisRequestViewView(BrowserView):
                 else:
                     allstatus.append(status)
             if len(allstatus) > 0:
-                self.addMessage("General Retract Done", 'warning')
+                message = "General Retract Done.  Submit this AR manually."
+                self.addMessage(message, 'warning')
 
         # If is a retracted AR, show the link to child AR and show a warn msg
         if workflow.getInfoFor(ar, 'review_state') == 'invalid':

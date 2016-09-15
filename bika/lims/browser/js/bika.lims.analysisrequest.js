@@ -13,6 +13,7 @@ function AnalysisRequestView() {
         // fires for all AR workflow transitions fired using the plone contentmenu workflow actions
         $("a[id^='workflow-transition']")
             .not('#workflow-transition-schedule_sampling')
+            .not('#workflow-transition-sample')
             .click(transition_with_publication_spec);
         // fires AR workflow transitions when using the schedule samplign transition
         transition_schedule_sampling();
@@ -75,6 +76,38 @@ function AnalysisRequestView() {
             });
         }
     }
+
+    function workflow_transition_sample() {
+        $("#workflow-transition-sample").click(function(event){
+            event.preventDefault();
+            var date = $("#DateSampled").val();
+            var sampler = $("#Sampler").val();
+            if (date && sampler) {
+                var form = $("form[name='header_form']");
+                // this 'transition' key is scanned for in header_table.py/__call__
+                form.append("<input type='hidden' name='transition' value='sample'/>")
+                form.submit();
+            }
+            else {
+                var message = "";
+                if (date == "" || date == undefined || date == null) {
+                    message = message + PMF('${name} is required, please correct.',
+                                            {'name': _("Date Sampled")})
+                }
+                if (sampler == "" || sampler == undefined || sampler == null) {
+                    if (message != "") {
+                        message = message + "<br/>";
+                    }
+                    message = message + PMF('${name} is required, please correct.',
+                                            {'name': _("Sampler")})
+                }
+                if ( message != "") {
+                    window.bika.lims.portalMessage(message);
+                }
+            }
+        });
+    }
+
 }
 
 /**
