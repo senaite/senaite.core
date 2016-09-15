@@ -940,9 +940,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
         is cancelled
         """
         # Can't do anything to the object if it's cancelled
-        if not isBasicTransitionAllowed(self):
-            return False
-        return True
+        return isBasicTransitionAllowed(self):
 
     def guard_sample_prep_transition(self):
         """Allow the sampleprep automatic transition to fire.
