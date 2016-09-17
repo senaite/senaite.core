@@ -2528,7 +2528,7 @@ class AnalysisRequest(BaseFolder):
         """Prevent the receive transition from being available if object
         is cancelled
         """
-        return isBasicTransitionAllowed(self):
+        return isBasicTransitionAllowed(self)
 
     def guard_sample_prep_transition(self):
         sample = self.getSample()
