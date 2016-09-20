@@ -139,7 +139,8 @@ class ReferenceSamplesView(BikaListingView):
                  obj.getManufacturer().Title() or ''
             items[x]['Definition'] = obj.getReferenceDefinition() and \
                  obj.getReferenceDefinition().Title() or ''
-            items[x]['DateSampled'] = self.ulocalized_time(obj.getDateSampled())
+            items[x]['DateSampled'] = self.ulocalized_time(
+                obj.getDateSampled(), long_format=True)
             items[x]['DateReceived'] = self.ulocalized_time(obj.getDateReceived())
             items[x]['DateOpened'] = self.ulocalized_time(obj.getDateOpened())
             items[x]['ExpiryDate'] = self.ulocalized_time(obj.getExpiryDate())

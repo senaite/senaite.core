@@ -41,7 +41,7 @@ class AnalysisRequestsView(_ARV, _ARAV):
             'getDateSampled': {'title': _('Date Sampled'),
                                'index': 'getDateSampled',
                                'toggle': True,
-                               'input_class': 'datepicker_nofuture',
+                               'input_class': 'datetimepicker_nofuture',
                                'input_width': '10'},
             'state_title': {'title': _('State'),
                             'index': 'review_state'},

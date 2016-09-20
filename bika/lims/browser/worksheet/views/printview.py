@@ -456,8 +456,10 @@ class PrintView(BrowserView):
             data = {'obj': sample,
                     'id': sample.id,
                     'url': sample.absolute_url(),
-                    'date_sampled': self.ulocalized_time(sample.getDateSampled(), long_format=0),
-                    'date_received': self.ulocalized_time(sample.getDateReceived(), long_format=0),
+                    'date_sampled': self.ulocalized_time(
+                        sample.getDateSampled(), long_format=True),
+                    'date_received': self.ulocalized_time(
+                        sample.getDateReceived(), long_format=0),
                     }
 
             if sample.portal_type == "ReferenceSample":
@@ -505,14 +507,18 @@ class PrintView(BrowserView):
         if ar.portal_type == "AnalysisRequest":
             return {'obj': ar,
                     'id': ar.getRequestID(),
-                    'date_received': self.ulocalized_time(ar.getDateReceived(), long_format=0),
-                    'date_sampled': self.ulocalized_time(ar.getDateSampled(), long_format=0),
+                    'date_received': self.ulocalized_time(
+                        ar.getDateReceived(), long_format=0),
+                    'date_sampled': self.ulocalized_time(
+                        ar.getDateSampled(), long_format=True),
                     'url': ar.absolute_url(),}
         elif ar.portal_type == "ReferenceSample":
             return {'obj': ar,
                     'id': ar.id,
-                    'date_received': self.ulocalized_time(ar.getDateReceived(), long_format=0),
-                    'date_sampled': self.ulocalized_time(ar.getDateSampled(), long_format=0),
+                    'date_received': self.ulocalized_time(
+                        ar.getDateReceived(), long_format=0),
+                    'date_sampled': self.ulocalized_time(
+                        ar.getDateSampled(), long_format=True),
                     'url': ar.absolute_url(),}
         else:
             return {'obj': ar,

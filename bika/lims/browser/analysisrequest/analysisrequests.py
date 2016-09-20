@@ -113,7 +113,7 @@ class AnalysisRequestsView(BikaListingView):
             'getDateSampled': {'title': _('Date Sampled'),
                                'index': 'getDateSampled',
                                'toggle': SamplingWorkflowEnabled,
-                               'input_class': 'datepicker_nofuture',
+                               'input_class': 'datetimepicker_nofuture',
                                'input_width': '10'},
             'getDateVerified': {'title': _('Date Verified'),
                                 'input_width': '10'},
@@ -750,11 +750,11 @@ class AnalysisRequestsView(BikaListingView):
 
         SamplingWorkflowEnabled = sample.getSamplingWorkflowEnabled()
         if SamplingWorkflowEnabled and not samplingdate > DateTime():
-            datesampled = self.ulocalized_time(sample.getDateSampled())
+            datesampled = self.ulocalized_time(
+                sample.getDateSampled(), long_format=True)
             if not datesampled:
                 datesampled = self.ulocalized_time(
-                    DateTime(),
-                    long_format=1)
+                    DateTime(), long_format=True)
                 item['class']['getDateSampled'] = 'provisional'
             sampler = sample.getSampler().strip()
             if sampler:

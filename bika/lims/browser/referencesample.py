@@ -407,7 +407,8 @@ class ReferenceSamplesView(BikaListingView):
             else:
                 items[x]['Definition'] = ' '
 
-            items[x]['DateSampled'] = self.ulocalized_time(obj.getDateSampled())
+            items[x]['DateSampled'] = self.ulocalized_time(
+                obj.getDateSampled(), long_format=True)
             items[x]['DateReceived'] = self.ulocalized_time(obj.getDateReceived())
             items[x]['ExpiryDate'] = self.ulocalized_time(obj.getExpiryDate())
 
