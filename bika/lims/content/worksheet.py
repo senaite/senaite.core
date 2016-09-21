@@ -330,10 +330,12 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             # the same Reference Sample and same Worksheet)
             if not refgid and not analysis.portal_type == 'ReferenceAnalysis':
                 prefix = analysis.aq_parent.getSample().id
-                dups = [an.getReferenceAnalysesGroupID()
-                        for an in self.getAnalyses()
-                        if an.portal_type == 'DuplicateAnalysis'
-                            and an.aq_parent.getSample().id == prefix]
+                dups = []
+                for an in self.getAnalyses():
+                    if an.portal_type == 'DuplicateAnalysis' \
+                            and hasattr(an.aq_parent, 'getSample') \
+                            and an.aq_parent.getSample().id == prefix:
+                        dups.append(an.getReferenceAnalysesGroupID())
                 dups = list(set(dups))
                 postfix = dups and len(dups) + 1 or 1
                 postfix = str(postfix).zfill(int(2))
