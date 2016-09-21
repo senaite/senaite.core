@@ -1,5 +1,7 @@
 3.2.1 (unreleased)
 ------------------
+LIMS-2404: AR list in batches permitted sampling without Sampler and Sampling date provided
+LIMS-2380: ARs are created in correct order (order of columns in ar-create form)
 LIMS-2394: Calculation failure in worksheets. TDS Calc misfires again.
 LIMS-2391: Use source analysis's sample ID in duplicate analysis IDs
 LIMS-2351: Field analyses without results do not prevent Samples from being received

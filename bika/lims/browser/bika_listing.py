@@ -5,8 +5,17 @@
 
 """ Display lists of items in tables.
 """
-from DateTime import DateTime
+import json
+import re
+import urllib
+from operator import itemgetter
+
+import App
+import pkg_resources
+import plone
+import transaction
 from Acquisition import aq_parent, aq_inner
+from DateTime import DateTime
 from OFS.interfaces import IOrderedContainer
 from Products.AdvancedQuery import And, Or, MatchRegexp, Between, Generic, Eq
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -14,18 +23,17 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone import PloneMessageFactory
 from Products.CMFPlone.utils import pretty_title_or_id, isExpired, safe_unicode
-from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import PMF
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t, format_supsub
 from bika.lims import logger
+from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IFieldIcons
 from bika.lims.subscribers import doActionFor
 from bika.lims.subscribers import skip
 from bika.lims.utils import isActive, getHiddenAttributesForClass
+from bika.lims.utils import t, format_supsub
 from bika.lims.utils import to_utf8
-from operator import itemgetter
 from plone.app.content.browser import tableview
 from plone.app.content.browser.foldercontents import FolderContentsView, FolderContentsTable
 from plone.app.content.browser.interfaces import IFolderContentsView
@@ -34,16 +42,8 @@ from zope.component import getAdapters
 from zope.component import getUtility
 from zope.component._api import getMultiAdapter
 from zope.i18nmessageid import MessageFactory
-from zope.interface import implements
 from zope.interface import Interface
-
-import App
-import json
-import pkg_resources
-import plone
-import re
-import transaction
-import urllib
+from zope.interface import implements
 
 try:
     from plone.batching import Batch
@@ -166,6 +166,9 @@ class WorkflowAction:
         action, came_from = self._get_form_workflow_action()
 
         if action:
+            # bika_listing sometimes gives us a list of items?
+            if type(action) == list:
+                action = action[0]
             # Call out to the workflow action method
             # Use default bika_listing.py/WorkflowAction for other transitions
             method_name = 'workflow_action_' + action
@@ -217,7 +220,6 @@ class WorkflowAction:
             dest = self.context.absolute_url() + q
 
         return len(transitioned), dest
-
 
 class BikaListingView(BrowserView):
     """
