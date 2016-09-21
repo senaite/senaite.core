@@ -191,14 +191,20 @@ function SiteView() {
 
 
         $("input.datetimepicker_nofuture").live("click", function() {
-            $(this).datepicker({
+            $(this).datetimepicker({
                 showOn:"focus",
                 showAnim:"",
                 changeMonth:true,
                 changeYear:true,
                 maxDate: curDate,
                 dateFormat: dateFormat,
-                yearRange: limitString
+                yearRange: limitString,
+                timeFormat: "HH:mm",
+                beforeShow: function() {
+                        setTimeout(function(){
+                            $('.ui-datepicker').css('z-index', 99999999999999);
+                        }, 0);
+                    }
             })
             .click(function(){$(this).attr("value", "");})
             .focus();

@@ -106,7 +106,7 @@ class SamplesView(BikaListingView):
                       'toggle': False},
             'SamplingDate': {'title': _('Sampling Date'),
                                 'index': 'getSamplingDate',
-                                'input_class': 'datetimepicker autosave',
+                                'input_class': 'datetimepicker_nofuture autosave',
                                 'input_width': '10',
                                 'toggle': True},
             'DateSampled': {'title': _('Date Sampled'),

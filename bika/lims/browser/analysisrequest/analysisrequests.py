@@ -121,7 +121,7 @@ class AnalysisRequestsView(BikaListingView):
                            'toggle': SamplingWorkflowEnabled},
             'getDatePreserved': {'title': _('Date Preserved'),
                                  'toggle': user_is_preserver,
-                                 'input_class': 'datepicker_nofuture',
+                                 'input_class': 'datetimepicker_nofuture',
                                  'input_width': '10',
                                  'sortable': False},  # no datesort without index
             'getPreserver': {'title': _('Preserver'),
