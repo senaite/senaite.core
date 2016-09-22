@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.analysisrequest import AnalysisRequestAddView as _ARAV
 from bika.lims.browser.analysisrequest import AnalysisRequestsView as _ARV
@@ -36,7 +41,7 @@ class AnalysisRequestsView(_ARV, _ARAV):
             'getDateSampled': {'title': _('Date Sampled'),
                                'index': 'getDateSampled',
                                'toggle': True,
-                               'input_class': 'datepicker_nofuture',
+                               'input_class': 'datetimepicker',
                                'input_width': '10'},
             'state_title': {'title': _('State'),
                             'index': 'review_state'},

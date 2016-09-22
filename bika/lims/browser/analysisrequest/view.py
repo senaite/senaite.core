@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from AccessControl import getSecurityManager
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
@@ -86,11 +91,6 @@ class AnalysisRequestViewView(BrowserView):
                    and poc == 'field':
                     t.review_states[0]['columns'].remove('DueDate')
                 self.tables[POINTS_OF_CAPTURE.getValue(poc)] = t.contents_table()
-        # Un-captured field analyses may cause confusion
-        if ar.getAnalyses(getPointOfCapture='field',
-                          review_state=['sampled', 'sample_due']):
-            message = _("There are field analyses without submitted results.")
-            self.addMessage(message, 'info')
         # Create QC Analyses View for this AR
         show_cats = self.context.bika_setup.getCategoriseAnalysisServices()
         qcview = self.createQCAnalyesView(ar,
@@ -120,7 +120,8 @@ class AnalysisRequestViewView(BrowserView):
                 else:
                     allstatus.append(status)
             if len(allstatus) > 0:
-                self.addMessage("General Retract Done", 'warning')
+                message = "General Retract Done.  Submit this AR manually."
+                self.addMessage(message, 'warning')
 
         # If is a retracted AR, show the link to child AR and show a warn msg
         if workflow.getInfoFor(ar, 'review_state') == 'invalid':

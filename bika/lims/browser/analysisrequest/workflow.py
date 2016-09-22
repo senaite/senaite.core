@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims import PMF
@@ -412,6 +417,21 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         # and then submit them.
         for analysis in submissable:
             doActionFor(analysis, 'submit')
+
+        # LIMS-2366: Finally, when we are done processing all applicable
+        # analyses, we must attempt to initiate the submit transition on the
+        # AR itself. This is for the case where "general retraction" has been
+        # done, or where the last "received" analysis has been removed, and
+        # the AR is in state "received" while there are no "received" analyses
+        # left to trigger the parent transition.
+        if self.context.portal_type == 'Sample':
+            ar = self.context.getAnalysisRequests()[0]
+        elif self.context.portal_type == 'Analysis':
+            ar = self.context.aq_parent
+        else:
+            ar = self.context
+        doActionFor(ar, 'submit')
+
         message = PMF("Changes saved.")
         self.context.plone_utils.addPortalMessage(message, 'info')
         if checkPermission(EditResults, self.context):

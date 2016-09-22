@@ -366,7 +366,7 @@ function WorksheetManageResultsView() {
         /// Get all the analysis UIDs from this manage results table, cause
         // we'll need them to retrieve all the IMM constraints/rules to be
         // applied later.
-        var dictuids = $.parseJSON($('#lab_analyses #item_data, #analyses_form #item_data').val());
+        var dictuids = $.parseJSON($('#item_data').val());
         $.each(dictuids, function(key, value) { auids.push(key); });
 
         // Retrieve all the rules/constraints to be applied for each analysis

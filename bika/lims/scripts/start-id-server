@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 reldir=`dirname $0`
 PYTHON=/usr/bin/python
 BIKA_BASE=./zinstance
