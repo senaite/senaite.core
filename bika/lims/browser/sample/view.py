@@ -106,13 +106,13 @@ class SamplesView(BikaListingView):
                       'toggle': False},
             'SamplingDate': {'title': _('Sampling Date'),
                                 'index': 'getSamplingDate',
-                                'input_class': 'datepicker autosave',
+                                'input_class': 'datetimepicker_nofuture autosave',
                                 'input_width': '10',
                                 'toggle': True},
             'DateSampled': {'title': _('Date Sampled'),
                                'index':'getDateSampled',
                                'toggle': SamplingWorkflowEnabled,
-                               'input_class': 'datepicker_nofuture autosave',
+                               'input_class': 'datetimepicker_nofuture autosave',
                                'input_width': '10'},
             'getSampler': {'title': _('Sampler'),
                            'toggle': SamplingWorkflowEnabled},
@@ -365,9 +365,11 @@ class SamplesView(BikaListingView):
 
         if not samplingdate > DateTime() \
                 and SamplingWorkflowEnabled:
-            datesampled = self.ulocalized_time(obj.getDateSampled())
+            datesampled = self.ulocalized_time(
+                obj.getDateSampled(), long_format=True)
             if not datesampled:
-                datesampled = self.ulocalized_time(DateTime())
+                datesampled = self.ulocalized_time(
+                    DateTime(), long_format=True)
                 item['class']['DateSampled'] = 'provisional'
             sampler = obj.getSampler().strip()
             if sampler:

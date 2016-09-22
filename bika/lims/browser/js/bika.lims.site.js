@@ -158,7 +158,6 @@ function SiteView() {
             })
             .click(function(){$(this).attr("value", "");})
             .focus();
-
         });
 
         $("input.datepicker_nofuture").live("click", function() {
@@ -185,6 +184,27 @@ function SiteView() {
                 numberOfMonths: 2,
                 dateFormat: dateFormat,
                 yearRange: limitString
+            })
+            .click(function(){$(this).attr("value", "");})
+            .focus();
+        });
+
+
+        $("input.datetimepicker_nofuture").live("click", function() {
+            $(this).datetimepicker({
+                showOn:"focus",
+                showAnim:"",
+                changeMonth:true,
+                changeYear:true,
+                maxDate: curDate,
+                dateFormat: dateFormat,
+                yearRange: limitString,
+                timeFormat: "HH:mm",
+                beforeShow: function() {
+                        setTimeout(function(){
+                            $('.ui-datepicker').css('z-index', 99999999999999);
+                        }, 0);
+                    }
             })
             .click(function(){$(this).attr("value", "");})
             .focus();

@@ -223,6 +223,7 @@ schema = BikaSchema.copy() + Schema((
         write_permission=SampleSample,
         widget = DateTimeWidget(
             label=_("Date Sampled"),
+            show_time=True,
             size=20,
             visible={'edit': 'visible',
                      'view': 'visible',
@@ -297,6 +298,7 @@ schema = BikaSchema.copy() + Schema((
         widget = DateTimeWidget(
             label=_("Sampling Date"),
             description=_("Define when the sampler has to take the samples"),
+            show_time=True,
             visible={'edit': 'visible',
                      'view': 'visible',
                      'header_table': 'visible',
@@ -940,7 +942,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
         is cancelled
         """
         # Can't do anything to the object if it's cancelled
-        return isBasicTransitionAllowed(self):
+        return isBasicTransitionAllowed(self)
 
     def guard_sample_prep_transition(self):
         """Allow the sampleprep automatic transition to fire.

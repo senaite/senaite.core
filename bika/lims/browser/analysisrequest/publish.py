@@ -257,7 +257,8 @@ class AnalysisRequestPublishView(BrowserView):
                 'date_received': self.ulocalized_time(ar.getDateReceived(), long_format=1),
                 'remarks': ar.getRemarks(),
                 'member_discount': ar.getMemberDiscount(),
-                'date_sampled': self.ulocalized_time(ar.getDateSampled(), long_format=1),
+                'date_sampled': self.ulocalized_time(
+                    ar.getDateSampled(), long_format=1),
                 'date_published': self.ulocalized_time(DateTime(), long_format=1),
                 'invoiced': ar.getInvoiced(),
                 'late': ar.getLate(),

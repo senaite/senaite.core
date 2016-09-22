@@ -475,6 +475,7 @@ schema = BikaSchema.copy() + Schema((
         widget = DateTimeWidget(
             label = _("Date Sampled"),
             size=20,
+            show_time=True,
             visible={'edit': 'visible',
                      'view': 'visible',
                      'secondary': 'disabled',
@@ -561,6 +562,7 @@ schema = BikaSchema.copy() + Schema((
         widget = DateTimeWidget(
             label = _("Sampling Date"),
             size=20,
+            show_time=True,
             render_own_label=True,
             # see SamplingWOrkflowWidgetVisibility
             visible={'edit': 'visible',
