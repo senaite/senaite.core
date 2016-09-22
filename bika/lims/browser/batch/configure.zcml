@@ -6,6 +6,14 @@
 
     <browser:page
       for="bika.lims.interfaces.IBatch"
+      name="workflow_action"
+      class="bika.lims.browser.batch.workflow.BatchWorkflowAction"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IBatch"
       name="analysisrequests"
       class="bika.lims.browser.batch.analysisrequests.AnalysisRequestsView"
       permission="zope2.View"
