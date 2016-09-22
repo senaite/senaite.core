@@ -81,8 +81,6 @@ class WorkflowAction:
         form = self.request.form
         came_from = "workflow_action"
         action = form.get(came_from, '')
-        if type(action) in (list, tuple):
-            action = action[0]
         if not action:
             came_from = "workflow_action_button"
             action = form.get('workflow_action_id', '')
@@ -92,6 +90,9 @@ class WorkflowAction:
                                            self.context.absolute_url())
                 self.request.response.redirect(self.destination_url)
                 return None, None
+        # A condition in the form causes Plone to sometimes send two actions
+        if type(action) in (list, tuple):
+            action = action[0]
         return (action, came_from)
 
     def _get_selected_items(self, full_objects = True):
@@ -166,9 +167,6 @@ class WorkflowAction:
         action, came_from = self._get_form_workflow_action()
 
         if action:
-            # bika_listing sometimes gives us a list of items?
-            if type(action) == list:
-                action = action[0]
             # Call out to the workflow action method
             # Use default bika_listing.py/WorkflowAction for other transitions
             method_name = 'workflow_action_' + action
@@ -214,12 +212,13 @@ class WorkflowAction:
         # automatic label printing
         if transitioned and action == 'receive' \
             and 'receive' in self.portal.bika_setup.getAutoPrintStickers():
-            q = "/sticker?autoprint=1&template=%s&items=" % (self.portal.bika_setup.getAutoStickerTemplate())
+            q = "/sticker?template=%s&items=" % (self.portal.bika_setup.getAutoStickerTemplate())
             # selected_items is a list of UIDs (stickers for AR_add use IDs)
             q += ",".join(transitioned)
             dest = self.context.absolute_url() + q
 
         return len(transitioned), dest
+
 
 class BikaListingView(BrowserView):
     """
@@ -491,12 +490,15 @@ class BikaListingView(BrowserView):
         self.rows_only = self.request.get('rows_only','') == form_id
         self.limit_from = int(self.request.get(form_id + '_limit_from',0))
 
-        # contentFilter is expected in every self.review_state.
-        for k, v in self.review_state['contentFilter'].items():
+        # contentFilter is allowed in every self.review_state.
+        for k, v in self.review_state.get('contentFilter', {}).items():
             self.contentFilter[k] = v
 
         # sort on
-        self.sort_on = self.request.get(form_id + '_sort_on', None)
+        self.sort_on = self.sort_on \
+            if hasattr(self, 'sort_on') and self.sort_on \
+            else None
+        self.sort_on = self.request.get(form_id + '_sort_on', self.sort_on)
         self.sort_order = self.request.get(form_id + '_sort_order', 'ascending')
         self.manual_sort_on = self.request.get(form_id + '_manual_sort_on', None)
 
@@ -514,6 +516,9 @@ class BikaListingView(BrowserView):
                    self.manual_sort_on = self.sort_on
             else:
                 # We cannot sort for a column that doesn't exist!
+                msg = "{}: sort_on is '{}', not a valid column".format(
+                    self, self.sort_on)
+                logger.error(msg)
                 self.sort_on = None
 
         if self.manual_sort_on:
@@ -522,9 +527,10 @@ class BikaListingView(BrowserView):
                                 else self.manual_sort_on
             if self.manual_sort_on not in self.columns.keys():
                 # We cannot sort for a column that doesn't exist!
+                msg = "{}: manual_sort_on is '{}', not a valid column".format(
+                    self, self.manual_sort_on)
+                logger.error(msg)
                 self.manual_sort_on = None
-        else:
-            self.request.set(form_id+'_manual_sort_on', self.sort_on)
 
         if self.sort_on or self.manual_sort_on:
             # By default, if sort_on is set, sort the items ASC
@@ -538,7 +544,7 @@ class BikaListingView(BrowserView):
             self.sort_on = 'created'
 
         self.contentFilter['sort_order'] = self.sort_order
-        if not self.manual_sort_on:
+        if self.sort_on:
             self.contentFilter['sort_on'] = self.sort_on
 
         # pagesize
@@ -969,12 +975,12 @@ class BikaListingView(BrowserView):
                 results.append(item)
                 idx+=1
 
-            # Need manual_sort?
-            # Note that the order has already been set in contentFilter, so
-            # there is no need to reverse
-            if self.manual_sort_on:
-                results.sort(lambda x,y:cmp(x.get(self.manual_sort_on, ''),
-                                         y.get(self.manual_sort_on, '')))
+        # Need manual_sort?
+        # Note that the order has already been set in contentFilter, so
+        # there is no need to reverse
+        if self.manual_sort_on:
+            results.sort(lambda x,y:cmp(x.get(self.manual_sort_on, ''),
+                                     y.get(self.manual_sort_on, '')))
 
         return results
 
