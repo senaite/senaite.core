@@ -2589,14 +2589,16 @@ class AnalysisRequest(BaseFolder):
         if skip(self, "sampling_workflow"):
             return
         sample = self.getSample()
-        if sample.getSamplingDate() > DateTime():
+        sd = sample.getSamplingDate()
+        if sd and sd > DateTime():
             sample.future_dated = True
 
     def workflow_script_no_sampling_workflow(self):
         if skip(self, "no_sampling_workflow"):
             return
         sample = self.getSample()
-        if sample.getSamplingDate() > DateTime():
+        sd = sample.getSamplingDate()
+        if sd and sd > DateTime():
             sample.future_dated = True
 
     def workflow_script_attach(self):
