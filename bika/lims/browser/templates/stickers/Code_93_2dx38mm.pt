@@ -34,7 +34,8 @@
     sample_id         python:sample.getId();
     sample_point      python:sample.getSamplePoint() and sample.getSamplePoint().Title() or '';
     sample_type       python:sample.getSampleType().Title();
-    sampling_date     python:sample.getSamplingDate() and sample.getSamplingDate().Date();
+    sd                python:sample.getSamplingDate();
+    sampling_date      python:sd.Date() if sd else '';
     client_sample_id  python:sample.getClientSampleID();
     preservation      python:part.getPreservation() and part.getPreservation().Title() or '';
     container         python:part.getContainer() and part.getContainer().Title() or '';
