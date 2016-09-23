@@ -8,8 +8,6 @@ from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
-from bika.lims.browser.analysisrequest.reject import AnalysisRequestRejectEmailView
-from bika.lims.browser.analysisrequest.reject import AnalysisRequestRejectPdfView
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import ISample, IAnalysisService, IAnalysis
 from bika.lims.utils import tmpID
@@ -274,6 +272,7 @@ def notify_rejection(analysisrequest):
 
     # This is the template to render for the pdf that will be either attached
     # to the email and attached the the Analysis Request for further access
+    from bika.lims.browser.analysisrequest.reject import AnalysisRequestRejectPdfView
     tpl = AnalysisRequestRejectPdfView(analysisrequest, analysisrequest.REQUEST)
     html = tpl.template()
     html = safe_unicode(html).encode('utf-8')
@@ -298,6 +297,7 @@ def notify_rejection(analysisrequest):
         os.remove(pdf_fn)
 
     # This is the message for the email's body
+    from bika.lims.browser.analysisrequest.reject import AnalysisRequestRejectEmailView
     tpl = AnalysisRequestRejectEmailView(analysisrequest, analysisrequest.REQUEST)
     html = tpl.template()
     html = safe_unicode(html).encode('utf-8')
