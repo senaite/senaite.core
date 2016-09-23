@@ -750,7 +750,7 @@ class AnalysisRequestsView(BikaListingView):
             item['ClientContact'] = ""
 
         SamplingWorkflowEnabled = sample.getSamplingWorkflowEnabled()
-        if SamplingWorkflowEnabled and sd and not sd > DateTime():
+        if SamplingWorkflowEnabled and (not sd or not sd > DateTime()):
             datesampled = self.ulocalized_time(
                 sample.getDateSampled(), long_format=True)
             if not datesampled:
@@ -774,8 +774,7 @@ class AnalysisRequestsView(BikaListingView):
         state = self.workflow.getInfoFor(obj, 'review_state')
         if state == 'to_be_sampled' \
                 and checkPermission(SampleSample, obj) \
-                and sd \
-                and not sd > DateTime():
+                and (not sd or not sd > DateTime()):
             item['required'] = ['getSampler', 'getDateSampled']
             item['allow_edit'] = ['getSampler', 'getDateSampled']
             samplers = getUsers(sample, ['Sampler', 'LabManager', 'Manager'])
