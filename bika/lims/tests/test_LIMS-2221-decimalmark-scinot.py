@@ -1,5 +1,11 @@
 # -*- coding: utf-8 -*-
 
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
+
 from bika.lims.content.analysis import Analysis
 from bika.lims.testing import BIKA_FUNCTIONAL_TESTING
 from bika.lims.tests.base import BikaFunctionalTestCase

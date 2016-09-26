@@ -1,5 +1,11 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from AccessControl import getSecurityManager
 from Products.CMFCore.permissions import ModifyPortalContent
+from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
@@ -17,6 +23,8 @@ from zope.interface import implements
 class AnalysisRequestsView(BikaListingView):
     """Base for all lists of ARs
     """
+    template = ViewPageTemplateFile("templates/analysisrequests.pt")
+    ar_add = ViewPageTemplateFile("templates/ar_add.pt")
     implements(IViewView)
 
     def __init__(self, context, request):
@@ -105,7 +113,7 @@ class AnalysisRequestsView(BikaListingView):
             'getDateSampled': {'title': _('Date Sampled'),
                                'index': 'getDateSampled',
                                'toggle': SamplingWorkflowEnabled,
-                               'input_class': 'datepicker_nofuture',
+                               'input_class': 'datetimepicker_nofuture',
                                'input_width': '10'},
             'getDateVerified': {'title': _('Date Verified'),
                                 'input_width': '10'},
@@ -113,7 +121,7 @@ class AnalysisRequestsView(BikaListingView):
                            'toggle': SamplingWorkflowEnabled},
             'getDatePreserved': {'title': _('Date Preserved'),
                                  'toggle': user_is_preserver,
-                                 'input_class': 'datepicker_nofuture',
+                                 'input_class': 'datetimepicker_nofuture',
                                  'input_width': '10',
                                  'sortable': False},  # no datesort without index
             'getPreserver': {'title': _('Preserver'),
@@ -188,6 +196,7 @@ class AnalysisRequestsView(BikaListingView):
                                'sort_order': 'reverse'},
              'transitions': [{'id': 'sample'},
                              {'id': 'submit'},
+                             {'id': 'cancel'},
                             ],
              'custom_actions': [],
              'columns': ['getRequestID',
@@ -221,7 +230,9 @@ class AnalysisRequestsView(BikaListingView):
              'contentFilter': {'review_state': ('to_be_preserved',),
                                'sort_on': 'created',
                                'sort_order': 'reverse'},
-             'transitions': [{'id': 'preserve'},],
+             'transitions': [{'id': 'preserve'},
+                             {'id': 'cancel'},
+                             ],
              'custom_actions': [],
              'columns': ['getRequestID',
                         'getSample',
@@ -254,7 +265,9 @@ class AnalysisRequestsView(BikaListingView):
              'contentFilter': {'review_state': ('scheduled_sampling',),
                                'sort_on': 'created',
                                'sort_order': 'reverse'},
-             'transitions': [{'id': 'sample'},],
+             'transitions': [{'id': 'sample'},
+                             {'id': 'cancel'},
+                             ],
              'custom_actions': [],
              'columns': ['getRequestID',
                         'getSample',
@@ -398,7 +411,9 @@ class AnalysisRequestsView(BikaListingView):
              'contentFilter': {'review_state': 'verified',
                                'sort_on': 'created',
                                'sort_order': 'reverse'},
-             'transitions': [{'id': 'publish'}],
+             'transitions': [{'id': 'publish'},
+                             {'id': 'cancel'},
+                             ],
              'custom_actions': [],
              'columns': ['getRequestID',
                         'getSample',
@@ -686,8 +701,9 @@ class AnalysisRequestsView(BikaListingView):
         val = obj.Schema().getField('SubGroup').get(obj)
         item['SubGroup'] = val.Title() if val else ''
 
-        samplingdate = obj.getSample().getSamplingDate()
-        item['SamplingDate'] = self.ulocalized_time(samplingdate, long_format=1)
+        sd = obj.getSample().getSamplingDate()
+        item['SamplingDate'] = \
+            self.ulocalized_time(sd, long_format=1) if sd else ''
         item['getDateReceived'] = self.ulocalized_time(obj.getDateReceived())
         item['getDatePublished'] = self.ulocalized_time(obj.getDatePublished())
         item['getDateVerified'] = getTransitionDate(obj, 'verify')
@@ -711,7 +727,7 @@ class AnalysisRequestsView(BikaListingView):
         if obj.getLate():
             after_icons += "<img src='%s/++resource++bika.lims.images/late.png' title='%s'>" % \
                 (self.portal_url, t(_("Late Analyses")))
-        if samplingdate > DateTime():
+        if sd and sd > DateTime():
             after_icons += "<img src='%s/++resource++bika.lims.images/calendar.png' title='%s'>" % \
                 (self.portal_url, t(_("Future dated sample")))
         if obj.getInvoiceExclude():
@@ -734,12 +750,12 @@ class AnalysisRequestsView(BikaListingView):
             item['ClientContact'] = ""
 
         SamplingWorkflowEnabled = sample.getSamplingWorkflowEnabled()
-        if SamplingWorkflowEnabled and not samplingdate > DateTime():
-            datesampled = self.ulocalized_time(sample.getDateSampled())
+        if SamplingWorkflowEnabled and (not sd or not sd > DateTime()):
+            datesampled = self.ulocalized_time(
+                sample.getDateSampled(), long_format=True)
             if not datesampled:
                 datesampled = self.ulocalized_time(
-                    DateTime(),
-                    long_format=1)
+                    DateTime(), long_format=True)
                 item['class']['getDateSampled'] = 'provisional'
             sampler = sample.getSampler().strip()
             if sampler:
@@ -758,7 +774,7 @@ class AnalysisRequestsView(BikaListingView):
         state = self.workflow.getInfoFor(obj, 'review_state')
         if state == 'to_be_sampled' \
                 and checkPermission(SampleSample, obj) \
-                and not samplingdate > DateTime():
+                and (not sd or not sd > DateTime()):
             item['required'] = ['getSampler', 'getDateSampled']
             item['allow_edit'] = ['getSampler', 'getDateSampled']
             samplers = getUsers(sample, ['Sampler', 'LabManager', 'Manager'])

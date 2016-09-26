@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 """The request for analysis by a client. It contains analysis instances.
 """
 import logging
@@ -470,6 +475,7 @@ schema = BikaSchema.copy() + Schema((
         widget = DateTimeWidget(
             label = _("Date Sampled"),
             size=20,
+            show_time=True,
             visible={'edit': 'visible',
                      'view': 'visible',
                      'secondary': 'disabled',
@@ -499,7 +505,7 @@ schema = BikaSchema.copy() + Schema((
         vocabulary='getSamplers',
         widget=BikaSelectionWidget(
             format='select',
-            label=_("Sampler who has sampled"),
+            label=_("Sampler"),
             # see SamplingWOrkflowWidgetVisibility
             visible={'edit': 'visible',
                      'view': 'visible',
@@ -527,11 +533,10 @@ schema = BikaSchema.copy() + Schema((
         write_permission=ScheduleSampling,
         vocabulary='getSamplers',
         widget=BikaSelectionWidget(
-            description=_(
-                "Define the sampler supposed to do the sample in the scheduled"+
-                " date"),
+            description=_("Define the sampler supposed to do the sample in "
+                          "the scheduled date"),
             format='select',
-            label=_("Define the Sampler for the scheduled sampling"),
+            label=_("Sampler for scheduled sampling"),
             visible={'edit': 'visible',
                      'view': 'visible',
                      'header_table': 'visible',
@@ -557,6 +562,7 @@ schema = BikaSchema.copy() + Schema((
         widget = DateTimeWidget(
             label = _("Sampling Date"),
             size=20,
+            show_time=True,
             render_own_label=True,
             # see SamplingWOrkflowWidgetVisibility
             visible={'edit': 'visible',
@@ -667,7 +673,7 @@ schema = BikaSchema.copy() + Schema((
     # see setResultsRange below.
     RecordsField('ResultsRange',
          required=0,
-         type='analysisspec',
+         type='resultsrange',
          subfields=('keyword', 'min', 'max', 'error', 'hidemin', 'hidemax', 'rangecomment'),
          widget=ComputedWidget(visible=False),
     ),
@@ -2521,20 +2527,10 @@ class AnalysisRequest(BaseFolder):
         return True
 
     def guard_receive_transition(self):
-        """Prevent the receive transition from being available:
-        - if object is cancelled
-        - if any related ARs have field analyses with no result.
+        """Prevent the receive transition from being available if object
+        is cancelled
         """
-        if not isBasicTransitionAllowed(self):
-            return False
-        # check if any related ARs have field analyses with no result.
-        for ar in self.getSample().getAnalysisRequests():
-            field_analyses = ar.getAnalyses(getPointOfCapture='field',
-                                            full_objects=True)
-            no_results = [a for a in field_analyses if a.getResult() == '']
-            if no_results:
-                return False
-        return True
+        return isBasicTransitionAllowed(self)
 
     def guard_sample_prep_transition(self):
         sample = self.getSample()
@@ -2593,14 +2589,16 @@ class AnalysisRequest(BaseFolder):
         if skip(self, "sampling_workflow"):
             return
         sample = self.getSample()
-        if sample.getSamplingDate() > DateTime():
+        sd = sample.getSamplingDate()
+        if sd and sd > DateTime():
             sample.future_dated = True
 
     def workflow_script_no_sampling_workflow(self):
         if skip(self, "no_sampling_workflow"):
             return
         sample = self.getSample()
-        if sample.getSamplingDate() > DateTime():
+        sd = sample.getSamplingDate()
+        if sd and sd > DateTime():
             sample.future_dated = True
 
     def workflow_script_attach(self):
