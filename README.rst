@@ -1,7 +1,8 @@
 Bika LIMS
 =========
 
-v3.2.1 (unreleased) [![Build Status](https://travis-ci.org/bikalabs/bika.lims.svg?branch=master)](https://travis-ci.org/bikalabs/bika.lims)
+v3.2.1 (unreleased)
+[![Build Status](https://travis-ci.org/bikalabs/bika.lims.svg?branch=master)](https://travis-ci.org/bikalabs/bika.lims)
 
 The meaning of Gaob
 -------------------
