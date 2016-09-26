@@ -1,8 +1,6 @@
 Bika LIMS
 =========
 
-v3.2.1 (unreleased) 
-
 .. image:: https://travis-ci.org/bikalabs/bika.lims.svg?branch=master
     :target: https://travis-ci.org/bikalabs/bika.lims
 
