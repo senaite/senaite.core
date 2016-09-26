@@ -1360,7 +1360,7 @@ class Calculations(WorksheetImporter):
         sheet = self.workbook.get_sheet_by_name("Methods")
         bsc = getToolByName(self.context, 'bika_setup_catalog')
         for row in self.get_rows(3, sheet):
-            if row['title'] and row['Calculation_title']:
+            if row.get('title', '') and row.get('Calculation_title', ''):
                 meth = self.get_object(bsc, "Method", row.get('title'))
                 if meth and not meth.getCalculation():
                     calctit = safe_unicode(row['Calculation_title']).encode('utf-8')
