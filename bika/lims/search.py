@@ -1,4 +1,10 @@
 # -*- coding: utf-8 -*-
+
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 """
 This is code from plone.app.search.browser, modified to
 include objects indexed in catalogs other than portal_catalog

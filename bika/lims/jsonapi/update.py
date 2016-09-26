@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from bika.lims.jsonapi import set_fields_from_request
 from Products.CMFCore.utils import getToolByName
 from plone.jsonapi.core import router

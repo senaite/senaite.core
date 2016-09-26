@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from AccessControl import getSecurityManager
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
@@ -58,7 +63,7 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
                     else:
                         allstatus.append(status)
                 if len(allstatus) > 0:
-                    message = "General Retract Done"
+                    message = "General Retract Done.  Submit this AR manually."
                     self.context.plone_utils.addPortalMessage(message, 'warning')
 
             self.checkInstrumentsValidity()

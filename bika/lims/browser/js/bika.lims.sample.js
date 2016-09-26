@@ -8,7 +8,7 @@ function SampleView() {
     that.load = function() {
         // Plone "Sample" transition is only available when Sampler and DateSampled
         // are completed
-        $("#workflow-transition-sample").click(workflow_transition_sample);
+        workflow_transition_sample();
         // fires AR workflow transitions when using the schedule samplign transition
         transition_schedule_sampling();
         // Trap the save button
@@ -19,34 +19,35 @@ function SampleView() {
 
     }
 
-    function workflow_transition_sample(event) {
-        event.preventDefault();
-        var date = $("#DateSampled").val();
-        var sampler = $("#Sampler").val();
-        if (date != "" && date != undefined && date != null
-                && sampler != "" && sampler != undefined && sampler != null) {
-            var form = $("form[name='header_form']");
-            // this 'transition' key is scanned for in header_table.py/__call__
-            form.append("<input type='hidden' name='transition' value='sample'/>")
-            form.submit();
-        }
-        else {
-            var message = "";
-            if (date == "" || date == undefined || date == null) {
-                message = message + PMF('${name} is required, please correct.',
-                                        {'name': _("Date Sampled")})
+    function workflow_transition_sample() {
+        $("#workflow-transition-sample").click(function(event){
+            event.preventDefault();
+            var date = $("#DateSampled").val();
+            var sampler = $("#Sampler").val();
+            if (date && sampler) {
+                var form = $("form[name='header_form']");
+                // this 'transition' key is scanned for in header_table.py/__call__
+                form.append("<input type='hidden' name='transition' value='sample'/>")
+                form.submit();
             }
-            if (sampler == "" || sampler == undefined || sampler == null) {
-                if (message != "") {
-                    message = message + "<br/>";
+            else {
+                var message = "";
+                if (date == "" || date == undefined || date == null) {
+                    message = message + PMF('${name} is required, please correct.',
+                                            {'name': _("Date Sampled")})
                 }
-                message = message + PMF('${name} is required, please correct.',
-                                        {'name': _("Sampler")})
+                if (sampler == "" || sampler == undefined || sampler == null) {
+                    if (message != "") {
+                        message = message + "<br/>";
+                    }
+                    message = message + PMF('${name} is required, please correct.',
+                                            {'name': _("Sampler")})
+                }
+                if ( message != "") {
+                    window.bika.lims.portalMessage(message);
+                }
             }
-            if ( message != "") {
-                window.bika.lims.portalMessage(message);
-            }
-        }
+        });
     }
 
     function save_header(event){
