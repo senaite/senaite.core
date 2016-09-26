@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from bika.lims import enum
 from bika.lims import PMF
 from bika.lims.browser import ulocalized_time
@@ -5,9 +10,10 @@ from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.jsonapi import get_include_fields
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import t
+from bika.lims import logger
 from Products.CMFCore.interfaces import IContentish
-from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
+from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.interfaces import IWorkflowChain
 from Products.CMFPlone.workflow import ToolWorkflowChain
 from zope.component import adapts
@@ -123,7 +129,15 @@ def getCurrentState(obj, stateflowid):
 
 def getTransitionDate(obj, action_id):
     workflow = getToolByName(obj, 'portal_workflow')
-    review_history = list(workflow.getInfoFor(obj, 'review_history'))
+    try:
+        # https://jira.bikalabs.com/browse/LIMS-2242:
+        # Sometimes the workflow history is inexplicably missing!
+        review_history = list(workflow.getInfoFor(obj, 'review_history'))
+    except WorkflowException:
+        logger.error(
+            "workflow history is inexplicably missing."
+            " https://jira.bikalabs.com/browse/LIMS-2242")
+        return None
     # invert the list, so we always see the most recent matching event
     review_history.reverse()
     for event in review_history:

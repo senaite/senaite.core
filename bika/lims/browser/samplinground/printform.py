@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from bika.lims import bikaMessageFactory as _, t
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
@@ -179,7 +184,7 @@ class PrintForm(BrowserView):
             for part in ar.getPartitions():
                 partcell = False
                 container = part.getContainer().title \
-                    if part.getContainer() else ''
+                    if part and part.getContainer() else ''
                 partans = part.getAnalyses()
                 numpartans = len(partans)
                 for analysis in partans:

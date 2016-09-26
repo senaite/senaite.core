@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 # Testing layer to provide some of the features of PloneTestCase
 from AccessControl import getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager, \
@@ -210,7 +215,8 @@ class RemoteKeywords(Keywords, RemoteLibrary):
                     value = True
             elif fieldtype in [
                 'Products.ATExtensions.field.records.RecordsField',
-                'Products.ATExtensions.field.records.RecordField']:
+                'Products.ATExtensions.field.records.RecordField',
+                'bika.lims.browser.fields.referenceresultsfield.ReferenceResultsField']:
                 value = eval(value)
             if mutator:
                 mutator(value)
@@ -222,7 +228,7 @@ class RemoteKeywords(Keywords, RemoteLibrary):
         portal = api.portal.get()
         container = portal.restrictedTraverse(path.strip('/').split('/'))
         # create object
-        obj = _createObjectByType(portal_type, container, id, **kwargs)
+        obj = _createObjectByType(portal_type, container, id)
         obj.processForm(container.REQUEST, values=kwargs)
         self.write_at_field_values(obj, **kwargs)
         return obj.UID()

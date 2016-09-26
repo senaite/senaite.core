@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import logger, to_utf8
 from bika.lims.interfaces import IJSONReadExtender

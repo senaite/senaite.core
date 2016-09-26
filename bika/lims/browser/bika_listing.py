@@ -1,7 +1,21 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 """ Display lists of items in tables.
 """
-from DateTime import DateTime
+import json
+import re
+import urllib
+from operator import itemgetter
+
+import App
+import pkg_resources
+import plone
+import transaction
 from Acquisition import aq_parent, aq_inner
+from DateTime import DateTime
 from OFS.interfaces import IOrderedContainer
 from Products.AdvancedQuery import And, Or, MatchRegexp, Between, Generic, Eq
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -9,18 +23,17 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone import PloneMessageFactory
 from Products.CMFPlone.utils import pretty_title_or_id, isExpired, safe_unicode
-from bika.lims.browser import BrowserView
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import PMF
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t, format_supsub
 from bika.lims import logger
+from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IFieldIcons
 from bika.lims.subscribers import doActionFor
 from bika.lims.subscribers import skip
 from bika.lims.utils import isActive, getHiddenAttributesForClass
+from bika.lims.utils import t, format_supsub
 from bika.lims.utils import to_utf8
-from operator import itemgetter
 from plone.app.content.browser import tableview
 from plone.app.content.browser.foldercontents import FolderContentsView, FolderContentsTable
 from plone.app.content.browser.interfaces import IFolderContentsView
@@ -29,16 +42,8 @@ from zope.component import getAdapters
 from zope.component import getUtility
 from zope.component._api import getMultiAdapter
 from zope.i18nmessageid import MessageFactory
-from zope.interface import implements
 from zope.interface import Interface
-
-import App
-import json
-import pkg_resources
-import plone
-import re
-import transaction
-import urllib
+from zope.interface import implements
 
 try:
     from plone.batching import Batch
@@ -76,8 +81,6 @@ class WorkflowAction:
         form = self.request.form
         came_from = "workflow_action"
         action = form.get(came_from, '')
-        if type(action) in (list, tuple):
-            action = action[0]
         if not action:
             came_from = "workflow_action_button"
             action = form.get('workflow_action_id', '')
@@ -87,6 +90,9 @@ class WorkflowAction:
                                            self.context.absolute_url())
                 self.request.response.redirect(self.destination_url)
                 return None, None
+        # A condition in the form causes Plone to sometimes send two actions
+        if type(action) in (list, tuple):
+            action = action[0]
         return (action, came_from)
 
     def _get_selected_items(self, full_objects = True):
@@ -206,7 +212,7 @@ class WorkflowAction:
         # automatic label printing
         if transitioned and action == 'receive' \
             and 'receive' in self.portal.bika_setup.getAutoPrintStickers():
-            q = "/sticker?autoprint=1&template=%s&items=" % (self.portal.bika_setup.getAutoStickerTemplate())
+            q = "/sticker?template=%s&items=" % (self.portal.bika_setup.getAutoStickerTemplate())
             # selected_items is a list of UIDs (stickers for AR_add use IDs)
             q += ",".join(transitioned)
             dest = self.context.absolute_url() + q
@@ -345,6 +351,9 @@ class BikaListingView(BrowserView):
     # - sortable: if False, adds nosort class to this column.
     # - toggle: enable/disable column toggle ability.
     # - input_class: CSS class applied to input widget in edit mode
+    #               autosave: when js detects this variable as 'true',
+    #               the system will save the value after been
+    #               introduced via ajax.
     # - input_width: size attribute applied to input widget in edit mode
     columns = {
            'obj_type': {'title': _('Type')},
@@ -481,12 +490,15 @@ class BikaListingView(BrowserView):
         self.rows_only = self.request.get('rows_only','') == form_id
         self.limit_from = int(self.request.get(form_id + '_limit_from',0))
 
-        # contentFilter is expected in every self.review_state.
-        for k, v in self.review_state['contentFilter'].items():
+        # contentFilter is allowed in every self.review_state.
+        for k, v in self.review_state.get('contentFilter', {}).items():
             self.contentFilter[k] = v
 
         # sort on
-        self.sort_on = self.request.get(form_id + '_sort_on', None)
+        self.sort_on = self.sort_on \
+            if hasattr(self, 'sort_on') and self.sort_on \
+            else None
+        self.sort_on = self.request.get(form_id + '_sort_on', self.sort_on)
         self.sort_order = self.request.get(form_id + '_sort_order', 'ascending')
         self.manual_sort_on = self.request.get(form_id + '_manual_sort_on', None)
 
@@ -504,6 +516,9 @@ class BikaListingView(BrowserView):
                    self.manual_sort_on = self.sort_on
             else:
                 # We cannot sort for a column that doesn't exist!
+                msg = "{}: sort_on is '{}', not a valid column".format(
+                    self, self.sort_on)
+                logger.error(msg)
                 self.sort_on = None
 
         if self.manual_sort_on:
@@ -512,9 +527,10 @@ class BikaListingView(BrowserView):
                                 else self.manual_sort_on
             if self.manual_sort_on not in self.columns.keys():
                 # We cannot sort for a column that doesn't exist!
+                msg = "{}: manual_sort_on is '{}', not a valid column".format(
+                    self, self.manual_sort_on)
+                logger.error(msg)
                 self.manual_sort_on = None
-        else:
-            self.request.set(form_id+'_manual_sort_on', self.sort_on)
 
         if self.sort_on or self.manual_sort_on:
             # By default, if sort_on is set, sort the items ASC
@@ -528,7 +544,7 @@ class BikaListingView(BrowserView):
             self.sort_on = 'created'
 
         self.contentFilter['sort_order'] = self.sort_order
-        if not self.manual_sort_on:
+        if self.sort_on:
             self.contentFilter['sort_on'] = self.sort_on
 
         # pagesize
@@ -895,7 +911,14 @@ class BikaListingView(BrowserView):
 
                 # a list of names of fields that are compulsory (if editable)
                 required = [],
-
+                # a dict where the column name works as a key and the value is
+                # the name of the field related with the column. It is used
+                # when the name given to the column and the content field it
+                # represents diverges. bika_listing_table_items.pt defines an
+                # attribute for each item, this attribute is named 'field' and
+                # the system fills it taking advantage of this dictionary or
+                # the name of the column if it isn't defined in the dict.
+                field={},
                 # "before", "after" and replace: dictionary (key is column ID)
                 # A snippet of HTML which will be rendered
                 # before/after/instead of the table cell content.
@@ -952,12 +975,12 @@ class BikaListingView(BrowserView):
                 results.append(item)
                 idx+=1
 
-            # Need manual_sort?
-            # Note that the order has already been set in contentFilter, so
-            # there is no need to reverse
-            if self.manual_sort_on:
-                results.sort(lambda x,y:cmp(x.get(self.manual_sort_on, ''),
-                                         y.get(self.manual_sort_on, '')))
+        # Need manual_sort?
+        # Note that the order has already been set in contentFilter, so
+        # there is no need to reverse
+        if self.manual_sort_on:
+            results.sort(lambda x,y:cmp(x.get(self.manual_sort_on, ''),
+                                     y.get(self.manual_sort_on, '')))
 
         return results
 
@@ -1025,7 +1048,7 @@ class BikaListingView(BrowserView):
                 new_actions.append(action)
             else:
                 logger.warning("bad action in custom_actions: %s. (complete list: %s)."%(action,actions))
-
+        actions = new_actions
         # and these are removed
         if 'hide_transitions' in self.review_state:
             actions = [a for a in actions
