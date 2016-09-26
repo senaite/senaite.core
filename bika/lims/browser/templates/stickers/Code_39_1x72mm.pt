@@ -34,7 +34,8 @@
     SamplePoint       python:sample.getSamplePoint() and sample.getSamplePoint().Title() or '';
     Preservation      python:part.getPreservation() and part.getPreservation().Title() or '';
     Container         python:part.getContainer() and part.getContainer().Title() or '';
-    SamplingDate      python:sample.getSamplingDate() and sample.getSamplingDate().Date();
+    sd                python:sample.getSamplingDate();
+    SamplingDate      python:sd.Date() if sd else '';
     Deviation         python:sample.getSamplingDeviation() and sample.getSamplingDeviation().Title() or '';
     DateSampled       python:sample.getDateSampled() and sample.getDateSampled().Date();
     Composite         python:sample.getComposite();

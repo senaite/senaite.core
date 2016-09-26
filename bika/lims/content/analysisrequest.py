@@ -475,6 +475,7 @@ schema = BikaSchema.copy() + Schema((
         widget = DateTimeWidget(
             label = _("Date Sampled"),
             size=20,
+            show_time=True,
             visible={'edit': 'visible',
                      'view': 'visible',
                      'secondary': 'disabled',
@@ -561,6 +562,7 @@ schema = BikaSchema.copy() + Schema((
         widget = DateTimeWidget(
             label = _("Sampling Date"),
             size=20,
+            show_time=True,
             render_own_label=True,
             # see SamplingWOrkflowWidgetVisibility
             visible={'edit': 'visible',
@@ -2528,7 +2530,7 @@ class AnalysisRequest(BaseFolder):
         """Prevent the receive transition from being available if object
         is cancelled
         """
-        return isBasicTransitionAllowed(self):
+        return isBasicTransitionAllowed(self)
 
     def guard_sample_prep_transition(self):
         sample = self.getSample()
@@ -2587,14 +2589,16 @@ class AnalysisRequest(BaseFolder):
         if skip(self, "sampling_workflow"):
             return
         sample = self.getSample()
-        if sample.getSamplingDate() > DateTime():
+        sd = sample.getSamplingDate()
+        if sd and sd > DateTime():
             sample.future_dated = True
 
     def workflow_script_no_sampling_workflow(self):
         if skip(self, "no_sampling_workflow"):
             return
         sample = self.getSample()
-        if sample.getSamplingDate() > DateTime():
+        sd = sample.getSamplingDate()
+        if sd and sd > DateTime():
             sample.future_dated = True
 
     def workflow_script_attach(self):

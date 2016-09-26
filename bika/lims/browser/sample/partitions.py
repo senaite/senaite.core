@@ -47,7 +47,7 @@ class SamplePartitionsView(BikaListingView):
 ##            'getSampler': {'title': _('Sampler'),
 ##                           'sortable':False},
 ##            'getDateSampled': {'title': _('Date Sampled'),
-##                               'input_class': 'datepicker_nofuture',
+##                               'input_class': 'datetimepicker',
 ##                               'input_width': '10',
 ##                               'sortable':False},
             'getPreserver': {'title': _('Preserver'),

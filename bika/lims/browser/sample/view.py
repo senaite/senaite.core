@@ -106,13 +106,13 @@ class SamplesView(BikaListingView):
                       'toggle': False},
             'SamplingDate': {'title': _('Sampling Date'),
                                 'index': 'getSamplingDate',
-                                'input_class': 'datepicker autosave',
+                                'input_class': 'datetimepicker_nofuture autosave',
                                 'input_width': '10',
                                 'toggle': True},
             'DateSampled': {'title': _('Date Sampled'),
                                'index':'getDateSampled',
                                'toggle': SamplingWorkflowEnabled,
-                               'input_class': 'datepicker_nofuture autosave',
+                               'input_class': 'datetimepicker_nofuture autosave',
                                'input_width': '10'},
             'getSampler': {'title': _('Sampler'),
                            'toggle': SamplingWorkflowEnabled},
@@ -343,8 +343,9 @@ class SamplesView(BikaListingView):
 
         item['Created'] = self.ulocalized_time(obj.created())
 
-        samplingdate = obj.getSamplingDate()
-        item['SamplingDate'] = self.ulocalized_time(samplingdate, long_format=1)
+        sd = obj.getSamplingDate()
+        item['SamplingDate'] = \
+            self.ulocalized_time(sd, long_format=1) if sd else ''
 
         after_icons = ''
         if obj.getSampleType().getHazardous():
@@ -352,7 +353,7 @@ class SamplesView(BikaListingView):
                 "src='%s/++resource++bika.lims.images/hazardous.png'>" % \
                 (t(_("Hazardous")),
                  self.portal_url)
-        if obj.getSamplingDate() > DateTime():
+        if sd and sd > DateTime():
             after_icons += "<img title='%s' " \
                 "src='%s/++resource++bika.lims.images/calendar.png' >" % \
                 (t(_("Future dated sample")),
@@ -363,11 +364,12 @@ class SamplesView(BikaListingView):
         SamplingWorkflowEnabled =\
             self.context.bika_setup.getSamplingWorkflowEnabled()
 
-        if not samplingdate > DateTime() \
-                and SamplingWorkflowEnabled:
-            datesampled = self.ulocalized_time(obj.getDateSampled())
+        if SamplingWorkflowEnabled and (not sd or not sd > DateTime()):
+            datesampled = self.ulocalized_time(
+                obj.getDateSampled(), long_format=True)
             if not datesampled:
-                datesampled = self.ulocalized_time(DateTime())
+                datesampled = self.ulocalized_time(
+                    DateTime(), long_format=True)
                 item['class']['DateSampled'] = 'provisional'
             sampler = obj.getSampler().strip()
             if sampler:

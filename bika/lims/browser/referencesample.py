@@ -412,7 +412,7 @@ class ReferenceSamplesView(BikaListingView):
             return None
 
         item['ID'] = obj.id
-        item['DateSampled'] = self.ulocalized_time(obj.getDateSampled())
+        item['DateSampled'] = self.ulocalized_time(obj.getDateSampled(), long_format=True)
         item['DateReceived'] = self.ulocalized_time(obj.getDateReceived())
         item['DateOpened'] = self.ulocalized_time(obj.getDateOpened())
         item['ExpiryDate'] = self.ulocalized_time(obj.getExpiryDate())
