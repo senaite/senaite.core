@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 """ An AnalysisRequest report, containing the report itself in pdf and html
     format. Also, includes information about the date when was published, from
     who, the report recipients (and their emails) and the publication mode

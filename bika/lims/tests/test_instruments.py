@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from Products.CMFPlone.utils import _createObjectByType
 from bika.lims.utils import tmpID
 from bika.lims.testing import BIKA_FUNCTIONAL_TESTING

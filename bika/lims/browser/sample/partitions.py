@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
@@ -42,7 +47,7 @@ class SamplePartitionsView(BikaListingView):
 ##            'getSampler': {'title': _('Sampler'),
 ##                           'sortable':False},
 ##            'getDateSampled': {'title': _('Date Sampled'),
-##                               'input_class': 'datepicker_nofuture',
+##                               'input_class': 'datetimepicker',
 ##                               'input_width': '10',
 ##                               'sortable':False},
             'getPreserver': {'title': _('Preserver'),

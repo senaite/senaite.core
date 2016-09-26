@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 import warnings
 import pkg_resources
 __version__ = pkg_resources.get_distribution("bika.lims").version

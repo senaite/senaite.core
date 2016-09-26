@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 """Analysis result range specifications for a client
 """
 from AccessControl import ClassSecurityInfo
@@ -59,7 +64,7 @@ Schema((
     RecordsField('ResultsRange',
         # schemata = 'Specifications',
         required = 1,
-        type = 'analysisspec',
+        type = 'resultsrange',
         subfields = ('keyword', 'min', 'max', 'error', 'hidemin', 'hidemax',
                      'rangecomment'),
         required_subfields = ('keyword', 'error'),
@@ -109,6 +114,20 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
+
+    def Title(self):
+        """ Return the title if possible, else return the Sample type.
+        Fall back on the instance's ID if there's no sample type or title.
+        """
+        if self.title:
+            title = self.title
+        else:
+            sampletype = self.getSampleType()
+            if sampletype:
+                title = sampletype.Title()
+            else:
+                title = self.id
+        return safe_unicode(title).encode('utf-8')
 
     def contextual_title(self):
         parent = self.aq_parent

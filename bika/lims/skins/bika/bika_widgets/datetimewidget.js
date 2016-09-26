@@ -28,5 +28,17 @@ $(document).ready(function(){
         changeYear:true,
         yearRange: "-100:+1"
     });
+
+    $('[datetimepicker_nofuture="1"]').datetimepicker({
+        hourGrid: 4,
+        minuteGrid: 10,
+        // addSliderAccess: true,
+        // sliderAccessArgs: { touchonly: false },
+        dateFormat: dateFormat,
+        timeFormat: "HH:mm",
+        changeMonth:true,
+        changeYear:true,
+        yearRange: "-100:+1"
+    });
 });
 });

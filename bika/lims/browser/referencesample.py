@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from AccessControl import getSecurityManager
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
@@ -382,14 +387,16 @@ class ReferenceSamplesView(BikaListingView):
                 # Check expiry date
                 from Products.ATContentTypes.utils import DT2dt
                 from datetime import datetime
-                expirydate = DT2dt(obj.getExpiryDate()).replace(tzinfo=None)
-                if (datetime.today() > expirydate):
-                    workflow.doActionFor(obj, 'expire')
-                    items[x]['review_state'] = 'expired'
-                    items[x]['obj'] = obj
-                    if 'review_state' in self.contentFilter \
-                        and self.contentFilter['review_state'] == 'current':
-                        continue
+                exdate = obj.getExpiryDate()
+                if exdate:
+                    expirydate = DT2dt(exdate).replace(tzinfo=None)
+                    if (datetime.today() > expirydate):
+                        workflow.doActionFor(obj, 'expire')
+                        items[x]['review_state'] = 'expired'
+                        items[x]['obj'] = obj
+                        if 'review_state' in self.contentFilter \
+                            and self.contentFilter['review_state'] == 'current':
+                            continue
 
             items[x]['ID'] = obj.id
             items[x]['replace']['Supplier'] = "<a href='%s'>%s</a>" % \
@@ -400,7 +407,8 @@ class ReferenceSamplesView(BikaListingView):
             else:
                 items[x]['Definition'] = ' '
 
-            items[x]['DateSampled'] = self.ulocalized_time(obj.getDateSampled())
+            items[x]['DateSampled'] = self.ulocalized_time(
+                obj.getDateSampled(), long_format=True)
             items[x]['DateReceived'] = self.ulocalized_time(obj.getDateReceived())
             items[x]['ExpiryDate'] = self.ulocalized_time(obj.getExpiryDate())
 
