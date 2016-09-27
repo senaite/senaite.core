@@ -1,0 +1,51 @@
+tr.records_row_ReflexRules{
+    border: 1px solid #CECECE;
+}
+.action_deletebtn {
+    border: 0;
+    cursor: pointer;
+}
+#ReflexRules_table {
+    width: 100%;
+}
+tr.records_row_ReflexRules td.rulescontainer {
+    width: 100%;
+    padding:10px;
+}
+tr.records_row_ReflexRules td:last-child {
+    background-color: #efefef;
+    padding: 5px;
+    text-align: right;
+    width: 40px;
+}
+
+tr.records_row_ReflexRules td div {
+    padding: 3px 0;
+}
+
+tr.records_row_ReflexRules td div.analyst-section {
+    padding-left:10px;
+}
+
+tr.records_row_ReflexRules td:first-child input[type="button"] {
+    background-color: #fff;
+    border: medium none;
+    color: #205c90;
+    cursor: pointer;
+    font-size: 0.9em;
+    margin-top: 10px;
+}
+
+div.inline {
+    display: inline;
+}
+
+tr.records_row_ReflexRules td.rulenumber {
+    background-color: #efefef;
+    border-right: 1px solid #cdcdcd;
+    font-size: 1.2em;
+    font-weight: bold;
+    padding: 10px !important;
+    vertical-align: top;
+    white-space: nowrap;
+}
