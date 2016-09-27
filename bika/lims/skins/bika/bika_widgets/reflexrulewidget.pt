@@ -1,0 +1,388 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:tal="http://xml.zope.org/namespaces/tal"
+    xmlns:metal="http://xml.zope.org/namespaces/metal"
+    xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+    i18n:domain="plone">
+
+<head><title></title></head>
+<body>
+
+<metal:view_macro define-macro="view"
+    tal:define="kssClassesView context/@@kss_field_decorator_view;
+                getKssClasses nocall:kssClassesView/getKssClassesInlineEditable;">
+<span metal:define-macro="records-field-view"
+    tal:define="
+        kss_class python:getKssClasses(fieldName,
+        templateId='records_widget', macro='records-field-view');"
+    tal:attributes="
+        class kss_class;
+        id string:parent-fieldname-$fieldName">
+    <tal:block metal:define-slot="inside"
+        tal:repeat="idx python:range(field.getSize(here))"
+        tal:define="outerJoin field/outerJoin;
+                    innerJoin field/innerJoin;">
+        <span
+            tal:define="subfieldValues python:[field.getViewFor(here,idx,key,innerJoin) for key in field.getSubfields()];
+                        dummy python:subfieldValues.sort()"
+            tal:replace="structure python:innerJoin.join(subfieldValues)" /><span
+            tal:replace="structure outerJoin"
+            tal:condition="not: repeat/idx/end" />
+    </tal:block>
+</span>
+</metal:view_macro>
+
+<metal:define define-macro="edit">
+<metal:use use-macro="here/widgets/field/macros/edit">
+<tal:block metal:fill-slot="widget_body">
+    <span tal:replace="structure context/@@authenticator/authenticator"/>
+
+    <fieldset style="border:none;"
+        class="ArchetypesRecordsWidget"
+        tal:define="
+            values python:field.getEditAccessor(here)();
+            session_values python:here.session_restore_value(fieldName, values);
+            cached_values python:request.get(fieldName,session_values);
+            values python:cached_values or values;
+            dummy python:values.sort();
+            i18n_domain field/widget/i18n_domain|context/i18n_domain|string:plone">
+    <!-- This div contains a dictionary with all the data that the view might
+    need to behave dynamically -->
+    <div id="rules-setup-data" style="display:none;visibility:hidden;"
+        tal:content="widget/getReflexRuleSetup">
+    </div>
+    <table
+        tal:attributes="id string:${fieldName}_table"
+        class="recordswidget nosort">
+
+    <tr class="header">
+        <tal:block repeat="key python:field.getSubfields()">
+            <th colspan="2" tal:condition="python:
+                field.testSubfieldCondition(key,here,portal,template)
+                and (not hasattr(field, 'subfield_hidden')
+                     or field.subfield_hidden.get(key, False) == False)">
+                <span
+                    tal:content="structure python:
+                        here.translate(domain=i18n_domain,
+                                       msgid=field.getSubfieldLabel(key), default=field.getSubfieldLabel(key))">
+                    Label
+                </span>
+                <span class="fieldRequired">&nbsp;</span>
+            </th>
+        </tal:block>
+        <th>
+            <span tal:condition="widget/allowDelete" i18n:translate="" id="delete_this_entry"></span>
+        </th>
+    </tr>
+
+    <tr
+        tal:attributes="class string:records_row_${fieldName}"
+        tal:repeat="idx python:range(field.getEditSize(here))">
+
+        <td class="rulenumber">
+            <span class="reflex_rule_text"
+                tal:content="python: '# %s' % (idx+1)">
+            </span>
+        </td>
+        <td class="rulescontainer">
+            <tal:block
+                define="
+                    value python:field.getSubfieldValue(values, idx, 'rulesset');">
+                <!-- Analysis Service selection -->
+                <span i18n:translate="" class="reflex_rule_text">
+                    Analysis service:
+                </span>
+                <!-- Analysis Service -->
+                <!-- This select element is not set using tal because there is
+                    a javascript controller which takes care of the
+                    method-analysisService relation in order to show the result
+                    options -->
+                <select
+                    tal:attributes="
+                        name string:${fieldName}.analysisservice:records:ignore_empty;
+                        id string:${fieldName}-analysisservice-${repeat/idx/index};
+                        tabindex tabindex/next|nothing;"
+                        i18n:domain="python:i18n_domain">
+                    <option
+                        value=""
+                        i18n:translate=""/>
+                    </select>
+                <!-- defining other conditions -->
+                <input type="checkbox"
+                    tal:attributes="
+                        name string:${fieldName}.otherresultcondition:records:ignore_empty;
+                        id string:${fieldName}-otherresultcondition-${repeat/idx/index};
+                        checked python:'checked' if widget.getReflexRuleElement(idx,'otherresultcondition') else '';
+                        tabindex tabindex/next|nothing;"/>
+                <span i18n:translate="" class="reflex_rule_text">
+                    and is a
+                </span>
+                <div class="otherconditions inline">
+                    <!-- Action selector -->
+                    <select
+                        tal:define="
+                            olist widget/getActionVoc"
+                        tal:attributes="
+                            name string:${fieldName}.resultcondition:records:ignore_empty;
+                            id string:${fieldName}-resultcondition-${repeat/idx/index};
+                            tabindex tabindex/next|nothing;"
+                        i18n:domain="python:i18n_domain">
+                        <option
+                            tal:repeat="option olist"
+                            tal:content="python:olist.getValue(option)"
+                            tal:attributes="
+                                value python: option;
+                                selected python:'selected' if option==widget.getReflexRuleElement(idx,'resultcondition') else None;"
+                            i18n:translate=""/>
+                    </select>
+                    From level
+                    <input
+                        size="5"
+                        tal:attributes="
+                            name string:${fieldName}.fromlevel:records:ignore_empty;
+                            id string:${fieldName}-fromlevel-${repeat/idx/index};
+                            tabindex tabindex/next|nothing;
+                            value python:widget.getReflexRuleElement(idx,'fromlevel');"
+                            i18n:domain="python:i18n_domain">
+                </div>
+                <br/>
+                <!-- Max number of reflexions -->
+                <span i18n:translate="" class="reflex_rule_text">
+                    Max number of reflexions:
+                </span>
+                <input
+                    size="5"
+                    tal:attributes="
+                        name string:${fieldName}.repetition_max:records:ignore_empty;
+                        id string:${fieldName}-repetition_max-${repeat/idx/index};
+                        tabindex tabindex/next|nothing;
+                        value python:widget.getReflexRuleElement(idx,'repetition_max');"
+                        i18n:domain="python:i18n_domain">
+                <br/>
+                <!-- Define when the rule has to be triggered, after submit or after verify -->
+                <span i18n:translate="" class="reflex_rule_text">
+                    Trigger rule
+                </span>
+                <select
+                    tal:define="
+                        olist widget/getTriggerVoc"
+                    tal:attributes="
+                        name string:${fieldName}.trigger:records:ignore_empty;
+                        id string:${fieldName}-trigger-${repeat/idx/index};"
+                        i18n:domain="python:i18n_domain">
+                    <option
+                        tal:repeat="option olist"
+                        tal:content="python:olist.getValue(option)"
+                        tal:attributes="
+                            value python: option;
+                            selected python:'selected' if option==widget.getReflexRuleElement(idx,'trigger') else None"
+                        i18n:translate=""/>
+                </select>
+                <!-- Range definition -->
+                <div class="rangecontainer">
+                    <span i18n:translate="" class="reflex_rule_text">
+                        Expected Values: From
+                    </span>
+                    <input
+                        size="5"
+                        tal:attributes="
+                            name string:${fieldName}.range0:records:ignore_empty;
+                            id string:${fieldName}-range0-${repeat/idx/index};
+                            tabindex tabindex/next|nothing;
+                            value python:widget.getReflexRuleElement(idx,'range0');"
+                            i18n:domain="python:i18n_domain">
+                    <span i18n:translate="" class="reflex_rule_text">
+                        To:
+                    </span>
+                    <input
+                        size="5"
+                        tal:attributes="
+                            name string:${fieldName}.range1:records:ignore_empty;
+                            id string:${fieldName}-range1-${repeat/idx/index};
+                            tabindex tabindex/next|nothing;
+                            value python:widget.getReflexRuleElement(idx,'range1');"
+                            i18n:domain="python:i18n_domain">
+                </div>
+                <!-- Discrete result definition -->
+                <div class="resultoptioncontainer">
+                    <span i18n:translate="" class="reflex_rule_text">
+                        Expected Value:
+                    </span>
+                    <select
+                        tal:attributes="
+                            name string:${fieldName}.discreteresult:records:ignore_empty;
+                            id string:${fieldName}-discreteresult-${repeat/idx/index};
+                            tabindex tabindex/next|nothing;"
+                            i18n:domain="python:i18n_domain">
+                    </select>
+                </div>
+                <!-- Reflex action rules list -->
+                <label i18n:translate="" class="title">
+                    Actions:
+                </label>
+                <div
+                    class="actions-set"
+                    tal:attributes="
+                        name string:${fieldName}.actionsset:records:ignore_empty;
+                        id string:${fieldName}-actionsset-${repeat/idx/index};">
+                    <div
+                        tal:define="action_rows python:widget.getReflexRuleElement(idx,'actions');"
+                        tal:repeat="action_row action_rows"
+                        class="action">
+                        <!-- Action selector -->
+                        <select
+                            tal:define="
+                                act_row_idx python:action_row['act_row_idx'];
+                                olist widget/getActionVoc"
+                            tal:attributes="
+                                name string:${fieldName}.action-${act_row_idx}:records:ignore_empty;
+                                id string:${fieldName}-action-${repeat/idx/index}-${act_row_idx};
+                                tabindex tabindex/next|nothing;"
+                                i18n:domain="python:i18n_domain">
+                            <option
+                                tal:repeat="option olist"
+                                tal:content="python:olist.getValue(option)"
+                                tal:attributes="
+                                    value python: option;
+                                    selected python:'selected' if option==action_row['action'] else None"
+                                i18n:translate=""/>
+                        </select>
+                        <div class="action_define_result inline">
+                            <span i18n:translate="" class="reflex_rule_text">
+                                From:
+                            </span>
+                            <!-- Define to which analysis the result should be
+                            set, to the original one or the next one
+                            (repeating the analysis) -->
+                            <select
+                                tal:define="
+                                    act_row_idx python:action_row['act_row_idx'];
+                                    olist widget/getDefiningResultTo"
+                                tal:attributes="
+                                    name string:${fieldName}.setresulton-${act_row_idx}:records:ignore_empty;
+                                    id string:${fieldName}-setresulton-${repeat/idx/index}-${act_row_idx};
+                                    tabindex tabindex/next|nothing;"
+                                    i18n:domain="python:i18n_domain">
+                                <option
+                                    tal:repeat="option olist"
+                                    tal:content="python:olist.getValue(option)"
+                                    tal:attributes="
+                                        value python: option;
+                                        selected python:'selected' if option==action_row.get('setresulton', '') else None"
+                                    i18n:translate=""/>
+                            </select>
+                            <span i18n:translate="" class="reflex_rule_text">
+                                as:
+                            </span>
+                            <!-- Define the value to the original/next analysis
+                            when discrete values are needed -->
+                            <select
+                                tal:define="
+                                    act_row_idx python:action_row['act_row_idx'];"
+                                tal:attributes="
+                                    name string:${fieldName}.setresultdiscrete-${act_row_idx}:records:ignore_empty;
+                                    id string:${fieldName}-setresultdiscrete-${repeat/idx/index}-${act_row_idx};
+                                    tabindex tabindex/next|nothing;"
+                                    i18n:domain="python:i18n_domain">
+                            </select>
+                            <!-- Define the value to the original/next analysis
+                            when numeric values are needed -->
+                            <input
+                                size="5"
+                                tal:define="
+                                    act_row_idx python:action_row['act_row_idx'];"
+                                tal:attributes="
+                                    name string:${fieldName}.setresultvalue-${act_row_idx}:records:ignore_empty;
+                                    id string:${fieldName}-setresultvalue-${repeat/idx/index}-${act_row_idx};
+                                    tabindex tabindex/next|nothing;
+                                    value python:widget.getReflexRuleElement(idx,'range0');"
+                                    i18n:domain="python:i18n_domain">
+                        </div>
+                        <div class="to_other_worksheet inline">
+                            <!-- Other worksheet checkbox -->
+                            <input type="checkbox"
+                                tal:define="act_row_idx python:action_row['act_row_idx']"
+                                tal:attributes="
+                                    name string:${fieldName}.otherWS-${act_row_idx}:records:ignore_empty;
+                                    id string:${fieldName}-otherWS-${repeat/idx/index}-${act_row_idx};
+                                    checked python:'checked' if widget.getReflexRuleActionElement(idx,act_row_idx,'otherWS') else ''">
+                            <span i18n:translate="" class="reflex_rule_text">
+                                To other worksheet.
+                            </span>
+                            <!-- Analyst section -->
+                            <div class="analyst-section inline">
+                                <span i18n:translate="" class="reflex_rule_text">
+                                    Select the analyst
+                                </span>
+                                <select
+                                    tal:define="
+                                        act_row_idx python:action_row['act_row_idx'];
+                                        alist widget/getAnalysts;"
+                                    tal:attributes="
+                                        name string:${fieldName}.analyst-${act_row_idx}:records:ignore_empty;
+                                        id string:${fieldName}-analyst-${repeat/idx/index}-${act_row_idx};
+                                        tabindex tabindex/next|nothing;"
+                                        i18n:domain="python:i18n_domain">
+                                    <option
+                                        tal:repeat="option alist"
+                                        tal:content="python:alist.getValue(option)"
+                                        tal:attributes="
+                                            value python: option;
+                                            selected python:'selected' if option==action_row.get('analyst', '') else None"
+                                        i18n:translate=""/>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- delete action-->
+                        <img class="action_deletebtn"
+                            tal:attributes="
+                                src string:${portal/absolute_url}/++resource++bika.lims.images/delete.png"/>
+                    </div>
+                    <input
+                        type="button"
+                        class="context addnew"
+                        value="More"
+                        tal:attributes="id string:${fieldName}_action_addnew;tabindex tabindex/next|nothing"
+                        i18n:attributes="value"/>
+                </div>
+            </tal:block>
+        </td>
+        <td>
+            <!-- delete -->
+            <img tal:condition="widget/allowDelete"
+                class="rw_deletebtn"
+                tal:attributes="
+                    src string:${portal/absolute_url}/++resource++bika.lims.images/delete.png"/>
+
+            <!-- Hidden fields -->
+            <input
+                type="hidden"
+                name=""
+                value=""
+                tal:attributes="
+                    id string:${fieldName}-analysisservice-${repeat/idx/index};
+                    name string:${fieldName}.analysisservice:records:ignore_empty;
+                    value python:field.getSubfieldValue(values, idx, 'rulesset');"/>
+        </td>
+
+    </tr>
+    </table>
+
+    <input
+        type="button"
+        class="context"
+        value="More"
+        tal:condition="python: field.showMore(values)"
+        tal:attributes="id string:${fieldName}_addnew;tabindex tabindex/next|nothing"
+        i18n:attributes="value" />
+    </fieldset>
+</tal:block>
+</metal:use>
+</metal:define>
+
+<div metal:define-macro="search">
+  <div metal:use-macro="here/widgets/string/macros/edit">
+  </div>
+</div>
+
+</body>
+</html>

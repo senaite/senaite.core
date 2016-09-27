@@ -38,6 +38,7 @@ def upgrade(tool):
     setup.runImportStepFromProfile('profile-bika.lims:default', 'skins')
     # Creating all the sampling coordinator roles, permissions and indexes
     create_samplingcoordinator(portal)
+    reflex_rules(portal)
     """Update workflow permissions
     """
     wf = getToolByName(portal, 'portal_workflow')
@@ -106,3 +107,41 @@ def create_samplingcoordinator(portal):
     bc = getToolByName(portal, 'bika_catalog', None)
     if 'getScheduledSamplingSampler' not in bc.indexes():
         bc.addIndex('getScheduledSamplingSampler', 'FieldIndex')
+
+def reflex_rules(portal):
+    at = getToolByName(portal, 'archetype_tool')
+    # If reflex rules folder is not created yet, we should create it
+    typestool = getToolByName(portal, 'portal_types')
+    qi = portal.portal_quickinstaller
+    if not portal['bika_setup'].get('bika_reflexrulefolder'):
+        typestool.constructContent(type_name="ReflexRuleFolder",
+                                   container=portal['bika_setup'],
+                                   id='bika_reflexrulefolder',
+                                   title='Reflex Rules Folder')
+    obj = portal['bika_setup']['bika_reflexrulefolder']
+    obj.unmarkCreationFlag()
+    obj.reindexObject()
+    if not portal['bika_setup'].get('bika_reflexrulefolder'):
+        logger.info("ReflexRuleFolder not created")
+    # Install Products.DataGridField
+    qi.installProducts(['Products.DataGridField'])
+    # add new types not to list in nav
+    # ReflexRule
+    portal_properties = getToolByName(portal, 'portal_properties')
+    ntp = getattr(portal_properties, 'navtree_properties')
+    types = list(ntp.getProperty('metaTypesNotToList'))
+    types.append("ReflexRule")
+    ntp.manage_changeProperties(MetaTypesNotToQuery=types)
+    pc = getToolByName(portal, 'portal_catalog')
+    addIndexAndColumn(pc, 'Analyst', 'FieldIndex')
+
+
+def addIndexAndColumn(catalog, index, indextype):
+    try:
+        catalog.addIndex(index, indextype)
+    except:
+        pass
+    try:
+        catalog.addColumn(index)
+    except:
+        pass
