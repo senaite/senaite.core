@@ -90,8 +90,9 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             # Adding the Security Seal Intact checkbox's value to the container object
             container_uid = form['getContainer'][0][part_uid]
             uc = getToolByName(self.context, 'uid_catalog')
-            if len(uc(UID=container_uid)) > 0:
-                container_obj = uc(UID=container_uid)[0].getObject()
+            cbr = uc(UID=container_uid)
+            if cbr and len(cbr) > 0:
+                container_obj = cbr[0].getObject()
             else:
                 continue
             value = form.get('setSecuritySealIntact', {}).get(part_uid, '') == 'on'
