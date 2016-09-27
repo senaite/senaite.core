@@ -8,8 +8,6 @@ from DateTime.DateTime import DateTime
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import BrowserView, ulocalized_time
 from bika.lims.browser.bika_listing import BikaListingView
-from bika.lims.content.analysisrequest import schema as ar_schema
-from bika.lims.content.sample import schema as sample_schema
 from bika.lims.interfaces import IClient
 from bika.lims.utils import tmpID
 from bika.lims.workflow import getTransitionDate

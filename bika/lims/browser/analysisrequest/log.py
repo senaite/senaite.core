@@ -3,17 +3,10 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from AccessControl import getSecurityManager
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.browser.log import LogView
-from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
-from bika.lims.permissions import *
-from DateTime import DateTime
-from Products.Archetypes import PloneMessageFactory as PMF
-from bika.lims.utils import to_utf8
-from bika.lims.workflow import doActionFor
 from Products.CMFCore.utils import getToolByName
 
 import plone

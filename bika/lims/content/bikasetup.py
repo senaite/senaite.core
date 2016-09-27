@@ -16,6 +16,7 @@ from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.interfaces import IBikaSetup
 from bika.lims.interfaces import IHaveNoBreadCrumbs
 from bika.lims.browser.widgets import DurationWidget
+from bika.lims.browser.widgets import RejectionSetupWidget
 from bika.lims.browser.fields import DurationField
 from bika.lims.vocabularies import getStickerTemplates as _getStickerTemplates
 from plone.app.folder import folder
@@ -567,7 +568,26 @@ schema = BikaFolderSchema.copy() + Schema((
         widget = StringWidget(
             label=_("ID Server URL"),
             description=_("The full URL: http://URL/path:port")
-
+        ),
+    ),
+    RecordsField('RejectionReasons',
+        schemata = "Analyses",
+        widget = RejectionSetupWidget(
+            label=_("Enable the rejection workflow"),
+            description = _("Select this to activate the rejection workflow "
+                            "for Samples and Analysis Requests. A 'Reject' "
+                            "option will be displayed in the actions menu for "
+                            "these objects.")
+        ),
+    ),
+    BooleanField('NotifyOnRejection',
+        schemata = "Analyses",
+        default = False,
+        widget = BooleanWidget(
+            label = _("Email notification on rejection"),
+            description =_("Select this to activate automatic notifications "
+                           "via email to the Client when a Sample or Analysis "
+                           "Request is rejected.")
         ),
     ),
 ))
@@ -633,6 +653,18 @@ class BikaSetup(folder.ATFolder):
         items = [(x['ISO'], x['Country']) for x in COUNTRIES]
         items.sort(lambda x,y: cmp(x[1], y[1]))
         return items
+
+    def isRejectionWorkflowEnabled(self):
+        """Return true if the rejection workflow is enabled (its checkbox is set)
+        """
+        widget = self.getRejectionReasons()
+        # widget will be something like:
+        # [{'checkbox': u'on', 'textfield-2': u'b', 'textfield-1': u'c', 'textfield-0': u'a'}]
+        if len(widget) > 0:
+            checkbox = widget[0].get('checkbox', False)
+            return True if checkbox == 'on' else False
+        else:
+            return False
 
 
 registerType(BikaSetup, PROJECTNAME)

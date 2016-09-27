@@ -27,7 +27,7 @@ BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N
 Id:,to_be_sampled,,,,,,,,,,,,
 Title:,To Be Sampled,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,
-Transitions,"sample, schedule_sampling",,,,,,,,,,,,
+Transitions,"sample, schedule_sampling, reject",,,,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,SamplingCoordinator
 BIKA: Cancel and reinstate,N,N,Y,Y,N,N,N,N,Y,Y,N,N,N
 BIKA: Edit Field Results,N,N,Y,N,N,N,N,N,Y,Y,N,Y,Y
@@ -44,7 +44,7 @@ BIKA: Schedule Sampling,N,N,Y,N,N,N,N,N,N,N,N,N,Y
 Id:,scheduled_sampling,,,,,,,,,,,,
 Title:,Scheduled Sampling,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,
-Transitions,sample,,,,,,,,,,,,
+Transitions,"sample, reject",,,,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,SamplingCoordinator
 BIKA: Cancel and reinstate,N,N,Y,Y,N,N,N,N,Y,Y,N,N,Y
 BIKA: Edit Field Results,N,N,Y,N,N,N,N,N,Y,Y,N,Y,N
@@ -61,7 +61,7 @@ BIKA: Schedule Sampling,N,N,Y,N,N,N,N,N,N,N,N,N,Y
 Id:,sampled,,,,,,,,,,,,
 Title:,Sampled,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,
-Transitions,"auto_preservation_required, auto_no_preservation_required, to_be_preserved, sample_due",,,,,,,,,,,,
+Transitions,"auto_preservation_required, auto_no_preservation_required, to_be_preserved, sample_due, reject",,,,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,SamplingCoordinator
 BIKA: Cancel and reinstate,N,N,Y,Y,N,N,N,N,Y,Y,N,N,N
 BIKA: Edit Field Results,N,N,Y,N,N,N,N,N,Y,Y,N,Y,Y
@@ -77,7 +77,7 @@ BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N
 Id:,to_be_preserved,,,,,,,,,,,,
 Title:,To Be Preserved,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,
-Transitions,preserve,,,,,,,,,,,,
+Transitions,"preserve, reject",,,,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,SamplingCoordinator
 BIKA: Cancel and reinstate,N,N,Y,N,N,N,N,N,Y,Y,N,N,N
 BIKA: Edit Field Results,N,N,Y,N,N,N,N,Y,Y,Y,N,Y,Y
@@ -93,7 +93,7 @@ BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N
 Id:,sample_received,,,,,,,,,,,,
 Title:,Sample received,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,
-Transitions,"expire, sample_prep",,,,,,,,,,,,
+Transitions,"expire, sample_prep, reject, reject",,,,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,SamplingCoordinator
 BIKA: Cancel and reinstate,N,N,Y,N,N,N,N,N,Y,Y,N,N,N
 BIKA: Edit Field Results,N,N,N,N,N,N,N,N,N,N,N,N,N
@@ -109,7 +109,7 @@ BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N
 Id:,sample_due,,,,,,,,,,,,
 Title:,Sample Due,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,
-Transitions,"preserve, receive",,,,,,,,,,,,
+Transitions,"preserve, receive, reject",,,,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,SamplingCoordinator
 BIKA: Cancel and reinstate,N,N,Y,Y,N,N,N,N,Y,Y,N,N,N
 BIKA: Edit Field Results,N,N,Y,N,N,N,N,Y,Y,Y,N,Y,Y
@@ -125,7 +125,7 @@ BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N
 Id:,expired,,,,,,,,,,,,
 Title:,Expired,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,
-Transitions,dispose,,,,,,,,,,,,
+Transitions,"dispose, reject",,,,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,SamplingCoordinator
 BIKA: Cancel and reinstate,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit Field Results,N,N,N,N,N,N,N,N,N,N,N,N,N
@@ -159,6 +159,22 @@ Title:,Sample Preparation,,,,,,,,,,,,
 Description:,A sample preparation workflow is in progress,,,,,,,,,,,,
 Transitions,,,,,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,SamplingCoordinator
+,,,,,,,,,,,,,
+[State],,,,,,,,,,,,,
+Id:,rejected,,,,,,,,,,,,
+Title:,rejected,,,,,,,,,,,,
+Description:,,,,,,,,,,,,,
+Transitions,,,,,,,,,,,,,
+Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,SamplingCoordinator
+BIKA: Cancel and reinstate,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Edit Field Results,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Edit Sample,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Receive Sample,N,N,N,N,N,N,N,N,N,N,N,N,N
+View,N,N,Y,Y,N,N,N,Y,Y,Y,N,Y,N
+Modify portal content,N,N,Y,Y,N,N,N,Y,Y,Y,N,N,N
+BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,,,,
 [Transition],,,,,,,,,,,,,
 Id:,auto_no_preservation_required,,,,,,,,,,,,
@@ -263,6 +279,14 @@ Title:,,,,,,,,,,,,,
 Description:,to_be_preserved,,,,,,,,,,,,
 Target state:,to_be_preserved,,,,,,,,,,,,
 Trigger:,User,,,,,,,,,,,,
+,,,,,,,,,,,,,
+[Transition],,,,,,,,,,,,,
+Id:,reject,,,,,,,,,,,,
+Title:,,,,,,,,,,,,,
+Description:,reject,,,,,,,,,,,,
+Target state:,rejected,,,,,,,,,,,,
+Trigger:,User,,,,,,,,,,,,
+Guard expression:,python:here.bika_setup.isRejectionWorkflowEnabled(),,,,,,,,,,,,
 ,,,,,,,,,,,,,
 [Transition],,,,,,,,,,,,,
 Id:,sample_prep,,,,,,,,,,,,

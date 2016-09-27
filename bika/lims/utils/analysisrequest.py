@@ -4,15 +4,30 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from Products.CMFCore.utils import getToolByName
-from bika.lims.interfaces import ISample, IAnalysisService, IAnalysis
+from Products.CMFPlone.utils import _createObjectByType
+from Products.CMFPlone.utils import safe_unicode
+from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.idserver import renameAfterCreation
+from bika.lims.interfaces import ISample, IAnalysisService, IAnalysis
 from bika.lims.utils import tmpID
+from bika.lims.utils import to_utf8
+from bika.lims.utils import encode_header
+from bika.lims.utils import createPdf
+from bika.lims.utils import attachPdf
 from bika.lims.utils.sample import create_sample
 from bika.lims.utils.samplepartition import create_samplepartition
 from Products.CMFCore.WorkflowCore import WorkflowException
 from bika.lims.workflow import doActionFor
+from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+from email.Utils import formataddr
+from os.path import join
 from plone import api
 from Products.CMFPlone.utils import _createObjectByType
+from smtplib import SMTPServerDisconnected, SMTPRecipientsRefused
+import os
+import tempfile
 
 
 def create_analysisrequest(context, request, values, analyses=None,
@@ -152,9 +167,13 @@ def create_analysisrequest(context, request, values, analyses=None,
                 state = workflow.getInfoFor(part, 'review_state')
                 if state == 'to_be_preserved':
                     workflow.doActionFor(part, 'preserve')
-
+    # Once the ar is fully created, check if there are rejection reasons
+    reject_field = values.get('RejectionReasons', '')
+    if reject_field and reject_field.get('checkbox', False):
+        doActionFor(ar, 'reject')
     # Return the newly created Analysis Request
     return ar
+
 
 def get_sample_from_values(context, values):
     """values may contain a UID or a direct Sample object.
@@ -237,5 +256,80 @@ def _resolve_items_to_service_uids(items):
         raise RuntimeError(
             str(item) + " should be the UID, title, keyword "
                         " or title of an AnalysisService.")
-
     return list(set(service_uids))
+
+
+def notify_rejection(analysisrequest):
+    """
+    Notifies via email that a given Analysis Request has been rejected. The
+    notification is sent to the Client contacts assigned to the Analysis
+    Request.
+
+    :param analysisrequest: Analysis Request to which the notification refers
+    :returns: true if success
+    """
+    arid = analysisrequest.getRequestID()
+
+    # This is the template to render for the pdf that will be either attached
+    # to the email and attached the the Analysis Request for further access
+    from bika.lims.browser.analysisrequest.reject import AnalysisRequestRejectPdfView
+    tpl = AnalysisRequestRejectPdfView(analysisrequest, analysisrequest.REQUEST)
+    html = tpl.template()
+    html = safe_unicode(html).encode('utf-8')
+    filename = '%s-rejected' % arid
+    pdf_fn = tempfile.mktemp(suffix=".pdf")
+    pdf = createPdf(htmlreport=html, outfile=pdf_fn)
+    if pdf:
+        # Attach the pdf to the Analysis Request
+        attid = analysisrequest.aq_parent.generateUniqueId('Attachment')
+        att = _createObjectByType("Attachment", analysisrequest.aq_parent, tmpID())
+        att.setAttachmentFile(open(pdf_fn))
+        # Awkward workaround to rename the file
+        attf = att.getAttachmentFile()
+        attf.filename = '%s.pdf' % filename
+        att.setAttachmentFile(attf)
+        att.unmarkCreationFlag()
+        renameAfterCreation(att)
+        atts = analysisrequest.getAttachment() + [att] if \
+                analysisrequest.getAttachment() else [att]
+        atts = [a.UID() for a in atts]
+        analysisrequest.setAttachment(atts)
+        os.remove(pdf_fn)
+
+    # This is the message for the email's body
+    from bika.lims.browser.analysisrequest.reject import AnalysisRequestRejectEmailView
+    tpl = AnalysisRequestRejectEmailView(analysisrequest, analysisrequest.REQUEST)
+    html = tpl.template()
+    html = safe_unicode(html).encode('utf-8')
+
+    # compose and send email.
+    mailto = []
+    lab = analysisrequest.bika_setup.laboratory
+    mailfrom = formataddr((encode_header(lab.getName()), lab.getEmailAddress()))
+    mailsubject = _('%s has been rejected') % arid
+    contacts = [analysisrequest.getContact()] + analysisrequest.getCCContact()
+    for contact in contacts:
+        name = to_utf8(contact.getFullname())
+        email = to_utf8(contact.getEmailAddress())
+        if email:
+            mailto.append(formataddr((encode_header(name), email)))
+
+    if not mailto:
+        return False
+    mime_msg = MIMEMultipart('related')
+    mime_msg['Subject'] = mailsubject
+    mime_msg['From'] = mailfrom
+    mime_msg['To'] = ','.join(mailto)
+    mime_msg.preamble = 'This is a multi-part MIME message.'
+    msg_txt = MIMEText(html, _subtype='html')
+    mime_msg.attach(msg_txt)
+    if pdf:
+        attachPdf(mime_msg, pdf, filename)
+
+    try:
+        host = getToolByName(analysisrequest, 'MailHost')
+        host.send(mime_msg.as_string(), immediate=True)
+    except:
+        pass
+
+    return True
