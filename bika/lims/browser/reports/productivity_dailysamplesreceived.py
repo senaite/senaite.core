@@ -57,6 +57,7 @@ class Report(BrowserView):
             analyses = sample.getAnalyses({})
             for analysis in analyses:
                 analysis = analysis.getObject()
+                sd = sample.getSamplingDate()
                 dataline = {'AnalysisKeyword': analysis.getKeyword(),
                             'AnalysisTitle': analysis.getServiceTitle(),
                             'SampleID': sample.getSampleID(),
@@ -64,7 +65,8 @@ class Report(BrowserView):
                             'SampleDateReceived': self.ulocalized_time(
                                 sample.getDateReceived(), long_format=1),
                             'SampleSamplingDate': self.ulocalized_time(
-                                sample.getSamplingDate(), long_format=1)}
+                                sd, long_format=1) if sd else ''
+                            }
                 datalines.append(dataline)
                 analyses_count += 1
 

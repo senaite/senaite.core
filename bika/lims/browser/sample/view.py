@@ -368,8 +368,9 @@ class SamplesView(BikaListingView):
 
         item['Created'] = self.ulocalized_time(obj.created())
 
-        samplingdate = obj.getSamplingDate()
-        item['SamplingDate'] = self.ulocalized_time(samplingdate, long_format=1)
+        sd = obj.getSamplingDate()
+        item['SamplingDate'] = \
+            self.ulocalized_time(sd, long_format=1) if sd else ''
 
         after_icons = ''
         if obj.getSampleType().getHazardous():
@@ -377,7 +378,7 @@ class SamplesView(BikaListingView):
                 "src='%s/++resource++bika.lims.images/hazardous.png'>" % \
                 (t(_("Hazardous")),
                  self.portal_url)
-        if obj.getSamplingDate() > DateTime():
+        if sd and sd > DateTime():
             after_icons += "<img title='%s' " \
                 "src='%s/++resource++bika.lims.images/calendar.png' >" % \
                 (t(_("Future dated sample")),
@@ -388,8 +389,7 @@ class SamplesView(BikaListingView):
         SamplingWorkflowEnabled =\
             self.context.bika_setup.getSamplingWorkflowEnabled()
 
-        if not samplingdate > DateTime() \
-                and SamplingWorkflowEnabled:
+        if SamplingWorkflowEnabled and (not sd or not sd > DateTime()):
             datesampled = self.ulocalized_time(
                 obj.getDateSampled(), long_format=True)
             if not datesampled:

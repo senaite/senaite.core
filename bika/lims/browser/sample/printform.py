@@ -164,10 +164,8 @@ class SamplesPrint(BrowserView):
                 sampler_uid = 'no_sampler'
                 sampler_name = ''
             client_uid = sample.getClientUID()
-            date = \
-                self.ulocalized_time(
-                    sample.getSamplingDate(), long_format=0)\
-                if sample.getSamplingDate() else ''
+            sd = sample.getSamplingDate()
+            date = self.ulocalized_time(sd, long_format=0) if sd else ''
             # Getting the sampler filter result
             in_sampler_filter = self._filter_sampler == '' or\
                 sampler_uid == self._filter_sampler
