@@ -259,7 +259,7 @@ def sortable_title(portal, title):
         return ''
 
     def_charset = portal.plone_utils.getSiteEncoding()
-    sortabletitle = title.lower().strip()
+    sortabletitle = str(title.lower().strip())
     # Replace numbers with zero filled numbers
     sortabletitle = num_sort_regex.sub(zero_fill, sortabletitle)
     # Truncate to prevent bloat
