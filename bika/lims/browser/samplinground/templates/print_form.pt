@@ -1,0 +1,209 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<metal:block use-macro="context/global_defines/macros/defines" />
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+      tal:attributes="lang default_language|default;
+                      xml:lang default_language|default;"
+      i18n:domain="bika"
+      tal:define="portal_state context/@@plone_portal_state;
+                  portal_url portal_state/portal_url;
+                  plone_view context/@@plone;
+                  portal portal_state/portal;">
+<head>
+    <div tal:replace="structure provider:plone.resourceregistries.scripts" />
+</head>
+<body class="letter" data-layout="letter">
+    <div id='sr_publish_container'>
+        <div id='sr_publish_header'>
+            <div id='options_handler'>
+                <div class='options-line'>
+                    <label for="sel_format" i18n:translate="">Available templates</label>
+                    <select id="sel_format" name="sel_format">
+                        <tal:templates tal:repeat="template python:view.getSRTemplates()">
+                            <option tal:attributes="value python:template['id']"
+                                    tal:content="python:template['title']"></option>
+                        </tal:templates>
+                    </select>
+                </div>
+                <div class='options-line'>
+                    <label for="sel_layout" i18n:translate="">Layout</label>
+                    <select id="sel_layout" name="sel_layout">
+                        <option value="A4">DIN-A4 (210 x 297 mm)</option>
+                        <option value="letter" selected>Letter size (216 x 279mm)</option>
+                    </select>
+                </div>
+            </div>
+            <div id='sr_publish_buttons'>
+                <input type="button" id='cancel_button' i18n:translate="" value="Cancel"/>&nbsp;&nbsp;
+                <input type="button" id='print_button' i18n:translate="" value="Print"/>
+            </div>
+        </div>
+        <style>
+            /** Report preview styling **/
+            html, body { margin: 0; }
+            html { background-color:#cdcdcd; }
+            body.A4 #sr_publish_container { width: 210mm; }
+            body.letter #sr_publish_container { width: 216mm; }
+            #report {
+                background-color:#ffffff;
+            }
+            div.sr_publish_page {
+                border: 1px dashed #cdcdcd;
+            }
+            #sr_publish_container {
+                margin:0 auto;
+                background-color:#fff;
+                padding:30px;
+            }
+            #sr_publish_header {
+                margin:-30px -30px 30px -30px;
+                padding:10px 20px 20px 10px;
+                background-color: #dcdcdc;
+                border-bottom: 20px solid #CDCDCD;
+                font-size:11px;
+            }
+            #sr_publish_header * {
+                font-family: Arial !important;
+                font-size:11.5px !important;
+            }
+            #sr_publish_header #options_handler label {
+                padding:5px 10px 5px 10px;
+            }
+            #sr_publish_header #options_handler input {
+                padding:5px 10px 0px;
+            }
+            #sr_publish_header #sr_publish_summary {
+                padding-left:10px;
+                padding-top:10px;
+            }
+            #sr_publish_header #sr_publish_buttons {
+                text-align:right;
+                padding-left:10px;
+                padding-top:10px;
+            }
+            #sr_publish_header #sr_publish_buttons input {
+                padding:4px 15px;
+                border:none;
+                color:#fff;
+                font-size:1.2em;
+                cursor:pointer;
+            }
+            #sr_publish_header #sr_publish_buttons input:hover {
+                opacity:0.8;
+                moz-opacity:0.8;
+                filter:alpha(opacity=80);
+                -webkit-transition: opacity 250ms ease-in-out;
+                -moz-transition: opacity 250ms ease-in-out;
+                -o-transition: opacity 250ms ease-in-out;
+                -ms-transition: opacity 250ms ease-in-out;
+                transition: opacity 250ms ease-in-out;
+            }
+            #sr_publish_header #sr_publish_buttons #cancel_button {
+                background-color:#666;
+            }
+            #sr_publish_header #sr_publish_buttons #print_button {
+                background-color:#0B486B;
+            }
+            #sr_publish_header #options_handler div.options-line {
+                padding:0 0 10px 0;
+            }
+            #sr_publish_header #options_handler input.option-margin {
+                border: 1px solid #bbb;
+                padding: 1px 2px;
+                width: 16px;
+            }
+            #sel_format_info {
+                padding: 0 15px 0 5px;
+                outline:0;
+            }
+            #sel_format_info img {
+                vertical-align:middle;
+            }
+            #sel_format_info_pane {
+                background-color: #EFEFEF;
+                border-top: 1px solid #008000;
+                line-height: 1.5em;
+                margin: 10px -20px 10px -10px;
+                padding: 10px 20px;
+            }
+            .page-break {
+                background-color: #cdcdcd;
+                height: 20px;
+                margin: 0mm -30mm;
+            }
+            .clearfix {
+                clear:both !important;
+                margin:0 !important;
+                padding:0 !important;
+                height:0 !important;
+            }
+            .page-footer.footer-invalid,
+            .page-header.header-invalid {
+                border: 1px dotted red;
+                color: red;
+                padding: 5px;
+            }
+            @media print {
+                a {
+                    text-decoration:none;
+                    color:#000;
+                }
+                div.sr_publish_page {
+                    border: none;
+                }
+                html {
+                    background-color:#fff;
+                    margin:0 !important;
+                    padding:0 !important;
+                }
+                body {
+                    padding:0 !important;
+                    margin:0 !important;
+                }
+                .page-break, .page-break-after, .page-break-before{
+                    display: block !important;
+                    border:none !important;
+                    padding:0 !important;
+                    margin:0 !important;
+                    background-color:transparent !important;
+                }
+                div.page-break {
+                    page-break-after: always;
+                }
+                div.page-break-after {
+                    page-break-after: always;
+                }
+                div.page-break-before {
+                    page-break-before: always;
+                }
+                .page-footer {
+                    margin:0 !important;
+                    border:none !important;
+                    background-color:#ffffff;
+                }
+                #sr_publish_header {
+                    display:none;
+                    visibility:hidden;
+                }
+                .page-footer.footer-invalid,
+                .page-header.header-invalid {
+                    display:none;
+                }
+            }
+        </style>
+        <style id='report-style' tal:content='structure python:view.getCSS()'></style>
+        <style id='layout-style'></style>
+            <div id='report'>
+                <div tal:attributes="id python:view.getSamplingRoundObj().id;
+                                    uid python:view.getSamplingRoundObj().UID();"
+                    class="report_body"
+                    tal:content='structure python:view.getFormTemplate()'></div>
+            </div>
+        <!--/div-->
+        <div id="my_mm" style="height:1mm;display:none"></div>
+    </div>
+</body>
+</html>

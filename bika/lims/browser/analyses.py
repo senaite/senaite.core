@@ -1,4 +1,10 @@
 # coding=utf-8
+
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from AccessControl import getSecurityManager
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
@@ -598,10 +604,12 @@ class AnalysesView(BikaListingView):
                     items[i]['Uncertainty'] = unc if unc else ''
                     items[i]['before']['Uncertainty'] = '&plusmn;&nbsp;';
                     items[i]['after']['Uncertainty'] = '<em class="discreet" style="white-space:nowrap;"> %s</em>' % items[i]['Unit'];
+                    items[i]['structure'] = False;
                 elif fu:
                     items[i]['Uncertainty'] = fu
                     items[i]['before']['Uncertainty'] = '&plusmn;&nbsp;';
                     items[i]['after']['Uncertainty'] = '<em class="discreet" style="white-space:nowrap;"> %s</em>' % items[i]['Unit'];
+                    items[i]['structure'] = True
 
                 # LIMS-1700. Allow manual input of Detection Limits
                 # LIMS-1775. Allow to select LDL or UDL defaults in results with readonly mode

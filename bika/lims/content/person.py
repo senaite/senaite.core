@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from webdav.common import rfc1123_date
 from AccessControl import ClassSecurityInfo
 from Products.CMFCore import permissions as CMFCorePermissions

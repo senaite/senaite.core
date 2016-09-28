@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from bika.lims.permissions import AddBatch
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims import bikaMessageFactory as _
@@ -39,6 +44,7 @@ class BatchFolderContentsView(BikaListingView):
             'BatchID': {'title': _('Batch ID')},
             'Description': {'title': _('Description')},
             'BatchDate': {'title': _('Date')},
+            'Client': {'title': _('Client')},
             'state_title': {'title': _('State'), 'sortable': False},
         }
 
@@ -50,6 +56,7 @@ class BatchFolderContentsView(BikaListingView):
              'columns': ['Title',
                          'BatchID',
                          'BatchDate',
+                         'Client',
                          'Description',
                          'state_title', ]
              },
@@ -60,6 +67,7 @@ class BatchFolderContentsView(BikaListingView):
              'columns': ['Title',
                          'BatchID',
                          'BatchDate',
+                         'Client',
                          'Description',
                          'state_title', ]
              },
@@ -70,6 +78,7 @@ class BatchFolderContentsView(BikaListingView):
              'columns': ['Title',
                          'BatchID',
                          'BatchDate',
+                         'Client',
                          'Description',
                          'state_title', ]
              },
@@ -79,6 +88,7 @@ class BatchFolderContentsView(BikaListingView):
              'columns': ['Title',
                          'BatchID',
                          'BatchDate',
+                         'Client',
                          'Description',
                          'state_title', ]
              },
@@ -111,6 +121,12 @@ class BatchFolderContentsView(BikaListingView):
             title = obj.Title()
             items[x]['Title'] = title
             items[x]['replace']['Title'] = "<a href='%s/%s'>%s</a>" % (items[x]['url'], 'analysisrequests', title)
+
+            if obj.getClient():
+                items[x]['Client'] = obj.getClient().Title()
+                items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % ( obj.getClient().absolute_url(), obj.getClient().Title())
+            else:
+                items[x]['Client'] = ''
 
             date = obj.Schema().getField('BatchDate').get(obj)
             if callable(date):

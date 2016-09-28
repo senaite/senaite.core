@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 # Testing layer to provide some of the features of PloneTestCase
 from AccessControl import getSecurityManager
 from AccessControl.SecurityManagement import newSecurityManager, \
@@ -171,9 +176,18 @@ class Keywords(object):
 class RemoteKeywords(Keywords, RemoteLibrary):
 
 
-    def write_at_field_values(self, obj, **kwargs):
+    def write_at_field_values(self, obj_or_path, **kwargs):
         """Write valid field values from kwargs into the object's AT fields.
+        obj_id_path could be an object or a path to an object, relative to the
+        portal root.  This makes the keyword much easier to use directly from
+        within a robot test.
         """
+        portal = api.portal.get()
+        if isinstance(obj_or_path, basestring):
+            obj = portal.restrictedTraverse(obj_or_path)
+        else:
+            obj = obj_or_path
+
         uc = getToolByName(obj, 'uid_catalog')
         schema = obj.Schema()
         # fields contains all schema-valid field values from the request.
@@ -201,7 +215,8 @@ class RemoteKeywords(Keywords, RemoteLibrary):
                     value = True
             elif fieldtype in [
                 'Products.ATExtensions.field.records.RecordsField',
-                'Products.ATExtensions.field.records.RecordField']:
+                'Products.ATExtensions.field.records.RecordField',
+                'bika.lims.browser.fields.referenceresultsfield.ReferenceResultsField']:
                 value = eval(value)
             if mutator:
                 mutator(value)
@@ -213,8 +228,8 @@ class RemoteKeywords(Keywords, RemoteLibrary):
         portal = api.portal.get()
         container = portal.restrictedTraverse(path.strip('/').split('/'))
         # create object
-        obj = _createObjectByType(portal_type, container, id, **kwargs)
-        obj.processForm(container.REQUEST, values=kwargs)
+        obj = _createObjectByType(portal_type, container, id)
+        obj.unmarkCreationFlag()
         self.write_at_field_values(obj, **kwargs)
         return obj.UID()
 

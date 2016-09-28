@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from zope.interface import Interface
 
 
@@ -661,6 +666,11 @@ class IHeaderTableFieldRenderer(Interface):
         """
         Accepts an Archetypes Field, returns HTML.
         """
+
+class ISamplePrepWorkflow(Interface):
+    """This flag enables the sample_prep workflow transitions to be inserted
+    into an object's workflow chain.
+    """
 
 class ICustomPubPref(Interface):
 

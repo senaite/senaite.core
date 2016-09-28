@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 """ All permissions are defined here.
     They are also defined in permissions.zcml.
     The two files must be kept in sync.
@@ -12,6 +17,7 @@ from Products.CMFCore.permissions import AddPortalContent
 # Add Permissions:
 # ----------------
 AddAnalysis = 'BIKA: Add Analysis'
+ScheduleSampling = 'BIKA: Schedule Sampling'
 AddAnalysisProfile = 'BIKA: Add AnalysisProfile'
 AddAnalysisRequest = 'BIKA: Add Analysis Request'
 AddAnalysisSpec = 'BIKA: Add AnalysisSpec'

@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from AccessControl import ClassSecurityInfo
 from Products.ATExtensions.ateapi import RecordsField
 from bika.lims.browser.widgets import RecordsWidget
@@ -257,6 +262,17 @@ schema = BikaFolderSchema.copy() + Schema((
         widget = BooleanWidget(
             label=_("Enable the Sampling workflow"),
             description=_("Select this to activate the sample collection workflow steps.")
+        ),
+    ),
+    BooleanField('ScheduleSamplingEnabled',
+        schemata = "Analyses",
+        default = False,
+        widget = BooleanWidget(
+            label=_("Enable the Schedule a Sampling functionality"),
+            description=_(
+                "Select this to allow a Sampling Coordinator to" +
+                " schedule a sampling. This functionality only takes effect" +
+                " when 'Sampling workflow' is active")
         ),
     ),
     BooleanField(

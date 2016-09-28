@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _, logger
 from bika.lims.config import *
@@ -234,7 +239,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
             # Set ReferenceAnalysesGroupID (same id for the analyses from
             # the same Reference Sample and same Worksheet)
-            # https://github.com/bikalabs/Bika-LIMS/issues/931
             ref_analysis.setReferenceAnalysesGroupID(refgid)
             ref_analysis.reindexObject(idxs=["getReferenceAnalysesGroupID"])
 
@@ -298,9 +302,25 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                         int(slot['position']) == int(dest_slot)]
 
         refgid = None
+        processed = []
         for analysis in src_analyses:
             if analysis.UID() in dest_analyses:
                 continue
+
+            # If retracted analyses, for some reason, the getLayout() returns
+            # two times the regular analysis generated automatically after a
+            # a retraction.
+            if analysis.UID() in processed:
+                continue
+
+            # Omit retracted analyses
+            # https://jira.bikalabs.com/browse/LIMS-1745
+            # https://jira.bikalabs.com/browse/LIMS-2001
+            if workflow.getInfoFor(analysis, "review_state") == 'retracted':
+                continue
+
+            processed.append(analysis.UID())
+
             # services with dependents don't belong in duplicates
             service = analysis.getService()
             calc = service.getCalculation()
@@ -313,17 +333,18 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
             # Set ReferenceAnalysesGroupID (same id for the analyses from
             # the same Reference Sample and same Worksheet)
-            # https://github.com/bikalabs/Bika-LIMS/issues/931
             if not refgid and not analysis.portal_type == 'ReferenceAnalysis':
-                part = analysis.getSamplePartition().id
-                dups = [an.getReferenceAnalysesGroupID()
-                        for an in self.getAnalyses()
-                        if an.portal_type == 'DuplicateAnalysis'
-                            and an.getSamplePartition().id == part]
+                prefix = analysis.aq_parent.getSample().id
+                dups = []
+                for an in self.getAnalyses():
+                    if an.portal_type == 'DuplicateAnalysis' \
+                            and hasattr(an.aq_parent, 'getSample') \
+                            and an.aq_parent.getSample().id == prefix:
+                        dups.append(an.getReferenceAnalysesGroupID())
                 dups = list(set(dups))
                 postfix = dups and len(dups) + 1 or 1
                 postfix = str(postfix).zfill(int(2))
-                refgid = '%s-D%s' % (part, postfix)
+                refgid = '%s-D%s' % (prefix, postfix)
             duplicate.setReferenceAnalysesGroupID(refgid)
             duplicate.reindexObject(idxs=["getReferenceAnalysesGroupID"])
 
@@ -338,9 +359,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             )
             self.setAnalyses(self.getAnalyses() + [duplicate, ])
             workflow.doActionFor(duplicate, 'assign')
-            # In case there are more than one analyses for an 'analysis_uid'
-            # https://jira.bikalabs.com/browse/LIMS-1745
-            break
+
 
     def applyWorksheetTemplate(self, wst):
         """ Add analyses to worksheet according to wst's layout.

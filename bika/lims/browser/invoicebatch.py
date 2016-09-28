@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import currency_format
@@ -14,18 +19,32 @@ class InvoiceBatchInvoicesView(BikaListingView):
         self.show_sort_column = False
         self.show_select_row = False
         self.show_select_all_checkbox = False
-        self.show_select_column = False
+        self.show_select_column = True
         self.pagesize = 25
         request.set('disable_border', 1)
         self.context_actions = {}
         self.columns = {
-            'id': {'title': _('Invoice Number')},
-            'client': {'title': _('Client')},
-            'invoicedate': {'title': _('Invoice Date')},
-            'subtotal': {'title': _('Subtotal')},
-            'vatamount': {'title': _('VAT')},
-            'total': {'title': _('Total')},
-        }
+            'id': {'title': _('Invoice Number'),
+                'toggle': True },
+            'client': {'title': _('Client'),
+                'toggle': True},
+            'email': {'title': _('Email Address'),
+                'toggle': False},
+            'phone': {'title': _('Phone'),
+                'toggle': False},
+            'invoicedate': {'title': _('Invoice Date'),
+                'toggle': True},
+            'startdate': {'title': _('Start Date'),
+                'toggle': False},
+            'enddate': {'title': _('End Date'),
+                'toggle': False},
+            'subtotal': {'title': _('Subtotal'),
+                'toggle': False},
+            'vatamount': {'title': _('VAT'),
+                'toggle': False},
+            'total': {'title': _('Total'),
+                'toggle': True},
+            }
         self.review_states = [
             {
                 'id': 'default',
@@ -35,7 +54,11 @@ class InvoiceBatchInvoicesView(BikaListingView):
                 'columns': [
                     'id',
                     'client',
+                    'email',
+                    'phone',
                     'invoicedate',
+                    'startdate',
+                    'enddate',
                     'subtotal',
                     'vatamount',
                     'total',
@@ -69,8 +92,26 @@ class InvoiceBatchInvoicesView(BikaListingView):
                 item['url'], obj.getId()
             )
             item['replace']['id'] = number_link
-            item['client'] = obj.getClient().Title()
+            
+            if obj.getClient():
+                item['client'] = obj.getClient().Title()
+                item['replace']['client'] = "<a href='%s'>%s</a>" % (
+                    obj.getClient().absolute_url(), obj.getClient().Title()
+                )
+
+                item['email'] = obj.getClient().getEmailAddress()
+                item['replace']['email'] = "<a href='%s'>%s</a>" % (
+                    'mailto:%s' % obj.getClient().getEmailAddress(), obj.getClient().getEmailAddress()
+                )
+                item['phone'] = obj.getClient().getPhone()
+            else:
+                item['client'] = ''
+                item['email'] = ''
+                item['phone'] = ''
+            
             item['invoicedate'] = self.ulocalized_time(obj.getInvoiceDate())
+            item['startdate'] = self.ulocalized_time(obj.getBatchStartDate())
+            item['enddate'] = self.ulocalized_time(obj.getBatchEndDate())
             item['subtotal'] = currency(obj.getSubtotal())
             item['vatamount'] = currency(obj.getVATAmount())
             item['total'] = currency(obj.getTotal())

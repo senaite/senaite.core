@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IAnalysis
 from bika.lims.interfaces import IFieldIcons
@@ -265,8 +270,8 @@ class ajaxCalculateAnalysisEntry(BrowserView):
         if analysis.portal_type == 'ReferenceAnalysis':
             # The analysis is a Control or Blank. We might use the
             # reference results instead other specs
-            uid = analysis.getServiceUID()
-            specs = analysis.aq_parent.getResultsRangeDict().get(uid, {})
+            _uid = analysis.getServiceUID()
+            specs = analysis.aq_parent.getResultsRangeDict().get(_uid, {})
 
         else:
             # Get the specs directly from the analysis. The getResultsRange

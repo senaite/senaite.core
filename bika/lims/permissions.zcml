@@ -57,6 +57,7 @@
 # ==================
 # For workflow transitions:
 # -------------------------
+<permission id="bika.lims.permissions.ScheduleSampling" title="BIKA: Schedule Sampling"/>
 <permission id="bika.lims.SampleSample" title="BIKA: Sample Sample"/>
 <permission id="bika.lims.PreserveSample" title="BIKA: Preserve Sample"/>
 <permission id="bika.lims.ReceiveSample" title="BIKA: Receive Sample"/>

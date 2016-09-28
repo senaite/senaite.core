@@ -263,6 +263,17 @@
               insert-after="*"/>
 
   <javascript authenticated="False"
+              id="++resource++bika.lims.js/bika.lims.graphics.range.js"
+              cacheable="True"
+              compression="safe"
+              conditionalcomment=""
+              cookable="False"
+              enabled="on"
+              expression=""
+              inline="False"
+              insert-after="*"/>
+
+  <javascript authenticated="False"
               id="++resource++bika.lims.js/bika.lims.method.js"
               cacheable="True"
               compression="safe"
@@ -396,6 +407,61 @@
 
   <javascript authenticated="False"
           id="++resource++bika.lims.js/bika.lims.samplingrounds.js"
+          cacheable="True"
+          compression="safe"
+          conditionalcomment=""
+          cookable="True"
+          enabled="on"
+          expression=""
+          inline="False"
+          insert-after="*"/>
+
+  <javascript authenticated="False"
+          id="++resource++bika.lims.js/bika.lims.samplinground.print.js"
+          cacheable="True"
+          compression="safe"
+          conditionalcomment=""
+          cookable="True"
+          enabled="on"
+          expression=""
+          inline="False"
+          insert-after="*"/>
+
+  <javascript authenticated="False"
+          id="++resource++bika.lims.js/bika.lims.rejection.js"
+          cacheable="True"
+          compression="safe"
+          conditionalcomment=""
+          cookable="True"
+          enabled="on"
+          expression=""
+          inline="False"
+          insert-after="*"/>
+
+  <javascript authenticated="False"
+          id="++resource++bika.lims.js/bika.lims.reflexrule.js"
+          cacheable="True"
+          compression="safe"
+          conditionalcomment=""
+          cookable="True"
+          enabled="on"
+          expression=""
+          inline="False"
+          insert-after="*"/>
+
+  <javascript authenticated="False"
+          id="++resource++bika.lims.js/bika.lims.samples.print.js"
+          cacheable="True"
+          compression="safe"
+          conditionalcomment=""
+          cookable="True"
+          enabled="on"
+          expression=""
+          inline="False"
+          insert-after="*"/>
+
+  <javascript authenticated="False"
+          id="++resource++bika.lims.js/bika.lims.samples.js"
           cacheable="True"
           compression="safe"
           conditionalcomment=""

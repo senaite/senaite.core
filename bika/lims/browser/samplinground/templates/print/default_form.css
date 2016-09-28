@@ -1,0 +1,60 @@
+
+.barcode-container {
+    width:100%;
+}
+div.report_body {
+    font-size:0.8em;
+}
+div.report_body a {
+    color:#000;
+    text-decoration:none;
+}
+div.report_body h1 {
+    padding-top:15px;
+    font-size:1.7em;
+}
+div#title{
+    font-size:1.5em;
+}
+.label {
+    font-weight: bold;
+}
+.table-text {
+    position: relative;
+}
+.data-input{
+    border: 1px solid #cdcdcd;
+    height: 20px;
+}
+table.samples-grid tr td {
+    vertical-align:top;
+    border: 1px solid #cdcdcd;
+    padding: 5px;
+}
+table thead th{
+    border: 1px solid #cdcdcd;
+    background-color: #808080;
+}
+#sampling-round-info div {
+    float: left;
+    font-size: 0.85em;
+    position: relative;
+    width: 150px;
+}
+span.units {
+    font-size: 0.7em;
+}
+div.lab-logo {
+    float: right;
+    position: relative;
+}
+p {
+    margin:0;
+    padding:0;
+}
+.clearfix {
+    clear:both;
+}
+#sampling-round-data-entry {
+    clear: both;
+}

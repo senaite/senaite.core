@@ -1,5 +1,11 @@
 # -*- coding: utf-8 -*-
 
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
+
 "DuplicateAnalysis uses this as it's base.  This accounts for much confusion."
 
 from AccessControl import getSecurityManager
@@ -30,7 +36,7 @@ from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysis, IDuplicateAnalysis, IReferenceAnalysis, \
-    IRoutineAnalysis
+    IRoutineAnalysis, ISamplePrepWorkflow
 from bika.lims.interfaces import IReferenceSample
 from bika.lims.utils import changeWorkflowState, formatDecimalMark
 from bika.lims.utils import drop_trailing_zeros_decimal
@@ -40,6 +46,7 @@ from bika.lims.workflow import doActionFor
 from bika.lims.content.reflexrule import doReflexRuleAction
 from decimal import Decimal
 from zope.interface import implements
+import cgi
 import datetime
 import math
 
@@ -237,7 +244,7 @@ schema = BikaSchema.copy() + Schema((
 
 
 class Analysis(BaseContent):
-    implements(IAnalysis)
+    implements(IAnalysis, ISamplePrepWorkflow)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -865,7 +872,7 @@ class Analysis(BaseContent):
             if self.getInstrument() else self.getDefaultInstrument()
         return instr.getMethod() if instr else None
 
-    def getFormattedResult(self, specs=None, decimalmark='.', sciformat=1):
+    def getFormattedResult(self, specs=None, decimalmark='.', sciformat=1, html=True):
         """Formatted result:
         1. If the result is a detection limit, returns '< LDL' or '> UDL'
         2. Print ResultText of matching ResultOptions
@@ -887,6 +894,8 @@ class Analysis(BaseContent):
                           4. The sci notation has to be formatted as a·10^b
                           5. As 4, but with super html entity for exp
                           By default 1
+        :param html: if true, returns an string with the special characters
+            escaped: e.g: '<' and '>' (LDL and UDL for results like < 23.4).
         """
         result = self.getResult()
 
@@ -896,7 +905,9 @@ class Analysis(BaseContent):
             try:
                 res = float(result) # required, check if floatable
                 res = drop_trailing_zeros_decimal(res)
-                return formatDecimalMark('%s %s' % (dl, res), decimalmark)
+                fdm = formatDecimalMark(res, decimalmark)
+                hdl = cgi.escape(dl) if html else dl
+                return '%s %s' % (hdl, fdm)
             except:
                 logger.warn("The result for the analysis %s is a "
                             "detection limit, but not floatable: %s" %
@@ -938,11 +949,13 @@ class Analysis(BaseContent):
 
         # 4.1. If result is below min and hidemin enabled, return '<min'
         if belowmin:
-            return formatDecimalMark('< %s' % hidemin, decimalmark)
+            fdm = formatDecimalMark('< %s' % hidemin, decimalmark)
+            return fdm.replace('< ', '&lt; ', 1) if html else fdm
 
         # 4.2. If result is above max and hidemax enabled, return '>max'
         if abovemax:
-            return formatDecimalMark('> %s' % hidemax, decimalmark)
+            fdm = formatDecimalMark('> %s' % hidemax, decimalmark)
+            return fdm.replace('> ', '&gt; ', 1) if html else fdm
 
         # Below Lower Detection Limit (LDL)?
         ldl = self.getLowerDetectionLimit()
@@ -950,7 +963,8 @@ class Analysis(BaseContent):
             # LDL must not be formatted according to precision, etc.
             # Drop trailing zeros from decimal
             ldl = drop_trailing_zeros_decimal(ldl)
-            return formatDecimalMark('< %s' % ldl, decimalmark)
+            fdm = formatDecimalMark('< %s' % ldl, decimalmark)
+            return fdm.replace('< ', '&lt; ', 1) if html else fdm
 
         # Above Upper Detection Limit (UDL)?
         udl = self.getUpperDetectionLimit()
@@ -958,7 +972,9 @@ class Analysis(BaseContent):
             # UDL must not be formatted according to precision, etc.
             # Drop trailing zeros from decimal
             udl = drop_trailing_zeros_decimal(udl)
-            return formatDecimalMark('> %s' % udl, decimalmark)
+            fdm = formatDecimalMark('> %s' % udl, decimalmark)
+            return fdm.replace('> ', '&gt; ', 1) if html else fdm
+
         # Render numerical values
         return format_numeric_result(self, self.getResult(),
                         decimalmark=decimalmark,
@@ -1035,6 +1051,14 @@ class Analysis(BaseContent):
         if workflow.getInfoFor(self, "cancellation_state", "active") == "cancelled":
             return False
         return True
+
+    def guard_sample_prep_transition(self):
+        sample = self.aq_parent.getSample()
+        return sample.guard_sample_prep_transition()
+
+    def guard_sample_prep_complete_transition(self):
+        sample = self.aq_parent.getSample()
+        return sample.guard_sample_prep_complete_transition()
 
     def guard_receive_transition(self):
         workflow = getToolByName(self, "portal_workflow")

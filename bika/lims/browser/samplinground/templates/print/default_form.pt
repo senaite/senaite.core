@@ -1,0 +1,134 @@
+<!--
+    Default Sampling Round form template for Bika LIMS
+-->
+<tal:form tal:define="samplinground python:view.getSamplingRoundObj()">
+    <!-- Sampling round info goes to the header of the printed form-->
+    <div class='lab-logo'>
+        <a tal:attributes="href view/getLab">
+            <img tal:attributes="src view/getLogo"/>
+        </a>
+    </div>
+    <div id="header">
+        <h1>
+            <a tal:attributes="href python: samplinground.absolute_url()"
+               tal:content="samplinground/id"></a>
+        </h1>
+        <div id="title">
+            <div id="samplinground-title" class="samplinground-field">
+                <p tal:content="samplinground/title"></p>
+            </div>
+        </div>
+    </div>
+    <div id="sampling-round-info">
+        <div id="samplinground-description">
+            <p class='label' i18n:translate="">Description</p>
+            <p tal:content="samplinground/description"></p>
+        </div>
+        <div id="samplinground-sr_template" class="samplinground-field">
+            <p class='label' i18n:translate="">Sampling round template</p>
+            <p tal:define="srt samplinground/getSRTemplateInfo">
+                <a tal:attributes="href srt/url">
+                    <span tal:content="srt/title"></span>
+                </a>
+            </p>        </div>
+        <div id="samplinground-sampler" class="samplinground-field">
+            <p class='label' i18n:translate="">Sampler</p>
+            <p tal:content="samplinground/sampler"></p>
+        </div>
+        <div id="samplinground-department" class="samplinground-field">
+            <p class='label' i18n:translate="">Department</p>
+            <p tal:define="department samplinground/getDepartmentInfo">
+                <a tal:attributes="href department/url">
+                    <span tal:content="department/title"></span>
+                </a>
+            </p>
+        </div>
+        <div id="samplinground-sampling_freq" class="samplinground-field">
+            <p class='label' i18n:translate="">Sampling frequency</p>
+            <p tal:content="samplinground/sampling_freq"></p>
+        </div>
+        <div id="samplinground-sampling_date" class="samplinground-field">
+            <p class='label' i18n:translate="">Sampling date</p>
+            <p tal:content="samplinground/sampling_date"></p>
+        </div>
+        <div id="samplinground-environmental_conditions" class="samplinground-field">
+            <p class='label' i18n:translate="">Environmental conditions</p>
+            <p tal:content="samplinground/environmental_conditions"></p>
+        </div>
+        <div id="samplinground-instructions" class="samplinground-field">
+            <p class='label' i18n:translate="">Sampling instructions</p>
+            <p tal:content="samplinground/instructions"></p>
+        </div>
+        <div id="samplinground-ar_templates" class="samplinground-field">
+            <p class='label' i18n:translate="">Analysis requests templates</p>
+            <p tal:define="arts view/getAnalysisRequestTemplatesInfo">
+                <a tal:repeat="art arts"
+                   tal:attributes="href art/url">
+                    <span tal:content="art/title"></span>
+                    <br>
+                </a>
+            </p>
+        </div>
+        <div id="samplinground-num_sample_points" class="samplinground-field">
+            <p class='label' i18n:translate="">Sample points</p>
+            <p tal:content="samplinground/num_sample_points"></p>
+        </div>
+        <div id="samplinground-num_containers" class="samplinground-field">
+            <p class='label' i18n:translate="">Containers</p>
+            <p tal:content="samplinground/num_containers"></p>
+        </div>
+        <div class="clearfix">&nbsp;</div>
+    </div>
+    <!-- analysis request listed by Sample Partition/Container -->
+    <div id="sampling-round-data-entry"
+        tal:define="table view/getAnalysisRequestBySample">
+        <table class="samples-grid">
+            <thead>
+                <tr>
+                    <th i18n:translate=""
+                        tal:repeat="column_id table/columns/column_order"
+                        tal:content="python: table['columns']['titles'][column_id]"></th>
+                </tr>
+            </thead>
+            <tbody>
+            <tal:rowsample repeat="row table/rows">
+                <tr>
+                <tal:rowcell repeat="column_id table/columns/column_order">
+                    <td tal:condition="python: column_id not in ['analyses', 'partition'] and not row[column_id]['hidden']"
+                        tal:attributes="rowspan python:row[column_id]['rowspan'];
+                                        class python:column_id">
+                        <div class="table-text"
+                            tal:content="python: row[column_id]['value']">
+                        </div>
+                    </td>
+                    <td tal:condition="python: column_id == 'analyses'"
+                        class="analyses">
+                        <span tal:content="python: row[column_id]['title']"></span>
+                        <div class="data-input"></div>
+                        <span
+                            class="units"
+                            tal:content="python: row[column_id]['units']"></span>
+                    </td>
+                    <td tal:condition="python: column_id == 'partition' and not row[column_id]['hidden']"
+                        tal:attributes="rowspan python:row[column_id]['rowspan'];
+                                        class python:column_id">
+                        <div class='barcode-container'>
+                            <div
+                                tal:condition="python: not row[column_id]['hidden']"
+                                class='barcode'
+                                data-code='code128'
+                                data-showHRI='false'
+                                data-barHeight='10'
+                                data-addQuietZone='true'
+                                tal:attributes="data-id python: row[column_id]['value']">
+                            </div>
+                        </div>
+                    </td>
+                </tal:rowcell>
+                </tr>
+            </tal:rowsample>
+            </tbody>
+        </table>
+
+    </div>
+</tal:form>

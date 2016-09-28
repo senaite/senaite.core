@@ -1,0 +1,507 @@
+<!--
+    Default Analysis Request results template for Bika LIMS
+
+    All data is available using the analysisrequest dictionary.
+    Example for accessing and displaying data:
+
+    <p tal:content="python:analysisrequest['laboratory']['title']"></p>
+
+    or
+
+    <p tal:content="analysisrequest/laboratory/title"></p>
+
+    Take a look to the documentation for more information about
+    available data and fields.
+    https://github.com/bikalabs/Bika-LIMS/wiki/Creating-new-report-templates
+
+-->
+<tal:report tal:define="analysisrequest python:view.getAnalysisRequest();
+                        client          analysisrequest/client;
+                        contact         analysisrequest/contact;
+                        laboratory      analysisrequest/laboratory;
+                        portal          analysisrequest/portal;
+                        sample          analysisrequest/sample;
+                        batch           analysisrequest/batch;
+                        analyses        analysisrequest/analyses;
+                        qcanalyses      analysisrequest/qcanalyses;
+                        specifications  analysisrequest/specifications;
+                        reporter        analysisrequest/reporter;
+                        pointsofcapture analysisrequest/points_of_capture;
+                        categories      analysisrequest/categories;
+                        categanalyses   analysisrequest/categorized_analyses;
+                        categqcanalyses analysisrequest/categorized_qcanalyses;
+                        hasqcanalyses   python:len(qcanalyses) &gt; 0;
+                        reportdrymatter analysisrequest/report_drymatter;
+                        hasprevresults  analysisrequest/haspreviousresults;
+                        showqcanalyses  python:view.isQCAnalysesVisible();
+                        remarksenabled  python:view.context.bika_setup.getEnableAnalysisRemarks();">
+
+<!--
+    Page Header
+    A div element with the class "page-header" will be placed on the
+    top of the report, within the top margin area. This element
+    will be displayed on each page.
+
+    Page numbering
+    For the number of page, use the "page-current-num" class.
+    For the total count, use the "page-total-count" class.
+-->
+<div id="section-header" class='page-header'>
+    <div id='barcode-container'>
+        <div class='barcode'
+            data-code='code128'
+            data-showHRI='false'
+            data-barHeight='15'
+            data-addQuietZone='true'
+            tal:attributes="data-id analysisrequest/id">
+        </div>
+    </div>
+    <div id='lab-logo'>
+        <a tal:attributes="href laboratory/url">
+            <img tal:attributes="src laboratory/logo"/>
+        </a>
+    </div>
+</div>
+
+<!-- Address and Lab info -->
+<div id="section-info">
+    <div id="accreditation-logo"
+        tal:condition="python:laboratory['accredited']==True">
+        <img tal:condition="laboratory/accreditation_logo"
+             tal:attributes="src laboratory/accreditation_logo/absolute_url"/>
+        <img tal:condition="not:laboratory/accreditation_logo"
+             tal:attributes="src string:${portal/url}/++resource++bika.lims.images/AccreditationBodyLogo.png"/>
+    </div>
+    <table>
+        <tr>
+            <td id="client-info">
+                <table>
+                    <tr tal:condition="python:contact.get('fullname','') != ''"><td id="client-contact" tal:content="contact/fullname"></td></tr>
+                    <tr><td id="client-name" tal:content="client/name"></td></tr>
+                    <tr><td id="client-address" tal:content="structure client/address"></td></tr>
+                    <tr tal:condition="python:contact.get('email','') != ''">
+                        <td id="client-email">
+                            <a tal:content="contact/email"
+                               tal:attributes="url python:'mailto:%s' % contact['email'];"></a>
+                        </td>
+                    </tr>
+                    <tr tal:condition="client/phone">
+                        <td id="client-phone">
+                            <span i18n:translate="">Phone</span>:
+                            <span tal:content="client/phone"></span>
+                        </td>
+                    </tr>
+                    <tr tal:condition="client/fax">
+                        <td id="client-fax">
+                            <span i18n:translate="">Fax</span>:
+                            <span tal:content="client/fax"></span>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+            <td id="lab-info">
+                <table>
+                    <tr><td id="lab-title" tal:content='laboratory/title'></td></tr>
+                    <tr><td id="lab-address" tal:content='structure laboratory/address'></td></tr>
+
+                    <tr tal:condition="laboratory/url">
+                        <td id="lab-URL">
+                            <a tal:attributes="href laboratory/url"
+                               tal:content="laboratory/url"></a>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<!-- Alert section (invalidated ar, etc.) -->
+<div id="section-alert" tal:condition="analysisrequest/invalid">
+    <h1 i18n:translate="">This Analysis Request has been invalidated due to erroneously published results</h1>
+    <tal:invalidreport tal:define="child python:analysisrequest['obj'].getChildAnalysisRequest()"
+                       tal:condition="child">
+       <span i18n:translate="">This Analysis request has been replaced by</span>&nbsp;
+       <a tal:attributes="href child/absolute_url"
+          tal:content="child/id"></a>
+    </tal:invalidreport>
+</div>
+<div id="section-alert" tal:condition="python:analysisrequest['prepublish']==True and analysisrequest['invalid']==False">
+    <h1 i18n:translate="">Provisional report</h1>
+</div>
+<!-- Summary section -->
+<div id="section-summary">
+    <h1 i18n:translate="">Summary</h1>
+    <table>
+        <tr>
+            <td class="label" i18n:translate="">Request ID</td>
+            <td>
+                <a tal:content="analysisrequest/id"
+                   tal:attributes="href analysisrequest/url;"></a>
+            </td>
+        </tr>
+        <tr>
+            <td class="label" i18n:translate="">Sample ID</td>
+            <td>
+                <a
+                   tal:content="sample/id"
+                   tal:attributes="href sample/url"></a>
+            </td>
+        </tr>
+        <tr tal:condition="python: batch">
+            <td class="label" i18n:translate="">Batch ID</td>
+            <td>
+                <a tal:content="batch/id"
+                   tal:attributes="href batch/url"></a>
+            </td>
+        </tr>
+        <tr tal:condition="python: batch">
+            <td class="label" i18n:translate="">Client Batch ID</td>
+            <td tal:content="batch/client_batchid"></td>
+        </tr>
+        <tr>
+            <td class="label" i18n:translate="">Client</td>
+            <td>
+            <a tal:attributes="href client/url"
+               tal:content="client/name"></a>
+            </td>
+        </tr>
+        <tr>
+            <td class="label" i18n:translate="">Client SID</td>
+            <td tal:content="analysisrequest/client_sampleid"></td>
+        </tr>
+        <tr>
+            <td class="label" i18n:translate="">Sample Type</td>
+            <td tal:content="sample/sample_type/title|nothing"></td>
+        </tr>
+        <tr>
+            <td class="label" i18n:translate="">Specification</td>
+            <td tal:content="specifications/title|nothing"></td>
+        </tr>
+        <tr>
+            <td class="label" i18n:translate="">Date Received</td>
+            <td tal:content="analysisrequest/date_received">2013-05-31 02:02 PM</td>
+        </tr>
+        <tr>
+            <td class="label" i18n:translate="">Date Published</td>
+            <td tal:content="analysisrequest/date_published">2013-06-03 12:02 PM</td>
+        </tr>
+        <tr tal:condition="reporter/username">
+            <td class="label" i18n:translate="">Published by</td>
+            <td>
+                <tal:email tal:condition="reporter/email"
+                           tal:define="email reporter/email">
+                    (<a tal:content="email"
+                       tal:attributes="href string:mailto:${email}"></a>)
+                </tal:email>
+            </td>
+        </tr>
+        <tr tal:condition="python: batch and batch.get('labels', None)">
+            <td class="label" i18n:translate="">Batch Labels</td>
+            <td tal:content="structure python:', '.join(batch.get('labels'))"></td>
+        </tr>
+    </table>
+</div>
+
+<!-- Results section -->
+<div id="section-results">
+    <h1 i18n:translate="">Results</h1>
+    <tal:poc tal:repeat="poc python:categanalyses.keys()">
+    <h2 tal:content="poc"></h2>
+    <tal:cat tal:repeat="cat python:sorted(categanalyses.get(poc,{}).keys())">
+    <table>
+        <thead>
+            <tr>
+                <th class="analysis"><span tal:content="string:${cat}">Category</span></th>
+                <th tal:condition="hasprevresults" class="previous"><span i18n:translate="">Previous Results</span></th>
+                <th class="result"><span i18n:translate="">Result</span></th>
+                <th class="dryresult" tal:condition="analysisrequest/report_drymatter"><span i18n:translate="">Dry</span></th>
+                <th class="specs"><span i18n:translate="">Value Range</span></th>
+                <th class="outofrange"></th>
+            </tr>
+        </thead>
+        <tfoot>
+            <!-- Category comments -->
+            <tr>
+                <td tal:attributes="colspan python:6 if hasprevresults else 5">
+                    <div class='category_comments'
+                         tal:define="category python:categanalyses[poc][cat][0]['obj'].getService().getCategory();
+                                     catcomm  python:category.getComments() if hasattr(category, 'getComments') else '';"
+                         tal:condition="catcomm"
+                         tal:content="catcomm"></div>
+                </td>
+            </tr>
+        </tfoot>
+        <tbody>
+            <tal:analyses tal:repeat="analysis python:categanalyses[poc][cat]">
+            <tal:analysis tal:define="analysis_css_result python:'outofrange' if analysis['outofrange'] else '';
+                            analysis_css_accredited python:'accredited' if analysis['accredited'] else '';
+                            analysis_css_retested python:'retested' if analysis['retested'] else '';">
+            <tr tal:attributes="class python:'actual %s %s %s' % (analysis_css_result, analysis_css_accredited, analysis_css_retested);">
+                <td class="analysis">
+                    <img tal:attributes='src python:portal["url"]+"/++resource++bika.lims.images/accredited.png";'
+                        tal:condition='analysis/accredited'
+                        alt="accredited"
+                        class="accredited-ico"/>
+                    <span tal:content="analysis/title" tal:condition="python: analysis['scientific_name'] == False">Total 25-OHD</span>
+                    <span tal:condition="analysis/scientific_name"><em tal:content="analysis/title"></em></span>
+                </td>
+                <td tal:condition="hasprevresults" class="prev">
+                    <span tal:content="structure analysis/previous_results">1,2,3</span>
+                </td>
+                <td>
+                    <span class="result" tal:content="structure analysis/formatted_result">23</span>
+                    <span class="units" tal:content="structure analysis/formatted_unit|nothing"></span>
+                </td>
+                <td class="dryresult" tal:condition="python: reportdrymatter and getattr(analysis, 'resultdm', None)">
+                    <span tal:content="structure string:${analysis/resultdm} ${analysis/formatted_unit|nothing}">23</span>
+                </td>
+                <td class="specs">
+                    <span tal:condition="analysis/uncertainty"
+                          tal:replace="structure string:[&plusmn; ${analysis/formatted_uncertainty}] "></span>
+                    <span tal:replace="python:'(RT) ' if analysis['retested'] else ''"></span>
+                    <span tal:replace="analysis/formatted_specs">50 - 60</span>
+                </td>
+                <td class="outofrange">
+                    <span tal:replace="python:'*' if analysis['outofrange']==True else ''"></span>
+                </td>
+                <td class="specs-graphs"
+                    tal:define="rr analysis/specs;
+                                min python: str(rr.get('min',0)).replace(',','.');
+                                min python: min if min else 0;
+                                max python: str(rr.get('max',0)).replace(',','.');
+                                max python: max if max else 0;
+                                err python: str(rr.get('error',0)).replace(',','.');
+                                err python: err if err else 0;
+                                res python: str(analysis.get('result',0)).replace(',','.');
+                                res python: res if res else 0;
+                                dataspecs python: '[%s,%s,%s,%s]' % (res,min,max,err);"
+                    tal:condition="rr">
+                    <div class="range-chart"
+                         tal:attributes="data-specs python:dataspecs"></div>
+                </td>
+            </tr>
+            <tr tal:condition="python:remarksenabled==True and analysis['remarks']">
+                <td class="remarks" colspan="6"
+                    tal:attributes="colspan python: '7' if reportdrymatter else '6';"
+                    tal:content="structure analysis/remarks">
+                    Quisque sodales quam quis faucibus pretium. Aliquam erat volutpat. Pellentesque vel gravida nibh. Curabitur scelerisque cursus pretium. Mauris sollicitudin, risus vitae tincidunt fringilla, nisi risus consequat dolor, a laoreet dui odio eget elit. Etiam metus orci, sagittis sit amet metus in, tempus viverra ipsum. Nulla sed mi pharetra, hendrerit turpis quis, hendrerit elit. In vel eleifend arcu. Phasellus at imperdiet dui, quis mattis velit. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
+                </td>
+            </tr>
+            </tal:analysis>
+            </tal:analyses>
+        </tbody>
+    </table>
+    </tal:cat>
+    </tal:poc>
+</div>
+<div id="section-resultsinterpretation"
+    tal:define="ri python:dict([(k,v) for (k,v) in analysisrequest.get('resultsinterpretationdepts',{}).items() if v and v.get('richtext','')]);"
+    tal:condition="python: ri">
+    <h1 i18n:translate="">Results interpretation</h1>
+    <tal:ris repeat="rid python:ri.keys()">
+        <h2 tal:content="rid" tal:condition="rid"></h2>
+        <div tal:content="structure python:ri.get(rid,{}).get('richtext','')"></div>
+        <p>&nbsp;</p>
+    </tal:ris>
+</div>
+<!-- QC Results section -->
+<div id="section-qcresults" tal:condition="python:hasqcanalyses and showqcanalyses">
+    <h1 i18n:translate="">QC Results</h1>
+    <table>
+        <tal:qctypes repeat="qctype python:categqcanalyses.keys()">
+        <tal:qctype define="blank python:qctype=='b';
+                            control python:qctype=='c';
+                            duplicate python:qctype=='d';
+                            qctype_tblid python: 'blank-analyses' if blank else ('control-analyses' if control else 'duplicate-analysis');">
+        <h2 tal:condition="python:qctype=='b'" i18n:translate="">Blank analyses</h2>
+        <h2 tal:condition="python:qctype=='c'" i18n:translate="">Control analyses</h2>
+        <h2 tal:condition="python:qctype=='d'" i18n:translate="">Duplicate analyses</h2>
+        <tal:poc tal:repeat="poc python:categqcanalyses.get(qctype,{}).keys()">
+        <tal:cat tal:repeat="cat python:categqcanalyses.get(qctype,{}).get(poc, {}).keys()">
+        <table tal:attributes="id python:qctype_tblid">
+            <thead>
+                <tr>
+                    <th class="analysis"><span tal:content='python: cat'>Category: Vitamin D</span></th>
+                    <th class="result"><span i18n:translate="">Result</span></th>
+                    <th class="dryresult" tal:condition="analysisrequest/report_drymatter"><span i18n:translate="">Dry</span></th>
+                    <th class="specs"><span i18n:translate="">Value Range</span></th>
+                    <th class="refsample" tal:condition='python: duplicate==False'><span i18n:translate="">Reference Sample</span></th>
+                    <th class="worksheet"><span i18n:translate="">Worksheet</span></th>
+                    <th class="outofrange"></th>
+                </tr>
+            </thead>
+            <tbody>
+            <tal:analyses tal:repeat="analysis python:categqcanalyses[qctype][poc][cat]">
+            <tal:analysis tal:define="analysis_css_result python:'outofrange' if analysis['outofrange'] else '';
+                                      analysis_css_accredited python:'accredited' if analysis['accredited'] else '';
+                                      analysis_css_retested python:'retested' if analysis['retested'] else '';">
+            <tr tal:attributes="class python:'%s %s %s' % (analysis_css_result, analysis_css_accredited, analysis_css_retested);">
+                <td class="analysis">
+                    <span tal:content="analysis/title" tal:condition="python: analysis['scientific_name'] == False">Total 25-OHD</span>
+                    <span tal:condition="analysis/scientific_name"><em tal:content="analysis/title"></em></span>
+                </td>
+                <td>
+                    <span class="result" tal:content="structure analysis/formatted_result">23</span>
+                    <span class="units" tal:content="structure analysis/formatted_unit|nothing"></span>
+                </td>
+                <td class="dryresult" tal:condition="python: reportdrymatter and getattr(analysis, 'resultdm', None)">
+                    <span tal:content="structure string:${analysis/resultdm}  ${analysis/formatted_unit|nothing}">23</span>
+                </td>
+                <td class="specs">
+                    <span tal:condition="analysis/uncertainty"
+                          tal:replace="structure string:[&plusmn; ${analysis/uncertainty}] "></span>
+                    <span tal:replace="python:'(RT) ' if analysis['retested'] else ''"></span>
+                    <span tal:replace="analysis/formatted_specs">50 - 60</span>
+                </td>
+                <td class="refsample" tal:content="analysis/refsample">QC13-0001 - Vit D Blank</td>
+                <td class="worksheet"><a tal:attributes="href analysis/worksheet_url" tal:content="analysis/worksheet">WS13-0001</a></td>
+                <td class="outofrange">
+                    <span tal:replace="python:'*' if analysis['outofrange']==True else ''"></span>
+                </td>
+            </tr>
+            </tal:analysis>
+            </tal:analyses>
+            </tbody>
+        </table>
+        </tal:cat>
+        </tal:poc>
+        </tal:qctype>
+        </tal:qctypes>
+    </table>
+</div>
+
+<!--  Remarks section -->
+<div id="section-remarks" tal:condition="analysisrequest/remarks">
+    <h1 i18n:translate="">Remarks</h1>
+    <p tal:content="structure analysisrequest/remarks"></p>
+</div>
+
+<!-- Attachments section -->
+<div id="section-attachments"
+    tal:define="ar_attachments python:(analysisrequest['obj'].getAttachment() and len(analysisrequest['obj'].getAttachment())>0) and analysisrequest['obj'].getAttachment() or None;
+                an_attachments python:[an.getAttachment() for an in analysisrequest['obj'].getAnalyses(full_objects=True) if an.getAttachment()];">
+    <h1 i18n:translate="" tal:condition="python: ar_attachments or len(an_attachments)>0">Attachments</h1>
+    <h2 i18n:translate="" tal:condition="ar_attachments">Analysis request attachments</h2>
+    <ul tal:condition="ar_attachments">
+    <tal:attachment tal:repeat="attachment ar_attachments">
+        <li tal:define="file python:attachment.getAttachmentFile();
+                        filename file/filename | nothing;
+                        filesize file/get_size | python:file and len(file) or 0;
+                        icon file/getBestIcon | nothing">
+            <a title="Click to download"
+               tal:attributes="href string:${attachment/absolute_url}/at_download/AttachmentFile"
+               tal:content="attachment/Title">Filename</a>
+            <span class="file-type" tal:content="python:attachment.getAttachmentType().Title() if attachment.getAttachmentType() else ''">Title</span>&nbsp;&nbsp;
+            (<span class="file-mime" tal:content="python:here.lookupMime(file.getContentType())">CSV</span>)&nbsp;&mdash;&nbsp;
+            <span class="file-size" tal:content="python:'%sKb' % (filesize / 1024)">145Kb</span>
+        </li>
+    </tal:attachment>
+    </ul>
+    <h2 i18n:translate="" tal:condition="python: len(an_attachments)>0">Analysis services attachments</h2>
+    <table id="analysis-attachments" tal:condition="python: len(an_attachments)>0">
+    <tal:anattachments tal:repeat="analysis python:analysisrequest['obj'].getAnalyses(full_objects=True)">
+    <tal:anattachment tal:repeat="anat python: analysis.getAttachment()">
+        <tr tal:define="file python:anat.getAttachmentFile();
+                        filename file/filename | nothing;
+                        filesize file/get_size | python:file and len(file) or 0;
+                        icon file/getBestIcon | nothing">
+            <td tal:content="python: analysis.getKeyword()">Total Vit D2 + D3</td>
+            <td>
+                <a title="Click to download"
+               tal:attributes="href string:${anat/absolute_url}/at_download/AttachmentFile"
+               tal:content="anat/Title">Filename</a>
+            <span class="file-type" tal:content="python:anat.getAttachmentType().Title() if anat.getAttachmentType() else ''">Title</span>&nbsp;&nbsp;
+            (<span class="file-mime" tal:content="python:here.lookupMime(file.getContentType())">CSV</span>)&nbsp;&mdash;&nbsp;
+            <span class="file-size" tal:content="python:'%sKb' % (filesize / 1024)">145Kb</span>
+            </td>
+        </tr>
+    </tal:anattachment>
+    </tal:anattachments>
+    </table>
+</div>
+
+<!-- Signatures section -->
+<div id="section-signatures">
+    <table>
+        <td tal:define="mngr_info analysisrequest/managers;
+                         mngr_ids python:mngr_info['ids'];
+                         managers python:mngr_info['dict'];"
+             tal:repeat="manager mngr_ids"
+             class="manager-info">
+             <tal:manager tal:define="rownum repeat/manager/number;
+                             email python:managers[manager]['email'];
+                             jobtitle python:managers[manager]['job_title'];
+                             phone python:managers[manager]['phone'];
+                             department python:managers[manager]['departments'];
+                             signature python:managers[manager]['signature'];">
+
+                <img tal:condition="signature"
+                     tal:attributes="src string:${signature}" style="height:75px"/>
+                <br/>
+                <span class="manager-salutation" tal:content="python:managers[manager]['salutation']">Ms.</span>&nbsp;
+                <span class="manager-fullname" tal:content="python:managers[manager]['name']">Joe Blogs</span>
+                <br tal:condition="jobtitle">
+                <span class="manager-jobtitle"
+                    tal:condition="jobtitle"
+                    tal:content="jobtitle"></span>
+                <br tal:condition="email"/>
+                <span class="manager-email" tal:condition="email">
+                    <a tal:attributes="href string:mailto:${email}"
+                       tal:content="email">a@b.com</a>
+                </span>
+                <br tal:condition="phone"/>
+                <span class="manager-phone"
+                    tal:content="phone"
+                    tal:condition="phone">011 555 1112</span>
+                <br/>
+                <span class="manager-department" tal:content="department">Chemistry</span>
+                <span tal:condition="python: rownum % 3 == 0"
+                      tal:replace="structure python:'</tr>'"></span>
+            </tal:manager>
+        </td>
+    </table>
+</div>
+<!-- Discreeter section -->
+<div id="section-discreeter">
+    <div id="discreeter-outofrange" i18n:translate="">* Result out of client specified range.</div>
+    <div tal:condition="analysisrequest/report_drymatter" i18n:translate="">Reported as dry matter</div>
+    <div tal:condition="analysisrequest/invoice_exclude" i18n:translate="">Not invoiced</div>
+    <div tal:condition="laboratory/accredited" i18n:translate="">Methods included in the <tal:block replace="laboratory/accreditation_body" i18n:name="accreditation_body"/> schedule of Accreditation for this Laboratory. Analysis remarks are not accredited</div>
+    <div i18n:translate="">Analysis results relate only to the samples tested.</div>
+    <div i18n:translate="">This document shall not be reproduced except in full, without the written approval of <tal:block replace="laboratory/title" i18n:name="name_lab"/></div>
+    <div tal:define="confidence_level laboratory/confidence"
+         tal:condition="confidence_level" i18n:translate="">Test results are at a <tal:block replace="confidence_level" i18n:name="lab_confidence"/>% confidence level</div>
+    <div tal:condition="python:contact.get('pubpref','') != '' and 'email' in contact['pubpref']" i18n:translate="">Methods of analysis available by clicking on the 'Request' link</div>
+</div>
+
+<!--
+    Page footer
+    A div element with the class "page-footer" will be placed in the
+    bottom of the report, within the bottom margin area. This element
+    will be displayed on each page.
+
+    Page numbering
+    For the number of page, use the "page-current-num" class.
+    For the total count, use the "page-total-count" class.
+-->
+<div class='page-footer'>
+    <table>
+        <tr>
+            <td class='footer-discreeter'>
+                <div class="footer" tal:content="structure analysisrequest/footer"></div>
+                <div class="page-number">Page <span class="page-current-num"></span> of <span class="page-total-count"></span></div>
+            </td>
+            <td class='barcode-container'>
+                <div class='barcode'
+                        data-code='code128'
+                        data-showHRI='false'
+                        data-barHeight='12'
+                        data-addQuietZone='true'
+                        tal:attributes="data-id analysisrequest/id">
+                </div>
+            </td>
+        </tr>
+    </table>
+</div>
+</tal:report>

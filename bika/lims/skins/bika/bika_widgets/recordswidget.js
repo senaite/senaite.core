@@ -98,6 +98,7 @@ function recordswidget_loadEventHandlers(elements) {
             var prefix = ID.split("-")[0] + "-" + ID.split("-")[1];
             var nr = parseInt(ID.split("-")[2]) + 1;
             $(found[i]).attr('id', prefix + "-" + nr);
+            $(found[i]).val('');
         };
         // First check to see that all required subfields are completed,
         // before allowing a new row to be added
