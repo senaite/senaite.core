@@ -229,7 +229,7 @@ class RemoteKeywords(Keywords, RemoteLibrary):
         container = portal.restrictedTraverse(path.strip('/').split('/'))
         # create object
         obj = _createObjectByType(portal_type, container, id)
-        obj.processForm(container.REQUEST, values=kwargs)
+        obj.unmarkCreationFlag()
         self.write_at_field_values(obj, **kwargs)
         return obj.UID()
 
