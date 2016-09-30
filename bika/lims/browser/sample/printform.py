@@ -286,19 +286,35 @@ class SamplesPrint(BrowserView):
             }
         }
         ars = sample.getAnalysisRequests()
-        labans = False;
+        labans = False
+        # The form is divided by ar(samples).
         for ar in ars:
+            # Since the form is divided by ar, we need a marker to know if
+            # we are still inside the same ar or it is a new one. The fields
+            # related with the ar itself shouldn't be repeated each loop.
+            # arcell == analysis request cell
             arcell = False
+            # Getting the analyses for each analysis request (sample). This
+            # number will be used in order to set the height of the ar html row
             numans = len(ar.getAnalyses())
+            # We want a row per patition in order to draw the barcodes
             for part in ar.getPartitions():
+                # The same logic used for 'arcell':True qhen the row still
+                # belongs to the same partition
+                # partcell == partition cell
                 partcell = False
                 container = part.getContainer().title \
                     if part and part.getContainer() else ''
+                # Gettin the analyses linked to the partition
                 partans = part.getAnalyses()
+                # Getting the number of partitions. Needed to know the height
+                # of the partition row.
                 numpartans = len(partans)
+                # Getting the points of capture if needed
                 labpoc = [an for an in partans if an.getService().getPointOfCapture() == 'field']
                 labans = True if labans or len(labpoc) > 0 else labans
                 labpoc = [partans[0]] if len(labpoc) == 0 else labpoc
+                # for each analyses, build the structure
                 for analysis in labpoc:
                     service = analysis.getService()
                     row = {
@@ -374,6 +390,8 @@ class SamplesPrint(BrowserView):
                         },
                     }
                     rows.append(row)
+                    # After the first iteration, we definitely are in a
+                    # analysis request and partition row
                     arcell = True
                     partcell = True
 
