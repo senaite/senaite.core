@@ -1801,7 +1801,7 @@ class AR_Templates(WorksheetImporter):
 
             obj = _createObjectByType("ARTemplate", folder, tmpID())
             obj.edit(
-                title=row['title'],
+                title=str(row['title']),
                 description=row.get('description', ''),
                 Remarks=row.get('Remarks', ''),
                 ReportDryMatter=bool(row['ReportDryMatter']))
@@ -1932,11 +1932,13 @@ class Setup(WorksheetImporter):
             AutoLogOff=int(values['AutoLogOff']),
             ShowPricing=values.get('ShowPricing', True),
             Currency=values['Currency'],
+            DefaultCountry=values.get('DefaultCountry', ''),
             MemberDiscount=str(Float(values['MemberDiscount'])),
             VAT=str(Float(values['VAT'])),
             MinimumResults=int(values['MinimumResults']),
             BatchEmail=int(values['BatchEmail']),
             SamplingWorkflowEnabled=values['SamplingWorkflowEnabled'],
+            ScheduleSamplingEnabled=values.get('ScheduleSamplingEnabled', 0),
             CategoriseAnalysisServices=self.to_bool(
                 values['CategoriseAnalysisServices']),
             EnableAnalysisRemarks=self.to_bool(
