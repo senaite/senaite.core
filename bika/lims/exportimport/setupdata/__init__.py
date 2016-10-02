@@ -1932,7 +1932,7 @@ class Setup(WorksheetImporter):
             AutoLogOff=int(values['AutoLogOff']),
             ShowPricing=values.get('ShowPricing', True),
             Currency=values['Currency'],
-            DefaultCountry=values.get('DefaultCountry', '')
+            DefaultCountry=values.get('DefaultCountry', ''),
             MemberDiscount=str(Float(values['MemberDiscount'])),
             VAT=str(Float(values['VAT'])),
             MinimumResults=int(values['MinimumResults']),
