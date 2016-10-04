@@ -128,7 +128,11 @@ class HistoryAwareReferenceField(ReferenceField):
     def get(self, instance, aslist=False, **kwargs):
         """get() returns the list of objects referenced under the relationship.
         """
-        uc = getToolByName(instance, "uid_catalog")
+        try:
+            uc = getToolByName(instance, "uid_catalog")
+        except AttributeError as err:
+            logger.error("AttributeError: {0}".format(err))
+            return []
 
         try:
             res = instance.getRefs(relationship=self.relationship)
