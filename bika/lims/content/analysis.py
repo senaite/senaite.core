@@ -1476,7 +1476,7 @@ class Analysis(BaseContent):
         if self.portal_type == "DuplicateAnalysis":
             return
         workflow = getToolByName(self, "portal_workflow")
-        self.reindexObject(idxs=["orksheetanalysis_review_state", ])
+        self.reindexObject(idxs=["worksheetanalysis_review_state", ])
         self.reindexObject(idxs=["review_state", ])
         # If it is assigned to a worksheet, unassign it.
         if workflow.getInfoFor(self, 'worksheetanalysis_review_state') == 'assigned':
