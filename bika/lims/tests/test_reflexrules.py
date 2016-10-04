@@ -729,8 +729,8 @@ class TestReflexRules(BikaFunctionalTestCase):
         self.assertEqual(
             reflexed_analysis_2.getReflexAnalysisOf().UID(),
             analyses[-2].getObject().UID())
-        self.assertTrue(
-            reflexed_analysis_2.getReflexRuleActionLevel() == 2)
+        self.assertEqual(
+            reflexed_analysis_2.getReflexRuleActionLevel(), 2)
         self.assertEqual(
             reflexed_analysis_2.getResult(), '2'
             )

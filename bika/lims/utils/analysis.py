@@ -34,8 +34,6 @@ def duplicateAnalysis(base):
                 if x.getId().startswith(kw)]
     a_id = "{0}-{1}".format(kw, len(analyses))
     # Create new analysis and copy values from current analysis
-    _id = ar.invokeFactory('Analysis', id=a_id)
-    # Create new analysis and copy values from current analysis
     # _id = ar.invokeFactory('Analysis', id=a_id) it gives unauthorized error
     # analysis = ar[_id]
     analysis = _createObjectByType('Analysis', ar, id=a_id)
