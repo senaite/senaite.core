@@ -162,6 +162,7 @@ function ControlChart() {
             .y(function(d) { return y(d.y_axis); });
 
         var svg = d3.select(canvas).append("svg")
+            .attr("xmlns", "http://www.w3.org/2000/svg")
             .attr("width", width + margin.left + margin.right)
             .attr("height", height + margin.top + margin.bottom)
           .append("g")

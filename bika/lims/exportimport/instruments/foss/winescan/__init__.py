@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 """ FOSS 'Winescan'
 """
 from bika.lims import bikaMessageFactory as _
@@ -25,7 +30,7 @@ class WinescanCSVParser(InstrumentCSVResultsFileParser):
             resid = splitted[0]
             if not resid:
                 self.err("No Sample ID found", numline=self.num_line)
-                self.currentHeader = None
+                self.currentheader = None
                 return 0
 
             duplicated = []
@@ -82,7 +87,7 @@ class WinescanCSVParser(InstrumentCSVResultsFileParser):
 
             # add result
             self._addRawResult(resid, outvals, True)
-            self.currentHeader = None
+            self.currentheader = None
             return 0
 
         self.err("No header found")

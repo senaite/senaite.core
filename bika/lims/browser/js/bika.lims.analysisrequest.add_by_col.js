@@ -841,7 +841,6 @@ function AnalysisRequestAddByCol() {
             var uid = $(this).attr('uid');
             var existing_uids = $('td[arnum="' + arnum + '"] input[name$="_uid"]').val().split(',');
             destroy(existing_uids, uid);
-            // Now update the CC Contact field to reflect the new UIDs
             $('td[arnum="' + arnum + '"] input[name$="CCContact-'+arnum+'_uid"]').val(existing_uids.join(','));
             $('td[arnum="' + arnum + '"] input[name="CCContact-0"]').attr('uid', existing_uids.join(','));
             $(this).parent('div').remove();

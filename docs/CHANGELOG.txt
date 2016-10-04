@@ -4,6 +4,29 @@ HEALTH-568: TaqMan 96 Interface not working well
 HEALTH-567: Nuclicens Interface not working well
 HEALTH-360: Enforce State (Province) and District if Zimbabwe is selected
 HEALTH-364: Added country/province/district columns to client listing table
+LIMS-2404: AR list in batches permitted sampling without Sampler and Sampling date provided
+LIMS-2380: ARs are created in correct order (order of columns in ar-create form)
+LIMS-2394: Calculation failure in worksheets. TDS Calc misfires again.
+LIMS-2391: Use source analysis's sample ID in duplicate analysis IDs
+LIMS-2351: Field analyses without results do not prevent Samples from being received
+LIMS-2366: Workflow. AR stays in Received state with all Analyses in To be Verifie
+LIMS-2384: ARImport: Workflow state of imported ARs and their Analyses not synchronised.
+LIMS-2369: Workflow. Sampler and Date Sampled should be compulsory
+LIMS-2355: Unable to view dormant/active filters in some bika_setup pages
+LIMS-2344: Fix some UI javascript failures when viewing ARs
+LIMS-2319: AR Add: Deleting a selected CC Contact corrupts the UID of reference widgets
+LIMS-2325: Allow SampleTypes to be linked with Client Sample Points
+LIMS-2324: WS export to the LaChat Quick Chem FIA
+LIMS-2298: Add filter in Clients list
+LIMS-2299: Add ui for editing ar_count in all analysisrequest lists
+LIMS-2268: Instrument Interface. Vista Pro Simultaneous ICP, bi-directional CSV
+LIMS-2261: Cannot create analysis request
+LIMS-1562: Using a Sample Round. Basic form and printed form
+LIMS-2266: Crating partitions through Add form, doesn't create partitions.
+HEALTH-394: Sample sticker layout. 2 new sticker layouts, 2 stickers per row
+LIMS-2032: AS Methods initialise with 1st available Instrument (loading setup data)
+LIMS-2014: I can only select a Default Method for an AS if Manual results capture is on
+LIMS-2181: An analysis is not stopped from using an invalid instrument
 HEALTH-310: Implemented Nuclisens EasyQ instrument importer
 HEALTH-319: Instrument. Roche Cobas Taqman 96
 LIMS-2091: Table Column Display options Everywhere
@@ -15,10 +38,33 @@ LIMS-1774: Shiny graphs for result ranges
 - Replacement of pagination by 'Show more' in tables makes the app faster
 - Add Bika LIMS TAL report reference in reports preview
 - Simplify instrument interface creation for basic CSV files
+- Scheduled sampling functionality added
+LIMS-2257: Scheduled sampling
+LIMS-2255: Switch to Chameleon (five.pt) for rendering TAL templates
+- Replacement of pagination by 'Show more' in tables makes the app faster
+- Add Bika LIMS TAL report reference in reports preview
+- Simplify instrument interface creation for basic CSV files
 
 3.1.x Long Term Support (LTS)
 -----------------------------
 HEALTH-498: Sampling Date accepting dates in the future
+3.1.11 (2016-04-22)
+-----------------------------
+LIMS-2181: An analysis is not stopped from using an invalid instrument
+3.1.12 (unreleased)
+-----------------------------
+HEALTH-569 Bar code printing not working on sample registration
+
+3.1.11 (2016-04-22)
+-----------------------------
+LIMS-2252: Partitions not submitted when creating AR if the form is submitted before partitions are calculated
+LIMS-2223: Saving a recordswidget as hidden fails
+LIMS-2225: Formatted results not displayed properly in Worksheet's transposed layout
+LIMS-2001: Duplicate for one analysis only
+LIMS-1809: Typos. Perdiod an missing spaces
+LIMS-2221: Decimal mark doesn't work in Sci Notation
+LIMS-2219: Using a SciNotation diferent from 'aE+b / aE-b' throws an error
+LIMS-2220: Raw display of exponential notations in results manage views
 LIMS-2216: Results below LDL are not displayed in reports
 LIMS-2217: Specifications are not set in analyses on Analysis Request creation
 LIMS-2218: Result is replaced by min or max specs when "<Min" or ">Max" fields are used
@@ -32,9 +78,7 @@ LIMS-1807: Validation for Start Date - End date relationship while creating invo
 LIMS-1991: Sort Order for Analysis Categories and Services
 LIMS-1521: Date verified column for AR lists
 LIMS-2194: Error when submitting a result
-
-3.1.11 (2016-01-25)
--------------------
+LIMS-2169: Cannot start instance
 WINE-125: Client users receive unauthorized when viewing some published ARs
 
 3.1.10 (2016-01-13)
@@ -92,6 +136,7 @@ LIMS-2149: Missing analyses can cause error accessing worksheet
 LIMS-1521: Date verified column for AR lists
 LIMS-2015: Column spacing on Client look-up
 LIMS-1807: Validation for Start Date - End Date relationship
+
 3.1.9 (2015-10-8)
 ------------------
 LIMS-2068: LIMS-2068 Urgent. Analysis Catgories don't expand

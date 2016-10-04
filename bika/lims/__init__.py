@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 import warnings
 import pkg_resources
 __version__ = pkg_resources.get_distribution("bika.lims").version
@@ -31,10 +36,15 @@ allow_module('bika.lims.config')
 allow_module('bika.lims.permissions')
 allow_module('bika.lims.utils')
 allow_module('json')
-allow_module('pdb')
 allow_module('zope.i18n.locales')
 allow_module('zope.component')
 allow_module('plone.registry.interfaces')
+
+import App
+debug_mode = App.config.getConfiguration().debug_mode
+if debug_mode:
+    allow_module('pdb')
+    allow_module('pudb')
 
 def initialize(context):
 

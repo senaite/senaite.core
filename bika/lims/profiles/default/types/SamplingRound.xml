@@ -72,6 +72,17 @@
          visible="True">
   <permission value="View"/>
  </action>
+  <action title="Print"
+          action_id="sampling_round_print"
+          category="document_actions"
+          condition_expr=""
+          icon_expr="string:${object_url}/print_icon.png"
+          link_target=""
+          url_expr="string:${object_url}/sr_form_print"
+          i18n:attributes="title"
+          visible="True">
+      <permission value="View"/>
+  </action>
 
     <!-- enabled behaviors -->
     <!-- This allow references between archetypes and dexterity content types. -->

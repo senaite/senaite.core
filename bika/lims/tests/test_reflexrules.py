@@ -251,21 +251,78 @@ class TestReflexRules(BikaFunctionalTestCase):
             ans_list[-1].UID() == rule.getReflexRules()[0].get(
                 'analysisservice', '')
             )
+        # Create an analysis Request
+        client = self.portal.clients['client-1']
+        sampletype = self.portal.bika_setup.bika_sampletypes['sampletype-1']
+        values = {'Client': client.UID(),
+                  'Contact': client.getContacts()[0].UID(),
+                  'SamplingDate': '2015-01-01',
+                  'SampleType': sampletype.UID()}
+        request = {}
+        ar = create_analysisrequest(client, request, values, [ans_list[-1]])
+        wf = getToolByName(ar, 'portal_workflow')
+        wf.doActionFor(ar, 'receive')
+        # Getting the analysis
+        analysis = ar.getAnalyses(full_objects=True)[0]
         # Testing reflexrule content type public functions
-        result = rule.getExpectedValuesAndRules(
-            ans_list[-1].UID(), 0, 'submit')
+        result = rule.getExpectedValuesAndRules(analysis, 'submit')
         self.assertEqual(
             result[0]['actions'], rules[0]['actions']
         )
         self.assertEqual(result[0]['expected_values'], ('5', '10'))
-        result = rule.getExpectedValuesAndRules(
-            ans_list[-1].UID(), 6, 'submit')
+        # A result outside the range
+        analysis.setResult('11.3')
+        result = rule.getActionReflexRules(analysis, 'submit')
         self.assertEqual(
             result, []
         )
-        result = rule.getRules(ans_list[-1].UID(), 8, 0, 'submit')
+        # A result inside the range
+        analysis.setResult('6.7')
+        result = rule.getExpectedValuesAndRules(analysis, 'submit')
         self.assertEqual(
-            result, rules[0]['actions']
+            result[0]['actions'], rules[0]['actions']
+        )
+        result = rule.getActionReflexRules(analysis, 'submit')
+        expected_result = [{
+            'act_row_idx': '1',
+            'action': 'repeat',
+            'analyst': 'analyst1',
+            'otherWS': True,
+            'rulename': 'Rule MS',
+            'rulenumber': 0
+            }, {
+            'act_row_idx': '2',
+            'action': 'duplicate',
+            'analyst': 'analyst1',
+            'otherWS': False,
+            'rulename': 'Rule MS',
+            'rulenumber': 0}]
+        self.assertEqual(
+            result, expected_result
+        )
+        # Using a float
+        analysis.setResult(6.7)
+        result = rule.getExpectedValuesAndRules(analysis, 'submit')
+        self.assertEqual(
+            result[0]['actions'], expected_result
+        )
+        result = rule.getActionReflexRules(analysis, 'submit')
+        expected_result = [{
+            'act_row_idx': '1',
+            'action': 'repeat',
+            'analyst': 'analyst1',
+            'otherWS': True,
+            'rulename': 'Rule MS',
+            'rulenumber': 0
+            }, {
+            'act_row_idx': '2',
+            'action': 'duplicate',
+            'analyst': 'analyst1',
+            'otherWS': False,
+            'rulename': 'Rule MS',
+            'rulenumber': 0}]
+        self.assertEqual(
+            result, expected_result
         )
 
     def test_reflex_rule_set_get_wrong_data(self):
@@ -401,6 +458,76 @@ class TestReflexRules(BikaFunctionalTestCase):
         ]
         rules_list = self.create_reflex_rules(rules_data)
         rule = rules_list[-1]
+        rules = [{
+            'range1': '10', 'range0': '5',
+            'discreteresult': '',
+            'repetition_max': -1,
+            'trigger': 'submit',
+            'analysisservice': ans_list[0].UID(), 'value': '8',
+                'actions':[{'action':'repeat', 'act_row_idx':'1',
+                            'otherWS':True, 'analyst': 'analyst1'},
+                          {'action':'duplicate', 'act_row_idx':'2',
+                            'otherWS':False, 'analyst': 'analyst1'},
+                    ],
+        },]
+        rules_data = [
+            {
+                'title': 'Rule MS 2',
+                'description': 'A description',
+                'method': meths[0],
+                'ReflexRules': rules
+            },
+        ]
+        rules_list = self.create_reflex_rules(rules_data)
+        rule = rules_list[-1]
+        rules = [{
+            'range1': '10', 'range0': '5',
+            'discreteresult': '',
+            'repetition_max': 0,
+            'trigger': 'submit',
+            'analysisservice': ans_list[0].UID(), 'value': '8',
+                'actions':[{'action':'repeat', 'act_row_idx':'1',
+                            'otherWS':True, 'analyst': 'analyst1'},
+                          {'action':'duplicate', 'act_row_idx':'2',
+                            'otherWS':False, 'analyst': 'analyst1'},
+                    ],
+        },]
+        rules_data = [
+            {
+                'title': 'Rule MS 2',
+                'description': 'A description',
+                'method': meths[0],
+                'ReflexRules': rules
+            },
+        ]
+        rules_list = self.create_reflex_rules(rules_data)
+        rule = rules_list[-1]
+        # There must be a rule without reflex rules
+        self.assertEqual(rule.getReflexRules(), [])
+        # Creating a rule with wrong otherresultscondition
+        rules = [{
+            'range1': '10', 'range0': '5',
+            'discreteresult': '',
+            'otherresultcondition': 'true',
+            'repetition_max': 'haba',
+            'trigger': 'submit',
+            'analysisservice': ans_list[0].UID(), 'value': '8',
+                'actions':[{'action':'repeat', 'act_row_idx':'1',
+                            'otherWS':True, 'analyst': 'analyst1'},
+                          {'action':'duplicate', 'act_row_idx':'2',
+                            'otherWS':False, 'analyst': 'analyst1'},
+                    ],
+        },]
+        rules_data = [
+            {
+                'title': 'Rule MS 2',
+                'description': 'A description',
+                'method': meths[0],
+                'ReflexRules': rules
+            },
+        ]
+        rules_list = self.create_reflex_rules(rules_data)
+        rule = rules_list[-1]
         # There must be a rule without reflex rules
         self.assertEqual(rule.getReflexRules(), [])
 
@@ -484,6 +611,129 @@ class TestReflexRules(BikaFunctionalTestCase):
             analysisrequests[0].getObject().getAnalyses()[1].UID,
             analysis.UID()
         )
+        # Checking the reflex rule fields in the created analysis
+        reflex_analysis = analysisrequests[0].getObject()\
+            .getAnalyses()[1].getObject()
+        self.assertTrue(reflex_analysis.getIsReflexAnalysis())
+        self.assertEqual(
+            reflex_analysis.getOriginalReflexedAnalysis().UID(),
+            analysis.UID())
+        self.assertEqual(
+            reflex_analysis.getReflexAnalysisOf().UID(),
+            analysis.UID())
+        self.assertEqual(
+            reflex_analysis.getReflexRuleAction(), 'duplicate')
+        self.assertEqual(
+            reflex_analysis.getReflexRuleActionLevel(), 1)
+
+    def test_reflex_rule_triggering_the_reflexion(self):
+        """
+        Testing the doReflexRuleAction using setresult on duplicate.
+        """
+        # Creating a department
+        department_data = [
+            {
+                'title': 'dep2',
+            }
+        ]
+        deps = self.create_departments(department_data)
+        # Creating a category
+        category_data = [{
+            'title': 'cat2',
+            'Department': deps[0]
+            },
+        ]
+        cats = self.create_category(category_data)
+        # Creating a method
+        methods_data = [
+            {
+                'title': 'Method 2',
+                'description': 'A description',
+                'Instructions': 'An instruction',
+                'MethodID': 'm2',
+                'Accredited': 'True'
+            },
+        ]
+        meths = self.create_methods(methods_data)
+        # Creating an analysis service
+        as_data = [{
+                'title': 'analysis service1',
+                'ShortTitle': 'as1',
+                'Keyword': 'as1',
+                'PointOfCapture': 'Lab',
+                'Category': cats[0],
+                'Methods': meths,
+                },
+        ]
+        ans_list = self.create_analysisservices(as_data)
+        actions1 = [
+                  {'action':'duplicate', 'act_row_idx':'1',
+                    'otherWS':False, 'analyst': 'analyst1'},
+            ]
+        actions2 = [
+                  {'otherresultcondition': True,
+                    'resultcondition': 'duplicate',
+                    'fromlevel': '1',
+                    'action':'setresult',
+                    'setresulton': 'next',
+                    'setresultvalue': '2',
+                    'act_row_idx':'2',
+                    'otherWS':False, 'analyst': 'analyst1'},
+            ]
+        # Create an analysis Request
+        client = self.portal.clients['client-1']
+        sampletype = self.portal.bika_setup.bika_sampletypes['sampletype-1']
+        values = {'Client': client.UID(),
+                  'Contact': client.getContacts()[0].UID(),
+                  'SamplingDate': '2015-01-01',
+                  'SampleType': sampletype.UID()}
+        request = {}
+        ar = create_analysisrequest(client, request, values, ans_list)
+        wf = getToolByName(ar, 'portal_workflow')
+        wf.doActionFor(ar, 'receive')
+        # Set result
+        analysis = ar.getAnalyses(full_objects=True)[0]
+        analysis.setResult('8.1')
+        # Getting client analysis requests
+        pc = getToolByName(ar, 'portal_catalog')
+        contentFilter = {'portal_type': 'AnalysisRequest',
+                         'cancellation_state': 'active'}
+        analysisrequests = pc(contentFilter)
+        self.assertEqual(
+            len(analysisrequests[0].getObject().getAnalyses()), 1)
+        self.assertEqual(
+            analysisrequests[0].getObject().getAnalyses()[0].UID,
+            analysis.UID())
+        # Apply reflex action 'repeat'
+        doReflexRuleAction(analysis, actions1)
+        analysisrequests = pc(contentFilter)
+        self.assertEqual(
+            len(analysisrequests[0].getObject().getAnalyses()), 2)
+        reflexed_analysis = analysisrequests[0].getObject().getAnalyses()[1]
+        reflexed_analysis.getObject().setResult('8.2')
+        # Apply reflex action 'setresult'
+        doReflexRuleAction(reflexed_analysis.getObject(), actions2)
+        self.assertEqual(
+            len(analysisrequests[0].getObject().getAnalyses()), 3)
+        bac = getToolByName(self.portal, 'bika_analysis_catalog')
+        contentFilter_analysis = {
+            'portal_type': 'Analysis',
+            'sort_on': 'created'}
+        analyses = bac(contentFilter_analysis)
+        reflexed_analysis_2 = analyses[-1].getObject()
+        # Checking the reflex rule fields in the created analysis
+        self.assertTrue(reflexed_analysis_2.getIsReflexAnalysis())
+        self.assertEqual(
+            reflexed_analysis_2.getOriginalReflexedAnalysis().UID(),
+            analysis.UID())
+        self.assertEqual(
+            reflexed_analysis_2.getReflexAnalysisOf().UID(),
+            analyses[-2].getObject().UID())
+        self.assertEqual(
+            reflexed_analysis_2.getReflexRuleActionLevel(), 2)
+        self.assertEqual(
+            reflexed_analysis_2.getResult(), '2'
+            )
 
 
 def test_suite():

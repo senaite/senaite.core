@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
@@ -12,7 +17,7 @@ from plone.app.layout.globals.interfaces import IViewView
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.content.bikaschema import BikaFolderSchema
-from bika.lims.permissions import AddMethod, ManageBika
+from bika.lims.permissions import AddMethod
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from zope.interface.declarations import implements
@@ -86,18 +91,6 @@ class MethodsView(BikaListingView):
                 'url': 'createObject?type_name=Method',
                 'icon': '++resource++bika.lims.images/add.png'
             }
-        if not mtool.checkPermission(ManageBika, self.context):
-            self.show_select_column = False
-            self.review_states = [
-                {'id':'default',
-                 'title': _('All'),
-                 'contentFilter':{},
-                 'columns': ['Title', 
-                             'Description',
-                             'Instrument',
-                             'Calculation',
-                             'ManualEntry']}
-            ]
         return super(MethodsView, self).__call__()
 
     def folderitems(self):

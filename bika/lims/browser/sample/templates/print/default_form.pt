@@ -1,0 +1,149 @@
+<!--
+    Default Samples form template for Bika LIMS
+-->
+<tal:form tal:define="samples python:view.getSortedFilteredSamples()">
+    <div id="section-header" class='page-header'>
+        <table class="header-form">
+            <th>
+            <div class='lab-logo'>
+                <a tal:attributes="href view/getLab">
+                    <img tal:attributes="src view/getLogo"/>
+                </a>
+            </div>
+            </th>
+            <th>
+                <div class="header-name" i18n:translate="">Samples print form</div>
+            <th>
+    </table>
+    </div>
+    <!-- samples listed by Partition/Container -->
+    <tal:data-entry
+        tal:define="
+            dictionaries view/getSortedFilteredSamples">
+        <!-- Sampler sections -->
+        <tal:sampler-section
+            tal:repeat="sampler_uid python:dictionaries.keys()">
+            <!-- Client sections -->
+            <tal:client_section
+                tal:repeat="client_uid python:dictionaries[sampler_uid].keys()">
+                <tal:dates_section
+                    tal:condition="python:client_uid!='info'"
+                    tal:repeat="date python:dictionaries[sampler_uid][client_uid].keys()">
+                    <div tal:condition="python:date!='info'">
+                        <table class="set-info">
+                            <thead>
+                            <tr>
+                                <th>
+                                    <div
+                                        tal:condition="python:dictionaries[sampler_uid]['info']['name']"
+                                        tal:content="python:dictionaries[sampler_uid]['info']['name']">Sampler</div>
+                                    <div
+                                        tal:condition="python:not(dictionaries[sampler_uid]['info']['name'])"
+                                        class="highlight">No sampler defined</div>
+                                </th>
+                                <th>
+                                    <table>
+                                    <td tal:content="python:dictionaries[sampler_uid][client_uid]['info']['name']">Client</td>
+                                    <td
+                                    tal:condition="python:dictionaries[sampler_uid][client_uid]['info']['reference']"> - </td>
+                                    <td tal:content="python:dictionaries[sampler_uid][client_uid]['info']['reference']">Client</td>
+                                    </table>
+                                </th>
+                                <th rowspan="2">
+                                    <div tal:content="date">Date</div>
+                                </th>
+                            </tr>
+                            <tr>
+                                <th>
+                                    <label i18n:translate="">Signature</label>
+                                    <div class="data-input"></div>
+                                </th>
+                                <th tal:define="
+                                    contacts_list python:dictionaries[sampler_uid][client_uid]['info']['contacts'];
+                                    contacts python:', '.join(contacts_list)">
+                                    <label i18n:translate="">Company contact</label>
+                                    <div tal:content="contacts">Contacts</div>
+                                    <div class="data-input"></div>
+                                </th>
+                            </tr>
+                            </thead>
+                        </table>
+                    </div>
+                    <!-- table section -->
+                    <tal:table
+                        tal:condition="python:date!='info'"
+                        tal:define="tables python:dictionaries[sampler_uid][client_uid][date]">
+                    <div>
+                        <table class="samples-grid"
+                            tal:repeat="table tables">
+                            <tal:rowheader repeat="info_row table/columns/column_order">
+                            <thead>
+                                <tr>
+                                    <th i18n:translate=""
+                                        tal:repeat="column_id info_row"
+                                        tal:content="python: table['columns']['titles'][column_id]"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            <tal:rowsample repeat="row table/rows">
+                                <tr>
+                                <tal:rowcell repeat="column_id info_row">
+                                    <td tal:condition="python: column_id not in ['analyses', 'partition'] and not row[column_id].get('hidden', '')"
+                                        tal:attributes="rowspan python:row[column_id].get('rowspan', '1');
+                                                        class python:column_id">
+                                        <div class="table-text"
+                                            tal:content="python: row[column_id]['value']">
+                                        </div>
+                                    </td>
+                                    <td tal:condition="python: column_id == 'analyses' and row[column_id]['units'] != ''"
+                                        class="analyses">
+                                        <span tal:content="python: row[column_id]['title']"></span>
+                                        <div class="data-input"></div>
+                                        <span
+                                            class="units"
+                                            tal:content="python: row[column_id]['units']"></span>
+                                    </td>
+                                    <td tal:condition="python: column_id == 'analyses' and row[column_id]['units'] == ''"
+                                        class="analyses">
+                                        <div class="table-text"
+                                            tal:content="python: row[column_id]['title']"></div>
+                                    </td>
+                                    <td tal:condition="python: column_id == 'partition' and not row[column_id]['hidden']"
+                                        tal:attributes="rowspan python:row[column_id]['rowspan'];
+                                                        class python:column_id">
+                                        <div class='barcode-container'>
+                                            <div
+                                                tal:condition="python: not row[column_id]['hidden']"
+                                                class='barcode'
+                                                data-code='code128'
+                                                data-showHRI='false'
+                                                data-barHeight='10'
+                                                data-addQuietZone='true'
+                                                tal:attributes="data-id python: row[column_id]['value']">
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tal:rowcell>
+                                </tr>
+                            </tal:rowsample>
+                        </tbody>
+                        </tal:rowheader>
+                        </table>
+                    </div>
+                    </tal:table>
+                <tal:cond tal:condition="python: date!='info' and client_uid!='info'">
+                    <div class='manual-page-break restart-page-count'></div>
+                    <div class='page-footer'>
+                        <div class="page-number">
+                            Page
+                            <span class="page-current-num"></span>
+                            of
+                            <span class="page-total-count"></span>
+                        </div>
+                    </div>
+                </tal:cond>
+                </tal:dates_section>
+            </tal:client_section>
+        </tal:sampler-section>
+    </tal:data-entry>
+</tal:form>

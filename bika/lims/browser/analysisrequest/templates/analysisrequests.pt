@@ -16,44 +16,44 @@
 		table_only python:hasattr(view, 'table_only') and view.table_only or view.request.get('table_only','') == form_id;"
 	tal:condition="python:not table_only">
     <h1>
-		<img tal:condition="view/icon | nothing"
-			 src="" tal:attributes="src view/icon"/>
+        <img tal:condition="view/icon | nothing"
+             src="" tal:attributes="src view/icon"/>
         <img tal:condition="view/getPriorityIcon | nothing"
              src="" tal:attributes="src view/getPriorityIcon"/>
-		<span style="position:relative;top:-0.2em;" class="documentFirstHeading" tal:content="view/title"/>
-		<tal:add_actions repeat="add_item python:view.context_actions.keys()">
-			<a tal:attributes="
+        <span style="position:relative;top:-0.2em;" class="documentFirstHeading" tal:content="view/title"/>
+        <tal:add_actions repeat="add_item python:view.context_actions.keys()">
+            <a tal:attributes="
 				style python:'background: url(%s) 2px 50%% no-repeat'%(view.context_actions[add_item]['icon']);
 				href python:view.context_actions[add_item]['url'];
 				class python:'context_action_link %s' % (view.context_actions[add_item].get('class',''))">
-				<span tal:replace="python:add_item"/>
-			</a>
-		</tal:add_actions>
-		<select name="ar_count"
-			class='ar_count' style="vertical-align:top !important"
-			tal:condition="python:len(view.context_actions) > 0">
-			<option value='1' i18n:translate="">1</option>
-			<option value='2' i18n:translate="">2</option>
-			<option value='3' i18n:translate="">3</option>
-			<option value='4' i18n:translate="">4</option>
-			<option value='5' i18n:translate="">5</option>
-			<option value='6' i18n:translate="">6</option>
-			<option value='7' i18n:translate="">7</option>
-			<option value='8' i18n:translate="">8</option>
-			<option value='9' i18n:translate="">9</option>
-			<option value='10' i18n:translate="">10</option>
-		</select>
+                <span tal:replace="python:add_item"/>
+            </a>
+            <input name="ar_count"
+                   class="ar_count context_action_link"
+                   type="number"
+                   value="4"
+                   style="width:4em;border-radius:0;border:1px solid #ddd;padding:2px;"
+                   tal:condition="python:len(view.context_actions) > 0"/>
+            <a tal:attributes="
+				href python:view.context_actions[add_item]['url'];
+				class python:'context_action_link %s' % (view.context_actions[add_item].get('class',''))"
+               style="padding:5px 1px 3px 1px;"
+               tal:condition="python:len(view.context_actions) > 0">ARs
+            </a>
+        </tal:add_actions>
     </h1>
-	<script type="text/javascript">
+    <script type="text/javascript">
 	(function( $ ) {
 	$(document).ready(function(){
-		$('.ar_count').change(function(){
+		$('input.ar_count').change(function(){
 			url = $(".context_action_link").attr('href').split("?")[0];
 			$(".context_action_link").attr('href', url + "?ar_count="+$(this).val());
 		});
+		$('input.ar_count').click(function(e){e.preventDefault();})
+		$('input.ar_count').change();
 	});
 	}(jQuery));
-	</script>
+    </script>
 </metal:content-title>
 
 <metal:content-description fill-slot="content-description"

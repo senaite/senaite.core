@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from bika.lims.exportimport.instruments.resultsimport import InstrumentCSVResultsFileParser
 from bika.lims.exportimport.instruments.instrument import GenericImport, getResultsInputFile
 

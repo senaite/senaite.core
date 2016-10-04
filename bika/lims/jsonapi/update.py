@@ -1,4 +1,10 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from bika.lims.jsonapi import set_fields_from_request
+from Products.CMFCore.utils import getToolByName
 from plone.jsonapi.core import router
 from plone.jsonapi.core.interfaces import IRouteProvider
 from zExceptions import BadRequest
@@ -98,22 +104,30 @@ class Update(object):
             "success": False,
             "error": True,
         }
-        # always require obj_path
-        self.require("obj_path")
-        obj_path = self.request['obj_path']
-        self.used("obj_path")
-
         obj = None
-        ppath = context.portal_url.getPortalObject().getPhysicalPath()
-        if ppath and len(ppath) > 1:
-            ppath = ppath[1]
-            # If obj_path contains "?_authenticator=c707...", remove it
-            obj_path = obj_path.split('?')[0]
-            obj = context.restrictedTraverse(ppath + obj_path)
+        # Find out if the object can be retrieved via UID or via
+        # traversing.
+        if self.request.get('obj_uid', ''):
+            uc = getToolByName(self.context, 'uid_catalog')
+            brain = uc(UID=self.request.get('obj_uid', ''))
+            obj = brain[0].getObject() if brain else None
+        if self.request.get('obj_path', '') and not obj:
+            obj_path = self.request['obj_path']
+            site_path = context.portal_url.getPortalObject().getPhysicalPath()
+            if site_path and isinstance(site_path, basestring):
+                site_path = site_path if site_path.startswith('/') else '/' + site_path
+                obj = context.restrictedTraverse(site_path + obj_path)
+            elif site_path and len(site_path) > 1:
+                site_path = site_path[1]
+                site_path = site_path if site_path.startswith('/') else '/' + site_path
+                obj = context.restrictedTraverse(site_path + obj_path)
 
-        if not obj:
+        if obj:
+            self.used('obj_uid')
+            self.used('obj_path')
+        else:
             ret['success'] = False
-            ret['fail'] = True
+            ret['error'] = True
             return ret
 
         try:

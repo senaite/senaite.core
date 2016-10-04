@@ -7,14 +7,14 @@
         lab python:ar.bika_setup.laboratory;">
 
     <tal:multiplereasons condition="python:len(reasons)&gt;1">
-    <p tal:content="python: 'The sample %s has been rejected because of the following reasons: ' % ar.id"></p>
+    <p tal:content="python: 'The analysis request %s has been rejected because of the following reasons: ' % ar.id"></p>
     <tal:reason repeat="reason python:r for r in reasons">
     - <span tal:replace="reason"></span><br/>
     </tal:reason>
     </tal:multiplereasons>
 
     <tal:singlereason tal:condition="python:len(reasons)==1">
-    <p tal:content="python: 'The sample %s has been rejected because %s.' % (ar.id,reasons[0].lower())"></p>
+    <p tal:content="python: 'The analysis request %s has been rejected because %s.' % (ar.id,reasons[0].lower())"></p>
     </tal:singlereason>
 
     <p i18n:translate="">

@@ -170,6 +170,14 @@ function AnalysisRequestPublishView() {
         });
     }
 
+    function convert_svgs() {
+        $('svg').each(function(e) {
+            var svg = $("<div />").append($(this).clone()).html();
+            var img = window.bika.lims.CommonUtils.svgToImage(svg);
+            $(this).replaceWith(img);
+        });
+    }
+
     /**
      * Re-load the report view in accordance to the values set in the
      * options panel (report format, pagesize, QC visible, etc.)
@@ -199,6 +207,8 @@ function AnalysisRequestPublishView() {
             $('#report').fadeTo('fast', 1);
             load_barcodes();
             load_layout();
+            window.bika.lims.RangeGraph.load();
+            convert_svgs();
         });
     }
 
@@ -229,7 +239,7 @@ function AnalysisRequestPublishView() {
         $('#margin-right').val(dim.marginRight);
         $('#margin-bottom').val(dim.marginBottom);
         $('#margin-left').val(dim.marginLeft);
-        
+
         var layout_style =
             '@page { size:  ' + dim.size + ' !important;' +
             '        width:  ' + dim.width + 'mm !important;' +

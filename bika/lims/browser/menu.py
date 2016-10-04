@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.utils import to_utf8
@@ -44,6 +49,17 @@ when viewing cancelled/inactive objects """
                 stateTitle = "%s (%s)" % (stateTitle, _(title2))
             return {'id': 'plone-contentmenu-workflow',
                     'class': 'state-inactive',
+                    'state': state,
+                    'stateTitle': stateTitle, }
+        elif workflow.getInfoFor(self.context, 'sampleprep_review_state', 0):
+            prep_wf_id = self.context.getPreparationWorkflow()
+            prep_wf = workflow.getWorkflowById(prep_wf_id)
+            prep_state = workflow.getInfoFor(
+                self.context, 'sampleprep_review_state')
+            prep_title = prep_wf.states[prep_state].title
+            stateTitle = "%s (%s)" % (stateTitle, _(prep_title))
+            return {'id': 'plone-contentmenu-workflow',
+                    'class': 'state-sampleprep',
                     'state': state,
                     'stateTitle': stateTitle, }
         else:

@@ -21,6 +21,8 @@ function BikaListingTableView() {
 		workflow_action_button_click()
 		column_toggle_context_menu()
 		column_toggle_context_menu_selection()
+		show_more_clicked();
+        autosave();
 
 		$('*').click(function () {
 			if ($(".tooltip").length > 0) {
@@ -28,6 +30,44 @@ function BikaListingTableView() {
 			}
 		})
 
+	}
+
+	function show_more_clicked() {
+		$('a.bika_listing_show_more').click(function(e){
+			e.preventDefault();
+			var formid = $(this).attr('data-form-id');
+			var pagesize = parseInt($(this).attr('data-pagesize'));
+			var url = $(this).attr('data-ajax-url');
+			var limit_from = parseInt($(this).attr('data-limitfrom'));
+			url = url.replace('_limit_from=','_olf=');
+			url += '&'+formid+"_limit_from="+limit_from;
+			$('#'+formid+' a.bika_listing_show_more').fadeOut();
+			var tbody = $('table.bika-listing-table[form_id="'+formid+'"] tbody.item-listing-tbody')
+			$.ajax(url)
+				.done(function(data) {
+					try {
+						// We must surround <tr> inside valid TABLE tags before extracting
+						var rows = $('<html><table>'+data+'</table></html>').find('tr')
+						// Then we can simply append the rows to existing TBODY.
+						$(tbody).append(rows)
+						// Increase limit_from so that next iteration uses correct start point
+						$('#'+formid+' a.bika_listing_show_more').attr('data-limitfrom', limit_from+pagesize);
+					}
+					catch (e) {
+						$('#' + formid + ' a.bika_listing_show_more').hide();
+						console.log(e);
+					}
+				}).fail(function () {
+					$('#'+formid+' a.bika_listing_show_more').hide();
+					console.log("bika_listing_show_more failed");
+    			}).always(function() {
+					var numitems = $('table.bika-listing-table[form_id="'+formid+'"] tbody.item-listing-tbody tr').length;
+					$('#'+formid+' span.number-items').html(numitems);
+					if (numitems % pagesize == 0) {
+						$('#'+formid+' a.bika_listing_show_more').show();
+					}
+				});
+		});
 	}
 
 	function column_header_clicked() {
@@ -479,4 +519,67 @@ function BikaListingTableView() {
 								 'left': tPosX
 							 })
 	}
+
+    function autosave() {
+        /*
+        This function looks for the column defined as 'autosave' and if
+        its value is true, the result of this input will be saved after each
+        change via ajax.
+        */
+        $('select.autosave, input.autosave').not('[type="hidden"]')
+            .each(function(i) {
+            // Save select fields
+            $(this).change(function () {
+                var pointer = this;
+                build_typical_save_request(pointer);
+            });
+        });
+    }
+    function build_typical_save_request(pointer) {
+        /**
+         * Build an array with the data to be saved for the typical data fields.
+         * @pointer is the object which has been modified and we want to save its new data.
+         */
+        var fieldvalue, fieldname, requestdata={}, uid, tr;
+        fieldvalue = $(pointer).val();
+        fieldname = $(pointer).attr('field');
+        tr = $(pointer).closest('tr');
+        uid = $(pointer).attr('uid');
+        requestdata[fieldname] = fieldvalue;
+        requestdata['obj_uid']= uid;
+        save_elements(requestdata, tr);
+    }
+    function save_elements(requestdata, tr) {
+        /**
+         * Given a dict with a fieldname and a fieldvalue, save this data via ajax petition.
+         * @requestdata should has the format  {fieldname=fieldvalue, uid=xxxx} ->  { ReportDryMatter=false, uid=xxx}.
+         */
+        var url = window.location.href.replace('/base_view', '');
+        // Staff for the notification
+        var name = $(tr).attr('title');
+        var anch =  "<a href='"+ url + "'>" + name + "</a>";
+        $.ajax({
+            type: "POST",
+            url: window.portal_url+"/@@API/update",
+            data: requestdata
+        })
+        .done(function(data) {
+            //success alert
+            if (data != null && data['success'] == true) {
+                bika.lims.SiteView.notificationPanel(anch + ': ' + name + ' updated successfully', "succeed");
+            } else {
+                bika.lims.SiteView.notificationPanel('Error while updating ' + name + ' for '+ anch, "error");
+                var msg = '[bika.lims.analysisrequest.js] Error while updating ' + name + ' for '+ ar;
+                console.warn(msg);
+                window.bika.lims.error(msg);
+            }
+        })
+        .fail(function(){
+            //error
+            bika.lims.SiteView.notificationPanel('Error while updating ' + name + ' for '+ anch, "error");
+            var msg = '[bika.lims.analysisrequest.js] Error while updating ' + name + ' for '+ ar;
+            console.warn(msg);
+            window.bika.lims.error(msg);
+        });
+    }
 }

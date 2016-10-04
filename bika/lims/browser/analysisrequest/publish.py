@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from bika.lims import bikaMessageFactory as _, t
 from bika.lims import logger
 from bika.lims.browser import BrowserView
@@ -35,7 +40,9 @@ import urllib2
 class AnalysisRequestPublishView(BrowserView):
     template = ViewPageTemplateFile("templates/analysisrequest_publish.pt")
     _ars = []
+    _arsbyclient = []
     _current_ar_index = 0
+    _current_arsbyclient_index = 0
     _publish = False
 
     def __init__(self, context, request, publish=False):
@@ -62,6 +69,16 @@ class AnalysisRequestPublishView(BrowserView):
             self.destination_url = self.request.get_header("referer",
                                    self.context.absolute_url())
 
+        # Group ARs by client
+        groups = {}
+        for ar in self._ars:
+            idclient = ar.aq_parent.id
+            if idclient not in groups:
+                groups[idclient] = [ar]
+            else:
+                groups[idclient].append(ar)
+        self._arsbyclient = [group for group in groups.values()]
+
         # Do publish?
         if self.request.form.get('publish', '0') == '1':
             self.publishFromPOST()
@@ -82,22 +99,41 @@ class AnalysisRequestPublishView(BrowserView):
     def getAnalysisRequests(self):
         """ Returns a dict with the analysis requests to manage
         """
-        return self._ars;
+        return self._ars
 
     def getAnalysisRequestsCount(self):
         """ Returns the number of analysis requests to manage
         """
-        return len(self._ars);
+        return len(self._ars)
+
+    def getGroupedAnalysisRequestsCount(self):
+        """ Returns the number of groups of analysis requests to manage when
+            a multi-ar template is selected. The ARs are grouped by client
+        """
+        return len(self._arsbyclient)
 
     def getAnalysisRequestObj(self):
         """ Returns the analysis request objects to be managed
         """
         return self._ars[self._current_ar_index]
 
-    def getAnalysisRequest(self):
-        """ Returns the dict for the currently managed analysis request
+    def getAnalysisRequest(self, analysisrequest=None):
+        """ Returns the dict for the Analysis Request specified. If no AR set,
+            returns the current analysis request
         """
-        return self._ar_data(self._ars[self._current_ar_index])
+        return self._ar_data(analysisrequest) if analysisrequest \
+                else self._ar_data(self._ars[self._current_ar_index])
+
+    def getAnalysisRequestGroup(self):
+        """ Returns the current analysis request group to be managed
+        """
+        return self._arsbyclient[self._current_arsbyclient_index]
+
+    def getAnalysisRequestGroupData(self):
+        """ Returns an array that contains the dicts (ar_data) for each
+            analysis request from the current group
+        """
+        return [self._ar_data(ar) for ar in self.getAnalysisRequestGroup()]
 
     def _nextAnalysisRequest(self):
         """ Move to the next analysis request
@@ -105,10 +141,15 @@ class AnalysisRequestPublishView(BrowserView):
         if self._current_ar_index < len(self._ars):
             self._current_ar_index += 1
 
-    def getReportTemplate(self):
-        """ Returns the html template for the current ar and moves to
-            the next ar to be processed. Uses the selected template
-            specified in the request ('template' parameter)
+    def _nextAnalysisRequestGroup(self):
+        """ Move to the next analysis request group
+        """
+        if self._current_arsbyclient_index < len(self._arsbyclient):
+            self._current_arsbyclient_index += 1
+
+    def _renderTemplate(self):
+        """ Returns the html template to be rendered in accordance with the
+            template specified in the request ('template' parameter)
         """
         templates_dir = 'templates/reports'
         embedt = self.request.form.get('template', self._DEFAULT_TEMPLATE)
@@ -117,14 +158,37 @@ class AnalysisRequestPublishView(BrowserView):
             templates_dir = queryResourceDirectory('reports', prefix).directory
             embedt = template
         embed = ViewPageTemplateFile(os.path.join(templates_dir, embedt))
+        return embedt, embed(self)
+
+    def getReportTemplate(self):
+        """ Returns the html template for the current ar and moves to
+            the next ar to be processed. Uses the selected template
+            specified in the request ('template' parameter)
+        """
         reptemplate = ""
+        embedt = ""
         try:
-            reptemplate = embed(self)
+            embedt, reptemplate = self._renderTemplate()
         except:
             tbex = traceback.format_exc()
             arid = self._ars[self._current_ar_index].id
             reptemplate = "<div class='error-report'>%s - %s '%s':<pre>%s</pre></div>" % (arid, _("Unable to load the template"), embedt, tbex)
         self._nextAnalysisRequest()
+        return reptemplate
+
+    def getGroupedReportTemplate(self):
+        """ Returns the html template for the current group of ARs and moves to
+            the next group to be processed. Uses the selected template
+            specified in the request ('template' parameter)
+        """
+        reptemplate = ""
+        embedt = ""
+        try:
+            embedt, reptemplate = self._renderTemplate()
+        except:
+            tbex = traceback.format_exc()
+            reptemplate = "<div class='error-report'>%s '%s':<pre>%s</pre></div>" % (_("Unable to load the template"), embedt, tbex)
+        self._nextAnalysisRequestGroup()
         return reptemplate
 
     def getReportStyle(self):
@@ -149,6 +213,11 @@ class AnalysisRequestPublishView(BrowserView):
                 content = content_file.read()
         return content
 
+    def isSingleARTemplate(self):
+        seltemplate = self.request.form.get('template', self._DEFAULT_TEMPLATE)
+        seltemplate = seltemplate.split(':')[-1].strip()
+        return not seltemplate.lower().startswith('multi')
+
     def isQCAnalysesVisible(self):
         """ Returns if the QC Analyses must be displayed
         """
@@ -158,6 +227,19 @@ class AnalysisRequestPublishView(BrowserView):
         """ Returns true if hidden analyses are visible
         """
         return self.request.form.get('hvisible', '0').lower() in ['true', '1']
+
+    def explode_data(self, data, padding=''):
+        out = ''
+        for k,v in data.items():
+            if type(v) is dict:
+                pad = '%s&nbsp;&nbsp;&nbsp;&nbsp;' % padding
+                exploded = self.explode_data(v,pad)
+                out = "%s<br/>%s'%s':{%s}" % (out, padding, str(k), exploded)
+            elif type(v) is list:
+                out = "%s<br/>%s'%s':[]" % (out, padding, str(k))
+            elif type(v) is str:
+                out = "%s<br/>%s'%s':''" % (out, padding, str(k))
+        return out
 
     def _ar_data(self, ar, excludearuids=[]):
         """ Creates an ar dict, accessible from the view and from each
@@ -175,7 +257,8 @@ class AnalysisRequestPublishView(BrowserView):
                 'date_received': self.ulocalized_time(ar.getDateReceived(), long_format=1),
                 'remarks': ar.getRemarks(),
                 'member_discount': ar.getMemberDiscount(),
-                'date_sampled': self.ulocalized_time(ar.getDateSampled(), long_format=1),
+                'date_sampled': self.ulocalized_time(
+                    ar.getDateSampled(), long_format=1),
                 'date_published': self.ulocalized_time(DateTime(), long_format=1),
                 'invoiced': ar.getInvoiced(),
                 'late': ar.getLate(),
@@ -544,7 +627,15 @@ class AnalysisRequestPublishView(BrowserView):
         andict['specs'] = specs
         scinot = self.context.bika_setup.getScientificNotationReport()
         fresult =  analysis.getFormattedResult(specs=specs, sciformat=int(scinot), decimalmark=decimalmark)
-        andict['formatted_result'] = cgi.escape(fresult);
+
+        # We don't use here cgi.encode because results fields must be rendered
+        # using the 'structure' wildcard. The reason is that the result can be
+        # expressed in sci notation, that may include <sup></sup> html tags.
+        # Please note the default value for the 'html' parameter from
+        # getFormattedResult signature is set to True, so the service will
+        # already take into account LDLs and UDLs symbols '<' and '>' and escape
+        # them if necessary.
+        andict['formatted_result'] = fresult;
 
         fs = ''
         if specs.get('min', None) and specs.get('max', None):
@@ -553,8 +644,8 @@ class AnalysisRequestPublishView(BrowserView):
             fs = '> %s' % specs['min']
         elif specs.get('max', None):
             fs = '< %s' % specs['max']
-        andict['formatted_specs'] = cgi.escape(formatDecimalMark(fs, decimalmark))
-        andict['formatted_uncertainty'] = cgi.escape(format_uncertainty(analysis, analysis.getResult(), decimalmark=decimalmark, sciformat=int(scinot)))
+        andict['formatted_specs'] = formatDecimalMark(fs, decimalmark)
+        andict['formatted_uncertainty'] = format_uncertainty(analysis, analysis.getResult(), decimalmark=decimalmark, sciformat=int(scinot))
 
         # Out of range?
         if specs:
@@ -661,9 +752,13 @@ class AnalysisRequestPublishView(BrowserView):
     def publishFromPOST(self):
         html = self.request.form.get('html')
         style = self.request.form.get('style')
-        uid = self.request.form.get('uid')
-        reporthtml = "<html><head>%s</head><body><div id='report'>%s</body></html>" % (style, html);
-        return self.publishFromHTML(uid, safe_unicode(reporthtml).encode('utf-8'));
+        uids = self.request.form.get('uid').split(':')
+        reporthtml = "<html><head>%s</head><body><div id='report'>%s</body></html>" % (style, html)
+        publishedars = []
+        for uid in uids:
+            ars = self.publishFromHTML(uid, safe_unicode(reporthtml).encode('utf-8'))
+            publishedars.extend(ars)
+        return publishedars
 
     def publishFromHTML(self, aruid, results_html):
         # The AR can be published only and only if allowed
@@ -789,7 +884,7 @@ class AnalysisRequestPublishView(BrowserView):
 
             # Attach the pdf to the email if requested
             if pdf_report and 'pdf' in recip.get('pubpref'):
-                attachPdf(mime_msg, pdf_report, pdf_fn)
+                attachPdf(mime_msg, pdf_report, ar.id)
 
             # For now, I will simply ignore mail send under test.
             if hasattr(self.portal, 'robotframework'):
@@ -932,3 +1027,52 @@ class AnalysisRequestPublishView(BrowserView):
         analysis_categories = bsc(portal_type="AnalysisCategory", sort_on="sortable_title")
         sort_keys = dict([(b.Title, "{:04}".format(a)) for a, b in enumerate(analysis_categories)])
         return sorted(category_keys, key=lambda title, sk=sort_keys: sk.get(title))
+
+    def getAnaysisBasedTransposedMatrix(self, ars):
+        """ Returns a dict with the following structure:
+            {'category_1_name':
+                {'service_1_title':
+                    {'service_1_uid':
+                        {'service': <AnalysisService-1>,
+                         'ars': {'ar1_id': [<Analysis (for as-1)>,
+                                           <Analysis (for as-1)>],
+                                 'ar2_id': [<Analysis (for as-1)>]
+                                },
+                        },
+                    },
+                {'service_2_title':
+                     {'service_2_uid':
+                        {'service': <AnalysisService-2>,
+                         'ars': {'ar1_id': [<Analysis (for as-2)>,
+                                           <Analysis (for as-2)>],
+                                 'ar2_id': [<Analysis (for as-2)>]
+                                },
+                        },
+                    },
+                ...
+                },
+            }
+        """
+        analyses = {}
+        for ar in ars:
+            ans = [an.getObject() for an in ar.getAnalyses()]
+            for an in ans:
+                service = an.getService()
+                cat = service.getCategoryTitle()
+                if cat not in analyses:
+                    analyses[cat] = {
+                        service.title: {
+                            'service': service,
+                            'ars': {ar.id: an.getFormattedResult()}
+                        }
+                    }
+                elif service.title not in analyses[cat]:
+                    analyses[cat][service.title] = {
+                        'service': service,
+                        'ars': {ar.id: an.getFormattedResult()}
+                    }
+                else:
+                    d = analyses[cat][service.title]
+                    d['ars'][ar.id] = an.getFormattedResult()
+                    analyses[cat][service.title]=d
+        return analyses

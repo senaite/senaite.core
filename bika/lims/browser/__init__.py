@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 """Bika's browser views are based on this one, for a nice set of utilities.
 """
 from DateTime.DateTime import DateTime, safelocaltime
@@ -36,8 +41,13 @@ def strptime(context, value):
             val = DateTime(*parts)
         break
     else:
-        logger.warning("DateTimeField failed to format date "
-                       "string '%s' with '%s'" % (value, fmtstr))
+        try:
+            # The following will handle an rfc822 string.
+            value = value.split(" +", 1)[0]
+            val = DateTime(value)
+        except:
+            logger.warning("DateTimeField failed to format date "
+                           "string '%s' with '%s'" % (value, fmtstr))
     return val
 
 

@@ -1,3 +1,8 @@
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from AccessControl import ClassSecurityInfo, Unauthorized
 from Products.ATExtensions.Extensions.utils import makeDisplayList
 from Products.ATExtensions.ateapi import RecordField, RecordsField
@@ -123,7 +128,11 @@ class HistoryAwareReferenceField(ReferenceField):
     def get(self, instance, aslist=False, **kwargs):
         """get() returns the list of objects referenced under the relationship.
         """
-        uc = getToolByName(instance, "uid_catalog")
+        try:
+            uc = getToolByName(instance, "uid_catalog")
+        except AttributeError as err:
+            logger.error("AttributeError: {0}".format(err))
+            return []
 
         try:
             res = instance.getRefs(relationship=self.relationship)
