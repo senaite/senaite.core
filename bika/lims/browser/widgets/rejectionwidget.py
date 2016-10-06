@@ -22,6 +22,18 @@ class RejectionWidget(TypesWidget):
 
     security = ClassSecurityInfo()
 
+    def isVisible(self, instance, mode='view', default=None, field=None):
+        """
+        This function returns the visibility of the widget depending on whether
+        the rejection workflow is enabled or not.
+        """
+        vis = super(RejectionWidget, self).isVisible(
+            instance=instance, mode=mode, default=default, field=field)
+        if instance.bika_setup.isRejectionWorkflowEnabled():
+            return vis
+        else:
+            return 'invisible'
+
     def rejectionOptionsList(self):
         "Return a sorted list with the options defined in bikasetup"
         plone = getSite()
