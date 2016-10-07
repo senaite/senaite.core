@@ -390,6 +390,15 @@ class ReflexRuleWidget(RecordsWidget):
             ('duplicate', 'Duplicate'),
             ('setresult', 'Set result')])
 
+    def getAndOrVoc(self):
+        """
+        Return the different concatenation options
+        """
+        return DisplayList([
+            ('no', ''),
+            ('and', 'AND'),
+            ('or', 'OR')])
+
     def getDefiningResultTo(self):
         """
         Returns where we can define a result.
