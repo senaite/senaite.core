@@ -662,7 +662,7 @@ class BikaSetup(folder.ATFolder):
         # [{'checkbox': u'on', 'textfield-2': u'b', 'textfield-1': u'c', 'textfield-0': u'a'}]
         if len(widget) > 0:
             checkbox = widget[0].get('checkbox', False)
-            return True if checkbox == 'on' else False
+            return True if checkbox == 'on' and len(widget[0]) > 1 else False
         else:
             return False
 

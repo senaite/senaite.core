@@ -631,7 +631,6 @@ schema = BikaSchema.copy() + Schema((
                      'invalid':           {'view': 'visible', 'edit': 'visible'},
                      'rejected':          {'view': 'visible', 'edit': 'visible'},
                      },
-            visibility_guard="self.context.bika_setup.isRejectionWorkflowEnabled()"
         ),
     ),
     ###ComputedField('Priority',
