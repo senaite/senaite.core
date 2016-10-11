@@ -23,6 +23,10 @@ jQuery(function($){
         $('input[id^="ReflexRules-range"]').bind("change", function () {
             range_controller(this);
         });
+        // Binding the and_or controller
+        $('select[id^="ReflexRules-and_or-"]').bind("change", function () {
+                and_or_controller($(this).closest('div.conditionscontainer'));
+            });
         // Running the trigger controller
         $.each($('select[id^="ReflexRules-trigger"]'), function(index, element){
                 trigger_controller(element);
@@ -174,6 +178,60 @@ jQuery(function($){
         }
     }
 
+    function and_or_controller(element){
+        /**
+        The 'element' variable is the 'conditionscontainer' where the triggered
+        selector belongs.
+        When the value of the selectelement is 'and' or 'or', another
+        conditionscontainer should be created below.
+        */
+        var sel = $(element).find('.and_or');
+        var and_or = $(sel).find(":selected").attr('value');
+        if ((and_or == 'and' || and_or == 'or') && ){
+            // create a new 'conditionscontainer' div below
+            var container_clone = $(element).clone();
+            var found = $(container_clone).find("input, select");
+            for (var i = found.length - 1; i >= 0; i--) {
+                // Increment the index id
+                var prefix, nr;
+                var ID = found[i].id;
+                prefix = ID.split("-")[0] + "-" + ID.split("-")[1];
+                var sufix = parseInt(ID.split("-")[3]) + 1;
+                nr = ID.split("-")[2];
+                $(found[i]).attr('id', prefix + "-" + nr + "-" + sufix);
+                // Increment the name id
+                var name = found[i].name;
+                prefix = name.split(":")[0];
+                sufix = name.split(":")[1] + ":" + name.split(":")[2];
+                var prefix_name = prefix.split('-')[0];
+                var prefix_idx = parseInt(prefix.split('-')[1]) + 1;
+                prefix = prefix_name + "-" + prefix_idx;
+                $(found[i]).attr('name', prefix + ":" + sufix);
+            }
+            // clear values
+            for(i=0; i<$(container_clone).children().length; i++){
+                var td = $(container_clone).children()[i];
+                var input = $(td).find('input').not('.addnew');
+                $(input).val('');
+                var sel_options = $(td).find(":selected");
+                $(sel_options).prop("selected", false);
+            }
+            $(container_clone).insertAfter(element);
+            var setupdata = $.parseJSON($('#rules-setup-data').html());
+            // Binding the analysis service controller
+            $(container_clone).find('select[id^="ReflexRules-analysisservice-"]').bind("change", function () {
+                analysiservice_change(this, setupdata);
+            });
+            // Trigger the controller
+            $(container_clone).find('select[id^="ReflexRules-analysisservice-"]').trigger('change');
+        }
+        else{
+            // Remove the 'conditionscontainer' div below
+            var target = $(element).next('.conditionscontainer');
+            $(target).remove();
+        }
+    }
+
     function trigger_controller(element){
         /**
         If trigger option 'after verify' is selected, all action aptions
@@ -264,7 +322,8 @@ jQuery(function($){
         // after cloning, make sure the new element's IDs are unique
         var found = $(set).find(
                 "input[id^='"+fieldname+"']," +
-                "select[id^='"+fieldname+"']");
+                "select[id^='"+fieldname+"']," +
+                "div[id^='ReflexRules-actionsset-']");
         for (var ii = found.length - 1; ii >= 0; ii--) {
             var prefix, nr;
             var ID = found[ii].id;
@@ -324,6 +383,13 @@ jQuery(function($){
                 otherWS_controller(this);
                 action_select_controller(this);
             });
+        // Binding the and_or controller
+        $(set)
+            .find('div.conditionscontainer select.and_or')
+            .bind("change", function () {
+                and_or_controller(
+                        $(set).find('div.conditionscontainer'));
+        }).trigger("change");
         if($(td).hasClass('rulenumber')){
             var idx = $(td).find('input.rulenumber').attr('originalvalue');
             var new_idx = parseInt(idx) + 1;

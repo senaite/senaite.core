@@ -107,8 +107,7 @@
                     the rulescontainer (the parent td), more than one conditions
                     container can be crated -->
                 <div class="conditionscontainer"
-                    tal:define="conditionscontainer_idx python:0;"
-                    tal:attributes="id string:${fieldName}-conditionscontainer-${repeat/idx/index};">
+                    tal:define="conditionscontainer_idx python:0;">
                     <!-- Analysis Service -->
                     <!-- This selections element is not set using tal because there is
                         a javascript controller which takes care of the
