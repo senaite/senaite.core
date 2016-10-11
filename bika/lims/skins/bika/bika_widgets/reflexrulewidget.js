@@ -23,22 +23,6 @@ jQuery(function($){
         $('input[id^="ReflexRules-range"]').bind("change", function () {
             range_controller(this);
         });
-        // Running the repetition max controller
-        $.each($('input[id^=ReflexRules-repetition_max-]'), function(index, element){
-                repmax_controller(element);
-            });
-        // Binding the trigger controller
-        $('input[id^=ReflexRules-repetition_max-]').bind("change", function () {
-            repmax_controller(this);
-        });
-        // Running the from level controller
-        $.each($('input[id^=ReflexRules-fromlevel-]'), function(index, element){
-            fromlevel_controller(element);
-            });
-        // Binding the from level controller
-        $('input[id^=ReflexRules-fromlevel-]').bind("change", function () {
-            fromlevel_controller(this);
-        });
         // Running the trigger controller
         $.each($('select[id^="ReflexRules-trigger"]'), function(index, element){
                 trigger_controller(element);
@@ -51,17 +35,6 @@ jQuery(function($){
             .bind("change", function () {
                 analysiservice_change(this, setupdata);
             });
-        // Setting up the otherconditions stuff
-        $.each($('input[id^="ReflexRules-otherresultcondition-"]'), function(index, element){
-                other_conditions_controller(element);
-            });
-        // Binding the othercondition controller
-        $('input[id^="ReflexRules-otherresultcondition-"]').bind("change", function () {
-            other_conditions_controller($(this));
-            fromlevel_controller(
-                    $(this).siblings('div.otherconditions')
-                        .find('input[id^="ReflexRules-fromlevel-"]'));
-        });
         // Setting the ws and define result stuff
         $.each($('div.action'), function(index, element){
                 otherWS_controller(element);
@@ -201,37 +174,6 @@ jQuery(function($){
         }
     }
 
-    function fromlevel_controller(element){
-        /**
-        If rep level is lower than 1, set as 1.
-        If a 'from level' is introduced, hide max number.
-        */
-        var number = $(element).val();
-        var repmax = $(element).parent()
-            .siblings('input[id^="ReflexRules-repetition_max-"]');
-        var other = $(element).parent()
-            .siblings('input[id^="ReflexRules-otherresultcondition-"]');
-        if (!$.isNumeric(number) && number < 1 ) {
-            $(element).val('');
-        }
-        if (number && $(other).is(':checked')) {
-            $(repmax).attr('disabled',true);
-        }
-        else {
-            $(repmax).attr('disabled',false);
-        }
-    }
-
-    function repmax_controller(element){
-        /**
-        If repetition max is lower than 1, set as 1..
-        */
-        var number = $(element).val();
-        if (!$.isNumeric(number) || number < 1 ) {
-            $(element).val(1);
-        }
-    }
-
     function trigger_controller(element){
         /**
         If trigger option 'after verify' is selected, all action aptions
@@ -251,7 +193,7 @@ jQuery(function($){
 
     function setup_addnew_buttons(){
         /**
-        Bind the process trigged after clicking on a 'more' button
+        Bind the process trigged after clicking on a 'more' or 'add action' button
         */
         $("input[id$='_addnew']").click(function(i,e){
             if ($(this).attr("id").split("_")[1] == "action"){
@@ -343,8 +285,7 @@ jQuery(function($){
         // clear values
         var td = $(set).children().first();
         var input = $(td).find('input')
-            .not('.addnew')
-            .not('[id^=ReflexRules-repetition_max-]');
+            .not('.addnew');
         $(input).val('');
         var sel_options = $(td).find(":selected");
         $(sel_options).prop("selected", false);
@@ -358,18 +299,6 @@ jQuery(function($){
                 range_controller($(set).find('input[id^="ReflexRules-range"]'));
                 setup_del_action_button();
         });
-        // from level controller
-        $(set)
-            .find('input[id^="ReflexRules-fromlevel-"]')
-            .bind("change", function () {
-                fromlevel_controller($(set).find('input[id^="ReflexRules-fromlevel-"]'));
-        });
-        // Max repetition controller
-        $(set)
-            .find('input[id^=ReflexRules-repetition_max-]')
-            .bind("change", function () {
-                repmax_controller($(set).find('input[id^=ReflexRules-repetition_max-]'));
-        }).trigger("change");
         // Action trigger controller
         $(set)
             .find('select[id^="ReflexRules-trigger"]')
@@ -387,15 +316,6 @@ jQuery(function($){
             .bind("change", function (element) {
                 var setupdata = $.parseJSON($('#rules-setup-data').html());
                 analysiservice_change(element.target, setupdata);
-            }).trigger("change");
-        // "Other result condition" controller
-        $(set)
-            .find('input[id^="ReflexRules-otherresultcondition-"]')
-            .bind("change", function (element) {
-                other_conditions_controller(element.target);
-                fromlevel_controller(
-                        $(element.target).siblings('div.otherconditions')
-                            .find('input[id^="ReflexRules-fromlevel-"]'));
             }).trigger("change");
         // Binding the otherWS controller and the controller for specific
         // actions select
@@ -447,6 +367,7 @@ jQuery(function($){
             }
             else{analysiservice_change(element, setupdata);}
         });
+        // Updating the setresult selection list in the actions set
         for (var i=0; rules.length > i; i++){
             var discrete = rules[i].discreteresult;
             $(ass[i]).siblings('div.resultoptioncontainer')
@@ -464,26 +385,6 @@ jQuery(function($){
                         .prop("selected", true);
                 }
             }
-        }
-    }
-
-    function other_conditions_controller(other_conditions_chk) {
-        /**
-        This function hides/shows and clean if necessary the other
-        condition inputs.
-        If the checkbox otherconditions is set, the other inputs have
-        to be shown
-        */
-        var checkbox = $(other_conditions_chk).attr('checked');
-        if (checkbox == "checked") {
-            // Showing the otherconditions div
-            $(other_conditions_chk)
-                .siblings('div.otherconditions')
-                .css('display', 'inline');
-        }
-        else{
-            // Hide the div
-            $(other_conditions_chk).siblings('div.otherconditions').hide();
         }
     }
 
