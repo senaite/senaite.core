@@ -22,7 +22,6 @@ from Products.Archetypes.public import registerType
 from Products.Archetypes.public import DisplayList
 from Products.Archetypes.public import ReferenceWidget
 from Products.Archetypes.references import HoldingReference
-# from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.content.person import Person
 from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
@@ -70,7 +69,7 @@ schema = Person.schema.copy() + Schema((
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('Department',),
         relationship = 'LabContactDepartment',
-        vocabulary = 'getDepartmentsVoc',
+        vocabulary = '_departmentsVoc',
         referenceClass = HoldingReference,
         multiValued=1,
         widget = ReferenceWidget(
@@ -120,6 +119,7 @@ class LabContact(Person):
         return self.portal_membership.getMemberById(
             self.getUsername()) is not None
 
+    # TODO: Remove getDepartment
     from bika.lims import deprecated
     @deprecated(comment="bika.lims.contant.labcontact.getDepartment "
                         "is deprecated and will be removed "
@@ -129,9 +129,9 @@ class LabContact(Person):
         This function is a mirror for getDepartments to maintain the
         compability with the old version.
         """
-        return self.getDepartments()
+        return self.getDepartments()[0] if self.getDepartments() else None
 
-    def getDepartmentsVoc(self):
+    def _departmentsVoc(self):
         """
         Returns a vocabulary object with the available departments.
         """
@@ -139,9 +139,15 @@ class LabContact(Person):
         items = [(o.UID, o.Title) for o in
                                bsc(portal_type='Department',
                                    inactive_state = 'active')]
-        o = self.getDepartments()
-        if o and o.UID() not in [i[0] for i in items]:
-            items.append((o.UID(), o.Title()))
+        # Getting the departments uids
+        deps_uids = [i[0] for i in items]
+        # Getting the assigned departments
+        objs = self.getDepartments()
+        # If one department assigned to the Lab Contact is disabled, it will
+        # be shown in the list until the department has been unassigned.
+        for o in objs:
+            if o and o.UID() not in deps_uids:
+                items.append((o.UID(), o.Title()))
         items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
