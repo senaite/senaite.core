@@ -147,8 +147,6 @@ def multi_department_to_labcontact(portal):
     multi-select field 'Departments' to maintain the consistency
     """
     pc = getToolByName(portal, 'portal_catalog', None)
-    if 'getDepartmentsTitle' not in pc.indexes():
-        pc.addIndex('getDepartmentsTitle', 'FieldIndex')
     # Moving from profile to profiles
     objs = pc(portal_type="LabContact")
     for obj_brain in objs:

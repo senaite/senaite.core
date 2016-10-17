@@ -78,20 +78,6 @@ schema = Person.schema.copy() + Schema((
             description=_("The laboratory departments"),
         ),
     ),
-    # TODO: DepartmentTitle'll be delated
-    ComputedField('DepartmentTitle',
-        expression = "here.getDepartmentsTitle()",
-        widget = ComputedWidget(
-            visible = False,
-        ),
-    ),
-
-    ComputedField('DepartmentsTitle',
-        expression = "here.getDepartmentsTitle()",
-        widget = ComputedWidget(
-            visible = False,
-        ),
-    ),
 ))
 
 schema['JobTitle'].schemata = 'default'
@@ -151,13 +137,5 @@ class LabContact(Person):
         items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
-    def getDepartmentsTitle(self):
-        """
-        This function returns a list with the string name of the selected
-        departments for this labcontact.
-        """
-        deps = self.getDepartments()
-        titles = [dep.Title() for dep in deps]
-        return titles
 
 registerType(LabContact, PROJECTNAME)
