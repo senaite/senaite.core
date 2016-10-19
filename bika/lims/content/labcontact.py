@@ -137,5 +137,40 @@ class LabContact(Person):
         items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
+    def addDepartment(self, dep):
+        """
+        It adds a new department to the departments content field.
+        @dep: is a uid or a department object
+        @return: True when the adding process has been done,
+            False otherwise.
+        """
+        # check if dep is an uid
+        if type(dep) is str:
+            deps = self.getDepartments()
+            deps = [d.UID() for d in deps]
+        else:
+            deps = self.getDepartments()
+        if dep and dep not in deps:
+            deps.append(dep)
+            self.setDepartments(deps)
+        return True
+
+    def removeDepartment(self, dep):
+        """
+        It removes a department to the departments content field.
+        @dep: is a uid or a department object
+        @return: True when the removing process has been done,
+            False otherwise.
+        """
+        # check if dep is an uid
+        if type(dep) is str:
+            deps = self.getDepartments()
+            deps = [d.UID() for d in deps]
+        else:
+            deps = self.getDepartments()
+        if dep and dep in deps:
+            deps.remove(dep)
+            self.setDepartments(deps)
+        return True
 
 registerType(LabContact, PROJECTNAME)

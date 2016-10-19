@@ -44,11 +44,16 @@ class LabContactsView(LabContactsView):
             'title': _('Active'),
             'contentFilter': {'inactive_state': 'active'},
             'transitions': [{'id': 'empty'}, ],  # No transitions here
-            'custom_actions': [{'id': 'assign_labcontacts_button',
-                                'title': _('Assign')}, ],
+            # 'custom_actions': [{'id': 'assign_labcontacts_button',
+            #                     'title': _('Assign')}, ],
             'columns': ['Fullname',
-                        'Department',
                         'BusinessPhone',
                         'MobilePhone',
                         'EmailAddress']},
         ]
+
+    def folderitem(self, obj, item, index):
+        item = super(LabContactsView, self).folderitem(obj, item, index)
+        deps = [dep.UID() for dep in obj.getDepartments()]
+        item['selected'] = self.context.UID() in deps
+        return item
