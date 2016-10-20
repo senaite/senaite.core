@@ -14,10 +14,10 @@
                 plone_view context/@@plone;
                 current_usr python:brains[0].getObject();">
     <dl class="portlet" id="portletfilter_by_department">
-        <!-- The header of the porlet -->
-        <dt class="portletHeader"
-            i18n:translate="">Department</dt>
-
+    <!-- The header of the porlet -->
+    <dt class="portletHeader"
+        i18n:translate="">Filter by department</dt>
+        <br>
         <!-- Opening the form -->
         <form
             action="portletfilter_by_department"
@@ -30,33 +30,29 @@
                     name="department_filter_portlet"
                     i18n:domain="python:i18n_domain"
                     tal:define="
-                        deps current_usr/getSortedDepartments;
-                        cookie python:request.cookies.get(
-                            'filter_by_department_info','');
-                        dep_cookie python: cookie if cookie else deps[0].UID()
-                        ">
-                    <!-- Filling the other options with the departments assigned
-                    to the user -->
-                <tal:option repeat="dep deps">
-                    <option
-                        tal:content="python:dep.Title()"
-                        tal:attributes="
-                            value python:dep.UID();
-                            selected python:'selected' if dep_cookie == dep.UID() else ''"
-                        i18n:translate=""/>
-                    </tal:option>
-                </select>
-                <!-- Only a label with the department if one department only -->
-                <label
-                    i18n:translate=""
-                    tal:condition="python: len(deps)<2"
-                    tal:content="python: deps[0].Title()"
-                    >Department</label>
-            </dd>
-            <!-- The submit form button -->
-            <dd class="portletFooter" style="display:none">
-                <input type="submit" id="department_filter_submit" value="Filter">
-            </dd>
+                        dep_cookie python:request.cookies.get(
+                            'filter_by_department_info','')">
+                <!--The first option should be void -->
+                <option
+                    tal:content="python:None"
+                    tal:attributes="
+                        value python:None;"
+                    i18n:translate=""/>
+                <!-- Filling the other options with the departments assigned
+                to the user -->
+                <tal:option repeat="dep current_usr/getSortedDepartments">
+                <option
+                    tal:content="python:dep.Title()"
+                    tal:attributes="
+                        value python:dep.UID();
+                        selected python:'selected' if dep_cookie == dep.UID() else ''"
+                    i18n:translate=""/>
+                </tal:option>
+            </select>
+        <!-- The submit form button -->
+        <dd class="portletFooter">
+            <input type="submit" value="Filter">
+        </dd>
         </form>
     </dl>
 </tal:departments>
