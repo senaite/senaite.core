@@ -36,6 +36,8 @@ def upgrade(tool):
     setup.runImportStepFromProfile('profile-bika.lims:default', 'catalog')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'propertiestool')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'skins')
+    setup.runImportStepFromProfile(
+        'profile-bika.lims:default', 'portlets', run_dependencies=False)
     # Creating all the sampling coordinator roles, permissions and indexes
     create_samplingcoordinator(portal)
     """Update workflow permissions
