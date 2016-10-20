@@ -1,0 +1,61 @@
+<html xmlns:tal="http://xml.zope.org/namespaces/tal"
+      xmlns:metal="http://xml.zope.org/namespaces/metal"
+      i18n:domain="bika">
+<body>
+<div metal:define-macro="portlet"
+    tal:define="
+        member python: context.portal_membership.getAuthenticatedMember();
+        brains python: here.portal_catalog(portal_type='LabContact',
+                                    getUsername='alex01');"
+    tal:condition="python:len(brains)>0">
+<!-- Defining the base variables -->
+<tal:departments
+    tal:define="portal context/portal_url/getPortalObject;
+                plone_view context/@@plone;
+                current_usr python:brains[0].getObject();">
+    <dl class="portlet" id="portletfilter_by_department">
+    <!-- The header of the porlet -->
+    <dt class="portletHeader"
+        i18n:translate="">Filter by department</dt>
+        <br>
+        <!-- Opening the form -->
+        <form
+            action="portletfilter_by_department"
+            name="portletfilter_by_department"
+            method="POST">
+            <!-- The selection list -->
+            <label for="department_filter_portlet"
+                i18n:translate="">Filter by:</label>
+            <select id="department_filter_portlet"
+                    name="department_filter_portlet"
+                    i18n:domain="python:i18n_domain"
+                    tal:define="
+                        dep_cookie python:request.cookies.get(
+                            'filter_by_department_info','')">
+                <!--The first option should be void -->
+                <option
+                    tal:content="python:None"
+                    tal:attributes="
+                        value python:None;"
+                    i18n:translate=""/>
+                <!-- Filling the other options with the departments assigned
+                to the user -->
+                <tal:option repeat="dep current_usr/getSortedDepartments">
+                <option
+                    tal:content="python:dep.Title()"
+                    tal:attributes="
+                        value python:dep.UID();
+                        selected python:'selected' if dep_cookie == dep.UID() else ''"
+                    i18n:translate=""/>
+                </tal:option>
+            </select>
+        <!-- The submit form button -->
+        <dd class="portletFooter">
+            <input type="submit" value="Filter">
+        </dd>
+        </form>
+    </dl>
+</tal:departments>
+</div>
+</body>
+</html>
