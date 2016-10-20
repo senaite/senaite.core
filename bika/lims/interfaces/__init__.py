@@ -682,3 +682,6 @@ class IReflexRule(Interface):
 
 class IReflexRuleFolder(Interface):
     ""
+
+class IDepartment(Interface):
+    ""

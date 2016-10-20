@@ -39,6 +39,8 @@ def upgrade(tool):
     # Creating all the sampling coordinator roles, permissions and indexes
     create_samplingcoordinator(portal)
     reflex_rules(portal)
+    # Now, more than one Department can be assigned to a LabContact, so the
+    multi_department_to_labcontact(portal)
     """Update workflow permissions
     """
     wf = getToolByName(portal, 'portal_workflow')
@@ -135,6 +137,22 @@ def reflex_rules(portal):
     pc = getToolByName(portal, 'portal_catalog')
     addIndexAndColumn(pc, 'Analyst', 'FieldIndex')
 
+def multi_department_to_labcontact(portal):
+    """
+    In "Lab Contact" edit view, replace the selection list populated with
+    departments by a multi-select list.
+    This requires to create a new content field on order to deal with
+    the migration of the old single-select list.
+    The 'Department' field info from created objects should be migrated to the
+    multi-select field 'Departments' to maintain the consistency
+    """
+    pc = getToolByName(portal, 'portal_catalog', None)
+    # Moving from profile to profiles
+    objs = pc(portal_type="LabContact")
+    for obj_brain in objs:
+        obj = obj_brain.getObject()
+        if not obj.getDepartments():
+            obj.setDepartments(obj.getDepartment())
 
 def addIndexAndColumn(catalog, index, indextype):
     try:

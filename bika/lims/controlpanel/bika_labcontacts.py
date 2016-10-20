@@ -43,7 +43,6 @@ class LabContactsView(BikaListingView):
             'Fullname': {'title': _('Name'),
                          'index': 'getFullname'},
             'Department': {'title': _('Department'),
-                           'index': 'getDepartmentTitle',
                            'toggle': True},
             'BusinessPhone': {'title': _('Phone'),
                               'toggle': True},
@@ -87,21 +86,33 @@ class LabContactsView(BikaListingView):
                          'EmailAddress']},
         ]
 
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        for x in range(len(items)):
-            if not items[x].has_key('obj'): continue
-            obj = items[x]['obj']
-            items[x]['Fullname'] = obj.getFullname()
-            items[x]['Department'] = obj.getDepartmentTitle()
-            items[x]['BusinessPhone'] = obj.getBusinessPhone()
-            items[x]['Fax'] = obj.getBusinessFax()
-            items[x]['MobilePhone'] = obj.getMobilePhone()
-            items[x]['EmailAddress'] = obj.getEmailAddress()
-            items[x]['replace']['Fullname'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['Fullname'])
-
-        return items
+    def folderitem(self, obj, item, index):
+        if 'obj' in item:
+            obj = item['obj']
+            item['Fullname'] = obj.getFullname()
+            deps_txt = ""
+            deps_url = ""
+            # Making the text for the departments column
+            for dep in obj.getDepartments():
+                if len(deps_txt) == 0:
+                    deps_txt += dep.Title()
+                    deps_url += \
+                        "<a href='%s'>%s</a>" %\
+                        (dep.absolute_url(), dep.Title())
+                else:
+                    deps_txt += ', ' + dep.Title()
+                    deps_url += \
+                        ", <a href='%s'>%s</a>" %\
+                        (dep.absolute_url(), dep.Title())
+            item['Department'] = deps_txt
+            item['BusinessPhone'] = obj.getBusinessPhone()
+            item['Fax'] = obj.getBusinessFax()
+            item['MobilePhone'] = obj.getMobilePhone()
+            item['EmailAddress'] = obj.getEmailAddress()
+            item['replace']['Fullname'] = "<a href='%s'>%s</a>" % \
+                (item['url'], item['Fullname'])
+            item['replace']['Department'] = deps_url
+        return item
 
 schema = ATFolderSchema.copy()
 class LabContacts(ATFolder):

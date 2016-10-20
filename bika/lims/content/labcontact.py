@@ -10,7 +10,17 @@ from AccessControl.Permissions import manage_users
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from Products.Archetypes.public import *
+from Products.Archetypes.public import LinesField
+from Products.Archetypes.public import MultiSelectionWidget
+from Products.Archetypes.public import ImageField
+from Products.Archetypes.public import ImageWidget
+from Products.Archetypes.public import ReferenceField
+from Products.Archetypes.public import ComputedField
+from Products.Archetypes.public import ComputedWidget
+from Products.Archetypes.public import Schema
+from Products.Archetypes.public import registerType
+from Products.Archetypes.public import DisplayList
+from Products.Archetypes.public import ReferenceWidget
 from Products.Archetypes.references import HoldingReference
 from bika.lims.content.person import Person
 from bika.lims.config import PROJECTNAME
@@ -39,6 +49,7 @@ schema = Person.schema.copy() + Schema((
                 "results reports. Ideal size is 250 pixels wide by 150 high"),
         ),
     ),
+    # TODO: Department'll be delated
     ReferenceField('Department',
         required = 0,
         vocabulary_display_path_bound = sys.maxint,
@@ -47,15 +58,24 @@ schema = Person.schema.copy() + Schema((
         vocabulary = 'getDepartments',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
+            visible=False,
             checkbox_bound = 0,
             label=_("Department"),
             description=_("The laboratory department"),
         ),
     ),
-    ComputedField('DepartmentTitle',
-        expression = "context.getDepartment() and context.getDepartment().Title() or ''",
-        widget = ComputedWidget(
-            visible = False,
+    ReferenceField('Departments',
+        required = 0,
+        vocabulary_display_path_bound = sys.maxint,
+        allowed_types = ('Department',),
+        relationship = 'LabContactDepartment',
+        vocabulary = '_departmentsVoc',
+        referenceClass = HoldingReference,
+        multiValued=1,
+        widget = ReferenceWidget(
+            checkbox_bound = 0,
+            label=_("Departments"),
+            description=_("The laboratory departments"),
         ),
     ),
 ))
@@ -85,15 +105,72 @@ class LabContact(Person):
         return self.portal_membership.getMemberById(
             self.getUsername()) is not None
 
-    def getDepartments(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('','')] + [(o.UID, o.Title) for o in
+    # TODO: Remove getDepartment
+    from bika.lims import deprecated
+    @deprecated(comment="bika.lims.contant.labcontact.getDepartment "
+                        "is deprecated and will be removed "
+                        "in Bika LIMS 3.3. Please, use getDepartments intead")
+    def getDepartment(self):
+        """
+        This function is a mirror for getDepartments to maintain the
+        compability with the old version.
+        """
+        return self.getDepartments()[0] if self.getDepartments() else None
+
+    def _departmentsVoc(self):
+        """
+        Returns a vocabulary object with the available departments.
+        """
+        bsc = getToolByName(self, 'portal_catalog')
+        items = [(o.UID, o.Title) for o in
                                bsc(portal_type='Department',
                                    inactive_state = 'active')]
-        o = self.getDepartment()
-        if o and o.UID() not in [i[0] for i in items]:
-            items.append((o.UID(), o.Title()))
+        # Getting the departments uids
+        deps_uids = [i[0] for i in items]
+        # Getting the assigned departments
+        objs = self.getDepartments()
+        # If one department assigned to the Lab Contact is disabled, it will
+        # be shown in the list until the department has been unassigned.
+        for o in objs:
+            if o and o.UID() not in deps_uids:
+                items.append((o.UID(), o.Title()))
         items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
+
+    def addDepartment(self, dep):
+        """
+        It adds a new department to the departments content field.
+        @dep: is a uid or a department object
+        @return: True when the adding process has been done,
+            False otherwise.
+        """
+        # check if dep is an uid
+        if type(dep) is str:
+            deps = self.getDepartments()
+            deps = [d.UID() for d in deps]
+        else:
+            deps = self.getDepartments()
+        if dep and dep not in deps:
+            deps.append(dep)
+            self.setDepartments(deps)
+        return True
+
+    def removeDepartment(self, dep):
+        """
+        It removes a department to the departments content field.
+        @dep: is a uid or a department object
+        @return: True when the removing process has been done,
+            False otherwise.
+        """
+        # check if dep is an uid
+        if type(dep) is str:
+            deps = self.getDepartments()
+            deps = [d.UID() for d in deps]
+        else:
+            deps = self.getDepartments()
+        if dep and dep in deps:
+            deps.remove(dep)
+            self.setDepartments(deps)
+        return True
 
 registerType(LabContact, PROJECTNAME)

@@ -488,7 +488,3 @@ from bika.lims import deprecated
                     "in Bika LIMS 3.3", replacement=crar)
 def create_analysisrequest(context, request, values):
     return crar(context, request, values)
-
-    reject_field = values.get('RejectionReasons', '')
-    if reject_field and reject_field.get('checkbox', False):
-        doActionFor(ar, 'reject')
