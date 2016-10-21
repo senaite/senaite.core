@@ -12,44 +12,50 @@
 <tal:departments
     tal:define="portal context/portal_url/getPortalObject;
                 plone_view context/@@plone;
-                current_usr python:brains[0].getObject();">
+                current_usr python:brains[0].getObject();
+                deps current_usr/getSortedDepartments;
+                cookie python:request.cookies.get(
+                    'filter_by_department_info','');
+                dep_cookie python: cookie if cookie and len(deps)>1
+                    else deps[0].UID();">
     <dl class="portlet" id="portletfilter_by_department">
-    <!-- The header of the porlet -->
-    <dt class="portletHeader"
-        i18n:translate="">Filter by department</dt>
-        <br>
+        <!-- The header of the porlet -->
+        <dt class="portletHeader"
+            i18n:translate="">Department</dt>
+
         <!-- Opening the form -->
         <form
             action="portletfilter_by_department"
             name="portletfilter_by_department"
             method="POST">
-            <!-- The selection list -->
-            <label for="department_filter_portlet"
-                i18n:translate="">Filter by:</label>
-            <select id="department_filter_portlet"
-                    name="department_filter_portlet"
-                    i18n:domain="python:i18n_domain"
-                    tal:define="
-                        deps current_usr/getSortedDepartments;
-                        cookie python:request.cookies.get(
-                            'filter_by_department_info','');
-                        dep_cookie python: cookie if cookie else deps[0].UID()
-                        ">
-                <!-- Filling the other options with the departments assigned
-                to the user -->
-                <tal:option repeat="dep deps">
-                <option
-                    tal:content="python:dep.Title()"
-                    tal:attributes="
-                        value python:dep.UID();
-                        selected python:'selected' if dep_cookie == dep.UID() else ''"
-                    i18n:translate=""/>
-                </tal:option>
-            </select>
-        <!-- The submit form button -->
-        <dd class="portletFooter">
-            <input type="submit" value="Filter">
-        </dd>
+            <dd class="portletItem">
+                <!-- The selection list -->
+                <select id="department_filter_portlet"
+                        name="department_filter_portlet"
+                        i18n:domain="python:i18n_domain"
+                        tal:attributes="style python: '' if len(deps)>1 else 'display:none'">
+                    <!-- Filling the other options with the departments assigned
+                    to the user -->
+                    <tal:option repeat="dep deps">
+                    <option
+                        tal:content="python:dep.Title()"
+                        tal:attributes="
+                            value python:dep.UID();
+                            selected python:'selected' if dep_cookie == dep.UID() else ''"
+                        i18n:translate=""/>
+                    </tal:option>
+                </select>
+                <!-- Only a label with the department if one department only -->
+                <label
+                    i18n:translate=""
+                    tal:condition="python: len(deps)<2"
+                    tal:content="python: deps[0].Title()"
+                    >Department</label>
+            </dd>
+            <!-- The submit form button -->
+            <dd class="portletFooter">
+                <input type="submit" value="Filter">
+            </dd>
         </form>
     </dl>
 </tal:departments>
