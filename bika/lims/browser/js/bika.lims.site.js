@@ -15,6 +15,8 @@ function SiteView() {
 
         loadReferenceDefinitionEvents();
 
+        loadFilterByDepartmentCookie();
+
     }
 
     function loadClientEvents() {
@@ -343,5 +345,24 @@ function SiteView() {
                 $('#panel-notification').fadeOut("slow","linear")
             }, 3000)
         });
+    };
+
+    function loadFilterByDepartmentCookie(){
+        /**
+        This function checks if the cookie 'filter_by_department_info' is
+        available. If the cookie exists, do nothing, if the cookie has not been
+        created yet, checks the selected department in the 'filter by department
+        cookie' and creates the cookie with the UID of the department.
+        */
+        // Gettin the cookie
+        var cookiename = 'filter_by_department_info';
+        var cookie_val = readCookie(cookiename);
+        if (cookie_val === null){
+            // we need to create a cookie with the default value in selected
+            // the portlet
+            var dep_uid = $('.portlet#portletfilter_by_department form ' +
+                'select#department_filter_portlet').find(":selected").val();
+            createCookie(cookiename, dep_uid);
+        }
     }
 }

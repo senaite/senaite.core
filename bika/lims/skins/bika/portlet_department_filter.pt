@@ -30,17 +30,14 @@
                     name="department_filter_portlet"
                     i18n:domain="python:i18n_domain"
                     tal:define="
-                        dep_cookie python:request.cookies.get(
-                            'filter_by_department_info','')">
-                <!--The first option should be void -->
-                <option
-                    tal:content="python:None"
-                    tal:attributes="
-                        value python:None;"
-                    i18n:translate=""/>
+                        deps current_usr/getSortedDepartments;
+                        cookie python:request.cookies.get(
+                            'filter_by_department_info','');
+                        dep_cookie python: cookie if cookie else deps[0].UID()
+                        ">
                 <!-- Filling the other options with the departments assigned
                 to the user -->
-                <tal:option repeat="dep current_usr/getSortedDepartments">
+                <tal:option repeat="dep deps">
                 <option
                     tal:content="python:dep.Title()"
                     tal:attributes="
