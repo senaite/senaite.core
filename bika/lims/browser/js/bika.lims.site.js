@@ -15,7 +15,8 @@ function SiteView() {
 
         loadReferenceDefinitionEvents();
 
-        loadFilterByDepartment();
+        loadFilterByDepartmentCookie();
+
     }
 
     function loadClientEvents() {
@@ -345,17 +346,6 @@ function SiteView() {
             }, 3000)
         });
     };
-
-    function loadFilterByDepartment() {
-        /**
-        This function sets up the filter by department widget, the cookie and
-        the auto-submit.
-        */
-        $('#department_filter_portlet').change(function(e) {
-            $('#department_filter_submit').click();
-        });
-        loadFilterByDepartmentCookie();
-    }
 
     function loadFilterByDepartmentCookie(){
         /**
