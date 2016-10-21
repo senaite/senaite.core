@@ -33,7 +33,7 @@
                 <select id="department_filter_portlet"
                         name="department_filter_portlet"
                         i18n:domain="python:i18n_domain"
-                        tal:attributes="style python: '' if len(deps)>1 else 'display:none'">
+                        tal:attributes="style python: 'width:100%' if len(deps)>1 else 'display:none'">
                     <!-- Filling the other options with the departments assigned
                     to the user -->
                     <tal:option repeat="dep deps">
@@ -53,8 +53,8 @@
                     >Department</label>
             </dd>
             <!-- The submit form button -->
-            <dd class="portletFooter">
-                <input type="submit" value="Filter">
+            <dd class="portletFooter" style="display:none">
+                <input type="submit" id="department_filter_submit" value="Filter">
             </dd>
         </form>
     </dl>
