@@ -135,18 +135,18 @@ class AddAnalysesView(BikaListingView):
         It checks if the item can be added to the list depending on the
         department filter. If the analysis service is not assigned to a
         department, show it.
-        @Obj: it is an analysis object.
-        @return: boolean
         """
         # Gettin the department from analysis service
+        import pdb; pdb.set_trace()
         serv_dep = obj.getService().getDepartment()
         result = True
         if serv_dep:
             # Getting the cookie value
-            cookie_dep_uid = self.request.get('filter_by_department_info', '')
+            cookie_dep_uid = self.request.get('filter_by_department_info', 'no')
             # Comparing departments' UIDs
             result = True if serv_dep.UID() in\
-                self.request.get('filter_by_department_info', '') else False
+                self.request.get('filter_by_department_info', 'no') else False
+            return result
         return result
 
     def folderitems(self):
