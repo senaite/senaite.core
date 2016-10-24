@@ -44,6 +44,25 @@ class ServicesView(BikaListingView):
             },
         ]
 
+    def isItemAllowed(self, obj):
+        """
+        It checks if the item can be added to the list depending on the
+        department filter. If the service is not assigned to a
+        department, show it.
+        @Obj: it is an analysis object.
+        @return: boolean
+        """
+        # Gettin the department from analysis service
+        serv_dep = obj.getDepartment()
+        result = True
+        if serv_dep:
+            # Getting the cookie value
+            cookie_dep_uid = self.request.get('filter_by_department_info', '')
+            # Comparing departments' UIDs
+            result = True if serv_dep.UID() in\
+                self.request.get('filter_by_department_info', '') else False
+        return result
+
     def folderitems(self):
         ws_services = []
         for analysis in self.context.getAnalyses():
@@ -57,8 +76,11 @@ class ServicesView(BikaListingView):
                            sort_on = 'sortable_title')
         items = []
         for service in services:
+            service_obj = service.getObject()
+            if not self.isItemAllowed(service_obj):
+                continue
             # if the service has dependencies, it can't have reference analyses
-            calculation = service.getObject().getCalculation()
+            calculation = service_obj.getCalculation()
             if calculation and calculation.getDependentServices():
                 continue
             cat = service.getCategoryTitle
