@@ -51,6 +51,8 @@ jQuery(function($){
         $('select[id^="ReflexRules-action-"]').bind("change", function () {
                 action_select_controller($(this).closest('div.action'));
             });
+        // Setup the local ids
+        setup_local_uids();
     });
 
     function method_controller(setupdata){
@@ -508,5 +510,104 @@ jQuery(function($){
             $(action_div).find('div.to_other_worksheet').css('display', 'inline');
             $(action_div).find('div.action_define_result').hide();
         }
+    }
+
+    function setup_local_uids() {
+        /**
+        This function sets up the local ids used to identify the analysis
+        resulted from the different actions
+        */
+        // Getting the dict of local ids
+        var local_ids = $.parseJSON($('#reflex_rule_analysis_ids').html());
+        // no ids means a new refles rule
+        if (local_ids === {}){
+            var new_id = '';
+            // Set up the first local id
+            // Getting the first action
+            var first_action = $("select[id^='ReflexRules-action-']")
+                .first().find(":selected").attr('value');
+            if (first_action == 'duplicate' || first_action == 'repeat'){
+                // If it is a duplicate, the local id will be dup-0
+                new_id = create_local_id(first_action);
+            }
+            else if (first_action == 'setresult' &&
+                $("select[id^='id='ReflexRules-setresulton-']")
+                .first().find(":selected").attr('value') == 'new') {
+                // If it is a 'set result on new analysis', the local id
+                // will be set-0
+                new_id = create_local_id(first_action);
+            }
+            // If the new local id has been created, insert into the
+            // 'ReflexRules-an_result_id-' input
+            if (new_id) {
+                $("input[id^='ReflexRules-an_result_id-']").first().val(new_id);
+            }
+        }
+    }
+
+    function create_local_id(action_type) {
+        /**
+        This function mainly creates a new local id.
+        It gets the string 'action_type' which is one of the possible actions
+        that refex rules can do: 'repeat', 'duplicate' or 'setresult'. Then the
+        function creates a new name taking into account the action type and the
+        are already existen ones.
+        @action_type: a string 'repeat', 'duplicate' or 'setresult'
+        @return: a string with the new local id
+        */
+        var new_local_id = '';
+        // Getting the local ids dictionary
+        var local_ids_dic = $.parseJSON($('#reflex_rule_analysis_ids').html());
+        if (action_type == 'duplicate'){
+            new_local_id = return_next_id('dup');
+        }
+        else if (action_type == 'repeat') {
+            new_local_id = return_next_id('rep');
+        }
+        else if (action_type == 'setresult') {
+            new_local_id = return_next_id('set');
+        }
+        return new_local_id;
+    }
+
+    function return_next_id(prefix) {
+        /**
+        This function looks for the next available local id with the prefix 'prefix'
+        @prefix: a string like 'rep', 'dup', 'set'
+        @return: a string as the new local id
+        */
+        var new_local_id = '', local_ids_list = [], num=0,
+            list_len, not_unique = true;
+        // Getting the local ids list
+        local_ids_list = local_ids_dic.dup;
+        list_len = local_ids_list.length;
+        // Create a new unique local id
+        while(not_unique) {
+            new_local_id = 'dup-' + new_local_id.toString();
+            not_unique = $.inArray(new_local_id, local_ids_list);
+            new_local_id = new_local_id + 1;
+        }
+        add_local_id(new_local_id);
+        return new_local_id;
+    }
+
+    function remove_local_id(id) {
+        /**
+        This function removes a local id to the 'reflex_rule_analysis_ids' div
+        */
+    }
+
+    function add_local_id(id){
+        /**
+        This function adds a local id to the 'reflex_rule_analysis_ids' div
+        */
+    }
+
+    function new_local_id_controller(element){
+        /**
+        This function creates a new local id when an action selection list
+        changes its state.
+        @element: it is the select list with id: 'ReflexRules.action-'
+        */
     }
 });
