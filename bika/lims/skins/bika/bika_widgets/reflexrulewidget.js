@@ -187,7 +187,11 @@ jQuery(function($){
         */
         var sel = $(element).find('.and_or');
         var and_or = $(sel).find(":selected").attr('value');
-        if ((and_or == 'and' || and_or == 'or') && ){
+        // This attribute is used to know if the selection element has changed
+        // its value from 'and' to 'or' (or viceversa) and a no container
+        // should be placed, or it has changed from a void value to 'and'/'or'
+        var already_sel = $(sel).attr('already_sel');
+        if ((and_or == 'and' || and_or == 'or') && already_sel != 'yes'){
             // create a new 'conditionscontainer' div below
             var container_clone = $(element).clone();
             var found = $(container_clone).find("input, select");
@@ -219,16 +223,25 @@ jQuery(function($){
             $(container_clone).insertAfter(element);
             var setupdata = $.parseJSON($('#rules-setup-data').html());
             // Binding the analysis service controller
-            $(container_clone).find('select[id^="ReflexRules-analysisservice-"]').bind("change", function () {
+            $(container_clone).find('select[id^="ReflexRules-analysisservice-"]')
+                .bind("change", function () {
                 analysiservice_change(this, setupdata);
             });
             // Trigger the controller
-            $(container_clone).find('select[id^="ReflexRules-analysisservice-"]').trigger('change');
+            $(container_clone).find('select[id^="ReflexRules-analysisservice-"]')
+                .trigger('change');
+            $(sel).attr('already_sel', 'yes');
+            // Binding the and_or controller
+            $(container_clone).find('select[id^="ReflexRules-and_or-"]')
+                .bind("change", function () {
+                    and_or_controller($(this).closest('div.conditionscontainer'));
+                });
         }
-        else{
+        else if (and_or != 'and' && and_or != 'or') {
             // Remove the 'conditionscontainer' div below
             var target = $(element).next('.conditionscontainer');
             $(target).remove();
+            $(sel).attr('already_sel', 'no');
         }
     }
 
