@@ -499,7 +499,10 @@ class BikaListingView(BrowserView):
             if hasattr(self, 'sort_on') and self.sort_on \
             else None
         self.sort_on = self.request.get(form_id + '_sort_on', self.sort_on)
-        self.sort_order = self.request.get(form_id + '_sort_order', 'ascending')
+        self.sort_order = self.sort_order \
+            if hasattr(self, 'sort_order') and self.sort_order \
+            else 'ascending'
+        self.sort_order = self.request.get(form_id + '_sort_order', self.sort_order)
         self.manual_sort_on = self.request.get(form_id + '_manual_sort_on', None)
 
         if self.sort_on:
