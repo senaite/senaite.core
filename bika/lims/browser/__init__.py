@@ -66,6 +66,26 @@ def ulocalized_time(time, long_format=None, time_only=None, context=None,
         return time_str
 
 
+class updateFilerByDepartmentCookie(BrowserView):
+    """
+    This function updates or creates the cookie 'filter_by_department_info'
+    in order to filter the lists by department.
+    @context: is the current view.
+    @value: is a list of UIDs of departments.
+    """
+
+    def __call__(self):
+        # Getting the department uid from the submit
+        dep_uid = self.request.form.get('department_filter_portlet', '')
+        # Create/Update a cookie with the new department uid
+        self.request.response.setCookie(
+            'filter_by_department_info', dep_uid, path='/')
+        # Redirect to the same page
+        url = self.request.get('URL', '')\
+            .replace('portletfilter_by_department', '')
+        self.request.response.redirect(url)
+
+
 class BrowserView(BrowserView):
     security = ClassSecurityInfo()
 

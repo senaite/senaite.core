@@ -173,4 +173,13 @@ class LabContact(Person):
             self.setDepartments(deps)
         return True
 
+    def getSortedDepartments(self):
+        """
+        It returns the departments the departments sorted by title.
+        """
+        deps = self.getDepartments()
+        deps.sort(key=lambda department: department.title)
+        return deps
+
+
 registerType(LabContact, PROJECTNAME)
