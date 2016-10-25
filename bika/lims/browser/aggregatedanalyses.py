@@ -76,6 +76,10 @@ class AggregatedAnalysesView(BikaListingView):
                 'title': _('Analysis'),
                 'sortable': False
             },
+            'Partition': {
+                'title': _("Partition"),
+                'sortable':False
+            },
         }
 
         self.review_states = [
@@ -85,13 +89,14 @@ class AggregatedAnalysesView(BikaListingView):
              'columns': ['AnalysisRequest',
                          'Worksheet',
                          'Service',
+                         'Partition',
                          ]
              },
         ]
         if not context.bika_setup.getShowPartitions():
             self.review_states[0]['columns'].remove('Partition')
 
-        super(AnalysesView, self).__init__(context,
+        super(AggregatedAnalysesView, self).__init__(context,
                                            request,
                                            show_categories=False,
                                            expand_all_categories=True)
@@ -105,7 +110,7 @@ class AggregatedAnalysesView(BikaListingView):
             return None
 
         parent = obj.aq_parent
-        if (parent.portal_type != 'AnaysisRequest'):
+        if (parent.portal_type != 'AnalysisRequest'):
             # Parent is not an AnalysisRequest, probably this object is a
             # QC analysis, so do nothing
             return None
@@ -125,4 +130,9 @@ class AggregatedAnalysesView(BikaListingView):
         item['Service'] = serv.Title()
         anchor = '<a href="%s">%s</a>' % (serv.absolute_url(), serv.Title())
         item['replace']['Service'] = anchor
+
+        try:
+            item['Partition'] = obj.getSamplePartition().getId()
+        except AttributeError:
+            items['Partition'] = ''
         return item
