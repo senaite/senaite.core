@@ -76,7 +76,7 @@ class ManageResultsView(BrowserView):
 
             if service_uid:
                 workflow = getToolByName(self.context, 'portal_workflow')
-                for analysis in self.context.getAnalyses():
+                for analysis in self._getAnalyses():
                     if analysis.portal_type not in ('Analysis', 'DuplicateAnalysis'):
                         continue
                     if not analysis.getServiceUID() == service_uid:
@@ -162,7 +162,7 @@ class ManageResultsView(BrowserView):
         """
         outdict = {}
         allowed_states = ['sample_received']
-        for analysis in self.context.getAnalyses():
+        for analysis in self._getAnalyses():
             wf = getToolByName(analysis, 'portal_workflow')
             if wf.getInfoFor(analysis, 'review_state') not in allowed_states:
                 continue
@@ -201,7 +201,7 @@ class ManageResultsView(BrowserView):
             will be displayed.
         """
         invalid = []
-        ans = [a for a in self.context.getAnalyses()]
+        ans = self._getAnalyses()
         for an in ans:
             valid = an.isInstrumentValid()
             if not valid:
@@ -219,3 +219,32 @@ class ManageResultsView(BrowserView):
             icon = priority.getBigIcon()
             if icon:
                 return '/'.join(icon.getPhysicalPath())
+
+    def _getAnalyses(self):
+        """
+        This function returns a list with the analyses related to the worksheet
+        and filtered by the current selected department in the department
+        porlet.
+        @returna list of analyses objects.
+        """
+        ans = [a for a in self.context.getAnalyses() if self._isItemAllowed(a)]
+        return ans
+
+    def _isItemAllowed(self, obj):
+        """
+        It checks if the analysis service can be added to the list depending
+        on the department filter. If the analysis service is not assigned to a
+        department, show it.
+        @Obj: it is an analysis object.
+        @return: boolean
+        """
+        # Gettin the department from analysis service
+        serv_dep = obj.getService().getDepartment()
+        result = True
+        if serv_dep:
+            # Getting the cookie value
+            cookie_dep_uid = self.request.get('filter_by_department_info', '')
+            # Comparing departments' UIDs
+            result = True if serv_dep.UID() in\
+                self.request.get('filter_by_department_info', '') else False
+        return result
