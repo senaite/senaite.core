@@ -40,6 +40,7 @@ class AggregatedAnalysesView(BikaListingView):
     """
 
     def __init__(self, context, request, **kwargs):
+        self.title = _("Analyses pending")
         self.catalog = "bika_analysis_catalog"
         self.contentFilter = dict(kwargs)
         self.contentFilter['portal_type'] = 'Analysis'
@@ -65,7 +66,7 @@ class AggregatedAnalysesView(BikaListingView):
 
         self.columns = {
             'AnalysisRequest': {
-                'title': _('AnalysisRequest'),
+                'title': _('Analysis Request'),
                 'sortable': False
             },
             'Worksheet': {
@@ -80,16 +81,45 @@ class AggregatedAnalysesView(BikaListingView):
                 'title': _("Partition"),
                 'sortable':False
             },
+            'Method': {
+                'title': _('Method'),
+                'sortable': False,
+                'toggle': True
+            },
+            'Instrument': {
+                'title': _('Instrument'),
+                'sortable': False,
+                'toggle': True
+            },
+            'Analyst': {
+                'title': _('Analyst'),
+                'sortable': False,
+                'toggle': True
+            },
+            'Result': {
+                'title': _('Result'),
+                'input_width': '6',
+                'input_class': 'ajax_calculate numeric',
+                'sortable': False
+            },
+            'state_title': {
+                'title': _('Status'),
+                'sortable': False
+            },
         }
 
         self.review_states = [
             {'id': 'default',
              'title':  _('All'),
-             'contentFilter': {},
+             'contentFilter': {'review_state': ['to_be_verified', 'assigned', 'retracted']},
              'columns': ['AnalysisRequest',
                          'Worksheet',
                          'Service',
                          'Partition',
+                         'Method',
+                         'Instrument',
+                         'Analyst',
+                         'state_title',
                          ]
              },
         ]
@@ -115,9 +145,16 @@ class AggregatedAnalysesView(BikaListingView):
             # QC analysis, so do nothing
             return None
 
+        wss = obj.getBackReferences('WorksheetAnalysis')
+        if not wss:
+            return None
+
+        # Analysis Request
         item['AnalysisRequest'] = parent.Title()
         anchor = '<a href="%s">%s</a>' % (parent.absolute_url(), parent.Title())
         item['replace']['AnalysisRequest'] = anchor
+
+        # Worksheet
         item['Worksheet'] = ''
         wss = obj.getBackReferences('WorksheetAnalysis')
         if wss and len(wss) > 0:
@@ -126,13 +163,25 @@ class AggregatedAnalysesView(BikaListingView):
             anchor = '<a href="%s">%s</a>' % (ws.absolute_url(), ws.Title())
             item['replace']['Worksheet'] = anchor
 
+        # Analysis Service
         serv = obj.getService()
+        unit = serv.getUnit()
         item['Service'] = serv.Title()
         anchor = '<a href="%s">%s</a>' % (serv.absolute_url(), serv.Title())
         item['replace']['Service'] = anchor
+        item['Unit'] = format_supsub(unit) if unit else ''
 
+        item['Method'] = ''
+        item['Instrument'] = ''
+        item['Analyst'] = obj.getAnalystName()
+        item['Result'] = obj.getResult()
+
+
+        # Sample Partition
         try:
             item['Partition'] = obj.getSamplePartition().getId()
         except AttributeError:
-            items['Partition'] = ''
+            item['Partition'] = ''
+
+
         return item
