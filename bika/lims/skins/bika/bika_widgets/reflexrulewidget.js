@@ -325,7 +325,8 @@ jQuery(function($){
     function add_action_set(element){
         /**
         :element: is the more(addnew) button
-        This function defines the process to add a new whole action set
+        This function defines the process to add a new whole action and
+        conditions set
         */
         var fieldname = $(element).attr("id").split("_")[0];
         var table = $('#'+fieldname+"_table");
@@ -403,6 +404,7 @@ jQuery(function($){
                 and_or_controller(
                         $(set).find('div.conditionscontainer'));
         }).trigger("change");
+        $(set).find('select[id^="ReflexRules-and_or-"]').show();
         if($(td).hasClass('rulenumber')){
             var idx = $(td).find('input.rulenumber').attr('originalvalue');
             var new_idx = parseInt(idx) + 1;

@@ -165,10 +165,12 @@
                         conditions, not in the main one.-->
                     <select class="and_or"
                         tal:define="
-                            olist widget/getAndOrVoc"
+                            olist widget/getAndOrVoc;
+                            resultscontainer_idx repeat/idx/index"
                         tal:attributes="
                             name string:${fieldName}.and_or:records:ignore_empty;
-                            id string:${fieldName}-and_or-${repeat/idx/index}-${conditionscontainer_idx};"
+                            id string:${fieldName}-and_or-${repeat/idx/index}-${conditionscontainer_idx};
+                            style python: '' if resultscontainer_idx == '0' else 'display:none';"
                             i18n:domain="python:i18n_domain">
                         <option
                             tal:repeat="option olist"
