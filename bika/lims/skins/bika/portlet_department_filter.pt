@@ -5,8 +5,9 @@
 <div metal:define-macro="portlet"
     tal:define="
         member python: context.portal_membership.getAuthenticatedMember();
+        user_name python: member.getUserName();
         brains python: here.portal_catalog(portal_type='LabContact',
-                                    getUsername='alex01');"
+                                    getUsername=user_name);"
     tal:condition="python:len(brains)>0">
 <!-- Defining the base variables -->
 <tal:departments
