@@ -53,6 +53,10 @@ jQuery(function($){
             });
         // Setup the local ids
         setup_local_uids();
+        // Controller on 'ReflexRules-setresulton' selection list
+        $('select[id^="ReflexRules-setresulton-"]').bind("change", function () {
+                setresulton_controller($(this).closest('div.action'));
+            });
     });
 
     function method_controller(setupdata){
@@ -321,6 +325,9 @@ jQuery(function($){
         $(row).find('select[id^="ReflexRules-action-"]').bind("change", function () {
             action_select_controller(row);
         });
+        $(row).find('select[id^="ReflexRules-setresulton-"]').bind("change", function () {
+            setresulton_controller(row);
+        });
         $(row).find('select[id^="ReflexRules-action-"]').trigger('change');
     }
 
@@ -394,11 +401,12 @@ jQuery(function($){
             }).trigger("change");
         // Binding the otherWS controller and the controller for specific
         // actions select
-        $(td).find('div[id^="ReflexRules-actionsset-"] div.action')
+        $(set).find('div[id^="ReflexRules-actionsset-"] div.action')
             .bind("change", function () {
                 otherWS_controller(this);
+                setresulton_controller(this);
                 action_select_controller(this);
-            });
+            }).trigger('change');
         // Binding the and_or controller
         $(set)
             .find('div.conditionscontainer select.and_or')
@@ -489,10 +497,16 @@ jQuery(function($){
 
     function action_select_controller(action_div) {
         /**
-        This function hide/shows the 'worksheet' section and 'defining analysis result' section deppending on the choosen action.
-        - If 'define result' action is selected, hides the to_other_worksheet div and shows the action_define_result div.
-        - If 'define result' action is NOT selected, shows the to_other_worksheet div and hides the action_define_result div.
+        This function hide/shows the 'worksheet' section and 'defining analysis
+        result' section deppending on the choosen action.
+        - If 'define result' action is selected, hides the to_other_worksheet
+        div and shows the action_define_result div.
+        - If 'define result' action is NOT selected, shows the
+        to_other_worksheet div and hides the action_define_result div.
+
+        The function alse generates the local ids related to the selected action.
         */
+        var local_id = '';
         var selection = $(action_div)
             .find('select[id^="ReflexRules-action-"]')
             .find(":selected").attr('value');
@@ -504,11 +518,26 @@ jQuery(function($){
                 .find('div.to_other_worksheet')
                 .find('input[id^="ReflexRules-otherWS-"]')
                 .removeAttr("checked");
+            // Creates a new local id if a new analysis is created
+            var set_new = $(action_div)
+                .find("select[id^='ReflexRules-setresulton-']'")
+                .find(":selected").attr('value');
+            if (set_new == 'new') {
+                local_id = create_local_id(selection);
+                $(action_div).find("input[id^='ReflexRules-an_result_id-']")
+                    .first().val(local_id);
+            }
+            else{
+                $(action_div).find("input[id^='ReflexRules-an_result_id-']")
+                    .first().val('');}
         }
         else{
             // Hide the options-set
             $(action_div).find('div.to_other_worksheet').css('display', 'inline');
             $(action_div).find('div.action_define_result').hide();
+            local_id = create_local_id(selection);
+            $(action_div).find("input[id^='ReflexRules-an_result_id-']")
+                .first().val(local_id);
         }
     }
 
@@ -518,9 +547,9 @@ jQuery(function($){
         resulted from the different actions
         */
         // Getting the dict of local ids
-        var local_ids = $.parseJSON($('#reflex_rule_analysis_ids').html());
+        var local_ids = $.parseJSON($('#reflex_rule_analysis_ids').val());
         // no ids means a new refles rule
-        if (local_ids === {}){
+        if (local_ids === null){
             var new_id = '';
             // Set up the first local id
             // Getting the first action
@@ -545,6 +574,31 @@ jQuery(function($){
         }
     }
 
+    function setresulton_controller(action_div) {
+        /**
+        This function checks if the selected value in the
+        'ReflexRules-setresulton' selectoin list is 'new'. If it is new, the
+        function creates a new local id for the analysis.
+        @action_div: the div.action
+        **/
+        // Creates a new local id if a new analysis is created
+        var local_id = '';
+        var selection = $(action_div)
+            .find('select[id^="ReflexRules-action-"]')
+            .find(":selected").attr('value');
+        var set_new = $(action_div)
+            .find("select[id^='ReflexRules-setresulton-']'")
+            .find(":selected").attr('value');
+        if (set_new == 'new') {
+            local_id = create_local_id(selection);
+            $(action_div).find("input[id^='ReflexRules-an_result_id-']")
+                .first().val(local_id);
+        }
+        else{
+            $(action_div).find("input[id^='ReflexRules-an_result_id-']")
+                .first().val('');}
+    }
+
     function create_local_id(action_type) {
         /**
         This function mainly creates a new local id.
@@ -556,17 +610,24 @@ jQuery(function($){
         @return: a string with the new local id
         */
         var new_local_id = '';
-        // Getting the local ids dictionary
-        var local_ids_dic = $.parseJSON($('#reflex_rule_analysis_ids').html());
+        var local_ids_dic = $.parseJSON($('#reflex_rule_analysis_ids').val());
+        if (local_ids_dic === null){
+                local_ids_dic = {'dup':[], 'rep':[], 'set':[]};
+            }
         if (action_type == 'duplicate'){
             new_local_id = return_next_id('dup');
+            local_ids_dic.dup.push(new_local_id);
         }
         else if (action_type == 'repeat') {
             new_local_id = return_next_id('rep');
+            local_ids_dic.rep.push(new_local_id);
         }
         else if (action_type == 'setresult') {
             new_local_id = return_next_id('set');
+            local_ids_dic.set.push(new_local_id);
         }
+        // Update the input#reflex_rule_analysis_ids with the new local id
+        $('#reflex_rule_analysis_ids').val(JSON.stringify(local_ids_dic));
         return new_local_id;
     }
 
@@ -576,38 +637,36 @@ jQuery(function($){
         @prefix: a string like 'rep', 'dup', 'set'
         @return: a string as the new local id
         */
+        // Getting the local ids dictionary
+        var local_ids_dic = $.parseJSON($('#reflex_rule_analysis_ids').val());
+        if (local_ids_dic === null){
+                local_ids_dic = {'dup':[], 'rep':[], 'set':[]};
+            }
         var new_local_id = '', local_ids_list = [], num=0,
-            list_len, not_unique = true;
+            list_len, not_unique = 0;
         // Getting the local ids list
-        local_ids_list = local_ids_dic.dup;
+        local_ids_list = local_ids_dic[prefix];
         list_len = local_ids_list.length;
         // Create a new unique local id
-        while(not_unique) {
-            new_local_id = 'dup-' + new_local_id.toString();
+        while(not_unique !== -1) {
+            new_local_id = prefix + '-' + list_len.toString();
             not_unique = $.inArray(new_local_id, local_ids_list);
-            new_local_id = new_local_id + 1;
+            list_len = list_len + 1;
         }
-        add_local_id(new_local_id);
         return new_local_id;
     }
 
-    function remove_local_id(id) {
+    function remove_local_id(array, id) {
         /**
-        This function removes a local id to the 'reflex_rule_analysis_ids' div
+        This function removes a local id to the 'reflex_rule_analysis_ids' div.
+        @array: the array where the element will be removed.
+        @id: the element to remove
+        @return the resultant array.
         */
-    }
-
-    function add_local_id(id){
-        /**
-        This function adds a local id to the 'reflex_rule_analysis_ids' div
-        */
-    }
-
-    function new_local_id_controller(element){
-        /**
-        This function creates a new local id when an action selection list
-        changes its state.
-        @element: it is the select list with id: 'ReflexRules.action-'
-        */
+        var index = array.indexOf(id);
+        if (index > -1) {
+            array.splice(index, 1);
+        }
+        return array;
     }
 });

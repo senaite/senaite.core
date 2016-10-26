@@ -53,7 +53,7 @@
     <!-- This div contains the local uids used to deal with the analysis
     created by the different actions. the format of the div content is
     {'dup':['dup-0','dup-1',...], 'rep':[...], 'set':[...]}-->
-    <div id="reflex_rule_analysis_ids" style="display:none;visibility:hidden;">{}</div>
+    <input id="reflex_rule_analysis_ids" style="display:none;visibility:hidden;"/>
     <table
         tal:attributes="id string:${fieldName}_table"
         class="recordswidget nosort">
