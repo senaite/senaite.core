@@ -6,6 +6,8 @@ jQuery(function($){
         remove_last_rule_set();
         setup_as_and_discrete_results(setupdata);
         setup_addnew_buttons();
+        // Hide the del_button in the fist td.rulescontainer
+        $('table#ReflexRules_table').find('.rw_deletebtn').first().hide();
         setup_del_action_button();
         $('select#Method').bind("change", function () {
             // Updates the new method
@@ -381,6 +383,8 @@ jQuery(function($){
                 range_controller($(set).find('input[id^="ReflexRules-range"]'));
                 setup_del_action_button();
         });
+        // Show the rw_deletebtn button
+        $(set).find(".rw_deletebtn").show();
         // Action trigger controller
         $(set)
             .find('select[id^="ReflexRules-trigger"]')
@@ -512,12 +516,15 @@ jQuery(function($){
             .find(":selected").attr('value');
         if (selection == "setresult") {
             // Showing the analyst-section div
-            $(action_div).find('div.action_define_result').css('display', 'inline');
+            var action_define_div = $(action_div).find('div.action_define_result');
+            $(action_define_div).css('display', 'inline');
             $(action_div).find('div.to_other_worksheet').hide();
             $(action_div)
                 .find('div.to_other_worksheet')
                 .find('input[id^="ReflexRules-otherWS-"]')
                 .removeAttr("checked");
+            // run the controlller dor the elements contained in the 'div.action_define_result'
+            action_define_div_controller(action_div);
             // Creates a new local id if a new analysis is created
             var set_new = $(action_div)
                 .find("select[id^='ReflexRules-setresulton-']'")
@@ -538,6 +545,46 @@ jQuery(function($){
             local_id = create_local_id(selection);
             $(action_div).find("input[id^='ReflexRules-an_result_id-']")
                 .first().val(local_id);
+        }
+    }
+
+    function action_define_div_controller(action_div){
+        /**
+        This functions hides/shows the input fields or selection lists depending
+        on the selected analysis.
+        @action_div is the div.action where the 'div.action_define_result'
+        belongs to.
+        */
+        // Populate the analysis selection list
+        var rulescontainer = $(action_div).closest('td.rulescontainer');
+        // Getting the selected services inside conditions div (the first one so far)
+        var as = $(rulescontainer).find('select[id^="ReflexRules-analysisservice-"]')
+            .first();
+        //Check if the selected analysis service has discrete values
+        var method = $('select[id="Method"]').find(":selected").attr('value');
+        var as_uid = $(as).find(":selected").attr('value');
+        var setupdata = $.parseJSON($('#rules-setup-data').html());
+        var as_info = setupdata[method].analysisservices[as_uid];
+        if (as_info === undefined){
+            var _ = window.jarn.i18n.MessageFactory("bika");
+            window.bika.lims.portalMessage(_('An analysis service must be selected'));
+        }
+        var resultoptions = as_info.resultoptions;
+        if(resultoptions.length > 0){
+            // If the analysis service possible results are discrete, hide the
+            // input and show the selection list
+            $(action_div)
+                .find('input[id^="ReflexRules-setresultvalue-"]').hide().val('');
+            $(action_div)
+                .find('select[id^="ReflexRules-setresultdiscrete-"]').show();
+        }
+        else{
+            // If the analysis service possible results aren't discrete, show the
+            // input and hide the selection list
+            $(action_div)
+                .find('input[id^="ReflexRules-setresultvalue-"]').show();
+            $(action_div)
+                .find('select[id^="ReflexRules-setresultdiscrete-"]').hide();
         }
     }
 

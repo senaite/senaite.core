@@ -145,6 +145,7 @@ class ReflexRuleWidget(RecordsWidget):
         value = []
         rulenum = 1
         # Building the actions list
+        #import pdb; pdb.set_trace()
         for action_set in raw_data[0]:
             d = self._format_actions_set(action_set)
             # Adding the rule number
@@ -404,8 +405,8 @@ class ReflexRuleWidget(RecordsWidget):
         Returns where we can define a result.
         """
         return DisplayList([
-            ('original', 'Original analysis'),
-            ('new', 'New analysis')])
+            ('original', 'Original analysis'), ])
+            # ('new', 'New analysis')])
 
     def getTriggerVoc(self):
         """
