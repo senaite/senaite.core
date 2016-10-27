@@ -6,6 +6,8 @@ jQuery(function($){
         remove_last_rule_set();
         setup_as_and_discrete_results(setupdata);
         setup_addnew_buttons();
+        // Hide the del_button in the fist td.rulescontainer
+        $('table#ReflexRules_table').find('.rw_deletebtn').first().hide();
         setup_del_action_button();
         $('select#Method').bind("change", function () {
             // Updates the new method
@@ -23,22 +25,10 @@ jQuery(function($){
         $('input[id^="ReflexRules-range"]').bind("change", function () {
             range_controller(this);
         });
-        // Running the repetition max controller
-        $.each($('input[id^=ReflexRules-repetition_max-]'), function(index, element){
-                repmax_controller(element);
+        // Binding the and_or controller
+        $('select[id^="ReflexRules-and_or-"]').bind("change", function () {
+                and_or_controller($(this).closest('div.conditionscontainer'));
             });
-        // Binding the trigger controller
-        $('input[id^=ReflexRules-repetition_max-]').bind("change", function () {
-            repmax_controller(this);
-        });
-        // Running the from level controller
-        $.each($('input[id^=ReflexRules-fromlevel-]'), function(index, element){
-            fromlevel_controller(element);
-            });
-        // Binding the from level controller
-        $('input[id^=ReflexRules-fromlevel-]').bind("change", function () {
-            fromlevel_controller(this);
-        });
         // Running the trigger controller
         $.each($('select[id^="ReflexRules-trigger"]'), function(index, element){
                 trigger_controller(element);
@@ -51,17 +41,6 @@ jQuery(function($){
             .bind("change", function () {
                 analysiservice_change(this, setupdata);
             });
-        // Setting up the otherconditions stuff
-        $.each($('input[id^="ReflexRules-otherresultcondition-"]'), function(index, element){
-                other_conditions_controller(element);
-            });
-        // Binding the othercondition controller
-        $('input[id^="ReflexRules-otherresultcondition-"]').bind("change", function () {
-            other_conditions_controller($(this));
-            fromlevel_controller(
-                    $(this).siblings('div.otherconditions')
-                        .find('input[id^="ReflexRules-fromlevel-"]'));
-        });
         // Setting the ws and define result stuff
         $.each($('div.action'), function(index, element){
                 otherWS_controller(element);
@@ -73,6 +52,12 @@ jQuery(function($){
         });
         $('select[id^="ReflexRules-action-"]').bind("change", function () {
                 action_select_controller($(this).closest('div.action'));
+            });
+        // Setup the local ids
+        setup_local_uids();
+        // Controller on 'ReflexRules-setresulton' selection list
+        $('select[id^="ReflexRules-setresulton-"]').bind("change", function () {
+                setresulton_controller($(this).closest('div.action'));
             });
     });
 
@@ -201,34 +186,70 @@ jQuery(function($){
         }
     }
 
-    function fromlevel_controller(element){
+    function and_or_controller(element){
         /**
-        If rep level is lower than 1, set as 1.
-        If a 'from level' is introduced, hide max number.
+        The 'element' variable is the 'conditionscontainer' where the triggered
+        selector belongs.
+        When the value of the selectelement is 'and' or 'or', another
+        conditionscontainer should be created below.
         */
-        var number = $(element).val();
-        var repmax = $(element).parent()
-            .siblings('input[id^="ReflexRules-repetition_max-"]');
-        var other = $(element).parent()
-            .siblings('input[id^="ReflexRules-otherresultcondition-"]');
-        if (!$.isNumeric(number) && number < 1 ) {
-            $(element).val('');
+        var sel = $(element).find('.and_or');
+        var and_or = $(sel).find(":selected").attr('value');
+        // This attribute is used to know if the selection element has changed
+        // its value from 'and' to 'or' (or viceversa) and a no container
+        // should be placed, or it has changed from a void value to 'and'/'or'
+        var already_sel = $(sel).attr('already_sel');
+        if ((and_or == 'and' || and_or == 'or') && already_sel != 'yes'){
+            // create a new 'conditionscontainer' div below
+            var container_clone = $(element).clone();
+            var found = $(container_clone).find("input, select");
+            for (var i = found.length - 1; i >= 0; i--) {
+                // Increment the index id
+                var prefix, nr;
+                var ID = found[i].id;
+                prefix = ID.split("-")[0] + "-" + ID.split("-")[1];
+                var sufix = parseInt(ID.split("-")[3]) + 1;
+                nr = ID.split("-")[2];
+                $(found[i]).attr('id', prefix + "-" + nr + "-" + sufix);
+                // Increment the name id
+                var name = found[i].name;
+                prefix = name.split(":")[0];
+                sufix = name.split(":")[1] + ":" + name.split(":")[2];
+                var prefix_name = prefix.split('-')[0];
+                var prefix_idx = parseInt(prefix.split('-')[1]) + 1;
+                prefix = prefix_name + "-" + prefix_idx;
+                $(found[i]).attr('name', prefix + ":" + sufix);
+            }
+            // clear values
+            for(i=0; i<$(container_clone).children().length; i++){
+                var td = $(container_clone).children()[i];
+                var input = $(td).find('input').not('.addnew');
+                $(input).val('');
+                var sel_options = $(td).find(":selected");
+                $(sel_options).prop("selected", false);
+            }
+            $(container_clone).insertAfter(element);
+            var setupdata = $.parseJSON($('#rules-setup-data').html());
+            // Binding the analysis service controller
+            $(container_clone).find('select[id^="ReflexRules-analysisservice-"]')
+                .bind("change", function () {
+                analysiservice_change(this, setupdata);
+            });
+            // Trigger the controller
+            $(container_clone).find('select[id^="ReflexRules-analysisservice-"]')
+                .trigger('change');
+            $(sel).attr('already_sel', 'yes');
+            // Binding the and_or controller
+            $(container_clone).find('select[id^="ReflexRules-and_or-"]')
+                .bind("change", function () {
+                    and_or_controller($(this).closest('div.conditionscontainer'));
+                });
         }
-        if (number && $(other).is(':checked')) {
-            $(repmax).attr('disabled',true);
-        }
-        else {
-            $(repmax).attr('disabled',false);
-        }
-    }
-
-    function repmax_controller(element){
-        /**
-        If repetition max is lower than 1, set as 1..
-        */
-        var number = $(element).val();
-        if (!$.isNumeric(number) || number < 1 ) {
-            $(element).val(1);
+        else if (and_or != 'and' && and_or != 'or') {
+            // Remove the 'conditionscontainer' div below
+            var target = $(element).next('.conditionscontainer');
+            $(target).remove();
+            $(sel).attr('already_sel', 'no');
         }
     }
 
@@ -251,7 +272,7 @@ jQuery(function($){
 
     function setup_addnew_buttons(){
         /**
-        Bind the process trigged after clicking on a 'more' button
+        Bind the process trigged after clicking on a 'more' or 'add action' button
         */
         $("input[id$='_addnew']").click(function(i,e){
             if ($(this).attr("id").split("_")[1] == "action"){
@@ -306,13 +327,17 @@ jQuery(function($){
         $(row).find('select[id^="ReflexRules-action-"]').bind("change", function () {
             action_select_controller(row);
         });
+        $(row).find('select[id^="ReflexRules-setresulton-"]').bind("change", function () {
+            setresulton_controller(row);
+        });
         $(row).find('select[id^="ReflexRules-action-"]').trigger('change');
     }
 
     function add_action_set(element){
         /**
         :element: is the more(addnew) button
-        This function defines the process to add a new whole action set
+        This function defines the process to add a new whole action and
+        conditions set
         */
         var fieldname = $(element).attr("id").split("_")[0];
         var table = $('#'+fieldname+"_table");
@@ -322,7 +347,8 @@ jQuery(function($){
         // after cloning, make sure the new element's IDs are unique
         var found = $(set).find(
                 "input[id^='"+fieldname+"']," +
-                "select[id^='"+fieldname+"']");
+                "select[id^='"+fieldname+"']," +
+                "div[id^='ReflexRules-actionsset-']");
         for (var ii = found.length - 1; ii >= 0; ii--) {
             var prefix, nr;
             var ID = found[ii].id;
@@ -343,8 +369,7 @@ jQuery(function($){
         // clear values
         var td = $(set).children().first();
         var input = $(td).find('input')
-            .not('.addnew')
-            .not('[id^=ReflexRules-repetition_max-]');
+            .not('.addnew');
         $(input).val('');
         var sel_options = $(td).find(":selected");
         $(sel_options).prop("selected", false);
@@ -358,18 +383,8 @@ jQuery(function($){
                 range_controller($(set).find('input[id^="ReflexRules-range"]'));
                 setup_del_action_button();
         });
-        // from level controller
-        $(set)
-            .find('input[id^="ReflexRules-fromlevel-"]')
-            .bind("change", function () {
-                fromlevel_controller($(set).find('input[id^="ReflexRules-fromlevel-"]'));
-        });
-        // Max repetition controller
-        $(set)
-            .find('input[id^=ReflexRules-repetition_max-]')
-            .bind("change", function () {
-                repmax_controller($(set).find('input[id^=ReflexRules-repetition_max-]'));
-        }).trigger("change");
+        // Show the rw_deletebtn button
+        $(set).find(".rw_deletebtn").show();
         // Action trigger controller
         $(set)
             .find('select[id^="ReflexRules-trigger"]')
@@ -388,22 +403,22 @@ jQuery(function($){
                 var setupdata = $.parseJSON($('#rules-setup-data').html());
                 analysiservice_change(element.target, setupdata);
             }).trigger("change");
-        // "Other result condition" controller
-        $(set)
-            .find('input[id^="ReflexRules-otherresultcondition-"]')
-            .bind("change", function (element) {
-                other_conditions_controller(element.target);
-                fromlevel_controller(
-                        $(element.target).siblings('div.otherconditions')
-                            .find('input[id^="ReflexRules-fromlevel-"]'));
-            }).trigger("change");
         // Binding the otherWS controller and the controller for specific
         // actions select
-        $(td).find('div[id^="ReflexRules-actionsset-"] div.action')
+        $(set).find('div[id^="ReflexRules-actionsset-"] div.action')
             .bind("change", function () {
                 otherWS_controller(this);
+                setresulton_controller(this);
                 action_select_controller(this);
-            });
+            }).trigger('change');
+        // Binding the and_or controller
+        $(set)
+            .find('div.conditionscontainer select.and_or')
+            .bind("change", function () {
+                and_or_controller(
+                        $(set).find('div.conditionscontainer'));
+        }).trigger("change");
+        $(set).find('select[id^="ReflexRules-and_or-"]').show();
         if($(td).hasClass('rulenumber')){
             var idx = $(td).find('input.rulenumber').attr('originalvalue');
             var new_idx = parseInt(idx) + 1;
@@ -447,6 +462,7 @@ jQuery(function($){
             }
             else{analysiservice_change(element, setupdata);}
         });
+        // Updating the setresult selection list in the actions set
         for (var i=0; rules.length > i; i++){
             var discrete = rules[i].discreteresult;
             $(ass[i]).siblings('div.resultoptioncontainer')
@@ -464,26 +480,6 @@ jQuery(function($){
                         .prop("selected", true);
                 }
             }
-        }
-    }
-
-    function other_conditions_controller(other_conditions_chk) {
-        /**
-        This function hides/shows and clean if necessary the other
-        condition inputs.
-        If the checkbox otherconditions is set, the other inputs have
-        to be shown
-        */
-        var checkbox = $(other_conditions_chk).attr('checked');
-        if (checkbox == "checked") {
-            // Showing the otherconditions div
-            $(other_conditions_chk)
-                .siblings('div.otherconditions')
-                .css('display', 'inline');
-        }
-        else{
-            // Hide the div
-            $(other_conditions_chk).siblings('div.otherconditions').hide();
         }
     }
 
@@ -505,26 +501,241 @@ jQuery(function($){
 
     function action_select_controller(action_div) {
         /**
-        This function hide/shows the 'worksheet' section and 'defining analysis result' section deppending on the choosen action.
-        - If 'define result' action is selected, hides the to_other_worksheet div and shows the action_define_result div.
-        - If 'define result' action is NOT selected, shows the to_other_worksheet div and hides the action_define_result div.
+        This function hide/shows the 'worksheet' section and 'defining analysis
+        result' section deppending on the choosen action.
+        - If 'define result' action is selected, hides the to_other_worksheet
+        div and shows the action_define_result div.
+        - If 'define result' action is NOT selected, shows the
+        to_other_worksheet div and hides the action_define_result div.
+
+        The function alse generates the local ids related to the selected action.
         */
+        var local_id = '';
         var selection = $(action_div)
             .find('select[id^="ReflexRules-action-"]')
             .find(":selected").attr('value');
         if (selection == "setresult") {
+            // Hide the temporary ID for this analysis
+            $(action_div).find('input[id^=ReflexRules-an_result_id-]').hide();
             // Showing the analyst-section div
-            $(action_div).find('div.action_define_result').css('display', 'inline');
+            var action_define_div = $(action_div).find('div.action_define_result');
+            $(action_define_div).css('display', 'inline');
             $(action_div).find('div.to_other_worksheet').hide();
             $(action_div)
                 .find('div.to_other_worksheet')
                 .find('input[id^="ReflexRules-otherWS-"]')
                 .removeAttr("checked");
+            // run the controlller dor the elements contained in the 'div.action_define_result'
+            action_define_div_controller(action_div);
+            // Creates a new local id if a new analysis is created
+            var set_new = $(action_div)
+                .find("select[id^='ReflexRules-setresulton-']'")
+                .find(":selected").attr('value');
+            if (set_new == 'new') {
+                local_id = create_local_id(selection);
+                $(action_div).find("input[id^='ReflexRules-an_result_id-']")
+                    .first().val(local_id);
+                populate_analysis_selection(local_id);
+            }
+            else{
+                $(action_div).find("input[id^='ReflexRules-an_result_id-']")
+                    .first().val('');}
         }
         else{
+            // Show the temporary ID of the analysis to be generated            
+            $(action_div).find('input[id^=ReflexRules-an_result_id-]').show();
             // Hide the options-set
             $(action_div).find('div.to_other_worksheet').css('display', 'inline');
             $(action_div).find('div.action_define_result').hide();
+            local_id = create_local_id(selection);
+            $(action_div).find("input[id^='ReflexRules-an_result_id-']")
+                .first().val(local_id);
+            populate_analysis_selection(local_id);
         }
+    }
+
+    function action_define_div_controller(action_div){
+        /**
+        This functions hides/shows the input fields or selection lists depending
+        on the selected analysis.
+        @action_div is the div.action where the 'div.action_define_result'
+        belongs to.
+        */
+        // Populate the analysis selection list
+        var rulescontainer = $(action_div).closest('td.rulescontainer');
+        // Getting the selected services inside conditions div (the first one so far)
+        var as = $(rulescontainer).find('select[id^="ReflexRules-analysisservice-"]')
+            .first();
+        //Check if the selected analysis service has discrete values
+        var method = $('select[id="Method"]').find(":selected").attr('value');
+        var as_uid = $(as).find(":selected").attr('value');
+        var setupdata = $.parseJSON($('#rules-setup-data').html());
+        var as_info = setupdata[method].analysisservices[as_uid];
+        if (as_info === undefined){
+            var _ = window.jarn.i18n.MessageFactory("bika");
+            window.bika.lims.portalMessage(_('An analysis service must be selected'));
+        }
+        var resultoptions = as_info.resultoptions;
+        if(resultoptions.length > 0){
+            // If the analysis service possible results are discrete, hide the
+            // input and show the selection list
+            $(action_div)
+                .find('input[id^="ReflexRules-setresultvalue-"]').hide().val('');
+            $(action_div)
+                .find('select[id^="ReflexRules-setresultdiscrete-"]').show();
+        }
+        else{
+            // If the analysis service possible results aren't discrete, show the
+            // input and hide the selection list
+            $(action_div)
+                .find('input[id^="ReflexRules-setresultvalue-"]').show();
+            $(action_div)
+                .find('select[id^="ReflexRules-setresultdiscrete-"]').hide();
+        }
+    }
+
+    function setup_local_uids() {
+        /**
+        This function sets up the local ids used to identify the analysis
+        resulted from the different actions
+        */
+        // Getting the dict of local ids
+        var local_ids = $.parseJSON($('#reflex_rule_analysis_ids').val());
+        // no ids means a new refles rule
+        if (local_ids === null){
+            var new_id = '';
+            // Set up the first local id
+            // Getting the first action
+            var first_action = $("select[id^='ReflexRules-action-']")
+                .first().find(":selected").attr('value');
+            if (first_action == 'duplicate' || first_action == 'repeat'){
+                // If it is a duplicate, the local id will be dup-0
+                new_id = create_local_id(first_action);
+            }
+            else if (first_action == 'setresult' &&
+                $("select[id^='id='ReflexRules-setresulton-']")
+                .first().find(":selected").attr('value') == 'new') {
+                // If it is a 'set result on new analysis', the local id
+                // will be set-0
+                new_id = create_local_id(first_action);
+            }
+            // If the new local id has been created, insert into the
+            // 'ReflexRules-an_result_id-' input
+            if (new_id) {
+                $("input[id^='ReflexRules-an_result_id-']").first().val(new_id);
+            }
+        }
+    }
+
+    function setresulton_controller(action_div) {
+        /**
+        This function checks if the selected value in the
+        'ReflexRules-setresulton' selectoin list is 'new'. If it is new, the
+        function creates a new local id for the analysis.
+        @action_div: the div.action
+        **/
+        // Creates a new local id if a new analysis is created
+        var local_id = '';
+        var selection = $(action_div)
+            .find('select[id^="ReflexRules-action-"]')
+            .find(":selected").attr('value');
+        var set_new = $(action_div)
+            .find("select[id^='ReflexRules-setresulton-']'")
+            .find(":selected").attr('value');
+        if (set_new == 'new') {
+            local_id = create_local_id(selection);
+            $(action_div).find("input[id^='ReflexRules-an_result_id-']")
+                .first().val(local_id);
+        }
+        else{
+            $(action_div).find("input[id^='ReflexRules-an_result_id-']")
+                .first().val('');}
+    }
+
+    function create_local_id(action_type) {
+        /**
+        This function mainly creates a new local id.
+        It gets the string 'action_type' which is one of the possible actions
+        that refex rules can do: 'repeat', 'duplicate' or 'setresult'. Then the
+        function creates a new name taking into account the action type and the
+        are already existen ones.
+        @action_type: a string 'repeat', 'duplicate' or 'setresult'
+        @return: a string with the new local id
+        */
+        var new_local_id = '';
+        var local_ids_dic = $.parseJSON($('#reflex_rule_analysis_ids').val());
+        if (local_ids_dic === null){
+                local_ids_dic = {'dup':[], 'rep':[], 'set':[]};
+            }
+        if (action_type == 'duplicate'){
+            new_local_id = return_next_id('dup');
+            local_ids_dic.dup.push(new_local_id);
+        }
+        else if (action_type == 'repeat') {
+            new_local_id = return_next_id('rep');
+            local_ids_dic.rep.push(new_local_id);
+        }
+        else if (action_type == 'setresult') {
+            new_local_id = return_next_id('set');
+            local_ids_dic.set.push(new_local_id);
+        }
+        // Update the input#reflex_rule_analysis_ids with the new local id
+        $('#reflex_rule_analysis_ids').val(JSON.stringify(local_ids_dic));
+        return new_local_id;
+    }
+
+    function return_next_id(prefix) {
+        /**
+        This function looks for the next available local id with the prefix 'prefix'
+        @prefix: a string like 'rep', 'dup', 'set'
+        @return: a string as the new local id
+        */
+        // Getting the local ids dictionary
+        var local_ids_dic = $.parseJSON($('#reflex_rule_analysis_ids').val());
+        if (local_ids_dic === null){
+                local_ids_dic = {'dup':[], 'rep':[], 'set':[]};
+            }
+        var new_local_id = '', local_ids_list = [], num=0,
+            list_len, not_unique = 0;
+        // Getting the local ids list
+        local_ids_list = local_ids_dic[prefix];
+        list_len = local_ids_list.length;
+        // Create a new unique local id
+        while(not_unique !== -1) {
+            new_local_id = prefix + '-' + list_len.toString();
+            not_unique = $.inArray(new_local_id, local_ids_list);
+            list_len = list_len + 1;
+        }
+        return new_local_id;
+    }
+
+    function remove_local_id(array, id) {
+        /**
+        This function removes a local id to the 'reflex_rule_analysis_ids' div.
+        @array: the array where the element will be removed.
+        @id: the element to remove
+        @return the resultant array.
+        */
+        var index = array.indexOf(id);
+        if (index > -1) {
+            array.splice(index, 1);
+        }
+        return array;
+    }
+
+    function populate_analysis_selection(local_id) {
+        /**
+        This function adds the recently created 'local_id' to the analysis
+        services selection lists.
+        */
+        // Getting the selectors from the containers
+        var selectors = $('td.rulescontainer').slice(1).find("select[id^='ReflexRules-analysisservice-']");
+        // Add the new local-id as a new the options
+        $.each($(selectors), function(index, element){
+            $(element).append(
+                '<option value="' + local_id +
+                '">' + local_id + '</option>'
+            );
+        });
     }
 });

@@ -50,6 +50,10 @@
     <div id="rules-setup-data" style="display:none;visibility:hidden;"
         tal:content="widget/getReflexRuleSetup">
     </div>
+    <!-- This div contains the local uids used to deal with the analysis
+    created by the different actions. the format of the div content is
+    {'dup':['dup-0','dup-1',...], 'rep':[...], 'set':[...]}-->
+    <input id="reflex_rule_analysis_ids" style="display:none;visibility:hidden;"/>
     <table
         tal:attributes="id string:${fieldName}_table"
         class="recordswidget nosort">
@@ -80,14 +84,16 @@
 
         <td class="rulenumber">
             <span class="reflex_rule_text rulenumber"
-                tal:content="python: '# %s' % (idx+1)">
+                tal:content="python: '# %s' % (idx)">
             </span>
             <input
                 type="hidden"
                 class="rulenumber"
                 tal:attributes="
-                    value python:idx+1;">
+                    value python:idx;">
         </td>
+        <!-- Rules container contains a set of conditions and the actions to
+            perform if the conditions are match -->
         <td class="rulescontainer">
             <tal:block
                 define="
@@ -100,123 +106,84 @@
                 <span i18n:translate="" class="reflex_rule_text">
                     The analysis is
                 </span>
-                <!-- Analysis Service -->
-                <!-- This select element is not set using tal because there is
-                    a javascript controller which takes care of the
-                    method-analysisService relation in order to show the result
-                    options -->
-                <select
-                    tal:attributes="
-                        name string:${fieldName}.analysisservice:records:ignore_empty;
-                        id string:${fieldName}-analysisservice-${repeat/idx/index};
-                        tabindex tabindex/next|nothing;"
-                        i18n:domain="python:i18n_domain">
-                    <option
-                        value=""
-                        i18n:translate=""/>
-                    </select>
-                <br/>
-                <!-- Range definition -->
-                <div class="rangecontainer">
-                    <span i18n:translate="" class="reflex_rule_text">
-                        The result of the analysis between
-                    </span>
-                    <input
-                        size="5"
-                        tal:attributes="
-                            name string:${fieldName}.range0:records:ignore_empty;
-                            id string:${fieldName}-range0-${repeat/idx/index};
-                            tabindex tabindex/next|nothing;
-                            value python:widget.getReflexRuleElement(idx,'range0');"
-                            i18n:domain="python:i18n_domain">
-                    <span i18n:translate="" class="reflex_rule_text">
-                        and
-                    </span>
-                    <input
-                        size="5"
-                        tal:attributes="
-                            name string:${fieldName}.range1:records:ignore_empty;
-                            id string:${fieldName}-range1-${repeat/idx/index};
-                            tabindex tabindex/next|nothing;
-                            value python:widget.getReflexRuleElement(idx,'range1');"
-                            i18n:domain="python:i18n_domain">
-                </div>
-                <!-- Discrete result definition -->
-                <div class="resultoptioncontainer">
-                    <span i18n:translate="" class="reflex_rule_text">
-                        The result of the analysis is
-                    </span>
+                <!-- This div contains a block of conditions, if the
+                    conditions are match, the actions will be performed. Inside
+                    the rulescontainer (the parent td), more than one conditions
+                    container can be crated -->
+                <div class="conditionscontainer"
+                    tal:define="conditionscontainer_idx python:0;">
+                    <!-- Analysis Service -->
+                    <!-- This selections element is not set using tal because there is
+                        a javascript controller which takes care of the
+                        method-analysisService relation in order to show the result
+                        options -->
+                    <!-- Inside the conditionscontainer the element's id contains the rulescontainer idx first and then the conditionscontainer idx:
+                        ${fieldName}-analysisservice-{rulescontainer idx}-{conditionscontainer idx} -->
                     <select
                         tal:attributes="
-                            name string:${fieldName}.discreteresult:records:ignore_empty;
-                            id string:${fieldName}-discreteresult-${repeat/idx/index};
-                            tabindex tabindex/next|nothing;"
+                            name string:${fieldName}.analysisservice-${conditionscontainer_idx}:records:ignore_empty;
+                            id string:${fieldName}-analysisservice-${repeat/idx/index}-${conditionscontainer_idx};"
                             i18n:domain="python:i18n_domain">
+                        <option
+                            value=""
+                            i18n:translate=""/>
+                        </select>
+                    <br/>
+                    <!-- Range definition -->
+                    <div class="rangecontainer">
+                        <span i18n:translate="" class="reflex_rule_text">
+                            The result of the analysis between
+                        </span>
+                        <input
+                            size="5"
+                            tal:attributes="
+                                name string:${fieldName}.range0-${conditionscontainer_idx}:records:ignore_empty;
+                                id string:${fieldName}-range0-${repeat/idx/index}-${conditionscontainer_idx};
+                                value python:widget.getReflexRuleElement(idx,'range0');"
+                                i18n:domain="python:i18n_domain">
+                        <span i18n:translate="" class="reflex_rule_text">
+                            and
+                        </span>
+                        <input
+                            size="5"
+                            tal:attributes="
+                                name string:${fieldName}.range1-${conditionscontainer_idx}:records:ignore_empty;
+                                id string:${fieldName}-range1-${repeat/idx/index}-${conditionscontainer_idx};
+                                value python:widget.getReflexRuleElement(idx,'range1');"
+                                i18n:domain="python:i18n_domain">
+                    </div>
+                    <!-- Discrete result definition -->
+                    <div class="resultoptioncontainer">
+                        <span i18n:translate="" class="reflex_rule_text">
+                            The result of the analysis is
+                        </span>
+                        <select
+                            tal:attributes="
+                                name string:${fieldName}.discreteresult-${conditionscontainer_idx}:records:ignore_empty;
+                                id string:${fieldName}-discreteresult-${repeat/idx/index}-${conditionscontainer_idx};"
+                                i18n:domain="python:i18n_domain">
+                        </select>
+                    </div>
+                    <!-- AND/OR condition to concatenate different conditions.
+                        This selector will be only displayed in the second level
+                        conditions, not in the main one.-->
+                    <select class="and_or"
+                        tal:define="
+                            olist widget/getAndOrVoc;
+                            resultscontainer_idx repeat/idx/index"
+                        tal:attributes="
+                            name string:${fieldName}.and_or-${conditionscontainer_idx}:records:ignore_empty;
+                            id string:${fieldName}-and_or-${repeat/idx/index}-${conditionscontainer_idx};
+                            style python: '' if resultscontainer_idx == '0' else 'display:none';"
+                            i18n:domain="python:i18n_domain">
+                        <option
+                            tal:repeat="option olist"
+                            tal:content="python:olist.getValue(option)"
+                            tal:attributes="
+                                value python: option;"
+                            i18n:translate=""/>
                     </select>
                 </div>
-                <!-- defining other conditions -->
-                <input type="checkbox"
-                    tal:attributes="
-                        name string:${fieldName}.otherresultcondition:records:ignore_empty;
-                        id string:${fieldName}-otherresultcondition-${repeat/idx/index};
-                        checked python:'checked' if widget.getReflexRuleElement(idx,'otherresultcondition') else '';
-                        tabindex tabindex/next|nothing;"/>
-                <span i18n:translate="" class="reflex_rule_text">
-                    The analysis was generated or modified due to a previous action of
-                </span>
-                <!-- Action selector -->
-                <select
-                    tal:define="
-                        olist widget/getActionVoc"
-                    tal:attributes="
-                        name string:${fieldName}.resultcondition:records:ignore_empty;
-                        id string:${fieldName}-resultcondition-${repeat/idx/index};
-                        tabindex tabindex/next|nothing;"
-                    i18n:domain="python:i18n_domain">
-                    <option
-                        tal:repeat="option olist"
-                        tal:content="python:olist.getValue(option)"
-                        tal:attributes="
-                            value python: option;
-                            selected python:'selected' if option==widget.getReflexRuleElement(idx,'resultcondition') else None;"
-                        i18n:translate=""/>
-                </select>
-                <div class="otherconditions">
-                    <br/>
-                    <span i18n:translate="" class="reflex_rule_text">
-                        Apply actions below only if
-                    </span>
-                    <input
-                        size="5"
-                        class="numeric"
-                        tal:attributes="
-                            name string:${fieldName}.fromlevel:records:ignore_empty;
-                            id string:${fieldName}-fromlevel-${repeat/idx/index};
-                            tabindex tabindex/next|nothing;
-                            value python:widget.getReflexRuleElement(idx,'fromlevel');"
-                            i18n:domain="python:i18n_domain">
-                    <span i18n:translate="" class="reflex_rule_text">
-                        previous actions were applied.
-                    </span>
-                </div>
-                <br/>
-                <!-- Max number of reflexions -->
-                <span i18n:translate="" class="reflex_rule_text">
-                    Do not apply the actions below if
-                </span>
-                <input
-                    size="5"
-                    class="numeric"
-                    tal:attributes="
-                        name string:${fieldName}.repetition_max:records:ignore_empty;
-                        id string:${fieldName}-repetition_max-${repeat/idx/index};
-                        tabindex tabindex/next|nothing;
-                        value python:widget.getReflexRuleElement(idx,'repetition_max');"
-                        i18n:domain="python:i18n_domain">
-                <span i18n:translate="" class="reflex_rule_text">
-                    previous actions were applied.
-                </span>
-                <br/>
                 <!-- Define when the rule has to be triggered, after submit or after verify -->
                 <span i18n:translate="" class="reflex_rule_text">
                     Apply the actions below
@@ -269,6 +236,20 @@
                                     selected python:'selected' if option==action_row['action'] else None"
                                 i18n:translate=""/>
                         </select>
+
+                        <div class="action_result_name inline">
+                            <!-- The duplicate/repeat analysis id to use in this reflex rule -->
+                            <input
+                                class="always_disabled"
+                                disabled="True"
+                                tal:define="
+                                    act_row_idx python:action_row['act_row_idx'];"
+                                tal:attributes="
+                                    name string:${fieldName}.an_result_id-${act_row_idx}:records:ignore_empty;
+                                    id string:${fieldName}-an_result_id-${repeat/idx/index}-${act_row_idx};
+                                    value python: widget.getReflexRuleActionElement(idx,act_row_idx,'an_result_id');
+                                    style python:'display:none' if action_row['action']=='setresult' else '';">
+                        </div>
                         <div class="action_define_result inline">
                             <span i18n:translate="" class="reflex_rule_text">
                                 From:

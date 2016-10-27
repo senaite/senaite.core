@@ -28,7 +28,7 @@ class ReflexRuleField(RecordsField):
         })
     security = ClassSecurityInfo()
 
-    def set(self, instance, rules_list, **kwargs):
+    def set_old(self, instance, rules_list, **kwargs):
         """
         Set the reflexrule field.
         :rules_list: is a list of dictionaries with the following format:
