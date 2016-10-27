@@ -49,3 +49,17 @@ tr.records_row_ReflexRules td.rulenumber {
     vertical-align: top;
     white-space: nowrap;
 }
+input.always_disabled {
+    background-color: #efefef;
+    border: medium none;
+    border-radius: 5px;
+    color: #333;
+    font-weight: bold;
+    padding: 3px 10px;
+    width: inherit;
+    margin:0 10px;
+    max-width:60px;
+}
+.action_define_result {
+    margin: 0 10px;
+}

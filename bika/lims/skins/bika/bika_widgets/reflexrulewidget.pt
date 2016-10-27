@@ -236,6 +236,20 @@
                                     selected python:'selected' if option==action_row['action'] else None"
                                 i18n:translate=""/>
                         </select>
+
+                        <div class="action_result_name inline">
+                            <!-- The duplicate/repeat analysis id to use in this reflex rule -->
+                            <input
+                                class="always_disabled"
+                                disabled="True"
+                                tal:define="
+                                    act_row_idx python:action_row['act_row_idx'];"
+                                tal:attributes="
+                                    name string:${fieldName}.an_result_id-${act_row_idx}:records:ignore_empty;
+                                    id string:${fieldName}-an_result_id-${repeat/idx/index}-${act_row_idx};
+                                    value python: widget.getReflexRuleActionElement(idx,act_row_idx,'an_result_id');
+                                    style python:'display:none' if action_row['action']=='setresult' else '';">
+                        </div>
                         <div class="action_define_result inline">
                             <span i18n:translate="" class="reflex_rule_text">
                                 From:
@@ -321,18 +335,6 @@
                                         i18n:translate=""/>
                                 </select>
                             </div>
-                        </div>
-                        <div class="action_result_name inline">
-                            <!-- The duplicate/repeat analysis id to use in this reflex rule -->
-                            <input
-                                class="always_disabled"
-                                disabled="True"
-                                tal:define="
-                                    act_row_idx python:action_row['act_row_idx'];"
-                                tal:attributes="
-                                    name string:${fieldName}.an_result_id-${act_row_idx}:records:ignore_empty;
-                                    id string:${fieldName}-an_result_id-${repeat/idx/index}-${act_row_idx};
-                                    value python: widget.getReflexRuleActionElement(idx,act_row_idx,'an_result_id');">
                         </div>
                         <!-- delete action-->
                         <img class="action_deletebtn"
