@@ -533,6 +533,7 @@ jQuery(function($){
                 local_id = create_local_id(selection);
                 $(action_div).find("input[id^='ReflexRules-an_result_id-']")
                     .first().val(local_id);
+                populate_analysis_selection(local_id);
             }
             else{
                 $(action_div).find("input[id^='ReflexRules-an_result_id-']")
@@ -545,6 +546,7 @@ jQuery(function($){
             local_id = create_local_id(selection);
             $(action_div).find("input[id^='ReflexRules-an_result_id-']")
                 .first().val(local_id);
+            populate_analysis_selection(local_id);
         }
     }
 
@@ -715,5 +717,21 @@ jQuery(function($){
             array.splice(index, 1);
         }
         return array;
+    }
+
+    function populate_analysis_selection(local_id) {
+        /**
+        This function adds the recently created 'local_id' to the analysis
+        services selection lists.
+        */
+        // Getting the selectors from the containers
+        var selectors = $('td.rulescontainer').slice(1).find("select[id^='ReflexRules-analysisservice-']");
+        // Add the new local-id as a new the options
+        $.each($(selectors), function(index, element){
+            $(element).append(
+                '<option value="' + local_id +
+                '">' + local_id + '</option>'
+            );
+        });
     }
 });
