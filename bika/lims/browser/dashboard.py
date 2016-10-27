@@ -121,6 +121,7 @@ class DashboardView(BrowserView):
             ARs to be verified, ARs to be published, etc.)
         """
         out = []
+        sampenabled = self.context.bika_setup.getSamplingWorkflowEnabled()
 
         # Analysis Requests
         active_rs = ['to_be_sampled',
@@ -141,56 +142,57 @@ class DashboardView(BrowserView):
                         cancellation_state=['active',],
                         created=self.base_date_range))
 
-        # Analysis Requests awaiting to be sampled or scheduled
-        review_state = ['to_be_sampled',]
-        ars = len(bc(portal_type="AnalysisRequest",
-                     review_state=review_state,
-                     cancellation_state=['active',]))
-        ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
-        ratio = str("%%.%sf" % 1) % ratio
-        msg = _("To be sampled")
-        out.append({'type':         'simple-panel',
-                    'name':         _('Analysis Requests to be sampled'),
-                    'class':        'informative',
-                    'description':  msg,
-                    'number':       ars,
-                    'total':        numars,
-                    'legend':       _('of') + " " + str(numars) + ' (' + ratio +'%)',
-                    'link':        self.portal_url + '/samples?samples_review_state=to_be_sampled'})
+        if (sampenabled):
+            # Analysis Requests awaiting to be sampled or scheduled
+            review_state = ['to_be_sampled',]
+            ars = len(bc(portal_type="AnalysisRequest",
+                         review_state=review_state,
+                         cancellation_state=['active',]))
+            ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
+            ratio = str("%%.%sf" % 1) % ratio
+            msg = _("To be sampled")
+            out.append({'type':         'simple-panel',
+                        'name':         _('Analysis Requests to be sampled'),
+                        'class':        'informative',
+                        'description':  msg,
+                        'number':       ars,
+                        'total':        numars,
+                        'legend':       _('of') + " " + str(numars) + ' (' + ratio +'%)',
+                        'link':        self.portal_url + '/samples?samples_review_state=to_be_sampled'})
 
-        # Analysis Requests awaiting to be preserved
-        review_state = ['to_be_preserved',]
-        ars = len(bc(portal_type="AnalysisRequest",
-                     review_state=review_state,
-                     cancellation_state=['active',]))
-        ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
-        ratio = str("%%.%sf" % 1) % ratio
-        msg = _("To be preserved")
-        out.append({'type':         'simple-panel',
-                    'name':         _('Analysis Requests to be preserved'),
-                    'class':        'informative',
-                    'description':  msg,
-                    'number':       ars,
-                    'total':        numars,
-                    'legend':       _('of') + " " + str(numars) + ' (' + ratio +'%)',
-                    'link':         self.portal_url + '/analysisrequests?analysisrequests_review_state=to_be_preserved'})
+            # Analysis Requests awaiting to be preserved
+            review_state = ['to_be_preserved',]
+            ars = len(bc(portal_type="AnalysisRequest",
+                         review_state=review_state,
+                         cancellation_state=['active',]))
+            ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
+            ratio = str("%%.%sf" % 1) % ratio
+            msg = _("To be preserved")
+            out.append({'type':         'simple-panel',
+                        'name':         _('Analysis Requests to be preserved'),
+                        'class':        'informative',
+                        'description':  msg,
+                        'number':       ars,
+                        'total':        numars,
+                        'legend':       _('of') + " " + str(numars) + ' (' + ratio +'%)',
+                        'link':         self.portal_url + '/analysisrequests?analysisrequests_review_state=to_be_preserved'})
 
-        # Analysis Requests awaiting to be sampled
-        review_state = ['scheduled_sampling',]
-        ars = len(bc(portal_type="AnalysisRequest",
-                     review_state=review_state,
-                     cancellation_state=['active',]))
-        ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
-        ratio = str("%%.%sf" % 1) % ratio
-        msg = _("Scheduled sampling")
-        out.append({'type':         'simple-panel',
-                    'name':         _('Analysis Requests with scheduled sampling'),
-                    'class':        'informative',
-                    'description':  msg,
-                    'number':       ars,
-                    'total':        numars,
-                    'legend':       _('of') + " " + str(numars) + ' (' + ratio +'%)',
-                    'link':          self.portal_url + '/samples?samples_review_state=to_be_sampled'})
+            # Analysis Requests awaiting to be sampled
+            review_state = ['scheduled_sampling',]
+            ars = len(bc(portal_type="AnalysisRequest",
+                         review_state=review_state,
+                         cancellation_state=['active',]))
+            ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
+            ratio = str("%%.%sf" % 1) % ratio
+            msg = _("Scheduled sampling")
+            out.append({'type':         'simple-panel',
+                        'name':         _('Analysis Requests with scheduled sampling'),
+                        'class':        'informative',
+                        'description':  msg,
+                        'number':       ars,
+                        'total':        numars,
+                        'legend':       _('of') + " " + str(numars) + ' (' + ratio +'%)',
+                        'link':          self.portal_url + '/samples?samples_review_state=to_be_sampled'})
 
         # Analysis Requests awaiting for reception
         review_state = ['sample_due',]
