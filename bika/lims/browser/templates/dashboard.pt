@@ -33,8 +33,8 @@
     }
     .dashboard-info-panel {
         /*border: 1px dotted #cdcdcd;*/
-        width: 120px;
-        height: 120px;
+        width: 150px;
+        height: 150px;
         padding: 10px;
         text-align: center;
     }
@@ -59,7 +59,7 @@
         font-weight: bold;
         line-height: 130%;
         text-align: center;
-        padding: 25px 0;
+        padding: 40px 0;
         color:#777;
     }
     #content .dashboard-info-panel-wrapper {
@@ -319,8 +319,8 @@
         $('.pie-chart').each(function(e) {
             var id = $(this).attr('id');
             var data = $.parseJSON($(this).attr('data'));
-            var width = 100;
-            var height = 100;
+            var width = 130;
+            var height = 130;
             var radius = height / 2 - 10;
 
             var arc = d3.svg.arc()

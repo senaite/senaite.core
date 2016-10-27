@@ -33,4 +33,12 @@
       permission="cmf.ModifyPortalContent"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
+
+    <browser:page
+      for="*"
+      name="aggregatedanalyses"
+      class="bika.lims.browser.aggregatedanalyses.AggregatedAnalysesView"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
 </configure>
