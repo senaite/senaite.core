@@ -129,6 +129,27 @@ class AggregatedAnalysesView(BikaListingView):
                                            show_categories=False,
                                            expand_all_categories=True)
 
+    def isItemAllowed(self, obj):
+        """
+        It checks if the item can be added to the list depending on the
+        department filter. If the analysis service is not assigned to a
+        department, show it.
+        @Obj: it is an analysis object.
+        @return: boolean
+        """
+        if not obj:
+            return None
+        # Gettin the department from analysis service
+        serv_dep = obj.getService().getDepartment()
+        result = True
+        if serv_dep:
+            # Getting the cookie value
+            cookie_dep_uid = self.request.get('filter_by_department_info', '')
+            # Comparing departments' UIDs
+            result = True if serv_dep.UID() in\
+                self.request.get('filter_by_department_info', '') else False
+        return result
+
     def folderitem(self, obj, item, index):
         if not obj:
             return None
@@ -141,10 +162,6 @@ class AggregatedAnalysesView(BikaListingView):
         if (parent.portal_type != 'AnalysisRequest'):
             # Parent is not an AnalysisRequest, probably this object is a
             # QC analysis, so do nothing
-            return None
-
-        wss = obj.getBackReferences('WorksheetAnalysis')
-        if not wss:
             return None
 
         # Analysis Request
