@@ -110,9 +110,9 @@ class DashboardView(BrowserView):
                  'title': <section_title>,
                 'panels': <array of panels>}
         """
-        sections = [self.get_analysisrequests_section(),
-                    self.get_worksheets_section(),
-                    self.get_analyses_section()]
+        sections = [self.get_analyses_section(),
+                    self.get_analysisrequests_section(),
+                    self.get_worksheets_section()]
         return sections
 
     def get_analysisrequests_section(self):
