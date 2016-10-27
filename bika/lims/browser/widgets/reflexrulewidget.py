@@ -161,7 +161,6 @@ class ReflexRuleWidget(RecordsWidget):
         value = []
         rulenum = 1
         # Building the actions list
-        import pdb; pdb.set_trace()
         for action_set in raw_data[0]:
             d = self._format_actions_set(action_set)
             # Adding the rule number
@@ -187,7 +186,9 @@ class ReflexRuleWidget(RecordsWidget):
           'setresulton-0': 'original',
           'setresulton-1': 'original',
           'trigger': 'submit',
-          'value': ''}
+          'value': '',
+          'an_result_id-0':'rep-1',
+          'an_result_id-1':'rep-2'}
 
         and returns a formatted set with the actions sorted like this one:
         {
@@ -200,7 +201,7 @@ class ReflexRuleWidget(RecordsWidget):
             {'action':'duplicate', 'act_row_idx':'0',
                 'otherWS': True, 'analyst': 'sussan1',
                 'setresultdiscrete': '1', 'setresultvalue': '2',
-                'setresulton': 'original'},
+                'setresulton': 'original','an_result_id-0':'rep-1'},
             {'action':'repeat', 'act_row_idx':'1',
                 'otherWS': False, 'analyst': '', ...},
         ]
@@ -213,18 +214,14 @@ class ReflexRuleWidget(RecordsWidget):
         # Getting the action field names in order to filter the keys later.
         # The names can be found in reflexrulewidget.pt inside the
         # Reflex action rules list section.
-        import pdb; pdb.set_trace()
         exclude = [
             'action-', 'otherWS-', 'analyst-', 'setresulton-',
-            'setresultdiscrete-', 'setresultvalue-']
+            'setresultdiscrete-', 'setresultvalue-', 'an_result_id-']
         action_keys = [k for k in keys if filter(k.startswith, exclude)]
         # Filling the dict with the values that aren't actions
         for key in keys:
             if key in action_keys:
                 pass
-            elif key == 'otherresultcondition':
-                formatted_action_set[key] = True if action_set[key] == 'on'\
-                    else False
             else:
                 formatted_action_set[key] = action_set[key]
         # Adding the actions list to the final dictionary
@@ -271,6 +268,9 @@ class ReflexRuleWidget(RecordsWidget):
             # Getting the numeric result to set
             setresultvalue_key = 'setresultvalue-'+str(a_count)
             setresultvalue = action_set.get(setresultvalue_key, '')
+            # Getting the local analysis id
+            local_id_key = 'an_result_id-'+str(a_count)
+            local_id = action_set.get(local_id_key, '')
             # Building the action dict
             action_dict = {
                 'action': action_set[key],
@@ -280,6 +280,7 @@ class ReflexRuleWidget(RecordsWidget):
                 'setresulton': setresulton,
                 'setresultdiscrete': setresultdiscrete,
                 'setresultvalue': setresultvalue,
+                'an_result_id': local_id,
                 }
             # Saves the action as a new dict inside the actions list
             actions_dicts_l.append(action_dict)
@@ -345,7 +346,6 @@ class ReflexRuleWidget(RecordsWidget):
                                         'discreteresult': 'X',
                                         'otherWS': Bool,
                                         'analyst': '<analyst_id>'
-                                        'repetition_max': integer,
                                         'trigger': 'xxx',
                                     }],
                            'method_id': '<method_uid>',
@@ -436,33 +436,27 @@ class ReflexRuleWidget(RecordsWidget):
 
         The widget is going to return a list like this:
         [
-            {'discreteresult': 'X',
-            'repetition_max': integer,
-            'analysisservice': '<as_uid>', 'value': '',
+            {'discreteresult-0': 'X',
+            'analysisservice-0': '<as_uid>', 'value': '',
             'trigger': 'xxx',
-            'rulenumber': 'number',
             'actions':[{'action':'<action_name>', 'act_row_idx':'X',
-                        'otherWS': Bool, 'analyst': '<analyst_id>'},
+                        'otherWS': Bool, 'analyst': '<analyst_id>',...},
                       {'action':'<action_name>', 'act_row_idx':'X',
                         'otherWS': Bool, 'analyst': '<analyst_id>'}
                 ]
             },
-            {'range1': 'X', 'range0': 'X',
+            {'range1-0': 'X', 'range0-0': 'X',
             'analysisservice': '<as_uid>', 'value': '',
-            'repetition_max': integer,
             'trigger': 'xxx',
             'actions':[{'action':'<action_name>', 'act_row_idx':'X',
-                        'otherWS': Bool, 'analyst': '<analyst_id>'},
+                        'otherWS': Bool, 'analyst': '<analyst_id>',
+                        'an_result_id':'integer'},
                       {'action':'<action_name>', 'act_row_idx':'X',
                         'otherWS': Bool, 'analyst': '<analyst_id>'}
                 ]
             },
-            {'range1': 'X', 'range0': 'X',
+            {'range1-0': 'X', 'range0-0': 'X',
             'analysisservice': '<as_uid>', 'value': '',
-            'repetition_max': integer,
-            'fromlevel': '2',
-            'otherresultcondition': True,
-            'resultcondition': 'repeat',
             'trigger': 'xxx',
             'actions':[{'action':'<action_name>', 'act_row_idx':'X',
                         'otherWS': Bool, 'analyst': '<analyst_id>'},
