@@ -123,16 +123,32 @@ class ReflexRuleWidget(RecordsWidget):
         Gets the values from the ReflexRule section and returns them in the
         correct way to be saved.
         So the function will return a list of dictionaries:
-        [{
-        'range1': 'X', 'range0': 'X',
-        'discreteresult': 'X',
+
+        [...,
+        {
+        'range1-0': 'X', 'range0-0': 'X',
         'trigger': 'xxx',
-        'rulenumber': 'number',
-        'analysisservice': '<as_uid>', 'value': '',
+        'and_or-0': 'and',
+        'analysisservice-0': '<as_uid>', 'value': '',
             'actions':[{'action':'<action_name>', 'act_row_idx':'X',
-                        'otherWS':Bool, 'analyst': '<analyst_id>', ...},
+                        'otherWS':Bool, 'analyst': '<analyst_id>',
+                        'an_result_id':'rep-1',...},
+                ]
+        },
+        {
+        'range1-0': 'X', 'range0-0': 'X',
+        'range1-1': 'X', 'range0-1': 'X',
+        'discreteresult-0': 'X',
+        'trigger': 'xxx',
+        'and_or-0': 'and', 'and_or-1': 'no',
+        'analysisservice-0': '<as_uid>', 'value': '',
+        'analysisservice-1': '<as_uid>',
+            'actions':[{'action':'<action_name>', 'act_row_idx':'X',
+                        'otherWS':Bool, 'analyst': '<analyst_id>',
+                        'an_result_id':'rep-1',...},
                       {'action':'<action_name>', 'act_row_idx':'X',
-                        'otherWS':Bool, 'analyst': '<analyst_id>', ...},
+                        'otherWS':Bool, 'analyst': '<analyst_id>',
+                        'an_result_id':'rep-2'...},
                 ]
         }, ...]
         """
@@ -145,7 +161,7 @@ class ReflexRuleWidget(RecordsWidget):
         value = []
         rulenum = 1
         # Building the actions list
-        #import pdb; pdb.set_trace()
+        import pdb; pdb.set_trace()
         for action_set in raw_data[0]:
             d = self._format_actions_set(action_set)
             # Adding the rule number
@@ -157,35 +173,28 @@ class ReflexRuleWidget(RecordsWidget):
     def _format_actions_set(self, action_set):
         """
         This function gets a set of actions with the following format:
-        {'analysisservice': '<as_uid>',
-        'value': '',
-        'range1': '3',
-        'range0': '1',
-        'discreteresult': '1',
-        'action-1': 'repeat',
-        'action-0': 'duplicate',
-        'otherWS-1': 'on',
-        'fromlevel': '2',
-        'setresultdiscrete-0': '1',
-        'setresulton-0': 'original',
-        'setresultvalue': '2'
-        'otherresultcondition': Bool,
-        'resultcondition': 'repeat',
-        'analyst-0': 'sussan1',
-        'repetition_max': 2,
-        'trigger': 'submit',
-        ...}
+
+         {'action-0': 'repeat',
+          'action-1': 'repeat',
+          'analysisservice-0': '30cd952b0bb04a05ac27b70ada7feab2',
+          'analysisservice-1': '30cd952b0bb04a05ac27b70ada7feab2',
+          'and_or-0': 'and',
+          'and_or-1': 'no',
+          'range0-0': '12',
+          'range0-1': '31',
+          'range1-0': '12',
+          'range1-1': '33',
+          'setresulton-0': 'original',
+          'setresulton-1': 'original',
+          'trigger': 'submit',
+          'value': ''}
 
         and returns a formatted set with the actions sorted like this one:
         {
-        'range1': '3', 'range0': '1',
-        'analysisservice': '<as_uid>',
-        'discreteresult': '1',
-        'repetition_max': 2,
+        'range1-0': '3', 'range0-0': '1',
+        'analysisservice-0': '<as_uid>',
+        'discreteresult-0': '1',
         'trigger': 'submit',
-        'fromlevel': '2',
-        'otherresultcondition': True,
-        'resultcondition': 'repeat',
         'value': '',
         'actions':[
             {'action':'duplicate', 'act_row_idx':'0',
@@ -204,6 +213,7 @@ class ReflexRuleWidget(RecordsWidget):
         # Getting the action field names in order to filter the keys later.
         # The names can be found in reflexrulewidget.pt inside the
         # Reflex action rules list section.
+        import pdb; pdb.set_trace()
         exclude = [
             'action-', 'otherWS-', 'analyst-', 'setresulton-',
             'setresultdiscrete-', 'setresultvalue-']
