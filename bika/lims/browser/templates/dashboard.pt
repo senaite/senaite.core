@@ -59,7 +59,7 @@
         font-weight: bold;
         line-height: 130%;
         text-align: center;
-        padding: 25px 0;
+        padding: 40px 0;
         color:#777;
     }
     #content .dashboard-info-panel-wrapper {
