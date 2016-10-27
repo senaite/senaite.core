@@ -58,8 +58,6 @@ class AggregatedAnalysesView(BikaListingView):
         self.portal = getToolByName(context, 'portal_url').getPortalObject()
         self.portal_url = self.portal.absolute_url()
 
-        request.set('disable_plone.rightcolumn', 1)
-
         # each editable item needs it's own allow_edit
         # which is a list of field names.
         self.allow_edit = False
