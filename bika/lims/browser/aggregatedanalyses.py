@@ -45,7 +45,7 @@ class AggregatedAnalysesView(BikaListingView):
         self.contentFilter = dict(kwargs)
         self.contentFilter['portal_type'] = 'Analysis'
         self.contentFilter['sort_on'] = 'created'
-        self.sort_order = 'reverse'
+        self.sort_order = 'ascending'
         self.contentFilter['sort_order'] = self.sort_order
         self.context_actions = {}
         self.show_sort_column = False
@@ -111,7 +111,7 @@ class AggregatedAnalysesView(BikaListingView):
         self.review_states = [
             {'id': 'default',
              'title':  _('All'),
-             'contentFilter': {'review_state': ['to_be_verified', 'assigned', 'retracted']},
+             'contentFilter': {'review_state': ['to_be_verified', 'assigned', 'attachment_due']},
              'columns': ['AnalysisRequest',
                          'Worksheet',
                          'Service',
