@@ -83,8 +83,8 @@ class ReflexRule(BaseContent):
     def getExpectedValuesAndRules(self, analysis, wf_action):
         """
         This function returns the expected values (even if they are discrete or
-        not) and the rules defined for the analysis service, the number of
-        reflections and the 'other conditions' section.
+        not) and the rules defined for the analysis service and all the
+        conditions.
         :analysis: the analysis full object which we want to obtain the
             rules for.
         :wf_action: it is the workflow action that the analysis is doing, we
@@ -92,9 +92,7 @@ class ReflexRule(BaseContent):
         :return: a list of dictionaries:
             [{
             'expected_values':(X,Y),
-            'repetition_max': '2',
             'wf_action': 'submit',
-            'rulenumber': 'number',
             'actions': [{'action': 'duplicate', },
                         {,},
                         ...]
@@ -102,37 +100,15 @@ class ReflexRule(BaseContent):
         """
         # getting the analysis service uid for the query
         as_uid = analysis.getServiceUID()
-        # The number of times the base analysis has been reflexed
-        reflexed_times = analysis.getReflexRuleActionLevel()
         # Getting the action sets, those that contain action rows
         action_sets = self.getReflexRules()
         l = []
+        import pdb; pdb.set_trace()
         for action_set in action_sets:
-            try:
-                rep_max = int(action_set.get('repetition_max', 0))
-            except ValueError:
-                logger.warn(
-                    'repetition_max in %s should be an integer or a'
-                    ' string representing an integer.' % (self.Title))
-                rep_max = 0
-            # Getting the 'other conditions' stuff from the rule
-            otherresultcondition = action_set.get(
-                'otherresultcondition', False)
-            resultcondition = action_set.get('resultcondition', '')
-            fromlevel = action_set.get('fromlevel', None)
-            # Validate the analysis service
-            if action_set.get('analysisservice', '') == as_uid and\
-                    action_set.get('trigger', '') == wf_action:
-                # Getting the 'other conditions' validity
-                if (otherresultcondition and
-                    resultcondition != analysis.getReflexRuleAction()) \
-                    or \
-                    (otherresultcondition and fromlevel and
-                        int(fromlevel) != analysis.getReflexRuleActionLevel()):
-                    continue
-                # From level and reflected time conditions
-                cond = int(fromlevel) == analysis.getReflexRuleActionLevel() \
-                    if otherresultcondition else rep_max > reflexed_times
+            # Validate the trigger
+            if action_set.get('trigger', '') == wf_action:
+                # Getting the dictionary keys
+                action_set_keys = action_set.keys()
                 # Defining the result deppending on the analysis' result type
                 if action_set.get('range0', '') and cond:
                     l.append({
@@ -141,14 +117,12 @@ class ReflexRule(BaseContent):
                             action_set.get('range1', '')
                             ),
                         'actions': action_set.get('actions', []),
-                        'rulenumber': action_set.get('rulenumber', 0)
                         })
                 elif not(action_set.get('range0', '')) and cond:
                     l.append({
                         'expected_values': action_set.get(
                             'discreteresult', ''),
                         'actions': action_set.get('actions', []),
-                        'rulenumber': action_set.get('rulenumber', 0)
                         })
                 else:
                     pass
@@ -206,6 +180,7 @@ def doActionToAnalysis(base, action):
     workflow = getToolByName(base, "portal_workflow")
     state = workflow.getInfoFor(base, 'review_state')
     action_rule_name = ''
+    import pdb; pdb.set_import()
     if action.get('action', '') == 'repeat' and state != 'retracted':
         # Repeat an analysis consist on cancel it and then create a new
         # analysis with the same analysis service used for the canceled
