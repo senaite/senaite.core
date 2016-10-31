@@ -515,6 +515,8 @@ jQuery(function($){
             .find('select[id^="ReflexRules-action-"]')
             .find(":selected").attr('value');
         if (selection == "setresult") {
+            // Hide the temporary ID for this analysis
+            $(action_div).find('input[id^=ReflexRules-an_result_id-]').hide();
             // Showing the analyst-section div
             var action_define_div = $(action_div).find('div.action_define_result');
             $(action_define_div).css('display', 'inline');
@@ -540,6 +542,8 @@ jQuery(function($){
                     .first().val('');}
         }
         else{
+            // Show the temporary ID of the analysis to be generated            
+            $(action_div).find('input[id^=ReflexRules-an_result_id-]').show();
             // Hide the options-set
             $(action_div).find('div.to_other_worksheet').css('display', 'inline');
             $(action_div).find('div.action_define_result').hide();
