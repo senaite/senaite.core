@@ -525,7 +525,7 @@ jQuery(function($){
                 .find('div.to_other_worksheet')
                 .find('input[id^="ReflexRules-otherWS-"]')
                 .removeAttr("checked");
-            // run the controlller dor the elements contained in the 'div.action_define_result'
+            // run the controlller for the elements contained in the 'div.action_define_result'
             action_define_div_controller(action_div);
             // Creates a new local id if a new analysis is created
             var set_new = $(action_div)
@@ -542,7 +542,7 @@ jQuery(function($){
                     .first().val('');}
         }
         else{
-            // Show the temporary ID of the analysis to be generated            
+            // Show the temporary ID of the analysis to be generated
             $(action_div).find('input[id^=ReflexRules-an_result_id-]').show();
             // Hide the options-set
             $(action_div).find('div.to_other_worksheet').css('display', 'inline');
@@ -728,14 +728,24 @@ jQuery(function($){
         This function adds the recently created 'local_id' to the analysis
         services selection lists.
         */
+        var option = '<option value="'+local_id+'">' + local_id + '</option>';
         // Getting the selectors from the containers
-        var selectors = $('td.rulescontainer').slice(1).find("select[id^='ReflexRules-analysisservice-']");
+        var selectors = $('td.rulescontainer').slice(1)
+            .find("select[id^='ReflexRules-analysisservice-']");
+        var first_created = $('input#ReflexRules-an_result_id-0-0').val();
         // Add the new local-id as a new the options
         $.each($(selectors), function(index, element){
-            $(element).append(
-                '<option value="' + local_id +
-                '">' + local_id + '</option>'
-            );
+            // The first local_id is not added to the next list by itself, we
+            // need to add it manualy if not added yet
+            var already_added = $(element).find(
+                'option[value="' + first_created + '"]');
+            if (first_created !== undefined &&
+                already_added.length < 1){
+                var str2 = '<option value="'+first_created+'">' +
+                    first_created + '</option>';
+                option = option.concat(str2);
+            }
+            $(element).append(option);
         });
     }
 });

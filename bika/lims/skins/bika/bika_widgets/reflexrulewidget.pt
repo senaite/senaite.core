@@ -111,7 +111,10 @@
                     the rulescontainer (the parent td), more than one conditions
                     container can be crated -->
                 <div class="conditionscontainer"
-                    tal:define="conditionscontainer_idx python:0;">
+                    tal:define="
+                    cond_rows python:widget.getReflexRuleElement(idx,'conditions');
+                    conditionscontainer_idx python:0;"
+                    tal:repeat="cond_row cond_rows">
                     <!-- Analysis Service -->
                     <!-- This selections element is not set using tal because there is
                         a javascript controller which takes care of the
@@ -130,7 +133,9 @@
                         </select>
                     <br/>
                     <!-- Range definition -->
-                    <div class="rangecontainer">
+                    <div class="rangecontainer"
+                        tal:define="
+                            cond_row_idx python:cond_row['cond_row_idx'];">
                         <span i18n:translate="" class="reflex_rule_text">
                             The result of the analysis between
                         </span>
@@ -139,7 +144,7 @@
                             tal:attributes="
                                 name string:${fieldName}.range0-${conditionscontainer_idx}:records:ignore_empty;
                                 id string:${fieldName}-range0-${repeat/idx/index}-${conditionscontainer_idx};
-                                value python:widget.getReflexRuleElement(idx,'range0');"
+                                value python:widget.getReflexRuleConditionElement(idx,cond_row_idx,'range0');"
                                 i18n:domain="python:i18n_domain">
                         <span i18n:translate="" class="reflex_rule_text">
                             and
@@ -149,7 +154,7 @@
                             tal:attributes="
                                 name string:${fieldName}.range1-${conditionscontainer_idx}:records:ignore_empty;
                                 id string:${fieldName}-range1-${repeat/idx/index}-${conditionscontainer_idx};
-                                value python:widget.getReflexRuleElement(idx,'range1');"
+                                value python:widget.getReflexRuleConditionElement(idx,cond_row_idx,'range1');"
                                 i18n:domain="python:i18n_domain">
                     </div>
                     <!-- Discrete result definition -->
@@ -180,7 +185,8 @@
                             tal:repeat="option olist"
                             tal:content="python:olist.getValue(option)"
                             tal:attributes="
-                                value python: option;"
+                                value python: option;
+                                selected python:'selected' if option==cond_row['and_or'] else None"
                             i18n:translate=""/>
                     </select>
                 </div>
