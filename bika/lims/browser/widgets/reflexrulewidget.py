@@ -549,15 +549,22 @@ class ReflexRuleWidget(RecordsWidget):
             elif element == 'conditions' and value == '':
                 return [{'analysisservice': '', 'cond_row_idx': '0',
                         'range0': '', 'range1': '',
-                        'discreteresult': '', 'and_or': 'no' }, ]
+                        'discreteresult': '', 'and_or': 'no'}, ]
             elif element == 'repetition_max' and value == '':
                 return 2
             else:
                 return value
-        return [{
-                'action': '', 'act_row_idx': '0',
-                'otherWS': False, 'analyst': ''
-                }] if element == 'actions' else ''
+        if element == 'actions':
+            return [{'action': '', 'act_row_idx': '0',
+                    'otherWS': False, 'analyst': '',
+                    'setresulton': '', 'setresultdiscrete': '',
+                    'setresultvalue': '', 'an_result_id': ''}, ]
+        elif element == 'conditions':
+            return [{'analysisservice': '', 'cond_row_idx': '0',
+                    'range0': '', 'range1': '',
+                    'discreteresult': '', 'and_or': 'no'}, ]
+        else:
+            return ''
 
     def getReflexRuleActionElement(self, set_idx=0, row_idx=0, element=''):
         """
