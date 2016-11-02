@@ -180,9 +180,10 @@
                             olist widget/getAndOrVoc;
                             cond_row_idx python:cond_row['cond_row_idx'];"
                         tal:attributes="
+                            already_sel python: 'yes' if cond_row.get('and_or', '') in ['and', 'or'] else '';
                             name string:${fieldName}.and_or-${cond_row_idx}:records:ignore_empty;
                             id string:${fieldName}-and_or-${repeat/idx/index}-${cond_row_idx};
-                            style python: '' if cond_row_idx == 0 else 'display:none';"
+                            style python: 'display:none' if idx == 0 or idx == '0' else '';"
                             i18n:domain="python:i18n_domain">
                         <option
                             tal:repeat="option olist"
@@ -250,7 +251,7 @@
                             <!-- The duplicate/repeat analysis id to use in this reflex rule -->
                             <input
                                 class="always_disabled"
-                                disabled="True"
+                                readonly="True"
                                 tal:define="
                                     act_row_idx python:action_row['act_row_idx'];"
                                 tal:attributes="
