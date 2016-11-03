@@ -220,20 +220,19 @@ def doActionToAnalysis(base, action):
         analysis.setResult('')
     elif action.get('action', '') == 'setresult':
         target_analysis = action.get('setresulton', '')
+        action_rule_name = 'Result set'
         result_value = action['setresultdiscrete'] if \
             action.get('setresultdiscrete', '') else action['setresultvalue']
         if target_analysis == 'original':
             original = base.getOriginalReflexedAnalysis()
             analysis = original
             original.setResult(result_value)
-        else:
-            # target_analysis == 'next'
+        elif target_analysis == 'new':
             # Create a new analysis
             analysis = duplicateAnalysis(base)
             analysis.setResult(result_value)
             changeWorkflowState(analysis,
                                 "bika_analysis_workflow", "to_be_verified")
-        action_rule_name = 'Result set'
     else:
         logger.error(
             "Not known Reflex Rule action %s." % (action.get('action', '')))

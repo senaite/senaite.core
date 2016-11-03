@@ -494,15 +494,15 @@ class ReflexRuleWidget(RecordsWidget):
         Returns where we can define a result.
         """
         return DisplayList([
-            ('original', 'Original analysis'), ])
-            # ('new', 'New analysis')])
+            ('original', 'Original analysis'),
+            ('new', 'New analysis')])
 
     def getTriggerVoc(self):
         """
         Return the triggeroptions for the rule
         """
-        return DisplayList(
-            [('submit', 'on analysis submission'),
+        return DisplayList([
+            ('submit', 'on analysis submission'),
             ('verify', 'on analysis verification')])
 
     def getReflexRuleElement(self, idx=0, element=''):
