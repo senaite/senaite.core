@@ -412,7 +412,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             ws_slots = [row['position'] for row in layout if row['type'] == t]
             for row in [r for r in wstlayout if
                         r['type'] == t and r['pos'] not in ws_slots]:
-                reference_definition_uid = row[form_key]
+                reference_definition_uid = row.get(form_key, None)
+                if (not reference_definition_uid):
+                    continue
                 samples = bc(portal_type='ReferenceSample',
                              review_state='current',
                              inactive_state='active',

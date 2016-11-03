@@ -23,6 +23,7 @@ from Testing.ZopeTestCase.functional import Functional
 from zope.component import getSiteManager
 
 import unittest
+import plone.protect.auto
 
 
 class MockMailHost(_MMH):
@@ -40,6 +41,11 @@ class BikaTestCase(unittest.TestCase):
 
     def setUp(self):
         super(BikaTestCase, self).setUp()
+        # Some browser paths like ""?analysisrequests_review_state=cancelled"
+        # do not work because plone.protect protect them.
+        # Disable the plone.protect on the testing layer
+        self.CSRF_DISABLED_ORIGINAL = plone.protect.auto.CSRF_DISABLED
+        plone.protect.auto.CSRF_DISABLED = True
 
     def afterSetUp(self):
         self.portal._original_MailHost = self.portal.MailHost
@@ -51,6 +57,10 @@ class BikaTestCase(unittest.TestCase):
         self.portal.email_from_address = 'test@example.com'
         ltool = self.portal.portal_languages
         ltool.setLanguageBindings()
+
+    def tearDown(self):
+        # Reset the plone.protect on the testing layer
+        plone.protect.auto.CSRF_DISABLED = self.CSRF_DISABLED_ORIGINAL
 
     def beforeTearDown(self):
         self.portal.MailHost = self.portal._original_MailHost

@@ -27,8 +27,17 @@
 					num_positions request/NoOfPositions | python:0;
 					num_positions python:int(num_positions);
 					display_rows python:widget.get_template_rows(num_positions, current_field_value);
-					analyses python:[s.UID() for s in context.getService()]">
-
+					analyses python:[s.UID() for s in context.getService()];
+					hasblanks python:len(BlankDefinitions) > 0;
+					hascontrols python:len(ControlDefinitions) > 0;">
+	<dl class="portalMessage warn" tal:condition="python:not hasblanks or not hascontrols">
+		<dt>Alert</dt>
+		<dd>
+			<p tal:omit-tag="" tal:condition="python: not hasblanks and hascontrols" i18n:translate="">No Reference Definitions for Blanks available.<br/>To add a Blank in this Worksheet Template, create a Reference Definition for a Blank sample first.</p>
+			<p tal:omit-tag="" tal:condition="python: not hascontrols and hasblanks" i18n:translate="">No Reference Definitions for Controls available.<br/>To add a Control in this Worksheet Template, create a Reference Definition for a Control sample first.</p>
+			<p tal:omit-tag="" tal:condition="python: not hascontrols and not hasblanks" i18n:translate="">No ReferenceDefinitions for Controls nor Blanks available.<br/>To add a Control or Blank in this Worksheet Template, create a Reference Definition first.</p>
+		</dd>
+	</dl>
 	<label i18n:translate="">Number of Positions</label>
 	<input name="NoOfPositions"
 		size="3"
@@ -75,7 +84,8 @@
 				tal:attributes="
 					value item;
 					selected this_selected"
-				tal:content="python:context.translate(item, default=vocab.getValue(item))"></option>
+				tal:content="python:context.translate(item, default=vocab.getValue(item))"
+				tal:condition="python:(item=='b' and hasblanks) or (item=='c' and hascontrols) or (item!='b' and item!='c')"></option>
 		</tal:item>
 		</select>
 	</td>
@@ -84,7 +94,7 @@
 	  <!-- dropdown for Blank references -->
 		<select name="Layout.blank_ref:records:ignore_empty"
 			tal:attributes="
-				style python: selected_type == 'b' and 'display:inline;;' or 'display:none;;';
+				style python: 'display:inline' if (selected_type == 'b' and hasblanks) else 'display:none';
 				class string:blank_ref_dropdown_${row/pos};">
 		<tal:item tal:repeat="ref BlankDefinitions">
 			<option
@@ -97,7 +107,7 @@
 	  <!-- dropdown for Control references -->
 		<select name="Layout.control_ref:records:ignore_empty"
 			tal:attributes="
-				style python: selected_type == 'c' and 'display:inline;;' or 'display:none;;';
+				style python: 'display:inline' if (selected_type == 'c' and hascontrols) else 'display:none';
 				class string:control_ref_dropdown_${row/pos};">
 		<tal:item tal:repeat="ref ControlDefinitions">
 			<option
