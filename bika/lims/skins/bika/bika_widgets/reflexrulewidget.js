@@ -338,6 +338,11 @@ jQuery(function($){
         var sets = $(".records_row_"+fieldname);
         // clone last set of actions
         var set = $(sets[sets.length-1]).clone();
+        // Hide the delete button from the right of the previous set
+        $(sets[sets.length-1]).find('.rw_deletebtn').hide();
+        // Remove actions and empty selectors
+        $(set).find("select[id^='ReflexRules-analysisservice-']").find('option').remove();
+        $(set).find("div.action:gt(0)").remove();
         // after cloning, make sure the new element's IDs are unique
         var found = $(set).find(
                 "input[id^='"+fieldname+"']," +
@@ -379,6 +384,13 @@ jQuery(function($){
         });
         // Show the rw_deletebtn button
         $(set).find(".rw_deletebtn").show();
+        $(set).delegate('.rw_deletebtn', 'click', function() {
+            // Display the delete button from the previous derivative rule
+            var tr = $(this).closest('tr').prev();
+            if (!$(tr).hasClass('rulenumber-0')){
+                $(tr).find('.rw_deletebtn').show();
+            }
+        });
         // Action trigger controller
         $(set)
             .find('select[id^="ReflexRules-trigger"]')
@@ -704,7 +716,7 @@ jQuery(function($){
             local_ids_dic.set.push(new_local_id);
         }
         // Update the input#reflex_rule_analysis_ids with the new local id
-        $('#reflex_rule_analysis_ids').val(JSON.stringify(local_ids_dic));
+        //$('#reflex_rule_analysis_ids').val(JSON.stringify(local_ids_dic));
         return new_local_id;
     }
 
@@ -715,22 +727,16 @@ jQuery(function($){
         @return: a string as the new local id
         */
         // Getting the local ids dictionary
-        var local_ids_dic = $.parseJSON($('#reflex_rule_analysis_ids').val());
-        if (local_ids_dic === null){
-                local_ids_dic = {'dup':[], 'rep':[], 'set':[]};
+        var maxnum = 0;
+        $('.derivative-id').each(function(index, element) {
+            var valid = $(this).val();
+            if (valid.match("^"+prefix+"-")) {
+                var num = valid.split(/-/);
+                num = parseInt(num[1]);
+                maxnum = num > maxnum ? num : maxnum;
             }
-        var new_local_id = '', local_ids_list = [], num=0,
-            list_len, not_unique = 0;
-        // Getting the local ids list
-        local_ids_list = local_ids_dic[prefix];
-        list_len = local_ids_list.length;
-        // Create a new unique local id
-        while(not_unique !== -1) {
-            new_local_id = prefix + '-' + list_len.toString();
-            not_unique = $.inArray(new_local_id, local_ids_list);
-            list_len = list_len + 1;
-        }
-        return new_local_id;
+        });
+        return prefix+"-"+(maxnum+1);
     }
 
     function remove_local_id(array, id) {
@@ -752,24 +758,28 @@ jQuery(function($){
         This function adds the recently created 'local_id' to the analysis
         services selection lists.
         */
-        var option = '<option value="'+local_id+'">' + local_id + '</option>';
         // Getting the selectors from the containers
         var selectors = $('td.rulescontainer').slice(1)
             .find("select[id^='ReflexRules-analysisservice-']");
-        var first_created = $('input#ReflexRules-an_result_id-0-0').val();
         // Add the new local-id as a new the options
         $.each($(selectors), function(index, element){
-            // The first local_id is not added to the next list by itself, we
-            // need to add it manualy if not added yet
-            var already_added = $(element).find(
-                'option[value="' + first_created + '"]');
-            if (first_created !== undefined &&
-                already_added.length < 1){
-                var str2 = '<option value="'+first_created+'">' +
-                    first_created + '</option>';
-                option = option.concat(str2);
-            }
-            $(element).append(option);
+            var options = [];
+            var selected = $('#'+$(element).attr('id')+" :selected").text();
+            $(element).find('option').remove();
+            var tr = $(this).closest('tr');
+            var prevtr = $(tr).prev();
+            do {
+                $(prevtr).find('.derivative-id').each(function(index, el2) {
+                    var did = $(this).val();
+                    if (did != '') {
+                        var optd = did == selected ? " selected" : "";
+                        options.push('<option value="'+did+'"'+optd+'>'+did+'</option>');
+                    }
+                });
+                prevtr = $(prevtr).prev();
+            } while ($(prevtr).hasClass('records_row_ReflexRules'));
+            options = options.sort();
+            $(element).append(options.join(''));
         });
     }
 });
