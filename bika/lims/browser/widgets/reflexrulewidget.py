@@ -175,6 +175,9 @@ class ReflexRuleWidget(RecordsWidget):
             d = self._format_conditions_and_actions(raw_set)
             # Adding the rule number
             d['rulenumber'] = str(rulenum)
+            # Filling the dict with the mother service UID
+            d['mother_service_uid'] = raw_data[0][0].get(
+                'analysisservice-0', '')
             value.append(d)
             rulenum += 1
         return value, {}

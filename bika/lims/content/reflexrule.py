@@ -80,6 +80,21 @@ class ReflexRule(BaseContent):
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
+    def _fetch_analysis_for_local_id(self, analysis, ans_cond):
+        """
+        This function returns True when the derivative IDs conditions are met.
+        :analysis: the analysis full object which we want to obtain the
+            rules for.
+        :ans_cond: the id with the target derivative reflex rule id.
+        """
+        first_reflexed = analysis.getOriginalReflexedAnalysis()
+        derivatives = first_reflexed.getBackReferences(
+            'OriginalAnalysisReflectedAnalysis')
+        for derivative in derivatives:
+            if derivative.getReflexRuleLocalID() == ans_cond:
+                return derivative
+        return None
+
     def _areConditionsMet(self, action_set, analysis):
         """
         This function returns a boolean as True if the conditions in the
@@ -89,13 +104,30 @@ class ReflexRule(BaseContent):
         :action_set: a set of rules and actions as a dictionary.
         :return: a Boolean.
         """
-        # the value of the analysis' result as string
-        result = analysis.getResult()
         conditions = action_set.get('conditions', [])
         service = analysis.getService()
         eval_str = ''
+        alocalid = analysis.getReflexRuleLocalID() if \
+            analysis.getIsReflexAnalysis() else service.UID()
+        localids = [cond.get('analysisservice') for cond in conditions
+                    if cond.get('analysisservice', '') == alocalid]
+        if not localids:
+            return False
+
         for condition in conditions:
-            ans_uid = condition.get('analysisservice', '')
+            ans_cond = condition.get('analysisservice', '')
+            ans_uid_cond = action_set.get('mother_service_uid', '')
+            if ans_cond != alocalid:
+                # Look for this localid (e.g dup-2)
+                curranalysis = self._fetch_analysis_for_local_id(
+                    analysis, ans_cond)
+            else:
+                curranalysis = analysis
+            if not curranalysis:
+                continue
+            # the value of the analysis' result as string
+            result = curranalysis.getResult()
+
             if len(service.getResultOptions()) > 0:
                 # Discrete result as expacted value
                 exp_val = condition.get('discreteresult', '')
@@ -105,13 +137,17 @@ class ReflexRule(BaseContent):
                     condition.get('range1', '')
                     )
             and_or = condition.get('and_or', '')
-            resolution = ans_uid == analysis.getServiceUID() and \
-                (isnumber(result) and isinstance(exp_val, str) and
-                    exp_val == result)\
-                or\
-                (isnumber(result) and len(exp_val) == 2 and
-                    float(exp_val[0]) <= float(result) and
-                    float(result) <= float(exp_val[1]))
+            service_uid = curranalysis.getServiceUID()
+
+            # Resolve the conditions
+            resolution = \
+                ans_uid_cond == service_uid and\
+                ((isnumber(result) and isinstance(exp_val, str) and
+                    exp_val == result) or
+                    (isnumber(result) and len(exp_val) == 2 and
+                        float(exp_val[0]) <= float(result) and
+                        float(result) <= float(exp_val[1])))
+
             # Build a string and then use eval()
             if and_or == 'no':
                 eval_str += str(resolution)
@@ -211,6 +247,7 @@ def doActionToAnalysis(base, action):
             base.getOriginalReflexedAnalysis())
     else:
         analysis.setOriginalReflexedAnalysis(base)
+    analysis.setReflexRuleLocalID(action.get('an_result_id', ''))
     # Setting the remarks to base analysis
     time = datetime.now().strftime('%Y-%m-%d %H:%M')
     rule_num = action.get('rulenumber', 0)
