@@ -338,6 +338,8 @@ jQuery(function($){
         var sets = $(".records_row_"+fieldname);
         // clone last set of actions
         var set = $(sets[sets.length-1]).clone();
+        // Hide the delete button from the right of the previous set
+        $(sets[sets.length-1]).find('.rw_deletebtn').hide();
         // after cloning, make sure the new element's IDs are unique
         var found = $(set).find(
                 "input[id^='"+fieldname+"']," +
@@ -379,6 +381,13 @@ jQuery(function($){
         });
         // Show the rw_deletebtn button
         $(set).find(".rw_deletebtn").show();
+        $(set).delegate('.rw_deletebtn', 'click', function() {
+            // Display the delete button from the previous derivative rule
+            var tr = $(this).closest('tr').prev();
+            if (!$(tr).hasClass('rulenumber-0')){
+                $(tr).find('.rw_deletebtn').show();
+            }
+        });
         // Action trigger controller
         $(set)
             .find('select[id^="ReflexRules-trigger"]')
@@ -757,6 +766,7 @@ jQuery(function($){
         var selectors = $('td.rulescontainer').slice(1)
             .find("select[id^='ReflexRules-analysisservice-']");
         var first_created = $('input#ReflexRules-an_result_id-0-0').val();
+
         // Add the new local-id as a new the options
         $.each($(selectors), function(index, element){
             // The first local_id is not added to the next list by itself, we
