@@ -12,6 +12,7 @@ from bika.lims.utils import tmpID
 from DateTime.DateTime import DateTime
 from plone.app.testing import login, logout
 from plone.app.testing import TEST_USER_NAME
+import plone.protect.auto
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 
@@ -55,8 +56,7 @@ class Test_ShowPrices(BikaFunctionalTestCase):
         transaction.commit()
 
     def tearDown(self):
-        super(Test_ShowPrices, self).setUp()
-        login(self.portal, TEST_USER_NAME)
+        super(Test_ShowPrices, self).tearDown()
 
     def test_default_view_does_not_show_cancelled_items(self):
         url = self.portal.analysisrequests.absolute_url()
