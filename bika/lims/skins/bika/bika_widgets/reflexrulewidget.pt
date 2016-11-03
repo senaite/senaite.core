@@ -249,7 +249,7 @@
                         <div class="action_result_name inline">
                             <!-- The duplicate/repeat analysis id to use in this reflex rule -->
                             <input
-                                class="always_disabled"
+                                class="always_disabled derivative-id"
                                 readonly="True"
                                 tal:define="
                                     act_row_idx python:action_row['act_row_idx'];"
