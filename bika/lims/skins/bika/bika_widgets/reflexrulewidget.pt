@@ -79,7 +79,7 @@
     </tr>
 
     <tr
-        tal:attributes="class string:records_row_${fieldName}"
+        tal:attributes="class python:'records_row_%s rulenumber-%s' % (fieldName, idx)"
         tal:repeat="idx python:range(field.getEditSize(here))">
 
         <td class="rulenumber">
@@ -95,17 +95,14 @@
         <!-- Rules container contains a set of conditions and the actions to
             perform if the conditions are match -->
         <td class="rulescontainer">
-            <tal:block
-                define="
+            <div class="rulescontainer-panel"
+                tal:define="
                     value python:field.getSubfieldValue(values, idx, 'rulesset');">
                 <!-- Analysis Service selection -->
                 <label i18n:translate="" class="title">
                     Conditions
                 </label>
                 <br/>
-                <span i18n:translate="" class="reflex_rule_text">
-                    The analysis is
-                </span>
                 <!-- This div contains a block of conditions, if the
                     conditions are match, the actions will be performed. Inside
                     the rulescontainer (the parent td), more than one conditions
@@ -114,6 +111,9 @@
                     tal:define="
                     cond_rows python:widget.getReflexRuleElement(idx,'conditions');"
                     tal:repeat="cond_row cond_rows">
+                    <span i18n:translate="" class="reflex_rule_text">
+                        The analysis is
+                    </span>
                     <!-- Analysis Service -->
                     <!-- This selections element is not set using tal because there is
                         a javascript controller which takes care of the
@@ -194,6 +194,10 @@
                             i18n:translate=""/>
                     </select>
                 </div>
+                <!-- Reflex action rules list -->
+                <label i18n:translate="" class="title actions-title">
+                    Actions
+                </label><br/>
                 <!-- Define when the rule has to be triggered, after submit or after verify -->
                 <span i18n:translate="" class="reflex_rule_text">
                     Apply the actions below
@@ -214,11 +218,6 @@
                         i18n:translate=""/>
                 </select>
                 <br/>
-                <br/>
-                <!-- Reflex action rules list -->
-                <label i18n:translate="" class="title">
-                    Actions
-                </label>
                 <div
                     class="actions-set"
                     tal:attributes="
@@ -358,7 +357,10 @@
                         tal:attributes="id string:${fieldName}_action_addnew;tabindex tabindex/next|nothing"
                         i18n:attributes="value"/>
                 </div>
-            </tal:block>
+                <div class="derivativeactions-title" i18n:translate="">
+                    Derivative rules
+                </div>
+            </div>
         </td>
         <td>
             <!-- delete -->
@@ -384,7 +386,7 @@
     <input
         type="button"
         class="context"
-        value="More"
+        value="Add derivative rule"
         tal:condition="python: field.showMore(values)"
         tal:attributes="id string:${fieldName}_addnew;tabindex tabindex/next|nothing"
         i18n:attributes="value" />

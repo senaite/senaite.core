@@ -21,6 +21,7 @@ tr.records_row_ReflexRules td:last-child {
 
 tr.records_row_ReflexRules td div {
     padding: 3px 0;
+    white-space: nowrap;
 }
 
 tr.records_row_ReflexRules td div.analyst-section {
@@ -62,4 +63,39 @@ input.always_disabled {
 }
 .action_define_result {
     margin: 0 10px;
+}
+
+.records_row_ReflexRules.rulenumber-0 {
+    border: medium none;
+}
+.records_row_ReflexRules.rulenumber-0 td.rulenumber * {
+    display: none;
+}
+.records_row_ReflexRules.rulenumber-0 td.rulenumber span.reflex_rule_text {
+    display:inherit;
+    color:transparent;
+}
+.records_row_ReflexRules.rulenumber-0 td:last-child,
+.records_row_ReflexRules.rulenumber-0 td.rulenumber {
+    background-color: transparent;
+    border: medium none;
+}
+.records_row_ReflexRules.rulenumber-0 td.rulescontainer {
+}
+.records_row_ReflexRules.rulenumber-0 td.rulescontainer div.rulescontainer-panel {
+    margin-left: -45px;
+}
+.records_row_ReflexRules td.rulescontainer div.rulescontainer-panel div.derivativeactions-title {
+    display:none;
+}
+.records_row_ReflexRules.rulenumber-0 td.rulescontainer div.rulescontainer-panel div.derivativeactions-title {
+    display: block;
+    font-weight: bold;
+    padding: 20px 0 0;
+}
+#ReflexRules_addnew.context {
+    margin-left:5px;
+}
+.title.actions-title {
+    line-height:30px;
 }
