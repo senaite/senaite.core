@@ -764,15 +764,17 @@ jQuery(function($){
         // Add the new local-id as a new the options
         $.each($(selectors), function(index, element){
             var options = [];
-            var selected = $($(this).attr('id')+" :selected").text();
+            var selected = $('#'+$(element).attr('id')+" :selected").text();
             $(element).find('option').remove();
             var tr = $(this).closest('tr');
             var prevtr = $(tr).prev();
             do {
                 $(prevtr).find('.derivative-id').each(function(index, el2) {
                     var did = $(this).val();
-                    var optd = did == selected ? " selected" : "";
-                    options.push('<option value="'+did+'"'+optd+'>'+did+'</option>');
+                    if (did != '') {
+                        var optd = did == selected ? " selected" : "";
+                        options.push('<option value="'+did+'"'+optd+'>'+did+'</option>');
+                    }
                 });
                 prevtr = $(prevtr).prev();
             } while ($(prevtr).hasClass('records_row_ReflexRules'));

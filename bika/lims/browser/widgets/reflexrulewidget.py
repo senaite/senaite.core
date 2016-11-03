@@ -98,6 +98,7 @@ So far there are only three reflex actions: duplicate, replace and set result.
  result.</li>
 </ul>
 """
+description=""
 
 
 class ReflexRuleWidget(RecordsWidget):
