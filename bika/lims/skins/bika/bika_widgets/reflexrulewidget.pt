@@ -79,7 +79,7 @@
     </tr>
 
     <tr
-        tal:attributes="class string:records_row_${fieldName}"
+        tal:attributes="class python:'records_row_%s rulenumber-%s' % (fieldName, idx)"
         tal:repeat="idx python:range(field.getEditSize(here))">
 
         <td class="rulenumber">
@@ -95,23 +95,25 @@
         <!-- Rules container contains a set of conditions and the actions to
             perform if the conditions are match -->
         <td class="rulescontainer">
-            <tal:block
-                define="
+            <div class="rulescontainer-panel"
+                tal:define="
                     value python:field.getSubfieldValue(values, idx, 'rulesset');">
                 <!-- Analysis Service selection -->
                 <label i18n:translate="" class="title">
                     Conditions
                 </label>
                 <br/>
-                <span i18n:translate="" class="reflex_rule_text">
-                    The analysis is
-                </span>
                 <!-- This div contains a block of conditions, if the
                     conditions are match, the actions will be performed. Inside
                     the rulescontainer (the parent td), more than one conditions
                     container can be crated -->
                 <div class="conditionscontainer"
-                    tal:define="conditionscontainer_idx python:0;">
+                    tal:define="
+                    cond_rows python:widget.getReflexRuleElement(idx,'conditions');"
+                    tal:repeat="cond_row cond_rows">
+                    <span i18n:translate="" class="reflex_rule_text">
+                        The analysis is
+                    </span>
                     <!-- Analysis Service -->
                     <!-- This selections element is not set using tal because there is
                         a javascript controller which takes care of the
@@ -120,9 +122,11 @@
                     <!-- Inside the conditionscontainer the element's id contains the rulescontainer idx first and then the conditionscontainer idx:
                         ${fieldName}-analysisservice-{rulescontainer idx}-{conditionscontainer idx} -->
                     <select
+                        tal:define="
+                            cond_row_idx python:cond_row['cond_row_idx'];"
                         tal:attributes="
-                            name string:${fieldName}.analysisservice-${conditionscontainer_idx}:records:ignore_empty;
-                            id string:${fieldName}-analysisservice-${repeat/idx/index}-${conditionscontainer_idx};"
+                            name string:${fieldName}.analysisservice-${cond_row_idx}:records:ignore_empty;
+                            id string:${fieldName}-analysisservice-${repeat/idx/index}-${cond_row_idx};"
                             i18n:domain="python:i18n_domain">
                         <option
                             value=""
@@ -130,16 +134,18 @@
                         </select>
                     <br/>
                     <!-- Range definition -->
-                    <div class="rangecontainer">
+                    <div class="rangecontainer"
+                        tal:define="
+                            cond_row_idx python:cond_row['cond_row_idx'];">
                         <span i18n:translate="" class="reflex_rule_text">
                             The result of the analysis between
                         </span>
                         <input
                             size="5"
                             tal:attributes="
-                                name string:${fieldName}.range0-${conditionscontainer_idx}:records:ignore_empty;
-                                id string:${fieldName}-range0-${repeat/idx/index}-${conditionscontainer_idx};
-                                value python:widget.getReflexRuleElement(idx,'range0');"
+                                name string:${fieldName}.range0-${cond_row_idx}:records:ignore_empty;
+                                id string:${fieldName}-range0-${repeat/idx/index}-${cond_row_idx};
+                                value python:widget.getReflexRuleConditionElement(idx,cond_row_idx,'range0');"
                                 i18n:domain="python:i18n_domain">
                         <span i18n:translate="" class="reflex_rule_text">
                             and
@@ -147,20 +153,22 @@
                         <input
                             size="5"
                             tal:attributes="
-                                name string:${fieldName}.range1-${conditionscontainer_idx}:records:ignore_empty;
-                                id string:${fieldName}-range1-${repeat/idx/index}-${conditionscontainer_idx};
-                                value python:widget.getReflexRuleElement(idx,'range1');"
+                                name string:${fieldName}.range1-${cond_row_idx}:records:ignore_empty;
+                                id string:${fieldName}-range1-${repeat/idx/index}-${cond_row_idx};
+                                value python:widget.getReflexRuleConditionElement(idx,cond_row_idx,'range1');"
                                 i18n:domain="python:i18n_domain">
                     </div>
                     <!-- Discrete result definition -->
-                    <div class="resultoptioncontainer">
+                    <div class="resultoptioncontainer"
+                        tal:define="
+                            cond_row_idx python:cond_row['cond_row_idx'];">
                         <span i18n:translate="" class="reflex_rule_text">
                             The result of the analysis is
                         </span>
                         <select
                             tal:attributes="
-                                name string:${fieldName}.discreteresult-${conditionscontainer_idx}:records:ignore_empty;
-                                id string:${fieldName}-discreteresult-${repeat/idx/index}-${conditionscontainer_idx};"
+                                name string:${fieldName}.discreteresult-${cond_row_idx}:records:ignore_empty;
+                                id string:${fieldName}-discreteresult-${repeat/idx/index}-${cond_row_idx};"
                                 i18n:domain="python:i18n_domain">
                         </select>
                     </div>
@@ -170,20 +178,26 @@
                     <select class="and_or"
                         tal:define="
                             olist widget/getAndOrVoc;
-                            resultscontainer_idx repeat/idx/index"
+                            cond_row_idx python:cond_row['cond_row_idx'];"
                         tal:attributes="
-                            name string:${fieldName}.and_or-${conditionscontainer_idx}:records:ignore_empty;
-                            id string:${fieldName}-and_or-${repeat/idx/index}-${conditionscontainer_idx};
-                            style python: '' if resultscontainer_idx == '0' else 'display:none';"
+                            already_sel python: 'yes' if cond_row.get('and_or', '') in ['and', 'or'] else '';
+                            name string:${fieldName}.and_or-${cond_row_idx}:records:ignore_empty;
+                            id string:${fieldName}-and_or-${repeat/idx/index}-${cond_row_idx};
+                            style python: 'display:none' if idx == 0 or idx == '0' else '';"
                             i18n:domain="python:i18n_domain">
                         <option
                             tal:repeat="option olist"
                             tal:content="python:olist.getValue(option)"
                             tal:attributes="
-                                value python: option;"
+                                value python: option;
+                                selected python:'selected' if option==cond_row['and_or'] else None"
                             i18n:translate=""/>
                     </select>
                 </div>
+                <!-- Reflex action rules list -->
+                <label i18n:translate="" class="title actions-title">
+                    Actions
+                </label><br/>
                 <!-- Define when the rule has to be triggered, after submit or after verify -->
                 <span i18n:translate="" class="reflex_rule_text">
                     Apply the actions below
@@ -204,11 +218,6 @@
                         i18n:translate=""/>
                 </select>
                 <br/>
-                <br/>
-                <!-- Reflex action rules list -->
-                <label i18n:translate="" class="title">
-                    Actions
-                </label>
                 <div
                     class="actions-set"
                     tal:attributes="
@@ -240,8 +249,8 @@
                         <div class="action_result_name inline">
                             <!-- The duplicate/repeat analysis id to use in this reflex rule -->
                             <input
-                                class="always_disabled"
-                                disabled="True"
+                                class="always_disabled derivative-id"
+                                readonly="True"
                                 tal:define="
                                     act_row_idx python:action_row['act_row_idx'];"
                                 tal:attributes="
@@ -348,7 +357,10 @@
                         tal:attributes="id string:${fieldName}_action_addnew;tabindex tabindex/next|nothing"
                         i18n:attributes="value"/>
                 </div>
-            </tal:block>
+                <div class="derivativeactions-title" i18n:translate="">
+                    Derivative rules
+                </div>
+            </div>
         </td>
         <td>
             <!-- delete -->
@@ -374,7 +386,7 @@
     <input
         type="button"
         class="context"
-        value="More"
+        value="Add derivative rule"
         tal:condition="python: field.showMore(values)"
         tal:attributes="id string:${fieldName}_addnew;tabindex tabindex/next|nothing"
         i18n:attributes="value" />
