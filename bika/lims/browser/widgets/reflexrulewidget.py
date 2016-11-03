@@ -176,6 +176,9 @@ class ReflexRuleWidget(RecordsWidget):
             d = self._format_conditions_and_actions(raw_set)
             # Adding the rule number
             d['rulenumber'] = str(rulenum)
+            # Filling the dict with the mother service UID
+            d['mother_service_uid'] = raw_data[0][0].get(
+                'analysisservice-0', '')
             value.append(d)
             rulenum += 1
 
@@ -492,15 +495,15 @@ class ReflexRuleWidget(RecordsWidget):
         Returns where we can define a result.
         """
         return DisplayList([
-            ('original', 'Original analysis'), ])
-            # ('new', 'New analysis')])
+            ('original', 'Original analysis'),
+            ('new', 'New analysis')])
 
     def getTriggerVoc(self):
         """
         Return the triggeroptions for the rule
         """
-        return DisplayList(
-            [('submit', 'on analysis submission'),
+        return DisplayList([
+            ('submit', 'on analysis submission'),
             ('verify', 'on analysis verification')])
 
     def getReflexRuleElement(self, idx=0, element=''):

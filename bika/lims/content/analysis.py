@@ -180,6 +180,8 @@ schema = BikaSchema.copy() + Schema((
     ),
     # Which is the Reflex Rule action that has created this analysis
     StringField('ReflexRuleAction', required=0, default=0),
+    # Which is the 'local_id' inside the reflex rule
+    StringField('ReflexRuleLocalID', required=0, default=0),
     ComputedField('ClientUID',
         expression = 'context.aq_parent.aq_parent.UID()',
     ),

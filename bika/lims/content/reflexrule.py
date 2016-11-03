@@ -80,53 +80,83 @@ class ReflexRule(BaseContent):
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
-    def getExpectedValuesAndRules(self, analysis, wf_action):
+    def _fetch_analysis_for_local_id(self, analysis, ans_cond):
         """
-        This function returns the expected values (even if they are discrete or
-        not) and the rules defined for the analysis service and all the
-        conditions.
+        This function returns True when the derivative IDs conditions are met.
         :analysis: the analysis full object which we want to obtain the
             rules for.
-        :wf_action: it is the workflow action that the analysis is doing, we
-            have to act in consideration of the action_set 'trigger' variable
-        :return: a list of dictionaries:
-            [{
-            'expected_values':(X,Y),
-            'wf_action': 'submit',
-            'actions': [{'action': 'duplicate', },
-                        {,},
-                        ...]
-            }, ...]
+        :ans_cond: the id with the target derivative reflex rule id.
         """
-        # getting the analysis service uid for the query
-        as_uid = analysis.getServiceUID()
-        # Getting the action sets, those that contain action rows
-        action_sets = self.getReflexRules()
-        l = []
-        import pdb; pdb.set_trace()
-        for action_set in action_sets:
-            # Validate the trigger
-            if action_set.get('trigger', '') == wf_action:
-                # Getting the dictionary keys
-                action_set_keys = action_set.keys()
-                # Defining the result deppending on the analysis' result type
-                if action_set.get('range0', '') and cond:
-                    l.append({
-                        'expected_values': (
-                            action_set.get('range0', ''),
-                            action_set.get('range1', '')
-                            ),
-                        'actions': action_set.get('actions', []),
-                        })
-                elif not(action_set.get('range0', '')) and cond:
-                    l.append({
-                        'expected_values': action_set.get(
-                            'discreteresult', ''),
-                        'actions': action_set.get('actions', []),
-                        })
-                else:
-                    pass
-        return l
+        first_reflexed = analysis.getOriginalReflexedAnalysis()
+        derivatives = first_reflexed.getBackReferences(
+            'OriginalAnalysisReflectedAnalysis')
+        for derivative in derivatives:
+            if derivative.getReflexRuleLocalID() == ans_cond:
+                return derivative
+        return None
+
+    def _areConditionsMet(self, action_set, analysis):
+        """
+        This function returns a boolean as True if the conditions in the
+        action_set are met, and returns False otherwise.
+        :analysis: the analysis full object which we want to obtain the
+            rules for.
+        :action_set: a set of rules and actions as a dictionary.
+        :return: a Boolean.
+        """
+        conditions = action_set.get('conditions', [])
+        service = analysis.getService()
+        eval_str = ''
+        alocalid = analysis.getReflexRuleLocalID() if \
+            analysis.getIsReflexAnalysis() else service.UID()
+        localids = [cond.get('analysisservice') for cond in conditions
+                    if cond.get('analysisservice', '') == alocalid]
+        if not localids:
+            return False
+
+        for condition in conditions:
+            ans_cond = condition.get('analysisservice', '')
+            ans_uid_cond = action_set.get('mother_service_uid', '')
+            if ans_cond != alocalid:
+                # Look for this localid (e.g dup-2)
+                curranalysis = self._fetch_analysis_for_local_id(
+                    analysis, ans_cond)
+            else:
+                curranalysis = analysis
+            if not curranalysis:
+                continue
+            # the value of the analysis' result as string
+            result = curranalysis.getResult()
+
+            if len(service.getResultOptions()) > 0:
+                # Discrete result as expacted value
+                exp_val = condition.get('discreteresult', '')
+            else:
+                exp_val = (
+                    condition.get('range0', ''),
+                    condition.get('range1', '')
+                    )
+            and_or = condition.get('and_or', '')
+            service_uid = curranalysis.getServiceUID()
+
+            # Resolve the conditions
+            resolution = \
+                ans_uid_cond == service_uid and\
+                ((isnumber(result) and isinstance(exp_val, str) and
+                    exp_val == result) or
+                    (isnumber(result) and len(exp_val) == 2 and
+                        float(exp_val[0]) <= float(result) and
+                        float(result) <= float(exp_val[1])))
+
+            # Build a string and then use eval()
+            if and_or == 'no':
+                eval_str += str(resolution)
+            else:
+                eval_str += str(resolution) + ' ' + and_or + ' '
+        if eval_str:
+            return eval(eval_str)
+        else:
+            return False
 
     def getActionReflexRules(self, analysis, wf_action):
         """
@@ -138,32 +168,26 @@ class ReflexRule(BaseContent):
             have to act in consideration of the action_set 'trigger' variable
         :return: [{'action': 'duplicate', ...}, {,}, ...]
         """
-        # the value of the analysis' result as string
-        result = analysis.getResult()
-        # Getting a list with the rules and expected values related to the
-        # analysis service
-        action_sets = self.getExpectedValuesAndRules(analysis, wf_action)
-        r = []
-        # Checking if the there are rules for this result and analysis
-        # state change
+        # Getting the action sets, those that contain action rows
+        action_sets = self.getReflexRules()
+        l = []
+        condition = False
         for action_set in action_sets:
-            # It is a discrete value in string shape or
-            # it is a range of values
-            exp_val = action_set.get('expected_values', '')
-            if (isnumber(result) and isinstance(exp_val, str) and
-                exp_val == result)\
-                or\
-                (isnumber(result) and len(exp_val) == 2 and
-                    float(exp_val[0]) <= float(result) and
-                    float(result) <= float(exp_val[1])):
-                acts = action_set.get('actions', {})
-                # Adding the rule number inside each action row because we will
-                # need to get the rule number from a row action later.
-                for act in acts:
-                    act['rulenumber'] = action_set.get('rulenumber', '0')
-                    act['rulename'] = self.Title()
-                r += acts
-        return r
+            # Validate the trigger
+            if action_set.get('trigger', '') == wf_action:
+                # Getting the conditions resolution
+                condition = self._areConditionsMet(action_set, analysis)
+                if condition:
+                    actions = action_set.get('actions', [])
+                    for act in actions:
+                        # Adding the rule number inside each action row because
+                        # need to get the rule number from a row action later.
+                        # we will need to get the rule number from a row
+                        # action later.
+                        act['rulenumber'] = action_set.get('rulenumber', '0')
+                        act['rulename'] = self.Title()
+                        l.append(act)
+        return l
 
 atapi.registerType(ReflexRule, PROJECTNAME)
 
@@ -180,7 +204,6 @@ def doActionToAnalysis(base, action):
     workflow = getToolByName(base, "portal_workflow")
     state = workflow.getInfoFor(base, 'review_state')
     action_rule_name = ''
-    import pdb; pdb.set_import()
     if action.get('action', '') == 'repeat' and state != 'retracted':
         # Repeat an analysis consist on cancel it and then create a new
         # analysis with the same analysis service used for the canceled
@@ -197,28 +220,23 @@ def doActionToAnalysis(base, action):
         analysis.setResult('')
     elif action.get('action', '') == 'setresult':
         target_analysis = action.get('setresulton', '')
+        action_rule_name = 'Result set'
         result_value = action['setresultdiscrete'] if \
             action.get('setresultdiscrete', '') else action['setresultvalue']
         if target_analysis == 'original':
             original = base.getOriginalReflexedAnalysis()
             analysis = original
             original.setResult(result_value)
-        else:
-            # target_analysis == 'next'
+        elif target_analysis == 'new':
             # Create a new analysis
             analysis = duplicateAnalysis(base)
             analysis.setResult(result_value)
             changeWorkflowState(analysis,
                                 "bika_analysis_workflow", "to_be_verified")
-        action_rule_name = 'Result set'
     else:
         logger.error(
             "Not known Reflex Rule action %s." % (action.get('action', '')))
         return 0
-    # Get the recreated time number
-    created_number = base.getReflexRuleActionLevel()
-    # Incrementing the creation time number
-    analysis.setReflexRuleActionLevel(created_number + 1)
     analysis.setReflexRuleAction(action.get('action', ''))
     analysis.setIsReflexAnalysis(True)
     analysis.setReflexAnalysisOf(base)
@@ -228,6 +246,7 @@ def doActionToAnalysis(base, action):
             base.getOriginalReflexedAnalysis())
     else:
         analysis.setOriginalReflexedAnalysis(base)
+    analysis.setReflexRuleLocalID(action.get('an_result_id', ''))
     # Setting the remarks to base analysis
     time = datetime.now().strftime('%Y-%m-%d %H:%M')
     rule_num = action.get('rulenumber', 0)
