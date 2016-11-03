@@ -51,14 +51,12 @@ jQuery(function($){
             otherWS_controller($(this).closest('div.action'));
         });
         $('select[id^="ReflexRules-action-"]').bind("change", function () {
-                action_select_controller($(this).closest('div.action'), false);
-            });
-        // Setup the local ids
-        setup_local_uids();
+            action_select_controller($(this).closest('div.action'), false);
+        });
         // Controller on 'ReflexRules-setresulton' selection list
         $('select[id^="ReflexRules-setresulton-"]').bind("change", function () {
-                setresulton_controller($(this).closest('div.action'));
-            });
+            setresulton_controller($(this).closest('div.action'));
+        });
         // Setting up the selected analysis services outside the main rule
         setup_as(setupdata);
     });
@@ -425,6 +423,7 @@ jQuery(function($){
             $(td).find('span').html('# ' + new_idx);
             $(td).parent('tr').removeClass('rulenumber-'+idx).addClass('rulenumber-'+new_idx);
         }
+        update_analysis_selectors();
     }
 
     function setup_del_action_button(){
@@ -437,6 +436,7 @@ jQuery(function($){
             var siblings = $(div).siblings();
             if (siblings.length < 2) return;
             $(this).parent().remove();
+            update_analysis_selectors();
         });
     }
 
@@ -459,10 +459,25 @@ jQuery(function($){
                     .prop("selected", true);
                 // Write the options
                 analysiservice_change(element, setupdata);
+            } else {
+                analysiservice_change(element, setupdata);
             }
-            else{analysiservice_change(element, setupdata);}
         });
+
+        if (rules.length > 0) {
+            var discrete = rules[0].conditions[0].discreteresult;
+            $('#ReflexRules-discreteresult-0-0 option[value="'+discrete+'"]').prop('selected', true);
+        }
+
         // Updating the setresult selection list in the actions set
+        /*for (var i=0; i < rules.length; i++) {
+            // Need to iterate through each action
+            for (var j=0; j < rules[i].actions.length; j++) {
+                var discrete=rules[i].actions[j].setresultdiscrete;
+                // Set the selected option to the corresponding selection list
+                $('#ReflexRules-setresultdiscrete-'+i+'-'+j+' option[value="'+discrete+'"]').prop('selected', true);
+            }
+        }*/
         for (var i=0; rules.length > i; i++){
             var discrete = rules[i].discreteresult;
             $(ass[i]).siblings('div.resultoptioncontainer')
@@ -479,6 +494,15 @@ jQuery(function($){
                         .find('option[value="'+ actions_saved[ii].setresultdiscrete + '"]')
                         .prop("selected", true);
                 }
+            }
+        }
+        // Set the discrete results to the conditions of derivative rules
+        for (var k=1; k < rules.length; k++) {
+            // Need to iterate through each action
+            for (var j=0; j < rules[k].conditions.length; j++) {
+                var disc=rules[k].conditions[j].discreteresult;
+                // Set the selected option to the corresponding selection list
+                $('#ReflexRules-discreteresult-'+k+'-'+j+' option[value="'+disc+'"]').prop('selected', true);
             }
         }
     }
@@ -557,7 +581,7 @@ jQuery(function($){
                 .find(":selected").attr('value');
             if (set_new == 'new') {
                 if (!first_setup){
-                    local_id = create_local_id(selection);
+                    local_id = new_localid(selection);
                     $(action_div).find("input[id^='ReflexRules-an_result_id-']")
                         .first().val(local_id);
                 }
@@ -565,7 +589,7 @@ jQuery(function($){
                     local_id = $(action_div).find("input[id^='ReflexRules-an_result_id-']")
                         .first().val();
                 }
-                populate_analysis_selection(local_id);
+                update_analysis_selectors();
             }
             else{
                 $(action_div).find("input[id^='ReflexRules-an_result_id-']")
@@ -578,7 +602,7 @@ jQuery(function($){
             $(action_div).find('div.to_other_worksheet').css('display', 'inline');
             $(action_div).find('div.action_define_result').hide();
             if (!first_setup){
-                local_id = create_local_id(selection);
+                local_id = new_localid(selection);
                 $(action_div).find("input[id^='ReflexRules-an_result_id-']")
                     .first().val(local_id);
             }
@@ -586,7 +610,7 @@ jQuery(function($){
                 local_id = $(action_div).find("input[id^='ReflexRules-an_result_id-']")
                     .first().val();
             }
-            populate_analysis_selection(local_id);
+            update_analysis_selectors();
         }
     }
 
@@ -630,39 +654,6 @@ jQuery(function($){
         }
     }
 
-    function setup_local_uids() {
-        /**
-        This function sets up the local ids used to identify the analysis
-        resulted from the different actions
-        */
-        // Getting the dict of local ids
-        var local_ids = $.parseJSON($('#reflex_rule_analysis_ids').val());
-        // no ids means a new refles rule
-        if (local_ids === null){
-            var new_id = '';
-            // Set up the first local id
-            // Getting the first action
-            var first_action = $("select[id^='ReflexRules-action-']")
-                .first().find(":selected").attr('value');
-            if (first_action == 'duplicate' || first_action == 'repeat'){
-                // If it is a duplicate, the local id will be dup-0
-                new_id = create_local_id(first_action);
-            }
-            else if (first_action == 'setresult' &&
-                $("select[id^='id='ReflexRules-setresulton-']")
-                .first().find(":selected").attr('value') == 'new') {
-                // If it is a 'set result on new analysis', the local id
-                // will be set-0
-                new_id = create_local_id(first_action);
-            }
-            // If the new local id has been created, insert into the
-            // 'ReflexRules-an_result_id-' input
-            if (new_id) {
-                $("input[id^='ReflexRules-an_result_id-']").first().val(new_id);
-            }
-        }
-    }
-
     function setresulton_controller(action_div) {
         /**
         This function checks if the selected value in the
@@ -679,105 +670,70 @@ jQuery(function($){
             .find("select[id^='ReflexRules-setresulton-']'")
             .find(":selected").attr('value');
         if (set_new == 'new') {
-            local_id = create_local_id(selection);
+            local_id = new_localid(selection);
             $(action_div).find("input[id^='ReflexRules-an_result_id-']")
                 .first().val(local_id);
-        }
-        else{
+        } else{
             $(action_div).find("input[id^='ReflexRules-an_result_id-']")
                 .first().val('');}
     }
 
-    function create_local_id(action_type) {
-        /**
-        This function mainly creates a new local id.
-        It gets the string 'action_type' which is one of the possible actions
-        that refex rules can do: 'repeat', 'duplicate' or 'setresult'. Then the
-        function creates a new name taking into account the action type and the
-        are already existen ones.
-        @action_type: a string 'repeat', 'duplicate' or 'setresult'
-        @return: a string with the new local id
-        */
-        var new_local_id = '';
-        var local_ids_dic = $.parseJSON($('#reflex_rule_analysis_ids').val());
-        if (local_ids_dic === null){
-                local_ids_dic = {'dup':[], 'rep':[], 'set':[]};
-            }
-        if (action_type == 'duplicate'){
-            new_local_id = return_next_id('dup');
-            local_ids_dic.dup.push(new_local_id);
-        }
-        else if (action_type == 'repeat') {
-            new_local_id = return_next_id('rep');
-            local_ids_dic.rep.push(new_local_id);
-        }
-        else if (action_type == 'setresult') {
-            new_local_id = return_next_id('set');
-            local_ids_dic.set.push(new_local_id);
-        }
-        // Update the input#reflex_rule_analysis_ids with the new local id
-        //$('#reflex_rule_analysis_ids').val(JSON.stringify(local_ids_dic));
-        return new_local_id;
-    }
-
-    function return_next_id(prefix) {
-        /**
-        This function looks for the next available local id with the prefix 'prefix'
-        @prefix: a string like 'rep', 'dup', 'set'
-        @return: a string as the new local id
-        */
+    /**
+     * Looks for the last on-fly-generated identifier (e.g. dup-1, dup-2, etc.)
+     * with the specified prefix and returns the contiguous id (if the last
+     * identifier for prefix "dup" was "dup-1", this method retursn "dup-2")
+     * @param {string} prefix a string like 'rep', 'dup', 'set', 'repeat',
+     *                        'setresult', 'duplicate'
+     * @return {string} The next id contiguous id with the prefix indicated
+     */
+    function new_localid(prefix) {
         // Getting the local ids dictionary
+        var rawprefix = prefix == 'duplicate' ? 'dup' : prefix;
+        rawprefix = rawprefix == 'repeat' ? 'rep' : rawprefix;
+        rawprefix = rawprefix == 'setresult' ? 'set' : rawprefix;
         var maxnum = 0;
         $('.derivative-id').each(function(index, element) {
             var valid = $(this).val();
-            if (valid.match("^"+prefix+"-")) {
+            if (valid.match("^"+rawprefix+"-")) {
                 var num = valid.split(/-/);
                 num = parseInt(num[1]);
                 maxnum = num > maxnum ? num : maxnum;
             }
         });
-        return prefix+"-"+(maxnum+1);
+        return rawprefix+"-"+(maxnum+1);
     }
 
-    function remove_local_id(array, id) {
-        /**
-        This function removes a local id to the 'reflex_rule_analysis_ids' div.
-        @array: the array where the element will be removed.
-        @id: the element to remove
-        @return the resultant array.
-        */
-        var index = array.indexOf(id);
-        if (index > -1) {
-            array.splice(index, 1);
-        }
-        return array;
-    }
-
-    function populate_analysis_selection(local_id) {
-        /**
-        This function adds the recently created 'local_id' to the analysis
-        services selection lists.
-        */
-        // Getting the selectors from the containers
-        var selectors = $('td.rulescontainer').slice(1)
-            .find("select[id^='ReflexRules-analysisservice-']");
+    /**
+     * Refresh the analysis selection lists from derivative rules with
+     * on-fly-generated identifiers (e.g. dup-1, rep-1, dup-2, etc.). In a
+     * selection list from a derivative rule, only those identifiers generated
+     * in previous derivative rules or in the main rule will be used. This is,
+     * a dup-3 generated in a derivative #3 will not be available in derivative
+     * rules #1 neither #2.
+     */
+    function update_analysis_selectors() {
+        // Getting the selectors from the containers. We explicitily discard
+        // the first selector cause it belongs to the top-level rule (we only
+        // want to update the selectors from derivative rules).
+        var selectors = $("select[id^='ReflexRules-analysisservice-']:gt(0)");
         // Add the new local-id as a new the options
         $.each($(selectors), function(index, element){
             var options = [];
             var selected = $('#'+$(element).attr('id')+" :selected").text();
             $(element).find('option').remove();
-            var tr = $(this).closest('tr');
-            var prevtr = $(tr).prev();
-            do {
+            // We fetch the local-ids from previous rows (rules)
+            var prevtr = $(element).closest('tr').prev();
+            while ($(prevtr).hasClass('records_row_ReflexRules')) {
                 $(prevtr).find('.derivative-id').each(function(index, el2) {
-                    var did = $(this).val();
-                    if (did != '') {
+                    var did = $(el2).val();
+                    if (did !== '') {
                         var optd = did == selected ? " selected" : "";
                         options.push('<option value="'+did+'"'+optd+'>'+did+'</option>');
                     }
                 });
                 prevtr = $(prevtr).prev();
-            } while ($(prevtr).hasClass('records_row_ReflexRules'));
+            }
+            // Sort the options and add them to the selection list
             options = options.sort();
             $(element).append(options.join(''));
         });
