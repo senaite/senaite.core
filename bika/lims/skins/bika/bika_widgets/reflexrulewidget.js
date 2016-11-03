@@ -411,6 +411,7 @@ jQuery(function($){
             var new_idx = parseInt(idx) + 1;
             $(td).find('input.rulenumber').attr('originalvalue', new_idx);
             $(td).find('span').html('# ' + new_idx);
+            $(td).parent('tr').removeClass('rulenumber-'+idx).addClass('rulenumber-'+new_idx);
         }
     }
 
