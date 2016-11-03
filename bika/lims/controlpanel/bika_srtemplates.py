@@ -3,26 +3,37 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from Products.ATContentTypes.content import schemata
-from Products.Archetypes import atapi
-from Products.CMFCore.utils import getToolByName
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from bika.lims.interfaces import ISamplingRoundTemplates
+from bika.lims.permissions import AddSRTemplate
+from bika.lims.utils import checkPermissions
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from plone.app.layout.globals.interfaces import IViewView
-from bika.lims.interfaces import ISRTemplates
+from Products.ATContentTypes.content import schemata
+from Products.Archetypes import atapi
+from Products.CMFCore.utils import getToolByName
+from Products.CMFCore.permissions import ModifyPortalContent, AddPortalContent
 from zope.interface.declarations import implements
 
 
-class TemplatesView(BikaListingView):
-
+class SamplingRoundTemplatesView(BikaListingView):
     implements(IFolderContentsView, IViewView)
+    """
+    Displays the list of Sampling Round Templates registered in the system.
+    For users with 'Bika: Add SRTemplate' permission granted (along with
+    ModifyPortalContent and AddPortalContent), an "Add" button will be
+    displayed at the top of the list.
+    """
 
     def __init__(self, context, request):
-        super(TemplatesView, self).__init__(context, request)
+        super(SamplingRoundTemplatesView, self).__init__(context, request)
+        self.form_id = "srtemplates"
+        self.show_select_column = True
+        self.icon = self.portal_url + "/++resource++bika.lims.images/srtemplate_big.png"
+        self.title = self.context.translate(_("Sampling Round Templates"))
         self.catalog = "bika_setup_catalog"
         self.contentFilter = {
             'portal_type': 'SRTemplate',
@@ -32,23 +43,11 @@ class TemplatesView(BikaListingView):
                 "level": 0
             },
         }
-        self.show_sort_column = False
-        self.show_select_row = False
-        self.show_select_column = True
-        self.icon = self.portal_url + "/++resource++bika.lims.images/srtemplate_big.png"
-        self.title = self.context.translate(_("Sampling Round Templates"))
-        self.description = ""
-        self.context_actions = {
-            _('Add Template'): {
-                'url': 'createObject?type_name=SRTemplate',
-                'icon': '++resource++bika.lims.images/add.png'
-            }
-        }
-
         self.columns = {
             'Title': {
                 'title': _('Template'),
-                'index': 'sortable_title'
+                'index': 'sortable_title',
+                'replace_url': 'absolute_url'
             },
             'Description': {
                 'title': _('Description'),
@@ -73,22 +72,24 @@ class TemplatesView(BikaListingView):
                          'Description']},
         ]
 
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        for x in range(len(items)):
-            if not items[x].has_key('obj'): continue
-            obj = items[x]['obj']
-            items[x]['Title'] = obj.Title()
-            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['title'])
-        return items
-
+    def __call__(self):
+        # Has the current user (might be a Client's contact) enough
+        # privileges to add a Sampling Round Template?. This check must be done
+        # here in the __call__ function because the user (and checkpermission)
+        # is only accessible once the object has already been instantiated.
+        reqperms = [ModifyPortalContent, AddPortalContent, AddSRTemplate]
+        if checkPermissions(reqperms, self.context):
+            self.context_actions = {
+                _('Add'): {
+                    'url': 'createObject?type_name=SRTemplate',
+                    'icon': '++resource++bika.lims.images/add.png'
+                }
+            }
+        return super(SamplingRoundTemplatesView, self).__call__()
 
 schema = ATFolderSchema.copy()
-
-
 class SRTemplates(ATFolder):
-    implements(ISRTemplates)
+    implements(ISamplingRoundTemplates)
     displayContentsTab = False
     schema = schema
 
