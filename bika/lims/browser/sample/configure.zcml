@@ -88,4 +88,11 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <browser:page
+      for="bika.lims.interfaces.ISample"
+      name="doActionForSample"
+      class="bika.lims.browser.sample.doActionForSample"
+      permission="bika.lims.ManageSamples"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
 </configure>

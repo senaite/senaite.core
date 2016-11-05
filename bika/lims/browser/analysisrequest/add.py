@@ -273,7 +273,11 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         for field in schema.fields():
             isVisible = field.widget.isVisible
             v = isVisible(self.context, mode, default='invisible', field=field)
-            if v == visibility:
+            visibility_guard = True
+            # visibility_guard is a widget field defined in the schema in order to know the visibility of the widget when the field is related to a dynamically changing content such as workflows. For instance those fields related to the workflow will be displayed only if the workflow is enabled, otherwise they should not be shown.
+            if 'visibility_guard' in dir(field.widget):
+                visibility_guard = eval(field.widget.visibility_guard)
+            if v == visibility and visibility_guard:
                 fields.append(field)
         return fields
 
