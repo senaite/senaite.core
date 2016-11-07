@@ -29,16 +29,10 @@ $(document).ready(function(){
         yearRange: "-100:+1"
     });
 
-    $('[datetimepicker_nofuture="1"]').datetimepicker({
-        hourGrid: 4,
-        minuteGrid: 10,
-        // addSliderAccess: true,
-        // sliderAccessArgs: { touchonly: false },
-        dateFormat: dateFormat,
-        timeFormat: "HH:mm",
-        changeMonth:true,
-        changeYear:true,
-        yearRange: "-100:+1"
+    $('[datepicker_nofuture="1"]').live("click", function() {
+        $(this).datepicker( "option", "maxDate", "0" )
+        .click(function(){$(this).attr("value", "");})
+        .focus();
     });
 });
 });
