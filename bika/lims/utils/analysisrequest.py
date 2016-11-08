@@ -312,7 +312,6 @@ def notify_rejection(analysisrequest):
         email = to_utf8(contact.getEmailAddress())
         if email:
             mailto.append(formataddr((encode_header(name), email)))
-
     if not mailto:
         return False
     mime_msg = MIMEMultipart('related')

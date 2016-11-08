@@ -2747,22 +2747,6 @@ class AnalysisRequest(BaseFolder):
         for analysis in analyses:
             doActionFor(analysis.getObject(), 'cancel')
 
-    def workflow_script_reject(self):
-        workflow = getToolByName(self, 'portal_workflow')
-        sample = self.getSample()
-        self.reindexObject(idxs=["review_state", ])
-        if workflow.getInfoFor(sample, 'review_state') != 'rejected':
-            # Setting the rejection reasons in sample
-            sample.setRejectionReasons(self.getRejectionReasons())
-            workflow.doActionFor(sample, "reject")
-        # deactivate all analyses in this AR.
-        analyses = self.getAnalyses()
-        for analysis in analyses:
-            doActionFor(analysis.getObject(), 'reject')
-        if self.bika_setup.getNotifyOnRejection():
-            # Notify the Client about the Rejection.
-            notify_rejection(self)
-
     def workflow_script_schedule_sampling(self):
         """
         This function runs all the needed process for that action
