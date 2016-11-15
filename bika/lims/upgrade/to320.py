@@ -134,6 +134,14 @@ def reflex_rules(portal):
     ntp.manage_changeProperties(MetaTypesNotToQuery=types)
     pc = getToolByName(portal, 'portal_catalog')
     addIndexAndColumn(pc, 'Analyst', 'FieldIndex')
+    bsc = getToolByName(portal, 'bika_setup_catalog')
+    if 'getAvailableMethodsUIDs' not in bsc.indexes():
+        bsc.addIndex('getAvailableMethodsUIDs', 'KeywordIndex')
+    if 'getMethodUID' not in bsc.indexes():
+        bsc.addIndex('getMethodUID', 'FieldIndex')
+    if ('getMethodUID' not in bsc.indexes()) or\
+            ('getAvailableMethodsUIDs' not in bsc.indexes()):
+        bsc.clearFindAndRebuild()
 
 
 def addIndexAndColumn(catalog, index, indextype):
