@@ -42,7 +42,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     ReferenceField('Service',
         schemata = 'Analyses',
-        required = 1,
+        required = 0,
         multiValued = 1,
         allowed_types = ('AnalysisService',),
         relationship = 'WorksheetTemplateAnalysisService',

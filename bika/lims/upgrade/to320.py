@@ -142,6 +142,14 @@ def reflex_rules(portal):
     if ('getMethodUID' not in bsc.indexes()) or\
             ('getAvailableMethodsUIDs' not in bsc.indexes()):
         bsc.clearFindAndRebuild()
+    bac = getToolByName(portal, 'bika_analysis_catalog')
+    if 'getInstrumentUID' not in bac.indexes():
+        bac.addIndex('getInstrumentUID', 'FieldIndex')
+    if 'getMethodUID' not in bac.indexes():
+        bac.addIndex('getMethodUID', 'FieldIndex')
+    if ('getMethodUID' not in bac.indexes()) or\
+            ('getInstrumentUID' not in bac.indexes()):
+        bac.clearFindAndRebuild()
 
 
 def addIndexAndColumn(catalog, index, indextype):

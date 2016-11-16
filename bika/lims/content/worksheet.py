@@ -28,6 +28,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode, _createObjectByType
 from zope.interface import implements
 import re
+import sys
 
 @indexer(IWorksheet)
 def Priority(instance):
@@ -68,10 +69,25 @@ schema = BikaSchema.copy() + Schema((
     StringField('Analyst',
         searchable = True,
     ),
+    ReferenceField(
+        'Method',
+        required=0,
+        vocabulary_display_path_bound=sys.maxint,
+        vocabulary='_getMethodsVoc',
+        allowed_types=('Method',),
+        relationship='WorksheetMethod',
+        referenceClass=HoldingReference,
+        widget=SelectionWidget(
+            format='select',
+            label=_("Method"),
+            visible=False,
+        ),
+    ),
     # TODO Remove. Instruments must be assigned directly to each analysis.
     ReferenceField('Instrument',
         required = 0,
         allowed_types = ('Instrument',),
+        vocabulary = '_getInstrumentsVoc',
         relationship = 'WorksheetInstrument',
         referenceClass = HoldingReference,
     ),
@@ -144,7 +160,16 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             # Set the method assigned to the selected instrument
             analysis.setMethod(instr.getMethod())
             analysis.setInstrument(instr)
-
+        # If the ws DOESN'T have an instrument assigned but it has a method,
+        # set the method to the analysis
+        method = self.getMethod()
+        if not instr and method and analysis.isMethodAllowed(method):
+            # Set the method
+            analysis.setMethod(method)
+        if analysis.getMethod():
+            # The analysis method can't be changed when the analysis belongs
+            # to a worksheet and that worksheet has a method.
+            analysis.setCanMethodBeChanged(False)
         self.setAnalyses(analyses + [analysis, ])
 
         # if our parent has a position, use that one.
@@ -206,6 +231,37 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         if analysis.portal_type == "DuplicateAnalysis":
             self._delObject(analysis.id)
+
+    def _getMethodsVoc(self):
+        """
+        This function returns the registered methods in the system as a
+        vocabulary.
+        """
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [(i.UID, i.Title)
+                 for i in bsc(portal_type='Method',
+                              inactive_state='active')]
+        items.sort(lambda x, y: cmp(x[1], y[1]))
+        items.insert(0, ('', _("Not specified")))
+        return DisplayList(list(items))
+
+    def _getInstrumentsVoc(self):
+        """
+        This function returns the registered instruments in the system as a
+        vocabulary. The instruments are filtered by the selected method.
+        """
+        cfilter = {'portal_type': 'Instrument', 'inactive_state': 'active'}
+        if self.getMethod():
+            cfilter['getMethodUID'] = self.getMethod().UID()
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [('', 'No instrument')] + [
+            (o.UID, o.Title) for o in
+            bsc(cfilter)]
+        o = self.getInstrument()
+        if o and o.UID() not in [i[0] for i in items]:
+            items.append((o.UID(), o.Title()))
+        items.sort(lambda x, y: cmp(x[1], y[1]))
+        return DisplayList(list(items))
 
     def addReferences(self, position, reference, service_uids):
         """ Add reference analyses to reference, and add to worksheet layout
@@ -366,7 +422,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             Will not overwrite slots which are filled already.
             If the selected template has an instrument assigned, it will
             only be applied to those analyses for which the instrument
-            is allowed
+            is allowed, the same happens with methods.
         """
         rc = getToolByName(self, REFERENCE_CATALOG)
         bac = getToolByName(self, "bika_analysis_catalog")
@@ -376,7 +432,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         wstlayout = wst.getLayout()
         services = wst.getService()
         wst_service_uids = [s.UID() for s in services]
-
         wst_slots = [row['pos'] for row in wstlayout if row['type'] == 'a']
         ws_slots = [row['position'] for row in layout if row['type'] == 'a']
         nr_slots = len(wst_slots) - len(ws_slots)
@@ -392,12 +447,15 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         # ar_analyses is used to group analyses by AR.
         ar_analyses = {}
         instr = self.getInstrument() if self.getInstrument() else wst.getInstrument()
+        method = wst.getRestrictToMethod()
         for brain in analyses:
             analysis = brain.getObject()
-            if instr and brain.getObject().isInstrumentAllowed(instr) is False:
+            if (instr and analysis.isInstrumentAllowed(instr) is False) or\
+                    (method and analysis.isMethodAllowed(method) is False):
                 # Exclude those analyses for which the ws selected
-                # instrument is not allowed
+                # instrument or method is not allowed
                 continue
+
             ar_id = brain.getRequestID
             if ar_id in ar_analyses:
                 ar_analyses[ar_id].append(analysis)
@@ -479,6 +537,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         # Apply the wst instrument to all analyses and ws
         if instr:
             self.setInstrument(instr, True)
+        # Apply the wst method to all analyses and ws
+        if method:
+            self.setMethod(method, True)
 
     def exportAnalyses(self, REQUEST=None, RESPONSE=None):
         """ Export analyses from this worksheet """
@@ -589,6 +650,30 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 total += 1
 
         self.getField('Instrument').set(self, instrument)
+        return total
+
+    def setMethod(self, method, override_analyses=False):
+        """ Sets the specified method to the Analyses from the
+            Worksheet. Only sets the method if the Analysis
+            allows to keep the integrity.
+            If an analysis has already assigned a method, it won't
+            be overriden.
+            Returns the number of analyses affected.
+        """
+        analyses = [an for an in self.getAnalyses()
+                    if (not an.getMethod() or
+                        not an.getInstrument() or
+                        override_analyses) and an.isMethodAllowed(method)]
+        total = 0
+        for an in analyses:
+            success = False
+            if an.isMethodAllowed(method):
+                success = an.setMethod(method)
+                an.setCanMethodBeChanged(False)
+            if success is True:
+                total += 1
+
+        self.getField('Method').set(self, method)
         return total
 
     def getAnalystName(self):

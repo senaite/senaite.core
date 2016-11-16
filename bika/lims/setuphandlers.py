@@ -553,6 +553,8 @@ class BikaGenerator:
         addIndex(bac, 'getRawSampleTypes', 'KeywordIndex')
         addIndex(bac, 'getRetested', 'FieldIndex')
         addIndex(bac, 'getReferenceAnalysesGroupID', 'FieldIndex')
+        addIndex(bac, 'getMethodUID', 'FieldIndex')
+        addIndex(bac, 'getInstrumentUID', 'FieldIndex')
 
         addColumn(bac, 'path')
         addColumn(bac, 'UID')
