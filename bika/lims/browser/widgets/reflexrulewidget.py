@@ -181,6 +181,7 @@ class ReflexRuleWidget(RecordsWidget):
                 'analysisservice-0', '')
             value.append(d)
             rulenum += 1
+
         return value, {}
 
     def _format_conditions_and_actions(self, raw_data):
