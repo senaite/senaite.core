@@ -27,7 +27,6 @@ from Products.CMFPlone.utils import safe_unicode, _createObjectByType
 from Products.CMFEditions.ArchivistTool import ArchivistRetrieveError
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
-from bika.lims import logger
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.fields import InterimFieldsField
@@ -44,6 +43,7 @@ from bika.lims.utils import drop_trailing_zeros_decimal
 from bika.lims.utils.analysis import get_significant_digits
 from bika.lims.workflow import skip
 from bika.lims.workflow import doActionFor
+from bika.lims.content.reflexrule import doReflexRuleAction
 from decimal import Decimal
 from zope.interface import implements
 import cgi
@@ -155,6 +155,33 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'AnalysisSamplePartition',
         referenceClass = HoldingReference,
     ),
+    # True if the analysis is created by a reflex rule
+    BooleanField(
+        'IsReflexAnalysis',
+        default=False,
+        required=0,
+    ),
+    # This field contains the original analysis which was reflected
+    ReferenceField(
+        'OriginalReflexedAnalysis',
+        required=0,
+        allowed_types=('Analysis',),
+        relationship='OriginalAnalysisReflectedAnalysis',
+        referenceClass=HoldingReference,
+    ),
+    # This field contains the analysis which has been reflected
+    # following a reflex rule
+    ReferenceField(
+        'ReflexAnalysisOf',
+        required=0,
+        allowed_types=('Analysis',),
+        relationship='AnalysisReflectedAnalysis',
+        referenceClass=HoldingReference,
+    ),
+    # Which is the Reflex Rule action that has created this analysis
+    StringField('ReflexRuleAction', required=0, default=0),
+    # Which is the 'local_id' inside the reflex rule
+    StringField('ReflexRuleLocalID', required=0, default=0),
     ComputedField('ClientUID',
         expression = 'context.aq_parent.aq_parent.UID()',
     ),
@@ -1000,6 +1027,16 @@ class Analysis(BaseContent):
         else:
             return ''
 
+    def setReflexAnalysisOf(self, analysis):
+        """ Sets the analysis that has been reflexed in order to create this
+        one, but if the analysis is the same as self, do nothing.
+        :analysis: an analysis object or UID
+        """
+        if analysis.UID() == self.UID():
+            pass
+        else:
+            self.Schema().getField('ReflexAnalysisOf').set(self, analysis)
+
     def guard_sample_transition(self):
         workflow = getToolByName(self, "portal_workflow")
         if workflow.getInfoFor(self, "cancellation_state", "active") == "cancelled":
@@ -1117,6 +1154,36 @@ class Analysis(BaseContent):
         self.updateDueDate()
         self.reindexObject()
 
+    def _reflex_rule_process(self, wf_action):
+        """
+        This function does all the reflex rule process.
+        :wf_action: is a variable containing a string with the workflow
+        action triggered
+        """
+        workflow = getToolByName(self, 'portal_workflow')
+        # Check out if the analysis has any reflex rule bound to it.
+        # First we have get the analysis' method because the Reflex Rule
+        # objects are related to a method.
+        a_method = self.getMethod()
+        # After getting the analysis' method we have to get all Reflex Rules
+        # related to that method.
+        if a_method:
+            all_rrs = a_method.getBackReferences('ReflexRuleMethod')
+            # Once we have all the Reflex Rules with the same method as the
+            # analysis has, it is time to get the rules that are bound to the
+            # same analysis service that is using the analysis.
+            rrs = []
+            for rule in all_rrs:
+                if workflow.getInfoFor(rule, 'inactive_state') == 'inactive':
+                    continue
+                # Getting the rules to be done from the reflex rule taking
+                # in consideration the analysis service, the result and
+                # the state change
+                action_row = rule.getActionReflexRules(self, wf_action)
+                # Once we have the rules, the system has to execute its
+                # instructions if the result has the expected result.
+                doReflexRuleAction(self, action_row)
+
     def workflow_script_submit(self):
         # DuplicateAnalysis doesn't have analysis_workflow.
         if self.portal_type == "DuplicateAnalysis":
@@ -1155,7 +1222,8 @@ class Analysis(BaseContent):
                             can_submit = False
                 if can_submit:
                     workflow.doActionFor(dependent, "submit")
-
+        # Do all the reflex rules process
+        self._reflex_rule_process('submit')
         # If all analyses in this AR have been submitted
         # escalate the action to the parent AR
         if not skip(ar, "submit", peek=True):
@@ -1223,9 +1291,9 @@ class Analysis(BaseContent):
         # Rename the analysis to make way for it's successor.
         # Support multiple retractions by renaming to *-0, *-1, etc
         parent = self.aq_parent
-        analyses = [x for x in parent.objectValues("Analysis")
-                    if x.getId().startswith(self.id)]
         kw = self.getKeyword()
+        analyses = [x for x in parent.objectValues("Analysis")
+                    if x.getId().startswith(kw)]
         # LIMS-1290 - Analyst must be able to retract, which creates a new Analysis.
         parent._verifyObjectPaste = str   # I cancel the permission check with this.
         parent.manage_renameObject(kw, "{0}-{1}".format(kw, len(analyses)))
@@ -1317,6 +1385,8 @@ class Analysis(BaseContent):
         if workflow.getInfoFor(self, 'cancellation_state', 'active') == "cancelled":
             return False
         self.reindexObject(idxs=["review_state", ])
+        # Do all the reflex rules process
+        self._reflex_rule_process('verify')
         # If all analyses in this AR are verified
         # escalate the action to the parent AR
         ar = self.aq_parent

@@ -675,3 +675,10 @@ class ISamplePrepWorkflow(Interface):
 class ICustomPubPref(Interface):
 
     ""
+
+class IReflexRule(Interface):
+
+    ""
+
+class IReflexRuleFolder(Interface):
+    ""
