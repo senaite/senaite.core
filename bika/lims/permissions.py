@@ -99,7 +99,6 @@ DisposeSample = 'BIKA: Dispose Sample'
 ImportAnalysis = 'BIKA: Import Analysis'
 Retract = "BIKA: Retract"
 Verify = 'BIKA: Verify'
-VerifyOwnResults = 'BIKA: Verify own results'
 Publish = 'BIKA: Publish'
 EditSample = 'BIKA: Edit Sample'
 EditAR = 'BIKA: Edit AR'
