@@ -245,8 +245,6 @@ class BikaGenerator:
         mp(PostInvoiceBatch, ['Manager', 'LabManager', 'Owner'], 1)
 
         mp(CancelAndReinstate, ['Manager', 'LabManager'], 0)
-
-        mp(VerifyOwnResults, ['Manager', ], 1)
         mp(ViewRetractedAnalyses, ['Manager', 'LabManager', 'LabClerk', 'Analyst', ], 0)
 
         mp(ScheduleSampling, ['Manager', 'SamplingCoordinator'], 0)
