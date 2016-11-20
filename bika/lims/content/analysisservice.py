@@ -956,7 +956,7 @@ schema = BikaSchema.copy() + Schema((
                  ),
     ),
     BooleanField(
-        'SelfVerification',
+        'SelfVerificationEnabled',
         schemata="Analysis",
         default=False,
         widget=BooleanWidget(
@@ -965,7 +965,8 @@ schema = BikaSchema.copy() + Schema((
                 "If enabled, the same user who submitted a result "
                 "for this analysis will be able to verify it. Note "
                 "only Lab Managers can verify results. Disabled by "
-                "default. "),
+                "default. The option set here has priority over the "
+                "option set in Bika Setup"),
          ),
     ),
     StringField('CommercialID',
