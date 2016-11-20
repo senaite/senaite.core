@@ -44,14 +44,14 @@ jQuery(function($){
         // Setting the ws and define result stuff
         $.each($('div.action'), function(index, element){
                 otherWS_controller(element);
-                action_select_controller(element, true);
+                action_select_controller(element);
             });
         // Binding the controllers
         $('input[id^="ReflexRules-otherWS-"]').bind("change", function () {
             otherWS_controller($(this).closest('div.action'));
         });
         $('select[id^="ReflexRules-action-"]').bind("change", function () {
-            action_select_controller($(this).closest('div.action'), false);
+            action_select_controller($(this).closest('div.action'));
         });
         // Controller on 'ReflexRules-setresulton' selection list
         $('select[id^="ReflexRules-setresulton-"]').bind("change", function () {
@@ -317,7 +317,7 @@ jQuery(function($){
             otherWS_controller(row);
         });
         $(row).find('select[id^="ReflexRules-action-"]').bind("change", function () {
-            action_select_controller(row, false);
+            action_select_controller(row);
         });
         $(row).find('select[id^="ReflexRules-setresulton-"]').bind("change", function () {
             setresulton_controller(row);
@@ -406,7 +406,7 @@ jQuery(function($){
             .bind("change", function () {
                 otherWS_controller(this);
                 setresulton_controller(this);
-                action_select_controller(this, false);
+                action_select_controller(this);
             }).trigger('change');
         // Binding the and_or controller
         $(set)
@@ -543,7 +543,7 @@ jQuery(function($){
         }
     }
 
-    function action_select_controller(action_div, first_setup) {
+    function action_select_controller(action_div) {
         /**
         This function hide/shows the 'worksheet' section and 'defining analysis
         result' section deppending on the choosen action.
@@ -555,8 +555,6 @@ jQuery(function($){
         The function alse generates the local ids related to the selected action.
 
         @action_div: it is the division with the input actions.
-        @first_setup: it is a boolean which is 'true' when the page is just
-        being setting up and the local_ids do not have to be created.
         */
         var local_id = '';
         var selection = $(action_div)
@@ -580,15 +578,9 @@ jQuery(function($){
                 .find("select[id^='ReflexRules-setresulton-']'")
                 .find(":selected").attr('value');
             if (set_new == 'new') {
-                if (!first_setup){
-                    local_id = new_localid(selection);
-                    $(action_div).find("input[id^='ReflexRules-an_result_id-']")
-                        .first().val(local_id);
-                }
-                else{
-                    local_id = $(action_div).find("input[id^='ReflexRules-an_result_id-']")
-                        .first().val();
-                }
+                local_id = new_localid(selection);
+                $(action_div).find("input[id^='ReflexRules-an_result_id-']")
+                      .first().val(local_id);
                 update_analysis_selectors();
             }
             else{
@@ -601,15 +593,9 @@ jQuery(function($){
             // Hide the options-set
             $(action_div).find('div.to_other_worksheet').css('display', 'inline');
             $(action_div).find('div.action_define_result').hide();
-            if (!first_setup){
-                local_id = new_localid(selection);
-                $(action_div).find("input[id^='ReflexRules-an_result_id-']")
-                    .first().val(local_id);
-            }
-            else{
-                local_id = $(action_div).find("input[id^='ReflexRules-an_result_id-']")
-                    .first().val();
-            }
+            local_id = new_localid(selection);
+            $(action_div).find("input[id^='ReflexRules-an_result_id-']")
+                .first().val(local_id);
             update_analysis_selectors();
         }
     }
