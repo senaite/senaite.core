@@ -1049,22 +1049,7 @@ class Analysis(BaseContent):
             return False
 
         # Check if the user who submited the result is the same as the current
-        workflow = getToolByName(self, "portal_workflow")
-        user_id = member.getUser().getId()
-        self_submitted = False
-        try:
-            review_history = workflow.getInfoFor(self, "review_history")
-            review_history = self.reverseList(review_history)
-            for event in review_history:
-                if event.get("action") == "submit":
-                    self_submitted = event.get("actor") == user_id
-                    break
-        except WorkflowException:
-            # https://jira.bikalabs.com/browse/LIMS-2037;
-            # Sometimes the workflow history is inexplicably missing!
-            # Let's assume the user that submitted the result is not the same
-            # as the current logged user
-            self_submitted = False
+        self_submitted = self.getSubmittedBy() == member.getUser().getId()
 
         # The submitter and the user must be different unless the analysis has
         # the option SelfVerificationEnabled set to true
@@ -1074,6 +1059,22 @@ class Analysis(BaseContent):
 
         # All checks pass
         return True
+
+    def getSubmittedBy(self):
+        """
+        Returns the identifier of the user who submitted the result if the
+        state of the current analysis is "to_be_verified" or "verified"
+        :return: the user_id of the user who did the last submission of result
+        """
+        workflow = getToolByName(self, "portal_workflow")
+        try:
+            review_history = workflow.getInfoFor(self, "review_history")
+            review_history = self.reverseList(review_history)
+            for event in review_history:
+                if event.get("action") == "submit":
+                    return event.get("actor")
+        except WorkflowException:
+            return ''
 
     def guard_sample_transition(self):
         workflow = getToolByName(self, "portal_workflow")
