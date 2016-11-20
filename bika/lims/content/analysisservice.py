@@ -1393,7 +1393,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
-    def getSelfVerificationEnabled(self):
+    def isSelfVerificationEnabled(self):
         """
         Returns if the user that submitted a result for this analysis must also
         be able to verify the result
