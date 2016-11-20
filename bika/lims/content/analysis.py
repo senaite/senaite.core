@@ -1049,39 +1049,57 @@ class Analysis(BaseContent):
         return True
 
     def guard_verify_transition(self):
-        workflow = getToolByName(self, "portal_workflow")
         mtool = getToolByName(self, "portal_membership")
         checkPermission = mtool.checkPermission
-        if workflow.getInfoFor(self, 'cancellation_state', 'active') == "cancelled":
+        workflow = getToolByName(self, "portal_workflow")
+        objstate = workflow.getInfoFor(self, 'cancellation_state', 'active')
+        if objstate == "cancelled":
             return False
+
         # Only Analysis needs to have dependencies checked
         if self.portal_type == "Analysis":
             for d in self.getDependencies():
                 review_state = workflow.getInfoFor(d, "review_state")
-                if review_state in ("to_be_sampled", "to_be_preserved", "sample_due",
-                                    "sample_received", "attachment_due", "to_be_verified"):
+                if review_state in (
+                        "to_be_sampled", "to_be_preserved", "sample_due",
+                        "sample_received", "attachment_due", "to_be_verified"):
                     return False
-        # submitter and verifier compared
-        # May we verify results that we ourself submitted?
-        if checkPermission(VerifyOwnResults, self):
-            return True
-        # Check for self-submitted Analysis.
+        else:
+            # This is not an analysis!
+            logger.warn("portal type: %s" % self.portal_type)
+            return False
+
+        # Check if the current has the LabManager role
+        member = mtool.getAuthenticatedMember()
+        allowed_roles = ['LabManager', 'Manager']
+        allowed = [r for r in member.getRoles() if r in allowed_roles]
+        if not allowed:
+            return False
+
+        # Check if the user who submited the result is the same as the current
         user_id = getSecurityManager().getUser().getId()
         self_submitted = False
         try:
+            review_history = workflow.getInfoFor(self, "review_history")
+            review_history = self.reverseList(review_history)
+            for event in review_history:
+                if event.get("action") == "submit":
+                    self_submitted = event.get("actor") == user_id
+                    break
+        except WorkflowException:
             # https://jira.bikalabs.com/browse/LIMS-2037;
             # Sometimes the workflow history is inexplicably missing!
-            review_history = workflow.getInfoFor(self, "review_history")
-        except WorkflowException:
-            return True
-        review_history = self.reverseList(review_history)
-        for event in review_history:
-            if event.get("action") == "submit":
-                if event.get("actor") == user_id:
-                    self_submitted = True
-                break
-        if self_submitted:
+            # Let's assume the user that submitted the result is not the same
+            # as the current logged user
+            self_submitted = False
+
+        # The submitter and the user must be different unless the analysis has
+        # the option SelfVerificationEnabled set to true
+        selfverification = self.getService().isSelfVerificationEnabled()
+        if self_submitted and not selfverification:
             return False
+
+        # All checks passed. Allow to verify
         return True
 
     def guard_assign_transition(self):
