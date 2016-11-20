@@ -955,6 +955,19 @@ schema = BikaSchema.copy() + Schema((
                         "Profile and/or Analysis Request"),
                  ),
     ),
+    BooleanField(
+        'SelfVerification',
+        schemata="Analysis",
+        default=False,
+        widget=BooleanWidget(
+            label=_("Allow self-verification of results"),
+            description=_(
+                "If enabled, the same user who submitted a result "
+                "for this analysis will be able to verify it. Note "
+                "only Lab Managers can verify results. Disabled by "
+                "default. "),
+         ),
+    ),
     StringField('CommercialID',
         searchable=1,
         schemata='Description',
