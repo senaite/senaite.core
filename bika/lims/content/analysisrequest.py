@@ -5,6 +5,7 @@
 
 """The request for analysis by a client. It contains analysis instances.
 """
+from plone import api
 import logging
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
@@ -23,6 +24,7 @@ from Products.CMFPlone.utils import _createObjectByType
 from bika.lims.browser.fields import ARAnalysesField
 from bika.lims.config import PROJECTNAME
 from bika.lims.permissions import *
+from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisRequest, ISamplePrepWorkflow
 from bika.lims.browser.fields import HistoryAwareReferenceField
@@ -2587,6 +2589,88 @@ class AnalysisRequest(BaseFolder):
             actor = items.get('actor')
             return mtool.getMemberById(actor)
         return None
+
+    def isVerifiable(self):
+        """
+        Checks it the current Analysis Request can be verified. This is, its
+        not a cancelled Analysis Request and all the analyses that contains
+        are verifiable too. Note that verifying an Analysis Request is in fact,
+        the same as verifying all the analyses that contains. Therefore, the
+        'verified' state of an Analysis Request shouldn't be a 'real' state,
+        rather a kind-of computed state, based on the statuses of the analyses
+        it contains. This is why this function checks if the analyses
+        contained are verifiable, cause otherwise, the Analysis Request will
+        never be able to reach a 'verified' state.
+        :return: True or False
+        """
+        # Check if the analysis request is active
+        workflow = getToolByName(self, "portal_workflow")
+        objstate = workflow.getInfoFor(self, 'cancellation_state', 'active')
+        if objstate == "cancelled":
+            return False
+
+        # Check if the analysis request state is to_be_verified
+        review_state = workflow.getInfoFor(self, "review_state")
+        if review_state == 'to_be_verified':
+            # This means that all the analyses from this analysis request have
+            # already been transitioned to a 'verified' state, and so the
+            # analysis request itself
+            return True
+        else:
+            # Check if the analyses contained in this analysis request are
+            # verifiable. Only check those analyses not cancelled and that
+            # are not in a kind-of already verified state
+            canbeverified = True
+            omit = ['published', 'retracted', 'rejected', 'verified']
+            for a in self.getAnalyses(full_objects=True):
+                st = workflow.getInfoFor(a, 'cancellation_state', 'active')
+                if st == 'cancelled':
+                    continue
+                st = workflow.getInfoFor(a, 'review_state')
+                if st in omit:
+                    continue
+                # Can the analysis be verified?
+                if not a.isVerifiable(self):
+                    canbeverified = False
+                    break
+            return canbeverified
+
+    def isUserAllowedToVerify(self, member):
+        """
+        Checks if the specified user has enough privileges to verify the
+        current AR. Apart from the roles, this function also checks if the
+        current user has enough privileges to verify all the analyses contained
+        in this Analysis Request. Note that this function only returns if the
+        user can verify the analysis request according to his/her privileges
+        and the analyses contained (see isVerifiable function)
+        :member: user to be tested
+        :return: true or false
+        """
+        # Check if the user has "Bika: Verify" privileges
+        username = member.getUserName()
+        allowed = api.user.has_permission(VerifyPermission, username=username)
+        if not allowed:
+            return False
+        # Check if the user is allowed to verify all the contained analyses
+        notallowed = [a for a in self.getAnalyses(full_objects=True)
+                      if not a.isUserAllowedToVerify(member)]
+        return not notallowed
+
+    def guard_verify_transition(self):
+        """
+        Checks if the verify transition can be performed to the current
+        Analysis Request by the current user depending on the user roles, as
+        well as the statuses of the analyses assigned to this Analysis Request
+        :return: true or false
+        """
+        mtool = getToolByName(self, "portal_membership")
+        checkPermission = mtool.checkPermission
+        # Check if the Analysis Request is in a "verifiable" state
+        if self.isVerifiable():
+            # Check if the user can verify the Analysis Request
+            member = mtool.getAuthenticatedMember()
+            return self.isUserAllowedToVerify(member)
+        return False
 
     def guard_unassign_transition(self):
         """Allow or disallow transition depending on our children's states

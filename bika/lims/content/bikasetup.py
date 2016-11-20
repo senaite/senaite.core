@@ -334,7 +334,24 @@ schema = BikaFolderSchema.copy() + Schema((
         default = False,
         widget = BooleanWidget(
             label=_("Add a remarks field to all analyses"),
+            description=_(
+                "If enabled, a free text field will be displayed close to "
+                "each analysis in results entry view"
+            )
         ),
+    ),
+    BooleanField(
+        'SelfVerificationEnabled',
+        schemata="Analyses",
+        default=False,
+        widget=BooleanWidget(
+            label=_("Allow self-verification of results"),
+            description=_(
+                "If enabled, the same user who submitted a result "
+                "for this analysis will be able to verify it. Note "
+                "only Lab Managers can verify results. Disabled by "
+                "default"),
+         ),
     ),
     ReferenceField('DryMatterService',
         schemata = "Analyses",
