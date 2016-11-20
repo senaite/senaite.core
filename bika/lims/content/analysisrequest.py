@@ -1266,9 +1266,8 @@ schema = BikaSchema.copy() + Schema((
     ),
     DateTimeField(
         'DatePublished',
-        mode="rw",
+        mode="r",
         read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
         widget=DateTimeWidget(
             label = _("Date Published"),
             visible={'edit': 'visible',
@@ -2265,6 +2264,11 @@ class AnalysisRequest(BaseFolder):
         if sample:
             return sample.getDateSampled()
         return self.Schema().getField('DateSampled').get(self)
+
+    security.declarePublic('getDatePublished')
+
+    def getDatePublished(self):
+        return getTransitionDate(self, 'publish')
 
     security.declarePublic('setSamplePoint')
 
