@@ -30,7 +30,7 @@ from bika.lims.browser.widgets import DateTimeWidget, DecimalWidget
 from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.browser.widgets import SelectionWidget
 from bika.lims.browser.widgets import RejectionWidget
-from bika.lims.workflow import skip, isBasicTransitionAllowed
+from bika.lims.workflow import skip, isBasicTransitionAllowed, getTransitionDate
 from bika.lims.workflow import doActionFor
 from decimal import Decimal
 from zope.interface import implements
@@ -61,6 +61,10 @@ def BatchUID(instance):
     batch = instance.getBatch()
     if batch:
         return batch.UID()
+
+@indexer(IAnalysisRequest)
+def getDatePublished(instance):
+    return getTransitionDate(instance, 'publish')
 
 @indexer(IAnalysisRequest)
 def SamplingRoundUID(instance):
