@@ -752,8 +752,14 @@ class AnalysesView(BikaListingView):
                                                   username=username)
                 if allowed and not obj.isUserAllowedToVerify(member):
                     after_icons.append(
-                         "<img src='++resource++bika.lims.images/submitted-by-current-user.png' title='%s'/>" %
-                         (t(_("Cannot verify: Submitted by current user")))
+                        "<img src='++resource++bika.lims.images/submitted-by-current-user.png' title='%s'/>" %
+                        (t(_("Cannot verify: Submitted by current user")))
+                        )
+                elif allowed:
+                    if obj.getSubmittedBy() == member.getUser().getId():
+                        after_icons.append(
+                        "<img src='++resource++bika.lims.images/warning.png' title='%s'/>" %
+                        (t(_("Can be verified, but submitted by current user")))
                         )
 
             # add icon for assigned analyses in AR views
