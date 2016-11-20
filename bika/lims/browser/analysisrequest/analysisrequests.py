@@ -738,9 +738,12 @@ class AnalysisRequestsView(BikaListingView):
         sd = obj.getSample().getSamplingDate()
         item['SamplingDate'] = \
             self.ulocalized_time(sd, long_format=1) if sd else ''
-        item['getDateReceived'] = self.ulocalized_time(obj.getDateReceived())
-        item['getDatePublished'] = self.ulocalized_time(obj.getDatePublished())
-        item['getDateVerified'] = getTransitionDate(obj, 'verify')
+        item['getDateReceived'] = \
+            self.ulocalized_time(obj.getDateReceived())
+        item['getDatePublished'] = \
+            self.ulocalized_time(getTransitionDate(obj, 'publish'))
+        item['getDateVerified'] = \
+            self.ulocalized_time(getTransitionDate(obj, 'verify'))
 
         deviation = sample.getSamplingDeviation()
         item['SamplingDeviation'] = deviation and deviation.Title() or ''

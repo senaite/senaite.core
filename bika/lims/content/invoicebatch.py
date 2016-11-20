@@ -17,7 +17,7 @@ from bika.lims.utils import get_invoice_item_description
 from DateTime import DateTime
 from Products.Archetypes.public import *
 from Products.CMFCore import permissions
-from bika.lims.workflow import isBasicTransitionAllowed
+from bika.lims.workflow import isBasicTransitionAllowed, getTransitionDate
 from zope.container.contained import ContainerModifiedEvent
 from zope.interface import implements
 
@@ -79,7 +79,8 @@ class InvoiceBatch(BaseFolder):
         for item in items:
             lineitem = InvoiceLineItem()
             if item.portal_type == 'AnalysisRequest':
-                lineitem['ItemDate'] = item.getDatePublished()
+                lineitem['ItemDate'] = \
+                    self.ulocalized_time(getTransitionDate(item, 'publish'))
                 lineitem['OrderNumber'] = item.getRequestID()
                 lineitem['AnalysisRequest'] = item
                 lineitem['SupplyOrder'] = ''
