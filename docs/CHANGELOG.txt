@@ -1,5 +1,6 @@
 3.2.1 (unreleased)
 ------------------
+LIMS-2447: getDatePublished index not indexed correctly at time of AR publication
 LIMS-2404: AR list in batches permitted sampling without Sampler and Sampling date provided
 LIMS-2380: ARs are created in correct order (order of columns in ar-create form)
 LIMS-2394: Calculation failure in worksheets. TDS Calc misfires again.
@@ -34,6 +35,7 @@ LIMS-1774: Shiny graphs for result ranges
 LIMS-2257: Scheduled sampling
 LIMS-2255: Switch to Chameleon (five.pt) for rendering TAL templates
 - Added Analyses section in the Dashboard
+- Add option to allow labman to self-verify analysis results
 - Replacement of pagination by 'Show more' in tables makes the app faster
 - Add Bika LIMS TAL report reference in reports preview
 - Simplify instrument interface creation for basic CSV files
@@ -41,6 +43,7 @@ LIMS-2255: Switch to Chameleon (five.pt) for rendering TAL templates
 3.1.11 (2016-04-22)
 -----------------------------
 LIMS-2181: An analysis is not stopped from using an invalid instrument
+
 3.1.12 (unreleased)
 -----------------------------
 HEALTH-569 Bar code printing not working on sample registration

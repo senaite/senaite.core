@@ -3,6 +3,7 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
+from plone import api
 from AccessControl import getSecurityManager
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -12,6 +13,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import getUsers
 from bika.lims.workflow import getTransitionDate
 from bika.lims.permissions import *
+from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.utils import to_utf8, getUsers
 from DateTime import DateTime
 from Products.Archetypes import PloneMessageFactory as PMF
@@ -738,9 +740,12 @@ class AnalysisRequestsView(BikaListingView):
         sd = obj.getSample().getSamplingDate()
         item['SamplingDate'] = \
             self.ulocalized_time(sd, long_format=1) if sd else ''
-        item['getDateReceived'] = self.ulocalized_time(obj.getDateReceived())
-        item['getDatePublished'] = self.ulocalized_time(obj.getDatePublished())
-        item['getDateVerified'] = getTransitionDate(obj, 'verify')
+        item['getDateReceived'] = \
+            self.ulocalized_time(obj.getDateReceived())
+        item['getDatePublished'] = \
+            self.ulocalized_time(getTransitionDate(obj, 'publish'))
+        item['getDateVerified'] = \
+            self.ulocalized_time(getTransitionDate(obj, 'verify'))
 
         deviation = sample.getSamplingDeviation()
         item['SamplingDeviation'] = deviation and deviation.Title() or ''
@@ -844,23 +849,14 @@ class AnalysisRequestsView(BikaListingView):
             item['class']['getDatePreserved'] = 'provisional'
 
         # Submitting user may not verify results
-        if item['review_state'] == 'to_be_verified' and \
-           not checkPermission(VerifyOwnResults, obj):
-            self_submitted = False
-            try:
-                review_history = list(self.workflow.getInfoFor(obj, 'review_history'))
-                review_history.reverse()
-                for event in review_history:
-                    if event.get('action') == 'submit':
-                        if event.get('actor') == member.getId():
-                            self_submitted = True
-                        break
-                if self_submitted:
-                    item['after']['state_title'] = \
-                         "<img src='++resource++bika.lims.images/submitted-by-current-user.png' title='%s'/>" % \
-                         t(_("Cannot verify: Submitted by current user"))
-            except Exception:
-                pass
+        if item['review_state'] == 'to_be_verified':
+            username = member.getUserName()
+            allowed = api.user.has_permission(VerifyPermission,
+                                              username=username)
+            if allowed and not obj.isUserAllowedToVerify(member):
+                item['after']['state_title'] = \
+                     "<img src='++resource++bika.lims.images/submitted-by-current-user.png' title='%s'/>" % \
+                     t(_("Cannot verify: Submitted by current user"))
 
         return item
 
