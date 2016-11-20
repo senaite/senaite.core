@@ -342,7 +342,7 @@ schema = BikaFolderSchema.copy() + Schema((
     ),
     BooleanField(
         'SelfVerificationEnabled',
-        schemata="Analysis",
+        schemata="Analyses",
         default=False,
         widget=BooleanWidget(
             label=_("Allow self-verification of results"),
