@@ -363,10 +363,9 @@ schema = BikaFolderSchema.copy() + Schema((
         widget=SelectionWidget(
             label=_("Number of required verifications"),
             description=_(
-                "Number of required verifications from different users with "
-                "enough privileges before a given result for being considered "
-                "as 'verified'. This setting can be overrided for a given "
-                "Analysis in Analysis Service edit view. By default, 1"),
+                "Number of required verifications before a given result being "
+                "considered as 'verified'. This setting can be overrided for "
+                "any Analysis in Analysis Service edit view. By default, 1"),
             format="select",
          ),
     ),
