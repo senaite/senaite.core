@@ -4,7 +4,7 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from AccessControl import ClassSecurityInfo
-from bika.lims import bikaMessageFactory as _, logger
+from bika.lims import bikaMessageFactory as _
 from bika.lims.config import *
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.utils import t, tmpID, changeWorkflowState
@@ -16,6 +16,7 @@ from bika.lims.interfaces import IWorksheet
 from bika.lims.permissions import EditWorksheet, ManageWorksheets
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import skip
+from bika.lims import logger
 from DateTime import DateTime
 from operator import itemgetter
 from plone.indexer import indexer
@@ -41,6 +42,14 @@ def Priority(instance):
 def Analyst(instance):
     return instance.getAnalyst()
 
+
+@indexer(IWorksheet)
+def worksheettemplateUID(instance):
+    worksheettemplate = instance.getWorksheetTemplate()
+    if worksheettemplate:
+        return worksheettemplate.UID()
+    else:
+        return ''
 
 schema = BikaSchema.copy() + Schema((
     HistoryAwareReferenceField('WorksheetTemplate',
@@ -134,6 +143,27 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         # The bika_listing machine passes contentFilter to all
         # contentsMethod methods.  We ignore it.
         return list(self.getAnalyses())
+
+    def setWorksheetTemplate(self, worksheettemplate, **kw):
+        """
+        Once a worksheettemplate has been set, the function looks for the
+        method of the template, if there is one, the function sets the
+        method field of the worksheet.
+        """
+        self.getField('WorksheetTemplate').set(self, worksheettemplate)
+        if worksheettemplate and isinstance(worksheettemplate, str):
+            # worksheettemplate is a UID, so we need to get the object first
+            uc = getToolByName(self, 'uid_catalog')
+            wst = uc(UID=worksheettemplate)
+            if wst and len(wst) == 1:
+                self.setMethod(wst[0].getObject().getRestrictToMethod())
+            else:
+                logger.warning(
+                    'The given Worksheet Template UID "%s" to be set ' +
+                    'in the Worksheet Object "%s" with uid "%s" is not valid' %
+                    (worksheettemplate, self.Title(), self.UID()))
+        elif worksheettemplate and worksheettemplate.getRestrictToMethod():
+            self.setMethod(worksheettemplate.getRestrictToMethod())
 
     security.declareProtected(EditWorksheet, 'addAnalysis')
 
@@ -656,7 +686,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """ Sets the specified method to the Analyses from the
             Worksheet. Only sets the method if the Analysis
             allows to keep the integrity.
-            If an analysis has already assigned a method, it won't
+            If an analysis has already been assigned to a method, it won't
             be overriden.
             Returns the number of analyses affected.
         """

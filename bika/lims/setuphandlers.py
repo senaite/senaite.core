@@ -856,6 +856,7 @@ class BikaGenerator:
             logger.warning('Could not find the portal_catalog tool.')
             return
         addIndex(pc, 'Analyst', 'FieldIndex')
+        addIndex(pc, 'worksheettemplateUID', 'FieldIndex')
         addColumn(pc, 'Analyst')
 
     def setupTopLevelFolders(self, context):

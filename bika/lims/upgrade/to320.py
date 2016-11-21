@@ -133,7 +133,12 @@ def reflex_rules(portal):
     types.append("ReflexRule")
     ntp.manage_changeProperties(MetaTypesNotToQuery=types)
     pc = getToolByName(portal, 'portal_catalog')
+    if 'worksheettemplateUID' not in pc.indexes():
+        pc.addIndex('worksheettemplateUID', 'FieldIndex')
     addIndexAndColumn(pc, 'Analyst', 'FieldIndex')
+    if ('worksheettemplateUID' not in pc.indexes()) or\
+            ('Analyst' not in pc.indexes()):
+        pc.clearFindAndRebuild()
     bsc = getToolByName(portal, 'bika_setup_catalog')
     if 'getAvailableMethodsUIDs' not in bsc.indexes():
         bsc.addIndex('getAvailableMethodsUIDs', 'KeywordIndex')
