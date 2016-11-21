@@ -42,7 +42,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     ReferenceField('Service',
         schemata = 'Analyses',
-        required = 1,
+        required = 0,
         multiValued = 1,
         allowed_types = ('AnalysisService',),
         relationship = 'WorksheetTemplateAnalysisService',
@@ -51,6 +51,25 @@ schema = BikaSchema.copy() + Schema((
             label=_("Analysis Service"),
             description=_("Select which Analyses should be included on the Worksheet"),
         )
+    ),
+    ReferenceField(
+        'RestrictToMethod',
+        schemata="Description",
+        required=0,
+        vocabulary_display_path_bound=sys.maxint,
+        vocabulary='_getMethodsVoc',
+        allowed_types=('Method',),
+        relationship='WorksheetTemplateMethod',
+        referenceClass=HoldingReference,
+        widget = SelectionWidget(
+            format='select',
+            label=_("Method"),
+            description=_(
+                "Restrict the available analysis services and instruments"
+                "to those with the selected method."
+                " In order to apply this change to the services list, you "
+                "should save the change first."),
+        ),
     ),
     ReferenceField('Instrument',
         schemata = "Description",
@@ -70,6 +89,13 @@ schema = BikaSchema.copy() + Schema((
         expression = "context.getInstrument() and context.getInstrument().Title() or ''",
         widget = ComputedWidget(
             visible = False,
+        ),
+    ),
+    ComputedField(
+        'MethodUID',
+        expression="context.getRestrictToMethod() and context.getRestrictToMethod().UID() or ''",
+        widget=ComputedWidget(
+            visible=False,
         ),
     ),
 ))
@@ -97,14 +123,30 @@ class WorksheetTemplate(BaseContent):
         return ANALYSIS_TYPES
 
     def getInstruments(self):
+        cfilter = {'portal_type': 'Instrument', 'inactive_state': 'active'}
+        if self.getRestrictToMethod():
+            cfilter['getMethodUID'] = self.getRestrictToMethod().UID()
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('', '')] + [(o.UID, o.Title) for o in
-                               bsc(portal_type = 'Instrument',
-                                   inactive_state = 'active')]
+        items = [('', 'No instrument')] + [
+            (o.UID, o.Title) for o in
+            bsc(cfilter)]
         o = self.getInstrument()
         if o and o.UID() not in [i[0] for i in items]:
             items.append((o.UID(), o.Title()))
         items.sort(lambda x, y: cmp(x[1], y[1]))
+        return DisplayList(list(items))
+
+    def _getMethodsVoc(self):
+        """
+        This function returns the registered methods in the system as a
+        vocabulary.
+        """
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [(i.UID, i.Title)
+                 for i in bsc(portal_type='Method',
+                              inactive_state='active')]
+        items.sort(lambda x, y: cmp(x[1], y[1]))
+        items.insert(0, ('', _("Not specified")))
         return DisplayList(list(items))
 
 registerType(WorksheetTemplate, PROJECTNAME)

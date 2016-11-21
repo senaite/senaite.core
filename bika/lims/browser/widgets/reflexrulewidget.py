@@ -199,6 +199,7 @@ class ReflexRuleWidget(RecordsWidget):
           'range0-1': '31',
           'range1-0': '12',
           'range1-1': '33',
+          'worksheettemplate-0': '70d48adfb34c4231a145f76a858e94cf',
           'setresulton-0': 'original',
           'setresulton-1': 'original',
           'trigger': 'submit',
@@ -226,6 +227,7 @@ class ReflexRuleWidget(RecordsWidget):
             {'action':'duplicate', 'act_row_idx':'0',
                 'otherWS': True, 'analyst': 'sussan1',
                 'setresultdiscrete': '1', 'setresultvalue': '2',
+                'worksheettemplate-0': '70d48adfb34c4231a145f76a858e94cf',
                 'setresulton': 'original','an_result_id-0':'rep-1'},
             {'action':'repeat', 'act_row_idx':'1',
                 'otherWS': False, 'analyst': '', ...},
@@ -329,7 +331,7 @@ class ReflexRuleWidget(RecordsWidget):
             analyst_key = 'analyst-'+str(a_count)
             # Getting the value for analyst
             analyst = raw_set.get(analyst_key, '')
-            # Getting in which analysis should has its result set
+            # Getting which analysis should has its result set
             setresulton_key = 'setresulton-'+str(a_count)
             setresulton = raw_set.get(setresulton_key, '')
             # Getting the discrete result to set
@@ -341,11 +343,15 @@ class ReflexRuleWidget(RecordsWidget):
             # Getting the local analysis id
             local_id_key = 'an_result_id-'+str(a_count)
             local_id = raw_set.get(local_id_key, '')
+            # Getting the local analysis id
+            worksheettemplate_key = 'worksheettemplate-'+str(a_count)
+            worksheettemplate = raw_set.get(worksheettemplate_key, '')
             # Building the action dict
             action_dict = {
                 'action': raw_set[key],
                 'act_row_idx': a_count,
                 'otherWS': otherWS,
+                'worksheettemplate': worksheettemplate,
                 'analyst': analyst,
                 'setresulton': setresulton,
                 'setresultdiscrete': setresultdiscrete,
@@ -392,7 +398,6 @@ class ReflexRuleWidget(RecordsWidget):
                                 ...
                             ]}
             },
-          'repetition_max': integer
           'as_keys': ['<as_uid>', '<as_uid>'],
           'method_id': '<method_id>',
           'method_tile': '<method_tile>'
@@ -406,7 +411,6 @@ class ReflexRuleWidget(RecordsWidget):
                             'as_title':'<as_title>',
                             'resultoptions': [,,]}
             },
-          'repetition_max': integer
           'as_keys': ['<as_uid>', '<as_uid>'],
           'method_id': '<method_id>',
           'method_tile': '<method_tile>'
@@ -419,7 +423,8 @@ class ReflexRuleWidget(RecordsWidget):
                                    'otherWS': False,
                                    'setresultdiscrete': '',
                                    'setresulton': 'original',
-                                   'setresultvalue': ''}],
+                                   'setresultvalue': '',
+                                   'worksheettemplate': '70d48adfb34c4231a145f76a858e94cf',}],
                       'conditions': [{'analysisservice': 'd802cdbf1f4742c094d45997b1038f9c',
                                       'and_or': 'no',
                                       'cond_row_idx': 0,
@@ -445,6 +450,22 @@ class ReflexRuleWidget(RecordsWidget):
             br = method.getBackReferences('AnalysisServiceMethods')
             analysiservices = {}
             for analysiservice in br:
+                # Getting the worksheet templates that could be used with the
+                # analysis, those worksheet templates are the ones without
+                # method and the ones with a method shared with the
+                # analysis service.
+                bsc = getToolByName(self, 'bika_setup_catalog')
+                service_methods_uid = analysiservice.getAvailableMethodsUIDs()
+                query_dict = {
+                    'portal_type': 'WorksheetTemplate',
+                    'inactive_state': 'active',
+                    'sort_on': 'sortable_title',
+                    'getMethodUID': {
+                        "query": service_methods_uid + [''],
+                        "operator": "or"
+                    }
+                }
+                wst_brains = bsc(query_dict)
                 analysiservices[analysiservice.UID()] = {
                     'as_id': analysiservice.id,
                     'as_title': analysiservice.Title(),
@@ -452,6 +473,8 @@ class ReflexRuleWidget(RecordsWidget):
                         analysiservice.getResultOptions()
                         if analysiservice.getResultOptions()
                         else [],
+                    'wstoptions': [
+                        (brain.UID, brain.Title) for brain in wst_brains]
                 }
             # Make the json dict
             relations[method.UID()] = {
@@ -550,18 +573,18 @@ class ReflexRuleWidget(RecordsWidget):
                 return [{'action': '', 'act_row_idx': '0',
                         'otherWS': False, 'analyst': '',
                         'setresulton': '', 'setresultdiscrete': '',
+                        'worksheettemplate': '',
                         'setresultvalue': '', 'an_result_id': ''}, ]
             elif element == 'conditions' and value == '':
                 return [{'analysisservice': '', 'cond_row_idx': '0',
                         'range0': '', 'range1': '',
                         'discreteresult': '', 'and_or': 'no'}, ]
-            elif element == 'repetition_max' and value == '':
-                return 2
             else:
                 return value
         if element == 'actions':
             return [{'action': '', 'act_row_idx': '0',
                     'otherWS': False, 'analyst': '',
+                    'worksheettemplate': '',
                     'setresulton': '', 'setresultdiscrete': '',
                     'setresultvalue': '', 'an_result_id': ''}, ]
         elif element == 'conditions':

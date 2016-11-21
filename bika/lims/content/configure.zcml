@@ -12,6 +12,7 @@
     <adapter name="SamplingRoundUID" factory=".analysisrequest.SamplingRoundUID" />
     <adapter name="Priority" factory=".analysis.Priority" />
     <adapter name="Priority" factory=".worksheet.Priority" />
+    <adapter name="worksheettemplateUID" factory=".worksheet.worksheettemplateUID" />
     <adapter name="analysisRequestTemplates" factory=".samplinground.analysisRequestTemplates" />
     <adapter name="samplingRoundSamplingDate" factory=".samplinground.samplingRoundSamplingDate" />
     <!--

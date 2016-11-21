@@ -263,7 +263,7 @@ def doActionToAnalysis(base, action):
     return analysis
 
 
-def createWorksheet(base, analyst):
+def createWorksheet(base, worksheettemplate, analyst):
     """
     This function creates a new worksheet takeing advantatge of the analyst
     variable. If there isn't an analyst definet, the system will puck up the
@@ -280,6 +280,7 @@ def createWorksheet(base, analyst):
     ws.edit(
         Number=new_ws_id,
         Analyst=analyst,
+        WorksheetTemplate=worksheettemplate,
         )
     return ws
 
@@ -289,13 +290,15 @@ def doWorksheetLogic(base, action, analysis):
     This function checks if the actions contains worksheet actions.
     If the action demands to add the new analysis to another worksheet, this
     function will do it following the next rules:
-    - If an analyst is defined in the action, the system will try to add the
+    1- If an analyst is defined in the action, the system will try to add the
     new analysis to the first worksheet of this analyst.
     If no active worksheet is found for this analyst, the system will create a
     new worksheet assigned to the defined analyst.
-    - If no analyst is defined the system will try to add the new analysis to
+    2- If no analyst is defined the system will try to add the new analysis to
     the last worksheet created, but if there are no active worksheets, a new
     worksheet with any analyst will be created.
+    3- If a worksheet template is defined, the system will try to get a
+    worksheet using that template and meeting the previous conditions (1 and 2).
 
     If the actions doesn't requires to add the new analysis to another
     worksheet, the function will try to add the analysis to the same worksheet
@@ -305,26 +308,30 @@ def doWorksheetLogic(base, action, analysis):
         # Adds the new analysis inside another worksheet.
         # Checking if the actions defines an analyst
         new_analyst = action.get('analyst', '')
+        # Checking if the action defines a worksheet template
+        worksheettemplate = action.get('worksheettemplate', '')
         pc = getToolByName(base, 'portal_catalog')
+        contentFilter = {
+            'portal_type': 'Worksheet',
+            'review_state': 'open',
+            'sort_on': 'created',
+            'sort_order': 'reverse'}
         # If a new analyst is defined, add the analysis to the first
         # analyst's worksheet
         if new_analyst:
             # Getting the last worksheet created for the analyst
-            wss = pc(
-                portal_type='Worksheet',
-                inactive_state='active',
-                sort_on='created',
-                sort_order='reverse',
-                Analyst=new_analyst)
-        else:
-            # Getting the last worksheet created
-            wss = pc(portal_type='Worksheet', inactive_state='active')
+            contentFilter['Analyst'] = new_analyst
+        if worksheettemplate:
+            # Adding the worksheettemplate filter
+            contentFilter['worksheettemplateUID'] = worksheettemplate
+        # Run the filter
+        wss = pc(contentFilter)
         if len(wss) > 0:
             # Add the new analysis to the worksheet
             wss[0].getObject().addAnalysis(analysis)
         else:
             # Create a new worksheet and add the analysis to it
-            ws = createWorksheet(base, new_analyst)
+            ws = createWorksheet(base, worksheettemplate, new_analyst)
             ws.addAnalysis(analysis)
     else:
         # Getting the base's worksheet

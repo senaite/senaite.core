@@ -59,6 +59,8 @@ jQuery(function($){
         });
         // Setting up the selected analysis services outside the main rule
         setup_as(setupdata);
+        // Setting up the worksheet templates select options
+        setup_worksheettemplate(setupdata);
     });
 
     function method_controller(setupdata){
@@ -103,6 +105,7 @@ jQuery(function($){
         }
         else{
             var resultoptions = as_info.resultoptions;
+            var i=0, select;
             if(resultoptions.length > 0){
                 // If the analysis service has discrete values, lets hide the range
                 // inputs and display the result selector with all the possible
@@ -111,7 +114,7 @@ jQuery(function($){
                 $('.rangecontainer').hide().find('input').val('');
                 $('.resultoptioncontainer').show();
                 // Delete old options
-                var select = $('.resultoptioncontainer').find('select');
+                select = $('.resultoptioncontainer').find('select');
                 $(select).find('option').remove();
                 // Actions section
                 var select_actionset = $('div.actions-set')
@@ -127,7 +130,7 @@ jQuery(function($){
                     .find("input[id^='ReflexRules-setresultvalue']")
                     .hide().val('');
                 // Write the different options in both sites
-                for (var i=0; resultoptions.length > i; i++){
+                for (i=0; resultoptions.length > i; i++){
                     $(select).append(
                         '<option value="' + resultoptions[i].ResultValue +
                         '">' + resultoptions[i].ResultText + '</option>'
@@ -157,6 +160,20 @@ jQuery(function($){
                 $('div.actions-set')
                     .find("input[id^='ReflexRules-setresultvalue']")
                     .show();
+            }
+            // Remove the old options
+            select = $('.worksheet-template-section').find('select');
+            $(select).find('option').remove();
+            var wst = as_info.wstoptions;
+            // Get the worksheet templates available for the analysis service
+            $(select).append(
+                '<option value=""></option>'
+            );
+            for (i=0; wst.length > i; i++){
+                $(select).append(
+                    '<option value="' + wst[i][0] +
+                    '">' + wst[i][1] + '</option>'
+                );
             }
         }
     }
@@ -512,8 +529,7 @@ jQuery(function($){
         This function selects the values for the not main analysis service
         selection lists.
         */
-        var rules = $.parseJSON($('#rules-setup-data')
-            .html()).saved_actions.rules;
+        var rules = setupdata.saved_actions.rules;
         var rulescontainers = $('td.rulescontainer').slice(1);
         $.each(rulescontainers,function(index1, element1){
             var ass = $(element1).find('select[id^="ReflexRules-analysisservice-"]');
@@ -522,6 +538,26 @@ jQuery(function($){
                 var as = element2.analysisservice;
                 var input = ass[index2];
                 $(input).find('option[value="'+ as + '"]')
+                    .prop("selected", true);
+            });
+        });
+    }
+
+    /**
+     * This function looks for all worksheet template 'select' elements and
+     * selects their option takeing in consideration the setupdata.
+     * @param {string} setupdata an object containing the setup data.
+     */
+    function setup_worksheettemplate(setupdata){
+        var rules = setupdata.saved_actions.rules;
+        var rulescontainers = $('td.rulescontainer');
+        $.each(rulescontainers,function(index1, element1){
+            var wsts = $(element1).find('select[id^="ReflexRules-worksheettemplate-"]');
+            var actions = rules[index1].actions;
+            $.each(actions,function(index2, element2){
+                var wst = element2.worksheettemplate;
+                var input = wsts[index2];
+                $(input).find('option[value="'+ wst + '"]')
                     .prop("selected", true);
             });
         });
@@ -536,10 +572,14 @@ jQuery(function($){
         if (checkbox == "checked") {
             // Showing the analyst-section div
             $(action_div).find('div.analyst-section').css('display', 'inline');
+            // Showing the worksheet-template-section div
+            $(action_div).find('div.worksheet-template-section').css('display', 'inline');
         }
         else{
             // Hide the options-set
             $(action_div).find('div.analyst-section').hide();
+            // hide the worksheet-template-section div
+            $(action_div).find('div.worksheet-template-section').hide();
         }
     }
 

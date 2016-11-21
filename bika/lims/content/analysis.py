@@ -149,6 +149,14 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'AnalysisMethod',
         referenceClass = HoldingReference,
     ),
+    # The analysis method can't be changed when the analysis belongs
+    # to a worksheet and that worksheet has a method.
+    BooleanField(
+        'CanMethodBeChanged',
+        default=True,
+        required=0,
+        visible=False,
+    ),
     ReferenceField('SamplePartition',
         required = 0,
         allowed_types = ('SamplePartition',),
@@ -214,6 +222,20 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField('CategoryTitle',
         expression = 'context.getService().getCategoryTitle()',
+    ),
+    ComputedField(
+        'MethodUID',
+        expression="context.getMethod() and context.getMethod().UID() or ''",
+        widget=ComputedWidget(
+            visible=False,
+        ),
+    ),
+    ComputedField(
+        'InstrumentUID',
+        expression="context.getInstrument() and context.getInstrument().UID() or ''",
+        widget=ComputedWidget(
+            visible=False,
+        ),
     ),
     ComputedField('PointOfCapture',
         expression = 'context.getService().getPointOfCapture()',
