@@ -553,6 +553,8 @@ class BikaGenerator:
         addIndex(bac, 'getRawSampleTypes', 'KeywordIndex')
         addIndex(bac, 'getRetested', 'FieldIndex')
         addIndex(bac, 'getReferenceAnalysesGroupID', 'FieldIndex')
+        addIndex(bac, 'getMethodUID', 'FieldIndex')
+        addIndex(bac, 'getInstrumentUID', 'FieldIndex')
 
         addColumn(bac, 'path')
         addColumn(bac, 'UID')
@@ -792,6 +794,7 @@ class BikaGenerator:
         addIndex(bsc, 'sortKey', 'FieldIndex')
         addIndex(bsc, 'getMethodID', 'FieldIndex')
         addIndex(bsc, 'getDocumentID', 'FieldIndex')
+        addIndex(bsc, 'getAvailableMethodsUIDs', 'KeywordIndex')
 
         addColumn(bsc, 'path')
         addColumn(bsc, 'UID')
@@ -853,6 +856,7 @@ class BikaGenerator:
             logger.warning('Could not find the portal_catalog tool.')
             return
         addIndex(pc, 'Analyst', 'FieldIndex')
+        addIndex(pc, 'worksheettemplateUID', 'FieldIndex')
         addColumn(pc, 'Analyst')
 
     def setupTopLevelFolders(self, context):

@@ -137,7 +137,28 @@ def reflex_rules(portal):
     types.append("ReflexRule")
     ntp.manage_changeProperties(MetaTypesNotToQuery=types)
     pc = getToolByName(portal, 'portal_catalog')
+    if 'worksheettemplateUID' not in pc.indexes():
+        pc.addIndex('worksheettemplateUID', 'FieldIndex')
     addIndexAndColumn(pc, 'Analyst', 'FieldIndex')
+    if ('worksheettemplateUID' not in pc.indexes()) or\
+            ('Analyst' not in pc.indexes()):
+        pc.clearFindAndRebuild()
+    bsc = getToolByName(portal, 'bika_setup_catalog')
+    if 'getAvailableMethodsUIDs' not in bsc.indexes():
+        bsc.addIndex('getAvailableMethodsUIDs', 'KeywordIndex')
+    if 'getMethodUID' not in bsc.indexes():
+        bsc.addIndex('getMethodUID', 'FieldIndex')
+    if ('getMethodUID' not in bsc.indexes()) or\
+            ('getAvailableMethodsUIDs' not in bsc.indexes()):
+        bsc.clearFindAndRebuild()
+    bac = getToolByName(portal, 'bika_analysis_catalog')
+    if 'getInstrumentUID' not in bac.indexes():
+        bac.addIndex('getInstrumentUID', 'FieldIndex')
+    if 'getMethodUID' not in bac.indexes():
+        bac.addIndex('getMethodUID', 'FieldIndex')
+    if ('getMethodUID' not in bac.indexes()) or\
+            ('getInstrumentUID' not in bac.indexes()):
+        bac.clearFindAndRebuild()
 
 def multi_department_to_labcontact(portal):
     """

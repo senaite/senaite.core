@@ -485,7 +485,8 @@ class AnalysesView(BikaListingView):
             # TODO: Only the labmanager must be able to change the method
             # can_set_method = getSecurityManager().checkPermission(SetAnalysisMethod, obj)
             can_set_method = can_edit_analysis \
-                and item['review_state'] in allowed_method_states
+                and item['review_state'] in allowed_method_states\
+                and obj.getCanMethodBeChanged()
             method = obj.getMethod() \
                         if hasattr(obj, 'getMethod') and obj.getMethod() \
                         else service.getMethod()

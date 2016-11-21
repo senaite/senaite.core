@@ -319,8 +319,28 @@
                                     id string:${fieldName}-otherWS-${repeat/idx/index}-${act_row_idx};
                                     checked python:'checked' if widget.getReflexRuleActionElement(idx,act_row_idx,'otherWS') else ''">
                             <span i18n:translate="" class="reflex_rule_text">
-                                To other worksheet.
+                                To other worksheet
                             </span>
+                            <!-- worksheet template section -->
+                            <div class="worksheet-template-section inline">
+                                <span i18n:translate="" class="reflex_rule_text">
+                                    by using the Worksheet Template
+                                </span>
+                                <select
+                                    tal:define="
+                                        act_row_idx python:action_row['act_row_idx'];
+                                        alist widget/getAnalysts;"
+                                    tal:attributes="
+                                        name string:${fieldName}.worksheettemplate-${act_row_idx}:records:ignore_empty;
+                                        id string:${fieldName}-worksheettemplate-${repeat/idx/index}-${act_row_idx};
+                                        tabindex tabindex/next|nothing;"
+                                        i18n:domain="python:i18n_domain">
+                                        <!-- Options are set using JS -->
+                                    <option
+                                        value=""
+                                        i18n:translate=""/>
+                                </select>
+                            </div>
                             <!-- Analyst section -->
                             <div class="analyst-section inline">
                                 <span i18n:translate="" class="reflex_rule_text">

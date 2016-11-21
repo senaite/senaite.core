@@ -170,6 +170,9 @@ window.bika.lims.controllers =  {
     ".portaltype-worksheet.template-manage_results":
         ['WorksheetManageResultsView'],
 
+    ".portaltype-worksheettemplate.template-base_edit":
+        ['WorksheetTemplateEdit'],
+
     "#worksheet-printview-wrapper":
         ['WorksheetPrintView'],
 

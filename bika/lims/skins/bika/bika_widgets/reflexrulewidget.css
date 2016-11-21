@@ -28,6 +28,10 @@ tr.records_row_ReflexRules td div.analyst-section {
     padding-left:10px;
 }
 
+tr.records_row_ReflexRules td div.worksheet-template-section {
+    padding-left:10px;
+}
+
 tr.records_row_ReflexRules td:first-child input[type="button"] {
     background-color: #fff;
     border: medium none;

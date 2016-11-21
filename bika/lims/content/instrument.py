@@ -310,6 +310,12 @@ class Instrument(ATFolder):
         items.sort(lambda x,y:cmp(x[1], y[1]))
         return DisplayList(items)
 
+    def getMethodUID(self):
+        if self.getMethod():
+            return self.getMethod().UID()
+        else:
+            return ''
+
     def getSuppliers(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(c.UID, c.getName) \
