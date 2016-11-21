@@ -130,6 +130,19 @@ schema = BikaSchema.copy() + Schema((
             label = _("Uncertainty"),
         ),
     ),
+
+    # Required number of required verifications before this analysis being
+    # transitioned to a 'verified' state. This value is set automatically
+    # when the analysis is created, based on the value set for the property
+    # NumberOfRequiredVerifications from the Analysis Service
+    IntegerField('NumberOfRequiredVerifications', default=1),
+
+    # Number of verifications done for this analysis. Each time a 'verify'
+    # transition takes place, this value is updated accordingly. The
+    # transition will finally succeed when the NumberOfVerifications matches
+    # with the NumberOfRequiredVerifications. Meanwhile, the state of the
+    # object will remain in 'to_be_verified'
+    IntegerField('NumberOfVerifications', default=0),
 ),
 )
 

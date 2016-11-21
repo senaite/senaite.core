@@ -117,6 +117,8 @@ def create_analysisrequest(context, request, values, analyses=None,
 
     # Set the state of analyses we created.
     for analysis in analyses:
+        revers = analysis.getService().getNumberOfRequiredVerifications()
+        analysis.setNumberOfRequiredVerifications(revers)
         doActionFor(analysis, 'sample_due')
         analysis_state = workflow.getInfoFor(analysis, 'review_state')
         if analysis_state not in skip_receive:

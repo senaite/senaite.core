@@ -732,9 +732,8 @@ class AnalysesView(BikaListingView):
                 numverifications = service.getNumberOfRequiredVerifications()
                 if numverifications > 1:
                     # More than one verification required, place an icon
-                    # TODO Get the number of verifications already done:
-                    import random
-                    done = random.randint(1, 3)
+                    # Get the number of verifications already done:
+                    done = obj.getNumberOfVerifications()
                     pending = numverifications - done
                     ratio = float(done)/float(numverifications) \
                         if done > 0 else 0

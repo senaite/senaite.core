@@ -234,6 +234,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             ref_uid = reference.addReferenceAnalysis(service_uid, ref_type)
             ref_analysis = rc.lookupObject(ref_uid)
 
+            # Set the required number of verifications
+            reqvers = service.getNumberOfRequiredVerifications()
+            ref_analysis.setNumberOfRequiredVerifications(reqvers)
+
             # Set ReferenceAnalysesGroupID (same id for the analyses from
             # the same Reference Sample and same Worksheet)
             ref_analysis.setReferenceAnalysesGroupID(refgid)
@@ -327,6 +331,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             _id = self._findUniqueId(service.getKeyword())
             duplicate = _createObjectByType("DuplicateAnalysis", self, _id)
             duplicate.setAnalysis(analysis)
+
+            # Set the required number of verifications
+            reqvers = analysis.getNumberOfRequiredVerifications()
+            duplicate.setNumberOfRequiredVerifications(reqvers)
 
             # Set ReferenceAnalysesGroupID (same id for the analyses from
             # the same Reference Sample and same Worksheet)
@@ -735,7 +743,15 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 state = workflow.getInfoFor(analysis, 'review_state', '')
                 if state != 'to_be_verified':
                     continue
-                doActionFor(analysis, "verify")
+                # For the 'verify' transition to (effectively) take place,
+                # we need to check if the required number of verifications for
+                # the analysis is, at least, the number of verifications
+                # performed previously +1
+                revers = analysis.getNumberOfRequiredVerifications()
+                nmvers = analysis.getNumberOfVerifications()
+                analysis.setNumberOfVerifications(nmvers+1)
+                if revers-nmvers <= 1:
+                    doActionFor(analysis, "verify")
 
     def workflow_script_reject(self):
         """Copy real analyses to RejectAnalysis, with link to real
