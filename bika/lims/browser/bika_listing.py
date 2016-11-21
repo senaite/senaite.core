@@ -204,7 +204,25 @@ class WorkflowAction:
                 allowed_transitions = [it['id'] for it in \
                                        workflow.getTransitionsFor(item)]
                 if action in allowed_transitions:
-                    success, message = doActionFor(item, action)
+                    success = False
+                    # if action is "verify" and the item is an analysis or
+                    # reference analysis, check if the if the required number
+                    # of verifications done for the analysis is, at least,
+                    # the number of verifications performed previously+1
+                    if (action == 'verify' and
+                        hasattr(item, 'getNumberOfVerifications') and
+                        hasattr(item, 'getNumberOfRequiredVerifications')):
+                        success = True
+                        revers = item.getNumberOfRequiredVerifications()
+                        nmvers = item.getNumberOfVerifications()
+                        item.setNumberOfVerifications(nmvers+1)
+                        if revers-nmvers <= 1:
+                            success, message = doActionFor(item, action)
+                            if not success:
+                                # If failed, restore to the previous number
+                                analysis.setNumberOfVerifications(numvers)
+                    else:
+                        success, message = doActionFor(item, action)
                     if success:
                         transitioned.append(item.id)
                     else:
