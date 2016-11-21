@@ -741,9 +741,9 @@ class AnalysesView(BikaListingView):
                     scale = '' if ratio < 0.25 else '25' \
                             if ratio < 0.50 else '50' \
                             if ratio < 0.75 else '75'
-                    anchor = "<a href='#' title='%s: %s %s' " \
+                    anchor = "<a href='#' title='%s &#13;%s %s' " \
                              "class='multi-verification scale-%s'>%s/%s</a>"
-                    anchor = anchor % (t(_("Multi verification required")),
+                    anchor = anchor % (t(_("Multi-verification required")),
                                        str(pending),
                                        t(_("verification(s) pending")),
                                        scale, str(done), str(numverifications))
@@ -755,13 +755,13 @@ class AnalysesView(BikaListingView):
                 if allowed and not obj.isUserAllowedToVerify(member):
                     after_icons.append(
                         "<img src='++resource++bika.lims.images/submitted-by-current-user.png' title='%s'/>" %
-                        (t(_("Cannot verify: Submitted by current user")))
+                        (t(_("Cannot verify, submitted by current user")))
                         )
                 elif allowed:
                     if obj.getSubmittedBy() == member.getUser().getId():
                         after_icons.append(
                         "<img src='++resource++bika.lims.images/warning.png' title='%s'/>" %
-                        (t(_("Can be verified, but submitted by current user")))
+                        (t(_("Can verify, but submitted by current user")))
                         )
 
             # add icon for assigned analyses in AR views
