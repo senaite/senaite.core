@@ -43,7 +43,7 @@
                            datepicker python:1 if not widget.show_time else 0;
                            datetimepicker python:1 if widget.show_time else 0;
                            maxlength widget/maxlength|nothing;
-                           datepicker_nofuture python:1 if widget.datetimepicker_nofuture else 0;"/>
+                           datepicker_nofuture python:1 if hasattr(widget, 'datetimepicker_nofuture') and widget.datetimepicker_nofuture else 0;"/>
   </metal:use>
 </metal:edit_macro>
 
