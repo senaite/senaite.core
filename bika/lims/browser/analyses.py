@@ -747,6 +747,27 @@ class AnalysesView(BikaListingView):
             # Submitting user may not verify results unless the user is labman
             # or manager and the AS has isSelfVerificationEnabled set to True
             if items[i]['review_state'] == 'to_be_verified':
+                # If multi-verification required, place an informative icon
+                numverifications = service.getNumberOfRequiredVerifications()
+                if numverifications > 1:
+                    # More than one verification required, place an icon
+                    # TODO Get the number of verifications already done:
+                    import random
+                    done = random.randint(1, 3)
+                    pending = numverifications - done
+                    ratio = float(done)/float(numverifications) \
+                        if done > 0 else 0
+                    scale = '' if ratio < 0.25 else '25' \
+                            if ratio < 0.50 else '50' \
+                            if ratio < 0.75 else '75'
+                    anchor = "<a href='#' title='%s: %s %s' " \
+                             "class='multi-verification scale-%s'>%s/%s</a>"
+                    anchor = anchor % (t(_("Multi verification required")),
+                                       str(pending),
+                                       t(_("verification(s) pending")),
+                                       scale, str(done), str(numverifications))
+                    after_icons.append(anchor)
+
                 username = member.getUserName()
                 allowed = api.user.has_permission(VerifyPermission,
                                                   username=username)

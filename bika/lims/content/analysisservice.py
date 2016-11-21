@@ -974,7 +974,7 @@ schema = BikaSchema.copy() + Schema((
          ),
     ),
     IntegerField(
-        'NumberOfRequiredVerifications',
+        '_NumberOfRequiredVerifications',
         schemata="Analysis",
         default=-1,
         vocabulary="_getNumberOfRequiredVerificationsVocabulary",
@@ -1433,6 +1433,17 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         bsval = "%s (%s)" % (_("System default"), bsve)
         items = [(-1, bsval), (0, _('No')), (1, _('Yes'))]
         return IntDisplayList(list(items))
+
+    def getNumberOfRequiredVerifications(self):
+        """
+        Returns the number of required verifications a test for this analysis
+        requires before being transitioned to 'verified' state
+        :return: number of required verifications
+        """
+        num = self.get_NumberOfRequiredVerifications()
+        if num < 1:
+            return self.bika_setup.getNumberOfRequiredVerifications()
+        return num
 
     def _getNumberOfRequiredVerificationsVocabulary(self):
         """
