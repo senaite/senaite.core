@@ -729,7 +729,7 @@ class AnalysesView(BikaListingView):
             # or manager and the AS has isSelfVerificationEnabled set to True
             if items[i]['review_state'] == 'to_be_verified':
                 # If multi-verification required, place an informative icon
-                numverifications = service.getNumberOfRequiredVerifications()
+                numverifications = obj.getNumberOfRequiredVerifications()
                 if numverifications > 1:
                     # More than one verification required, place an icon
                     # Get the number of verifications already done:
