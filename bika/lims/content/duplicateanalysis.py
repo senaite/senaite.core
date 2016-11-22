@@ -130,6 +130,10 @@ schema = schema.copy() + Schema((
         'Keyword',
         expression="context.getAnalysis().getKeyword()",
     ),
+    ComputedField(
+        'NumberOfRequiredVerifications',
+        expression='context.getAnalysis().getNumberOfRequiredVerifications()',
+    )
 ),
 )
 
