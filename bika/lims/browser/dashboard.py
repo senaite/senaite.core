@@ -115,6 +115,111 @@ class DashboardView(BrowserView):
                     self.get_worksheets_section()]
         return sections
 
+    def isAllowedAR(self, obj):
+        """
+        It checks if the analysis request can be added to the list depending
+        on the department filter. It checks the department of each analysis
+        service from each analysis belonguing to the given analysis request.
+        @Obj: it is an analysis request object.
+        @return: boolean
+        """
+        # Gettin the department from analysis service
+        deps = obj.getDepartments()
+        result = True
+        if deps:
+            # Getting the cookie value
+            cookie_dep_uid = self.request.get('filter_by_department_info', '')
+            # Comparing departments' UIDs
+            deps_uids = set([dep.UID() for dep in deps])
+            filter_uids = set(
+                [self.request.get('filter_by_department_info', '')])
+            matches = deps_uids & filter_uids
+            result = len(matches) > 0
+        return result
+
+    def getAllowedLenAR(self,catalog):
+        """
+        Returns count of Analysis Requests from the catalog filtered by department.
+        @catalog is a bika_catalog
+        """
+        count=0
+        for c in catalog:
+            if self.isAllowedAR(c.getObject()):
+                count+=1
+        return count
+
+    def isAllowedAn(self, obj):
+        """
+        It checks if the item can be added to the list depending on the
+        department filter. If the analysis service is not assigned to a
+        department, show it.
+        @Obj: it is an analysis object.
+        @return: boolean
+        """
+        # Gettin the department from analysis service
+        serv_dep = obj.getService().getDepartment()
+        result = True
+        if serv_dep:
+            # Getting the cookie value
+            cookie_dep_uid = self.request.get('filter_by_department_info', '')
+            # Comparing departments' UIDs
+            result = True if serv_dep.UID() in\
+                self.request.get('filter_by_department_info', '') else False
+        return result
+
+    def getAllowedLenAn(self,catalog):
+        """
+        Returns count of Analysises from the catalog filtered by department.
+        @catalog is a bika_catalog
+        """
+        count=0
+        for c in catalog:
+            if self.isAllowedAn(c.getObject()):
+                count+=1
+        return count
+
+    def isAllowedWS(self, obj):
+        """
+        Only show "my" worksheets
+        this cannot be setup in contentFilter,
+        because AuthenticatedMember is not available in __init__
+        It also checks if the worksheet can be added to the list depending
+        on the department filter. It checks the department of each analysis
+        service from each analysis belonguing to the given worksheet.
+        @Obj: it is a worksheet object.
+        @return: boolean
+        """
+        if self.selected_state == 'mine' or self.restrict_results == True:
+            analyst = obj.getAnalyst().strip()
+            if analyst != _c(self.member.getId()):
+                return False
+        # Gettin the department from worksheet
+        deps = [an.getDepartment().UID() for
+                an in obj.getWorksheetServices() if
+                an.getDepartment()]
+        result = True
+        if deps:
+            # Getting the cookie value
+            cookie_dep_uid = self.request.get('filter_by_department_info', '')
+            # Comparing departments' UIDs
+            deps_uids = set(deps)
+            filter_uids = set(
+                [self.request.get('filter_by_department_info', '')])
+            matches = deps_uids & filter_uids
+            result = len(matches) > 0
+        return result
+
+    def getAllowedLenWS(self,catalog):
+        """
+        Returns count of Worksheet from the catalog filtered by department.
+        @catalog is a bika_catalog
+        """
+        count=0
+        for c in catalog:
+            if self.isAllowedWS(c.getObject()):
+                count+=1
+        return count
+
     def get_analysisrequests_section(self):
         """ Returns the section dictionary related with Analysis
             Requests, that contains some informative panels (like
@@ -134,23 +239,21 @@ class DashboardView(BrowserView):
                      'attachment_due',
                      'verified']
         bc = getToolByName(self.context, "bika_catalog")
-        numars = len(bc(portal_type="AnalysisRequest",
-                        created=self.date_range,
-                        getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
-                        cancellation_state=['active',]))
-        numars += len(bc(portal_type="AnalysisRequest",
-                         review_state=active_rs,
+        numars = self.getAllowedLenAR(bc(portal_type="AnalysisRequest",
+                                       created=self.date_range,
+                                       cancellation_state=['active',]))
+        numars += self.getAllowedLenAR(bc(portal_type="AnalysisRequest",
+                                        review_state=active_rs,
                          getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
-                         cancellation_state=['active',],
-                         created=self.base_date_range))
+                                        cancellation_state=['active',],
+                                        created=self.base_date_range))
 
         if (sampenabled):
             # Analysis Requests awaiting to be sampled or scheduled
             review_state = ['to_be_sampled',]
-            ars = len(bc(portal_type="AnalysisRequest",
-                         review_state=review_state,
-                         getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
-                         cancellation_state=['active',]))
+            ars = self.getAllowedLenAR(bc(portal_type="AnalysisRequest",
+                                        review_state=review_state,
+                                        cancellation_state=['active',]))
             ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
             ratio = str("%%.%sf" % 1) % ratio
             msg = _("To be sampled")
@@ -165,10 +268,9 @@ class DashboardView(BrowserView):
 
             # Analysis Requests awaiting to be preserved
             review_state = ['to_be_preserved',]
-            ars = len(bc(portal_type="AnalysisRequest",
-                         review_state=review_state,
-                         getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
-                         cancellation_state=['active',]))
+            ars = self.getAllowedLenAR(bc(portal_type="AnalysisRequest",
+                                        review_state=review_state,
+                                        cancellation_state=['active',]))
             ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
             ratio = str("%%.%sf" % 1) % ratio
             msg = _("To be preserved")
@@ -183,10 +285,9 @@ class DashboardView(BrowserView):
 
             # Analysis Requests awaiting to be sampled
             review_state = ['scheduled_sampling',]
-            ars = len(bc(portal_type="AnalysisRequest",
-                         review_state=review_state,
-                         getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
-                         cancellation_state=['active',]))
+            ars = self.getAllowedLenAR(bc(portal_type="AnalysisRequest",
+                                        review_state=review_state,
+                                        cancellation_state=['active',]))
             ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
             ratio = str("%%.%sf" % 1) % ratio
             msg = _("Scheduled sampling")
@@ -201,10 +302,9 @@ class DashboardView(BrowserView):
 
         # Analysis Requests awaiting for reception
         review_state = ['sample_due',]
-        ars = len(bc(portal_type="AnalysisRequest",
-                     review_state=review_state,
-                     getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
-                     cancellation_state=['active',]))
+        ars = self.getAllowedLenAR(bc(portal_type="AnalysisRequest",
+                                    review_state=review_state,
+                                    cancellation_state=['active',]))
         ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
         msg = _("Reception pending")
@@ -219,10 +319,9 @@ class DashboardView(BrowserView):
 
         # Analysis Requests under way
         review_state = ['attachment_due', 'sample_received', 'assigned']
-        ars = len(bc(portal_type="AnalysisRequest",
-                     review_state=review_state,
-                     getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
-                     cancellation_state=['active',]))
+        ars = self.getAllowedLenAR(bc(portal_type="AnalysisRequest",
+                                    review_state=review_state,
+                                    cancellation_state=['active',]))
         ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
         msg = _("Results pending")
@@ -237,10 +336,9 @@ class DashboardView(BrowserView):
 
         # Analysis Requests to be verified
         review_state = ['to_be_verified',]
-        ars = len(bc(portal_type="AnalysisRequest",
-                     review_state=review_state,
-                     getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
-                     cancellation_state=['active',]))
+        ars = self.getAllowedLenAR(bc(portal_type="AnalysisRequest",
+                                    review_state=review_state,
+                                    cancellation_state=['active',]))
         ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
         msg = _("To be verified")
@@ -255,10 +353,9 @@ class DashboardView(BrowserView):
 
         # Analysis Requests to be published
         review_state = ['verified',]
-        ars = len(bc(portal_type="AnalysisRequest",
-                     review_state=review_state,
-                     getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
-                     cancellation_state=['active',]))
+        ars = self.getAllowedLenAR(bc(portal_type="AnalysisRequest",
+                                    review_state=review_state,
+                                    cancellation_state=['active',]))
         ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
         msg = _("To be published")
@@ -276,40 +373,40 @@ class DashboardView(BrowserView):
         workflow = getToolByName(self.context, 'portal_workflow')
         allars = bc(portal_type="AnalysisRequest",
                     sort_on="created",
-                    getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
                     created=self.min_date_range)
         outevo = []
         for ar in allars:
             ar = ar.getObject()
-            state = 'other_status'
-            try:
-                state = workflow.getInfoFor(ar, 'cancellation_state')
-                if (state == 'active'):
-                    state = workflow.getInfoFor(ar, 'review_state')
-                else:
-                    state = 'inactive'
-            except:
-                pass
+            if self.isAllowedAR(ar):
+                state = 'other_status'
+                try:
+                    state = workflow.getInfoFor(ar, 'cancellation_state')
+                    if (state == 'active'):
+                        state = workflow.getInfoFor(ar, 'review_state')
+                    else:
+                        state = 'inactive'
+                except:
+                    pass
 
-            created = self._getDateStr(self.periodicity, ar.created())
-            state = 'sample_due' if state in ['to_be_sampled', 'to_be_preserved'] else state
-            state = 'sample_received' if state in ['assigned', 'attachment_due'] else state
-            if (len(outevo) > 0 and outevo[-1]['date'] == created):
-                key = state if _(state) in outevo[-1] else 'other_status'
-                outevo[-1][_(key)] += 1
-            else:
-                currow = {'date': created,
-                   _('sample_due'): 0,
-                   _('sample_received'): 0,
-                   _('to_be_verified'): 0,
-                   _('verified'): 0,
-                   _('published'): 0,
-                   _('inactive'): 0,
-                   _('other_status'): 0,
-                   }
-                key = state if _(state) in currow else 'other_status'
-                currow[_(key)] += 1
-                outevo.append(currow);
+                created = self._getDateStr(self.periodicity, ar.created())
+                state = 'sample_due' if state in ['to_be_sampled', 'to_be_preserved'] else state
+                state = 'sample_received' if state in ['assigned', 'attachment_due'] else state
+                if (len(outevo) > 0 and outevo[-1]['date'] == created):
+                    key = state if _(state) in outevo[-1] else 'other_status'
+                    outevo[-1][_(key)] += 1
+                else:
+                    currow = {'date': created,
+                       _('sample_due'): 0,
+                       _('sample_received'): 0,
+                       _('to_be_verified'): 0,
+                       _('verified'): 0,
+                       _('published'): 0,
+                       _('inactive'): 0,
+                       _('other_status'): 0,
+                       }
+                    key = state if _(state) in currow else 'other_status'
+                    currow[_(key)] += 1
+                    outevo.append(currow);
 
         out.append({'type':         'bar-chart-panel',
                     'name':         _('Evolution of Analysis Requests'),
@@ -328,22 +425,20 @@ class DashboardView(BrowserView):
         """
         out = []
         bc = getToolByName(self.context, "bika_catalog")
-        cookie_dep_uid = self.request.get('filter_by_department_info', '')
         active_ws = ['open', 'to_be_verified', 'attachment_due']
-        numws = len(bc(portal_type="Worksheet",
+        numws = self.getAllowedLenWS(bc(portal_type="Worksheet",
                        getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
-                       created=self.date_range))
+                                        created=self.date_range))
 
-        numws += len(bc(portal_type="Worksheet",
+        numws += self.getAllowedLenWS(bc(portal_type="Worksheet",
                         getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
-                        review_state=active_ws,
-                        created=self.base_date_range))
+                                         review_state=active_ws,
+                                         created=self.base_date_range))
 
         # Open worksheets
         review_state = ['open', 'attachment_due']
-        ws = len(bc(portal_type="Worksheet",
-                    getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
-                    review_state=review_state))
+        ws = self.getAllowedLenWS(bc(portal_type="Worksheet",
+                                     review_state=review_state))
         ratio = (float(ws)/float(numws))*100 if ws > 0 and numws > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
         msg = _("Results pending")
@@ -358,9 +453,8 @@ class DashboardView(BrowserView):
 
         # Worksheets to be verified
         review_state = ['to_be_verified', ]
-        ws = len(bc(portal_type="Worksheet",
-                    getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
-                    review_state=review_state))
+        ws = self.getAllowedLenWS(bc(portal_type="Worksheet",
+                                     review_state=review_state))
         ratio = (float(ws)/float(numws))*100 if ws > 0 and numws > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
         msg = _("To be verified")
@@ -377,39 +471,39 @@ class DashboardView(BrowserView):
         # periodicity
         workflow = getToolByName(self.context, 'portal_workflow')
         allws = bc(portal_type="Worksheet",
-                   getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
                    sort_on="created",
                    created=self.min_date_range)
         outevo = []
         for ws in allws:
             ws = ws.getObject()
-            state = 'other_status'
-            try:
-                state = workflow.getInfoFor(ws, 'cancellation_state')
-                if (state == 'active'):
-                    state = workflow.getInfoFor(ws, 'review_state')
+            if self.isAllowedWS(ws):
+                state = 'other_status'
+                try:
+                    state = workflow.getInfoFor(ws, 'cancellation_state')
+                    if (state == 'active'):
+                        state = workflow.getInfoFor(ws, 'review_state')
+                    else:
+                        state = 'inactive'
+                except:
+                    pass
+
+                created = self._getDateStr(self.periodicity, ws.created())
+
+                if (len(outevo) > 0 and outevo[-1]['date'] == created):
+                    key = state if _(state) in outevo[-1] else 'other_status'
+                    outevo[-1][_(key)] += 1
                 else:
-                    state = 'inactive'
-            except:
-                pass
-
-            created = self._getDateStr(self.periodicity, ws.created())
-
-            if (len(outevo) > 0 and outevo[-1]['date'] == created):
-                key = state if _(state) in outevo[-1] else 'other_status'
-                outevo[-1][_(key)] += 1
-            else:
-                currow = {'date': created,
-                   _('open'): 0,
-                   _('to_be_verified'): 0,
-                   _('attachment_due'): 0,
-                   _('verified'): 0,
-                   _('inactive'): 0,
-                   _('other_status'): 0,
-                   }
-                key = state if _(state) in currow else 'other_status'
-                currow[_(key)] += 1
-                outevo.append(currow);
+                    currow = {'date': created,
+                       _('open'): 0,
+                       _('to_be_verified'): 0,
+                       _('attachment_due'): 0,
+                       _('verified'): 0,
+                       _('inactive'): 0,
+                       _('other_status'): 0,
+                       }
+                    key = state if _(state) in currow else 'other_status'
+                    currow[_(key)] += 1
+                    outevo.append(currow);
 
         out.append({'type':         'bar-chart-panel',
                     'name':         _('Evolution of Worksheets'),
@@ -438,23 +532,21 @@ class DashboardView(BrowserView):
                      'to_be_verified',
                      'verified']
         bac = getToolByName(self.context, "bika_analysis_catalog")
-        cookie_dep_uid = self.request.get('filter_by_department_info', '')
-        numans = len(bac(portal_type="Analysis",
-                         created=self.date_range,
+        numans = self.getAllowedLenAn(bac(portal_type="Analysis",
+                                     created=self.date_range,
                          getDepartmentUID=cookie_dep_uid,
-                         cancellation_state=['active']))
-        numans += len(bac(portal_type="Analysis",
-                          review_state=active_rs,
+                                     cancellation_state=['active']))
+        numans += self.getAllowedLenAn(bac(portal_type="Analysis",
+                                      review_state=active_rs,
                           getDepartmentUID=cookie_dep_uid,
-                          cancellation_state=['active'],
-                          created=self.base_date_range))
-
+                                      cancellation_state=['active'],
+                                      created=self.base_date_range))
         # Analyses pending
         review_state = ['sample_received',
                         'assigned',
                         'attachment_due',
                         'to_be_verified']
-        ans = len(bac(portal_type="Analysis", review_state=review_state,getDepartmentUID=cookie_dep_uid ))
+        ans = self.getAllowedLenAn(bac(portal_type="Analysis", review_state=review_state))
         ratio = (float(ans)/float(numans))*100 if ans > 0 and numans > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
         msg = _("Analyses pending")
@@ -469,7 +561,7 @@ class DashboardView(BrowserView):
 
         # Analyses to be verified
         review_state = ['to_be_verified', ]
-        ans = len(bac(portal_type="Analysis", getDepartmentUID=cookie_dep_uid,review_state=review_state))
+        ans = self.getAllowedLenAn(bac(portal_type="Analysis", review_state=review_state))
         ratio = (float(ans)/float(numans))*100 if ans > 0 and numans > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
         msg = _("To be verified")
@@ -487,38 +579,38 @@ class DashboardView(BrowserView):
         workflow = getToolByName(self.context, 'portal_workflow')
         allans = bac(portal_type="Analysis",
                      sort_on="created",
-                     getDepartmentUID=cookie_dep_uid,
                      created=self.min_date_range)
         outevo = []
         for an in allans:
             an = an.getObject()
-            state = 'other_status'
-            try:
-                state = workflow.getInfoFor(an, 'cancellation_state')
-                if (state == 'active'):
-                    state = workflow.getInfoFor(an, 'review_state')
+            if self.isAllowedAn(an):
+                state = 'other_status'
+                try:
+                    state = workflow.getInfoFor(an, 'cancellation_state')
+                    if (state == 'active'):
+                        state = workflow.getInfoFor(an, 'review_state')
+                    else:
+                        state = 'inactive'
+                except:
+                    pass
+
+                created = self._getDateStr(self.periodicity, an.created())
+
+                if (len(outevo) > 0 and outevo[-1]['date'] == created):
+                    key = state if _(state) in outevo[-1] else 'other_status'
+                    outevo[-1][_(key)] += 1
                 else:
-                    state = 'inactive'
-            except:
-                pass
-
-            created = self._getDateStr(self.periodicity, an.created())
-
-            if (len(outevo) > 0 and outevo[-1]['date'] == created):
-                key = state if _(state) in outevo[-1] else 'other_status'
-                outevo[-1][_(key)] += 1
-            else:
-                currow = {'date': created,
-                   _('assigned'): 0,
-                   _('to_be_verified'): 0,
-                   _('attachment_due'): 0,
-                   _('verified'): 0,
-                   _('inactive'): 0,
-                   _('other_status'): 0,
-                   }
-                key = state if _(state) in currow else 'other_status'
-                currow[_(key)] += 1
-                outevo.append(currow)
+                    currow = {'date': created,
+                       _('assigned'): 0,
+                       _('to_be_verified'): 0,
+                       _('attachment_due'): 0,
+                       _('verified'): 0,
+                       _('inactive'): 0,
+                       _('other_status'): 0,
+                       }
+                    key = state if _(state) in currow else 'other_status'
+                    currow[_(key)] += 1
+                    outevo.append(currow)
 
         out.append({'type':         'bar-chart-panel',
                     'name':         _('Evolution of Analyses'),
