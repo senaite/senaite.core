@@ -2834,15 +2834,23 @@ class AnalysisRequest(BaseFolder):
             # verify all analyses in this AR.
             analyses = self.getAnalyses(review_state='to_be_verified')
             for analysis in analyses:
-                # For the 'verify' transition to (effectively) take place,
-                # we need to check if the required number of verifications for
-                # the analysis is, at least, the number of verifications
-                # performed previously +1
-                revers = analysis.getNumberOfRequiredVerifications()
-                nmvers = analysis.getNumberOfVerifications()
-                analysis.setNumberOfVerifications(nmvers+1)
-                if revers-nmvers <= 1:
-                    doActionFor(analysis.getObject(), "verify")
+                if (hasattr(analysis, 'getNumberOfVerifications') and
+                    hasattr(analysis, 'getNumberOfRequiredVerifications')):
+                    # For the 'verify' transition to (effectively) take place,
+                    # we need to check if the required number of verifications
+                    # for the analysis is, at least, the number of verifications
+                    # performed previously +1
+                    success = True
+                    revers = analysis.getNumberOfRequiredVerifications()
+                    nmvers = analysis.getNumberOfVerifications()
+                    analysis.setNumberOfVerifications(nmvers+1)
+                    if revers-nmvers <= 1:
+                        success, message = doActionFor(analysis, 'verify')
+                        if not success:
+                            # If failed, restore to the previous number
+                            analysis.setNumberOfVerifications(numvers)
+                else:
+                    doActionFor(analysis, 'verify')
 
     def workflow_script_publish(self):
         if skip(self, "publish"):

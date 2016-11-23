@@ -220,7 +220,7 @@ class WorkflowAction:
                             success, message = doActionFor(item, action)
                             if not success:
                                 # If failed, restore to the previous number
-                                analysis.setNumberOfVerifications(numvers)
+                                item.setNumberOfVerifications(numvers)
                             elif item.aq_parent.portal_type == 'AnalysisRequest':
                                 item.aq_parent.resetCache()
                     else:
