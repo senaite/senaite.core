@@ -2915,5 +2915,6 @@ class AnalysisRequest(BaseFolder):
     def resetCache(self):
         self.set_CachedAnalysesNum('')
         self.set_CachedDepartmentUIDs('')
+        self.reindexObject(idxs=["getDepartmentUIDs"])
 
 atapi.registerType(AnalysisRequest, PROJECTNAME)
