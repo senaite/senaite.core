@@ -38,6 +38,13 @@ def Priority(instance):
         return priority.getSortKey()
 
 
+@indexer(IWorksheet)
+def getDepartmentUIDs(instance):
+    deps = [an.getDepartment().UID() for
+            an in obj.getWorksheetServices() if
+            an.getDepartment()]
+    return deps
+
 schema = BikaSchema.copy() + Schema((
     HistoryAwareReferenceField('WorksheetTemplate',
         allowed_types=('WorksheetTemplate',),

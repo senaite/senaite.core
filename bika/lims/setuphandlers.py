@@ -524,6 +524,7 @@ class BikaGenerator:
         addIndex(bac, 'review_state', 'FieldIndex')
         addIndex(bac, 'worksheetanalysis_review_state', 'FieldIndex')
         addIndex(bac, 'cancellation_state', 'FieldIndex')
+        addIndex(bac, 'getDepartmentUID', 'KeywordIndex')
 
         addIndex(bac, 'getDueDate', 'DateIndex')
         addIndex(bac, 'getDateSampled', 'DateIndex')
@@ -612,6 +613,7 @@ class BikaGenerator:
         addIndex(bc, 'worksheetanalysis_review_state', 'FieldIndex')
         addIndex(bc, 'cancellation_state', 'FieldIndex')
 
+        addIndex(bc, 'getDepartmentUIDs', 'KeywordIndex')
         addIndex(bc, 'getAnalysisCategory', 'KeywordIndex')
         addIndex(bc, 'getAnalysisService', 'KeywordIndex')
         addIndex(bc, 'getAnalyst', 'FieldIndex')

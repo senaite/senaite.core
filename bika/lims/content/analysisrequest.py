@@ -82,6 +82,14 @@ def SamplingRoundUID(instance):
     if sr:
         return sr.UID()
 
+@indexer(IAnalysisRequest)
+def getDepartmentUIDs(instance):
+    """ Returns department UIDs assigned to the Analyses
+        from this Analysis Request
+    """
+    ans = [an.getObject() for an in instance.getAnalyses()]
+    depts = [an.getService().getDepartment().UID() for an in ans if an.getService().getDepartment()]
+    return depts
 
 schema = BikaSchema.copy() + Schema((
     StringField(
