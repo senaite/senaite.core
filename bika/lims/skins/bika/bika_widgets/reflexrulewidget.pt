@@ -307,7 +307,7 @@
                                     name string:${fieldName}.setresultvalue-${act_row_idx}:records:ignore_empty;
                                     id string:${fieldName}-setresultvalue-${repeat/idx/index}-${act_row_idx};
                                     tabindex tabindex/next|nothing;
-                                    value python:widget.getReflexRuleElement(idx,'range0');"
+                                    value python:widget.getReflexRuleActionElement(idx, act_row_idx, 'setresultvalue');"
                                     i18n:domain="python:i18n_domain">
                         </div>
                         <div class="to_other_worksheet inline">
