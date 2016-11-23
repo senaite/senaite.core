@@ -122,6 +122,7 @@ class DashboardView(BrowserView):
         """
         out = []
         sampenabled = self.context.bika_setup.getSamplingWorkflowEnabled()
+        cookie_dep_uid = self.request.get('filter_by_department_info', '')
 
         # Analysis Requests
         active_rs = ['to_be_sampled',
@@ -136,6 +137,7 @@ class DashboardView(BrowserView):
         bc = getToolByName(self.context, "bika_catalog")
         numars = len(bc(portal_type="AnalysisRequest",
                         created=self.date_range,
+                        getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
                         cancellation_state=['active',]))
         numars += len(bc(portal_type="AnalysisRequest",
                         review_state=active_rs,
@@ -147,6 +149,7 @@ class DashboardView(BrowserView):
             review_state = ['to_be_sampled',]
             ars = len(bc(portal_type="AnalysisRequest",
                          review_state=review_state,
+                         getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
                          cancellation_state=['active',]))
             ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
             ratio = str("%%.%sf" % 1) % ratio
@@ -164,6 +167,7 @@ class DashboardView(BrowserView):
             review_state = ['to_be_preserved',]
             ars = len(bc(portal_type="AnalysisRequest",
                          review_state=review_state,
+                         getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
                          cancellation_state=['active',]))
             ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
             ratio = str("%%.%sf" % 1) % ratio
@@ -181,6 +185,7 @@ class DashboardView(BrowserView):
             review_state = ['scheduled_sampling',]
             ars = len(bc(portal_type="AnalysisRequest",
                          review_state=review_state,
+                         getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
                          cancellation_state=['active',]))
             ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
             ratio = str("%%.%sf" % 1) % ratio
@@ -198,6 +203,7 @@ class DashboardView(BrowserView):
         review_state = ['sample_due',]
         ars = len(bc(portal_type="AnalysisRequest",
                      review_state=review_state,
+                     getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
                      cancellation_state=['active',]))
         ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
@@ -215,6 +221,7 @@ class DashboardView(BrowserView):
         review_state = ['attachment_due', 'sample_received', 'assigned']
         ars = len(bc(portal_type="AnalysisRequest",
                      review_state=review_state,
+                     getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
                      cancellation_state=['active',]))
         ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
@@ -232,6 +239,7 @@ class DashboardView(BrowserView):
         review_state = ['to_be_verified',]
         ars = len(bc(portal_type="AnalysisRequest",
                      review_state=review_state,
+                     getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
                      cancellation_state=['active',]))
         ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
@@ -249,6 +257,7 @@ class DashboardView(BrowserView):
         review_state = ['verified',]
         ars = len(bc(portal_type="AnalysisRequest",
                      review_state=review_state,
+                     getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
                      cancellation_state=['active',]))
         ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
@@ -266,6 +275,7 @@ class DashboardView(BrowserView):
         # periodicity
         workflow = getToolByName(self.context, 'portal_workflow')
         allars = bc(portal_type="AnalysisRequest",
+                    getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
                     sort_on="created",
                     created=self.min_date_range)
         outevo = []
@@ -318,17 +328,21 @@ class DashboardView(BrowserView):
         """
         out = []
         bc = getToolByName(self.context, "bika_catalog")
+        cookie_dep_uid = self.request.get('filter_by_department_info', '')
         active_ws = ['open', 'to_be_verified', 'attachment_due']
         numws = len(bc(portal_type="Worksheet",
+                       getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
                        created=self.date_range))
 
         numws += len(bc(portal_type="Worksheet",
+                        getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
                         review_state=active_ws,
                         created=self.base_date_range))
 
         # Open worksheets
         review_state = ['open', 'attachment_due']
         ws = len(bc(portal_type="Worksheet",
+                    getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
                     review_state=review_state))
         ratio = (float(ws)/float(numws))*100 if ws > 0 and numws > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
@@ -345,6 +359,7 @@ class DashboardView(BrowserView):
         # Worksheets to be verified
         review_state = ['to_be_verified', ]
         ws = len(bc(portal_type="Worksheet",
+                    getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
                     review_state=review_state))
         ratio = (float(ws)/float(numws))*100 if ws > 0 and numws > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
@@ -362,6 +377,7 @@ class DashboardView(BrowserView):
         # periodicity
         workflow = getToolByName(self.context, 'portal_workflow')
         allws = bc(portal_type="Worksheet",
+                   getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
                    sort_on="created",
                    created=self.min_date_range)
         outevo = []
@@ -422,10 +438,13 @@ class DashboardView(BrowserView):
                      'to_be_verified',
                      'verified']
         bac = getToolByName(self.context, "bika_analysis_catalog")
+        cookie_dep_uid = self.request.get('filter_by_department_info', '')
         numans = len(bac(portal_type="Analysis",
+                         getDepartmentUID=cookie_dep_uid,
                          created=self.date_range,
                          cancellation_state=['active']))
         numans += len(bac(portal_type="Analysis",
+                          getDepartmentUID=cookie_dep_uid,
                           review_state=active_rs,
                           cancellation_state=['active'],
                           created=self.base_date_range))
@@ -435,7 +454,9 @@ class DashboardView(BrowserView):
                         'assigned',
                         'attachment_due',
                         'to_be_verified']
-        ans = len(bac(portal_type="Analysis", review_state=review_state))
+        ans = len(bac(portal_type="Analysis",
+                      getDepartmentUID=cookie_dep_uid,
+                      review_state=review_state))
         ratio = (float(ans)/float(numans))*100 if ans > 0 and numans > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
         msg = _("Analyses pending")
@@ -450,7 +471,9 @@ class DashboardView(BrowserView):
 
         # Analyses to be verified
         review_state = ['to_be_verified', ]
-        ans = len(bac(portal_type="Analysis", review_state=review_state))
+        ans = len(bac(portal_type="Analysis",
+                      getDepartmentUID=cookie_dep_uid,
+                      review_state=review_state))
         ratio = (float(ans)/float(numans))*100 if ans > 0 and numans > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
         msg = _("To be verified")
@@ -467,6 +490,7 @@ class DashboardView(BrowserView):
         # periodicity
         workflow = getToolByName(self.context, 'portal_workflow')
         allans = bac(portal_type="Analysis",
+                     getDepartmentUID=cookie_dep_uid,
                      sort_on="created",
                      created=self.min_date_range)
         outevo = []

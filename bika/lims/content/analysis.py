@@ -328,6 +328,9 @@ class Analysis(BaseContent):
                 duetime = ''
             self.setDueDate(duetime)
 
+    def getDepartmentUID(self):
+        return self.getService().getDepartment().UID()
+
     def getReviewState(self):
         """ Return the current analysis' state"""
         workflow = getToolByName(self, "portal_workflow")
