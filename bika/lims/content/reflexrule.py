@@ -100,7 +100,7 @@ class ReflexRule(BaseContent):
                 return derivative
         return None
 
-    def _areConditionsMet(self, action_set, analysis):
+    def _areConditionsMet(self, action_set, analysis, forceuid=False):
         """
         This function returns a boolean as True if the conditions in the
         action_set are met, and returns False otherwise.
@@ -131,6 +131,8 @@ class ReflexRule(BaseContent):
             'mother_service_uid': 'ddaa2a7538bb4d188798498d6e675abd',
             'rulenumber': '1',
             'trigger': 'submit'}
+        :forceuid: a boolean used to get the analysis service's UID from the
+        analysis even if the analysis has been reflected and has a local_id.
         :return: a Boolean.
         """
         conditions = action_set.get('conditions', [])
@@ -138,15 +140,24 @@ class ReflexRule(BaseContent):
         eval_str = ''
         # Getting the analysis local id or its uid instead
         alocalid = analysis.getReflexRuleLocalID() if \
-            analysis.getIsReflexAnalysis() else service.UID()
+            analysis.getIsReflexAnalysis() and not forceuid else service.UID()
         # Getting the local ids (or analysis service uid) from the condition
         # with the same local id (or analysis service uid) as the analysis
         # attribute
         localids = [cond.get('analysisservice') for cond in conditions
                     if cond.get('analysisservice', '') == alocalid]
-        # If the local_id of the analysis is not found in the conditions, this
-        # action_set will not have any action for this analysis.
-        if not localids:
+        # Now the alocalid could be the UID of the analysis service (if
+        # this analysis has not been crated by a previous reflex rule) or it
+        # could be a local_id if the analysis has been created by a reflex
+        # rule.
+        # So, if the analysis was reflexed, and no localid has been found
+        # inside the action_set matching the analysis localid, lets look for
+        # the analysis service UID.
+        # forceuid is True when this second query has been done.
+        if not localids and not forceuid and analysis.getIsReflexAnalysis():
+            return self._areConditionsMet(action_set, analysis, forceuid=True)
+        # action_set will not have any action for this analysis
+        elif not localids:
             return False
         # Getting the action_set.rulenumber in order to check the
         # analysis.ReflexRuleActionsTriggered
@@ -347,8 +358,9 @@ def createWorksheet(base, worksheettemplate, analyst):
     ws.edit(
         Number=new_ws_id,
         Analyst=analyst,
-        WorksheetTemplate=worksheettemplate,
         )
+    if worksheettemplate:
+        ws.setWorksheetTemplate(worksheettemplate)
     return ws
 
 
