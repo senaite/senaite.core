@@ -10,6 +10,7 @@ from bika.lims import logger
 from Products.CMFCore import permissions
 from bika.lims.permissions import *
 
+cleanrebuild = []
 
 def upgrade(tool):
     """Upgrade step required for Bika LIMS 3.2.0
@@ -38,15 +39,22 @@ def upgrade(tool):
     setup.runImportStepFromProfile('profile-bika.lims:default', 'skins')
     setup.runImportStepFromProfile(
         'profile-bika.lims:default', 'portlets', run_dependencies=False)
+
     # Creating all the sampling coordinator roles, permissions and indexes
+    logger.info("Sampling Coordinator...")
     create_samplingcoordinator(portal)
+
+    # Reflex Testing setup
+    logger.info("Reflex testing...")
     reflex_rules(portal)
-    # Now, more than one Department can be assigned to a LabContact, so the
+
+    # Mote than one department can be assigned to a Contact
+    logger.info("More than one department per contact...")
     multi_department_to_labcontact(portal)
-    """Update workflow permissions
-    """
-    wf = getToolByName(portal, 'portal_workflow')
-    wf.updateRoleMappings()
+
+    # Clean and rebuild affected catalogs
+    cleanAndRebuildIfNeeded(portal)
+
     return True
 
 
@@ -56,61 +64,67 @@ def create_samplingcoordinator(portal):
     if 'SamplingCoordinator'\
             not in portal.acl_users.portal_role_manager.listRoleIds():
         portal.acl_users.portal_role_manager.addRole('SamplingCoordinator')
-    # add roles to the portal
-    portal._addRole('SamplingCoordinator')
-    if 'SamplingCoordinators' not in portal_groups.listGroupIds():
-        portal_groups.addGroup(
-            'SamplingCoordinators', title="Sampling Coordinators",
-            roles=['SamplingCoordinator'])
-    # permissions
-    # to deal with permissions http://docs.plone.org/develop/plone/security/permissions.html#checking-if-the-logged-in-user-has-a-permission
-    # Root permissions
-    # The last 0/1 regards the 'Acquire' column in the workflow's csv's
-    mp = portal.manage_permission
-    mp(AddSamplePartition, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler', 'SamplingCoordinator'], 1)
-    mp(ManageARPriority, ['Manager', 'LabManager', 'LabClerk'], 1)
-    mp(ManageAnalysisRequests, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'RegulatoryInspector', 'SamplingCoordinator'], 1)
-    mp(ManageSamples, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'RegulatoryInspector', 'SamplingCoordinator'], 1)
-    mp(ScheduleSampling, ['Manager', 'SamplingCoordinator'], 0)
-    mp(ReceiveSample, ['Manager', 'LabManager', 'LabClerk', 'Sampler', 'SamplingCoordinator'], 1)
-    mp(EditSample, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 1)
-    mp(ViewResults, ['Manager', 'LabManager', 'Analyst', 'Sampler', 'RegulatoryInspector', 'SamplingCoordinator'], 1)
-    mp(EditSamplePartition, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 1)
-    # /clients folder permissions
-    mp = portal.clients.manage_permission
-    mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'SamplingCoordinator'], 0)
-    mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Member', 'Analyst', 'Sampler', 'Preserver', 'SamplingCoordinator', 'SamplingCoordinator'], 0)
-    mp('Access contents information', ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 0)
-    portal.clients.reindexObject()
-    for obj in portal.clients.objectValues():
-        mp = obj.manage_permission
+        # add roles to the portal
+        portal._addRole('SamplingCoordinator')
+        if 'SamplingCoordinators' not in portal_groups.listGroupIds():
+            portal_groups.addGroup(
+                'SamplingCoordinators', title="Sampling Coordinators",
+                roles=['SamplingCoordinator'])
+
+        # permissions
+        # to deal with permissions http://docs.plone.org/develop/plone/security/permissions.html#checking-if-the-logged-in-user-has-a-permission
+        # Root permissions
+        # The last 0/1 regards the 'Acquire' column in the workflow's csv's
+        mp = portal.manage_permission
+        mp(AddSamplePartition, ['Manager', 'Owner', 'LabManager', 'LabClerk', 'Sampler', 'SamplingCoordinator'], 1)
+        mp(ManageARPriority, ['Manager', 'LabManager', 'LabClerk'], 1)
+        mp(ManageAnalysisRequests, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'RegulatoryInspector', 'SamplingCoordinator'], 1)
+        mp(ManageSamples, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'RegulatoryInspector', 'SamplingCoordinator'], 1)
+        mp(ScheduleSampling, ['Manager', 'SamplingCoordinator'], 0)
+        mp(ReceiveSample, ['Manager', 'LabManager', 'LabClerk', 'Sampler', 'SamplingCoordinator'], 1)
+        mp(EditSample, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 1)
+        mp(ViewResults, ['Manager', 'LabManager', 'Analyst', 'Sampler', 'RegulatoryInspector', 'SamplingCoordinator'], 1)
+        mp(EditSamplePartition, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 1)
+
+        # /clients folder permissions
+        mp = portal.clients.manage_permission
         mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'SamplingCoordinator'], 0)
-        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Member', 'Analyst', 'Sampler', 'Preserver', 'SamplingCoordinator'], 0)
+        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Member', 'Analyst', 'Sampler', 'Preserver', 'SamplingCoordinator', 'SamplingCoordinator'], 0)
         mp('Access contents information', ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 0)
-        obj.reindexObject()
-        for contact in portal.clients.objectValues('Contact'):
-            mp = contact.manage_permission
-            mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Owner', 'Analyst', 'Sampler', 'Preserver', 'SamplingCoordinator'], 0)
-            mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner', 'SamplingCoordinator'], 0)
+        portal.clients.reindexObject()
+        for obj in portal.clients.objectValues():
+            mp = obj.manage_permission
+            mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'SamplingCoordinator'], 0)
+            mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Member', 'Analyst', 'Sampler', 'Preserver', 'SamplingCoordinator'], 0)
+            mp('Access contents information', ['Manager', 'LabManager', 'Member', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'SamplingCoordinator'], 0)
+            obj.reindexObject()
+            for contact in portal.clients.objectValues('Contact'):
+                mp = contact.manage_permission
+                mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Owner', 'Analyst', 'Sampler', 'Preserver', 'SamplingCoordinator'], 0)
+                mp(permissions.ModifyPortalContent, ['Manager', 'LabManager', 'Owner', 'SamplingCoordinator'], 0)
 
-    # /analysisrequests folder permissions
-    mp = portal.analysisrequests.manage_permission
-    mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
-    mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
-    mp('Access contents information', ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
-    portal.analysisrequests.reindexObject()
-    # /samples folder permissions
-    mp = portal.samples.manage_permission
-    mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
-    mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'SamplingCoordinator'], 0)
-    mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
-    mp('Access contents information', ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
-    portal.analysisrequests.reindexObject()
+        # /analysisrequests folder permissions
+        mp = portal.analysisrequests.manage_permission
+        mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
+        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
+        mp('Access contents information', ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
+        portal.analysisrequests.reindexObject()
 
-    # Add the index for the catalog
-    bc = getToolByName(portal, 'bika_catalog', None)
-    if 'getScheduledSamplingSampler' not in bc.indexes():
-        bc.addIndex('getScheduledSamplingSampler', 'FieldIndex')
+        # /samples folder permissions
+        mp = portal.samples.manage_permission
+        mp(permissions.ListFolderContents, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
+        mp(permissions.AddPortalContent, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'SamplingCoordinator'], 0)
+        mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
+        mp('Access contents information', ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
+        portal.samples.reindexObject()
+
+        # Add the index for the catalog
+        bc = getToolByName(portal, 'bika_catalog', None)
+        addIndex(bc, 'getScheduledSamplingSampler', 'FieldIndex' )
+
+        logger.info("Update workflow permissions...")
+        wf = getToolByName(portal, 'portal_workflow')
+        wf.updateRoleMappings()
 
 def reflex_rules(portal):
     at = getToolByName(portal, 'archetype_tool')
@@ -127,6 +141,7 @@ def reflex_rules(portal):
     obj.reindexObject()
     if not portal['bika_setup'].get('bika_reflexrulefolder'):
         logger.info("ReflexRuleFolder not created")
+
     # Install Products.DataGridField
     qi.installProducts(['Products.DataGridField'])
     # add new types not to list in nav
@@ -136,29 +151,19 @@ def reflex_rules(portal):
     types = list(ntp.getProperty('metaTypesNotToList'))
     types.append("ReflexRule")
     ntp.manage_changeProperties(MetaTypesNotToQuery=types)
+
     pc = getToolByName(portal, 'portal_catalog')
-    if 'worksheettemplateUID' not in pc.indexes():
-        pc.addIndex('worksheettemplateUID', 'FieldIndex')
+    addIndex(pc, 'worksheettemplateUID', 'FieldIndex')
     addIndexAndColumn(pc, 'Analyst', 'FieldIndex')
-    if ('worksheettemplateUID' not in pc.indexes()) or\
-            ('Analyst' not in pc.indexes()):
-        pc.clearFindAndRebuild()
+
     bsc = getToolByName(portal, 'bika_setup_catalog')
-    if 'getAvailableMethodsUIDs' not in bsc.indexes():
-        bsc.addIndex('getAvailableMethodsUIDs', 'KeywordIndex')
-    if 'getMethodUID' not in bsc.indexes():
-        bsc.addIndex('getMethodUID', 'FieldIndex')
-    if ('getMethodUID' not in bsc.indexes()) or\
-            ('getAvailableMethodsUIDs' not in bsc.indexes()):
-        bsc.clearFindAndRebuild()
+    addIndex(bsc, 'getAvailableMethodsUIDs', 'KeywordIndex')
+    addIndex(bsc, 'getMethodUID', 'FieldIndex')
+
     bac = getToolByName(portal, 'bika_analysis_catalog')
-    if 'getInstrumentUID' not in bac.indexes():
-        bac.addIndex('getInstrumentUID', 'FieldIndex')
-    if 'getMethodUID' not in bac.indexes():
-        bac.addIndex('getMethodUID', 'FieldIndex')
-    if ('getMethodUID' not in bac.indexes()) or\
-            ('getInstrumentUID' not in bac.indexes()):
-        bac.clearFindAndRebuild()
+    addIndex(bac, 'getInstrumentUID', 'FieldIndex')
+    addIndex(bac, 'getMethodUID', 'FieldIndex')
+    addIndex(bac, 'getInstrumentUID', 'FieldIndex')
 
 def multi_department_to_labcontact(portal):
     """
@@ -177,12 +182,52 @@ def multi_department_to_labcontact(portal):
         if not obj.getDepartments():
             obj.setDepartments(obj.getDepartment())
 
+
+def delIndexAndColumn(catalog, index):
+    if index in catalog.indexes():
+        try:
+            catalog.delIndex(index)
+            logger.info('Old catalog index %s deleted.' % index)
+            if catalog.id not in cleanrebuild:
+                cleanrebuild.append(catalog.id)
+        except:
+            pass
+        try:
+            catalog.delColumn(index)
+            logger.info('Old catalog column %s deleted.' % index)
+        except:
+            pass
+def addIndex(catalog, index, indextype):
+    if index not in catalog.indexes():
+        try:
+            catalog.addIndex(index, indextype)
+            logger.info('Catalog index %s added.' % index)
+            if catalog.id not in cleanrebuild:
+                cleanrebuild.append(catalog.id)
+        except:
+            pass
+
 def addIndexAndColumn(catalog, index, indextype):
-    try:
-        catalog.addIndex(index, indextype)
-    except:
-        pass
-    try:
-        catalog.addColumn(index)
-    except:
-        pass
+    if index not in catalog.indexes():
+        try:
+            catalog.addIndex(index, indextype)
+            logger.info('Catalog index %s added.' % index)
+            if catalog.id not in cleanrebuild:
+                cleanrebuild.append(catalog.id)
+        except:
+            pass
+        try:
+            catalog.addColumn(index)
+            logger.info('Catalog column %s added.' % index)
+        except:
+            pass
+
+def cleanAndRebuildIfNeeded(portal):
+    for c in cleanrebuild:
+        logger.info('Cleaning and rebuilding %s...' % c)
+        try:
+            catalog = getToolByName(portal, c)
+            catalog.clearFindAndRebuild()
+        except:
+            logger.info("Unable to clean and rebuild %s " % c)
+            pass
