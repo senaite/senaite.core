@@ -723,13 +723,13 @@ class AnalysisRequestsView(BikaListingView):
         @return: boolean
         """
         # Gettin the department from analysis service
-        deps = obj.getDepartments()
+        deps = obj.getDepartmentUIDs()
         result = True
         if deps:
             # Getting the cookie value
             cookie_dep_uid = self.request.get('filter_by_department_info', '')
             # Comparing departments' UIDs
-            deps_uids = set([dep.UID() for dep in deps])
+            deps_uids = set(deps)
             filter_uids = set(
                 [self.request.get('filter_by_department_info', '')])
             matches = deps_uids & filter_uids

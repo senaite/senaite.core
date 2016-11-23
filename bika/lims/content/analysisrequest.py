@@ -1528,7 +1528,8 @@ schema = BikaSchema.copy() + Schema((
     ),
 
     # Temporary performance optimizations (cached fields on runtime)
-    StringField('_CachedAnalysesNum', default='')
+    StringField('_CachedAnalysesNum', default=''),
+    StringField('_CachedDepartmentUIDs', default=''),
 )
 )
 
@@ -2474,9 +2475,28 @@ class AnalysisRequest(BaseFolder):
         """ Returns a set with the departments assigned to the Analyses
             from this Analysis Request
         """
-        ans = [an.getObject() for an in self.getAnalyses()]
-        depts = [an.getService().getDepartment() for an in ans if an.getService().getDepartment()]
+        if self.get_CachedDepartmentUIDs():
+            logger.warn("Departments: cached")
+            uids = self.get_CachedDepartmentUIDs()
+            uids = uids.split(',')
+            bc = getToolByName(self, "bika_setup_catalog")
+            depts = bc(portal_type="Department", UID=uids)
+            depts = [dept.getObject() for dept in depts]
+        else:
+            logger.warn("Departments: NOT cached")
+            ans = [an.getObject() for an in self.getAnalyses()]
+            depts = [an.getService().getDepartment() for an in ans if an.getService().getDepartment()]
+            uids = [dept.UID() for dept in depts]
+            uids = ','.join(uids);
+            self.set_CachedDepartmentUIDs(uids)
         return set(depts)
+
+    def getDepartmentUIDs(self):
+        if self.get_CachedDepartmentUIDs():
+            depts = self.get_CachedDepartmentUIDs().split(',')
+        else:
+            depts = [dept.UID() for dept in self.getDepartments()]
+        return depts
 
     def getResultsInterpretationByDepartment(self, department=None):
         """ Returns the results interpretation for this Analysis Request
@@ -2883,5 +2903,6 @@ class AnalysisRequest(BaseFolder):
 
     def resetCache(self):
         self.set_CachedAnalysesNum('')
+        self.set_CachedDepartmentUIDs('')
 
 atapi.registerType(AnalysisRequest, PROJECTNAME)

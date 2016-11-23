@@ -121,7 +121,7 @@ class BatchFolderContentsView(BikaListingView):
             [self.request.get('filter_by_department_info', '')])
         for ar in ars:
             # Comparing departments' UIDs
-            deps_uids = set([dep.UID() for dep in ar.getDepartments()])
+            deps_uids = set(ar.getDepartmentUIDs())
             matches = deps_uids & filter_uids
             if len(matches) > 0:
                 return True
