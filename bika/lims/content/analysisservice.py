@@ -955,6 +955,21 @@ schema = BikaSchema.copy() + Schema((
                         "Profile and/or Analysis Request"),
                  ),
     ),
+    IntegerField(
+        'SelfVerification',
+        schemata="Analysis",
+        default=-1,
+        vocabulary="_getSelfVerificationVocabulary",
+        widget=SelectionWidget(
+            label=_("Self-verification of results"),
+            description=_(
+                "If enabled, the same user who submitted a result for this "
+                "analysis will be able to verify it. Note only Lab Managers "
+                "can verify results. The option set here has priority over "
+                "the option set in Bika Setup"),
+            format="select",
+         ),
+    ),
     StringField('CommercialID',
         searchable=1,
         schemata='Description',
@@ -1392,6 +1407,29 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         items = [(o.UID, o.Title) for o in
                  bsc(portal_type='Preservation', inactive_state='active')]
         items.sort(lambda x, y: cmp(x[1], y[1]))
+        return DisplayList(list(items))
+
+    def isSelfVerificationEnabled(self):
+        """
+        Returns if the user that submitted a result for this analysis must also
+        be able to verify the result
+        :return: true or false
+        """
+        bsve = self.bika_setup.getSelfVerificationEnabled()
+        vs = self.getSelfVerification()
+        return bsve if vs == -1 else vs == 1
+
+    def _getSelfVerificationVocabulary(self):
+        """
+        Returns a DisplayList with the available options for the
+        self-verification list: 'system default', 'true', 'false'
+        :return: DisplayList with the available options for the
+            self-verification list
+        """
+        bsve = self.bika_setup.getSelfVerificationEnabled()
+        bsve = _('Yes') if bsve else _('No')
+        bsval = "%s (%s)" % (_("System default"), bsve)
+        items = [('-1', bsval), ('0', _('No')), ('1', _('Yes'))]
         return DisplayList(list(items))
 
     def workflow_script_activate(self):
