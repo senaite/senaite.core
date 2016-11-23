@@ -22,6 +22,7 @@ from Products.Archetypes.public import DisplayList, ReferenceField, \
     IntegerWidget, StringWidget, BaseContent, \
     Schema, registerType, MultiSelectionWidget, \
     FloatField, DecimalWidget
+from Products.Archetypes.utils import IntDisplayList
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
@@ -963,10 +964,27 @@ schema = BikaSchema.copy() + Schema((
         widget=SelectionWidget(
             label=_("Self-verification of results"),
             description=_(
-                "If enabled, the same user who submitted a result for this "
-                "analysis will be able to verify it. Note only Lab Managers "
-                "can verify results. The option set here has priority over "
-                "the option set in Bika Setup"),
+                "If enabled, a user who submitted a result for this analysis "
+                "will also be able to verify it. This setting take effect for "
+                "those users with a role assigned that allows them to verify "
+                "results (by default, managers, labmanagers and verifiers). "
+                "The option set here has priority over the option set in Bika "
+                "Setup"),
+            format="select",
+         ),
+    ),
+    IntegerField(
+        '_NumberOfRequiredVerifications',
+        schemata="Analysis",
+        default=-1,
+        vocabulary="_getNumberOfRequiredVerificationsVocabulary",
+        widget=SelectionWidget(
+            label=_("Number of required verifications"),
+            description=_(
+                "Number of required verifications from different users with "
+                "enough privileges before a given result for this analysis "
+                "being considered as 'verified'. The option set here has "
+                "priority over the option set in Bika Setup"),
             format="select",
          ),
     ),
@@ -1429,8 +1447,31 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         bsve = self.bika_setup.getSelfVerificationEnabled()
         bsve = _('Yes') if bsve else _('No')
         bsval = "%s (%s)" % (_("System default"), bsve)
-        items = [('-1', bsval), ('0', _('No')), ('1', _('Yes'))]
-        return DisplayList(list(items))
+        items = [(-1, bsval), (0, _('No')), (1, _('Yes'))]
+        return IntDisplayList(list(items))
+
+    def getNumberOfRequiredVerifications(self):
+        """
+        Returns the number of required verifications a test for this analysis
+        requires before being transitioned to 'verified' state
+        :return: number of required verifications
+        """
+        num = self.get_NumberOfRequiredVerifications()
+        if num < 1:
+            return self.bika_setup.getNumberOfRequiredVerifications()
+        return num
+
+    def _getNumberOfRequiredVerificationsVocabulary(self):
+        """
+        Returns a DisplayList with the available options for the
+        multi-verification list: 'system default', '1', '2', '3', '4'
+        :return: DisplayList with the available options for the
+            multi-verification list
+        """
+        bsve = self.bika_setup.getNumberOfRequiredVerifications()
+        bsval = "%s (%s)" % (_("System default"), str(bsve))
+        items = [(-1, bsval), (1, '1'), (2, '2'), (3, '3'), (4, '4')]
+        return IntDisplayList(list(items))
 
     def workflow_script_activate(self):
         workflow = getToolByName(self, 'portal_workflow')

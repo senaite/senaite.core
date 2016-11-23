@@ -347,10 +347,26 @@ schema = BikaFolderSchema.copy() + Schema((
         widget=BooleanWidget(
             label=_("Allow self-verification of results"),
             description=_(
-                "If enabled, the same user who submitted a result "
-                "for this analysis will be able to verify it. Note "
-                "only Lab Managers can verify results. Disabled by "
-                "default"),
+                "If enabled, a user who submitted a result will also be able "
+                "to verify it. This setting only take effect for those users "
+                "with a role assigned that allows them to verify results "
+                "(by default, managers, labmanagers and verifiers)."
+                "This setting can be overrided for a given Analysis in "
+                "Analysis Service edit view. By default, disabled."),
+         ),
+    ),
+    IntegerField(
+        'NumberOfRequiredVerifications',
+        schemata="Analyses",
+        default=1,
+        vocabulary="_getNumberOfRequiredVerificationsVocabulary",
+        widget=SelectionWidget(
+            label=_("Number of required verifications"),
+            description=_(
+                "Number of required verifications before a given result being "
+                "considered as 'verified'. This setting can be overrided for "
+                "any Analysis in Analysis Service edit view. By default, 1"),
+            format="select",
          ),
     ),
     ReferenceField('DryMatterService',
@@ -682,6 +698,16 @@ class BikaSetup(folder.ATFolder):
             return True if checkbox == 'on' and len(widget[0]) > 1 else False
         else:
             return False
+
+    def _getNumberOfRequiredVerificationsVocabulary(self):
+        """
+        Returns a DisplayList with the available options for the
+        multi-verification list: '1', '2', '3', '4'
+        :return: DisplayList with the available options for the
+            multi-verification list
+        """
+        items = [(1, '1'), (2, '2'), (3, '3'), (4, '4')]
+        return IntDisplayList(list(items))
 
 
 registerType(BikaSetup, PROJECTNAME)
