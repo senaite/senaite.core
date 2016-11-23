@@ -260,9 +260,7 @@
                                     style python:'display:none' if action_row['action']=='setresult' else '';">
                         </div>
                         <div class="action_define_result inline">
-                            <span i18n:translate="" class="reflex_rule_text">
-                                From:
-                            </span>
+                            <span i18n:translate="" class="reflex_rule_text">to</span>
                             <!-- Define to which analysis the result should be
                             set, to the original one or the next one
                             (repeating the analysis) -->
