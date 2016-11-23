@@ -743,25 +743,26 @@ class AnalysisRequestsView(BikaListingView):
         if not item:
             return None
 
-        member = self.mtool.getAuthenticatedMember()
-        roles = member.getRoles()
-        hideclientlink = 'RegulatoryInspector' in roles \
-            and 'Manager' not in roles \
-            and 'LabManager' not in roles \
-            and 'LabClerk' not in roles
-
         sample = obj.getSample()
         url = obj.absolute_url()
-        if getSecurityManager().checkPermission(EditResults, obj):
+        if self.editresults == -1:
+            self.editresults = 1 if getSecurityManager().checkPermission(EditResults, obj) else 0
+        elif self.editresults == 1:
             url += "/manage_results"
 
-        item['Client'] = obj.aq_parent.Title()
-        if (hideclientlink == False):
+        clientuid = obj.getClientUID()
+        client = self.clients.get(clientuid,None)
+        if not client:
+            client = obj.aq_parent
+            self.clients[clientuid]=client
+
+        item['Client'] = client.Title()
+        if (self.hideclientlink == False):
             item['replace']['Client'] = "<a href='%s'>%s</a>" % \
-                (obj.aq_parent.absolute_url(), obj.aq_parent.Title())
+                (client.absolute_url(), client.Title())
         # extract province and district
-        item['Province'] = obj.aq_parent.getProvince()
-        item['District'] = obj.aq_parent.getDistrict()
+        item['Province'] = client.getProvince()
+        item['District'] = client.getDistrict()
         item['Creator'] = self.user_fullname(obj.Creator())
         item['getRequestID'] = obj.getRequestID()
         item['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
@@ -848,8 +849,8 @@ class AnalysisRequestsView(BikaListingView):
             sampler = sample.getSampler().strip()
             if sampler:
                 item['replace']['getSampler'] = self.user_fullname(sampler)
-            if 'Sampler' in member.getRoles() and not sampler:
-                sampler = member.id
+            if 'Sampler' in self.member.getRoles() and not sampler:
+                sampler = self.member.id
                 item['class']['getSampler'] = 'provisional'
         else:
             datesampled = ''
@@ -866,7 +867,7 @@ class AnalysisRequestsView(BikaListingView):
             item['required'] = ['getSampler', 'getDateSampled']
             item['allow_edit'] = ['getSampler', 'getDateSampled']
             samplers = getUsers(sample, ['Sampler', 'LabManager', 'Manager'])
-            username = member.getUserName()
+            username = self.member.getUserName()
             users = [({'ResultValue': u, 'ResultText': samplers.getValue(u)})
                      for u in samplers]
             item['choices'] = {'getSampler': users}
@@ -880,12 +881,11 @@ class AnalysisRequestsView(BikaListingView):
         item['getDatePreserved'] = ''
 
         # inline edits for Preserver and Date Preserved
-        checkPermission = self.context.portal_membership.checkPermission
         if checkPermission(PreserveSample, obj):
             item['required'] = ['getPreserver', 'getDatePreserved']
             item['allow_edit'] = ['getPreserver', 'getDatePreserved']
             preservers = getUsers(obj, ['Preserver', 'LabManager', 'Manager'])
-            username = member.getUserName()
+            username = self.member.getUserName()
             users = [({'ResultValue': u, 'ResultText': preservers.getValue(u)})
                      for u in preservers]
             item['choices'] = {'getPreserver': users}
@@ -899,10 +899,10 @@ class AnalysisRequestsView(BikaListingView):
 
         # Submitting user may not verify results
         if item['review_state'] == 'to_be_verified':
-            username = member.getUserName()
+            username = self.member.getUserName()
             allowed = api.user.has_permission(VerifyPermission,
                                               username=username)
-            if allowed and not obj.isUserAllowedToVerify(member):
+            if allowed and not obj.isUserAllowedToVerify(self.member):
                 item['after']['state_title'] = \
                      "<img src='++resource++bika.lims.images/submitted-by-current-user.png' title='%s'/>" % \
                      t(_("Cannot verify: Submitted by current user"))
@@ -920,6 +920,16 @@ class AnalysisRequestsView(BikaListingView):
     def __call__(self):
         self.workflow = getToolByName(self.context, "portal_workflow")
         self.mtool = getToolByName(self.context, 'portal_membership')
+
+        self.member = self.mtool.getAuthenticatedMember()
+        roles = self.member.getRoles()
+        self.hideclientlink = 'RegulatoryInspector' in roles \
+            and 'Manager' not in roles \
+            and 'LabManager' not in roles \
+            and 'LabClerk' not in roles
+
+        self.editresults = -1
+        self.clients = {}
 
         # Only "BIKA: ManageAnalysisRequests" may see the copy to new button.
         # elsewhere it is hacked in where required.
