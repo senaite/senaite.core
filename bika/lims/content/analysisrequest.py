@@ -1530,6 +1530,7 @@ schema = BikaSchema.copy() + Schema((
     # Temporary performance optimizations (cached fields on runtime)
     StringField('_CachedAnalysesNum', default=''),
     StringField('_CachedDepartmentUIDs', default=''),
+    StringField('_CachedProfilesTitle', default=''),
 )
 )
 
@@ -1597,7 +1598,15 @@ class AnalysisRequest(BaseFolder):
         return self.getContact().Title() if self.getContact() else ''
 
     def getProfilesTitle(self):
-        return [profile.Title() for profile in self.getProfiles()]
+        titles = self.get_CachedProfilesTitle()
+        if titles:
+            logger.warn("ProfilesTitle: cached")
+            return titles.split[',']
+        else:
+            logger.warn("ProfilesTitle: NOT cached")
+            titles = [profile.Title() for profile in self.getProfiles()]
+            self.set_CachedProfilesTitle(','.join(titles))
+            return titles
 
     def getTemplateTitle(self):
         return self.getTemplate().Title() if self.getTemplate() else ''
