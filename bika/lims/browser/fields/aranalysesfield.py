@@ -192,6 +192,9 @@ class ARAnalysesField(ObjectField):
         if delete_ids:
             # Note: subscriber might promote the AR
             instance.manage_delObjects(ids=delete_ids)
+
+        # reset cache
+        instance.resetCache()
         return new_analyses
 
     security.declarePublic('Vocabulary')

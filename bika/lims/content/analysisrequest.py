@@ -37,6 +37,7 @@ from bika.lims.workflow import doActionFor
 from decimal import Decimal
 from zope.interface import implements
 from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
 from bika.lims.utils import t, getUsers, dicts_to_dict
 from bika.lims.utils.analysisrequest import notify_rejection
 
@@ -1525,6 +1526,9 @@ schema = BikaSchema.copy() + Schema((
          subfields=('uid', 'hidden',),
          widget=ComputedWidget(visible=False),
     ),
+
+    # Temporary performance optimizations (cached fields on runtime)
+    StringField('_CachedAnalysesNum', default='')
 )
 )
 
@@ -1675,15 +1679,24 @@ class AnalysisRequest(BaseFolder):
 
     def getAnalysesNum(self):
         """ Return the amount of analyses verified/total in the current AR """
-        verified = 0
-        total = 0
-        for analysis in self.getAnalyses():
-            review_state = analysis.review_state
-            if review_state in ['verified' ,'published']:
-                verified += 1
-            if review_state not in 'retracted':
-                total += 1
-        return verified,total
+        annum = self.get_CachedAnalysesNum()
+        if annum:
+            logger.warn("AnalysesNum: cached")
+            annums = annum.split(',')
+            return int(annums[0]), int(annums[1])
+        else:
+            logger.warn("AnalysesNum: NOT cached")
+            verified = 0
+            total = 0
+            for analysis in self.getAnalyses():
+                review_state = analysis.review_state
+                if review_state in ['verified' ,'published']:
+                    verified += 1
+                if review_state not in 'retracted':
+                    total += 1
+            annum = '%s,%s' % (verified, total)
+            self.set_CachedAnalysesNum(annum)
+            return verified,total
 
     def getResponsible(self):
         """ Return all manager info of responsible departments """
@@ -2867,5 +2880,8 @@ class AnalysisRequest(BaseFolder):
         if self.bika_setup.getNotifyOnRejection():
             # Notify the Client about the Rejection.
             notify_rejection(self)
+
+    def resetCache(self):
+        self.set_CachedAnalysesNum('')
 
 atapi.registerType(AnalysisRequest, PROJECTNAME)
