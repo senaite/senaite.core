@@ -54,9 +54,9 @@ def upgrade(tool):
 
     # Add new indexes
     bc = getToolByName(portal, 'bika_catalog', None)
-    bac = getToolByName(porta, 'bika_analysis_catalog', None)
+    bac = getToolByName(portal, 'bika_analysis_catalog', None)
     addIndex(bc, 'getDepartmentUIDs', 'KeywordIndex')
-    addIndex(bc, 'getDepartmentUID', 'FieldIndex')
+    addIndex(bac, 'getDepartmentUID', 'FieldIndex')
 
     # Remove unused indexes and columns
     logger.info("Removing stale indexes...")
