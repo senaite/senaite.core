@@ -1601,10 +1601,8 @@ class AnalysisRequest(BaseFolder):
     def getProfilesTitle(self):
         titles = self.get_CachedProfilesTitle()
         if titles:
-            logger.warn("ProfilesTitle: cached")
             return titles.split[',']
         else:
-            logger.warn("ProfilesTitle: NOT cached")
             titles = [profile.Title() for profile in self.getProfiles()]
             self.set_CachedProfilesTitle(','.join(titles))
             return titles
@@ -1612,7 +1610,6 @@ class AnalysisRequest(BaseFolder):
     def getTemplateTitle(self):
         title = self.get_CachedTemplateTitle()
         if not title:
-            logger.warn("TemplateTitle: NOT cached")
             title = self.getTemplate().Title() if self.getTemplate() else ''
             self.set_CachedTemplateTitle(title)
         return title
@@ -1697,11 +1694,9 @@ class AnalysisRequest(BaseFolder):
         """ Return the amount of analyses verified/total in the current AR """
         annum = self.get_CachedAnalysesNum()
         if annum:
-            logger.warn("AnalysesNum: cached")
             annums = annum.split(',')
             return int(annums[0]), int(annums[1])
         else:
-            logger.warn("AnalysesNum: NOT cached")
             verified = 0
             total = 0
             for analysis in self.getAnalyses():
@@ -2475,14 +2470,12 @@ class AnalysisRequest(BaseFolder):
             from this Analysis Request
         """
         if self.get_CachedDepartmentUIDs():
-            logger.warn("Departments: cached")
             uids = self.get_CachedDepartmentUIDs()
             uids = uids.split(',')
             bc = getToolByName(self, "bika_setup_catalog")
             depts = bc(portal_type="Department", UID=uids)
             depts = [dept.getObject() for dept in depts]
         else:
-            logger.warn("Departments: NOT cached")
             ans = [an.getObject() for an in self.getAnalyses()]
             depts = [an.getService().getDepartment() for an in ans if an.getService().getDepartment()]
             uids = [dept.UID() for dept in depts]
