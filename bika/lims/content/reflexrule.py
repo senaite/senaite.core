@@ -297,8 +297,9 @@ def doActionToAnalysis(base, action):
             # Create a new analysis
             analysis = duplicateAnalysis(base)
             analysis.setResult(result_value)
-            changeWorkflowState(analysis,
-                                "bika_analysis_workflow", "to_be_verified")
+            doActionFor(analysis, 'submit')
+            #changeWorkflowState(analysis,
+            #                    "bika_analysis_workflow", "to_be_verified")
     else:
         logger.error(
             "Not known Reflex Rule action %s." % (action.get('action', '')))
