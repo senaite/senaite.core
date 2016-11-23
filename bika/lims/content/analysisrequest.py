@@ -1717,15 +1717,7 @@ class AnalysisRequest(BaseFolder):
     def getResponsible(self):
         """ Return all manager info of responsible departments """
         managers = {}
-        departments = []
-        for analysis in self.objectValues('Analysis'):
-            department = analysis.getService().getDepartment()
-            if department is None:
-                continue
-            department_id = department.getId()
-            if department_id in departments:
-                continue
-            departments.append(department_id)
+        for department in self.getDepartments():
             manager = department.getManager()
             if manager is None:
                 continue
@@ -1760,15 +1752,7 @@ class AnalysisRequest(BaseFolder):
         """ Return all managers of responsible departments """
         manager_ids = []
         manager_list = []
-        departments = []
-        for analysis in self.objectValues('Analysis'):
-            department = analysis.getService().getDepartment()
-            if department is None:
-                continue
-            department_id = department.getId()
-            if department_id in departments:
-                continue
-            departments.append(department_id)
+        for department in self.getDepartments():
             manager = department.getManager()
             if manager is None:
                 continue
