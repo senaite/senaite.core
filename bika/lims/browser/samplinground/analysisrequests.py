@@ -48,7 +48,6 @@ class AnalysisRequestsView(_ARV, _ARAV):
             'getProfilesTitle': {'title': _('Profile'),
                                 'toggle': False},
             'getTemplateTitle': {'title': _('Template'),
-                                 'index': 'getTemplateTitle',
                                  'toggle': False},
         }
 

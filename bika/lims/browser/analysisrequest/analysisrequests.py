@@ -147,7 +147,6 @@ class AnalysisRequestsView(BikaListingView):
                                'sortable': True,
                                'toggle': False},
             'getTemplateTitle': {'title': _('Template'),
-                                 'index': 'getTemplateTitle',
                                  'toggle': False},
         }
         self.review_states = [

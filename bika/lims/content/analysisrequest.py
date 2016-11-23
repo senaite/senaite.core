@@ -1531,6 +1531,7 @@ schema = BikaSchema.copy() + Schema((
     StringField('_CachedAnalysesNum', default=''),
     StringField('_CachedDepartmentUIDs', default=''),
     StringField('_CachedProfilesTitle', default=''),
+    StringField('_CachedTemplateTitle', default='')
 )
 )
 
@@ -1609,7 +1610,12 @@ class AnalysisRequest(BaseFolder):
             return titles
 
     def getTemplateTitle(self):
-        return self.getTemplate().Title() if self.getTemplate() else ''
+        title = self.get_CachedTemplateTitle()
+        if not title:
+            logger.warn("TemplateTitle: NOT cached")
+            title = self.getTemplate().Title() if self.getTemplate() else ''
+            self.set_CachedTemplateTitle(title)
+        return title
 
     def setPublicationSpecification(self, value):
         "Never contains a value; this field is here for the UI."
