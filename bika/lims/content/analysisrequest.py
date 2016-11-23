@@ -2849,8 +2849,12 @@ class AnalysisRequest(BaseFolder):
                         if not success:
                             # If failed, restore to the previous number
                             analysis.setNumberOfVerifications(numvers)
+                        elif analysis.aq_parent.portal_type == 'AnalysisRequest':
+                            analysis.aq_parent.resetCache()
                 else:
                     doActionFor(analysis, 'verify')
+                    if analysis.aq_parent.portal_type == 'AnalysisRequest':
+                        analysis.aq_parent.resetCache()
 
     def workflow_script_publish(self):
         if skip(self, "publish"):
