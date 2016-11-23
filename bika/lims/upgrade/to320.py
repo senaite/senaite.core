@@ -41,6 +41,7 @@ def upgrade(tool):
     # Creating all the sampling coordinator roles, permissions and indexes
     create_samplingcoordinator(portal)
     departments(portal)
+    departments(portal)
     """Update workflow permissions
     """
     wf = getToolByName(portal, 'portal_workflow')
@@ -110,6 +111,17 @@ def create_samplingcoordinator(portal):
     if 'getScheduledSamplingSampler' not in bc.indexes():
         bc.addIndex('getScheduledSamplingSampler', 'FieldIndex')
 
+        bac.clearFindAndRebuild()
+
+def departments(portal):
+    """ To add department indexes to the catalogs """
+    bc = getToolByName(portal, 'bika_catalog')
+    if 'getDepartmentUIDs' not in bc.indexes():
+        bc.addIndex('getDepartmentUIDs', 'KeywordIndex')
+        bc.clearFindAndRebuild()
+    bac = getToolByName(portal, 'bika_analysis_catalog')
+    if 'getDepartmentUID' not in bac.indexes():
+        bac.addIndex('getDepartmentUID', 'KeywordIndex')
         bac.clearFindAndRebuild()
 
 def departments(portal):
