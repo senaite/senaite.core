@@ -222,7 +222,7 @@ class WorkflowAction:
                             success, message = doActionFor(item, action)
                             if not success:
                                 # If failed, restore to the previous number
-                                analysis.setNumberOfVerifications(numvers)
+                                item.setNumberOfVerifications(numvers)
                     else:
                         success, message = doActionFor(item, action)
                     if success:
