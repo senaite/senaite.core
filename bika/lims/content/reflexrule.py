@@ -82,14 +82,19 @@ class ReflexRule(BaseContent):
 
     def _fetch_analysis_for_local_id(self, analysis, ans_cond):
         """
-        This function returns True when the derivative IDs conditions are met.
+        This function returns an analysis when the derivative IDs conditions
+        are met.
         :analysis: the analysis full object which we want to obtain the
             rules for.
-        :ans_cond: the id with the target derivative reflex rule id.
+        :ans_cond: the local id with the target derivative reflex rule id.
         """
+        # Getting the first reflexed analysis from the chain
         first_reflexed = analysis.getOriginalReflexedAnalysis()
+        # Getting all reflexed analysis created due to this first analysis
         derivatives = first_reflexed.getBackReferences(
             'OriginalAnalysisReflectedAnalysis')
+        # From all the related reflexed analysis, return the one that matches
+        # with the local id 'ans_cond'
         for derivative in derivatives:
             if derivative.getReflexRuleLocalID() == ans_cond:
                 return derivative
@@ -102,32 +107,92 @@ class ReflexRule(BaseContent):
         :analysis: the analysis full object which we want to obtain the
             rules for.
         :action_set: a set of rules and actions as a dictionary.
+            {'actions': [{'act_row_idx': 0,
+                'action': 'setresult',
+                'an_result_id': 'set-4',
+                'analyst': 'analyst1',
+                'otherWS': False,
+                'setresultdiscrete': '3',
+                'setresulton': 'new',
+                'setresultvalue': '',
+                'worksheettemplate': ''}],
+            'conditions': [{'analysisservice': 'dup-2',
+                'and_or': 'and',
+                'cond_row_idx': 0,
+                'discreteresult': '2',
+                'range0': '',
+                'range1': ''},
+                {'analysisservice': 'dup-7',
+                'and_or': 'no',
+                'cond_row_idx': 1,
+                'discreteresult': '2',
+                'range0': '',
+                'range1': ''}],
+            'mother_service_uid': 'ddaa2a7538bb4d188798498d6e675abd',
+            'rulenumber': '1',
+            'trigger': 'submit'}
         :return: a Boolean.
         """
         conditions = action_set.get('conditions', [])
         service = analysis.getService()
         eval_str = ''
+        # Getting the analysis local id or its uid instead
         alocalid = analysis.getReflexRuleLocalID() if \
             analysis.getIsReflexAnalysis() else service.UID()
+        # Getting the local ids (or analysis service uid) from the condition
+        # with the same local id (or analysis service uid) as the analysis
+        # attribute
         localids = [cond.get('analysisservice') for cond in conditions
                     if cond.get('analysisservice', '') == alocalid]
+        # If the local_id of the analysis is not found in the conditions, this
+        # action_set will not have any action for this analysis.
         if not localids:
             return False
-
+        # Getting the action_set.rulenumber in order to check the
+        # analysis.ReflexRuleActionsTriggered
+        rulenumber = action_set.get('rulenumber', '')
+        # Getting the reflex rules uid in order to fill the
+        # analysis.ReflexRuleActionsTriggered attribute later
+        rr_uid = self.UID()
+        # Building the possible analysis.ReflexRuleActionsTriggered
+        rr_actions_triggered = '.'.join([rr_uid, rulenumber])
+        # If the follow condition is met, it means that the action_set for this
+        # analysis has already been done by any other analysis from the
+        # action_set. (e.g analsys.local_id =='dup-2', but this action has been
+        # ran by the analysis with local_id=='dup-1', so we do not have to
+        # run it again)
+        if rr_actions_triggered in\
+                analysis.getReflexRuleActionsTriggered().split('|'):
+            return False
+        # To save the analysis realted in the same action_set
+        ans_related_to_set = []
         for condition in conditions:
+            # analysisservice can be either a service uid (if it is the first
+            # condition in the reflex rule) or it could be a local id such
+            # as 'dup-2' if the analysis_set belongs to a derivate rule.
             ans_cond = condition.get('analysisservice', '')
             ans_uid_cond = action_set.get('mother_service_uid', '')
+            # Be aware that we already know that the local_id for 'analysis'
+            # has been founf inside the conditions fo this action_set
             if ans_cond != alocalid:
-                # Look for this localid (e.g dup-2)
+                # If the 'analysisservice' item from the condition is not the
+                # same as the local_id from the analysis, the system
+                # should look for the possible analysis with this localid
+                # (e.g dup-2) and get its analysis object in order to compare
+                # the results of the 'analysis variable' with the analysis
+                # object obtained here
                 curranalysis = self._fetch_analysis_for_local_id(
                     analysis, ans_cond)
             else:
+                # if the local_id of the 'analysis' is the same as the
+                # local_id in the condition, we will use it as the current
+                # analysis
                 curranalysis = analysis
+            ans_related_to_set.append(curranalysis)
             if not curranalysis:
                 continue
             # the value of the analysis' result as string
             result = curranalysis.getResult()
-
             if len(service.getResultOptions()) > 0:
                 # Discrete result as expacted value
                 exp_val = condition.get('discreteresult', '')
@@ -147,14 +212,15 @@ class ReflexRule(BaseContent):
                     (isnumber(result) and len(exp_val) == 2 and
                         float(exp_val[0]) <= float(result) and
                         float(result) <= float(exp_val[1])))
-
             # Build a string and then use eval()
             if and_or == 'no':
                 eval_str += str(resolution)
             else:
                 eval_str += str(resolution) + ' ' + and_or + ' '
-        if eval_str:
-            return eval(eval_str)
+        if eval_str and eval(eval_str):
+            for an in ans_related_to_set:
+                an.addReflexRuleActionsTriggered(rr_actions_triggered)
+            return True
         else:
             return False
 
@@ -231,8 +297,9 @@ def doActionToAnalysis(base, action):
             # Create a new analysis
             analysis = duplicateAnalysis(base)
             analysis.setResult(result_value)
-            changeWorkflowState(analysis,
-                                "bika_analysis_workflow", "to_be_verified")
+            doActionFor(analysis, 'submit')
+            #changeWorkflowState(analysis,
+            #                    "bika_analysis_workflow", "to_be_verified")
     else:
         logger.error(
             "Not known Reflex Rule action %s." % (action.get('action', '')))

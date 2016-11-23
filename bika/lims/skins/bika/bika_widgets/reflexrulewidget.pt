@@ -260,9 +260,7 @@
                                     style python:'display:none' if action_row['action']=='setresult' else '';">
                         </div>
                         <div class="action_define_result inline">
-                            <span i18n:translate="" class="reflex_rule_text">
-                                From:
-                            </span>
+                            <span i18n:translate="" class="reflex_rule_text">to</span>
                             <!-- Define to which analysis the result should be
                             set, to the original one or the next one
                             (repeating the analysis) -->
@@ -307,7 +305,7 @@
                                     name string:${fieldName}.setresultvalue-${act_row_idx}:records:ignore_empty;
                                     id string:${fieldName}-setresultvalue-${repeat/idx/index}-${act_row_idx};
                                     tabindex tabindex/next|nothing;
-                                    value python:widget.getReflexRuleElement(idx,'range0');"
+                                    value python:widget.getReflexRuleActionElement(idx, act_row_idx, 'setresultvalue');"
                                     i18n:domain="python:i18n_domain">
                         </div>
                         <div class="to_other_worksheet inline">

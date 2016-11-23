@@ -192,6 +192,9 @@ schema = BikaSchema.copy() + Schema((
     StringField('ReflexRuleAction', required=0, default=0),
     # Which is the 'local_id' inside the reflex rule
     StringField('ReflexRuleLocalID', required=0, default=0),
+    # Reflex rule triggered actions from which the current analysis is
+    # responsible of. Separated by '|'
+    StringField('ReflexRuleActionsTriggered', required=0, default=''),
     ComputedField('ClientUID',
         expression = 'context.aq_parent.aq_parent.UID()',
     ),
@@ -1071,6 +1074,17 @@ class Analysis(BaseContent):
             pass
         else:
             self.Schema().getField('ReflexAnalysisOf').set(self, analysis)
+
+    def addReflexRuleActionsTriggered(self, text):
+        """
+        This function adds a new item to the string field
+        ReflexRuleActionsTriggered.
+        From the field: Reflex rule triggered actions from which the current
+        analysis is responsible of. Separated by '|'
+        :text: is na str object with the format '<UID>.<rulename>' -> '123354.1'
+        """
+        old = self.getReflexRuleActionsTriggered()
+        self.setReflexRuleActionsTriggered(old + text + '|')
 
     def isVerifiable(self):
         """
