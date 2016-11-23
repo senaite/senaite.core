@@ -746,15 +746,23 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 state = workflow.getInfoFor(analysis, 'review_state', '')
                 if state != 'to_be_verified':
                     continue
-                # For the 'verify' transition to (effectively) take place,
-                # we need to check if the required number of verifications for
-                # the analysis is, at least, the number of verifications
-                # performed previously +1
-                revers = analysis.getNumberOfRequiredVerifications()
-                nmvers = analysis.getNumberOfVerifications()
-                analysis.setNumberOfVerifications(nmvers+1)
-                if revers-nmvers <= 1:
-                    doActionFor(analysis, "verify")
+                if (hasattr(analysis, 'getNumberOfVerifications') and
+                    hasattr(analysis, 'getNumberOfRequiredVerifications')):
+                    # For the 'verify' transition to (effectively) take place,
+                    # we need to check if the required number of verifications
+                    # for the analysis is, at least, the number of verifications
+                    # performed previously +1
+                    success = True
+                    revers = analysis.getNumberOfRequiredVerifications()
+                    nmvers = analysis.getNumberOfVerifications()
+                    analysis.setNumberOfVerifications(nmvers+1)
+                    if revers-nmvers <= 1:
+                        success, message = doActionFor(analysis, 'verify')
+                        if not success:
+                            # If failed, restore to the previous number
+                            analysis.setNumberOfVerifications(numvers)
+                else:
+                    doActionFor(analysis, 'verify')
 
     def workflow_script_reject(self):
         """Copy real analyses to RejectAnalysis, with link to real
