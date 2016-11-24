@@ -46,10 +46,8 @@ class AnalysisRequestsView(_ARV, _ARAV):
             'state_title': {'title': _('State'),
                             'index': 'review_state'},
             'getProfilesTitle': {'title': _('Profile'),
-                                'index': 'getProfilesTitle',
                                 'toggle': False},
             'getTemplateTitle': {'title': _('Template'),
-                                 'index': 'getTemplateTitle',
                                  'toggle': False},
         }
 

@@ -37,6 +37,7 @@ from bika.lims.workflow import doActionFor
 from decimal import Decimal
 from zope.interface import implements
 from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
 from bika.lims.utils import t, getUsers, dicts_to_dict
 from bika.lims.utils.analysisrequest import notify_rejection
 
@@ -1525,6 +1526,12 @@ schema = BikaSchema.copy() + Schema((
          subfields=('uid', 'hidden',),
          widget=ComputedWidget(visible=False),
     ),
+
+    # Temporary performance optimizations (cached fields on runtime)
+    StringField('_CachedAnalysesNum', default=''),
+    StringField('_CachedDepartmentUIDs', default=''),
+    StringField('_CachedProfilesTitle', default=''),
+    StringField('_CachedTemplateTitle', default='')
 )
 )
 
@@ -1592,10 +1599,20 @@ class AnalysisRequest(BaseFolder):
         return self.getContact().Title() if self.getContact() else ''
 
     def getProfilesTitle(self):
-        return [profile.Title() for profile in self.getProfiles()]
+        titles = self.get_CachedProfilesTitle()
+        if titles:
+            return titles.split[',']
+        else:
+            titles = [profile.Title() for profile in self.getProfiles()]
+            self.set_CachedProfilesTitle(','.join(titles))
+            return titles
 
     def getTemplateTitle(self):
-        return self.getTemplate().Title() if self.getTemplate() else ''
+        title = self.get_CachedTemplateTitle()
+        if not title:
+            title = self.getTemplate().Title() if self.getTemplate() else ''
+            self.set_CachedTemplateTitle(title)
+        return title
 
     def setPublicationSpecification(self, value):
         "Never contains a value; this field is here for the UI."
@@ -1675,28 +1692,27 @@ class AnalysisRequest(BaseFolder):
 
     def getAnalysesNum(self):
         """ Return the amount of analyses verified/total in the current AR """
-        verified = 0
-        total = 0
-        for analysis in self.getAnalyses():
-            review_state = analysis.review_state
-            if review_state in ['verified' ,'published']:
-                verified += 1
-            if review_state not in 'retracted':
-                total += 1
-        return verified,total
+        annum = self.get_CachedAnalysesNum()
+        if annum:
+            annums = annum.split(',')
+            return int(annums[0]), int(annums[1])
+        else:
+            verified = 0
+            total = 0
+            for analysis in self.getAnalyses():
+                review_state = analysis.review_state
+                if review_state in ['verified' ,'published']:
+                    verified += 1
+                if review_state not in 'retracted':
+                    total += 1
+            annum = '%s,%s' % (verified, total)
+            self.set_CachedAnalysesNum(annum)
+            return verified,total
 
     def getResponsible(self):
         """ Return all manager info of responsible departments """
         managers = {}
-        departments = []
-        for analysis in self.objectValues('Analysis'):
-            department = analysis.getService().getDepartment()
-            if department is None:
-                continue
-            department_id = department.getId()
-            if department_id in departments:
-                continue
-            departments.append(department_id)
+        for department in self.getDepartments():
             manager = department.getManager()
             if manager is None:
                 continue
@@ -1731,15 +1747,7 @@ class AnalysisRequest(BaseFolder):
         """ Return all managers of responsible departments """
         manager_ids = []
         manager_list = []
-        departments = []
-        for analysis in self.objectValues('Analysis'):
-            department = analysis.getService().getDepartment()
-            if department is None:
-                continue
-            department_id = department.getId()
-            if department_id in departments:
-                continue
-            departments.append(department_id)
+        for department in self.getDepartments():
             manager = department.getManager()
             if manager is None:
                 continue
@@ -2461,9 +2469,26 @@ class AnalysisRequest(BaseFolder):
         """ Returns a set with the departments assigned to the Analyses
             from this Analysis Request
         """
-        ans = [an.getObject() for an in self.getAnalyses()]
-        depts = [an.getService().getDepartment() for an in ans if an.getService().getDepartment()]
+        if self.get_CachedDepartmentUIDs():
+            uids = self.get_CachedDepartmentUIDs()
+            uids = uids.split(',')
+            bc = getToolByName(self, "bika_setup_catalog")
+            depts = bc(portal_type="Department", UID=uids)
+            depts = [dept.getObject() for dept in depts]
+        else:
+            ans = [an.getObject() for an in self.getAnalyses()]
+            depts = [an.getService().getDepartment() for an in ans if an.getService().getDepartment()]
+            uids = [dept.UID() for dept in depts]
+            uids = ','.join(uids);
+            self.set_CachedDepartmentUIDs(uids)
         return set(depts)
+
+    def getDepartmentUIDs(self):
+        if self.get_CachedDepartmentUIDs():
+            depts = self.get_CachedDepartmentUIDs().split(',')
+        else:
+            depts = [dept.UID() for dept in self.getDepartments()]
+        return depts
 
     def getResultsInterpretationByDepartment(self, department=None):
         """ Returns the results interpretation for this Analysis Request
@@ -2816,8 +2841,12 @@ class AnalysisRequest(BaseFolder):
                         if not success:
                             # If failed, restore to the previous number
                             analysis.setNumberOfVerifications(numvers)
+                        elif analysis.aq_parent.portal_type == 'AnalysisRequest':
+                            analysis.aq_parent.resetCache()
                 else:
                     doActionFor(analysis, 'verify')
+                    if analysis.aq_parent.portal_type == 'AnalysisRequest':
+                        analysis.aq_parent.resetCache()
 
     def workflow_script_publish(self):
         if skip(self, "publish"):
@@ -2875,5 +2904,9 @@ class AnalysisRequest(BaseFolder):
         if self.bika_setup.getNotifyOnRejection():
             # Notify the Client about the Rejection.
             notify_rejection(self)
+
+    def resetCache(self):
+        self.set_CachedAnalysesNum('')
+        self.set_CachedDepartmentUIDs('')
 
 atapi.registerType(AnalysisRequest, PROJECTNAME)

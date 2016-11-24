@@ -221,8 +221,12 @@ class WorkflowAction:
                             if not success:
                                 # If failed, restore to the previous number
                                 item.setNumberOfVerifications(numvers)
+                            elif item.aq_parent.portal_type == 'AnalysisRequest':
+                                item.aq_parent.resetCache()
                     else:
                         success, message = doActionFor(item, action)
+                        if item.aq_parent.portal_type == 'AnalysisRequest':
+                            item.aq_parent.resetCache()
                     if success:
                         transitioned.append(item.id)
                     else:

@@ -52,6 +52,10 @@ def upgrade(tool):
     logger.info("More than one department per contact...")
     multi_department_to_labcontact(portal)
 
+    # Remove unused indexes and columns
+    logger.info("Removing stale indexes...")
+    removeUnusedIndexes(portal)
+
     # Clean and rebuild affected catalogs
     cleanAndRebuildIfNeeded(portal)
 
@@ -182,6 +186,9 @@ def multi_department_to_labcontact(portal):
         if not obj.getDepartments():
             obj.setDepartments(obj.getDepartment())
 
+def removeUnusedIndexes(portal):
+    bc = getToolByName(portal, 'bika_catalog', None)
+    delIndexAndColumn(bc, 'getProfilesTitle')
 
 def delIndexAndColumn(catalog, index):
     if index in catalog.indexes():
