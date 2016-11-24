@@ -53,6 +53,8 @@ jQuery(function($){
         $('select[id^="ReflexRules-action-"]').bind("change", function () {
             action_select_controller($(this).closest('div.action'), false);
         });
+
+        set_action_select_value($('div.action'));
         // Controller on 'ReflexRules-setresulton' selection list
         $('select[id^="ReflexRules-setresulton-"]').bind("change", function () {
             setresulton_controller($(this).closest('div.action'));
@@ -580,6 +582,21 @@ jQuery(function($){
             $(action_div).find('div.analyst-section').hide();
             // hide the worksheet-template-section div
             $(action_div).find('div.worksheet-template-section').hide();
+        }
+    }
+
+    function set_action_select_value(action_div) {
+        console.log("Test");
+        var local_id = '';
+        var selection = $(action_div)
+            .find('select[id^="ReflexRules-action-"]')
+            .find(":selected").attr('value');
+        if (selection != "setresult") {
+            if($(action_div).find("input[id^='ReflexRules-an_result_id-']")
+                .first().val() === ''){
+                local_id = new_localid(selection);
+                $(action_div).find("input[id^='ReflexRules-an_result_id-']")
+                    .first().val(local_id);}
         }
     }
 
