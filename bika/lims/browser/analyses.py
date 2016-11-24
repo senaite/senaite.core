@@ -349,7 +349,7 @@ class AnalysesView(BikaListingView):
             if workflow.getInfoFor(obj, 'review_state') == 'retracted' \
                 and not checkPermission(ViewRetractedAnalyses, self.context):
                 continue
-
+            items[i] = self.folderitem(obj, items[i], i)
             result = obj.getResult()
             service = obj.getService()
             calculation = service.getCalculation()

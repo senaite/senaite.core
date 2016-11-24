@@ -11,7 +11,8 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t, dicts_to_dict, format_supsub
 from bika.lims.utils.analysis import format_uncertainty
 from bika.lims.browser import BrowserView
-from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.browser.analyses import AnalysesView
+from bika.lims.browser.bika_listing import BikaListingView ####
 from bika.lims.config import QCANALYSIS_TYPES
 from bika.lims.interfaces import IResultOutOfRange
 from bika.lims.permissions import *
@@ -33,13 +34,17 @@ from zope.component import getAdapters
 import json
 
 
-class AggregatedAnalysesView(BikaListingView):
+class AggregatedAnalysesView(AnalysesView):
     """ Displays a list of Analyses in a table.
         Visible InterimFields from all analyses are added to self.columns[].
         Keyword arguments are passed directly to bika_analysis_catalog.
     """
 
     def __init__(self, context, request, **kwargs):
+        super(AggregatedAnalysesView, self).__init__(context,
+                                           request,
+                                           show_categories=False,
+                                           expand_all_categories=False)
         self.title = _("Analyses pending")
         self.catalog = "bika_analysis_catalog"
         self.contentFilter = dict(kwargs)
@@ -52,67 +57,39 @@ class AggregatedAnalysesView(BikaListingView):
         self.show_select_row = False
         self.show_select_column = False
         self.show_column_toggles = False
+        self.show_select_all_checkbox = False
+        self.show_categories = False
         self.pagesize = 50
         self.form_id = 'analyses_form'
-
         self.portal = getToolByName(context, 'portal_url').getPortalObject()
         self.portal_url = self.portal.absolute_url()
 
         # each editable item needs it's own allow_edit
         # which is a list of field names.
-        self.allow_edit = False
+        self.allow_edit = True
 
-        self.columns = {
-            'AnalysisRequest': {
-                'title': _('Analysis Request'),
-                'sortable': False
-            },
-            'Worksheet': {
-                'title': _('Worksheet'),
-                'sortable': False
-            },
-            'Service': {
-                'title': _('Analysis'),
-                'sortable': False
-            },
-            'Partition': {
-                'title': _("Partition"),
-                'sortable':False
-            },
-            'Method': {
-                'title': _('Method'),
-                'sortable': False,
-                'toggle': True
-            },
-            'Instrument': {
-                'title': _('Instrument'),
-                'sortable': False,
-                'toggle': True
-            },
-            'Analyst': {
-                'title': _('Analyst'),
-                'sortable': False,
-                'toggle': True
-            },
-            'Result': {
-                'title': _('Result'),
-                'input_width': '6',
-                'input_class': 'ajax_calculate numeric',
-                'sortable': False
-            },
-            'state_title': {
-                'title': _('Status'),
-                'sortable': False
-            },
-        }
-
+        self.columns['AnalysisRequest'] = {
+            'title': _('Analysis Request'),
+            'sortable': False
+            }
+        self.columns['Worksheet'] = {
+            'title': _('Worksheet'),
+            'sortable': False
+            }
         self.review_states = [
             {'id': 'default',
              'title':  _('All'),
-             'contentFilter': {'review_state': ['to_be_verified', 'assigned', 'attachment_due']},
+             'transitions': [{'id': 'sample'},
+                             {'id': 'submit'},
+                             {'id': 'cancel'},
+                             {'id': 'assign'}],
+             'contentFilter': {'review_state': [
+                'sample_received', 'assigned', 'attachment_due']},
              'columns': ['AnalysisRequest',
                          'Worksheet',
                          'Service',
+                         'Result',
+                         'Uncertainty',
                          'Partition',
                          'Method',
                          'Instrument',
@@ -123,11 +100,6 @@ class AggregatedAnalysesView(BikaListingView):
         ]
         if not context.bika_setup.getShowPartitions():
             self.review_states[0]['columns'].remove('Partition')
-
-        super(AggregatedAnalysesView, self).__init__(context,
-                                           request,
-                                           show_categories=False,
-                                           expand_all_categories=True)
 
     def isItemAllowed(self, obj):
         """
@@ -151,24 +123,11 @@ class AggregatedAnalysesView(BikaListingView):
         return result
 
     def folderitem(self, obj, item, index):
-        if not obj:
-            return None
-
-        item = super(AggregatedAnalysesView, self).folderitem(obj, item, index)
-        if not item:
-            return None
-
         parent = obj.aq_parent
-        if (parent.portal_type != 'AnalysisRequest'):
-            # Parent is not an AnalysisRequest, probably this object is a
-            # QC analysis, so do nothing
-            return None
-
         # Analysis Request
         item['AnalysisRequest'] = parent.Title()
         anchor = '<a href="%s">%s</a>' % (parent.absolute_url(), parent.Title())
         item['replace']['AnalysisRequest'] = anchor
-
         # Worksheet
         item['Worksheet'] = ''
         wss = obj.getBackReferences('WorksheetAnalysis')
@@ -177,26 +136,4 @@ class AggregatedAnalysesView(BikaListingView):
             item['Worksheet'] = ws.Title()
             anchor = '<a href="%s">%s</a>' % (ws.absolute_url(), ws.Title())
             item['replace']['Worksheet'] = anchor
-
-        # Analysis Service
-        serv = obj.getService()
-        unit = serv.getUnit()
-        item['Service'] = serv.Title()
-        anchor = '<a href="%s">%s</a>' % (serv.absolute_url(), serv.Title())
-        item['replace']['Service'] = anchor
-        item['Unit'] = format_supsub(unit) if unit else ''
-
-        item['Method'] = ''
-        item['Instrument'] = ''
-        item['Analyst'] = obj.getAnalystName()
-        item['Result'] = obj.getResult()
-
-
-        # Sample Partition
-        try:
-            item['Partition'] = obj.getSamplePartition().getId()
-        except AttributeError:
-            item['Partition'] = ''
-
-
         return item
