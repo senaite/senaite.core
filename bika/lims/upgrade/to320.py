@@ -46,7 +46,7 @@ def upgrade(tool):
 
     # Reflex Testing setup
     logger.info("Reflex testing...")
-    reflex_rules(portal)
+    #reflex_rules(portal)
 
     # Mote than one department can be assigned to a Contact
     logger.info("More than one department per contact...")
