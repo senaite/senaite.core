@@ -52,6 +52,12 @@ def upgrade(tool):
     logger.info("More than one department per contact...")
     multi_department_to_labcontact(portal)
 
+    # Add new indexes
+    bc = getToolByName(portal, 'bika_catalog', None)
+    bac = getToolByName(portal, 'bika_analysis_catalog', None)
+    addIndex(bc, 'getDepartmentUIDs', 'KeywordIndex')
+    addIndex(bac, 'getDepartmentUID', 'FieldIndex')
+
     # Remove unused indexes and columns
     logger.info("Removing stale indexes...")
     removeUnusedIndexes(portal)

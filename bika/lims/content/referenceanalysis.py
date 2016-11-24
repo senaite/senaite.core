@@ -311,6 +311,9 @@ class ReferenceAnalysis(BaseContent):
         else:
             return ''
 
+    def getDepartmentUID(self):
+        return self.getService().getDepartment().UID()
+
     def getFormattedResult(self, specs=None, decimalmark='.', sciformat=1):
         """Formatted result:
         1. If the result is not floatable, return it without being formatted

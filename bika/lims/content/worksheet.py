@@ -1124,4 +1124,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if priorities:
             return priorities[-1]
 
+    def getDepartmentUIDs(self):
+        return [an.getDepartmentUID() for an in self.getAnalyses()]
+
 registerType(Worksheet, PROJECTNAME)
