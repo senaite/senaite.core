@@ -586,7 +586,6 @@ jQuery(function($){
     }
 
     function set_action_select_value(action_div) {
-        console.log("Test");
         var local_id = '';
         var selection = $(action_div)
             .find('select[id^="ReflexRules-action-"]')
