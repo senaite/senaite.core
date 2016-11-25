@@ -351,11 +351,24 @@ function SiteView() {
         /**
         This function sets up the filter by department widget, the cookie and
         the auto-submit.
+        Also it does auto-submit if admin wants to enable/disable the department filtering.
         */
         $('#department_filter_portlet').change(function(e) {
             $('#department_filter_submit').click();
         });
-        loadFilterByDepartmentCookie();
+
+        $('#admin_dep_filter_enabled').change(function() {
+            var cookiename = 'filter_by_department_info';
+            if($(this).is(":checked")) {
+                createCookie(cookiename, "disabled");
+                $('#department_filter_portlet').prop("disabled",true);
+                location.reload();
+              }else{
+                $('#department_filter_portlet').prop("disabled",false);
+                $('#department_filter_submit').click();
+              }
+            });
+          loadFilterByDepartmentCookie();
     }
 
     function loadFilterByDepartmentCookie(){
@@ -364,6 +377,7 @@ function SiteView() {
         available. If the cookie exists, do nothing, if the cookie has not been
         created yet, checks the selected department in the 'filter by department
         cookie' and creates the cookie with the UID of the department.
+        If cookie value is "disabled", it means the user is admin and filtering is disabled.
         */
         // Gettin the cookie
         var cookiename = 'filter_by_department_info';
@@ -374,6 +388,10 @@ function SiteView() {
             var dep_uid = $('.portlet#portletfilter_by_department form ' +
                 'select#department_filter_portlet').find(":selected").val();
             createCookie(cookiename, dep_uid);
+        }
+        if (cookie_val === "disabled"){
+            $('#admin_dep_filter_enabled').prop("checked",true);
+            $('#department_filter_portlet').prop("disabled",true);
         }
     }
 }
