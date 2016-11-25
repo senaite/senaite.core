@@ -5,7 +5,7 @@
 <div metal:define-macro="portlet"
     tal:define="
         member python: context.portal_membership.getAuthenticatedMember();
-        brains python: here.portal_catalog(portal_type='LabContact',
+        brains python: here.portal_catalog(portal_type='LabContact') if user_name=='admin'  else here.portal_catalog(portal_type='LabContact',
                                     getUsername='alex01');"
     tal:condition="python:len(brains)>0">
 <!-- Defining the base variables -->
@@ -23,6 +23,10 @@
             action="portletfilter_by_department"
             name="portletfilter_by_department"
             method="POST">
+                <input type="checkbox" name="admin_dep_filter_enabled"
+                       tal:condition= "python: user_name=='admin'"
+                       />
+                       <label tal:condition= "python: user_name=='admin'">Disable department filtering <br><br></label>
             <!-- The selection list -->
             <label for="department_filter_portlet"
                 i18n:translate="">Filter by:</label>
