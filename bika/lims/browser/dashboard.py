@@ -189,7 +189,7 @@ class DashboardView(BrowserView):
         @Obj: it is a worksheet object.
         @return: boolean
         """
-        if self.selected_state == 'mine' or self.restrict_results == True:
+        if obj.selected_state == 'mine' or self.restrict_results == True:
             analyst = obj.getAnalyst().strip()
             if analyst != _c(self.member.getId()):
                 return False

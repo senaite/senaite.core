@@ -30,10 +30,9 @@
             name="portletfilter_by_department"
             method="POST">
             <dd class="portletItem">
-                <input type="checkbox"
-                       name="admin_dep_filter_enabled"
-                       id="admin_dep_filter_enabled"
-                       tal:condition= "python: user_name=='admin'"/>
+                <input type="checkbox" name="admin_dep_filter_enabled"
+                       tal:condition= "python: user_name=='admin'"
+                       />
                        <label tal:condition= "python: user_name=='admin'">Disable department filtering <br><br></label>
                 <!-- The selection list -->
                 <select id="department_filter_portlet"
