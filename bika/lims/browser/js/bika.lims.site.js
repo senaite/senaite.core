@@ -346,7 +346,16 @@ function SiteView() {
             }, 3000)
         });
     };
-
+    function loadFilterByDepartment() {
+          /**
+          This function sets up the filter by department widget, the cookie and
+          the auto-submit.
+          */
+          $('#department_filter_portlet').change(function(e) {
+              $('#department_filter_submit').click();
+          });
+          loadFilterByDepartmentCookie();
+      }
     function loadFilterByDepartmentCookie(){
         /**
         This function checks if the cookie 'filter_by_department_info' is
