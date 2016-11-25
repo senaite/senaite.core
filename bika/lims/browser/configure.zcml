@@ -38,7 +38,7 @@
   <include file="supplyorderfolder.zcml"/>
   <include file="viewlets.zcml"/>
   <include file="arimports.zcml"/>
-  <include file="worksheettemplate.zcml"/>    
+  <include file="worksheettemplate.zcml"/>
 
   <include package=".analysisrequest"/>
   <include package=".batch"/>
@@ -48,6 +48,7 @@
   <include package=".srtemplate"/>
   <include package=".sample"/>
   <include package=".worksheet"/>
+  <include package=".dashboard"/>
 
   <include package=".fields"/>
   <include package=".widgets"/>

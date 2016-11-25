@@ -12,7 +12,6 @@ from bika.lims.utils import t, dicts_to_dict, format_supsub
 from bika.lims.utils.analysis import format_uncertainty
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analyses import AnalysesView
-from bika.lims.browser.bika_listing import BikaListingView ####
 from bika.lims.config import QCANALYSIS_TYPES
 from bika.lims.interfaces import IResultOutOfRange
 from bika.lims.permissions import *
@@ -20,6 +19,7 @@ from bika.lims.utils import isActive
 from bika.lims.utils import getUsers
 from bika.lims.utils import to_utf8
 from bika.lims.utils import formatDecimalMark
+from bika.lims.browser.bika_listing import WorkflowAction
 from DateTime import DateTime
 from operator import itemgetter
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -82,7 +82,8 @@ class AggregatedAnalysesView(AnalysesView):
              'transitions': [{'id': 'sample'},
                              {'id': 'submit'},
                              {'id': 'cancel'},
-                             {'id': 'assign'}],
+                             # {'id': 'assign'}
+                             ],
              'contentFilter': {'review_state': [
                 'sample_received', 'assigned', 'attachment_due']},
              'columns': ['AnalysisRequest',
