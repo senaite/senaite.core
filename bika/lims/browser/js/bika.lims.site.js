@@ -360,10 +360,17 @@ function SiteView() {
         $('#admin_dep_filter_enabled').change(function() {
             var cookiename = 'filter_by_department_info';
             if($(this).is(":checked")) {
-                createCookie(cookiename, "disabled");
+                var deps=[];
+                var all_dep_ids = document.getElementById('department_filter_portlet').options;
+                for (var i = 0; i < all_dep_ids.length; i++) {
+                  deps.push(all_dep_ids[i].value);
+                }
+                createCookie(cookiename, deps);
+                createCookie('dep_filter_disabled','true');
                 $('#department_filter_portlet').prop("disabled",true);
                 location.reload();
               }else{
+                createCookie('dep_filter_disabled','false');
                 $('#department_filter_portlet').prop("disabled",false);
                 $('#department_filter_submit').click();
               }
@@ -382,6 +389,7 @@ function SiteView() {
         // Gettin the cookie
         var cookiename = 'filter_by_department_info';
         var cookie_val = readCookie(cookiename);
+        console.log(cookie_val);
         if (cookie_val === null){
             // we need to create a cookie with the default value in selected
             // the portlet
@@ -389,7 +397,7 @@ function SiteView() {
                 'select#department_filter_portlet').find(":selected").val();
             createCookie(cookiename, dep_uid);
         }
-        if (cookie_val === "disabled"){
+        if (readCookie('dep_filter_disabled')==="true"){
             $('#admin_dep_filter_enabled').prop("checked",true);
             $('#department_filter_portlet').prop("disabled",true);
         }

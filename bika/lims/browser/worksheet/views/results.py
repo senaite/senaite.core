@@ -246,5 +246,5 @@ class ManageResultsView(BrowserView):
             cookie_dep_uid = self.request.get('filter_by_department_info', '')
             # Comparing departments' UIDs
             result = True if serv_dep.UID() in\
-                self.request.get('filter_by_department_info', '') else False
+                self.request.get('filter_by_department_info', '').split(',') else False
         return result

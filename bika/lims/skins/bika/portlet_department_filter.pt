@@ -17,7 +17,7 @@
                                             inactive_state='active') if user_name=='admin'  else brains[0].getObject().getSortedDepartments();
                 cookie python:request.cookies.get(
                     'filter_by_department_info','');
-                dep_cookie python: cookie if cookie and len(deps)>1
+                dep_cookie python: cookie.split(',')[0] if cookie and len(deps)>1
                     else deps[0].UID();">
     <dl class="portlet" id="portletfilter_by_department">
         <!-- The header of the porlet -->

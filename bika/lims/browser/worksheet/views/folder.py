@@ -302,7 +302,7 @@ class FolderView(BikaListingView):
             # Comparing departments' UIDs
             deps_uids = set(deps)
             filter_uids = set(
-                [self.request.get('filter_by_department_info', '')])
+                self.request.get('filter_by_department_info', '').split(','))
             matches = deps_uids & filter_uids
             result = len(matches) > 0
         return result
