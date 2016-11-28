@@ -346,32 +346,60 @@ function SiteView() {
             }, 3000)
         });
     };
+
     function loadFilterByDepartment() {
-          /**
-          This function sets up the filter by department widget, the cookie and
-          the auto-submit.
-          */
-          $('#department_filter_portlet').change(function(e) {
-              $('#department_filter_submit').click();
-          });
+        /**
+        This function sets up the filter by department widget, the cookie and
+        the auto-submit.
+        Also it does auto-submit if admin wants to enable/disable the department filtering.
+        */
+        $('#department_filter_portlet').change(function(e) {
+            $('#department_filter_submit').click();
+        });
+
+        $('#admin_dep_filter_enabled').change(function() {
+            var cookiename = 'filter_by_department_info';
+            if($(this).is(":checked")) {
+                var deps=[];
+                var all_dep_ids = document.getElementById('department_filter_portlet').options;
+                for (var i = 0; i < all_dep_ids.length; i++) {
+                  deps.push(all_dep_ids[i].value);
+                }
+                createCookie(cookiename, deps);
+                createCookie('dep_filter_disabled','true');
+                $('#department_filter_portlet').prop("disabled",true);
+                location.reload();
+              }else{
+                createCookie('dep_filter_disabled','false');
+                $('#department_filter_portlet').prop("disabled",false);
+                $('#department_filter_submit').click();
+              }
+            });
           loadFilterByDepartmentCookie();
-      }
+    }
+
     function loadFilterByDepartmentCookie(){
         /**
         This function checks if the cookie 'filter_by_department_info' is
         available. If the cookie exists, do nothing, if the cookie has not been
         created yet, checks the selected department in the 'filter by department
         cookie' and creates the cookie with the UID of the department.
+        If cookie value is "disabled", it means the user is admin and filtering is disabled.
         */
         // Gettin the cookie
         var cookiename = 'filter_by_department_info';
         var cookie_val = readCookie(cookiename);
+        console.log(cookie_val);
         if (cookie_val === null){
             // we need to create a cookie with the default value in selected
             // the portlet
             var dep_uid = $('.portlet#portletfilter_by_department form ' +
                 'select#department_filter_portlet').find(":selected").val();
             createCookie(cookiename, dep_uid);
+        }
+        if (readCookie('dep_filter_disabled')==="true"){
+            $('#admin_dep_filter_enabled').prop("checked",true);
+            $('#department_filter_portlet').prop("disabled",true);
         }
     }
 }

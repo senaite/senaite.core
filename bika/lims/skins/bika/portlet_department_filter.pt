@@ -13,16 +13,12 @@
 <tal:departments
     tal:define="portal context/portal_url/getPortalObject;
                 plone_view context/@@plone;
-                current_usr python:brains[0].getObject();
-                deps current_usr/getSortedDepartments;
+                deps python: here.portal_catalog(portal_type='Department',sort_on='sortable_title', sort_order='ascending',
+                                            inactive_state='active') if user_name=='admin'  else brains[0].getObject().getSortedDepartments();
                 cookie python:request.cookies.get(
                     'filter_by_department_info','');
-                dep_from_cookie python: cookie.split(',')[0] if cookie and len(deps)>1
-                    else 'doesnt_exist';
-                dep_from_cat python: deps[0].UID if user_name=='admin'
-                        else deps[0].UID();
-                dep_cookie python: dep_from_cat if dep_from_cookie=='doesnt_exist'
-                    else dep_from_cookie;">
+                dep_cookie python: cookie.split(',')[0] if cookie and len(deps)>1
+                    else deps[0].UID();">
     <dl class="portlet" id="portletfilter_by_department">
         <!-- The header of the porlet -->
         <dt class="portletHeader"
