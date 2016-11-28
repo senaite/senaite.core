@@ -8,13 +8,13 @@
         user_name python: member.getUserName();
         brains python: [] if user_name=='admin'  else here.portal_catalog(portal_type='LabContact',
                                     getUsername=user_name);"
-    tal:condition="python:len(brains)>0">
+    tal:condition="python:len(brains)>0 or user_name=='admin'">
 <!-- Defining the base variables -->
 <tal:departments
     tal:define="portal context/portal_url/getPortalObject;
                 plone_view context/@@plone;
-                current_usr python:brains[0].getObject();
-                deps current_usr/getSortedDepartments;
+                deps python: here.portal_catalog(portal_type='Department',sort_on='sortable_title', sort_order='ascending',
+                                            inactive_state='active') if user_name=='admin'  else brains[0].getObject().getSortedDepartments();
                 cookie python:request.cookies.get(
                     'filter_by_department_info','');
                 dep_cookie python: cookie if cookie and len(deps)>1
@@ -44,10 +44,10 @@
                     to the user -->
                     <tal:option repeat="dep deps">
                     <option
-                        tal:content="python:dep.Title()"
+                        tal:content="python: dep.Title if user_name=='admin' else dep.Title()"
                         tal:attributes="
-                            value python:dep.UID();
-                            selected python:'selected' if dep_cookie == dep.UID() else ''"
+                            value python: dep.UID if user_name=='admin' else dep.UID();
+                            selected python: 'selected' if user_name=='admin' and dep_cookie == dep.UID else 'selected' if user_name!='admin' and dep_cookie == dep.UID() else ''"
                         i18n:translate=""/>
                     </tal:option>
                 </select>
@@ -55,7 +55,7 @@
                 <label
                     i18n:translate=""
                     tal:condition="python: len(deps)<2"
-                    tal:content="python: deps[0].Title()"
+                    tal:content="python: deps[0].Title if user_name=='admin' else deps[0].Title()"
                     >Department</label>
             </dd>
             <!-- The submit form button -->
