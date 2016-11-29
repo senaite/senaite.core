@@ -314,7 +314,7 @@ class AnalysisServicesView(BikaListingView):
             cookie_dep_uid = self.request.get('filter_by_department_info', 'no')
             # Comparing departments' UIDs
             result = True if obj_dep.UID() in\
-                self.request.get('filter_by_department_info', 'no') else False
+                cookie_dep_uid.split(',') else False
             return result
         return result
 
