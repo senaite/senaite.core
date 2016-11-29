@@ -146,7 +146,7 @@ class AddAnalysesView(BikaListingView):
             cookie_dep_uid = self.request.get('filter_by_department_info', '')
             # Comparing departments' UIDs
             result = True if serv_dep.UID() in\
-                self.request.get('filter_by_department_info', '') else False
+                cookie_dep_uidsplit(',') else False
         return result
 
     def folderitems(self):
