@@ -23,6 +23,7 @@ class AggregatedAnalysesView(AnalysesView):
                                            request,
                                            show_categories=False,
                                            expand_all_categories=False)
+        import pdb; pdb.set_trace()
         self.title = _("Analyses pending")
         self.catalog = "bika_analysis_catalog"
         self.contentFilter = dict(kwargs)
