@@ -728,7 +728,7 @@ class AnalysisRequestsView(BikaListingView):
             cookie_dep_uid = self.request.get('filter_by_department_info', '')
             # Comparing departments' UIDs
             deps_uids = set(deps)
-            filter_uids = set(self.request.get('filter_by_department_info', '').split(','))
+            filter_uids = set(cookie_dep_uid.split(','))
             matches = deps_uids & filter_uids
             result = len(matches) > 0
         return result

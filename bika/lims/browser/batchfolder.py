@@ -118,7 +118,7 @@ class BatchFolderContentsView(BikaListingView):
         # Getting the cookie value
         cookie_dep_uid = self.request.get('filter_by_department_info', '')
         filter_uids = set(
-            self.request.get('filter_by_department_info', '').split(','))
+            cookie_dep_uid.split(','))
         for ar in ars:
             # Comparing departments' UIDs
             deps_uids = set(ar.getDepartmentUIDs())
