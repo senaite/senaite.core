@@ -51,4 +51,7 @@
       handler="bika.lims.subscribers.samplinground.SamplingRoundAddedEventHandler"
     />
 
- </configure>
+    <subscriber
+        for="Products.PlonePAS.events.UserLoggedOutEvent"
+      handler="bika.lims.subscribers.logout.ClearDepartmentCookies" />
+    </configure>

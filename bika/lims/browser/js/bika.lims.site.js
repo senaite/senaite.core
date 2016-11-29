@@ -389,7 +389,6 @@ function SiteView() {
         // Gettin the cookie
         var cookiename = 'filter_by_department_info';
         var cookie_val = readCookie(cookiename);
-        console.log(cookie_val);
         if (cookie_val === null){
             // we need to create a cookie with the default value in selected
             // the portlet
