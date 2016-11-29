@@ -5,33 +5,11 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from AccessControl import getSecurityManager
-from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t, dicts_to_dict, format_supsub
-from bika.lims.utils.analysis import format_uncertainty
-from bika.lims.browser import BrowserView
 from bika.lims.browser.analyses import AnalysesView
-from bika.lims.config import QCANALYSIS_TYPES
-from bika.lims.interfaces import IResultOutOfRange
 from bika.lims.permissions import *
-from bika.lims.utils import isActive
-from bika.lims.utils import getUsers
-from bika.lims.utils import to_utf8
-from bika.lims.utils import formatDecimalMark
-from bika.lims.browser.bika_listing import WorkflowAction
-from DateTime import DateTime
-from operator import itemgetter
-from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
-from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims.utils.analysis import format_numeric_result
 from zope.interface import implements
-from zope.interface import Interface
-from zope.component import getAdapters
-
-import json
 
 
 class AggregatedAnalysesView(AnalysesView):
@@ -101,6 +79,9 @@ class AggregatedAnalysesView(AnalysesView):
         ]
         if not context.bika_setup.getShowPartitions():
             self.review_states[0]['columns'].remove('Partition')
+
+    def getPOSTAction(self):
+        return 'aggregatedanalyses_workflow_action'
 
     def isItemAllowed(self, obj):
         """

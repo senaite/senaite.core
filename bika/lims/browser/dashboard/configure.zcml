@@ -10,10 +10,17 @@
         permission="zope.Public"
         layer="bika.lims.interfaces.IBikaLIMS"
     />
+    <browser:page
+      for="*"
+      name="aggregatedanalyses"
+      class="bika.lims.browser.dashboard.AggregatedAnalysesView"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
 
     <browser:page
       for="*"
-      name="aaa-workflow_action"
+      name="aggregatedanalyses_workflow_action"
       class="bika.lims.browser.dashboard.AggregatedAnalysesWorkflowAction"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
