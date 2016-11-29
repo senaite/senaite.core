@@ -122,7 +122,7 @@ class DashboardView(BrowserView):
         """
         out = []
         sampenabled = self.context.bika_setup.getSamplingWorkflowEnabled()
-        cookie_dep_uid = self.request.get('filter_by_department_info', '')
+        cookie_dep_uid= self.request.get('filter_by_department_info', '').split(',')
         # Analysis Requests
         active_rs = ['to_be_sampled',
                      'to_be_preserved',
@@ -140,7 +140,7 @@ class DashboardView(BrowserView):
                         cancellation_state=['active',]))
         numars += len(bc(portal_type="AnalysisRequest",
                          review_state=active_rs,
-                         getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
+                        getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
                          cancellation_state=['active',],
                          created=self.base_date_range))
 
@@ -328,7 +328,7 @@ class DashboardView(BrowserView):
         """
         out = []
         bc = getToolByName(self.context, "bika_catalog")
-        cookie_dep_uid = self.request.get('filter_by_department_info', '')
+        cookie_dep_uid = self.request.get('filter_by_department_info', '').split(',')
         active_ws = ['open', 'to_be_verified', 'attachment_due']
         numws = len(bc(portal_type="Worksheet",
                        getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
@@ -438,22 +438,26 @@ class DashboardView(BrowserView):
                      'to_be_verified',
                      'verified']
         bac = getToolByName(self.context, "bika_analysis_catalog")
-        cookie_dep_uid = self.request.get('filter_by_department_info', '')
+        cookie_dep_uid = self.request.get('filter_by_department_info', '').split(',')
         numans = len(bac(portal_type="Analysis",
+                         getDepartmentUID={ "query":cookie_dep_uid,"operator":"or" },
                          created=self.date_range,
-                         getDepartmentUID=cookie_dep_uid,
                          cancellation_state=['active']))
         numans += len(bac(portal_type="Analysis",
+                          getDepartmentUID={ "query":cookie_dep_uid,"operator":"or" },
                           review_state=active_rs,
                           getDepartmentUID=cookie_dep_uid,
                           cancellation_state=['active'],
                           created=self.base_date_range))
+
         # Analyses pending
         review_state = ['sample_received',
                         'assigned',
                         'attachment_due',
                         'to_be_verified']
         ans = len(bac(portal_type="Analysis", review_state=review_state,getDepartmentUID=cookie_dep_uid ))
+                      getDepartmentUID={ "query":cookie_dep_uid,"operator":"or" },
+                      review_state=review_state))
         ratio = (float(ans)/float(numans))*100 if ans > 0 and numans > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
         msg = _("Analyses pending")
@@ -469,6 +473,8 @@ class DashboardView(BrowserView):
         # Analyses to be verified
         review_state = ['to_be_verified', ]
         ans = len(bac(portal_type="Analysis", getDepartmentUID=cookie_dep_uid,review_state=review_state))
+                      getDepartmentUID={ "query":cookie_dep_uid,"operator":"or" },
+                      review_state=review_state))
         ratio = (float(ans)/float(numans))*100 if ans > 0 and numans > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
         msg = _("To be verified")
@@ -485,8 +491,8 @@ class DashboardView(BrowserView):
         # periodicity
         workflow = getToolByName(self.context, 'portal_workflow')
         allans = bac(portal_type="Analysis",
+                     getDepartmentUID={ "query":cookie_dep_uid,"operator":"or" },
                      sort_on="created",
-                     getDepartmentUID=cookie_dep_uid,
                      created=self.min_date_range)
         outevo = []
         for an in allans:
