@@ -384,19 +384,20 @@ function SiteView() {
         available. If the cookie exists, do nothing, if the cookie has not been
         created yet, checks the selected department in the 'filter by department
         cookie' and creates the cookie with the UID of the department.
-        If cookie value is "disabled", it means the user is admin and filtering is disabled.
+        If cookie value "dep_filter_disabled" is true, it means the user is admin and filtering is disabled.
         */
         // Gettin the cookie
         var cookiename = 'filter_by_department_info';
         var cookie_val = readCookie(cookiename);
-        if (cookie_val === null){
+        if (cookie_val === null || document.cookie.indexOf(cookiename)<1){
             // we need to create a cookie with the default value in selected
             // the portlet
             var dep_uid = $('.portlet#portletfilter_by_department form ' +
                 'select#department_filter_portlet').find(":selected").val();
             createCookie(cookiename, dep_uid);
         }
-        if (readCookie('dep_filter_disabled')==="true"){
+        var dep_filter_disabled=readCookie('dep_filter_disabled');
+        if (dep_filter_disabled=="true" || dep_filter_disabled=='"true"'){
             $('#admin_dep_filter_enabled').prop("checked",true);
             $('#department_filter_portlet').prop("disabled",true);
         }
