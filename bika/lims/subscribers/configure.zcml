@@ -53,5 +53,12 @@
 
     <subscriber
         for="Products.PlonePAS.events.UserLoggedOutEvent"
-      handler="bika.lims.subscribers.logout.ClearDepartmentCookies" />
+      handler="bika.lims.subscribers.dep_cookie.ClearDepartmentCookies"
+       />
+
+      <subscriber
+        for="Products.PluggableAuthService.interfaces.events.IUserLoggedInEvent"
+        handler="bika.lims.subscribers.dep_cookie.SetDepartmentCookies"
+        />
+
     </configure>
