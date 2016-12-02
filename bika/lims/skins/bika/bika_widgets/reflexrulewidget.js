@@ -47,7 +47,7 @@ jQuery(function($){
                 action_select_controller(element, true);
             });
         // Binding the controllers
-        $('input[id^="ReflexRules-otherWS-"]').bind("change", function () {
+        $('select[id^="ReflexRules-otherWS-"]').bind("change", function () {
             otherWS_controller($(this).closest('div.action'));
         });
         $('select[id^="ReflexRules-action-"]').bind("change", function () {
@@ -332,9 +332,9 @@ jQuery(function($){
         $(row).insertBefore(element);
         // Binding the otherWS controller and the controller for specific
         // actions select
-        $(row).find('input[id^="ReflexRules-otherWS-"]').bind("change", function () {
+        $(row).find('select[id^="ReflexRules-otherWS-"]').bind("change", function () {
             otherWS_controller(row);
-        });
+        }).trigger('change');
         $(row).find('select[id^="ReflexRules-action-"]').bind("change", function () {
             action_select_controller(row, false);
         });
@@ -470,6 +470,7 @@ jQuery(function($){
             .html()).saved_actions.rules;
         var ass = $('select[id^="ReflexRules-analysisservice-"]').first();
         var action_sets = $('div.actions-set');
+        var discrete;
         $.each(ass,function(index, element){
             // Select the analysis service
             if (rules[index] !== undefined){
@@ -484,7 +485,7 @@ jQuery(function($){
         });
 
         if (rules.length > 0) {
-            var discrete = rules[0].conditions[0].discreteresult;
+            discrete = rules[0].conditions[0].discreteresult;
             $('#ReflexRules-discreteresult-0-0 option[value="'+discrete+'"]').prop('selected', true);
         }
 
@@ -498,7 +499,7 @@ jQuery(function($){
             }
         }*/
         for (var i=0; rules.length > i; i++){
-            var discrete = rules[i].discreteresult;
+            discrete = rules[i].discreteresult;
             $(ass[i]).siblings('div.resultoptioncontainer')
                 .find('select option[value="'+ discrete + '"]')
                 .prop("selected", true);
@@ -567,11 +568,12 @@ jQuery(function($){
 
     function otherWS_controller(action_div){
         /**
-        This function hide/shows the selection of an analyst deppending on the
-        checkbox state
+        This function hide/shows the selection of an analyst and the worksheet
+        template deppending on the option selected.
         */
-        var checkbox = $(action_div).find('input[id^="ReflexRules-otherWS-"]').attr('checked');
-        if (checkbox == "checked") {
+        var selection = $(action_div).find('select[id^="ReflexRules-otherWS-"]')
+            .find(":selected").attr('value');
+        if (selection == "to_another" || selection == 'create_another') {
             // Showing the analyst-section div
             $(action_div).find('div.analyst-section').css('display', 'inline');
             // Showing the worksheet-template-section div
@@ -632,8 +634,8 @@ jQuery(function($){
             $(action_div).find('div.to_other_worksheet').hide();
             $(action_div)
                 .find('div.to_other_worksheet')
-                .find('input[id^="ReflexRules-otherWS-"]')
-                .removeAttr("checked");
+                .find('select[id^="ReflexRules-otherWS-"]').find(":selected")
+                .prop("selected", false);
             // run the controlller for the elements contained in the 'div.action_define_result'
             action_define_div_controller(action_div);
             // Creates a new local id if a new analysis is created
