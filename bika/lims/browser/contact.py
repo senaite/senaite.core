@@ -6,6 +6,7 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 import re
+
 from Acquisition import aq_base
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -24,12 +25,14 @@ class ContactLoginDetailsView(BrowserView):
     """Contact Login View
     """
     template = ViewPageTemplateFile("templates/login_details.pt")
-    searchstring = ""
 
     def __call__(self):
         request = self.request
         form = request.form
         CheckAuthenticator(form)
+
+        self.newSearch = False
+        self.searchstring = form.get("searchstring", "")
 
         if form.get("submitted"):
             logger.debug("Form Submitted: {}".format(form))
@@ -39,6 +42,7 @@ class ContactLoginDetailsView(BrowserView):
                 self._unlink_user(delete=True)
             elif form.get("search_button", False):
                 logger.debug("Search User")
+                self.newSearch = True
             elif form.get("link_button", False):
                 logger.debug("Link User")
                 self._link_user(form.get("userid"))
@@ -89,7 +93,6 @@ class ContactLoginDetailsView(BrowserView):
         """Search Plone users which are not linked to a contact
         """
         users = api.user.get_users()
-        self.searchstring = self.request.form.get("searchstring")
 
         out = []
         for user in users:
@@ -115,7 +118,7 @@ class ContactLoginDetailsView(BrowserView):
             # Append the userdata for the results
             out.append(userdata)
 
-        out.sort(lambda x, y: cmp(x["userid"], y["userid"]))
+        out.sort(lambda x, y: cmp(x["fullname"], y["fullname"]))
         return out
 
     def _link_user(self, userid):

@@ -135,17 +135,17 @@
         </p>
 
         <fieldset
-            tal:define="Batch python:modules['Products.CMFPlone'].Batch;
+            tal:define="Batch python:modules['plone.batching'].Batch;
                         b_size python:5;
-                        b_start python:request.get('b_start', 0);
+                        b_start python:0 if view.newSearch else request.get('b_start', 0);
                         batch python:Batch(view.linkable_users(), b_size, int(b_start), orphan=1) or None;
-                        batchformkeys python:['searchstring','_authenticator'];">
+                        batchformkeys python:['_authenticator'];">
 
             <legend i18n:translate="">Link an existing User</legend>
             <form id="user_search_form"
                   method="post">
 
-                <span tal:replace="structure context/@@authenticator/authenticator"/>
+                <input tal:replace="structure context/@@authenticator/authenticator"/>
                 <input type="hidden" name="submitted" value="1"/>
 
                 <table class="listing">
@@ -183,7 +183,9 @@
                 </table>
 
                 <div class="discreet">
-                    <div metal:use-macro="context/batch_macros/macros/navigation" />
+                    <tal:batchnavigation
+                        define="batchnavigation nocall:context/@@batchnavigation"
+                        replace="structure python:batchnavigation(batch, batchformkeys)" />
                 </div>
 
                 <!-- Form Controls -->
