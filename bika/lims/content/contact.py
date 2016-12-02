@@ -27,7 +27,6 @@ from bika.lims.config import ManageClients
 from bika.lims import logger
 from bika.lims import bikaMessageFactory as _
 
-
 ACTIVE_STATES = ["active"]
 
 
@@ -79,9 +78,27 @@ class Contact(Person):
     schema = schema
     _at_rename_after_creation = True
 
-    def _renameAfterCreation(self, check_auto_id=False):
-        from bika.lims.idserver import renameAfterCreation
-        renameAfterCreation(self)
+    @classmethod
+    def getContactByUsername(cls, username):
+        """Convenience Classmethod which returns a Contact by a Username
+        """
+
+        # Check if the User is linked already
+        pc = api.portal.get_tool("portal_catalog")
+        contacts = pc(portal_type="Contact", getUsername=username)
+
+        # No Contact assigned to this username
+        if len(contacts) == 0:
+            return None
+
+        # Multiple Users assigned, this should never happen
+        if len(contacts) > 1:
+            logger.error("User '{}' is bound to multiple Contacts '{}'".format(
+                username, ",".join(map(lambda c: c.Title, contacts))))
+            return map(lambda x: x.getObject(), contacts)
+
+        # Return the found Contact object
+        return contacts[0].getObject()
 
     def Title(self):
         """Return the contact's Fullname as title
@@ -112,6 +129,9 @@ class Contact(Person):
     security.declareProtected(ManageClients, 'getUser')
     def setUser(self, user_or_username):
         """Link the user to the Contact
+
+        :returns: True if OK, False if the User could not be linked
+        :rtype: bool
         """
         user = None
         userid = None
@@ -128,11 +148,16 @@ class Contact(Person):
         # Not a valid user
         if user is None:
             return False
+
+        # Link the User
         return self._linkUser(user)
 
     security.declareProtected(ManageClients, 'unlinkUser')
     def unlinkUser(self, delete=False):
         """Unlink the user to the Contact
+
+        :returns: True if OK, False if no User was unlinked
+        :rtype: bool
         """
         userid = self.getUsername()
         user = self.getUser()
@@ -140,7 +165,7 @@ class Contact(Person):
             logger.debug("Unlinking User '{}' from Contact '{}'".format(
                 userid, self.Title()))
 
-            # Unlink the user
+            # Unlink the User
             if not self._unlinkUser():
                 return False
 
@@ -148,6 +173,7 @@ class Contact(Person):
             if delete:
                 logger.debug("Removing Plone User '{}'".format(userid))
                 api.user.delete(username=userid)
+
             return True
         return False
 
@@ -160,6 +186,24 @@ class Contact(Person):
             return False
         return True
 
+    def getContacts(self, dl=True):
+        pairs = []
+        objects = []
+        for contact in self.aq_parent.objectValues('Contact'):
+            if isActive(contact) and contact.UID() != self.UID():
+                pairs.append((contact.UID(), contact.Title()))
+                if not dl:
+                    objects.append(contact)
+        pairs.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
+        return dl and DisplayList(pairs) or objects
+
+    def getParentUID(self):
+        return self.aq_parent.UID()
+
+    def _renameAfterCreation(self, check_auto_id=False):
+        from bika.lims.idserver import renameAfterCreation
+        renameAfterCreation(self)
+
     security.declarePrivate('_linkUser')
     def _linkUser(self, user):
         """Set the UID of the current Contact in the User properties and update
@@ -167,6 +211,20 @@ class Contact(Person):
         """
         KEY = "linked_contact_uid"
 
+        username = user.getId()
+        contact = Contact.getContactByUsername(username)
+
+        # User is linked to another contact (fix in UI)
+        if contact and contact.UID() != self.UID():
+            raise ValueError("User '{}' is already linked to Contact '{}'".format(
+                username, contact.Title()))
+
+        # User is linked to multiple other contacts (fix in Data)
+        if isinstance(contact, list):
+            raise ValueError("User '{}' is linked to multiple Contacts: '{}'".format(
+                username, ",".join(map(lambda x: x.Title(), contact)))) 
+
+        # XXX: Does it make sense to "remember" the UID as a User property?
         tool = user.getTool()
         try:
             user.getProperty(KEY)
@@ -179,6 +237,7 @@ class Contact(Person):
         user.setMemberProperties({KEY: uid})
         logger.info("Linked Contact UID {} to User {}".format(
             user.getProperty(KEY), user.getId()))
+
         # Set the Username
         self.setUsername(user.getId())
         # Update the Email address from the user
@@ -213,19 +272,5 @@ class Contact(Person):
         self.reindexObject()
 
         return True
-
-    def getContacts(self, dl=True):
-        pairs = []
-        objects = []
-        for contact in self.aq_parent.objectValues('Contact'):
-            if isActive(contact) and contact.UID() != self.UID():
-                pairs.append((contact.UID(), contact.Title()))
-                if not dl:
-                    objects.append(contact)
-        pairs.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
-        return dl and DisplayList(pairs) or objects
-
-    def getParentUID(self):
-        return self.aq_parent.UID()
 
 atapi.registerType(Contact, PROJECTNAME)

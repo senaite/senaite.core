@@ -29,16 +29,15 @@ if membership_tool.isAnonymousUser():
 
 member = membership_tool.getAuthenticatedMember()
 
-# Disable logins for deactivated Contacts
-linked_contact_uid = member.getProperty('linked_contact_uid', '')
-if linked_contact_uid:
-    catalog = getToolByName(context, "portal_catalog")
-    results = catalog(UID=linked_contact_uid)
-    if len(results) == 1:
-        contact = results[0].getObject()
-        if not contact.isActive():
-            context.plone_utils.addPortalMessage(_(u'Login failed. Your Login has been deactivated. Please contact the Lab for further information.'), 'error')
-            return state.set(status='failure')
+username = member.getId()
+catalog = getToolByName(context, "portal_catalog")
+contacts = catalog(portal_type="Contact", getUsername=username)
+# How to proceed if the User is assigned to multiple Contacts?
+if len(contacts) > 0:
+    contact = contacts[0].getObject()
+    if not contact.isActive():
+        context.plone_utils.addPortalMessage(_(u'Login failed. Your Login has been deactivated. Please contact the Lab for further information.'), 'error')
+        return state.set(status='failure')
 
 login_time = member.getProperty('login_time', '2000/01/01')
 initial_login = int(str(login_time) == '2000/01/01')

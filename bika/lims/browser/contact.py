@@ -16,6 +16,7 @@ from plone.protect import CheckAuthenticator
 from bika.lims import PMF
 from bika.lims import logger
 from bika.lims.browser import BrowserView
+from bika.lims.content.contact import Contact
 from bika.lims import bikaMessageFactory as _
 
 
@@ -87,9 +88,7 @@ class ContactLoginDetailsView(BrowserView):
     def linkable_users(self):
         """Search Plone users which are not linked to a contact
         """
-
         users = api.user.get_users()
-        pc = api.portal.get_tool("portal_catalog")
         self.searchstring = self.request.form.get("searchstring")
 
         out = []
@@ -97,13 +96,8 @@ class ContactLoginDetailsView(BrowserView):
             userid = user.getId()
 
             # Skip users which are already linked to a Contact
-            results = pc(portal_type="Contact", getUsername=userid)
-            if results:
-                logger.debug("User {} is already linked to {}".format(
-                    userid, ",".join(map(lambda x: x.Title, results))))
-                if len(results) > 1:
-                    logger.error("User {} is linked to multiple Contacts: {}".format(
-                        userid, ",".join(map(lambda x: x.Title, results))))
+            contact = Contact.getContactByUsername(userid)
+            if contact:
                 continue
 
             userdata = {
@@ -120,6 +114,8 @@ class ContactLoginDetailsView(BrowserView):
 
             # Append the userdata for the results
             out.append(userdata)
+
+        out.sort(lambda x, y: cmp(x["userid"], y["userid"]))
         return out
 
     def _link_user(self, userid):
@@ -127,8 +123,11 @@ class ContactLoginDetailsView(BrowserView):
         """
         # check if we have a selected user from the search-list
         if userid:
-            self.context.setUser(userid)
-            self.add_status_message(_("User linked to this Contact"), "info")
+            try:
+                self.context.setUser(userid)
+                self.add_status_message(_("User linked to this Contact"), "info")
+            except ValueError, e:
+                self.add_status_message(e, "error")
         else:
             self.add_status_message(_("Please select a User from the list"), "info")
 
