@@ -13,12 +13,17 @@
 <tal:departments
     tal:define="portal context/portal_url/getPortalObject;
                 plone_view context/@@plone;
+                dep_disabled python:request.cookies.get('dep_filter_disabled','');
                 deps python: here.portal_catalog(portal_type='Department',sort_on='sortable_title', sort_order='ascending',
                                             inactive_state='active') if user_name=='admin'  else brains[0].getObject().getSortedDepartments();
                 cookie python:request.cookies.get(
                     'filter_by_department_info','');
-                dep_cookie python: cookie.split(',')[0] if cookie and len(deps)>1
-                    else deps[0].UID();">
+                deps_from_cookie python: cookie.split(',') if cookie and len(deps)>0
+                    else [];
+                first_from_cat python: deps[0].UID if user_name=='admin'
+                        else deps[0].UID();
+                first_dep python: deps_from_cookie[0] if len(deps_from_cookie)>1
+                    else first_from_cat if not cookie else '';">
     <dl class="portlet" id="portletfilter_by_department">
         <!-- The header of the porlet -->
         <dt class="portletHeader"
@@ -30,26 +35,24 @@
             name="portletfilter_by_department"
             method="POST">
             <dd class="portletItem">
-                <input type="checkbox" name="admin_dep_filter_enabled"
-                       tal:condition= "python: user_name=='admin'"
-                       />
-                       <label tal:condition= "python: user_name=='admin'">Disable department filtering <br><br></label>
-                <!-- The selection list -->
-                <select id="department_filter_portlet"
-                        name="department_filter_portlet"
-                        i18n:domain="python:i18n_domain"
-                        tal:attributes="style python: 'width:100%' if len(deps)>1 else 'display:none'">
-                    <!-- Filling the other options with the departments assigned
-                    to the user -->
-                    <tal:option repeat="dep deps">
-                    <option
-                        tal:content="python: dep.Title if user_name=='admin' else dep.Title()"
-                        tal:attributes="
-                            value python: dep.UID if user_name=='admin' else dep.UID();
-                            selected python: 'selected' if user_name=='admin' and dep_cookie == dep.UID else 'selected' if user_name!='admin' and dep_cookie == dep.UID() else ''"
-                        i18n:translate=""/>
-                    </tal:option>
-                </select>
+                <input type="checkbox"
+                       name="admin_dep_filter_enabled"
+                       id="admin_dep_filter_enabled"
+                       tal:condition= "python: user_name=='admin'"/>
+                       <label tal:condition= "python: user_name=='admin'">Select All Departments<br><br></label>
+
+                <tal:option repeat="dep deps">
+                <input type="checkbox"
+                    tal:define="dep_name python:dep.Title if user_name=='admin' else dep.Title();
+                                dep_uid python: dep.UID if user_name=='admin' else dep.UID()"
+                    tal:content="python: dep_name"
+                    tal:attributes="
+                        value python: dep_uid;
+                        name python: 'chb_deps[]' ;
+                        checked python: 'true' if dep_disabled=='true' else 'true' if any(dep_uid in cd for cd in deps_from_cookie) else 'true' if first_dep==dep_uid else ''"
+                    i18n:translate=""/><br>
+                </tal:option>
+
                 <!-- Only a label with the department if one department only -->
                 <label
                     i18n:translate=""
@@ -58,8 +61,8 @@
                     >Department</label>
             </dd>
             <!-- The submit form button -->
-            <dd class="portletFooter" style="display:none">
-                <input type="submit" id="department_filter_submit" value="Filter">
+            <dd class="portletFooter">
+                <input type="button" id="department_filter_submit" value="Filter">
             </dd>
         </form>
     </dl>
