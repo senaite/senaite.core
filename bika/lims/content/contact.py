@@ -203,7 +203,7 @@ class Contact(Person):
 
         # Unset the UID from the User Property
         user.setMemberProperties({KEY: ""})
-        logger.info("Unlinked Contact UID from User {}".format(user.getProperty(KEY)))
+        logger.info("Unlinked Contact UID from User {}".format(user.getProperty(KEY, "")))
         # Unset the Username
         self.setUsername(None)
         # Unset the Email
