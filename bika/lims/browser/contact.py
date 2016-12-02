@@ -14,8 +14,8 @@ from plone import api
 from plone.protect import CheckAuthenticator
 
 from bika.lims import PMF
-from bika.lims.browser import BrowserView
 from bika.lims import logger
+from bika.lims.browser import BrowserView
 from bika.lims import bikaMessageFactory as _
 
 
@@ -31,53 +31,61 @@ class ContactLoginDetailsView(BrowserView):
         CheckAuthenticator(form)
 
         if form.get("submitted"):
-            logger.info("Form Submitted: {}".format(form))
+            logger.debug("Form Submitted: {}".format(form))
             if form.get("unlink_button", False):
                 self._unlink_user()
             elif form.get("delete_button", False):
                 self._unlink_user(delete=True)
-            elif form.get("deactivate_button", False):
-                self._deactivate_user()
             elif form.get("search_button", False):
-                logger.info("Search User")
+                logger.debug("Search User")
             elif form.get("link_button", False):
-                logger.info("Link User")
+                logger.debug("Link User")
                 self._link_user(form.get("userid"))
             elif form.get("save_button", False):
-                logger.info("Create User")
+                logger.debug("Create User")
                 self._create_user()
 
         return self.template()
 
-    def _link_user(self, userid):
-        """Link user to the current Contact
+    def get_user_properties(self):
+        """Return the properties of the User
         """
-        if userid:
-            self.context.setUser(userid)
-            self.add_status_message(_("Linked System User"), "success")
 
-    def _unlink_user(self, delete=False):
-        """Unlink/Delete the User from the current Contact
-        """
-        if delete:
-            self.add_status_message(_("Unlinked and deleted System User"), "warning")
-            self.context.unlinkUser(delete=True)
-        else:
-            self.add_status_message(_("Unlinked System User"), "info")
-            self.context.unlinkUser()
+        user = self.context.getUser()
 
-    def _deactivate_user(self):
-        """Deactivate User Login
-        """
-        self.add_status_message(_("Deactivated System User"), "info")
+        # No User linked, nothing to do
+        if user is None:
+            return {}
 
-    def add_status_message(self, message, severity="info"):
-        """Set a portal message
+        out = {}
+        plone_user = user.getUser()
+        userid = plone_user.getId()
+        for sheet in plone_user.listPropertysheets():
+            ps = plone_user.getPropertysheet(sheet)
+            out.update(dict(ps.propertyItems()))
+
+        portal = api.portal.get()
+        mtool = api.portal.get_tool(name='portal_membership')
+
+        out["id"] = userid
+        out["portrait"] = mtool.getPersonalPortrait(id=userid)
+        out["edit_url"] = "{}/@@user-information?userid={}".format(
+            portal.absolute_url(), userid)
+
+        return out
+
+    def get_contact_properties(self):
+        """Return the properties of the Contact
         """
-        self.context.plone_utils.addPortalMessage(message, severity)
+        contact = self.context
+
+        return {
+            "fullname": contact.getFullname(),
+            "username": contact.getUsername(),
+        }
 
     def linkable_users(self):
-        """Users which are not linked to a contact
+        """Search Plone users which are not linked to a contact
         """
 
         users = api.user.get_users()
@@ -91,7 +99,7 @@ class ContactLoginDetailsView(BrowserView):
             # Skip users which are already linked to a Contact
             results = pc(portal_type="Contact", getUsername=userid)
             if results:
-                logger.info("User {} is already linked to {}".format(
+                logger.debug("User {} is already linked to {}".format(
                     userid, ",".join(map(lambda x: x.Title, results))))
                 if len(results) > 1:
                     logger.error("User {} is linked to multiple Contacts: {}".format(
@@ -107,14 +115,41 @@ class ContactLoginDetailsView(BrowserView):
             # filter out users which do not match the searchstring
             if self.searchstring:
                 s = self.searchstring.lower()
-                if not any(map(lambda v: re.search(v, s), userdata.values())):
+                if not any(map(lambda v: re.search(s, v.lower()), userdata.values())):
                     continue
 
             # Append the userdata for the results
             out.append(userdata)
         return out
 
+    def _link_user(self, userid):
+        """Link an existing user to the current Contact
+        """
+        # check if we have a selected user from the search-list
+        if userid:
+            self.context.setUser(userid)
+            self.add_status_message(_("User linked to this Contact"), "info")
+        else:
+            self.add_status_message(_("Please select a User from the list"), "info")
+
+    def _unlink_user(self, delete=False):
+        """Unlink and delete the User from the current Contact
+        """
+        if delete:
+            self.add_status_message(_("Unlinked and deleted User"), "warning")
+            self.context.unlinkUser(delete=True)
+        else:
+            self.add_status_message(_("Unlinked User"), "info")
+            self.context.unlinkUser()
+
+    def add_status_message(self, message, severity="info"):
+        """Set a portal message
+        """
+        self.context.plone_utils.addPortalMessage(message, severity)
+
     def _create_user(self):
+        """Create a new user
+        """
         def error(field, message):
             if field:
                 message = "%s: %s" % (field, message)
@@ -163,8 +198,7 @@ class ContactLoginDetailsView(BrowserView):
         except ValueError, msg:
             return error(None, msg)
 
-        contact.setUsername(username)
-        contact.setEmailAddress(email)
+        contact.setUser(username)
 
         # If we're being created in a Client context, then give
         # the contact an Owner local role on client.
@@ -207,40 +241,3 @@ class ContactLoginDetailsView(BrowserView):
         while True:
             i += 1
             yield i
-
-    def get_user_properties(self):
-        """Return the properties of the System User
-        """
-
-        user = self.context.getUser()
-
-        # No User linked, nothing to do
-        if user is None:
-            return {}
-
-        out = {}
-        plone_user = user.getUser()
-        userid = plone_user.getId()
-        for sheet in plone_user.listPropertysheets():
-            ps = plone_user.getPropertysheet(sheet)
-            out.update(dict(ps.propertyItems()))
-
-        portal = api.portal.get()
-        mtool = api.portal.get_tool(name='portal_membership')
-
-        out["id"] = userid
-        out["portrait"] = mtool.getPersonalPortrait(id=userid)
-        out["edit_url"] = "{}/@@user-information?userid={}".format(
-            portal.absolute_url(), userid)
-
-        return out
-
-    def get_contact_properties(self):
-        """Return the properties of the Contact
-        """
-        contact = self.context
-
-        return {
-            "fullname": contact.getFullname(),
-            "username": contact.getUsername(),
-        }

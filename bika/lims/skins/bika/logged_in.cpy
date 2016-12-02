@@ -28,6 +28,18 @@ if membership_tool.isAnonymousUser():
     return state.set(status='failure')
 
 member = membership_tool.getAuthenticatedMember()
+
+# Disable logins for deactivated Contacts
+linked_contact_uid = member.getProperty('linked_contact_uid', '')
+if linked_contact_uid:
+    catalog = getToolByName(context, "portal_catalog")
+    results = catalog(UID=linked_contact_uid)
+    if len(results) == 1:
+        contact = results[0].getObject()
+        if not contact.isActive():
+            context.plone_utils.addPortalMessage(_(u'Login failed. Your Login has been deactivated. Please contact the Lab for further information.'), 'error')
+            return state.set(status='failure')
+
 login_time = member.getProperty('login_time', '2000/01/01')
 initial_login = int(str(login_time) == '2000/01/01')
 state.set(initial_login=initial_login)

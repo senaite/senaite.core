@@ -28,6 +28,9 @@ from bika.lims import logger
 from bika.lims import bikaMessageFactory as _
 
 
+ACTIVE_STATES = ["active"]
+
+
 schema = Person.schema.copy() + atapi.Schema((
     atapi.LinesField('PublicationPreference',
                      vocabulary_factory='bika.lims.vocabularies.CustomPubPrefVocabularyFactory',
@@ -85,6 +88,17 @@ class Contact(Person):
         """
         return safe_unicode(self.getFullname()).encode('utf-8')
 
+    def isActive(self):
+        """Checks if the Contact is active
+        """
+        wftool = api.portal.get_tool("portal_workflow")
+        status = wftool.getStatusOf("bika_inactive_workflow", self)
+        if status and status.get("inactive_state") in ACTIVE_STATES:
+            logger.debug("Contact '{}' is active".format(self.Title()))
+            return True
+        logger.debug("Contact '{}' is deactivated".format(self.Title()))
+        return False
+
     security.declareProtected(ManageClients, 'getUser')
     def getUser(self):
         """Returns the linked Plone User or None
@@ -114,20 +128,22 @@ class Contact(Person):
         # Not a valid user
         if user is None:
             return False
-
-        # Set the Username
-        self.setUsername(userid)
-        return True
+        return self._linkUser(user)
 
     security.declareProtected(ManageClients, 'unlinkUser')
     def unlinkUser(self, delete=False):
         """Unlink the user to the Contact
         """
         userid = self.getUsername()
-        if self.hasUser():
+        user = self.getUser()
+        if user:
             logger.debug("Unlinking User '{}' from Contact '{}'".format(
                 userid, self.Title()))
-            self.setUsername(None)
+
+            # Unlink the user
+            if not self._unlinkUser():
+                return False
+
             # Also remove the Plone User (caution)
             if delete:
                 logger.debug("Removing Plone User '{}'".format(userid))
@@ -142,6 +158,60 @@ class Contact(Person):
         user = self.getUser()
         if user is None:
             return False
+        return True
+
+    security.declarePrivate('_linkUser')
+    def _linkUser(self, user):
+        """Set the UID of the current Contact in the User properties and update
+        all relevant own properties.
+        """
+        KEY = "linked_contact_uid"
+
+        tool = user.getTool()
+        try:
+            user.getProperty(KEY)
+        except ValueError:
+            logger.info("Adding User property {}".format(KEY))
+            tool.manage_addProperty(KEY, "", "string")
+
+        # Set the UID as a User Property
+        uid = self.UID()
+        user.setMemberProperties({KEY: uid})
+        logger.info("Linked Contact UID {} to User {}".format(
+            user.getProperty(KEY), user.getId()))
+        # Set the Username
+        self.setUsername(user.getId())
+        # Update the Email address from the user
+        self.setEmailAddress(user.getProperty("email"))
+
+        # somehow the `getUsername` index gets out of sync
+        self.reindexObject()
+        return True
+
+    security.declarePrivate('_unlinkUser')
+    def _unlinkUser(self):
+        """Remove the UID of the current Contact in the User properties and
+        update all relevant own properties.
+        """
+        KEY = "linked_contact_uid"
+
+        # Nothing to do if no user is linked
+        if not self.hasUser():
+            return False
+
+        user = self.getUser()
+
+        # Unset the UID from the User Property
+        user.setMemberProperties({KEY: ""})
+        logger.info("Unlinked Contact UID from User {}".format(user.getProperty(KEY)))
+        # Unset the Username
+        self.setUsername(None)
+        # Unset the Email
+        self.setEmailAddress(None)
+
+        # somehow the `getUsername` index gets out of sync
+        self.reindexObject()
+
         return True
 
     def getContacts(self, dl=True):

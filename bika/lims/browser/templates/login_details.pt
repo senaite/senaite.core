@@ -20,7 +20,9 @@
     <!-- Contact has a linked User -->
     <tal:withuser condition="has_user"
                   define="userprops    view/get_user_properties;
-                          contactprops view/get_contact_properties">
+                          contactprops view/get_contact_properties;
+                          active       context/isActive;
+                          inactive     not: active">
 
         <p i18n:translate="">
             <span tal:content="contactprops/fullname"
@@ -38,14 +40,13 @@
 
 
         <fieldset>
-            <legend i18n:translate="">Manage linked System User</legend>
+            <legend i18n:translate="">Manage linked User</legend>
 
             <form id="contact_edit_form"
                   method="post">
 
                 <span tal:replace="structure context/@@authenticator/authenticator"/>
                 <input type="hidden" name="submitted" value="1"/>
-
 
                 <table class="plain">
                     <tbody>
@@ -95,7 +96,15 @@
                 </table>
 
                 <!-- Form Controls -->
-                <div class="formControls">
+                <div class="formControls" tal:condition="active">
+                    <input class="context"
+                           style="color:red;"
+                           type="submit"
+                           tabindex=""
+                           name="delete_button"
+                           value="Unlink and delete User"
+                           i18n:attributes="value"
+                           tal:attributes="tabindex tabindex/next;" />
                     <input class="context"
                            type="submit"
                            tabindex=""
@@ -103,23 +112,13 @@
                            value="Unlink User"
                            i18n:attributes="value"
                            tal:attributes="tabindex tabindex/next;" />
-
-                    <input class="context"
-                           type="submit"
-                           tabindex=""
-                           name="delete_button"
-                           value="Unlink and delete User"
-                           i18n:attributes="value"
-                           tal:attributes="tabindex tabindex/next;" />
-
-                    <!-- <input class="context" -->
-                    <!-- type="submit" -->
-                    <!-- tabindex="" -->
-                    <!-- name="deactivate_button" -->
-                    <!-- value="Deactivate User" -->
-                    <!-- i18n:attributes="value" -->
-                    <!-- tal:attributes="tabindex tabindex/next;" /> -->
                 </div>
+                <p tal:condition="inactive">
+                    <img src="++resource++bika.lims.images/exclamation2.png" title="Disabled Contact">
+                    <span i18n:translate="" class="discreet">
+                        Contact is deactivated. User cannot be unlinked.
+                    </span>
+                </p>
             </form>
         </fieldset>
     </tal:withuser>
@@ -142,7 +141,7 @@
                         batch python:Batch(view.linkable_users(), b_size, int(b_start), orphan=1) or None;
                         batchformkeys python:['searchstring','_authenticator'];">
 
-            <legend i18n:translate="">Link an existing System User</legend>
+            <legend i18n:translate="">Link an existing User</legend>
             <form id="user_search_form"
                   method="post">
 
@@ -201,7 +200,7 @@
         </fieldset>
 
         <fieldset>
-            <legend i18n:translate="">Create a new System User</legend>
+            <legend i18n:translate="">Create a new User</legend>
 
             <form id="contact_edit_form"
                   method="post">
