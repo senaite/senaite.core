@@ -349,30 +349,35 @@ function SiteView() {
 
     function loadFilterByDepartment() {
         /**
-        This function sets up the filter by department widget, the cookie and
-        the auto-submit.
+        This function sets up the filter by department cookie value by chosen departments.
         Also it does auto-submit if admin wants to enable/disable the department filtering.
         */
-        $('#department_filter_portlet').change(function(e) {
-            $('#department_filter_submit').click();
+        $('#department_filter_submit').click(function() {
+          var deps =[];
+          $.each($("input[name='chb_deps[]']:checked"), function() {
+            deps.push($(this).val());
+          });
+          var cookiename = 'filter_by_department_info';
+          if (deps.length===0) {
+            deps.push($("input[name='chb_deps[]']:first").val());
+          }
+          createCookie(cookiename, deps.toString());
+          location.reload();
         });
 
         $('#admin_dep_filter_enabled').change(function() {
             var cookiename = 'filter_by_department_info';
             if($(this).is(":checked")) {
                 var deps=[];
-                var all_dep_ids = document.getElementById('department_filter_portlet').options;
-                for (var i = 0; i < all_dep_ids.length; i++) {
-                  deps.push(all_dep_ids[i].value);
-                }
+                $.each($("input[name='chb_deps[]']"), function() {
+                  deps.push($(this).val());
+                });
                 createCookie(cookiename, deps);
                 createCookie('dep_filter_disabled','true');
-                $('#department_filter_portlet').prop("disabled",true);
                 location.reload();
               }else{
                 createCookie('dep_filter_disabled','false');
-                $('#department_filter_portlet').prop("disabled",false);
-                $('#department_filter_submit').click();
+                location.reload();
               }
             });
           loadFilterByDepartmentCookie();
@@ -382,24 +387,19 @@ function SiteView() {
         /**
         This function checks if the cookie 'filter_by_department_info' is
         available. If the cookie exists, do nothing, if the cookie has not been
-        created yet, checks the selected department in the 'filter by department
-        cookie' and creates the cookie with the UID of the department.
+        created yet, checks the selected department in the checkbox group and creates the cookie with the UID of the first department.
         If cookie value "dep_filter_disabled" is true, it means the user is admin and filtering is disabled.
         */
         // Gettin the cookie
         var cookiename = 'filter_by_department_info';
         var cookie_val = readCookie(cookiename);
         if (cookie_val === null || document.cookie.indexOf(cookiename)<1){
-            // we need to create a cookie with the default value in selected
-            // the portlet
-            var dep_uid = $('.portlet#portletfilter_by_department form ' +
-                'select#department_filter_portlet').find(":selected").val();
+            var dep_uid = $("input[name='chb_deps[]']:first").val();
             createCookie(cookiename, dep_uid);
         }
         var dep_filter_disabled=readCookie('dep_filter_disabled');
         if (dep_filter_disabled=="true" || dep_filter_disabled=='"true"'){
             $('#admin_dep_filter_enabled').prop("checked",true);
-            $('#department_filter_portlet').prop("disabled",true);
         }
     }
 }
