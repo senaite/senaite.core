@@ -29,12 +29,19 @@ if membership_tool.isAnonymousUser():
 
 member = membership_tool.getAuthenticatedMember()
 
+# https://jira.bikalabs.com/browse/LIMS-2455
 username = member.getId()
 catalog = getToolByName(context, "portal_catalog")
-contacts = catalog(portal_type="Contact", getUsername=username)
-# How to proceed if the User is assigned to multiple Contacts?
-if len(contacts) > 0:
-    contact = contacts[0].getObject()
+contacts = catalog(portal_type=["Contact", "LabContact" ],
+                   getUsername=username)
+if len(contacts) > 1:
+    # This should not happen!
+    logger.error("User {} is linked to multiple Contacts!")
+    context.plone_utils.addPortalMessage(_(u'Login failed. Your Login is linked to multiple Contacts. Please contact the Lab for further information.'), 'error')
+    return state.set(status='failure')
+for contact in contacts:
+    contact = contact.getObject()
+    # Deny login if the linked Contact/LabContact is not active
     if not contact.isActive():
         context.plone_utils.addPortalMessage(_(u'Login failed. Your Login has been deactivated. Please contact the Lab for further information.'), 'error')
         return state.set(status='failure')

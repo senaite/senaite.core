@@ -68,10 +68,15 @@
                                 <span i18n:translate="">User Name</span>
                             </td>
                             <td>
+                                <tal:labcontact condition="view/is_labcontact">
                                 <a href="#"
                                    tal:attributes="href userprops/edit_url">
-                                    <span tal:replace="userprops/id"></span>
+                                    <span tal:replace="userprops/id">labuser</span>
                                 </a>
+                                </tal:labcontact>
+                                <tal:contact condition="view/is_contact">
+                                    <span tal:replace="userprops/id">customeruser</span>
+                                </tal:contact>
                             </td>
                         </tr>
                         <tr>
@@ -81,7 +86,7 @@
                             <td>
                                 <a href="#"
                                    tal:attributes="href string:mailto:${userprops/email}"
-                                   tal:content="userprops/email"></a>
+                                   tal:content="userprops/email">labcontact@bikalims.com</a>
                             </td>
                         </tr>
                         <tr>
@@ -126,7 +131,7 @@
 
     <!-- Contact has **no** linked User -->
     <tal:withoutuser condition="not:has_user"
-                     define="contactprops view/get_contact_properties">
+                     define="contactprops view/get_contact_properties;">
 
         <p i18n:translate="">
             No user exists for
@@ -177,7 +182,10 @@
                                    tal:attributes="href string:mailto:${user/email}"
                                    tal:content="user/email"></a>
                                 </td>
-                                <td tal:content="user/userid">Username</td>
+                                <td>
+                                    <span tal:replace="user/userid">customeruser</span>
+                                </td>
+
                         </tr>
                     </tbody>
                 </table>
@@ -257,7 +265,7 @@
                     <input type="text" name="email" size="30" tal:attributes="value python: context.getEmailAddress() and context.getEmailAddress() or view.request.get('email', '')"/> </div>
 
                     <div class="field"
-                         tal:condition="python: view.context.portal_type == 'LabContact'">
+                         tal:condition="view/is_labcontact">
                         <label i18n:translate="label_add_to_groups">Add to the following groups:</label>
                         <span class="fieldRequired" i18n:translate="">(Required)</span>
                         <br/>

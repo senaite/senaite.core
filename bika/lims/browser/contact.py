@@ -18,6 +18,7 @@ from bika.lims import PMF
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.content.contact import Contact
+from bika.lims.content.labcontact import LabContact
 from bika.lims import bikaMessageFactory as _
 
 
@@ -100,7 +101,8 @@ class ContactLoginDetailsView(BrowserView):
 
             # Skip users which are already linked to a Contact
             contact = Contact.getContactByUsername(userid)
-            if contact:
+            labcontact = LabContact.getContactByUsername(userid)
+            if contact or labcontact:
                 continue
 
             userdata = {
@@ -120,6 +122,20 @@ class ContactLoginDetailsView(BrowserView):
 
         out.sort(lambda x, y: cmp(x["fullname"], y["fullname"]))
         return out
+
+    def is_contact(self):
+        """Check if the current context is a Contact
+        """
+        if self.context.portal_type == "Contact":
+            return True
+        return False
+
+    def is_labcontact(self):
+        """Check if the current context is a LabContact
+        """
+        if self.context.portal_type == "LabContact":
+            return True
+        return False
 
     def _link_user(self, userid):
         """Link an existing user to the current Contact

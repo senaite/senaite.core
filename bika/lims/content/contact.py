@@ -15,9 +15,8 @@ from Products.Archetypes import atapi
 from Products.CMFPlone.utils import safe_unicode
 from Products.Archetypes.utils import DisplayList
 
-from zope.interface import implements
-
 from plone import api
+from zope.interface import implements
 
 from bika.lims.utils import isActive
 from bika.lims.interfaces import IContact
@@ -73,9 +72,9 @@ class Contact(Person):
     """
     implements(IContact)
 
-    security = ClassSecurityInfo()
-    displayContentsTab = False
     schema = schema
+    displayContentsTab = False
+    security = ClassSecurityInfo()
     _at_rename_after_creation = True
 
     @classmethod
@@ -85,7 +84,8 @@ class Contact(Person):
 
         # Check if the User is linked already
         pc = api.portal.get_tool("portal_catalog")
-        contacts = pc(portal_type="Contact", getUsername=username)
+        contacts = pc(portal_type=cls.portal_type,
+                      getUsername=username)
 
         # No Contact assigned to this username
         if len(contacts) == 0:
@@ -212,7 +212,7 @@ class Contact(Person):
         KEY = "linked_contact_uid"
 
         username = user.getId()
-        contact = Contact.getContactByUsername(username)
+        contact = self.getContactByUsername(username)
 
         # User is linked to another contact (fix in UI)
         if contact and contact.UID() != self.UID():
