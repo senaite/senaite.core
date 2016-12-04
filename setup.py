@@ -71,6 +71,7 @@ setup(name='bika.lims',
           'plone.app.referenceablebehavior',
           'five.pt',
           'z3c.jbot',
+          'plone.resource',
       ],
       extras_require={
           'test': [
