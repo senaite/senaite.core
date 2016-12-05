@@ -8,7 +8,7 @@
         user_name python: member.getUserName();
         brains python: [] if user_name=='admin'  else here.portal_catalog(portal_type='LabContact',
                                     getUsername=user_name);"
-    tal:condition="python:len(brains)>0 or user_name=='admin'">
+    tal:condition="python:context.bika_setup.getAllowDepartmentFiltering() and (len(brains)>0 or user_name=='admin') ">
 <!-- Defining the base variables -->
 <tal:departments
     tal:define="portal context/portal_url/getPortalObject;

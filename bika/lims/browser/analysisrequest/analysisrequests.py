@@ -689,9 +689,12 @@ class AnalysisRequestsView(BikaListingView):
         It checks if the analysis request can be added to the list depending
         on the department filter. It checks the department of each analysis
         service from each analysis belonguing to the given analysis request.
+        If department filtering is disabled in bika_setup, will return True.
         @Obj: it is an analysis request object.
         @return: boolean
         """
+        if not self.context.bika_setup.getAllowDepartmentFiltering():
+            return True
         # Gettin the department from analysis service
         deps = obj.getDepartments()
         result = True
