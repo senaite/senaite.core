@@ -1,5 +1,6 @@
 3.2.1 (unreleased)
 ------------------
+LIMS-2341: Cleanup and format default Multi-AR COA
 LIMS-2455: Contact/Login Linkage Behavior
 LIMS-2447: getDatePublished index not indexed correctly at time of AR publication
 LIMS-2404: AR list in batches permitted sampling without Sampler and Sampling date provided
