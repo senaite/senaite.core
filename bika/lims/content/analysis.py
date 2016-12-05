@@ -192,7 +192,7 @@ schema = BikaSchema.copy() + Schema((
     StringField('ReflexRuleAction', required=0, default=0),
     # Which is the 'local_id' inside the reflex rule
     StringField('ReflexRuleLocalID', required=0, default=0),
-    # Reflex rule triggered actions from which the current analysis is
+    # Reflex rule triggered actions which the current analysis is
     # responsible of. Separated by '|'
     StringField('ReflexRuleActionsTriggered', required=0, default=''),
     ComputedField('ClientUID',
