@@ -73,8 +73,6 @@ def BatchUID(instance):
 
 @indexer(IAnalysisRequest)
 def getDatePublished(instance):
-    print('indexer for getDatePublished: %s = "%s"' %
-          (instance, getTransitionDate(instance, 'publish')))
     return getTransitionDate(instance, 'publish')
 
 

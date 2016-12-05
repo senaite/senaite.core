@@ -32,3 +32,4 @@ selenium-screenshot*
 Thumbs.db
 var
 tags
+buildout-cache
