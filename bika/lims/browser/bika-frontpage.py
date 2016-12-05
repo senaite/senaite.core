@@ -18,6 +18,8 @@ class FrontPageView(BrowserView):
     template = ViewPageTemplateFile("templates/bika-frontpage.pt")
 
     def __call__(self):
+        self.set_versions()
+        self.icon = self.portal_url + "/++resource++bika.lims.images/chevron_big.png"
         bika_setup = ploneapi.portal.get_tool("bika_setup")
         landingpage = bika_setup.getLandingPage()
 
@@ -33,8 +35,6 @@ class FrontPageView(BrowserView):
         # Authenticated Users get either the Dashboard, the std. Bika Frontpage
         # or the custom landing page. Furthermore, they can switch between the
         # Dashboard and the landing page.
-        self.set_versions()
-        self.icon = self.portal_url + "/++resource++bika.lims.images/chevron_big.png"
 
         # First precedence: Request parameter `redirect_to`
         redirect_to = self.request.form.get("redirect_to", None)
