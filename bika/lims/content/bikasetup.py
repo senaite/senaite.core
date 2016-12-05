@@ -35,6 +35,7 @@ from Products.Archetypes.atapi import TextField
 from Products.Archetypes.utils import DisplayList
 from Products.Archetypes.utils import IntDisplayList
 from Products.Archetypes.references import HoldingReference
+from archetypes.referencebrowserwidget import ReferenceBrowserWidget
 
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.widgets import DurationWidget
@@ -536,6 +537,25 @@ schema = BikaFolderSchema.copy() + Schema((
         widget=BooleanWidget(
             label=_("Use Dashboard as default front page"),
             description=_("Select this to activate the dashboard as a default front page.")
+        ),
+    ),
+    ReferenceField(
+        'LandingPage',
+        schemata="Analyses",
+        multiValued=0,
+        allowed_types=('Document', ),
+        relationship='SetupLandingPage',
+        widget=ReferenceBrowserWidget(
+            label=_("Landing Page"),
+            description=_("The selected landing page is displayed for non-authenticated users "
+                          "and if the Dashboard is not selected as the default front page. "
+                          "If no landing page is selected, the default Bika frontpage is displayed."),
+            allow_search=1,
+            allow_browse=1,
+            startup_directory='/',
+            force_close_on_insert=1,
+            default_search_index='SearchableText',
+            base_query={'review_state': 'published'},
         ),
     ),
     StringField(
