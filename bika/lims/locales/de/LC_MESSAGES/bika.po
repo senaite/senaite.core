@@ -29,7 +29,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
 "POT-Creation-Date: 2016-12-06 16:31+0000\n"
-"PO-Revision-Date: 2016-12-07 09:50+0100\n"
+"PO-Revision-Date: 2016-12-07 10:40+0100\n"
 "Last-Translator: Lutz Kogel <lkogel@koluma.de>\n"
 "Language-Team: German (http://www.transifex.com/bikalabs/bika-lims/language/de/)\n"
 "MIME-Version: 1.0\n"
@@ -4124,7 +4124,7 @@ msgstr "Keine Analyseaufträge passen zur Suche"
 
 #: bika/lims/exportimport/instruments/eltra/cs/cs2000.py:38
 msgid "No Analysis Services defined"
-msgstr ""
+msgstr "Keine Analysenleistungen definiert"
 
 # File: bika.lims/bika/lims/browser/reports/administration_usershistory.py,
 # line: 162
@@ -4746,7 +4746,7 @@ msgstr ""
 
 #: bika/lims/skins/bika/bika_widgets/rejectionsetupwidget.pt:32
 msgid "Predefined reasons of rejection"
-msgstr ""
+msgstr "Standard Grund der Ablehnung"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 172
 #: bika/lims/content/bikasetup.py:178
@@ -4756,7 +4756,7 @@ msgstr "Bevorzugter Dezimaltrenner für Berichte"
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 391
 #: bika/lims/content/bikasetup.py:441
 msgid "Preferred decimal mark for results"
-msgstr ""
+msgstr "Dezimalstellen in Ergebnissen bevorzugt."
 
 #: bika/lims/content/bikasetup.py:461
 msgid "Preferred layout of the results entry table in the Worksheet view. Classic layout displays the Analysis Requests in rows and the analyses in columns. Transposed layout displays the Analysis Requests in columns and the analyses in rows."
@@ -4765,12 +4765,12 @@ msgstr ""
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 182
 #: bika/lims/content/bikasetup.py:188
 msgid "Preferred scientific notation format for reports"
-msgstr ""
+msgstr "Wissenschaftliche Notation in Berichten bevorzugt"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 401
 #: bika/lims/content/bikasetup.py:451
 msgid "Preferred scientific notation format for results"
-msgstr ""
+msgstr "Wissenschaftliche Notation in Ergebnissen bevorzugt"
 
 # File: bika.lims/bika/lims/controlpanel/bika_sampletypes.py, line: 50
 #: bika/lims/controlpanel/bika_sampletypes.py:55
@@ -4789,7 +4789,7 @@ msgstr "Premium"
 
 #: bika/lims/content/analysisrequest.py:1525 bika/lims/content/sample.py:337
 msgid "Preparation Workflow"
-msgstr ""
+msgstr "Konservierungs Workflow"
 
 # File: bika.lims/bika/lims/content/instrumentcertification.py, line: 85
 #: bika/lims/content/instrumentcertification.py:91
@@ -5992,7 +5992,7 @@ msgstr "Sicherheitssiegel unbeschädigt J/N"
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 411
 #: bika/lims/content/bikasetup.py:484
 msgid "Select 'Register' if you want stickers to be automatically printed when new ARs or sample records are created. Select 'Receive' to print stickers when ARs or Samples are received. Select 'None' to disable automatic printing"
-msgstr ""
+msgstr "Wählen Sie 'Registrierung', wenn Sie einen automatischen Etikettendruck anstossen wollen, sobald neue Analysenaufträge oder Proben erstellt werden. Wählen Sie 'Empfang', wenn Sie einen automatischen Etikettendruck anstossen wollen, sobald Analysenaufträge oder Proben empfangen wurden. Wählen Sie 'Keine' um den automatischen Etikettendruck abzuschalten."
 
 # File: bika.lims/bika/lims/content/srtemplate.py, line: 37
 #: bika/lims/content/srtemplate.py:86
@@ -6033,7 +6033,7 @@ msgstr "Alle Einträge auswählen"
 
 #: bika/lims/content/instrument.py:128
 msgid "Select an Export interface for this instrument."
-msgstr ""
+msgstr "Wählen Sie die Exportschnittstelle für dieses Instrument."
 
 # File: bika.lims/bika/lims/content/artemplate.py, line: 172
 #: bika/lims/content/artemplate.py:184
@@ -6119,7 +6119,7 @@ msgstr ""
 
 #: bika/lims/browser/sample/templates/print_form.pt:45
 msgid "Select the filter to apply"
-msgstr ""
+msgstr "Wählen Sie den zu aktivierenden Filter"
 
 # File: bika.lims/bika/lims/content/worksheettemplate.py, line: 61
 #: bika/lims/content/worksheettemplate.py:66
@@ -7812,7 +7812,7 @@ msgstr "Sie müssen ein Gerät auswählen"
 # 58
 #: bika/lims/exportimport/instruments/sysmex/xs/i500.py:63
 msgid "You should introduce a default result key."
-msgstr ""
+msgstr "Sie sollten einen Standard Ergebnisschlüssel einführen."
 
 # File: bika.lims/bika/lims/browser/reports/administration_usershistory.py,
 # line: 116
