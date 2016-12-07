@@ -2249,21 +2249,20 @@ class AnalysisRequest(BaseFolder):
                 suids.append(an.getServiceUID())
 
         def valid_dup(wan):
+            if wan.portal_type == 'ReferenceAnalysis':
+                return False
             an_state = wf.getInfoFor(wan, 'review_state')
-            an_reftype = wan.getReferenceType()
             return \
                 wan.portal_type == 'DuplicateAnalysis' \
                 and wan.getRequestID() == self.id \
-                and wan not in qcanalyses \
-                and (qctype is None or an_reftype == qctype) \
                 and (review_state is None or an_state in review_state)
 
         def valid_ref(wan):
+            if wan.portal_type != 'ReferenceAnalysis':
+                return False
             an_state = wf.getInfoFor(wan, 'review_state')
             an_reftype = wan.getReferenceType()
-            return \
-                wan.portal_type == 'ReferenceAnalysis' \
-                and wan.getServiceUID() in suids \
+            return wan.getServiceUID() in suids \
                 and wan not in qcanalyses \
                 and (qctype is None or an_reftype == qctype) \
                 and (review_state is None or an_state in review_state)
