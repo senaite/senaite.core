@@ -1,12 +1,13 @@
 #
 # Translators:
+# Marco Rodriguez <tabarishneo@gmail.com>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2016-12-07 11:33+0000\n"
-"PO-Revision-Date: 2012-01-04 12:46+0000\n"
-"Last-Translator: Bika <bikasupport@bikalabs.com>\n"
-"Language-Team: Italian (Italy) (http://www.transifex.com/bikalabs/bika-lims/language/it_IT/)\n"
+"POT-Creation-Date: 2016-12-07 17:21+0000\n"
+"PO-Revision-Date: 2016-08-05 21:27+0000\n"
+"Last-Translator: Marco Rodriguez <tabarishneo@gmail.com>\n"
+"Language-Team: Spanish (Latin America) (http://www.transifex.com/bikalabs/bika-lims/language/es_419/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -15,71 +16,71 @@ msgstr ""
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: DOMAIN\n"
-"Language: it_IT\n"
+"Language: es_419\n"
 
 # File: bika.lims/bika/lims/browser/templates/login_details.pt, line: 18
 #: bika/lims/browser/templates/login_details.pt:33
 msgid "${contact_fullname} can log into the LIMS by using ${contact_username} as username. Contacts must change their own passwords. If a password is forgotten a contact can request a new password from the login form."
-msgstr ""
+msgstr "${contact_fullname} puede loguearse en el LIMS usando ${contact_username} como nombre de usuario. Los contactos deben cambiar sus contraseñas. Si una contraseña es olvidada, el contacto puede solicitar una nueva desde el formulario de login."
 
 # File: bika.lims/bika/lims/browser/analysisrequest/workflow.py, line: 224
 #: bika/lims/browser/analysisrequest/workflow.py:240
 msgid "${items} are missing Preserver or Date Preserved"
-msgstr ""
+msgstr "${items} Falta preservador, o fecha de preservación"
 
 # File: bika.lims/bika/lims/browser/client.py, line: 132
 #: bika/lims/browser/client/workflow.py:110
 msgid "${items} are waiting for preservation."
-msgstr ""
+msgstr "${items} están esperando formas de preservación."
 
 # File: bika.lims/bika/lims/browser/analysisrequest/workflow.py, line: 212
 # File: bika.lims/bika/lims/browser/client.py, line: 135
 #: bika/lims/browser/analysisrequest/workflow.py:228
 #: bika/lims/browser/client/workflow.py:113
 msgid "${items} are waiting to be received."
-msgstr ""
+msgstr "${items} están esperando ser recibidos."
 
 # File: bika.lims/bika/lims/browser/analysisrequest/workflow.py, line: 514
 #: bika/lims/browser/analysisrequest/workflow.py:561
 msgid "${items} invalidated."
-msgstr ""
+msgstr "${items} se han invalidado."
 
 # File: bika.lims/bika/lims/controlpanel/bika_analysisservices.py, line: 109
 #: bika/lims/controlpanel/bika_analysisservices.py:112
 msgid "${items} were successfully created."
-msgstr ""
+msgstr "${items} fueron creados exitosamente."
 
 # File: bika.lims/bika/lims/browser/client.py, line: 198
 #: bika/lims/browser/client/workflow.py:176
 msgid "${items}: partitions are waiting to be received."
-msgstr ""
+msgstr "${items}: las particiones están esperando ser recibidas."
 
 # File: bika.lims/bika/lims/browser/analysisrequest/workflow.py, line: 228
 #: bika/lims/browser/analysisrequest/workflow.py:244
 msgid "${item} is missing Preserver or Preservation Date"
-msgstr ""
+msgstr "${item} Falta preservador, o fecha de preservación"
 
 # File: bika.lims/bika/lims/browser/client.py, line: 140
 #: bika/lims/browser/client/workflow.py:118
 msgid "${item} is waiting for preservation."
-msgstr ""
+msgstr "${item} están esperando forma de preservación."
 
 # File: bika.lims/bika/lims/browser/analysisrequest/workflow.py, line: 216
 # File: bika.lims/bika/lims/browser/client.py, line: 143
 #: bika/lims/browser/analysisrequest/workflow.py:232
 #: bika/lims/browser/client/workflow.py:121
 msgid "${item} is waiting to be received."
-msgstr ""
+msgstr "${item} está esperando ser recibido."
 
 # File: bika.lims/bika/lims/controlpanel/bika_analysisservices.py, line: 113
 #: bika/lims/controlpanel/bika_analysisservices.py:116
 msgid "${item} was successfully created."
-msgstr ""
+msgstr "${item} fue creado exitosamente."
 
 # File: bika.lims/bika/lims/browser/client.py, line: 201
 #: bika/lims/browser/client/workflow.py:179
 msgid "${item}: ${part} is waiting to be received."
-msgstr ""
+msgstr "${item}: ${part} la partición está esperando ser recibida."
 
 #: bika/lims/browser/templates/bika_listing_table.pt:259
 msgid "${nr_items} Item"
@@ -94,12 +95,12 @@ msgstr ""
 # line: 36
 #: bika/lims/browser/reports/templates/productivity_samplereceivedvsreported.pt:36
 msgid "%"
-msgstr ""
+msgstr "%"
 
 # File: bika.lims/bika/lims/content/analysisspec.py, line: 72
 #: bika/lims/content/analysisspec.py:77
 msgid "% Error"
-msgstr ""
+msgstr "% Error"
 
 # File:
 # bika.lims/bika/lims/browser/reports/templates/productivity_analysesperdepartment.pt,
@@ -110,7 +111,7 @@ msgstr ""
 #: bika/lims/browser/reports/templates/productivity_analysesperdepartment.pt:99
 #: bika/lims/browser/reports/templates/productivity_analysesperformedpertotal.pt:99
 msgid "% Performed"
-msgstr ""
+msgstr "% Realizado"
 
 # File:
 # bika.lims/bika/lims/browser/reports/templates/productivity_analysesperdepartment.pt,
@@ -121,7 +122,7 @@ msgstr ""
 #: bika/lims/browser/reports/templates/productivity_analysesperdepartment.pt:101
 #: bika/lims/browser/reports/templates/productivity_analysesperformedpertotal.pt:101
 msgid "% Published"
-msgstr ""
+msgstr "% Publicado"
 
 #: bika/lims/utils/workflow/schedulesampling.py:33
 msgid "%s can't be transitioned."
@@ -134,12 +135,12 @@ msgstr ""
 # File: bika.lims/bika/lims/exportimport/setupdata/__init__.py, line: 29
 #: bika/lims/exportimport/setupdata/__init__.py:35
 msgid "%s has no '%s' column."
-msgstr ""
+msgstr "%s no tiene '%s' columna."
 
 # File: bika.lims/bika/lims/skins/bika/attachments.pt, line: 60
 #: bika/lims/skins/bika/attachments.pt:60
 msgid "&nbsp;"
-msgstr ""
+msgstr "&nbsp;"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 341
 #: bika/lims/content/bikasetup.py:391
@@ -2222,7 +2223,7 @@ msgstr ""
 #: bika/lims/browser/invoicebatch.py:52
 #: bika/lims/controlpanel/bika_arpriorities.py:51
 msgid "Default"
-msgstr ""
+msgstr "Por defecto"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 293
 # File: bika.lims/bika/lims/content/client.py, line: 89
@@ -6583,6 +6584,7 @@ msgstr ""
 msgid "Technical description and instructions intended for analysts"
 msgstr ""
 
+# File: bika.lims/bika/lims/content/arimport.py, line: 180
 #: bika/lims/browser/sample/printform.py:279
 msgid "Temperature"
 msgstr ""
@@ -7932,7 +7934,7 @@ msgid "bika-frontpage-title"
 msgstr ""
 
 msgid "bika_manual_test"
-msgstr ""
+msgstr "Test manual de Bika"
 
 # File: bika.lims/bika/lims/content/calculation.py, line: 61
 #. an analysis using this calculation is displayed.</p><p>To enter a

@@ -1,15 +1,17 @@
 #
 # Translators:
+# Daria, 2016
 # Emil Cyraniak <cyrano30@epf.pl>, 2012
 # Emil Cyraniak <cyrano30@epf.pl>, 2012
+# Daria, 2016
 # Emil Cyraniak <cyrano30@epf.pl>, 2012-2014
 # Ryszard Grodowski <ryszard@grodowski.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2016-12-07 11:33+0000\n"
-"PO-Revision-Date: 2015-11-16 12:02+0000\n"
-"Last-Translator: Ryszard Grodowski <ryszard@grodowski.com>\n"
+"POT-Creation-Date: 2016-12-07 17:21+0000\n"
+"PO-Revision-Date: 2016-01-18 14:20+0000\n"
+"Last-Translator: Daria\n"
 "Language-Team: Polish (http://www.transifex.com/bikalabs/bika-lims/language/pl/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -34,14 +36,14 @@ msgstr "${item} brak daty utrwalenia lub osoby odpowiedzialnej"
 # File: bika.lims/bika/lims/browser/client.py, line: 132
 #: bika/lims/browser/client/workflow.py:110
 msgid "${items} are waiting for preservation."
-msgstr "${items} oczekuje na utrwalenie."
+msgstr "${items} oczekują na utrwalenie."
 
 # File: bika.lims/bika/lims/browser/analysisrequest/workflow.py, line: 212
 # File: bika.lims/bika/lims/browser/client.py, line: 135
 #: bika/lims/browser/analysisrequest/workflow.py:228
 #: bika/lims/browser/client/workflow.py:113
 msgid "${items} are waiting to be received."
-msgstr "${items} oczekują na dostarczenie."
+msgstr "${items} oczekują na przyjęcie."
 
 # File: bika.lims/bika/lims/browser/analysisrequest/workflow.py, line: 514
 #: bika/lims/browser/analysisrequest/workflow.py:561
@@ -56,12 +58,12 @@ msgstr "${items} zostały pomyślnie utworzone."
 # File: bika.lims/bika/lims/browser/client.py, line: 198
 #: bika/lims/browser/client/workflow.py:176
 msgid "${items}: partitions are waiting to be received."
-msgstr "${items}: części czeka na dostarczenie"
+msgstr "${items}: części czekają na przyjęcie"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/workflow.py, line: 228
 #: bika/lims/browser/analysisrequest/workflow.py:244
 msgid "${item} is missing Preserver or Preservation Date"
-msgstr "${item} brak daty utrwalenia lub osoby odpowiedzialnej"
+msgstr "${item} brak Utrwalającego lub daty utrwalenia"
 
 # File: bika.lims/bika/lims/browser/client.py, line: 140
 #: bika/lims/browser/client/workflow.py:118
@@ -73,7 +75,7 @@ msgstr "${item} oczekuje na utrwalenie."
 #: bika/lims/browser/analysisrequest/workflow.py:232
 #: bika/lims/browser/client/workflow.py:121
 msgid "${item} is waiting to be received."
-msgstr "${item} oczekuje na dostarczenie."
+msgstr "${item} oczekuje na przyjęcie."
 
 # File: bika.lims/bika/lims/controlpanel/bika_analysisservices.py, line: 113
 #: bika/lims/controlpanel/bika_analysisservices.py:116
@@ -83,7 +85,7 @@ msgstr "${item} został pomyślnie utworzony."
 # File: bika.lims/bika/lims/browser/client.py, line: 201
 #: bika/lims/browser/client/workflow.py:179
 msgid "${item}: ${part} is waiting to be received."
-msgstr "${item}: ${part} oczekuje na dostarczenie."
+msgstr "${item}: ${part} oczekuje na przyjęcie."
 
 #: bika/lims/browser/templates/bika_listing_table.pt:259
 msgid "${nr_items} Item"
@@ -415,7 +417,7 @@ msgstr "Dodaj szablon"
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 319
 #: bika/lims/content/bikasetup.py:336
 msgid "Add a remarks field to all analyses"
-msgstr "Dadaj pole komentaża do wsystkich analiz"
+msgstr "Dadaj pole komentarza do wszystkich analiz"
 
 # File: bika.lims/bika/lims/browser/batch/analysisrequests.py, line: 34
 #: bika/lims/browser/batch/analysisrequests.py:34
@@ -493,7 +495,7 @@ msgstr "Zezwól Kierownikowi laboratorium na utworzenia konta klienta i jego edy
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 315
 #: bika/lims/content/analysisservice.py:339
 msgid "Allow Manual Detection Limit input"
-msgstr "Zezwól na ręczne wprowadzanie limitów detekcji"
+msgstr "Zezwól na ręczne wprowadzanie granicy oznaczalności"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 90
 #: bika/lims/content/bikasetup.py:96
@@ -1009,7 +1011,7 @@ msgstr "Zatwierdzone przez"
 # File: bika.lims/bika/lims/content/instrumentcertification.py, line: 16
 #: bika/lims/content/instrument.py:206
 msgid "Asset Number"
-msgstr ""
+msgstr "Numer ewidencyjny"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 427
@@ -1521,7 +1523,7 @@ msgstr "Zaznacz tą opcję, jeżeli pobrana z tego miejsca próbka jest 'złożo
 # File: bika.lims/bika/lims/content/container.py, line: 43
 #: bika/lims/content/container.py:48
 msgid "Check this box if this container is already preserved.Setting this will short-circuit the preservation workflow for sample partitions stored in this container."
-msgstr "Zaznacz to pole, jeśli pojemnik jest już utrwalony. Setting this will short-circuit the preservation workflow for sample partitions stored in this container."
+msgstr "Zaznacz to pole, jeśli pojemnik jest już utrwalony. Zaznaczenie to spowoduje przerwanie procedury utrwalania próbek w nim  przechowywanych."
 
 # File: bika.lims/bika/lims/content/arpriority.py, line: 40
 #: bika/lims/content/arpriority.py:45
@@ -1984,7 +1986,7 @@ msgstr "Defininiowany separator miejsca dziesiętnego"
 #: bika/lims/browser/analyses.py:90
 #: bika/lims/browser/worksheet/views/analyses.py:39
 msgid "DL"
-msgstr ""
+msgstr "Lista Dystrybucyjna"
 
 #: bika/lims/browser/templates/dashboard.pt:352
 msgid "Daily"
@@ -2372,7 +2374,7 @@ msgstr "Definicja precyzji podczas konwersji wartości do notacji wykładniczej.
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 443
 #: bika/lims/content/bikasetup.py:536
 msgid "Define the prefixes for the unique sequential IDs the system issues for objects. In the 'Padding' field, indicate with how many leading zeros the numbers must be padded. E.g. a prefix of WS for worksheets with padding of 4, will see them numbered from WS-0001 to WS-9999. Sequence Start indicates the number from which the next ID should start. This is set only if it is greater than existing id numbers. Note that the gap created by jumping IDs cannot be refilled. NB: Note that samples and analysis requests are prefixed with sample type abbreviations and are not configured in this table - their padding can be set in the specified fields below"
-msgstr "Zdefiniuj prefiksy dla nadawanych przez system unikalnym sekwencyjnym identyfikatorom ID obiektów. W polu 'Padding' wskaż ile pozycji wypełnionych wstępnie zerami ma mieć mumer. N.p. prefiks KP dla karty pracy z wartością 'Padding' 4 będzie widoczny w zakresie KP-0001 do KP-9999. Start sekwencji wskazuje na numer od którego ma się zacząć numeracja. Zostanie użyty, jeżeli jest większy od już istniejącego identyfikatora. Powstełego w ten sposób odstępu w numeracji nie można wykorzystać. Uwaga: nazwy dla próbek i zestawów analiz porzedzone zostają skrutem typu próbki i nie są definiowane w tej tabeli - ilość pozycji dla nich można ustawić w odpowiednich polach poniżej."
+msgstr "Zdefiniuj prefiksy dla nadawanych przez system unikalnym sekwencyjnym identyfikatorom ID obiektów. W polu 'Padding' wskaż ile pozycji wypełnionych wstępnie zerami ma mieć mumer. Np. prefiks KP dla karty pracy z wartością 'Padding' 4 będzie widoczny w zakresie KP-0001 do KP-9999. Start sekwencji wskazuje na numer od którego ma się zacząć numeracja. Zostanie użyty, jeżeli jest większy od już istniejącego identyfikatora. Powstełego w ten sposób odstępu w numeracji nie można wykorzystać. Uwaga: nazwy dla próbek i zestawów analiz porzedzone zostają skrótem typu próbki i nie są definiowane w tej tabeli - ilość pozycji dla nich można ustawić w odpowiednich polach poniżej."
 
 #: bika/lims/content/analysisrequest.py:595
 #: bika/lims/content/sample.py:283
@@ -2666,7 +2668,7 @@ msgstr "Wczesny"
 # File: bika.lims/bika/lims/content/samplepoint.py, line: 38
 #: bika/lims/content/samplepoint.py:44
 msgid "Elevation"
-msgstr "Wysokość nad poziomem morza"
+msgstr "Wysokość - głębokość"
 
 # File: bika.lims/bika/lims/browser/templates/login_details.pt, line: 93
 # File: bika.lims/bika/lims/config.py, line: 23
@@ -2703,7 +2705,7 @@ msgstr "Włącz specyfikację zestawu analiz AR"
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 257
 #: bika/lims/content/bikasetup.py:263
 msgid "Enable the Sampling workflow"
-msgstr "Włącz workflow dla próbek"
+msgstr "Uruchom proces obiegu próbek"
 
 #: bika/lims/content/bikasetup.py:271
 msgid "Enable the Schedule a Sampling functionality"
@@ -3044,7 +3046,7 @@ msgstr "Grupuj według"
 #: bika/lims/browser/reports/productivity_analysesperdepartment.py:59
 #: bika/lims/browser/reports/productivity_analysesperformedpertotal.py:50
 msgid "Grouping period"
-msgstr ""
+msgstr "okres grupowania"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 598
@@ -3083,7 +3085,7 @@ msgstr "Godziny"
 # File: bika.lims/bika/lims/content/supplier.py, line: 49
 #: bika/lims/content/supplier.py:54
 msgid "IBN"
-msgstr ""
+msgstr "Podstawowe stałe"
 
 # File: bika.lims/bika/lims/browser/bika_listing.py, line: 347
 # File: bika.lims/bika/lims/browser/referencesample.py, line: 100
@@ -5306,7 +5308,7 @@ msgstr "Wartość odniesienia wynosi zero lub jest to \"próbka ślepa\""
 #: bika/lims/content/duplicateanalysis.py:125
 #: bika/lims/content/referenceanalysis.py:121
 msgid "ReferenceAnalysesGroupID"
-msgstr ""
+msgstr "IDGrupyReferencyjnychAnaliz"
 
 # File: bika.lims/bika/lims/controlpanel/bika_referencedefinitions.py, line:
 # 31
@@ -6200,7 +6202,7 @@ msgstr ""
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 258
 #: bika/lims/content/bikasetup.py:264
 msgid "Select this to activate the sample collection workflow steps."
-msgstr "Zaznacz dla aktywacji instrukcji opisującej proces pomiarowy"
+msgstr "Zaznacz dla aktywacji instrukcji opisującej proces pobierania próbek."
 
 #: bika/lims/content/bikasetup.py:272
 msgid "Select this to allow a Sampling Coordinator to schedule a sampling. This functionality only takes effect when 'Sampling workflow' is active"
@@ -6587,9 +6589,10 @@ msgstr "Typ zadania"
 msgid "Technical description and instructions intended for analysts"
 msgstr "Opis techniczny i instrukcje przeznaczone dla analityków"
 
+# File: bika.lims/bika/lims/content/arimport.py, line: 180
 #: bika/lims/browser/sample/printform.py:279
 msgid "Temperature"
-msgstr ""
+msgstr "Temperatura"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 132
@@ -7784,7 +7787,7 @@ msgstr "Tygodni do wygaśnięcia"
 # File: bika.lims/bika/lims/content/analysisprofile.py, line: 112
 #: bika/lims/content/analysisprofile.py:85
 msgid "When it's set, the system uses the analysis profile's price to quote and the system's VAT is overridden by the analysis profile's specific VAT"
-msgstr ""
+msgstr "Jeśli ustawiono odrębną stawkę VAT dla ceny profilu analiz (AP), system wykorzysta ją, nadpisując domyślnie ustawioną stawkę."
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 607
 #: bika/lims/content/analysisservice.py:667
@@ -8081,7 +8084,7 @@ msgstr ""
 # File: bika.lims/bika/lims/content/instrumentscheduledtask.py, line: 100
 #: bika/lims/content/instrumentscheduledtask.py:105
 msgid "repeating every"
-msgstr ""
+msgstr "powtarzać co każde"
 
 # File: bika.lims/bika/lims/content/instrumentscheduledtask.py, line: 100
 #: bika/lims/content/instrumentscheduledtask.py:105
@@ -8112,7 +8115,7 @@ msgstr "Lista zawartości"
 #. Default: "Bika"
 #: bika/lims/browser/templates/plone-addsite.pt:72
 msgid "text_default_site_title"
-msgstr ""
+msgstr "tekst_domyślny_tytuł_strony"
 
 #: bika/lims/content/samplinground.py:218
 msgid "the total number of Sample Points defined in the Round."

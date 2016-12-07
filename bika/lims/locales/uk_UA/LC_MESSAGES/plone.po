@@ -1,11 +1,12 @@
 #
 # Translators:
+# Dima Domin <dima.domin@gmail.com>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2016-12-07 11:33+0000\n"
-"PO-Revision-Date: 2015-06-11 08:18+0000\n"
-"Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
+"POT-Creation-Date: 2016-12-07 17:21+0000\n"
+"PO-Revision-Date: 2016-04-02 15:53+0000\n"
+"Last-Translator: Dima Domin <dima.domin@gmail.com>\n"
 "Language-Team: Ukrainian (Ukraine) (http://www.transifex.com/bikalabs/bika-lims/language/uk_UA/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -159,13 +160,13 @@ msgstr "Специфікації аналізу"
 # File: bika.lims/bika/lims/profiles/default/types/Attachment.xml, line: -1
 #: bika/lims/profiles/default/types/Attachment.xml
 msgid "Attachment"
-msgstr ""
+msgstr "Додаток"
 
 # File: bika.lims/bika/lims/profiles/default/types/AttachmentType.xml, line:
 # -1
 #: bika/lims/profiles/default/types/AttachmentType.xml
 msgid "Attachment Type"
-msgstr ""
+msgstr "Тип додатку"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/AttachmentTypes.xml, line:
@@ -173,12 +174,12 @@ msgstr ""
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/AttachmentTypes.xml
 msgid "Attachment Types"
-msgstr ""
+msgstr "Типи додатків"
 
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Attachments"
-msgstr ""
+msgstr "Додатки"
 
 # File: bika.lims/bika/lims/profiles/default/types/Batch.xml, line: -1
 #: bika/lims/profiles/default/types/Batch.xml
@@ -291,7 +292,7 @@ msgstr "Підрозділ"
 # File: bika.lims/bika/lims/profiles/default/types/Departments.xml, line: -1
 #: bika/lims/profiles/default/types/Departments.xml
 msgid "Departments"
-msgstr ""
+msgstr "Підрозділи"
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Documents"
@@ -336,7 +337,7 @@ msgstr "Інструмент"
 # -1
 #: bika/lims/profiles/default/types/InstrumentType.xml
 msgid "Instrument Type"
-msgstr ""
+msgstr "Тип інструменту"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/InstrumentTypes.xml, line:
@@ -344,7 +345,7 @@ msgstr ""
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/InstrumentTypes.xml
 msgid "Instrument Types"
-msgstr ""
+msgstr "Типи інструментів"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/InstrumentType.xml, line:
@@ -362,12 +363,12 @@ msgstr "Інструменти"
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Invoice.xml
 msgid "Invoice"
-msgstr ""
+msgstr "Рахунок"
 
 # File: bika.lims/bika/lims/profiles/default/types/LabContact.xml, line: -1
 #: bika/lims/profiles/default/types/LabContact.xml
 msgid "Lab Contact"
-msgstr ""
+msgstr "Контакт лабораторії"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/LabContacts.xml, line: -1
@@ -396,7 +397,7 @@ msgstr "Лабораторія"
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 msgid "Laboratory Information"
-msgstr ""
+msgstr "Інформація про лабораторію"
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
 # -1
@@ -445,26 +446,26 @@ msgstr ""
 # File: bika.lims/bika/lims/profiles/default/types/Manufacturer.xml, line: -1
 #: bika/lims/profiles/default/types/Manufacturer.xml
 msgid "Manufacturer"
-msgstr ""
+msgstr "Виробник"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Manufacturers.xml, line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Manufacturers.xml
 msgid "Manufacturers"
-msgstr ""
+msgstr "Виробники"
 
 # File: bika.lims/bika/lims/profiles/default/types/Method.xml, line: -1
 #: bika/lims/profiles/default/types/Method.xml
 msgid "Method"
-msgstr ""
+msgstr "Метод"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Methods.xml, line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Methods.xml
 msgid "Methods"
-msgstr ""
+msgstr "Методи"
 
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 #: bika/lims/profiles/default/types/Client.xml
@@ -592,7 +593,7 @@ msgstr "Звіт"
 # File: bika.lims/bika/lims/profiles/default/types/ReportFolder.xml, line: -1
 #: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "Reports"
-msgstr ""
+msgstr "Звіти"
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
 # -1
@@ -603,7 +604,7 @@ msgstr ""
 # File: bika.lims/bika/lims/profiles/default/types/Sample.xml, line: -1
 #: bika/lims/profiles/default/types/Sample.xml
 msgid "Sample"
-msgstr ""
+msgstr "Зразок"
 
 # File: bika.lims/bika/lims/profiles/default/types/SampleCondition.xml, line:
 # -1
@@ -658,14 +659,14 @@ msgstr ""
 # File: bika.lims/bika/lims/profiles/default/types/SampleType.xml, line: -1
 #: bika/lims/profiles/default/types/SampleType.xml
 msgid "Sample Type"
-msgstr ""
+msgstr "Тип зразка"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/SampleTypes.xml, line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SampleTypes.xml
 msgid "Sample Types"
-msgstr ""
+msgstr "Тип зразків"
 
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 #: bika/lims/profiles/default/types/Client.xml
@@ -679,7 +680,7 @@ msgstr ""
 #: bika/lims/profiles/default/types/Batch.xml
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Samples"
-msgstr ""
+msgstr "Зразки"
 
 # File: bika.lims/bika/lims/profiles/default/types/SamplesFolder.xml, line: -1
 #: bika/lims/profiles/default/types/SamplesFolder.xml
@@ -690,7 +691,7 @@ msgstr ""
 # line: -1
 #: bika/lims/profiles/default/types/SamplingDeviation.xml
 msgid "Sampling Deviation"
-msgstr ""
+msgstr "Відхилення зразка"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/SamplingDeviations.xml,
@@ -698,7 +699,7 @@ msgstr ""
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SamplingDeviations.xml
 msgid "Sampling Deviations"
-msgstr ""
+msgstr "Відхилення зразків"
 
 #: bika/lims/profiles/default/types/SRTemplate.xml
 msgid "Sampling Round Template"
@@ -718,7 +719,7 @@ msgstr ""
 # File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Schedule"
-msgstr ""
+msgstr "Розклад"
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
 # -1
@@ -729,7 +730,7 @@ msgstr ""
 #: bika/lims/profiles/default/types/Sample.xml
 #: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Small Sticker"
-msgstr ""
+msgstr "Маленький стікер"
 
 #: bika/lims/profiles/default/types/InvoiceFolder.xml
 msgid "Statements"
@@ -739,7 +740,7 @@ msgstr ""
 # -1
 #: bika/lims/profiles/default/types/ReferenceSample.xml
 msgid "Sticker"
-msgstr ""
+msgstr "Стікер"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Sample.xml
@@ -751,7 +752,7 @@ msgstr ""
 # -1
 #: bika/lims/profiles/default/types/StorageLocation.xml
 msgid "Storage Location"
-msgstr ""
+msgstr "Місце зберігання"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/StorageLocations.xml, line:
@@ -759,24 +760,24 @@ msgstr ""
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/StorageLocations.xml
 msgid "Storage Locations"
-msgstr ""
+msgstr "Місця зберігання"
 
 # File: bika.lims/bika/lims/profiles/default/types/SubGroup.xml, line: -1
 #: bika/lims/profiles/default/types/SubGroup.xml
 msgid "Sub-group"
-msgstr ""
+msgstr "Підгрупа"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/SubGroups.xml, line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SubGroups.xml
 msgid "Sub-groups"
-msgstr ""
+msgstr "Підгрупи"
 
 # File: bika.lims/bika/lims/profiles/default/types/Supplier.xml, line: -1
 #: bika/lims/profiles/default/types/Supplier.xml
 msgid "Supplier"
-msgstr ""
+msgstr "Постачальник"
 
 # File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
@@ -785,18 +786,18 @@ msgstr ""
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Suppliers.xml
 msgid "Suppliers"
-msgstr ""
+msgstr "Постачальники"
 
 # File: bika.lims/bika/lims/profiles/default/types/SupplyOrder.xml, line: -1
 #: bika/lims/profiles/default/types/SupplyOrder.xml
 msgid "Supply Order"
-msgstr ""
+msgstr "Замовлення"
 
 # File: bika.lims/bika/lims/profiles/default/types/SupplyOrderFolder.xml,
 # line: -1
 #: bika/lims/profiles/default/types/SupplyOrderFolder.xml
 msgid "Supply Orders"
-msgstr ""
+msgstr "Замовлення"
 
 # File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
 #: bika/lims/profiles/default/types/Instrument.xml
@@ -816,7 +817,7 @@ msgstr "Журнал"
 # line: -1
 #: bika/lims/profiles/default/types/WorksheetTemplate.xml
 msgid "Worksheet Template"
-msgstr ""
+msgstr "Шаблон журналу"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/WorksheetTemplates.xml,
@@ -948,7 +949,7 @@ msgid "label_schema_Accounting"
 msgstr "Accounting"
 
 msgid "label_schema_Address"
-msgstr "Address"
+msgstr "Адреса"
 
 msgid "label_schema_Analyses"
 msgstr "Analyses"
@@ -984,7 +985,7 @@ msgid "label_schema_Location"
 msgstr "Location"
 
 msgid "label_schema_Method"
-msgstr "Method"
+msgstr "Метод"
 
 msgid "label_schema_Preferences"
 msgstr "Preferences"

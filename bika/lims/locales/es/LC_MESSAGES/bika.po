@@ -4,7 +4,7 @@
 # Carlos Javier García Quintana <garciaquintana_carlos@yahoo.com.mx>, 2013
 # Carlos Javier García Quintana <garciaquintana_carlos@yahoo.com.mx>, 2013
 # Jordi Puiggené <jpuiggene@naralabs.com>, 2012-2013
-# Jordi Puiggené <jpuiggene@naralabs.com>, 2014
+# Jordi Puiggené <jpuiggene@naralabs.com>, 2014,2016
 # lemoene Smit <admin@bikalabs.com>, 2012
 # leorojas <leonardorojass@gmail.com>, 2014
 # leorojas <leonardorojass@gmail.com>, 2014
@@ -17,9 +17,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2016-12-07 11:33+0000\n"
-"PO-Revision-Date: 2015-10-15 13:47+0000\n"
-"Last-Translator: Michael Quintana <michaelquintana@gmail.com>\n"
+"POT-Creation-Date: 2016-12-07 17:21+0000\n"
+"PO-Revision-Date: 2016-11-14 16:02+0000\n"
+"Last-Translator: Jordi Puiggené <jpuiggene@naralabs.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/bikalabs/bika-lims/language/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -5947,7 +5947,7 @@ msgstr "Muestras: ${samples}"
 #: bika/lims/browser/sample/view.py:107
 #: bika/lims/browser/samplinground/printform.py:173
 msgid "Sampling Date"
-msgstr "Fecha de muestreo"
+msgstr "Fecha prevista de muestreo"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 92
@@ -6597,9 +6597,10 @@ msgstr "Tipo de tarea"
 msgid "Technical description and instructions intended for analysts"
 msgstr "Descripción técnica e instrucciones para los analistas"
 
+# File: bika.lims/bika/lims/content/arimport.py, line: 180
 #: bika/lims/browser/sample/printform.py:279
 msgid "Temperature"
-msgstr ""
+msgstr "Temperatura"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 132

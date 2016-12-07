@@ -3,10 +3,10 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2016-12-07 11:33+0000\n"
-"PO-Revision-Date: 2015-06-11 08:45+0000\n"
-"Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
-"Language-Team: Swedish (Sweden) (http://www.transifex.com/bikalabs/bika-lims/language/sv_SE/)\n"
+"POT-Creation-Date: 2016-12-07 17:21+0000\n"
+"PO-Revision-Date: 2012-01-04 12:46+0000\n"
+"Last-Translator: Bika <bikasupport@bikalabs.com>\n"
+"Language-Team: Hungarian (Hungary) (http://www.transifex.com/bikalabs/bika-lims/language/hu_HU/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -15,7 +15,7 @@ msgstr ""
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: DOMAIN\n"
-"Language: sv_SE\n"
+"Language: hu_HU\n"
 
 # File: bika.lims/bika/lims/browser/templates/login_details.pt, line: 18
 #: bika/lims/browser/templates/login_details.pt:33
@@ -6583,6 +6583,7 @@ msgstr ""
 msgid "Technical description and instructions intended for analysts"
 msgstr ""
 
+# File: bika.lims/bika/lims/content/arimport.py, line: 180
 #: bika/lims/browser/sample/printform.py:279
 msgid "Temperature"
 msgstr ""

@@ -5,9 +5,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2016-12-07 11:33+0000\n"
-"PO-Revision-Date: 2015-06-11 08:18+0000\n"
-"Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
+"POT-Creation-Date: 2016-12-07 17:21+0000\n"
+"PO-Revision-Date: 2016-03-23 02:42+0000\n"
+"Last-Translator: jincheng_li <394428196@qq.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/bikalabs/bika-lims/language/zh_CN/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -20,7 +20,7 @@ msgstr ""
 "Language: zh_CN\n"
 
 msgid "AR Imports"
-msgstr "AR Imports"
+msgstr "AR导入"
 
 # File: bika.lims/bika/lims/profiles/default/types/ARPriorities.xml, line: -1
 #: bika/lims/profiles/default/types/ARPriorities.xml
@@ -39,7 +39,7 @@ msgstr "分析模板"
 #: bika/lims/profiles/default/types/ARTemplates.xml
 #: bika/lims/profiles/default/types/Client.xml
 msgid "AR Templates"
-msgstr ""
+msgstr "分析请求模板"
 
 # File: bika.lims/bika/lims/profiles/default/types/ARReport.xml, line: -1
 #: bika/lims/profiles/default/types/ARReport.xml
@@ -112,7 +112,7 @@ msgstr "分析概况"
 #: bika/lims/profiles/default/types/AnalysisProfiles.xml
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Analysis Profiles"
-msgstr ""
+msgstr "分析多个数据图表"
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
 # -1
@@ -147,7 +147,7 @@ msgstr "分析服务"
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisSpec.xml, line: -1
 #: bika/lims/profiles/default/types/AnalysisSpec.xml
 msgid "Analysis Specification"
-msgstr ""
+msgstr "分析单个规格"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisSpecs.xml, line: -1
@@ -185,31 +185,31 @@ msgstr "附件"
 # File: bika.lims/bika/lims/profiles/default/types/Batch.xml, line: -1
 #: bika/lims/profiles/default/types/Batch.xml
 msgid "Batch"
-msgstr ""
+msgstr "批"
 
 # File: bika.lims/bika/lims/profiles/default/types/Batch.xml, line: -1
 #: bika/lims/profiles/default/types/Batch.xml
 msgid "Batch Book"
-msgstr ""
+msgstr "批预定"
 
 # File: bika.lims/bika/lims/profiles/default/types/BatchLabel.xml, line: -1
 #: bika/lims/profiles/default/types/BatchLabel.xml
 msgid "Batch Label"
-msgstr ""
+msgstr "批标签"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/BatchLabels.xml, line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/BatchLabels.xml
 msgid "Batch Labels"
-msgstr ""
+msgstr "批标签"
 
 # File: bika.lims/bika/lims/profiles/default/types/BatchFolder.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 #: bika/lims/profiles/default/types/BatchFolder.xml
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Batches"
-msgstr ""
+msgstr "多批"
 
 # File: bika.lims/bika/lims/profiles/default/types/BikaSetup.xml, line: -1
 #: bika/lims/profiles/default/types/BikaSetup.xml
@@ -235,7 +235,7 @@ msgstr ""
 # File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Calibrations"
-msgstr ""
+msgstr "校准"
 
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 #: bika/lims/profiles/default/types/Client.xml
@@ -303,17 +303,17 @@ msgstr ""
 # line: -1
 #: bika/lims/profiles/default/types/DuplicateAnalysis.xml
 msgid "Duplicate Analysis"
-msgstr ""
+msgstr "重复的分析"
 
 # File: bika.lims/bika/lims/profiles/default/types/Pricelist.xml, line: -1
 #: bika/lims/profiles/default/types/Pricelist.xml
 msgid "Email pricelist"
-msgstr ""
+msgstr "电子邮件价目表"
 
 # File: bika.lims/bika/lims/profiles/default/types/Worksheet.xml, line: -1
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Export"
-msgstr ""
+msgstr "导出"
 
 #: bika/lims/profiles/default/types/InvoiceBatch.xml
 msgid "Export Batch To CSV"
@@ -322,12 +322,12 @@ msgstr ""
 # File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
 #: bika/lims/profiles/default/actions.xml
 msgid "Extracts"
-msgstr ""
+msgstr "提取"
 
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Imports"
-msgstr ""
+msgstr "导入"
 
 # File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
 #: bika/lims/profiles/default/types/Instrument.xml
@@ -338,7 +338,7 @@ msgstr "仪器"
 # -1
 #: bika/lims/profiles/default/types/InstrumentType.xml
 msgid "Instrument Type"
-msgstr ""
+msgstr "仪器类型"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/InstrumentTypes.xml, line:
@@ -346,7 +346,7 @@ msgstr ""
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/InstrumentTypes.xml
 msgid "Instrument Types"
-msgstr ""
+msgstr "仪器类型"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/InstrumentType.xml, line:
@@ -369,36 +369,36 @@ msgstr "发票"
 # File: bika.lims/bika/lims/profiles/default/types/LabContact.xml, line: -1
 #: bika/lims/profiles/default/types/LabContact.xml
 msgid "Lab Contact"
-msgstr ""
+msgstr "实验室联系人"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/LabContacts.xml, line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/LabContacts.xml
 msgid "Lab Contacts"
-msgstr ""
+msgstr "实验室联系方式"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 msgid "Lab Departments"
-msgstr ""
+msgstr "实验室科系"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/LabProducts.xml, line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/LabProducts.xml
 msgid "Lab Products"
-msgstr ""
+msgstr "实验室产品"
 
 # File: bika.lims/bika/lims/profiles/default/types/Laboratory.xml, line: -1
 #: bika/lims/profiles/default/types/Laboratory.xml
 msgid "Laboratory"
-msgstr ""
+msgstr "实验室"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 msgid "Laboratory Information"
-msgstr ""
+msgstr "实验室信息"
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
 # -1
@@ -409,7 +409,7 @@ msgstr ""
 #: bika/lims/profiles/default/types/Sample.xml
 #: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Large Sticker"
-msgstr ""
+msgstr "大贴纸"
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisProfile.xml, line:
 # -1
@@ -421,20 +421,20 @@ msgstr ""
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/AnalysisService.xml
 msgid "Log"
-msgstr ""
+msgstr "日志"
 
 # File: bika.lims/bika/lims/profiles/default/types/Contact.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/LabContact.xml, line: -1
 #: bika/lims/profiles/default/types/Contact.xml
 #: bika/lims/profiles/default/types/LabContact.xml
 msgid "Login details"
-msgstr ""
+msgstr "登录详情"
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
 # -1
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Manage Analyses"
-msgstr ""
+msgstr "管理分析"
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
 # -1
@@ -442,64 +442,64 @@ msgstr ""
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Manage Results"
-msgstr ""
+msgstr "管理结果"
 
 # File: bika.lims/bika/lims/profiles/default/types/Manufacturer.xml, line: -1
 #: bika/lims/profiles/default/types/Manufacturer.xml
 msgid "Manufacturer"
-msgstr ""
+msgstr "生产厂家"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Manufacturers.xml, line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Manufacturers.xml
 msgid "Manufacturers"
-msgstr ""
+msgstr "多个制造商"
 
 # File: bika.lims/bika/lims/profiles/default/types/Method.xml, line: -1
 #: bika/lims/profiles/default/types/Method.xml
 msgid "Method"
-msgstr ""
+msgstr "方法"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Methods.xml, line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Methods.xml
 msgid "Methods"
-msgstr ""
+msgstr "多个方法"
 
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Orders"
-msgstr ""
+msgstr "多个订单"
 
 # File: bika.lims/bika/lims/profiles/default/types/Preservation.xml, line: -1
 #: bika/lims/profiles/default/types/Preservation.xml
 msgid "Preservation"
-msgstr ""
+msgstr "储藏"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Preservations.xml, line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Preservations.xml
 msgid "Preservations"
-msgstr ""
+msgstr "保留的样品"
 
 # File: bika.lims/bika/lims/profiles/default/types/Pricelist.xml, line: -1
 #: bika/lims/profiles/default/types/Pricelist.xml
 msgid "Pricelist"
-msgstr ""
+msgstr "价目表"
 
 # File: bika.lims/bika/lims/profiles/default/types/PricelistFolder.xml, line:
 # -1
 #: bika/lims/profiles/default/types/PricelistFolder.xml
 msgid "Pricelists"
-msgstr ""
+msgstr "价目表"
 
 # File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
 #: bika/lims/profiles/default/actions.xml
 msgid "Prices"
-msgstr ""
+msgstr "价格"
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
 # -1
@@ -509,23 +509,23 @@ msgstr ""
 #: bika/lims/profiles/default/types/Invoice.xml
 #: bika/lims/profiles/default/types/SupplyOrder.xml
 msgid "Print"
-msgstr ""
+msgstr "打印"
 
 # File: bika.lims/bika/lims/profiles/default/types/Pricelist.xml, line: -1
 #: bika/lims/profiles/default/types/Pricelist.xml
 msgid "Print pricelist"
-msgstr ""
+msgstr "打印价目表"
 
 # File: bika.lims/bika/lims/profiles/default/types/ReportFolder.xml, line: -1
 #: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "Productivity"
-msgstr ""
+msgstr "生产率"
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
 # -1
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Published results"
-msgstr ""
+msgstr "已发布结果"
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "QC Results"
@@ -534,19 +534,19 @@ msgstr ""
 # File: bika.lims/bika/lims/profiles/default/types/ReportFolder.xml, line: -1
 #: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "Quality Control"
-msgstr ""
+msgstr "质量控制(QC)"
 
 # File: bika.lims/bika/lims/profiles/default/types/ReferenceAnalysis.xml,
 # line: -1
 #: bika/lims/profiles/default/types/ReferenceAnalysis.xml
 msgid "Reference Analysis"
-msgstr ""
+msgstr "参考分析"
 
 # File: bika.lims/bika/lims/profiles/default/types/ReferenceDefinition.xml,
 # line: -1
 #: bika/lims/profiles/default/types/ReferenceDefinition.xml
 msgid "Reference Definition"
-msgstr ""
+msgstr "参考定义"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/ReferenceDefinitions.xml,
@@ -554,13 +554,13 @@ msgstr ""
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/ReferenceDefinitions.xml
 msgid "Reference Definitions"
-msgstr ""
+msgstr "参考多项定义"
 
 # File: bika.lims/bika/lims/profiles/default/types/ReferenceSample.xml, line:
 # -1
 #: bika/lims/profiles/default/types/ReferenceSample.xml
 msgid "Reference Sample"
-msgstr ""
+msgstr "参考样品"
 
 # File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/ReferenceSamplesFolder.xml,
@@ -570,48 +570,48 @@ msgstr ""
 #: bika/lims/profiles/default/types/ReferenceSamplesFolder.xml
 #: bika/lims/profiles/default/types/Supplier.xml
 msgid "Reference Samples"
-msgstr ""
+msgstr "参考样品"
 
 # File: bika.lims/bika/lims/profiles/default/types/ReferenceSample.xml, line:
 # -1
 #: bika/lims/profiles/default/types/ReferenceSample.xml
 msgid "Reference Values"
-msgstr ""
+msgstr "参考值"
 
 # File: bika.lims/bika/lims/profiles/default/types/RejectAnalysis.xml, line:
 # -1
 #: bika/lims/profiles/default/types/RejectAnalysis.xml
 msgid "Reject Analysis"
-msgstr ""
+msgstr "剔除分析"
 
 # File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Report.xml, line: -1
 #: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/Report.xml
 msgid "Report"
-msgstr ""
+msgstr "报告"
 
 # File: bika.lims/bika/lims/profiles/default/types/ReportFolder.xml, line: -1
 #: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "Reports"
-msgstr ""
+msgstr "多个报告"
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
 # -1
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Results not requested"
-msgstr ""
+msgstr "结果未请求"
 
 # File: bika.lims/bika/lims/profiles/default/types/Sample.xml, line: -1
 #: bika/lims/profiles/default/types/Sample.xml
 msgid "Sample"
-msgstr ""
+msgstr "样品"
 
 # File: bika.lims/bika/lims/profiles/default/types/SampleCondition.xml, line:
 # -1
 #: bika/lims/profiles/default/types/SampleCondition.xml
 msgid "Sample Condition"
-msgstr ""
+msgstr "样品状态"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/SampleConditions.xml, line:
@@ -619,7 +619,7 @@ msgstr ""
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SampleConditions.xml
 msgid "Sample Conditions"
-msgstr ""
+msgstr "样品状态"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/SampleMatrices.xml, line:
@@ -627,52 +627,52 @@ msgstr ""
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SampleMatrices.xml
 msgid "Sample Matrices"
-msgstr ""
+msgstr "样品基体"
 
 # File: bika.lims/bika/lims/profiles/default/types/SampleMatrix.xml, line: -1
 #: bika/lims/profiles/default/types/SampleMatrix.xml
 msgid "Sample Matrix"
-msgstr ""
+msgstr "样品基体"
 
 # File: bika.lims/bika/lims/profiles/default/types/SamplePartition.xml, line:
 # -1
 #: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Sample Partition"
-msgstr ""
+msgstr "样品区块"
 
 # File: bika.lims/bika/lims/profiles/default/types/Sample.xml, line: -1
 #: bika/lims/profiles/default/types/Sample.xml
 msgid "Sample Partitions"
-msgstr ""
+msgstr "样品区块"
 
 # File: bika.lims/bika/lims/profiles/default/types/SamplePoint.xml, line: -1
 #: bika/lims/profiles/default/types/SamplePoint.xml
 msgid "Sample Point"
-msgstr ""
+msgstr "单个样品点"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/SamplePoints.xml, line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SamplePoints.xml
 msgid "Sample Points"
-msgstr ""
+msgstr "多个样品点"
 
 # File: bika.lims/bika/lims/profiles/default/types/SampleType.xml, line: -1
 #: bika/lims/profiles/default/types/SampleType.xml
 msgid "Sample Type"
-msgstr ""
+msgstr "样品类型"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/SampleTypes.xml, line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SampleTypes.xml
 msgid "Sample Types"
-msgstr ""
+msgstr "多个样品类型"
 
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 #: bika/lims/profiles/default/types/Client.xml
 msgid "SamplePoints"
-msgstr ""
+msgstr "样品点"
 
 # File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Batch.xml, line: -1
@@ -681,7 +681,7 @@ msgstr ""
 #: bika/lims/profiles/default/types/Batch.xml
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Samples"
-msgstr ""
+msgstr "多个样品"
 
 # File: bika.lims/bika/lims/profiles/default/types/SamplesFolder.xml, line: -1
 #: bika/lims/profiles/default/types/SamplesFolder.xml
@@ -692,7 +692,7 @@ msgstr "样品"
 # line: -1
 #: bika/lims/profiles/default/types/SamplingDeviation.xml
 msgid "Sampling Deviation"
-msgstr ""
+msgstr "采样偏差"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/SamplingDeviations.xml,
@@ -700,7 +700,7 @@ msgstr ""
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SamplingDeviations.xml
 msgid "Sampling Deviations"
-msgstr ""
+msgstr "采样偏差"
 
 #: bika/lims/profiles/default/types/SRTemplate.xml
 msgid "Sampling Round Template"
@@ -710,7 +710,7 @@ msgstr ""
 #: bika/lims/profiles/default/types/Client.xml
 #: bika/lims/profiles/default/types/SRTemplates.xml
 msgid "Sampling Round Templates"
-msgstr ""
+msgstr "采样回合模板"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Client.xml
@@ -720,7 +720,7 @@ msgstr ""
 # File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Schedule"
-msgstr ""
+msgstr "日程表"
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
 # -1
@@ -731,7 +731,7 @@ msgstr ""
 #: bika/lims/profiles/default/types/Sample.xml
 #: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Small Sticker"
-msgstr ""
+msgstr "小贴纸"
 
 #: bika/lims/profiles/default/types/InvoiceFolder.xml
 msgid "Statements"
@@ -741,7 +741,7 @@ msgstr ""
 # -1
 #: bika/lims/profiles/default/types/ReferenceSample.xml
 msgid "Sticker"
-msgstr ""
+msgstr "贴纸"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Sample.xml
@@ -753,7 +753,7 @@ msgstr ""
 # -1
 #: bika/lims/profiles/default/types/StorageLocation.xml
 msgid "Storage Location"
-msgstr ""
+msgstr "存储位置"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/StorageLocations.xml, line:
@@ -761,24 +761,24 @@ msgstr ""
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/StorageLocations.xml
 msgid "Storage Locations"
-msgstr ""
+msgstr "存储位置"
 
 # File: bika.lims/bika/lims/profiles/default/types/SubGroup.xml, line: -1
 #: bika/lims/profiles/default/types/SubGroup.xml
 msgid "Sub-group"
-msgstr ""
+msgstr "子组"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/SubGroups.xml, line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SubGroups.xml
 msgid "Sub-groups"
-msgstr ""
+msgstr "多个子组"
 
 # File: bika.lims/bika/lims/profiles/default/types/Supplier.xml, line: -1
 #: bika/lims/profiles/default/types/Supplier.xml
 msgid "Supplier"
-msgstr ""
+msgstr "供应商"
 
 # File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
@@ -787,23 +787,23 @@ msgstr ""
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Suppliers.xml
 msgid "Suppliers"
-msgstr ""
+msgstr "供应商"
 
 # File: bika.lims/bika/lims/profiles/default/types/SupplyOrder.xml, line: -1
 #: bika/lims/profiles/default/types/SupplyOrder.xml
 msgid "Supply Order"
-msgstr ""
+msgstr "供货订单"
 
 # File: bika.lims/bika/lims/profiles/default/types/SupplyOrderFolder.xml,
 # line: -1
 #: bika/lims/profiles/default/types/SupplyOrderFolder.xml
 msgid "Supply Orders"
-msgstr ""
+msgstr "供应订单"
 
 # File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Validations"
-msgstr ""
+msgstr "验证"
 
 #: bika/lims/profiles/default/types/Client.xml
 msgid "WINE-40: Do not move or remove this entry."
@@ -812,13 +812,13 @@ msgstr ""
 # File: bika.lims/bika/lims/profiles/default/types/Worksheet.xml, line: -1
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Worksheet"
-msgstr ""
+msgstr "工作表"
 
 # File: bika.lims/bika/lims/profiles/default/types/WorksheetTemplate.xml,
 # line: -1
 #: bika/lims/profiles/default/types/WorksheetTemplate.xml
 msgid "Worksheet Template"
-msgstr ""
+msgstr "工作表模板"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/WorksheetTemplates.xml,
@@ -826,7 +826,7 @@ msgstr ""
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/WorksheetTemplates.xml
 msgid "Worksheet Templates"
-msgstr ""
+msgstr "工作表模板"
 
 # File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/WorksheetFolder.xml, line:
@@ -834,7 +834,7 @@ msgstr ""
 #: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/WorksheetFolder.xml
 msgid "Worksheets"
-msgstr ""
+msgstr "多个工作表"
 
 # File: ../profiles/default/workflows/bika_inactive_workflow/definition.xml,
 # line: -1

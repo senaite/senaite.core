@@ -1,21 +1,22 @@
 #
 # Translators:
+# corneliu.e <corneliueva@yahoo.com>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2016-12-07 11:33+0000\n"
-"PO-Revision-Date: 2015-06-11 08:45+0000\n"
-"Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
-"Language-Team: Esperanto (http://www.transifex.com/bikalabs/bika-lims/language/eo/)\n"
+"POT-Creation-Date: 2016-12-07 17:21+0000\n"
+"PO-Revision-Date: 2016-11-06 18:18+0000\n"
+"Last-Translator: corneliu.e <corneliueva@yahoo.com>\n"
+"Language-Team: Romanian (Romania) (http://www.transifex.com/bikalabs/bika-lims/language/ro_RO/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?2:1));\n"
 "Language-Code: en\n"
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: DOMAIN\n"
-"Language: eo\n"
+"Language: ro_RO\n"
 
 # File: bika.lims/bika/lims/browser/templates/login_details.pt, line: 18
 #: bika/lims/browser/templates/login_details.pt:33
@@ -30,24 +31,24 @@ msgstr ""
 # File: bika.lims/bika/lims/browser/client.py, line: 132
 #: bika/lims/browser/client/workflow.py:110
 msgid "${items} are waiting for preservation."
-msgstr ""
+msgstr "${items} așteaptă conservarea."
 
 # File: bika.lims/bika/lims/browser/analysisrequest/workflow.py, line: 212
 # File: bika.lims/bika/lims/browser/client.py, line: 135
 #: bika/lims/browser/analysisrequest/workflow.py:228
 #: bika/lims/browser/client/workflow.py:113
 msgid "${items} are waiting to be received."
-msgstr ""
+msgstr "${items} așteaptă să fie primite."
 
 # File: bika.lims/bika/lims/browser/analysisrequest/workflow.py, line: 514
 #: bika/lims/browser/analysisrequest/workflow.py:561
 msgid "${items} invalidated."
-msgstr ""
+msgstr "${items} invalidate."
 
 # File: bika.lims/bika/lims/controlpanel/bika_analysisservices.py, line: 109
 #: bika/lims/controlpanel/bika_analysisservices.py:112
 msgid "${items} were successfully created."
-msgstr ""
+msgstr "${items} au fost create cu succes."
 
 # File: bika.lims/bika/lims/browser/client.py, line: 198
 #: bika/lims/browser/client/workflow.py:176
@@ -62,19 +63,19 @@ msgstr ""
 # File: bika.lims/bika/lims/browser/client.py, line: 140
 #: bika/lims/browser/client/workflow.py:118
 msgid "${item} is waiting for preservation."
-msgstr ""
+msgstr "${item} așteaptă conservarea."
 
 # File: bika.lims/bika/lims/browser/analysisrequest/workflow.py, line: 216
 # File: bika.lims/bika/lims/browser/client.py, line: 143
 #: bika/lims/browser/analysisrequest/workflow.py:232
 #: bika/lims/browser/client/workflow.py:121
 msgid "${item} is waiting to be received."
-msgstr ""
+msgstr "${item} așteaptă să fie primit."
 
 # File: bika.lims/bika/lims/controlpanel/bika_analysisservices.py, line: 113
 #: bika/lims/controlpanel/bika_analysisservices.py:116
 msgid "${item} was successfully created."
-msgstr ""
+msgstr "${item} a fost creat cu succes."
 
 # File: bika.lims/bika/lims/browser/client.py, line: 201
 #: bika/lims/browser/client/workflow.py:179
@@ -94,12 +95,12 @@ msgstr ""
 # line: 36
 #: bika/lims/browser/reports/templates/productivity_samplereceivedvsreported.pt:36
 msgid "%"
-msgstr ""
+msgstr "%"
 
 # File: bika.lims/bika/lims/content/analysisspec.py, line: 72
 #: bika/lims/content/analysisspec.py:77
 msgid "% Error"
-msgstr ""
+msgstr "% Eroare"
 
 # File:
 # bika.lims/bika/lims/browser/reports/templates/productivity_analysesperdepartment.pt,
@@ -110,7 +111,7 @@ msgstr ""
 #: bika/lims/browser/reports/templates/productivity_analysesperdepartment.pt:99
 #: bika/lims/browser/reports/templates/productivity_analysesperformedpertotal.pt:99
 msgid "% Performed"
-msgstr ""
+msgstr "% Efectuat"
 
 # File:
 # bika.lims/bika/lims/browser/reports/templates/productivity_analysesperdepartment.pt,
@@ -121,7 +122,7 @@ msgstr ""
 #: bika/lims/browser/reports/templates/productivity_analysesperdepartment.pt:101
 #: bika/lims/browser/reports/templates/productivity_analysesperformedpertotal.pt:101
 msgid "% Published"
-msgstr ""
+msgstr "% Publicat"
 
 #: bika/lims/utils/workflow/schedulesampling.py:33
 msgid "%s can't be transitioned."
@@ -134,12 +135,12 @@ msgstr ""
 # File: bika.lims/bika/lims/exportimport/setupdata/__init__.py, line: 29
 #: bika/lims/exportimport/setupdata/__init__.py:35
 msgid "%s has no '%s' column."
-msgstr ""
+msgstr "%s nu are coloana '%s'."
 
 # File: bika.lims/bika/lims/skins/bika/attachments.pt, line: 60
 #: bika/lims/skins/bika/attachments.pt:60
 msgid "&nbsp;"
-msgstr ""
+msgstr "&nbsp;"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 341
 #: bika/lims/content/bikasetup.py:391
@@ -159,27 +160,27 @@ msgstr ""
 #: bika/lims/content/referencesample.py:190
 #: bika/lims/skins/bika/attachments.pt:205
 msgid "(Blank)"
-msgstr ""
+msgstr "(Gol)"
 
 # File: bika.lims/bika/lims/skins/bika/attachments.pt, line: 212
 #: bika/lims/skins/bika/attachments.pt:212
 msgid "(Control)"
-msgstr ""
+msgstr "(Control)"
 
 # File: bika.lims/bika/lims/skins/bika/attachments.pt, line: 219
 #: bika/lims/skins/bika/attachments.pt:219
 msgid "(Duplicate)"
-msgstr ""
+msgstr "(Duplicat)"
 
 # File: bika.lims/bika/lims/content/referencesample.py, line: 187
 #: bika/lims/content/referencesample.py:192
 msgid "(Hazardous)"
-msgstr ""
+msgstr "(Periculos)"
 
 # File: bika.lims/bika/lims/browser/templates/login_details.pt, line: 51
 #: bika/lims/browser/templates/login_details.pt:225
 msgid "(Required)"
-msgstr ""
+msgstr "(Necesar)"
 
 # File: bika.lims/bika/lims/browser/analyses.py, line: 96
 # File: bika.lims/bika/lims/browser/referencesample.py, line: 115
@@ -188,7 +189,7 @@ msgstr ""
 #: bika/lims/browser/referencesample.py:121
 #: bika/lims/browser/worksheet/views/analyses.py:46
 msgid "+-"
-msgstr ""
+msgstr "+-"
 
 # File: bika.lims/bika/lims/content/arpriority.py, line: 28
 #: bika/lims/content/arpriority.py:33
@@ -206,7 +207,7 @@ msgstr ""
 #: bika/lims/browser/widgets/analysisspecificationwidget.py:53
 #: bika/lims/content/analysisspec.py:78
 msgid "< Min"
-msgstr ""
+msgstr "< Min"
 
 #: bika/lims/skins/bika/bika_widgets/rejectionwidget.pt:59
 msgid "<input type=\"checkbox\" class=\"rejectionwidget-checkbox-other rejectionwidget-field\" name=\"${DYNAMIC_CONTENT}\" id=\"${DYNAMIC_CONTENT}\" /> Other"
@@ -222,7 +223,7 @@ msgstr ""
 #: bika/lims/browser/widgets/analysisspecificationwidget.py:54
 #: bika/lims/content/analysisspec.py:79
 msgid "> Max"
-msgstr ""
+msgstr "> Max"
 
 #: bika/lims/content/samplinground.py:141
 msgid "A short name that describes the Round for it to be easily identified on forms and drop-down menus"
@@ -279,24 +280,24 @@ msgstr ""
 # File: bika.lims/bika/lims/content/organisation.py, line: 73
 #: bika/lims/content/organisation.py:78
 msgid "Account Name"
-msgstr ""
+msgstr "Nume cont"
 
 # File: bika.lims/bika/lims/content/organisation.py, line: 79
 #: bika/lims/content/organisation.py:84
 msgid "Account Number"
-msgstr ""
+msgstr "Număr cont"
 
 # File: bika.lims/bika/lims/content/organisation.py, line: 67
 #: bika/lims/content/organisation.py:72
 msgid "Account Type"
-msgstr ""
+msgstr "Tip cont"
 
 # File: bika.lims/bika/lims/browser/accreditation.py, line: 34
 # File: bika.lims/bika/lims/content/laboratory.py, line: 59
 #: bika/lims/browser/accreditation.py:40
 #: bika/lims/content/laboratory.py:64
 msgid "Accreditation"
-msgstr ""
+msgstr "Acreditare"
 
 # File: bika.lims/bika/lims/content/laboratory.py, line: 43
 #: bika/lims/content/laboratory.py:48
@@ -333,7 +334,7 @@ msgstr ""
 #: bika/lims/browser/widgets/analysisprofileanalyseswidget.py:134
 #: bika/lims/browser/widgets/analysisspecificationwidget.py:105
 msgid "Accredited"
-msgstr ""
+msgstr "Acreditat"
 
 # File: bika.lims/bika/lims/browser/log.py, line: 48
 # File:
@@ -345,7 +346,7 @@ msgstr ""
 #: bika/lims/browser/reports/templates/administration_usershistory.pt:74
 #: bika/lims/browser/templates/analysisservice_popup.pt:290
 msgid "Action"
-msgstr ""
+msgstr "Acțiune"
 
 # File: bika.lims/bika/lims/browser/reports/templates/administration.pt, line:
 # 137
@@ -361,7 +362,7 @@ msgstr ""
 #: bika/lims/browser/client/views/analysisprofiles.py:49
 #: bika/lims/browser/client/views/analysisspecs.py:55
 msgid "Active"
-msgstr ""
+msgstr "Activ"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 98
@@ -371,7 +372,7 @@ msgstr ""
 #: bika/lims/browser/sample/printform.py:284
 #: bika/lims/browser/sample/view.py:105
 msgid "Ad-Hoc"
-msgstr ""
+msgstr "Ad-Hoc"
 
 # File: bika.lims/bika/lims/browser/batchfolder.py, line: 94
 # File: bika.lims/bika/lims/browser/client.py, line: 283
@@ -380,49 +381,49 @@ msgstr ""
 #: bika/lims/browser/client/views/analysisprofiles.py:68
 #: bika/lims/browser/client/views/analysisrequests.py:44
 msgid "Add"
-msgstr ""
+msgstr "Adaugă"
 
 # File: bika.lims/bika/lims/browser/worksheet.py, line: 850
 #: bika/lims/browser/worksheet/views/add_analyses.py:33
 msgid "Add Analyses"
-msgstr ""
+msgstr "Adaugă analize"
 
 # File: bika.lims/bika/lims/browser/worksheet.py, line: 1050
 #: bika/lims/browser/worksheet/views/add_blank.py:31
 msgid "Add Blank Reference"
-msgstr ""
+msgstr "Adaugă referință goală"
 
 # File: bika.lims/bika/lims/browser/worksheet.py, line: 1108
 #: bika/lims/browser/worksheet/views/add_control.py:30
 msgid "Add Control Reference"
-msgstr ""
+msgstr "Adaugă referință de control"
 
 # File: bika.lims/bika/lims/browser/worksheet.py, line: 1167
 #: bika/lims/browser/worksheet/views/add_duplicate.py:31
 msgid "Add Duplicate"
-msgstr ""
+msgstr "Adaugă duplicat"
 
 # File: bika.lims/bika/lims/controlpanel/bika_artemplates.py, line: 36
 # File: bika.lims/bika/lims/controlpanel/bika_srtemplates.py, line: 37
 #: bika/lims/controlpanel/bika_artemplates.py:41
 msgid "Add Template"
-msgstr ""
+msgstr "Adaugă șablon"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 319
 #: bika/lims/content/bikasetup.py:336
 msgid "Add a remarks field to all analyses"
-msgstr ""
+msgstr "Adaugă un câmp de mențiuni pentru toate analizele"
 
 # File: bika.lims/bika/lims/browser/batch/analysisrequests.py, line: 34
 #: bika/lims/browser/batch/analysisrequests.py:34
 #: bika/lims/browser/samplinground/analysisrequests.py:270
 msgid "Add new"
-msgstr ""
+msgstr "Adaugă"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/workflow.py, line: 485
 #: bika/lims/browser/analysisrequest/workflow.py:532
 msgid "Additional remarks:"
-msgstr ""
+msgstr "Mențiuni suplimentare:"
 
 # File: bika.lims/bika/lims/content/storagelocation.py, line: 82
 # File: bika.lims/bika/lims/skins/bika/bika_widgets/addresswidget.pt, line:
@@ -430,7 +431,7 @@ msgstr ""
 #: bika/lims/content/storagelocation.py:87
 #: bika/lims/skins/bika/bika_widgets/addresswidget.pt:122
 msgid "Address"
-msgstr ""
+msgstr "Adresă"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 462
 #: bika/lims/content/bikasetup.py:555
@@ -441,20 +442,20 @@ msgstr ""
 # 80
 #: bika/lims/browser/reports/templates/administration.pt:80
 msgid "Administrative Reports"
-msgstr ""
+msgstr "Rapoarte administrative"
 
 # File: bika.lims/bika/lims/browser/reports/selection_macros/__init__.py,
 # line: 162
 #: bika/lims/browser/reports/selection_macros/__init__.py:167
 msgid "After ${end_date}"
-msgstr ""
+msgstr "După ${end_date}"
 
 # File: bika.lims/bika/lims/browser/instrument.py, line: 531
 # File: bika.lims/bika/lims/content/instrumentcertification.py, line: 47
 #: bika/lims/browser/instrument.py:537
 #: bika/lims/content/instrumentcertification.py:53
 msgid "Agency"
-msgstr ""
+msgstr "Agenție"
 
 # File: bika.lims/bika/lims/browser/accreditation.py, line: 75
 # File: bika.lims/bika/lims/browser/analyses.py, line: 118
@@ -463,7 +464,7 @@ msgstr ""
 #: bika/lims/browser/analyses.py:127
 #: bika/lims/browser/analysisrequest/add.py:80
 msgid "All"
-msgstr ""
+msgstr "Toate"
 
 # File: bika.lims/bika/lims/browser/accreditation.py, line: 54
 #: bika/lims/browser/accreditation.py:60
@@ -484,7 +485,7 @@ msgstr ""
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 82
 #: bika/lims/content/bikasetup.py:88
 msgid "Allow Lab Clerks to create and edit clients"
-msgstr ""
+msgstr "Permite funcționarilor din laborator să creeze și să editeze clienți"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 315
 #: bika/lims/content/analysisservice.py:339
@@ -518,7 +519,7 @@ msgstr ""
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 562
 #: bika/lims/content/analysisservice.py:622
 msgid "Alternative Calculation"
-msgstr ""
+msgstr "Calcul alternativ"
 
 # File: bika.lims/bika/lims/content/client.py, line: 66
 #: bika/lims/content/client.py:71
@@ -533,7 +534,7 @@ msgstr ""
 # line: 67
 #: bika/lims/browser/reports/administration_arsnotinvoiced.py:73
 msgid "Amount"
-msgstr ""
+msgstr "Cantitate"
 
 # File:
 # bika.lims/bika/lims/browser/analysisrequest/templates/analysisrequest_analyses.pt,
@@ -548,7 +549,7 @@ msgstr ""
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_manage_results.pt:57
 #: bika/lims/browser/dashboard.py:509
 msgid "Analyses"
-msgstr ""
+msgstr "Analize"
 
 # File:
 # bika.lims/bika/lims/browser/reports/qualitycontrol_resultspersamplepoint.py,
@@ -597,7 +598,7 @@ msgstr ""
 # 165
 #: bika/lims/browser/reports/templates/productivity.pt:165
 msgid "Analyses per service"
-msgstr ""
+msgstr "Analize per serviciu"
 
 # File: bika.lims/bika/lims/browser/reports/templates/productivity.pt, line:
 # 415
@@ -629,7 +630,7 @@ msgstr ""
 # 37
 #: bika/lims/browser/reports/templates/qualitycontrol.pt:37
 msgid "Analyses repeated"
-msgstr ""
+msgstr "Analize repetate"
 
 # File:
 # bika.lims/bika/lims/browser/reports/qualitycontrol_analysesoutofrange.py,
@@ -643,7 +644,7 @@ msgstr ""
 # line: 25
 #: bika/lims/browser/reports/qualitycontrol_analysesrepeated.py:30
 msgid "Analyses retested"
-msgstr ""
+msgstr "Analize retestate"
 
 # File:
 # bika.lims/bika/lims/browser/reports/productivity_analysesperdepartment.py,
@@ -664,7 +665,7 @@ msgstr ""
 # line: 26
 #: bika/lims/browser/reports/qualitycontrol_analysesrepeated.py:31
 msgid "Analyses which have been retested"
-msgstr ""
+msgstr "Analize care au fost retestate"
 
 # File: bika.lims/bika/lims/browser/analyses.py, line: 60
 # File:
@@ -675,7 +676,7 @@ msgstr ""
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_analyses_not_requested.pt:69
 #: bika/lims/browser/late_analyses.py:44
 msgid "Analysis"
-msgstr ""
+msgstr "Analiză"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 365
 #: bika/lims/content/bikasetup.py:415
@@ -685,18 +686,18 @@ msgstr ""
 # File: bika.lims/bika/lims/controlpanel/bika_analysiscategories.py, line: 28
 #: bika/lims/controlpanel/bika_analysiscategories.py:22
 msgid "Analysis Categories"
-msgstr ""
+msgstr "Categorii analize"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 648
 # File: bika.lims/bika/lims/profiles/default/registry.xml, line: -1
 #: bika/lims/content/analysisservice.py:708
 msgid "Analysis Category"
-msgstr ""
+msgstr "Categorie analiză"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 348
 #: bika/lims/content/analysisservice.py:372
 msgid "Analysis Keyword"
-msgstr ""
+msgstr "Cuvânt cheie analiză"
 
 # File: bika.lims/bika/lims/content/analysisrequest.py, line: 363
 # File: bika.lims/bika/lims/content/arimportitem.py, line: 74
@@ -704,7 +705,7 @@ msgstr ""
 #: bika/lims/content/analysisrequest.py:473
 #: bika/lims/content/artemplate.py:165
 msgid "Analysis Profile"
-msgstr ""
+msgstr "Profil analiză"
 
 # File: bika.lims/bika/lims/browser/client.py, line: 327
 # File: bika.lims/bika/lims/controlpanel/bika_analysisprofiles.py, line: 34
@@ -712,7 +713,7 @@ msgstr ""
 #: bika/lims/content/analysisrequest.py:494
 #: bika/lims/controlpanel/bika_analysisprofiles.py:22
 msgid "Analysis Profiles"
-msgstr ""
+msgstr "Profile analiză"
 
 # File: bika.lims/bika/lims/browser/batch/batchbook.py, line: 41
 # File: bika.lims/bika/lims/browser/templates/analyses_retractedlist.pt, line:
@@ -722,12 +723,12 @@ msgstr ""
 #: bika/lims/browser/templates/analyses_retractedlist.pt:17
 #: bika/lims/vocabularies/__init__.py:130
 msgid "Analysis Request"
-msgstr ""
+msgstr "Cerere analiză"
 
 # File: bika.lims/bika/lims/config.py, line: 78
 #: bika/lims/config.py:74
 msgid "Analysis Request ID"
-msgstr ""
+msgstr "ID cerere analiză"
 
 # File: bika.lims/bika/lims/browser/arimports.py, line: 88
 #: bika/lims/browser/arimports.py:56
@@ -759,7 +760,7 @@ msgstr ""
 #: bika/lims/browser/dashboard.py:311
 #: bika/lims/skins/bika/portlet_to_be_verified.pt:69
 msgid "Analysis Requests"
-msgstr ""
+msgstr "Cereri analize"
 
 #: bika/lims/browser/dashboard.py:172
 msgid "Analysis Requests to be preserved"
@@ -798,45 +799,45 @@ msgstr ""
 #: bika/lims/browser/fields/referenceresultsfield.py:26
 #: bika/lims/browser/reports/productivity_analysestats_overtime.py:44
 msgid "Analysis Service"
-msgstr ""
+msgstr "Serviciu analiză"
 
 # File: bika.lims/bika/lims/config.py, line: 48
 # File: bika.lims/bika/lims/controlpanel/bika_analysisservices.py, line: 138
 #: bika/lims/config.py:44
 #: bika/lims/controlpanel/bika_analysisservices.py:130
 msgid "Analysis Services"
-msgstr ""
+msgstr "Servicii analize"
 
 # File: bika.lims/bika/lims/content/analysisrequest.py, line: 515
 #: bika/lims/content/analysisrequest.py:728
 msgid "Analysis Specification"
-msgstr ""
+msgstr "Specificație analiză"
 
 # File: bika.lims/bika/lims/browser/client.py, line: 530
 # File: bika.lims/bika/lims/controlpanel/bika_analysisspecs.py, line: 30
 #: bika/lims/browser/client/views/analysisspecs.py:42
 #: bika/lims/controlpanel/bika_analysisspecs.py:35
 msgid "Analysis Specifications"
-msgstr ""
+msgstr "Specificații analize"
 
 # File:
 # bika.lims/bika/lims/browser/reports/productivity_analysesperdepartment.py,
 # line: 39
 #: bika/lims/browser/reports/productivity_analysesperdepartment.py:44
 msgid "Analysis State"
-msgstr ""
+msgstr "Stare analiză"
 
 # File: bika.lims/bika/lims/content/worksheettemplate.py, line: 24
 #: bika/lims/content/worksheettemplate.py:29
 msgid "Analysis Type"
-msgstr ""
+msgstr "Tip analiză"
 
 # File:
 # bika.lims/bika/lims/browser/reports/selection_macros/select_analysiscategory.pt,
 # line: 2
 #: bika/lims/browser/reports/selection_macros/select_analysiscategory.pt:2
 msgid "Analysis category"
-msgstr ""
+msgstr "Categorie analiză"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/add.py, line: 441
 #: bika/lims/browser/analysisrequest/add.py:461
@@ -889,7 +890,7 @@ msgstr ""
 # File: bika.lims/bika/lims/browser/analysisrequest/publish.py, line: 912
 #: bika/lims/browser/analysisrequest/publish.py:1019
 msgid "Analysis results"
-msgstr ""
+msgstr "Rezultate analiză"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/publish.py, line: 907
 #: bika/lims/browser/analysisrequest/publish.py:1014
@@ -918,7 +919,7 @@ msgstr ""
 #: bika/lims/browser/reports/productivity_analysesperservice.py:95
 #: bika/lims/browser/reports/selection_macros/select_analysisservice.pt:3
 msgid "Analysis service"
-msgstr ""
+msgstr "Serviciu analiză"
 
 # File: bika.lims/bika/lims/browser/client.py, line: 609
 #: bika/lims/browser/client/views/analysisspecs.py:115
@@ -964,12 +965,12 @@ msgstr ""
 #: bika/lims/browser/batch/publish.py:98
 #: bika/lims/browser/reports/productivity_analysestats_overtime.py:53
 msgid "Analyst"
-msgstr ""
+msgstr "Analist"
 
 # File: bika.lims/bika/lims/browser/worksheetfolder.py, line: 525
 #: bika/lims/browser/worksheet/views/add_worksheet.py:32
 msgid "Analyst must be specified."
-msgstr ""
+msgstr "Analistul trebuie specificat."
 
 # File: bika.lims/bika/lims/browser/templates/worksheet_add_analyses.pt, line:
 # 72
@@ -977,19 +978,19 @@ msgstr ""
 #: bika/lims/browser/worksheet/templates/add_analyses.pt:72
 #: bika/lims/content/analysisservice.py:76
 msgid "Any"
-msgstr ""
+msgstr "Orice"
 
 # File: bika.lims/bika/lims/browser/templates/worksheet_manage_results.pt,
 # line: 136
 #: bika/lims/browser/worksheet/templates/results.pt:153
 msgid "Apply"
-msgstr ""
+msgstr "Aplică"
 
 # File: bika.lims/bika/lims/browser/templates/worksheet_add_analyses.pt, line:
 # 58
 #: bika/lims/browser/worksheet/templates/add_analyses.pt:58
 msgid "Apply template"
-msgstr ""
+msgstr "Aplică șablon"
 
 # File: bika.lims/bika/lims/browser/fields/interimfieldsfield.py, line: 25
 #: bika/lims/browser/fields/interimfieldsfield.py:30
@@ -999,7 +1000,7 @@ msgstr ""
 # File: bika.lims/bika/lims/content/instrumentcertification.py, line: 103
 #: bika/lims/content/instrumentcertification.py:109
 msgid "Approved by"
-msgstr ""
+msgstr "Aprobat de"
 
 # File: bika.lims/bika/lims/content/instrument.py, line: 181
 # File: bika.lims/bika/lims/content/instrumentcertification.py, line: 16
@@ -1012,7 +1013,7 @@ msgstr ""
 #: bika/lims/browser/analysisrequest/analysisrequests.py:562
 #: bika/lims/browser/samplinground/analysisrequests.py:205
 msgid "Assigned"
-msgstr ""
+msgstr "Asignat"
 
 # File: bika.lims/bika/lims/browser/reports/productivity_analysesperclient.py,
 # line: 84
@@ -1026,17 +1027,17 @@ msgstr ""
 #: bika/lims/browser/reports/productivity_analysespersampletype.py:91
 #: bika/lims/browser/reports/productivity_analysesperservice.py:90
 msgid "Assigned to worksheet"
-msgstr ""
+msgstr "Asignat la foaia de lucru"
 
 # File: bika.lims/bika/lims/browser/analyses.py, line: 743
 #: bika/lims/browser/analyses.py:777
 msgid "Assigned to: ${worksheet_id}"
-msgstr ""
+msgstr "Asignat la: ${worksheet_id}"
 
 # File: bika.lims/bika/lims/skins/bika/attachments.pt, line: 258
 #: bika/lims/skins/bika/attachments.pt:258
 msgid "Attach to"
-msgstr ""
+msgstr "Atașează la"
 
 # File: bika.lims/bika/lims/content/attachment.py, line: 26
 # File: bika.lims/bika/lims/skins/bika/attachments.pt, line: 11
@@ -1044,17 +1045,17 @@ msgstr ""
 #: bika/lims/content/samplepoint.py:88
 #: bika/lims/skins/bika/attachments.pt:11
 msgid "Attachment"
-msgstr ""
+msgstr "Atașament"
 
 # File: bika.lims/bika/lims/content/attachment.py, line: 40
 #: bika/lims/content/attachment.py:45
 msgid "Attachment Keys"
-msgstr ""
+msgstr "Chei atașament"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 334
 #: bika/lims/content/analysisservice.py:358
 msgid "Attachment Option"
-msgstr ""
+msgstr "Opțiune atașament"
 
 # File: bika.lims/bika/lims/browser/client.py, line: 636
 # File: bika.lims/bika/lims/content/attachment.py, line: 34
@@ -1063,12 +1064,12 @@ msgstr ""
 #: bika/lims/content/attachment.py:39
 #: bika/lims/controlpanel/bika_attachmenttypes.py:41
 msgid "Attachment Type"
-msgstr ""
+msgstr "Tip atașament"
 
 # File: bika.lims/bika/lims/controlpanel/bika_attachmenttypes.py, line: 29
 #: bika/lims/controlpanel/bika_attachmenttypes.py:34
 msgid "Attachment Types"
-msgstr ""
+msgstr "Tipuri atașamente"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/manage_analyses.py, line:
 # 259
@@ -1080,7 +1081,7 @@ msgstr ""
 #: bika/lims/browser/widgets/analysisprofileanalyseswidget.py:149
 #: bika/lims/browser/widgets/analysisspecificationwidget.py:120
 msgid "Attachment not permitted"
-msgstr ""
+msgstr "Atașamentul nu este permis"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/manage_analyses.py, line:
 # 252
@@ -1092,14 +1093,14 @@ msgstr ""
 #: bika/lims/browser/widgets/analysisprofileanalyseswidget.py:144
 #: bika/lims/browser/widgets/analysisspecificationwidget.py:115
 msgid "Attachment required"
-msgstr ""
+msgstr "Atașamentul este necesar"
 
 # File:
 # bika.lims/bika/lims/browser/reports/productivity_analysesattachments.py,
 # line: 63
 #: bika/lims/browser/reports/productivity_analysesattachments.py:68
 msgid "Attachment type"
-msgstr ""
+msgstr "Tip atașament"
 
 # File: bika.lims/bika/lims/browser/analyses.py, line: 104
 # File: bika.lims/bika/lims/browser/client.py, line: 630
@@ -1110,7 +1111,7 @@ msgstr ""
 #: bika/lims/browser/client/views/attachments.py:29
 #: bika/lims/browser/reports/productivity_analysesattachments.py:32
 msgid "Attachments"
-msgstr ""
+msgstr "Atașamente"
 
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_retract_pdf.pt:140
 msgid "Authorized by"
@@ -1120,19 +1121,19 @@ msgstr ""
 # line: 93
 #: bika/lims/browser/worksheet/templates/results.pt:110
 msgid "Autofill"
-msgstr ""
+msgstr "Completare automată"
 
 # File:
 # bika.lims/bika/lims/exportimport/instruments/agilent/masshunter/quantitative.py,
 # line: 475
 #: bika/lims/exportimport/instruments/agilent/masshunter/quantitative.py:480
 msgid "Autoimport"
-msgstr ""
+msgstr "Import automat"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 71
 #: bika/lims/content/bikasetup.py:77
 msgid "Automatic log-off"
-msgstr ""
+msgstr "Deautentificare automată"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 410
 #: bika/lims/content/bikasetup.py:483
@@ -1147,7 +1148,7 @@ msgstr ""
 #: bika/lims/browser/samplinground/templates/print_form.pt:23
 #: bika/lims/browser/worksheet/templates/print.pt:121
 msgid "Available templates"
-msgstr ""
+msgstr "Șabloane disponibile"
 
 # File:
 # bika.lims/bika/lims/browser/reports/productivity_analysestats_overtime.py,
@@ -1187,7 +1188,7 @@ msgstr ""
 # line: 35
 #: bika/lims/browser/templates/instrument_referenceanalyses.pt:35
 msgid "Basis"
-msgstr ""
+msgstr "Bază"
 
 # File:
 # bika.lims/bika/lims/browser/reports/templates/productivity_dataentrydaybook.pt,
@@ -1198,7 +1199,7 @@ msgstr ""
 #: bika/lims/content/analysisrequest.py:311
 #: bika/lims/content/arimport.py:130
 msgid "Batch"
-msgstr ""
+msgstr "Lot"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 72
@@ -1208,19 +1209,19 @@ msgstr ""
 #: bika/lims/browser/batchfolder.py:44
 #: bika/lims/browser/templates/batch_publish.pt:52
 msgid "Batch ID"
-msgstr ""
+msgstr "ID lot"
 
 # File: bika.lims/bika/lims/content/batch.py, line: 109
 # File: bika.lims/bika/lims/controlpanel/bika_batchlabels.py, line: 24
 #: bika/lims/content/batch.py:115
 #: bika/lims/controlpanel/bika_batchlabels.py:29
 msgid "Batch Labels"
-msgstr ""
+msgstr "Etichete lot"
 
 # File: bika.lims/bika/lims/browser/batchfolder.py, line: 27
 #: bika/lims/browser/batchfolder.py:34
 msgid "Batches"
-msgstr ""
+msgstr "Loturi"
 
 # File: bika.lims/bika/lims/browser/fields/coordinatefield.py, line: 24
 #: bika/lims/browser/fields/coordinatefield.py:29
@@ -1260,7 +1261,7 @@ msgstr ""
 #: bika/lims/config.py:88
 #: bika/lims/content/organisation.py:66
 msgid "Billing address"
-msgstr ""
+msgstr "Adresă facturare"
 
 # File: bika.lims/bika/lims/browser/supplier.py, line: 146
 # File: bika.lims/bika/lims/browser/templates/referencesample_view.pt, line:
@@ -1270,17 +1271,17 @@ msgstr ""
 #: bika/lims/browser/templates/referencesample_view.pt:21
 #: bika/lims/config.py:50
 msgid "Blank"
-msgstr ""
+msgstr "Gol"
 
 # File: bika.lims/bika/lims/config.py, line: 97
 #: bika/lims/config.py:93
 msgid "Blank QC analyses"
-msgstr ""
+msgstr "Analize QC goale"
 
 # File: bika.lims/bika/lims/controlpanel/bika_instruments.py, line: 45
 #: bika/lims/controlpanel/bika_instruments.py:50
 msgid "Brand"
-msgstr ""
+msgstr "Marcă"
 
 # File: bika.lims/bika/lims/content/client.py, line: 36
 # File: bika.lims/bika/lims/content/pricelist.py, line: 31
@@ -1304,7 +1305,7 @@ msgstr ""
 # File: bika.lims/bika/lims/browser/reports/__init__.py, line: 128
 #: bika/lims/browser/reports/__init__.py:133
 msgid "By"
-msgstr ""
+msgstr "De"
 
 # File: bika.lims/bika/lims/content/analysisrequest.py, line: 124
 #: bika/lims/content/analysisrequest.py:160
@@ -1328,12 +1329,12 @@ msgstr ""
 #: bika/lims/browser/widgets/serviceswidget.py:61
 #: bika/lims/content/method.py:109
 msgid "Calculation"
-msgstr ""
+msgstr "Calcul"
 
 # File: bika.lims/bika/lims/content/calculation.py, line: 60
 #: bika/lims/content/calculation.py:65
 msgid "Calculation Formula"
-msgstr ""
+msgstr "Formulă calcul"
 
 # File: bika.lims/bika/lims/content/analysis.py, line: 74
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 588
@@ -1359,30 +1360,30 @@ msgstr ""
 # File: bika.lims/bika/lims/controlpanel/bika_calculations.py, line: 29
 #: bika/lims/controlpanel/bika_calculations.py:34
 msgid "Calculations"
-msgstr ""
+msgstr "Calcule"
 
 # File: bika.lims/bika/lims/content/instrumentscheduledtask.py, line: 84
 #: bika/lims/content/instrumentscheduledtask.py:89
 msgid "Calibration"
-msgstr ""
+msgstr "Calibrare"
 
 # File: bika.lims/bika/lims/browser/templates/instrument_certifications.pt,
 # line: 40
 #: bika/lims/browser/templates/instrument_certifications.pt:40
 msgid "Calibration Certificates"
-msgstr ""
+msgstr "Certificate calibrare"
 
 # File: bika.lims/bika/lims/content/instrumentcalibration.py, line: 34
 #: bika/lims/content/instrumentcalibration.py:39
 msgid "Calibration report date"
-msgstr ""
+msgstr "Dată raport calibrare"
 
 # File: bika.lims/bika/lims/browser/instrument.py, line: 156
 # File: bika.lims/bika/lims/content/instrumentcalibration.py, line: 58
 #: bika/lims/browser/instrument.py:162
 #: bika/lims/content/instrumentcalibration.py:63
 msgid "Calibrator"
-msgstr ""
+msgstr "Calibrator"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/manage_analyses.py, line:
 # 245
@@ -1408,7 +1409,7 @@ msgstr ""
 #: bika/lims/browser/arimports.py:93
 #: bika/lims/browser/batchfolder.py:75
 msgid "Cancelled"
-msgstr ""
+msgstr "Anulat"
 
 # File: bika.lims/bika/lims/content/calculation.py, line: 181
 #: bika/lims/content/calculation.py:186
@@ -1436,7 +1437,7 @@ msgstr ""
 #: bika/lims/content/container.py:39
 #: bika/lims/controlpanel/bika_containers.py:50
 msgid "Capacity"
-msgstr ""
+msgstr "Capacitate"
 
 # File: bika.lims/bika/lims/browser/analyses.py, line: 107
 # File: bika.lims/bika/lims/browser/referencesample.py, line: 114
@@ -1447,13 +1448,13 @@ msgstr ""
 #: bika/lims/browser/referencesample.py:120
 #: bika/lims/browser/reports/qualitycontrol_referenceanalysisqc.py:134
 msgid "Captured"
-msgstr ""
+msgstr "Capturat"
 
 # File: bika.lims/bika/lims/browser/templates/instrument_referenceanalyses.pt,
 # line: 36
 #: bika/lims/browser/templates/instrument_referenceanalyses.pt:36
 msgid "Cardinal"
-msgstr ""
+msgstr "Cardinal"
 
 # File: bika.lims/bika/lims/browser/templates/referencesample_view.pt, line:
 # 54
@@ -1461,7 +1462,7 @@ msgstr ""
 #: bika/lims/browser/templates/referencesample_view.pt:54
 #: bika/lims/content/referencesample.py:76
 msgid "Catalogue Number"
-msgstr ""
+msgstr "Număr catalog"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 274
 #: bika/lims/content/bikasetup.py:291
@@ -1477,7 +1478,7 @@ msgstr ""
 #: bika/lims/browser/referencesample.py:108
 #: bika/lims/browser/reports/qualitycontrol_analysesoutofrange.py:104
 msgid "Category"
-msgstr ""
+msgstr "Categorie"
 
 # File: bika.lims/bika/lims/content/analysiscategory.py, line: 76
 #: bika/lims/content/analysiscategory.py:98
@@ -1492,7 +1493,7 @@ msgstr ""
 # File: bika.lims/bika/lims/content/instrumentcertification.py, line: 137
 #: bika/lims/content/instrumentcertification.py:143
 msgid "Certificate Code"
-msgstr ""
+msgstr "Cod certificat"
 
 #: bika/lims/browser/worksheet/views/results.py:108
 #: bika/lims/skins/bika/validate_integrity.cpy:24
@@ -1502,7 +1503,7 @@ msgstr ""
 # File: bika.lims/bika/lims/content/method.py, line: 119
 #: bika/lims/content/method.py:124
 msgid "Check if the method has been accredited"
-msgstr ""
+msgstr "Verifică dacă metoda a fost acreditată"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 618
 #: bika/lims/content/analysisservice.py:678
@@ -1552,12 +1553,12 @@ msgstr ""
 # File: bika.lims/bika/lims/skins/bika/bika_widgets/addresswidget.pt, line: 99
 #: bika/lims/skins/bika/bika_widgets/addresswidget.pt:99
 msgid "City"
-msgstr ""
+msgstr "Oraș"
 
 # File: bika.lims/bika/lims/config.py, line: 73
 #: bika/lims/config.py:69
 msgid "Classic"
-msgstr ""
+msgstr "Clasic"
 
 # File: bika.lims/bika/lims/browser/referencesample.py, line: 210
 #: bika/lims/browser/referencesample.py:218
@@ -1578,7 +1579,7 @@ msgstr ""
 # 110
 #: bika/lims/browser/templates/analysisservice_popup.pt:110
 msgid "Click to download"
-msgstr ""
+msgstr "Click pentru a descărca"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 74
@@ -1588,12 +1589,12 @@ msgstr ""
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_retract_pdf.pt:78
 #: bika/lims/browser/arimports.py:61
 msgid "Client"
-msgstr ""
+msgstr "Client"
 
 # File: bika.lims/bika/lims/content/batch.py, line: 94
 #: bika/lims/content/batch.py:100
 msgid "Client Batch ID"
-msgstr ""
+msgstr "ID lot client"
 
 # File: bika.lims/bika/lims/content/arimport.py, line: 84
 # File: bika.lims/bika/lims/content/batch.py, line: 84
@@ -1602,7 +1603,7 @@ msgstr ""
 #: bika/lims/content/batch.py:91
 #: bika/lims/content/client.py:34
 msgid "Client ID"
-msgstr ""
+msgstr "ID client"
 
 # File: bika.lims/bika/lims/profiles/default/registry.xml, line: -1
 #: bika/lims/profiles/default/registry.xml
@@ -1613,7 +1614,7 @@ msgstr ""
 # File: bika.lims/bika/lims/profiles/default/registry.xml, line: -1
 #: bika/lims/content/arimport.py:77
 msgid "Client Name"
-msgstr ""
+msgstr "Nume client"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 61
@@ -1621,7 +1622,7 @@ msgstr ""
 # File: bika.lims/bika/lims/profiles/default/registry.xml, line: -1
 #: bika/lims/browser/analysisrequest/analysisrequests.py:73
 msgid "Client Order"
-msgstr ""
+msgstr "Comandă client"
 
 # File: bika.lims/bika/lims/browser/batch/batchbook.py, line: 55
 # File: bika.lims/bika/lims/content/analysisrequest.py, line: 666
@@ -1629,7 +1630,7 @@ msgstr ""
 #: bika/lims/content/analysisrequest.py:903
 #: bika/lims/content/arimport.py:93
 msgid "Client Order Number"
-msgstr ""
+msgstr "Număr comandă client"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 76
@@ -1638,7 +1639,7 @@ msgstr ""
 #: bika/lims/browser/analysisrequest/analysisrequests.py:88
 #: bika/lims/browser/sample/view.py:90
 msgid "Client Ref"
-msgstr ""
+msgstr "Ref. client"
 
 # File: bika.lims/bika/lims/config.py, line: 80
 # File: bika.lims/bika/lims/content/analysisrequest.py, line: 695
@@ -1647,7 +1648,7 @@ msgstr ""
 #: bika/lims/config.py:76
 #: bika/lims/content/analysisrequest.py:937
 msgid "Client Reference"
-msgstr ""
+msgstr "Referință client"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 79
@@ -1657,7 +1658,7 @@ msgstr ""
 #: bika/lims/browser/sample/view.py:93
 #: bika/lims/config.py:77
 msgid "Client SID"
-msgstr ""
+msgstr "SID client"
 
 # File: bika.lims/bika/lims/content/analysisrequest.py, line: 725
 # File: bika.lims/bika/lims/content/query.py, line: 123
@@ -1687,7 +1688,7 @@ msgstr ""
 # File: bika.lims/bika/lims/browser/clientfolder.py, line: 29
 #: bika/lims/browser/clientfolder.py:34
 msgid "Clients"
-msgstr ""
+msgstr "Clienți"
 
 # File: bika.lims/bika/lims/browser/batchfolder.py, line: 58
 # File: bika.lims/bika/lims/content/instrumentmaintenancetask.py, line: 107
@@ -1695,12 +1696,12 @@ msgstr ""
 #: bika/lims/content/instrumentmaintenancetask.py:112
 #: bika/lims/controlpanel/bika_samplingrounds.py:63
 msgid "Closed"
-msgstr ""
+msgstr "Închis"
 
 # File: bika.lims/bika/lims/content/storagelocation.py, line: 48
 #: bika/lims/content/storagelocation.py:53
 msgid "Code for the location"
-msgstr ""
+msgstr "Cod pentru locație"
 
 # File: bika.lims/bika/lims/content/storagelocation.py, line: 30
 #: bika/lims/content/storagelocation.py:35
@@ -1710,12 +1711,12 @@ msgstr ""
 # File: bika.lims/bika/lims/content/storagelocation.py, line: 72
 #: bika/lims/content/storagelocation.py:77
 msgid "Code the the shelf"
-msgstr ""
+msgstr "Cod pentru raft"
 
 # File: bika.lims/bika/lims/config.py, line: 114
 #: bika/lims/config.py:110
 msgid "Comma (,)"
-msgstr ""
+msgstr "Virgulă (,)"
 
 # File:
 # bika.lims/bika/lims/browser/reports/templates/administration_usershistory.pt,
@@ -1724,7 +1725,7 @@ msgstr ""
 #: bika/lims/browser/reports/templates/administration_usershistory.pt:77
 #: bika/lims/content/analysiscategory.py:39
 msgid "Comments"
-msgstr ""
+msgstr "Comentarii"
 
 # File: bika.lims/bika/lims/content/analysisrequest.py, line: 1236
 #: bika/lims/content/analysisrequest.py:1611
@@ -1737,7 +1738,7 @@ msgstr ""
 #: bika/lims/content/analysisservice.py:996
 #: bika/lims/controlpanel/bika_analysisservices.py:190
 msgid "Commercial ID"
-msgstr ""
+msgstr "ID comercial"
 
 # File: bika.lims/bika/lims/browser/templates/stickers/sticker_large.pt, line:
 # 90
@@ -1747,7 +1748,7 @@ msgstr ""
 #: bika/lims/content/analysisrequest.py:1190
 #: bika/lims/content/artemplate.py:87
 msgid "Composite"
-msgstr ""
+msgstr "Compozit"
 
 #: bika/lims/browser/srtemplate/artemplates.py:53
 msgid "Composite Y/N"
@@ -1756,7 +1757,7 @@ msgstr ""
 # File: bika.lims/bika/lims/content/laboratory.py, line: 26
 #: bika/lims/content/laboratory.py:31
 msgid "Confidence Level %"
-msgstr ""
+msgstr "Nivel de încredere %"
 
 # File: bika.lims/bika/lims/content/artemplate.py, line: 121
 #: bika/lims/content/artemplate.py:133
@@ -1766,7 +1767,7 @@ msgstr ""
 # File: bika.lims/bika/lims/browser/templates/login_details.pt, line: 81
 #: bika/lims/browser/templates/login_details.pt:248
 msgid "Confirm password"
-msgstr ""
+msgstr "Confirmă parola"
 
 # File: bika.lims/bika/lims/content/instrumentcalibration.py, line: 68
 # File: bika.lims/bika/lims/content/instrumentmaintenancetask.py, line: 73
@@ -1787,7 +1788,7 @@ msgstr ""
 #: bika/lims/browser/late_analyses.py:49
 #: bika/lims/browser/reports/selection_macros/select_contact.pt:4
 msgid "Contact"
-msgstr ""
+msgstr "Contact"
 
 #: bika/lims/browser/templates/login_details.pt:123
 msgid "Contact is deactivated. User cannot be unlinked."
@@ -1801,7 +1802,7 @@ msgstr ""
 #: bika/lims/browser/supplier.py:61
 #: bika/lims/browser/templates/pricelist_email_form.pt:27
 msgid "Contacts"
-msgstr ""
+msgstr "Contacte"
 
 # File: bika.lims/bika/lims/content/contact.py, line: 45
 #: bika/lims/content/contact.py:57
@@ -1816,7 +1817,7 @@ msgstr ""
 #: bika/lims/browser/sample/printform.py:277
 #: bika/lims/browser/samplinground/printform.py:175
 msgid "Container"
-msgstr ""
+msgstr "Container"
 
 #: bika/lims/browser/srtemplate/artemplates.py:58
 msgid "Container Title"
@@ -1829,12 +1830,12 @@ msgstr ""
 #: bika/lims/content/container.py:32
 #: bika/lims/controlpanel/bika_containers.py:48
 msgid "Container Type"
-msgstr ""
+msgstr "Tip container"
 
 # File: bika.lims/bika/lims/controlpanel/bika_containertypes.py, line: 29
 #: bika/lims/controlpanel/bika_containertypes.py:34
 msgid "Container Types"
-msgstr ""
+msgstr "Tipuri containere"
 
 #: bika/lims/browser/srtemplate/artemplates.py:63
 msgid "Container Volume"
@@ -1846,24 +1847,24 @@ msgstr ""
 #: bika/lims/browser/templates/analysisservice_popup.pt:265
 #: bika/lims/controlpanel/bika_containers.py:34
 msgid "Containers"
-msgstr ""
+msgstr "Containere"
 
 # File: bika.lims/bika/lims/browser/client.py, line: 637
 #: bika/lims/browser/client/views/attachments.py:36
 msgid "Content Type"
-msgstr ""
+msgstr "Tip conținut"
 
 # File:
 # bika.lims/bika/lims/browser/reports/productivity_analysesattachments.py,
 # line: 64
 #: bika/lims/browser/reports/productivity_analysesattachments.py:69
 msgid "Content type"
-msgstr ""
+msgstr "Tip conținut"
 
 # File: bika.lims/bika/lims/config.py, line: 55
 #: bika/lims/config.py:51
 msgid "Control"
-msgstr ""
+msgstr "Control"
 
 # File: bika.lims/bika/lims/config.py, line: 98
 #: bika/lims/config.py:94
@@ -1874,7 +1875,7 @@ msgstr ""
 # line: 56
 #: bika/lims/controlpanel/templates/analysisservice_copy.pt:56
 msgid "Copy"
-msgstr ""
+msgstr "Copiază"
 
 # File: bika.lims/bika/lims/controlpanel/templates/analysisservice_copy.pt,
 # line: 11
@@ -1885,7 +1886,7 @@ msgstr ""
 # File: bika.lims/bika/lims/skins/bika/bika_widgets/addresswidget.pt, line: 47
 #: bika/lims/skins/bika/bika_widgets/addresswidget.pt:47
 msgid "Copy from"
-msgstr ""
+msgstr "Copiază de la"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 730
@@ -1899,14 +1900,14 @@ msgstr ""
 # line: 132
 #: bika/lims/browser/reports/productivity_analysestats.py:137
 msgid "Count"
-msgstr ""
+msgstr "Număr"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 140
 # File: bika.lims/bika/lims/skins/bika/bika_widgets/addresswidget.pt, line: 29
 #: bika/lims/content/bikasetup.py:146
 #: bika/lims/skins/bika/bika_widgets/addresswidget.pt:29
 msgid "Country"
-msgstr ""
+msgstr "Țară"
 
 #: bika/lims/browser/templates/login_details.pt:213
 msgid "Create a new User"
@@ -1917,7 +1918,7 @@ msgstr ""
 #: bika/lims/content/analysisrequest.py:661
 #: bika/lims/content/artemplate.py:69
 msgid "Create a new sample of this type"
-msgstr ""
+msgstr "Creează o mostră nouă de acest tip"
 
 # File: bika.lims/bika/lims/browser/instrument.py, line: 274
 # File: bika.lims/bika/lims/browser/reports/__init__.py, line: 127
@@ -1927,18 +1928,18 @@ msgstr ""
 #: bika/lims/browser/reports/__init__.py:132
 #: bika/lims/browser/reports/administration_usershistory.py:114
 msgid "Created"
-msgstr ""
+msgstr "Creat"
 
 # File: bika.lims/bika/lims/browser/instrument.py, line: 273
 #: bika/lims/browser/instrument.py:279
 msgid "Created by"
-msgstr ""
+msgstr "Creat de"
 
 # File: bika.lims/bika/lims/browser/reports/templates/report_frame.pt, line:
 # 44
 #: bika/lims/browser/reports/templates/report_frame.pt:44
 msgid "Created by:"
-msgstr ""
+msgstr "Creat de:"
 
 #: bika/lims/content/arimport.py:291
 msgid "Creating and initialising objects"
@@ -1950,25 +1951,25 @@ msgstr ""
 # File: bika.lims/bika/lims/profiles/default/registry.xml, line: -1
 #: bika/lims/browser/reports/templates/productivity_dataentrydaybook.pt:97
 msgid "Creator"
-msgstr ""
+msgstr "Autor"
 
 # File: bika.lims/bika/lims/browser/instrument.py, line: 272
 # File: bika.lims/bika/lims/content/instrumentscheduledtask.py, line: 46
 #: bika/lims/browser/instrument.py:278
 #: bika/lims/content/instrumentscheduledtask.py:51
 msgid "Criteria"
-msgstr ""
+msgstr "Criterii"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 129
 #: bika/lims/content/bikasetup.py:135
 msgid "Currency"
-msgstr ""
+msgstr "Monedă"
 
 # File: bika.lims/bika/lims/browser/referencesample.py, line: 332
 # File: bika.lims/bika/lims/browser/supplier.py, line: 66
 #: bika/lims/browser/referencesample.py:347
 msgid "Current"
-msgstr ""
+msgstr "Curent"
 
 # File: bika.lims/bika/lims/content/client.py, line: 107
 #: bika/lims/content/client.py:112
@@ -2031,7 +2032,7 @@ msgstr ""
 #: bika/lims/browser/batchfolder.py:46
 #: bika/lims/browser/instrument.py:538
 msgid "Date"
-msgstr ""
+msgstr "Dată"
 
 # File: bika.lims/bika/lims/browser/reports/productivity_dataentrydaybook.py,
 # line: 28
@@ -2179,12 +2180,12 @@ msgstr ""
 #: bika/lims/browser/analysisrequest/templates/analysisrequest_retract_pdf.pt:106
 #: bika/lims/browser/reports/templates/productivity_dailysamplesreceived.pt:56
 msgid "Date received"
-msgstr ""
+msgstr "Dată primire"
 
 # File: bika.lims/bika/lims/content/instrumentcertification.py, line: 75
 #: bika/lims/content/instrumentcertification.py:81
 msgid "Date until the certificate is valid"
-msgstr ""
+msgstr "Data până când certificatul este valabil"
 
 # File: bika.lims/bika/lims/content/instrumentcalibration.py, line: 52
 # File: bika.lims/bika/lims/content/instrumentmaintenancetask.py, line: 56
@@ -2198,7 +2199,7 @@ msgstr ""
 # File: bika.lims/bika/lims/content/instrumentcertification.py, line: 55
 #: bika/lims/content/instrumentcertification.py:61
 msgid "Date when the calibration certificate was granted"
-msgstr ""
+msgstr "Data de emitere a certificatului de calibrare"
 
 #: bika/lims/browser/sample/printform.py:275
 msgid "Date/Time Sampled"
@@ -2207,7 +2208,7 @@ msgstr ""
 # File: bika.lims/bika/lims/browser/fields/durationfield.py, line: 17
 #: bika/lims/browser/fields/durationfield.py:22
 msgid "Days"
-msgstr ""
+msgstr "Zile"
 
 # File: bika.lims/bika/lims/content/instrument.py, line: 87
 #: bika/lims/content/instrument.py:95
@@ -2222,7 +2223,7 @@ msgstr ""
 #: bika/lims/browser/invoicebatch.py:52
 #: bika/lims/controlpanel/bika_arpriorities.py:51
 msgid "Default"
-msgstr ""
+msgstr "Implicit"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 293
 # File: bika.lims/bika/lims/content/client.py, line: 89
@@ -2238,7 +2239,7 @@ msgstr ""
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 531
 #: bika/lims/content/analysisservice.py:591
 msgid "Default Calculation"
-msgstr ""
+msgstr "Calcul implicit"
 
 # File: bika.lims/bika/lims/content/analysisrequest.py, line: 825
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 866
@@ -2247,32 +2248,32 @@ msgstr ""
 #: bika/lims/content/analysisservice.py:926
 #: bika/lims/controlpanel/bika_sampletypes.py:63
 msgid "Default Container"
-msgstr ""
+msgstr "Container implicit"
 
 # File: bika.lims/bika/lims/content/sampletype.py, line: 71
 #: bika/lims/content/sampletype.py:77
 msgid "Default Container Type"
-msgstr ""
+msgstr "Tip implicit container"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 428
 #: bika/lims/content/analysisservice.py:475
 msgid "Default Instrument"
-msgstr ""
+msgstr "Instrument implicit"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 490
 #: bika/lims/content/analysisservice.py:550
 msgid "Default Method"
-msgstr ""
+msgstr "Metodă implicită"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 847
 #: bika/lims/content/analysisservice.py:907
 msgid "Default Preservation"
-msgstr ""
+msgstr "Conservare implicită"
 
 # File: bika.lims/bika/lims/content/arpriority.py, line: 39
 #: bika/lims/content/arpriority.py:44
 msgid "Default Priority?"
-msgstr ""
+msgstr "Prioritate implicită?"
 
 # File: bika.lims/bika/lims/content/analysisservice.py, line: 532
 #: bika/lims/content/analysisservice.py:592
@@ -2282,7 +2283,7 @@ msgstr ""
 # File: bika.lims/bika/lims/content/client.py, line: 65
 #: bika/lims/content/client.py:70
 msgid "Default categories"
-msgstr ""
+msgstr "Categorii implicite"
 
 # File: bika.lims/bika/lims/content/analysisrequest.py, line: 826
 #: bika/lims/content/analysisrequest.py:1118
@@ -2324,17 +2325,17 @@ msgstr ""
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 181
 #: bika/lims/content/bikasetup.py:187
 msgid "Default scientific notation format for reports"
-msgstr ""
+msgstr "Format implicit notație științifică pentru rapoarte"
 
 # File: bika.lims/bika/lims/content/bikasetup.py, line: 400
 #: bika/lims/content/bikasetup.py:450
 msgid "Default scientific notation format for results"
-msgstr ""
+msgstr "Format implicit notație științifică pentru rezultate"
 
 # File: bika.lims/bika/lims/browser/fields/interimfieldsfield.py, line: 22
 #: bika/lims/browser/fields/interimfieldsfield.py:27
 msgid "Default value"
-msgstr ""
+msgstr "Valoare implicită"
 
 # File: bika.lims/bika/lims/content/client.py, line: 90
 #: bika/lims/content/client.py:95
@@ -2398,7 +2399,7 @@ msgstr ""
 #: bika/lims/browser/reports/templates/productivity_analysesperdepartment.pt:96
 #: bika/lims/content/analysiscategory.py:50
 msgid "Department"
-msgstr ""
+msgstr "Departament"
 
 # File: bika.lims/bika/lims/browser/templates/analysisservice_popup.pt, line:
 # 155
@@ -2406,7 +2407,7 @@ msgstr ""
 #: bika/lims/browser/templates/analysisservice_popup.pt:155
 #: bika/lims/content/calculation.py:56
 msgid "Dependent Analyses"
-msgstr ""
+msgstr "Analize dependente"
 
 # File: bika.lims/bika/lims/content/method.py, line: 126
 #: bika/lims/content/method.py:131
@@ -2420,7 +2421,7 @@ msgstr ""
 #: bika/lims/browser/client/views/analysisprofiles.py:42
 #: bika/lims/browser/client/views/artemplates.py:41
 msgid "Description"
-msgstr ""
+msgstr "Descriere"
 
 # File: bika.lims/bika/lims/content/instrumentcalibration.py, line: 79
 #: bika/lims/content/instrumentcalibration.py:84
@@ -6583,6 +6584,7 @@ msgstr ""
 msgid "Technical description and instructions intended for analysts"
 msgstr ""
 
+# File: bika.lims/bika/lims/content/arimport.py, line: 180
 #: bika/lims/browser/sample/printform.py:279
 msgid "Temperature"
 msgstr ""
@@ -7932,7 +7934,7 @@ msgid "bika-frontpage-title"
 msgstr ""
 
 msgid "bika_manual_test"
-msgstr ""
+msgstr "Test manual Bika"
 
 # File: bika.lims/bika/lims/content/calculation.py, line: 61
 #. an analysis using this calculation is displayed.</p><p>To enter a
@@ -7967,7 +7969,7 @@ msgstr ""
 #. ${b} ${d}, ${Y} ${I}:${M} ${p}
 #: ./TranslationServiceTool.py
 msgid "date_format_long"
-msgstr ""
+msgstr "${Y}-${m}-${d} ${I}:${M} ${p}"
 
 # File: TranslationServiceTool.py, line: -1
 #. The variables used here are the same as used in the strftime formating.
@@ -7978,13 +7980,13 @@ msgstr ""
 #. ${b} ${d}, ${Y}
 #: ./TranslationServiceTool.py
 msgid "date_format_short"
-msgstr ""
+msgstr "${Y}-${m}-${d}"
 
 #. Date format used with the datepicker jqueryui plugin.
 #. Please only use 'dd', 'mm', 'yy', '-', '/', '.' in this string.
 #. Default: "mm/dd/yy"
 msgid "date_format_short_datepicker"
-msgstr ""
+msgstr "aa-ll-zz"
 
 # File: bika.lims/bika/lims/browser/templates/referencesample_view.pt, line:
 # 124
@@ -8119,7 +8121,7 @@ msgstr ""
 #. ${I}:${M} ${p}
 #: ./TranslationServiceTool.py
 msgid "time_format"
-msgstr ""
+msgstr "${I}:${M} ${p}"
 
 # File: bika.lims/bika/lims/browser/templates/header_table.pt, line: 37
 #. Default: "Required"

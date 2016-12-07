@@ -3,12 +3,13 @@
 # alireza mashayekhi <alireza.mashayekhi@gmail.com>, 2015
 # arma <arma4c@gmail.com>, 2013
 # arma <arma4c@gmail.com>, 2013
+# Mohammad Javad Danesh <daneshy@gmail.com>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2016-12-07 11:33+0000\n"
-"PO-Revision-Date: 2015-08-27 15:11+0000\n"
-"Last-Translator: alireza mashayekhi <alireza.mashayekhi@gmail.com>\n"
+"POT-Creation-Date: 2016-12-07 17:21+0000\n"
+"PO-Revision-Date: 2016-04-10 09:24+0000\n"
+"Last-Translator: Mohammad Javad Danesh <daneshy@gmail.com>\n"
 "Language-Team: Persian (http://www.transifex.com/bikalabs/bika-lims/language/fa/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -6586,9 +6587,10 @@ msgstr ""
 msgid "Technical description and instructions intended for analysts"
 msgstr ""
 
+# File: bika.lims/bika/lims/content/arimport.py, line: 180
 #: bika/lims/browser/sample/printform.py:279
 msgid "Temperature"
-msgstr ""
+msgstr "دما"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 132

@@ -8,7 +8,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2016-12-07 11:33+0000\n"
+"POT-Creation-Date: 2016-12-07 17:21+0000\n"
 "PO-Revision-Date: 2015-08-31 22:15+0000\n"
 "Last-Translator: Yildiz Oezkan <perry@wysiwyg.ch>\n"
 "Language-Team: Turkish (Turkey) (http://www.transifex.com/bikalabs/bika-lims/language/tr_TR/)\n"
@@ -6588,9 +6588,10 @@ msgstr ""
 msgid "Technical description and instructions intended for analysts"
 msgstr "Analistlere yönelik teknik açıklama ve talimatlar"
 
+# File: bika.lims/bika/lims/content/arimport.py, line: 180
 #: bika/lims/browser/sample/printform.py:279
 msgid "Temperature"
-msgstr ""
+msgstr "Sıcaklık"
 
 # File: bika.lims/bika/lims/browser/analysisrequest/analysisrequests.py, line:
 # 132
