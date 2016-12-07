@@ -120,3 +120,8 @@ WORKSHEET_LAYOUT_OPTIONS = DisplayList((
     ('1', _('Classic')),
     ('2', _('Transposed')),
 ))
+MULTI_VERIFICATION_TYPE = DisplayList((
+    ('self_multi_enabled', _('Allow same user to verify multiple times')),
+    ('self_multi_not_cons', _('Allow same user to verify multiple times, but not consecutively')),
+    ('self_multi_disabled', _('Disable multi-verification for the same user')),
+))
