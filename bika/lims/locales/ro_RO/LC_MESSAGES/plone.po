@@ -1,405 +1,401 @@
 #
 # Translators:
+# corneliu.e <corneliueva@yahoo.com>, 2016
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2015-11-20 09:41+0000\n"
-"PO-Revision-Date: 2015-06-11 08:18+0000\n"
-"Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
-"Language-Team: Esperanto (http://www.transifex.com/bikalabs/bika-lims/language/eo/)\n"
+"POT-Creation-Date: 2016-12-07 17:21+0000\n"
+"PO-Revision-Date: 2016-05-30 17:45+0000\n"
+"Last-Translator: corneliu.e <corneliueva@yahoo.com>\n"
+"Language-Team: Romanian (Romania) (http://www.transifex.com/bikalabs/bika-lims/language/ro_RO/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=3; plural=(n==1?0:(((n%100>19)||((n%100==0)&&(n!=0)))?2:1));\n"
 "Language-Code: en\n"
 "Language-Name: English\n"
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: plone\n"
-"Language: eo\n"
+"Language: ro_RO\n"
 
 msgid "AR Imports"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/ARPriorities.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/ARPriorities.xml
+#: bika/lims/profiles/default/types/ARPriorities.xml
 msgid "AR Priorities"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/ARTemplate.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/ARTemplate.xml
+#: bika/lims/profiles/default/types/ARTemplate.xml
 msgid "AR Template"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/ARTemplates.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/ARTemplates.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/ARTemplates.xml
+#: bika/lims/profiles/default/types/Client.xml
 msgid "AR Templates"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/ARReport.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/ARReport.xml
+#: bika/lims/profiles/default/types/ARReport.xml
 msgid "ARReport"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Worksheet.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Worksheet.xml
+#: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Analyses"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Worksheet.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Worksheet.xml
+#: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Blank Reference"
-msgstr ""
+msgstr "Adaugă referință goală"
 
 # File: bika.lims/bika/lims/profiles/default/types/Worksheet.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Worksheet.xml
+#: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Control Reference"
-msgstr ""
+msgstr "Adaugă referință de control"
 
 # File: bika.lims/bika/lims/profiles/default/types/Worksheet.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Worksheet.xml
+#: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Duplicate"
-msgstr ""
+msgstr "Adaugă duplicat"
 
 # File: bika.lims/bika/lims/profiles/default/types/ReportFolder.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/ReportFolder.xml
+#: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "Administration"
-msgstr ""
+msgstr "Administrare"
 
 # File: bika.lims/bika/lims/profiles/default/types/ReferenceSample.xml, line:
 # -1
 # File: bika.lims/bika/lims/profiles/default/types/Sample.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/ReferenceSample.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Sample.xml
+#: bika/lims/profiles/default/types/ReferenceSample.xml
+#: bika/lims/profiles/default/types/Sample.xml
 msgid "Analyses"
-msgstr ""
+msgstr "Analize"
 
 # File: bika.lims/bika/lims/profiles/default/types/Analysis.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Analysis.xml
+#: bika/lims/profiles/default/types/Analysis.xml
 msgid "Analysis"
-msgstr ""
+msgstr "Analiză"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisCategories.xml,
 # line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/AnalysisCategories.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/AnalysisCategories.xml
 msgid "Analysis Categories"
-msgstr ""
+msgstr "Categorii analize"
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisCategory.xml, line:
 # -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/AnalysisCategory.xml
+#: bika/lims/profiles/default/types/AnalysisCategory.xml
 msgid "Analysis Category"
-msgstr ""
+msgstr "Categorie analiză"
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisProfile.xml, line:
 # -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/AnalysisProfile.xml
+#: bika/lims/profiles/default/types/AnalysisProfile.xml
 msgid "Analysis Profile"
-msgstr ""
+msgstr "Profil analiză"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisProfiles.xml, line:
 # -1
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/AnalysisProfiles.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/AnalysisProfiles.xml
+#: bika/lims/profiles/default/types/Client.xml
 msgid "Analysis Profiles"
-msgstr ""
+msgstr "Profile analize"
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
 # -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Analysis Request"
-msgstr ""
+msgstr "Cerere analiză"
 
 # File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisRequestsFolder.xml,
 # line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Batch.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/actions.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/AnalysisRequestsFolder.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Batch.xml
+#: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/types/AnalysisRequestsFolder.xml
+#: bika/lims/profiles/default/types/Batch.xml
 msgid "Analysis Requests"
-msgstr ""
+msgstr "Cereri analize"
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisService.xml, line:
 # -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/AnalysisService.xml
+#: bika/lims/profiles/default/types/AnalysisService.xml
 msgid "Analysis Service"
-msgstr ""
+msgstr "Serviciu analiză"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisServices.xml, line:
 # -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/AnalysisServices.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/AnalysisServices.xml
 msgid "Analysis Services"
-msgstr ""
+msgstr "Servicii analize"
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisSpec.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/AnalysisSpec.xml
+#: bika/lims/profiles/default/types/AnalysisSpec.xml
 msgid "Analysis Specification"
-msgstr ""
+msgstr "Specificație analiză"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisSpecs.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/AnalysisSpecs.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/AnalysisSpecs.xml
+#: bika/lims/profiles/default/types/Client.xml
 msgid "Analysis Specifications"
-msgstr ""
+msgstr "Specificații analize"
 
 # File: bika.lims/bika/lims/profiles/default/types/Attachment.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Attachment.xml
+#: bika/lims/profiles/default/types/Attachment.xml
 msgid "Attachment"
-msgstr ""
+msgstr "Atașament"
 
 # File: bika.lims/bika/lims/profiles/default/types/AttachmentType.xml, line:
 # -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/AttachmentType.xml
+#: bika/lims/profiles/default/types/AttachmentType.xml
 msgid "Attachment Type"
-msgstr ""
+msgstr "Tip atașament"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/AttachmentTypes.xml, line:
 # -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/AttachmentTypes.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/AttachmentTypes.xml
 msgid "Attachment Types"
-msgstr ""
+msgstr "Tipuri atașamente"
 
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/types/Client.xml
 msgid "Attachments"
-msgstr ""
+msgstr "Atașamente"
 
 # File: bika.lims/bika/lims/profiles/default/types/Batch.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Batch.xml
+#: bika/lims/profiles/default/types/Batch.xml
 msgid "Batch"
-msgstr ""
+msgstr "Lot"
 
 # File: bika.lims/bika/lims/profiles/default/types/Batch.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Batch.xml
+#: bika/lims/profiles/default/types/Batch.xml
 msgid "Batch Book"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/BatchLabel.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/BatchLabel.xml
+#: bika/lims/profiles/default/types/BatchLabel.xml
 msgid "Batch Label"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/BatchLabels.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/BatchLabels.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/BatchLabels.xml
 msgid "Batch Labels"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/BatchFolder.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/BatchFolder.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/types/BatchFolder.xml
+#: bika/lims/profiles/default/types/Client.xml
 msgid "Batches"
-msgstr ""
+msgstr "Loturi"
 
 # File: bika.lims/bika/lims/profiles/default/types/BikaSetup.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/BikaSetup.xml
+#: bika/lims/profiles/default/types/BikaSetup.xml
 msgid "Bika Setup"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Calculation.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Calculation.xml
+#: bika/lims/profiles/default/types/Calculation.xml
 msgid "Calculation"
-msgstr ""
+msgstr "Calcul"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Calculations.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Calculations.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Calculations.xml
 msgid "Calculations"
-msgstr ""
+msgstr "Calcule"
 
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Instrument.xml
+#: bika/lims/profiles/default/types/Instrument.xml
 msgid "Calibration Certificates"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Instrument.xml
+#: bika/lims/profiles/default/types/Instrument.xml
 msgid "Calibrations"
-msgstr ""
+msgstr "Calibrări"
 
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/types/Client.xml
 msgid "Client"
-msgstr ""
+msgstr "Client"
 
 # File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/ClientFolder.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/actions.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/ClientFolder.xml
+#: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/types/ClientFolder.xml
 msgid "Clients"
-msgstr ""
+msgstr "Clienți"
 
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Supplier.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Client.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Supplier.xml
+#: bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/types/Supplier.xml
 msgid "Contacts"
-msgstr ""
+msgstr "Contacte"
 
 # File: bika.lims/bika/lims/profiles/default/types/Container.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Container.xml
+#: bika/lims/profiles/default/types/Container.xml
 msgid "Container"
-msgstr ""
+msgstr "Container"
 
 # File: bika.lims/bika/lims/profiles/default/types/ContainerType.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/ContainerType.xml
+#: bika/lims/profiles/default/types/ContainerType.xml
 msgid "Container Type"
-msgstr ""
+msgstr "Tip container"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/ContainerTypes.xml, line:
 # -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/ContainerTypes.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/ContainerTypes.xml
 msgid "Container Types"
-msgstr ""
+msgstr "Tipuri containere"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Containers.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Containers.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Containers.xml
 msgid "Containers"
-msgstr ""
+msgstr "Containere"
 
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Create Invoice"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Department.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Department.xml
+#: bika/lims/profiles/default/types/Department.xml
 msgid "Department"
-msgstr ""
+msgstr "Departament"
 
 # File: bika.lims/bika/lims/profiles/default/types/Departments.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Departments.xml
+#: bika/lims/profiles/default/types/Departments.xml
 msgid "Departments"
-msgstr ""
+msgstr "Departamente"
 
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Instrument.xml
+#: bika/lims/profiles/default/types/Instrument.xml
 msgid "Documents"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/DuplicateAnalysis.xml,
 # line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/DuplicateAnalysis.xml
+#: bika/lims/profiles/default/types/DuplicateAnalysis.xml
 msgid "Duplicate Analysis"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Pricelist.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Pricelist.xml
+#: bika/lims/profiles/default/types/Pricelist.xml
 msgid "Email pricelist"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Worksheet.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Worksheet.xml
+#: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Export"
-msgstr ""
+msgstr "Exportă"
 
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/InvoiceBatch.xml
+#: bika/lims/profiles/default/types/InvoiceBatch.xml
 msgid "Export Batch To CSV"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/actions.xml
 msgid "Extracts"
-msgstr ""
+msgstr "Extrage"
 
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/types/Client.xml
 msgid "Imports"
-msgstr ""
+msgstr "Importă"
 
 # File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Instrument.xml
+#: bika/lims/profiles/default/types/Instrument.xml
 msgid "Instrument"
-msgstr ""
+msgstr "Instrument"
 
 # File: bika.lims/bika/lims/profiles/default/types/InstrumentType.xml, line:
 # -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/InstrumentType.xml
+#: bika/lims/profiles/default/types/InstrumentType.xml
 msgid "Instrument Type"
-msgstr ""
+msgstr "Tip instrument"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/InstrumentTypes.xml, line:
 # -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/InstrumentTypes.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/InstrumentTypes.xml
 msgid "Instrument Types"
-msgstr ""
+msgstr "Tipuri instrumente"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/InstrumentType.xml, line:
 # -1
 # File: bika.lims/bika/lims/profiles/default/types/Instruments.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/InstrumentType.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Instruments.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/InstrumentType.xml
+#: bika/lims/profiles/default/types/Instruments.xml
 msgid "Instruments"
-msgstr ""
+msgstr "Instrumente"
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
 # -1
 # File: bika.lims/bika/lims/profiles/default/types/Invoice.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Invoice.xml
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/Invoice.xml
 msgid "Invoice"
-msgstr ""
-
-# File: bika.lims/bika/lims/profiles/default/types/InvoiceFolder.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/InvoiceFolder.xml
-msgid "Invoices"
-msgstr ""
+msgstr "Factură"
 
 # File: bika.lims/bika/lims/profiles/default/types/LabContact.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/LabContact.xml
+#: bika/lims/profiles/default/types/LabContact.xml
 msgid "Lab Contact"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/LabContacts.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/LabContacts.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/LabContacts.xml
 msgid "Lab Contacts"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/controlpanel.xml
 msgid "Lab Departments"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/LabProducts.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/LabProducts.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/LabProducts.xml
 msgid "Lab Products"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Laboratory.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Laboratory.xml
+#: bika/lims/profiles/default/types/Laboratory.xml
 msgid "Laboratory"
-msgstr ""
+msgstr "Laborator"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/controlpanel.xml
 msgid "Laboratory Information"
 msgstr ""
 
@@ -408,9 +404,9 @@ msgstr ""
 # File: bika.lims/bika/lims/profiles/default/types/Sample.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/SamplePartition.xml, line:
 # -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Sample.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/SamplePartition.xml
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/Sample.xml
+#: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Large Sticker"
 msgstr ""
 
@@ -420,158 +416,148 @@ msgstr ""
 # -1
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisService.xml, line:
 # -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/AnalysisProfile.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/AnalysisService.xml
+#: bika/lims/profiles/default/types/AnalysisProfile.xml
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/AnalysisService.xml
 msgid "Log"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Contact.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/LabContact.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Contact.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/LabContact.xml
+#: bika/lims/profiles/default/types/Contact.xml
+#: bika/lims/profiles/default/types/LabContact.xml
 msgid "Login details"
-msgstr ""
+msgstr "Detalii autentificare"
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
 # -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Manage Analyses"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
 # -1
 # File: bika.lims/bika/lims/profiles/default/types/Worksheet.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Worksheet.xml
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Manage Results"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Manufacturer.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Manufacturer.xml
+#: bika/lims/profiles/default/types/Manufacturer.xml
 msgid "Manufacturer"
-msgstr ""
+msgstr "Producător"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Manufacturers.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Manufacturers.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Manufacturers.xml
 msgid "Manufacturers"
-msgstr ""
+msgstr "Producători"
 
 # File: bika.lims/bika/lims/profiles/default/types/Method.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Method.xml
+#: bika/lims/profiles/default/types/Method.xml
 msgid "Method"
-msgstr ""
+msgstr "Metodă"
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Methods.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Methods.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Methods.xml
 msgid "Methods"
-msgstr ""
+msgstr "Metode"
 
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/types/Client.xml
 msgid "Orders"
-msgstr ""
+msgstr "Comenzi"
 
 # File: bika.lims/bika/lims/profiles/default/types/Preservation.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Preservation.xml
+#: bika/lims/profiles/default/types/Preservation.xml
 msgid "Preservation"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Preservations.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Preservations.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Preservations.xml
 msgid "Preservations"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Pricelist.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Pricelist.xml
+#: bika/lims/profiles/default/types/Pricelist.xml
 msgid "Pricelist"
-msgstr ""
+msgstr "Listă de prețuri"
 
 # File: bika.lims/bika/lims/profiles/default/types/PricelistFolder.xml, line:
 # -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/PricelistFolder.xml
+#: bika/lims/profiles/default/types/PricelistFolder.xml
 msgid "Pricelists"
-msgstr ""
+msgstr "Liste de prețuri"
 
 # File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/actions.xml
 msgid "Prices"
-msgstr ""
+msgstr "Prețuri"
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
 # -1
 # File: bika.lims/bika/lims/profiles/default/types/Invoice.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/SupplyOrder.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Invoice.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/SupplyOrder.xml
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/Invoice.xml
+#: bika/lims/profiles/default/types/SupplyOrder.xml
 msgid "Print"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Pricelist.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Pricelist.xml
+#: bika/lims/profiles/default/types/Pricelist.xml
 msgid "Print pricelist"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/ReportFolder.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/ReportFolder.xml
+#: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "Productivity"
-msgstr ""
+msgstr "Productivitate"
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
 # -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Published results"
-msgstr ""
+msgstr "Rezultate publicate"
 
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Instrument.xml
+#: bika/lims/profiles/default/types/Instrument.xml
 msgid "QC Results"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/ReportFolder.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/ReportFolder.xml
+#: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "Quality Control"
-msgstr ""
-
-# File: bika.lims/bika/lims/profiles/default/types/QueryFolder.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/QueryFolder.xml
-msgid "Queries"
-msgstr ""
-
-# File: bika.lims/bika/lims/profiles/default/types/Query.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Query.xml
-msgid "Query"
-msgstr ""
+msgstr "Control calitate"
 
 # File: bika.lims/bika/lims/profiles/default/types/ReferenceAnalysis.xml,
 # line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/ReferenceAnalysis.xml
+#: bika/lims/profiles/default/types/ReferenceAnalysis.xml
 msgid "Reference Analysis"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/ReferenceDefinition.xml,
 # line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/ReferenceDefinition.xml
+#: bika/lims/profiles/default/types/ReferenceDefinition.xml
 msgid "Reference Definition"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/ReferenceDefinitions.xml,
 # line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/ReferenceDefinitions.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/ReferenceDefinitions.xml
 msgid "Reference Definitions"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/ReferenceSample.xml, line:
 # -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/ReferenceSample.xml
+#: bika/lims/profiles/default/types/ReferenceSample.xml
 msgid "Reference Sample"
 msgstr ""
 
@@ -579,159 +565,159 @@ msgstr ""
 # File: bika.lims/bika/lims/profiles/default/types/ReferenceSamplesFolder.xml,
 # line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Supplier.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/actions.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/ReferenceSamplesFolder.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Supplier.xml
+#: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/types/ReferenceSamplesFolder.xml
+#: bika/lims/profiles/default/types/Supplier.xml
 msgid "Reference Samples"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/ReferenceSample.xml, line:
 # -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/ReferenceSample.xml
+#: bika/lims/profiles/default/types/ReferenceSample.xml
 msgid "Reference Values"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/RejectAnalysis.xml, line:
 # -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/RejectAnalysis.xml
+#: bika/lims/profiles/default/types/RejectAnalysis.xml
 msgid "Reject Analysis"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Report.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/actions.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Report.xml
+#: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/types/Report.xml
 msgid "Report"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/ReportFolder.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/ReportFolder.xml
+#: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "Reports"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
 # -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Results not requested"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Sample.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Sample.xml
+#: bika/lims/profiles/default/types/Sample.xml
 msgid "Sample"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/SampleCondition.xml, line:
 # -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/SampleCondition.xml
+#: bika/lims/profiles/default/types/SampleCondition.xml
 msgid "Sample Condition"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/SampleConditions.xml, line:
 # -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/SampleConditions.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/SampleConditions.xml
 msgid "Sample Conditions"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/SampleMatrices.xml, line:
 # -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/SampleMatrices.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/SampleMatrices.xml
 msgid "Sample Matrices"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/SampleMatrix.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/SampleMatrix.xml
+#: bika/lims/profiles/default/types/SampleMatrix.xml
 msgid "Sample Matrix"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/SamplePartition.xml, line:
 # -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/SamplePartition.xml
+#: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Sample Partition"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Sample.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Sample.xml
+#: bika/lims/profiles/default/types/Sample.xml
 msgid "Sample Partitions"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/SamplePoint.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/SamplePoint.xml
+#: bika/lims/profiles/default/types/SamplePoint.xml
 msgid "Sample Point"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/SamplePoints.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/SamplePoints.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/SamplePoints.xml
 msgid "Sample Points"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/SampleType.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/SampleType.xml
+#: bika/lims/profiles/default/types/SampleType.xml
 msgid "Sample Type"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/SampleTypes.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/SampleTypes.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/SampleTypes.xml
 msgid "Sample Types"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/types/Client.xml
 msgid "SamplePoints"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Batch.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/actions.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Batch.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/types/Batch.xml
+#: bika/lims/profiles/default/types/Client.xml
 msgid "Samples"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/SamplesFolder.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/SamplesFolder.xml
+#: bika/lims/profiles/default/types/SamplesFolder.xml
 msgid "SamplesFolder"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/SamplingDeviation.xml,
 # line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/SamplingDeviation.xml
+#: bika/lims/profiles/default/types/SamplingDeviation.xml
 msgid "Sampling Deviation"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/SamplingDeviations.xml,
 # line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/SamplingDeviations.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/SamplingDeviations.xml
 msgid "Sampling Deviations"
 msgstr ""
 
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/SRTemplate.xml
+#: bika/lims/profiles/default/types/SRTemplate.xml
 msgid "Sampling Round Template"
 msgstr ""
 
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Client.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/SRTemplates.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/types/SRTemplates.xml
 msgid "Sampling Round Templates"
 msgstr ""
 
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Client.xml
 msgid "Sampling Rounds"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Instrument.xml
+#: bika/lims/profiles/default/types/Instrument.xml
 msgid "Schedule"
 msgstr ""
 
@@ -740,108 +726,112 @@ msgstr ""
 # File: bika.lims/bika/lims/profiles/default/types/Sample.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/SamplePartition.xml, line:
 # -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Sample.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/SamplePartition.xml
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/Sample.xml
+#: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Small Sticker"
+msgstr ""
+
+#: bika/lims/profiles/default/types/InvoiceFolder.xml
+msgid "Statements"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/ReferenceSample.xml, line:
 # -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/ReferenceSample.xml
+#: bika/lims/profiles/default/types/ReferenceSample.xml
 msgid "Sticker"
 msgstr ""
 
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Sample.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/SamplePartition.xml
+#: bika/lims/profiles/default/types/AnalysisRequest.xml
+#: bika/lims/profiles/default/types/Sample.xml
+#: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Stickers preview"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/StorageLocation.xml, line:
 # -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/StorageLocation.xml
+#: bika/lims/profiles/default/types/StorageLocation.xml
 msgid "Storage Location"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/StorageLocations.xml, line:
 # -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/StorageLocations.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/StorageLocations.xml
 msgid "Storage Locations"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/SubGroup.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/SubGroup.xml
+#: bika/lims/profiles/default/types/SubGroup.xml
 msgid "Sub-group"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/SubGroups.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/SubGroups.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/SubGroups.xml
 msgid "Sub-groups"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Supplier.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Supplier.xml
+#: bika/lims/profiles/default/types/Supplier.xml
 msgid "Supplier"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/Suppliers.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/actions.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Suppliers.xml
+#: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/Suppliers.xml
 msgid "Suppliers"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/SupplyOrder.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/SupplyOrder.xml
+#: bika/lims/profiles/default/types/SupplyOrder.xml
 msgid "Supply Order"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/SupplyOrderFolder.xml,
 # line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/SupplyOrderFolder.xml
+#: bika/lims/profiles/default/types/SupplyOrderFolder.xml
 msgid "Supply Orders"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Instrument.xml
+#: bika/lims/profiles/default/types/Instrument.xml
 msgid "Validations"
 msgstr ""
 
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Client.xml
+#: bika/lims/profiles/default/types/Client.xml
 msgid "WINE-40: Do not move or remove this entry."
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/Worksheet.xml, line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/Worksheet.xml
+#: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Worksheet"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/types/WorksheetTemplate.xml,
 # line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/WorksheetTemplate.xml
+#: bika/lims/profiles/default/types/WorksheetTemplate.xml
 msgid "Worksheet Template"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/WorksheetTemplates.xml,
 # line: -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/controlpanel.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/WorksheetTemplates.xml
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/WorksheetTemplates.xml
 msgid "Worksheet Templates"
 msgstr ""
 
 # File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
 # File: bika.lims/bika/lims/profiles/default/types/WorksheetFolder.xml, line:
 # -1
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/actions.xml
-#: /home/campbell/repos/bika.lims/bika/lims/profiles/default/types/WorksheetFolder.xml
+#: bika/lims/profiles/default/actions.xml
+#: bika/lims/profiles/default/types/WorksheetFolder.xml
 msgid "Worksheets"
 msgstr ""
 
@@ -850,7 +840,7 @@ msgstr ""
 #. Default: "Activate"
 #: ../profiles/default/workflows/bika_inactive_workflow/definition.xml
 msgid "activate_transition_title"
-msgstr ""
+msgstr "Activează"
 
 # File:
 # ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
@@ -880,7 +870,7 @@ msgstr ""
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 #: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
 msgid "attach_transition_title"
-msgstr ""
+msgstr "Adaugă atașament"
 
 # File:
 # ../profiles/default/workflows/bika_cancellation_workflow/definition.xml,
@@ -888,14 +878,14 @@ msgstr ""
 #. Default: "Cancel"
 #: ../profiles/default/workflows/bika_cancellation_workflow/definition.xml
 msgid "cancel_transition_title"
-msgstr ""
+msgstr "Anulare"
 
 # File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
 # line: -1
 #. Default: "Close"
 #: ../profiles/default/workflows/bika_batch_workflow/definition.xml
 msgid "close_transition_title"
-msgstr ""
+msgstr "Închide"
 
 msgid "copy_to_new_transition_title"
 msgstr ""
@@ -905,7 +895,7 @@ msgstr ""
 #. Default: "Deactivate"
 #: ../profiles/default/workflows/bika_inactive_workflow/definition.xml
 msgid "deactivate_transition_title"
-msgstr ""
+msgstr "Dezactivează"
 
 # File: ../profiles/default/workflows/bika_order_workflow/definition.xml,
 # line: -1
@@ -959,46 +949,46 @@ msgid "label_schema_Accounting"
 msgstr ""
 
 msgid "label_schema_Address"
-msgstr ""
+msgstr "Adresă"
 
 msgid "label_schema_Analyses"
 msgstr ""
 
 msgid "label_schema_Bank details"
-msgstr ""
+msgstr "Detalii bancă"
 
 msgid "label_schema_Calculation"
-msgstr ""
+msgstr "Calcul"
 
 msgid "label_schema_Container and Preservation"
 msgstr ""
 
 msgid "label_schema_Dates"
-msgstr ""
+msgstr "Date"
 
 msgid "label_schema_Description"
-msgstr ""
+msgstr "Descriere"
 
 msgid "label_schema_Email Telephone Fax"
 msgstr ""
 
 msgid "label_schema_ID Server"
-msgstr ""
+msgstr "ID Server"
 
 msgid "label_schema_Labels"
-msgstr ""
+msgstr "Etichete"
 
 msgid "label_schema_Layout"
 msgstr ""
 
 msgid "label_schema_Location"
-msgstr ""
+msgstr "Locație"
 
 msgid "label_schema_Method"
-msgstr ""
+msgstr "Metodă"
 
 msgid "label_schema_Preferences"
-msgstr ""
+msgstr "Preferințe"
 
 msgid "label_schema_Publication preference"
 msgstr ""
@@ -1019,7 +1009,7 @@ msgid "label_schema_Sample Partitions"
 msgstr ""
 
 msgid "label_schema_Security"
-msgstr ""
+msgstr "Securitate"
 
 msgid "label_schema_Uncertainties"
 msgstr ""
@@ -1029,7 +1019,7 @@ msgstr ""
 #. Default: "Open"
 #: ../profiles/default/workflows/bika_batch_workflow/definition.xml
 msgid "open_transition_title"
-msgstr ""
+msgstr "Deschide"
 
 msgid "plone_manual_test"
 msgstr ""
@@ -1062,7 +1052,7 @@ msgstr ""
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 msgid "publish_transition_title"
-msgstr ""
+msgstr "Publică"
 
 #. Default: "Reassign"
 msgid "reassign_transition_title"
@@ -1149,15 +1139,15 @@ msgstr ""
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 #: ../profiles/default/workflows/bika_sample_worflow/definition.xml
 msgid "sample_transition_title"
-msgstr ""
+msgstr "Mostră"
 
 #. Default: "Save analyses"
 msgid "save_analyses_button_transition_title"
-msgstr ""
+msgstr "Salvează analizele"
 
 #. Default: "Save partitions"
 msgid "save_partitions_button_transition_title"
-msgstr ""
+msgstr "Salvează partițiile"
 
 #. Default: "Save selection"
 msgid "save_selection_button_transition_title"
@@ -1212,5 +1202,4 @@ msgstr ""
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 #: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
 msgid "verify_transition_title"
-msgstr ""
-
+msgstr "Verifică"
