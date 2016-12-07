@@ -192,6 +192,10 @@ def multi_department_to_labcontact(portal):
         if not obj.getDepartments():
             obj.setDepartments(obj.getDepartment())
 
+def multi-verification(portal):
+    
+    #Coming soon
+
 def removeUnusedIndexes(portal):
     bc = getToolByName(portal, 'bika_catalog', None)
     delIndexAndColumn(bc, 'getProfilesTitle')
