@@ -5,6 +5,13 @@
     i18n_domain="bika">
 
     <adapter
+      factory=".acquirefielddefaults.AcquireFieldDefaults"
+      provides="bika.lims.interfaces.IAcquireFieldDefaults"
+      for="bika.lims.interfaces.IAnalysisRequest"
+      name="DefaultAquireFieldDefaults"
+    />
+
+    <adapter
       factory=".widgetvisibility.ClientFieldWidgetVisibility"
       provides="bika.lims.interfaces.IATWidgetVisibility"
       for="bika.lims.interfaces.IAnalysisRequest"

@@ -48,6 +48,20 @@ schema = Organisation.schema.copy() + atapi.Schema((
             label=_("Member discount applies"),
         ),
     ),
+    atapi.StringField(
+        'CCEmails',
+        schemata = 'Preferences',
+        mode="rw",
+        widget=atapi.StringWidget(
+            label=_("CC Emails"),
+            description=_(
+                "Default Emails to CC all published ARs for this client"),
+            visible={
+                'edit': 'visible',
+                'view': 'visible',
+            },
+        ),
+    ),
     atapi.LinesField('EmailSubject',
         schemata = 'Preferences',
         default = ['ar', ],
