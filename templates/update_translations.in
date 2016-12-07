@@ -19,7 +19,7 @@ fi
 # Check if the plone.pot file is accessible
 if test ! -f $PLONE_POT; then
     echo "Plone translation template (plone.pot) not found in $PLONE_POT"
-    echo "Please install omeltte in your buildout: https://pypi.python.org/pypi/collective.recipe.omelette"
+    echo "Please install omlette in your buildout: https://pypi.python.org/pypi/collective.recipe.omelette"
     die "Plone POT not found"
 fi
 
@@ -49,7 +49,7 @@ function tx_push() {
     if has_tx; then
         cd $LOCALES
         echo "Transifex Push"
-        tx push -s -t
+        tx push -s -t --skip
     else
         die "Please install the Transifex Client first: $ pip install transifex-client"
     fi
@@ -58,15 +58,8 @@ function tx_push() {
 # Clean all generated .mo files
 find $LOCALES -name "*.mo" -delete
 
-# Pull Transifex?
-if has_tx; then
-    read -r -p "Pull Transifex? [N/y]" prompt
-    if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]; then
-        tx_pull
-    else
-        echo "Skipped Transifex Pull"
-    fi
-fi
+# Pull Transifex
+tx_pull
 
 # Generate the Bika Domain
 DOMAIN=bika
@@ -96,12 +89,5 @@ mv $LOCALES/$DOMAIN-tmp.pot $LOCALES/$DOMAIN.pot
 $I18N sync --pot $LOCALES/$DOMAIN.pot $LOCALES/*/LC_MESSAGES/$DOMAIN.po
 echo "Domain $DOMAIN [DONE]"
 
-# Push Transifex?
-if has_tx; then
-    read -r -p "Push Transifex? [N/y]" prompt
-    if [[ $prompt == "y" || $prompt == "Y" || $prompt == "yes" || $prompt == "Yes" ]]; then
-        tx_push
-    else
-        echo "Skipped Transifex Push"
-    fi
-fi
+# Push Transifex
+tx_push
