@@ -432,7 +432,8 @@ schema = BikaFolderSchema.copy() + Schema((
             label=_("Multi Verification type"),
             description = _(
                 "Choose type of multiple verification for the same user."
-                "This setting can enable/disable verifying/consecutively verifying more than once for the same user."),
+                "This setting can enable/disable verifying/consecutively verifying"
+                "more than once for the same user."),
             format='select',
         )
     ),
