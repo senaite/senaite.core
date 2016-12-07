@@ -42,6 +42,7 @@ function tx_pull() {
     else
         die "Please install the Transifex Client first: $ pip install transifex-client"
     fi
+    cd $BASE
 }
 
 # Transifex Push Function
@@ -53,6 +54,7 @@ function tx_push() {
     else
         die "Please install the Transifex Client first: $ pip install transifex-client"
     fi
+    cd $BASE
 }
 
 # Clean all generated .mo files
