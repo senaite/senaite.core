@@ -1261,7 +1261,7 @@ msgstr "Vor ${start_date}"
 
 #: bika/lims/browser/templates/dashboard.pt:356
 msgid "Biannual"
-msgstr "Zweijährlich"
+msgstr "Halbjährlich"
 
 # File: bika.lims/bika/lims/content/arpriority.py, line: 33
 #: bika/lims/content/arpriority.py:38
