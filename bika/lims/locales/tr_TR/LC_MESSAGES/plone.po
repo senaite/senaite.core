@@ -1,13 +1,14 @@
-#
+# --- PLEASE EDIT THE LINES BELOW CORRECTLY ---
+# SOME DESCRIPTIVE TITLE.
 # Translators:
 # Burak ÇAM <burakcam@akdeniz.edu.tr>, 2014
 # Burak ÇAM <burakcam@akdeniz.edu.tr>, 2014
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2016-12-07 17:21+0000\n"
-"PO-Revision-Date: 2015-06-11 08:18+0000\n"
-"Last-Translator: campbell_bika <campbell@bikalabs.com>\n"
+"POT-Creation-Date: 2016-12-07 18:27+0000\n"
+"PO-Revision-Date: 2016-12-07 17:36+0000\n"
+"Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
 "Language-Team: Turkish (Turkey) (http://www.transifex.com/bikalabs/bika-lims/language/tr_TR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -22,207 +23,148 @@ msgstr ""
 msgid "AR Imports"
 msgstr ""
 
-# File: bika.lims/bika/lims/profiles/default/types/ARPriorities.xml, line: -1
 #: bika/lims/profiles/default/types/ARPriorities.xml
 msgid "AR Priorities"
 msgstr "Analiz Talebi Öncelikleri"
 
-# File: bika.lims/bika/lims/profiles/default/types/ARTemplate.xml, line: -1
 #: bika/lims/profiles/default/types/ARTemplate.xml
 msgid "AR Template"
 msgstr "AR Şablonlar"
 
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/ARTemplates.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/ARTemplates.xml
 #: bika/lims/profiles/default/types/Client.xml
 msgid "AR Templates"
 msgstr "Analiz Talepleri -AR- Şablonları"
 
-# File: bika.lims/bika/lims/profiles/default/types/ARReport.xml, line: -1
 #: bika/lims/profiles/default/types/ARReport.xml
 msgid "ARReport"
 msgstr "Analiz Talebi Raporları"
 
-# File: bika.lims/bika/lims/profiles/default/types/Worksheet.xml, line: -1
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Analyses"
 msgstr "Analiz Ekle"
 
-# File: bika.lims/bika/lims/profiles/default/types/Worksheet.xml, line: -1
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Blank Reference"
 msgstr "Kör Referans Ekle"
 
-# File: bika.lims/bika/lims/profiles/default/types/Worksheet.xml, line: -1
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Control Reference"
 msgstr "Kontrol Referans Ekle"
 
-# File: bika.lims/bika/lims/profiles/default/types/Worksheet.xml, line: -1
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Duplicate"
 msgstr "Tekerrür Ekle"
 
-# File: bika.lims/bika/lims/profiles/default/types/ReportFolder.xml, line: -1
 #: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "Administration"
 msgstr "Yönetim"
 
-# File: bika.lims/bika/lims/profiles/default/types/ReferenceSample.xml, line:
-# -1
-# File: bika.lims/bika/lims/profiles/default/types/Sample.xml, line: -1
 #: bika/lims/profiles/default/types/ReferenceSample.xml
 #: bika/lims/profiles/default/types/Sample.xml
 msgid "Analyses"
 msgstr "Analizler"
 
-# File: bika.lims/bika/lims/profiles/default/types/Analysis.xml, line: -1
 #: bika/lims/profiles/default/types/Analysis.xml
 msgid "Analysis"
 msgstr "Analiz"
 
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/AnalysisCategories.xml,
-# line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/AnalysisCategories.xml
 msgid "Analysis Categories"
 msgstr "Analiz Kategorileri"
 
-# File: bika.lims/bika/lims/profiles/default/types/AnalysisCategory.xml, line:
-# -1
 #: bika/lims/profiles/default/types/AnalysisCategory.xml
 msgid "Analysis Category"
 msgstr "Analiz Kategorisi"
 
-# File: bika.lims/bika/lims/profiles/default/types/AnalysisProfile.xml, line:
-# -1
 #: bika/lims/profiles/default/types/AnalysisProfile.xml
 msgid "Analysis Profile"
 msgstr "Analiz Profili"
 
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/AnalysisProfiles.xml, line:
-# -1
-# File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/AnalysisProfiles.xml
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Analysis Profiles"
 msgstr "Analiz Profilleri"
 
-# File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
-# -1
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Analysis Request"
 msgstr "Analiz Talebi"
 
-# File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/AnalysisRequestsFolder.xml,
-# line: -1
-# File: bika.lims/bika/lims/profiles/default/types/Batch.xml, line: -1
 #: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/AnalysisRequestsFolder.xml
 #: bika/lims/profiles/default/types/Batch.xml
 msgid "Analysis Requests"
 msgstr "Analiz Talepleri"
 
-# File: bika.lims/bika/lims/profiles/default/types/AnalysisService.xml, line:
-# -1
 #: bika/lims/profiles/default/types/AnalysisService.xml
 msgid "Analysis Service"
 msgstr "Analiz Hizmeti"
 
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/AnalysisServices.xml, line:
-# -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/AnalysisServices.xml
 msgid "Analysis Services"
 msgstr "Analiz Hizmetleri"
 
-# File: bika.lims/bika/lims/profiles/default/types/AnalysisSpec.xml, line: -1
 #: bika/lims/profiles/default/types/AnalysisSpec.xml
 msgid "Analysis Specification"
 msgstr "Analiz Özellikleri"
 
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/AnalysisSpecs.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/AnalysisSpecs.xml
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Analysis Specifications"
 msgstr "Analiz Özellikleri"
 
-# File: bika.lims/bika/lims/profiles/default/types/Attachment.xml, line: -1
 #: bika/lims/profiles/default/types/Attachment.xml
 msgid "Attachment"
 msgstr "Eklenti"
 
-# File: bika.lims/bika/lims/profiles/default/types/AttachmentType.xml, line:
-# -1
 #: bika/lims/profiles/default/types/AttachmentType.xml
 msgid "Attachment Type"
 msgstr "Eklenti Türü"
 
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/AttachmentTypes.xml, line:
-# -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/AttachmentTypes.xml
 msgid "Attachment Types"
 msgstr "Eklenti Türleri"
 
-# File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Attachments"
 msgstr "Eklentiler"
 
-# File: bika.lims/bika/lims/profiles/default/types/Batch.xml, line: -1
 #: bika/lims/profiles/default/types/Batch.xml
 msgid "Batch"
 msgstr "Toplu İş"
 
-# File: bika.lims/bika/lims/profiles/default/types/Batch.xml, line: -1
 #: bika/lims/profiles/default/types/Batch.xml
 msgid "Batch Book"
 msgstr "Toplu İş Kitabı"
 
-# File: bika.lims/bika/lims/profiles/default/types/BatchLabel.xml, line: -1
 #: bika/lims/profiles/default/types/BatchLabel.xml
 msgid "Batch Label"
 msgstr "Toplu İş Etiketi"
 
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/BatchLabels.xml, line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/BatchLabels.xml
 msgid "Batch Labels"
 msgstr "Toplu İş Etiketleri"
 
-# File: bika.lims/bika/lims/profiles/default/types/BatchFolder.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 #: bika/lims/profiles/default/types/BatchFolder.xml
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Batches"
 msgstr "Toplu İşler"
 
-# File: bika.lims/bika/lims/profiles/default/types/BikaSetup.xml, line: -1
 #: bika/lims/profiles/default/types/BikaSetup.xml
 msgid "Bika Setup"
 msgstr "Bika Ayarları"
 
-# File: bika.lims/bika/lims/profiles/default/types/Calculation.xml, line: -1
 #: bika/lims/profiles/default/types/Calculation.xml
 msgid "Calculation"
 msgstr "Hesaplama"
 
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/Calculations.xml, line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Calculations.xml
 msgid "Calculations"
@@ -232,50 +174,37 @@ msgstr "Hesaplamalar"
 msgid "Calibration Certificates"
 msgstr ""
 
-# File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Calibrations"
 msgstr "Kalibrasyonlar"
 
-# File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Client"
 msgstr "Müşteri"
 
-# File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/ClientFolder.xml, line: -1
 #: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/ClientFolder.xml
 msgid "Clients"
 msgstr "Müşteriler"
 
-# File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/Supplier.xml, line: -1
 #: bika/lims/profiles/default/types/Client.xml
 #: bika/lims/profiles/default/types/Supplier.xml
 msgid "Contacts"
 msgstr "Yetkililer"
 
-# File: bika.lims/bika/lims/profiles/default/types/Container.xml, line: -1
 #: bika/lims/profiles/default/types/Container.xml
 msgid "Container"
 msgstr "Numune Kabı"
 
-# File: bika.lims/bika/lims/profiles/default/types/ContainerType.xml, line: -1
 #: bika/lims/profiles/default/types/ContainerType.xml
 msgid "Container Type"
 msgstr "Numune Kabı Türü"
 
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/ContainerTypes.xml, line:
-# -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/ContainerTypes.xml
 msgid "Container Types"
 msgstr "Numune Kabı Türleri"
 
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/Containers.xml, line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Containers.xml
 msgid "Containers"
@@ -285,12 +214,10 @@ msgstr "Numune Kapları"
 msgid "Create Invoice"
 msgstr ""
 
-# File: bika.lims/bika/lims/profiles/default/types/Department.xml, line: -1
 #: bika/lims/profiles/default/types/Department.xml
 msgid "Department"
 msgstr "Bölüm"
 
-# File: bika.lims/bika/lims/profiles/default/types/Departments.xml, line: -1
 #: bika/lims/profiles/default/types/Departments.xml
 msgid "Departments"
 msgstr "Bölümler"
@@ -299,18 +226,14 @@ msgstr "Bölümler"
 msgid "Documents"
 msgstr ""
 
-# File: bika.lims/bika/lims/profiles/default/types/DuplicateAnalysis.xml,
-# line: -1
 #: bika/lims/profiles/default/types/DuplicateAnalysis.xml
 msgid "Duplicate Analysis"
 msgstr "Tekerrür Analizi"
 
-# File: bika.lims/bika/lims/profiles/default/types/Pricelist.xml, line: -1
 #: bika/lims/profiles/default/types/Pricelist.xml
 msgid "Email pricelist"
 msgstr "Fiyat listesini e-posta gönder"
 
-# File: bika.lims/bika/lims/profiles/default/types/Worksheet.xml, line: -1
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Export"
 msgstr "Dışa aktar"
@@ -319,210 +242,147 @@ msgstr "Dışa aktar"
 msgid "Export Batch To CSV"
 msgstr ""
 
-# File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
 #: bika/lims/profiles/default/actions.xml
 msgid "Extracts"
 msgstr "Ekstraktlar"
 
-# File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Imports"
 msgstr "İçe Aktarılanlar"
 
-# File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Instrument"
 msgstr "Cihaz"
 
-# File: bika.lims/bika/lims/profiles/default/types/InstrumentType.xml, line:
-# -1
 #: bika/lims/profiles/default/types/InstrumentType.xml
 msgid "Instrument Type"
 msgstr "Cihaz türü"
 
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/InstrumentTypes.xml, line:
-# -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/InstrumentTypes.xml
 msgid "Instrument Types"
 msgstr "Cihaz Türleri"
 
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/InstrumentType.xml, line:
-# -1
-# File: bika.lims/bika/lims/profiles/default/types/Instruments.xml, line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/InstrumentType.xml
 #: bika/lims/profiles/default/types/Instruments.xml
 msgid "Instruments"
 msgstr "Cihazlar"
 
-# File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
-# -1
-# File: bika.lims/bika/lims/profiles/default/types/Invoice.xml, line: -1
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Invoice.xml
 msgid "Invoice"
 msgstr "Fatura"
 
-# File: bika.lims/bika/lims/profiles/default/types/LabContact.xml, line: -1
 #: bika/lims/profiles/default/types/LabContact.xml
 msgid "Lab Contact"
 msgstr "Lab Yetkilisi"
 
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/LabContacts.xml, line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/LabContacts.xml
 msgid "Lab Contacts"
 msgstr "Lab Yetkilileri"
 
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 msgid "Lab Departments"
 msgstr "Lab Bölümleri"
 
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/LabProducts.xml, line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/LabProducts.xml
 msgid "Lab Products"
 msgstr "Lab Ürünleri"
 
-# File: bika.lims/bika/lims/profiles/default/types/Laboratory.xml, line: -1
 #: bika/lims/profiles/default/types/Laboratory.xml
 msgid "Laboratory"
 msgstr "Laboratuvar"
 
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 msgid "Laboratory Information"
 msgstr "Laboratuvar Bilgisi"
 
-# File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
-# -1
-# File: bika.lims/bika/lims/profiles/default/types/Sample.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/SamplePartition.xml, line:
-# -1
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Sample.xml
 #: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Large Sticker"
 msgstr "Geniş Etiket"
 
-# File: bika.lims/bika/lims/profiles/default/types/AnalysisProfile.xml, line:
-# -1
-# File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
-# -1
-# File: bika.lims/bika/lims/profiles/default/types/AnalysisService.xml, line:
-# -1
 #: bika/lims/profiles/default/types/AnalysisProfile.xml
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/AnalysisService.xml
 msgid "Log"
 msgstr "Kayıt"
 
-# File: bika.lims/bika/lims/profiles/default/types/Contact.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/LabContact.xml, line: -1
 #: bika/lims/profiles/default/types/Contact.xml
 #: bika/lims/profiles/default/types/LabContact.xml
 msgid "Login details"
 msgstr "Oturum açma detayları"
 
-# File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
-# -1
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Manage Analyses"
 msgstr "Analizleri Yönet"
 
-# File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
-# -1
-# File: bika.lims/bika/lims/profiles/default/types/Worksheet.xml, line: -1
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Manage Results"
 msgstr "Sonuçları Yönet"
 
-# File: bika.lims/bika/lims/profiles/default/types/Manufacturer.xml, line: -1
 #: bika/lims/profiles/default/types/Manufacturer.xml
 msgid "Manufacturer"
 msgstr "Üretici"
 
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/Manufacturers.xml, line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Manufacturers.xml
 msgid "Manufacturers"
 msgstr "Üreticiler"
 
-# File: bika.lims/bika/lims/profiles/default/types/Method.xml, line: -1
 #: bika/lims/profiles/default/types/Method.xml
 msgid "Method"
 msgstr "Metot"
 
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/Methods.xml, line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Methods.xml
 msgid "Methods"
 msgstr "Metotlar"
 
-# File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Orders"
 msgstr "Siparişler"
 
-# File: bika.lims/bika/lims/profiles/default/types/Preservation.xml, line: -1
 #: bika/lims/profiles/default/types/Preservation.xml
 msgid "Preservation"
 msgstr "Muhafaza"
 
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/Preservations.xml, line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Preservations.xml
 msgid "Preservations"
 msgstr "Muhafaza"
 
-# File: bika.lims/bika/lims/profiles/default/types/Pricelist.xml, line: -1
 #: bika/lims/profiles/default/types/Pricelist.xml
 msgid "Pricelist"
 msgstr "Fiyat listesi"
 
-# File: bika.lims/bika/lims/profiles/default/types/PricelistFolder.xml, line:
-# -1
 #: bika/lims/profiles/default/types/PricelistFolder.xml
 msgid "Pricelists"
 msgstr "Fiyat Listeleri"
 
-# File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
 #: bika/lims/profiles/default/actions.xml
 msgid "Prices"
 msgstr "Fiyatlar"
 
-# File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
-# -1
-# File: bika.lims/bika/lims/profiles/default/types/Invoice.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/SupplyOrder.xml, line: -1
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Invoice.xml
 #: bika/lims/profiles/default/types/SupplyOrder.xml
 msgid "Print"
 msgstr "Yazdır"
 
-# File: bika.lims/bika/lims/profiles/default/types/Pricelist.xml, line: -1
 #: bika/lims/profiles/default/types/Pricelist.xml
 msgid "Print pricelist"
 msgstr "Fiyat Listesini yazdır"
 
-# File: bika.lims/bika/lims/profiles/default/types/ReportFolder.xml, line: -1
 #: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "Productivity"
 msgstr "Üretkenlik"
 
-# File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
-# -1
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Published results"
 msgstr "Yayınlanan Sonuçlar"
@@ -531,172 +391,120 @@ msgstr "Yayınlanan Sonuçlar"
 msgid "QC Results"
 msgstr ""
 
-# File: bika.lims/bika/lims/profiles/default/types/ReportFolder.xml, line: -1
 #: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "Quality Control"
 msgstr "Kalite Kontrol"
 
-# File: bika.lims/bika/lims/profiles/default/types/ReferenceAnalysis.xml,
-# line: -1
 #: bika/lims/profiles/default/types/ReferenceAnalysis.xml
 msgid "Reference Analysis"
 msgstr "Referans Analiz"
 
-# File: bika.lims/bika/lims/profiles/default/types/ReferenceDefinition.xml,
-# line: -1
 #: bika/lims/profiles/default/types/ReferenceDefinition.xml
 msgid "Reference Definition"
 msgstr "Referans Tanımı"
 
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/ReferenceDefinitions.xml,
-# line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/ReferenceDefinitions.xml
 msgid "Reference Definitions"
 msgstr "Referans Tanımları"
 
-# File: bika.lims/bika/lims/profiles/default/types/ReferenceSample.xml, line:
-# -1
 #: bika/lims/profiles/default/types/ReferenceSample.xml
 msgid "Reference Sample"
 msgstr "Referans Numune"
 
-# File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/ReferenceSamplesFolder.xml,
-# line: -1
-# File: bika.lims/bika/lims/profiles/default/types/Supplier.xml, line: -1
 #: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/ReferenceSamplesFolder.xml
 #: bika/lims/profiles/default/types/Supplier.xml
 msgid "Reference Samples"
 msgstr "Referans Numuneler"
 
-# File: bika.lims/bika/lims/profiles/default/types/ReferenceSample.xml, line:
-# -1
 #: bika/lims/profiles/default/types/ReferenceSample.xml
 msgid "Reference Values"
 msgstr "Referans Değerleri"
 
-# File: bika.lims/bika/lims/profiles/default/types/RejectAnalysis.xml, line:
-# -1
 #: bika/lims/profiles/default/types/RejectAnalysis.xml
 msgid "Reject Analysis"
 msgstr ""
 
-# File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/Report.xml, line: -1
 #: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/Report.xml
 msgid "Report"
 msgstr "Rapor"
 
-# File: bika.lims/bika/lims/profiles/default/types/ReportFolder.xml, line: -1
 #: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "Reports"
 msgstr "Raporlar"
 
-# File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
-# -1
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Results not requested"
 msgstr "Sonuç talep edilmedi"
 
-# File: bika.lims/bika/lims/profiles/default/types/Sample.xml, line: -1
 #: bika/lims/profiles/default/types/Sample.xml
 msgid "Sample"
 msgstr "Numune"
 
-# File: bika.lims/bika/lims/profiles/default/types/SampleCondition.xml, line:
-# -1
 #: bika/lims/profiles/default/types/SampleCondition.xml
 msgid "Sample Condition"
 msgstr "Numunenin Durumu"
 
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/SampleConditions.xml, line:
-# -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SampleConditions.xml
 msgid "Sample Conditions"
 msgstr "Numunenin Durumu"
 
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/SampleMatrices.xml, line:
-# -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SampleMatrices.xml
 msgid "Sample Matrices"
 msgstr "Numune Matrisleri"
 
-# File: bika.lims/bika/lims/profiles/default/types/SampleMatrix.xml, line: -1
 #: bika/lims/profiles/default/types/SampleMatrix.xml
 msgid "Sample Matrix"
 msgstr "Numune Matrisi"
 
-# File: bika.lims/bika/lims/profiles/default/types/SamplePartition.xml, line:
-# -1
 #: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Sample Partition"
 msgstr "Numune Bölümü"
 
-# File: bika.lims/bika/lims/profiles/default/types/Sample.xml, line: -1
 #: bika/lims/profiles/default/types/Sample.xml
 msgid "Sample Partitions"
 msgstr "Numune Bölümleri"
 
-# File: bika.lims/bika/lims/profiles/default/types/SamplePoint.xml, line: -1
 #: bika/lims/profiles/default/types/SamplePoint.xml
 msgid "Sample Point"
 msgstr "Örnekleme Noktası"
 
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/SamplePoints.xml, line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SamplePoints.xml
 msgid "Sample Points"
 msgstr "Örnekleme Noktaları"
 
-# File: bika.lims/bika/lims/profiles/default/types/SampleType.xml, line: -1
 #: bika/lims/profiles/default/types/SampleType.xml
 msgid "Sample Type"
 msgstr "Numune Türü"
 
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/SampleTypes.xml, line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SampleTypes.xml
 msgid "Sample Types"
 msgstr "Numune Türleri"
 
-# File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 #: bika/lims/profiles/default/types/Client.xml
 msgid "SamplePoints"
 msgstr "ÖrneklemeNoktası"
 
-# File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/Batch.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/Client.xml, line: -1
 #: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/Batch.xml
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Samples"
 msgstr "Numuneler"
 
-# File: bika.lims/bika/lims/profiles/default/types/SamplesFolder.xml, line: -1
 #: bika/lims/profiles/default/types/SamplesFolder.xml
 msgid "SamplesFolder"
 msgstr "NumuneKlasörü"
 
-# File: bika.lims/bika/lims/profiles/default/types/SamplingDeviation.xml,
-# line: -1
 #: bika/lims/profiles/default/types/SamplingDeviation.xml
 msgid "Sampling Deviation"
 msgstr "Örnekleme Sapması"
 
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/SamplingDeviations.xml,
-# line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SamplingDeviations.xml
 msgid "Sampling Deviations"
@@ -717,16 +525,10 @@ msgstr ""
 msgid "Sampling Rounds"
 msgstr ""
 
-# File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Schedule"
 msgstr "Planlama"
 
-# File: bika.lims/bika/lims/profiles/default/types/AnalysisRequest.xml, line:
-# -1
-# File: bika.lims/bika/lims/profiles/default/types/Sample.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/SamplePartition.xml, line:
-# -1
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Sample.xml
 #: bika/lims/profiles/default/types/SamplePartition.xml
@@ -737,8 +539,6 @@ msgstr "Küçük Etiket"
 msgid "Statements"
 msgstr ""
 
-# File: bika.lims/bika/lims/profiles/default/types/ReferenceSample.xml, line:
-# -1
 #: bika/lims/profiles/default/types/ReferenceSample.xml
 msgid "Sticker"
 msgstr "Etiket"
@@ -749,58 +549,42 @@ msgstr "Etiket"
 msgid "Stickers preview"
 msgstr ""
 
-# File: bika.lims/bika/lims/profiles/default/types/StorageLocation.xml, line:
-# -1
 #: bika/lims/profiles/default/types/StorageLocation.xml
 msgid "Storage Location"
 msgstr "Soğutucunun Yeri"
 
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/StorageLocations.xml, line:
-# -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/StorageLocations.xml
 msgid "Storage Locations"
 msgstr "Soğutucu Yerleri"
 
-# File: bika.lims/bika/lims/profiles/default/types/SubGroup.xml, line: -1
 #: bika/lims/profiles/default/types/SubGroup.xml
 msgid "Sub-group"
 msgstr "Alt-grup"
 
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/SubGroups.xml, line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SubGroups.xml
 msgid "Sub-groups"
 msgstr "Alt-gruplar"
 
-# File: bika.lims/bika/lims/profiles/default/types/Supplier.xml, line: -1
 #: bika/lims/profiles/default/types/Supplier.xml
 msgid "Supplier"
 msgstr "Tedarikçi"
 
-# File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/Suppliers.xml, line: -1
 #: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Suppliers.xml
 msgid "Suppliers"
 msgstr "Tedarikçiler"
 
-# File: bika.lims/bika/lims/profiles/default/types/SupplyOrder.xml, line: -1
 #: bika/lims/profiles/default/types/SupplyOrder.xml
 msgid "Supply Order"
 msgstr "Tedarikçiye Sipariş"
 
-# File: bika.lims/bika/lims/profiles/default/types/SupplyOrderFolder.xml,
-# line: -1
 #: bika/lims/profiles/default/types/SupplyOrderFolder.xml
 msgid "Supply Orders"
 msgstr "Malzeme Siparişleri"
 
-# File: bika.lims/bika/lims/profiles/default/types/Instrument.xml, line: -1
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Validations"
 msgstr "Validasyonlar"
@@ -809,49 +593,29 @@ msgstr "Validasyonlar"
 msgid "WINE-40: Do not move or remove this entry."
 msgstr ""
 
-# File: bika.lims/bika/lims/profiles/default/types/Worksheet.xml, line: -1
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Worksheet"
 msgstr "Çalışma"
 
-# File: bika.lims/bika/lims/profiles/default/types/WorksheetTemplate.xml,
-# line: -1
 #: bika/lims/profiles/default/types/WorksheetTemplate.xml
 msgid "Worksheet Template"
 msgstr "Çalışma Şablonu"
 
-# File: bika.lims/bika/lims/profiles/default/controlpanel.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/WorksheetTemplates.xml,
-# line: -1
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/WorksheetTemplates.xml
 msgid "Worksheet Templates"
 msgstr "Çalışma Şablonları"
 
-# File: bika.lims/bika/lims/profiles/default/actions.xml, line: -1
-# File: bika.lims/bika/lims/profiles/default/types/WorksheetFolder.xml, line:
-# -1
 #: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/WorksheetFolder.xml
 msgid "Worksheets"
 msgstr "Çalışmalar"
 
-# File: ../profiles/default/workflows/bika_inactive_workflow/definition.xml,
-# line: -1
 #. Default: "Activate"
 #: ../profiles/default/workflows/bika_inactive_workflow/definition.xml
 msgid "activate_transition_title"
 msgstr "Etkinleştir"
 
-# File:
-# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
-# line: -1
-# File:
-# ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml,
-# line: -1
-# File:
-# ../profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml,
-# line: -1
 #. Default: "Assign"
 #: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml
@@ -859,13 +623,6 @@ msgstr "Etkinleştir"
 msgid "assign_transition_title"
 msgstr "Sevk Et"
 
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File:
-# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
-# line: -1
 #. Default: "Add attachment"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
@@ -873,16 +630,11 @@ msgstr "Sevk Et"
 msgid "attach_transition_title"
 msgstr "Eklenti ekle"
 
-# File:
-# ../profiles/default/workflows/bika_cancellation_workflow/definition.xml,
-# line: -1
 #. Default: "Cancel"
 #: ../profiles/default/workflows/bika_cancellation_workflow/definition.xml
 msgid "cancel_transition_title"
 msgstr "İptal Et"
 
-# File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
-# line: -1
 #. Default: "Close"
 #: ../profiles/default/workflows/bika_batch_workflow/definition.xml
 msgid "close_transition_title"
@@ -891,25 +643,16 @@ msgstr "Kapat"
 msgid "copy_to_new_transition_title"
 msgstr "Yeni olarak kopyala"
 
-# File: ../profiles/default/workflows/bika_inactive_workflow/definition.xml,
-# line: -1
 #. Default: "Deactivate"
 #: ../profiles/default/workflows/bika_inactive_workflow/definition.xml
 msgid "deactivate_transition_title"
 msgstr "Pasifleştir"
 
-# File: ../profiles/default/workflows/bika_order_workflow/definition.xml,
-# line: -1
 #. Default: "Dispatch order"
 #: ../profiles/default/workflows/bika_order_workflow/definition.xml
 msgid "dispatch_transition_title"
 msgstr "Siparişi yönlendir"
 
-# File:
-# ../profiles/default/workflows/bika_referencesample_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
-# line: -1
 #. Default: "Dispose"
 #: ../profiles/default/workflows/bika_referencesample_workflow/definition.xml
 #: ../profiles/default/workflows/bika_sample_workflow/definition.xml
@@ -920,19 +663,12 @@ msgstr "Atık"
 msgid "duplicate_transition_title"
 msgstr "Tekerrür Oluştur"
 
-# File:
-# ../profiles/default/workflows/bika_referencesample_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
-# line: -1
 #. Default: "Expire"
 #: ../profiles/default/workflows/bika_referencesample_workflow/definition.xml
 #: ../profiles/default/workflows/bika_sample_workflow/definition.xml
 msgid "expire_transition_title"
 msgstr "Süresi dolan"
 
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
 #. Default: "Import"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 msgid "import_transition_title"
@@ -1015,8 +751,6 @@ msgstr "Güvenlik"
 msgid "label_schema_Uncertainties"
 msgstr "Belirsizlikler"
 
-# File: ../profiles/default/workflows/bika_batch_workflow/definition.xml,
-# line: -1
 #. Default: "Open"
 #: ../profiles/default/workflows/bika_batch_workflow/definition.xml
 msgid "open_transition_title"
@@ -1025,19 +759,11 @@ msgstr "Aç"
 msgid "plone_manual_test"
 msgstr "Plone Manuel Testi"
 
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
 #. Default: "Prepublish"
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 msgid "prepublish_transition_title"
 msgstr "Tekrar Yayımla"
 
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
-# line: -1
 #. Default: "Preserve"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
@@ -1045,10 +771,6 @@ msgstr "Tekrar Yayımla"
 msgid "preserve_transition_title"
 msgstr "Muhafaza Et"
 
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
 #. Default: "Publish"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
@@ -1059,12 +781,6 @@ msgstr "Yayınla"
 msgid "reassign_transition_title"
 msgstr "Tekrar Sevk Et"
 
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File: ../profiles/default/workflows/bika_sample_workflow/definition.xml,
-# line: -1
 #. Default: "Receive sample"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
@@ -1072,22 +788,11 @@ msgstr "Tekrar Sevk Et"
 msgid "receive_transition_title"
 msgstr "Numuneyi Kabul Et"
 
-# File:
-# ../profiles/default/workflows/bika_cancellation_workflow/definition.xml,
-# line: -1
 #. Default: "Reinstate"
 #: ../profiles/default/workflows/bika_cancellation_workflow/definition.xml
 msgid "reinstate_transition_title"
 msgstr "Eski Haline Getir"
 
-# File:
-# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
-# line: -1
-# File:
-# ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml,
-# line: -1
 #. Default: "Reject"
 #: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml
@@ -1095,20 +800,11 @@ msgstr "Eski Haline Getir"
 msgid "reject_transition_title"
 msgstr "Reddet"
 
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
 #. Default: "Republish"
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
 msgid "republish_transition_title"
 msgstr "Tekrar Yayınla"
 
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File:
-# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
-# line: -1
 #. Default: "Retract"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
@@ -1116,8 +812,6 @@ msgstr "Tekrar Yayınla"
 msgid "retract_transition_title"
 msgstr "Geri Çek"
 
-# File: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml,
-# line: -1
 #. Default: "Retract worksheet"
 #: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml
 msgid "retract_worksheet_transition_title"
@@ -1129,12 +823,6 @@ msgstr "İş Emrini Geri Çek"
 msgid "revert_transition_title"
 msgstr "Geri Çek"
 
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File: ../profiles/default/workflows/bika_sample_worflow/definition.xml,
-# line: -1
 #. Default: "Sample"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
@@ -1154,20 +842,11 @@ msgstr "Numune Bölümlerini Kaydet"
 msgid "save_selection_button_transition_title"
 msgstr "Seçilenleri Kaydet"
 
-# File: ../profiles/default/workflows/bika_arimport_workflow/definition.xml,
-# line: -1
 #. Default: "Submit ARImport"
 #: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
 msgid "submit_arimport_transition_title"
 msgstr "Analiz Talebi İçe Aktarımını Gönder"
 
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File:
-# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
-# line: -1
 #. Default: "Submit for verification"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
@@ -1175,15 +854,6 @@ msgstr "Analiz Talebi İçe Aktarımını Gönder"
 msgid "submit_transition_title"
 msgstr "Doğrulama için gönder"
 
-# File:
-# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
-# line: -1
-# File:
-# ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml,
-# line: -1
-# File:
-# ../profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml,
-# line: -1
 #. Default: "Remove"
 #: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml
@@ -1191,13 +861,6 @@ msgstr "Doğrulama için gönder"
 msgid "unassign_transition_title"
 msgstr "Kaldır"
 
-# File: ../profiles/default/workflows/bika_analysis_workflow/definition.xml,
-# line: -1
-# File: ../profiles/default/workflows/bika_ar_workflow/definition.xml, line:
-# -1
-# File:
-# ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml,
-# line: -1
 #. Default: "Verify"
 #: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml
