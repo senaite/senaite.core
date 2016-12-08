@@ -1869,6 +1869,7 @@ class AnalysisRequest(BaseFolder):
         """ return True if any analyses are late """
         workflow = getToolByName(self, 'portal_workflow')
         review_state = workflow.getInfoFor(self, 'review_state', '')
+        resultdate = 0
         if review_state in ['to_be_sampled', 'to_be_preserved',
                             'sample_due', 'published']:
             return False
