@@ -2,6 +2,7 @@
     xmlns="http://namespaces.zope.org/zope"
     xmlns:browser="http://namespaces.zope.org/browser"
     xmlns:i18n="http://namespaces.zope.org/i18n"
+    xmlns:monkey="http://namespaces.plone.org/monkey"
     i18n_domain="bika">
 
     <adapter
@@ -84,5 +85,26 @@
       for="bika.lims.interfaces.IClient"
       name="HideClientDiscountFields"
     />
+
+    <adapter name='bika.lims.IHaveIdentifiersExtender' factory=".identifiers.IHaveIdentifiersSchemaExtender"/>
+    <adapter name='bika.lims.IHaveIdentifiersModifier' factory=".identifiers.IHaveIdentifiersSchemaModifier"/>
+
+    <adapter factory=".identifiers.IdentifiersIndexer" name="Identifiers"/>
+
+    <browser:page
+      for="*"
+      name="getidentifiertypes"
+      class="bika.lims.adapters.identifiers.ajaxGetIdentifierTypes"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <monkey:patch
+      description="Allow Identifiers to be included in SearchableText"
+      class="Products.Archetypes.BaseObject.BaseObject"
+      original="SearchableText"
+      replacement=".identifiers.SearchableText"
+      preserveOriginal="True"
+     />
 
 </configure>
