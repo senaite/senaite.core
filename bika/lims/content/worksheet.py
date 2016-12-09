@@ -757,7 +757,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                         success, message = doActionFor(analysis, 'verify')
                         if not success:
                             # If failed, restore to the previous number
-                            analysis.setNumberOfVerifications(numvers)
+                            analysis.setNumberOfVerifications(nmvers)
                 else:
                     doActionFor(analysis, 'verify')
 
