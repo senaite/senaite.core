@@ -30,8 +30,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2016-12-09 15:01+0000\n"
-"PO-Revision-Date: 2016-12-09 14:58+0000\n"
+"POT-Creation-Date: 2016-12-09 15:30+0000\n"
+"PO-Revision-Date: 2016-12-09 15:28+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
 "Language-Team: German (http://www.transifex.com/bikalabs/bika-lims/language/de/)\n"
 "MIME-Version: 1.0\n"
@@ -738,7 +738,7 @@ msgstr "Genehmigt von"
 
 #: bika/lims/content/instrument.py:206
 msgid "Asset Number"
-msgstr "Asset Nummer"
+msgstr "Prüfmittelnummer"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:562
 #: bika/lims/browser/samplinground/analysisrequests.py:205
@@ -4929,11 +4929,11 @@ msgstr "Die Modellnummer des Geräts"
 
 #: bika/lims/browser/analysisrequest/workflow.py:692
 msgid "The item %s can't be transitioned."
-msgstr ""
+msgstr "Die Artikel %s können nicht übergeleitet werden."
 
 #: bika/lims/browser/analysisrequest/workflow.py:705
 msgid "The item can't be transitioned."
-msgstr ""
+msgstr "Dieser Artikel kann nicht übergeleitet werden."
 
 #: bika/lims/content/samplinground.py:168
 msgid "The lab department responsible for the sampling round"
@@ -5451,7 +5451,7 @@ msgstr "Historie (Benutzer)"
 
 #: bika/lims/browser/contact.py:147
 msgid "User linked to this Contact"
-msgstr "Verknüpfter Benutzer zu diesem Kontakt"
+msgstr "Benutzer wurde zu diesem Kontakt verknüpft"
 
 #: bika/lims/browser/reports/administration_usershistory.py:183
 #: bika/lims/browser/reports/templates/administration_usershistory.pt:56
@@ -5836,14 +5836,14 @@ msgstr "Anhang fällig"
 #: bika/lims/browser/templates/bika-frontpage.pt:27
 #, fuzzy
 msgid "bika-frontpage-description"
-msgstr "bika-frontpage-Beschreibung"
+msgstr "Bika LIMS Arbeitsprozesse passen zu allen Labor Disziplinen und sind konform zum ISO 17025 Standard. Bika is Open Source, flexibel und erlaubt Anpassungen für Ihre speziellen Laboranforderungen."
 
 #. ${version} ${DYNAMIC_CONTENT}"
 #. Default: "<img src=\"${DYNAMIC_CONTENT}\" /> Welcome to Bika LIMS ${version} ${DYNAMIC_CONTENT}"
 #: bika/lims/browser/templates/bika-frontpage.pt:20
 #, fuzzy
 msgid "bika-frontpage-title"
-msgstr "bika-frontpage-Titel"
+msgstr "<img src=\\\"${DYNAMIC_CONTENT}\\\" /> Willkomen auf Bika LIMS ${version} ${DYNAMIC_CONTENT}"
 
 msgid "bika_manual_test"
 msgstr "Manuelle Prüfung"
@@ -5866,7 +5866,7 @@ msgstr ""
 
 #: bika/lims/browser/reports/administration_usershistory.py:148
 msgid "comment"
-msgstr "kommentar"
+msgstr "Kommentar"
 
 #: bika/lims/browser/batch/publish.py:118
 msgid "datalines"
@@ -5896,16 +5896,16 @@ msgstr "${d}.${m}.${Y}"
 #. Please only use 'dd', 'mm', 'yy', '-', '/', '.' in this string.
 #. Default: "mm/dd/yy"
 msgid "date_format_short_datepicker"
-msgstr "yy-mm-dd"
+msgstr "dd.mm.yy"
 
 #: bika/lims/browser/templates/referencesample_view.pt:124
 msgid "deactivate"
-msgstr "Deaktivieren"
+msgstr "deaktivieren"
 
 #. Default: "Analysis Request Priority"
 #: bika/lims/browser/templates/arpriority_add_form.pt:15
 msgid "heading_arpriority"
-msgstr "überschrift_priorität"
+msgstr "Priorität des Analyseauftrags"
 
 #: bika/lims/browser/dashboard.py:297
 msgid "inactive"
@@ -5913,17 +5913,17 @@ msgstr "inaktiv"
 
 #: bika/lims/skins/bika/attachments.pt:65
 msgid "keywords"
-msgstr "Schlüsselwürter"
+msgstr "Schlüsselwörter"
 
 #. Default: "Add to the following groups:"
 #: bika/lims/browser/templates/login_details.pt:269
 msgid "label_add_to_groups"
-msgstr "label_zu_gruppen_hinzufügen"
+msgstr "Zu den folgenden Gruppen hinzufügen:"
 
 #. Default: "Specification"
 #: bika/lims/browser/reports/selection_macros/select_analysisspecification.pt:3
 msgid "label_specification"
-msgstr "label_spezifikation"
+msgstr "Spezifikation"
 
 #: bika/lims/browser/analysis.py:43
 #: bika/lims/browser/referenceanalysis.py:51
@@ -6011,7 +6011,7 @@ msgstr ""
 #. ${I}:${M} ${p}
 #: ./TranslationServiceTool.py
 msgid "time_format"
-msgstr "${I}:${M} ${p}"
+msgstr "${H}:${M} ${Z}"
 
 #. Default: "Required"
 #: bika/lims/browser/templates/header_table.pt:39
