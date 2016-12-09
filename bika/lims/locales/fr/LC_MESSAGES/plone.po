@@ -7,10 +7,11 @@
 # CestPasFaux <rodriguesdossantos.vincent@gmail.com>, 2012
 # CestPasFaux <rodriguesdossantos.vincent@gmail.com>, 2012
 # Walter, 2015
+# Walter, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2016-12-07 18:27+0000\n"
+"POT-Creation-Date: 2016-12-09 14:39+0000\n"
 "PO-Revision-Date: 2016-12-07 17:36+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
 "Language-Team: French (http://www.transifex.com/bikalabs/bika-lims/language/fr/)\n"

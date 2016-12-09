@@ -4,8 +4,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2016-12-07 18:27+0000\n"
-"PO-Revision-Date: 2016-12-07 17:22+0000\n"
+"POT-Creation-Date: 2016-12-09 14:39+0000\n"
+"PO-Revision-Date: 2016-12-07 18:27+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
 "Language-Team: English (Spain) (http://www.transifex.com/bikalabs/bika-lims/language/en_ES/)\n"
 "MIME-Version: 1.0\n"
@@ -98,7 +98,7 @@ msgstr ""
 msgid "%s can't be transitioned."
 msgstr ""
 
-#: bika/lims/utils/analysisrequest.py:311
+#: bika/lims/utils/analysisrequest.py:312
 msgid "%s has been rejected"
 msgstr ""
 

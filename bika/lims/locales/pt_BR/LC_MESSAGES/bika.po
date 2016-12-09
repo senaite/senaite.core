@@ -14,18 +14,18 @@
 # Laboratório Clínico Veterinário, 2014
 # Laboratório Clínico Veterinário, 2014
 # MARCELO BONNET <mbonnet2002@yahoo.com>, 2015
-# PabloBF <pablobusattof@gmail.com>, 2014
 # PabloBF <pablobusattof@gmail.com>, 2014,2016
-# Renato Cruz <renato@baktron.com.br>, 2013,2015
+# PabloBF <pablobusattof@gmail.com>, 2014,2016
+# Renato Cruz <renato@baktron.com.br>, 2013,2015-2016
 # Renato Cruz <renatorlcruz@gmail.com>, 2015
 # Wesley Gabriel de Oliveira Leal <wesleygabriel@gmail.com>, 2013
 # Wesley Gabriel de Oliveira Leal <wesleygabriel@gmail.com>, 2013
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2016-12-07 18:27+0000\n"
-"PO-Revision-Date: 2016-12-07 17:22+0000\n"
-"Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
+"POT-Creation-Date: 2016-12-09 14:39+0000\n"
+"PO-Revision-Date: 2016-12-07 20:37+0000\n"
+"Last-Translator: Renato Cruz <renato@baktron.com.br>\n"
 "Language-Team: Portuguese (Brazil) (http://www.transifex.com/bikalabs/bika-lims/language/pt_BR/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -89,11 +89,11 @@ msgstr "${item}: ${part} está aguardando recebimento."
 
 #: bika/lims/browser/templates/bika_listing_table.pt:259
 msgid "${nr_items} Item"
-msgstr ""
+msgstr "${nr_items} Item"
 
 #: bika/lims/browser/templates/bika_listing_table.pt:256
 msgid "${nr_items} Items"
-msgstr ""
+msgstr "${nr_items} Itens"
 
 #: bika/lims/browser/reports/templates/productivity_samplereceivedvsreported.pt:36
 msgid "%"
@@ -117,9 +117,9 @@ msgstr "% Publicado"
 msgid "%s can't be transitioned."
 msgstr ""
 
-#: bika/lims/utils/analysisrequest.py:311
+#: bika/lims/utils/analysisrequest.py:312
 msgid "%s has been rejected"
-msgstr ""
+msgstr "%s foi rejeitada"
 
 #: bika/lims/exportimport/setupdata/__init__.py:35
 msgid "%s has no '%s' column."
