@@ -667,7 +667,7 @@ class Analysis(BaseContent):
         # Add interims to mapping
         for i in interims:
             if 'keyword' not in i:
-                continue;
+                continue
             try:
                 ivalue = float(i['value'])
                 mapping[i['keyword']] = ivalue
