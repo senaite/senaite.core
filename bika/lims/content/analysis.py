@@ -1176,7 +1176,8 @@ class Analysis(BaseContent):
             for event in review_history:
                 if event.get("action") == "verify":
                     return event.get("actor")
-        except WorkflowException:
+        except WorkflowException as msg:
+            logger.error("Error during getting last verifier from review_history... " + msg)
             return ''
 
     def guard_sample_transition(self):
