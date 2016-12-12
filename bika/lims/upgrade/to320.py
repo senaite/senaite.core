@@ -42,6 +42,9 @@ def upgrade(tool):
     """
     wf = getToolByName(portal, 'portal_workflow')
     wf.updateRoleMappings()
+    # Updating Verifications of Analysis field from integer to String.
+    multi_verification(portal)
+
     return True
 
 
@@ -106,7 +109,21 @@ def create_samplingcoordinator(portal):
     bc = getToolByName(portal, 'bika_catalog', None)
     if 'getScheduledSamplingSampler' not in bc.indexes():
         bc.addIndex('getScheduledSamplingSampler', 'FieldIndex')
-def multi-verification(portal):
-    
-    #Coming soon
+def multi_verification(portal):
+    """
+    Getting all analyses with review_state in to_be_verified and
+    adding "admin" as a verificator as many times as this analysis verified before.
+    """
+    ac = getToolByName(portal, 'portal_catalog', None)
+    objs = pc(portal_type="Analyses",review_state="to_be_verified")
+    for obj_brain in objs:
+        obj = obj_brain.getObject()
+        old_field = obj.Schema().get("NumberOfVerifications", None)
+        if old_field:
+            new_value=''
+            for n in range(0,old_field):
+                new_value+='admin'
+                if n<old_field:
+                    new_value+=','
+            obj.setVerificators(new_value)
 

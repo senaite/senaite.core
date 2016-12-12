@@ -754,7 +754,7 @@ class AnalysesView(BikaListingView):
                 if allowed and not obj.isUserAllowedToVerify(member):
                     after_icons.append(
                         "<img src='++resource++bika.lims.images/submitted-by-current-user.png' title='%s'/>" %
-                        (t(_("Cannot verify, submitted by current user")))
+                        (t(_("Cannot verify, submitted or verified by current user before")))
                         )
                 elif allowed:
                     if obj.getSubmittedBy() == member.getUser().getId():
