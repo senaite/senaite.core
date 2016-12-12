@@ -623,6 +623,13 @@ schema = BikaFolderSchema.copy() + Schema((
                            "Request is rejected.")
         ),
     ),
+    BooleanField(
+        'AllowDepartmentFiltering',
+        default=False,
+        widget=BooleanWidget(
+            label=_("Allow users to filter datas by department."),
+        )
+    ),
 ))
 
 schema['title'].validators = ()

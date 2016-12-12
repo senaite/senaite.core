@@ -262,7 +262,10 @@ class AnalysisServicesView(BikaListingView):
         It checks if the item can be added to the list depending on the
         department filter. If the analysis service is not assigned to a
         department, show it.
+        If department filtering is disabled in bika_setup, will return True.
         """
+        if not self.context.bika_setup.getAllowDepartmentFiltering():
+            return True
         # Gettin the department from analysis service
         obj_dep = obj.getDepartment()
         result = True

@@ -122,7 +122,8 @@ class DashboardView(BrowserView):
         """
         out = []
         sampenabled = self.context.bika_setup.getSamplingWorkflowEnabled()
-        cookie_dep_uid= self.request.get('filter_by_department_info', '').split(',')
+        filtering_allowed=self.context.bika_setup.getAllowDepartmentFiltering()
+        cookie_dep_uid= self.request.get('filter_by_department_info', '').split(',') if filtering_allowed else ''
 
         # Analysis Requests
         active_rs = ['to_be_sampled',
@@ -135,23 +136,30 @@ class DashboardView(BrowserView):
                      'attachment_due',
                      'verified']
         bc = getToolByName(self.context, "bika_catalog")
-        numars = len(bc(portal_type="AnalysisRequest",
-                        created=self.date_range,
-                        getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
-                        cancellation_state=['active',]))
-        numars += len(bc(portal_type="AnalysisRequest",
-                        review_state=active_rs,
-                        getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
-                        cancellation_state=['active',],
-                        created=self.base_date_range))
 
+        query_dic = {'portal_type':"AnalysisRequest",
+                     'created':self.date_range,
+                     'cancellation_state':['active']}
+        if filtering_allowed:
+            query_dic['getDepartmentUIDs'] = { "query":cookie_dep_uid,"operator":"or" }
+        numars = len(bc(query_dic))
+        query_dic = {'portal_type':"AnalysisRequest",
+                     'review_state':active_rs,
+                     'created':self.base_date_range,
+                     'cancellation_state':['active']}
+        if filtering_allowed:
+            query_dic['getDepartmentUIDs'] = { "query":cookie_dep_uid,"operator":"or" }
+        numars += len(bc(query_dic))
+        
         if (sampenabled):
             # Analysis Requests awaiting to be sampled or scheduled
             review_state = ['to_be_sampled',]
-            ars = len(bc(portal_type="AnalysisRequest",
-                         review_state=review_state,
-                         getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
-                         cancellation_state=['active',]))
+            query_dic = {'portal_type':"AnalysisRequest",
+                     'review_state':review_state,
+                     'cancellation_state':['active']}
+            if filtering_allowed:
+                query_dic['getDepartmentUIDs'] = { "query":cookie_dep_uid,"operator":"or" }
+            ars = len(bc(query_dic))
             ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
             ratio = str("%%.%sf" % 1) % ratio
             msg = _("To be sampled")
@@ -166,10 +174,12 @@ class DashboardView(BrowserView):
 
             # Analysis Requests awaiting to be preserved
             review_state = ['to_be_preserved',]
-            ars = len(bc(portal_type="AnalysisRequest",
-                         review_state=review_state,
-                         getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
-                         cancellation_state=['active',]))
+            query_dic = {'portal_type':"AnalysisRequest",
+                     'review_state':review_state,
+                     'cancellation_state':['active']}
+            if filtering_allowed:
+                query_dic['getDepartmentUIDs'] = { "query":cookie_dep_uid,"operator":"or" }
+            ars = len(bc(query_dic))
             ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
             ratio = str("%%.%sf" % 1) % ratio
             msg = _("To be preserved")
@@ -184,10 +194,12 @@ class DashboardView(BrowserView):
 
             # Analysis Requests awaiting to be sampled
             review_state = ['scheduled_sampling',]
-            ars = len(bc(portal_type="AnalysisRequest",
-                         review_state=review_state,
-                         getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
-                         cancellation_state=['active',]))
+            query_dic = {'portal_type':"AnalysisRequest",
+                     'review_state':review_state,
+                     'cancellation_state':['active']}
+            if filtering_allowed:
+                query_dic['getDepartmentUIDs'] = { "query":cookie_dep_uid,"operator":"or" }
+            ars = len(bc(query_dic))
             ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
             ratio = str("%%.%sf" % 1) % ratio
             msg = _("Scheduled sampling")
@@ -202,10 +214,12 @@ class DashboardView(BrowserView):
 
         # Analysis Requests awaiting for reception
         review_state = ['sample_due',]
-        ars = len(bc(portal_type="AnalysisRequest",
-                     review_state=review_state,
-                     getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
-                     cancellation_state=['active',]))
+        query_dic = {'portal_type':"AnalysisRequest",
+                 'review_state':review_state,
+                 'cancellation_state':['active']}
+        if filtering_allowed:
+            query_dic['getDepartmentUIDs'] = { "query":cookie_dep_uid,"operator":"or" }
+        ars = len(bc(query_dic))
         ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
         msg = _("Reception pending")
@@ -220,10 +234,12 @@ class DashboardView(BrowserView):
 
         # Analysis Requests under way
         review_state = ['attachment_due', 'sample_received', 'assigned']
-        ars = len(bc(portal_type="AnalysisRequest",
-                     review_state=review_state,
-                     getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
-                     cancellation_state=['active',]))
+        query_dic = {'portal_type':"AnalysisRequest",
+                 'review_state':review_state,
+                 'cancellation_state':['active']}
+        if filtering_allowed:
+            query_dic['getDepartmentUIDs'] = { "query":cookie_dep_uid,"operator":"or" }
+        ars = len(bc(query_dic))
         ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
         msg = _("Results pending")
@@ -238,10 +254,12 @@ class DashboardView(BrowserView):
 
         # Analysis Requests to be verified
         review_state = ['to_be_verified',]
-        ars = len(bc(portal_type="AnalysisRequest",
-                     review_state=review_state,
-                     getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
-                     cancellation_state=['active',]))
+        query_dic = {'portal_type':"AnalysisRequest",
+                 'review_state':review_state,
+                 'cancellation_state':['active']}
+        if filtering_allowed:
+            query_dic['getDepartmentUIDs'] = { "query":cookie_dep_uid,"operator":"or" }
+        ars = len(bc(query_dic))
         ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
         msg = _("To be verified")
@@ -256,10 +274,12 @@ class DashboardView(BrowserView):
 
         # Analysis Requests to be published
         review_state = ['verified',]
-        ars = len(bc(portal_type="AnalysisRequest",
-                     review_state=review_state,
-                     getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
-                     cancellation_state=['active',]))
+        query_dic = {'portal_type':"AnalysisRequest",
+                 'review_state':review_state,
+                 'cancellation_state':['active']}
+        if filtering_allowed:
+            query_dic['getDepartmentUIDs'] = { "query":cookie_dep_uid,"operator":"or" }
+        ars = len(bc(query_dic))
         ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
         msg = _("To be published")
@@ -275,10 +295,12 @@ class DashboardView(BrowserView):
         # Chart with the evolution of ARs over a period, grouped by
         # periodicity
         workflow = getToolByName(self.context, 'portal_workflow')
-        allars = bc(portal_type="AnalysisRequest",
-                    getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
-                    sort_on="created",
-                    created=self.min_date_range)
+        query_dic = {'portal_type':"AnalysisRequest",
+                     'sort_on':"created",
+                     'created':self.min_date_range}
+        if filtering_allowed:
+            query_dic['getDepartmentUIDs'] = { "query":cookie_dep_uid,"operator":"or" }
+        allars = bc(query_dic)
         outevo = []
         for ar in allars:
             ar = ar.getObject()
@@ -329,22 +351,31 @@ class DashboardView(BrowserView):
         """
         out = []
         bc = getToolByName(self.context, "bika_catalog")
-        cookie_dep_uid = self.request.get('filter_by_department_info', '').split(',')
+        filtering_allowed=self.context.bika_setup.getAllowDepartmentFiltering()
+        cookie_dep_uid = self.request.get('filter_by_department_info', '').split(',') if filtering_allowed else ''
         active_ws = ['open', 'to_be_verified', 'attachment_due']
-        numws = len(bc(portal_type="Worksheet",
-                       getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
-                       created=self.date_range))
 
-        numws += len(bc(portal_type="Worksheet",
-                        getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
-                        review_state=active_ws,
-                        created=self.base_date_range))
+        query_dic = {'portal_type':"Worksheet",
+                 'created':self.date_range}
+        if filtering_allowed:
+            query_dic['getDepartmentUIDs'] = { "query":cookie_dep_uid,"operator":"or" }
+        numws = len(bc(query_dic))
+
+        query_dic = {'portal_type':"Worksheet",
+                 'review_state':active_ws,
+                 'created':self.base_date_range}
+        if filtering_allowed:
+            query_dic['getDepartmentUIDs'] = { "query":cookie_dep_uid,"operator":"or" }
+        numws += len(bc(query_dic))
 
         # Open worksheets
         review_state = ['open', 'attachment_due']
-        ws = len(bc(portal_type="Worksheet",
-                    getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
-                    review_state=review_state))
+        query_dic = {'portal_type':"Worksheet",
+                 'review_state':review_state,
+                   'created':self.base_date_range}
+        if filtering_allowed:
+            query_dic['getDepartmentUIDs'] = { "query":cookie_dep_uid,"operator":"or" }
+        ws = len(bc(query_dic))
         ratio = (float(ws)/float(numws))*100 if ws > 0 and numws > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
         msg = _("Results pending")
@@ -359,9 +390,11 @@ class DashboardView(BrowserView):
 
         # Worksheets to be verified
         review_state = ['to_be_verified', ]
-        ws = len(bc(portal_type="Worksheet",
-                    getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
-                    review_state=review_state))
+        query_dic = {'portal_type':"Worksheet",
+                 'review_state':review_state}
+        if filtering_allowed:
+            query_dic['getDepartmentUIDs'] = { "query":cookie_dep_uid,"operator":"or" }
+        ws = len(bc(query_dic))
         ratio = (float(ws)/float(numws))*100 if ws > 0 and numws > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
         msg = _("To be verified")
@@ -377,10 +410,12 @@ class DashboardView(BrowserView):
         # Chart with the evolution of WSs over a period, grouped by
         # periodicity
         workflow = getToolByName(self.context, 'portal_workflow')
-        allws = bc(portal_type="Worksheet",
-                   getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
-                   sort_on="created",
-                   created=self.min_date_range)
+        query_dic = {'portal_type':"Worksheet",
+                 'sort_on':"created",
+                 'created':self.min_date_range}
+        if filtering_allowed:
+            query_dic['getDepartmentUIDs'] = { "query":cookie_dep_uid,"operator":"or" }
+        allws = bc(query_dic)
         outevo = []
         for ws in allws:
             ws = ws.getObject()
@@ -439,25 +474,34 @@ class DashboardView(BrowserView):
                      'to_be_verified',
                      'verified']
         bac = getToolByName(self.context, "bika_analysis_catalog")
-        cookie_dep_uid = self.request.get('filter_by_department_info', '').split(',')
-        numans = len(bac(portal_type="Analysis",
-                         getDepartmentUID={ "query":cookie_dep_uid,"operator":"or" },
-                         created=self.date_range,
-                         cancellation_state=['active']))
-        numans += len(bac(portal_type="Analysis",
-                          getDepartmentUID={ "query":cookie_dep_uid,"operator":"or" },
-                          review_state=active_rs,
-                          cancellation_state=['active'],
-                          created=self.base_date_range))
+        filtering_allowed=self.context.bika_setup.getAllowDepartmentFiltering()
+        cookie_dep_uid = self.request.get('filter_by_department_info', '').split(',') if filtering_allowed else ''
+
+        query_dic = {'portal_type':"Analysis",
+                 'created':self.date_range,
+                 'cancellation_state':['active']}
+        if filtering_allowed:
+            query_dic['getDepartmentUID'] = { "query":cookie_dep_uid,"operator":"or" }
+        numans = len(bac(query_dic))
+
+        query_dic = {'portal_type':"Analysis",
+                 'created':self.base_date_range,
+                 'review_state':active_rs,
+                 'cancellation_state':['active']}
+        if filtering_allowed:
+            query_dic['getDepartmentUID'] = { "query":cookie_dep_uid,"operator":"or" }
+        numans += len(bac(query_dic))
 
         # Analyses pending
         review_state = ['sample_received',
                         'assigned',
                         'attachment_due',
                         'to_be_verified']
-        ans = len(bac(portal_type="Analysis",
-                      getDepartmentUID={ "query":cookie_dep_uid,"operator":"or" },
-                      review_state=review_state))
+        query_dic = {'portal_type':"Analysis",
+                 'review_state':review_state}
+        if filtering_allowed:
+            query_dic['getDepartmentUID'] = { "query":cookie_dep_uid,"operator":"or" }
+        ans = len(bac(query_dic))
         ratio = (float(ans)/float(numans))*100 if ans > 0 and numans > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
         msg = _("Analyses pending")
@@ -472,9 +516,11 @@ class DashboardView(BrowserView):
 
         # Analyses to be verified
         review_state = ['to_be_verified', ]
-        ans = len(bac(portal_type="Analysis",
-                      getDepartmentUID={ "query":cookie_dep_uid,"operator":"or" },
-                      review_state=review_state))
+        query_dic = {'portal_type':"Analysis",
+                 'review_state':review_state}
+        if filtering_allowed:
+            query_dic['getDepartmentUID'] = { "query":cookie_dep_uid,"operator":"or" }
+        ans = len(bac(query_dic))
         ratio = (float(ans)/float(numans))*100 if ans > 0 and numans > 0 else 0
         ratio = str("%%.%sf" % 1) % ratio
         msg = _("To be verified")
@@ -490,10 +536,12 @@ class DashboardView(BrowserView):
         # Chart with the evolution of WSs over a period, grouped by
         # periodicity
         workflow = getToolByName(self.context, 'portal_workflow')
-        allans = bac(portal_type="Analysis",
-                     getDepartmentUID={ "query":cookie_dep_uid,"operator":"or" },
-                     sort_on="created",
-                     created=self.min_date_range)
+        query_dic = {'portal_type':"Analysis",
+                 'sort_on':"created",
+                 "created":self.min_date_range}
+        if filtering_allowed:
+            query_dic['getDepartmentUID'] = { "query":cookie_dep_uid,"operator":"or" }
+        allans = bac(query_dic)
         outevo = []
         for an in allans:
             an = an.getObject()

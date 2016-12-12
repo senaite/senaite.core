@@ -110,9 +110,12 @@ class BatchFolderContentsView(BikaListingView):
         It checks if the item can be added to the list depending on the
         department filter. If the batch contains analysis requests
         with services from the selected department, show it.
+        If department filtering is disabled in bika_setup, will return True.
         @obj: it is a batch.
         @return: boolean
         """
+        if not self.context.bika_setup.getAllowDepartmentFiltering():
+            return True
         # Gettin the departments from the batch
         ars = obj.getAnalysisRequests()
         # Getting the cookie value
