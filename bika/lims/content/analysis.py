@@ -1163,6 +1163,23 @@ class Analysis(BaseContent):
         except WorkflowException:
             return ''
 
+    def getVerifiedBy(self):
+        """
+        Returns the identifier of the user who verified the result if the
+        state of the current analysis is "verified" or "published"
+        :return: the user_id of the user who did the last submission of result
+        """
+        workflow = getToolByName(self, "portal_workflow")
+        try:
+            review_history = workflow.getInfoFor(self, "review_history")
+            review_history = self.reverseList(review_history)
+            for event in review_history:
+                if event.get("action") == "verify":
+                    return event.get("actor")
+        except WorkflowException as msg:
+            logger.error("Error during getting last verifier from review_history... " + msg)
+            return ''
+
     def guard_sample_transition(self):
         workflow = getToolByName(self, "portal_workflow")
         if workflow.getInfoFor(self, "cancellation_state", "active") == "cancelled":
