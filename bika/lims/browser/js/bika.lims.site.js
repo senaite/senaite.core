@@ -354,12 +354,12 @@ function SiteView() {
         */
         $('#department_filter_submit').click(function() {
           var deps =[];
-          $.each($("input[name='chb_deps[]']:checked"), function() {
+          $.each($("input[name^=chb_deps_]:checked"), function() {
             deps.push($(this).val());
           });
           var cookiename = 'filter_by_department_info';
           if (deps.length===0) {
-            deps.push($("input[name='chb_deps[]']:first").val());
+            deps.push($('input[name^=chb_deps_]:checkbox:not(:checked):visible:first').val());
           }
           createCookie(cookiename, deps.toString());
           location.reload();
@@ -369,7 +369,7 @@ function SiteView() {
             var cookiename = 'filter_by_department_info';
             if($(this).is(":checked")) {
                 var deps=[];
-                $.each($("input[name='chb_deps[]']"), function() {
+                $.each($("input[name^=chb_deps_]:checkbox"), function() {
                   deps.push($(this).val());
                 });
                 createCookie(cookiename, deps);
@@ -394,7 +394,7 @@ function SiteView() {
         var cookiename = 'filter_by_department_info';
         var cookie_val = readCookie(cookiename);
         if (cookie_val === null || document.cookie.indexOf(cookiename)<1){
-            var dep_uid = $("input[name='chb_deps[]']:first").val();
+            var dep_uid = $('input[name^=chb_deps_]:checkbox:visible:first').val();
             createCookie(cookiename, dep_uid);
         }
         var dep_filter_disabled=readCookie('dep_filter_disabled');
