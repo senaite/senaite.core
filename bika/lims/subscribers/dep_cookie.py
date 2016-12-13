@@ -18,19 +18,22 @@ def SetDepartmentCookies(event):
     username = mtool.getAuthenticatedMember().getUserName()
     dep_for_cookie=''
 
-    if username=='admin':
-        deps=context.portal_catalog(portal_type='Department',sort_on='sortable_title', sort_order='ascending',
-                inactive_state='active')
-        for dep in deps:
-            dep_for_cookie+=dep.UID+','
-        response.setCookie('dep_filter_disabled','true',  path = '/', max_age = 24 * 3600)
+    if context.bika_setup.getAllowDepartmentFiltering():
+        if username=='admin':
+            deps=context.portal_catalog(portal_type='Department',sort_on='sortable_title', sort_order='ascending',
+                    inactive_state='active')
+            for dep in deps:
+                dep_for_cookie+=dep.UID+','
+            response.setCookie('dep_filter_disabled','true',  path = '/', max_age = 24 * 3600)
+        else:
+            deps=context.portal_catalog(portal_type='LabContact',
+                                getUsername=username)[0].getObject().getSortedDepartments()
+            dep_for_cookie=deps[0].UID() if len(deps)>0 else ''
+        response.setCookie('filter_by_department_info',dep_for_cookie,  path = '/', max_age = 24 * 3600)
     else:
-        deps=context.portal_catalog(portal_type='LabContact',
-                            getUsername=username)[0].getObject().getSortedDepartments()
-        dep_for_cookie=deps[0].UID() if len(deps)>0 else ''
+        response.setCookie('filter_by_department_info',None,  path = '/', max_age = 0)
+        response.setCookie('dep_filter_disabled',None,  path = '/', max_age = 0)
 
-    response.setCookie('filter_by_department_info',dep_for_cookie,  path = '/', max_age = 24 * 3600)
-    #import pdb; pdb.set_trace()
 
 def ClearDepartmentCookies(event):
     """

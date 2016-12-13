@@ -284,6 +284,7 @@ class FolderView(BikaListingView):
         It also checks if the worksheet can be added to the list depending
         on the department filter. It checks the department of each analysis
         service from each analysis belonguing to the given worksheet.
+        If department filtering is disabled in bika_setup, will return True.
         @Obj: it is a worksheet object.
         @return: boolean
         """
@@ -291,6 +292,8 @@ class FolderView(BikaListingView):
             analyst = obj.getAnalyst().strip()
             if analyst != _c(self.member.getId()):
                 return False
+        if not self.context.bika_setup.getAllowDepartmentFiltering():
+            return True
         # Gettin the department from worksheet
         deps = [an.getDepartment().UID() for
                 an in obj.getWorksheetServices() if
