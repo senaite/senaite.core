@@ -44,8 +44,9 @@ class AnalysisRequestPublishedResults(BikaListingView):
         self.columns = {
             'Title': {'title': _('File')},
             'FileSize': {'title': _('Size')},
-            'Date': {'title': _('Date')},
+            'Date': {'title': _('Published Date')},
             'PublishedBy': {'title': _('Published By')},
+            'DatePrinted': {'title': _('Printed Date')},
             'Recipients': {'title': _('Recipients')},
         }
         self.review_states = [
@@ -56,6 +57,7 @@ class AnalysisRequestPublishedResults(BikaListingView):
                          'FileSize',
                          'Date',
                          'PublishedBy',
+                         'DatePrinted',
                          'Recipients']},
         ]
 
@@ -122,6 +124,17 @@ class AnalysisRequestPublishedResults(BikaListingView):
         fmt_date = self.ulocalized_time(obj.created(), long_format=1)
         item['Date'] = fmt_date
         item['PublishedBy'] = self.user_fullname(obj.Creator())
+
+        # The date when the Results Report was printed (if so)
+        item['DatePrinted'] = ''
+        fmt_date = obj.getDatePrinted() if hasattr(obj, 'getDatePrinted') else ''
+        if (fmt_date):
+            fmt_date = self.ulocalized_time(fmt_date, long_format=1)
+            item['DatePrinted'] = fmt_date
+            if obj.getDatePrinted() is None:
+                item['after']['DatePrinted']=("<img src='++resource++bika.lims.images/warning.png' title='%s'/>" %
+                                        (t(_("Has not been Printed."))))
+
         recip = []
         for recipient in obj.getRecipients():
             email = recipient['EmailAddress']

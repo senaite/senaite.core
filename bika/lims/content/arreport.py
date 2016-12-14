@@ -16,6 +16,9 @@ from plone.app.blob.field import BlobField
 from Products.Archetypes.references import HoldingReference
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.browser.fields import DateTimeField
+from bika.lims.browser.widgets import DateTimeWidget
+from bika.lims import bikaMessageFactory as _
 
 schema = BikaSchema.copy() + Schema((
     ReferenceField('AnalysisRequest',
@@ -34,6 +37,16 @@ schema = BikaSchema.copy() + Schema((
         type='recipients',
         subfields=('UID', 'Username', 'Fullname', 'EmailAddress',
                    'PublicationModes'),
+    ),
+    DateTimeField(
+        'DatePrinted',
+        mode="rw",
+        widget=DateTimeWidget(
+            label = _("Date Printed"),
+            visible={'edit': 'visible',
+                     'view': 'visible'
+                     }
+        ),
     ),
 ))
 
