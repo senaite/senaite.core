@@ -148,6 +148,8 @@ class AnalysisRequestsView(BikaListingView):
                                'toggle': False},
             'getTemplateTitle': {'title': _('Template'),
                                  'toggle': False},
+            'Printed': {'title': _('Printed'),
+                                      'toggle': False},
         }
         self.review_states = [
             {'id': 'default',
@@ -494,6 +496,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getDateReceived',
                         'getAnalysesNum',
                         'getDateVerified',
+                        'Printed',
                         'getDatePublished']},
             {'id': 'cancelled',
              'title': _('Cancelled'),
@@ -798,6 +801,7 @@ class AnalysisRequestsView(BikaListingView):
         item['getDateReceived'] = self.ulocalized_time(obj.getDateReceived())
         item['getDatePublished'] = self.ulocalized_time(obj.getDatePublished())
         item['getDateVerified'] = getTransitionDate(obj, 'verify')
+        item['Printed']= obj.getPrinted()
 
         deviation = sample.getSamplingDeviation()
         item['SamplingDeviation'] = deviation and deviation.Title() or ''
