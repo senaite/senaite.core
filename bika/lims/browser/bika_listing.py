@@ -412,6 +412,9 @@ class BikaListingView(BrowserView):
          'columns':['obj_type', 'title_or_id', 'modified', 'state_title']
          },
     ]
+    # The advanced filter bar instance, it is initialized using
+    # getAdvancedFilterBar
+    _advfilterbar = None
 
     def __init__(self, context, request, **kwargs):
         self.field_icons = {}
@@ -1120,6 +1123,16 @@ class BikaListingView(BrowserView):
             i += 1
             yield i
 
+    def getFilterBar(self):
+        """
+        This function creates an instance of BikaListingFilterBar if the
+        class has not created one yet.
+        :return: a BikaListingFilterBar instance
+        """
+        self._advfilterbar = self._advfilterbar if self._advfilterbar else \
+            BikaListingFilterBar(context=self.context, request=self.request)
+        return self._advfilterbar.render()
+
 
 class BikaListingTable(tableview.Table):
 
@@ -1196,3 +1209,88 @@ class BikaListingTable(tableview.Table):
         while True:
             i += 1
             yield i
+
+
+class BikaListingFilterBar(BrowserView):
+    """
+    This class defines a filter bar to make advanced queries in
+    BikaListingView. This filter shouldn't override the 'filter by state'
+    functionality
+    """
+    _render = ViewPageTemplateFile("templates/bika_listing_filter_bar.pt")
+
+    def render(self):
+        """
+        Returns a ViewPageTemplateFile instance with the filter inputs and
+        submit button.
+        """
+        return self._render()
+
+    def setRender(self, new_template):
+        """
+        Defines a new template to render.
+        :new_template: should be a ViewPageTemplateFile object such as
+            'ViewPageTemplateFile("templates/bika_listing_filter_bar.pt")'
+        """
+        self._render = new_template
+
+    def filter_bar_button_title(self):
+        """
+        This function returns a string with the name for the input. A function
+        is used in order to translate the name.
+        :return: an string with the title.
+        """
+        return _('Filter')
+
+    def filter_bar_submit(self, filter_bar_items={}):
+        """
+        This function gets the values from the filter bar inputs in order to
+        create a query accordingly.
+        :filter_bar_items: is a dictionary with the items to define the query.
+        :return: a dictionary to be added to contentFilter.
+        """
+        return {}
+
+    def filter_bar_builder(self):
+        """
+        The template is going to call this method to create the filter bar in
+        bika_listing_filter_bar.pt
+        If the method returns None, the filter bar will not be shown.
+        :return: a list of dictionaries as the filtering fields or None.
+
+        Eaxh dictionary defines a field, those are the expected elements
+        for each field type by the default template:
+        - select/multiple:
+            {
+                'name': 'field_name',
+                'label': _('Field name'),
+                'type': 'select/multiple',
+                'voc': <a DisplayList object containing the options>,
+            }
+        - simple text input:
+            {
+                'name': 'field_name',
+                'label': _('Field name'),
+                'type': 'text',
+            }
+        - autocomplete text input:
+            {
+                'name': 'field_name',
+                'label': _('Field name'),
+                'type': 'autocomplete_text',
+                'voc': <a List object containing the options in JSON>,
+            }
+        - value range input:
+            {
+                'name': 'field_name',
+                'label': _('Field name'),
+                'type': 'range',
+            },
+        - date range input:
+            {
+                'name': 'field_name',
+                'label': _('Field name'),
+                'type': 'date_range',
+            },
+        """
+        return None
