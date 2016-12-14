@@ -6,6 +6,7 @@
 # Cheng Jin <17067405@qq.com>, 2016
 # Bisheng <doun@163.com>, 2013
 # Inus Scheepers <inus@animatica.co.za>, 2012
+# jincheng_li <394428196@qq.com>, 2016
 # lin chen <aling1472@163.com>, 2016
 # Rui Tang <bio.nanoparticle@gmail.com>, 2012
 # Tao Li <wintersun_li@yahoo.com>, 2012
@@ -17,8 +18,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2016-12-07 18:27+0000\n"
-"PO-Revision-Date: 2016-12-07 17:22+0000\n"
+"POT-Creation-Date: 2016-12-09 15:30+0000\n"
+"PO-Revision-Date: 2016-12-07 18:27+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/bikalabs/bika-lims/language/zh_CN/)\n"
 "MIME-Version: 1.0\n"
@@ -111,7 +112,7 @@ msgstr "% 已发表"
 msgid "%s can't be transitioned."
 msgstr ""
 
-#: bika/lims/utils/analysisrequest.py:311
+#: bika/lims/utils/analysisrequest.py:312
 msgid "%s has been rejected"
 msgstr ""
 

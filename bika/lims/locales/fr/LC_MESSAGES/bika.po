@@ -18,11 +18,12 @@
 # CestPasFaux <rodriguesdossantos.vincent@gmail.com>, 2012
 # CestPasFaux <rodriguesdossantos.vincent@gmail.com>, 2012
 # Walter, 2015
+# Walter, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2016-12-07 18:27+0000\n"
-"PO-Revision-Date: 2016-12-07 17:22+0000\n"
+"POT-Creation-Date: 2016-12-09 15:30+0000\n"
+"PO-Revision-Date: 2016-12-07 18:27+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
 "Language-Team: French (http://www.transifex.com/bikalabs/bika-lims/language/fr/)\n"
 "MIME-Version: 1.0\n"
@@ -115,7 +116,7 @@ msgstr "% Publié"
 msgid "%s can't be transitioned."
 msgstr ""
 
-#: bika/lims/utils/analysisrequest.py:311
+#: bika/lims/utils/analysisrequest.py:312
 msgid "%s has been rejected"
 msgstr ""
 
