@@ -43,13 +43,14 @@ function rejectionwidget_loadEventHandlers() {
         $(option).attr('id', option_prefix + "-" + nr).val('');
         $(option).appendTo($(optionsset));
     });
-    // Remove an option div
     $(".rej_deletebtn").live('click', function(i,e){
-        var option = $(this).parent();
-        var siblings = $(option).siblings();
-        if (siblings.length > 0) {
+        if($(".RejectionSetupWidget .option-set").length > 1){
+            // Remove an option div IF it is not the last item.
             $(this).parent().remove();
-        };
-        return
+        } else {
+            // If this is the last item, just clear the fields
+           $(".RejectionSetupWidget input[type='text']").val('');
+        }
+
     });
 }
