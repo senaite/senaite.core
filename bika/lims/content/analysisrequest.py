@@ -1644,6 +1644,18 @@ schema = BikaSchema.copy() + Schema((
                  subfields=('uid', 'hidden',),
                  widget=ComputedWidget(visible=False),
                  ),
+    StringField(
+        'Printed',
+        searchable=True,
+        mode="rw",
+        read_permission=permissions.View,
+        widget=StringWidget(
+            label = _("Printed"),
+            description=_("Indicates if the last ARReport is printed,"),
+            visible={'view': 'invisible',
+                     'edit': 'invisible'},
+        ),
+    ),
 )
 )
 
@@ -1899,6 +1911,18 @@ class AnalysisRequest(BaseFolder):
                 return True
 
         return False
+
+    def getPrinted(self):
+        """ return True if its last ARReport  has been printed"""
+        workflow = getToolByName(self, 'portal_workflow')
+        review_state = workflow.getInfoFor(self, 'review_state', '')
+        if review_state not in ['published']:
+            return "0"
+
+        last_report=sorted(self.objectValues('ARReport'),key=lambda report: report.getDatePublished())[-1]
+        if last_report.getDatePrinted:
+            return "1"
+        return "0"
 
     security.declareProtected(View, 'getBillableItems')
 
