@@ -772,9 +772,21 @@ class AnalysisRequestsView(BikaListingView):
             self.ulocalized_time(obj.getDateReceived())
         item['getDatePublished'] = \
             self.ulocalized_time(getTransitionDate(obj, 'publish'))
-        item['Printed']= obj.getPrinted()
         item['getDateVerified'] = \
             self.ulocalized_time(getTransitionDate(obj, 'verify'))
+        item['Printed']= ''
+        printed=obj.getPrinted()
+        print_icon=''
+        if printed=="0":
+            print_icon="<img src='%s/++resource++bika.lims.images/delete.png' title='%s'>" % \
+                (self.portal_url, t(_("Not printed yet.")))
+        elif printed=="1":
+            print_icon="<img src='%s/++resource++bika.lims.images/ok.png' title='%s'>" % \
+                (self.portal_url, t(_("Not printed yet.")))
+        elif printed=="2":
+            print_icon="<img src='%s/++resource++bika.lims.images/exclamation.png' title='%s'>" % \
+                (self.portal_url, t(_("Republished after last print.")))
+        item['after']['Printed']=print_icon
 
         deviation = sample.getSamplingDeviation()
         item['SamplingDeviation'] = deviation and deviation.Title() or ''
@@ -909,6 +921,16 @@ class AnalysisRequestsView(BikaListingView):
 
         self.editresults = -1
         self.clients = {}
+
+        #Print button to choose multiple ARs and print them.
+        review_states = []
+        for review_state in self.review_states:
+            review_state.get('custom_actions', []).extend(
+                [{'id': 'print',
+                  'title': _('Print'),
+                  'url': 'workflow_action?action=print'}, ])
+            review_states.append(review_state)
+        self.review_states = review_states
 
         # Only "BIKA: ManageAnalysisRequests" may see the copy to new button.
         # elsewhere it is hacked in where required.

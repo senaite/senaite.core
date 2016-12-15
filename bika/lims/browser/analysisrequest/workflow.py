@@ -450,6 +450,16 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
     def workflow_action_republish(self):
         self.workflow_action_publish()
 
+    def workflow_action_print(self):
+        # Calls printLastReport method for selected ARs
+        uids = self.request.get('uids',[])
+        uc = getToolByName(self.context, 'uid_catalog')
+        for obj in uc(UID=uids):
+            ar=obj.getObject()
+            ar.printLastReport()
+        referer = self.request.get_header("referer")
+        self.request.response.redirect(referer)
+
     def workflow_action_publish(self):
         action, came_from = WorkflowAction._get_form_workflow_action(self)
         if not isActive(self.context):
