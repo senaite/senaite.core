@@ -1,7 +1,7 @@
 import os
 from setuptools import setup, find_packages
 
-version = '3.1.10'
+version = '3.1.12'
 
 
 def read(*rnames):
@@ -64,6 +64,10 @@ setup(name='bika.lims',
           'plone.app.dexterity',
           'plone.app.relationfield',
           'plone.app.referenceablebehavior',
+          'five.pt',
+          'z3c.jbot',
+          'plone.resource',
+          'CairoSVG==1.0.20',
       ],
       extras_require={
           'test': [
