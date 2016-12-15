@@ -5,13 +5,14 @@
 # Emil Cyraniak <cyrano30@epf.pl>, 2012
 # Emil Cyraniak <cyrano30@epf.pl>, 2012
 # Daria, 2016
+# Daria, 2016
 # Emil Cyraniak <cyrano30@epf.pl>, 2012-2014
 # Ryszard Grodowski <ryszard@grodowski.com>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2016-12-07 18:27+0000\n"
-"PO-Revision-Date: 2016-12-07 17:22+0000\n"
+"POT-Creation-Date: 2016-12-09 15:30+0000\n"
+"PO-Revision-Date: 2016-12-07 18:27+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
 "Language-Team: Polish (http://www.transifex.com/bikalabs/bika-lims/language/pl/)\n"
 "MIME-Version: 1.0\n"
@@ -104,7 +105,7 @@ msgstr "% opublikowanych"
 msgid "%s can't be transitioned."
 msgstr ""
 
-#: bika/lims/utils/analysisrequest.py:311
+#: bika/lims/utils/analysisrequest.py:312
 msgid "%s has been rejected"
 msgstr ""
 
