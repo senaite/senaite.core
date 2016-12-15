@@ -72,6 +72,8 @@ setup(name='bika.lims',
           'five.pt',
           'z3c.jbot',
           'plone.resource',
+          'CairoSVG==1.0.20',
+
       ],
       extras_require={
           'test': [
