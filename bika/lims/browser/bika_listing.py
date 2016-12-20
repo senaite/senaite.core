@@ -8,6 +8,7 @@
 import json
 import re
 import urllib
+import copy
 from operator import itemgetter
 
 import App
@@ -180,6 +181,16 @@ class WorkflowAction:
                 method()
             else:
                 self.workflow_action_default(action, came_from)
+        if form.get('bika_listing_filter_bar_submit', ''):
+            # Getting all the filter inputs with the key starting with:
+            # 'bika_listing_filter_bar_'
+            filter_val = \
+                [[k, v] for k, v in form.items()
+                    if k.startswith('bika_listing_filter_bar_')]
+            filter_val = json.dumps(filter_val)
+            # Adding the filter parameters to cookue
+            self.request.response.setCookie(
+                'bika_listing_filter_bar', filter_val, path='/', max_age=10)
         else:
             # Do nothing
             self.request.response.redirect(self.destination_url)
@@ -728,7 +739,18 @@ class BikaListingView(BrowserView):
         if self.ajax_categories and not self.category_index:
             msg = "category_index must be defined when using ajax_categories."
             raise AssertionError(msg)
-
+        # Getting the bika_listing_filter_bar cookie
+        cookie_filter_bar = self.request.get('bika_listing_filter_bar', '')
+        self.request.response.setCookie(
+            'bika_listing_filter_bar', None,  path='/', max_age=0)
+        # Saving the filter bar values
+        cookie_filter_bar = json.loads(cookie_filter_bar) if\
+            cookie_filter_bar else ''
+        # Creating a dict from cookie data
+        cookie_data = {}
+        for k, v in cookie_filter_bar:
+            cookie_data[k] = v
+        self.save_filter_bar_values(cookie_data)
         self._process_request()
 
         # ajax_category_expand is included in the form if this form submission
@@ -825,12 +847,15 @@ class BikaListingView(BrowserView):
             show_all = True
         else:
             show_all = False
-
+        contentFilterTemp = copy.deepcopy(self.contentFilter)
+        addition = self.get_filter_bar_queryaddition()
+        if addition:
+            contentFilterTemp.update(addition)
         if (hasattr(self, 'And') and self.And) \
            or (hasattr(self, 'Or') and self.Or):
             # if contentsMethod is capable, we do an AdvancedQuery.
             if hasattr(self.contentsMethod, 'makeAdvancedQuery'):
-                aq = self.contentsMethod.makeAdvancedQuery(self.contentFilter)
+                aq = self.contentsMethod.makeAdvancedQuery(contentFilterTemp)
                 if hasattr(self, 'And') and self.And:
                     tmpAnd = And()
                     for q in self.And:
@@ -844,9 +869,9 @@ class BikaListingView(BrowserView):
                 brains = self.contentsMethod.evalAdvancedQuery(aq)
             else:
                 # otherwise, self.contentsMethod must handle contentFilter
-                brains = self.contentsMethod(self.contentFilter)
+                brains = self.contentsMethod(contentFilterTemp)
         else:
-            brains = self.contentsMethod(self.contentFilter)
+            brains = self.contentsMethod(contentFilterTemp)
 
         # idx increases one unit each time an object is added to the 'items'
         # dictionary to be returned. Note that if the item is not rendered,
@@ -1131,7 +1156,43 @@ class BikaListingView(BrowserView):
         """
         self._advfilterbar = self._advfilterbar if self._advfilterbar else \
             BikaListingFilterBar(context=self.context, request=self.request)
-        return self._advfilterbar.render()
+        return self._advfilterbar
+
+    def save_filter_bar_values(self, filter_bar_items={}):
+        """
+        This function saves the values to filter the bika_listing inside the
+        BikaListingFilterBar object.
+        :filter_bar_items: an array of tuples with the items to define the
+        query. The array has the following format: [(key, value), (), ...]
+        """
+        self.getFilterBar().save_filter_bar_values(filter_bar_items)
+
+    def get_filter_bar_queryaddition(self):
+        """
+        This function calls the filter bar get_filter_bar_queryaddition
+        from self._advfilterbar in order to obtain the obtain the extra filter
+        conditions.
+        """
+        if self.getFilterBar():
+            return self.getFilterBar().get_filter_bar_queryaddition()
+        else:
+            return {}
+
+    def check_item(self, key, value):
+        """
+        This functions receives a key-value items, and checks if it should be
+        displayed.
+        It is recomended to be used in isItemAllowed() method.
+        This function should be only used for those fields without
+        representation as an index in the catalog.
+        :key: a string with a field_name defined in filter_bar_builder().
+        :value: the values for the key.
+        :return: boolean.
+        """
+        if self.getFilterBar():
+            self.getFilterBar().check_item()
+        else:
+            return True
 
 
 class BikaListingTable(tableview.Table):
@@ -1218,6 +1279,7 @@ class BikaListingFilterBar(BrowserView):
     functionality
     """
     _render = ViewPageTemplateFile("templates/bika_listing_filter_bar.pt")
+    _filter_bar_dict = {}
 
     def render(self):
         """
@@ -1232,7 +1294,8 @@ class BikaListingFilterBar(BrowserView):
         :new_template: should be a ViewPageTemplateFile object such as
             'ViewPageTemplateFile("templates/bika_listing_filter_bar.pt")'
         """
-        self._render = new_template
+        if new_template:
+            self._render = new_template
 
     def filter_bar_button_title(self):
         """
@@ -1242,14 +1305,53 @@ class BikaListingFilterBar(BrowserView):
         """
         return _('Filter')
 
-    def filter_bar_submit(self, filter_bar_items={}):
+    def save_filter_bar_values(self, filter_bar_items={}):
+        """
+        This function saves the values to filter the bika_listing inside the
+        BikaListingFilterBar object.
+        The dictionary is saved inside a class attribute.
+        This function tranforms the unicodes to strings and removes the
+        'bika_listing_filter_bar_' starting string of each key.
+        :filter_bar_items: a dictionary with the items to define the
+        query.
+        """
+        if filter_bar_items:
+            new_dict = {}
+            for k in filter_bar_items.keys():
+                value = str(filter_bar_items[k])
+                key = str(k).replace("bika_listing_filter_bar_", "")
+                new_dict[key] = value
+            self._filter_bar_dict = new_dict
+
+    def get_filter_bar_dict(self):
+        """
+        Return the _filter_bar_dict attribute
+        """
+        return self._filter_bar_dict
+
+    def get_filter_bar_queryaddition(self):
         """
         This function gets the values from the filter bar inputs in order to
-        create a query accordingly.
-        :filter_bar_items: is a dictionary with the items to define the query.
+        create a catalog query accordingly.
+        Only returns the items that can be added to contentFilter dictionary,
+        this means that only the dictionary items (key-value) with index
+        representations should be returned.
         :return: a dictionary to be added to contentFilter.
         """
         return {}
+
+    def check_item(self, key, value):
+        """
+        This functions receives a key-value items, and checks if it should be
+        displayed.
+        It is recomended to be used in isItemAllowed() method.
+        This function should be only used for those fields without
+        representation as an index in the catalog.
+        :key: a string with a field_name defined in filter_bar_builder().
+        :value: the values for the key.
+        :return: boolean.
+        """
+        return True
 
     def filter_bar_builder(self):
         """

@@ -16,7 +16,6 @@ This filter shouldn’t override the filter by state functionality
         <!-- Select field type -->
         <select
             tal:condition="python: field.get('type', '') == 'select'"
-            form="bika_listing_form"
             tal:attributes="
                 name python: 'bika_listing_filter_bar_' + field.get('name', '');"
             tal:define="
@@ -35,7 +34,6 @@ This filter shouldn’t override the filter by state functionality
         <select
             tal:condition="python: field.get('type', '') == 'multiple'"
             multiple="true" size='2'
-            form="bika_listing_form"
             tal:attributes="
                 name python: 'bika_listing_filter_bar_' + field.get('name', '');"
             tal:define="
@@ -51,7 +49,6 @@ This filter shouldn’t override the filter by state functionality
         <!-- simple text input -->
         <input
             tal:condition="python: field.get('type', '') == 'text'"
-            form="bika_listing_form"
             tal:attributes="
                 name python: 'bika_listing_filter_bar_' + field.get('name', '');"
                 >
@@ -60,7 +57,6 @@ This filter shouldn’t override the filter by state functionality
         <input
             tal:condition="python: field.get('type', '') == 'autocomplete_text'"
             class="autocomplete"
-            form="bika_listing_form"
             tal:attributes="
                 name python: 'bika_listing_filter_bar_' + field.get('name', '');
                 voc python: field.get('voc', [])"
@@ -70,7 +66,6 @@ This filter shouldn’t override the filter by state functionality
         <input
             class="range_0"
             tal:condition="python: field.get('type', '') == 'range'"
-            form="bika_listing_form"
             tal:attributes="
                 name python: 'bika_listing_filter_bar_' + field.get('name', '') + '_0';"
                 >
@@ -78,7 +73,6 @@ This filter shouldn’t override the filter by state functionality
         <input
             class="range_1"
             tal:condition="python: field.get('type', '') == 'range'"
-            form="bika_listing_form"
             tal:attributes="
                 name python: 'bika_listing_filter_bar_' + field.get('name', '') + '_1';"
                 >
@@ -87,7 +81,6 @@ This filter shouldn’t override the filter by state functionality
         <input
             class="date_range_start datepicker_range"
             tal:condition="python: field.get('type', '') == 'date_range'"
-            form="bika_listing_form"
             tal:attributes="
                 name python: 'bika_listing_filter_bar_' + field.get('name', '') + '_0';"
                 >
@@ -95,22 +88,24 @@ This filter shouldn’t override the filter by state functionality
         <input
             class="date_range_end datepicker_range"
             tal:condition="python: field.get('type', '') == 'date_range'"
-            form="bika_listing_form"
             tal:attributes="
                 name python: 'bika_listing_filter_bar_' + field.get('name', '') + '_1';"
                 >
         </input>
     </td>
 </tr>
-<tr>
+<tr tal:condition="filter_fields">
     <td class="bika_listing_filter_bar noborder" style="whitespace:nowrap">
         <input
-            type="submit"
-            name="bika_listing_filter_bar"
-            form="bika_listing_form"
-            formaction="bika_listing_filter_bar_submit"
+            type="button"
+            id="bika_listing_filter_bar_button"
             tal:attributes="
-                value view/filter_bar_button_title;"/>
+                value view/filter_bar_button_title;"></input>
+        <input
+            type="hidden"
+            id="bika_listing_filter_bar_submit"
+            name="bika_listing_filter_bar_submit"
+            value="0"></input>
     </td>
 </tr>
 </tal:tr-filter>

@@ -117,7 +117,7 @@ Workflow review state selector
         <table width="100%" cellpadding="0" cellspacing="0" class="noborder nomargin">
         <!-- Filter bar -->
         <tal:filter-bar
-            tal:content="structure python:view.bika_listing.getFilterBar()">
+            tal:content="structure python:view.bika_listing.getFilterBar().render()">
         </tal:filter-bar>
         <!-- workflow state filter -->
         <tr class="noborder"
