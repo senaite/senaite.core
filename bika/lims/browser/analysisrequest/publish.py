@@ -850,7 +850,7 @@ class AnalysisRequestPublishView(BrowserView):
             if len(to) > 0:
                 # Send the email to the managers
                 mime_msg['To'] = ','.join(to)
-                attachPdf(mime_msg, pdf_report, pdf_fn)
+                attachPdf(mime_msg, pdf_report, ar.id)
 
                 try:
                     host = getToolByName(ar, 'MailHost')
