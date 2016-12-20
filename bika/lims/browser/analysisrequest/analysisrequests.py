@@ -807,13 +807,13 @@ class AnalysisRequestsView(BikaListingView):
         print_icon=''
         if printed=="0":
             print_icon="<img src='%s/++resource++bika.lims.images/delete.png' title='%s'>" % \
-                (self.portal_url, t(_("Not printed yet.")))
+                (self.portal_url, t(_("Not printed yet")))
         elif printed=="1":
             print_icon="<img src='%s/++resource++bika.lims.images/ok.png' title='%s'>" % \
-                (self.portal_url, t(_("Not printed yet.")))
+                (self.portal_url, t(_("Printed")))
         elif printed=="2":
             print_icon="<img src='%s/++resource++bika.lims.images/exclamation.png' title='%s'>" % \
-                (self.portal_url, t(_("Republished after last print.")))
+                (self.portal_url, t(_("Republished after last print")))
         item['after']['Printed']=print_icon
 
         deviation = sample.getSamplingDeviation()
