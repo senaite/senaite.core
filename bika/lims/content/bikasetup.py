@@ -369,6 +369,19 @@ schema = BikaFolderSchema.copy() + Schema((
             format="select",
          ),
     ),
+    StringField('TypeOfmultiVerification',
+        schemata = "Analyses",
+        default = 'self_multi_enabled',
+        vocabulary = MULTI_VERIFICATION_TYPE,
+        widget = SelectionWidget(
+            label=_("Multi Verification type"),
+            description = _(
+                "Choose type of multiple verification for the same user."
+                "This setting can enable/disable verifying/consecutively verifying"
+                "more than once for the same user."),
+            format='select',
+        )
+    ),
     ReferenceField('DryMatterService',
         schemata = "Analyses",
         required = 0,
