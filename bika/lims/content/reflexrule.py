@@ -111,7 +111,7 @@ class ReflexRule(BaseContent):
                 'action': 'setresult',
                 'an_result_id': 'set-4',
                 'analyst': 'analyst1',
-                'otherWS': False,
+                'otherWS': 'current',
                 'setresultdiscrete': '3',
                 'setresulton': 'new',
                 'setresultvalue': '',
@@ -341,7 +341,7 @@ def doActionToAnalysis(base, action):
     return analysis
 
 
-def createWorksheet(base, worksheettemplate, analyst):
+def _createWorksheet(base, worksheettemplate, analyst):
     """
     This function creates a new worksheet takeing advantatge of the analyst
     variable. If there isn't an analyst definet, the system will puck up the
@@ -367,28 +367,59 @@ def createWorksheet(base, worksheettemplate, analyst):
 def doWorksheetLogic(base, action, analysis):
     """
     This function checks if the actions contains worksheet actions.
-    If the action demands to add the new analysis to another worksheet, this
-    function will do it following the next rules:
-    1- If an analyst is defined in the action, the system will try to add the
-    new analysis to the first worksheet of this analyst.
-    If no active worksheet is found for this analyst, the system will create a
-    new worksheet assigned to the defined analyst.
-    2- If no analyst is defined the system will try to add the new analysis to
-    the last worksheet created, but if there are no active worksheets, a new
-    worksheet with any analyst will be created.
-    3- If a worksheet template is defined, the system will try to get a
-    worksheet using that template and meeting the previous conditions (1 and 2).
 
-    If the actions doesn't requires to add the new analysis to another
-    worksheet, the function will try to add the analysis to the same worksheet
-    as the base analysis.
+    There is a selection list in each action section. This select has the
+    following options and consequence.
+
+    1) "To the current worksheet" (selected by default)
+    2) "To another worksheet"
+    3) "Create another worksheet"
+    4) "No worksheet"
+
+    - If option 1) is selected, the Analyst selection list will not be
+    displayed. Since the action doesn't require to add the new analysis to
+    another worksheet, the function will try to add the analysis to the same
+    worksheet as the base analysis. If the base analysis is not assigned in a
+    worksheet, no worksheet will be assigned to the new analysis.
+
+    - If option 2) is selected, the Analyst selection list will be displayed.
+
+    - If option 2) is selected and an analyst has also been selected, then the
+    system will search for the latest worksheet in status "open" for the
+    selected analyst and will add the analysis in that worksheet (the system
+    also searches for the worksheet template if defined).
+    If the system doesn't find any match, another worksheet assigned to the
+    selected analyst and with the analysis must be automatically created.
+
+    - If option 2) is selected but no analyst selected, then the system will
+    search for the latest worksheet in the status "open" regardless of the
+    analyst assigned and will add the analysis in that worksheet. If there
+    isn't any open worksheet available, then go to option 3)
+
+    - If option 3) is selected, a new worksheet with the defined analyst will
+    be created.
+    If no analyst is defined for the original analysis, the system
+    will create a new worksheet and assign the same analyst as the original
+    analysis to which the rule applies.
+    If the original analysis doesn't have assigned any analyst, the system will
+    assign the same analyst that was assigned to the latest worksheet available
+    in the system. If there isn't any worksheet created yet, use the first
+    active user with role "analyst" available.
+
+    - if option 4) the Analyst selection list will not be displayed. The
+    analysis (duplicate, repeat, whatever) will be created, but not assigned
+    to any worksheet, so it will stay "on queue", assigned to the same
+    Analysis Request as the original analysis for which the rule has been
+    triggered.
     """
-    if action.get('otherWS', False):
-        # Adds the new analysis inside another worksheet.
+    otherWS = action.get('otherWS', False)
+    if otherWS in ['to_another', 'create_another']:
+        # Adds the new analysis inside same worksheet as the previous analysis.
         # Checking if the actions defines an analyst
         new_analyst = action.get('analyst', '')
         # Checking if the action defines a worksheet template
         worksheettemplate = action.get('worksheettemplate', '')
+        # Creating the query
         pc = getToolByName(base, 'portal_catalog')
         contentFilter = {
             'portal_type': 'Worksheet',
@@ -405,20 +436,55 @@ def doWorksheetLogic(base, action, analysis):
             contentFilter['worksheettemplateUID'] = worksheettemplate
         # Run the filter
         wss = pc(contentFilter)
-        if len(wss) > 0:
+        # 'repeat' actions takes advantatge of the 'retract' workflow action.
+        # the retract process assigns the new analysis to the same worksheet
+        # as the base analysis, so we need to desassign it now.
+        ws = analysis.getBackReferences("WorksheetAnalysis")
+        if ws:
+            ws[0].removeAnalysis(analysis)
+        # If worksheet found and option 2
+        if len(wss) > 0 and otherWS == 'to_another':
             # Add the new analysis to the worksheet
             wss[0].getObject().addAnalysis(analysis)
-        else:
+        # No worksheet found, but option 2 or 3 selected:
+        elif new_analyst:
             # Create a new worksheet and add the analysis to it
-            ws = createWorksheet(base, worksheettemplate, new_analyst)
+            ws = _createWorksheet(base, worksheettemplate, new_analyst)
             ws.addAnalysis(analysis)
-    else:
+        elif not new_analyst:
+            # Getting the original analysis to which the rule applies
+            previous_analysis = analysis.getReflexAnalysisOf()
+            # Getting the worksheet of the analysis
+            prev_ws = previous_analysis.getBackReferences("WorksheetAnalysis")
+            # Getting the analyst from the worksheet
+            prev_analyst = prev_ws[0].getAnalyst() if prev_ws else ''
+            # If the previous analysis belongs to a worksheet:
+            if prev_analyst:
+                ws = _createWorksheet(base, worksheettemplate, prev_analyst)
+                ws.addAnalysis(analysis)
+            # If the original analysis doesn't have assigned any analyst
+            else:
+                # assign the same analyst that was assigned to the latest
+                # worksheet available
+                prev_analyst = wss[0].getObject().getAnalyst() if wss else ''
+                if prev_analyst:
+                    ws = _createWorksheet(base, worksheettemplate, prev_analyst)
+                    ws.addAnalysis(analysis)
+
+    elif otherWS == 'current':
         # Getting the base's worksheet
         wss = base.getBackReferences('WorksheetAnalysis')
         if len(wss) > 0:
             # If the old analysis belongs to a worksheet, add the new
             # one to it
             wss[0].addAnalysis(analysis)
+    # If option 1 selected and no ws found, no worksheet will be assigned to
+    # the analysis.
+    # If option 4 selected, no worksheet will be assigned to the analysis
+    elif otherWS == 'no_ws':
+        ws = analysis.getBackReferences("WorksheetAnalysis")
+        if ws:
+            ws[0].removeAnalysis(analysis)
 
 
 def doReflexRuleAction(base, action_row):

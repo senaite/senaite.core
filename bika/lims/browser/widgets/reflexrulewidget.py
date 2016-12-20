@@ -134,7 +134,7 @@ class ReflexRuleWidget(RecordsWidget):
                 }, {...}],
             'trigger': 'xxx',
             'actions':[{'action':'<action_name>', 'act_row_idx':'X',
-                            'otherWS':Bool, 'analyst': '<analyst_id>',
+                            'otherWS':'to_another', 'analyst': '<analyst_id>',
                             'an_result_id':'rep-1',...},
                     ]
         },
@@ -155,10 +155,10 @@ class ReflexRuleWidget(RecordsWidget):
                 }, {...}],
             'trigger': 'xxx',
             'actions':[{'action':'<action_name>', 'act_row_idx':'X',
-                        'otherWS':Bool, 'analyst': '<analyst_id>',
+                        'otherWS':to_another, 'analyst': '<analyst_id>',
                         'an_result_id':'rep-1',...},
                       {'action':'<action_name>', 'act_row_idx':'X',
-                        'otherWS':Bool, 'analyst': '<analyst_id>',
+                        'otherWS':to_another, 'analyst': '<analyst_id>',
                         'an_result_id':'rep-2'...},
                 ]
         }, ...]
@@ -225,12 +225,12 @@ class ReflexRuleWidget(RecordsWidget):
         'trigger': 'xxx',
         'actions':[
             {'action':'duplicate', 'act_row_idx':'0',
-                'otherWS': True, 'analyst': 'sussan1',
+                'otherWS': to_another, 'analyst': 'sussan1',
                 'setresultdiscrete': '1', 'setresultvalue': '2',
                 'worksheettemplate-0': '70d48adfb34c4231a145f76a858e94cf',
                 'setresulton': 'original','an_result_id-0':'rep-1'},
             {'action':'repeat', 'act_row_idx':'1',
-                'otherWS': False, 'analyst': '', ...},
+                'otherWS': current, 'analyst': '', ...},
         ]
         }
         """
@@ -324,9 +324,8 @@ class ReflexRuleWidget(RecordsWidget):
         for key in actions_list:
             # Getting the key for otherWS element
             otherWS_key = 'otherWS-'+str(a_count)
-            # Getting the value for otherWS checkbox
-            otherWS = True if otherWS_key in keys_list \
-                and raw_set[otherWS_key] == 'on' else False
+            # Getting the value for otherWS selector
+            otherWS = raw_set.get(otherWS_key, '')
             # Getting the key for analyst element
             analyst_key = 'analyst-'+str(a_count)
             # Getting the value for analyst
@@ -420,7 +419,7 @@ class ReflexRuleWidget(RecordsWidget):
                                    'action': 'repeat',
                                    'an_result_id': '',
                                    'analyst': '',
-                                   'otherWS': False,
+                                   'otherWS': current,
                                    'setresultdiscrete': '',
                                    'setresulton': 'original',
                                    'setresultvalue': '',
@@ -529,6 +528,16 @@ class ReflexRuleWidget(RecordsWidget):
             ('submit', 'on analysis submission'),
             ('verify', 'on analysis verification')])
 
+    def getWorksheetOptionsVoc(self):
+        """
+        Return the the available options to carry on realted with a worksheet
+        """
+        return DisplayList([
+            ('current', "To the current worksheet"),
+            ('to_another', "To another worksheet"),
+            ('create_another', "Create another worksheet"),
+            ('no_ws', "No worksheet")])
+
     def getReflexRuleElement(self, idx=0, element=''):
         """
         Returns the expected value saved in the object.
@@ -547,9 +556,9 @@ class ReflexRuleWidget(RecordsWidget):
                             'range1': '12'}}]
             'trigger': 'xxx',
             'actions':[{'action':'<action_name>', 'act_row_idx':'X',
-                        'otherWS': Bool, 'analyst': '<analyst_id>',...},
+                        'otherWS': 'to_another', 'analyst': '<analyst_id>',...},
                       {'action':'<action_name>', 'act_row_idx':'X',
-                        'otherWS': Bool, 'analyst': '<analyst_id>'}
+                        'otherWS': 'to_another', 'analyst': '<analyst_id>'}
                 ]
             }, ...]
         - The list is the abstraction of the rules section in a Reflex
@@ -571,7 +580,7 @@ class ReflexRuleWidget(RecordsWidget):
             value = rules_list[idx].get(element, '')
             if element == 'actions' and value == '':
                 return [{'action': '', 'act_row_idx': '0',
-                        'otherWS': False, 'analyst': '',
+                        'otherWS': 'current', 'analyst': '',
                         'setresulton': '', 'setresultdiscrete': '',
                         'worksheettemplate': '',
                         'setresultvalue': '', 'an_result_id': ''}, ]
@@ -583,7 +592,7 @@ class ReflexRuleWidget(RecordsWidget):
                 return value
         if element == 'actions':
             return [{'action': '', 'act_row_idx': '0',
-                    'otherWS': False, 'analyst': '',
+                    'otherWS': 'current', 'analyst': '',
                     'worksheettemplate': '',
                     'setresulton': '', 'setresultdiscrete': '',
                     'setresultvalue': '', 'an_result_id': ''}, ]
