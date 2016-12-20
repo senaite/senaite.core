@@ -51,6 +51,7 @@ from bika.lims.config import ATTACHMENT_OPTIONS
 from bika.lims.config import CURRENCIES
 from bika.lims.config import DECIMAL_MARKS
 from bika.lims.config import DEFAULT_AR_SPECS
+from bika.lims.config import MULTI_VERIFICATION_TYPE
 from bika.lims.config import PROJECTNAME
 from bika.lims.config import SCINOTATION_OPTIONS
 from bika.lims.config import WORKSHEET_LAYOUT_OPTIONS
