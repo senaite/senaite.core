@@ -567,6 +567,9 @@ table.bika-listing-table-transposed table.worksheet-position tbody tr {
 #content .bika-listing-table a.multi-verification.scale-75 {
     background-color:#afb064;
 }
+#content .bika-listing-table td.export-controls {
+    width:90px;
+}
 #content .bika-listing-table td.export-controls,
 #content .bika-listing-table td.export-controls a {
     color:#333;

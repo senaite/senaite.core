@@ -641,7 +641,7 @@ function BikaListingTableView() {
                     text = text.replace('"', "'");
                     rowdata.push('"' + $.trim(text) + '"');
                 });
-                if (rowdata.length > 1) {
+                if (rowdata.length == headers.length) {
                     data.push(rowdata.join(','));
                 }
             });
