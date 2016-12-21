@@ -219,14 +219,6 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         )
     ),
 
-    # StringField('Location',
-    #     schemata = 'Additional info.',
-    #     widget = StringWidget(
-    #         label=_("Location"),
-    #         description=_("The room and location where the instrument is installed"),
-    #     )
-    # ),
-
     ReferenceField('InstrumentLocation',
         schemata = 'Additional info.',
         vocabulary='getInstrumentLocations',
