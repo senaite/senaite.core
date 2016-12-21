@@ -1177,19 +1177,18 @@ class BikaListingView(BrowserView):
         else:
             return {}
 
-    def check_item(self, key, value):
+    def filter_bar_check_item(self, item):
         """
         This functions receives a key-value items, and checks if it should be
         displayed.
         It is recomended to be used in isItemAllowed() method.
         This function should be only used for those fields without
         representation as an index in the catalog.
-        :key: a string with a field_name defined in filter_bar_builder().
-        :value: the values for the key.
-        :return: boolean.
+        :item: The item to check.
+        :return: boolean
         """
         if self.getFilterBar():
-            self.getFilterBar().check_item()
+            return self.getFilterBar().filter_bar_check_item(item)
         else:
             return True
 
@@ -1339,15 +1338,14 @@ class BikaListingFilterBar(BrowserView):
         """
         return {}
 
-    def check_item(self, key, value):
+    def filter_bar_check_item(self, item):
         """
         This functions receives a key-value items, and checks if it should be
         displayed.
         It is recomended to be used in isItemAllowed() method.
         This function should be only used for those fields without
         representation as an index in the catalog.
-        :key: a string with a field_name defined in filter_bar_builder().
-        :value: the values for the key.
+        :item: The item to check.
         :return: boolean.
         """
         return True
