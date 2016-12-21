@@ -117,6 +117,11 @@ Workflow review state selector
 ********************************</tal:comment>
     <td tal:attributes="colspan python:nr_cols" class="listing-filter-row">
         <table width="100%" cellpadding="0" cellspacing="0" class="noborder nomargin">
+        <!-- Filter bar -->
+        <tal:filter-bar
+            tal:content="structure python:view.bika_listing.getFilterBar().render()">
+        </tal:filter-bar>
+        <!-- workflow state filter -->
         <tr class="noborder"
             tal:condition="python:len(view.bika_listing.review_states) > 1 and not rows_only">
             <td class="review_state_selector noborder" style="whitespace:nowrap"

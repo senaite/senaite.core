@@ -51,7 +51,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             came_from = came_from[0]
         # Call out to the workflow action method
         # Use default bika_listing.py/WorkflowAction for other transitions
-        method_name = 'workflow_action_' + action
+        method_name = 'workflow_action_' + action if action else ''
         method = getattr(self, method_name, False)
         if method:
             method()
