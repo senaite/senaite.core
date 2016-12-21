@@ -42,8 +42,21 @@ function BikaListingTableView() {
 			url = url.replace('_limit_from=','_olf=');
 			url += '&'+formid+"_limit_from="+limit_from;
 			$('#'+formid+' a.bika_listing_show_more').fadeOut();
-			var tbody = $('table.bika-listing-table[form_id="'+formid+'"] tbody.item-listing-tbody')
-			$.ajax(url)
+			var tbody = $('table.bika-listing-table[form_id="'+formid+'"] tbody.item-listing-tbody');
+			// The results must be filtered?
+			var filter_options = [];
+			filters1 = $('.bika_listing_filter_bar input[name][value!=""]');
+			filters2 = $('.bika_listing_filter_bar select option:selected[value!=""]');
+			filters = $.merge(filters1, filters2);
+			$(filters).each(function(e) {
+				var opt = [$(this).attr('name'), $(this).val()];
+				filter_options.push(opt);
+			});
+			var filterbar = {};
+			if (filter_options.length > 0) {
+				filterbar.bika_listing_filter_bar = $.toJSON(filter_options);
+			}
+			$.post(url, filterbar)
 				.done(function(data) {
 					try {
 						// We must surround <tr> inside valid TABLE tags before extracting
