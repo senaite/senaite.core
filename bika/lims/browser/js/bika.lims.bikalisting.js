@@ -603,6 +603,7 @@ function BikaListingTableView() {
         });
         $(".bika-listing-table a[download]").click(function(e) {
             $(this).closest('.bika-listing-table').find('td.export-controls span.export-toggle').click();
+            var type = $(this).attr('type');
             var data = [];
             var headers = [];
             var omitidx = [];
@@ -644,9 +645,51 @@ function BikaListingTableView() {
                     data.push(rowdata.join(','));
                 }
             });
-            var output = data.join('\r\n');
-            var uri = 'data:application/csv;base64;charset=UTF-8,' + btoa(output);
+            var output = '';
+            var urischema = '';
+            if (type == 'xml') {
+                output = "<items>\r\n";
+                for (var i = 1; i < data.length; i++) {
+                    row = data[i].substr(1,data[i].length-2);
+                    row = row.split('","');
+                    if (row.length == headers.length) {
+                        output += "  <item>\r\n";
+                        for (var j=0; j < row.length; j++) {
+                            if (j < headers.length) {
+                                var colname = qname(headers[j]);
+                                output += "    <"+colname+">";
+                                output += escapeTxt(row[j]);
+                                output += "</"+colname+">\r\n";
+                            }
+                        }
+                        output += "  </item>\r\n";
+                    }
+                }
+                output += "</items>";
+                urischema = 'data:application/xml;base64;charset-UTF-8,';
+            } else {
+                // Fallback CSV
+                output = data.join('\r\n');
+                urischema = 'data:application/csv;base64;charset=UTF-8,';
+            }
+            var uri = urischema + btoa(output);
             $(this).attr('href', uri);
         });
+
+        function unquote(val) {
+            return val.replace( /^\s*\"(.*)\"\s*$/, "$1" );
+        }
+
+        function escapeTxt(val) {
+            var vl = val.replace(/&/g, "&amp;");
+            vl = vl.replace(/</g, "&lt;");
+            vl = vl.replace(/>/g, "&gt;");
+            return unquote(vl);
+        }
+
+        function qname(name) {
+            var nm = name.replace(/(\s)+/g, "_");
+            return unquote(nm);
+        }
     }
 }
