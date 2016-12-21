@@ -1178,6 +1178,14 @@ class BikaListingView(BrowserView):
         else:
             return {}
 
+    def get_filter_bar_values(self):
+        """
+        This function calls the filter bar get_filter_bar_dict
+        from the filterbar object in order to obtain the filter values.
+        :return: a dictionary
+        """
+        return self.getFilterBar().get_filter_bar_dict()
+
     def filter_bar_check_item(self, item):
         """
         This functions receives a key-value items, and checks if it should be
@@ -1324,7 +1332,7 @@ class BikaListingFilterBar(BrowserView):
 
     def get_filter_bar_dict(self):
         """
-        Return the _filter_bar_dict attribute
+        Returns the _filter_bar_dict attribute
         """
         return self._filter_bar_dict
 
