@@ -135,7 +135,10 @@ Workflow review state selector
                 <span href="#" class='export-toggle' i18n:translate="">Export</span>
                 <ul>
                     <li>
-                        <a href="" download="name.csv">CSV</a>
+                        <a href="" type='csv' tal:attributes="download python:form_id + '.csv'">CSV</a>
+                    </li>
+                    <li>
+                        <a href="" type='xml' tal:attributes="download python:form_id + '.xml'">XML</a>
                     </li>
                 </ul>
             </td>
