@@ -131,6 +131,14 @@ Workflow review state selector
                     tal:content="structure state/title"/>
                 </tal:review_states>
             </td>
+            <td class="export-controls">
+                <span href="#" class='export-toggle' i18n:translate="">Export</span>
+                <ul>
+                    <li>
+                        <a href="" download="name.csv">CSV</a>
+                    </li>
+                </ul>
+            </td>
 <tal:comment replace="nothing">***************
 filter search
 ********************************</tal:comment>
