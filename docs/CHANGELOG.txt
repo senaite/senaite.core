@@ -1,5 +1,6 @@
 3.2.1 (unreleased)
 ------------------
+LIMS-2466: Central Instrument Location Management
 LIMS-2357: Custom Landing Page and Link to switch between the Front Page and Dashboard
 LIMS-2455: Contact/Login Linkage Behavior
 LIMS-2447: getDatePublished index not indexed correctly at time of AR publication

@@ -260,6 +260,13 @@ class IInstrumentTypes(Interface):
 
     ""
 
+class IInstrumentLocation(Interface):
+    """A physical place, where instruments can be located
+    """
+
+class IInstrumentLocations(Interface):
+    """Physical places, where instruments can be located
+    """
 
 class IAnalysisSpecs(Interface):
     ""

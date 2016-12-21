@@ -81,6 +81,7 @@ def initialize(context):
     from content.instrumentscheduledtask import InstrumentScheduledTask
     from content.instrumentvalidation import InstrumentValidation
     from content.instrumenttype import InstrumentType
+    from content.instrumentlocation import InstrumentLocation
     from content.invoice import Invoice
     from content.invoicebatch import InvoiceBatch
     from content.invoicefolder import InvoiceFolder
@@ -136,6 +137,7 @@ def initialize(context):
     from controlpanel.bika_departments import Departments
     from controlpanel.bika_instruments import Instruments
     from controlpanel.bika_instrumenttypes import InstrumentTypes
+    from controlpanel.bika_instrumentlocations import InstrumentLocations
     from controlpanel.bika_labcontacts import LabContacts
     from controlpanel.bika_labproducts import LabProducts
     from controlpanel.bika_manufacturers import Manufacturers

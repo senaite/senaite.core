@@ -83,6 +83,7 @@ class BikaGenerator:
                        'bika_preservations',
                        'bika_instruments',
                        'bika_instrumenttypes',
+                       'bika_instrumentlocations',
                        'bika_analysisspecs',
                        'bika_analysisprofiles',
                        'bika_artemplates',
@@ -707,8 +708,9 @@ class BikaGenerator:
         at.setCatalogsByType('SamplePoint', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('StorageLocation', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('SamplingDeviation', ['bika_setup_catalog', ])
-        at.setCatalogsByType('Instrument', ['bika_setup_catalog', ])
-        at.setCatalogsByType('InstrumentType', ['bika_setup_catalog', ])
+        at.setCatalogsByType('Instrument', ['bika_setup_catalog', 'portal_catalog'])
+        at.setCatalogsByType('InstrumentType', ['bika_setup_catalog', 'portal_catalog'])
+        at.setCatalogsByType('InstrumentLocation', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('Method', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('Multifile', ['bika_setup_catalog'])
         at.setCatalogsByType('AttachmentType', ['bika_setup_catalog', ])
@@ -754,6 +756,7 @@ class BikaGenerator:
         addIndex(bsc, 'getAnalyst', 'FieldIndex')
         addIndex(bsc, 'getInstrumentType', 'FieldIndex')
         addIndex(bsc, 'getInstrumentTypeName', 'FieldIndex')
+        addIndex(bsc, 'getInstrumentLocationName', 'FieldIndex')
         addIndex(bsc, 'getBlank', 'FieldIndex')
         addIndex(bsc, 'getCalculationTitle', 'FieldIndex')
         addIndex(bsc, 'getCalculationUID', 'FieldIndex')
@@ -811,6 +814,7 @@ class BikaGenerator:
         addColumn(bsc, 'getAccredited')
         addColumn(bsc, 'getInstrumentType')
         addColumn(bsc, 'getInstrumentTypeName')
+        addColumn(bsc, 'getInstrumentLocationName')
         addColumn(bsc, 'getBlank')
         addColumn(bsc, 'getCalculationTitle')
         addColumn(bsc, 'getCalculationUID')
