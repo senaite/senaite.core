@@ -26,7 +26,10 @@ This filter shouldn’t override the filter by state functionality
                 <option
                     tal:repeat="option olist"
                     tal:content="python:olist.getValue(option)"
+                    tal:define="
+                        pre_condition python:view.get_filter_bar_dict().get(field.get('name', ''), '');"
                     tal:attributes="
+                        selected python:'selected' if pre_condition == option else '';
                         value python: option;"
                     />
         </select>
@@ -42,7 +45,10 @@ This filter shouldn’t override the filter by state functionality
                 <option
                     tal:repeat="option olist"
                     tal:content="python:olist.getValue(option)"
+                    tal:define="
+                        pre_condition python:view.get_filter_bar_dict().get(field.get('name', ''), '');"
                     tal:attributes="
+                        selected python:'selected' if pre_condition == option else '';
                         value python: option;"
                     />
         </select>
@@ -50,7 +56,8 @@ This filter shouldn’t override the filter by state functionality
         <input
             tal:condition="python: field.get('type', '') == 'text'"
             tal:attributes="
-                name python: 'bika_listing_filter_bar_' + field.get('name', '');"
+                name python: 'bika_listing_filter_bar_' + field.get('name', '');
+                value python:view.get_filter_bar_dict().get(field.get('name', ''), '');"
                 >
         </input>
         <!-- autocomplete text input -->
@@ -59,6 +66,7 @@ This filter shouldn’t override the filter by state functionality
             class="autocomplete"
             tal:attributes="
                 name python: 'bika_listing_filter_bar_' + field.get('name', '');
+                value python:view.get_filter_bar_dict().get(field.get('name', ''), '');
                 voc python: field.get('voc', [])"
                 >
         </input>
@@ -67,14 +75,16 @@ This filter shouldn’t override the filter by state functionality
             class="range_0"
             tal:condition="python: field.get('type', '') == 'range'"
             tal:attributes="
-                name python: 'bika_listing_filter_bar_' + field.get('name', '') + '_0';"
+                name python: 'bika_listing_filter_bar_' + field.get('name', '') + '_0';
+                value python:view.get_filter_bar_dict().get(field.get('name', '')+'_0', '');"
                 >
         </input>
         <input
             class="range_1"
             tal:condition="python: field.get('type', '') == 'range'"
             tal:attributes="
-                name python: 'bika_listing_filter_bar_' + field.get('name', '') + '_1';"
+                name python: 'bika_listing_filter_bar_' + field.get('name', '') + '_1';
+                value python:view.get_filter_bar_dict().get(field.get('name', '')+'_1', ''), '');"
                 >
         </input>
         <!-- date range input -->
@@ -82,6 +92,7 @@ This filter shouldn’t override the filter by state functionality
         <input
             class="date_range_start datepicker_range"
             tal:attributes="
+                value python:view.get_filter_bar_dict().get(field.get('name', '')+'_0', '');
                 name python: 'bika_listing_filter_bar_' + field.get('name', '') + '_0';"
                 >
         </input>
@@ -89,6 +100,7 @@ This filter shouldn’t override the filter by state functionality
         <input
             class="date_range_end datepicker_range"
             tal:attributes="
+                value python:view.get_filter_bar_dict().get(field.get('name', '')+'_0', '');
                 name python: 'bika_listing_filter_bar_' + field.get('name', '') + '_1';"
                 >
         </input>
@@ -104,7 +116,9 @@ This filter shouldn’t override the filter by state functionality
             type="hidden"
             id="bika_listing_filter_bar_submit"
             name="bika_listing_filter_bar_submit"
-            value="0"></input>
+            tal:attributes="
+                value python:view.get_filter_bar_dict().get('submit', '0');"
+            ></input>
         </div>
     </td>
 </tr>
