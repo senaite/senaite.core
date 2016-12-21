@@ -100,7 +100,7 @@ This filter shouldn’t override the filter by state functionality
         <input
             class="date_range_end datepicker_range"
             tal:attributes="
-                value python:view.get_filter_bar_dict().get(field.get('name', '')+'_0', '');
+                value python:view.get_filter_bar_dict().get(field.get('name', '')+'_1', '');
                 name python: 'bika_listing_filter_bar_' + field.get('name', '') + '_1';"
                 >
         </input>
