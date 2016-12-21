@@ -114,7 +114,7 @@ def multi_verification(portal):
     Getting all analyses with review_state in to_be_verified and
     adding "admin" as a verificator as many times as this analysis verified before.
     """
-    ac = getToolByName(portal, 'portal_catalog', None)
+    pc = getToolByName(portal, 'portal_catalog', None)
     objs = pc(portal_type="Analyses",review_state="to_be_verified")
     for obj_brain in objs:
         obj = obj_brain.getObject()
