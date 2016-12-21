@@ -19,7 +19,7 @@ def upgrade(tool):
 
     qi = portal.portal_quickinstaller
     ufrom = qi.upgradeInfo('bika.lims')['installedVersion']
-    logger.info("Upgrading Bika LIMS: %s -> %s" % (ufrom, '3.1.11'))
+    logger.info("Upgrading Bika LIMS: %s -> %s" % (ufrom, '3.2.0'))
 
     """Updated profile steps
     list of the generic setup import step names: portal.portal_setup.getSortedImportSteps() <---
@@ -62,11 +62,11 @@ def upgrade(tool):
     logger.info("Removing stale indexes...")
     removeUnusedIndexes(portal)
 
-    # Clean and rebuild affected catalogs
-    cleanAndRebuildIfNeeded(portal)
-
     # Updating Verifications of Analysis field from integer to String.
     multi_verification(portal)
+
+    # Clean and rebuild affected catalogs
+    cleanAndRebuildIfNeeded(portal)
 
     return True
 
@@ -200,7 +200,7 @@ def multi_verification(portal):
     Getting all analyses with review_state in to_be_verified and
     adding "admin" as a verificator as many times as this analysis verified before.
     """
-    ac = getToolByName(portal, 'portal_catalog', None)
+    pc = getToolByName(portal, 'portal_catalog', None)
     objs = pc(portal_type="Analyses",review_state="to_be_verified")
     for obj_brain in objs:
         obj = obj_brain.getObject()
