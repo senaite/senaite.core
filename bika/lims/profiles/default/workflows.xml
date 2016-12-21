@@ -178,6 +178,12 @@
    <bound-workflow workflow_id="bika_inactive_workflow"/>
   </type>
 
+  <type type_id="InstrumentLocations"/>
+  <type type_id="InstrumentLocation">
+   <bound-workflow workflow_id="bika_one_state_workflow"/>
+   <bound-workflow workflow_id="bika_inactive_workflow"/>
+  </type>
+
   <type type_id="InstrumentValidation"/>
 
   <type type_id="Invoice"/>
