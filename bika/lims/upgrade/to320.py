@@ -83,7 +83,7 @@ def migrate_instrument_locations(portal):
 
         # get the string value of the `location` field
         location = instrument.getLocation()
-        if location == "":
+        if not location:
             continue  # Skip if no location was set
 
         # make a dictionary with the Titles as keys and the objects as values
