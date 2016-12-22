@@ -6,9 +6,12 @@
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import _createObjectByType
+
 from bika.lims import logger
 from Products.CMFCore import permissions
 from bika.lims.permissions import *
+from bika.lims.utils import tmpID
 
 
 def upgrade(tool):
@@ -106,3 +109,17 @@ def create_samplingcoordinator(portal):
     bc = getToolByName(portal, 'bika_catalog', None)
     if 'getScheduledSamplingSampler' not in bc.indexes():
         bc.addIndex('getScheduledSamplingSampler', 'FieldIndex')
+
+def create_CAS_IdentifierType(portal):
+    """LIMS-1391 The CAS Nr IdentifierType is normally created by
+    setuphandlers during site initialisation.
+    """
+    bsc = getToolByName(portal, 'bika_catalog', None)
+    idtypes = bsc(portal_type = 'IdentifierType', title='CAS Nr')
+    if not idtypes:
+        folder = portal.bika_setup.bika_identifiertypes
+        idtype = _createObjectByType('IdentifierType', folder, tmpID())
+        idtype.processForm()
+        idtype.edit(title='CAS Nr',
+                    description='Chemical Abstracts Registry number',
+                    portal_types=['Analysis Service'])
