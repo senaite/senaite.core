@@ -44,18 +44,21 @@ schema = Person.schema.copy() + atapi.Schema((
                              "Upload a scanned signature to be used on printed analysis "
                              "results reports. Ideal size is 250 pixels wide by 150 high"),
                      )),
+      # TODO: Department'll be delated
     atapi.ReferenceField('Department',
-                         required=0,
-                         vocabulary_display_path_bound=sys.maxint,
-                         allowed_types=('Department',),
-                         relationship='LabContactDepartment',
-                         vocabulary='getDepartments',
-                         referenceClass=HoldingReference,
-                         widget=atapi.ReferenceWidget(
-                             checkbox_bound=0,
-                             label=_("Department"),
-                             description=_("The laboratory department"),
-                         )),
+        required = 0,
+        vocabulary_display_path_bound = sys.maxint,
+        allowed_types = ('Department',),
+        relationship = 'LabContactDepartment',
+        vocabulary = 'getDepartments',
+        referenceClass = HoldingReference,
+        widget = atapi.ReferenceWidget(
+            visible=False,
+            checkbox_bound = 0,
+            label=_("Department"),
+            description=_("The laboratory department"),
+        ),
+    ),
     atapi.ComputedField('DepartmentTitle',
                         expression="context.getDepartment() and context.getDepartment().Title() or ''",
                         widget=atapi.ComputedWidget(
@@ -116,6 +119,26 @@ class LabContact(Contact):
         compability with the old version.
         """
         return self.getDepartments()[0] if self.getDepartments() else None
+
+    def getDepartments_voc(self):
+        """
+        Returns a vocabulary object with the available departments.
+        """
+        bsc = getToolByName(self, 'portal_catalog')
+        items = [(o.UID, o.Title) for o in
+                               bsc(portal_type='Department',
+                                   inactive_state = 'active')]
+        # Getting the departments uids
+        deps_uids = [i[0] for i in items]
+        # Getting the assigned departments
+        objs = self.getDepartments()
+        # If one department assigned to the Lab Contact is disabled, it will
+        # be shown in the list until the department has been unassigned.
+        for o in objs:
+            if o and o.UID() not in deps_uids:
+                items.append((o.UID(), o.Title()))
+        items.sort(lambda x,y: cmp(x[1], y[1]))
+        return DisplayList(list(items))
 
     def _departmentsVoc(self):
         """
@@ -182,4 +205,4 @@ class LabContact(Contact):
         return deps
 
 
-registerType(LabContact, PROJECTNAME)
+atapi.registerType(LabContact, PROJECTNAME)
