@@ -45,6 +45,10 @@ def upgrade(tool):
     """
     wf = getToolByName(portal, 'portal_workflow')
     wf.updateRoleMappings()
+
+    # Updating Verifications of Analysis field from integer to String.
+    multi_verification(portal)
+
     return True
 
 
@@ -114,6 +118,15 @@ def create_CAS_IdentifierType(portal):
     """LIMS-1391 The CAS Nr IdentifierType is normally created by
     setuphandlers during site initialisation.
     """
+    pc = getToolByName(portal, 'portal_catalog', None)
+    objs = pc(portal_type="Analyses",review_state="to_be_verified")
+    for obj_brain in objs:
+        obj = obj_brain.getObject()
+        old_field = obj.Schema().get("NumberOfVerifications", None)
+        if old_field:
+            new_value=''
+            for n in range(0,old_field):
+                new_value+='admin'
     bsc = getToolByName(portal, 'bika_catalog', None)
     idtypes = bsc(portal_type = 'IdentifierType', title='CAS Nr')
     if not idtypes:
@@ -123,3 +136,22 @@ def create_CAS_IdentifierType(portal):
         idtype.edit(title='CAS Nr',
                     description='Chemical Abstracts Registry number',
                     portal_types=['Analysis Service'])
+
+def multi_verification(portal):
+    """
+    Getting all analyses with review_state in to_be_verified and
+    adding "admin" as a verificator as many times as this analysis verified before.
+    """
+    pc = getToolByName(portal, 'portal_catalog', None)
+    objs = pc(portal_type="Analyses",review_state="to_be_verified")
+    for obj_brain in objs:
+        obj = obj_brain.getObject()
+        old_field = obj.Schema().get("NumberOfVerifications", None)
+        if old_field:
+            new_value=''
+            for n in range(0,old_field):
+                new_value+='admin'
+                if n<old_field:
+                    new_value+=','
+            obj.setVerificators(new_value)
+

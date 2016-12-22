@@ -217,12 +217,13 @@ class WorkflowAction:
                         success = True
                         revers = item.getNumberOfRequiredVerifications()
                         nmvers = item.getNumberOfVerifications()
-                        item.setNumberOfVerifications(nmvers+1)
+                        username=getToolByName(self.context,'portal_membership').getAuthenticatedMember().getUserName()
+                        item.addVerificator(username)
                         if revers-nmvers <= 1:
                             success, message = doActionFor(item, action)
                             if not success:
-                                # If failed, restore to the previous number
-                                item.setNumberOfVerifications(numvers)
+                                # If failed, remove the last verification
+                                item.deleteLastVerificator()
                     else:
                         success, message = doActionFor(item, action)
                     if success:
