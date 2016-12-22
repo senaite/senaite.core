@@ -2,73 +2,141 @@
  * Do not use margins, use padding instead
  */
 
-#report {
-    font: 9pt Arial, Verdana, serif;
+@page {
 }
 
-#report h1 { font-size:1.4em; }
-#report h2 { font-size:1.2em; }
-#report h3 { font-size:1.1em; }
+#report {
+    font: 8pt Arial, Verdana, serif;
+}
 
-#report h1,
-#report h2,
-#report h3 {
+#report h1 {
+    font-size:1.4em;
+    font-weight:bold;
+}
+
+#report h2 {
+    font-size:1.2em;
     font-weight:bold;
     padding-bottom:5px !important;
 }
 
-#report table {
-    width: 100%;
+#report h3 {
+    font-size:1.1em;
+    font-weight:bold;
+    padding-bottom:5px !important;
 }
 
-#report table tr td,
-#report table tr th {
-    text-align:left;
-    vertical-align:top;
+.page-header {
+    height: 76px;
 }
+
+#section-info {
+    line-height:125% !important;
+}
+
+#section-info-heading {
+    height:2em;
+    text-align:center !important;
+    vertical-align:center;
+}
+
+#discreeter div{
+  margin-top:3px;
+  line-height: 125% !important;
+}
+
+#discreeter-info {
+    color:#555;
+}
+
+.accredited-ico {
+    height:1.1em;
+    vertical-align:middle;
+}
+
 #report .label {
     font-weight:bold;
     padding-right: 10px;
+    text-align: left;
+    vertical-align: top;
 }
 #report .outofrange,
 #report .outofrange a {
     font-weight:bold;
     color:#d40000;
 }
-#report .units,
-#report .units sub,
-#report .units sup {
-    color:#777;
-    font-weight:normal;
-    font-style:italic;
-}
-#report .units sub,
-#report .units sup {
-    font-size:7pt;
-}
 #report .page-footer table {
     border-top: 1px solid #aaaaaa;
     padding: 5px 0;
     width: 100%;
 }
-#report #ar-grid th {
-    padding: 5px 5px 5px 0;
+
+.ar_table {
+    padding-top:10px;
+    font-size: 82.5%;
+    border-top:1px solid #cdcdcd;
+    border-left:1px solid #cdcdcd;
 }
-#report #ar-grid td {
-  border:1px solid #cdcdcd;
-  padding:3px;
+.ar_table .header_th {
+    font-weight:bold;
+    padding: 2px 2px 2px 0;
 }
-#report #ar-grid td.blank-row {
-  border: 0 none;
-  padding: 10px;
+.ar_table .header_td {
+    text-align: center;
+    font-weight:bold;
+    padding:2px;
 }
-#report #ar-grid td.sampleid,
-#report #ar-grid td.sampletype,
-#report #ar-grid td.samplepoint,
-#report #ar-grid td.result {
-  text-align:center;
+.ar_table .th {
+    background: #eeeeee;
+    color: #444444;
+    padding:1px;
+    border-bottom:1px solid #cdcdcd;
+    border-right:1px solid #cdcdcd;
 }
-#report #ar-grid td.sampleid {
-  font-weight:bold;
-  text-align:center;
+.ar_table .td {
+    padding:1px;
+    border-bottom:1px solid #cdcdcd;
+    border-right:1px solid #cdcdcd;
 }
+.cat_title {
+    background: #dddddd;
+    color: #444444;
+    padding:2px 0px 2px 0px;
+    margin-top:7px;
+}
+
+.ar_table .unit,
+.ar_table .unit sub,
+.ar_table .unit sup {
+    color:#777;
+    font-weight:normal;
+    font-style:italic;
+    font-size:7pt;
+}
+
+div.resultsinterpretation {
+    border: 1px solid #cdcdcd;
+}
+
+div.resultsinterpretation_heading {
+    font-weight:bold;
+    background: #dddddd;
+    color: #444444;
+    margin-top:7px;
+    padding:2px 0px 2px 0px;
+    font-size:1.2em;
+}
+
+
+/* this is to reproduce table-like structure
+   for the sake of table-less layout. */
+.table { display:table; table-layout:fixed; width:100%; }
+.row { display:table-row; }
+.th { display:table-cell; font-weight:bold; }
+.td { display:table-cell; }
+/* this is where the colspan tricks works. */
+/* below is for visual recognition test purposes only. */
+.red { background:red; }
+.blue { background:blue; }
+.green { background:green; }
+.black { background:black; }

@@ -1,6 +1,7 @@
 3.2.1 (unreleased)
 ------------------
 LIMS-2357: Custom Landing Page and Link to switch between the Front Page and Dashboard
+LIMS-2341: Cleanup and format default Multi-AR COA
 LIMS-2455: Contact/Login Linkage Behavior
 LIMS-2456: Restrict duplicate slots in worksheet templates to routine analyses only.
 LIMS-2447: getDatePublished index not indexed correctly at time of AR publication
