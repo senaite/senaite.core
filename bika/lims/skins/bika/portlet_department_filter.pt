@@ -41,7 +41,8 @@
                        tal:condition= "python: user_name=='admin'"/>
                        <label tal:condition= "python: user_name=='admin'">Select All Departments<br><br></label>
 
-                <tal:option repeat="dep deps">
+                <tal:option repeat="dep deps"
+                    tal:condition="python: len(deps)>1">
                 <input type="checkbox"
                     tal:define="dep_name python:dep.Title if user_name=='admin' else dep.Title();
                                 dep_uid python: dep.UID if user_name=='admin' else dep.UID()"
@@ -59,10 +60,11 @@
                     tal:condition="python: len(deps)<2"
                     tal:content="python: deps[0].Title if user_name=='admin' else deps[0].Title()"
                     >Department</label>
-            </dd>
+            </dd><br>
             <!-- The submit form button -->
             <dd class="portletFooter">
-                <input type="button" id="department_filter_submit" value="Filter">
+                <input type="button" id="department_filter_submit" value="Filter"
+                  tal:condition="python: len(deps)>1">
             </dd>
         </form>
     </dl>
