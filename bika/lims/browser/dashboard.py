@@ -425,6 +425,7 @@ class DashboardView(BrowserView):
         """
         out = []
         bc = getToolByName(self.context, "bika_catalog")
+        cookie_dep_uid = self.request.get('filter_by_department_info', '')
         active_ws = ['open', 'to_be_verified', 'attachment_due']
         numws = self.getAllowedLenWS(bc(portal_type="Worksheet",
                        getDepartmentUIDs={ "query":cookie_dep_uid,"operator":"or" },
@@ -532,6 +533,7 @@ class DashboardView(BrowserView):
                      'to_be_verified',
                      'verified']
         bac = getToolByName(self.context, "bika_analysis_catalog")
+        cookie_dep_uid = self.request.get('filter_by_department_info', '')
         numans = self.getAllowedLenAn(bac(portal_type="Analysis",
                                      created=self.date_range,
                          getDepartmentUID=cookie_dep_uid,
