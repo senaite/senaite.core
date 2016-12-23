@@ -446,7 +446,6 @@ class DashboardView(BrowserView):
         numans += len(bac(portal_type="Analysis",
                           getDepartmentUID={ "query":cookie_dep_uid,"operator":"or" },
                           review_state=active_rs,
-                          getDepartmentUID=cookie_dep_uid,
                           cancellation_state=['active'],
                           created=self.base_date_range))
 
@@ -455,7 +454,7 @@ class DashboardView(BrowserView):
                         'assigned',
                         'attachment_due',
                         'to_be_verified']
-        ans = len(bac(portal_type="Analysis", review_state=review_state,getDepartmentUID=cookie_dep_uid ))
+        ans = len(bac(portal_type="Analysis",
                       getDepartmentUID={ "query":cookie_dep_uid,"operator":"or" },
                       review_state=review_state))
         ratio = (float(ans)/float(numans))*100 if ans > 0 and numans > 0 else 0
@@ -472,7 +471,7 @@ class DashboardView(BrowserView):
 
         # Analyses to be verified
         review_state = ['to_be_verified', ]
-        ans = len(bac(portal_type="Analysis", getDepartmentUID=cookie_dep_uid,review_state=review_state))
+        ans = len(bac(portal_type="Analysis",
                       getDepartmentUID={ "query":cookie_dep_uid,"operator":"or" },
                       review_state=review_state))
         ratio = (float(ans)/float(numans))*100 if ans > 0 and numans > 0 else 0
