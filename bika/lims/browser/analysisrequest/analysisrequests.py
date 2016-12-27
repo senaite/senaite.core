@@ -696,7 +696,8 @@ class AnalysisRequestsView(BikaListingView):
         if not self.context.bika_setup.getAllowDepartmentFiltering():
             return True
         # Gettin the department from analysis service
-        deps = obj.getDepartments()
+        ans = [an.getObject() for an in obj.getAnalyses()]
+        deps = [an.getService().getDepartment().UID() for an in ans if an.getService().getDepartment()]
         result = True
         if deps:
             # Getting the cookie value

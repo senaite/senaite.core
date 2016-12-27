@@ -353,15 +353,17 @@ function SiteView() {
         Also it does auto-submit if admin wants to enable/disable the department filtering.
         */
         $('#department_filter_submit').click(function() {
-          var deps =[];
-          $.each($("input[name^=chb_deps_]:checked"), function() {
-            deps.push($(this).val());
-          });
-          var cookiename = 'filter_by_department_info';
-          if (deps.length===0) {
-            deps.push($('input[name^=chb_deps_]:checkbox:not(:checked):visible:first').val());
+          if(!($('#admin_dep_filter_enabled').is(":checked"))) {
+            var deps =[];
+            $.each($("input[name^=chb_deps_]:checked"), function() {
+              deps.push($(this).val());
+            });
+            var cookiename = 'filter_by_department_info';
+            if (deps.length===0) {
+              deps.push($('input[name^=chb_deps_]:checkbox:not(:checked):visible:first').val());
+            }
+            createCookie(cookiename, deps.toString());
           }
-          createCookie(cookiename, deps.toString());
           location.reload();
         });
 
