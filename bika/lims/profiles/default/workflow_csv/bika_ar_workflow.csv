@@ -10,7 +10,7 @@ State variable:,review_state,,,,,,,,,,,,,,,
 Id:,sample_registered,,,,,,,,,,,,,,,
 Title:,Registered,,,,,,,,,,,,,,,
 Description:,Creating an AR,,,,,,,,,,,,,,,
-Transitions,"sampling_workflow, no_sampling_workflow",,,,,,,,,,,,,,,
+Transitions,"sampling_workflow, no_sampling_workflow, reject",,,,,,,,,,,,,,,
 Permissions,Acquire,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,Publisher,Reviewer,RegulatoryInspector,Owner,Client,Anonymous,Authenticated,SamplingCoordinator
 BIKA: Add Analysis,N,Y,Y,Y,N,Y,N,N,N,N,N,Y,N,N,N,N
 BIKA: Cancel and reinstate,N,Y,Y,Y,N,Y,N,N,N,N,N,Y,N,N,N,N
@@ -30,7 +30,7 @@ BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 Id:,to_be_sampled,,,,,,,,,,,,,,,
 Title:,To Be Sampled,,,,,,,,,,,,,,,
 Description:,AR successfully created,,,,,,,,,,,,,,,
-Transitions,"sample, submit, schedule_sampling",,,,,,,,,,,,,,,
+Transitions,"sample, submit, schedule_sampling, reject",,,,,,,,,,,,,,,
 Permissions,Acquire,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,Publisher,Reviewer,RegulatoryInspector,Owner,Client,Anonymous,Authenticated,SamplingCoordinator
 BIKA: Add Analysis,N,Y,Y,Y,N,Y,N,N,N,N,N,Y,N,N,N,N
 BIKA: Cancel and reinstate,N,Y,Y,Y,N,Y,N,N,N,N,N,Y,N,N,N,N
@@ -52,7 +52,7 @@ BIKA: Schedule Sampling,N,Y,N,N,N,N,N,N,N,N,N,N,N,N,N,Y
 Id:,scheduled_sampling,,,,,,,,,,,,,,,
 Title:,Scheduled Sampling,,,,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,,,,
-Transitions,sample,,,,,,,,,,,,,,,
+Transitions,"sample, reject",,,,,,,,,,,,,,,
 Permissions,Acquire,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,Publisher,Reviewer,RegulatoryInspector,Owner,Client,Anonymous,Authenticated,SamplingCoordinator
 BIKA: Add Analysis,N,Y,Y,Y,N,Y,N,N,N,N,N,Y,N,N,N,N
 BIKA: Cancel and reinstate,N,Y,Y,Y,N,Y,N,N,N,N,N,Y,N,N,N,N
@@ -74,7 +74,7 @@ BIKA: Schedule Sampling,N,Y,N,N,N,N,N,N,N,N,N,N,N,N,N,Y
 Id:,sampled,,,,,,,,,,,,,,,
 Title:,Sampled,,,,,,,,,,,,,,,
 Description:,"Sampling completed, Sampler, Date Sampled and Field analysis results captured",,,,,,,,,,,,,,,
-Transitions,"auto_preservation_required, auto_no_preservation_required, to_be_preserved, sample_due",,,,,,,,,,,,,,,
+Transitions,"auto_preservation_required, auto_no_preservation_required, to_be_preserved, sample_due, reject",,,,,,,,,,,,,,,
 Permissions,Acquire,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,Publisher,Reviewer,RegulatoryInspector,Owner,Client,Anonymous,Authenticated,SamplingCoordinator
 BIKA: Add Analysis,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Cancel and reinstate,N,Y,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N
@@ -94,7 +94,7 @@ BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 Id:,to_be_preserved,,,,,,,,,,,,,,,
 Title:,To Be Preserved,,,,,,,,,,,,,,,
 Description:,Sample was identified as requiring preservation,,,,,,,,,,,,,,,
-Transitions,preserve,,,,,,,,,,,,,,,
+Transitions,"preserve, reject",,,,,,,,,,,,,,,
 Permissions,Acquire,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,Publisher,Reviewer,RegulatoryInspector,Owner,Client,Anonymous,Authenticated,SamplingCoordinator
 BIKA: Add Analysis,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Cancel and reinstate,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
@@ -116,7 +116,7 @@ BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 Id:,sample_due,,,,,,,,,,,,,,,
 Title:,Sample Due,,,,,,,,,,,,,,,
 Description:,Sample yet to be taken into the lab for analysis,,,,,,,,,,,,,,,
-Transitions,"receive, submit",,,,,,,,,,,,,,,
+Transitions,"receive, submit, reject",,,,,,,,,,,,,,,
 Permissions,Acquire,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,Publisher,Reviewer,RegulatoryInspector,Owner,Client,Anonymous,Authenticated,SamplingCoordinator
 BIKA: Add Analysis,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Cancel and reinstate,N,Y,Y,Y,N,N,N,N,N,N,N,Y,N,N,N,N
@@ -145,7 +145,7 @@ Permissions,Acquire,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifi
 Id:,sample_received,,,,,,,,,,,,,,,
 Title:,Received,,,,,,,,,,,,,,,
 Description:,Sample is 'in the lab',,,,,,,,,,,,,,,
-Transitions,"prepublish, submit",,,,,,,,,,,,,,,
+Transitions,"prepublish, submit, sample_prep, reject",,,,,,,,,,,,,,,
 Permissions,Acquire,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,Publisher,Reviewer,RegulatoryInspector,Owner,Client,Anonymous,Authenticated,SamplingCoordinator
 BIKA: Add Analysis,N,Y,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Cancel and reinstate,N,Y,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N
@@ -166,7 +166,7 @@ BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 Id:,attachment_due,,,,,,,,,,,,,,,
 Title:,Attachment Outstanding,,,,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,,,,
-Transitions,"prepublish, attach, retract",,,,,,,,,,,,,,,
+Transitions,"prepublish, attach, retract, reject",,,,,,,,,,,,,,,
 Permissions,Acquire,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,Publisher,Reviewer,RegulatoryInspector,Owner,Client,Anonymous,Authenticated,SamplingCoordinator
 BIKA: Add Analysis,N,Y,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Cancel and reinstate,N,Y,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N
@@ -187,7 +187,7 @@ BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 Id:,to_be_verified,,,,,,,,,,,,,,,
 Title:,To be verified,,,,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,,,,
-Transitions,"prepublish, verify, retract",,,,,,,,,,,,,,,
+Transitions,"prepublish, verify, retract, reject",,,,,,,,,,,,,,,
 Permissions,Acquire,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,Publisher,Reviewer,RegulatoryInspector,Owner,Client,Anonymous,Authenticated,SamplingCoordinator
 BIKA: Add Analysis,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Cancel and reinstate,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N,N
@@ -209,7 +209,7 @@ BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 Id:,verified,,,,,,,,,,,,,,,
 Title:,Verified,,,,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,,,,
-Transitions,"publish, retract_ar",,,,,,,,,,,,,,,
+Transitions,"publish, retract_ar, reject",,,,,,,,,,,,,,,
 Permissions,Acquire,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,Publisher,Reviewer,RegulatoryInspector,Owner,Client,Anonymous,Authenticated,SamplingCoordinator
 BIKA: Add Analysis,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Cancel and reinstate,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
@@ -230,7 +230,7 @@ BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 Id:,published,,,,,,,,,,,,,,,
 Title:,Published,,,,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,,,,
-Transitions,"republish, retract_ar",,,,,,,,,,,,,,,
+Transitions,"republish, retract_ar, reject",,,,,,,,,,,,,,,
 Permissions,Acquire,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,Publisher,Reviewer,RegulatoryInspector,Owner,Client,Anonymous,Authenticated,SamplingCoordinator
 BIKA: Add Analysis,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Cancel and reinstate,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
@@ -250,19 +250,38 @@ Id:,invalid,,,,,,,,,,,,,,,
 Title:,Invalid,,,,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,,,,
 Transitions,,,,,,,,,,,,,,,,
-Permissions,Acquire,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,Publisher,Reviewer,RegulatoryInspector,Owner,Anonymous,Authenticated,SamplingCoordinator,
-BIKA: Add Analysis,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,
-BIKA: Cancel and reinstate,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,
-BIKA: Edit AR,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,
-BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,
-BIKA: View Results,N,Y,Y,Y,Y,N,N,N,N,N,N,Y,N,N,N,
-BIKA: Manage Invoices,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,
-BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,
-BIKA: Results not requested,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,
-BIKA: Edit AR Contact,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,
-View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,N,N,Y,
-Modify portal content,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N,
-BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,
+Permissions,Acquire,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,Publisher,Reviewer,RegulatoryInspector,Owner,Client,Anonymous,Authenticated,SamplingCoordinator
+BIKA: Add Analysis,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Cancel and reinstate,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Edit AR,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: View Results,N,Y,Y,Y,Y,N,N,N,N,N,N,Y,Y,N,N,N
+BIKA: Manage Invoices,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Results not requested,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Edit AR Contact,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,Y
+Modify portal content,N,Y,Y,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+,,,,,,,,,,,,,,,,
+[State],,,,,,,,,,,,,,,,
+Id:,rejected,,,,,,,,,,,,,,,
+Title:,Rejected,,,,,,,,,,,,,,,
+Description:,,,,,,,,,,,,,,,,
+Transitions,,,,,,,,,,,,,,,,
+Permissions,Acquire,Manager,LabManager,LabClerk,Analyst,Sampler,Preserver,Verifier,Publisher,Reviewer,RegulatoryInspector,Owner,Client,Anonymous,Authenticated,SamplingCoordinator
+BIKA: Add Analysis,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Cancel and reinstate,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Edit AR,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: View Results,N,Y,Y,Y,Y,N,N,N,N,N,N,Y,Y,N,N,N
+BIKA: Manage Invoices,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Preserve Sample,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Results not requested,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Edit AR Contact,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+View,N,Y,Y,Y,Y,Y,Y,Y,Y,N,Y,Y,Y,N,N,Y
+Modify portal content,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,,,,,,,
 [Transition],,,,,,,,,,,,,,,,
 Id:,attach,,,,,,,,,,,,,,,
@@ -423,6 +442,15 @@ Target state:,verified,,,,,,,,,,,,,,,
 URL:,,,,,,,,,,,,,,,,
 Trigger:,User,,,,,,,,,,,,,,,
 Guard expression:,python:here.guard_verify_transition(),,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,
+[Transition],,,,,,,,,,,,,,,,
+Id:,reject,,,,,,,,,,,,,,,
+Title:,Reject,,,,,,,,,,,,,,,
+Description:,Reject,,,,,,,,,,,,,,,
+Target state:,rejected,,,,,,,,,,,,,,,
+URL:,,,,,,,,,,,,,,,,
+Trigger:,User,,,,,,,,,,,,,,,
+Guard expression:,python:here.bika_setup.isRejectionWorkflowEnabled(),,,,,,,,,,,,,,,
 ,,,,,,,,,,,,,,,,
 [Transition],,,,,,,,,,,,,,,,
 Id:,sample_prep,,,,,,,,,,,,,,,

@@ -54,6 +54,8 @@ class DefaultReferenceWidgetVocabulary(object):
                             schema = instance.Schema()
                             if fieldname in schema:
                                 value = schema[fieldname].get(instance)
+                        if callable(value):
+                            value = value()
                         if value and value.lower().find(searchTerm) > -1:
                             _brains.append(p)
                             break

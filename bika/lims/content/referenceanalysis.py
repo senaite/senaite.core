@@ -8,6 +8,7 @@
 
 """ReferenceAnalysis
 """
+from plone import api
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t, formatDecimalMark
@@ -18,6 +19,7 @@ from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
 from bika.lims.config import STD_TYPES, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IReferenceAnalysis
+from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.subscribers import skip
 from bika.lims.utils.analysis import get_significant_digits
 from DateTime import DateTime
@@ -128,6 +130,19 @@ schema = BikaSchema.copy() + Schema((
             label = _("Uncertainty"),
         ),
     ),
+
+    # Required number of required verifications before this analysis being
+    # transitioned to a 'verified' state. This value is set automatically
+    # when the analysis is created, based on the value set for the property
+    # NumberOfRequiredVerifications from the Analysis Service
+    IntegerField('NumberOfRequiredVerifications', default=1),
+
+    # Number of verifications done for this analysis. Each time a 'verify'
+    # transition takes place, this value is updated accordingly. The
+    # transition will finally succeed when the NumberOfVerifications matches
+    # with the NumberOfRequiredVerifications. Meanwhile, the state of the
+    # object will remain in 'to_be_verified'
+    IntegerField('NumberOfVerifications', default=0),
 ),
 )
 
@@ -377,6 +392,95 @@ class ReferenceAnalysis(BaseContent):
             return get_significant_digits(uncertainty)
         else:
             return serv.getPrecision(result)
+
+    def isVerifiable(self):
+        """
+        Checks it the current analysis can be verified. This is, its not a
+        cancelled analysis and has no dependenant analyses not yet verified
+        :return: True or False
+        """
+        # Check if the analysis is active
+        workflow = getToolByName(self, "portal_workflow")
+        objstate = workflow.getInfoFor(self, 'cancellation_state', 'active')
+        if objstate == "cancelled":
+            return False
+
+        # Check if the analysis state is to_be_verified
+        review_state = workflow.getInfoFor(self, "review_state")
+        if review_state != 'to_be_verified':
+            return False
+
+        # Check if the analysis has dependencies not yet verified
+        for d in self.getDependencies():
+            review_state = workflow.getInfoFor(d, "review_state")
+            if review_state in (
+                    "to_be_sampled", "to_be_preserved", "sample_due",
+                    "sample_received", "attachment_due", "to_be_verified"):
+                return False
+
+        # All checks passsed
+        return True
+
+    def isUserAllowedToVerify(self, member):
+        """
+        Checks if the specified user has enough privileges to verify the
+        current analysis. Apart of roles, the function also checks if the
+        option IsSelfVerificationEnabled is set to true at Service or
+        Bika Setup levels and validates if according to this value, together
+        with the user roles, the analysis can be verified. Note that this
+        function only returns if the user can verify the analysis, but not if
+        the analysis is ready to be verified (see isVerifiable)
+        :member: user to be tested
+        :return: true or false
+        """
+        # Check if the user has "Bika: Verify" privileges
+        username = member.getUserName()
+        allowed = api.user.has_permission(VerifyPermission, username=username)
+        if not allowed:
+            return False
+
+        # Check if the user who submited the result is the same as the current
+        workflow = getToolByName(self, "portal_workflow")
+        user_id = member.getUser().getId()
+        self_submitted = False
+        try:
+            review_history = workflow.getInfoFor(self, "review_history")
+            review_history = self.reverseList(review_history)
+            for event in review_history:
+                if event.get("action") == "submit":
+                    self_submitted = event.get("actor") == user_id
+                    break
+        except WorkflowException:
+            # https://jira.bikalabs.com/browse/LIMS-2037;
+            # Sometimes the workflow history is inexplicably missing!
+            # Let's assume the user that submitted the result is not the same
+            # as the current logged user
+            self_submitted = False
+
+        # The submitter and the user must be different unless the analysis has
+        # the option SelfVerificationEnabled set to true
+        selfverification = self.getService().isSelfVerificationEnabled()
+        if self_submitted and not selfverification:
+            return False
+
+        # All checks pass
+        return True
+
+    def guard_verify_transition(self):
+        """
+        Checks if the verify transition can be performed to the current
+        Analysis by the current user depending on the user roles, as
+        well as the status of the analysis
+        :return: true or false
+        """
+        mtool = getToolByName(self, "portal_membership")
+        checkPermission = mtool.checkPermission
+        # Check if the analysis is in a "verifiable" state
+        if self.isVerifiable():
+            # Check if the user can verify the analysis
+            member = mtool.getAuthenticatedMember()
+            return self.isUserAllowedToVerify(member)
+        return False
 
     def workflow_script_submit(self):
         if skip(self, "submit"):

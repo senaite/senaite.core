@@ -110,7 +110,8 @@ class DashboardView(BrowserView):
                  'title': <section_title>,
                 'panels': <array of panels>}
         """
-        sections = [self.get_analysisrequests_section(),
+        sections = [self.get_analyses_section(),
+                    self.get_analysisrequests_section(),
                     self.get_worksheets_section()]
         return sections
 
@@ -120,6 +121,7 @@ class DashboardView(BrowserView):
             ARs to be verified, ARs to be published, etc.)
         """
         out = []
+        sampenabled = self.context.bika_setup.getSamplingWorkflowEnabled()
 
         # Analysis Requests
         active_rs = ['to_be_sampled',
@@ -140,56 +142,57 @@ class DashboardView(BrowserView):
                         cancellation_state=['active',],
                         created=self.base_date_range))
 
-        # Analysis Requests awaiting to be sampled or scheduled
-        review_state = ['to_be_sampled',]
-        ars = len(bc(portal_type="AnalysisRequest",
-                     review_state=review_state,
-                     cancellation_state=['active',]))
-        ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
-        ratio = str("%%.%sf" % 1) % ratio
-        msg = _("To be sampled")
-        out.append({'type':         'simple-panel',
-                    'name':         _('Analysis Requests to be sampled'),
-                    'class':        'informative',
-                    'description':  msg,
-                    'number':       ars,
-                    'total':        numars,
-                    'legend':       _('of') + " " + str(numars) + ' (' + ratio +'%)',
-                    'link':        self.portal_url + '/samples?samples_review_state=to_be_sampled'})
+        if (sampenabled):
+            # Analysis Requests awaiting to be sampled or scheduled
+            review_state = ['to_be_sampled',]
+            ars = len(bc(portal_type="AnalysisRequest",
+                         review_state=review_state,
+                         cancellation_state=['active',]))
+            ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
+            ratio = str("%%.%sf" % 1) % ratio
+            msg = _("To be sampled")
+            out.append({'type':         'simple-panel',
+                        'name':         _('Analysis Requests to be sampled'),
+                        'class':        'informative',
+                        'description':  msg,
+                        'number':       ars,
+                        'total':        numars,
+                        'legend':       _('of') + " " + str(numars) + ' (' + ratio +'%)',
+                        'link':        self.portal_url + '/samples?samples_review_state=to_be_sampled'})
 
-        # Analysis Requests awaiting to be preserved
-        review_state = ['to_be_preserved',]
-        ars = len(bc(portal_type="AnalysisRequest",
-                     review_state=review_state,
-                     cancellation_state=['active',]))
-        ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
-        ratio = str("%%.%sf" % 1) % ratio
-        msg = _("To be preserved")
-        out.append({'type':         'simple-panel',
-                    'name':         _('Analysis Requests to be preserved'),
-                    'class':        'informative',
-                    'description':  msg,
-                    'number':       ars,
-                    'total':        numars,
-                    'legend':       _('of') + " " + str(numars) + ' (' + ratio +'%)',
-                    'link':         self.portal_url + '/analysisrequests?analysisrequests_review_state=to_be_preserved'})
+            # Analysis Requests awaiting to be preserved
+            review_state = ['to_be_preserved',]
+            ars = len(bc(portal_type="AnalysisRequest",
+                         review_state=review_state,
+                         cancellation_state=['active',]))
+            ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
+            ratio = str("%%.%sf" % 1) % ratio
+            msg = _("To be preserved")
+            out.append({'type':         'simple-panel',
+                        'name':         _('Analysis Requests to be preserved'),
+                        'class':        'informative',
+                        'description':  msg,
+                        'number':       ars,
+                        'total':        numars,
+                        'legend':       _('of') + " " + str(numars) + ' (' + ratio +'%)',
+                        'link':         self.portal_url + '/analysisrequests?analysisrequests_review_state=to_be_preserved'})
 
-        # Analysis Requests awaiting to be sampled
-        review_state = ['scheduled_sampling',]
-        ars = len(bc(portal_type="AnalysisRequest",
-                     review_state=review_state,
-                     cancellation_state=['active',]))
-        ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
-        ratio = str("%%.%sf" % 1) % ratio
-        msg = _("Scheduled sampling")
-        out.append({'type':         'simple-panel',
-                    'name':         _('Analysis Requests with scheduled sampling'),
-                    'class':        'informative',
-                    'description':  msg,
-                    'number':       ars,
-                    'total':        numars,
-                    'legend':       _('of') + " " + str(numars) + ' (' + ratio +'%)',
-                    'link':          self.portal_url + '/samples?samples_review_state=to_be_sampled'})
+            # Analysis Requests awaiting to be sampled
+            review_state = ['scheduled_sampling',]
+            ars = len(bc(portal_type="AnalysisRequest",
+                         review_state=review_state,
+                         cancellation_state=['active',]))
+            ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
+            ratio = str("%%.%sf" % 1) % ratio
+            msg = _("Scheduled sampling")
+            out.append({'type':         'simple-panel',
+                        'name':         _('Analysis Requests with scheduled sampling'),
+                        'class':        'informative',
+                        'description':  msg,
+                        'number':       ars,
+                        'total':        numars,
+                        'legend':       _('of') + " " + str(numars) + ' (' + ratio +'%)',
+                        'link':          self.portal_url + '/samples?samples_review_state=to_be_sampled'})
 
         # Analysis Requests awaiting for reception
         review_state = ['sample_due',]
@@ -400,6 +403,110 @@ class DashboardView(BrowserView):
 
         return {'id': 'worksheets',
                 'title': _('Worksheets'),
+                'panels': out}
+
+    def get_analyses_section(self):
+        """ Returns the section dictionary related with Analyses,
+            that contains some informative panels (analyses pending
+            analyses assigned, etc.)
+
+            sample_registered, not_requested, published, retracted,
+            sample_due, sample_received, sample_prep, sampled, to_be_preserved,
+            to_be_sampled, , to_be_verified, rejected, verified, to_be_verified,
+            assigned
+        """
+        out = []
+        active_rs = ['sample_received',
+                     'assigned',
+                     'attachment_due',
+                     'to_be_verified',
+                     'verified']
+        bac = getToolByName(self.context, "bika_analysis_catalog")
+        numans = len(bac(portal_type="Analysis",
+                         created=self.date_range,
+                         cancellation_state=['active']))
+        numans += len(bac(portal_type="Analysis",
+                          review_state=active_rs,
+                          cancellation_state=['active'],
+                          created=self.base_date_range))
+
+        # Analyses pending
+        review_state = ['sample_received',
+                        'assigned',
+                        'attachment_due',
+                        'to_be_verified']
+        ans = len(bac(portal_type="Analysis", review_state=review_state))
+        ratio = (float(ans)/float(numans))*100 if ans > 0 and numans > 0 else 0
+        ratio = str("%%.%sf" % 1) % ratio
+        msg = _("Analyses pending")
+        out.append({'type':         'simple-panel',
+                    'name':         _('Analyses pending'),
+                    'class':        'informative',
+                    'description':  msg,
+                    'number':       ans,
+                    'total':        numans,
+                    'legend':       _('of') + " " + str(numans) + ' (' + ratio +'%)',
+                    'link':         self.portal_url + '/aggregatedanalyses'})
+
+        # Analyses to be verified
+        review_state = ['to_be_verified', ]
+        ans = len(bac(portal_type="Analysis", review_state=review_state))
+        ratio = (float(ans)/float(numans))*100 if ans > 0 and numans > 0 else 0
+        ratio = str("%%.%sf" % 1) % ratio
+        msg = _("To be verified")
+        out.append({'type':         'simple-panel',
+                    'name':         _('To be verified'),
+                    'class':        'informative',
+                    'description':  msg,
+                    'number':       ans,
+                    'total':        numans,
+                    'legend':       _('of') + " " + str(numans) + ' (' + ratio +'%)',
+                    'link':         self.portal_url + '/worksheets?list_review_state=to_be_verified'})
+
+        # Chart with the evolution of WSs over a period, grouped by
+        # periodicity
+        workflow = getToolByName(self.context, 'portal_workflow')
+        allans = bac(portal_type="Analysis",
+                     sort_on="created",
+                     created=self.min_date_range)
+        outevo = []
+        for an in allans:
+            an = an.getObject()
+            state = 'other_status'
+            try:
+                state = workflow.getInfoFor(an, 'cancellation_state')
+                if (state == 'active'):
+                    state = workflow.getInfoFor(an, 'review_state')
+                else:
+                    state = 'inactive'
+            except:
+                pass
+
+            created = self._getDateStr(self.periodicity, an.created())
+
+            if (len(outevo) > 0 and outevo[-1]['date'] == created):
+                key = state if _(state) in outevo[-1] else 'other_status'
+                outevo[-1][_(key)] += 1
+            else:
+                currow = {'date': created,
+                   _('assigned'): 0,
+                   _('to_be_verified'): 0,
+                   _('attachment_due'): 0,
+                   _('verified'): 0,
+                   _('inactive'): 0,
+                   _('other_status'): 0,
+                   }
+                key = state if _(state) in currow else 'other_status'
+                currow[_(key)] += 1
+                outevo.append(currow)
+
+        out.append({'type':         'bar-chart-panel',
+                    'name':         _('Evolution of Analyses'),
+                    'class':        'informative',
+                    'description':  _('Evolution of Analyses'),
+                    'data':         json.dumps(outevo)})
+        return {'id': 'analyses',
+                'title': _('Analyses'),
                 'panels': out}
 
     def _getDateStr(self, period, created):

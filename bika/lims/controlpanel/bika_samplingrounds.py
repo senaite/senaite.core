@@ -38,7 +38,8 @@ class SamplingRoundsView(BikaListingView):
         self.columns = {
             'title': {'title': _('Title'),
                       'sortable': True,
-                      'toggle': True},
+                      'toggle': True,
+                      'replace_url': 'absolute_url'},
             'Description': {'title': _('Description')},
             'num_sample_points': {'title': _('Number of sampling points'),
                                     'index': 'sortable_title'},
@@ -88,16 +89,6 @@ class SamplingRoundsView(BikaListingView):
                          ]
              },
         ]
-
-    def folderitems(self, full_objects=True):
-        items = BikaListingView.folderitems(self, full_objects)
-        for x in range(len(items)):
-            if not items[x].has_key('obj'): continue
-            obj = items[x]['obj']
-            items[x]['title'] = obj.Title()
-            items[x]['replace']['title'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['title'])
-        return items
 
 
 class ISamplingRounds(model.Schema):

@@ -10,8 +10,10 @@ from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone import PloneMessageFactory
+from Products.CMFPlone.utils import _createObjectByType
+
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from bika.lims.utils import t, tmpID
 from bika.lims import logger
 from bika.lims.config import *
 from bika.lims.permissions import *
@@ -81,6 +83,7 @@ class BikaGenerator:
                        'bika_containers',
                        'bika_containertypes',
                        'bika_preservations',
+                       'bika_identifiertypes',
                        'bika_instruments',
                        'bika_instrumenttypes',
                        'bika_analysisspecs',
@@ -112,10 +115,6 @@ class BikaGenerator:
         lab.unmarkCreationFlag()
         lab.reindexObject()
 
-        # Move calendar and user action to bika
-# for action in portal.portal_controlpanel.listActions():
-# if action.id in ('UsersGroups', 'UsersGroups2', 'bika_calendar_tool'):
-# action.permissions = (ManageBika,)
 
     def setupGroupsAndRoles(self, portal):
         # add roles
@@ -244,8 +243,6 @@ class BikaGenerator:
         mp(PostInvoiceBatch, ['Manager', 'LabManager', 'Owner'], 1)
 
         mp(CancelAndReinstate, ['Manager', 'LabManager'], 0)
-
-        mp(VerifyOwnResults, ['Manager', ], 1)
         mp(ViewRetractedAnalyses, ['Manager', 'LabManager', 'LabClerk', 'Analyst', ], 0)
 
         mp(ScheduleSampling, ['Manager', 'SamplingCoordinator'], 0)
@@ -613,6 +610,7 @@ class BikaGenerator:
         addIndex(bc, 'inactive_state', 'FieldIndex')
         addIndex(bc, 'worksheetanalysis_review_state', 'FieldIndex')
         addIndex(bc, 'cancellation_state', 'FieldIndex')
+        addIndex(bc, 'Identifiers', 'KeywordIndex')
 
         addIndex(bc, 'getAnalysisCategory', 'KeywordIndex')
         addIndex(bc, 'getAnalysisService', 'KeywordIndex')
@@ -709,6 +707,7 @@ class BikaGenerator:
         at.setCatalogsByType('SamplePoint', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('StorageLocation', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('SamplingDeviation', ['bika_setup_catalog', ])
+        at.setCatalogsByType('IdentifierType', ['bika_setup_catalog', ])
         at.setCatalogsByType('Instrument', ['bika_setup_catalog', ])
         at.setCatalogsByType('InstrumentType', ['bika_setup_catalog', ])
         at.setCatalogsByType('Method', ['bika_setup_catalog', 'portal_catalog'])
@@ -743,6 +742,7 @@ class BikaGenerator:
         addIndex(bsc, 'created', 'DateIndex')
         addIndex(bsc, 'Creator', 'FieldIndex')
         addIndex(bsc, 'getObjPositionInParent', 'GopipIndex')
+        addIndex(bc, 'Identifiers', 'KeywordIndex')
 
         addIndex(bsc, 'title', 'FieldIndex', 'Title')
         addIndex(bsc, 'sortable_title', 'FieldIndex')
@@ -860,6 +860,20 @@ class BikaGenerator:
             alsoProvides(obj, IHaveNoBreadCrumbs)
 
 
+def create_CAS_IdentifierType(portal):
+    """LIMS-1391 The CAS Nr IdentifierType is normally created by
+    setuphandlers during site initialisation.
+    """
+    bsc = getToolByName(portal, 'bika_catalog', None)
+    idtypes = bsc(portal_type = 'IdentifierType', title='CAS Nr')
+    if not idtypes:
+        folder = portal.bika_setup.bika_identifiertypes
+        idtype = _createObjectByType('IdentifierType', folder, tmpID())
+        idtype.processForm()
+        idtype.edit(title='CAS Nr',
+                    description='Chemical Abstracts Registry number',
+                    portal_types=['Analysis Service'])
+
 def setupVarious(context):
     """
     Final Bika import steps.
@@ -887,3 +901,5 @@ def setupVarious(context):
     setup.runImportStepFromProfile(
             'profile-plone.app.jquery:default', 'jsregistry')
     # setup.runImportStepFromProfile('profile-plone.app.jquerytools:default', 'jsregistry')
+
+    create_CAS_IdentifierType(site)

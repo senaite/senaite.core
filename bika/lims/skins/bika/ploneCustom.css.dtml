@@ -1193,4 +1193,99 @@ body.template-ar_add table.listing.analysisrequest.add {
 body.template-ar_add table.th.column {
     text-align:center;
 }
+/*Rejection overlay CSS*/
+div#semioverlay {
+    display:none;
+}
+
+div#semioverlay div.semioverlay-back {
+    background-color: #fff;
+    bottom: 0;
+    left: 0;
+    opacity: 0.8;
+    filter: alpha(opacity=80);
+    position: fixed;
+    right: 0;
+    top: 0;
+    z-index: 500;
+}
+
+
+
+.rejectionwidget-multiselect.rejectionwidget-field{
+    background-color: #E8E8E8;
+}
+div#semioverlay div.semioverlay-content input{
+    background-color: #E8E8E8;
+}
+div#semioverlay div.semioverlay-buttons input{
+    background-color: #e0e0e0;
+    font-size: 16px
+}
+div#semioverlay div.semioverlay-panel {
+    position: absolute;
+    right: 30%;
+    left:10%;
+    top:0;
+    z-index:1000;
+    background-color: #e9e9e9;
+    border-radius: 5px;
+    padding: 20px 30px 30px 30px;
+    -webkit-box-shadow: 1px 1px 5px 0px rgba(119,119,119,1);
+    -moz-box-shadow: 1px 1px 5px 0px rgba(119,119,119,1);
+    box-shadow: 1px 1px 5px 0px rgba(119,119,119,1);
+}
+div#semioverlay div.semioverlay-head {
+    background: url(&dtml-portal_url;/++resource++bika.lims.images/warning_big.png) left top no-repeat;
+    color: #333;
+    font-size: 1.6em;
+    line-height: 35px;
+    padding: 0 0 10px 45px;
+}
+div#semioverlay div.semioverlay-content input[type="checkbox"].rejectionwidget-checkbox {
+    display:none;
+    visibility:hidden;
+}
+div#semioverlay div.semioverlay-content .options-set-multiselect {
+    padding:0 0 15px;
+}
+div#semioverlay div.semioverlay-content .options-set-multiselect select {
+    border:1px solid #cdcdcd;
+    background-color: #fff;
+    width:100%;
+}
+div#semioverlay div.semioverlay-content .options-set-multiselect select option {
+    font-size: 14px;
+    padding: 10px;
+}
+div#semioverlay div.semioverlay-content .options-set-other,
+div#semioverlay div.semioverlay-content .options-set-other .other-text {
+    padding: 10px 0;
+}
+div#semioverlay div.semioverlay-content .options-set-other .other-text input {
+    background-color: #fff;
+    border: 1px solid #ccc;
+    display: block;
+    font-size: 14px;
+    line-height: 1.2em;
+    margin-right: 10px;
+    padding: 5px 0 5px 10px;
+    width: 98%;
+}
+div#semioverlay div.semioverlay-buttons {
+    text-align: center;
+}
+div#semioverlay div.semioverlay-buttons input {
+    background-color: #e0e0e0;
+    border: 1px solid #999;
+    border-radius: 5px;
+    font-size: 16px;
+    margin: 0 5px;
+    padding: 5px 10px;
+    text-transform: capitalize;
+    cursor:pointer;
+}
+div#semioverlay div.semioverlay-buttons input:hover {
+    background-color:#ccc;
+}
 </dtml-with>

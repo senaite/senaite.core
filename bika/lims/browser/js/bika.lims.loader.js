@@ -89,7 +89,8 @@ window.bika.lims.controllers =  {
 
     // Sample
     ".portaltype-sample":
-        ['SampleView'],
+        ['SampleView',
+        'RejectionKickOff'],
     // Samples fodler
     ".portaltype-samplesfolder":
         ['SamplesFolderView'],
@@ -107,6 +108,7 @@ window.bika.lims.controllers =  {
     ".portaltype-analysisrequest.template-base_view":
         ['WorksheetManageResultsView',
          'AnalysisRequestViewView',
+         'RejectionKickOff',
          'AnalysisRequestManageResultsView'],
 
     ".portaltype-analysisrequest.template-manage_results":

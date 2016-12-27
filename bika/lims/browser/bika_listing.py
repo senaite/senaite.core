@@ -34,6 +34,7 @@ from bika.lims.subscribers import skip
 from bika.lims.utils import isActive, getHiddenAttributesForClass
 from bika.lims.utils import t, format_supsub
 from bika.lims.utils import to_utf8
+from bika.lims.utils import getFromString
 from plone.app.content.browser import tableview
 from plone.app.content.browser.foldercontents import FolderContentsView, FolderContentsTable
 from plone.app.content.browser.interfaces import IFolderContentsView
@@ -44,6 +45,7 @@ from zope.component._api import getMultiAdapter
 from zope.i18nmessageid import MessageFactory
 from zope.interface import Interface
 from zope.interface import implements
+import types
 
 try:
     from plone.batching import Batch
@@ -204,7 +206,26 @@ class WorkflowAction:
                 allowed_transitions = [it['id'] for it in \
                                        workflow.getTransitionsFor(item)]
                 if action in allowed_transitions:
-                    success, message = doActionFor(item, action)
+                    success = False
+                    # if action is "verify" and the item is an analysis or
+                    # reference analysis, check if the if the required number
+                    # of verifications done for the analysis is, at least,
+                    # the number of verifications performed previously+1
+                    if (action == 'verify' and
+                        hasattr(item, 'getNumberOfVerifications') and
+                        hasattr(item, 'getNumberOfRequiredVerifications')):
+                        success = True
+                        revers = item.getNumberOfRequiredVerifications()
+                        nmvers = item.getNumberOfVerifications()
+                        username=getToolByName(self.context,'portal_membership').getAuthenticatedMember().getUserName()
+                        item.addVerificator(username)
+                        if revers-nmvers <= 1:
+                            success, message = doActionFor(item, action)
+                            if not success:
+                                # If failed, remove the last verification
+                                item.deleteLastVerificator()
+                    else:
+                        success, message = doActionFor(item, action)
                     if success:
                         transitioned.append(item.id)
                     else:
@@ -849,7 +870,7 @@ class BikaListingView(BrowserView):
 
             # check if the item must be rendered or not (prevents from
             # doing it later in folderitems) and dealing with paging
-            if not self.isItemAllowed(obj):
+            if not obj or not self.isItemAllowed(obj):
                 continue
 
             uid = obj.UID()
@@ -958,15 +979,28 @@ class BikaListingView(BrowserView):
 
             # Search for values for all columns in obj
             for key in self.columns.keys():
-                if hasattr(obj, key):
-                    # if the key is already in the results dict
-                    # then we don't replace it's value
-                    if results_dict.has_key(key):
-                        continue
-                    value = getattr(obj, key)
-                    if callable(value):
-                        value = value()
+                # if the key is already in the results dict
+                # then we don't replace it's value
+                value = results_dict.get(key, '')
+                if key not in results_dict:
+                    attrobj = getFromString(obj, key)
+                    value = attrobj if attrobj else value
+
+                    # Custom attribute? Inspect to set the value
+                    # for the current column dinamically
+                    vattr = self.columns[key].get('attr', None)
+                    if vattr:
+                        attrobj = getFromString(obj, vattr)
+                        value = attrobj if attrobj else value
                     results_dict[key] = value
+
+                # Replace with an url?
+                replace_url = self.columns[key].get('replace_url', None)
+                if replace_url:
+                    attrobj = getFromString(obj, replace_url)
+                    if attrobj:
+                        results_dict['replace'][key] = \
+                            '<a href="%s">%s</a>' % (attrobj, value)
 
             # The item basics filled. Delegate additional actions to folderitem
             # service. folderitem service is frequently overriden by child objects
