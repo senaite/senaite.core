@@ -307,6 +307,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         for analysis in src_analyses:
             if analysis.UID() in dest_analyses:
                 continue
+            if analysis.portal_type == 'ReferenceAnalysis':
+                logger.warning('Cannot create duplicate analysis from '
+                               'ReferenceAnalysis at {}'.format(analysis))
+                continue
 
             # If retracted analyses, for some reason, the getLayout() returns
             # two times the regular analysis generated automatically after a
@@ -338,7 +342,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
             # Set ReferenceAnalysesGroupID (same id for the analyses from
             # the same Reference Sample and same Worksheet)
-            if not refgid and not analysis.portal_type == 'ReferenceAnalysis':
+            if not refgid:
                 prefix = analysis.aq_parent.getSample().id
                 dups = []
                 for an in self.getAnalyses():

@@ -3,6 +3,7 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
+import os
 from AccessControl.SecurityManagement import newSecurityManager
 from Acquisition import aq_base
 from bika.lims import logger
@@ -23,7 +24,6 @@ from Testing.ZopeTestCase.functional import Functional
 from zope.component import getSiteManager
 
 import unittest
-import plone.protect.auto
 
 
 class MockMailHost(_MMH):
@@ -44,8 +44,12 @@ class BikaTestCase(unittest.TestCase):
         # Some browser paths like ""?analysisrequests_review_state=cancelled"
         # do not work because plone.protect protect them.
         # Disable the plone.protect on the testing layer
-        self.CSRF_DISABLED_ORIGINAL = plone.protect.auto.CSRF_DISABLED
-        plone.protect.auto.CSRF_DISABLED = True
+        # self.CSRF_DISABLED_ORIGINAL = plone.protect.auto.CSRF_DISABLED
+        # plone.protect.auto.CSRF_DISABLED = True
+        # NB: plone.protect.auto is first available in p.p>=3.0.0, but plone still uses 2.0.3
+        # -> This should also do the trick, see:
+        # https://pypi.python.org/pypi/plone.protect (Disable All Automatic CSRF Protection)
+        os.environ["PLONE_CSRF_DISABLED"] = "true"
 
     def afterSetUp(self):
         self.portal._original_MailHost = self.portal.MailHost
@@ -60,7 +64,8 @@ class BikaTestCase(unittest.TestCase):
 
     def tearDown(self):
         # Reset the plone.protect on the testing layer
-        plone.protect.auto.CSRF_DISABLED = self.CSRF_DISABLED_ORIGINAL
+        # plone.protect.auto.CSRF_DISABLED = self.CSRF_DISABLED_ORIGINAL
+        del os.environ["PLONE_CSRF_DISABLED"]
 
     def beforeTearDown(self):
         self.portal.MailHost = self.portal._original_MailHost

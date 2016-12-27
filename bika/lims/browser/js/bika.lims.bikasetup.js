@@ -44,6 +44,17 @@ function BikaSetupEditView() {
             }
         });
 
+        if ($("select[name=NumberOfRequiredVerifications] option:selected").val() == 1) {
+            document.getElementById('archetypes-fieldname-TypeOfmultiVerification').style.display='none';
+        }
+        $('#NumberOfRequiredVerifications').change(function () {
+            if ($(this).val()>1) {
+              document.getElementById('archetypes-fieldname-TypeOfmultiVerification').style.display='block';
+            } else {
+              document.getElementById('archetypes-fieldname-TypeOfmultiVerification').style.display='none';
+            }
+        });
+
         $(restrict_useraccess).change();
     };
 
@@ -67,4 +78,3 @@ function BikaSetupEditView() {
         }
     }
 }
-
