@@ -8,6 +8,8 @@ from zope.schema.vocabulary import SimpleVocabulary
 from zope.schema.vocabulary import SimpleTerm
 from bika.lims.utils import getUsers
 from bika.lims.browser.widgets import RecordsWidget
+from bika.lims.browser.widgets.reflexrulewidget_description import description
+
 import json
 
 try:
@@ -15,90 +17,6 @@ try:
 except:
     # Plone < 4.3
     from zope.app.component.hooks import getSite
-
-# Writting the description for the widget
-description = """
-<p>
-When the results become available, some samples may need to be added to the next available worksheet in order to retest it and confirm the result or maybe the result of a previous analysis should be changed depending on the result of the reflexed analysis. These situations can be caused by the indetermination of the result or by a failed test.
-</p>
-<p>
-The aim of this functionality is to create a logic capable of defining some determined actions after submitting or verifying specific results.
-</p>
-<p>
-Basic usage:
-</p>
-<ul>
-<li>Each reflex rule have to be bound to an analysis method using the drop-down list. So, the actions defined inside that reflex rule will be triggered only if the analysis is submitted/verified using this method.
- </li>
-
-<li>Inside the reflex rule the user will be able to add actions for each analysis service belonging to the selected method. In order to improve the flexibility of the system, the user can set some conditions over the analysis service. For instance, the user can restrict the trigger of the actions to only those analyses which a reflex rule has been applied to them. We can expand the restriction introducing the number of times an analysis have been reflexed.
-An example of the usage can be a lab that after submitting a result, if this is indeterminate, another test must be done (this is done using reflex rules). If the result is indeterminate two more time, the result of the first (original) analysis will be changed to negative instead of indeterminate.
- </li>
-
-<li>For each analysis service the user can introduce a range of values or a discrete value depending on the result type of the selected analysis (Expected value/s). Then the user has to select from the drop-down list the action to be performed when the result for this analysis and the other conditions are met.
-</li>
-
-<li>"Do not apply the actions below if..." allows the system to set how many times this rule can be carried on over the same analysis.
-</li>
-
-<li>"Apply the actions below" specifies when the rule has to be checked and carried on.
-</li>
-
-<li>Using the 'add action' button, is possible to add more actions for the same result inside an analysis service or add new analysis services and results.
-</li>
-
-<li>If there is an analysis service with a defined range and rules but the user wants to add another range and new rules for it, he/she haves to create a new set of rules for the analysis service and define the actions to be done for the new results.
-</li>
-
-<li>The rules will be ran top-down, so the rule number one will be ran first, and the same happens withs its actions.
-</li>
-
-</ul>
-<p>
-Worksheet behaviour:
-</p>
-<ul>
-<li>After defining the rule, the user can set the check-box in order to define
- whether the new analysis has to be added in a different worksheet.</li>
-<li>If the user doesn't select that option the new analysis will be added to
- the current worksheet (or without worksheet if the analysis does not belong
- to anyone).</li>
-
-<li>If the check-box is set and the user doesn't select an analyst the system
- will look for an open worksheet and it will add the analysis to that
- worksheet, without caring about the analyst. If there are no open worksheets,
- the system will create a new worksheet with an analyst (chosen by the system).
-
-<li>If the check-box is set and the user defines an analyst, the system will
- look for the first worksheet assigned to the analyst. If there is no open
- worksheet for that analyst, the system will create a new worksheet assigned
- to the analyst.</li>
-</ul>
-<p>
-So far there are only three reflex actions: duplicate, replace and set result.
-</p>
-<ul>
-<li>Repeat an analysis means to cancel it and then create a new analysis with
- the same analysis service used for the canceled one (always working with the
- same sample). Attention! It is no possible to repeat a verified analysis, only
- a duplicate is allowed.</li>
-
-<li>Duplicate an analysis consist on creating a new analysis with the same
- analysis service for the same sample. It is used in order to reduce the error
- procedure probability because both results must be similar.</li>
-
-<li>If there are more than one 'repeat' actions for the same result, the system
- will do a 'duplicate' instead of another 'repeat'.</li>
-
-<li>Set the result instruction gives to the analysis a final result depending
- on the result obtained in the last analysis. It can work in two different
- ways, for example you can set the result of the original analysis (the first
- one) and this will change the result on the original one. If you select to
- create a new analysis, it will repeat the analysis and will set the defined
- result.</li>
-</ul>
-"""
-description=""
 
 
 class ReflexRuleWidget(RecordsWidget):

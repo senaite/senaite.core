@@ -1,3 +1,13 @@
+#archetypes-fieldname-ReflexRules label[for="ReflexRules"] {
+    cursor: pointer;
+}
+#archetypes-fieldname-ReflexRules label.formQuestion:before {
+    content: '?';
+    background-color: yellow;
+    color: blue;
+    padding: 3px;
+    margin-bottom: 10px;
+}
 tr.records_row_ReflexRules{
     border: 1px solid #CECECE;
 }
