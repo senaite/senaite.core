@@ -78,6 +78,20 @@ schema = Person.schema.copy() + Schema((
             description=_("The laboratory departments"),
         ),
     ),
+    ReferenceField('DefaultDepartment',
+        required = 0,
+        vocabulary_display_path_bound = sys.maxint,
+        allowed_types = ('Department',),
+        relationship = 'LabContactDepartment',
+        vocabulary = '_departmentsVoc',
+        referenceClass = HoldingReference,
+        widget = ReferenceWidget(
+            visible=True,
+            checkbox_bound = 0,
+            label=_("Default Department"),
+            description=_("Default Department"),
+        ),
+    ),
 ))
 
 schema['JobTitle'].schemata = 'default'
