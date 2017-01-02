@@ -217,12 +217,12 @@ class WorkflowAction:
                         success = True
                         revers = item.getNumberOfRequiredVerifications()
                         nmvers = item.getNumberOfVerifications()
-                        username=getToolByName(self.context,'portal_membership').getAuthenticatedMember().getUserName()
+                        username=getToolByName(context,'portal_membership').getAuthenticatedMember().getUserName()
                         item.addVerificator(username)
                         if revers-nmvers <= 1:
                             success, message = doActionFor(item, action)
                             if not success:
-                                # If failed, remove the last verification
+                                # If failed, delete last verificator.
                                 item.deleteLastVerificator()
                     else:
                         success, message = doActionFor(item, action)
