@@ -217,7 +217,7 @@ class WorkflowAction:
                         success = True
                         revers = item.getNumberOfRequiredVerifications()
                         nmvers = item.getNumberOfVerifications()
-                        username=getToolByName(context,'portal_membership').getAuthenticatedMember().getUserName()
+                        username=getToolByName(self.context,'portal_membership').getAuthenticatedMember().getUserName()
                         item.addVerificator(username)
                         if revers-nmvers <= 1:
                             success, message = doActionFor(item, action)
