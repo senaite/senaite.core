@@ -2877,7 +2877,7 @@ class AnalysisRequest(BaseFolder):
                     success = True
                     revers = analysis.getNumberOfRequiredVerifications()
                     nmvers = analysis.getNumberOfVerifications()
-                    username=getToolByName(context,'portal_membership').getAuthenticatedMember().getUserName()
+                    username=getToolByName(self,'portal_membership').getAuthenticatedMember().getUserName()
                     item.addVerificator(username)
                     if revers-nmvers <= 1:
                         success, message = doActionFor(analysis, 'verify')
