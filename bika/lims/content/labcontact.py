@@ -83,7 +83,7 @@ schema = Person.schema.copy() + atapi.Schema((
         vocabulary_display_path_bound = sys.maxint,
         allowed_types = ('Department',),
         relationship = 'LabContactDepartment',
-        vocabulary = '_departmentsVoc',
+        vocabulary = '_defaultDepsVoc',
         referenceClass = HoldingReference,
         widget = ReferenceWidget(
             visible=True,
@@ -171,6 +171,18 @@ class LabContact(Contact):
         for o in objs:
             if o and o.UID() not in deps_uids:
                 items.append((o.UID(), o.Title()))
+        items.sort(lambda x,y: cmp(x[1], y[1]))
+        return DisplayList(list(items))
+
+    def _defaultDepsVoc(self):
+        """
+        Returns a vocabulary object containing all its departments.
+        """
+        # Getting the assigned departments
+        deps=self.getDepartments()
+        items=[]
+        for d in deps:
+            items.append((d.UID(), d.Title()))
         items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
