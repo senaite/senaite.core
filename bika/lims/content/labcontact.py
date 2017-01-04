@@ -18,10 +18,12 @@ from Products.Archetypes.public import ReferenceField
 from Products.Archetypes.public import ComputedField
 from Products.Archetypes.public import ComputedWidget
 from Products.Archetypes.public import StringField
+from Products.Archetypes.public import StringWidget
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import registerType
 from Products.Archetypes.public import DisplayList
 from Products.Archetypes.public import ReferenceWidget
+from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.references import HoldingReference
 from bika.lims.content.person import Person
 from bika.lims.config import PROJECTNAME
@@ -83,9 +85,9 @@ schema = Person.schema.copy() + Schema((
         required = 0,
         vocabulary_display_path_bound = sys.maxint,
         vocabulary = '_defaultDepsVoc',
-        widget = ReferenceWidget(
+        widget = SelectionWidget(
             visible=True,
-            checkbox_bound = 0,
+            format='select',
             label=_("Default Department"),
             description=_("Default Department"),
         ),

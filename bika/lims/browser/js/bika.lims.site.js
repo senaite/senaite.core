@@ -23,6 +23,8 @@ function SiteView() {
         $('.date_range_end').bind("change", function () {
             date_range_controller_1(this);
         });
+
+        //Reset default dep list when departments change
         $(function() {
           $("select[name='Departments:list']").change(function() {
             reset_default_deps(this);
@@ -493,12 +495,14 @@ function SiteView() {
     @param {object} deps_element is the multiple select of deparments
     */
     function reset_default_deps(deps_element){
-      def_deps=$("select[name='DefaultDepartment:list']")[0];
+      //Resetting def_dep_list
+      def_deps=$("select[name='DefaultDepartment']")[0];
       def_deps.options.length=0;
+      //Adding selected deps
       $('option:selected', deps_element).each(function() {
         var option = document.createElement("option");
         option.text = $(this).text();
-        option.val = $(this).val();
+        option.value = $(this).val();
         option.selected="selected";
         def_deps.add(option);
       });
