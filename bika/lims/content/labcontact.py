@@ -15,6 +15,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 
 from Products.Archetypes import atapi
+from Products.Archetypes.public import StringField
 from Products.Archetypes.references import HoldingReference
 from Products.Archetypes.utils import DisplayList
 
@@ -78,13 +79,10 @@ schema = Person.schema.copy() + atapi.Schema((
             		description=_("The laboratory departments"),
         ),
     ),
-    ReferenceField('DefaultDepartment',
+    StringField('DefaultDepartment',
         required = 0,
         vocabulary_display_path_bound = sys.maxint,
-        allowed_types = ('Department',),
-        relationship = 'LabContactDepartment',
         vocabulary = '_defaultDepsVoc',
-        referenceClass = HoldingReference,
         widget = ReferenceWidget(
             visible=True,
             checkbox_bound = 0,
