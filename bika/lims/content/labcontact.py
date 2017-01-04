@@ -17,6 +17,7 @@ from Products.Archetypes.public import ImageWidget
 from Products.Archetypes.public import ReferenceField
 from Products.Archetypes.public import ComputedField
 from Products.Archetypes.public import ComputedWidget
+from Products.Archetypes.public import StringField
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import registerType
 from Products.Archetypes.public import DisplayList
@@ -78,13 +79,10 @@ schema = Person.schema.copy() + Schema((
             description=_("The laboratory departments"),
         ),
     ),
-    ReferenceField('DefaultDepartment',
+    StringField('DefaultDepartment',
         required = 0,
         vocabulary_display_path_bound = sys.maxint,
-        allowed_types = ('Department',),
-        relationship = 'LabContactDepartment',
         vocabulary = '_defaultDepsVoc',
-        referenceClass = HoldingReference,
         widget = ReferenceWidget(
             visible=True,
             checkbox_bound = 0,
