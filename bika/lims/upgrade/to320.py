@@ -39,8 +39,12 @@ def upgrade(tool):
     setup.runImportStepFromProfile('profile-bika.lims:default', 'catalog')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'propertiestool')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'skins')
+    setup.runImportStepFromProfile(
+        'profile-bika.lims:default', 'portlets', run_dependencies=False)
     # Creating all the sampling coordinator roles, permissions and indexes
     create_samplingcoordinator(portal)
+    departments(portal)
+    departments(portal)
     """Update workflow permissions
     """
     wf = getToolByName(portal, 'portal_workflow')
@@ -113,6 +117,18 @@ def create_samplingcoordinator(portal):
     bc = getToolByName(portal, 'bika_catalog', None)
     if 'getScheduledSamplingSampler' not in bc.indexes():
         bc.addIndex('getScheduledSamplingSampler', 'FieldIndex')
+
+        bac.clearFindAndRebuild()
+
+def departments(portal):
+    """ To add department indexes to the catalogs """
+    bc = getToolByName(portal, 'bika_catalog')
+    if 'getDepartmentUIDs' not in bc.indexes():
+        bc.addIndex('getDepartmentUIDs', 'KeywordIndex')
+        bc.clearFindAndRebuild()
+    bac = getToolByName(portal, 'bika_analysis_catalog')
+    if 'getDepartmentUID' not in bac.indexes():
+        bac.addIndex('getDepartmentUID', 'KeywordIndex')
 
 def create_CAS_IdentifierType(portal):
     """LIMS-1391 The CAS Nr IdentifierType is normally created by

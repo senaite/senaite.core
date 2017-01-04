@@ -38,6 +38,20 @@ def Priority(instance):
         return priority.getSortKey()
 
 
+@indexer(IWorksheet)
+def getDepartmentUIDs(instance):
+    deps = [an.getDepartment().UID() for
+            an in obj.getWorksheetServices() if
+            an.getDepartment()]
+    return deps
+
+@indexer(IWorksheet)
+def getDepartmentUIDs(instance):
+    deps = [an.getDepartment().UID() for
+            an in obj.getWorksheetServices() if
+            an.getDepartment()]
+    return deps
+
 schema = BikaSchema.copy() + Schema((
     HistoryAwareReferenceField('WorksheetTemplate',
         allowed_types=('WorksheetTemplate',),
@@ -756,12 +770,13 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                     success = True
                     revers = analysis.getNumberOfRequiredVerifications()
                     nmvers = analysis.getNumberOfVerifications()
-                    analysis.setNumberOfVerifications(nmvers+1)
+                    username=getToolByName(self,'portal_membership').getAuthenticatedMember().getUserName()
+                    item.addVerificator(username)
                     if revers-nmvers <= 1:
                         success, message = doActionFor(analysis, 'verify')
                         if not success:
-                            # If failed, restore to the previous number
-                            analysis.setNumberOfVerifications(nmvers)
+                            # If failed, delete last verificator.
+                            item.deleteLastVerificator()
                 else:
                     doActionFor(analysis, 'verify')
 

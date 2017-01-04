@@ -189,22 +189,6 @@
                 </tal:columns>
             </tr>
 
-            <!--
-            <tr>
-                <th colspan="3" style="background-color: #FFF">
-                </th>
-                <tal:block repeat="arnum python:range(view.ar_count)">
-                    <td>
-                        <input type="button" value="Create Profile"
-                                tal:attributes="
-                                        class string:ar_${arnum}_save_profile;
-                                name string:save_profile;
-                                id string:ar_${arnum}_save_profile;
-                                " />
-                    </td>
-                </tal:block>
-            </tr>
--->
         </tfoot>
     </table>
 

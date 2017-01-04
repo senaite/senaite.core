@@ -13,7 +13,17 @@
     <property name="macro">portlet</property>
     <property name="template">portlet_accreditation</property>
     </assignment>
-
+    <assignment
+        name="portlet_department_filter-pt"
+        insert-before="navigation"
+        category="context"
+        key="/"
+        manager="plone.leftcolumn"
+        type="portlets.Classic"
+        visible="True">
+    <property name="macro">portlet</property>
+    <property name="template">portlet_department_filter</property>
+    </assignment>
     <assignment
         name="login"
         category="context"
@@ -57,6 +67,29 @@
     <property name="template">portlet_to_be_sampled</property>
     </assignment>
 
+    <assignment
+        name="portlet_department_filter-pt"
+        category="context"
+        key="/"
+        manager="plone.rightcolumn"
+        type="portlets.Classic"
+        visible="True"
+        remove="True">
+    <property name="macro">portlet</property>
+    <property name="template">portlet_department_filter</property>
+    </assignment>
+
+    <assignment
+        name="portlet_department_filter-pt"
+        category="context"
+        key="/"
+        manager="plone.rightcolumn"
+        type="portlets.Classic"
+        visible="True"
+        remove="True">
+    <property name="macro">portlet</property>
+    <property name="template">portlet_department_filter</property>
+    </assignment>
     <assignment
         name="portlet_to_be_preserved-pt"
         category="context"
