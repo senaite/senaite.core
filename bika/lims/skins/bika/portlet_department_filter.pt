@@ -21,7 +21,7 @@
                 deps_from_cookie python: cookie.split(',') if cookie and len(deps)>0
                     else [];
                 first_from_cat python: deps[0].UID if user_name=='admin'
-                        else deps[0].UID() if len(deps)>1 else '';
+                        else deps[0].UID() if deps else '';
                 first_dep python: deps_from_cookie[0] if len(deps_from_cookie)>1
                     else first_from_cat if not cookie else '';">
     <dl class="portlet" id="portletfilter_by_department">
@@ -41,7 +41,7 @@
                        tal:condition= "python: user_name=='admin'"/>
                        <label tal:condition= "python: user_name=='admin'">Select All Departments<br><br></label>
 
-                <tal:option repeat="dep deps">
+                <tal:option repeat="dep deps" tal:condition="python: len(deps)>1">
                 <input type="checkbox"
                     tal:define="dep_name python:dep.Title if user_name=='admin' else dep.Title();
                                 dep_uid python: dep.UID if user_name=='admin' else dep.UID()"
@@ -57,12 +57,13 @@
                 <label
                     i18n:translate=""
                     tal:condition="python: len(deps)<2"
-                    tal:content="python: deps[0].Title if user_name=='admin' else deps[0].Title() if len(deps)>1 else ''"
+                    tal:content="python: deps[0].Title if user_name=='admin' else deps[0].Title() if deps else ''"
                     >Department</label>
             </dd>
             <!-- The submit form button -->
             <dd class="portletFooter">
-                <input type="button" id="department_filter_submit" value="Filter">
+                <input type="button" id="department_filter_submit" value="Filter"
+                  tal:condition="python: len(deps)>1">
             </dd>
         </form>
     </dl>
