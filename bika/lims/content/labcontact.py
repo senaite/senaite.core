@@ -16,6 +16,8 @@ from Products.CMFPlone.utils import safe_unicode
 
 from Products.Archetypes import atapi
 from Products.Archetypes.public import StringField
+from Products.Archetypes.public import StringWidget
+from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.references import HoldingReference
 from Products.Archetypes.utils import DisplayList
 
@@ -83,9 +85,9 @@ schema = Person.schema.copy() + atapi.Schema((
         required = 0,
         vocabulary_display_path_bound = sys.maxint,
         vocabulary = '_defaultDepsVoc',
-        widget = ReferenceWidget(
+        widget = SelectionWidget(
             visible=True,
-            checkbox_bound = 0,
+            format='select',
             label=_("Default Department"),
             description=_("Default Department"),
         ),
