@@ -39,6 +39,8 @@ LIMS-2148: Unable to sort Bika Listing tables
 LIMS-1774: Shiny graphs for result ranges
 LIMS-2257: Scheduled sampling
 LIMS-2255: Switch to Chameleon (five.pt) for rendering TAL templates
+- System-wide filter by department
+- Allow to assign a lab contact to more than one department
 - Multi-verification of analyses, with different verification types
 - Add option to allow multi-approval (multi-verification) of results
 - Added Analyses section in the Dashboard

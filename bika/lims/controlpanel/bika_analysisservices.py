@@ -6,13 +6,15 @@
 from Products.CMFPlone.utils import _createObjectByType, safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
-from bika.lims.controlpanel.bika_setupitems import BikaSetupItemsView
+from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IAnalysisServices
 from bika.lims.utils import tmpID
 from bika.lims.validators import ServiceKeywordValidator
+from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
+from plone.app.layout.globals.interfaces import IViewView
 from Products.Archetypes import atapi
 from Products.ATContentTypes.content import schemata
 from Products.CMFCore.utils import getToolByName
@@ -122,14 +124,30 @@ class AnalysisServiceCopy(BrowserView):
             self.request.response.redirect(self.context.absolute_url())
 
 
-class AnalysisServicesView(BikaSetupItemsView):
+class AnalysisServicesView(BikaListingView):
+    implements(IFolderContentsView, IViewView)
 
     def __init__(self, context, request):
-        super(AnalysisServicesView, self).__init__(
-            context, request, 'AnalysisService', 'analysisservice_big.png')
+        """
+        """
+
+        super(AnalysisServicesView, self).__init__(context, request)
+        self.catalog = 'bika_setup_catalog'
+        self.contentFilter = {'portal_type': 'AnalysisService',
+                              'sort_on': 'sortable_title'}
+        self.context_actions = {
+            _('Add'):
+                {'url': 'createObject?type_name=AnalysisService',
+                 'icon': '++resource++bika.lims.images/add.png'}}
+        self.icon = self.portal_url + \
+            "/++resource++bika.lims.images/analysisservice_big.png"
         self.title = self.context.translate(_("Analysis Services"))
         self.show_sort_column = False
+        self.show_select_row = False
+        self.show_select_column = True
         self.show_select_all_checkbox = False
+        self.pagesize = 25
+
         self.categories = []
         self.do_cats = self.context.bika_setup.getCategoriseAnalysisServices()
         if self.do_cats:
@@ -282,8 +300,39 @@ class AnalysisServicesView(BikaSetupItemsView):
                            sort_on="sortable_title")
         self.an_cats_order = dict([(b.Title, "{:04}".format(a))
                                   for a, b in enumerate(self.an_cats)])
+    def isItemAllowed(self, obj):
+        """
+        It checks if the item can be added to the list depending on the
+        department filter. If the analysis service is not assigned to a
+        department, show it.
+        If department filtering is disabled in bika_setup, will return True.
+        """
+        if not self.context.bika_setup.getAllowDepartmentFiltering():
+            return True
+        # Gettin the department from analysis service
+        obj_dep = obj.getDepartment()
+        result = True
+        if obj_dep:
+            # Getting the cookie value
+            cookie_dep_uid = self.request.get('filter_by_department_info', 'no')
+            # Comparing departments' UIDs
+            result = True if obj_dep.UID() in\
+                cookie_dep_uid.split(',') else False
+            return result
+        return result
+
 
     def folderitem(self, obj, item, index):
+    	if 'obj'  in item:
+            obj = item['obj']
+            # Although these should be automatically inserted when bika_listing
+            # searches the schema for fields that match columns, it is still
+            # not harmful to be explicit:
+            item['Keyword'] = obj.getKeyword()
+            item['CommercialID'] = obj.getCommercialID()
+            item['ProtocolID'] = obj.getProtocolID()
+            item['SortKey'] = obj.getSortKey()
+
         cat = obj.getCategoryTitle()
         cat_order = self.an_cats_order.get(cat)
         if self.do_cats:
