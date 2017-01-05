@@ -1805,6 +1805,8 @@ class AnalysisRequest(BaseFolder):
         if review_state not in ['published']:
             return "0"
         report_list=sorted(self.objectValues('ARReport'),key=lambda report: report.getDatePublished())
+        if not report_list:
+            return "0"
         last_report=report_list[-1]
         if last_report.getDatePrinted():
             return "1"

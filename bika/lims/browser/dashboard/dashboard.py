@@ -150,7 +150,7 @@ class DashboardView(BrowserView):
         if filtering_allowed:
             query_dic['getDepartmentUIDs'] = { "query":cookie_dep_uid,"operator":"or" }
         numars += len(bc(query_dic))
-        
+
         if (sampenabled):
             # Analysis Requests awaiting to be sampled or scheduled
             review_state = ['to_be_sampled',]
@@ -495,8 +495,7 @@ class DashboardView(BrowserView):
         # Analyses pending
         review_state = ['sample_received',
                         'assigned',
-                        'attachment_due',
-                        'to_be_verified']
+                        'attachment_due']
         query_dic = {'portal_type':"Analysis",
                  'review_state':review_state}
         if filtering_allowed:
