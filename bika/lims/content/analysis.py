@@ -1168,7 +1168,7 @@ class Analysis(BaseContent):
             return False
 
         #Checking verifiability depending on multi-verification type of bika_setup
-        if self.bika_setup.getNumberOfRequiredVerifications>1:
+        if self.bika_setup.getNumberOfRequiredVerifications()>1:
             mv_type=self.bika_setup.getTypeOfmultiVerification()
             #If user verified before and self_multi_disabled, then return False
             if mv_type=='self_multi_disabled' and self.wasVerifiedByUser(username):

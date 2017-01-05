@@ -1805,6 +1805,8 @@ class AnalysisRequest(BaseFolder):
         if review_state not in ['published']:
             return "0"
         report_list=sorted(self.objectValues('ARReport'),key=lambda report: report.getDatePublished())
+        if not report_list:
+            return "0"
         last_report=report_list[-1]
         if last_report.getDatePrinted():
             return "1"
@@ -2877,12 +2879,13 @@ class AnalysisRequest(BaseFolder):
                     success = True
                     revers = analysis.getNumberOfRequiredVerifications()
                     nmvers = analysis.getNumberOfVerifications()
-                    analysis.setNumberOfVerifications(nmvers+1)
+                    username=getToolByName(self,'portal_membership').getAuthenticatedMember().getUserName()
+                    item.addVerificator(username)
                     if revers-nmvers <= 1:
                         success, message = doActionFor(analysis, 'verify')
                         if not success:
-                            # If failed, restore to the previous number
-                            analysis.setNumberOfVerifications(numvers)
+                            # If failed, delete last verificator
+                            item.deleteLastVerificator()
                         elif analysis.aq_parent.portal_type == 'AnalysisRequest':
                             analysis.aq_parent.resetCache()
                 else:

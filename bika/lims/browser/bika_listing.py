@@ -226,12 +226,13 @@ class WorkflowAction:
                         success = True
                         revers = item.getNumberOfRequiredVerifications()
                         nmvers = item.getNumberOfVerifications()
-                        item.setNumberOfVerifications(nmvers+1)
+                        username=getToolByName(self.context,'portal_membership').getAuthenticatedMember().getUserName()
+                        item.addVerificator(username)
                         if revers-nmvers <= 1:
                             success, message = doActionFor(item, action)
                             if not success:
-                                # If failed, restore to the previous number
-                                item.setNumberOfVerifications(numvers)
+                                # If failed, delete last verificator.
+                                item.deleteLastVerificator()
                             elif item.aq_parent.portal_type == 'AnalysisRequest':
                                 item.aq_parent.resetCache()
                     else:
