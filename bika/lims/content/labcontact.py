@@ -17,10 +17,13 @@ from Products.Archetypes.public import ImageWidget
 from Products.Archetypes.public import ReferenceField
 from Products.Archetypes.public import ComputedField
 from Products.Archetypes.public import ComputedWidget
+from Products.Archetypes.public import StringField
+from Products.Archetypes.public import StringWidget
 from Products.Archetypes.public import Schema
 from Products.Archetypes.public import registerType
 from Products.Archetypes.public import DisplayList
 from Products.Archetypes.public import ReferenceWidget
+from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.references import HoldingReference
 from bika.lims.content.person import Person
 from bika.lims.config import PROJECTNAME
@@ -76,6 +79,17 @@ schema = Person.schema.copy() + Schema((
             checkbox_bound = 0,
             label=_("Departments"),
             description=_("The laboratory departments"),
+        ),
+    ),
+    StringField('DefaultDepartment',
+        required = 0,
+        vocabulary_display_path_bound = sys.maxint,
+        vocabulary = '_defaultDepsVoc',
+        widget = SelectionWidget(
+            visible=True,
+            format='select',
+            label=_("Default Department"),
+            description=_("Default Department"),
         ),
     ),
 ))
@@ -134,6 +148,18 @@ class LabContact(Person):
         for o in objs:
             if o and o.UID() not in deps_uids:
                 items.append((o.UID(), o.Title()))
+        items.sort(lambda x,y: cmp(x[1], y[1]))
+        return DisplayList(list(items))
+
+    def _defaultDepsVoc(self):
+        """
+        Returns a vocabulary object containing all its departments.
+        """
+        # Getting the assigned departments
+        deps=self.getDepartments()
+        items=[("","")]
+        for d in deps:
+            items.append((d.UID(), d.Title()))
         items.sort(lambda x,y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
