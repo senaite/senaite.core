@@ -180,7 +180,7 @@ class LabContact(Contact):
         """
         # Getting the assigned departments
         deps=self.getDepartments()
-        items=[]
+        items=[("","")]
         for d in deps:
             items.append((d.UID(), d.Title()))
         items.sort(lambda x,y: cmp(x[1], y[1]))

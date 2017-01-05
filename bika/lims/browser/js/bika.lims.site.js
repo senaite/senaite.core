@@ -498,6 +498,11 @@ function SiteView() {
       //Resetting def_dep_list
       def_deps=$("select[name='DefaultDepartment']")[0];
       def_deps.options.length=0;
+      var null_opt = document.createElement("option");
+      null_opt.text = "";
+      null_opt.value = "";
+      null_opt.selected="selected";
+      def_deps.add(null_opt);
       //Adding selected deps
       $('option:selected', deps_element).each(function() {
         var option = document.createElement("option");
