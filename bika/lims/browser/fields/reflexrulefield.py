@@ -28,89 +28,137 @@ class ReflexRuleField(RecordsField):
         })
     security = ClassSecurityInfo()
 
-    def set_old(self, instance, rules_list, **kwargs):
+    def set(self, instance, rules_list, **kwargs):
         """
         Set the reflexrule field.
         :rules_list: is a list of dictionaries with the following format:
-        [{
-        'discreteresult': 'X',
-        'trigger': 'xxx',
-        'fromlevel': '2',
-        'rulenumber': 'number',
-        'otherresultcondition': 'on',
-        'resultcondition': 'repeat',
-        'repetition_max': 'x'/integer,
-        'analysisservice': '<as_uid>', 'value': '',
-            'actions':[{'action':'<action_name>', 'act_row_idx':'X',
-                        'otherWS':Bool, 'analyst': '<analyst_id>'},
-                      {'action':'<action_name>', 'act_row_idx':'X',
-                        'otherWS':Bool, 'analyst': '<analyst_id>'},
-                ]
-        },
-        {
-        'range1': 'X', 'range0': 'X',
-        'trigger': 'xxx',
-        'rulenumber': 'number',
-        'repetition_max': 'x'/integer,
-        'analysisservice': '<as_uid>', 'value': '',
-            'actions':[{'action':'<action_name>', 'act_row_idx':'X',
-                        'otherWS':Bool, 'analyst': '<analyst_id>'},
-                      {'action':'<action_name>', 'act_row_idx':'X',
-                        'otherWS':Bool, 'analyst': '<analyst_id>'},
-                ]
-        ...]
+        [{'actions': [{'act_row_idx': 0,
+                       'action': 'repeat',
+                       'an_result_id': 'rep-1',
+                       'analyst': '',
+                       'otherWS': 'current',
+                       'setresultdiscrete': '',
+                       'setresulton': 'original',
+                       'setresultvalue': '',
+                       'worksheettemplate': ''}],
+          'conditions': [{'analysisservice': '52853cf7d5114b5aa8c159afad2f3da1',
+                          'and_or': 'no',
+                          'cond_row_idx': 0,
+                          'discreteresult': '',
+                          'range0': '11',
+                          'range1': '12'}],
+          'mother_service_uid': '52853cf7d5114b5aa8c159afad2f3da1',
+          'rulenumber': '0',
+          'trigger': 'submit'},
+         {'actions': [{'act_row_idx': 0,
+                       'action': 'repeat',
+                       'an_result_id': 'rep-2',
+                       'analyst': '',
+                       'otherWS': 'current',
+                       'setresultdiscrete': '',
+                       'setresulton': 'original',
+                       'setresultvalue': '',
+                       'worksheettemplate': ''},
+                      {'act_row_idx': 1,
+                       'action': 'repeat',
+                       'an_result_id': 'rep-4',
+                       'analyst': 'analyst1',
+                       'otherWS': 'to_another',
+                       'setresultdiscrete': '',
+                       'setresulton': 'original',
+                       'setresultvalue': '',
+                       'worksheettemplate': '70d48adfb34c4231a145f76a858e94cf'},
+                      {'act_row_idx': 2,
+                       'action': 'repeat',
+                       'an_result_id': 'rep-5',
+                       'analyst': '',
+                       'otherWS': 'create_another',
+                       'setresultdiscrete': '',
+                       'setresulton': 'original',
+                       'setresultvalue': '',
+                       'worksheettemplate': ''},
+                      {'act_row_idx': 3,
+                       'action': 'repeat',
+                       'an_result_id': 'rep-6',
+                       'analyst': '',
+                       'otherWS': 'no_ws',
+                       'setresultdiscrete': '',
+                       'setresulton': 'original',
+                       'setresultvalue': '',
+                       'worksheettemplate': ''}],
+          'conditions': [{'analysisservice': 'rep-1',
+                          'and_or': 'no',
+                          'cond_row_idx': 0,
+                          'discreteresult': '',
+                          'range0': '12',
+                          'range1': '12'}],
+          'mother_service_uid': '52853cf7d5114b5aa8c159afad2f3da1',
+          'rulenumber': '1',
+          'trigger': 'submit'},
+         {'actions': [{'act_row_idx': 0,
+                       'action': 'repeat',
+                       'an_result_id': 'rep-3',
+                       'analyst': '',
+                       'otherWS': 'current',
+                       'setresultdiscrete': '',
+                       'setresulton': 'original',
+                       'setresultvalue': '',
+                       'worksheettemplate': ''}],
+          'conditions': [{'analysisservice': 'rep-1',
+                          'and_or': 'and',
+                          'cond_row_idx': 0,
+                          'discreteresult': '',
+                          'range0': '12',
+                          'range1': '12'},
+                         {'analysisservice': 'rep-2',
+                          'and_or': 'or',
+                          'cond_row_idx': 1,
+                          'discreteresult': '',
+                          'range0': '115',
+                          'range1': '115'},
+                         {'analysisservice': 'rep-1',
+                          'and_or': 'no',
+                          'cond_row_idx': 2,
+                          'discreteresult': '',
+                          'range0': '14',
+                          'range1': '14'}],
+          'mother_service_uid': '52853cf7d5114b5aa8c159afad2f3da1',
+          'rulenumber': '2',
+          'trigger': 'submit'}]
         This list of dictionaries is how the system will store the reflexrule
         field info. This dictionaries must be in sync with the
         browser/widgets/reflexrulewidget.py/process_form() dictionaries format.
         """
-        final_list = []
         for d in rules_list:
             # Checking if all dictionary items are correct
-            if _check_set_values(instance, d):
-                # checking actions
-                action_idx = 0
-                for action in d['actions']:
-                    if type(action) not in (dict,):
-                        logger.warn('Each action must be a dict.')
-                        return False
-                    if action.get('action', '') not in \
-                            ('repeat', 'duplicate', 'setresult'):
-                        logger.warn(
-                            'Action %s does not exist' %
-                            action.get('action', ''))
-                        return False
-                    if not action.get('act_row_idx', '') or\
-                            not isnumber(action.get('act_row_idx')):
-                            action['act_row_idx'] = action_idx
-                    action['act_row_idx'] = str(action['act_row_idx'])
-                    action_idx += 1
-                final_list.append(d)
-        RecordsField.set(self, instance, final_list, **kwargs)
+            if not _check_set_values(instance, d):
+                RecordsField.set(self, instance, [], **kwargs)
+        RecordsField.set(self, instance, rules_list, **kwargs)
 
 
 def _check_set_values(instance, dic):
     """
-    This function check if the dict values are correct. It doesn't look
-    into the action list.
+    This function checks if the dict values are correct.
     :instance: the object instance. Used for querying
     :dic: is a dictionary with the following format:
-    {
-    'range1': 'X', 'range0': 'X', 'discreteresult': 'X',
-    'trigger': 'xxx',
-    'fromlevel': '2',
-    'otherresultcondition': Bool,
-    'resultcondition': 'repeat',
-    'rulenumber': 'number',
-    'repetition_max': 'x'/integer,
-    'analysisservice': '<as_uid>', 'value': '',
-        'actions':[{'action':'<action_name>', 'act_row_idx':'X',
-                    'otherWS':Bool, 'analyst': '<analyst_id>',
-                    'setresultdiscrete': '1', 'setresulton': 'original',
-                    'setresultvalue': 'number'},
-                  {'action':'<action_name>', 'act_row_idx':'X',
-                    'otherWS':Bool, 'analyst': '<analyst_id>'},
-            ]
-    }
+    {'actions': [{'act_row_idx': 0,
+                   'action': 'repeat',
+                   'an_result_id': 'rep-1',
+                   'analyst': '',
+                   'otherWS': 'current',
+                   'setresultdiscrete': '',
+                   'setresulton': 'original',
+                   'setresultvalue': '',
+                   'worksheettemplate': ''}],
+      'conditions': [{'analysisservice': '52853cf7d5114b5aa8c159afad2f3da1',
+                      'and_or': 'no',
+                      'cond_row_idx': 0,
+                      'discreteresult': '',
+                      'range0': '11',
+                      'range1': '12'}],
+      'mother_service_uid': '52853cf7d5114b5aa8c159afad2f3da1',
+      'rulenumber': '0',
+      'trigger': 'submit'},
     These are the checking rules:
         :range0/range1: string or number.
     They are the numeric range within the action will be
@@ -133,78 +181,115 @@ def _check_set_values(instance, dic):
     browser/widgets/reflexrulewidget.py/ReflexRuleWidget/getActionVoc
     so far.
     """
-    range0 = dic.get('range0', None)
-    range1 = dic.get('range1', None)
-    discreteresult = dic.get('discreteresult', None)
+    uc = getToolByName(instance, 'uid_catalog')
+    rulenumber = dic.get('rulenumber', '0')
+    if rulenumber and not(isnumber(rulenumber)):
+        logger.warn('The range must be a number. Now its value is: '
+                    '%s' % (rulenumber))
+        return False
     trigger = dic.get('trigger', 'submit')
-    analysisservice = dic.get('analysisservice', None)
-    fromlevel = dic.get('fromlevel', '0')
-    otherresultcondition = dic.get('otherresultcondition', False)
-    resultcondition = dic.get('resultcondition', '')
-    rulenum = dic.get('rulenumber', '')
-    actions = dic.get('actions', [])
-    rep_max = dic.get('repetition_max', '1')
-    if (not discreteresult and (not range0 or not range1)) or \
-            (discreteresult and range0 and range1):
-        logger.warn(_(
-            'If range values are empty, discreteresult must contain a '
-            'value, and if discreteresult has a value, ranges must be '
-            'empty. But ranges or discreteresult must conatin a value.'
-            'The given values are: '
-            'discreteresult: %s, range0: %s, range1: %s'
-            % (discreteresult, range0, range1)))
-        return False
-    if range1 and not(isnumber(range1)):
-        logger.warn('The range must be a number. Now its value is: '
-                    '%s' % (range1))
-        return False
-    if range0 and not(isnumber(range0)):
-        logger.warn('The range must be a number. Now its value is: '
-                    '%s' % (range0))
-        return False
     if trigger not in ['submit', 'verify']:
         logger.warn('Only available triggers are "verify" or "submit". '
                     '%s has been introduced.' % (trigger))
         return False
-    uc = getToolByName(instance, 'uid_catalog')
-    as_brain = uc(UID=analysisservice)
+    mother_service_uid = dic.get('mother_service_uid', '')
+    as_brain = uc(UID=mother_service_uid)
     if not as_brain:
-        logger.warn('Not correct analysis service UID.')
-        return False
-    if type(actions) not in (list,):
-        logger.warn('actions must be a list.')
-        return False
-    if type(rep_max) not in (str, int) or rep_max < 1:
         logger.warn(
-            'repetition_max must be an integer > 0 or a string '
-            'representing an integer > 0.')
+            'Not correct analysis service with UID. %s' % (mother_service_uid))
         return False
-    if rulenum and not(isnumber(rulenum)):
-        logger.warn('The rule number be a number. Now its value is: '
-                    '%s' % (rulenum))
+    # Checking the conditions
+    conditions = dic.get('conditions', [])
+    if not conditions or not _check_conditions(instance, conditions):
         return False
-    if type(fromlevel) not in (str, int):
-        logger.warn(
-            'fromlevel must be an integer or a string '
-            'representing an integer.')
+    # Checking the actions
+    actions = dic.get('actions', [])
+    if not actions or not _check_actions(instance, actions):
         return False
-    if type(otherresultcondition) not in (bool,):
-        logger.warn(
-            'otherresultcondition must be a boolean.')
-        return False
-    try:
-        int(rep_max)
-    except ValueError:
-        logger.warn(
-            'repetition_max must be an integer or a string '
-            'representing an integer.')
-        return False
-    try:
-        if fromlevel != '':
-            int(fromlevel)
-    except ValueError:
-        logger.warn(
-            'repetition_max must be an integer or a string '
-            'representing an integer.')
-        return False
+    return True
+
+
+def _check_conditions(instance, conditions):
+    uc = getToolByName(instance, 'uid_catalog')
+    for condition in conditions:
+        range0 = condition.get('range0', None)
+        range1 = condition.get('range1', None)
+        discreteresult = condition.get('discreteresult', None)
+        analysisservice = condition.get('analysisservice', None)
+        and_or = condition.get('and_or', 'no')
+        cond_row_idx = condition.get('cond_row_idx', None)
+        as_brain = uc(UID=analysisservice)
+        if (not discreteresult and (not range0 or not range1)) or \
+                (discreteresult and range0 and range1):
+            logger.warn(_(
+                'If range values are empty, discreteresult must contain a '
+                'value, and if discreteresult has a value, ranges must be '
+                'empty. But ranges or discreteresult must conatin a value.'
+                'The given values are: '
+                'discreteresult: %s, range0: %s, range1: %s'
+                % (discreteresult, range0, range1)))
+            return False
+        if range1 and not(isnumber(range1)):
+            logger.warn('The range must be a number. Now its value is: '
+                        '%s' % (range1))
+            return False
+        if range0 and not(isnumber(range0)):
+            logger.warn('The range must be a number. Now its value is: '
+                        '%s' % (range0))
+            return False
+        if not as_brain:
+            logger.warn(
+                'Not correct analysis service with UID. %s' %
+                (analysisservice))
+            return False
+        if and_or not in ['and', 'or', 'no']:
+            logger.warn(
+                'Not correct and_or value')
+            return False
+        if cond_row_idx and not(isnumber(cond_row_idx)):
+            logger.warn('The cond_row_idx must be a number. Now its value is: '
+                        '%s' % (cond_row_idx))
+            return False
+    return True
+
+
+def _check_actions(instance, actions):
+    uc = getToolByName(instance, 'uid_catalog')
+    for action in actions:
+        act_row_idx = action.get('act_row_idx', '0')
+        action_name = action.get('action', '')
+        an_result_id = action.get('an_result_id', '')
+        analyst = action.get('analyst', '')
+        otherWS = action.get('otherWS', 'current')
+        setresultdiscrete = action.get('setresultdiscrete', '')
+        setresulton = action.get('setresulton', '')
+        setresultvalue = action.get('setresultvalue', '')
+        worksheettemplate = action.get('worksheettemplate', '')
+        wt_brain = uc(UID=worksheettemplate)
+        if act_row_idx and not(isnumber(act_row_idx)):
+            logger.warn('The act_row_idx must be a number. Now its value is: '
+                        '%s' % (act_row_idx))
+            return False
+        if action_name not in ['repeat', 'duplicate', 'setresult']:
+            logger.warn(
+                'Not correct action_name value')
+            return False
+        if otherWS not in ['current', 'to_another', 'create_another', 'no_ws']:
+            logger.warn(
+                'Not correct otherWS value')
+            return False
+        if setresulton not in ['original', 'bew']:
+            logger.warn(
+                'Not correct setresulton value')
+            return False
+        if setresultvalue and not(isnumber(setresultvalue)):
+            logger.warn(
+                'The setresultvalue must be a number. Now its value is: '
+                '%s' % (setresultvalue))
+            return False
+        if worksheettemplate and not wt_brain:
+            logger.warn(
+                'Not correct worksheet template with UID. %s' %
+                (worksheettemplate))
+            return False
     return True

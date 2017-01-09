@@ -221,6 +221,7 @@ class ReflexRule(BaseContent):
                 ((isnumber(result) and isinstance(exp_val, str) and
                     exp_val == result) or
                     (isnumber(result) and len(exp_val) == 2 and
+                        isnumber(exp_val[0]) and isnumber(exp_val[1]) and
                         float(exp_val[0]) <= float(result) and
                         float(result) <= float(exp_val[1])))
             # Build a string and then use eval()
