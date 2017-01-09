@@ -333,7 +333,7 @@ def doActionToAnalysis(base, action):
         (rule_num, rule_name, time)
     base_remark = base.getRemarks() + base_remark + '<br/> '
     base.setRemarks(base_remark)
-    # Setting the remarks to base analysis
+    # Setting the remarks to new analysis
     analysis_remark = "%s due to reflex rule number %s of '%s' at %s" % \
         (action_rule_name, rule_num, rule_name, time)
     analysis_remark = analysis.getRemarks() + analysis_remark + '<br/> '

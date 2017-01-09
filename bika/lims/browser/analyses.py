@@ -814,7 +814,7 @@ class AnalysesView(BikaListingView):
                     self.portal_url,
                     t(_('It comes form a reflex rule'))
                 ))
-            items[i]['after']['Service'] = after_icons
+            items[i]['after']['Service'] = '&nbsp;'.join(after_icons)
 
         # the TAL requires values for all interim fields on all
         # items, so we set blank values in unused cells
