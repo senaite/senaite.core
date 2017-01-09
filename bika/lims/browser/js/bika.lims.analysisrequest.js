@@ -157,9 +157,8 @@ function AnalysisRequestViewView() {
                     }
                 }
             });
-        }
-
-    }
+        };
+    };
 
     function resultsinterpretation_move_below(){
         // By default show only the Results Interpretation for the whole AR, not Dept specific
@@ -234,14 +233,14 @@ function AnalysisRequestViewView() {
          * Set an event for each input field in the AR header. After write something in the input field and
          * focus out it, the event automatically saves the change.
          */
-        $("table.header_table input").not('[attr="referencewidget"').not('[type="hidden"]').each(function(i){
+        $("table.header_table input").not('[attr="referencewidget"').not('[type="hidden"]').not('.rejectionwidget-field').each(function(i){
             // Save input fields
             $(this).change(function () {
                 var pointer = this;
                 build_typical_save_request(pointer);
             });
         });
-        $("table.header_table select").not('[type="hidden"]').each(function(i) {
+        $("table.header_table select").not('[type="hidden"]').not('.rejectionwidget-field').each(function(i) {
             // Save select fields
             $(this).change(function () {
                 var pointer = this;

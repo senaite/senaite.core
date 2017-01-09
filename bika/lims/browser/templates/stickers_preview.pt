@@ -152,7 +152,7 @@
                       data-itemsurl python:view.getItemsURL();">
     <div id='sticker-preview-wrapper'>
         <!-- Header of the preview. This will never be printed.
-             Container with preview options and buttons --->
+             Container with preview options and buttons -->
         <div id="sticker-preview-header">
             <div id='options-handler'>
                 <div class='options-line'>

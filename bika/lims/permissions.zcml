@@ -69,7 +69,6 @@
 
 <permission id="bika.lims.Retract" title="BIKA: Retract"/>
 <permission id="bika.lims.Verify" title="BIKA: Verify"/>
-<permission id="bika.lims.VerifyOwnResults" title="BIKA: Verify own results"/>
 <permission id="bika.lims.Publish" title="BIKA: Publish"/>
 <permission id="bika.lims.CancelAndReinstate" title="BIKA: Cancel and reinstate"/>
 

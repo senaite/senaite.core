@@ -3,6 +3,7 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
+from plone import api
 from AccessControl import getSecurityManager
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -12,6 +13,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.utils import getUsers
 from bika.lims.workflow import getTransitionDate
 from bika.lims.permissions import *
+from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.utils import to_utf8, getUsers
 from DateTime import DateTime
 from Products.Archetypes import PloneMessageFactory as PMF
@@ -646,7 +648,66 @@ class AnalysisRequestsView(BikaListingView):
                         'getAnalysesNum',
                         'getDateVerified',
                         'state_title']},
+            {'id': 'rejected',
+             'title': _('Rejected'),
+             'contentFilter': {'review_state': 'rejected',
+                               'sort_on': 'created',
+                               'sort_order': 'reverse'},
+             'transitions': [],
+             'custom_actions': [],
+             'columns': ['getRequestID',
+                        'getSample',
+                        'BatchID',
+                        'SubGroup',
+                        'Client',
+                        'getProfilesTitle',
+                        'getTemplateTitle',
+                        'Creator',
+                        'Created',
+                        'getClientOrderNumber',
+                        'getClientReference',
+                        'getClientSampleID',
+                        'ClientContact',
+                        'getSampleTypeTitle',
+                        'getSamplePointTitle',
+                        'getStorageLocation',
+                        'SamplingDeviation',
+                        'Priority',
+                        'AdHoc',
+                        'getDateSampled',
+                        'getSampler',
+                        'getDatePreserved',
+                        'getPreserver',
+                        'getDateReceived',
+                        'getDatePublished',
+                        'getAnalysesNum',
+                        'state_title']},
             ]
+
+    def isItemAllowed(self, obj):
+        """
+        It checks if the analysis request can be added to the list depending
+        on the department filter. It checks the department of each analysis
+        service from each analysis belonguing to the given analysis request.
+        If department filtering is disabled in bika_setup, will return True.
+        @Obj: it is an analysis request object.
+        @return: boolean
+        """
+        if not self.context.bika_setup.getAllowDepartmentFiltering():
+            return True
+        # Gettin the department from analysis service
+        ans = [an.getObject() for an in obj.getAnalyses()]
+        deps = [an.getService().getDepartment().UID() for an in ans if an.getService().getDepartment()]
+        result = True
+        if deps:
+            # Getting the cookie value
+            cookie_dep_uid = self.request.get('filter_by_department_info', '')
+            # Comparing departments' UIDs
+            deps_uids = set(deps)
+            filter_uids = set(cookie_dep_uid.split(','))
+            matches = deps_uids & filter_uids
+            result = len(matches) > 0
+        return result
 
     def folderitem(self, obj, item, index):
         # Additional info from AnalysisRequest to be added in the item generated
@@ -704,9 +765,12 @@ class AnalysisRequestsView(BikaListingView):
         sd = obj.getSample().getSamplingDate()
         item['SamplingDate'] = \
             self.ulocalized_time(sd, long_format=1) if sd else ''
-        item['getDateReceived'] = self.ulocalized_time(obj.getDateReceived())
-        item['getDatePublished'] = self.ulocalized_time(obj.getDatePublished())
-        item['getDateVerified'] = getTransitionDate(obj, 'verify')
+        item['getDateReceived'] = \
+            self.ulocalized_time(obj.getDateReceived())
+        item['getDatePublished'] = \
+            self.ulocalized_time(getTransitionDate(obj, 'publish'))
+        item['getDateVerified'] = \
+            self.ulocalized_time(getTransitionDate(obj, 'verify'))
 
         deviation = sample.getSamplingDeviation()
         item['SamplingDeviation'] = deviation and deviation.Title() or ''
@@ -810,23 +874,14 @@ class AnalysisRequestsView(BikaListingView):
             item['class']['getDatePreserved'] = 'provisional'
 
         # Submitting user may not verify results
-        if item['review_state'] == 'to_be_verified' and \
-           not checkPermission(VerifyOwnResults, obj):
-            self_submitted = False
-            try:
-                review_history = list(self.workflow.getInfoFor(obj, 'review_history'))
-                review_history.reverse()
-                for event in review_history:
-                    if event.get('action') == 'submit':
-                        if event.get('actor') == member.getId():
-                            self_submitted = True
-                        break
-                if self_submitted:
-                    item['after']['state_title'] = \
-                         "<img src='++resource++bika.lims.images/submitted-by-current-user.png' title='%s'/>" % \
-                         t(_("Cannot verify: Submitted by current user"))
-            except Exception:
-                pass
+        if item['review_state'] == 'to_be_verified':
+            username = member.getUserName()
+            allowed = api.user.has_permission(VerifyPermission,
+                                              username=username)
+            if allowed and not obj.isUserAllowedToVerify(member):
+                item['after']['state_title'] = \
+                     "<img src='++resource++bika.lims.images/submitted-by-current-user.png' title='%s'/>" % \
+                     t(_("Cannot verify: Submitted by current user"))
 
         return item
 

@@ -25,7 +25,10 @@ import tempfile
 
 from optparse import OptionParser
 
-tmpeggs = tempfile.mkdtemp()
+__version__ = '2015-07-01'
+# See zc.buildout's changelog if this version is up to date.
+
+tmpeggs = tempfile.mkdtemp(prefix='bootstrap-')
 
 usage = '''\
 [DESIRED PYTHON FOR BUILDOUT] bootstrap.py [options]
@@ -40,8 +43,9 @@ this script from going over the network.
 '''
 
 parser = OptionParser(usage=usage)
-parser.add_option("-v", "--version", help="use a specific zc.buildout version")
-
+parser.add_option("--version",
+                  action="store_true", default=False,
+                  help=("Return bootstrap.py version."))
 parser.add_option("-t", "--accept-buildout-test-releases",
                   dest='accept_buildout_test_releases',
                   action="store_true", default=False,
@@ -56,46 +60,81 @@ parser.add_option("-c", "--config-file",
                         "file to be used."))
 parser.add_option("-f", "--find-links",
                   help=("Specify a URL to search for buildout releases"))
-
+parser.add_option("--allow-site-packages",
+                  action="store_true", default=False,
+                  help=("Let bootstrap.py use existing site packages"))
+parser.add_option("--buildout-version",
+                  help="Use a specific zc.buildout version")
+parser.add_option("--setuptools-version",
+                  help="Use a specific setuptools version")
+parser.add_option("--setuptools-to-dir",
+                  help=("Allow for re-use of existing directory of "
+                        "setuptools versions"))
 
 options, args = parser.parse_args()
+if options.version:
+    print("bootstrap.py version %s" % __version__)
+    sys.exit(0)
+
 
 ######################################################################
 # load/install setuptools
 
-to_reload = False
 try:
-    import pkg_resources
-    import setuptools
+    from urllib.request import urlopen
 except ImportError:
-    ez = {}
+    from urllib2 import urlopen
 
-    try:
-        from urllib.request import urlopen
-    except ImportError:
-        from urllib2 import urlopen
+ez = {}
+if os.path.exists('ez_setup.py'):
+    exec(open('ez_setup.py').read(), ez)
+else:
+    exec(urlopen('https://bootstrap.pypa.io/ez_setup.py').read(), ez)
 
-    # XXX use a more permanent ez_setup.py URL when available.
-    exec(urlopen('https://bitbucket.org/pypa/setuptools/raw/0.7.2/ez_setup.py'
-                ).read(), ez)
-    setup_args = dict(to_dir=tmpeggs, download_delay=0)
-    ez['use_setuptools'](**setup_args)
+if not options.allow_site_packages:
+    # ez_setup imports site, which adds site packages
+    # this will remove them from the path to ensure that incompatible versions
+    # of setuptools are not in the path
+    import site
+    # inside a virtualenv, there is no 'getsitepackages'.
+    # We can't remove these reliably
+    if hasattr(site, 'getsitepackages'):
+        for sitepackage_path in site.getsitepackages():
+            # Strip all site-packages directories from sys.path that
+            # are not sys.prefix; this is because on Windows
+            # sys.prefix is a site-package directory.
+            if sitepackage_path != sys.prefix:
+                sys.path[:] = [x for x in sys.path
+                               if sitepackage_path not in x]
 
-    if to_reload:
-        reload(pkg_resources)
-    import pkg_resources
-    # This does not (always?) update the default working set.  We will
-    # do it.
-    for path in sys.path:
-        if path not in pkg_resources.working_set.entries:
-            pkg_resources.working_set.add_entry(path)
+setup_args = dict(to_dir=tmpeggs, download_delay=0)
+
+if options.setuptools_version is not None:
+    setup_args['version'] = options.setuptools_version
+if options.setuptools_to_dir is not None:
+    setup_args['to_dir'] = options.setuptools_to_dir
+
+ez['use_setuptools'](**setup_args)
+import setuptools
+import pkg_resources
+
+# This does not (always?) update the default working set.  We will
+# do it.
+for path in sys.path:
+    if path not in pkg_resources.working_set.entries:
+        pkg_resources.working_set.add_entry(path)
 
 ######################################################################
 # Install buildout
 
 ws = pkg_resources.working_set
 
+setuptools_path = ws.find(
+    pkg_resources.Requirement.parse('setuptools')).location
+
+# Fix sys.path here as easy_install.pth added before PYTHONPATH
 cmd = [sys.executable, '-c',
+       'import sys; sys.path[0:0] = [%r]; ' % setuptools_path +
        'from setuptools.command.easy_install import main; main()',
        '-mZqNxd', tmpeggs]
 
@@ -108,21 +147,23 @@ find_links = os.environ.get(
 if find_links:
     cmd.extend(['-f', find_links])
 
-setuptools_path = ws.find(
-    pkg_resources.Requirement.parse('setuptools')).location
-
 requirement = 'zc.buildout'
-version = options.version
+version = options.buildout_version
 if version is None and not options.accept_buildout_test_releases:
     # Figure out the most recent final version of zc.buildout.
     import setuptools.package_index
     _final_parts = '*final-', '*final'
 
     def _final_version(parsed_version):
-        for part in parsed_version:
-            if (part[:1] == '*') and (part not in _final_parts):
-                return False
-        return True
+        try:
+            return not parsed_version.is_prerelease
+        except AttributeError:
+            # Older setuptools
+            for part in parsed_version:
+                if (part[:1] == '*') and (part not in _final_parts):
+                    return False
+            return True
+
     index = setuptools.package_index.PackageIndex(
         search_path=[setuptools_path])
     if find_links:
@@ -147,10 +188,9 @@ if version:
 cmd.append(requirement)
 
 import subprocess
-if subprocess.call(cmd, env=dict(os.environ, PYTHONPATH=setuptools_path)) != 0:
+if subprocess.call(cmd) != 0:
     raise Exception(
-        "Failed to execute command:\n%s",
-        repr(cmd)[1:-1])
+        "Failed to execute command:\n%s" % repr(cmd)[1:-1])
 
 ######################################################################
 # Import and run buildout

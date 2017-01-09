@@ -9,7 +9,7 @@ from views.analysisrequests import ClientBatchAnalysisRequestsView
 from views.samples import ClientSamplesView
 from views.analysisprofiles import ClientAnalysisProfilesView
 from views.artemplates import ClientARTemplatesView
-from views.srtemplates import ClientSRTemplatesView
+from views.srtemplates import ClientSamplingRoundTemplatesView
 from views.samplepoints import ClientSamplePointsView
 from views.analysisspecs import ClientAnalysisSpecsView
 from views.analysisspecs import SetSpecsToLabDefaults

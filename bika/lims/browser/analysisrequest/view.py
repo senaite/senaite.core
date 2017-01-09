@@ -11,7 +11,6 @@ from bika.lims.browser.analyses import AnalysesView
 from bika.lims.browser.analyses import QCAnalysesView
 from bika.lims.browser.header_table import HeaderTableView
 from bika.lims.browser.sample import SamplePartitionsView
-from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
 from bika.lims.config import POINTS_OF_CAPTURE
 from bika.lims.permissions import *
 from bika.lims.utils import isActive

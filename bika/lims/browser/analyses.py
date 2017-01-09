@@ -5,6 +5,7 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
+from plone import api
 from AccessControl import getSecurityManager
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
@@ -15,6 +16,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import QCANALYSIS_TYPES
 from bika.lims.interfaces import IResultOutOfRange
 from bika.lims.permissions import *
+from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.utils import isActive
 from bika.lims.utils import getUsers
 from bika.lims.utils import to_utf8
@@ -274,6 +276,28 @@ class AnalysesView(BikaListingView):
                         'ResultText': analysts.getValue(a)})
         return ret
 
+    def isItemAllowed(self, obj):
+        """
+        It checks if the item can be added to the list depending on the
+        department filter. If the analysis service is not assigned to a
+        department, show it.
+        If department filtering is disabled in bika_setup, will return True.
+        @Obj: it is an analysis object.
+        @return: boolean
+        """
+        if not self.context.bika_setup.getAllowDepartmentFiltering():
+            return True
+        # Gettin the department from analysis service
+        serv_dep = obj.getService().getDepartment()
+        result = True
+        if serv_dep:
+            # Getting the cookie value
+            cookie_dep_uid = self.request.get('filter_by_department_info', '')
+            # Comparing departments' UIDs
+            result = True if serv_dep.UID() in\
+                cookie_dep_uid.split(',') else False
+        return result
+
     def folderitems(self):
         rc = getToolByName(self.context, REFERENCE_CATALOG)
         bsc = getToolByName(self.context, 'bika_setup_catalog')
@@ -295,6 +319,8 @@ class AnalysesView(BikaListingView):
 
         self.categories = []
         items = super(AnalysesView, self).folderitems(full_objects = True)
+
+        member = mtool.getAuthenticatedMember()
 
         # manually skim retracted analyses from the list
         new_items = []
@@ -721,26 +747,51 @@ class AnalysesView(BikaListingView):
                          self.portal_url,
                          t(_("Late Analysis")))
 
-            # Submitting user may not verify results (admin can though)
-            if items[i]['review_state'] == 'to_be_verified' and \
-               not checkPermission(VerifyOwnResults, obj):
-                user_id = getSecurityManager().getUser().getId()
-                self_submitted = False
-                try:
-                    review_history = list(workflow.getInfoFor(obj, 'review_history'))
-                    review_history.reverse()
-                    for event in review_history:
-                        if event.get('action') == 'submit':
-                            if event.get('actor') == user_id:
-                                self_submitted = True
-                            break
-                    if self_submitted:
-                        items[i]['after']['state_title'] = \
-                             "<img src='++resource++bika.lims.images/submitted-by-current-user.png' title='%s'/>" % \
-                             (t(_("Cannot verify: Submitted by current user")))
-                except WorkflowException:
-                    pass
-            after_icons = ''
+            after_icons = []
+            # Submitting user may not verify results unless the user is labman
+            # or manager and the AS has isSelfVerificationEnabled set to True
+            if items[i]['review_state'] == 'to_be_verified':
+                # If multi-verification required, place an informative icon
+                numverifications = obj.getNumberOfRequiredVerifications()
+                if numverifications > 1:
+                    # More than one verification required, place an icon
+                    # Get the number of verifications already done:
+                    done = obj.getNumberOfVerifications()
+                    pending = numverifications - done
+                    ratio = float(done)/float(numverifications) \
+                        if done > 0 else 0
+                    scale = '' if ratio < 0.25 else '25' \
+                            if ratio < 0.50 else '50' \
+                            if ratio < 0.75 else '75'
+                    anchor = "<a href='#' title='%s &#13;%s %s' " \
+                             "class='multi-verification scale-%s'>%s/%s</a>"
+                    anchor = anchor % (t(_("Multi-verification required")),
+                                       str(pending),
+                                       t(_("verification(s) pending")),
+                                       scale, str(done), str(numverifications))
+                    after_icons.append(anchor)
+
+                username = member.getUserName()
+                allowed = api.user.has_permission(VerifyPermission,
+                                                  username=username)
+                if allowed and not obj.isUserAllowedToVerify(member):
+                    after_icons.append(
+                        "<img src='++resource++bika.lims.images/submitted-by-current-user.png' title='%s'/>" %
+                        (t(_("Cannot verify, submitted or verified by current user before")))
+                        )
+                elif allowed:
+                    if obj.getSubmittedBy() == member.getUser().getId():
+                        after_icons.append(
+                        "<img src='++resource++bika.lims.images/warning.png' title='%s'/>" %
+                        (t(_("Can verify, but submitted by current user")))
+                        )
+            #If analysis Submitted and Verified by the same person, then warning icon will appear.
+            submitter=obj.getSubmittedBy()
+            if submitter and obj.wasVerifiedByUser(submitter):
+                after_icons.append(
+                    "<img src='++resource++bika.lims.images/warning.png' title='%s'/>" %
+                    (t(_("Submited and verified by the same user- "+ submitter)))
+                    )
             # add icon for assigned analyses in AR views
             if self.context.portal_type == 'AnalysisRequest':
                 obj = items[i]['obj']
@@ -750,19 +801,19 @@ class AnalysesView(BikaListingView):
                     br = obj.getBackReferences('WorksheetAnalysis')
                     if len(br) > 0:
                         ws = br[0]
-                        after_icons += "<a href='%s'><img src='++resource++bika.lims.images/worksheet.png' title='%s'/></a>" % \
+                        after_icons.append("<a href='%s'><img src='++resource++bika.lims.images/worksheet.png' title='%s'/></a>" %
                         (ws.absolute_url(),
                          t(_("Assigned to: ${worksheet_id}",
-                             mapping={'worksheet_id': safe_unicode(ws.id)})))
-            items[i]['after']['state_title'] = after_icons
-            after_icons = ''
+                             mapping={'worksheet_id': safe_unicode(ws.id)}))))
+            items[i]['after']['state_title'] = '&nbsp;'.join(after_icons)
+            after_icons = []
             if obj.getIsReflexAnalysis():
-                after_icons += "<img\
+                after_icons.append("<img\
                 src='%s/++resource++bika.lims.images/reflexrule.png'\
                 title='%s'>" % (
                     self.portal_url,
                     t(_('It comes form a reflex rule'))
-                )
+                ))
             items[i]['after']['Service'] = after_icons
 
         # the TAL requires values for all interim fields on all

@@ -5,7 +5,6 @@
 
 from bika.lims.controlpanel.bika_instruments import InstrumentsView
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 
 class InstrumentTypeInstrumentsView(InstrumentsView):
 
@@ -17,13 +16,6 @@ class InstrumentTypeInstrumentsView(InstrumentsView):
                                 {'url': url+'createObject?type_name=Instrument',
                                  'icon': '++resource++bika.lims.images/add.png'}}
 
-    def folderitems(self):
-        items = InstrumentsView.folderitems(self)
-        filtered_items = []
-        for item in items:
-            if 'obj' not in item:
-                continue
-            itype = item['obj'].getInstrumentType()
-            if itype and itype.UID() == self.context.UID():
-                filtered_items.append(item)
-        return filtered_items
+    def isItemAllowed(self, obj):
+        itype = obj.getInstrumentType() if obj else None
+        return itype.UID() == self.context.UID() if itype else False

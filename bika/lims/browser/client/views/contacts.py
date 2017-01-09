@@ -77,30 +77,21 @@ class ClientContactsView(BikaListingView):
                          'getMobilePhone']},
         ]
 
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        for x in range(len(items)):
-            if not items[x].has_key('obj'):
-                continue
-
-            obj = items[x]['obj']
-            items[x]['getFullname'] = obj.getFullname()
-            items[x]['getEmailAddress'] = obj.getEmailAddress()
-            items[x]['getBusinessPhone'] = obj.getBusinessPhone()
-            items[x]['getMobilePhone'] = obj.getMobilePhone()
-            username = obj.getUsername()
-            items[x]['Username'] = username and username or ''
-
-            items[x]['replace']['getFullname'] = \
-                "<a href='%s'>%s</a>" % (
-                    items[x]['url'], items[x]['getFullname'])
-
-            if items[x]['getEmailAddress']:
-                addr = items[x]['getEmailAddress']
-                items[x]['replace']['getEmailAddress'] = \
-                    "<a href='mailto:%s'>%s</a>" % (addr, addr)
-
-        return items
+    def folderitem(self, obj, item, index):
+        username = obj.getUsername()
+        item['getFullname'] = obj.getFullname()
+        item['getEmailAddress'] = obj.getEmailAddress()
+        item['getBusinessPhone'] = obj.getBusinessPhone()
+        item['getMobilePhone'] = obj.getMobilePhone()
+        item['Username'] = username and username or ''
+        item['replace']['getFullname'] = \
+            "<a href='%s'>%s</a>" % (
+                item['url'], item['getFullname'])
+        if item['getEmailAddress']:
+            addr = item['getEmailAddress']
+            item['replace']['getEmailAddress'] = \
+                "<a href='mailto:%s'>%s</a>" % (addr, addr)
+        return item
 
 
 class ClientContactVocabularyFactory(CatalogVocabulary):

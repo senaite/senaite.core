@@ -90,7 +90,11 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             # Adding the Security Seal Intact checkbox's value to the container object
             container_uid = form['getContainer'][0][part_uid]
             uc = getToolByName(self.context, 'uid_catalog')
-            container_obj = uc(UID=container_uid)[0].getObject()
+            cbr = uc(UID=container_uid)
+            if cbr and len(cbr) > 0:
+                container_obj = cbr[0].getObject()
+            else:
+                continue
             value = form.get('setSecuritySealIntact', {}).get(part_uid, '') == 'on'
             container_obj.setSecuritySealIntact(value)
         objects = WorkflowAction._get_selected_items(self)
@@ -459,7 +463,10 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
     def workflow_action_verify(self):
         # default bika_listing.py/WorkflowAction, but then go to view screen.
         self.destination_url = self.context.absolute_url()
-        return self.workflow_action_default(action='verify', came_from='edit')
+        action, came_from = WorkflowAction._get_form_workflow_action(self)
+        if type(came_from) in (list, tuple):
+            came_from = came_from[0]
+        return self.workflow_action_default(action='verify', came_from=came_from)
 
     def workflow_action_retract_ar(self):
         workflow = getToolByName(self.context, 'portal_workflow')

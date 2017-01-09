@@ -2,6 +2,7 @@
 #
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+from bika.lims.workflow import getTransitionDate
 
 from Products.CMFCore.utils import getToolByName
 from bika.lims.browser import BrowserView
@@ -98,7 +99,9 @@ class Report(BrowserView):
             dataitem = {'value': ar.getSamplePointTitle()}
             dataline.append(dataitem)
 
-            dataitem = {'value': self.ulocalized_time(ar.getDatePublished())}
+            dataitem = {'value':
+                        self.ulocalized_time(getTransitionDate(ar, 'publish'),
+                                             long_format=True)}
             dataline.append(dataitem)
 
             dataitem = {'value': ar.getTotalPrice()}

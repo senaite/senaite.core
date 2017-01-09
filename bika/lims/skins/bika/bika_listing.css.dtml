@@ -551,4 +551,20 @@ table.bika-listing-table-transposed table.worksheet-position tbody tr {
     color: #205c90 !important;
     padding: 4px 10px;
 }
+#content .bika-listing-table a.multi-verification {
+    background-color: #b42e29;
+    border-radius: 5px;
+    color: #fff !important;
+    margin: 0 4px;
+    padding: 1px 4px;
+}
+#content .bika-listing-table a.multi-verification.scale-25 {
+    background-color:#c36349;
+}
+#content .bika-listing-table a.multi-verification.scale-50 {
+    background-color:#c89e55;
+}
+#content .bika-listing-table a.multi-verification.scale-75 {
+    background-color:#afb064;
+}
 /* </dtml-with> */

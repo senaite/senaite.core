@@ -1,190 +1,317 @@
-<!--
-    Default Analysis Request results template for Bika LIMS
+<tal:comment replace="nothing">
+    Print COA for a set of analysisrequests.
 
-    All data is available using the analysisrequest dictionary.
-    Example for accessing and displaying data:
+    The filename starts with "multi" indicates this report is formatted
+    print multiple ARs.
+</tal:comment>
 
-    <p tal:content="python:analysisrequest['laboratory']['title']"></p>
-
-    or
-
-    <p tal:content="analysisrequest/laboratory/title"></p>
-
-    Take a look to the documentation for more information about
-    available data and fields.
-    https://github.com/bikalabs/Bika-LIMS/wiki/Creating-new-report-templates
-
--->
-<tal:report tal:define="num_ars_per_page python:4;
+<tal:report tal:define="num_ars_per_page python:5;
                         argroup python:view.getAnalysisRequestGroup();
-                        arspage python:[argroup[i:i+num_ars_per_page] for i in range(0,len(argroup),num_ars_per_page)];">
+                        arspage python:[argroup[i:i+num_ars_per_page] for i in range(0,len(argroup),num_ars_per_page)];
+                        coanr python:view.next_certificate_number();">
 
-  <tal:page_iter repeat="ars arspage">
-  <tal:page tal:define="
-      firstar         python:ars[0];
-      analysisrequest python:view.getAnalysisRequest(firstar);
-      client          analysisrequest/client;
-      contact         analysisrequest/contact;
-      laboratory      analysisrequest/laboratory;
-      portal          analysisrequest/portal;
-      showqcanalyses  python:view.isQCAnalysesVisible();
-      remarksenabled  python:view.context.bika_setup.getEnableAnalysisRemarks();">
+    <!-- Address and Lab info, displayed only on first page. -->
+    <div id="section-info"
+         tal:define="firstar         python:arspage[0][0];
+                     analysisrequest python:view.getAnalysisRequest(firstar);
+                     portal          analysisrequest/portal;
+                     client          python:analysisrequest['client']['obj'];
+                     contact         python:analysisrequest['contact']['obj'];
+                     lab             python:portal['obj'].bika_setup.laboratory;
+                     showqcanalyses  python:view.isQCAnalysesVisible();
+                     remarksenabled  python:view.context.bika_setup.getEnableAnalysisRemarks();">
+        <table width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+                <td colspan="2" id="section-info-heading" i18n:translate="section-info-heading">
+                    <h1>CERTIFICATE OF ANALYSIS</h1>
+                </td>
+            </tr>
+        </table>
+        <hr size="1"/>
+        <table width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+                <td>
+                    <!-- Client -->
+                    <table>
+                        <tr>
+                            <th i18n:translate="" class="label">Client</th>
+                            <td tal:content="python:client.Title()"/>
+                        </tr>
+                        <tr>
+                            <th i18n:translate="" class="label">Contact</th>
+                            <td tal:content="python:contact.getFullname()"/>
+                        </tr>
+                        <tr>
+                            <th i18n:translate="" class="label">Email</th>
+                            <td id="client-email">
+                                <a tal:content="python:contact.getEmailAddress()"
+                                   tal:attributes="url python:'mailto:%s' % contact.getEmailAddress()"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th i18n:translate="" class="label">Telephone</th>
+                            <td tal:content="structure python: client.getPhone()"/>
+                        </tr>
+                        <tr>
+                            <th i18n:translate="" class="label">Address</th>
+                            <td tal:content="structure python:view._client_address(client)"/>
+                        </tr>
+                    </table>
+                </td>
+                <td>
+                    <!-- Laboratory -->
+                    <table>
+                        <tr>
+                            <th i18n:translate="" class="label">
+                                Laboratory
+                            </th>
+                            <td tal:content="python: lab.Title()"/>
+                        </tr>
+                        <tr>
+                            <th i18n:translate="" class="label">Email
+                            </th>
+                            <td>
+                                <a tal:content="python:lab.getEmailAddress()"
+                                   tal:attributes="url python:'mailto:%s' % lab.getEmailAddress()"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th i18n:translate="" class="label">
+                                Telephone
+                            </th>
+                            <td tal:content="structure python: lab.getPhone()"/>
+                        </tr>
+                        <tr>
+                            <th i18n:translate="" class="label">
+                                Address
+                            </th>
+                            <td tal:content="structure python:view._lab_address(lab)"/>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <hr size="1"/>
+        <table width="100%" cellpadding="0" cellspacing="0">
+            <tr>
+                <th i18n:translate="" class="label">Report Date</th>
+                <td tal:content="structure view/current_date"/>
+            </tr>
+            <tr>
+                <th i18n:translate="" class="label">Number of samples</th>
+                <td tal:content="structure python:len(argroup)"/>
+            </tr>
+            <tr>
+                <th i18n:translate="" class="label">Certificate Number
+                </th>
+                <td tal:content="structure coanr"/>
+            </tr>
+        </table>
 
-  <!--
-      Page Header
-      A div element with the class "page-header" will be placed on the
-      top of the report, within the top margin area. This element
-      will be displayed on each page.
+        <hr size="1"/>
 
-      Page numbering
-      For the number of page, use the "page-current-num" class.
-      For the total count, use the "page-total-count" class.
-  -->
-  <div id="section-header" class="page-header">
-    <div id='lab-logo'>
-      <a tal:attributes="href laboratory/url">
-          <img tal:attributes="src laboratory/logo"/>
-      </a>
+
+        <!-- Discreeter section -->
+        <div class="discreeter" id="discreeter-info">
+            <div i18n:translate="">
+                This report supersedes any previous report for the samples listed here.
+            </div>
+            <div i18n:translate="">
+                Analysis results relate only to the samples as they were received.
+            </div>
+            <div i18n:translate="">
+                This document shall not be reproduced except in full, without the written approval of
+                <tal:block replace="python:lab.Title()" i18n:name="name_lab"/>.
+            </div>
+            <div tal:condition="python:lab.getConfidence()" i18n:translate="">
+                Test results are at a <tal:block replace="python:lab.getConfidence()" i18n:name="lab_confidence"/>% confidence level.
+            </div>
+            <div tal:condition="python:lab.getLaboratoryAccredited()" i18n:translate="">
+                Methods included in the
+                <tal:block replace="python:lab.getAccreditationBody()" i18n:name="accreditation_body"/>
+                schedule of Accreditation for this Laboratory are marked with
+                <img tal:attributes='src python:portal["url"]+"/++resource++bika.lims.images/accredited.png";' class="accredited-ico"/>
+            </div>
+            <div tal:condition="python:lab.getLaboratoryAccredited()" i18n:translate="">
+                Analysis remarks are not accredited.
+            </div>
+        </div>
+
     </div>
-  </div>
 
-  <!-- Address and Lab info -->
-  <div id="section-info">
-      <table width="100%">
-          <tr>
-              <td id="lab-info">
-                  <table>
-                      <tr><td id="lab-title" tal:content='laboratory/title'></td></tr>
-                      <tr><td id="lab-address" tal:content='structure laboratory/address'></td></tr>
+    <tal:comment replace="nothing">
+        Break before first AR section.
+        Subsequent AR sections have page breaks after each one.
+    </tal:comment>
+    <div class='manual-page-break'></div>
 
-                      <tr tal:condition="laboratory/url">
-                          <td id="lab-URL">
-                              <a tal:attributes="href laboratory/url"
-                                 tal:content="laboratory/url"></a>
-                          </td>
-                      </tr>
-                  </table>
-              </td>
-          </tr>
-      </table>
-      <hr size="1"/>
-      <table width="100%" cellpadding="0" cellspacing="0">
-        <tr>
-            <td i18n:translate="" class="label">Client</td>
-            <td id="client-name" tal:content="client/name"></td>
-            <td i18n:translate="" class="label">Address</td>
-            <td id="client-address" tal:content="structure client/address"></td>
-        </tr>
-        <tr>
-            <td i18n:translate="" class="label">Client Contact</td>
-            <td id="client-contact" tal:content="python:contact.get('fullname','')"></td>
-            <td i18n:translate="" class="label">Received Date</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td i18n:translate="" class="label">Contact Email</td>
-            <td id="client-email">
-              <a tal:content="contact/email"
-                 tal:attributes="url python:'mailto:%s' % contact['email'];"></a>
-            </td>
-            <td i18n:translate="" class="label">Reporting Date</td>
-            <td></td>
-        </tr>
-        <tr>
-            <td i18n:translate="" class="label">Contact Number</td>
-            <td></td>
-            <td i18n:translate="" class="label">Certificate Number</td>
-            <td></td>
-        </tr>
-      </table>
-      <hr size="1"/>
-  </div>
+    <tal:page_iter repeat="ars arspage">
+        <tal:page tal:define="
+            firstar         python:ars[0];
+            analysisrequest python:view.getAnalysisRequest(firstar);
+            portal          analysisrequest/portal;
+            client          python:analysisrequest['client']['obj'];
+            contact         python:analysisrequest['contact']['obj'];
+            lab             python:portal['obj'].bika_setup.laboratory;
+            showqcanalyses  python:view.isQCAnalysesVisible();
+            remarksenabled  python:view.context.bika_setup.getEnableAnalysisRemarks();">
 
-  <!-- Analysis Requests table -->
-  <div id="ar-grid" tal:define="transposed python:view.getAnaysisBasedTransposedMatrix(ars);">
-    <table width="100%" cellpadding="0" cellspacing="0">
-      <!-- Sample ID -->
-      <tr>
-        <th i18n:translate="" colspan="5">Sample ID</th>
-        <tal:ar repeat="ar ars">
-        <td tal:attributes="id ar/id;uid ar/UID;" class="sampleid">
-          <a tal:attributes="href python:ar.getSample().absolute_url()"
-             tal:content="python:ar.getSample().id"></a>
-        </td>
-        </tal:ar>
-      </tr>
-      <!-- Sample Type -->
-      <tr>
-        <th i18n:translate="" colspan="5">Sample Type</th>
-        <tal:ar repeat="ar ars">
-        <td class="sampletype" tal:content="python:ar.getSample().getSampleType().title"></td>
-        </tal:ar>
-      </tr>
-      <!-- Sample Point -->
-      <tr>
-        <th i18n:translate="" colspan="5">Sample Point</th>
-        <tal:ar repeat="ar ars">
-        <td class="samplepoint" tal:content="python:ar.getSample().getSamplePointTitle()"></td>
-        </tal:ar>
-      </tr>
+            <!-- This element will be displayed on each page within the top margin area. -->
+            <div id="section-header" class="page-header">
+                <div id='lab-logo'>
+                    <table style="margin:0;padding:0;width:100%" cellpadding="0" cellspacing="0">
+                        <tr>
+                            <td width="100%">
+                                <a tal:attributes="href python: lab.getLabURL()">
+                                    <img tal:attributes="src python:portal['obj'].absolute_url() + '/logo_print.png'"/>
+                                </a>
+                            </td>
+                            <td>
+                                <img tal:attributes="src python:lab.getAccreditationBodyLogo().absolute_url()"/>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
 
-      <!-- Tests/results -->
-      <tr>
-          <td class="blank-row" tal:attributes="colspan python:len(ars)+5;"></td>
-      </tr>
-      <tr>
-        <th i18n:translate="">Category</th>
-        <th i18n:translate="">Analysis</th>
-        <th>+/-</th>
-        <th i18n:translate="">Unit</th>
-        <th i18n:translate="">Method</th>
-        <th attributes="colspan python:len(ars)" i18n:translate="">Results</th>
-      </tr>
-      <tal:cats repeat="cat python:sorted(transposed.keys())">
-      <tr>
-        <td class="category" tal:content="cat" tal:attributes="rowspan python:len(transposed[cat].keys())+1"></td>
-      </tr>
-      <tr tal:repeat="service python:sorted(transposed[cat].keys())">
-        <td class="service" tal:content="service"></td>
-        <td></td>
-        <td class="unit" tal:content="python:transposed[cat][service]['service'].getUnit()"></td>
-        <td class="method" tal:content="python:transposed[cat][service]['service'].getMethod().title if transposed[cat][service]['service'].getMethod() else ''"></td>
-        <tal:ar repeat="ar ars">
-        <td class="result" tal:content="python:transposed[cat][service]['ars'].get(ar.id,'')"></td>
-        </tal:ar>
-      </tr>
-      </tal:cats>
-    </table>
-  </div>
+            <!-- Analysis Requests table -->
+            <tal:def tal:define="transposed python:view.getAnaysisBasedTransposedMatrix(ars);
+                     cat_titles python:sorted(transposed.keys());
+                     leftcol_width python:50 + divmod(50, len(ars))[1];
+                     rightcol_width python:100 - leftcol_width;
+                     methodcol_width python:float(leftcol_width)/100*40;
+                     servicecol_width python:float(leftcol_width)/100*50;
+                     unitcol_width python:leftcol_width-(methodcol_width+servicecol_width);
+                     arcol_width python:float(rightcol_width)/len(ars);">
 
-  <!--
-      Page footer
-      A div element with the class "page-footer" will be placed in the
-      bottom of the report, within the bottom margin area. This element
-      will be displayed on each page.
+                <!-- AR Group headers -->
+                <div class="table ar_table">
+                    <div class="row">
+                        <span class="th header_th"
+                              tal:attributes="style string:width:${leftcol_width}%;;border-top:1px solid #cdcdcd;"
+                              i18n:translate="">Sample ID</span>
+                        <tal:ar repeat="ar ars">
+                            <span class="td header_td"
+                                  tal:attributes="style string:width:${arcol_width}%;;border-top:1px solid #cdcdcd;"
+                                  tal:content="python:ar.getSample().id"/>
+                        </tal:ar>
+                    </div>
+                    <div class="row">
+                        <span class="th header_th"
+                              tal:attributes="style string:width:${leftcol_width}%"
+                              i18n:translate="">Sample Type</span>
+                        <tal:ar repeat="ar ars">
+                            <span class="td header_td"
+                                  tal:attributes="style string:width:${arcol_width}%"
+                                  tal:content="python:ar.getSample().getSampleType().Title()"/>
+                        </tal:ar>
+                    </div>
+                    <div class="row">
+                        <span class="th header_th"
+                              tal:attributes="style string:width:${leftcol_width}%"
+                              i18n:translate="">Date Received</span>
+                        <tal:ar repeat="ar ars">
+                            <span class="td header_td"
+                                  tal:attributes="style string:width:${arcol_width}%"
+                                  tal:content="python:ar.getDateReceived().Date()"/>
+                        </tal:ar>
+                    </div>
+                </div>
 
-      Page numbering
-      For the number of page, use the "page-current-num" class.
-      For the total count, use the "page-total-count" class.
-  -->
-  <div class='page-footer'>
-    <table>
-      <tr>
-        <td class='footer-discreeter'>
-          <div class="page-number">Page <span class="page-current-num"></span> of <span class="page-total-count"></span></div>
-        </td>
-      </tr>
-    </table>
-  </div>
+                <!-- Category header for each category -->
+                <tal:category tal:repeat="cat_title cat_titles">
+                    <div class="cat_title" tal:content="cat_title"/>
+                    <!-- Service details for each result and results for each AR -->
+                    <div class="table ar_table">
+                        <div class="row">
+                            <span class="th"
+                                  tal:attributes="style string:width:${servicecol_width}%">Service</span>
+                            <span class="th"
+                                  tal:attributes="style string:width:${methodcol_width}%">Method</span>
+                            <span class="th"
+                                  tal:attributes="style string:width:${unitcol_width}%">Unit</span>
+                            <tal:ar repeat="ar ars">
+                                <span class="th"
+                                      tal:attributes="style string:width:${arcol_width}%">Result</span>
+                            </tal:ar>
+                        </div>
 
-  <!--
-      Manual break ("manual-page-break" css class)
-      We want to report to be splitted by the max number of ARs per page.
+                        <tal:cat_analyses tal:repeat="service_title python:sorted(transposed[cat_title].keys())">
+                            <div class="row">
+                                <span class="td service_title"
+                                      tal:attributes="style string:width:${servicecol_width}%">
+                                <span tal:content="service_title"/>
+                                <img tal:attributes='src python:portal["url"]+"/++resource++bika.lims.images/accredited.png";'
+                                     tal:condition="python:transposed[cat_title][service_title]['accredited']"
+                                     class="accredited-ico"/>
+                                </span>
+                                <span class="td method_title"
+                                      tal:attributes="style string:width:${methodcol_width}%"
+                                      tal:content="python:transposed[cat_title][service_title]['service'].getMethod().Title() if transposed[cat_title][service_title]['service'].getMethod() else ''"></span>
+                                <span class="td unit"
+                                      tal:attributes="style string:width:${unitcol_width}%"
+                                      tal:content="python:transposed[cat_title][service_title]['service'].getUnit()"></span>
+                                <tal:ar repeat="ar ars">
+                                    <span class="td result"
+                                          tal:attributes="style string:width:${arcol_width}%"
+                                          tal:content="structure python:transposed[cat_title][service_title]['ars'].get(ar.id,'')"/>
+                                </tal:ar>
+                            </div>
+                        </tal:cat_analyses>
+                    </div>
+                </tal:category>
 
-      Restart page count ("restart-page-count" css class)
-      We want the number of pages to restart after the current page
-  -->
-  <div class='manual-page-break restart-page-count'></div>
-  </tal:page>
-  </tal:page_iter>
+                <!-- Results Interpretation for all ARs in this argroup -->
+                <tal:ri_ars repeat="ar ars">
+                    <tal:ri_def define="interps python:ar.getResultsInterpretationDepts();
+                                        uc python:ar.uid_catalog"
+                                condition="interps">
+                        <div tal:repeat="interp interps" class="resultsinterpretation">
+                            <div class="resultsinterpretation_heading"
+                                 tal:condition="python:interp['uid'] == 'general'">
+                                General results interpretation for <span tal:replace="python:ar.id"/>
+                            </div>
+                            <div class="resultsinterpretation_heading"
+                                 tal:condition="python:interp['uid'] != 'general'"
+                                 tal:content="python:'Interpreted results for %s (%s)'%(ar.id, uc(UID=interp['uid'])[0].title)"></div>
+                                <span tal:content="structure python:interp['richtext']"/>
+                        </div>
+                    </tal:ri_def>
+                </tal:ri_ars>
+
+            </tal:def>
+
+            <!--
+            Page footer
+            A div element with the class "page-footer" will be placed in the
+            bottom of the report, within the bottom margin area. This element
+            will be displayed on each page.
+
+            Page numbering
+            For the number of page, use the "page-current-num" class.
+            For the total count, use the "page-total-count" class.
+            -->
+            <div class='page-footer'>
+                <table>
+                    <tr>
+                        <td class='footer-discreeter'>
+                            <div class="page-number">Page
+                                <span class="page-current-num"></span> of
+                                <span class="page-total-count"></span></div>
+                        </td>
+                        <td align="right" tal:content="coanr"></td>
+                    </tr>
+                </table>
+            </div>
+
+            <!--
+                Manual break ("manual-page-break" css class)
+                We want to report to be splitted by the max number of ARs per page.
+
+                Restart page count ("restart-page-count" css class)
+                We want the number of pages to restart after the current page
+            -->
+            <div class='manual-page-break'></div>
+        </tal:page>
+    </tal:page_iter>
 </tal:report>

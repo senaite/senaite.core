@@ -10,7 +10,7 @@ State variable:,review_state,,,,,,,,,,,,,
 Id:,attachment_due,,,,,,,,,,,,,
 Title:,Attachment Outstanding,,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,,
-Transitions,"attach, retract",,,,,,,,,,,,,
+Transitions,"attach, retract, reject",,,,,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier,RegulatoryInspector
 BIKA: Cancel and reinstate,N,N,Y,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Edit Field Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N
@@ -22,7 +22,7 @@ BIKA: Retract,N,N,Y,N,N,N,N,Y,N,Y,N,N,N,N
 Id:,not_requested,,,,,,,,,,,,,
 Title:,Not requested,,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,,
-Transitions,verify,,,,,,,,,,,,,
+Transitions,"verify, reject",,,,,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier,RegulatoryInspector
 BIKA: Cancel and reinstate,N,N,Y,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Edit Field Results,Y,N,N,N,N,N,N,N,N,N,N,N,N,N
@@ -33,7 +33,7 @@ BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y,N,N,N,Y
 Id:,published,,,,,,,,,,,,,
 Title:,Published,,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,,
-Transitions,publish,,,,,,,,,,,,,
+Transitions,"publish, reject",,,,,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier,RegulatoryInspector
 BIKA: Cancel and reinstate,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit Field Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N
@@ -55,7 +55,7 @@ BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y,N,Y,Y,Y
 Id:,sample_due,,,,,,,,,,,,,
 Title:,Sample Due,,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,,
-Transitions,"import, receive, submit",,,,,,,,,,,,,
+Transitions,"import, receive, submit, reject",,,,,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier,RegulatoryInspector
 BIKA: Cancel and reinstate,N,N,Y,Y,N,N,N,N,N,Y,N,N,N,N
 BIKA: Edit Field Results,N,N,Y,N,N,N,N,N,Y,Y,N,Y,N,N
@@ -67,7 +67,7 @@ BIKA: View Results,Y,N,Y,N,N,N,N,N,Y,Y,N,Y,N,Y
 Id:,sample_received,,,,,,,,,,,,,
 Title:,Received,,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,,
-Transitions,"submit, sample_prep",,,,,,,,,,,,
+Transitions,"submit, sample_prep, reject",,,,,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier,RegulatoryInspector
 BIKA: Cancel and reinstate,N,N,Y,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Edit Field Results,Y,N,N,N,N,N,N,N,N,N,N,N,N,N
@@ -85,21 +85,21 @@ Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,La
 Id:,sample_registered,,,,,,,,,,,,,
 Title:,Registered,,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,,
-Transitions,"sampling_workflow, no_sampling_workflow",,,,,,,,,,,,,
+Transitions,"sampling_workflow, no_sampling_workflow, reject",,,,,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier,RegulatoryInspector
 ,,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,,
 Id:,sampled,,,,,,,,,,,,,
 Title:,Sampled,,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,,
-Transitions,"auto_preservation_required, auto_no_preservation_required, to_be_preserved, sample_due",,,,,,,,,,,,,
+Transitions,"auto_preservation_required, auto_no_preservation_required, to_be_preserved, sample_due, reject",,,,,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier,RegulatoryInspector
 ,,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,,
 Id:,to_be_preserved,,,,,,,,,,,,,
 Title:,To Be Preserved,,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,,
-Transitions,preserve,,,,,,,,,,,,,
+Transitions,"preserve, reject",,,,,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier,RegulatoryInspector
 BIKA: Cancel and reinstate,N,N,Y,N,N,N,N,N,Y,Y,N,N,N,N
 BIKA: Edit Field Results,N,N,Y,N,N,N,N,N,Y,Y,N,Y,N,N
@@ -112,7 +112,7 @@ BIKA: Results not requested,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 Id:,to_be_sampled,,,,,,,,,,,,,
 Title:,To Be Sampled,,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,,
-Transitions,sample,,,,,,,,,,,,,
+Transitions,"sample, reject",,,,,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier,RegulatoryInspector
 BIKA: Cancel and reinstate,N,N,Y,Y,N,N,N,N,Y,Y,N,N,N,N
 BIKA: Edit Field Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N
@@ -122,26 +122,49 @@ BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 Id:,to_be_verified,,,,,,,,,,,,,
 Title:,To be verified,,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,,
-Transitions,"verify, retract",,,,,,,,,,,,,
+Transitions,"verify, retract, reject",,,,,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier,RegulatoryInspector
 BIKA: Cancel and reinstate,N,N,Y,N,N,N,N,N,N,Y,N,N,N,N
 BIKA: Edit Field Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y,N,Y,Y,Y
-BIKA: Retract
+BIKA: Retract,,,,,,,,,,,,,,
 Review portal content,N,N,Y,N,N,N,N,Y,Y,Y,N,Y,Y,Y
 BIKA: Retract,N,N,Y,N,N,N,N,Y,N,Y,N,N,N,N
+,,,,,,,,,,,,,,
+[State],,,,,,,,,,,,,,
+Id:,rejected,,,,,,,,,,,,,
+Title:,Reject,,,,,,,,,,,,,
+Description:,,,,,,,,,,,,,,
+Transitions,,,,,,,,,,,,,,
+Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier,RegulatoryInspector
+BIKA: Cancel and reinstate,N,N,N,N,N,N,N,N,N,Y,N,N,N,N
+BIKA: Edit Field Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N
+BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y,N,Y,Y,Y
+BIKA: Retract,,,,,,,,,,,,,,
+Review portal content,N,N,Y,N,N,N,N,Y,Y,Y,N,Y,Y,Y
+BIKA: Retract,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 ,,,,,,,,,,,,,,
 [State],,,,,,,,,,,,,,
 Id:,verified,,,,,,,,,,,,,
 Title:,Verified,,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,,
-Transitions,publish,,,,,,,,,,,,,
+Transitions,"publish, reject",,,,,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier,RegulatoryInspector
 BIKA: Cancel and reinstate,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit Field Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: Edit Results,N,N,N,N,N,N,N,N,N,N,N,N,N,N
 BIKA: View Results,N,N,Y,Y,N,N,N,Y,Y,Y,N,N,N,Y
+,,,,,,,,,,,,,,
+[State],,,,,,,,,,,,,,
+Id:,to_be_verified,,,,,,,,,,,,,
+Title:,To be verified,,,,,,,,,,,,,
+Description:,,,,,,,,,,,,,,
+Transitions,"verify, retract",,,,,,,,,,,,,
+Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,Verifier,RegulatoryInspector
+BIKA: View Results,N,N,Y,N,N,N,N,Y,Y,Y,N,Y,Y,Y
+Review portal content,N,N,Y,N,N,N,N,Y,Y,Y,N,Y,Y,Y
 ,,,,,,,,,,,,,,
 [Transition],,,,,,,,,,,,,,
 Id:,attach,,,,,,,,,,,,,
@@ -292,3 +315,12 @@ Target state:,sample_received,,,,,,,,,,,,,
 URL:,,,,,,,,,,,,,,
 Trigger:,Automatic,,,,,,,,,,,,,
 Guard expression:,python:here.guard_sample_prep_complete_transition(),,,,,,,,,,,,,
+,,,,,,,,,,,,,,
+[Transition],,,,,,,,,,,,,,
+Id:,reject,,,,,,,,,,,,,
+Title:,Reject,,,,,,,,,,,,,
+Description:,Reject,,,,,,,,,,,,,
+Target state:,rejected,,,,,,,,,,,,,
+URL:,,,,,,,,,,,,,,
+Trigger:,User,,,,,,,,,,,,,
+Guard expression:here.bika_setup.isRejectionWorkflowEnabled(),,,,,,,,,,,,,,
