@@ -1438,7 +1438,7 @@ class Analysis(BaseContent):
         parent = self.aq_parent
         kw = self.getKeyword()
         analyses = [x for x in parent.objectValues("Analysis")
-                    if x.getId().startswith(kw)]
+                    if x.getId().startswith(self.getId())]
         # LIMS-1290 - Analyst must be able to retract, which creates a new Analysis.
         parent._verifyObjectPaste = str   # I cancel the permission check with this.
         parent.manage_renameObject(kw, "{0}-{1}".format(kw, len(analyses)))
