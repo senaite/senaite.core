@@ -43,6 +43,7 @@ LIMS-1774: Shiny graphs for result ranges
 - Scheduled sampling functionality added
 LIMS-2257: Scheduled sampling
 LIMS-2255: Switch to Chameleon (five.pt) for rendering TAL templates
+- Add buttons to export lists to CSV and XML formats
 - System-wide filter by department
 - Allow to assign a lab contact to more than one department
 - Multi-verification of analyses, with different verification types
