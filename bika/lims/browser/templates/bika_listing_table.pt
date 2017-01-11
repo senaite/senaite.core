@@ -109,14 +109,14 @@ XXX This should use form_id </tal:comment>
 
     <thead tal:condition="python:not rows_only">
 
-    <tr style="border:none !important;" tal:condition="python:len(view.bika_listing.review_states) > 1 and not rows_only">
+    <tr style="border:none !important;">
 <tal:comment replace="nothing">***************
 Workflow review state selector
 ********************************</tal:comment>
     <td tal:attributes="colspan python:nr_cols" class="listing-filter-row">
         <table width="100%" cellpadding="0" cellspacing="0" class="noborder nomargin">
         <tr class="noborder"
-            tal:condition="python:len(view.bika_listing.review_states) > 1">
+            tal:condition="python:len(view.bika_listing.review_states) > 1 and not rows_only">
             <td class="review_state_selector noborder" style="whitespace:nowrap"
                     tal:condition="python:(len(view.bika_listing.review_states) > 1)">
                 <tal:review_states repeat="state view/bika_listing/review_states">
@@ -131,10 +131,21 @@ Workflow review state selector
                     tal:content="structure state/title"/>
                 </tal:review_states>
             </td>
+            <td class="export-controls">
+                <span href="#" class='export-toggle' i18n:translate="">Export</span>
+                <ul>
+                    <li>
+                        <a href="" type='csv' tal:attributes="download python:form_id + '.csv'">CSV</a>
+                    </li>
+                    <li>
+                        <a href="" type='xml' tal:attributes="download python:form_id + '.xml'">XML</a>
+                    </li>
+                </ul>
+            </td>
 <tal:comment replace="nothing">***************
 filter search
 ********************************</tal:comment>
-            <td class="filter noborder" style="text-align:right;whitespace:nowrap;padding:0 0 0 5px;">
+            <td class="filter noborder" style="text-align:right;whitespace:nowrap;padding:0 0 0 5px;width: 160px;">
                 <tal:filters_enabled
                     tal:define="term python:request.get(form_id+'_filter', '');"
                     tal:condition="python:hasattr(view.bika_listing, 'filter_indexes') and view.bika_listing.filter_indexes">

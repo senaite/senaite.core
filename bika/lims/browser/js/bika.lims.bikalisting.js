@@ -23,6 +23,7 @@ function BikaListingTableView() {
 		column_toggle_context_menu_selection()
 		show_more_clicked();
         autosave();
+		load_export_buttons();
 
 		$('*').click(function () {
 			if ($(".tooltip").length > 0) {
@@ -581,5 +582,114 @@ function BikaListingTableView() {
             console.warn(msg);
             window.bika.lims.error(msg);
         });
+    }
+
+    /**
+     * Load the events regardin to the export (to CSV and to XML) buttons. When
+     * an export button is clicked, the function walksthrough all the items
+     * within the bika listing table, builds a string with the desired format
+     * (CSV or XML) and prompts the user for its download.
+     */
+    function load_export_buttons() {
+        $('.bika-listing-table td.export-controls span.export-toggle').click(function(e) {
+            var ul = $(this).closest('td').find('ul');
+            if ($(ul).is(":visible")) {
+                $(this).removeClass("expanded");
+            } else {
+                $(ul).css('min-width', $(this).width());
+                $(this).addClass("expanded");
+            }
+            $(ul).toggle();
+        });
+        $(".bika-listing-table a[download]").click(function(e) {
+            $(this).closest('.bika-listing-table').find('td.export-controls span.export-toggle').click();
+            var type = $(this).attr('type');
+            var data = [];
+            var headers = [];
+            var omitidx = [];
+
+            // Get the headers, but only if not empty. Store the position index
+            // of those columns that must be omitted later on rows walkthrouugh
+            $(this).closest(".bika-listing-table").find("th.column").each(function(i) {
+                var colname = $.trim($(this).text());
+                if (colname != "") {
+                    colname = colname.replace('"', "'");
+                    headers.push('"' + colname + '"');
+                } else {
+                    omitidx.push(i);
+                }
+            });
+            data.push(headers.join(","));
+
+            // Iterate through all rows an append all data in an array
+            // that later will be transformed into the desired format
+            $(this).closest(".bika-listing-table").find("tbody tr").each(function(r) {
+                // Iterate through all cells from within the current row
+                var rowdata = [];
+                $(this).find("td").each(function(c) {
+                    // Should the current cell be omitted?
+                    if ($.inArray(c, omitidx) > -1) {
+                        return 'non-false';
+                    }
+                    // Each cell's content is structured as follows:
+                    // <span class='before'></span>
+                    // <element>content</element>
+                    // <span class='after'>
+                    var text = $(this).find("span.before")
+                                      .nextUntil("span.after").text();
+                    // If no format specified, always fallback to csv
+                    text = text.replace('"', "'");
+                    rowdata.push('"' + $.trim(text) + '"');
+                });
+                if (rowdata.length == headers.length) {
+                    data.push(rowdata.join(','));
+                }
+            });
+            var output = '';
+            var urischema = '';
+            if (type == 'xml') {
+                output = "<items>\r\n";
+                for (var i = 1; i < data.length; i++) {
+                    row = data[i].substr(1,data[i].length-2);
+                    row = row.split('","');
+                    if (row.length == headers.length) {
+                        output += "  <item>\r\n";
+                        for (var j=0; j < row.length; j++) {
+                            if (j < headers.length) {
+                                var colname = qname(headers[j]);
+                                output += "    <"+colname+">";
+                                output += escapeTxt(row[j]);
+                                output += "</"+colname+">\r\n";
+                            }
+                        }
+                        output += "  </item>\r\n";
+                    }
+                }
+                output += "</items>";
+                urischema = 'data:application/xml;base64;charset-UTF-8,';
+            } else {
+                // Fallback CSV
+                output = data.join('\r\n');
+                urischema = 'data:application/csv;base64;charset=UTF-8,';
+            }
+            var uri = urischema + btoa(output);
+            $(this).attr('href', uri);
+        });
+
+        function unquote(val) {
+            return val.replace( /^\s*\"(.*)\"\s*$/, "$1" );
+        }
+
+        function escapeTxt(val) {
+            var vl = val.replace(/&/g, "&amp;");
+            vl = vl.replace(/</g, "&lt;");
+            vl = vl.replace(/>/g, "&gt;");
+            return unquote(vl);
+        }
+
+        function qname(name) {
+            var nm = name.replace(/(\s)+/g, "_");
+            return unquote(nm);
+        }
     }
 }
