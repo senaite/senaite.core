@@ -108,6 +108,38 @@ schema = BikaSchema.copy() + Schema((
            label=_("Physical address"),
         ),
     ),
+    ComputedField(
+        'City',
+        expression='context.getPhysicalAddress().get("city")',
+        searchable=1,
+        widget=ComputedWidget(
+            visible=False
+        ),
+    ),
+    ComputedField(
+        'District',
+        expression='context.getPhysicalAddress().get("district")',
+        searchable=1,
+        widget=ComputedWidget(
+            visible=False
+        ),
+    ),
+    ComputedField(
+        'PostalCode',
+        expression='context.getPhysicalAddress().get("postalCode")',
+        searchable=1,
+        widget=ComputedWidget(
+            visible=False
+        ),
+    ),
+    ComputedField(
+        'Country',
+        expression='context.getPhysicalAddress().get("country")',
+        searchable=1,
+        widget=ComputedWidget(
+            visible=False
+        ),
+    ),
     AddressField('PostalAddress',
         schemata = 'Address',
         widget = AddressWidget(
