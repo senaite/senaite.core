@@ -492,7 +492,8 @@ class AnalysesView(BikaListingView):
             # TODO: Only the labmanager must be able to change the method
             # can_set_method = getSecurityManager().checkPermission(SetAnalysisMethod, obj)
             can_set_method = can_edit_analysis \
-                and item['review_state'] in allowed_method_states
+                and item['review_state'] in allowed_method_states\
+                and obj.getCanMethodBeChanged()
             method = obj.getMethod() \
                         if hasattr(obj, 'getMethod') and obj.getMethod() \
                         else service.getMethod()
@@ -791,7 +792,6 @@ class AnalysesView(BikaListingView):
                     "<img src='++resource++bika.lims.images/warning.png' title='%s'/>" %
                     (t(_("Submited and verified by the same user- "+ submitter)))
                     )
-
             # add icon for assigned analyses in AR views
             if self.context.portal_type == 'AnalysisRequest':
                 obj = items[i]['obj']
@@ -806,7 +806,15 @@ class AnalysesView(BikaListingView):
                          t(_("Assigned to: ${worksheet_id}",
                              mapping={'worksheet_id': safe_unicode(ws.id)}))))
             items[i]['after']['state_title'] = '&nbsp;'.join(after_icons)
-
+            after_icons = []
+            if obj.getIsReflexAnalysis():
+                after_icons.append("<img\
+                src='%s/++resource++bika.lims.images/reflexrule.png'\
+                title='%s'>" % (
+                    self.portal_url,
+                    t(_('It comes form a reflex rule'))
+                ))
+            items[i]['after']['Service'] = '&nbsp;'.join(after_icons)
 
         # the TAL requires values for all interim fields on all
         # items, so we set blank values in unused cells

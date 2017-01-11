@@ -311,4 +311,13 @@
   <permission>BIKA: Manage Bika</permission>
  </configlet>
 
+ <configlet title="Reflex Rules" action_id="bika_reflexrulefolder"
+    appId="bika.lims" category="bika" condition_expr=""
+    icon_expr="string:++resource++bika.lims.images/reflexrule.png"
+    url_expr="string:$portal_url/bika_setup/bika_reflexrulefolder"
+    visible="True"
+    i18n:attributes="title">
+  <permission>BIKA: Manage Bika</permission>
+ </configlet>
+
 </object>

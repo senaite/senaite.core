@@ -1100,3 +1100,44 @@ class SortKeyValidator:
 
 
 validation.register(SortKeyValidator())
+
+
+class ReflexRuleValidator:
+
+    """
+    - The analysis service have to be related to the method
+    """
+
+    implements(IValidator)
+    name = "reflexrulevalidator"
+
+    def __call__(self, value, *args, **kwargs):
+
+        instance = kwargs['instance']
+        # fieldname = kwargs['field'].getName()
+        # request = kwargs.get('REQUEST', {})
+        # form = request.get('form', {})
+        method = instance.getMethod()
+        method_ans_uids = [
+            ans.UID() for ans in
+            method.getBackReferences('AnalysisServiceMethods')]
+        rules = instance.getReflexRules()
+        error = ''
+        pc = getToolByName(instance, 'portal_catalog')
+        for rule in rules:
+            as_uid = rule.get('analysisservice', '')
+            as_brain = pc(
+                    UID=as_uid,
+                    portal_type='AnalysisService',
+                    inactive_state='active')
+            if as_brain[0] and as_brain[0].UID in method_ans_uids:
+                pass
+            else:
+                error += as_brain['title'] + ' '
+        if error:
+            msg = _("The following analysis services don't belong to the"
+                    "current method: " + error)
+            return to_utf8(translate(msg))
+        return True
+
+validation.register(ReflexRuleValidator())

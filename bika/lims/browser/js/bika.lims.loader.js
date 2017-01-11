@@ -169,9 +169,14 @@ window.bika.lims.controllers =  {
     ".portaltype-worksheet.template-manage_results":
         ['WorksheetManageResultsView'],
 
+    ".portaltype-worksheettemplate.template-base_edit":
+        ['WorksheetTemplateEdit'],
+
     "#worksheet-printview-wrapper":
         ['WorksheetPrintView'],
 
+    ".portaltype-reflexrule.template-base_edit":
+        ['ReflexRuleEditView'],
 
     // Reports folder (not AR Reports)
     ".portaltype-reportfolder":

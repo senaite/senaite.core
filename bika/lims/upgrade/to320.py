@@ -43,7 +43,7 @@ def upgrade(tool):
         'profile-bika.lims:default', 'portlets', run_dependencies=False)
     # Creating all the sampling coordinator roles, permissions and indexes
     create_samplingcoordinator(portal)
-    departments(portal)
+    reflex_rules(portal)
     departments(portal)
     """Update workflow permissions
     """
@@ -171,3 +171,61 @@ def multi_verification(portal):
                     new_value+=','
             obj.setVerificators(new_value)
 
+def reflex_rules(portal):
+    at = getToolByName(portal, 'archetype_tool')
+    # If reflex rules folder is not created yet, we should create it
+    typestool = getToolByName(portal, 'portal_types')
+    qi = portal.portal_quickinstaller
+    if not portal['bika_setup'].get('bika_reflexrulefolder'):
+        typestool.constructContent(type_name="ReflexRuleFolder",
+                                   container=portal['bika_setup'],
+                                   id='bika_reflexrulefolder',
+                                   title='Reflex Rules Folder')
+    obj = portal['bika_setup']['bika_reflexrulefolder']
+    obj.unmarkCreationFlag()
+    obj.reindexObject()
+    if not portal['bika_setup'].get('bika_reflexrulefolder'):
+        logger.info("ReflexRuleFolder not created")
+    # Install Products.DataGridField
+    qi.installProducts(['Products.DataGridField'])
+    # add new types not to list in nav
+    # ReflexRule
+    portal_properties = getToolByName(portal, 'portal_properties')
+    ntp = getattr(portal_properties, 'navtree_properties')
+    types = list(ntp.getProperty('metaTypesNotToList'))
+    types.append("ReflexRule")
+    ntp.manage_changeProperties(MetaTypesNotToQuery=types)
+    pc = getToolByName(portal, 'portal_catalog')
+    if 'worksheettemplateUID' not in pc.indexes():
+        pc.addIndex('worksheettemplateUID', 'FieldIndex')
+    addIndexAndColumn(pc, 'Analyst', 'FieldIndex')
+    if ('worksheettemplateUID' not in pc.indexes()) or\
+            ('Analyst' not in pc.indexes()):
+        pc.clearFindAndRebuild()
+    bsc = getToolByName(portal, 'bika_setup_catalog')
+    if 'getAvailableMethodsUIDs' not in bsc.indexes():
+        bsc.addIndex('getAvailableMethodsUIDs', 'KeywordIndex')
+    if 'getMethodUID' not in bsc.indexes():
+        bsc.addIndex('getMethodUID', 'FieldIndex')
+    if ('getMethodUID' not in bsc.indexes()) or\
+            ('getAvailableMethodsUIDs' not in bsc.indexes()):
+        bsc.clearFindAndRebuild()
+    bac = getToolByName(portal, 'bika_analysis_catalog')
+    if 'getInstrumentUID' not in bac.indexes():
+        bac.addIndex('getInstrumentUID', 'FieldIndex')
+    if 'getMethodUID' not in bac.indexes():
+        bac.addIndex('getMethodUID', 'FieldIndex')
+    if ('getMethodUID' not in bac.indexes()) or\
+            ('getInstrumentUID' not in bac.indexes()):
+        bac.clearFindAndRebuild()
+
+
+def addIndexAndColumn(catalog, index, indextype):
+    try:
+        catalog.addIndex(index, indextype)
+    except:
+        pass
+    try:
+        catalog.addColumn(index)
+    except:
+        pass

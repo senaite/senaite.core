@@ -40,6 +40,7 @@
   <type portal_type="Preservation"/>
   <type portal_type="ReferenceDefinition"/>
   <type portal_type="ReferenceSample"/>
+  <type portal_type="ReflexRule"/>
   <type portal_type="Pricelist"/>
   <type portal_type="Sample"/>
   <type portal_type="SampleMatrix"/>

@@ -103,14 +103,10 @@
     <element value="ATPathCriterion"/>
     <element value="ATRelativePathCriterion"/>
     <element value="SamplingRound"/>
+    <element value="ReflexRule"/>
   </property>
   <property name="enable_wf_state_filtering" type="boolean">False</property>
   <property name="wf_states_to_show" type="lines"/>
 </object>
 
 </object>
-
-
-
-
-
