@@ -144,6 +144,27 @@ class AnalysisRequestAnalysesView(BikaListingView):
             return dicts_to_dict(spec, 'keyword').get(keyword, empty)
         return empty
 
+    def isItemAllowed(self, obj):
+        """
+        It checks if the item can be added to the list depending on the
+        department filter. If the analysis service is not assigned to a
+        department, show it.
+        If department filtering is disabled in bika_setup, will return True.
+        """
+        if not self.context.bika_setup.getAllowDepartmentFiltering():
+            return True
+        # Gettin the department from analysis service
+        obj_dep = obj.getDepartment()
+        result = True
+        if obj_dep:
+            # Getting the cookie value
+            cookie_dep_uid = self.request.get('filter_by_department_info', 'no')
+            # Comparing departments' UIDs
+            result = True if obj_dep.UID() in\
+                cookie_dep_uid.split(',') else False
+            return result
+        return result
+
     def folderitems(self):
         self.categories = []
 
