@@ -75,7 +75,8 @@ def upgrade(tool):
 
     # Remove unused indexes and columns
     logger.info("Removing stale indexes...")
-    removeUnusedIndexes(portal)
+    bc = getToolByName(portal, 'bika_catalog', None)
+    delIndexAndColumn(bc, 'getProfilesTitle')
 
     # Clean and rebuild affected catalogs (if required)
     logger.info("Cleaning and rebuilding...")
@@ -246,7 +247,7 @@ def multi_verification(portal):
             obj.setVerificators(new_value)
 
 def reflex_rules(portal):
-     at = getToolByName(portal, 'archetype_tool')
+    at = getToolByName(portal, 'archetype_tool')
     # If reflex rules folder is not created yet, we should create it
     typestool = getToolByName(portal, 'portal_types')
     qi = portal.portal_quickinstaller
@@ -301,10 +302,11 @@ def multi_department_to_labcontact(portal):
         if not obj.getDepartments():
             obj.setDepartments(obj.getDepartment())
 
-def removeUnusedIndexes(portal):
-    bc = getToolByName(portal, 'bika_catalog', None)
-    delIndexAndColumn(bc, 'getProfilesTitle')
 
+# *********************
+# Helper methods below
+# *********************
+cleanrebuild = []
 def delIndexAndColumn(catalog, index):
     if index in catalog.indexes():
         try:
