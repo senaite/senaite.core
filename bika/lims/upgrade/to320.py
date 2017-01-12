@@ -21,7 +21,7 @@ def upgrade(tool):
 
     qi = portal.portal_quickinstaller
     ufrom = qi.upgradeInfo('bika.lims')['installedVersion']
-    logger.info("Upgrading Bika LIMS: %s -> %s" % (ufrom, '3.1.11'))
+    logger.info("Upgrading Bika LIMS: %s -> %s" % (ufrom, '3.2.0'))
 
     """Updated profile steps
     list of the generic setup import step names: portal.portal_setup.getSortedImportSteps() <---
@@ -49,9 +49,11 @@ def upgrade(tool):
     """
     wf = getToolByName(portal, 'portal_workflow')
     wf.updateRoleMappings()
-
     # Updating Verifications of Analysis field from integer to String.
     multi_verification(portal)
+
+    # Clean and rebuild affected catalogs
+    cleanAndRebuildIfNeeded(portal)
 
     return True
 

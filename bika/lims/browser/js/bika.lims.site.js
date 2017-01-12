@@ -16,8 +16,14 @@ function SiteView() {
         loadReferenceDefinitionEvents();
 
         loadFilterByDepartment();
-
-    }
+        //Date range controllers
+        $('.date_range_start').bind("change", function () {
+            date_range_controller_0(this);
+        });
+        $('.date_range_end').bind("change", function () {
+            date_range_controller_1(this);
+        });
+    };
 
     function loadClientEvents() {
 
@@ -161,6 +167,19 @@ function SiteView() {
             .click(function(){$(this).attr("value", "");})
             .focus();
         });
+        /**
+        This function defines a datepicker for a date range. Both input
+        elements should be siblings and have the class 'date_range_start' and
+        'date_range_end'.
+        */
+        $("input.datepicker_range").datepicker({
+            showOn:"focus",
+            showAnim:"",
+            changeMonth:true,
+            changeYear:true,
+            dateFormat: dateFormat,
+            yearRange: limitString
+        });
 
         $("input.datepicker_nofuture").live("click", function() {
             $(this).datepicker({
@@ -271,6 +290,45 @@ function SiteView() {
             } else {
                 event.preventDefault();
             }
+        });
+        // autocomplete input controller
+        var availableTags = $.parseJSON($("input.autocomplete").attr('voc'));
+        function split( val ) {
+            return val.split( /,\s*/ );
+        }
+        function extractLast( term ) {
+            return split( term ).pop();
+        }
+        $("input.autocomplete")
+            // don't navigate away from the field on tab when selecting an item
+            .on( "keydown", function( event ) {
+              if ( event.keyCode === $.ui.keyCode.TAB &&
+                  $( this ).autocomplete( "instance" ).menu.active ) {
+                event.preventDefault();
+              }
+            })
+            .autocomplete({
+                minLength: 0,
+                source: function( request, response ) {
+                    // delegate back to autocomplete, but extract the last term
+                    response( $.ui.autocomplete.filter(
+                        availableTags, extractLast( request.term ) ) );
+                },
+                focus: function() {
+                    // prevent value inserted on focus
+                    return false;
+                },
+                select: function( event, ui ) {
+                    var terms = split( this.value );
+                    // remove the current input
+                    terms.pop();
+                    // add the selected item
+                    terms.push( ui.item.value );
+                    // add placeholder to get the comma-and-space at the end
+                    terms.push( "" );
+                    this.value = terms.join( ", " );
+                    return false;
+                }
         });
 
         // Archetypes :int and IntegerWidget inputs get filtered
@@ -403,5 +461,25 @@ function SiteView() {
         if (dep_filter_disabled=="true" || dep_filter_disabled=='"true"'){
             $('#admin_dep_filter_enabled').prop("checked",true);
         }
+    }
+
+
+    /**
+    This function updates the minimum selectable date of date_range_end
+    @param {object} input_element is the <input> object for date_range_start
+    */
+    function date_range_controller_0(input_element){
+        var date_element = $(input_element).datepicker("getDate");
+        var brother = $(input_element).siblings('.date_range_end');
+        $(brother).datepicker("option", "minDate", date_element );
+    }
+    /**
+    This function updates the maximum selectable date of date_range_start
+    @param {object} input_element is the <input> object for date_range_end
+    */
+    function date_range_controller_1(input_element){
+        var date_element = $(input_element).datepicker("getDate");
+        var brother = $(input_element).siblings('.date_range_start');
+        $(brother).datepicker("option", "maxDate", date_element );
     }
 }
