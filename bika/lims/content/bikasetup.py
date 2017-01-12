@@ -306,6 +306,18 @@ schema = BikaFolderSchema.copy() + Schema((
     #     )
     # ),
     BooleanField(
+        'PrintingWorkflowEnabled',
+        schemata="Results Reports",
+        default=False,
+        widget=BooleanWidget(
+            label=_("Enable the Results Report Printing workflow"),
+            description=_("Select this to allow the user to set an "
+                          "additional 'Printed' status to those Analysis "
+                          "Requests tha have been Published. "
+                          "Disabled by default.")
+        ),
+    ),
+    BooleanField(
         'SamplingWorkflowEnabled',
         schemata="Analyses",
         default=False,
@@ -736,7 +748,12 @@ schema = BikaFolderSchema.copy() + Schema((
         'AllowDepartmentFiltering',
         default=False,
         widget=BooleanWidget(
-            label=_("Allow users to filter datas by department."),
+            label=_("Enable filtering by department"),
+            description=_("When enabled, only those items belonging to the "
+                          "same department as the logged user will be "
+                          "displayed. Since a user can belong to more than "
+                          "one department, a department filtering portlet "
+                          "will be displayed too. By default, disabled.")
         )
     ),
 ))

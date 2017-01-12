@@ -87,6 +87,22 @@ class AnalysisRequestPublishedResults(BikaListingView):
                         mapping={'retracted_request_id': par.getRequestID()})
             self.context.plone_utils.addPortalMessage(
                 self.context.translate(message), 'info')
+
+        # Printing workflow enabled?
+        # If not, remove the Column
+        self.printwfenabled = self.context.bika_setup.getPrintingWorkflowEnabled()
+        printed_colname = 'DatePrinted'
+        if not self.printwfenabled and printed_colname in self.columns:
+            # Remove "Printed" columns
+            del self.columns[printed_colname]
+            tmprvs = []
+            for rs in self.review_states:
+                tmprs = rs
+                tmprs['columns'] = [c for c in rs.get('columns', []) if
+                                    c != printed_colname]
+                tmprvs.append(tmprs)
+            self.review_states = tmprvs
+
         template = BikaListingView.__call__(self)
         return template
 
@@ -125,15 +141,16 @@ class AnalysisRequestPublishedResults(BikaListingView):
         item['Date'] = fmt_date
         item['PublishedBy'] = self.user_fullname(obj.Creator())
 
-        # The date when the Results Report was printed (if so)
-        item['DatePrinted'] = ''
-        fmt_date = obj.getDatePrinted() if hasattr(obj, 'getDatePrinted') else ''
-        if (fmt_date):
-            fmt_date = self.ulocalized_time(fmt_date, long_format=1)
-            item['DatePrinted'] = fmt_date
-            if obj.getDatePrinted() is None:
-                item['after']['DatePrinted']=("<img src='++resource++bika.lims.images/warning.png' title='%s'/>" %
-                                        (t(_("Has not been Printed."))))
+        if self.printwfenabled:
+            # The date when the Results Report was printed (if so)
+            item['DatePrinted'] = ''
+            fmt_date = obj.getDatePrinted() if hasattr(obj, 'getDatePrinted') else ''
+            if (fmt_date):
+                fmt_date = self.ulocalized_time(fmt_date, long_format=1)
+                item['DatePrinted'] = fmt_date
+                if obj.getDatePrinted() is None:
+                    item['after']['DatePrinted']=("<img src='++resource++bika.lims.images/warning.png' title='%s'/>" %
+                                            (t(_("Has not been Printed."))))
 
         recip = []
         for recipient in obj.getRecipients():
