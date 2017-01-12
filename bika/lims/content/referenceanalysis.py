@@ -436,14 +436,6 @@ class ReferenceAnalysis(BaseContent):
         if review_state != 'to_be_verified':
             return False
 
-        # Check if the analysis has dependencies not yet verified
-        for d in self.getDependencies():
-            review_state = workflow.getInfoFor(d, "review_state")
-            if review_state in (
-                    "to_be_sampled", "to_be_preserved", "sample_due",
-                    "sample_received", "attachment_due", "to_be_verified"):
-                return False
-
         # All checks passsed
         return True
 

@@ -157,6 +157,14 @@
     />
 
     <browser:page
+      for="bika.lims.interfaces.IInstrumentLocations"
+      name="folder_view"
+      class=".bika_instrumentlocations.InstrumentLocationsView"
+      permission="bika.lims.ManageBika"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
       for="bika.lims.interfaces.ICalculations"
       name="folder_view"
       class=".bika_calculations.CalculationsView"

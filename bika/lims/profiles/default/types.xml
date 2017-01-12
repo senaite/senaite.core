@@ -48,6 +48,8 @@
  <object name="InstrumentScheduledTask" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="InstrumentType" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="InstrumentTypes" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="InstrumentLocation" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="InstrumentLocations" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="InstrumentValidation" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Invoice" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="InvoiceBatch" meta_type="Factory-based Type Information with dynamic views"/>
