@@ -51,6 +51,7 @@ from bika.lims.config import ATTACHMENT_OPTIONS
 from bika.lims.config import CURRENCIES
 from bika.lims.config import DECIMAL_MARKS
 from bika.lims.config import DEFAULT_AR_SPECS
+from bika.lims.config import MULTI_VERIFICATION_TYPE
 from bika.lims.config import PROJECTNAME
 from bika.lims.config import SCINOTATION_OPTIONS
 from bika.lims.config import WORKSHEET_LAYOUT_OPTIONS
@@ -424,6 +425,19 @@ schema = BikaFolderSchema.copy() + Schema((
                 "any Analysis in Analysis Service edit view. By default, 1"),
         ),
     ),
+    StringField('TypeOfmultiVerification',
+        schemata = "Analyses",
+        default = 'self_multi_enabled',
+        vocabulary = MULTI_VERIFICATION_TYPE,
+        widget = SelectionWidget(
+            label=_("Multi Verification type"),
+            description = _(
+                "Choose type of multiple verification for the same user."
+                "This setting can enable/disable verifying/consecutively verifying"
+                "more than once for the same user."),
+            format='select',
+        )
+    ),
     ReferenceField(
         'DryMatterService',
         schemata="Analyses",
@@ -717,6 +731,13 @@ schema = BikaFolderSchema.copy() + Schema((
                           "via email to the Client when a Sample or Analysis "
                           "Request is rejected.")
         ),
+    ),
+    BooleanField(
+        'AllowDepartmentFiltering',
+        default=False,
+        widget=BooleanWidget(
+            label=_("Allow users to filter datas by department."),
+        )
     ),
 ))
 

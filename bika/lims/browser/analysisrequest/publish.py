@@ -19,7 +19,6 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.Utils import formataddr
 from operator import itemgetter
-from os.path import join
 from plone.registry.interfaces import IRegistry
 from plone.resource.utils import iterDirectoriesOfType, queryResourceDirectory
 from Products.CMFCore.utils import getToolByName
@@ -29,13 +28,15 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from smtplib import SMTPServerDisconnected, SMTPRecipientsRefused
 from zope.component import getAdapters, getUtility
 
+from plone.registry import Record
+from plone.registry import field
+from plone import api
+
 import App
-import cgi
-import glob, os, sys, traceback
-import Globals
+import os, traceback
 import re
 import tempfile
-import urllib2
+
 
 class AnalysisRequestPublishView(BrowserView):
     template = ViewPageTemplateFile("templates/analysisrequest_publish.pt")
@@ -49,12 +50,34 @@ class AnalysisRequestPublishView(BrowserView):
         super(AnalysisRequestPublishView, self).__init__(context, request)
         self._publish = publish
         self._ars = [self.context]
+        # Simple caching hack.  Various templates can allow these functions
+        # to be called many thousands of times for relatively simple reports.
+        # To prevent bad code from causing this, we cache all analysis data
+        # here.
+        self._cache = {
+            '_analysis_data': {},
+            '_qcanalyses_data': {},
+            '_ar_data': {}
+        }
 
     @property
     def _DEFAULT_TEMPLATE(self):
         registry = getUtility(IRegistry)
         return registry.get(
             'bika.lims.analysisrequest.default_arreport_template', 'default.pt')
+
+    def next_certificate_number(self):
+        """Get a new certificate id.  These are throwaway IDs, until the
+        publication is actually done.  So each preview gives us a new ID.
+        """
+        key = 'bika.lims.current_coa_number'
+        registry = getUtility(IRegistry)
+        if key not in registry:
+            registry.records[key] = \
+                Record(field.Int(title=u"Current COA number"), 0)
+        val = api.portal.get_registry_record(key) + 1
+        api.portal.set_registry_record(key, val)
+        return "%05d"%int(val)
 
     def __call__(self):
         if self.context.portal_type == 'AnalysisRequest':
@@ -78,6 +101,9 @@ class AnalysisRequestPublishView(BrowserView):
             else:
                 groups[idclient].append(ar)
         self._arsbyclient = [group for group in groups.values()]
+
+        # Report may want to print current date
+        self.current_date = self.ulocalized_time(DateTime(), long_format=True)
 
         # Do publish?
         if self.request.form.get('publish', '0') == '1':
@@ -245,6 +271,8 @@ class AnalysisRequestPublishView(BrowserView):
         """ Creates an ar dict, accessible from the view and from each
             specific template.
         """
+        if ar.UID() in self._cache['_ar_data']:
+            return self._cache['_ar_data'][ar.UID()]
         data = {'obj': ar,
                 'id': ar.getRequestID(),
                 'client_order_num': ar.getClientOrderNumber(),
@@ -255,7 +283,6 @@ class AnalysisRequestPublishView(BrowserView):
                 'report_drymatter': ar.getReportDryMatter(),
                 'invoice_exclude': ar.getInvoiceExclude(),
                 'date_received': self.ulocalized_time(ar.getDateReceived(), long_format=1),
-                'remarks': ar.getRemarks(),
                 'member_discount': ar.getMemberDiscount(),
                 'date_sampled': self.ulocalized_time(
                     ar.getDateSampled(), long_format=1),
@@ -357,6 +384,7 @@ class AnalysisRequestPublishView(BrowserView):
             ri[dept.Title()] = ar.getResultsInterpretationByDepartment(dept)
         data['resultsinterpretationdepts'] = ri
 
+        self._cache['_ar_data'][ar.UID()] = data
         return data
 
     def _batch_data(self, ar):
@@ -450,24 +478,28 @@ class AnalysisRequestPublishView(BrowserView):
                     'url': samplepoint.absolute_url()}
         return data
 
+    def format_address(self, address):
+        if address:
+            _keys = ['address', 'city', 'district', 'state', 'zip', 'country']
+            _list = ["<div>%s</div>" % address.get(v) for v in _keys
+                     if address.get(v)]
+            return ''.join(_list)
+        return ''
+
+    def _lab_address(self, lab):
+        lab_address = lab.getPostalAddress() \
+                      or lab.getBillingAddress() \
+                      or lab.getPhysicalAddress()
+        return self.format_address(lab_address)
+
     def _lab_data(self):
         portal = self.context.portal_url.getPortalObject()
         lab = self.context.bika_setup.laboratory
-        lab_address = lab.getPostalAddress() \
-                        or lab.getBillingAddress() \
-                        or lab.getPhysicalAddress()
-        if lab_address:
-            _keys = ['address', 'city', 'state', 'zip', 'country']
-            _list = ["<div>%s</div>" % lab_address.get(v) for v in _keys
-                     if lab_address.get(v)]
-            lab_address = "".join(_list)
-        else:
-            lab_address = ''
 
         return {'obj': lab,
                 'title': to_utf8(lab.Title()),
                 'url': to_utf8(lab.getLabURL()),
-                'address': to_utf8(lab_address),
+                'address': to_utf8(self._lab_address(lab)),
                 'confidence': lab.getConfidence(),
                 'accredited': lab.getLaboratoryAccredited(),
                 'accreditation_body': to_utf8(lab.getAccreditationBody()),
@@ -484,6 +516,17 @@ class AnalysisRequestPublishView(BrowserView):
                     'pubpref': contact.getPublicationPreference()}
         return data
 
+    def _client_address(self, client):
+        client_address = client.getPostalAddress()
+        if not client_address:
+            # Data from the first contact
+            contact = self.getAnalysisRequest().getContact()
+            if contact and contact.getBillingAddress():
+                client_address = contact.getBillingAddress()
+            elif contact and contact.getPhysicalAddress():
+                client_address = contact.getPhysicalAddress()
+        return self.format_address(client_address)
+
     def _client_data(self, ar):
         data = {}
         client = ar.aq_parent
@@ -495,23 +538,7 @@ class AnalysisRequestPublishView(BrowserView):
             data['phone'] = to_utf8(client.getPhone())
             data['fax'] = to_utf8(client.getFax())
 
-            client_address = client.getPostalAddress()
-            if not client_address:
-                # Data from the first contact
-                contact = self.getAnalysisRequest().getContact()
-                if contact and contact.getBillingAddress():
-                    client_address = contact.getBillingAddress()
-                elif contact and contact.getPhysicalAddress():
-                    client_address = contact.getPhysicalAddress()
-
-            if client_address:
-                _keys = ['address', 'city', 'state', 'zip', 'country']
-                _list = ["<div>%s</div>" % client_address.get(v) for v in _keys
-                         if client_address.get(v)]
-                client_address = "".join(_list)
-            else:
-                client_address = ''
-            data['address'] = to_utf8(client_address)
+            data['address'] = to_utf8(self._client_address(client))
         return data
 
     def _specs_data(self, ar):
@@ -571,6 +598,9 @@ class AnalysisRequestPublishView(BrowserView):
         return analyses
 
     def _analysis_data(self, analysis, decimalmark=None):
+        if analysis.UID() in self._cache['_analysis_data']:
+            return self._cache['_analysis_data'][analysis.UID()]
+
         keyword = analysis.getKeyword()
         service = analysis.getService()
         andict = {'obj': analysis,
@@ -656,9 +686,12 @@ class AnalysisRequestPublishView(BrowserView):
                 if ret and ret['out_of_range']:
                     andict['outofrange'] = True
                     break
+        self._cache['_analysis_data'][analysis.UID()]  = andict
         return andict
 
     def _qcanalyses_data(self, ar, analysis_states=['verified', 'published']):
+        if ar.UID() in self._cache['_qcanalyses_data']:
+            return self._cache['_qcanalyses_data'][ar.UID()]
         analyses = []
         batch = ar.getBatch()
         workflow = getToolByName(self.context, 'portal_workflow')
@@ -673,6 +706,7 @@ class AnalysisRequestPublishView(BrowserView):
 
             analyses.append(andict)
         analyses.sort(lambda x, y: cmp(x.get('title').lower(), y.get('title').lower()))
+        self._cache['_qcanalyses_data'][ar.UID()] = analyses
         return analyses
 
     def _reporter_data(self, ar):
@@ -718,7 +752,6 @@ class AnalysisRequestPublishView(BrowserView):
             managers['dict'][mngr]['departments'] = final_depts
 
         return managers
-
 
     def localise_images(self, htmlreport):
         """WeasyPrint will attempt to retrieve attachments directly from the URL
@@ -850,7 +883,7 @@ class AnalysisRequestPublishView(BrowserView):
             if len(to) > 0:
                 # Send the email to the managers
                 mime_msg['To'] = ','.join(to)
-                attachPdf(mime_msg, pdf_report, pdf_fn)
+                attachPdf(mime_msg, pdf_report, ar.id)
 
                 try:
                     host = getToolByName(ar, 'MailHost')
@@ -930,7 +963,6 @@ class AnalysisRequestPublishView(BrowserView):
 
         results_html = safe_unicode(self.template()).encode('utf-8')
         return self.publishFromHTML(results_html)
-
 
     def get_recipients(self, ar):
         """ Returns a list with the recipients and all its publication prefs
@@ -1061,12 +1093,14 @@ class AnalysisRequestPublishView(BrowserView):
                     analyses[cat] = {
                         service.title: {
                             'service': service,
+                            'accredited': service.getAccredited(),
                             'ars': {ar.id: an.getFormattedResult()}
                         }
                     }
                 elif service.title not in analyses[cat]:
                     analyses[cat][service.title] = {
                         'service': service,
+                        'accredited': service.getAccredited(),
                         'ars': {ar.id: an.getFormattedResult()}
                     }
                 else:

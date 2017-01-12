@@ -82,6 +82,14 @@ def SamplingRoundUID(instance):
     if sr:
         return sr.UID()
 
+@indexer(IAnalysisRequest)
+def getDepartmentUIDs(instance):
+    """ Returns department UIDs assigned to the Analyses
+        from this Analysis Request
+    """
+    ans = [an.getObject() for an in instance.getAnalyses()]
+    depts = [an.getService().getDepartment().UID() for an in ans if an.getService().getDepartment()]
+    return depts
 
 schema = BikaSchema.copy() + Schema((
     StringField(
@@ -197,6 +205,8 @@ schema = BikaSchema.copy() + Schema((
         mode="rw",
         read_permission=permissions.View,
         write_permission=EditARContact,
+        acquire=True,
+        acquire_fieldname="CCEmails",
         widget=StringWidget(
             label=_("CC Emails"),
             visible={
@@ -2989,12 +2999,13 @@ class AnalysisRequest(BaseFolder):
                     success = True
                     revers = analysis.getNumberOfRequiredVerifications()
                     nmvers = analysis.getNumberOfVerifications()
-                    analysis.setNumberOfVerifications(nmvers+1)
+                    username=getToolByName(self,'portal_membership').getAuthenticatedMember().getUserName()
+                    item.addVerificator(username)
                     if revers-nmvers <= 1:
                         success, message = doActionFor(analysis, 'verify')
                         if not success:
-                            # If failed, restore to the previous number
-                            analysis.setNumberOfVerifications(numvers)
+                            # If failed, delete last verificator
+                            item.deleteLastVerificator()
                 else:
                     doActionFor(analysis, 'verify')
 

@@ -276,6 +276,28 @@ class AnalysesView(BikaListingView):
                         'ResultText': analysts.getValue(a)})
         return ret
 
+    def isItemAllowed(self, obj):
+        """
+        It checks if the item can be added to the list depending on the
+        department filter. If the analysis service is not assigned to a
+        department, show it.
+        If department filtering is disabled in bika_setup, will return True.
+        @Obj: it is an analysis object.
+        @return: boolean
+        """
+        if not self.context.bika_setup.getAllowDepartmentFiltering():
+            return True
+        # Gettin the department from analysis service
+        serv_dep = obj.getService().getDepartment()
+        result = True
+        if serv_dep:
+            # Getting the cookie value
+            cookie_dep_uid = self.request.get('filter_by_department_info', '')
+            # Comparing departments' UIDs
+            result = True if serv_dep.UID() in\
+                cookie_dep_uid.split(',') else False
+        return result
+
     def folderitems(self):
         rc = getToolByName(self.context, REFERENCE_CATALOG)
         bsc = getToolByName(self.context, 'bika_setup_catalog')
@@ -754,7 +776,7 @@ class AnalysesView(BikaListingView):
                 if allowed and not obj.isUserAllowedToVerify(member):
                     after_icons.append(
                         "<img src='++resource++bika.lims.images/submitted-by-current-user.png' title='%s'/>" %
-                        (t(_("Cannot verify, submitted by current user")))
+                        (t(_("Cannot verify, submitted or verified by current user before")))
                         )
                 elif allowed:
                     if obj.getSubmittedBy() == member.getUser().getId():
@@ -762,6 +784,13 @@ class AnalysesView(BikaListingView):
                         "<img src='++resource++bika.lims.images/warning.png' title='%s'/>" %
                         (t(_("Can verify, but submitted by current user")))
                         )
+            #If analysis Submitted and Verified by the same person, then warning icon will appear.
+            submitter=obj.getSubmittedBy()
+            if submitter and obj.wasVerifiedByUser(submitter):
+                after_icons.append(
+                    "<img src='++resource++bika.lims.images/warning.png' title='%s'/>" %
+                    (t(_("Submited and verified by the same user- "+ submitter)))
+                    )
 
             # add icon for assigned analyses in AR views
             if self.context.portal_type == 'AnalysisRequest':

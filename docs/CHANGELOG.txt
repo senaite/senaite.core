@@ -1,8 +1,12 @@
 3.2.1 (unreleased)
 ------------------
 LIMS-2466: Central Instrument Location Management
+LIMS-2477: Reference Analysis has no dependencies; remove guard that assumes it does
+LIMS-1391: Add configurable identifier types (CAS# for AnalysisService)
 LIMS-2357: Custom Landing Page and Link to switch between the Front Page and Dashboard
+LIMS-2341: Cleanup and format default Multi-AR COA
 LIMS-2455: Contact/Login Linkage Behavior
+LIMS-2456: Restrict duplicate slots in worksheet templates to routine analyses only.
 LIMS-2447: getDatePublished index not indexed correctly at time of AR publication
 LIMS-2404: AR list in batches permitted sampling without Sampler and Sampling date provided
 LIMS-2380: ARs are created in correct order (order of columns in ar-create form)
@@ -37,6 +41,9 @@ LIMS-2148: Unable to sort Bika Listing tables
 LIMS-1774: Shiny graphs for result ranges
 LIMS-2257: Scheduled sampling
 LIMS-2255: Switch to Chameleon (five.pt) for rendering TAL templates
+- System-wide filter by department
+- Allow to assign a lab contact to more than one department
+- Multi-verification of analyses, with different verification types
 - Add option to allow multi-approval (multi-verification) of results
 - Added Analyses section in the Dashboard
 - Add option to allow labman to self-verify analysis results

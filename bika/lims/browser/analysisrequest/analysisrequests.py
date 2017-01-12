@@ -684,6 +684,31 @@ class AnalysisRequestsView(BikaListingView):
                         'state_title']},
             ]
 
+    def isItemAllowed(self, obj):
+        """
+        It checks if the analysis request can be added to the list depending
+        on the department filter. It checks the department of each analysis
+        service from each analysis belonguing to the given analysis request.
+        If department filtering is disabled in bika_setup, will return True.
+        @Obj: it is an analysis request object.
+        @return: boolean
+        """
+        if not self.context.bika_setup.getAllowDepartmentFiltering():
+            return True
+        # Gettin the department from analysis service
+        ans = [an.getObject() for an in obj.getAnalyses()]
+        deps = [an.getService().getDepartment().UID() for an in ans if an.getService().getDepartment()]
+        result = True
+        if deps:
+            # Getting the cookie value
+            cookie_dep_uid = self.request.get('filter_by_department_info', '')
+            # Comparing departments' UIDs
+            deps_uids = set(deps)
+            filter_uids = set(cookie_dep_uid.split(','))
+            matches = deps_uids & filter_uids
+            result = len(matches) > 0
+        return result
+
     def folderitem(self, obj, item, index):
         # Additional info from AnalysisRequest to be added in the item generated
         # by default by bikalisting.

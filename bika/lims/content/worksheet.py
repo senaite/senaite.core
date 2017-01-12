@@ -38,6 +38,20 @@ def Priority(instance):
         return priority.getSortKey()
 
 
+@indexer(IWorksheet)
+def getDepartmentUIDs(instance):
+    deps = [an.getDepartment().UID() for
+            an in obj.getWorksheetServices() if
+            an.getDepartment()]
+    return deps
+
+@indexer(IWorksheet)
+def getDepartmentUIDs(instance):
+    deps = [an.getDepartment().UID() for
+            an in obj.getWorksheetServices() if
+            an.getDepartment()]
+    return deps
+
 schema = BikaSchema.copy() + Schema((
     HistoryAwareReferenceField('WorksheetTemplate',
         allowed_types=('WorksheetTemplate',),
@@ -307,6 +321,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         for analysis in src_analyses:
             if analysis.UID() in dest_analyses:
                 continue
+            if analysis.portal_type == 'ReferenceAnalysis':
+                logger.warning('Cannot create duplicate analysis from '
+                               'ReferenceAnalysis at {}'.format(analysis))
+                continue
 
             # If retracted analyses, for some reason, the getLayout() returns
             # two times the regular analysis generated automatically after a
@@ -338,7 +356,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
             # Set ReferenceAnalysesGroupID (same id for the analyses from
             # the same Reference Sample and same Worksheet)
-            if not refgid and not analysis.portal_type == 'ReferenceAnalysis':
+            if not refgid:
                 prefix = analysis.aq_parent.getSample().id
                 dups = []
                 for an in self.getAnalyses():
@@ -752,12 +770,13 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                     success = True
                     revers = analysis.getNumberOfRequiredVerifications()
                     nmvers = analysis.getNumberOfVerifications()
-                    analysis.setNumberOfVerifications(nmvers+1)
+                    username=getToolByName(self,'portal_membership').getAuthenticatedMember().getUserName()
+                    item.addVerificator(username)
                     if revers-nmvers <= 1:
                         success, message = doActionFor(analysis, 'verify')
                         if not success:
-                            # If failed, restore to the previous number
-                            analysis.setNumberOfVerifications(nmvers)
+                            # If failed, delete last verificator.
+                            item.deleteLastVerificator()
                 else:
                     doActionFor(analysis, 'verify')
 
