@@ -15,7 +15,6 @@ from bika.lims.utils import tmpID
 from bika.lims.permissions import *
 from bika.lims.utils import tmpID
 
-cleanrebuild = []
 
 def upgrade(tool):
     """Upgrade step required for Bika LIMS 3.2.0
@@ -57,7 +56,7 @@ def upgrade(tool):
     logger.info("Departments...")
     departments(portal)
 
-    # Mote than one department can be assigned to a Contact
+    # More than one department can be assigned to a Contact
     logger.info("More than one department per contact...")
     multi_department_to_labcontact(portal)
 
@@ -69,11 +68,17 @@ def upgrade(tool):
     logger.info("Multiverification of Analyses...")
     multi_verification(portal)
 
+    # Update workflow permissions
+    logger.info("Updating role mappings...")
+    wf = getToolByName(portal, 'portal_workflow')
+    wf.updateRoleMappings()
+
     # Remove unused indexes and columns
     logger.info("Removing stale indexes...")
-    removeUnusedIndexes(portal)
+    bc = getToolByName(portal, 'bika_catalog', None)
+    delIndexAndColumn(bc, 'getProfilesTitle')
 
-    # Clean and rebuild affected catalogs
+    # Clean and rebuild affected catalogs (if required)
     logger.info("Cleaning and rebuilding...")
     cleanAndRebuildIfNeeded(portal)
 
@@ -191,19 +196,14 @@ def create_samplingcoordinator(portal):
 
     # Add the index for the catalog
     bc = getToolByName(portal, 'bika_catalog', None)
-    if 'getScheduledSamplingSampler' not in bc.indexes():
-        bc.addIndex('getScheduledSamplingSampler', 'FieldIndex')
-        bc.clearFindAndRebuild()
+    addIndex(bc, 'getScheduledSamplingSampler', 'FieldIndex')
 
 def departments(portal):
     """ To add department indexes to the catalogs """
     bc = getToolByName(portal, 'bika_catalog')
-    if 'getDepartmentUIDs' not in bc.indexes():
-        bc.addIndex('getDepartmentUIDs', 'KeywordIndex')
-        bc.clearFindAndRebuild()
     bac = getToolByName(portal, 'bika_analysis_catalog')
-    if 'getDepartmentUID' not in bac.indexes():
-        bac.addIndex('getDepartmentUID', 'KeywordIndex')
+    addIndex(bc, 'getDepartmentUIDs', 'KeywordIndex')
+    addIndex(bac, 'getDepartmentUID', 'KeywordIndex')
 
 def create_CAS_IdentifierType(portal):
     """LIMS-1391 The CAS Nr IdentifierType is normally created by
@@ -302,28 +302,11 @@ def multi_department_to_labcontact(portal):
         if not obj.getDepartments():
             obj.setDepartments(obj.getDepartment())
 
-def multi_verification(portal):
-    """
-    Getting all analyses with review_state in to_be_verified and
-    adding "admin" as a verificator as many times as this analysis verified before.
-    """
-    pc = getToolByName(portal, 'portal_catalog', None)
-    objs = pc(portal_type="Analyses",review_state="to_be_verified")
-    for obj_brain in objs:
-        obj = obj_brain.getObject()
-        old_field = obj.Schema().get("NumberOfVerifications", None)
-        if old_field:
-            new_value=''
-            for n in range(0,old_field):
-                new_value+='admin'
-                if n<old_field:
-                    new_value+=','
-            obj.setVerificators(new_value)
 
-def removeUnusedIndexes(portal):
-    bc = getToolByName(portal, 'bika_catalog', None)
-    delIndexAndColumn(bc, 'getProfilesTitle')
-
+# *********************
+# Helper methods below
+# *********************
+cleanrebuild = []
 def delIndexAndColumn(catalog, index):
     if index in catalog.indexes():
         try:
@@ -338,6 +321,7 @@ def delIndexAndColumn(catalog, index):
             logger.info('Old catalog column %s deleted.' % index)
         except:
             pass
+
 def addIndex(catalog, index, indextype):
     if index not in catalog.indexes():
         try:
