@@ -23,6 +23,13 @@ function SiteView() {
         $('.date_range_end').bind("change", function () {
             date_range_controller_1(this);
         });
+
+        //Reset default dep list when departments change
+        $(function() {
+          $("select[name='Departments:list']").change(function() {
+            reset_default_deps(this);
+          });
+        });
     };
 
     function loadClientEvents() {
@@ -481,5 +488,28 @@ function SiteView() {
         var date_element = $(input_element).datepicker("getDate");
         var brother = $(input_element).siblings('.date_range_start');
         $(brother).datepicker("option", "maxDate", date_element );
+    }
+
+    /**
+    Updating default department list when assigned departments change
+    @param {object} deps_element is the multiple select of deparments
+    */
+    function reset_default_deps(deps_element){
+      //Resetting def_dep_list
+      def_deps=$("select[name='DefaultDepartment']")[0];
+      def_deps.options.length=0;
+      var null_opt = document.createElement("option");
+      null_opt.text = "";
+      null_opt.value = "";
+      null_opt.selected="selected";
+      def_deps.add(null_opt);
+      //Adding selected deps
+      $('option:selected', deps_element).each(function() {
+        var option = document.createElement("option");
+        option.text = $(this).text();
+        option.value = $(this).val();
+        option.selected="selected";
+        def_deps.add(option);
+      });
     }
 }
