@@ -44,8 +44,9 @@ class AnalysisRequestPublishedResults(BikaListingView):
         self.columns = {
             'Title': {'title': _('File')},
             'FileSize': {'title': _('Size')},
-            'Date': {'title': _('Date')},
+            'Date': {'title': _('Published Date')},
             'PublishedBy': {'title': _('Published By')},
+            'DatePrinted': {'title': _('Printed Date')},
             'Recipients': {'title': _('Recipients')},
         }
         self.review_states = [
@@ -56,6 +57,7 @@ class AnalysisRequestPublishedResults(BikaListingView):
                          'FileSize',
                          'Date',
                          'PublishedBy',
+                         'DatePrinted',
                          'Recipients']},
         ]
 
@@ -85,6 +87,22 @@ class AnalysisRequestPublishedResults(BikaListingView):
                         mapping={'retracted_request_id': par.getRequestID()})
             self.context.plone_utils.addPortalMessage(
                 self.context.translate(message), 'info')
+
+        # Printing workflow enabled?
+        # If not, remove the Column
+        self.printwfenabled = self.context.bika_setup.getPrintingWorkflowEnabled()
+        printed_colname = 'DatePrinted'
+        if not self.printwfenabled and printed_colname in self.columns:
+            # Remove "Printed" columns
+            del self.columns[printed_colname]
+            tmprvs = []
+            for rs in self.review_states:
+                tmprs = rs
+                tmprs['columns'] = [c for c in rs.get('columns', []) if
+                                    c != printed_colname]
+                tmprvs.append(tmprs)
+            self.review_states = tmprvs
+
         template = BikaListingView.__call__(self)
         return template
 
@@ -122,6 +140,18 @@ class AnalysisRequestPublishedResults(BikaListingView):
         fmt_date = self.ulocalized_time(obj.created(), long_format=1)
         item['Date'] = fmt_date
         item['PublishedBy'] = self.user_fullname(obj.Creator())
+
+        if self.printwfenabled:
+            # The date when the Results Report was printed (if so)
+            item['DatePrinted'] = ''
+            fmt_date = obj.getDatePrinted() if hasattr(obj, 'getDatePrinted') else ''
+            if (fmt_date):
+                fmt_date = self.ulocalized_time(fmt_date, long_format=1)
+                item['DatePrinted'] = fmt_date
+                if obj.getDatePrinted() is None:
+                    item['after']['DatePrinted']=("<img src='++resource++bika.lims.images/warning.png' title='%s'/>" %
+                                            (t(_("Has not been Printed."))))
+
         recip = []
         for recipient in obj.getRecipients():
             email = recipient['EmailAddress']
