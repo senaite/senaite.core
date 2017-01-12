@@ -406,7 +406,6 @@ schema = BikaFolderSchema.copy() + Schema((
                 "If enabled, a free text field will be displayed close to "
                 "each analysis in results entry view"
             )
-<<<<<<< HEAD
         ),
     ),
     BooleanField(
@@ -439,53 +438,6 @@ schema = BikaFolderSchema.copy() + Schema((
          ),
     ),
     StringField('TypeOfmultiVerification',
-        schemata = "Analyses",
-        default = 'self_multi_enabled',
-        vocabulary = MULTI_VERIFICATION_TYPE,
-        widget = SelectionWidget(
-            label=_("Multi Verification type"),
-            description = _(
-                "Choose type of multiple verification for the same user."
-                "This setting can enable/disable verifying/consecutively verifying"
-                "more than once for the same user."),
-            format='select',
-        )
-    ),
-    ReferenceField('DryMatterService',
-=======
-        ),
-    ),
-    BooleanField(
-        'SelfVerificationEnabled',
-        schemata="Analyses",
-        default=False,
-        widget=BooleanWidget(
-            label=_("Allow self-verification of results"),
-            description=_(
-                "If enabled, a user who submitted a result will also be able "
-                "to verify it. This setting only take effect for those users "
-                "with a role assigned that allows them to verify results "
-                "(by default, managers, labmanagers and verifiers)."
-                "This setting can be overrided for a given Analysis in "
-                "Analysis Service edit view. By default, disabled."),
-        ),
-    ),
-    IntegerField(
-        'NumberOfRequiredVerifications',
-        schemata="Analyses",
-        default=1,
-        vocabulary="_getNumberOfRequiredVerificationsVocabulary",
-        widget=SelectionWidget(
-            format="select",
-            label=_("Number of required verifications"),
-            description=_(
-                "Number of required verifications before a given result being "
-                "considered as 'verified'. This setting can be overrided for "
-                "any Analysis in Analysis Service edit view. By default, 1"),
-        ),
-    ),
-    StringField('TypeOfmultiVerification',
->>>>>>> naralabs/wip
         schemata = "Analyses",
         default = 'self_multi_enabled',
         vocabulary = MULTI_VERIFICATION_TYPE,
@@ -796,16 +748,12 @@ schema = BikaFolderSchema.copy() + Schema((
         'AllowDepartmentFiltering',
         default=False,
         widget=BooleanWidget(
-<<<<<<< HEAD
-            label=_("Allow users to filter datas by department."),
-=======
             label=_("Enable filtering by department"),
             description=_("When enabled, only those items belonging to the "
                           "same department as the logged user will be "
                           "displayed. Since a user can belong to more than "
                           "one department, a department filtering portlet "
                           "will be displayed too. By default, disabled.")
->>>>>>> naralabs/wip
         )
     ),
 ))
@@ -901,9 +849,5 @@ class BikaSetup(folder.ATFolder):
         """
         items = [(1, '1'), (2, '2'), (3, '3'), (4, '4')]
         return IntDisplayList(list(items))
-<<<<<<< HEAD
-
-=======
->>>>>>> naralabs/wip
 
 registerType(BikaSetup, PROJECTNAME)
