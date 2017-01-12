@@ -2,6 +2,7 @@ jQuery(function($){
     $(document).ready(function(){
         // This will be a variable to be used everywhere
         var setupdata = $.parseJSON($('#rules-setup-data').html());
+        description_controller();
         method_controller(setupdata);
         remove_last_rule_set();
         setup_as_and_discrete_results(setupdata);
@@ -64,6 +65,15 @@ jQuery(function($){
         // Setting up the worksheet templates select options
         setup_worksheettemplate(setupdata);
     });
+    /**
+     * The controller to hide/show the description.
+     */
+    function description_controller(){
+        $('#ReflexRules_help').hide();
+        $('label[for="ReflexRules"]').click(function(e) {
+            $('#ReflexRules_help').toggle();
+        });
+    }
 
     function method_controller(setupdata){
         /**

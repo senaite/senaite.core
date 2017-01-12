@@ -1221,18 +1221,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
     def getAvailableMethodsUIDs(self):
         """ Returns the UIDs of the available method.
         """
-        methods = self.getMethods()
-        muids = [m.UID() for m in methods]
-        if self.getInstrumentEntryOfResults() is True:
-            # Add the methods from the instruments capable to perform
-            # this analysis service
-            for ins in self.getInstruments():
-                method = ins.getMethod()
-                if method and method.UID() not in muids:
-                    methods.append(method)
-                    muids.append(method.UID())
-
-        return muids
+        return [m.UID() for m in self.getAvailableMethods()]
 
     def getAvailableInstruments(self):
         """ Returns the instruments available for this analysis.
