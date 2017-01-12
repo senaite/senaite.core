@@ -71,6 +71,8 @@ setup(name='bika.lims',
           'plone.app.referenceablebehavior',
           'five.pt',
           'z3c.jbot',
+          'plone.resource',
+          'CairoSVG==1.0.20',
       ],
       extras_require={
           'test': [

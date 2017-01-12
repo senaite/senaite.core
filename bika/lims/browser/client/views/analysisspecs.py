@@ -42,26 +42,29 @@ class ClientAnalysisSpecsView(BikaListingView):
         self.title = self.context.translate(_("Analysis Specifications"))
 
         self.columns = {
-            'Title': {'title': _('Title'),
-                      'index': 'title'},
+            'title': {'title': _('Title'),
+                      'index': 'title',
+                      'replace_url': 'absolute_url'},
             'SampleType': {'title': _('Sample Type'),
-                           'index': 'getSampleTypeTitle'},
+                           'index': 'getSampleTypeTitle',
+                           'attr': 'getSampleType.Title',
+                           'replace_url': 'getSampleType.absolute_url'},
         }
         self.review_states = [
             {'id': 'default',
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
              'transitions': [{'id': 'deactivate'}, ],
-             'columns': ['Title', 'SampleType']},
+             'columns': ['title', 'SampleType']},
             {'id': 'inactive',
              'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': [{'id': 'activate'}, ],
-             'columns': ['Title', 'SampleType']},
+             'columns': ['title', 'SampleType']},
             {'id': 'all',
              'title': _('All'),
              'contentFilter': {},
-             'columns': ['Title', 'SampleType']},
+             'columns': ['title', 'SampleType']},
         ]
 
     def __call__(self):
@@ -80,19 +83,6 @@ class ClientAnalysisSpecsView(BikaListingView):
                 #         {'url': 'set_to_lab_defaults',
                 #          'icon': '++resource++bika.lims.images/analysisspec.png'}
         return super(ClientAnalysisSpecsView, self).__call__()
-
-    def folderitems(self):
-        items = BikaListingView.folderitems(self)
-        for x in range(len(items)):
-            if not items[x].has_key('obj'):
-                continue
-            obj = items[x]['obj']
-            items[x]['Title'] = obj.Title()
-            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                                           (items[x]['url'], items[x]['Title'])
-            items[x]['SampleType'] = obj.getSampleType().Title() \
-                if obj.getSampleType() else ""
-        return items
 
 
 class SetSpecsToLabDefaults(BrowserView):

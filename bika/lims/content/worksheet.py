@@ -53,6 +53,22 @@ def worksheettemplateUID(instance):
     else:
         return ''
 
+@indexer(IWorksheet)
+def getDepartmentUIDs(instance):
+    deps = [an.getDepartment().UID() for
+            an in obj.getWorksheetServices() if
+            an.getDepartment()]
+    return deps
+
+
+@indexer(IWorksheet)
+def getDepartmentUIDs(instance):
+    deps = [an.getDepartment().UID() for
+            an in obj.getWorksheetServices() if
+            an.getDepartment()]
+    return deps
+
+
 schema = BikaSchema.copy() + Schema((
     HistoryAwareReferenceField('WorksheetTemplate',
         allowed_types=('WorksheetTemplate',),
@@ -398,6 +414,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         for analysis in src_analyses:
             if analysis.UID() in dest_analyses:
                 continue
+            if analysis.portal_type == 'ReferenceAnalysis':
+                logger.warning('Cannot create duplicate analysis from '
+                               'ReferenceAnalysis at {}'.format(analysis))
+                continue
 
             # If retracted analyses, for some reason, the getLayout() returns
             # two times the regular analysis generated automatically after a
@@ -429,7 +449,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
             # Set ReferenceAnalysesGroupID (same id for the analyses from
             # the same Reference Sample and same Worksheet)
-            if not refgid and not analysis.portal_type == 'ReferenceAnalysis':
+            if not refgid:
                 prefix = analysis.aq_parent.getSample().id
                 dups = []
                 for an in self.getAnalyses():
@@ -515,7 +535,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             ws_slots = [row['position'] for row in layout if row['type'] == t]
             for row in [r for r in wstlayout if
                         r['type'] == t and r['pos'] not in ws_slots]:
-                reference_definition_uid = row[form_key]
+                reference_definition_uid = row.get(form_key, None)
+                if (not reference_definition_uid):
+                    continue
                 samples = bc(portal_type='ReferenceSample',
                              review_state='current',
                              inactive_state='active',

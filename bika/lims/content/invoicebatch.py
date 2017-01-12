@@ -6,44 +6,43 @@
 """InvoiceBatch is a container for Invoice instances.
 """
 from AccessControl import ClassSecurityInfo
+from DateTime import DateTime
+from Products.Archetypes.public import *
 from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 from bika.lims.config import ManageInvoices, PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.invoice import InvoiceLineItem
 from bika.lims.interfaces import IInvoiceBatch
 from bika.lims.utils import get_invoice_item_description
-from DateTime import DateTime
-from Products.Archetypes.public import *
-from Products.CMFCore import permissions
-from bika.lims.workflow import isBasicTransitionAllowed
+from bika.lims.workflow import isBasicTransitionAllowed, getTransitionDate
 from zope.container.contained import ContainerModifiedEvent
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
     DateTimeField('BatchStartDate',
-        required=1,
-        default_method='current_date',
-        widget=CalendarWidget(
-            label=_("Start Date"),
-        ),
-    ),
+                  required=1,
+                  default_method='current_date',
+                  widget=CalendarWidget(
+                      label=_("Start Date"),
+                  ),
+                  ),
     DateTimeField('BatchEndDate',
-        required=1,
-        default_method='current_date',
-        validators = ('invoicebatch_EndDate_validator',),
-        widget=CalendarWidget(
-            label=_("End Date"),
-        ),
-    ),
+                  required=1,
+                  default_method='current_date',
+                  validators=('invoicebatch_EndDate_validator',),
+                  widget=CalendarWidget(
+                      label=_("End Date"),
+                  ),
+                  ),
 ),
 )
 
+# noinspection PyCallingNonCallable
 schema['title'].default = DateTime().strftime('%b %Y')
 
-class InvoiceBatch(BaseFolder):
 
+class InvoiceBatch(BaseFolder):
     """ Container for Invoice instances """
     implements(IInvoiceBatch)
     security = ClassSecurityInfo()
@@ -68,18 +67,22 @@ class InvoiceBatch(BaseFolder):
     def createInvoice(self, client_uid, items):
         """ Creates and invoice for a client and a set of items
         """
+        plone_view = self.restrictedTraverse('@@plone')
         invoice_id = self.generateUniqueId('Invoice')
         invoice = _createObjectByType("Invoice", self, invoice_id)
+        # noinspection PyCallingNonCallable
         invoice.edit(
             Client=client_uid,
             InvoiceDate=DateTime(),
         )
+
         invoice.processForm()
         invoice.invoice_lineitems = []
         for item in items:
             lineitem = InvoiceLineItem()
             if item.portal_type == 'AnalysisRequest':
-                lineitem['ItemDate'] = item.getDatePublished()
+                lineitem['ItemDate'] = plone_view.toLocalizedTime(
+                    getTransitionDate(item, 'publish'), long_format=1)
                 lineitem['OrderNumber'] = item.getRequestID()
                 lineitem['AnalysisRequest'] = item
                 lineitem['SupplyOrder'] = ''
@@ -100,8 +103,10 @@ class InvoiceBatch(BaseFolder):
         return invoice
 
     security.declarePublic('current_date')
+
     def current_date(self):
         """ return current date """
+        # noinspection PyCallingNonCallable
         return DateTime()
 
     def guard_cancel_transition(self):
@@ -113,6 +118,7 @@ class InvoiceBatch(BaseFolder):
         if not isBasicTransitionAllowed(self):
             return False
         return True
+
 
 registerType(InvoiceBatch, PROJECTNAME)
 

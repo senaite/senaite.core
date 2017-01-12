@@ -70,7 +70,7 @@
     <browser:page
       for="bika.lims.interfaces.IClient"
       name="srtemplates"
-      class="bika.lims.browser.client.ClientSRTemplatesView"
+      class="bika.lims.browser.client.ClientSamplingRoundTemplatesView"
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

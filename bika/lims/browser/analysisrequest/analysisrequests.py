@@ -141,16 +141,19 @@ class AnalysisRequestsView(BikaListingView):
             'state_title': {'title': _('State'),
                             'index': 'review_state'},
             'getProfilesTitle': {'title': _('Profile'),
+                                'index': 'getProfilesTitle',
                                 'toggle': False},
             'getAnalysesNum': {'title': _('Number of Analyses'),
                                'index': 'getAnalysesNum',
                                'sortable': True,
                                'toggle': False},
             'getTemplateTitle': {'title': _('Template'),
+                                 'index': 'getTemplateTitle',
                                  'toggle': False},
             'Printed': {'title': _('Printed'),
                                       'toggle': False},
         }
+
         self.review_states = [
             {'id': 'default',
              'title': _('Active'),
@@ -727,7 +730,7 @@ class AnalysisRequestsView(BikaListingView):
         if not self.context.bika_setup.getAllowDepartmentFiltering():
             return True
         # Gettin the department from analysis service
-        deps = obj.getDepartmentUIDs()
+        deps = obj.getDepartmentUIDs() if hasattr(obj, 'getDepartmentUIDs') else []
         result = True
         if deps:
             # Getting the cookie value
@@ -765,9 +768,11 @@ class AnalysisRequestsView(BikaListingView):
         if (self.hideclientlink == False):
             item['replace']['Client'] = "<a href='%s'>%s</a>" % \
                 (client.absolute_url(), client.Title())
+
         # extract province and district
         item['Province'] = client.getProvince()
         item['District'] = client.getDistrict()
+
         item['Creator'] = self.user_fullname(obj.Creator())
         item['getRequestID'] = obj.getRequestID()
         item['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
@@ -798,23 +803,27 @@ class AnalysisRequestsView(BikaListingView):
         sd = obj.getSample().getSamplingDate()
         item['SamplingDate'] = \
             self.ulocalized_time(sd, long_format=1) if sd else ''
-        item['getDateReceived'] = self.ulocalized_time(obj.getDateReceived())
-        item['getDatePublished'] = self.ulocalized_time(obj.getDatePublished())
-        item['getDateVerified'] = getTransitionDate(obj, 'verify')
+        item['getDateReceived'] = \
+            self.ulocalized_time(obj.getDateReceived())
+        item['getDatePublished'] = \
+            self.ulocalized_time(getTransitionDate(obj, 'publish'))
+        item['getDateVerified'] = \
+            self.ulocalized_time(getTransitionDate(obj, 'verify'))
 
-        item['Printed']= ''
-        printed=obj.getPrinted()
-        print_icon=''
-        if printed=="0":
-            print_icon="<img src='%s/++resource++bika.lims.images/delete.png' title='%s'>" % \
-                (self.portal_url, t(_("Not printed yet")))
-        elif printed=="1":
-            print_icon="<img src='%s/++resource++bika.lims.images/ok.png' title='%s'>" % \
-                (self.portal_url, t(_("Printed")))
-        elif printed=="2":
-            print_icon="<img src='%s/++resource++bika.lims.images/exclamation.png' title='%s'>" % \
-                (self.portal_url, t(_("Republished after last print")))
-        item['after']['Printed']=print_icon
+        if self.printwfenabled:
+            item['Printed']= ''
+            printed = obj.getPrinted() if hasattr(obj, 'getPrinted') else "0"
+            print_icon=''
+            if printed=="0":
+                print_icon="<img src='%s/++resource++bika.lims.images/delete.png' title='%s'>" % \
+                    (self.portal_url, t(_("Not printed yet")))
+            elif printed=="1":
+                print_icon="<img src='%s/++resource++bika.lims.images/ok.png' title='%s'>" % \
+                    (self.portal_url, t(_("Printed")))
+            elif printed=="2":
+                print_icon="<img src='%s/++resource++bika.lims.images/exclamation.png' title='%s'>" % \
+                    (self.portal_url, t(_("Republished after last print")))
+            item['after']['Printed']=print_icon
 
         deviation = sample.getSamplingDeviation()
         item['SamplingDeviation'] = deviation and deviation.Title() or ''
@@ -950,15 +959,30 @@ class AnalysisRequestsView(BikaListingView):
         self.editresults = -1
         self.clients = {}
 
-        #Print button to choose multiple ARs and print them.
-        review_states = []
-        for review_state in self.review_states:
-            review_state.get('custom_actions', []).extend(
-                [{'id': 'print',
-                  'title': _('Print'),
-                  'url': 'workflow_action?action=print'}, ])
-            review_states.append(review_state)
-        self.review_states = review_states
+        # Printing workflow enabled?
+        # If not, remove the Column
+        self.printwfenabled = self.context.bika_setup.getPrintingWorkflowEnabled()
+        printed_colname = 'Printed'
+        if not self.printwfenabled and printed_colname in self.columns:
+            # Remove "Printed" columns
+            del self.columns[printed_colname]
+            tmprvs = []
+            for rs in self.review_states:
+                tmprs = rs
+                tmprs['columns'] = [c for c in rs.get('columns', []) if
+                                    c != printed_colname]
+                tmprvs.append(tmprs)
+            self.review_states = tmprvs
+        elif self.printwfenabled:
+            #Print button to choose multiple ARs and print them.
+            review_states = []
+            for review_state in self.review_states:
+                review_state.get('custom_actions', []).extend(
+                    [{'id': 'print',
+                      'title': _('Print'),
+                      'url': 'workflow_action?action=print'}, ])
+                review_states.append(review_state)
+            self.review_states = review_states
 
         # Only "BIKA: ManageAnalysisRequests" may see the copy to new button.
         # elsewhere it is hacked in where required.

@@ -352,7 +352,7 @@ class AnalysesView(BikaListingView):
             if workflow.getInfoFor(obj, 'review_state') == 'retracted' \
                 and not checkPermission(ViewRetractedAnalyses, self.context):
                 continue
-            items[i] = self.folderitem(obj, items[i], i)
+
             result = obj.getResult()
             service = obj.getService()
             calculation = service.getCalculation()
@@ -807,14 +807,15 @@ class AnalysesView(BikaListingView):
                          t(_("Assigned to: ${worksheet_id}",
                              mapping={'worksheet_id': safe_unicode(ws.id)}))))
             items[i]['after']['state_title'] = '&nbsp;'.join(after_icons)
-
+            after_icons = []
             if obj.getIsReflexAnalysis():
-                items[i]['after']['Service'] = "<img\
+                after_icons.append("<img\
                 src='%s/++resource++bika.lims.images/reflexrule.png'\
                 title='%s'>" % (
                     self.portal_url,
                     t(_('It comes form a reflex rule'))
-                )
+                ))
+            items[i]['after']['Service'] = '&nbsp;'.join(after_icons)
 
         # the TAL requires values for all interim fields on all
         # items, so we set blank values in unused cells

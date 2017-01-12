@@ -241,6 +241,17 @@ class IContainerTypes(Interface):
     ""
 
 
+class IIdentifierTypes(Interface):
+    ""
+
+
+class IHaveIdentifiers(Interface):
+    """If this interface is provided by an AT object, the object will
+    automatically be given an 'Identifiers' field, which will be associated
+    with the bika_identifiertypes in site setup.
+    """
+
+
 class IInstrument(Interface):
 
     ""
@@ -356,7 +367,7 @@ class ISampleTypes(Interface):
     ""
 
 
-class ISRTemplates(Interface):
+class ISamplingRoundTemplates(Interface):
 
     ""
 
@@ -672,8 +683,8 @@ class ISamplePrepWorkflow(Interface):
     into an object's workflow chain.
     """
 
-class ICustomPubPref(Interface):
 
+class ICustomPubPref(Interface):
     ""
 
 class IReflexRule(Interface):
@@ -685,3 +696,32 @@ class IReflexRuleFolder(Interface):
 
 class IDepartment(Interface):
     ""
+
+class IAcquireFieldDefaults(Interface):
+    """Register this adapter to define if and how the value for a field is
+    acquired.
+
+    An instance's schema fields may delegate the responsibility of providing
+    default values to their acquisition parents by providing an attribute
+    "acquire=True".
+
+    During object creation this behaviour will walk up the acquisition chain
+    looking for a matching field, and if one is found it's current value will
+    be used as the default for this field.
+
+    By default the acquisition chain is searched for a field named
+    identically to the destination field, but this can be configured with an
+    attribute "acquire_fieldname='FieldName'".
+
+    If the source field is found on a parent but contains a False-ish value,
+    or if the adapter otherwise returns None (this will be the case if the
+    walker reaches the SiteRoot), the schema's original AT default is used.
+
+    No attempt is made to type check the fields - the value of the parent
+    field is simply injected into getDefaults().
+
+    """
+
+    def __call__(context, field):
+        """This function must return the surrogate (source) value directly.
+        """

@@ -3,6 +3,13 @@
         i18n:domain="bika">
 
 <metal:content-title fill-slot="content-title">
+    <a href=""
+       style="float:right;"
+       tal:condition="python: not view.is_anonymous_user() and view.is_dashboard_enabled()"
+       i18n:translate=""
+       tal:attributes="href string:${portal_url}?redirect_to=dashboard">
+        Switch to dashboard
+    </a>
 
     <h1 class="documentFirstHeading" i18n:translate="bika-frontpage-title">
         <img tal:attributes="src view/icon"/> Welcome to Bika LIMS

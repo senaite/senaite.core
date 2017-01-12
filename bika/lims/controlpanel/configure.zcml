@@ -63,7 +63,7 @@
     <browser:page
       for="bika.lims.interfaces.IAnalysisProfiles"
       name="folder_view"
-      class=".bika_analysisprofiles.ProfilesView"
+      class=".bika_analysisprofiles.AnalysisProfilesView"
       permission="bika.lims.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -128,6 +128,14 @@
       for="bika.lims.interfaces.IAnalysisSpecs"
       name="folder_view"
       class=".bika_analysisspecs.AnalysisSpecsView"
+      permission="bika.lims.ManageBika"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
+      for="bika.lims.interfaces.IIdentifierTypes"
+      name="folder_view"
+      class=".bika_identifiertypes.IdentifierTypesView"
       permission="bika.lims.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
@@ -205,9 +213,9 @@
     />
 
     <browser:page
-      for="bika.lims.interfaces.ISRTemplates"
+      for="bika.lims.interfaces.ISamplingRoundTemplates"
       name="folder_view"
-      class=".bika_srtemplates.TemplatesView"
+      class=".bika_srtemplates.SamplingRoundTemplatesView"
       permission="bika.lims.ManageBika"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

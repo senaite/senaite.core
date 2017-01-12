@@ -5,6 +5,12 @@ HEALTH-568: TaqMan 96 Interface not working well
 HEALTH-567: Nuclicens Interface not working well
 HEALTH-360: Enforce State (Province) and District if Zimbabwe is selected
 HEALTH-364: Added country/province/district columns to client listing table
+LIMS-1391: Add configurable identifier types (CAS# for AnalysisService)
+LIMS-2357: Custom Landing Page and Link to switch between the Front Page and Dashboard
+LIMS-2341: Cleanup and format default Multi-AR COA
+LIMS-2455: Contact/Login Linkage Behavior
+LIMS-2456: Restrict duplicate slots in worksheet templates to routine analyses only.
+LIMS-2447: getDatePublished index not indexed correctly at time of AR publication
 LIMS-2404: AR list in batches permitted sampling without Sampler and Sampling date provided
 LIMS-2380: ARs are created in correct order (order of columns in ar-create form)
 LIMS-2394: Calculation failure in worksheets. TDS Calc misfires again.
@@ -42,9 +48,18 @@ LIMS-1774: Shiny graphs for result ranges
 - Scheduled sampling functionality added
 LIMS-2257: Scheduled sampling
 LIMS-2255: Switch to Chameleon (five.pt) for rendering TAL templates
+- Additional "Printed" workflow for Analysis Requests once Published
+- Add buttons to export lists to CSV and XML formats
+- System-wide filter by department
+- Allow to assign a lab contact to more than one department
+- Multi-verification of analyses, with different verification types
+- Add option to allow multi-approval (multi-verification) of results
+- Added Analyses section in the Dashboard
+- Add option to allow labman to self-verify analysis results
 - Replacement of pagination by 'Show more' in tables makes the app faster
 - Add Bika LIMS TAL report reference in reports preview
 - Simplify instrument interface creation for basic CSV files
+- Pinned CairoSVG to 1.0.20 (support for Python 2 removed in later versions)
 
 3.1.x Long Term Support (LTS)
 -----------------------------
@@ -53,8 +68,10 @@ HEALTH-498: Sampling Date accepting dates in the future
 -----------------------------
 LIMS-2181: An analysis is not stopped from using an invalid instrument
 3.1.12 (unreleased)
+3.1.12 (2016-12-15)
 -----------------------------
 HEALTH-569 Bar code printing not working on sample registration
+- Pinned CairoSVG to 1.0.20 (support for Python 2 removed in later versions)
 
 3.1.11 (2016-04-22)
 -----------------------------

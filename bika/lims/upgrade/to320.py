@@ -6,9 +6,12 @@
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import _createObjectByType
+
 from bika.lims import logger
 from Products.CMFCore import permissions
 from bika.lims.permissions import *
+from bika.lims.utils import tmpID
 
 cleanrebuild = []
 
@@ -46,17 +49,11 @@ def upgrade(tool):
 
     # Reflex Testing setup
     logger.info("Reflex testing...")
-    #reflex_rules(portal)
+    reflex_rules(portal)
 
     # Mote than one department can be assigned to a Contact
     logger.info("More than one department per contact...")
     multi_department_to_labcontact(portal)
-
-    # Add new indexes
-    bc = getToolByName(portal, 'bika_catalog', None)
-    bac = getToolByName(portal, 'bika_analysis_catalog', None)
-    addIndex(bc, 'getDepartmentUIDs', 'KeywordIndex')
-    addIndex(bac, 'getDepartmentUID', 'FieldIndex')
 
     # Remove unused indexes and columns
     logger.info("Removing stale indexes...")
@@ -131,13 +128,62 @@ def create_samplingcoordinator(portal):
         mp('Access contents information', ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
         portal.samples.reindexObject()
 
-        # Add the index for the catalog
-        bc = getToolByName(portal, 'bika_catalog', None)
-        addIndex(bc, 'getScheduledSamplingSampler', 'FieldIndex' )
+    # Add the index for the catalog
+    bc = getToolByName(portal, 'bika_catalog', None)
+    if 'getScheduledSamplingSampler' not in bc.indexes():
+        bc.addIndex('getScheduledSamplingSampler', 'FieldIndex')
+        bc.clearFindAndRebuild()
 
-        logger.info("Update workflow permissions...")
-        wf = getToolByName(portal, 'portal_workflow')
-        wf.updateRoleMappings()
+def departments(portal):
+    """ To add department indexes to the catalogs """
+    bc = getToolByName(portal, 'bika_catalog')
+    if 'getDepartmentUIDs' not in bc.indexes():
+        bc.addIndex('getDepartmentUIDs', 'KeywordIndex')
+        bc.clearFindAndRebuild()
+    bac = getToolByName(portal, 'bika_analysis_catalog')
+    if 'getDepartmentUID' not in bac.indexes():
+        bac.addIndex('getDepartmentUID', 'KeywordIndex')
+
+def create_CAS_IdentifierType(portal):
+    """LIMS-1391 The CAS Nr IdentifierType is normally created by
+    setuphandlers during site initialisation.
+    """
+    pc = getToolByName(portal, 'portal_catalog', None)
+    objs = pc(portal_type="Analyses",review_state="to_be_verified")
+    for obj_brain in objs:
+        obj = obj_brain.getObject()
+        old_field = obj.Schema().get("NumberOfVerifications", None)
+        if old_field:
+            new_value=''
+            for n in range(0,old_field):
+                new_value+='admin'
+    bsc = getToolByName(portal, 'bika_catalog', None)
+    idtypes = bsc(portal_type = 'IdentifierType', title='CAS Nr')
+    if not idtypes:
+        folder = portal.bika_setup.bika_identifiertypes
+        idtype = _createObjectByType('IdentifierType', folder, tmpID())
+        idtype.processForm()
+        idtype.edit(title='CAS Nr',
+                    description='Chemical Abstracts Registry number',
+                    portal_types=['Analysis Service'])
+
+def multi_verification(portal):
+    """
+    Getting all analyses with review_state in to_be_verified and
+    adding "admin" as a verificator as many times as this analysis verified before.
+    """
+    pc = getToolByName(portal, 'portal_catalog', None)
+    objs = pc(portal_type="Analyses",review_state="to_be_verified")
+    for obj_brain in objs:
+        obj = obj_brain.getObject()
+        old_field = obj.Schema().get("NumberOfVerifications", None)
+        if old_field:
+            new_value=''
+            for n in range(0,old_field):
+                new_value+='admin'
+                if n<old_field:
+                    new_value+=','
+            obj.setVerificators(new_value)
 
 def reflex_rules(portal):
     at = getToolByName(portal, 'archetype_tool')
