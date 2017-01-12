@@ -58,6 +58,7 @@
     <element value="InstrumentMaintenanceTask"/>
     <element value="InstrumentScheduledTask"/>
     <element value="InstrumentType"/>
+    <element value="InstrumentLocation"/>
     <element value="InstrumentValidation"/>
     <element value="Invoice"/>
     <element value="InvoiceBatch"/>

@@ -24,6 +24,7 @@
   <include file="duplicateanalysis.zcml"/>
   <include file="instrument.zcml"/>
   <include file="instrumenttype.zcml"/>
+  <include file="instrumentlocation.zcml"/>
   <include file="late_analyses.zcml"/>
   <include file="manufacturer.zcml"/>
   <include file="menu.zcml"/>
