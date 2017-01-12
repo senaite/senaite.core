@@ -10,6 +10,7 @@ bika_calculations,Calculations
 bika_identifiertypes,IdentifierTypes
 bika_instruments,Instruments
 bika_instrumenttypes,InstrumentTypes
+bika_instrumentlocations,InstrumentLocations
 bika_labcontacts,LabContacts
 bika_containers,Containers
 bika_containertypes,ContainerTypes
