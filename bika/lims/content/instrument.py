@@ -185,6 +185,17 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
          ),
     ),
 
+    ComputedField('InstrumentLocationName',
+        expression = 'here.getInstrumentLocation().Title() if here.getInstrumentLocation() else ""',
+        widget = ComputedWidget(
+            label=_("Instrument Location"),
+            label_msgid="instrument_location",
+            description=_("The room and location where the instrument is installed"),
+            description_msgid="help_instrument_location",
+            visible=True,
+         ),
+    ),
+
     ComputedField('ManufacturerName',
         expression = 'here.getManufacturer().Title() if here.getManufacturer() else ""',
         widget = ComputedWidget(
@@ -208,11 +219,19 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         )
     ),
 
-    StringField('Location',
+    ReferenceField('InstrumentLocation',
         schemata = 'Additional info.',
-        widget = StringWidget(
-            label=_("Location"),
+        vocabulary='getInstrumentLocations',
+        allowed_types=('InstrumentLocation', ),
+        relationship='InstrumentInstrumentLocation',
+        required=0,
+        widget=SelectionWidget(
+            format='select',
+            label=_("Instrument Location"),
+            label_msgid="instrument_location",
             description=_("The room and location where the instrument is installed"),
+            description_msgid="help_instrument_location",
+            visible={'view': 'invisible', 'edit': 'visible'}
         )
     ),
 
@@ -337,6 +356,15 @@ class Instrument(ATFolder):
                 for c in bsc(portal_type='InstrumentType',
                              inactive_state = 'active')]
         items.sort(lambda x,y:cmp(x[1], y[1]))
+        return DisplayList(items)
+
+    def getInstrumentLocations(self):
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [(c.UID, c.Title) \
+                 for c in bsc(portal_type='InstrumentLocation',
+                              inactive_state = 'active')]
+        items.sort(lambda x, y: cmp(x[1], y[1]))
+        items.insert(0, ('', t(_('None'))))
         return DisplayList(items)
 
     def getMaintenanceTasks(self):

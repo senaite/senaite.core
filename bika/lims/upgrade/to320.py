@@ -10,6 +10,8 @@ from Products.CMFPlone.utils import _createObjectByType
 
 from bika.lims import logger
 from Products.CMFCore import permissions
+from Products.CMFPlone.utils import _createObjectByType
+from bika.lims.utils import tmpID
 from bika.lims.permissions import *
 from bika.lims.utils import tmpID
 
@@ -45,6 +47,8 @@ def upgrade(tool):
     create_samplingcoordinator(portal)
     departments(portal)
     departments(portal)
+    # Migrate Instrument Locations
+    migrate_instrument_locations(portal)
     """Update workflow permissions
     """
     wf = getToolByName(portal, 'portal_workflow')
@@ -56,6 +60,55 @@ def upgrade(tool):
     cleanAndRebuildIfNeeded(portal)
 
     return True
+
+
+def migrate_instrument_locations(portal):
+    bsc = portal.bika_setup_catalog
+
+    bika_instrumentlocations = portal.bika_setup.get("bika_instrumentlocations")
+
+    if bika_instrumentlocations is None:
+        logger.error("bika_instrumentlocations not found in bika_setup!")
+        return  # This should not happen
+
+    # move bika_instrumentlocations below bika_instrumenttypes
+    panel_ids = portal.bika_setup.objectIds()
+    target_idx = panel_ids.index("bika_instrumenttypes")
+    current_idx = panel_ids.index("bika_instrumentlocations")
+    delta = current_idx - target_idx
+    if delta > 1:
+        portal.bika_setup.moveObjectsUp("bika_instrumentlocations", delta=delta-1)
+
+    instrument_brains = bsc(portal_type="Instrument")
+    for instrument_brain in instrument_brains:
+        instrument = instrument_brain.getObject()
+
+        # get the string value of the `location` field
+        location = instrument.getLocation()
+        if not location:
+            continue  # Skip if no location was set
+
+        # make a dictionary with the Titles as keys and the objects as values
+        instrument_locations = bika_instrumentlocations.objectValues()
+        instrument_location_titles = map(lambda o: o.Title(), instrument_locations)
+        locations = dict(zip(instrument_location_titles, instrument_locations))
+
+        instrument_location = None
+        if location in locations:
+            logger.info("Instrument Location {} exists in bika_instrumentlocations".format(location))
+            instrument_location = locations[location]
+        else:
+            # Create a new location and link it to the instruments InstrumentLocation field
+            instrument_location = _createObjectByType("InstrumentLocation", bika_instrumentlocations, tmpID())
+            instrument_location.setTitle(location)
+            instrument_location._renameAfterCreation()
+            instrument_location.reindexObject()
+            logger.info("Created Instrument Location {} in bika_instrumentlocations".format(location))
+
+        instrument.setLocation(None)  # flush the old instrument location
+        instrument.setInstrumentLocation(instrument_location)
+        instrument.reindexObject()
+        logger.info("Linked Instrument Location {} to Instrument {}".format(location, instrument.id))
 
 
 def create_samplingcoordinator(portal):

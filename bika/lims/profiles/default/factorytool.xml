@@ -29,6 +29,8 @@
   <type portal_type="InstrumentMaintenanceTask"/>
   <type portal_type="InstrumentScheduledTask"/>
   <type portal_type="InstrumentType"/>
+  <type portal_type="InstrumentLocation"/>
+  <type portal_type="InstrumentLocations"/>
   <type portal_type="InstrumentValidation"/>
   <type portal_type="Invoice"/>
   <type portal_type="InvoiceBatch"/>
