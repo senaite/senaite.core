@@ -247,10 +247,12 @@ Workflow Actions
                         class="context workflow_action_button action_button allowMultiSubmit"
                         type="submit"
                         name="workflow_action_button"
+                        i18n:attributes="value"
+                        i18n:domain="plone"
                         tal:attributes="
                             id python:action['id']+'_transition';
                             transition action/id;
-                            value action/title;
+                            value string:${action/id}_transition_title;
                             url python:action.get('url', '');"/>
                 </span>
             </span>
