@@ -133,6 +133,14 @@
     />
 
     <browser:page
+      for="bika.lims.interfaces.IIdentifierTypes"
+      name="folder_view"
+      class=".bika_identifiertypes.IdentifierTypesView"
+      permission="bika.lims.ManageBika"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <browser:page
       for="bika.lims.interfaces.IInstruments"
       name="folder_view"
       class=".bika_instruments.InstrumentsView"

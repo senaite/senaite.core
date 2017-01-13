@@ -27,6 +27,11 @@ class ExtensionField(object):
 
     storage = AnnotationStorage()
 
+    def __init__(self, *args, **kwargs):
+        super(ExtensionField, self).__init__(*args, **kwargs)
+        self.args = args
+        self.kwargs = kwargs
+
     def getAccessor(self, instance):
         def accessor():
             if self.getType().endswith('ReferenceField'):
