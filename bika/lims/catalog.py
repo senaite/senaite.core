@@ -14,6 +14,7 @@ from bika.lims.interfaces import IBikaAnalysisCatalog
 from bika.lims.interfaces import IBikaSetupCatalog
 from bika.lims import logger
 import sys
+import traceback
 from zope.interface import implements
 
 
@@ -283,7 +284,7 @@ def _setup_catalog(portal, catalog_id, catalog_definition):
     columns_ids = catalog_definition.get('columns', [])
     for col in columns_ids:
         created = _addColumn(catalog, col)
-        reindex = True if indexed else reindex
+        reindex = True if created else reindex
     return reindex
 
 
@@ -338,7 +339,7 @@ def _cleanAndRebuildIfNeeded(portal, cleanrebuild):
             catalog.clearFindAndRebuild()
             logger.info('%s cleaned and rebuilt' % cat)
         except:
-            import pdb; pdb.set_trace()
-            e = sys.exc_info()[0]
+            logger.error(traceback.format_exc())
+            e = sys.exc_info()
             logger.error(
                 "Unable to clean and rebuild %s due to: %s" % (cat, e))
