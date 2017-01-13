@@ -276,15 +276,30 @@ def _setup_catalog(portal, catalog_id, catalog_definition):
         return False
     # Indexes
     indexes_ids = catalog_definition.get('indexes', {}).keys()
+    # Indexing
     for idx in indexes_ids:
         # The function returns if the index needs to be reindexed
         indexed = _addIndex(catalog, idx, catalog_definition['indexes'][idx])
         reindex = True if indexed else reindex
+    # Removing indexes
+    in_catalog_idxs = catalog.indexes()
+    to_remove = list(set(in_catalog_idxs)-set(indexes_ids))
+    for idx in to_remove:
+        # The function returns if the index has been deleted
+        desindexed = _delIndex(catalog, idx)
+        reindex = True if desindexed else reindex
     # Columns
     columns_ids = catalog_definition.get('columns', [])
     for col in columns_ids:
         created = _addColumn(catalog, col)
         reindex = True if created else reindex
+    # Removing columns
+    in_catalog_cols = catalog.schema()
+    to_remove = list(set(in_catalog_cols)-set(columns_ids))
+    for col in to_remove:
+        # The function returns if the index has been deleted
+        desindexed = _delColumn(catalog, col)
+        reindex = True if desindexed else reindex
     return reindex
 
 
@@ -323,6 +338,43 @@ def _addColumn(cat, col):
             return True
         except:
             logger.error('Catalog column %s error while adding.' % col)
+    return False
+
+
+def _delIndex(catalog, index):
+    """
+    This function desindexes the index element from the catalog.
+    :catalog: a catalog object
+    :index: an index id as string
+    :return: a boolean as True if the element has been desindexed and it
+    returns False otherwise.
+    """
+    if index in catalog.indexes():
+        try:
+            catalog.delIndex(index, indextype)
+            logger.info('Catalog index %s deleted.' % index)
+            return True
+        except:
+            logger.error('Catalog index %s error while deleting.' % index)
+    return False
+
+
+def _delColumn(cat, col):
+    """
+    This function deletes a metadata column of the acatalog.
+    :cat: a catalog object
+    :col: a column id as string
+    :return: a boolean as True if the element has been removed and
+        False otherwise
+    """
+    # First check if the metadata column already exists
+    if col in cat.schema():
+        try:
+            cat.delColumn(col)
+            logger.info('Column %s deleted.' % col)
+            return True
+        except:
+            logger.error('Catalog column %s error while deleting.' % col)
     return False
 
 
