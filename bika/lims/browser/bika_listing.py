@@ -824,8 +824,121 @@ class BikaListingView(BrowserView):
         """
         return item
 
-    def folderitems(self, full_objects = False):
+    def folderitems(self, full_objects=False, classic=True):
         """
+        This function returns an array of dictionaries where each dictionary
+        contains the columns data to render the list.
+
+        No object is needed by default. We should be able to get all
+        the listing columns taking advantage of the catalog's metadata,
+        so that the listing will be much more faster. If a very specific
+        info has to be retrive from the objects, we can define
+        full_objects as True but performance can be lowered.
+
+        :full_objects: a boolean, if True, each dictionary will contain an item
+        with the cobject itself. item.get('obj') will return a object.
+        :classic: if True, the old way folderitems works will be executed. This
+        function is mainly used to mantain the integrity with the old version.
+        """
+        # If the classic is True,, use the old way.
+        if classic:
+            return self._folderitems(full_objects)
+
+        if not hasattr(self, 'contentsMethod'):
+            self.contentsMethod = getToolByName(self.context, self.catalog)
+        # Setting up some attributes
+        context = aq_inner(self.context)
+        workflow = getToolByName(context, 'portal_workflow')
+
+        # Creating a copy of the contentFilter dictionary in order to include
+        # the filter bar's filtering additions in the query. We don't want to
+        # modify contentFilter with those 'extra' filtering elements to be
+        # inculded in the.
+        contentFilterTemp = copy.deepcopy(self.contentFilter)
+        addition = self.get_filter_bar_queryaddition()
+        # Adding the extra filtering elements
+        if addition:
+            contentFilterTemp.update(addition)
+        # Check for 'and'/'or' logic queries
+        if (hasattr(self, 'And') and self.And) \
+           or (hasattr(self, 'Or') and self.Or):
+            # if contentsMethod is capable, we do an AdvancedQuery.
+            if hasattr(self.contentsMethod, 'makeAdvancedQuery'):
+                aq = self.contentsMethod.makeAdvancedQuery(contentFilterTemp)
+                if hasattr(self, 'And') and self.And:
+                    tmpAnd = And()
+                    for q in self.And:
+                        tmpAnd.addSubquery(q)
+                    aq &= tmpAnd
+                if hasattr(self, 'Or') and self.Or:
+                    tmpOr = Or()
+                    for q in self.Or:
+                        tmpOr.addSubquery(q)
+                    aq &= tmpOr
+                brains = self.contentsMethod.evalAdvancedQuery(aq)
+            else:
+                # otherwise, self.contentsMethod must handle contentFilter
+                brains = self.contentsMethod(contentFilterTemp)
+        else:
+            brains = self.contentsMethod(contentFilterTemp)
+
+        # idx increases one unit each time an object is added to the 'items'
+        # dictionary to be returned. Note that if the item is not rendered,
+        # the idx will not increase.
+        idx = 0
+        results = []
+        self.show_more = False
+        brains = brains[self.limit_from:]
+        for i, obj in enumerate(brains):
+            # avoid creating unnecessary info for items outside the current
+            # batch;  only the path is needed for the "select all" case...
+            # we only take allowed items into account
+            if idx >= self.pagesize:
+                # Maximum number of items to be shown reached!
+                self.show_more = True
+                break
+
+            # Get the whole object if needed
+            obj = obj.getObject()\
+                if full_objects and hasattr(obj, 'getObject') else obj
+
+            # check if the item must be rendered or not (prevents from
+            # doing it later in folderitems) and dealing with paging
+            if not obj or not self.isItemAllowed(obj):
+                continue
+            import pdb; pdb.set_trace()
+            modified = self.ulocalized_time(obj.modified()),
+            # Building the dictionary with basic items
+            results_dict = dict(
+                obj=obj,
+                # a dict where the column name works as a key and the value is
+                # the name of the field related with the column. It is used
+                # when the name given to the column and the content field it
+                # represents diverges. bika_listing_table_items.pt defines an
+                # attribute for each item, this attribute is named 'field' and
+                # the system fills it taking advantage of this dictionary or
+                # the name of the column if it isn't defined in the dict.
+                field={},
+                # "before", "after" and replace: dictionary (key is column ID)
+                # A snippet of HTML which will be rendered
+                # before/after/instead of the table cell content.
+                before={},  # { before : "<a href=..>" }
+                after={},
+                replace={},
+            )
+            # The item basics filled. Delegate additional actions to folderitem
+            # service. folderitem service is frequently overriden by child
+            # objects
+            item = self.folderitem(obj, results_dict, idx)
+            if item:
+                results.append(item)
+                idx+=1
+        return results
+
+
+    def _folderitems(self, full_objects = False):
+        """
+        WARNING: :full_objects: could create a big performance hit.
         >>> portal = layer['portal']
         >>> portal_url = portal.absolute_url()
         >>> from plone.app.testing import SITE_OWNER_NAME
@@ -844,7 +957,7 @@ class BikaListingView(BrowserView):
         #self.contentsMethod = self.context.getFolderContents
         if not hasattr(self, 'contentsMethod'):
             self.contentsMethod = getToolByName(self.context, self.catalog)
-
+        # Setting up some attributes
         context = aq_inner(self.context)
         plone_layout = getMultiAdapter((context, self.request), name = u'plone_layout')
         plone_utils = getToolByName(context, 'plone_utils')
@@ -860,10 +973,16 @@ class BikaListingView(BrowserView):
             show_all = True
         else:
             show_all = False
+        # Creating a copy of the contentFilter dictionary in order to include
+        # the filter bar's filtering additions in the query. We don't want to
+        # modify contentFilter with those 'extra' filtering elements to be
+        # inculded in the.
         contentFilterTemp = copy.deepcopy(self.contentFilter)
         addition = self.get_filter_bar_queryaddition()
+        # Adding the extra filtering elements
         if addition:
             contentFilterTemp.update(addition)
+        # Check for 'and'/'or' logic queries
         if (hasattr(self, 'And') and self.And) \
            or (hasattr(self, 'Or') and self.Or):
             # if contentsMethod is capable, we do an AdvancedQuery.
