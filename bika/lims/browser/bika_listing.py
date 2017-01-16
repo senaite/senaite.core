@@ -837,6 +837,7 @@ class BikaListingView(BrowserView):
 
         :full_objects: a boolean, if True, each dictionary will contain an item
         with the cobject itself. item.get('obj') will return a object.
+        WARNING: :full_objects: could create a big performance hit!
         :classic: if True, the old way folderitems works will be executed. This
         function is mainly used to mantain the integrity with the old version.
         """
@@ -906,11 +907,11 @@ class BikaListingView(BrowserView):
             # doing it later in folderitems) and dealing with paging
             if not obj or not self.isItemAllowed(obj):
                 continue
-            import pdb; pdb.set_trace()
             modified = self.ulocalized_time(obj.modified()),
             # Building the dictionary with basic items
             results_dict = dict(
                 obj=obj,
+                url=obj.getURL(),
                 # a dict where the column name works as a key and the value is
                 # the name of the field related with the column. It is used
                 # when the name given to the column and the content field it
@@ -935,8 +936,7 @@ class BikaListingView(BrowserView):
                 idx+=1
         return results
 
-
-    def _folderitems(self, full_objects = False):
+    def _folderitems(self, full_objects=False):
         """
         WARNING: :full_objects: could create a big performance hit.
         >>> portal = layer['portal']
