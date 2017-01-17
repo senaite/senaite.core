@@ -146,6 +146,14 @@ schema = BikaSchema.copy() + Schema((
            label=_("Postal address"),
         ),
     ),
+    ComputedField(
+        'ObjectWorkflowStates',
+        expression='context.getObjectWorkflowStates()',
+        searchable=1,
+        widget=ComputedWidget(
+            visible=False
+        ),
+    ),
 ),
 )
 
@@ -218,6 +226,19 @@ class Person(BaseFolder):
         """ check if contact has user """
         return self.portal_membership.getMemberById(
             self.getUsername()) is not None
+
+    def getObjectWorkflowStates(self):
+        """
+        Returns a dictionary with the workflow id as key and workflow state as
+        value.
+        :return: {'review_state':'active',...}
+        """
+        workflow = getToolByName(self, 'portal_workflow')
+        states = {}
+        for w in workflow.getWorkflowsFor(self):
+            state = w._getWorkflowStateOf(self).id
+            states[w.state_var] = state
+        return states
 
     ### Removed these accessors to prevent confusion when LDAP is used
     # def getEmailAddress(self, **kw):

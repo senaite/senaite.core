@@ -908,10 +908,22 @@ class BikaListingView(BrowserView):
             if not obj or not self.isItemAllowed(obj):
                 continue
             modified = self.ulocalized_time(obj.modified()),
+            state_class = ''
+            states = obj.getObjectWorkflowStates
+            for w_id in states.keys():
+                state_class += "state-%s " % states.get(w_id, '')
             # Building the dictionary with basic items
             results_dict = dict(
                 obj=obj,
+                uid=obj.UID,
                 url=obj.getURL(),
+                id=obj.id,
+                title=obj.Title,
+                # To colour the list items by state
+                state_class=state_class,
+                review_state=obj.review_state,
+                # a list of names of fields that may be edited on this item
+                allow_edit=[],
                 # a dict where the column name works as a key and the value is
                 # the name of the field related with the column. It is used
                 # when the name given to the column and the content field it
@@ -927,13 +939,46 @@ class BikaListingView(BrowserView):
                 after={},
                 replace={},
             )
+            # Getting the state title, if the review_state doesn't have a title
+            # use the title of the first workflow found for the object
+            try:
+                rs = obj.review_state
+                st_title = workflow.getTitleForStateOnType(rs, obj.portal_type)
+                st_title = t(PMF(st_title))
+            except:
+                logger.warning(
+                    "Workflow title doesn't obtined for object %s" % obj.id)
+                rs = 'active'
+                st_title = None
+            for state_var, state in states.items():
+                if not st_title:
+                    st_title = workflow.getTitleForStateOnType(
+                        state, obj.portal_type)
+                results_dict[state_var] = state
+            results_dict['state_title'] = st_title
+            # extra classes for individual fields on this item
+            # { field_id : "css classes" }
+            results_dict['class'] = {}
+            # TODO: This trace of code should be implemented in analysis only
+            # obj_f=obj.getObject()
+            # for name, adapter in getAdapters((obj_f, ), IFieldIcons):
+            #     auid = obj.UID
+            #     if not auid:
+            #         continue
+            #     alerts = adapter()
+            #     if alerts and auid in alerts:
+            #         if auid in self.field_icons:
+            #             self.field_icons[auid].extend(alerts[auid])
+            #         else:
+            #             self.field_icons[auid] = alerts[auid]
+
             # The item basics filled. Delegate additional actions to folderitem
             # service. folderitem service is frequently overriden by child
             # objects
             item = self.folderitem(obj, results_dict, idx)
             if item:
                 results.append(item)
-                idx+=1
+                idx += 1
         return results
 
     def _folderitems(self, full_objects=False):

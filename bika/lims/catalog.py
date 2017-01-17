@@ -315,10 +315,12 @@ def _addIndex(catalog, index, indextype):
     if index not in catalog.indexes():
         try:
             catalog.addIndex(index, indextype)
-            logger.info('Catalog index %s added.' % index)
+            logger.info('Catalog index %s added to %s.' % (index, catalog.id))
             return True
         except:
-            logger.error('Catalog index %s error while adding.' % index)
+            logger.error(
+                'Catalog index %s error while adding to %s.'
+                % (index, catalog.id))
     return False
 
 
@@ -334,10 +336,11 @@ def _addColumn(cat, col):
     if col not in cat.schema():
         try:
             cat.addColumn(col)
-            logger.info('Column %s added.' % col)
+            logger.info('Column %s added to %s.' % (col, cat.id))
             return True
         except:
-            logger.error('Catalog column %s error while adding.' % col)
+            logger.error(
+                'Catalog column %s error while adding to %s.' % (col, cat.id))
     return False
 
 
@@ -352,10 +355,13 @@ def _delIndex(catalog, index):
     if index in catalog.indexes():
         try:
             catalog.delIndex(index, indextype)
-            logger.info('Catalog index %s deleted.' % index)
+            logger.info(
+                'Catalog index %s deleted from %s.' % (index, catalog.id))
             return True
         except:
-            logger.error('Catalog index %s error while deleting.' % index)
+            logger.error(
+                'Catalog index %s error while deleting from %s.'
+                % (index, catalog.id))
     return False
 
 
@@ -371,10 +377,12 @@ def _delColumn(cat, col):
     if col in cat.schema():
         try:
             cat.delColumn(col)
-            logger.info('Column %s deleted.' % col)
+            logger.info('Column %s deleted from %s.' % (col, cat.id))
             return True
         except:
-            logger.error('Catalog column %s error while deleting.' % col)
+            logger.error(
+                'Catalog column %s error while deleting from %s.'
+                % (col, cat.id))
     return False
 
 
