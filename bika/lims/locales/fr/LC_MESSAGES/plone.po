@@ -11,7 +11,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2016-12-09 15:30+0000\n"
+"POT-Creation-Date: 2017-01-17 08:44+0000\n"
 "PO-Revision-Date: 2016-12-07 17:36+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
 "Language-Team: French (http://www.transifex.com/bikalabs/bika-lims/language/fr/)\n"
@@ -251,6 +251,15 @@ msgstr ""
 msgid "Extracts"
 msgstr "Extractions"
 
+#: bika/lims/profiles/default/types/IdentifierType.xml
+msgid "Identifier Type"
+msgstr ""
+
+#: bika/lims/profiles/default/controlpanel.xml
+#: bika/lims/profiles/default/types/IdentifierTypes.xml
+msgid "Identifier Types"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Imports"
 msgstr "Importations"
@@ -258,6 +267,10 @@ msgstr "Importations"
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Instrument"
 msgstr "Instrument"
+
+#: bika/lims/profiles/default/controlpanel.xml
+msgid "Instrument Locations"
+msgstr ""
 
 #: bika/lims/profiles/default/types/InstrumentType.xml
 msgid "Instrument Type"
