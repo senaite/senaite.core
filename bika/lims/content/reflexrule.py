@@ -221,6 +221,7 @@ class ReflexRule(BaseContent):
                 ((isnumber(result) and isinstance(exp_val, str) and
                     exp_val == result) or
                     (isnumber(result) and len(exp_val) == 2 and
+                        isnumber(exp_val[0]) and isnumber(exp_val[1]) and
                         float(exp_val[0]) <= float(result) and
                         float(result) <= float(exp_val[1])))
             # Build a string and then use eval()
@@ -333,7 +334,7 @@ def doActionToAnalysis(base, action):
         (rule_num, rule_name, time)
     base_remark = base.getRemarks() + base_remark + '<br/> '
     base.setRemarks(base_remark)
-    # Setting the remarks to base analysis
+    # Setting the remarks to new analysis
     analysis_remark = "%s due to reflex rule number %s of '%s' at %s" % \
         (action_rule_name, rule_num, rule_name, time)
     analysis_remark = analysis.getRemarks() + analysis_remark + '<br/> '

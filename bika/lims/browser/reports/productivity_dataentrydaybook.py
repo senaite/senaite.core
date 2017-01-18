@@ -2,6 +2,7 @@
 #
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+from bika.lims.workflow import getTransitionDate
 
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
@@ -56,7 +57,7 @@ class Report(BrowserView):
             ar = ar.getObject()
             datecreated = ar.created()
             datereceived = ar.getDateReceived()
-            datepublished = ar.getDatePublished()
+            datepublished = getTransitionDate(ar, 'publish')
             receptionlag = 0
             publicationlag = 0
             anlcount = len(ar.getAnalyses())
@@ -81,7 +82,7 @@ class Report(BrowserView):
             datalines[ar.getRequestID()] = dataline
 
             totalreceivedcount += ar.getDateReceived() and 1 or 0
-            totalpublishedcount += ar.getDatePublished() and 1 or 0
+            totalpublishedcount += 1 if datepublished else 0
             totalanlcount += anlcount
             totalreceptionlag += receptionlag
             totalpublicationlag += publicationlag

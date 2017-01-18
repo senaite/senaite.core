@@ -67,6 +67,10 @@ def sortable_title_with_sort_key(instance):
             return "{:010.3f}{}".format(sort_key, service.Title())
         return service.Title()
 
+@indexer(IAnalysis)
+def getDepartmentUID(instance):
+    return instance.getService().getDepartment().UID()
+
 schema = BikaSchema.copy() + Schema((
     HistoryAwareReferenceField('Service',
         required=1,

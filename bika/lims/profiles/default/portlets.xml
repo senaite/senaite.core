@@ -80,6 +80,17 @@
     </assignment>
 
     <assignment
+        name="portlet_department_filter-pt"
+        category="context"
+        key="/"
+        manager="plone.rightcolumn"
+        type="portlets.Classic"
+        visible="True"
+        remove="True">
+    <property name="macro">portlet</property>
+    <property name="template">portlet_department_filter</property>
+    </assignment>
+    <assignment
         name="portlet_to_be_preserved-pt"
         category="context"
         key="/"

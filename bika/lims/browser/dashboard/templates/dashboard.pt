@@ -3,9 +3,16 @@
         i18n:domain="bika">
 
 <metal:content-title fill-slot="content-title">
+<a href=""
+   style="float:right;"
+   i18n:translate=""
+   tal:attributes="href string:${portal_url}?redirect_to=frontpage">
+    Switch to frontpage
+</a>
 <h1 class="documentFirstHeading" i18n:translate="">System Dashboard</h1>
 </metal:content-title>
 
+<a style="float:right;" href="#" i18n:translate="">Switch to Frontpage</a>
 <metal:content-description fill-slot="content-description">
 </metal:content-description>
 

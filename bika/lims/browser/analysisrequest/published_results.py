@@ -36,15 +36,11 @@ class AnalysisRequestPublishedResults(BikaListingView):
         self.contentFilter = {'portal_type': 'ARReport',
                               'sort_order': 'reverse'}
         self.context_actions = {}
-        self.show_sort_column = False
-        self.show_select_row = False
         self.show_select_column = True
         self.show_workflow_action_buttons = False
-        self.pagesize = 50
         self.form_id = 'published_results'
         self.icon = self.portal_url + "/++resource++bika.lims.images/report_big.png"
         self.title = self.context.translate(_("Published results"))
-        self.description = ""
         self.columns = {
             'Title': {'title': _('File')},
             'FileSize': {'title': _('Size')},
@@ -91,59 +87,78 @@ class AnalysisRequestPublishedResults(BikaListingView):
                         mapping={'retracted_request_id': par.getRequestID()})
             self.context.plone_utils.addPortalMessage(
                 self.context.translate(message), 'info')
+
+        # Printing workflow enabled?
+        # If not, remove the Column
+        self.printwfenabled = self.context.bika_setup.getPrintingWorkflowEnabled()
+        printed_colname = 'DatePrinted'
+        if not self.printwfenabled and printed_colname in self.columns:
+            # Remove "Printed" columns
+            del self.columns[printed_colname]
+            tmprvs = []
+            for rs in self.review_states:
+                tmprs = rs
+                tmprs['columns'] = [c for c in rs.get('columns', []) if
+                                    c != printed_colname]
+                tmprvs.append(tmprs)
+            self.review_states = tmprvs
+
         template = BikaListingView.__call__(self)
         return template
 
     def contentsMethod(self, contentFilter):
-        return self.context.objectValues('ARReport')
-
-    def folderitems(self):
-        items = super(AnalysisRequestPublishedResults, self).folderitems()
+        """
+        ARReport objects associated to the current Analysis request.
+        If the user is not a Manager or LabManager or Client, no items are
+        displayed.
+        """
+        allowedroles = ['Manager', 'LabManager', 'Client', 'LabClerk']
         pm = getToolByName(self.context, "portal_membership")
         member = pm.getAuthenticatedMember()
         roles = member.getRoles()
-        if 'Manager' not in roles \
-            and 'LabManager' not in roles \
-            and 'Client' not in roles:
-            return []
-        for x in range(len(items)):
-            if 'obj' in items[x]:
-                obj = items[x]['obj']
-                obj_url = obj.absolute_url()
-                pdf = obj.getPdf()
-                filesize = 0
-                title = _('Download')
-                anchor = "<a href='%s/at_download/Pdf'>%s</a>" % \
-                         (obj_url, _("Download"))
-                try:
-                    filesize = pdf.get_size()
-                    filesize = filesize / 1024 if filesize > 0 else 0
-                except:
-                    # POSKeyError: 'No blob file'
-                    # Show the record, but not the link
-                    title = _('Not available')
-                    anchor = title
-                items[x]['Title'] = title
-                items[x]['FileSize'] = '%sKb' % filesize
-                fmt_date = self.ulocalized_time(obj.created(), long_format=1)
-                items[x]['Date'] = fmt_date
-                fmt_date = self.ulocalized_time(obj.getDatePrinted(), long_format=1)
-                items[x]['DatePrinted'] = fmt_date
-                if obj.getDatePrinted() is None:
-                    items[x]['after']['DatePrinted']=("<img src='++resource++bika.lims.images/warning.png' title='%s'/>" %
-                                        (t(_("Has not been Printed."))))
-                items[x]['PublishedBy'] = self.user_fullname(obj.Creator())
-                recip = ''
-                for recipient in obj.getRecipients():
-                    email = recipient['EmailAddress']
-                    val = recipient['Fullname']
-                    if email:
-                        val = "<a href='mailto:%s'>%s</a>" % (email, val)
-                    if len(recip) == 0:
-                        recip = val
-                    else:
-                        recip += (", " + val)
+        allowed = [a for a in allowedroles if a in roles]
+        return self.context.objectValues('ARReport') if allowed else []
 
-                items[x]['replace']['Recipients'] = recip
-                items[x]['replace']['Title'] = anchor
-        return items
+    def folderitem(self, obj, item, index):
+        obj_url = obj.absolute_url()
+        pdf = obj.getPdf()
+        filesize = 0
+        title = _('Download')
+        anchor = "<a href='%s/at_download/Pdf'>%s</a>" % \
+                 (obj_url, _("Download"))
+        try:
+            filesize = pdf.get_size()
+            filesize = filesize / 1024 if filesize > 0 else 0
+        except:
+            # POSKeyError: 'No blob file'
+            # Show the record, but not the link
+            title = _('Not available')
+            anchor = title
+
+        item['Title'] = title
+        item['FileSize'] = '%sKb' % filesize
+        fmt_date = self.ulocalized_time(obj.created(), long_format=1)
+        item['Date'] = fmt_date
+        item['PublishedBy'] = self.user_fullname(obj.Creator())
+
+        if self.printwfenabled:
+            # The date when the Results Report was printed (if so)
+            item['DatePrinted'] = ''
+            fmt_date = obj.getDatePrinted() if hasattr(obj, 'getDatePrinted') else ''
+            if (fmt_date):
+                fmt_date = self.ulocalized_time(fmt_date, long_format=1)
+                item['DatePrinted'] = fmt_date
+                if obj.getDatePrinted() is None:
+                    item['after']['DatePrinted']=("<img src='++resource++bika.lims.images/warning.png' title='%s'/>" %
+                                            (t(_("Has not been Printed."))))
+
+        recip = []
+        for recipient in obj.getRecipients():
+            email = recipient['EmailAddress']
+            val = recipient['Fullname']
+            if email:
+                val = "<a href='mailto:%s'>%s</a>" % (email, val)
+            recip.append(val)
+        item['replace']['Recipients'] = ', '.join(recip)
+        item['replace']['Title'] = anchor
+        return item

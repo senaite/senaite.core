@@ -7,8 +7,10 @@ bika_analysisspecs
 bika_attachmenttypes
 bika_batchlabels
 bika_calculations
+bika_identifiertypes
 bika_instruments
 bika_instrumenttypes
+bika_instrumentlocations
 bika_labcontacts
 bika_containers
 bika_containertypes

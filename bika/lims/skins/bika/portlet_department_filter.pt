@@ -60,7 +60,7 @@
                     tal:condition="python: len(deps)<2"
                     tal:content="python: deps[0].Title if user_name=='admin' else deps[0].Title() if deps else ''"
                     >Department</label>
-            </dd>
+            </dd><br>
             <!-- The submit form button -->
             <dd class="portletFooter">
                 <input type="button" id="department_filter_submit" value="Filter"

@@ -16,7 +16,7 @@ from bika.lims.config import VERIFIED_STATES
 from bika.lims.interfaces import IInvoiceView
 from bika.lims.permissions import *
 from bika.lims.utils import to_utf8, isAttributeHidden, encode_header
-from bika.lims.workflow import doActionFor
+from bika.lims.workflow import doActionFor, getTransitionDate
 from DateTime import DateTime
 from Products.Archetypes import PloneMessageFactory as PMF
 from Products.CMFCore.utils import getToolByName
@@ -56,12 +56,9 @@ class InvoiceView(BrowserView):
         self.verified = verified
         self.request['verified'] = verified
         # Collect published date
-        datePublished = context.getDatePublished()
-        if datePublished is not None:
-            datePublished = self.ulocalized_time(
-                datePublished, long_format=1
-            )
-        self.datePublished = datePublished
+        self.datePublished = \
+            self.ulocalized_time(getTransitionDate(context, 'publish'),
+                                 long_format=1)
         # Collect received date
         dateReceived = context.getDateReceived()
         if dateReceived is not None:
@@ -98,11 +95,6 @@ class InvoiceView(BrowserView):
                 self.headers.append(
                     {'title': 'datePublished', 'value': self.datePublished})
 
-        #   <tal:published tal:condition="view/datePublished">
-        #       <th i18n:translate="">Date Published</th>
-        #       <td tal:content="view/datePublished"></td>
-        #   </tal:published>
-        #</tr>
         analyses = []
         profiles = []
         # Retrieve required data from analyses collection

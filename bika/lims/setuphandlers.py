@@ -10,8 +10,10 @@ from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone import PloneMessageFactory
+from Products.CMFPlone.utils import _createObjectByType
+
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from bika.lims.utils import t, tmpID
 from bika.lims import logger
 from bika.lims.config import *
 from bika.lims.permissions import *
@@ -81,8 +83,10 @@ class BikaGenerator:
                        'bika_containers',
                        'bika_containertypes',
                        'bika_preservations',
+                       'bika_identifiertypes',
                        'bika_instruments',
                        'bika_instrumenttypes',
+                       'bika_instrumentlocations',
                        'bika_analysisspecs',
                        'bika_analysisprofiles',
                        'bika_artemplates',
@@ -113,10 +117,6 @@ class BikaGenerator:
         lab.unmarkCreationFlag()
         lab.reindexObject()
 
-        # Move calendar and user action to bika
-# for action in portal.portal_controlpanel.listActions():
-# if action.id in ('UsersGroups', 'UsersGroups2', 'bika_calendar_tool'):
-# action.permissions = (ManageBika,)
 
     def setupGroupsAndRoles(self, portal):
         # add roles
@@ -525,6 +525,7 @@ class BikaGenerator:
         addIndex(bac, 'review_state', 'FieldIndex')
         addIndex(bac, 'worksheetanalysis_review_state', 'FieldIndex')
         addIndex(bac, 'cancellation_state', 'FieldIndex')
+        addIndex(bac, 'getDepartmentUID', 'KeywordIndex')
 
         addIndex(bac, 'getDueDate', 'DateIndex')
         addIndex(bac, 'getDateSampled', 'DateIndex')
@@ -614,7 +615,9 @@ class BikaGenerator:
         addIndex(bc, 'inactive_state', 'FieldIndex')
         addIndex(bc, 'worksheetanalysis_review_state', 'FieldIndex')
         addIndex(bc, 'cancellation_state', 'FieldIndex')
+        addIndex(bc, 'Identifiers', 'KeywordIndex')
 
+        addIndex(bc, 'getDepartmentUIDs', 'KeywordIndex')
         addIndex(bc, 'getAnalysisCategory', 'KeywordIndex')
         addIndex(bc, 'getAnalysisService', 'KeywordIndex')
         addIndex(bc, 'getAnalyst', 'FieldIndex')
@@ -708,8 +711,10 @@ class BikaGenerator:
         at.setCatalogsByType('SamplePoint', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('StorageLocation', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('SamplingDeviation', ['bika_setup_catalog', ])
-        at.setCatalogsByType('Instrument', ['bika_setup_catalog', ])
-        at.setCatalogsByType('InstrumentType', ['bika_setup_catalog', ])
+        at.setCatalogsByType('IdentifierType', ['bika_setup_catalog', ])
+        at.setCatalogsByType('Instrument', ['bika_setup_catalog', 'portal_catalog'])
+        at.setCatalogsByType('InstrumentType', ['bika_setup_catalog', 'portal_catalog'])
+        at.setCatalogsByType('InstrumentLocation', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('Method', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('Multifile', ['bika_setup_catalog'])
         at.setCatalogsByType('AttachmentType', ['bika_setup_catalog', ])
@@ -742,6 +747,7 @@ class BikaGenerator:
         addIndex(bsc, 'created', 'DateIndex')
         addIndex(bsc, 'Creator', 'FieldIndex')
         addIndex(bsc, 'getObjPositionInParent', 'GopipIndex')
+        addIndex(bc, 'Identifiers', 'KeywordIndex')
 
         addIndex(bsc, 'title', 'FieldIndex', 'Title')
         addIndex(bsc, 'sortable_title', 'FieldIndex')
@@ -755,6 +761,7 @@ class BikaGenerator:
         addIndex(bsc, 'getAnalyst', 'FieldIndex')
         addIndex(bsc, 'getInstrumentType', 'FieldIndex')
         addIndex(bsc, 'getInstrumentTypeName', 'FieldIndex')
+        addIndex(bsc, 'getInstrumentLocationName', 'FieldIndex')
         addIndex(bsc, 'getBlank', 'FieldIndex')
         addIndex(bsc, 'getCalculationTitle', 'FieldIndex')
         addIndex(bsc, 'getCalculationUID', 'FieldIndex')
@@ -813,6 +820,7 @@ class BikaGenerator:
         addColumn(bsc, 'getAccredited')
         addColumn(bsc, 'getInstrumentType')
         addColumn(bsc, 'getInstrumentTypeName')
+        addColumn(bsc, 'getInstrumentLocationName')
         addColumn(bsc, 'getBlank')
         addColumn(bsc, 'getCalculationTitle')
         addColumn(bsc, 'getCalculationUID')
@@ -869,6 +877,20 @@ class BikaGenerator:
             alsoProvides(obj, IHaveNoBreadCrumbs)
 
 
+def create_CAS_IdentifierType(portal):
+    """LIMS-1391 The CAS Nr IdentifierType is normally created by
+    setuphandlers during site initialisation.
+    """
+    bsc = getToolByName(portal, 'bika_catalog', None)
+    idtypes = bsc(portal_type = 'IdentifierType', title='CAS Nr')
+    if not idtypes:
+        folder = portal.bika_setup.bika_identifiertypes
+        idtype = _createObjectByType('IdentifierType', folder, tmpID())
+        idtype.processForm()
+        idtype.edit(title='CAS Nr',
+                    description='Chemical Abstracts Registry number',
+                    portal_types=['Analysis Service'])
+
 def setupVarious(context):
     """
     Final Bika import steps.
@@ -896,3 +918,5 @@ def setupVarious(context):
     setup.runImportStepFromProfile(
             'profile-plone.app.jquery:default', 'jsregistry')
     # setup.runImportStepFromProfile('profile-plone.app.jquerytools:default', 'jsregistry')
+
+    create_CAS_IdentifierType(site)

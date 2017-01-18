@@ -41,5 +41,12 @@ $(document).ready(function(){
           this.value='';
       }
     });
+    $('[datepicker_nofuture="1"]').change(function() {
+      if (new Date(this.value)>new Date()) {
+          alert("Please enter valid date");
+          this.text='';
+          this.value='';
+      }
+    });
 });
 });

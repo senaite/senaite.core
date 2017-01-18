@@ -55,8 +55,7 @@ class Test_ShowPrices(BikaFunctionalTestCase):
         transaction.commit()
 
     def tearDown(self):
-        super(Test_ShowPrices, self).setUp()
-        login(self.portal, TEST_USER_NAME)
+        super(Test_ShowPrices, self).tearDown()
 
     def test_default_view_does_not_show_cancelled_items(self):
         url = self.portal.analysisrequests.absolute_url()
