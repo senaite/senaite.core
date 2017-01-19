@@ -99,7 +99,7 @@
     <div class="sample">
         <table cellpadding="0" cellspacing="0" border="0">
             <tr>
-                <td class="label" i8n:translate="">Sample type</td>
+                <td class="label" i18n:translate="">Sample type</td>
                 <td tal:content="python: sample.getSampleType().Title()"></td>
                 <td class="label" i18n:translate="">Date collected</td>
                 <td tal:content="python:plone_view.toLocalizedTime(sample.getDateSampled())"></td>
@@ -122,7 +122,7 @@
     </div>
 
     <div class="reasons">
-        <h3 i8n:translate="">Reasons for rejection</h3>
+        <h3 i18n:translate="">Reasons for rejection</h3>
         <div class="reasons-list">
             <tal:reason repeat="reason python:r for r in labreasons">
             <span
