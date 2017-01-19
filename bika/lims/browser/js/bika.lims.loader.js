@@ -181,6 +181,9 @@ window.bika.lims.controllers =  {
     ".portaltype-reflexrule.template-base_edit":
         ['ReflexRuleEditView'],
 
+    ".template-labcontacts.portaltype-department":
+        ['DepartmentLabContactsView'],
+
     // Reports folder (not AR Reports)
     ".portaltype-reportfolder":
         ['ReportFolderView'],
