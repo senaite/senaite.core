@@ -37,13 +37,14 @@ from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.browser.widgets import SelectionWidget
 from bika.lims.browser.widgets import RejectionWidget
 from bika.lims.workflow import skip, isBasicTransitionAllowed, getTransitionDate
+from bika.lims.workflow import getTransitionUsers
 from bika.lims.workflow import doActionFor
 from decimal import Decimal
 from zope.interface import implements
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import getUsers, dicts_to_dict
 from bika.lims.utils.analysisrequest import notify_rejection
-
+from bika.lims import logger
 from bika.lims.browser.fields import DateTimeField
 from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
 
@@ -57,53 +58,13 @@ except ImportError:
     from zope.app.component.hooks import getSite
 
 
-@indexer(IAnalysisRequest)
-def Priority(instance):
-    priority = instance.getPriority()
-    if priority:
-        return priority.getSortKey()
-
-
-@indexer(IAnalysisRequest)
-def BatchUID(instance):
-    batch = instance.getBatch()
-    if batch:
-        return batch.UID()
-
-
-@indexer(IAnalysisRequest)
-def getDatePublished(instance):
-    return getTransitionDate(instance, 'publish')
-
-
-@indexer(IAnalysisRequest)
-def SamplingRoundUID(instance):
-    sr = instance.getSamplingRound()
-    if sr:
-        return sr.UID()
-
-@indexer(IAnalysisRequest)
-def getDepartmentUIDs(instance):
-    """ Returns department UIDs assigned to the Analyses
-        from this Analysis Request
-    """
-    ans = [an.getObject() for an in instance.getAnalyses()]
-    depts = [an.getService().getDepartment().UID() for an in ans if an.getService().getDepartment()]
-    return depts
-
 schema = BikaSchema.copy() + Schema((
-    StringField(
+    # The ID assigned to the client's request by the lab
+    ComputedField(
         'RequestID',
         searchable=True,
-        mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
-        widget=StringWidget(
-            label=_("Request ID"),
-            description=_("The ID assigned to the client's request by the lab"),
-            visible={'view': 'invisible',
-                     'edit': 'invisible'},
-        ),
+        expression="here.getId()",
+        widget=ComputedWidget(visible=False),
     ),
     ReferenceField(
         'Contact',
@@ -348,6 +309,13 @@ schema = BikaSchema.copy() + Schema((
             showOn=True,
         ),
     ),
+    ComputedField(
+        'BatchUID',
+        expression='here.getBatch().UID() if here.getBatch() else ""',
+        widget=ComputedWidget(
+            visible=False,
+        ),
+    ),
     ReferenceField(
         'SamplingRound',
         allowed_types=('SamplingRound',),
@@ -530,7 +498,7 @@ schema = BikaSchema.copy() + Schema((
             showOn=True,
         ),
     ),
-    # Sample field
+    # This field is a mirror of a field in Sample with the same name
     DateTimeField(
         'DateSampled',
         mode="rw",
@@ -563,7 +531,7 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
         ),
     ),
-    # Sample field
+    # This field is a mirror of a field in Sample with the same name
     StringField(
         'Sampler',
         mode="rw",
@@ -622,7 +590,7 @@ schema = BikaSchema.copy() + Schema((
             },
             render_own_label=True,
         ),
-    ),
+    ),# This field is a mirror of a Sample field with the same name
     DateTimeField(
         'SamplingDate',
         required=1,
@@ -905,7 +873,6 @@ schema = BikaSchema.copy() + Schema((
     ),
     StringField(
         'ClientOrderNumber',
-        searchable=True,
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
@@ -939,7 +906,6 @@ schema = BikaSchema.copy() + Schema((
     # Sample field
     StringField(
         'ClientReference',
-        searchable=True,
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
@@ -974,7 +940,6 @@ schema = BikaSchema.copy() + Schema((
     # Sample field
     StringField(
         'ClientSampleID',
-        searchable=True,
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
@@ -1336,6 +1301,12 @@ schema = BikaSchema.copy() + Schema((
             },
         )
     ),
+    # Another way to obtain a transition date is using getTransitionDate
+    # function. We are using a DateTimeField/Widget here because in some
+    # cases the user may want to change the Received Date.
+    # AnalysisRequest and Sample's DateReceived fields needn't to have
+    # the same value.
+    # This field is updated in workflow_script_receive method.
     DateTimeField(
         'DateReceived',
         mode="rw",
@@ -1398,7 +1369,6 @@ schema = BikaSchema.copy() + Schema((
     ),
     TextField(
         'Remarks',
-        searchable=True,
         default_content_type='text/x-web-intelligent',
         allowable_content_types=('text/plain',),
         default_output_type="text/plain",
@@ -1438,7 +1408,6 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField(
         'ClientUID',
-        searchable=True,
         expression='here.aq_parent.UID()',
         widget=ComputedWidget(
             visible=False,
@@ -1446,7 +1415,6 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField(
         'SampleTypeTitle',
-        searchable=True,
         expression="here.getSampleType().Title() if here.getSampleType() "
                    "else ''",
         widget=ComputedWidget(
@@ -1455,7 +1423,6 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField(
         'SamplePointTitle',
-        searchable=True,
         expression="here.getSamplePoint().Title() if here.getSamplePoint() "
                    "else ''",
         widget=ComputedWidget(
@@ -1498,6 +1465,46 @@ schema = BikaSchema.copy() + Schema((
         widget=ComputedWidget(
             visible=False,
         ),
+    ),
+    # Returns department UIDs assigned to the Analyses
+    # from this Analysis Request
+    ComputedField(
+        'DepartmentUIDs',
+        expression='here.getDepartmentUIDs',
+        default='',
+        widget=ComputedWidget(
+            visible=False,
+        ),
+    ),
+    ComputedField(
+        'ReceivedBy',
+        expression='here.getReceivedBy',
+        default='',
+        widget=ComputedWidget(visible=False,),
+    ),
+    ComputedField(
+        'DateVerified',
+        expression='here.getDateVerified',
+        default='',
+        widget=ComputedWidget(visible=False,),
+    ),
+    ComputedField(
+        'DatePublished',
+        expression='here.getDatePublished',
+        default='',
+        widget=ComputedWidget(visible=False,),
+    ),
+    ComputedField(
+        'Priority',
+        searchable=True,
+        expression="here.getPriority().getSortKey() if here.getPriority() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'SamplingRoundUID',
+        searchable=True,
+        expression="here.getSamplingRound().UID() if here.getSamplingRound() else ''",
+        widget=ComputedWidget(visible=False),
     ),
     ReferenceField(
         'ChildAnalysisRequest',
@@ -1608,7 +1615,6 @@ schema = BikaSchema.copy() + Schema((
     # ResultsInterpretationDepts (due to LIMS-1628)
     TextField(
         'ResultsInterpretation',
-        searchable=True,
         mode="rw",
         default_content_type='text/html',
         # Input content type for the textfield
@@ -1646,7 +1652,6 @@ schema = BikaSchema.copy() + Schema((
                  ),
     StringField(
         'Printed',
-        searchable=True,
         mode="rw",
         read_permission=permissions.View,
         widget=StringWidget(
@@ -1698,18 +1703,13 @@ class AnalysisRequest(BaseFolder):
         from bika.lims.catalog import getCatalog
         return getCatalog(self)
 
-    def getRequestID(self):
-        """ Return the id as RequestID
-        """
-        return safe_unicode(self.getId()).encode('utf-8')
-
     def Title(self):
         """ Return the Request ID as title """
-        return self.getRequestID()
+        return self.getId()()
 
     def Description(self):
         """ Return searchable data as Description """
-        descr = " ".join((self.getRequestID(), self.aq_parent.Title()))
+        descr = " ".join((self.getId()(), self.aq_parent.Title()))
         return safe_unicode(descr).encode('utf-8')
 
     def getClient(self):
@@ -2453,6 +2453,15 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample and value:
             sample.setSamplingDate(value)
+            self.Schema()['DateSampled'].set(self, value)
+        elif not sample:
+            logger.warning(
+                "setSamplingDate has failed for Analysis Request %s because "
+                "it hasn't got a sample." % self.id)
+        else:
+            logger.warning(
+                "setSamplingDate has failed for Analysis Request %s because "
+                "'value' doesn't have a value'." % self.id)
 
     security.declarePublic('getSamplingDate')
 
@@ -2460,6 +2469,11 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getSamplingDate()
+        else:
+            logger.warning(
+                "getSamplingDate has failed for Analysis Request %s because "
+                "it hasn't got a sample." % self.id)
+            return ''
 
     security.declarePublic('setSampler')
 
@@ -2467,7 +2481,15 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample and value:
             sample.setSampler(value)
-        self.Schema()['Sampler'].set(self, value)
+            self.Schema()['Sampler'].set(self, value)
+        elif not sample:
+            logger.warning(
+                "setSampler has failed for Analysis Request %s because "
+                "it hasn't got a sample." % self.id)
+        else:
+            logger.warning(
+                "setSampler has failed for Analysis Request %s because "
+                "'value' doesn't have a value'." % self.id)
 
     security.declarePublic('getSampler')
 
@@ -2475,7 +2497,11 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getSampler()
-        return self.Schema().getField('Sampler').get(self)
+        else:
+            logger.warning(
+                "getSampler has failed for Analysis Request %s because "
+                "it hasn't got a sample." % self.id)
+            return ''
 
     security.declarePublic('setDateSampled')
 
@@ -2483,7 +2509,15 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample and value:
             sample.setDateSampled(value)
-        self.Schema()['DateSampled'].set(self, value)
+            self.Schema()['DateSampled'].set(self, value)
+        elif not sample:
+            logger.warning(
+                "setDateSampled has failed for Analysis Request %s because "
+                "it hasn't got a sample." % self.id)
+        else:
+            logger.warning(
+                "setDateSampled has failed for Analysis Request %s because "
+                "'value' doesn't have a value'." % self.id)
 
     security.declarePublic('getDateSampled')
 
@@ -2491,7 +2525,11 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getDateSampled()
-        return self.Schema().getField('DateSampled').get(self)
+        else:
+            logger.warning(
+                "getDateSampled has failed for Analysis Request %s because "
+                "it hasn't got a sample." % self.id)
+            return ''
 
     security.declarePublic('getDatePublished')
 
@@ -2836,6 +2874,32 @@ class AnalysisRequest(BaseFolder):
             return mtool.getMemberById(actor)
         return None
 
+    # TODO-performance: this function must be optimized
+    def getDepartmentUIDs(self):
+        """ Returns department UIDs assigned to the Analyses
+            from this Analysis Request
+        """
+        # This will be imporved using brains
+        ans = [an.getObject() for an in instance.getAnalyses()]
+        depts = [
+            an.getService().getDepartment().UID()
+            for an in ans if an.getService().getDepartment()]
+        return depts
+
+    def getReceivedBy(self):
+        """
+        Returns the User who received the analysis request.
+        :return: the user id
+        """
+        user = getTransitionUsers(self, 'receive', last_user=True)
+        return user[0] if user else ''
+
+    def getDateVerified(self):
+        """
+        Returns the user id who has verified the analysis request.
+        """
+        return getTransitionDate(self, 'verify')
+
     def isVerifiable(self):
         """
         Checks it the current Analysis Request can be verified. This is, its
@@ -2972,7 +3036,8 @@ class AnalysisRequest(BaseFolder):
         workflow = getToolByName(self, 'portal_workflow')
         # noinspection PyCallingNonCallable
         self.setDateReceived(DateTime())
-        self.reindexObject(idxs=["review_state", "getDateReceived", ])
+        self.reindexObject(idxs=[
+            "review_state", "getDateReceived", "getReceivedBy" ])
         # receive the AR's sample
         sample = self.getSample()
         if not skip(sample, 'receive', peek=True):
@@ -3052,7 +3117,7 @@ class AnalysisRequest(BaseFolder):
     def workflow_script_verify(self):
         if skip(self, "verify"):
             return
-        self.reindexObject(idxs=["review_state", ])
+        self.reindexObject(idxs=["review_state", "getDateVerified"])
         if "verify all analyses" not in self.REQUEST['workflow_skiplist']:
             # verify all analyses in this AR.
             analyses = self.getAnalyses(review_state='to_be_verified')
@@ -3083,7 +3148,8 @@ class AnalysisRequest(BaseFolder):
     def workflow_script_publish(self):
         if skip(self, "publish"):
             return
-        self.reindexObject(idxs=["review_state", "getDatePublished", ])
+        self.reindexObject(idxs=[
+            "review_state", "getDatePublished", "getDatePublished"])
         if "publish all analyses" not in self.REQUEST['workflow_skiplist']:
             # publish all analyses in this AR. (except not requested ones)
             analyses = self.getAnalyses(review_state='verified')

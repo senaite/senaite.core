@@ -29,12 +29,27 @@ _catalogs_definition = {
         'indexes': {
             # Minimum indexes for bika_listing
             'id': 'FieldIndex',
+            # TODO: Can be removed?
+            'getId': 'FieldIndex',
             'created': 'DateIndex',
+            'Creator': 'FieldIndex',
             'sortable_title': 'FieldIndex',
             'review_state': 'FieldIndex',
             'inactive_state': 'FieldIndex',
+            'cancellation_state': 'FieldIndex',
             'portal_type': 'FieldIndex',
             'UID': 'FieldIndex',
+            'getBatchUID': 'FieldIndex',
+            'getClientUID': 'FieldIndex',
+            'getSampleUID': 'FieldIndex',
+            'getDepartmentUIDs': 'KeywordIndex',
+            'getDateSampled': 'DateIndex',
+            'getSamplingDate': 'DateIndex',
+            'getSampler': 'FieldIndex',
+            'getDateReceived': 'DateIndex',
+            'getReceivedBy': 'FieldIndex',
+            'getDateVerified': 'DateIndex',
+            'getDatePublished': 'DateIndex'
         },
         'columns': [
             'UID',

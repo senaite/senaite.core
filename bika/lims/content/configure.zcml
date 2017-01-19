@@ -7,11 +7,6 @@
     i18n_domain="bika">
 
     <adapter name="BatchDate" factory=".batch.BatchDate" />
-    <adapter name="Priority" factory=".analysisrequest.Priority" />
-    <adapter name="BatchUID" factory=".analysisrequest.BatchUID" />
-    <adapter name="getDatePublished" factory=".analysisrequest.getDatePublished" />
-    <adapter name="SamplingRoundUID" factory=".analysisrequest.SamplingRoundUID" />
-    <adapter name="getDepartmentUIDs" factory=".analysisrequest.getDepartmentUIDs" />
     <adapter name="getDepartmentUID" factory=".analysis.getDepartmentUID" />
     <adapter name="Priority" factory=".analysis.Priority" />
     <adapter name="Priority" factory=".worksheet.Priority" />

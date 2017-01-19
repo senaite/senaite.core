@@ -148,6 +148,34 @@ def getTransitionDate(obj, action_id):
     return None
 
 
+def getTransitionUsers(obj, action_id, last_user=False):
+    """
+    This function returns a list with the users who have done the transition.
+    :action_id: a sring as the transition id.
+    :last_user: a boolean to return only the last user triggering the
+        transition or all of them.
+    :return: a list of user ids.
+    """
+    workflow = getToolByName(obj, 'portal_workflow')
+    users = []
+    try:
+        # https://jira.bikalabs.com/browse/LIMS-2242:
+        # Sometimes the workflow history is inexplicably missing!
+        review_history = list(workflow.getInfoFor(obj, 'review_history'))
+    except WorkflowException:
+        logger.error(
+            "workflow history is inexplicably missing."
+            " https://jira.bikalabs.com/browse/LIMS-2242")
+        return users
+    # invert the list, so we always see the most recent matching event
+    review_history.reverse()
+    for event in review_history:
+        if event.get('action', '') == action_id:
+            value = event.get('actor', '')
+            users.append(value)
+            if last_user:
+                return users
+    return users
 
 # Enumeration of the available status flows
 StateFlow = enum(review='review_state',
