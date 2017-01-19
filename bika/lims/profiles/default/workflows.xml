@@ -367,7 +367,7 @@
 
   <type type_id="Department">
     <bound-workflow workflow_id="bika_inactive_workflow"/>
-  </type
+  </type>
 
  </bindings>
 </object>
