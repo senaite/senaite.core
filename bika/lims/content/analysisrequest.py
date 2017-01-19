@@ -1820,14 +1820,7 @@ class AnalysisRequest(BaseFolder):
         """ Return all manager info of responsible departments """
         managers = {}
         departments = []
-        for analysis in self.objectValues('Analysis'):
-            department = analysis.getService().getDepartment()
-            if department is None:
-                continue
-            department_id = department.getId()
-            if department_id in departments:
-                continue
-            departments.append(department_id)
+        for department in self.getDepartments():
             manager = department.getManager()
             if manager is None:
                 continue
@@ -1866,15 +1859,7 @@ class AnalysisRequest(BaseFolder):
         """ Return all managers of responsible departments """
         manager_ids = []
         manager_list = []
-        departments = []
-        for analysis in self.objectValues('Analysis'):
-            department = analysis.getService().getDepartment()
-            if department is None:
-                continue
-            department_id = department.getId()
-            if department_id in departments:
-                continue
-            departments.append(department_id)
+        for department in self.getDepartments():
             manager = department.getManager()
             if manager is None:
                 continue
@@ -1882,7 +1867,6 @@ class AnalysisRequest(BaseFolder):
             if manager_id not in manager_ids:
                 manager_ids.append(manager_id)
                 manager_list.append(manager)
-
         return manager_list
 
     security.declareProtected(View, 'getLate')
