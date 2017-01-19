@@ -49,9 +49,15 @@ class ARAnalysesField(ObjectField):
         """
 
         full_objects = False
+        # If get_reflexed is false don't return the analyses that have been
+        # reflexed, only the final ones
+        get_reflexed = True
         if 'full_objects' in kwargs:
             full_objects = kwargs['full_objects']
             del kwargs['full_objects']
+        if 'get_reflexed' in kwargs:
+            get_reflexed = kwargs['get_reflexed']
+            del kwargs['get_reflexed']
 
         if 'retracted' in kwargs:
             retracted = kwargs['retracted']
@@ -69,10 +75,21 @@ class ARAnalysesField(ObjectField):
         contentFilter['path'] = {'query': "/".join(instance.getPhysicalPath()),
                                  'level': 0}
         analyses = bac(contentFilter)
-        if not retracted:
-            analyses = [a for a in analyses if a.review_state != 'retracted']
-        if full_objects:
-            analyses = [a.getObject() for a in analyses]
+        if not retracted or full_objects or not get_reflexed:
+            analyses_filtered = []
+            for a in analyses:
+                if not retracted and a.review_state == 'retracted':
+                    continue
+                if full_objects or not get_reflexed:
+                    a_obj = a.getObject()
+                    # Check if analysis has been reflexed
+                    if not get_reflexed and \
+                            a_obj.getReflexRuleActionsTriggered() != '':
+                        continue
+                    if full_objects:
+                        a = a_obj
+                analyses_filtered.append(a)
+            analyses = analyses_filtered
         return analyses
 
     security.declarePrivate('set')
