@@ -39,7 +39,7 @@
   <include file="supplyorderfolder.zcml"/>
   <include file="viewlets.zcml"/>
   <include file="arimports.zcml"/>
-  <include file="worksheettemplate.zcml"/>    
+  <include file="worksheettemplate.zcml"/>
 
   <include package=".analysisrequest"/>
   <include package=".batch"/>
