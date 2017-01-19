@@ -346,6 +346,7 @@ schema = BikaSchema.copy() + Schema((
                      'sample_received':   {'view': 'visible', 'edit': 'invisible'},
                      'expired':           {'view': 'visible', 'edit': 'invisible'},
                      'disposed':          {'view': 'visible', 'edit': 'invisible'},
+                     'rejected':          {'view': 'visible', 'edit': 'invisible'},
                      },
             render_own_label=True,
         ),
@@ -977,6 +978,18 @@ class Sample(BaseFolder, HistoryAwareMixin):
                 ar_state = workflow.getInfoFor(ar, 'cancellation_state')
                 if ar_state == 'active':
                     workflow.doActionFor(ar, 'cancel')
+
+    def workflow_script_reject(self):
+        workflow = getToolByName(self, 'portal_workflow')
+        for ar in self.getAnalysisRequests():
+            if workflow.getInfoFor(ar, 'review_state') != 'rejected':
+                # Setting the rejection reasons in ar
+                ar.setRejectionReasons(self.getRejectionReasons())
+                workflow.doActionFor(ar, "reject")
+        parts = self.objectValues('SamplePartition')
+        for part in parts:
+            if workflow.getInfoFor(part, 'review_state') != 'rejected':
+                workflow.doActionFor(part, "reject")
 
     def workflow_script_schedule_sampling(self):
         """
