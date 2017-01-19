@@ -105,13 +105,14 @@ window.bika.lims.controllers =  {
     // Analysis Requests
     ".portaltype-analysisrequest":
         ['SampleView',
-         'AnalysisRequestView'],
+         'AnalysisRequestView',
+         'RejectionKickOff',],
 
     ".portaltype-analysisrequest.template-base_view":
         ['WorksheetManageResultsView',
          'AnalysisRequestViewView',
-         'RejectionKickOff',
-         'AnalysisRequestManageResultsView'],
+         'AnalysisRequestManageResultsView',
+         'RejectionKickOff',],
 
     ".portaltype-analysisrequest.template-manage_results":
         ['WorksheetManageResultsView',
