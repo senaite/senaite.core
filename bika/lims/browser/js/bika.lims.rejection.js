@@ -119,7 +119,12 @@
          // Makes all the steps needed to reject the ar or sample
          var requestdata = {};
          //save the rejection widget's values
-         var url = window.location.href.replace('/base_view', '');
+         var url = window.location.href.replace('/base_view', '')
+            .replace('/base_view', '')
+            .replace('/analyses', '')
+            .replace('/manage_results', '')
+            .replace('/not_requested', '')
+            .replace('/log', '');
          var obj_path = url.replace(window.portal_url, '');
          var redirect_state = $("a#workflow-transition-reject").attr('href');
          // requestdata should has the format  {fieldname=fieldvalue}
