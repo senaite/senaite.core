@@ -6,6 +6,7 @@ HEALTH-567: Nuclicens Interface not working well
 HEALTH-360: Enforce State (Province) and District if Zimbabwe is selected
 HEALTH-364: Added country/province/district columns to client listing table
 LIMS-2477: Reference Analysis has no dependencies; remove guard that assumes it does
+LIMS-2465: Not possible to translate Bika Listing Table Workflow Action Buttons
 LIMS-1391: Add configurable identifier types (CAS# for AnalysisService)
 LIMS-2466: Central Instrument Location Management
 LIMS-2357: Custom Landing Page and Link to switch between the Front Page and Dashboard

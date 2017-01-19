@@ -49,10 +49,10 @@ class ARAnalysesField(ObjectField):
         """
 
         full_objects = False
-        # Has get to return the reflexed analyses? If get_reflexed is false
-        # don't return the analyses which has been reflexed, only the final
-        # ones
+        # If get_reflexed is false don't return the analyses that have been
+        # reflexed, only the final ones
         get_reflexed = True
+
         if 'full_objects' in kwargs:
             full_objects = kwargs['full_objects']
             del kwargs['full_objects']

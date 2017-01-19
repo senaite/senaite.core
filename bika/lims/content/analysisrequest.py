@@ -1889,7 +1889,6 @@ class AnalysisRequest(BaseFolder):
             if manager_id not in manager_ids:
                 manager_ids.append(manager_id)
                 manager_list.append(manager)
-
         return manager_list
 
     security.declareProtected(View, 'getLate')

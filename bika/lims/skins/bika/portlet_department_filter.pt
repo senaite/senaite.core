@@ -46,7 +46,6 @@
                 <input type="checkbox"
                     tal:define="dep_name python:dep.Title if user_name=='admin' else dep.Title();
                                 dep_uid python: dep.UID if user_name=='admin' else dep.UID()"
-                    tal:content="python: dep_name"
                     tal:attributes="
                         value python: dep_uid;
                         name python: 'chb_deps_'+ dep_name;
@@ -64,7 +63,7 @@
             <!-- The submit form button -->
             <dd class="portletFooter">
                 <input type="button" id="department_filter_submit" value="Filter"
-                  tal:condition="python: len(deps)>1">
+                  tal:condition="python: len(deps)>1"/>
             </dd>
         </form>
     </dl>
