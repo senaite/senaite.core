@@ -24,6 +24,8 @@ from zope.interface import alsoProvides
 from Products.CMFEditions.Permissions import ApplyVersionControl
 from Products.CMFEditions.Permissions import SaveNewVersion
 from Products.CMFEditions.Permissions import AccessPreviousVersions
+from bika.lims.catalog import setup_catalogs
+from bika.lims.catalog import getCatalogDefinitions
 
 
 class Empty:
@@ -588,7 +590,6 @@ class BikaGenerator:
 
         at = getToolByName(portal, 'archetype_tool')
         at.setCatalogsByType('Batch', ['bika_catalog', 'portal_catalog'])
-        at.setCatalogsByType('AnalysisRequest', ['bika_catalog', 'portal_catalog'])
         at.setCatalogsByType('Sample', ['bika_catalog', 'portal_catalog'])
         at.setCatalogsByType('SamplePartition', ['bika_catalog', 'portal_catalog'])
         at.setCatalogsByType('ReferenceSample', ['bika_catalog', 'portal_catalog'])
@@ -862,6 +863,9 @@ class BikaGenerator:
         addIndex(pc, 'Analyst', 'FieldIndex')
         addIndex(pc, 'worksheettemplateUID', 'FieldIndex')
         addColumn(pc, 'Analyst')
+
+        # CATALOG_ANALYSIS_REQUEST
+        setup_catalogs(portal, getCatalogDefinitions())
 
     def setupTopLevelFolders(self, context):
         workflow = getToolByName(context, "portal_workflow")

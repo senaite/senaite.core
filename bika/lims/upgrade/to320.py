@@ -14,6 +14,8 @@ from Products.CMFPlone.utils import _createObjectByType
 from bika.lims.utils import tmpID
 from bika.lims.permissions import *
 from bika.lims.utils import tmpID
+from bika.lims.catalog import setup_catalogs
+from bika.lims.catalog import getCatalogDefinitions
 
 
 def upgrade(tool):
@@ -41,6 +43,7 @@ def upgrade(tool):
     setup.runImportStepFromProfile('profile-bika.lims:default', 'catalog')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'propertiestool')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'skins')
+    setup.runImportStepFromProfile('profile-bika.health:default', 'toolset')
     setup.runImportStepFromProfile(
         'profile-bika.lims:default', 'portlets', run_dependencies=False)
 
@@ -81,6 +84,11 @@ def upgrade(tool):
     # Clean and rebuild affected catalogs (if required)
     logger.info("Cleaning and rebuilding...")
     cleanAndRebuildIfNeeded(portal)
+
+    # Updateing lims catalogs if there is any change in them
+    logger.info("Updateing catalogs if needed...")
+    setup_catalogs(portal, getCatalogDefinitions())
+    logger.info("Catalogs updated")
 
     return True
 

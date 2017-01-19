@@ -12,10 +12,47 @@ from Products.ZCatalog.ZCatalog import ZCatalog
 from bika.lims.interfaces import IBikaCatalog
 from bika.lims.interfaces import IBikaAnalysisCatalog
 from bika.lims.interfaces import IBikaSetupCatalog
+from bika.lims.interfaces import IBikaCatalogAnalysisRequestListing
 from bika.lims import logger
 import sys
 import traceback
 from zope.interface import implements
+
+
+# Using a variable to avoid plain strings in code
+CATALOG_ANALYSIS_REQUEST_LISTING = 'bika_catalog_analysisrequest_listing'
+
+_catalogs_definition = {
+    # This catalog contains the metacolumns to list patients in bikalisting
+    CATALOG_ANALYSIS_REQUEST_LISTING: {
+        'types':   ['AnalysisRequest', ],
+        'indexes': {
+            # Minimum indexes for bika_listing
+            'id': 'FieldIndex',
+            'created': 'DateIndex',
+            'sortable_title': 'FieldIndex',
+            'review_state': 'FieldIndex',
+            'inactive_state': 'FieldIndex',
+            'portal_type': 'FieldIndex',
+            'UID': 'FieldIndex',
+        },
+        'columns': [
+            'UID',
+            'Title',
+            'review_state',
+            'inactive_state',
+            'getObjectWorkflowStates',
+            'getPhysicalPath',
+        ]
+    }
+}
+
+
+def getCatalogDefinitions():
+    """
+    Returns a dictionary with catalog definitions
+    """
+    return _catalogs_definition
 
 
 def getCatalog(instance, field='UID'):
@@ -157,6 +194,44 @@ class BikaSetupCatalog(CatalogTool):
                                 apply_func=indexObject)
 
 InitializeClass(BikaSetupCatalog)
+
+
+class BikaCatalogAnalysisRequestListing(CatalogTool):
+    """
+    Catalog to list analysis requests in BikaListing
+    """
+    implements(IBikaCatalogAnalysisRequestListing)
+    title = 'Bika Catalog Analysis Request Listing'
+    id = CATALOG_ANALYSIS_REQUEST_LISTING
+    portal_type = meta_type = 'BikaCatalogAnalysisRequestListing'
+    plone_tool = 1
+    security = ClassSecurityInfo()
+    _properties = (
+      {'id': 'title', 'type': 'string', 'mode': 'w'},)
+
+    def __init__(self):
+        ZCatalog.__init__(self, self.id)
+
+    security.declareProtected(ManagePortal, 'clearFindAndRebuild')
+
+    def clearFindAndRebuild(self):
+        """Empties catalog, then finds all contentish objects (i.e. objects
+           with an indexObject method), and reindexes them.
+           This may take a long time.
+        """
+        def indexObject(obj, path):
+            self.reindexObject(obj)
+        at = getToolByName(self, 'archetype_tool')
+        types = [k for k, v in at.catalog_map.items()
+                 if self.id in v]
+        self.manage_catalogClear()
+        portal = getToolByName(self, 'portal_url').getPortalObject()
+        portal.ZopeFindAndApply(
+            portal,
+            obj_metatypes=types,
+            search_sub=True,
+            apply_func=indexObject)
+InitializeClass(BikaCatalogAnalysisRequestListing)
 
 
 def setup_catalogs(portal, catalogs_definition):
