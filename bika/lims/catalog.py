@@ -35,7 +35,6 @@ _catalogs_definition = {
             'Creator': 'FieldIndex',
             'sortable_title': 'FieldIndex',
             'review_state': 'FieldIndex',
-            'inactive_state': 'FieldIndex',
             'cancellation_state': 'FieldIndex',
             'portal_type': 'FieldIndex',
             'UID': 'FieldIndex',
@@ -55,7 +54,6 @@ _catalogs_definition = {
             'UID',
             'Title',
             'review_state',
-            'inactive_state',
             'getObjectWorkflowStates',
             'getPhysicalPath',
         ]
@@ -249,7 +247,7 @@ class BikaCatalogAnalysisRequestListing(CatalogTool):
 InitializeClass(BikaCatalogAnalysisRequestListing)
 
 
-def setup_catalogs(portal, catalogs_definition):
+def setup_catalogs(portal, catalogs_definition, force_reindex=False):
     """
     Setup the given catalogs. Redefines the map between content types and
     catalogs and then checks the indexes and metacolumns, if one index/column
@@ -285,7 +283,7 @@ def setup_catalogs(portal, catalogs_definition):
         reindex = False
         reindex = _setup_catalog(
             portal, cat_id, catalogs_definition.get(cat_id, {}))
-        if reindex and cat_id not in clean_and_rebuild:
+        if (reindex or force_reindex) and (cat_id not in clean_and_rebuild):
             # add the catalog if it has not been added before
             clean_and_rebuild.append(cat_id)
     # Reindex the catalogs which needs it

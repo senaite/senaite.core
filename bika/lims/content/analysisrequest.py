@@ -1705,7 +1705,7 @@ class AnalysisRequest(BaseFolder):
 
     def Title(self):
         """ Return the Request ID as title """
-        return self.getId()()
+        return self.getId()
 
     def Description(self):
         """ Return searchable data as Description """
@@ -2449,6 +2449,10 @@ class AnalysisRequest(BaseFolder):
     security.declarePublic('setSamplingDate')
 
     def setSamplingDate(self, value):
+        """
+        Sets the specified sampling date from the sample.
+        :value: a date as a date object.
+        """
         sample = self.getSample()
         if sample and value:
             sample.setSamplingDate(value)
@@ -2465,6 +2469,9 @@ class AnalysisRequest(BaseFolder):
     security.declarePublic('getSamplingDate')
 
     def getSamplingDate(self):
+        """
+        Gets the specified sampling date from the sample.
+        """
         sample = self.getSample()
         if sample:
             return sample.getSamplingDate()
@@ -2477,6 +2484,10 @@ class AnalysisRequest(BaseFolder):
     security.declarePublic('setSampler')
 
     def setSampler(self, value):
+        """
+        Sets the sampler to the sample.
+        :value: a user id.
+        """
         sample = self.getSample()
         if sample and value:
             sample.setSampler(value)
@@ -2493,6 +2504,9 @@ class AnalysisRequest(BaseFolder):
     security.declarePublic('getSampler')
 
     def getSampler(self):
+        """
+        Returns the sampler (as a user id) from the sample
+        """
         sample = self.getSample()
         if sample:
             return sample.getSampler()
@@ -2505,6 +2519,10 @@ class AnalysisRequest(BaseFolder):
     security.declarePublic('setDateSampled')
 
     def setDateSampled(self, value):
+        """
+        sets the date when the sample has been sampled.
+        :value: the time value
+        """
         sample = self.getSample()
         if sample and value:
             sample.setDateSampled(value)
@@ -2521,6 +2539,9 @@ class AnalysisRequest(BaseFolder):
     security.declarePublic('getDateSampled')
 
     def getDateSampled(self):
+        """
+        Returns the date when the sample has been sampled.
+        """
         sample = self.getSample()
         if sample:
             return sample.getDateSampled()
@@ -2533,6 +2554,9 @@ class AnalysisRequest(BaseFolder):
     security.declarePublic('getDatePublished')
 
     def getDatePublished(self):
+        """
+        Returns the transition date from the Analysis Request object
+        """
         return getTransitionDate(self, 'publish')
 
     security.declarePublic('setSamplePoint')
@@ -2879,7 +2903,7 @@ class AnalysisRequest(BaseFolder):
             from this Analysis Request
         """
         # This will be imporved using brains
-        ans = [an.getObject() for an in instance.getAnalyses()]
+        ans = [an.getObject() for an in self.getAnalyses()]
         depts = [
             an.getService().getDepartment().UID()
             for an in ans if an.getService().getDepartment()]
