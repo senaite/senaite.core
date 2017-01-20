@@ -247,7 +247,7 @@ class BikaCatalogAnalysisRequestListing(CatalogTool):
 InitializeClass(BikaCatalogAnalysisRequestListing)
 
 
-def setup_catalogs(portal, catalogs_definition, force_reindex=False):
+def setup_catalogs( portal, catalogs_definition, force_reindex=False):
     """
     Setup the given catalogs. Redefines the map between content types and
     catalogs and then checks the indexes and metacolumns, if one index/column
@@ -268,6 +268,8 @@ def setup_catalogs(portal, catalogs_definition, force_reindex=False):
                 ]
             }
         }
+    :force_reindex: boolean to reindex the catalogs even if there is no need
+        to do so.
     """
     # This variable will be used to clean reindex the catalog. Saves the
     # catalogs ids
@@ -287,6 +289,29 @@ def setup_catalogs(portal, catalogs_definition, force_reindex=False):
             # add the catalog if it has not been added before
             clean_and_rebuild.append(cat_id)
     # Reindex the catalogs which needs it
+    _cleanAndRebuildIfNeeded(portal, clean_and_rebuild)
+
+
+def extend_catalogs(portal, catalog_extensions):
+    """
+    Add the new index and columns defined in the dictionaries to the catalogs.
+    This function should be used to add more columns in a catalog from an
+    addon of bika.
+    :portal: the Plone portal
+    :catalog_extensions: a list of dictionaris with more elements to add to the
+        ones defined in catalogs_definition.
+        {
+                'types': ['ContentType', ],
+                'indexes': {
+                    'getDoctorUID': 'FieldIndex',
+                    ...
+                },
+                'columns': [
+                    'AnotherTitle',
+                    ...
+                ]
+            }
+    """
     _cleanAndRebuildIfNeeded(portal, clean_and_rebuild)
 
 
