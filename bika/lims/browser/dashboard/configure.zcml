@@ -25,6 +25,4 @@
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
-
-
 </configure>
