@@ -484,6 +484,17 @@
           insert-after="*"/>
 
   <javascript authenticated="False"
+          id="++resource++bika.lims.js/bika.lims.department.js"
+          cacheable="True"
+          compression="safe"
+          conditionalcomment=""
+          cookable="True"
+          enabled="on"
+          expression=""
+          inline="False"
+          insert-after="*"/>
+
+  <javascript authenticated="False"
           id="++resource++bika.lims.js/bika.lims.worksheettemplate.js"
           cacheable="True"
           compression="safe"
