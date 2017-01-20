@@ -48,6 +48,7 @@
   <include package=".srtemplate"/>
   <include package=".sample"/>
   <include package=".worksheet"/>
+  <include package=".dashboard"/>
 
   <include package=".fields"/>
   <include package=".widgets"/>

@@ -479,6 +479,14 @@ class BikaListingView(BrowserView):
         self.request['%s_review_state' % self.form_id] = review_state['id']
         return review_state
 
+    def getPOSTAction(self):
+        """
+        This function returns a string as the value for the action attribute of
+        the form element in the template.
+        This method is used in bika_listing_table.pt
+        """
+        return 'workflow_action'
+
     def _process_request(self):
         """Scan request for parameters and configure class attributes
         accordingly.  Setup AdvancedQuery or catalog contentFilter.
