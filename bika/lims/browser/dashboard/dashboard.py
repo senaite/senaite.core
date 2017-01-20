@@ -494,8 +494,7 @@ class DashboardView(BrowserView):
         # Analyses pending
         review_state = ['sample_received',
                         'assigned',
-                        'attachment_due',
-                        'to_be_verified']
+                        'attachment_due']
         query_dic = {'portal_type':"Analysis",
                  'review_state':review_state}
         if filtering_allowed:

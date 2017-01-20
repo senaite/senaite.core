@@ -2,9 +2,11 @@
 version. use "tal:omit-tag='table_only'" on the elements which should not be
 displayed when ajax requests the table. </tal:comment>
 
-<form name="bika_listing_form" method="post" action="workflow_action"
+<form name="bika_listing_form" method="post"
     i18n:domain="bika"
-    tal:attributes="id form_id"
+    tal:attributes="
+        id form_id;
+        action python:view.bika_listing.getPOSTAction();"
     tal:omit-tag="table_only"
     tal:define="
         form_id view/bika_listing/form_id;
