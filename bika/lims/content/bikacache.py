@@ -18,6 +18,8 @@ schema = BikaSchema.copy() + atapi.Schema((
 
 ))
 
+schema['title'].widget.visible = False
+
 class BikaCache(BaseContent):
     schema = schema
 

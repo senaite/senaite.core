@@ -64,7 +64,7 @@ def initialize(context):
     from content.batch import Batch
     from content.batchfolder import BatchFolder
     from content.batchlabel import BatchLabel
-    from content.bika_cache import BikaCache
+    from content.bikacache import BikaCache
     from content.bikaschema import BikaSchema
     from content.bikasetup import BikaSetup
     from content.calculation import Calculation
