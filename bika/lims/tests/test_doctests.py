@@ -1,14 +1,15 @@
+# -*- coding: utf-8 -*-
+#
 # This file is part of Bika LIMS
 #
-# Copyright 2011-2016 by it's authors.
+# Copyright 2011-2017 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from bika.lims.testing import BIKA_FUNCTIONAL_TESTING
-from doctest import DocFileSuite
-from doctest import DocTestSuite
-from plone.testing import layered
 import doctest
 import unittest
+
+from plone.testing import layered
+from bika.lims.testing import BIKA_FUNCTIONAL_TESTING
 
 OPTIONFLAGS = (doctest.ELLIPSIS | doctest.NORMALIZE_WHITESPACE)
 
@@ -19,7 +20,7 @@ DOCTESTS = [
     'bika.lims.browser.instrument',
     'bika.lims.jsonapi.create',
     'bika.lims.jsonapi.update',
-	'bika.lims.jsonapi.remove',
+    'bika.lims.jsonapi.remove',
     'bika.lims.vocabularies',
 ]
 
@@ -28,7 +29,7 @@ def test_suite():
     suite = unittest.TestSuite()
     for module in DOCTESTS:
         suite.addTests([
-            layered(DocTestSuite(module=module, optionflags=OPTIONFLAGS),
+            layered(doctest.DocTestSuite(module=module, optionflags=OPTIONFLAGS),
                     layer=BIKA_FUNCTIONAL_TESTING),
         ])
     return suite

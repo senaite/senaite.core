@@ -1,32 +1,46 @@
+# -*- coding: utf-8 -*-
+
 # This file is part of Bika LIMS
 #
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-import os
-from AccessControl.SecurityManagement import newSecurityManager
+import re
+import unittest
+import pkg_resources
+
 from Acquisition import aq_base
-from bika.lims import logger
-from bika.lims.testing import BIKA_FUNCTIONAL_TESTING, BIKA_SIMPLE_TESTING
-from plone.app.robotframework.remote import RemoteLibrary
-from plone.app.testing import setRoles
+from AccessControl.SecurityManagement import newSecurityManager
+from Products.CMFPlone.tests.utils import MockMailHost as _MMH
+from Products.MailHost.interfaces import IMailHost
+from Testing.ZopeTestCase.functional import Functional
+
+from zope.component import getSiteManager
+
 from plone.app.testing import SITE_OWNER_NAME
-from plone.app.testing import SITE_OWNER_PASSWORD
 from plone.app.testing import TEST_USER_ID
 from plone.app.testing import TEST_USER_NAME
 from plone.app.testing import TEST_USER_PASSWORD
+from plone.app.testing import setRoles
 from plone.protect.authenticator import AuthenticatorView
 from plone.testing.z2 import Browser
-from Products.CMFPlone.tests.utils import MockMailHost as _MMH
-from Products.MailHost.interfaces import IMailHost
-from re import match
-from Testing.ZopeTestCase.functional import Functional
-from zope.component import getSiteManager
 
-import unittest
+from bika.lims import logger
+from bika.lims.testing import BIKA_SIMPLE_TESTING
+from bika.lims.testing import BIKA_FUNCTIONAL_TESTING
+
+try:
+    pkg_resources.get_distribution('plone.protect')
+    import plone.protect.auto
+except (pkg_resources.DistributionNotFound, ImportError):
+    HAS_PLONE_PROTECT = False
+else:
+    HAS_PLONE_PROTECT = True
 
 
 class MockMailHost(_MMH):
+    """MockMailHost with logging capabilities.
+    """
 
     def send(self, *kwargs):
         logger.log("***Message***")
@@ -38,18 +52,21 @@ class MockMailHost(_MMH):
 
 
 class BikaTestCase(unittest.TestCase):
+    """Base Test Case for Bika LIMS.
+    """
 
     def setUp(self):
         super(BikaTestCase, self).setUp()
-        # Some browser paths like ""?analysisrequests_review_state=cancelled"
-        # do not work because plone.protect protect them.
-        # Disable the plone.protect on the testing layer
-        # self.CSRF_DISABLED_ORIGINAL = plone.protect.auto.CSRF_DISABLED
-        # plone.protect.auto.CSRF_DISABLED = True
-        # NB: plone.protect.auto is first available in p.p>=3.0.0, but plone still uses 2.0.3
-        # -> This should also do the trick, see:
-        # https://pypi.python.org/pypi/plone.protect (Disable All Automatic CSRF Protection)
-        os.environ["PLONE_CSRF_DISABLED"] = "true"
+
+        self.app = self.layer['app']
+        self.portal = self.layer['portal']
+        self.request = self.layer['request']
+        self.request['ACTUAL_URL'] = self.portal.absolute_url()
+        setRoles(self.portal, TEST_USER_ID, ['LabManager', 'Member'])
+
+        # Disable auto protection for tests
+        if HAS_PLONE_PROTECT:
+            plone.protect.auto.CSRF_DISABLED = True
 
     def afterSetUp(self):
         self.portal._original_MailHost = self.portal.MailHost
@@ -63,9 +80,9 @@ class BikaTestCase(unittest.TestCase):
         ltool.setLanguageBindings()
 
     def tearDown(self):
-        # Reset the plone.protect on the testing layer
-        # plone.protect.auto.CSRF_DISABLED = self.CSRF_DISABLED_ORIGINAL
-        del os.environ["PLONE_CSRF_DISABLED"]
+        # Enable auto protection again
+        if HAS_PLONE_PROTECT:
+            plone.protect.auto.CSRF_DISABLED = False
 
     def beforeTearDown(self):
         self.portal.MailHost = self.portal._original_MailHost
@@ -83,16 +100,25 @@ class BikaTestCase(unittest.TestCase):
     def getAuthenticator(self):
         tag = AuthenticatorView('context', 'request').authenticator()
         pattern = '<input .*name="(\w+)".*value="(\w+)"'
-        return match(pattern, tag).groups()[1]
+        return re.match(pattern, tag).groups()[1]
+
+    def getApp(self):
+        return self.layer.get("app")
+
+    def getPortal(self):
+        return self.layer.get("portal")
+
+    def getRequest(self):
+        return self.layer.get("request")
 
     def setupAuthenticator(self):
         name, token = self.getAuthenticator()
         self.app.REQUEST.form[name] = token
 
     def loginAsPortalOwner(self):
-        '''Use if - AND ONLY IF - you need to manipulate
+        """Use if - AND ONLY IF - you need to manipulate
            the portal object itself.
-        '''
+        """
         uf = self.app.acl_users
         user = uf.getUserById(SITE_OWNER_NAME)
         if not hasattr(user, 'aq_base'):
@@ -122,24 +148,18 @@ class BikaTestCase(unittest.TestCase):
 
 
 class BikaSimpleTestCase(Functional, BikaTestCase):
-
+    """Simple test case without demo data installed.
+    """
     layer = BIKA_SIMPLE_TESTING
 
     def setUp(self):
         super(BikaSimpleTestCase, self).setUp()
-        self.app = self.layer['app']
-        self.portal = self.layer['portal']
-        self.request = self.layer['request']
-        self.request['ACTUAL_URL'] = self.portal.absolute_url()
-        setRoles(self.portal, TEST_USER_ID, ['LabManager', 'Member'])
+
 
 class BikaFunctionalTestCase(Functional, BikaTestCase):
+    """Functional test case with demo data installed.
+    """
     layer = BIKA_FUNCTIONAL_TESTING
 
     def setUp(self):
         super(BikaFunctionalTestCase, self).setUp()
-        self.app = self.layer['app']
-        self.portal = self.layer['portal']
-        self.request = self.layer['request']
-        self.request['ACTUAL_URL'] = self.portal.absolute_url()
-        setRoles(self.portal, TEST_USER_ID, ['LabManager', 'Member'])
