@@ -15,6 +15,7 @@ from bika.lims import logger
 from zope.cachedescriptors.property import Lazy as lazy_property
 from zope.i18n import translate
 from time import strptime as _strptime
+from bika.lims.utils import user_fullname
 
 
 def strptime(context, value):
@@ -144,23 +145,21 @@ class BrowserView(BrowserView):
     def checkPermission(self, perm, obj):
         return self.portal_membership.checkPermission(perm, obj)
 
-    def user_fullname(self, userid):
-        member = self.portal_membership.getMemberById(userid)
-        if member is None:
-            return userid
-        member_fullname = member.getProperty('fullname')
-        c = self.portal_catalog(portal_type='Contact', getUsername=userid)
-        contact_fullname = c[0].getObject().getFullname() if c else None
-        return contact_fullname or member_fullname or userid
+    from bika.lims import deprecated
 
+    @deprecated(comment="bika.lims.browser.user_fullname. "
+                        "user_fullname is deprecated and will be removed "
+                        "in Bika LIMS 3.3. Use bika.utils.user_fullname "
+                        "instead")
+    def user_fullname(self, userid):
+        user_fullname(self.context, userid)
+
+    @deprecated(comment="bika.lims.browser.user_email. "
+                        "user_email is deprecated and will be removed "
+                        "in Bika LIMS 3.3. Use bika.utils.user_email "
+                        "instead")
     def user_email(self, userid):
-        member = self.portal_membership.getMemberById(userid)
-        if member is None:
-            return userid
-        member_email = member.getProperty('email')
-        c = self.portal_catalog(portal_type='Contact', getUsername=userid)
-        contact_email = c[0].getObject().getEmailAddress() if c else None
-        return contact_email or member_email or ''
+        user_email(self.context, userid)
 
     def python_date_format(self, long_format=None, time_only=False):
         """This convert bika domain date format msgstrs to Python

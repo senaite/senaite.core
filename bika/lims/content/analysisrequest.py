@@ -44,6 +44,8 @@ from zope.interface import implements
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import getUsers, dicts_to_dict
 from bika.lims.utils.analysisrequest import notify_rejection
+from bika.lims.utils import user_fullname
+from bika.lims.utils import user_email
 from bika.lims import logger
 from bika.lims.browser.fields import DateTimeField
 from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
@@ -1452,8 +1454,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField(
         'ProfilesUID',
-        expression="here.getProfiles() and "
-                   "[profile.UID() for profile in here.getProfiles()] or []",
+        expression="[p.UID() for p in here.getProfiles()] if here.getProfiles() else []",
         widget=ComputedWidget(
             visible=False,
         ),
@@ -1501,9 +1502,138 @@ schema = BikaSchema.copy() + Schema((
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
+        'CreatorFullName',
+        expression="here._getCreatorFullName",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'CreatorEmail',
+        expression="here._getCreatorEmail",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'SampleId',
+        expression="here.getSample().getId()",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
         'SamplingRoundUID',
-        searchable=True,
         expression="here.getSamplingRound().UID() if here.getSamplingRound() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'SampleUrl',
+        expression="here.getSample().absolute_url()",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'ClientSampleID',
+        expression="here.getSample().getClientSampleID() if here.getSample() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'SamplerFullName',
+        expression="here._getSamplerFullName()",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'SamplerEmail',
+        expression="here._getSamplerEmail()",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'BatchID',
+        expression="here.getBatch().getId() if here.getBatch() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'BatchURL',
+        expression="here.getBatch().getId() if here.getBatch() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'ClientUID',
+        expression="here.getClient().UID() if here.getClient() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'ClientTitle',
+        expression="here.getClient().Title() if here.getClient() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'ClientURL',
+        expression="here.getClient().absolute_path() if here.getClient() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'ContactUsername',
+        expression="here.getContact().getUsername() if here getContact() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'ContactFullName',
+        expression="here.getContact().getFullname() if here.getContact() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'ContactEmail',
+        expression="here.getContact().getEmailAddress() if here.getContact() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'SampleTypeUID',
+        expression="here.getSampleType().UID() if here.getSampleType() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'SamplePointUID',
+        expression="here.getSamplePoint().UID() if here.getSample() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'StorageLocationUID',
+        expression="here.getStorageLocation().UID() if here.getStorageLocation() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'ProfilesURL',
+        expression="[p.absolute_url() for p in here.getProfiles()] if here.getProfiles() else []",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'ProfilesTitle',
+        expression="[p.Title() for p in here.getProfiles()] if here.getProfiles() else []",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'ProfilesTitleStr',
+        expression="' '.join([p.Title() for p in here.getProfiles()]) if here.getProfiles() else []",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'TemplateUID',
+        expression="here.getTemplate().UID() if here.getTemplate() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'TemplateURL',
+        expression="here.getTemplate().absolute_url() if here.getTemplate() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'TemplateURL',
+        expression="here.getTemplate().absolute_url() if here.getTemplate() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'TemplateTitle',
+        expression="here.getTemplate().Title() if here.getTemplate() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'AnalysesNum',
+        expression="here._getAnalysesNum()",
         widget=ComputedWidget(visible=False),
     ),
     ReferenceField(
@@ -1666,7 +1796,6 @@ schema = BikaSchema.copy() + Schema((
     StringField('_CachedAnalysesNum', default=''),
     StringField('_CachedDepartmentUIDs', default=''),
     StringField('_CachedProfilesTitle', default=''),
-    StringField('_CachedTemplateTitle', default='')
 )
 )
 
@@ -1721,12 +1850,6 @@ class AnalysisRequest(BaseFolder):
     def getClientPath(self):
         return "/".join(self.aq_parent.getPhysicalPath())
 
-    def getClientTitle(self):
-        return self.getClient().Title() if self.getClient() else ''
-
-    def getContactTitle(self):
-        return self.getContact().Title() if self.getContact() else ''
-
     def getProfilesTitle(self):
         titles = self.get_CachedProfilesTitle()
         if titles:
@@ -1736,12 +1859,6 @@ class AnalysisRequest(BaseFolder):
             self.set_CachedProfilesTitle(','.join(titles))
             return titles
 
-    def getTemplateTitle(self):
-        title = self.get_CachedTemplateTitle()
-        if not title:
-            title = self.getTemplate().Title() if self.getTemplate() else ''
-            self.set_CachedTemplateTitle(title)
-        return title
 
     def setPublicationSpecification(self, value):
         """Never contains a value; this field is here for the UI." \
@@ -1820,7 +1937,7 @@ class AnalysisRequest(BaseFolder):
 
     security.declareProtected(View, 'getResponsible')
 
-    def getAnalysesNum(self):
+    def _getAnalysesNum(self):
         """ Return the amount of analyses verified/total in the current AR """
         annum = self.get_CachedAnalysesNum()
         if annum:
@@ -2565,7 +2682,15 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample and value:
             sample.setSamplePoint(value)
-        self.Schema()['SamplePoint'].set(self, value)
+            self.Schema()['SamplePoint'].set(self, value)
+        elif not sample:
+            logger.warning(
+                "setSamplePoint has failed for Analysis Request %s because "
+                "it hasn't got a sample." % self.id)
+        else:
+            logger.warning(
+                "setSamplePoint has failed for Analysis Request %s because "
+                "'value' doesn't have a value'." % self.id)
 
     security.declarePublic('getSamplepoint')
 
@@ -2573,7 +2698,11 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getSamplePoint()
-        return self.Schema().getField('SamplePoint').get(self)
+        else:
+            logger.warning(
+                "getSamplePoint has failed for Analysis Request %s because "
+                "it hasn't got a sample." % self.id)
+            return ''
 
     security.declarePublic('setSampleType')
 
@@ -2581,7 +2710,15 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample and value:
             sample.setSampleType(value)
-        self.Schema()['SampleType'].set(self, value)
+            self.Schema()['SampleType'].set(self, value)
+        elif not sample:
+            logger.warning(
+                "setSampleType has failed for Analysis Request %s because "
+                "it hasn't got a sample." % self.id)
+        else:
+            logger.warning(
+                "setSampleType has failed for Analysis Request %s because "
+                "'value' doesn't have a value'." % self.id)
 
     security.declarePublic('getSampleType')
 
@@ -2589,7 +2726,11 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getSampleType()
-        return self.Schema().getField('SampleType').get(self)
+        else:
+            logger.warning(
+                "getSampleType has failed for Analysis Request %s because "
+                "it hasn't got a sample." % self.id)
+            return ''
 
     security.declarePublic('setClientReference')
 
@@ -2693,7 +2834,15 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample and value:
             sample.setStorageLocation(value)
-        self.Schema()['StorageLocation'].set(self, value)
+            self.Schema()['StorageLocation'].set(self, value)
+        elif not sample:
+            logger.warning(
+                "setStorageLocation has failed for Analysis Request %s because"
+                " it hasn't got a sample." % self.id)
+        else:
+            logger.warning(
+                "setStorageLocation has failed for Analysis Request %s because"
+                " 'value' doesn't have a value'." % self.id)
 
     security.declarePublic('getStorageLocation')
 
@@ -2701,8 +2850,11 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getStorageLocation()
-        return self.Schema().getField('StorageLocation').get(self)
-
+        else:
+            logger.warning(
+                "getStorageLocation has failed for Analysis Request %s because"
+                " it hasn't got a sample." % self.id)
+            return ''
     security.declarePublic('setAdHoc')
 
     def setAdHoc(self, value):
@@ -2922,6 +3074,30 @@ class AnalysisRequest(BaseFolder):
         Returns the user id who has verified the analysis request.
         """
         return getTransitionDate(self, 'verify')
+
+    def _getCreatorFullName(self):
+        """
+        Returns the full name of this analysis request's creator.
+        """
+        return user_fullname(self, self.Creator())
+
+    def _getCreatorEmail(self):
+        """
+        Returns the email of this analysis request's creator.
+        """
+        return user_email(self, self.Creator())
+
+    def _getSamplerFullName(self):
+        """
+        Returns the full name's defined sampler.
+        """
+        return user_fullname(self, self.getSampler())
+
+    def _getSamplerEmail(self):
+        """
+        Returns the email of this analysis request's sampler.
+        """
+        return user_email(self, self.Creator())
 
     def isVerifiable(self):
         """

@@ -34,9 +34,11 @@ _catalogs_definition = {
             'getId': 'FieldIndex',
             'created': 'DateIndex',
             'Creator': 'FieldIndex',
+            # TODO: Can be removed? Same as id
             'sortable_title': 'FieldIndex',
             'review_state': 'FieldIndex',
             'cancellation_state': 'FieldIndex',
+            # TODO-catalog: can be removed?
             'portal_type': 'FieldIndex',
             'UID': 'FieldIndex',
             'getBatchUID': 'FieldIndex',
@@ -53,10 +55,57 @@ _catalogs_definition = {
         },
         'columns': [
             'UID',
+            'getId',
             'Title',
+            'created',
+            'Creator',
+            'getCreatorFullName',
+            'getCreatorEmail',
             'review_state',
             'getObjectWorkflowStates',
             'getPhysicalPath',
+            'getSampleUID',
+            # Used to print the ID of the Sample in lists
+            'getSampleId',
+            # Used to create add an anchor to Sample ID that redirects to
+            # the Sample view.
+            'getSampleUrl',
+            'getClientOrderNumber',
+            'getClientReference',
+            'getClientSampleID',
+            'getSampler',
+            'getSamplerFullName',
+            'getSamplerEmail',
+            'getBatchUID',
+            #  Used to print the ID of the Batch in lists
+            'getBatchID',
+            'getBatchURL',
+            'getClientUID',
+            'getClientTitle',
+            'getClientURL',
+            'getContactUID',
+            'getContactUsername',
+            'getContactEmail',
+            'getSampleTypeUID',
+            'getSampleTypeTitle',
+            'getSamplePointUID',
+            'getSamplePointTitle',
+            'getStorageLocationUID',
+            'getPriority',
+            'getSamplingDate',
+            'getDateSampled',
+            'getDateReceived',
+            'getDateVerified',
+            'getDatePublished',
+            'getProfilesUID',
+            'getProfilesURL',
+            'getProfilesTitle',
+            'getProfilesTitleStr',
+            'getTemplateUID',
+            'getTemplateURL',
+            'getTemplateTitle',
+
+
         ]
     }
 }
