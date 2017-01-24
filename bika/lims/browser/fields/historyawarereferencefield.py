@@ -155,15 +155,28 @@ class HistoryAwareReferenceField(ReferenceField):
 
                 version_id = instance.reference_versions[uid]
                 try:
-                    o = pr._retrieve(r,
+                    result = pr._retrieve(r,
                                      selector=version_id,
                                      preserve=(),
-                                     countPurged=True).object
-                except ArchivistRetrieveError:
+                                     countPurged=True)
+                    o = result.object
+                # except ArchivistRetrieveError:
+                #     o = r
+                except:
+                    import pdb; pdb.set_trace()
+                    # TODO Need to investigate
+                    # TypeError: can't pickle instancemethod objects.
+                    # At:
+                    # Products.CMFEditions-2.2.21-py2.7.egg/Products/CMFEditions/CopyModifyMergeRepositoryTool.py", line 494, in _retrieve:    saved = transaction.savepoint()
+                    # https://github.com/plone/Products.CMFEditions/blob/7360a8431c98fdcaecbaaaafd321fd3881a88f9b/Products/CMFEditions/CopyModifyMergeRepositoryTool.py#L494
+                    e = sys.exc_info()
+                    logger.error(
+                        "Caught exception in"
+                        " HistoryAwareReferenceField: %s" % e)
                     o = r
+                rd[uid] = o
             else:
-                o = r
-            rd[uid] = o
+                rd[uid] = r
 
         # singlevalued ref fields return only the object, not a list,
         # unless explicitely specified by the aslist option

@@ -34,57 +34,56 @@ def upgrade(tool):
     http://stackoverflow.com/questions/7821498/is-there-a-good-reference-list-for-the-names-of-the-genericsetup-import-steps
     """
     setup = portal.portal_setup
-    if False:
-        setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
-        setup.runImportStepFromProfile('profile-bika.lims:default', 'jsregistry')
-        setup.runImportStepFromProfile('profile-bika.lims:default', 'cssregistry')
-        setup.runImportStepFromProfile('profile-bika.lims:default', 'workflow-csv')
-        setup.runImportStepFromProfile('profile-bika.lims:default', 'factorytool')
-        setup.runImportStepFromProfile('profile-bika.lims:default', 'controlpanel')
-        setup.runImportStepFromProfile('profile-bika.lims:default', 'catalog')
-        setup.runImportStepFromProfile('profile-bika.lims:default', 'propertiestool')
-        setup.runImportStepFromProfile('profile-bika.lims:default', 'skins')
-        setup.runImportStepFromProfile('profile-bika.health:default', 'toolset')
-        setup.runImportStepFromProfile(
-            'profile-bika.lims:default', 'portlets', run_dependencies=False)
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'jsregistry')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'cssregistry')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'workflow-csv')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'factorytool')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'controlpanel')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'catalog')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'propertiestool')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'skins')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'toolset')
+    setup.runImportStepFromProfile(
+        'profile-bika.lims:default', 'portlets', run_dependencies=False)
 
-        # Creating all the sampling coordinator roles, permissions and indexes
-        logger.info("Sampling Coordinator...")
-        create_samplingcoordinator(portal)
+    # Creating all the sampling coordinator roles, permissions and indexes
+    logger.info("Sampling Coordinator...")
+    create_samplingcoordinator(portal)
 
-        # Reflex Testing setup
-        logger.info("Reflex testing...")
-        reflex_rules(portal)
+    # Reflex Testing setup
+    logger.info("Reflex testing...")
+    reflex_rules(portal)
 
-        # Departments
-        logger.info("Departments...")
-        departments(portal)
+    # Departments
+    logger.info("Departments...")
+    departments(portal)
 
-        # More than one department can be assigned to a Contact
-        logger.info("More than one department per contact...")
-        multi_department_to_labcontact(portal)
+    # More than one department can be assigned to a Contact
+    logger.info("More than one department per contact...")
+    multi_department_to_labcontact(portal)
 
-        # Migrate Instrument Locations
-        logger.info("Migrating instrument locations...")
-        migrate_instrument_locations(portal)
+    # Migrate Instrument Locations
+    logger.info("Migrating instrument locations...")
+    migrate_instrument_locations(portal)
 
-        # Updating Verifications of Analysis field from integer to String.
-        logger.info("Multiverification of Analyses...")
-        multi_verification(portal)
+    # Updating Verifications of Analysis field from integer to String.
+    logger.info("Multiverification of Analyses...")
+    multi_verification(portal)
 
-        # Update workflow permissions
-        logger.info("Updating role mappings...")
-        wf = getToolByName(portal, 'portal_workflow')
-        wf.updateRoleMappings()
+    # Update workflow permissions
+    logger.info("Updating role mappings...")
+    wf = getToolByName(portal, 'portal_workflow')
+    wf.updateRoleMappings()
 
-        # Remove unused indexes and columns
-        logger.info("Removing stale indexes...")
-        bc = getToolByName(portal, 'bika_catalog', None)
-        delIndexAndColumn(bc, 'getProfilesTitle')
+    # Remove unused indexes and columns
+    logger.info("Removing stale indexes...")
+    bc = getToolByName(portal, 'bika_catalog', None)
+    delIndexAndColumn(bc, 'getProfilesTitle')
 
-        # Clean and rebuild affected catalogs (if required)
-        logger.info("Cleaning and rebuilding...")
-        cleanAndRebuildIfNeeded(portal)
+    # Clean and rebuild affected catalogs (if required)
+    logger.info("Cleaning and rebuilding...")
+    cleanAndRebuildIfNeeded(portal)
 
     # Updateing lims catalogs if there is any change in them
     logger.info("Updateing catalogs if needed...")

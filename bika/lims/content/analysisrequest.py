@@ -1471,7 +1471,7 @@ schema = BikaSchema.copy() + Schema((
     # from this Analysis Request
     ComputedField(
         'DepartmentUIDs',
-        expression='here.getDepartmentUIDs',
+        expression='here._getDepartmentUIDs',
         default='',
         widget=ComputedWidget(
             visible=False,
@@ -1563,12 +1563,12 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField(
         'ClientURL',
-        expression="here.getClient().absolute_path() if here.getClient() else ''",
+        expression="here.getClient().absolute_url() if here.getClient() else ''",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
         'ContactUsername',
-        expression="here.getContact().getUsername() if here getContact() else ''",
+        expression="here.getContact().getUsername() if here.getContact() else ''",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
@@ -1588,7 +1588,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField(
         'SamplePointUID',
-        expression="here.getSamplePoint().UID() if here.getSample() else ''",
+        expression="here.getSamplePoint().UID() if here.getSamplePoint() else ''",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
@@ -1794,7 +1794,6 @@ schema = BikaSchema.copy() + Schema((
 
     # Temporary performance optimizations (cached fields on runtime)
     StringField('_CachedAnalysesNum', default=''),
-    StringField('_CachedDepartmentUIDs', default=''),
     StringField('_CachedProfilesTitle', default=''),
 )
 )
@@ -1865,6 +1864,7 @@ class AnalysisRequest(BaseFolder):
         """
         return value
 
+    # TODO-performance: Don't get the whole object"
     def getAnalysisCategory(self):
         proxies = self.getAnalyses(full_objects=True)
         value = []
@@ -1874,6 +1874,7 @@ class AnalysisRequest(BaseFolder):
                 value.append(val)
         return value
 
+    # TODO-performance: Don't get the whole object"
     def getAnalysisCategoryIDs(self):
         proxies = self.getAnalyses(full_objects=True)
         value = []
@@ -2908,26 +2909,11 @@ class AnalysisRequest(BaseFolder):
         """ Returns a set with the departments assigned to the Analyses
             from this Analysis Request
         """
-        if self.get_CachedDepartmentUIDs():
-            uids = self.get_CachedDepartmentUIDs()
-            uids = uids.split(',')
-            bc = getToolByName(self, "bika_setup_catalog")
-            depts = bc(portal_type="Department", UID=uids)
-            depts = [dept.getObject() for dept in depts]
-        else:
-            ans = [an.getObject() for an in self.getAnalyses()]
-            depts = [an.getService().getDepartment() for an in ans if an.getService().getDepartment()]
-            uids = [dept.UID() for dept in depts]
-            uids = ','.join(uids);
-            self.set_CachedDepartmentUIDs(uids)
+        ans = [an.getObject() for an in self.getAnalyses()]
+        depts = [an.getService().getDepartment() for an in ans if an.getService().getDepartment()]
+        uids = [dept.UID() for dept in depts]
+        uids = ','.join(uids);
         return set(depts)
-
-    def getDepartmentUIDs(self):
-        if self.get_CachedDepartmentUIDs():
-            depts = self.get_CachedDepartmentUIDs().split(',')
-        else:
-            depts = [dept.UID() for dept in self.getDepartments()]
-        return depts
 
     def getResultsInterpretationByDepartment(self, department=None):
         """ Returns the results interpretation for this Analysis Request
@@ -3050,7 +3036,7 @@ class AnalysisRequest(BaseFolder):
         return None
 
     # TODO-performance: this function must be optimized
-    def getDepartmentUIDs(self):
+    def _getDepartmentUIDs(self):
         """ Returns department UIDs assigned to the Analyses
             from this Analysis Request
         """
@@ -3404,7 +3390,5 @@ class AnalysisRequest(BaseFolder):
 
     def resetCache(self):
         self.set_CachedAnalysesNum('')
-        self.set_CachedDepartmentUIDs('')
-        self.reindexObject(idxs=["getDepartmentUIDs"])
 
 atapi.registerType(AnalysisRequest, PROJECTNAME)
