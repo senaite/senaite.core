@@ -15,7 +15,8 @@ from bika.lims.tests.base import BikaSimpleTestCase
 
 
 DOCTESTS = [
-    "../docs/Versioning.rst"
+    "../docs/Instruments.rst",
+    "../docs/Versioning.rst",
 ]
 
 
