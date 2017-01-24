@@ -137,13 +137,6 @@ class DashboardView(BrowserView):
                      'verified']
         bc = getToolByName(self.context, "bika_catalog")
 
-        from bika.lims.utils import tmpID
-        caches=self.context.listFolderContents(contentFilter={"portal_type": 'BikaCache'})
-        print 'len---->'+str(len(caches))
-        _id=self.context.invokeFactory("BikaCache",id=tmpID(),Key="Test Key",Value="Test Value2")
-        item = self.context[_id]
-        item.markCreationFlag()
-
         query_dic = {'portal_type':"AnalysisRequest",
                      'created':self.date_range,
                      'cancellation_state':['active']}
