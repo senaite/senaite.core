@@ -12,5 +12,4 @@
     <property name="filter_content_types">True</property>
     <property name="allow_discussion">True</property>
 
-
 </object>
