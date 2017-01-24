@@ -163,7 +163,6 @@ class HistoryAwareReferenceField(ReferenceField):
                 # except ArchivistRetrieveError:
                 #     o = r
                 except:
-                    import pdb; pdb.set_trace()
                     # TODO Need to investigate
                     # TypeError: can't pickle instancemethod objects.
                     # At:

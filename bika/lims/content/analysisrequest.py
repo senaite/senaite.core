@@ -1837,7 +1837,7 @@ class AnalysisRequest(BaseFolder):
 
     def Description(self):
         """ Return searchable data as Description """
-        descr = " ".join((self.getId()(), self.aq_parent.Title()))
+        descr = " ".join((self.getId(), self.aq_parent.Title()))
         return safe_unicode(descr).encode('utf-8')
 
     def getClient(self):
