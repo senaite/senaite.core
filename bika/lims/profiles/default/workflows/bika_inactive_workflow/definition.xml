@@ -1,8 +1,15 @@
 <?xml version="1.0"?>
-<dc-workflow workflow_id="bika_inactive_workflow" title="Bika Inactive workflow" description="" state_variable="inactive_state"         initial_state="active" manager_bypass="False" >
+<dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             workflow_id="bika_inactive_workflow"
+             title="Bika Inactive workflow"
+             description=""
+             state_variable="inactive_state"
+             initial_state="active"
+             manager_bypass="False"
+             i18n:domain="bika">
  <permission>Delete objects</permission>
  <permission>Modify portal content</permission>
- <state state_id="active" title="Active" >
+ <state state_id="active" title="Active" i18n:attributes="title">
   <description>Item is active and visible</description>
   <exit-transition transition_id="deactivate" />
   <permission-map name="Delete objects" acquired="True">
@@ -14,7 +21,7 @@
   
   
  </state>
- <state state_id="inactive" title="Inactive" >
+ <state state_id="inactive" title="Inactive" i18n:attributes="title">
   <exit-transition transition_id="activate" />
   <permission-map name="Delete objects" acquired="False">
    <permission-role>Analyst</permission-role>
@@ -33,13 +40,13 @@
   
   
  </state>
- <transition transition_id="activate" title="Activate" new_state="active" trigger="USER" before_script="" after_script="" >
+ <transition transition_id="activate" title="Activate" new_state="active" trigger="USER" before_script="" after_script="" i18n:attributes="title">
   <action url="" category="workflow" icon="">Activate</action>
   <guard >
   </guard>
   
  </transition>
- <transition transition_id="deactivate" title="Deactivate" new_state="inactive" trigger="USER" before_script="" after_script="" >
+ <transition transition_id="deactivate" title="Deactivate" new_state="inactive" trigger="USER" before_script="" after_script="" i18n:attributes="title">
   <action url="" category="workflow" icon="">Deactivate</action>
   <guard >
   </guard>

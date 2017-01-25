@@ -1,9 +1,16 @@
 <?xml version="1.0"?>
-<dc-workflow workflow_id="bika_referenceanalysis_workflow" title="Bika Reference Analysis Workflow" description="" state_variable="review_state"         initial_state="unassigned" manager_bypass="False" >
+<dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             workflow_id="bika_referenceanalysis_workflow"
+             title="Bika Reference Analysis Workflow"
+             description=""
+             state_variable="review_state"
+             initial_state="unassigned"
+             manager_bypass="False"
+             i18n:domain="bika">
  <permission>BIKA: Edit Results</permission>
  <permission>BIKA: Retract</permission>
  <permission>BIKA: View Results</permission>
- <state state_id="assigned" title="Assigned" >
+ <state state_id="assigned" title="Assigned" i18n:attributes="title">
   <exit-transition transition_id="submit" />
   <exit-transition transition_id="unassign" />
   <permission-map name="BIKA: Edit Results" acquired="False">
@@ -21,7 +28,7 @@
   
   
  </state>
- <state state_id="attachment_due" title="Attachment Outstanding" >
+ <state state_id="attachment_due" title="Attachment Outstanding" i18n:attributes="title">
   <exit-transition transition_id="attach" />
   <exit-transition transition_id="retract" />
   <exit-transition transition_id="reject" />
@@ -45,7 +52,7 @@
   
   
  </state>
- <state state_id="rejected" title="Rejected" >
+ <state state_id="rejected" title="Rejected" i18n:attributes="title">
   <exit-transition transition_id="" />
   <permission-map name="BIKA: Edit Results" acquired="False">
    
@@ -60,7 +67,7 @@
   
   
  </state>
- <state state_id="to_be_verified" title="To be verified" >
+ <state state_id="to_be_verified" title="To be verified" i18n:attributes="title">
   <exit-transition transition_id="verify" />
   <exit-transition transition_id="retract" />
   <exit-transition transition_id="reject" />
@@ -84,7 +91,7 @@
   
   
  </state>
- <state state_id="unassigned" title="Unassigned" >
+ <state state_id="unassigned" title="Unassigned" i18n:attributes="title">
   <exit-transition transition_id="assign" />
   <permission-map name="BIKA: Edit Results" acquired="False">
    
@@ -99,7 +106,7 @@
   
   
  </state>
- <state state_id="verified" title="Verified" >
+ <state state_id="verified" title="Verified" i18n:attributes="title">
   <exit-transition transition_id="unassign" />
   <permission-map name="BIKA: Edit Results" acquired="False">
    
@@ -114,13 +121,13 @@
   
   
  </state>
- <transition transition_id="assign" title="Assign" new_state="assigned" trigger="USER" before_script="" after_script="" >
+ <transition transition_id="assign" title="Assign" new_state="assigned" trigger="USER" before_script="" after_script="" i18n:attributes="title"i18n:attributes="title">
   <action url="" category="workflow" icon="">Assign</action>
   <guard >
   </guard>
   
  </transition>
- <transition transition_id="attach" title="Add attachment" new_state="to_be_verified" trigger="USER" before_script="" after_script="" >
+ <transition transition_id="attach" title="Add attachment" new_state="to_be_verified" trigger="USER" before_script="" after_script="" i18n:attributes="title"i18n:attributes="title">
   <action url="" category="workflow" icon="">Add attachment</action>
   <guard >
    <guard-expression>python:here.guard_attach_transition()</guard-expression
@@ -128,33 +135,33 @@
   </guard>
   
  </transition>
- <transition transition_id="reject" title="Reject" new_state="rejected" trigger="USER" before_script="" after_script="" >
+ <transition transition_id="reject" title="Reject" new_state="rejected" trigger="USER" before_script="" after_script="" i18n:attributes="title"i18n:attributes="title">
   <action url="" category="workflow" icon="">Reject</action>
   <guard >
    <guard-permission>BIKA: Reject Worksheet</guard-permission>
   </guard>
   
  </transition>
- <transition transition_id="retract" title="Retract" new_state="assigned" trigger="USER" before_script="" after_script="" >
+ <transition transition_id="retract" title="Retract" new_state="assigned" trigger="USER" before_script="" after_script="" i18n:attributes="title"i18n:attributes="title">
   <action url="" category="workflow" icon="">Retract</action>
   <guard >
    <guard-permission>BIKA: Retract</guard-permission>
   </guard>
   
  </transition>
- <transition transition_id="submit" title="Submit for verification" new_state="attachment_due" trigger="USER" before_script="" after_script="" >
+ <transition transition_id="submit" title="Submit for verification" new_state="attachment_due" trigger="USER" before_script="" after_script="" i18n:attributes="title"i18n:attributes="title">
   <action url="" category="workflow" icon="">Submit for verification</action>
   <guard >
   </guard>
   
  </transition>
- <transition transition_id="unassign" title="Remove" new_state="unassigned" trigger="USER" before_script="" after_script="" >
+ <transition transition_id="unassign" title="Remove" new_state="unassigned" trigger="USER" before_script="" after_script="" i18n:attributes="title"i18n:attributes="title">
   <action url="" category="workflow" icon="">Remove</action>
   <guard >
   </guard>
   
  </transition>
- <transition transition_id="verify" title="Verify" new_state="verified" trigger="USER" before_script="" after_script="" >
+ <transition transition_id="verify" title="Verify" new_state="verified" trigger="USER" before_script="" after_script="" i18n:attributes="title"i18n:attributes="title">
   <action url="" category="workflow" icon="">Verify</action>
   <guard >
    <guard-permission>BIKA: Verify</guard-permission>

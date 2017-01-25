@@ -1,5 +1,12 @@
 <?xml version="1.0"?>
-<dc-workflow workflow_id="bika_worksheet_workflow" title="Bika Worksheet Workflow" description="" state_variable="review_state"         initial_state="open" manager_bypass="False" >
+<dc-workflow workflow_id="bika_worksheet_workflow"
+             title="Bika Worksheet Workflow"
+             description=""
+             state_variable="review_state"
+             initial_state="open"
+             manager_bypass="False"
+             i18n:domain="bika">
+
  <permission>BIKA: Add Attachment</permission>
  <permission>BIKA: Assign analyses</permission>
  <permission>BIKA: Edit Worksheet</permission>
@@ -7,7 +14,7 @@
  <permission>BIKA: Unassign analyses</permission>
  <permission>BIKA: View Results</permission>
  <permission>Modify portal content</permission>
- <state state_id="attachment_due" title="Attachment Outstanding" >
+ <state state_id="attachment_due" title="Attachment Outstanding" i18n:attributes="title">
   <exit-transition transition_id="attach" />
   <exit-transition transition_id="retract" />
   <exit-transition transition_id="reject" />
@@ -55,7 +62,7 @@
   
   
  </state>
- <state state_id="open" title="Open" >
+ <state state_id="open" title="Open" i18n:attributes="title">
   <exit-transition transition_id="submit" />
   <permission-map name="BIKA: Add Attachment" acquired="False">
    <permission-role>Analyst</permission-role>
@@ -101,7 +108,7 @@
   
   
  </state>
- <state state_id="rejected" title="Rejected" >
+ <state state_id="rejected" title="Rejected" i18n:attributes="title">
   <exit-transition transition_id="" />
   <permission-map name="BIKA: Add Attachment" acquired="False">
    <permission-role>Manager</permission-role>
@@ -130,7 +137,7 @@
   
   
  </state>
- <state state_id="to_be_verified" title="To be verified" >
+ <state state_id="to_be_verified" title="To be verified" i18n:attributes="title">
   <exit-transition transition_id="verify" />
   <exit-transition transition_id="retract" />
   <exit-transition transition_id="reject" />
@@ -179,7 +186,7 @@
   
   
  </state>
- <state state_id="verified" title="Verified" >
+ <state state_id="verified" title="Verified" i18n:attributes="title">
   <exit-transition transition_id="" />
   <permission-map name="BIKA: Add Attachment" acquired="False">
    <permission-role>Analyst</permission-role>
@@ -215,7 +222,7 @@
   
   
  </state>
- <transition transition_id="attach" title="Add attachment" new_state="to_be_verified" trigger="USER" before_script="" after_script="" >
+ <transition transition_id="attach" title="Add attachment" new_state="to_be_verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
   <action url="" category="workflow" icon="">Add attachment</action>
   <guard >
    <guard-expression>python:here.guard_attach_transition()</guard-expression
@@ -223,14 +230,14 @@
   </guard>
   
  </transition>
- <transition transition_id="reject" title="Reject" new_state="rejected" trigger="USER" before_script="" after_script="" >
+ <transition transition_id="reject" title="Reject" new_state="rejected" trigger="USER" before_script="" after_script="" i18n:attributes="title">
   <action url="" category="workflow" icon="">Reject</action>
   <guard >
    <guard-permission>BIKA: Reject Worksheet</guard-permission>
   </guard>
   
  </transition>
- <transition transition_id="retract" title="Retract worksheet" new_state="open" trigger="USER" before_script="" after_script="" >
+ <transition transition_id="retract" title="Retract worksheet" new_state="open" trigger="USER" before_script="" after_script="" i18n:attributes="title">
   <action url="" category="workflow" icon="">Retract worksheet</action>
   <guard >
    <guard-expression>python:here.guard_retract_transition()</guard-expression
@@ -238,7 +245,7 @@
   </guard>
   
  </transition>
- <transition transition_id="submit" title="Submit for verification" new_state="attachment_due" trigger="USER" before_script="" after_script="" >
+ <transition transition_id="submit" title="Submit for verification" new_state="attachment_due" trigger="USER" before_script="" after_script="" i18n:attributes="title">
   <action url="" category="workflow" icon="">Submit for verification</action>
   <guard >
    <guard-expression>python:here.guard_submit_transition()</guard-expression
@@ -246,7 +253,7 @@
   </guard>
   
  </transition>
- <transition transition_id="verify" title="Verify" new_state="verified" trigger="USER" before_script="" after_script="" >
+ <transition transition_id="verify" title="Verify" new_state="verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
   <action url="" category="workflow" icon="">Verify</action>
   <guard >
    <guard-expression>python:here.guard_verify_transition()</guard-expression

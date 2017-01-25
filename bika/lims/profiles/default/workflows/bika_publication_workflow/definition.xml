@@ -1,19 +1,26 @@
 <?xml version="1.0"?>
-<dc-workflow workflow_id="bika_publication_workflow" title="Bika Publication Workflow" description="" state_variable="publish_state"         initial_state="unpublished" manager_bypass="False" >
- 
- <state state_id="published" title="Published" >
+<dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             workflow_id="bika_publication_workflow"
+             title="Bika Publication Workflow"
+             description=""
+             state_variable="publish_state"
+             initial_state="unpublished"
+             manager_bypass="False"
+              i18n:domain="bika">
+
+ <state state_id="published" title="Published" i18n:attributes="title">
   <exit-transition transition_id="republish" />
   
   
   
  </state>
- <state state_id="unpublished" title="Unpublished" >
+ <state state_id="unpublished" title="Unpublished" i18n:attributes="title">
   <exit-transition transition_id="publish" />
   
   
   
  </state>
- <transition transition_id="publish" title="Publish" new_state="published" trigger="USER" before_script="" after_script="bika.lims.workflow.default" >
+ <transition transition_id="publish" title="Publish" new_state="published" trigger="USER" before_script="" after_script="bika.lims.workflow.default" i18n:attributes="title">
   <action url="%(content_url)s/publish" category="workflow" icon="">Publish</action>
   <guard >
    <guard-permission>BIKA: Publish</guard-permission>
@@ -22,7 +29,7 @@
   </guard>
   
  </transition>
- <transition transition_id="republish" title="Republish" new_state="" trigger="USER" before_script="" after_script="bika.lims.workflow.default" >
+ <transition transition_id="republish" title="Republish" new_state="" trigger="USER" before_script="" after_script="bika.lims.workflow.default" i18n:attributes="title">
   <action url="%(content_url)s/publish" category="workflow" icon="">Republish</action>
   <guard >
    <guard-permission>BIKA: Publish</guard-permission>

@@ -1,10 +1,17 @@
 <?xml version="1.0"?>
-<dc-workflow workflow_id="bika_referencesample_workflow" title="Bika Reference Sample Workflow" description="" state_variable="review_state"         initial_state="current" manager_bypass="False" >
+<dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             workflow_id="bika_referencesample_workflow"
+             title="Bika Reference Sample Workflow"
+             description=""
+             state_variable="review_state"
+             initial_state="current"
+             manager_bypass="False"
+             i18n:domain="bika">
  <permission>Add portal content</permission>
  <permission>BIKA: Manage Reference</permission>
  <permission>Delete objects</permission>
  <permission>Modify portal content</permission>
- <state state_id="current" title="Current" >
+ <state state_id="current" title="Current" i18n:attributes="title">
   <exit-transition transition_id="expire" />
   <permission-map name="Add portal content" acquired="False">
    <permission-role>Analyst</permission-role>
@@ -27,7 +34,7 @@
   
   
  </state>
- <state state_id="disposed" title="Disposed" >
+ <state state_id="disposed" title="Disposed" i18n:attributes="title">
   <exit-transition transition_id="" />
   <permission-map name="Add portal content" acquired="False">
    <permission-role>Manager</permission-role>
@@ -53,7 +60,7 @@
   
   
  </state>
- <state state_id="expired" title="Expired" >
+ <state state_id="expired" title="Expired" i18n:attributes="title">
   <exit-transition transition_id="dispose" />
   <permission-map name="Add portal content" acquired="False">
    <permission-role>Manager</permission-role>
@@ -70,14 +77,14 @@
   
   
  </state>
- <transition transition_id="dispose" title="Dispose" new_state="disposed" trigger="USER" before_script="" after_script="" >
+ <transition transition_id="dispose" title="Dispose" new_state="disposed" trigger="USER" before_script="" after_script="" i18n:attributes="title">
   <action url="" category="workflow" icon="">Dispose</action>
   <guard >
    <guard-permission>BIKA: Manage Reference</guard-permission>
   </guard>
   
  </transition>
- <transition transition_id="expire" title="Expire" new_state="expired" trigger="USER" before_script="" after_script="" >
+ <transition transition_id="expire" title="Expire" new_state="expired" trigger="USER" before_script="" after_script="" i18n:attributes="title">
   <action url="" category="workflow" icon="">Expire</action>
   <guard >
    <guard-permission>BIKA: Manage Reference</guard-permission>
