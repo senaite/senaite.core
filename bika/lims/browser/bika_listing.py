@@ -1102,7 +1102,7 @@ class BikaListingView(BrowserView):
         if 'transitions' in self.review_state:
             for transition_dict in self.review_state['transitions']:
                 if transition_dict['id'] in transitions:
-                    actions.append(transitions[transition_dict['title']])
+                    actions.append(transitions[transition_dict['id']])
         else:
             actions = transitions.values()
 
@@ -1135,7 +1135,7 @@ class BikaListingView(BrowserView):
                     actions.append(action)
 
         for a,action in enumerate(actions):
-            actions[a]['title'] = t(_(actions[a]['title']))
+            actions[a]['id'] = t(_(actions[a]['title']))
         return actions
 
     def getPriorityIcon(self):
