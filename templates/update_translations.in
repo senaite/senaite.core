@@ -88,7 +88,7 @@ echo -n "" > $LOCALES/en/LC_MESSAGES/$DOMAIN.po
 # Re-scan the source code for new strings and create a temporary $DOMAIN-tmp.pot
 $I18N rebuild-pot --pot $LOCALES/$DOMAIN-tmp.pot --exclude "build" --create $DOMAIN bika/lims/profiles
 # Merge the manual translations of $DOMAIN-manual.pot into the temporary $DOMAIN-tmp.pot
-$I18N merge --pot $LOCALES/$DOMAIN-tmp.pot --merge $LOCALES/$DOMAIN-manual.pot
+$I18N merge --pot $LOCALES/$DOMAIN-tmp.pot --merge $PLONE_POT --merge2 $LOCALES/$DOMAIN-manual.pot
 # Overwrite the existing $DOMAIN.pot
 mv $LOCALES/$DOMAIN-tmp.pot $LOCALES/$DOMAIN.pot
 # Synchronize all .po files with the new $DOMAIN.pot
