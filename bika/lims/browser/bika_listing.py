@@ -170,6 +170,9 @@ class WorkflowAction:
         action, came_from = self._get_form_workflow_action()
 
         if action:
+            # bika_listing sometimes gives us a list of items?
+            if type(action) == list:
+                action = action[0]
             # Call out to the workflow action method
             # Use default bika_listing.py/WorkflowAction for other transitions
             method_name = 'workflow_action_' + action
@@ -248,6 +251,7 @@ class WorkflowAction:
             # selected_items is a list of UIDs (stickers for AR_add use IDs)
             q += ",".join(transitioned)
             dest = self.context.absolute_url() + q
+            self.destination_url = dest
 
         return len(transitioned), dest
 
@@ -1098,7 +1102,7 @@ class BikaListingView(BrowserView):
         if 'transitions' in self.review_state:
             for transition_dict in self.review_state['transitions']:
                 if transition_dict['id'] in transitions:
-                    actions.append(transitions[transition_dict['id']])
+                    actions.append(transitions[transition_dict['title']])
         else:
             actions = transitions.values()
 
@@ -1131,7 +1135,7 @@ class BikaListingView(BrowserView):
                     actions.append(action)
 
         for a,action in enumerate(actions):
-            actions[a]['title'] = t(PMF(actions[a]['id'] + "_transition_title"))
+            actions[a]['title'] = t(_(actions[a]['title']))
         return actions
 
     def getPriorityIcon(self):
