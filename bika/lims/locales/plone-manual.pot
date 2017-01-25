@@ -18,6 +18,9 @@ msgstr ""
 msgid "Dormant"
 msgstr ""
 
+msgid "Verify"
+msgstr ""
+
 msgid "plone_manual_test"
 msgstr "Plone Manual Test"
 
