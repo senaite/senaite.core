@@ -248,11 +248,10 @@ Workflow Actions
                         type="submit"
                         name="workflow_action_button"
                         i18n:attributes="value"
-                        i18n:domain="plone"
                         tal:attributes="
                             id python:action['id']+'_transition';
                             transition action/id;
-                            value string:${action/id}_transition_title;
+                            value string:${action/title};
                             url python:action.get('url', '');"/>
                 </span>
             </span>
