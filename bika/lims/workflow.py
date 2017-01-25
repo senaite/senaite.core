@@ -93,11 +93,11 @@ def get_workflow_actions(obj):
     """
 
     def translate(id):
-        return t(PMF(id + "_transition_title"))
+        return t(_(id))
 
     workflow = getToolByName(obj, 'portal_workflow')
     actions = [{"id": it["id"],
-                "title": translate(it["id"])}
+                "title": t(_(it["title"]))}
                for it in workflow.getTransitionsFor(obj)]
 
     return actions
