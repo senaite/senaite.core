@@ -9,8 +9,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2017-01-25 15:36+0000\n"
-"PO-Revision-Date: 2017-01-25 15:21+0000\n"
+"POT-Creation-Date: 2017-01-25 15:54+0000\n"
+"PO-Revision-Date: 2017-01-25 15:48+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
 "Language-Team: Portuguese (Brazil) (http://www.transifex.com/bikalabs/bika-lims/language/pt_BR/)\n"
 "MIME-Version: 1.0\n"
@@ -45,9 +45,6 @@ msgstr "Modelos de RA"
 msgid "ARReport"
 msgstr "Relatório de RA"
 
-# bika/lims/profiles/default/workflow_csv/bika_cancellation_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_inactive_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_one_state_workflow.csv
 msgid "Active"
 msgstr ""
 
@@ -128,9 +125,6 @@ msgstr "Especificações de Análise"
 msgid "Analysis Specifications"
 msgstr "Especificações de Análise"
 
-# bika/lims/profiles/default/workflow_csv/bika_duplicateanalysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_referenceanalysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_worksheetanalysis_workflow.csv
 msgid "Assigned"
 msgstr ""
 
@@ -202,7 +196,6 @@ msgstr ""
 msgid "Calibrations"
 msgstr "Calibração"
 
-# bika/lims/profiles/default/workflow_csv/bika_cancellation_workflow.csv
 msgid "Cancelled"
 msgstr ""
 
@@ -215,8 +208,6 @@ msgstr "Cliente"
 msgid "Clients"
 msgstr "Clientes"
 
-# bika/lims/profiles/default/workflow_csv/bika_batch_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_samplinground_workflow.csv
 msgid "Closed"
 msgstr ""
 
@@ -256,7 +247,6 @@ msgstr "Recipientes"
 msgid "Create Invoice"
 msgstr ""
 
-# bika/lims/profiles/default/workflow_csv/bika_referencesample_workflow.csv
 msgid "Current"
 msgstr ""
 
@@ -268,12 +258,9 @@ msgstr "Departamento"
 msgid "Departments"
 msgstr "Departamentos"
 
-# bika/lims/profiles/default/workflow_csv/bika_order_workflow.csv
 msgid "Dispatched"
 msgstr ""
 
-# bika/lims/profiles/default/workflow_csv/bika_referencesample_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_sample_workflow.csv
 msgid "Disposed"
 msgstr ""
 
@@ -298,8 +285,6 @@ msgstr ""
 msgid "Email pricelist"
 msgstr "Endereço de e-mail"
 
-# bika/lims/profiles/default/workflow_csv/bika_referencesample_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_sample_workflow.csv
 msgid "Expired"
 msgstr ""
 
@@ -336,7 +321,6 @@ msgstr ""
 msgid "Import"
 msgstr ""
 
-# bika/lims/profiles/default/workflow_csv/bika_arimport_workflow.csv
 msgid "Imported"
 msgstr ""
 
@@ -344,7 +328,6 @@ msgstr ""
 msgid "Imports"
 msgstr "Importar"
 
-# bika/lims/profiles/default/workflow_csv/bika_inactive_workflow.csv
 msgid "Inactive"
 msgstr ""
 
@@ -371,8 +354,6 @@ msgstr "Tipos  de Instrumento"
 msgid "Instruments"
 msgstr "Instrumentos"
 
-# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_arimport_workflow.csv
 msgid "Invalid"
 msgstr ""
 
@@ -459,9 +440,6 @@ msgstr "Métodos"
 msgid "Not requested"
 msgstr ""
 
-# bika/lims/profiles/default/workflow_csv/bika_batch_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_samplinground_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_worksheet_workflow.csv
 msgid "Open"
 msgstr ""
 
@@ -473,7 +451,6 @@ msgstr ""
 msgid "Orders"
 msgstr "Pedidos"
 
-#. Default: "Pending"
 msgid "Pending"
 msgstr ""
 
@@ -527,8 +504,6 @@ msgstr ""
 msgid "Quality Control"
 msgstr "Controle de qualidade"
 
-# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
 msgid "Received"
 msgstr ""
 
@@ -565,7 +540,7 @@ msgstr "Valores de referência"
 msgid "Registered"
 msgstr ""
 
-#. Default: "Reject"
+# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
 msgid "Reject"
 msgstr ""
 
@@ -573,11 +548,6 @@ msgstr ""
 msgid "Reject Analysis"
 msgstr "Rejeitar análise"
 
-# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_duplicateanalysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_referenceanalysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_reject_analysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_worksheet_workflow.csv
 msgid "Rejected"
 msgstr ""
 
@@ -775,30 +745,15 @@ msgstr "Ordem de fornecimento"
 msgid "Supply Orders"
 msgstr "Pedidos de fornecimento"
 
-# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_sample_workflow.csv
 msgid "To Be Preserved"
 msgstr ""
 
-# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_sample_workflow.csv
 msgid "To Be Sampled"
 msgstr ""
 
-# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_duplicateanalysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_referenceanalysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_worksheet_workflow.csv
 msgid "To be verified"
 msgstr ""
 
-# bika/lims/profiles/default/workflow_csv/bika_duplicateanalysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_referenceanalysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_worksheetanalysis_workflow.csv
 msgid "Unassigned"
 msgstr ""
 
@@ -814,11 +769,6 @@ msgstr ""
 msgid "Validations"
 msgstr "Validações"
 
-# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_duplicateanalysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_referenceanalysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_worksheet_workflow.csv
 msgid "Verified"
 msgstr ""
 

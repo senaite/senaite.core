@@ -9,8 +9,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2017-01-25 15:36+0000\n"
-"PO-Revision-Date: 2017-01-25 15:21+0000\n"
+"POT-Creation-Date: 2017-01-25 15:54+0000\n"
+"PO-Revision-Date: 2017-01-25 15:48+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
 "Language-Team: German (http://www.transifex.com/bikalabs/bika-lims/language/de/)\n"
 "MIME-Version: 1.0\n"
@@ -45,9 +45,6 @@ msgstr "Analysenauftrag - Vorlagen"
 msgid "ARReport"
 msgstr "Bericht über Analysenaufträge"
 
-# bika/lims/profiles/default/workflow_csv/bika_cancellation_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_inactive_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_one_state_workflow.csv
 msgid "Active"
 msgstr "Aktiv"
 
@@ -128,9 +125,6 @@ msgstr "Analysen - Spezifikation"
 msgid "Analysis Specifications"
 msgstr "Analysen - Spezifikationen"
 
-# bika/lims/profiles/default/workflow_csv/bika_duplicateanalysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_referenceanalysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_worksheetanalysis_workflow.csv
 msgid "Assigned"
 msgstr "Zugewiesen"
 
@@ -202,7 +196,6 @@ msgstr "Kalibrierungszertifikate"
 msgid "Calibrations"
 msgstr "Kalibrierungen"
 
-# bika/lims/profiles/default/workflow_csv/bika_cancellation_workflow.csv
 msgid "Cancelled"
 msgstr "Abgebrochen"
 
@@ -215,8 +208,6 @@ msgstr "Kunde"
 msgid "Clients"
 msgstr "Kunden"
 
-# bika/lims/profiles/default/workflow_csv/bika_batch_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_samplinground_workflow.csv
 msgid "Closed"
 msgstr "Geschlossen"
 
@@ -256,7 +247,6 @@ msgstr "Behälter"
 msgid "Create Invoice"
 msgstr "Rechnung erstellen"
 
-# bika/lims/profiles/default/workflow_csv/bika_referencesample_workflow.csv
 msgid "Current"
 msgstr "Aktuell"
 
@@ -268,12 +258,9 @@ msgstr "Abteilung"
 msgid "Departments"
 msgstr "Abteilungen"
 
-# bika/lims/profiles/default/workflow_csv/bika_order_workflow.csv
 msgid "Dispatched"
 msgstr "Versandt"
 
-# bika/lims/profiles/default/workflow_csv/bika_referencesample_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_sample_workflow.csv
 msgid "Disposed"
 msgstr "Entsorgt"
 
@@ -298,8 +285,6 @@ msgstr "Bearbeiten"
 msgid "Email pricelist"
 msgstr "Preisliste per Mail versenden"
 
-# bika/lims/profiles/default/workflow_csv/bika_referencesample_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_sample_workflow.csv
 msgid "Expired"
 msgstr "Abgelaufen"
 
@@ -336,7 +321,6 @@ msgstr "Identifikationstypen"
 msgid "Import"
 msgstr "Import"
 
-# bika/lims/profiles/default/workflow_csv/bika_arimport_workflow.csv
 msgid "Imported"
 msgstr "importiert"
 
@@ -344,7 +328,6 @@ msgstr "importiert"
 msgid "Imports"
 msgstr "Importe"
 
-# bika/lims/profiles/default/workflow_csv/bika_inactive_workflow.csv
 msgid "Inactive"
 msgstr "Inaktiv"
 
@@ -371,8 +354,6 @@ msgstr "Gerätearten"
 msgid "Instruments"
 msgstr "Geräte"
 
-# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_arimport_workflow.csv
 msgid "Invalid"
 msgstr "Ungültig"
 
@@ -459,9 +440,6 @@ msgstr "Methoden"
 msgid "Not requested"
 msgstr "Nicht angefragt"
 
-# bika/lims/profiles/default/workflow_csv/bika_batch_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_samplinground_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_worksheet_workflow.csv
 msgid "Open"
 msgstr "Offen"
 
@@ -473,7 +451,6 @@ msgstr "Auftrag ausstehend"
 msgid "Orders"
 msgstr "Bestellungen"
 
-#. Default: "Pending"
 msgid "Pending"
 msgstr "ausstehend"
 
@@ -527,8 +504,6 @@ msgstr "QC Ergebnisse"
 msgid "Quality Control"
 msgstr "Qualitätssicherung"
 
-# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
 msgid "Received"
 msgstr "Empfangen"
 
@@ -565,7 +540,7 @@ msgstr "Referenzwerte"
 msgid "Registered"
 msgstr "registriert"
 
-#. Default: "Reject"
+# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
 msgid "Reject"
 msgstr "Ablehnen"
 
@@ -573,11 +548,6 @@ msgstr "Ablehnen"
 msgid "Reject Analysis"
 msgstr "Analyse ablehnen"
 
-# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_duplicateanalysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_referenceanalysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_reject_analysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_worksheet_workflow.csv
 msgid "Rejected"
 msgstr "Abgelehnt"
 
@@ -775,30 +745,15 @@ msgstr "Lieferauftrag"
 msgid "Supply Orders"
 msgstr "Lieferauftrag"
 
-# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_sample_workflow.csv
 msgid "To Be Preserved"
 msgstr "Zu konservieren"
 
-# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_sample_workflow.csv
 msgid "To Be Sampled"
 msgstr "Zu beproben"
 
-# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_duplicateanalysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_referenceanalysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_worksheet_workflow.csv
 msgid "To be verified"
 msgstr "Zu überprüfen"
 
-# bika/lims/profiles/default/workflow_csv/bika_duplicateanalysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_referenceanalysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_worksheetanalysis_workflow.csv
 msgid "Unassigned"
 msgstr "Nicht zugewiesen"
 
@@ -814,11 +769,6 @@ msgstr "Gültig"
 msgid "Validations"
 msgstr "Validierungen"
 
-# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_duplicateanalysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_referenceanalysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_worksheet_workflow.csv
 msgid "Verified"
 msgstr "Überprüft"
 
