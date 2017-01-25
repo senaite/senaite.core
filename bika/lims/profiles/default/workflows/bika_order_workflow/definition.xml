@@ -1,8 +1,15 @@
 <?xml version="1.0"?>
-<dc-workflow workflow_id="bika_order_workflow" title="Bika Order Workflow" description="" state_variable="review_state"         initial_state="pending" manager_bypass="False" >
+<dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             workflow_id="bika_order_workflow"
+             title="Bika Order Workflow"
+             description=""
+             state_variable="review_state"
+             initial_state="pending"
+             manager_bypass="False"
+             i18n:domain="bika">
  <permission>Delete objects</permission>
  <permission>Modify portal content</permission>
- <state state_id="dispatched" title="Dispatched" >
+ <state state_id="dispatched" title="Dispatched" i18n:attributes="title">
   <exit-transition transition_id="" />
   <permission-map name="Delete objects" acquired="False">
    <permission-role>LabManager</permission-role>
@@ -15,7 +22,7 @@
   
   
  </state>
- <state state_id="pending" title="Order pending" >
+ <state state_id="pending" title="Order pending" i18n:attributes="title">
   <exit-transition transition_id="dispatch" />
   <permission-map name="Delete objects" acquired="False">
    <permission-role>LabClerk</permission-role>
@@ -32,7 +39,7 @@
   
   
  </state>
- <transition transition_id="dispatch" title="Dispatch order" new_state="dispatched" trigger="USER" before_script="" after_script="" >
+ <transition transition_id="dispatch" title="Dispatch order" new_state="dispatched" trigger="USER" before_script="" after_script="" i18n:attributes="title">
   <action url="" category="workflow" icon="">Dispatch order</action>
   <guard >
    <guard-permission>BIKA: Dispatch Order</guard-permission>

@@ -1,10 +1,16 @@
 <?xml version="1.0"?>
-<dc-workflow workflow_id="bika_reject_analysis_workflow" title="Bika Rejected Analysis Workflow" description="" state_variable="review_state"         initial_state="rejected" manager_bypass="False" >
+<dc-workflow workflow_id="bika_reject_analysis_workflow"
+             title="Bika Rejected Analysis Workflow"
+             description=""
+             state_variable="review_state"
+             initial_state="rejected"
+             manager_bypass="False"
+             i18n:domain="bika">
  <permission>BIKA: Cancel and reinstate</permission>
  <permission>BIKA: Edit Field Results</permission>
  <permission>BIKA: Edit Results</permission>
  <permission>BIKA: View Results</permission>
- <state state_id="rejected" title="Rejected" >
+ <state state_id="rejected" title="Rejected" i18n:attributes="title">
   <exit-transition transition_id="" />
   <permission-map name="BIKA: Cancel and reinstate" acquired="False">
    

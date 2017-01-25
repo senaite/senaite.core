@@ -1,7 +1,14 @@
 <?xml version="1.0"?>
-<dc-workflow workflow_id="bika_one_state_workflow" title="Bika Single State Workflow" description="" state_variable="review_state"         initial_state="active" manager_bypass="False" >
- 
- <state state_id="active" title="Active" >
+<dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             workflow_id="bika_one_state_workflow"
+             title="Bika Single State Workflow"
+             description=""
+             state_variable="review_state"
+             initial_state="active"
+             manager_bypass="False"
+             i18n:domain="bika">
+
+ <state state_id="active" title="Active" i18n:attributes="title">
   <exit-transition transition_id="" />
   
   

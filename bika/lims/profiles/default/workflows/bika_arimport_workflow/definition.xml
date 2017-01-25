@@ -1,5 +1,12 @@
 <?xml version="1.0"?>
-<dc-workflow workflow_id="bika_arimport_workflow" title="Bika ARImport Workflow" description="" state_variable="review_state"         initial_state="invalid" manager_bypass="False" >
+<dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             workflow_id="bika_arimport_workflow"
+             title="Bika ARImport Workflow"
+             description=""
+             state_variable="review_state"
+             initial_state="invalid"
+             manager_bypass="False"
+             i18n:domain="bika">
  <permission>Modify portal content</permission>
  <state state_id="imported" title="Imported" >
   <exit-transition transition_id="" />
@@ -29,14 +36,14 @@
   
   
  </state>
- <transition transition_id="import" title="" new_state="imported" trigger="USER" before_script="" after_script="" >
+ <transition transition_id="import" title="" new_state="imported" trigger="USER" before_script="" after_script="" i18n:attributes="title">
   <action url="" category="workflow" icon="">Import</action>
   <guard >
    <guard-permission>BIKA: Manage ARImport</guard-permission>
   </guard>
   
  </transition>
- <transition transition_id="validate" title="" new_state="valid" trigger="USER" before_script="" after_script="" >
+ <transition transition_id="validate" title="" new_state="valid" trigger="USER" before_script="" after_script="" i18n:attributes="title">
   <action url="" category="workflow" icon="">Validate</action>
   <guard >
    <guard-permission>BIKA: Manage ARImport</guard-permission>
