@@ -1,11 +1,12 @@
 <?xml version="1.0"?>
-<dc-workflow workflow_id="sampleprep_simple"
+<dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             workflow_id="sampleprep_simple"
              title="Simple one-step"
              description="Simple single-step sample preparation"
              state_variable="sampleprep_review_state"
              initial_state="pending"
              manager_bypass="False"
-              i18n:domain="bika">
+             i18n:domain="bika">
 
  <state state_id="complete" title="Complete" i18n:attributes="title">
   <description>Complete</description>

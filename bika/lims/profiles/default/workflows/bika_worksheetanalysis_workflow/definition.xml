@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<dc-workflow workflow_id="bika_worksheetanalysis_workflow"
+<dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             workflow_id="bika_worksheetanalysis_workflow"
              title="Bika Worksheet Analysis Workflow"
              description=""
              state_variable="worksheetanalysis_review_state"
