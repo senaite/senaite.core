@@ -1,5 +1,6 @@
 <?xml version="1.0"?>
-<dc-workflow workflow_id="bika_reject_analysis_workflow"
+<dc-workflow xmlns:i18n="http://xml.zope.org/namespaces/i18n"
+             workflow_id="bika_reject_analysis_workflow"
              title="Bika Rejected Analysis Workflow"
              description=""
              state_variable="review_state"
