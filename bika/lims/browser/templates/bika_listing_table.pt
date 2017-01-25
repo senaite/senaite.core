@@ -252,7 +252,7 @@ Workflow Actions
                         tal:attributes="
                             id python:action['id']+'_transition';
                             transition action/id;
-                            value string:${action/id}_transition_title;
+                            value string:${action/title};
                             url python:action.get('url', '');"/>
                 </span>
             </span>
