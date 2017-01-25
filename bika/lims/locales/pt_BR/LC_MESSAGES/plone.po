@@ -9,8 +9,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2017-01-25 14:31+0000\n"
-"PO-Revision-Date: 2017-01-25 13:44+0000\n"
+"POT-Creation-Date: 2017-01-25 15:36+0000\n"
+"PO-Revision-Date: 2017-01-25 15:21+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
 "Language-Team: Portuguese (Brazil) (http://www.transifex.com/bikalabs/bika-lims/language/pt_BR/)\n"
 "MIME-Version: 1.0\n"
@@ -473,7 +473,7 @@ msgstr ""
 msgid "Orders"
 msgstr "Pedidos"
 
-# bika/lims/profiles/default/workflow_csv/sampleprep_simple.csv
+#. Default: "Pending"
 msgid "Pending"
 msgstr ""
 
@@ -512,9 +512,6 @@ msgstr "Imprimir lista de compra"
 msgid "Productivity"
 msgstr "Produtividade"
 
-# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
-# bika/lims/profiles/default/workflow_csv/bika_publication_workflow.csv
 msgid "Published"
 msgstr ""
 
@@ -568,7 +565,7 @@ msgstr "Valores de referência"
 msgid "Registered"
 msgstr ""
 
-# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
+#. Default: "Reject"
 msgid "Reject"
 msgstr ""
 

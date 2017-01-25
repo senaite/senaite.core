@@ -30,8 +30,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2017-01-25 14:31+0000\n"
-"PO-Revision-Date: 2017-01-25 13:20+0000\n"
+"POT-Creation-Date: 2017-01-25 15:36+0000\n"
+"PO-Revision-Date: 2017-01-25 15:21+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
 "Language-Team: German (http://www.transifex.com/bikalabs/bika-lims/language/de/)\n"
 "MIME-Version: 1.0\n"
@@ -5022,7 +5022,7 @@ msgstr "Dezimalzeichen im LIMS Setup wird verwendet."
 
 #: bika/lims/content/samplinground.py:161
 msgid "The default Sampler for these Sampling Round"
-msgstr ""
+msgstr "Standard Probennehmer für diese Probenrunde"
 
 #: bika/lims/content/sampletype.py:78
 msgid "The default container type. New sample partitions are automatically assigned a container of this type, unless it has been specified in more details per analysis service"
