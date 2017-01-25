@@ -5,8 +5,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2017-01-17 08:44+0000\n"
-"PO-Revision-Date: 2016-12-07 17:36+0000\n"
+"POT-Creation-Date: 2017-01-25 14:31+0000\n"
+"PO-Revision-Date: 2017-01-25 13:44+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
 "Language-Team: Hungarian (http://www.transifex.com/bikalabs/bika-lims/language/hu/)\n"
 "MIME-Version: 1.0\n"
@@ -19,6 +19,7 @@ msgstr ""
 "Domain: plone\n"
 "Language: hu\n"
 
+#. Default: "AR Imports"
 msgid "AR Imports"
 msgstr "AR importok"
 
@@ -39,6 +40,12 @@ msgstr "AR sablonok"
 #: bika/lims/profiles/default/types/ARReport.xml
 msgid "ARReport"
 msgstr "AR jelentés"
+
+# bika/lims/profiles/default/workflow_csv/bika_cancellation_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_inactive_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_one_state_workflow.csv
+msgid "Active"
+msgstr ""
 
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Analyses"
@@ -117,9 +124,23 @@ msgstr "Vizsgálat szolgáltatás"
 msgid "Analysis Specifications"
 msgstr "Vizsgálat szolgáltatások"
 
+# bika/lims/profiles/default/workflow_csv/bika_duplicateanalysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_referenceanalysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_worksheetanalysis_workflow.csv
+msgid "Assigned"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Attachment.xml
 msgid "Attachment"
 msgstr "Csatolmány "
+
+# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_duplicateanalysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_referenceanalysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_worksheet_workflow.csv
+msgid "Attachment Outstanding"
+msgstr ""
 
 #: bika/lims/profiles/default/types/AttachmentType.xml
 msgid "Attachment Type"
@@ -177,6 +198,10 @@ msgstr ""
 msgid "Calibrations"
 msgstr "Hitelesítések"
 
+# bika/lims/profiles/default/workflow_csv/bika_cancellation_workflow.csv
+msgid "Cancelled"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Client"
 msgstr "Ügyfél"
@@ -185,6 +210,20 @@ msgstr "Ügyfél"
 #: bika/lims/profiles/default/types/ClientFolder.xml
 msgid "Clients"
 msgstr "Ügyfelek"
+
+# bika/lims/profiles/default/workflow_csv/bika_batch_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_samplinground_workflow.csv
+msgid "Closed"
+msgstr ""
+
+# bika/lims/profiles/default/workflow_csv/sampleprep_simple.csv
+msgid "Complete"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Contact.xml
+#: bika/lims/profiles/default/types/SupplierContact.xml
+msgid "Contact"
+msgstr ""
 
 #: bika/lims/profiles/default/types/Client.xml
 #: bika/lims/profiles/default/types/Supplier.xml
@@ -213,6 +252,10 @@ msgstr "Tárolók"
 msgid "Create Invoice"
 msgstr ""
 
+# bika/lims/profiles/default/workflow_csv/bika_referencesample_workflow.csv
+msgid "Current"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Department.xml
 msgid "Department"
 msgstr "Osztály"
@@ -221,17 +264,40 @@ msgstr "Osztály"
 msgid "Departments"
 msgstr "Osztályok"
 
+# bika/lims/profiles/default/workflow_csv/bika_order_workflow.csv
+msgid "Dispatched"
+msgstr ""
+
+# bika/lims/profiles/default/workflow_csv/bika_referencesample_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_sample_workflow.csv
+msgid "Disposed"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Documents"
+msgstr ""
+
+msgid "Dormant"
 msgstr ""
 
 #: bika/lims/profiles/default/types/DuplicateAnalysis.xml
 msgid "Duplicate Analysis"
 msgstr "Másolat vizsgálat"
 
+#: bika/lims/profiles/default/types/ARImport.xml
+#: bika/lims/profiles/default/types/ARPriority.xml
+#: bika/lims/profiles/default/types/ARTemplate.xml
+msgid "Edit"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Pricelist.xml
 msgid "Email pricelist"
 msgstr "Árlista küldése Email-ben"
+
+# bika/lims/profiles/default/workflow_csv/bika_referencesample_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_sample_workflow.csv
+msgid "Expired"
+msgstr ""
 
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Export"
@@ -245,6 +311,14 @@ msgstr ""
 msgid "Extracts"
 msgstr "Kivonatok"
 
+#: bika/lims/profiles/default/types/ReportFolder.xml
+msgid "History"
+msgstr ""
+
+#: bika/lims/profiles/default/actions.xml
+msgid "Home"
+msgstr ""
+
 #: bika/lims/profiles/default/types/IdentifierType.xml
 msgid "Identifier Type"
 msgstr ""
@@ -254,9 +328,21 @@ msgstr ""
 msgid "Identifier Types"
 msgstr ""
 
+#: bika/lims/profiles/default/actions.xml
+msgid "Import"
+msgstr ""
+
+# bika/lims/profiles/default/workflow_csv/bika_arimport_workflow.csv
+msgid "Imported"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Imports"
 msgstr "Importok"
+
+# bika/lims/profiles/default/workflow_csv/bika_inactive_workflow.csv
+msgid "Inactive"
+msgstr ""
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Instrument"
@@ -280,6 +366,11 @@ msgstr "Műszer típusok"
 #: bika/lims/profiles/default/types/Instruments.xml
 msgid "Instruments"
 msgstr "Műszerek"
+
+# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_arimport_workflow.csv
+msgid "Invalid"
+msgstr ""
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Invoice.xml
@@ -329,6 +420,10 @@ msgstr "Napló"
 msgid "Login details"
 msgstr "Kapcsolódási részletek"
 
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "Maintenance"
+msgstr ""
+
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Manage Analyses"
 msgstr "Vizsgálatok kezelése"
@@ -356,9 +451,27 @@ msgstr "Módszer"
 msgid "Methods"
 msgstr "Módszerek"
 
+# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
+msgid "Not requested"
+msgstr ""
+
+# bika/lims/profiles/default/workflow_csv/bika_batch_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_samplinground_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_worksheet_workflow.csv
+msgid "Open"
+msgstr ""
+
+# bika/lims/profiles/default/workflow_csv/bika_order_workflow.csv
+msgid "Order pending"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Orders"
 msgstr "Rendelések"
+
+# bika/lims/profiles/default/workflow_csv/sampleprep_simple.csv
+msgid "Pending"
+msgstr ""
 
 #: bika/lims/profiles/default/types/Preservation.xml
 msgid "Preservation"
@@ -395,6 +508,12 @@ msgstr "Árlista nyomtatás"
 msgid "Productivity"
 msgstr "Termelékenység"
 
+# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_publication_workflow.csv
+msgid "Published"
+msgstr ""
+
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Published results"
 msgstr "Közzétett eredmények"
@@ -406,6 +525,11 @@ msgstr ""
 #: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "Quality Control"
 msgstr "Minőség ellenőrzés"
+
+# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
+msgid "Received"
+msgstr ""
 
 #: bika/lims/profiles/default/types/ReferenceAnalysis.xml
 msgid "Reference Analysis"
@@ -434,9 +558,27 @@ msgstr "Referencia minták"
 msgid "Reference Values"
 msgstr "Referencia értékek"
 
+# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_sample_workflow.csv
+msgid "Registered"
+msgstr ""
+
+# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
+msgid "Reject"
+msgstr ""
+
 #: bika/lims/profiles/default/types/RejectAnalysis.xml
 msgid "Reject Analysis"
 msgstr "Referencia vizsgálat"
+
+# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_duplicateanalysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_referenceanalysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_reject_analysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_worksheet_workflow.csv
+msgid "Rejected"
+msgstr ""
 
 #: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/Report.xml
@@ -451,6 +593,10 @@ msgstr "Jelentések"
 msgid "Results not requested"
 msgstr "Eredmény nem szükséges"
 
+# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
+msgid "Retracted"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Sample.xml
 msgid "Sample"
 msgstr "Minta"
@@ -463,6 +609,12 @@ msgstr "Minta feltétel"
 #: bika/lims/profiles/default/types/SampleConditions.xml
 msgid "Sample Conditions"
 msgstr "Minta feltételek"
+
+# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_sample_workflow.csv
+msgid "Sample Due"
+msgstr ""
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SampleMatrices.xml
@@ -490,6 +642,12 @@ msgstr "Minta pont"
 msgid "Sample Points"
 msgstr "Minta pontok"
 
+# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_sample_workflow.csv
+msgid "Sample Preparation"
+msgstr ""
+
 #: bika/lims/profiles/default/types/SampleType.xml
 msgid "Sample Type"
 msgstr "Minta típus"
@@ -499,9 +657,19 @@ msgstr "Minta típus"
 msgid "Sample Types"
 msgstr "Minta típusok"
 
+# bika/lims/profiles/default/workflow_csv/bika_sample_workflow.csv
+msgid "Sample received"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Client.xml
 msgid "SamplePoints"
 msgstr "Minta pontok"
+
+# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_sample_workflow.csv
+msgid "Sampled"
+msgstr ""
 
 #: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/Batch.xml
@@ -540,6 +708,15 @@ msgstr ""
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Schedule"
 msgstr "Ütemezés"
+
+# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_sample_workflow.csv
+msgid "Scheduled Sampling"
+msgstr ""
+
+#: bika/lims/profiles/default/actions.xml
+msgid "Sharing"
+msgstr ""
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Sample.xml
@@ -597,9 +774,58 @@ msgstr "Szállítói rendelés"
 msgid "Supply Orders"
 msgstr "Szállítói rendelések"
 
+# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_sample_workflow.csv
+msgid "To Be Preserved"
+msgstr ""
+
+# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_sample_workflow.csv
+msgid "To Be Sampled"
+msgstr ""
+
+# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_duplicateanalysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_referenceanalysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_worksheet_workflow.csv
+msgid "To be verified"
+msgstr ""
+
+# bika/lims/profiles/default/workflow_csv/bika_duplicateanalysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_referenceanalysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_worksheetanalysis_workflow.csv
+msgid "Unassigned"
+msgstr ""
+
+# bika/lims/profiles/default/workflow_csv/bika_publication_workflow.csv
+msgid "Unpublished"
+msgstr ""
+
+# bika/lims/profiles/default/workflow_csv/bika_arimport_workflow.csv
+msgid "Valid"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Validations"
 msgstr "Jóváhagyás"
+
+# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_duplicateanalysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_referenceanalysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_worksheet_workflow.csv
+msgid "Verified"
+msgstr ""
+
+#: bika/lims/profiles/default/types/ARImport.xml
+#: bika/lims/profiles/default/types/ARPriority.xml
+#: bika/lims/profiles/default/types/ARReport.xml
+msgid "View"
+msgstr ""
 
 #: bika/lims/profiles/default/types/Client.xml
 msgid "WINE-40: Do not move or remove this entry."
@@ -652,6 +878,7 @@ msgstr "Mégse"
 msgid "close_transition_title"
 msgstr "Bezár"
 
+#. Default: "Copy to new"
 msgid "copy_to_new_transition_title"
 msgstr "Új másolat létrehozás"
 
@@ -691,75 +918,99 @@ msgstr "Import"
 msgid "invalidate_transition_title"
 msgstr "Érvénytelenítés"
 
+#. Default: "AR Templates"
 msgid "label_schema_AR Templates"
 msgstr "AR sablonok"
 
+#. Default: "Accounting"
 msgid "label_schema_Accounting"
 msgstr "Számlázás"
 
+#. Default: "Address"
 msgid "label_schema_Address"
 msgstr "Cím"
 
+#. Default: "Analyses"
 msgid "label_schema_Analyses"
 msgstr "Vizsgálatok"
 
+#. Default: "Bank details"
 msgid "label_schema_Bank details"
 msgstr "Bank adatok"
 
+#. Default: "Calculation"
 msgid "label_schema_Calculation"
 msgstr "Számítás"
 
+#. Default: "Container and Preservation"
 msgid "label_schema_Container and Preservation"
 msgstr "Tároló és megőrzés"
 
+#. Default: "Dates"
 msgid "label_schema_Dates"
 msgstr "Dátumok"
 
+#. Default: "Description"
 msgid "label_schema_Description"
 msgstr "Leírás"
 
+#. Default: "Email Telephone Fax"
 msgid "label_schema_Email Telephone Fax"
 msgstr "Email, telefon, fax"
 
+#. Default: "ID Server"
 msgid "label_schema_ID Server"
 msgstr "ID szerver"
 
+#. Default: "Labels"
 msgid "label_schema_Labels"
 msgstr "Címkék"
 
+#. Default: "Layout"
 msgid "label_schema_Layout"
 msgstr "Elrendezés"
 
+#. Default: "Location"
 msgid "label_schema_Location"
 msgstr "Hely"
 
+#. Default: "Method"
 msgid "label_schema_Method"
 msgstr "Módszer"
 
+#. Default: "Preferences"
 msgid "label_schema_Preferences"
 msgstr "Beállítások"
 
+#. Default: "Publication preference"
 msgid "label_schema_Publication preference"
 msgstr "Közzététel beállítás"
 
+#. Default: "Reference Values"
 msgid "label_schema_Reference Values"
 msgstr "Referencia érték"
 
+#. Default: "Result Options"
 msgid "label_schema_Result Options"
 msgstr "Eredmény beállítások"
 
+#. Default: "Results Reports"
 msgid "label_schema_Results Reports"
 msgstr "Erdemény riportok"
 
+#. Default: "SR Templates"
 msgid "label_schema_SR Templates"
 msgstr "SR sablonok"
 
+#. Default: "Sample Partitions"
 msgid "label_schema_Sample Partitions"
 msgstr "Minta szét/felosztások"
 
+#. Default: "Security"
 msgid "label_schema_Security"
 msgstr "Biztonság"
 
+#. Default: "Uncertainties"
 msgid "label_schema_Uncertainties"
 msgstr "Bizonytalanság"
 
@@ -768,6 +1019,7 @@ msgstr "Bizonytalanság"
 msgid "open_transition_title"
 msgstr "Megnyitás"
 
+#. Default: "Plone Manual Test"
 msgid "plone_manual_test"
 msgstr "Plone kézi ellenőrzés"
 
@@ -811,6 +1063,10 @@ msgstr "Visszatétel"
 #: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml
 msgid "reject_transition_title"
 msgstr "Eldob"
+
+# bika/lims/profiles/default/workflow_csv/bika_sample_workflow.csv
+msgid "rejected"
+msgstr ""
 
 #. Default: "Republish"
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml

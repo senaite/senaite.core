@@ -10,8 +10,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2017-01-17 08:44+0000\n"
-"PO-Revision-Date: 2016-12-07 17:36+0000\n"
+"POT-Creation-Date: 2017-01-25 14:31+0000\n"
+"PO-Revision-Date: 2017-01-25 13:44+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
 "Language-Team: Spanish (Peru) (http://www.transifex.com/bikalabs/bika-lims/language/es_PE/)\n"
 "MIME-Version: 1.0\n"
@@ -24,6 +24,7 @@ msgstr ""
 "Domain: plone\n"
 "Language: es_PE\n"
 
+#. Default: "AR Imports"
 msgid "AR Imports"
 msgstr "AR Imports"
 
@@ -44,6 +45,12 @@ msgstr "Plantillas de solicitud de análisis"
 #: bika/lims/profiles/default/types/ARReport.xml
 msgid "ARReport"
 msgstr "Reporte AR"
+
+# bika/lims/profiles/default/workflow_csv/bika_cancellation_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_inactive_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_one_state_workflow.csv
+msgid "Active"
+msgstr ""
 
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Analyses"
@@ -122,9 +129,23 @@ msgstr "Especificación de análisis"
 msgid "Analysis Specifications"
 msgstr "Especificaciones de análisis"
 
+# bika/lims/profiles/default/workflow_csv/bika_duplicateanalysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_referenceanalysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_worksheetanalysis_workflow.csv
+msgid "Assigned"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Attachment.xml
 msgid "Attachment"
 msgstr "Fichero adjunto"
+
+# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_duplicateanalysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_referenceanalysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_worksheet_workflow.csv
+msgid "Attachment Outstanding"
+msgstr ""
 
 #: bika/lims/profiles/default/types/AttachmentType.xml
 msgid "Attachment Type"
@@ -182,6 +203,10 @@ msgstr ""
 msgid "Calibrations"
 msgstr "Calibraciones"
 
+# bika/lims/profiles/default/workflow_csv/bika_cancellation_workflow.csv
+msgid "Cancelled"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Client"
 msgstr "Cliente"
@@ -190,6 +215,20 @@ msgstr "Cliente"
 #: bika/lims/profiles/default/types/ClientFolder.xml
 msgid "Clients"
 msgstr "Clientes"
+
+# bika/lims/profiles/default/workflow_csv/bika_batch_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_samplinground_workflow.csv
+msgid "Closed"
+msgstr ""
+
+# bika/lims/profiles/default/workflow_csv/sampleprep_simple.csv
+msgid "Complete"
+msgstr ""
+
+#: bika/lims/profiles/default/types/Contact.xml
+#: bika/lims/profiles/default/types/SupplierContact.xml
+msgid "Contact"
+msgstr ""
 
 #: bika/lims/profiles/default/types/Client.xml
 #: bika/lims/profiles/default/types/Supplier.xml
@@ -218,6 +257,10 @@ msgstr "Contenedores"
 msgid "Create Invoice"
 msgstr ""
 
+# bika/lims/profiles/default/workflow_csv/bika_referencesample_workflow.csv
+msgid "Current"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Department.xml
 msgid "Department"
 msgstr "Departamento"
@@ -226,17 +269,40 @@ msgstr "Departamento"
 msgid "Departments"
 msgstr "Departamentos"
 
+# bika/lims/profiles/default/workflow_csv/bika_order_workflow.csv
+msgid "Dispatched"
+msgstr ""
+
+# bika/lims/profiles/default/workflow_csv/bika_referencesample_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_sample_workflow.csv
+msgid "Disposed"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Documents"
+msgstr ""
+
+msgid "Dormant"
 msgstr ""
 
 #: bika/lims/profiles/default/types/DuplicateAnalysis.xml
 msgid "Duplicate Analysis"
 msgstr "Análisis duplicados"
 
+#: bika/lims/profiles/default/types/ARImport.xml
+#: bika/lims/profiles/default/types/ARPriority.xml
+#: bika/lims/profiles/default/types/ARTemplate.xml
+msgid "Edit"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Pricelist.xml
 msgid "Email pricelist"
 msgstr "Lista de precios por correo electrónico"
+
+# bika/lims/profiles/default/workflow_csv/bika_referencesample_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_sample_workflow.csv
+msgid "Expired"
+msgstr ""
 
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Export"
@@ -250,6 +316,14 @@ msgstr ""
 msgid "Extracts"
 msgstr "Extractos"
 
+#: bika/lims/profiles/default/types/ReportFolder.xml
+msgid "History"
+msgstr ""
+
+#: bika/lims/profiles/default/actions.xml
+msgid "Home"
+msgstr ""
+
 #: bika/lims/profiles/default/types/IdentifierType.xml
 msgid "Identifier Type"
 msgstr ""
@@ -259,9 +333,21 @@ msgstr ""
 msgid "Identifier Types"
 msgstr ""
 
+#: bika/lims/profiles/default/actions.xml
+msgid "Import"
+msgstr ""
+
+# bika/lims/profiles/default/workflow_csv/bika_arimport_workflow.csv
+msgid "Imported"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Imports"
 msgstr "Importaciones"
+
+# bika/lims/profiles/default/workflow_csv/bika_inactive_workflow.csv
+msgid "Inactive"
+msgstr ""
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Instrument"
@@ -285,6 +371,11 @@ msgstr "Tipos de Instrumento"
 #: bika/lims/profiles/default/types/Instruments.xml
 msgid "Instruments"
 msgstr "Equipos"
+
+# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_arimport_workflow.csv
+msgid "Invalid"
+msgstr ""
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Invoice.xml
@@ -334,6 +425,10 @@ msgstr "Registro"
 msgid "Login details"
 msgstr "Detalles de acceso"
 
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "Maintenance"
+msgstr ""
+
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Manage Analyses"
 msgstr "Administrar análisis"
@@ -361,9 +456,27 @@ msgstr "Método"
 msgid "Methods"
 msgstr "Métodos"
 
+# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
+msgid "Not requested"
+msgstr ""
+
+# bika/lims/profiles/default/workflow_csv/bika_batch_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_samplinground_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_worksheet_workflow.csv
+msgid "Open"
+msgstr ""
+
+# bika/lims/profiles/default/workflow_csv/bika_order_workflow.csv
+msgid "Order pending"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Orders"
 msgstr "Pedidos"
+
+# bika/lims/profiles/default/workflow_csv/sampleprep_simple.csv
+msgid "Pending"
+msgstr ""
 
 #: bika/lims/profiles/default/types/Preservation.xml
 msgid "Preservation"
@@ -400,6 +513,12 @@ msgstr "Imprimir la lista de precios"
 msgid "Productivity"
 msgstr "Productividad"
 
+# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_publication_workflow.csv
+msgid "Published"
+msgstr ""
+
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Published results"
 msgstr "Resultados publicados"
@@ -411,6 +530,11 @@ msgstr ""
 #: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "Quality Control"
 msgstr "Control de calidad"
+
+# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
+msgid "Received"
+msgstr ""
 
 #: bika/lims/profiles/default/types/ReferenceAnalysis.xml
 msgid "Reference Analysis"
@@ -439,9 +563,27 @@ msgstr "Muestras de referencia"
 msgid "Reference Values"
 msgstr "Valores de referencia"
 
+# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_sample_workflow.csv
+msgid "Registered"
+msgstr ""
+
+# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
+msgid "Reject"
+msgstr ""
+
 #: bika/lims/profiles/default/types/RejectAnalysis.xml
 msgid "Reject Analysis"
 msgstr "Análisis rechazado"
+
+# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_duplicateanalysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_referenceanalysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_reject_analysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_worksheet_workflow.csv
+msgid "Rejected"
+msgstr ""
 
 #: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/Report.xml
@@ -456,6 +598,10 @@ msgstr "Informes"
 msgid "Results not requested"
 msgstr "No se han solicitado resultados"
 
+# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
+msgid "Retracted"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Sample.xml
 msgid "Sample"
 msgstr "Muestra"
@@ -468,6 +614,12 @@ msgstr "Condición de muestra"
 #: bika/lims/profiles/default/types/SampleConditions.xml
 msgid "Sample Conditions"
 msgstr "Condiciones de muestra"
+
+# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_sample_workflow.csv
+msgid "Sample Due"
+msgstr ""
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/SampleMatrices.xml
@@ -495,6 +647,12 @@ msgstr "Punto de muestreo"
 msgid "Sample Points"
 msgstr "Puntos de muestreo"
 
+# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_sample_workflow.csv
+msgid "Sample Preparation"
+msgstr ""
+
 #: bika/lims/profiles/default/types/SampleType.xml
 msgid "Sample Type"
 msgstr "Tipo de muestra"
@@ -504,9 +662,19 @@ msgstr "Tipo de muestra"
 msgid "Sample Types"
 msgstr "Tipos de muestras"
 
+# bika/lims/profiles/default/workflow_csv/bika_sample_workflow.csv
+msgid "Sample received"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Client.xml
 msgid "SamplePoints"
 msgstr "Puntos de muestreo"
+
+# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_sample_workflow.csv
+msgid "Sampled"
+msgstr ""
 
 #: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/Batch.xml
@@ -545,6 +713,15 @@ msgstr ""
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Schedule"
 msgstr "Tarea programada"
+
+# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_sample_workflow.csv
+msgid "Scheduled Sampling"
+msgstr ""
+
+#: bika/lims/profiles/default/actions.xml
+msgid "Sharing"
+msgstr ""
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Sample.xml
@@ -602,9 +779,58 @@ msgstr "Pedido de proveedor"
 msgid "Supply Orders"
 msgstr "Ordenes de Suministro"
 
+# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_sample_workflow.csv
+msgid "To Be Preserved"
+msgstr ""
+
+# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_sample_workflow.csv
+msgid "To Be Sampled"
+msgstr ""
+
+# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_duplicateanalysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_referenceanalysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_worksheet_workflow.csv
+msgid "To be verified"
+msgstr ""
+
+# bika/lims/profiles/default/workflow_csv/bika_duplicateanalysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_referenceanalysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_worksheetanalysis_workflow.csv
+msgid "Unassigned"
+msgstr ""
+
+# bika/lims/profiles/default/workflow_csv/bika_publication_workflow.csv
+msgid "Unpublished"
+msgstr ""
+
+# bika/lims/profiles/default/workflow_csv/bika_arimport_workflow.csv
+msgid "Valid"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Validations"
 msgstr "Validaciones"
+
+# bika/lims/profiles/default/workflow_csv/bika_analysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_ar_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_duplicateanalysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_referenceanalysis_workflow.csv
+# bika/lims/profiles/default/workflow_csv/bika_worksheet_workflow.csv
+msgid "Verified"
+msgstr ""
+
+#: bika/lims/profiles/default/types/ARImport.xml
+#: bika/lims/profiles/default/types/ARPriority.xml
+#: bika/lims/profiles/default/types/ARReport.xml
+msgid "View"
+msgstr ""
 
 #: bika/lims/profiles/default/types/Client.xml
 msgid "WINE-40: Do not move or remove this entry."
@@ -657,6 +883,7 @@ msgstr "Cancel"
 msgid "close_transition_title"
 msgstr "Close"
 
+#. Default: "Copy to new"
 msgid "copy_to_new_transition_title"
 msgstr "Copy to new"
 
@@ -696,75 +923,99 @@ msgstr "Import"
 msgid "invalidate_transition_title"
 msgstr "Invalidate"
 
+#. Default: "AR Templates"
 msgid "label_schema_AR Templates"
 msgstr "AR Templates"
 
+#. Default: "Accounting"
 msgid "label_schema_Accounting"
 msgstr "Accounting"
 
+#. Default: "Address"
 msgid "label_schema_Address"
 msgstr "Address"
 
+#. Default: "Analyses"
 msgid "label_schema_Analyses"
 msgstr "Analyses"
 
+#. Default: "Bank details"
 msgid "label_schema_Bank details"
 msgstr "Bank details"
 
+#. Default: "Calculation"
 msgid "label_schema_Calculation"
 msgstr "Calculation"
 
+#. Default: "Container and Preservation"
 msgid "label_schema_Container and Preservation"
 msgstr "Container and Preservation"
 
+#. Default: "Dates"
 msgid "label_schema_Dates"
 msgstr "Dates"
 
+#. Default: "Description"
 msgid "label_schema_Description"
 msgstr "Description"
 
+#. Default: "Email Telephone Fax"
 msgid "label_schema_Email Telephone Fax"
 msgstr "Email Telephone Fax"
 
+#. Default: "ID Server"
 msgid "label_schema_ID Server"
 msgstr "ID Server"
 
+#. Default: "Labels"
 msgid "label_schema_Labels"
 msgstr "Labels"
 
+#. Default: "Layout"
 msgid "label_schema_Layout"
 msgstr "Layout"
 
+#. Default: "Location"
 msgid "label_schema_Location"
 msgstr "Location"
 
+#. Default: "Method"
 msgid "label_schema_Method"
 msgstr "Method"
 
+#. Default: "Preferences"
 msgid "label_schema_Preferences"
 msgstr "Preferences"
 
+#. Default: "Publication preference"
 msgid "label_schema_Publication preference"
 msgstr "Publication preference"
 
+#. Default: "Reference Values"
 msgid "label_schema_Reference Values"
 msgstr "Reference Values"
 
+#. Default: "Result Options"
 msgid "label_schema_Result Options"
 msgstr "Result Options"
 
+#. Default: "Results Reports"
 msgid "label_schema_Results Reports"
 msgstr "Results Reports"
 
+#. Default: "SR Templates"
 msgid "label_schema_SR Templates"
 msgstr "SR Templates"
 
+#. Default: "Sample Partitions"
 msgid "label_schema_Sample Partitions"
 msgstr "Sample Partitions"
 
+#. Default: "Security"
 msgid "label_schema_Security"
 msgstr "Security"
 
+#. Default: "Uncertainties"
 msgid "label_schema_Uncertainties"
 msgstr "Uncertainties"
 
@@ -773,6 +1024,7 @@ msgstr "Uncertainties"
 msgid "open_transition_title"
 msgstr "Open"
 
+#. Default: "Plone Manual Test"
 msgid "plone_manual_test"
 msgstr "Prueba manual de Plone"
 
@@ -816,6 +1068,10 @@ msgstr "Reinstate"
 #: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml
 msgid "reject_transition_title"
 msgstr "Reject"
+
+# bika/lims/profiles/default/workflow_csv/bika_sample_workflow.csv
+msgid "rejected"
+msgstr ""
 
 #. Default: "Republish"
 #: ../profiles/default/workflows/bika_ar_workflow/definition.xml

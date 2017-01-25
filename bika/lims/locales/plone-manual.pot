@@ -15,6 +15,9 @@ msgstr ""
 "Domain: plone\n"
 
 
+msgid "Dormant"
+msgstr ""
+
 msgid "plone_manual_test"
 msgstr "Plone Manual Test"
 
