@@ -16,6 +16,7 @@ from bika.lims.permissions import *
 from bika.lims.utils import tmpID
 from bika.lims.catalog import setup_catalogs
 from bika.lims.catalog import getCatalogDefinitions
+import transaction
 
 
 def upgrade(tool):
@@ -74,7 +75,7 @@ def upgrade(tool):
     # Update workflow permissions
     logger.info("Updating role mappings...")
     wf = getToolByName(portal, 'portal_workflow')
-    wf.updateRoleMappings()
+    #wf.updateRoleMappings()
 
     # Remove unused indexes and columns
     logger.info("Removing stale indexes...")
@@ -84,10 +85,10 @@ def upgrade(tool):
     # Clean and rebuild affected catalogs (if required)
     logger.info("Cleaning and rebuilding...")
     cleanAndRebuildIfNeeded(portal)
-
-    # Updateing lims catalogs if there is any change in them
-    logger.info("Updateing catalogs if needed...")
-    setup_catalogs(portal, getCatalogDefinitions(), force_reindex=True)
+    transaction.commit()
+    # Updating lims catalogs if there is any change in them
+    logger.info("Updating catalogs if needed...")
+    setup_catalogs(portal, getCatalogDefinitions())
     logger.info("Catalogs updated")
 
     return True
@@ -357,7 +358,6 @@ def addIndexAndColumn(catalog, index, indextype):
 
 def cleanAndRebuildIfNeeded(portal):
     for c in cleanrebuild:
-        logger.info('Cleaning and rebuilding %s...' % c)
         try:
             catalog = getToolByName(portal, c)
             catalog.clearFindAndRebuild()

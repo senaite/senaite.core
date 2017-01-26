@@ -1467,16 +1467,6 @@ schema = BikaSchema.copy() + Schema((
             visible=False,
         ),
     ),
-    # Returns department UIDs assigned to the Analyses
-    # from this Analysis Request
-    ComputedField(
-        'DepartmentUIDs',
-        expression='here._getDepartmentUIDs',
-        default='',
-        widget=ComputedWidget(
-            visible=False,
-        ),
-    ),
     ComputedField(
         'ReceivedBy',
         expression='here.getReceivedBy',
@@ -3036,15 +3026,15 @@ class AnalysisRequest(BaseFolder):
         return None
 
     # TODO-performance: this function must be optimized
-    def _getDepartmentUIDs(self):
+    def getDepartmentUIDs(self):
         """ Returns department UIDs assigned to the Analyses
             from this Analysis Request
         """
         # This will be imporved using brains
         ans = [an.getObject() for an in self.getAnalyses()]
         depts = [
-            an.getService().getDepartment().UID()
-            for an in ans if an.getService().getDepartment()]
+            an.getDepartmentUID()
+            for an in ans if an.getDepartmentUID()]
         return depts
 
     def getReceivedBy(self):

@@ -18,6 +18,7 @@ import sys
 import traceback
 import copy
 from zope.interface import implements
+import transaction
 
 
 # Using a variable to avoid plain strings in code
@@ -164,7 +165,7 @@ class BikaCatalog(CatalogTool):
 
         def indexObject(obj, path):
             self.reindexObject(obj)
-
+        logger.info('Cleaning and rebuilding %s...' % self.id)
         at = getToolByName(self, 'archetype_tool')
         types = [k for k, v in at.catalog_map.items()
                  if self.id in v]
@@ -175,6 +176,8 @@ class BikaCatalog(CatalogTool):
                                 obj_metatypes=types,
                                 search_sub=True,
                                 apply_func=indexObject)
+        transaction.commit()
+        logger.info('%s cleaned and rebuilt' % self.id)
 
 InitializeClass(BikaCatalog)
 
@@ -204,7 +207,7 @@ class BikaAnalysisCatalog(CatalogTool):
 
         def indexObject(obj, path):
             self.reindexObject(obj)
-
+        logger.info('Cleaning and rebuilding %s...' % self.id)
         at = getToolByName(self, 'archetype_tool')
         types = [k for k, v in at.catalog_map.items()
                  if self.id in v]
@@ -215,6 +218,8 @@ class BikaAnalysisCatalog(CatalogTool):
                                 obj_metatypes=types,
                                 search_sub=True,
                                 apply_func=indexObject)
+        transaction.commit()
+        logger.info('%s cleaned and rebuilt' % self.id)
 
 InitializeClass(BikaAnalysisCatalog)
 
@@ -244,7 +249,7 @@ class BikaSetupCatalog(CatalogTool):
 
         def indexObject(obj, path):
             self.reindexObject(obj)
-
+        logger.info('Cleaning and rebuilding %s...' % self.id)
         at = getToolByName(self, 'archetype_tool')
         types = [k for k, v in at.catalog_map.items()
                  if self.id in v]
@@ -255,6 +260,8 @@ class BikaSetupCatalog(CatalogTool):
                                 obj_metatypes=types,
                                 search_sub=True,
                                 apply_func=indexObject)
+        transaction.commit()
+        logger.info('%s cleaned and rebuilt' % self.id)
 
 InitializeClass(BikaSetupCatalog)
 
@@ -284,6 +291,7 @@ class BikaCatalogAnalysisRequestListing(CatalogTool):
         """
         def indexObject(obj, path):
             self.reindexObject(obj)
+        logger.info('Cleaning and rebuilding %s...' % self.id)
         at = getToolByName(self, 'archetype_tool')
         types = [k for k, v in at.catalog_map.items()
                  if self.id in v]
@@ -294,6 +302,8 @@ class BikaCatalogAnalysisRequestListing(CatalogTool):
             obj_metatypes=types,
             search_sub=True,
             apply_func=indexObject)
+        transaction.commit()
+        logger.info('%s cleaned and rebuilt' % self.id)
 InitializeClass(BikaCatalogAnalysisRequestListing)
 
 
@@ -635,11 +645,9 @@ def _cleanAndRebuildIfNeeded(portal, cleanrebuild):
     :cleanrebuild: a list with catalog ids
     """
     for cat in cleanrebuild:
-        logger.info('Cleaning and rebuilding %s...' % cat)
         try:
             catalog = getToolByName(portal, cat)
             catalog.clearFindAndRebuild()
-            logger.info('%s cleaned and rebuilt' % cat)
         except:
             logger.error(traceback.format_exc())
             e = sys.exc_info()

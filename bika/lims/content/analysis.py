@@ -60,16 +60,12 @@ def Priority(instance):
 
 @indexer(IAnalysis)
 def sortable_title_with_sort_key(instance):
-    service = instance.getService()
+    service = instance.getServiceUsingQuery()
     if service:
         sort_key = service.getSortKey()
         if sort_key:
             return "{:010.3f}{}".format(sort_key, service.Title())
         return service.Title()
-
-@indexer(IAnalysis)
-def getDepartmentUID(instance):
-    return instance.getService().getDepartment().UID()
 
 schema = BikaSchema.copy() + Schema((
     HistoryAwareReferenceField('Service',
@@ -212,13 +208,10 @@ schema = BikaSchema.copy() + Schema((
         expression = 'context.aq_parent.getClientOrderNumber()',
     ),
     ComputedField('Keyword',
-        expression = 'context.getService().getKeyword()',
-    ),
-    ComputedField('ServiceTitle',
-        expression = 'context.getService().Title()',
+        expression = 'context.getServiceUsingQuery().getKeyword()',
     ),
     ComputedField('ServiceUID',
-        expression = 'context.getService().UID()',
+        expression = 'context.getServiceUsingQuery().UID()',
     ),
     ComputedField('SampleTypeUID',
         expression = 'context.aq_parent.getSample().getSampleType().UID()',
@@ -227,10 +220,7 @@ schema = BikaSchema.copy() + Schema((
         expression = 'context.aq_parent.getSample().getSamplePoint().UID() if context.aq_parent.getSample().getSamplePoint() else None',
     ),
     ComputedField('CategoryUID',
-        expression = 'context.getService().getCategoryUID()',
-    ),
-    ComputedField('CategoryTitle',
-        expression = 'context.getService().getCategoryTitle()',
+        expression = 'context.getServiceUsingQuery().getCategoryUID()',
     ),
     ComputedField(
         'MethodUID',
@@ -247,7 +237,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ComputedField('PointOfCapture',
-        expression = 'context.getService().getPointOfCapture()',
+        expression = 'context.getServiceUsingQuery().getPointOfCapture()',
     ),
     ComputedField('DateReceived',
         expression = 'context.aq_parent.getDateReceived()',
@@ -315,13 +305,29 @@ class Analysis(BaseContent):
     def getLastVerificator(self):
         return self.getVerificators().split(',')[-1]
 
+    def getServiceUsingQuery(self):
+        """
+        This function returns the asociated service.
+        Use this method to avoid some errores while rebuilding a catalog.
+        Be aware that this method doesn't care about the history fo the
+        service.
+        """
+        # Getting the service like that because otherwise gives an error
+        # when rebuilding the catalogs.
+        service_uid = self.getRawService()
+        catalog = getToolByName(self, "uid_catalog")
+        brain = catalog(UID=service_uid)
+        if brain:
+            return brain[0].getObject()
+        return ''
+
     def Title(self):
         """ Return the service title as title.
         Some silliness here, for premature indexing, when the service
         is not yet configured.
         """
         try:
-            s = self.getService()
+            s = self.getServiceUsingQuery()
             if s:
                 s = s.Title()
             if not s:
@@ -355,8 +361,50 @@ class Analysis(BaseContent):
                 duetime = ''
             self.setDueDate(duetime)
 
+    # TODO-performance: improve this function using another catalog and takeing
+    # advantatge of the column in service, not getting the full object.
     def getDepartmentUID(self):
-        return self.getService().getDepartment().UID()
+        """
+        Returns the UID of the asociated service's department.
+        """
+        # Getting the service like that because otherwise gives an error
+        # when rebuilding the catalogs.
+        service_uid = self.getRawService()
+        catalog = getToolByName(self, "uid_catalog")
+        brain = catalog(UID=service_uid)
+        if brain:
+            return brain[0].getObject().getDepartmentUID().UID()
+        return ''
+
+    # TODO-performance: improve this function using another catalog and takeing
+    # advantatge of the column in service, not getting the full object.
+    def getCategoryTitle(self):
+        """
+        Returns the Title of the asociated service's department.
+        """
+        # Getting the service like that because otherwise gives an error
+        # when rebuilding the catalogs.
+        service_uid = self.getRawService()
+        catalog = getToolByName(self, "uid_catalog")
+        brain = catalog(UID=service_uid)
+        if brain:
+            return brain[0].getObject().getCategoryTitle()
+        return ''
+
+    # TODO-performance: improve this function using another catalog and takeing
+    # advantatge of the column in service, not getting the full object.
+    def getServiceTitle(self):
+        """
+        Returns the Title of the asociated service.
+        """
+        # Getting the service like that because otherwise gives an error
+        # when rebuilding the catalogs.
+        service_uid = self.getRawService()
+        catalog = getToolByName(self, "uid_catalog")
+        brain = catalog(UID=service_uid)
+        if brain:
+            return brain[0].title
+        return ''
 
     def getReviewState(self):
         """ Return the current analysis' state"""
