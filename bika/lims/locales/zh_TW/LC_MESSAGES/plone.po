@@ -4,8 +4,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2017-01-26 11:48+0000\n"
-"PO-Revision-Date: 2017-01-25 18:13+0000\n"
+"POT-Creation-Date: 2017-01-26 15:50+0000\n"
+"PO-Revision-Date: 2017-01-26 15:42+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
 "Language-Team: Chinese (Taiwan) (http://www.transifex.com/bikalabs/bika-lims/language/zh_TW/)\n"
 "MIME-Version: 1.0\n"
@@ -38,6 +38,17 @@ msgstr "分析请求模板"
 
 #: bika/lims/profiles/default/types/ARReport.xml
 msgid "ARReport"
+msgstr ""
+
+# Manual Workflow State and Transition MsgIds
+# Despite the fact, that these are defined in the "bika" domain, they are not
+# translated
+# in the action menu of Plone.
+# Please don't remove
+msgid "Activate"
+msgstr ""
+
+msgid "Active"
 msgstr ""
 
 #: bika/lims/profiles/default/types/Worksheet.xml
@@ -117,6 +128,15 @@ msgstr "分析規格"
 msgid "Analysis Specifications"
 msgstr "分析祥述"
 
+msgid "Assign"
+msgstr ""
+
+msgid "Assigned"
+msgstr ""
+
+msgid "Attach"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Attachment.xml
 msgid "Attachment"
 msgstr "附件"
@@ -129,6 +149,9 @@ msgstr "单一附件类型"
 #: bika/lims/profiles/default/types/AttachmentTypes.xml
 msgid "Attachment Types"
 msgstr "多个附件类型"
+
+msgid "Attachment due"
+msgstr ""
 
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Attachments"
@@ -177,6 +200,9 @@ msgstr ""
 msgid "Calibrations"
 msgstr ""
 
+msgid "Cancel"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Client"
 msgstr "客户"
@@ -185,6 +211,12 @@ msgstr "客户"
 #: bika/lims/profiles/default/types/ClientFolder.xml
 msgid "Clients"
 msgstr "多个客户"
+
+msgid "Close"
+msgstr ""
+
+msgid "Complete"
+msgstr ""
 
 #: bika/lims/profiles/default/types/Contact.xml
 #: bika/lims/profiles/default/types/SupplierContact.xml
@@ -218,12 +250,30 @@ msgstr "多个容器"
 msgid "Create Invoice"
 msgstr ""
 
+msgid "Current"
+msgstr ""
+
+msgid "Deactivate"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Department.xml
 msgid "Department"
 msgstr "系"
 
 #: bika/lims/profiles/default/types/Departments.xml
 msgid "Departments"
+msgstr ""
+
+msgid "Dispatch"
+msgstr ""
+
+msgid "Dispatched"
+msgstr ""
+
+msgid "Dispose"
+msgstr ""
+
+msgid "Disposed"
 msgstr ""
 
 #: bika/lims/profiles/default/types/Instrument.xml
@@ -245,6 +295,12 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/Pricelist.xml
 msgid "Email pricelist"
+msgstr ""
+
+msgid "Expire"
+msgstr ""
+
+msgid "Expired"
 msgstr ""
 
 #: bika/lims/profiles/default/types/Worksheet.xml
@@ -280,8 +336,14 @@ msgstr ""
 msgid "Import"
 msgstr ""
 
+msgid "Imported"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Imports"
+msgstr ""
+
+msgid "Inactive"
 msgstr ""
 
 #: bika/lims/profiles/default/types/Instrument.xml
@@ -306,6 +368,12 @@ msgstr "儀器類型"
 #: bika/lims/profiles/default/types/Instruments.xml
 msgid "Instruments"
 msgstr "多个仪器"
+
+msgid "Invalid"
+msgstr ""
+
+msgid "Invalidate"
+msgstr ""
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Invoice.xml
@@ -386,18 +454,39 @@ msgstr "方法"
 msgid "Methods"
 msgstr "多个方法"
 
+msgid "No preservation required"
+msgstr ""
+
+msgid "No sampling workflow"
+msgstr ""
+
+msgid "Not requested"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Orders"
 msgstr "多个订单"
+
+msgid "Pending"
+msgstr ""
+
+msgid "Prepublish"
+msgstr ""
 
 #: bika/lims/profiles/default/types/Preservation.xml
 msgid "Preservation"
 msgstr "储藏"
 
+msgid "Preservation required"
+msgstr ""
+
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Preservations.xml
 msgid "Preservations"
 msgstr "保留的样品"
+
+msgid "Preserve"
+msgstr ""
 
 #: bika/lims/profiles/default/types/Pricelist.xml
 msgid "Pricelist"
@@ -425,6 +514,12 @@ msgstr ""
 msgid "Productivity"
 msgstr ""
 
+msgid "Publish"
+msgstr ""
+
+msgid "Published"
+msgstr ""
+
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Published results"
 msgstr "公佈結果"
@@ -435,6 +530,15 @@ msgstr ""
 
 #: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "Quality Control"
+msgstr ""
+
+msgid "Receive"
+msgstr ""
+
+msgid "Receive sample"
+msgstr ""
+
+msgid "Received"
 msgstr ""
 
 #: bika/lims/profiles/default/types/ReferenceAnalysis.xml
@@ -464,8 +568,23 @@ msgstr "参考样品"
 msgid "Reference Values"
 msgstr "Reference Values"
 
+msgid "Registered"
+msgstr ""
+
+msgid "Reinstate"
+msgstr ""
+
+msgid "Reject"
+msgstr ""
+
 #: bika/lims/profiles/default/types/RejectAnalysis.xml
 msgid "Reject Analysis"
+msgstr ""
+
+msgid "Rejected"
+msgstr ""
+
+msgid "Remove"
 msgstr ""
 
 #: bika/lims/profiles/default/actions.xml
@@ -477,8 +596,17 @@ msgstr "报告"
 msgid "Reports"
 msgstr "多个报告"
 
+msgid "Republish"
+msgstr ""
+
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Results not requested"
+msgstr ""
+
+msgid "Retract"
+msgstr ""
+
+msgid "Retracted"
 msgstr ""
 
 #: bika/lims/profiles/default/types/Sample.xml
@@ -529,8 +657,26 @@ msgstr "样品类型"
 msgid "Sample Types"
 msgstr "多个样品类型"
 
+msgid "Sample due"
+msgstr ""
+
+msgid "Sample preparation"
+msgstr ""
+
+msgid "Sample preparation complete"
+msgstr ""
+
+msgid "Sample received"
+msgstr ""
+
+msgid "Sample registered"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Client.xml
 msgid "SamplePoints"
+msgstr ""
+
+msgid "Sampled"
 msgstr ""
 
 #: bika/lims/profiles/default/actions.xml
@@ -567,8 +713,17 @@ msgstr ""
 msgid "Sampling Rounds"
 msgstr ""
 
+msgid "Sampling workflow"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Schedule"
+msgstr ""
+
+msgid "Schedule sampling"
+msgstr ""
+
+msgid "Scheduled sampling"
 msgstr ""
 
 #: bika/lims/profiles/default/actions.xml
@@ -613,6 +768,9 @@ msgstr "分組"
 msgid "Sub-groups"
 msgstr "多個分組"
 
+msgid "Submit"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Supplier.xml
 msgid "Supplier"
 msgstr "供应商"
@@ -631,8 +789,32 @@ msgstr "供應訂單"
 msgid "Supply Orders"
 msgstr ""
 
+msgid "To be preserved"
+msgstr ""
+
+msgid "To be sampled"
+msgstr ""
+
+msgid "To be verified"
+msgstr ""
+
+msgid "Unpublished"
+msgstr ""
+
+msgid "Unsassign"
+msgstr ""
+
+msgid "Valid"
+msgstr ""
+
+msgid "Validate"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Validations"
+msgstr ""
+
+msgid "Verified"
 msgstr ""
 
 msgid "Verify"

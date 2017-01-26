@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2017-01-26 11:48+0000\n"
-"PO-Revision-Date: 2017-01-25 18:13+0000\n"
+"POT-Creation-Date: 2017-01-26 15:50+0000\n"
+"PO-Revision-Date: 2017-01-26 15:42+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
 "Language-Team: Turkish (Turkey) (http://www.transifex.com/bikalabs/bika-lims/language/tr_TR/)\n"
 "MIME-Version: 1.0\n"
@@ -41,6 +41,17 @@ msgstr "Analiz Talepleri -AR- Şablonları"
 #: bika/lims/profiles/default/types/ARReport.xml
 msgid "ARReport"
 msgstr "Analiz Talebi Raporları"
+
+# Manual Workflow State and Transition MsgIds
+# Despite the fact, that these are defined in the "bika" domain, they are not
+# translated
+# in the action menu of Plone.
+# Please don't remove
+msgid "Activate"
+msgstr ""
+
+msgid "Active"
+msgstr ""
 
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Analyses"
@@ -119,6 +130,15 @@ msgstr "Analiz Özellikleri"
 msgid "Analysis Specifications"
 msgstr "Analiz Özellikleri"
 
+msgid "Assign"
+msgstr ""
+
+msgid "Assigned"
+msgstr ""
+
+msgid "Attach"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Attachment.xml
 msgid "Attachment"
 msgstr "Eklenti"
@@ -131,6 +151,9 @@ msgstr "Eklenti Türü"
 #: bika/lims/profiles/default/types/AttachmentTypes.xml
 msgid "Attachment Types"
 msgstr "Eklenti Türleri"
+
+msgid "Attachment due"
+msgstr ""
 
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Attachments"
@@ -179,6 +202,9 @@ msgstr ""
 msgid "Calibrations"
 msgstr "Kalibrasyonlar"
 
+msgid "Cancel"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Client"
 msgstr "Müşteri"
@@ -187,6 +213,12 @@ msgstr "Müşteri"
 #: bika/lims/profiles/default/types/ClientFolder.xml
 msgid "Clients"
 msgstr "Müşteriler"
+
+msgid "Close"
+msgstr ""
+
+msgid "Complete"
+msgstr ""
 
 #: bika/lims/profiles/default/types/Contact.xml
 #: bika/lims/profiles/default/types/SupplierContact.xml
@@ -220,6 +252,12 @@ msgstr "Numune Kapları"
 msgid "Create Invoice"
 msgstr ""
 
+msgid "Current"
+msgstr ""
+
+msgid "Deactivate"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Department.xml
 msgid "Department"
 msgstr "Bölüm"
@@ -227,6 +265,18 @@ msgstr "Bölüm"
 #: bika/lims/profiles/default/types/Departments.xml
 msgid "Departments"
 msgstr "Bölümler"
+
+msgid "Dispatch"
+msgstr ""
+
+msgid "Dispatched"
+msgstr ""
+
+msgid "Dispose"
+msgstr ""
+
+msgid "Disposed"
+msgstr ""
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Documents"
@@ -248,6 +298,12 @@ msgstr ""
 #: bika/lims/profiles/default/types/Pricelist.xml
 msgid "Email pricelist"
 msgstr "Fiyat listesini e-posta gönder"
+
+msgid "Expire"
+msgstr ""
+
+msgid "Expired"
+msgstr ""
 
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Export"
@@ -282,9 +338,15 @@ msgstr ""
 msgid "Import"
 msgstr ""
 
+msgid "Imported"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Imports"
 msgstr "İçe Aktarılanlar"
+
+msgid "Inactive"
+msgstr ""
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Instrument"
@@ -308,6 +370,12 @@ msgstr "Cihaz Türleri"
 #: bika/lims/profiles/default/types/Instruments.xml
 msgid "Instruments"
 msgstr "Cihazlar"
+
+msgid "Invalid"
+msgstr ""
+
+msgid "Invalidate"
+msgstr ""
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Invoice.xml
@@ -388,18 +456,39 @@ msgstr "Metot"
 msgid "Methods"
 msgstr "Metotlar"
 
+msgid "No preservation required"
+msgstr ""
+
+msgid "No sampling workflow"
+msgstr ""
+
+msgid "Not requested"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Orders"
 msgstr "Siparişler"
+
+msgid "Pending"
+msgstr ""
+
+msgid "Prepublish"
+msgstr ""
 
 #: bika/lims/profiles/default/types/Preservation.xml
 msgid "Preservation"
 msgstr "Muhafaza"
 
+msgid "Preservation required"
+msgstr ""
+
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Preservations.xml
 msgid "Preservations"
 msgstr "Muhafaza"
+
+msgid "Preserve"
+msgstr ""
 
 #: bika/lims/profiles/default/types/Pricelist.xml
 msgid "Pricelist"
@@ -427,6 +516,12 @@ msgstr "Fiyat Listesini yazdır"
 msgid "Productivity"
 msgstr "Üretkenlik"
 
+msgid "Publish"
+msgstr ""
+
+msgid "Published"
+msgstr ""
+
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Published results"
 msgstr "Yayınlanan Sonuçlar"
@@ -438,6 +533,15 @@ msgstr ""
 #: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "Quality Control"
 msgstr "Kalite Kontrol"
+
+msgid "Receive"
+msgstr ""
+
+msgid "Receive sample"
+msgstr ""
+
+msgid "Received"
+msgstr ""
 
 #: bika/lims/profiles/default/types/ReferenceAnalysis.xml
 msgid "Reference Analysis"
@@ -466,8 +570,23 @@ msgstr "Referans Numuneler"
 msgid "Reference Values"
 msgstr "Referans Değerleri"
 
+msgid "Registered"
+msgstr ""
+
+msgid "Reinstate"
+msgstr ""
+
+msgid "Reject"
+msgstr ""
+
 #: bika/lims/profiles/default/types/RejectAnalysis.xml
 msgid "Reject Analysis"
+msgstr ""
+
+msgid "Rejected"
+msgstr ""
+
+msgid "Remove"
 msgstr ""
 
 #: bika/lims/profiles/default/actions.xml
@@ -479,9 +598,18 @@ msgstr "Rapor"
 msgid "Reports"
 msgstr "Raporlar"
 
+msgid "Republish"
+msgstr ""
+
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Results not requested"
 msgstr "Sonuç talep edilmedi"
+
+msgid "Retract"
+msgstr ""
+
+msgid "Retracted"
+msgstr ""
 
 #: bika/lims/profiles/default/types/Sample.xml
 msgid "Sample"
@@ -531,9 +659,27 @@ msgstr "Numune Türü"
 msgid "Sample Types"
 msgstr "Numune Türleri"
 
+msgid "Sample due"
+msgstr ""
+
+msgid "Sample preparation"
+msgstr ""
+
+msgid "Sample preparation complete"
+msgstr ""
+
+msgid "Sample received"
+msgstr ""
+
+msgid "Sample registered"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Client.xml
 msgid "SamplePoints"
 msgstr "ÖrneklemeNoktası"
+
+msgid "Sampled"
+msgstr ""
 
 #: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/Batch.xml
@@ -569,9 +715,18 @@ msgstr ""
 msgid "Sampling Rounds"
 msgstr ""
 
+msgid "Sampling workflow"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Schedule"
 msgstr "Planlama"
+
+msgid "Schedule sampling"
+msgstr ""
+
+msgid "Scheduled sampling"
+msgstr ""
 
 #: bika/lims/profiles/default/actions.xml
 msgid "Sharing"
@@ -615,6 +770,9 @@ msgstr "Alt-grup"
 msgid "Sub-groups"
 msgstr "Alt-gruplar"
 
+msgid "Submit"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Supplier.xml
 msgid "Supplier"
 msgstr "Tedarikçi"
@@ -633,9 +791,33 @@ msgstr "Tedarikçiye Sipariş"
 msgid "Supply Orders"
 msgstr "Malzeme Siparişleri"
 
+msgid "To be preserved"
+msgstr ""
+
+msgid "To be sampled"
+msgstr ""
+
+msgid "To be verified"
+msgstr ""
+
+msgid "Unpublished"
+msgstr ""
+
+msgid "Unsassign"
+msgstr ""
+
+msgid "Valid"
+msgstr ""
+
+msgid "Validate"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Validations"
 msgstr "Validasyonlar"
+
+msgid "Verified"
+msgstr ""
 
 msgid "Verify"
 msgstr ""

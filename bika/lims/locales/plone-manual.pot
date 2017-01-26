@@ -14,11 +14,197 @@ msgstr ""
 "Preferred-Encodings: utf-8 latin1\n"
 "Domain: plone\n"
 
+###
+# Manual Workflow State and Transition MsgIds
+# Despite the fact, that these are defined in the "bika" domain, they are not translated
+# in the action menu of Plone.
+# Please don't remove
+msgid "Activate"
+msgstr ""
+
+msgid "Active"
+msgstr ""
+
+msgid "Assign"
+msgstr ""
+
+msgid "Assigned"
+msgstr ""
+
+msgid "Attach"
+msgstr ""
+
+msgid "Attachment due"
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Close"
+msgstr ""
+
+msgid "Complete"
+msgstr ""
+
+msgid "Current"
+msgstr ""
+
+msgid "Deactivate"
+msgstr ""
+
+msgid "Dispatch"
+msgstr ""
+
+msgid "Dispatched"
+msgstr ""
+
+msgid "Dispose"
+msgstr ""
+
+msgid "Disposed"
+msgstr ""
+
 msgid "Dormant"
+msgstr ""
+
+msgid "Expire"
+msgstr ""
+
+msgid "Expired"
+msgstr ""
+
+msgid "Import"
+msgstr ""
+
+msgid "Imported"
+msgstr ""
+
+msgid "Inactive"
+msgstr ""
+
+msgid "Invalid"
+msgstr ""
+
+msgid "Invalidate"
+msgstr ""
+
+msgid "No preservation required"
+msgstr ""
+
+msgid "No sampling workflow"
+msgstr ""
+
+msgid "Not requested"
+msgstr ""
+
+msgid "Pending"
+msgstr ""
+
+msgid "Prepublish"
+msgstr ""
+
+msgid "Preservation required"
+msgstr ""
+
+msgid "Preserve"
+msgstr ""
+
+msgid "Publish"
+msgstr ""
+
+msgid "Published"
+msgstr ""
+
+msgid "Receive"
+msgstr ""
+
+msgid "Receive sample"
+msgstr ""
+
+msgid "Received"
+msgstr ""
+
+msgid "Registered"
+msgstr ""
+
+msgid "Reinstate"
+msgstr ""
+
+msgid "Reject"
+msgstr ""
+
+msgid "Rejected"
+msgstr ""
+
+msgid "Remove"
+msgstr ""
+
+msgid "Republish"
+msgstr ""
+
+msgid "Retract"
+msgstr ""
+
+msgid "Retracted"
+msgstr ""
+
+msgid "Sample due"
+msgstr ""
+
+msgid "Sample preparation"
+msgstr ""
+
+msgid "Sample preparation complete"
+msgstr ""
+
+msgid "Sample received"
+msgstr ""
+
+msgid "Sample registered"
+msgstr ""
+
+msgid "Sampled"
+msgstr ""
+
+msgid "Sampling workflow"
+msgstr ""
+
+msgid "Schedule sampling"
+msgstr ""
+
+msgid "Scheduled sampling"
+msgstr ""
+
+msgid "Submit"
+msgstr ""
+
+msgid "To be preserved"
+msgstr ""
+
+msgid "To be sampled"
+msgstr ""
+
+msgid "To be verified"
+msgstr ""
+
+msgid "Unpublished"
+msgstr ""
+
+msgid "Unsassign"
+msgstr ""
+
+msgid "Valid"
+msgstr ""
+
+msgid "Validate"
 msgstr ""
 
 msgid "Verify"
 msgstr ""
+
+msgid "Verified"
+msgstr ""
+###
 
 msgid "label_schema_Accounting"
 msgstr "Accounting"

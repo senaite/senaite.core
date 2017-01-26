@@ -18,8 +18,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2017-01-26 11:48+0000\n"
-"PO-Revision-Date: 2017-01-26 10:01+0000\n"
+"POT-Creation-Date: 2017-01-26 15:50+0000\n"
+"PO-Revision-Date: 2017-01-26 14:51+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
 "Language-Team: Spanish (http://www.transifex.com/bikalabs/bika-lims/language/es/)\n"
 "MIME-Version: 1.0\n"
@@ -82,11 +82,11 @@ msgstr "${item} fue creado satisfactoriamente."
 msgid "${item}: ${part} is waiting to be received."
 msgstr "${item}: ${part} a la espera de ser recepcionado."
 
-#: bika/lims/browser/templates/bika_listing_table.pt:267
+#: bika/lims/browser/templates/bika_listing_table.pt:287
 msgid "${nr_items} Item"
 msgstr ""
 
-#: bika/lims/browser/templates/bika_listing_table.pt:264
+#: bika/lims/browser/templates/bika_listing_table.pt:284
 msgid "${nr_items} Items"
 msgstr ""
 
@@ -340,12 +340,6 @@ msgstr "Añadir plantilla"
 msgid "Add a remarks field to all analyses"
 msgstr "Agregar un campo de observaciones a todos los análisis"
 
-#: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
-#: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
-#: bika/lims/profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
-msgid "Add attachment"
-msgstr ""
-
 #: bika/lims/browser/batch/analysisrequests.py:34
 #: bika/lims/browser/samplinground/analysisrequests.py:270
 msgid "Add new"
@@ -371,11 +365,6 @@ msgstr "Informes administrativos"
 #: bika/lims/browser/reports/selection_macros/__init__.py:167
 msgid "After ${end_date}"
 msgstr "Después de ${end_date}"
-
-#: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
-#: bika/lims/profiles/default/workflows/bika_sample_workflow/definition.xml
-msgid "After the sampling coordinator defines the sampler and date"
-msgstr ""
 
 #: bika/lims/browser/instrument.py:537
 #: bika/lims/content/instrumentcertification.py:57
@@ -788,6 +777,12 @@ msgstr "Asignado a hoja de trabajo"
 msgid "Assigned to: ${worksheet_id}"
 msgstr "Asignado a: ${worksheet_id}"
 
+#: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
+#: bika/lims/profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
+msgid "Attach"
+msgstr ""
+
 #: bika/lims/skins/bika/attachments.pt:258
 msgid "Attach to"
 msgstr "Adjuntar a"
@@ -806,12 +801,6 @@ msgstr "Claves de adjunto"
 msgid "Attachment Option"
 msgstr "Opciones de adjuntos"
 
-#: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
-#: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
-#: bika/lims/profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
-msgid "Attachment Outstanding"
-msgstr ""
-
 #: bika/lims/browser/client/views/attachments.py:35
 #: bika/lims/content/attachment.py:39
 #: bika/lims/controlpanel/bika_attachmenttypes.py:41
@@ -821,6 +810,12 @@ msgstr "Tipo de fichero adjunto"
 #: bika/lims/controlpanel/bika_attachmenttypes.py:34
 msgid "Attachment Types"
 msgstr "Tipos de ficheros adjuntos"
+
+#: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
+#: bika/lims/profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
+msgid "Attachment due"
+msgstr ""
 
 #: bika/lims/browser/analysisrequest/manage_analyses.py:285
 #: bika/lims/browser/widgets/analysisprofileanalyseswidget.py:149
@@ -1268,12 +1263,9 @@ msgstr ""
 msgid "Clients"
 msgstr "Clientes"
 
-#: bika/lims/profiles/default/workflows/bika_samplinground_workflow/definition.xml
-msgid "Close the SamplingRound"
-msgstr ""
-
 #: bika/lims/profiles/default/workflows/bika_batch_workflow/definition.xml
-msgid "Close the batch"
+#: bika/lims/profiles/default/workflows/bika_samplinground_workflow/definition.xml
+msgid "Close"
 msgstr ""
 
 #: bika/lims/browser/batchfolder.py:65
@@ -1856,7 +1848,7 @@ msgid "Discount %"
 msgstr "Descuento %"
 
 #: bika/lims/profiles/default/workflows/bika_order_workflow/definition.xml
-msgid "Dispatch order"
+msgid "Dispatch"
 msgstr ""
 
 #: bika/lims/browser/supplyorderfolder.py:61
@@ -3303,6 +3295,12 @@ msgstr "No ha seleccionado ningún elemento"
 msgid "No new items were created."
 msgstr "No se han creado ítems nuevos."
 
+#: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
+#: bika/lims/profiles/default/workflows/bika_sample_workflow/definition.xml
+msgid "No preservation required"
+msgstr ""
+
 #: bika/lims/browser/reports/qualitycontrol_referenceanalysisqc.py:55
 msgid "No reference sample was selected."
 msgstr "No ha seleccionado ninguna muestra de referencia"
@@ -3315,6 +3313,12 @@ msgstr "No se ha especificado ningún informe en la solicitud"
 #: bika/lims/browser/reports/productivity_samplereceivedvsreported.py:50
 msgid "No samples matched your query"
 msgstr "No existen muestras que coincidan con su busqueda"
+
+#: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
+#: bika/lims/profiles/default/workflows/bika_sample_workflow/definition.xml
+msgid "No sampling workflow"
+msgstr ""
 
 #: bika/lims/browser/templates/login_details.pt:138
 msgid "No user exists for ${contact_fullname} and he/she will not be able to log in. Fill in the form below to create one for him/her."
@@ -3486,10 +3490,6 @@ msgstr "ID de pedido"
 msgid "Order Number"
 msgstr "Número de pedido"
 
-#: bika/lims/profiles/default/workflows/bika_order_workflow/definition.xml
-msgid "Order pending"
-msgstr ""
-
 #: bika/lims/browser/supplyorderfolder.py:35
 msgid "Orders"
 msgstr "Pedidos"
@@ -3554,7 +3554,7 @@ msgstr "Tiempo de vida de las contraseñas"
 
 #: bika/lims/browser/arimports.py:71
 #: bika/lims/browser/supplyorderfolder.py:56
-#: bika/lims/profiles/default/workflows/sampleprep_simple/definition.xml
+#: bika/lims/profiles/default/workflows/bika_order_workflow/definition.xml
 msgid "Pending"
 msgstr "Pendiente"
 
@@ -3737,6 +3737,12 @@ msgstr "Categoría de método de conservación"
 
 #: bika/lims/browser/srtemplate/artemplates.py:77
 msgid "Preservation Method"
+msgstr ""
+
+#: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
+#: bika/lims/profiles/default/workflows/bika_sample_workflow/definition.xml
+msgid "Preservation required"
 msgstr ""
 
 #: bika/lims/browser/templates/analysisservice_popup.pt:264
@@ -3959,11 +3965,11 @@ msgid "Reassign"
 msgstr "Reasignar"
 
 #: bika/lims/content/bikasetup.py:95
+#: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
 msgid "Receive"
 msgstr "Recibir"
 
 #: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
-#: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
 #: bika/lims/profiles/default/workflows/bika_sample_workflow/definition.xml
 msgid "Receive sample"
 msgstr ""
@@ -4073,7 +4079,6 @@ msgstr "Registro"
 
 #: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
 #: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
-#: bika/lims/profiles/default/workflows/bika_sample_workflow/definition.xml
 msgid "Registered"
 msgstr ""
 
@@ -4119,7 +4124,6 @@ msgstr "Observaciones a tener en cuenta antes de la validación"
 msgid "Remarks to take into account for maintenance process"
 msgstr "Observaciones a tener en cuenta para proceso de mantenimiento"
 
-#: bika/lims/profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
 #: bika/lims/profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml
 #: bika/lims/profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml
 msgid "Remove"
@@ -4328,10 +4332,6 @@ msgstr "Prueba repetida"
 msgid "Retract"
 msgstr ""
 
-#: bika/lims/profiles/default/workflows/bika_worksheet_workflow/definition.xml
-msgid "Retract worksheet"
-msgstr ""
-
 #: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
 msgid "Retracted"
 msgstr ""
@@ -4385,9 +4385,7 @@ msgstr "Condiciones de muestra"
 msgid "Sample Conditions"
 msgstr "Condiciones de muestra"
 
-#: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
-#: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
-#: bika/lims/profiles/default/workflows/bika_sample_workflow/definition.xml
+#: bika/lims/skins/bika/portlet_sample_due.pt:22
 msgid "Sample Due"
 msgstr "Muestra pendiente"
 
@@ -4436,18 +4434,6 @@ msgstr "Punto de muestreo"
 msgid "Sample Points"
 msgstr "Puntos de muestreo"
 
-#: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
-#: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
-#: bika/lims/profiles/default/workflows/bika_sample_workflow/definition.xml
-msgid "Sample Preparation"
-msgstr ""
-
-#: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
-#: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
-#: bika/lims/profiles/default/workflows/bika_sample_workflow/definition.xml
-msgid "Sample Preparation Complete"
-msgstr ""
-
 #: bika/lims/content/analysisrequest.py:704
 #: bika/lims/content/sample.py:612
 msgid "Sample Rejection"
@@ -4481,18 +4467,36 @@ msgstr "Tipos de muestras"
 msgid "Sample condition"
 msgstr "Condiciones de la muestra"
 
+#: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
+#: bika/lims/profiles/default/workflows/bika_sample_workflow/definition.xml
+msgid "Sample due"
+msgstr ""
+
 #: bika/lims/browser/reports/administration_arsnotinvoiced.py:71
 #: bika/lims/browser/reports/qualitycontrol_analysesoutofrange.py:103
 #: bika/lims/browser/reports/qualitycontrol_analysesrepeated.py:92
 msgid "Sample point"
 msgstr "Punto de muestreo"
 
-#: bika/lims/profiles/default/workflows/sampleprep_simple/definition.xml
-msgid "Sample preparation is complete"
+#: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
+#: bika/lims/profiles/default/workflows/bika_sample_workflow/definition.xml
+msgid "Sample preparation"
+msgstr ""
+
+#: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
+#: bika/lims/profiles/default/workflows/bika_sample_workflow/definition.xml
+msgid "Sample preparation complete"
 msgstr ""
 
 #: bika/lims/profiles/default/workflows/bika_sample_workflow/definition.xml
 msgid "Sample received"
+msgstr ""
+
+#: bika/lims/profiles/default/workflows/bika_sample_workflow/definition.xml
+msgid "Sample registered"
 msgstr ""
 
 #: bika/lims/browser/reports/templates/productivity.pt:95
@@ -4609,6 +4613,12 @@ msgstr ""
 msgid "Sampling frequency"
 msgstr ""
 
+#: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
+#: bika/lims/profiles/default/workflows/bika_sample_workflow/definition.xml
+msgid "Sampling workflow"
+msgstr ""
+
 #: bika/lims/browser/analysisrequest/manage_analyses.py:98
 #: bika/lims/browser/analysisrequest/templates/ar_add.pt:125
 #: bika/lims/browser/sample/partitions.py:84
@@ -4621,11 +4631,12 @@ msgstr "Guardar comentarios"
 
 #: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
 #: bika/lims/profiles/default/workflows/bika_sample_workflow/definition.xml
-msgid "Scheduled Sampling"
+msgid "Schedule sampling"
 msgstr ""
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:266
 #: bika/lims/browser/dashboard.py:204
+#: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
 msgid "Scheduled sampling"
 msgstr ""
 
@@ -4901,7 +4912,7 @@ msgstr "Mostrar análisis ocultos"
 msgid "Show QC Analyses"
 msgstr ""
 
-#: bika/lims/browser/templates/bika_listing_table.pt:277
+#: bika/lims/browser/templates/bika_listing_table.pt:297
 msgid "Show more"
 msgstr ""
 
@@ -5029,18 +5040,14 @@ msgid "Subgroups are sorted with this key in group views"
 msgstr "Se utilizará el valor de este campo para ordenar los subgrupos en las listas. En una lista, un subgrupo que para este campo tenga valor '1' se mostrará antes que otro con valor '5'. Admite valores numéricos y caracteres."
 
 #: bika/lims/exportimport/import.pt:54
+#: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
 msgid "Submit"
 msgstr "Tramitar"
 
 #: bika/lims/exportimport/import.pt:47
 msgid "Submit a valid Open XML (.XLSX) file containing Bika setup records to continue."
 msgstr "Proporcione un archivo Open XML (.XLSX) válido que contenga los datos de configuración del Bika para continuar."
-
-#: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
-#: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
-#: bika/lims/profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
-msgid "Submit for verification"
-msgstr ""
 
 #: bika/lims/browser/analyses.py:792
 msgid "Submited and verified by the same user- "
@@ -5522,14 +5529,12 @@ msgid "To"
 msgstr "A"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:231
-#: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
-#: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
+#: bika/lims/skins/bika/portlet_to_be_preserved.pt:22
 msgid "To Be Preserved"
 msgstr "Por conservar"
 
 #: bika/lims/browser/analysisrequest/analysisrequests.py:195
-#: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
-#: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
+#: bika/lims/skins/bika/portlet_to_be_sampled.pt:22
 msgid "To Be Sampled"
 msgstr "Por muestrear"
 
@@ -5538,6 +5543,8 @@ msgid "To be displayed below each Analysis Category section on results reports."
 msgstr ""
 
 #: bika/lims/browser/dashboard.py:184
+#: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
+#: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
 msgid "To be preserved"
 msgstr ""
 
@@ -5547,6 +5554,7 @@ msgstr ""
 
 #: bika/lims/browser/dashboard.py:164
 #: bika/lims/browser/sample/view.py:163
+#: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
 msgid "To be sampled"
 msgstr ""
 
@@ -5720,6 +5728,10 @@ msgstr "Formato de fichero no válido: ${fileformat}"
 msgid "Unrecognized file format ${format}"
 msgstr ""
 
+#: bika/lims/profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
+msgid "Unsassign"
+msgstr ""
+
 #: bika/lims/content/labcontact.py:43
 msgid "Upload a scanned signature to be used on printed analysis results reports. Ideal size is 250 pixels wide by 150 high"
 msgstr "Cargar una firma digitalizada para que sea imprimida en los informes de resultados. Las dimensiones idóneas son 250 píxels de ancho por 150 píxels de alto."
@@ -5747,14 +5759,6 @@ msgstr "Utilizar un servidor de IDs externo"
 #: bika/lims/content/instrument.py:143
 msgid "Use this field to pass arbitrary parameters to the export/import modules."
 msgstr "Utilizad estos campos para pasar parámetros arbitrarios al módulo de importación"
-
-#: bika/lims/profiles/default/workflows/bika_samplinground_workflow/definition.xml
-msgid "Used to retract a SamplingRound to 'open' state"
-msgstr ""
-
-#: bika/lims/profiles/default/workflows/bika_batch_workflow/definition.xml
-msgid "Used to retract a batch to 'open' state"
-msgstr ""
 
 #: bika/lims/browser/log.py:52
 #: bika/lims/browser/reports/administration_usershistory.py:93
@@ -5819,6 +5823,10 @@ msgstr "Válido desde"
 #: bika/lims/browser/instrument.py:540
 msgid "Valid to"
 msgstr "Válido hasta"
+
+#: bika/lims/profiles/default/workflows/bika_arimport_workflow/definition.xml
+msgid "Validate"
+msgstr ""
 
 #: bika/lims/content/instrumentscheduledtask.py:93
 msgid "Validation"
@@ -6158,18 +6166,6 @@ msgstr ""
 msgid "attachment_due"
 msgstr ""
 
-#: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
-#: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
-#: bika/lims/profiles/default/workflows/bika_sample_workflow/definition.xml
-msgid "auto_no_preservation_required"
-msgstr ""
-
-#: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
-#: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
-#: bika/lims/profiles/default/workflows/bika_sample_workflow/definition.xml
-msgid "auto_preservation_required"
-msgstr ""
-
 #. the ISO 17025 standard. Bika is Open Source, flexible and allows
 #. customisations to your lab's specific requirements."
 #. Default: "The Bika LIMS workflow fits all lab disciplines, conforming to the ISO 17025 standard. Bika is Open Source, flexible and allows customisations to your lab's specific requirements."
@@ -6181,10 +6177,6 @@ msgstr ""
 #. Default: "<img src=\"${DYNAMIC_CONTENT}\" /> Welcome to Bika LIMS ${version} ${DYNAMIC_CONTENT}"
 #: bika/lims/browser/templates/bika-frontpage.pt:20
 msgid "bika-frontpage-title"
-msgstr ""
-
-#. Default: "Bika Manual Test"
-msgid "bika_manual_test"
 msgstr ""
 
 #. an analysis using this calculation is displayed.</p><p>To enter a
@@ -6289,12 +6281,6 @@ msgstr ""
 msgid "new_version_available_title"
 msgstr ""
 
-#: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
-#: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
-#: bika/lims/profiles/default/workflows/bika_sample_workflow/definition.xml
-msgid "no_sampling_workflow"
-msgstr ""
-
 #: bika/lims/browser/dashboard.py:171
 msgid "of"
 msgstr ""
@@ -6320,8 +6306,6 @@ msgid "repeatperiod"
 msgstr "período de repetición"
 
 #: bika/lims/browser/dashboard.py:324
-#: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
-#: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
 msgid "sample_due"
 msgstr ""
 
@@ -6329,18 +6313,12 @@ msgstr ""
 msgid "sample_received"
 msgstr ""
 
-#: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
-#: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
-#: bika/lims/profiles/default/workflows/bika_sample_workflow/definition.xml
-msgid "sampling_workflow"
-msgstr ""
-
 #: bika/lims/skins/bika/attachments.pt:63
 msgid "size"
 msgstr "Tamaño"
 
 #. Default: "Content listing"
-#: bika/lims/browser/templates/bika_listing_table.pt:100
+#: bika/lims/browser/templates/bika_listing_table.pt:109
 #: bika/lims/browser/worksheet/templates/analyses_transposed.pt:34
 msgid "summary_content_listing"
 msgstr "summary_content_listing"
@@ -6377,12 +6355,6 @@ msgstr "Campo obligatorio"
 #: bika/lims/browser/reports/selection_macros/select_daterange.pt:28
 msgid "to"
 msgstr "hasta"
-
-#: bika/lims/profiles/default/workflows/bika_analysis_workflow/definition.xml
-#: bika/lims/profiles/default/workflows/bika_ar_workflow/definition.xml
-#: bika/lims/profiles/default/workflows/bika_sample_workflow/definition.xml
-msgid "to_be_preserved"
-msgstr ""
 
 #: bika/lims/browser/dashboard.py:326
 msgid "to_be_verified"
