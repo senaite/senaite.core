@@ -4,8 +4,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2017-01-26 10:01+0000\n"
-"PO-Revision-Date: 2017-01-25 18:11+0000\n"
+"POT-Creation-Date: 2017-01-26 11:48+0000\n"
+"PO-Revision-Date: 2017-01-26 10:01+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
 "Language-Team: Bengali (http://www.transifex.com/bikalabs/bika-lims/language/bn/)\n"
 "MIME-Version: 1.0\n"
@@ -68,11 +68,11 @@ msgstr ""
 msgid "${item}: ${part} is waiting to be received."
 msgstr ""
 
-#: bika/lims/browser/templates/bika_listing_table.pt:265
+#: bika/lims/browser/templates/bika_listing_table.pt:267
 msgid "${nr_items} Item"
 msgstr ""
 
-#: bika/lims/browser/templates/bika_listing_table.pt:262
+#: bika/lims/browser/templates/bika_listing_table.pt:264
 msgid "${nr_items} Items"
 msgstr ""
 
@@ -2228,7 +2228,7 @@ msgstr ""
 msgid "Files"
 msgstr ""
 
-#: bika/lims/browser/bika_listing.py:1317
+#: bika/lims/browser/bika_listing.py:1328
 msgid "Filter"
 msgstr ""
 
@@ -2325,7 +2325,7 @@ msgstr ""
 msgid "IBN"
 msgstr ""
 
-#: bika/lims/browser/bika_listing.py:396
+#: bika/lims/browser/bika_listing.py:387
 #: bika/lims/browser/referencesample.py:106
 #: bika/lims/browser/reports/templates/productivity_dataentrydaybook.pt:85
 msgid "ID"
@@ -2816,7 +2816,7 @@ msgstr ""
 msgid "Last Login Time"
 msgstr ""
 
-#: bika/lims/browser/bika_listing.py:398
+#: bika/lims/browser/bika_listing.py:389
 msgid "Last modified"
 msgstr ""
 
@@ -3217,7 +3217,7 @@ msgid "No actions found for user ${user}"
 msgstr ""
 
 #: bika/lims/browser/analysisrequest/workflow.py:124
-#: bika/lims/browser/bika_listing.py:149
+#: bika/lims/browser/bika_listing.py:137
 msgid "No analyses have been selected"
 msgstr ""
 
@@ -3281,7 +3281,7 @@ msgstr ""
 msgid "No items have been selected"
 msgstr ""
 
-#: bika/lims/browser/bika_listing.py:137
+#: bika/lims/browser/bika_listing.py:125
 msgid "No items selected"
 msgstr ""
 
@@ -4887,7 +4887,7 @@ msgstr ""
 msgid "Show QC Analyses"
 msgstr ""
 
-#: bika/lims/browser/templates/bika_listing_table.pt:275
+#: bika/lims/browser/templates/bika_listing_table.pt:277
 msgid "Show more"
 msgstr ""
 
@@ -5485,7 +5485,7 @@ msgstr ""
 
 #: bika/lims/browser/arimports.py:60
 #: bika/lims/browser/batchfolder.py:43
-#: bika/lims/browser/bika_listing.py:397
+#: bika/lims/browser/bika_listing.py:388
 msgid "Title"
 msgstr ""
 
@@ -5603,7 +5603,7 @@ msgstr ""
 msgid "Turnaround time (h)"
 msgstr ""
 
-#: bika/lims/browser/bika_listing.py:395
+#: bika/lims/browser/bika_listing.py:386
 #: bika/lims/browser/reports/templates/administration_usershistory.pt:75
 #: bika/lims/controlpanel/bika_instruments.py:46
 msgid "Type"
@@ -6350,7 +6350,6 @@ msgstr ""
 msgid "time_format"
 msgstr ""
 
-#: bika/lims/browser/bika_listing.py:1138
 #: bika/lims/workflow.py:100
 msgid "title"
 msgstr ""
