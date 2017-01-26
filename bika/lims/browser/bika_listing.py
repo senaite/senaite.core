@@ -973,7 +973,7 @@ class BikaListingView(BrowserView):
             try:
                 rs = workflow.getInfoFor(obj, 'review_state')
                 st_title = workflow.getTitleForStateOnType(rs, obj.portal_type)
-                st_title = t(PMF(st_title))
+                st_title = _(st_title)
             except:
                 rs = 'active'
                 st_title = None
