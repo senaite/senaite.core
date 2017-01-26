@@ -1,7 +1,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2017-01-25 18:27+0000\n"
+"POT-Creation-Date: 2017-01-26 10:01+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1250,6 +1250,10 @@ msgstr ""
 msgid "Clients"
 msgstr ""
 
+#: bika/lims/profiles/default/workflows/bika_samplinground_workflow/definition.xml
+msgid "Close the SamplingRound"
+msgstr ""
+
 #: bika/lims/profiles/default/workflows/bika_batch_workflow/definition.xml
 msgid "Close the batch"
 msgstr ""
@@ -2431,6 +2435,7 @@ msgid "Import Analysis Request Data"
 msgstr ""
 
 #: bika/lims/browser/arimports.py:82
+#: bika/lims/profiles/default/workflows/bika_arimport_workflow/definition.xml
 msgid "Imported"
 msgstr ""
 
@@ -5725,6 +5730,10 @@ msgstr ""
 msgid "Use this field to pass arbitrary parameters to the export/import modules."
 msgstr ""
 
+#: bika/lims/profiles/default/workflows/bika_samplinground_workflow/definition.xml
+msgid "Used to retract a SamplingRound to 'open' state"
+msgstr ""
+
 #: bika/lims/profiles/default/workflows/bika_batch_workflow/definition.xml
 msgid "Used to retract a batch to 'open' state"
 msgstr ""
@@ -5779,6 +5788,10 @@ msgstr ""
 
 #: bika/lims/content/organisation.py:31
 msgid "VAT number"
+msgstr ""
+
+#: bika/lims/profiles/default/workflows/bika_arimport_workflow/definition.xml
+msgid "Valid"
 msgstr ""
 
 #: bika/lims/browser/instrument.py:539

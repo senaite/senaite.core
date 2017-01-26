@@ -18,7 +18,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2017-01-25 18:27+0000\n"
+"POT-Creation-Date: 2017-01-26 10:01+0000\n"
 "PO-Revision-Date: 2017-01-25 18:11+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/bikalabs/bika-lims/language/zh_CN/)\n"
@@ -1268,6 +1268,10 @@ msgstr ""
 msgid "Clients"
 msgstr "多个客户"
 
+#: bika/lims/profiles/default/workflows/bika_samplinground_workflow/definition.xml
+msgid "Close the SamplingRound"
+msgstr ""
+
 #: bika/lims/profiles/default/workflows/bika_batch_workflow/definition.xml
 msgid "Close the batch"
 msgstr ""
@@ -2449,6 +2453,7 @@ msgid "Import Analysis Request Data"
 msgstr ""
 
 #: bika/lims/browser/arimports.py:82
+#: bika/lims/profiles/default/workflows/bika_arimport_workflow/definition.xml
 msgid "Imported"
 msgstr "已导入"
 
@@ -5743,6 +5748,10 @@ msgstr "使用外部ID服务器"
 msgid "Use this field to pass arbitrary parameters to the export/import modules."
 msgstr "使用该字段传递任意参数到导出/导入模块"
 
+#: bika/lims/profiles/default/workflows/bika_samplinground_workflow/definition.xml
+msgid "Used to retract a SamplingRound to 'open' state"
+msgstr ""
+
 #: bika/lims/profiles/default/workflows/bika_batch_workflow/definition.xml
 msgid "Used to retract a batch to 'open' state"
 msgstr ""
@@ -5798,6 +5807,10 @@ msgstr "增值税合计"
 #: bika/lims/content/organisation.py:31
 msgid "VAT number"
 msgstr "增值税数目"
+
+#: bika/lims/profiles/default/workflows/bika_arimport_workflow/definition.xml
+msgid "Valid"
+msgstr ""
 
 #: bika/lims/browser/instrument.py:539
 msgid "Valid from"
