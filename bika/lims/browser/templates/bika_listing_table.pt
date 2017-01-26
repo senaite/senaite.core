@@ -239,19 +239,21 @@ Workflow Actions
                 tal:define="actions view/bika_listing/get_workflow_actions">
                 <span tal:omit-tag="python:True" tal:repeat="action actions"
                     tal:condition="view/bika_listing/show_workflow_action_buttons">
+
                     <input
                         type="hidden"
-                        tal:attributes="name action/title;
+                        tal:attributes="name action/id;
                                         value action/id;"/>
                     <input
                         class="context workflow_action_button action_button allowMultiSubmit"
                         type="submit"
                         name="workflow_action_button"
                         i18n:attributes="value"
+                        i18n:domain="bika"
                         tal:attributes="
                             id python:action['id']+'_transition';
                             transition action/id;
-                            value string:${action/title};
+                            value action/title;
                             url python:action.get('url', '');"/>
                 </span>
             </span>

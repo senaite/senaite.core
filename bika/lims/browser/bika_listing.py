@@ -40,6 +40,7 @@ from plone.app.content.browser import tableview
 from plone.app.content.browser.foldercontents import FolderContentsView, FolderContentsTable
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.i18n.normalizer.interfaces import IIDNormalizer
+from plone import api as ploneapi
 from zope.component import getAdapters
 from zope.component import getUtility
 from zope.component._api import getMultiAdapter
@@ -1079,6 +1080,28 @@ class BikaListingView(BrowserView):
         data = self.render_items()
         return data
 
+    def get_transitions_for_items(self, items):
+        """Extract Worfklow transitions for the bika listing items
+        """
+        workflow = ploneapi.portal.get_tool('portal_workflow')
+        out = {}
+
+        # helper method to extract the object from an bika listing item
+        def get_object_from_item(item):
+            obj = item.get("obj")
+            if hasattr(obj, "getObject") and callable(obj.getObject):
+                return obj.getObject()
+            return obj
+
+        # extract all objects from the items
+        objects = map(get_object_from_item, self.items)
+
+        for obj in objects:
+            for transition in workflow.getTransitionsFor(obj):
+                # append the transition by its id to the transitions dictionary
+                out[transition['id']] = transition
+        return out
+
     def get_workflow_actions(self):
         """ Compile a list of possible workflow transitions for items
             in this Table.
@@ -1088,33 +1111,31 @@ class BikaListingView(BrowserView):
         if not self.show_select_column:
             return []
 
-        workflow = getToolByName(self.context, 'portal_workflow')
-
         # get all transitions for all items.
-        transitions = {}
+        transitions = self.get_transitions_for_items(self.items)
+
+        # The actions which will be displayed in the listing view
         actions = []
-        for obj in [i.get('obj', '') for i in self.items]:
-            obj = hasattr(obj, 'getObject') and obj.getObject() or obj
-            for it in workflow.getTransitionsFor(obj):
-                transitions[it['id']] = it
 
         # the list is restricted to and ordered by these transitions.
         if 'transitions' in self.review_state:
-            for transition_dict in self.review_state['transitions']:
-                if transition_dict['id'] in transitions:
-                    actions.append(transitions[transition_dict['id']])
+            for transition in self.review_state['transitions']:
+                if transition['id'] in transitions:
+                    actions.append(transitions[transition['id']])
         else:
             actions = transitions.values()
 
         new_actions = []
         # remove any invalid items with a warning
-        for a,action in enumerate(actions):
-            if isinstance(action, dict) \
-                    and 'id' in action:
+        for action in actions:
+            if isinstance(action, dict) and 'id' in action:
                 new_actions.append(action)
             else:
-                logger.warning("bad action in custom_actions: %s. (complete list: %s)."%(action,actions))
+                logger.warning("bad action in custom_actions: {}. (complete list: {}).".format(
+                    action, actions))
+
         actions = new_actions
+
         # and these are removed
         if 'hide_transitions' in self.review_state:
             actions = [a for a in actions
@@ -1123,19 +1144,20 @@ class BikaListingView(BrowserView):
         # cheat: until workflow_action is abolished, all URLs defined in
         # GS workflow setup will be ignored, and the default will apply.
         # (that means, WorkflowAction-bound URL is called).
-        for i, action in enumerate(actions):
-            actions[i]['url'] = ''
+        for action in actions:
+            action['url'] = ''
 
         # if there is a self.review_state['some_state']['custom_actions'] attribute
         # on the BikaListingView, add these actions to the list.
         if 'custom_actions' in self.review_state:
             for action in self.review_state['custom_actions']:
-                if isinstance(action, dict) \
-                        and 'id' in action:
+                if isinstance(action, dict) and 'id' in action:
                     actions.append(action)
 
-        for a,action in enumerate(actions):
-            actions[a]['id'] = t(_(actions[a]['title']))
+        # # translate the workflow action title for the template
+        # for action in actions:
+        #     action['title'] = t(_(action['title']))
+
         return actions
 
     def getPriorityIcon(self):
