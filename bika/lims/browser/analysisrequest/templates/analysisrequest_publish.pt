@@ -237,7 +237,7 @@
         <tal:ar tal:repeat="i python:range(view.getAnalysisRequestsCount())">
         <div tal:attributes="id python:view.getAnalysisRequestObj().id;
                             uid python:view.getAnalysisRequestObj().UID();
-                            class python:('ar_publish_body singlear %s' % ('ar-invalid' if view.getAnalysisRequestObj().isInvalid() else ('ar-provisional' if view.getAnalysisRequest()['prepublish']==True else '')))"
+                            class python:('ar_publish_body singlear %s' % ('ar-invalid' if hasattr(view.getAnalysisRequestObj(),'isInvalid') and view.getAnalysisRequestObj().isInvalid() else ('ar-provisional' if view.getAnalysisRequest()['prepublish']==True else '')))"
             tal:content='structure python:view.getReportTemplate()'></div>
         </tal:ar>
         </tal:singlearreport>
@@ -251,7 +251,7 @@
         <tal:argroup repeat="i python:range(view.getGroupedAnalysisRequestsCount())">
         <tal:multiar define="ids python:':'.join([ar.id for ar in view.getAnalysisRequestGroup()]);
                             uids python:':'.join([ar.UID() for ar in view.getAnalysisRequestGroup()]);
-                            inv  python:len([ar.isInvalid() for ar in view.getAnalysisRequestGroup() if ar.isInvalid()]) > 0;">
+                            inv  python:len([hasattr(ar,'isInvalid') and ar.isInvalid() for ar in view.getAnalysisRequestGroup() if hasattr(ar,'isInvalid') and ar.isInvalid()]) > 0;">
         <div tal:content="structure python:view.getGroupedReportTemplate()"
              tal:attributes="id ids;
                             uid uids;
