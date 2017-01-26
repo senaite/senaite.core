@@ -16,7 +16,7 @@
   <permission>BIKA: View Results</permission>
   <permission>Modify portal content</permission>
 
-  <state state_id="attachment_due" title="Attachment Outstanding" i18n:attributes="title">
+  <state state_id="attachment_due" title="Attachment due" i18n:attributes="title">
     <exit-transition transition_id="attach" />
     <exit-transition transition_id="retract" />
     <exit-transition transition_id="reject" />
@@ -212,7 +212,7 @@
     </permission-map>
   </state>
 
-  <transition transition_id="attach" title="Add attachment" new_state="to_be_verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+  <transition transition_id="attach" title="Attach" new_state="to_be_verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Add attachment</action>
     <guard>
       <guard-expression>python:here.guard_attach_transition()</guard-expression>
@@ -226,14 +226,14 @@
     </guard>
   </transition>
 
-  <transition transition_id="retract" title="Retract worksheet" new_state="open" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+  <transition transition_id="retract" title="Retract" new_state="open" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Retract worksheet</action>
     <guard>
       <guard-expression>python:here.guard_retract_transition()</guard-expression>
     </guard>
   </transition>
 
-  <transition transition_id="submit" title="Submit for verification" new_state="attachment_due" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+  <transition transition_id="submit" title="Submit" new_state="attachment_due" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Submit for verification</action>
     <guard>
       <guard-expression>python:here.guard_submit_transition()</guard-expression>

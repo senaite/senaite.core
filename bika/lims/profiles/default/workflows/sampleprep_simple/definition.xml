@@ -18,7 +18,7 @@
     <exit-transition transition_id="complete" />
   </state>
 
-  <transition transition_id="complete" title="Sample preparation is complete" new_state="complete" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+  <transition transition_id="complete" title="Complete" new_state="complete" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Complete</action>
     <guard>
       <guard-permission>Modify portal content</guard-permission>

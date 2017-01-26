@@ -29,7 +29,7 @@
     </permission-map>
   </state>
 
-  <state state_id="attachment_due" title="Attachment Outstanding" i18n:attributes="title">
+  <state state_id="attachment_due" title="Attachment due" i18n:attributes="title">
     <exit-transition transition_id="attach" />
     <exit-transition transition_id="retract" />
     <exit-transition transition_id="reject" />
@@ -118,7 +118,7 @@
     </guard>
   </transition>
 
-  <transition transition_id="attach" title="Add attachment" new_state="to_be_verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+  <transition transition_id="attach" title="Attach" new_state="to_be_verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Add attachment</action>
     <guard>
       <guard-expression>python:here.guard_attach_transition()</guard-expression>
@@ -139,7 +139,7 @@
     </guard>
   </transition>
 
-  <transition transition_id="submit" title="Submit for verification" new_state="attachment_due" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+  <transition transition_id="submit" title="Submit" new_state="attachment_due" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Submit for verification</action>
     <guard>
     </guard>

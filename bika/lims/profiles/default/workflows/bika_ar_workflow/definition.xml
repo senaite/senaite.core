@@ -26,7 +26,7 @@
   <permission>Modify portal content</permission>
   <permission>View</permission>
 
-  <state state_id="attachment_due" title="Attachment Outstanding" i18n:attributes="title">
+  <state state_id="attachment_due" title="Attachment due" i18n:attributes="title">
     <exit-transition transition_id="prepublish" />
     <exit-transition transition_id="attach" />
     <exit-transition transition_id="retract" />
@@ -217,7 +217,7 @@
     </permission-map>
   </state>
 
-  <state state_id="sample_due" title="Sample Due" i18n:attributes="title">
+  <state state_id="sample_due" title="Sample due" i18n:attributes="title">
     <description>Sample yet to be taken into the lab for analysis</description>
     <exit-transition transition_id="receive" />
     <exit-transition transition_id="submit" />
@@ -308,7 +308,7 @@
     </permission-map>
   </state>
 
-  <state state_id="sample_prep" title="Sample Preparation" i18n:attributes="title">
+  <state state_id="sample_prep" title="Sample preparation" i18n:attributes="title">
     <description>A sample preparation workflow is in progress</description>
     <exit-transition transition_id="sample_prep_complete" />
   </state>
@@ -567,7 +567,7 @@
     </permission-map>
   </state>
 
-  <state state_id="scheduled_sampling" title="Scheduled Sampling" i18n:attributes="title">
+  <state state_id="scheduled_sampling" title="Scheduled sampling" i18n:attributes="title">
     <exit-transition transition_id="sample" />
     <permission-map name="BIKA: Add Analysis" acquired="False">
       <permission-role>LabClerk</permission-role>
@@ -654,7 +654,7 @@
     </permission-map>
   </state>
 
-  <state state_id="to_be_preserved" title="To Be Preserved" i18n:attributes="title">
+  <state state_id="to_be_preserved" title="To be preserved" i18n:attributes="title">
     <description>Sample was identified as requiring preservation</description>
     <exit-transition transition_id="preserve" />
     <permission-map name="BIKA: Add Analysis" acquired="False">
@@ -743,7 +743,7 @@
     </permission-map>
   </state>
 
-  <state state_id="to_be_sampled" title="To Be Sampled" i18n:attributes="title">
+  <state state_id="to_be_sampled" title="To be sampled" i18n:attributes="title">
     <description>AR successfully created</description>
     <exit-transition transition_id="sample" />
     <exit-transition transition_id="submit" />
@@ -988,26 +988,26 @@
     </permission-map>
   </state>
 
-  <transition transition_id="attach" title="Add attachment" new_state="to_be_verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+  <transition transition_id="attach" title="Attach" new_state="to_be_verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Add attachment</action>
     <guard>
       <guard-expression>python:here.guard_attach_transition()</guard-expression>
     </guard>
   </transition>
 
-  <transition transition_id="auto_no_preservation_required" title="auto_no_preservation_required" new_state="sample_due" trigger="AUTOMATIC" before_script="" after_script="" i18n:attributes="title">
+  <transition transition_id="auto_no_preservation_required" title="No preservation required" new_state="sample_due" trigger="AUTOMATIC" before_script="" after_script="" i18n:attributes="title">
     <guard>
       <guard-expression>python:here.guard_auto_preservation_required() == False</guard-expression>
     </guard>
   </transition>
 
-  <transition transition_id="auto_preservation_required" title="auto_preservation_required" new_state="to_be_preserved" trigger="AUTOMATIC" before_script="" after_script="" i18n:attributes="title">
+  <transition transition_id="auto_preservation_required" title="Preservation required" new_state="to_be_preserved" trigger="AUTOMATIC" before_script="" after_script="" i18n:attributes="title">
     <guard>
       <guard-expression>python:here.guard_auto_preservation_required() == True</guard-expression>
     </guard>
   </transition>
 
-  <transition transition_id="no_sampling_workflow" title="no_sampling_workflow" new_state="sampled" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+  <transition transition_id="no_sampling_workflow" title="No sampling workflow" new_state="sampled" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <guard>
       <guard-permission>BIKA: Add Analysis Request</guard-permission>
     </guard>
@@ -1036,7 +1036,7 @@
     </guard>
   </transition>
 
-  <transition transition_id="receive" title="Receive sample" new_state="sample_received" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+  <transition transition_id="receive" title="Receive" new_state="sample_received" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Receive sample</action>
     <guard>
       <guard-permission>BIKA: Receive Sample</guard-permission>
@@ -1075,32 +1075,32 @@
     </guard>
   </transition>
 
-  <transition transition_id="sample_due" title="sample_due" new_state="sample_due" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+  <transition transition_id="sample_due" title="Sample due" new_state="sample_due" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <guard>
     </guard>
   </transition>
 
-  <transition transition_id="sample_prep" title="Sample Preparation" new_state="sample_prep" trigger="AUTOMATIC" before_script="" after_script="" i18n:attributes="title">
+  <transition transition_id="sample_prep" title="Sample preparation" new_state="sample_prep" trigger="AUTOMATIC" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Sample Preparation</action>
     <guard>
       <guard-expression>python:here.guard_sample_prep_transition()</guard-expression>
     </guard>
   </transition>
 
-  <transition transition_id="sample_prep_complete" title="Sample Preparation Complete" new_state="sample_received" trigger="AUTOMATIC" before_script="" after_script="" i18n:attributes="title">
+  <transition transition_id="sample_prep_complete" title="Sample preparation complete" new_state="sample_received" trigger="AUTOMATIC" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Sample Preparation Complete</action>
     <guard>
       <guard-expression>python:here.guard_sample_prep_complete_transition()</guard-expression>
     </guard>
   </transition>
 
-  <transition transition_id="sampling_workflow" title="sampling_workflow" new_state="to_be_sampled" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+  <transition transition_id="sampling_workflow" title="Sampling workflow" new_state="to_be_sampled" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <guard>
       <guard-permission>BIKA: Add Analysis Request</guard-permission>
     </guard>
   </transition>
 
-  <transition transition_id="schedule_sampling" title="After the sampling coordinator defines the sampler and date" new_state="scheduled_sampling" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+  <transition transition_id="schedule_sampling" title="Schedule sampling" new_state="scheduled_sampling" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Schedule Sampling</action>
     <guard>
       <guard-permission>BIKA: Schedule Sampling</guard-permission>
@@ -1108,14 +1108,14 @@
     </guard>
   </transition>
 
-  <transition transition_id="submit" title="Submit for verification" new_state="to_be_verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+  <transition transition_id="submit" title="Submit" new_state="to_be_verified" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Submit for verification</action>
     <guard>
       <guard-expression>python:here.guard_submit_transition()</guard-expression>
     </guard>
   </transition>
 
-  <transition transition_id="to_be_preserved" title="to_be_preserved" new_state="to_be_preserved" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+  <transition transition_id="to_be_preserved" title="To be preserved" new_state="to_be_preserved" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <guard>
     </guard>
   </transition>

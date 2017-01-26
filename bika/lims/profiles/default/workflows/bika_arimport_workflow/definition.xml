@@ -34,14 +34,14 @@
     </permission-map>
   </state>
 
-  <transition transition_id="import" title="" new_state="imported" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+  <transition transition_id="import" title="Import" new_state="imported" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Import</action>
     <guard>
       <guard-permission>BIKA: Manage ARImport</guard-permission>
     </guard>
   </transition>
 
-  <transition transition_id="validate" title="" new_state="valid" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+  <transition transition_id="validate" title="Validate" new_state="valid" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Validate</action>
     <guard>
       <guard-permission>BIKA: Manage ARImport</guard-permission>

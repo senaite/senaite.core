@@ -74,7 +74,7 @@
     </permission-map>
   </state>
 
-  <transition transition_id="close" title="Close the batch" new_state="closed" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+  <transition transition_id="close" title="Close" new_state="closed" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Close</action>
     <guard>
       <guard-permission>BIKA: Close Batch</guard-permission>
@@ -82,7 +82,7 @@
     </guard>
   </transition>
 
-  <transition transition_id="open" title="Used to retract a batch to 'open' state" new_state="open" trigger="USER" before_script="" after_script="" i18n:attributes="title">
+  <transition transition_id="open" title="Open" new_state="open" trigger="USER" before_script="" after_script="" i18n:attributes="title">
     <action url="" category="workflow" icon="">Open</action>
     <guard>
       <guard-permission>BIKA: Reopen Batch</guard-permission>
