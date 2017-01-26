@@ -6,7 +6,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2017-01-26 15:50+0000\n"
+"POT-Creation-Date: 2017-01-26 16:37+0000\n"
 "PO-Revision-Date: 2017-01-26 14:51+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
 "Language-Team: Chinese (Taiwan) (http://www.transifex.com/bikalabs/bika-lims/language/zh_TW/)\n"
@@ -6334,7 +6334,7 @@ msgstr ""
 msgid "time_format"
 msgstr ""
 
-#: bika/lims/workflow.py:100
+#: bika/lims/workflow.py:101
 msgid "title"
 msgstr ""
 

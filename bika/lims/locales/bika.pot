@@ -4,7 +4,7 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
-"POT-Creation-Date: 2017-01-26 15:50+0000\n"
+"POT-Creation-Date: 2017-01-26 16:37+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI +ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -6316,7 +6316,7 @@ msgstr ""
 msgid "time_format"
 msgstr ""
 
-#: bika/lims/workflow.py:100
+#: bika/lims/workflow.py:101
 msgid "title"
 msgstr ""
 

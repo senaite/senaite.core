@@ -30,8 +30,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2017-01-26 15:50+0000\n"
-"PO-Revision-Date: 2017-01-26 15:49+0000\n"
+"POT-Creation-Date: 2017-01-26 16:37+0000\n"
+"PO-Revision-Date: 2017-01-26 16:35+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
 "Language-Team: German (http://www.transifex.com/bikalabs/bika-lims/language/de/)\n"
 "MIME-Version: 1.0\n"
@@ -3477,7 +3477,7 @@ msgstr "Nur für leere oder Null-Felder"
 #: bika/lims/browser/instrument.py:69
 #: bika/lims/browser/worksheet/views/folder.py:172
 msgid "Open"
-msgstr "öffnen"
+msgstr "Offen"
 
 #: bika/lims/profiles.zcml:11
 msgid "Open Source Web based Laboratory Information Management System suitable for all types of laboratories"
@@ -6361,7 +6361,7 @@ msgstr "die Gesamtanzahl der in der Probenrunde definierten Probennahmen"
 msgid "time_format"
 msgstr ""
 
-#: bika/lims/workflow.py:100
+#: bika/lims/workflow.py:101
 msgid "title"
 msgstr "Titel"
 
