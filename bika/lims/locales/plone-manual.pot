@@ -178,6 +178,9 @@ msgstr ""
 msgid "Submit"
 msgstr ""
 
+msgid "Submit for verification"
+msgstr ""
+
 msgid "To be preserved"
 msgstr ""
 
@@ -185,6 +188,9 @@ msgid "To be sampled"
 msgstr ""
 
 msgid "To be verified"
+msgstr ""
+
+msgid "Open"
 msgstr ""
 
 msgid "Unpublished"
