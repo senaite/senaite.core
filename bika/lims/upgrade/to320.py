@@ -55,9 +55,6 @@ def upgrade(tool):
     # Updating Verifications of Analysis field from integer to String.
     multi_verification(portal)
 
-    # Clean and rebuild affected catalogs
-    cleanAndRebuildIfNeeded(portal)
-
     return True
 
 
