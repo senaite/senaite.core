@@ -106,3 +106,6 @@ msgstr ""
 
 msgid "Unable to load instruments: ${invalid_list}"
 msgstr ""
+
+msgid "Submit for verification"
+msgstr ""

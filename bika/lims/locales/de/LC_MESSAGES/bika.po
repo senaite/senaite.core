@@ -30,8 +30,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2017-01-26 16:37+0000\n"
-"PO-Revision-Date: 2017-01-26 16:35+0000\n"
+"POT-Creation-Date: 2017-01-26 17:24+0000\n"
+"PO-Revision-Date: 2017-01-26 17:23+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
 "Language-Team: German (http://www.transifex.com/bikalabs/bika-lims/language/de/)\n"
 "MIME-Version: 1.0\n"
@@ -196,11 +196,11 @@ msgid "<p>${service} requires the following services to be selected:</p><br/><p>
 msgstr "<p>${service} benötigt die folgenden ausgewählten Dienste: </p><br/><p>${deps}</p><br/><p>Wollen Sie diese Auswahl zuweisen?</p>"
 
 msgid "<p>The following services depend on ${service}, and will be unselected if you continue:</p><br/><p>${deps}</p><br/><p>Do you want to remove these selections now?</p>"
-msgstr ""
+msgstr "<p>Die folgenden Dienste hängen von ${service} ab, und werden deselektiert wenn Sie fortfahren:</p><br/><p>${deps}</p><br/><p>Wollen Sie die Auswahl jetzt löschen?</p>"
 
 #: bika/lims/skins/bika/bika_widgets/rejectionsetupwidget.pt:33
 msgid "<span>x</span> <span class=\"formHelp\">x</span>"
-msgstr ""
+msgstr "<span>x</span> <span class=\"formHelp\">x</span>"
 
 #: bika/lims/browser/widgets/analysisspecificationwidget.py:54
 #: bika/lims/content/analysisspec.py:79
@@ -209,7 +209,7 @@ msgstr "> Max"
 
 #: bika/lims/content/samplinground.py:141
 msgid "A short name that describes the Round for it to be easily identified on forms and drop-down menus"
-msgstr ""
+msgstr "Ein Kurzname, der die Probenrunde beschreibt, so dass sie leicht in Formularen und Selektionsmenüs gefunden werden kann."
 
 #: bika/lims/browser/analysisrequest/add.py:99
 msgid "AR ${ar_number}"
@@ -3032,7 +3032,7 @@ msgid "Manual entry of results for method %s is not allowed and no valid instrum
 msgstr "Manuelle Ergebniseingabe ist für die Methode %s nicht erlaubt und es wurden keine gültigen Geräte gefunden: %s"
 
 msgid "Manual entry of results for method {methodname} is not allowed and no valid instruments found: ${invalid_list}"
-msgstr ""
+msgstr "Die manuelle Ergebniserfassung ist für die Methode {methodname} nicht erlaubt und es wurden keine gültigen Geräte gefunden: ${invalid_list}"
 
 #: bika/lims/browser/referencesample.py:317
 #: bika/lims/browser/templates/referencesample_sticker.pt:51
@@ -5061,6 +5061,9 @@ msgstr "Einreichen"
 msgid "Submit a valid Open XML (.XLSX) file containing Bika setup records to continue."
 msgstr "Geben Sie eine gültige Open XML (.XLSX) Datei an, um mit den LIMS-Einstellungen fortzufahren."
 
+msgid "Submit for verification"
+msgstr "Zur Überprüfung einreichen"
+
 #: bika/lims/browser/analyses.py:792
 msgid "Submited and verified by the same user- "
 msgstr "Eingereicht und verifiziert durch den gleichen Benutzer-"
@@ -5392,7 +5395,7 @@ msgstr "Das gewählte Instrument unterstützt die Methode. Weisen Sie die Method
 
 #: bika/lims/content/bikasetup.py:564
 msgid "The selected landing page is displayed for non-authenticated users and if the Dashboard is not selected as the default front page. If no landing page is selected, the default Bika frontpage is displayed."
-msgstr ""
+msgstr "Die ausgewählte Startseite wird für unangemeldete Benutzer angezeigt, sofern das Dashboard nicht als Standardseite aktiviert ist. Wenn keine Startseite ausgewählt wurde, wird die standard Bika Startseite angezeigt."
 
 #: bika/lims/content/instrument.py:77
 msgid "The serial number that uniquely identifies the instrument"

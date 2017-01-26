@@ -9,8 +9,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2017-01-26 16:37+0000\n"
-"PO-Revision-Date: 2017-01-26 14:51+0000\n"
+"POT-Creation-Date: 2017-01-26 17:24+0000\n"
+"PO-Revision-Date: 2017-01-26 17:08+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
 "Language-Team: Turkish (Turkey) (http://www.transifex.com/bikalabs/bika-lims/language/tr_TR/)\n"
 "MIME-Version: 1.0\n"
@@ -5038,6 +5038,9 @@ msgstr "Gönder"
 
 #: bika/lims/exportimport/import.pt:47
 msgid "Submit a valid Open XML (.XLSX) file containing Bika setup records to continue."
+msgstr ""
+
+msgid "Submit for verification"
 msgstr ""
 
 #: bika/lims/browser/analyses.py:792

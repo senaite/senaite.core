@@ -6,8 +6,8 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2017-01-26 16:37+0000\n"
-"PO-Revision-Date: 2017-01-26 15:42+0000\n"
+"POT-Creation-Date: 2017-01-26 17:24+0000\n"
+"PO-Revision-Date: 2017-01-26 16:51+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
 "Language-Team: Chinese (China) (http://www.transifex.com/bikalabs/bika-lims/language/zh_CN/)\n"
 "MIME-Version: 1.0\n"
@@ -465,6 +465,9 @@ msgstr ""
 msgid "Not requested"
 msgstr ""
 
+msgid "Open"
+msgstr ""
+
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Orders"
 msgstr "多个订单"
@@ -771,6 +774,9 @@ msgid "Sub-groups"
 msgstr "多个子组"
 
 msgid "Submit"
+msgstr ""
+
+msgid "Submit for verification"
 msgstr ""
 
 #: bika/lims/profiles/default/types/Supplier.xml
