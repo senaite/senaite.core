@@ -514,6 +514,11 @@ function SiteView() {
       });
     }
 
+    /**
+    This function sets cookie value
+    @param {String} cname is name of the cookie
+    @param {String} cvalue is value of the cookie
+    */
     function setCookie(cname, cvalue) {
         var d = new Date();
         d.setTime(d.getTime() + (1 * 24 * 60 * 60 * 1000));
@@ -521,6 +526,10 @@ function SiteView() {
         document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
     }
 
+    /**
+    This function is to read cookie value
+    @param {String} cname is name of the cookie to be read 
+    */
     function readCookie(cname) {
         var name = cname + "=";
         var ca = document.cookie.split(';');
