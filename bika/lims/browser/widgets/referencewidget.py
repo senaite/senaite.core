@@ -138,6 +138,8 @@ class ReferenceWidget(StringWidget):
     def initial_uid_field_value(self, value):
         if type(value) in (list, tuple):
             ret = ",".join([v.UID() for v in value])
+        elif type(value) in [str, ]:
+            ret = value
         else:
             ret = value.UID() if value else value
         return ret

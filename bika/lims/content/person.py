@@ -108,10 +108,50 @@ schema = BikaSchema.copy() + Schema((
            label=_("Physical address"),
         ),
     ),
+    ComputedField(
+        'City',
+        expression='context.getPhysicalAddress().get("city")',
+        searchable=1,
+        widget=ComputedWidget(
+            visible=False
+        ),
+    ),
+    ComputedField(
+        'District',
+        expression='context.getPhysicalAddress().get("district")',
+        searchable=1,
+        widget=ComputedWidget(
+            visible=False
+        ),
+    ),
+    ComputedField(
+        'PostalCode',
+        expression='context.getPhysicalAddress().get("postalCode")',
+        searchable=1,
+        widget=ComputedWidget(
+            visible=False
+        ),
+    ),
+    ComputedField(
+        'Country',
+        expression='context.getPhysicalAddress().get("country")',
+        searchable=1,
+        widget=ComputedWidget(
+            visible=False
+        ),
+    ),
     AddressField('PostalAddress',
         schemata = 'Address',
         widget = AddressWidget(
            label=_("Postal address"),
+        ),
+    ),
+    ComputedField(
+        'ObjectWorkflowStates',
+        expression='context.getObjectWorkflowStates()',
+        searchable=1,
+        widget=ComputedWidget(
+            visible=False
         ),
     ),
 ),
@@ -186,6 +226,19 @@ class Person(BaseFolder):
         """ check if contact has user """
         return self.portal_membership.getMemberById(
             self.getUsername()) is not None
+
+    def getObjectWorkflowStates(self):
+        """
+        Returns a dictionary with the workflow id as key and workflow state as
+        value.
+        :return: {'review_state':'active',...}
+        """
+        workflow = getToolByName(self, 'portal_workflow')
+        states = {}
+        for w in workflow.getWorkflowsFor(self):
+            state = w._getWorkflowStateOf(self).id
+            states[w.state_var] = state
+        return states
 
     ### Removed these accessors to prevent confusion when LDAP is used
     # def getEmailAddress(self, **kw):
