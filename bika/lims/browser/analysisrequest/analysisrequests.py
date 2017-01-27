@@ -927,9 +927,9 @@ class AnalysisRequestsView(BikaListingView):
 
         # Submitting user may not verify results
         if item['review_state'] == 'to_be_verified':
-            username = self.member.getUserName()
-            allowed = api.user.has_permission(VerifyPermission,
-                                              username=username)
+            allowed = api.user.has_permission(
+                VerifyPermission,
+                username=self.member.getUserName())
             if allowed and not obj.isUserAllowedToVerify(self.member):
                 item['after']['state_title'] = \
                      "<img src='++resource++bika.lims.images/submitted-by-current-user.png' title='%s'/>" % \
