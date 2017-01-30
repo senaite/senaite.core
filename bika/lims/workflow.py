@@ -1,25 +1,26 @@
+# -*- coding: utf-8 -*-
+
 # This file is part of Bika LIMS
 #
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
+from Products.CMFCore.WorkflowCore import WorkflowException
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.interfaces import IWorkflowChain
+from Products.CMFPlone.workflow import ToolWorkflowChain
+
+from zope.interface import implementer
+from zope.interface import implements
+
 from bika.lims import enum
-from bika.lims import PMF
 from bika.lims.browser import ulocalized_time
 from bika.lims.interfaces import IJSONReadExtender
 from bika.lims.jsonapi import get_include_fields
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import t
 from bika.lims import logger
-from Products.CMFCore.interfaces import IContentish
-from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.interfaces import IWorkflowChain
-from Products.CMFPlone.workflow import ToolWorkflowChain
-from zope.component import adapts
-from zope.interface import implementer
-from zope.interface import implements
-from zope.interface import Interface
+from bika.lims import bikaMessageFactory as _
 
 
 def skip(instance, action, peek=False, unskip=False):
@@ -93,11 +94,11 @@ def get_workflow_actions(obj):
     """
 
     def translate(id):
-        return t(PMF(id + "_transition_title"))
+        return t(_(id))
 
     workflow = getToolByName(obj, 'portal_workflow')
     actions = [{"id": it["id"],
-                "title": translate(it["id"])}
+                "title": t(_(it["title"]))}
                for it in workflow.getTransitionsFor(obj)]
 
     return actions
@@ -127,6 +128,7 @@ def getCurrentState(obj, stateflowid):
     wf = getToolByName(obj, 'portal_workflow')
     return wf.getInfoFor(obj, stateflowid, '')
 
+
 def getTransitionDate(obj, action_id):
     workflow = getToolByName(obj, 'portal_workflow')
     try:
@@ -146,7 +148,6 @@ def getTransitionDate(obj, action_id):
                                     time_only=False, context=obj)
             return value
     return None
-
 
 
 # Enumeration of the available status flows
@@ -187,7 +188,6 @@ class JSONReadExtender(object):
         include_fields = get_include_fields(request)
         if not include_fields or "transitions" in include_fields:
             data['transitions'] = get_workflow_actions(self.context)
-
 
 
 @implementer(IWorkflowChain)

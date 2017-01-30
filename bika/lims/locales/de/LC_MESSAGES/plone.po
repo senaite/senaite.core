@@ -4,12 +4,13 @@
 # Lutz Kogel <lkogel@koluma.de>, 2015-2016
 # Mabuse <mabuse@byom.de>, 2014
 # Mabuse <mabuse@byom.de>, 2014
+# Ramon Bartl <rb@ridingbytes.com>, 2017
 # Stefan Gruber <st.gruber@t-online.de>, 2015
 msgid ""
 msgstr ""
 "Project-Id-Version: Bika-LIMS\n"
-"POT-Creation-Date: 2017-01-17 08:44+0000\n"
-"PO-Revision-Date: 2016-12-07 17:36+0000\n"
+"POT-Creation-Date: 2017-01-26 17:24+0000\n"
+"PO-Revision-Date: 2017-01-26 17:05+0000\n"
 "Last-Translator: Ramon Bartl <rb@ridingbytes.com>\n"
 "Language-Team: German (http://www.transifex.com/bikalabs/bika-lims/language/de/)\n"
 "MIME-Version: 1.0\n"
@@ -22,6 +23,7 @@ msgstr ""
 "Domain: plone\n"
 "Language: de\n"
 
+#. Default: "AR Imports"
 msgid "AR Imports"
 msgstr "Analyenauftrag Importe"
 
@@ -42,6 +44,17 @@ msgstr "Analysenauftrag - Vorlagen"
 #: bika/lims/profiles/default/types/ARReport.xml
 msgid "ARReport"
 msgstr "Bericht über Analysenaufträge"
+
+# Manual Workflow State and Transition MsgIds
+# Despite the fact, that these are defined in the "bika" domain, they are not
+# translated
+# in the action menu of Plone.
+# Please don't remove
+msgid "Activate"
+msgstr "Aktivieren"
+
+msgid "Active"
+msgstr "Aktiv"
 
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Add Analyses"
@@ -120,6 +133,15 @@ msgstr "Analysen - Spezifikation"
 msgid "Analysis Specifications"
 msgstr "Analysen - Spezifikationen"
 
+msgid "Assign"
+msgstr "Zuweisen"
+
+msgid "Assigned"
+msgstr "Zugewiesen"
+
+msgid "Attach"
+msgstr "Anfügen"
+
 #: bika/lims/profiles/default/types/Attachment.xml
 msgid "Attachment"
 msgstr "Attachment"
@@ -132,6 +154,9 @@ msgstr "Attachment - Typ"
 #: bika/lims/profiles/default/types/AttachmentTypes.xml
 msgid "Attachment Types"
 msgstr "Attachment - Typen"
+
+msgid "Attachment due"
+msgstr "Anhang ausstehend"
 
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Attachments"
@@ -174,11 +199,14 @@ msgstr "Berechnungen"
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Calibration Certificates"
-msgstr ""
+msgstr "Kalibrierungszertifikate"
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Calibrations"
 msgstr "Kalibrierungen"
+
+msgid "Cancel"
+msgstr "Annullieren"
 
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Client"
@@ -188,6 +216,17 @@ msgstr "Kunde"
 #: bika/lims/profiles/default/types/ClientFolder.xml
 msgid "Clients"
 msgstr "Kunden"
+
+msgid "Close"
+msgstr "Schließen"
+
+msgid "Complete"
+msgstr "Vollständig"
+
+#: bika/lims/profiles/default/types/Contact.xml
+#: bika/lims/profiles/default/types/SupplierContact.xml
+msgid "Contact"
+msgstr "Kontakt"
 
 #: bika/lims/profiles/default/types/Client.xml
 #: bika/lims/profiles/default/types/Supplier.xml
@@ -214,7 +253,13 @@ msgstr "Behälter"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Create Invoice"
-msgstr ""
+msgstr "Rechnung erstellen"
+
+msgid "Current"
+msgstr "Aktuell"
+
+msgid "Deactivate"
+msgstr "Deaktivieren"
 
 #: bika/lims/profiles/default/types/Department.xml
 msgid "Department"
@@ -224,17 +269,44 @@ msgstr "Abteilung"
 msgid "Departments"
 msgstr "Abteilungen"
 
+msgid "Dispatch"
+msgstr "Ausliefern"
+
+msgid "Dispatched"
+msgstr "Ausgeliefert"
+
+msgid "Dispose"
+msgstr "Entsorgen"
+
+msgid "Disposed"
+msgstr "Entsorgt"
+
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Documents"
-msgstr ""
+msgstr "Dokumente"
+
+msgid "Dormant"
+msgstr "Inaktiv"
 
 #: bika/lims/profiles/default/types/DuplicateAnalysis.xml
 msgid "Duplicate Analysis"
 msgstr "Doppelbestimmung"
 
+#: bika/lims/profiles/default/types/ARImport.xml
+#: bika/lims/profiles/default/types/ARPriority.xml
+#: bika/lims/profiles/default/types/ARTemplate.xml
+msgid "Edit"
+msgstr "Bearbeiten"
+
 #: bika/lims/profiles/default/types/Pricelist.xml
 msgid "Email pricelist"
 msgstr "Preisliste per Mail versenden"
+
+msgid "Expire"
+msgstr "Ablaufen lassen"
+
+msgid "Expired"
+msgstr "Abgelaufen"
 
 #: bika/lims/profiles/default/types/Worksheet.xml
 msgid "Export"
@@ -242,24 +314,42 @@ msgstr "Export"
 
 #: bika/lims/profiles/default/types/InvoiceBatch.xml
 msgid "Export Batch To CSV"
-msgstr ""
+msgstr "Exportiere Batch nach CSV"
 
 #: bika/lims/profiles/default/actions.xml
 msgid "Extracts"
 msgstr "Extrakte"
 
+#: bika/lims/profiles/default/types/ReportFolder.xml
+msgid "History"
+msgstr "Historie"
+
+#: bika/lims/profiles/default/actions.xml
+msgid "Home"
+msgstr "Start"
+
 #: bika/lims/profiles/default/types/IdentifierType.xml
 msgid "Identifier Type"
-msgstr ""
+msgstr "Identifikationstyp"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/IdentifierTypes.xml
 msgid "Identifier Types"
-msgstr ""
+msgstr "Identifikationstypen"
+
+#: bika/lims/profiles/default/actions.xml
+msgid "Import"
+msgstr "Import"
+
+msgid "Imported"
+msgstr "Importiert"
 
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Imports"
 msgstr "Importe"
+
+msgid "Inactive"
+msgstr "Inaktiv"
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Instrument"
@@ -267,7 +357,7 @@ msgstr "Gerät"
 
 #: bika/lims/profiles/default/controlpanel.xml
 msgid "Instrument Locations"
-msgstr ""
+msgstr "Geräteorte"
 
 #: bika/lims/profiles/default/types/InstrumentType.xml
 msgid "Instrument Type"
@@ -283,6 +373,12 @@ msgstr "Gerätearten"
 #: bika/lims/profiles/default/types/Instruments.xml
 msgid "Instruments"
 msgstr "Geräte"
+
+msgid "Invalid"
+msgstr "Ungültig"
+
+msgid "Invalidate"
+msgstr "Annullieren"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Invoice.xml
@@ -332,6 +428,10 @@ msgstr "Protokoll"
 msgid "Login details"
 msgstr "Login-Details"
 
+#: bika/lims/profiles/default/types/Instrument.xml
+msgid "Maintenance"
+msgstr "Wartung"
+
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Manage Analyses"
 msgstr "Analysen verwalten"
@@ -359,18 +459,42 @@ msgstr "Methode"
 msgid "Methods"
 msgstr "Methoden"
 
+msgid "No preservation required"
+msgstr "Keine Konservierung erforderlich"
+
+msgid "No sampling workflow"
+msgstr "Kein Probennahme Workflow"
+
+msgid "Not requested"
+msgstr "Nicht angefragt"
+
+msgid "Open"
+msgstr "Offen"
+
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Orders"
 msgstr "Bestellungen"
+
+msgid "Pending"
+msgstr "Ausstehend"
+
+msgid "Prepublish"
+msgstr "Vorveröffentlichen"
 
 #: bika/lims/profiles/default/types/Preservation.xml
 msgid "Preservation"
 msgstr "Konservierung"
 
+msgid "Preservation required"
+msgstr "Konservierung erforderlich"
+
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Preservations.xml
 msgid "Preservations"
 msgstr "Konservierungen"
+
+msgid "Preserve"
+msgstr "Konservieren"
 
 #: bika/lims/profiles/default/types/Pricelist.xml
 msgid "Pricelist"
@@ -398,17 +522,32 @@ msgstr "Preisliste drucken"
 msgid "Productivity"
 msgstr "Produktivität"
 
+msgid "Publish"
+msgstr "Veröffentlichen"
+
+msgid "Published"
+msgstr "Veröffentlicht"
+
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Published results"
 msgstr "Veröffentlichte Ergebnisse"
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "QC Results"
-msgstr ""
+msgstr "QC Ergebnisse"
 
 #: bika/lims/profiles/default/types/ReportFolder.xml
 msgid "Quality Control"
 msgstr "Qualitätssicherung"
+
+msgid "Receive"
+msgstr "Empfange"
+
+msgid "Receive sample"
+msgstr "Probe empfangen"
+
+msgid "Received"
+msgstr "Empfangen"
 
 #: bika/lims/profiles/default/types/ReferenceAnalysis.xml
 msgid "Reference Analysis"
@@ -437,9 +576,24 @@ msgstr "Referenzproben"
 msgid "Reference Values"
 msgstr "Referenzwerte"
 
+msgid "Registered"
+msgstr "Registriert"
+
+msgid "Reinstate"
+msgstr "Wiedereinstellen"
+
+msgid "Reject"
+msgstr "Ablehnen"
+
 #: bika/lims/profiles/default/types/RejectAnalysis.xml
 msgid "Reject Analysis"
 msgstr "Analyse ablehnen"
+
+msgid "Rejected"
+msgstr "Abgelehnt"
+
+msgid "Remove"
+msgstr "Entfernen"
 
 #: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/Report.xml
@@ -450,9 +604,18 @@ msgstr "Bericht"
 msgid "Reports"
 msgstr "Berichte"
 
+msgid "Republish"
+msgstr "Wiederveröffentlichen"
+
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 msgid "Results not requested"
 msgstr "Ergebnisse nicht angefordert"
+
+msgid "Retract"
+msgstr "Zurückziehen"
+
+msgid "Retracted"
+msgstr "Zurückgezogen"
 
 #: bika/lims/profiles/default/types/Sample.xml
 msgid "Sample"
@@ -502,9 +665,27 @@ msgstr "Probentyp"
 msgid "Sample Types"
 msgstr "Probentypen"
 
+msgid "Sample due"
+msgstr "Probe ausstehend"
+
+msgid "Sample preparation"
+msgstr "Probe präparieren"
+
+msgid "Sample preparation complete"
+msgstr "Probe präpariert"
+
+msgid "Sample received"
+msgstr "Probe empfangen"
+
+msgid "Sample registered"
+msgstr "Probe registriert"
+
 #: bika/lims/profiles/default/types/Client.xml
 msgid "SamplePoints"
 msgstr "Probenahmestellen"
+
+msgid "Sampled"
+msgstr "Probe entnommen"
 
 #: bika/lims/profiles/default/actions.xml
 #: bika/lims/profiles/default/types/Batch.xml
@@ -527,7 +708,7 @@ msgstr "Probenahme - Abweichungen"
 
 #: bika/lims/profiles/default/types/SRTemplate.xml
 msgid "Sampling Round Template"
-msgstr ""
+msgstr "Probenrundenvorlage"
 
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Client.xml
@@ -538,11 +719,24 @@ msgstr "Vorlagen für Probenahmerunden"
 #: bika/lims/profiles/default/controlpanel.xml
 #: bika/lims/profiles/default/types/Client.xml
 msgid "Sampling Rounds"
-msgstr ""
+msgstr "Probenrunden"
+
+msgid "Sampling workflow"
+msgstr "Probennahme Workflow"
 
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Schedule"
 msgstr "Zeitplan"
+
+msgid "Schedule sampling"
+msgstr "Plane Probennahme"
+
+msgid "Scheduled sampling"
+msgstr "Geplante Probennahme"
+
+#: bika/lims/profiles/default/actions.xml
+msgid "Sharing"
+msgstr "Zugriff"
 
 #: bika/lims/profiles/default/types/AnalysisRequest.xml
 #: bika/lims/profiles/default/types/Sample.xml
@@ -552,7 +746,7 @@ msgstr "Kleiner Aufkleber"
 
 #: bika/lims/profiles/default/types/InvoiceFolder.xml
 msgid "Statements"
-msgstr ""
+msgstr "Angaben"
 
 #: bika/lims/profiles/default/types/ReferenceSample.xml
 msgid "Sticker"
@@ -562,7 +756,7 @@ msgstr "Aufkleber"
 #: bika/lims/profiles/default/types/Sample.xml
 #: bika/lims/profiles/default/types/SamplePartition.xml
 msgid "Stickers preview"
-msgstr ""
+msgstr "Etikettenvorschau"
 
 #: bika/lims/profiles/default/types/StorageLocation.xml
 msgid "Storage Location"
@@ -582,6 +776,12 @@ msgstr "Untergruppe"
 msgid "Sub-groups"
 msgstr "Untergruppen"
 
+msgid "Submit"
+msgstr "Einreichen"
+
+msgid "Submit for verification"
+msgstr "Zur Überprüfung einreichen"
+
 #: bika/lims/profiles/default/types/Supplier.xml
 msgid "Supplier"
 msgstr "Lieferant"
@@ -600,9 +800,42 @@ msgstr "Lieferauftrag"
 msgid "Supply Orders"
 msgstr "Lieferauftrag"
 
+msgid "To be preserved"
+msgstr "Zu konservieren"
+
+msgid "To be sampled"
+msgstr "Zu beproben"
+
+msgid "To be verified"
+msgstr "Zu verifizieren"
+
+msgid "Unpublished"
+msgstr "Unveröffentlicht"
+
+msgid "Unsassign"
+msgstr "Zuordnung aufheben"
+
+msgid "Valid"
+msgstr "Gültig"
+
+msgid "Validate"
+msgstr "Validieren"
+
 #: bika/lims/profiles/default/types/Instrument.xml
 msgid "Validations"
 msgstr "Validierungen"
+
+msgid "Verified"
+msgstr "Verifiziert"
+
+msgid "Verify"
+msgstr "Verifizieren"
+
+#: bika/lims/profiles/default/types/ARImport.xml
+#: bika/lims/profiles/default/types/ARPriority.xml
+#: bika/lims/profiles/default/types/ARReport.xml
+msgid "View"
+msgstr "Anzeigen"
 
 #: bika/lims/profiles/default/types/Client.xml
 msgid "WINE-40: Do not move or remove this entry."
@@ -626,259 +859,98 @@ msgstr "Arbeitsblatt - Vorlagen"
 msgid "Worksheets"
 msgstr "Arbeitsblätter"
 
-#. Default: "Activate"
-#: ../profiles/default/workflows/bika_inactive_workflow/definition.xml
-msgid "activate_transition_title"
-msgstr "Aktivieren"
-
-#. Default: "Assign"
-#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
-#: ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml
-#: ../profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml
-msgid "assign_transition_title"
-msgstr "Zuweisen"
-
-#. Default: "Add attachment"
-#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
-#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
-#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
-msgid "attach_transition_title"
-msgstr "Attachment hinzufügen"
-
-#. Default: "Cancel"
-#: ../profiles/default/workflows/bika_cancellation_workflow/definition.xml
-msgid "cancel_transition_title"
-msgstr "Abbrechen"
-
-#. Default: "Close"
-#: ../profiles/default/workflows/bika_batch_workflow/definition.xml
-msgid "close_transition_title"
-msgstr "Schließen"
-
-msgid "copy_to_new_transition_title"
-msgstr "Kopieren als neu"
-
-#. Default: "Deactivate"
-#: ../profiles/default/workflows/bika_inactive_workflow/definition.xml
-msgid "deactivate_transition_title"
-msgstr "Deaktivieren"
-
-#. Default: "Dispatch order"
-#: ../profiles/default/workflows/bika_order_workflow/definition.xml
-msgid "dispatch_transition_title"
-msgstr "Bestellung abschicken"
-
-#. Default: "Dispose"
-#: ../profiles/default/workflows/bika_referencesample_workflow/definition.xml
-#: ../profiles/default/workflows/bika_sample_workflow/definition.xml
-msgid "dispose_transition_title"
-msgstr "Entsorgen"
-
-#. Default: "Duplicate"
-msgid "duplicate_transition_title"
-msgstr "Duplikat"
-
-#. Default: "Expire"
-#: ../profiles/default/workflows/bika_referencesample_workflow/definition.xml
-#: ../profiles/default/workflows/bika_sample_workflow/definition.xml
-msgid "expire_transition_title"
-msgstr "Verfallen"
-
-#. Default: "Import"
-#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
-msgid "import_transition_title"
-msgstr "Import"
-
-# This is for the "retract_ar" transition, to invalidate a published AR.
-#. Default: "Invalidate"
-msgid "invalidate_transition_title"
-msgstr "Ungültig machen"
-
+#. Default: "AR Templates"
 msgid "label_schema_AR Templates"
 msgstr "Analysenauftrag - Vorlagen"
 
+#. Default: "Accounting"
 msgid "label_schema_Accounting"
 msgstr "Abrechnung"
 
+#. Default: "Address"
 msgid "label_schema_Address"
 msgstr "Adresse"
 
+#. Default: "Analyses"
 msgid "label_schema_Analyses"
 msgstr "Analysen"
 
+#. Default: "Bank details"
 msgid "label_schema_Bank details"
 msgstr "Bankverbindung"
 
+#. Default: "Calculation"
 msgid "label_schema_Calculation"
 msgstr "Berechnung"
 
+#. Default: "Container and Preservation"
 msgid "label_schema_Container and Preservation"
 msgstr "Behälter und Konservierung"
 
+#. Default: "Dates"
 msgid "label_schema_Dates"
 msgstr "Daten"
 
+#. Default: "Description"
 msgid "label_schema_Description"
 msgstr "Beschreibung"
 
+#. Default: "Email Telephone Fax"
 msgid "label_schema_Email Telephone Fax"
 msgstr "E-Mail Telefon Fax"
 
+#. Default: "ID Server"
 msgid "label_schema_ID Server"
 msgstr "ID Server"
 
+#. Default: "Labels"
 msgid "label_schema_Labels"
 msgstr "Etiketten"
 
+#. Default: "Layout"
 msgid "label_schema_Layout"
 msgstr "Layout"
 
+#. Default: "Location"
 msgid "label_schema_Location"
 msgstr "Standort"
 
+#. Default: "Method"
 msgid "label_schema_Method"
 msgstr "Methode"
 
+#. Default: "Preferences"
 msgid "label_schema_Preferences"
 msgstr "Voreinstellungen"
 
+#. Default: "Publication preference"
 msgid "label_schema_Publication preference"
 msgstr "bevorzugte Veröffentlichung"
 
+#. Default: "Reference Values"
 msgid "label_schema_Reference Values"
 msgstr "Referenzwerte"
 
+#. Default: "Result Options"
 msgid "label_schema_Result Options"
 msgstr "Ergebnis-Optionen"
 
+#. Default: "Results Reports"
 msgid "label_schema_Results Reports"
 msgstr "Ergebnisberichte"
 
+#. Default: "SR Templates"
 msgid "label_schema_SR Templates"
-msgstr "SR Templates"
+msgstr "SR Vorlagen"
 
+#. Default: "Sample Partitions"
 msgid "label_schema_Sample Partitions"
 msgstr "Teilproben"
 
+#. Default: "Security"
 msgid "label_schema_Security"
 msgstr "Sicherheit"
 
+#. Default: "Uncertainties"
 msgid "label_schema_Uncertainties"
 msgstr "Unsicherheiten"
-
-#. Default: "Open"
-#: ../profiles/default/workflows/bika_batch_workflow/definition.xml
-msgid "open_transition_title"
-msgstr "Öffnen"
-
-msgid "plone_manual_test"
-msgstr "Plone Manual Test"
-
-#. Default: "Prepublish"
-#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
-msgid "prepublish_transition_title"
-msgstr "Vorveröffentlichen"
-
-#. Default: "Preserve"
-#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
-#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
-#: ../profiles/default/workflows/bika_sample_workflow/definition.xml
-msgid "preserve_transition_title"
-msgstr "Konservieren"
-
-#. Default: "Publish"
-#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
-#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
-msgid "publish_transition_title"
-msgstr "Veröffentlichen"
-
-#. Default: "Reassign"
-msgid "reassign_transition_title"
-msgstr "Wiederzuweisen"
-
-#. Default: "Receive sample"
-#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
-#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
-#: ../profiles/default/workflows/bika_sample_workflow/definition.xml
-msgid "receive_transition_title"
-msgstr "Probeneingang"
-
-#. Default: "Reinstate"
-#: ../profiles/default/workflows/bika_cancellation_workflow/definition.xml
-msgid "reinstate_transition_title"
-msgstr "Wiedereinsetzen"
-
-#. Default: "Reject"
-#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
-#: ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml
-#: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml
-msgid "reject_transition_title"
-msgstr "Ablehnen"
-
-#. Default: "Republish"
-#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
-msgid "republish_transition_title"
-msgstr "Wiederveröffentlichen"
-
-#. Default: "Retract"
-#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
-#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
-#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
-msgid "retract_transition_title"
-msgstr "Zurückziehen"
-
-#. Default: "Retract worksheet"
-#: ../profiles/default/workflows/bika_worksheet_workflow/definition.xml
-msgid "retract_worksheet_transition_title"
-msgstr "Arbeitsblatt zurückziehen"
-
-# This is for the "revert" transition, which is meant to look like a
-# "retract".
-#. Default: "Retract"
-msgid "revert_transition_title"
-msgstr "Zurückziehen"
-
-#. Default: "Sample"
-#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
-#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
-#: ../profiles/default/workflows/bika_sample_worflow/definition.xml
-msgid "sample_transition_title"
-msgstr "Probe"
-
-#. Default: "Save analyses"
-msgid "save_analyses_button_transition_title"
-msgstr "Analysen abspeichern"
-
-#. Default: "Save partitions"
-msgid "save_partitions_button_transition_title"
-msgstr "Teile abspeichern"
-
-#. Default: "Save selection"
-msgid "save_selection_button_transition_title"
-msgstr "Auswahl abspeichern"
-
-#. Default: "Submit ARImport"
-#: ../profiles/default/workflows/bika_arimport_workflow/definition.xml
-msgid "submit_arimport_transition_title"
-msgstr "Einreichen AA-Import"
-
-#. Default: "Submit for verification"
-#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
-#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
-#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
-msgid "submit_transition_title"
-msgstr "Zur Überprüfung einreichen"
-
-#. Default: "Remove"
-#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
-#: ../profiles/default/workflows/bika_referenceanalysis_workflow/definition.xml
-#: ../profiles/default/workflows/bika_worksheetanalysis_workflow/definition.xml
-msgid "unassign_transition_title"
-msgstr "Entfernen"
-
-#. Default: "Verify"
-#: ../profiles/default/workflows/bika_analysis_workflow/definition.xml
-#: ../profiles/default/workflows/bika_ar_workflow/definition.xml
-#: ../profiles/default/workflows/bika_duplicateanalysis_workflow/definition.xml
-msgid "verify_transition_title"
-msgstr "Überprüfen"

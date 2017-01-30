@@ -1,294 +1,316 @@
-<tal:comment replace="nothing"> This template also renders an AJAX table-only
-version. use "tal:omit-tag='table_only'" on the elements which should not be
-displayed when ajax requests the table. </tal:comment>
+<tal:comment replace="nothing">
+    This template also renders an AJAX table-only version.
+
+    Use "tal:omit-tag='table_only'" on the elements which should not be
+    displayed when ajax requests the table.
+</tal:comment>
 
 <form name="bika_listing_form" method="post" action="workflow_action"
-    i18n:domain="bika"
-    tal:attributes="id form_id"
-    tal:omit-tag="table_only"
-    tal:define="
-        form_id view/bika_listing/form_id;
-        rows_only python:(hasattr(view, 'rows_only') and view.rows_only)
-                        or (hasattr(view.bika_listing, 'rows_only') and view.bika_listing.rows_only)
-                        or view.request.get('rows_only','') == form_id;
-        table_only python:rows_only
-                        or (hasattr(view, 'table_only') and view.table_only)
-                        or (hasattr(view.bika_listing, 'table_only') and view.bika_listing.table_only)
-                        or view.request.get('table_only','') == form_id;
-        nosortclass view/get_nosort_class;
-        portal context/@@plone_portal_state/portal;
-        review_state_id python:request.get(form_id+'_review_state', 'default');
-        review_state python:[t for t in view.bika_listing.review_states
-                            if t['id'] == review_state_id];
-        review_state python:review_state and review_state[0]
-                            or view.bika_listing.review_states[0];
-        toggle_cols python:dict([(col, view.bika_listing.columns[col])
-                                for col in view.bika_listing.columns.keys()
-                                if col in review_state['columns']]);
-        specification python:view.request.get('specification', None);
-        sm python:modules['AccessControl'].getSecurityManager();
-        EditAnalyses python:sm.checkPermission('BIKA: Edit analyses', context);
-        ViewResults python:sm.checkPermission('BIKA: View Results', context);
-        tabindex view/tabindex;
-        user python:sm.getUser();
-        roles python:user.getRoles();
-        nr_cols python:len(review_state['columns']);
-        nr_cols python:view.bika_listing.show_select_column and nr_cols + 1 or nr_cols;
-        nr_cols python:view.bika_listing.show_sort_column and nr_cols + 1 or nr_cols;
-        nr_cols python:str(nr_cols);">
+      i18n:domain="bika"
+      tal:attributes="id form_id"
+      tal:omit-tag="table_only"
+      tal:define="form_id view/bika_listing/form_id;
+                  rows_only python:(hasattr(view, 'rows_only') and view.rows_only)
+                  or (hasattr(view.bika_listing, 'rows_only') and view.bika_listing.rows_only)
+                  or view.request.get('rows_only','') == form_id;
+                  table_only python:rows_only
+                  or (hasattr(view, 'table_only') and view.table_only)
+                  or (hasattr(view.bika_listing, 'table_only') and view.bika_listing.table_only)
+                  or view.request.get('table_only','') == form_id;
+                  nosortclass view/get_nosort_class;
+                  portal context/@@plone_portal_state/portal;
+                  review_state_id python:request.get(form_id+'_review_state', 'default');
+                  review_state python:[t for t in view.bika_listing.review_states
+                  if t['id'] == review_state_id];
+                  review_state python:review_state and review_state[0]
+                  or view.bika_listing.review_states[0];
+                  toggle_cols python:dict([(col, view.bika_listing.columns[col])
+                  for col in view.bika_listing.columns.keys()
+                  if col in review_state['columns']]);
+                  specification python:view.request.get('specification', None);
+                  sm python:modules['AccessControl'].getSecurityManager();
+                  EditAnalyses python:sm.checkPermission('BIKA: Edit analyses', context);
+                  ViewResults python:sm.checkPermission('BIKA: View Results', context);
+                  tabindex view/tabindex;
+                  user python:sm.getUser();
+                  roles python:user.getRoles();
+                  nr_cols python:len(review_state['columns']);
+                  nr_cols python:view.bika_listing.show_select_column and nr_cols + 1 or nr_cols;
+                  nr_cols python:view.bika_listing.show_sort_column and nr_cols + 1 or nr_cols;
+                  nr_cols python:str(nr_cols);">
 
-<input tal:condition="python:not table_only" tal:replace="structure context/@@authenticator/authenticator"/>
+  <input tal:condition="python:not table_only" tal:replace="structure context/@@authenticator/authenticator"/>
 
-<input type="hidden" tal:omit-tag="python:table_only" name="submitted" value="1"/>
-<input type="hidden" tal:omit-tag="python:table_only" name="form_id" tal:attributes="value form_id"/>
-<input type="hidden" tal:omit-tag="python:table_only" name="view_url"
-    tal:attributes="value view/bika_listing/view_url"/>
-<input type="hidden" tal:omit-tag="python:table_only" name="portal_type"
-    tal:attributes="value view/context/portal_type"/>
-<input type="hidden" tal:omit-tag="python:table_only"
-    tal:attributes="
-        name python:form_id+'_sort_on';
-        value python:request.get(form_id+'_sort_on', 'id')"/>
-<input type="hidden" tal:omit-tag="python:table_only"
-    tal:attributes="
-        name python:form_id+'_sort_order';
-        value python:request.get(form_id+'_sort_order', 'ascending')"/>
+  <input type="hidden" tal:omit-tag="python:table_only" name="submitted" value="1"/>
 
-<input type="hidden" name="ajax_categories" value="1"
-        tal:condition="view/bika_listing/ajax_categories"
-        tal:attributes="form_id form_id"/>
+  <input type="hidden" tal:omit-tag="python:table_only" name="form_id" tal:attributes="value form_id"/>
 
-<input type="hidden" name="ajax_categories_url"
-        tal:condition="python:hasattr(view.bika_listing, 'ajax_categories_url')"
-        tal:attributes="value view/bika_listing/ajax_categories_url"/>
+  <input type="hidden" tal:omit-tag="python:table_only" name="view_url"
+         tal:attributes="value view/bika_listing/view_url"/>
 
-<tal:worksheet-cheat-1 condition="python:hasattr(view.bika_listing, 'analyst')">
+  <input type="hidden" tal:omit-tag="python:table_only" name="portal_type"
+         tal:attributes="value view/context/portal_type"/>
+
+  <input type="hidden" tal:omit-tag="python:table_only"
+         tal:attributes="name python:form_id+'_sort_on';
+                         value python:request.get(form_id+'_sort_on', 'id')"/>
+
+  <input type="hidden" tal:omit-tag="python:table_only"
+         tal:attributes="name python:form_id+'_sort_order';
+                         value python:request.get(form_id+'_sort_order', 'ascending')"/>
+
+  <input type="hidden" name="ajax_categories" value="1"
+         tal:condition="view/bika_listing/ajax_categories"
+         tal:attributes="form_id form_id"/>
+
+  <input type="hidden" name="ajax_categories_url"
+         tal:condition="python:hasattr(view.bika_listing, 'ajax_categories_url')"
+         tal:attributes="value view/bika_listing/ajax_categories_url"/>
+
+  <tal:worksheet-cheat-1 condition="python:hasattr(view.bika_listing, 'analyst')">
     <input type="hidden"
-        name="analyst"
-        tal:omit-tag="python:table_only"
-        tal:attributes="value python:view.bika_listing.analyst"/>
-</tal:worksheet-cheat-1>
+           name="analyst"
+           tal:omit-tag="python:table_only"
+           tal:attributes="value python:view.bika_listing.analyst"/>
+  </tal:worksheet-cheat-1>
 
-<tal:worksheet-cheat-2 condition="python:hasattr(view.bika_listing, 'instrument')">
+  <tal:worksheet-cheat-2 condition="python:hasattr(view.bika_listing, 'instrument')">
     <input type="hidden"
-        name="instrument"
-        tal:omit-tag="python:table_only"
-        tal:attributes="value python:view.bika_listing.instrument"/>
-</tal:worksheet-cheat-2>
+           name="instrument"
+           tal:omit-tag="python:table_only"
+           tal:attributes="value python:view.bika_listing.instrument"/>
+  </tal:worksheet-cheat-2>
 
-<div class='bika-listing-table-container'
-    tal:omit-tag="python:table_only">
+  <div class='bika-listing-table-container'
+       tal:omit-tag="python:table_only">
 
-<tal:comment replace="nothing"> These two hidden fields must be located
-directly above the table element Some of the javascript relies on this to
-distinguish between data for pages with multiple editable tables.
-XXX This should use form_id </tal:comment>
+    <tal:comment replace="nothing">
+      These two hidden fields must be located directly above the table
+      element Some of the javascript relies on this to distinguish between
+      data for pages with multiple editable tables. XXX This should use
+      form_id
+    </tal:comment>
 
-<!-- <input type="hidden"
-    name="specs"
-    tal:omit-tag="python:table_only"
-    tal:attributes="value python:hasattr(view.bika_listing, 'json_specs') and
-                                view.bika_listing.json_specs or []"/>
--->
-<input type="hidden"
-    id="item_data"
-    tal:omit-tag="python:table_only"
-    tal:condition="python:not table_only"
-    name="item_data"
-    tal:attributes="value python:hasattr(view.bika_listing, 'json_interim_fields') and
-                                view.bika_listing.json_interim_fields or []"/>
-<table
-    summary="Content listing"
-    tal:omit-tag="python:rows_only"
-    tal:attributes="class python:'bika-listing-table';
-                    form_id view/bika_listing/form_id"
-    i18n:attributes="summary summary_content_listing;"
-    tal:define="
-        columns view/bika_listing/columns;
-        column_list python:review_state['columns']" style="margin-bottom:0px;">
+    <!-- <input type="hidden"
+         name="specs"
+         tal:omit-tag="python:table_only"
+         tal:attributes="value python:hasattr(view.bika_listing, 'json_specs') and
+         view.bika_listing.json_specs or []"/>
+       -->
 
-    <thead tal:condition="python:not rows_only">
+    <input type="hidden"
+           id="item_data"
+           tal:omit-tag="python:table_only"
+           tal:condition="python:not table_only"
+           name="item_data"
+           tal:attributes="value python:hasattr(view.bika_listing, 'json_interim_fields') and
+                           view.bika_listing.json_interim_fields or []"/>
 
-    <tr style="border:none !important;" tal:condition="python:len(view.bika_listing.review_states) > 1 and not rows_only">
-<tal:comment replace="nothing">***************
-Workflow review state selector
-********************************</tal:comment>
-    <td tal:attributes="colspan python:nr_cols" class="listing-filter-row">
-        <table width="100%" cellpadding="0" cellspacing="0" class="noborder nomargin">
-        <!-- Filter bar -->
-        <tal:filter-bar
-            tal:content="structure python:view.bika_listing.getFilterBar().render()">
-        </tal:filter-bar>
-        <!-- workflow state filter -->
-        <tr class="noborder"
-            tal:condition="python:len(view.bika_listing.review_states) > 1">
-            <td class="review_state_selector noborder" style="whitespace:nowrap"
+    <table
+        summary="Content listing"
+        tal:omit-tag="python:rows_only"
+        tal:attributes="class python:'bika-listing-table';
+                        form_id view/bika_listing/form_id"
+        i18n:attributes="summary summary_content_listing;"
+        tal:define="
+                    columns view/bika_listing/columns;
+                    column_list python:review_state['columns']" style="margin-bottom:0px;">
+
+      <thead tal:condition="python:not rows_only">
+
+        <tr style="border:none !important;" tal:condition="python:len(view.bika_listing.review_states) > 1 and not rows_only">
+          <tal:comment replace="nothing">
+            ********************************
+            Workflow review state selector
+            ********************************
+          </tal:comment>
+          <td tal:attributes="colspan python:nr_cols" class="listing-filter-row">
+            <table width="100%" cellpadding="0" cellspacing="0" class="noborder nomargin">
+              <!-- Filter bar -->
+              <tal:filter-bar
+                  tal:content="structure python:view.bika_listing.getFilterBar().render()">
+              </tal:filter-bar>
+              <!-- workflow state filter -->
+              <tr class="noborder"
+                  tal:condition="python:len(view.bika_listing.review_states) > 1">
+                <td class="review_state_selector noborder" style="whitespace:nowrap"
                     tal:condition="python:(len(view.bika_listing.review_states) > 1)">
-                <tal:review_states repeat="state view/bika_listing/review_states">
-                <a
-                    tal:define="state_id state/id"
-                    tal:attributes="
-                        href python:view.bika_listing.GET_url(review_state=state['id']);
-                        value state_id;
-                        id state/id;
-                        class python:request.get(form_id + '_review_state', 'default') == state_id
-                                    and 'selected' or ''"
-                    tal:content="structure state/title"/>
-                </tal:review_states>
-            </td>
-<tal:comment replace="nothing">***************
-filter search
-********************************</tal:comment>
-            <td class="filter noborder" style="text-align:right;whitespace:nowrap;padding:0 0 0 5px;">
-                <tal:filters_enabled
+                  <tal:review_states repeat="state view/bika_listing/review_states">
+                    <a
+                        tal:define="state_id state/id"
+                        tal:attributes="
+                                        href python:view.bika_listing.GET_url(review_state=state['id']);
+                                        value state_id;
+                                        id state/id;
+                                        class python:request.get(form_id + '_review_state', 'default') == state_id
+                                        and 'selected' or ''"
+                        tal:content="structure state/title"/>
+                  </tal:review_states>
+                </td>
+                <tal:comment replace="nothing">
+                  ********************************
+                  Filter search
+                  ********************************
+                </tal:comment>
+                <td class="filter noborder" style="text-align:right;whitespace:nowrap;padding:0 0 0 5px;">
+                  <tal:filters_enabled
                     tal:define="term python:request.get(form_id+'_filter', '');"
                     tal:condition="python:hasattr(view.bika_listing, 'filter_indexes') and view.bika_listing.filter_indexes">
                     <span class="filter-search-button">&nbsp;</span>
                     <input
                         class="filter-search-input" autocomplete="off"
                         tal:attributes="
-                            name python:form_id+'_filter';
-                            value python:term;"/>
-                </tal:filters_enabled>
-            </td>
+                                        name python:form_id+'_filter';
+                                        value python:term;"/>
+                  </tal:filters_enabled>
+                </td>
+              </tr>
+            </table>
+          </td>
         </tr>
-        </table>
-    </td>
-    </tr>
 
-<tal:comment replace="nothing">***************
-Colum Headers
-********************************</tal:comment>
-    <tr tal:condition="python:view.items and not rows_only">
-        <th class="nosort column"
-            id="foldercontents-order-column"
-            tal:condition="view/bika_listing/show_sort_column"/>
-        <th class="nosort column"
-            tal:condition="view/bika_listing/show_select_column">
+        <tal:comment replace="nothing">
+          ********************************
+          Colum Headers
+          ********************************
+        </tal:comment>
+        <tr tal:condition="python:view.items and not rows_only">
+          <th class="nosort column"
+              id="foldercontents-order-column"
+              tal:condition="view/bika_listing/show_sort_column"/>
+          <th class="nosort column"
+              tal:condition="view/bika_listing/show_select_column">
             <!-- All toggleable columns in this review_state,
-                regardless of state. JS uses this for the popup menu -->
+                 regardless of state. JS uses this for the popup menu -->
             <input type="hidden"
-                tal:condition="view/bika_listing/show_column_toggles"
-                tal:attributes="
-                    id python:form_id+'_toggle_cols';
-                    value python:modules['json'].dumps(toggle_cols);"/>
+                   tal:condition="view/bika_listing/show_column_toggles"
+                   tal:attributes="
+                                   id python:form_id+'_toggle_cols';
+                                   value python:modules['json'].dumps(toggle_cols);"/>
             <input
                 type="checkbox"
                 class="noborder"
                 tal:condition="view/bika_listing/show_select_all_checkbox"
                 tal:attributes="id string:${view/bika_listing/form_id}_select_all"/>
-        </th>
-        <tal:col repeat="column column_list">
+          </th>
+          <tal:col repeat="column column_list">
             <th
                 tal:condition="python: 'toggle' not in view.bika_listing.columns[column]
-                                    or view.bika_listing.columns[column].get('toggle', True)"
+                               or view.bika_listing.columns[column].get('toggle', True)"
                 tal:define="
-                    klass python:view.bika_listing.columns[column].get('sortable', True) and 'sortable column' or 'column';
-                    klass python:'%s%s'%(klass, request.get(form_id+'_sort_on', '') == column and ' sort_on' or '');
-                    klass python:'%s %s'%(klass, request.get(form_id+'_sort_on', '') == column and request.get(form_id+'_sort_order','ascending') or '');
-                    klass python:'%s%s'%(klass, view.bika_listing.columns[column].get('index',None) and ' indexed' or '');"
+                            klass python:view.bika_listing.columns[column].get('sortable', True) and 'sortable column' or 'column';
+                            klass python:'%s%s'%(klass, request.get(form_id+'_sort_on', '') == column and ' sort_on' or '');
+                            klass python:'%s %s'%(klass, request.get(form_id+'_sort_on', '') == column and request.get(form_id+'_sort_order','ascending') or '');
+                            klass python:'%s%s'%(klass, view.bika_listing.columns[column].get('index',None) and ' indexed' or '');"
                 tal:attributes="
-                    id string:foldercontents-${column}-column;
-                    class klass">
-                <span tal:replace="structure python:view.bika_listing.columns[  column  ]['title']"/>
+                                id string:foldercontents-${column}-column;
+                                class klass">
+              <span tal:replace="structure python:view.bika_listing.columns[  column  ]['title']"/>
             </th>
-        </tal:col>
-    </tr>
+          </tal:col>
+        </tr>
 
-    </thead>
+      </thead>
 
-    <tbody class="item-listing-tbody"
-        tal:condition="view/items"
-        tal:omit-tag="rows_only"
-        tal:define="selected_cats python: view.bika_listing.selected_cats(view.batch);
-                restricted_cats python:view.bika_listing.restricted_cats(view.batch)">
+      <tbody class="item-listing-tbody"
+             tal:condition="view/items"
+             tal:omit-tag="rows_only"
+             tal:define="selected_cats python: view.bika_listing.selected_cats(view.batch);
+                         restricted_cats python:view.bika_listing.restricted_cats(view.batch)">
 
-        <tal:comment replace="nothing">*************** TR - Table data rows start here ********************************</tal:comment>
+        <tal:comment replace="nothing">
+          *******************************
+          TR - Table data rows start here
+          *******************************
+        </tal:comment>
 
         <tal:cats tal:repeat="cat python: view.bika_listing.categories+['None', ] if view.bika_listing.categories else ['None', ]">
-            <tal:show_this_category tal:condition="python: cat not in restricted_cats">
+          <tal:show_this_category tal:condition="python: cat not in restricted_cats">
 
-                <tr tal:condition="python: view.bika_listing.show_categories and cat != 'None'">
-                    <th style="text-align:left;"
-                        tal:attributes="colspan nr_cols;
-                                        cat cat;
-                                        class python:'cat_header expanded %s'%view.bika_listing.cat_header_class if cat in selected_cats else 'cat_header collapsed %s'%view.bika_listing.cat_header_class"
-                        tal:content="structure cat">
-                    </th>
-                </tr>
+            <tr tal:condition="python: view.bika_listing.show_categories and cat != 'None'">
+              <th style="text-align:left;"
+                  tal:attributes="colspan nr_cols;
+                                  cat cat;
+                                  class python:'cat_header expanded %s'%view.bika_listing.cat_header_class if cat in selected_cats else 'cat_header collapsed %s'%view.bika_listing.cat_header_class"
+                  tal:content="structure cat">
+              </th>
+            </tr>
 
-                <span tal:replace="structure python:view.rendered_items(cat)"/>
+            <span tal:replace="structure python:view.rendered_items(cat)"/>
 
-            </tal:show_this_category>
+          </tal:show_this_category>
         </tal:cats>
-    </tbody>
+      </tbody>
 
-<tfoot tal:condition="python: not rows_only and (view.bika_listing.show_table_footer if hasattr(view.bika_listing, 'show_table_footer') else True)">
+      <tfoot tal:condition="python: not rows_only and (view.bika_listing.show_table_footer if hasattr(view.bika_listing, 'show_table_footer') else True)">
+        <tr>
+          <td class="noborder"
+              tal:attributes="colspan nr_cols"
+              tal:condition="python:(view.batch.multiple_pages and not view.show_all) or (view.bika_listing.show_workflow_action_buttons)">
 
-<tr>
-<td class="noborder"
-    tal:attributes="colspan nr_cols"
-    tal:condition="python:(view.batch.multiple_pages and not view.show_all) or (view.bika_listing.show_workflow_action_buttons)">
-<table style="margin:0" width="100%">
-    <tr class="noborder" tal:condition="python:len(view.batch) > 0">
-<tal:comment replace="nothing">***************
-Workflow Actions
-********************************</tal:comment>
-        <td class="workflow_actions">
-            <span class="workflow_action_buttons"
-                tal:define="actions view/bika_listing/get_workflow_actions">
-                <span tal:omit-tag="python:True" tal:repeat="action actions"
-                    tal:condition="view/bika_listing/show_workflow_action_buttons">
-                    <input
-                        type="hidden"
-                        tal:attributes="name action/title;
-                                        value action/id;"/>
-                    <input
-                        class="context workflow_action_button action_button allowMultiSubmit"
-                        type="submit"
-                        name="workflow_action_button"
-                        i18n:attributes="value"
-                        i18n:domain="plone"
-                        tal:attributes="
-                            id python:action['id']+'_transition';
-                            transition action/id;
-                            value string:${action/id}_transition_title;
-                            url python:action.get('url', '');"/>
-                </span>
-            </span>
-        </td>
-        <td class="batching" style="text-align:right">
+            <table style="margin:0" width="100%">
+              <tr class="noborder" tal:condition="python:len(view.batch) > 0">
+                <tal:comment replace="nothing">
+                  ********************************
+                  Workflow Actions
+                  ********************************
+                </tal:comment>
+                <td class="workflow_actions">
+                  <span class="workflow_action_buttons"
+                        tal:define="actions view/bika_listing/get_workflow_actions">
+                    <span tal:omit-tag="python:True" tal:repeat="action actions"
+                          tal:condition="view/bika_listing/show_workflow_action_buttons">
 
-            <span class='number-items' i18n:domain="bika" i18n:translate="" tal:condition="python:len(view.items) != 1">
-                <span i18n:name="nr_items" tal:replace="python:len(view.items)"/> Items
-            </span>
-            <span class='number-items' i18n:translate="" tal:condition="python:len(view.items) == 1">
-                <span i18n:name="nr_items" tal:replace="python:len(view.items)"/> Item
-            </span>
-            <tal:showmore define="pagesize        python:view.bika_listing.pagesize;
-                                  limit_from      python:view.bika_listing.limit_from;
-                                  limit_to        python:pagesize+limit_from-1;
-                                  next_limit_from python:pagesize+limit_from;
-                                  next_pagesize   python:pagesize+next_limit_from;
-                                  form_id         python:view.bika_listing.form_id;"
-                          condition="python:view.bika_listing.show_more">
-            &nbsp;&nbsp;
-            <a tal:attributes="
-                href           python:view.bika_listing.GET_url(pagesize=next_pagesize,limit_from=limit_from);
-                data-ajax-url  python:'%s&rows_only=%s' % (view.bika_listing.GET_url(pagesize=pagesize),form_id);
-                data-pagesize  python:pagesize;
-                data-limitfrom python:next_limit_from;
-                data-form-id   python:form_id;"
-               class="bika_listing_show_more"
-               i18n:translate="">Show more</a>
-            </tal:showmore>
-        </td>
-    </tr>
-</table>
-</td>
-</tr>
-</tfoot>
+                      <input
+                          type="hidden"
+                          tal:attributes="name action/id;
+                                          value action/id;"/>
+                      <input
+                          class="context workflow_action_button action_button allowMultiSubmit"
+                          type="submit"
+                          name="workflow_action_button"
+                          i18n:attributes="value"
+                          i18n:domain="bika"
+                          tal:attributes="id python:action['id']+'_transition';
+                                          transition action/id;
+                                          value action/title;
+                                          url python:action.get('url', '');"/>
+                    </span>
+                  </span>
+                </td>
+                <td class="batching" style="text-align:right">
 
-</table>
-</div>
+                  <span class='number-items' i18n:domain="bika" i18n:translate="" tal:condition="python:len(view.items) != 1">
+                    <span i18n:name="nr_items" tal:replace="python:len(view.items)"/> Items
+                  </span>
+                  <span class='number-items' i18n:translate="" tal:condition="python:len(view.items) == 1">
+                    <span i18n:name="nr_items" tal:replace="python:len(view.items)"/> Item
+                  </span>
+                  <tal:showmore define="pagesize        python:view.bika_listing.pagesize;
+                                        limit_from      python:view.bika_listing.limit_from;
+                                        limit_to        python:pagesize+limit_from-1;
+                                        next_limit_from python:pagesize+limit_from;
+                                        next_pagesize   python:pagesize+next_limit_from;
+                                        form_id         python:view.bika_listing.form_id;"
+                                condition="python:view.bika_listing.show_more">
+                    &nbsp;&nbsp;
+                    <a tal:attributes="
+                                       href           python:view.bika_listing.GET_url(pagesize=next_pagesize,limit_from=limit_from);
+                                       data-ajax-url  python:'%s&rows_only=%s' % (view.bika_listing.GET_url(pagesize=pagesize),form_id);
+                                       data-pagesize  python:pagesize;
+                                       data-limitfrom python:next_limit_from;
+                                       data-form-id   python:form_id;"
+                       class="bika_listing_show_more"
+                       i18n:translate="">Show more</a>
+                  </tal:showmore>
+                </td>
+              </tr>
+            </table>
+
+          </td>
+        </tr>
+      </tfoot>
+    </table>
+
+  </div>
 </form>

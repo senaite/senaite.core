@@ -35,12 +35,12 @@ def upgrade(tool):
     setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'jsregistry')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'cssregistry')
-    setup.runImportStepFromProfile('profile-bika.lims:default', 'workflow-csv')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'factorytool')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'controlpanel')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'catalog')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'propertiestool')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'skins')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'workflow')
     setup.runImportStepFromProfile(
         'profile-bika.lims:default', 'portlets', run_dependencies=False)
     # Creating all the sampling coordinator roles, permissions and indexes
@@ -55,9 +55,6 @@ def upgrade(tool):
     wf.updateRoleMappings()
     # Updating Verifications of Analysis field from integer to String.
     multi_verification(portal)
-
-    # Clean and rebuild affected catalogs
-    cleanAndRebuildIfNeeded(portal)
 
     return True
 

@@ -78,9 +78,6 @@ msgstr ""
 msgid "Parent"
 msgstr ""
 
-msgid "bika_manual_test"
-msgstr "Bika Manual Test"
-
 # worksheet.js
 
 msgid "Add Remark"
@@ -108,4 +105,7 @@ msgid "Unable to apply the selected instrument"
 msgstr ""
 
 msgid "Unable to load instruments: ${invalid_list}"
+msgstr ""
+
+msgid "Submit for verification"
 msgstr ""
