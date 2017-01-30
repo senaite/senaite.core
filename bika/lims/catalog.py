@@ -394,8 +394,11 @@ def _cleanAndRebuildIfNeeded(portal, cleanrebuild):
         logger.info('Cleaning and rebuilding %s...' % cat)
         try:
             catalog = getToolByName(portal, cat)
-            catalog.clearFindAndRebuild()
-            logger.info('%s cleaned and rebuilt' % cat)
+            if catalog:
+                catalog.clearFindAndRebuild()
+                logger.info('%s cleaned and rebuilt' % cat)
+            else:
+                logger.info('%s do not found' % cat)
         except:
             logger.error(traceback.format_exc())
             e = sys.exc_info()
