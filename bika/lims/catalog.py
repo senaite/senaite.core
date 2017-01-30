@@ -181,15 +181,12 @@ def setup_catalogs(portal, catalogs_definition):
             }
         }
     """
-    # This variable will be used to clean reindex the catalog. Saves the
-    # catalogs ids
-    clean_and_rebuild = []
+
     archetype_tool = getToolByName(portal, 'archetype_tool')
     # Mapping content types in catalogs
-    to_reindex = _map_content_types(archetype_tool, catalogs_definition)
-    # Merging the two lists and adding the new catalogs to reindex
-    clean_and_rebuild = clean_and_rebuild +\
-        list(set(to_reindex) - set(clean_and_rebuild))
+    # This variable will be used to clean reindex the catalog. Saves the
+    # catalogs ids
+    clean_and_rebuild = _map_content_types(archetype_tool, catalogs_definition)
     # Indexing
     for cat_id in catalogs_definition.keys():
         reindex = False
@@ -223,6 +220,7 @@ def _map_content_types(archetype_tool, catalogs_definition):
     """
     # This will be a dictionari like {'content_type':['catalog_id', ...]}
     ct_map = {}
+    # This list will contain the atalog ids to be rebuild
     to_reindex = []
     # getting the dictionary of mapped content_types in the catalog
     map_types = archetype_tool.catalog_map
@@ -231,9 +229,9 @@ def _map_content_types(archetype_tool, catalogs_definition):
         # Mapping the catalog with the defined types
         types = catalog_info.get('types', [])
         for t in types:
-            l = ct_map.get(t, [])
-            l.append(catalog_id)
-            ct_map[t] = l
+            tmp_l = ct_map.get(t, [])
+            tmp_l.append(catalog_id)
+            ct_map[t] = tmp_l
     # Mapping
     for t in ct_map.keys():
         catalogs_list = ct_map[t]
@@ -244,7 +242,7 @@ def _map_content_types(archetype_tool, catalogs_definition):
         set2 = set(perv_catalogs_list)
         if set1 != set2:
             archetype_tool.setCatalogsByType(t, catalogs_list)
-            # Adding to reindex only the catalogs that have differed
+            # Adding to reindex only the catalogs that have changed
             to_reindex = to_reindex + list(set1 - set2) + list(set2 - set1)
     return to_reindex
 
