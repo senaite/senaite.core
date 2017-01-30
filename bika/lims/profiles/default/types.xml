@@ -25,7 +25,7 @@
  <object name="BatchFolder" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="BatchLabel" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="BatchLabels" meta_type="Factory-based Type Information with dynamic views"/>
-  <object name="BikaCache" meta_type="Factory-based Type Information with dynamic views"/>
+ <object name="BikaCache" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="BikaSetup" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Calculation" meta_type="Factory-based Type Information with dynamic views"/>
  <object name="Calculations" meta_type="Factory-based Type Information with dynamic views"/>

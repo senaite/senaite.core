@@ -79,7 +79,7 @@ def upgrade(tool):
     except:
         logger.error(traceback.format_exc())
         e = sys.exc_info()
-        logger.error("Unable to update role maps due to: %s" % (e))
+        logger.error("Unable to update role maps due to: %s" % (str(e)))
 
     # Remove unused indexes and columns
     logger.info("Removing stale indexes...")
