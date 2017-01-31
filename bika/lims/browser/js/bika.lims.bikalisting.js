@@ -75,11 +75,11 @@ function BikaListingTableView() {
 				}).fail(function () {
 					$('#'+formid+' a.bika_listing_show_more').hide();
 					console.log("bika_listing_show_more failed");
-    			}).always(function() {
+    		}).always(function() {
 					var numitems = $('table.bika-listing-table[form_id="'+formid+'"] tbody.item-listing-tbody tr').length;
 					$('#'+formid+' span.number-items').html(numitems);
 					if (numitems % pagesize == 0) {
-						$('#'+formid+' a.bika_listing_show_more').show();
+						$('#'+formid+' a.bika_listing_show_more').fadeIn();
 					}
 				});
 		});
