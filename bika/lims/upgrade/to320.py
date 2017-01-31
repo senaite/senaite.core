@@ -140,7 +140,7 @@ def migrate_instrument_locations(portal):
         instrument.setInstrumentLocation(instrument_location)
         instrument.reindexObject()
         logger.info("Linked Instrument Location {} to Instrument {}".format(location, instrument.id))
-        transaction.commit()
+    transaction.commit()
 
 
 def create_samplingcoordinator(portal):
@@ -202,6 +202,7 @@ def create_samplingcoordinator(portal):
         mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
         mp('Access contents information', ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
         portal.samples.reindexObject()
+        transaction.commit()
 
     # Add the index for the catalog
     bc = getToolByName(portal, 'bika_catalog', None)
@@ -238,6 +239,7 @@ def create_CAS_IdentifierType(portal):
         idtype.edit(title='CAS Nr',
                     description='Chemical Abstracts Registry number',
                     portal_types=['Analysis Service'])
+    transaction.commit()
 
 def multi_verification(portal):
     """
@@ -256,6 +258,7 @@ def multi_verification(portal):
                 if n<old_field:
                     new_value+=','
             obj.setVerificators(new_value)
+    transaction.commit()
 
 def reflex_rules(portal):
     at = getToolByName(portal, 'archetype_tool')
@@ -369,3 +372,4 @@ def cleanAndRebuildIfNeeded(portal):
         except:
             logger.info("Unable to clean and rebuild %s " % c)
             pass
+        transaction.commit()
