@@ -103,6 +103,9 @@ function AnalysisServiceEditView() {
         // select the preservation and disable the input.
         $(".portaltype-analysisservice #Container").bind("selected", function(){
             var container_uid = $(this).attr("uid");
+            if (container_uid === undefined || container_uid === null){
+              container_uid='';
+            }
             var request_data = {
                 catalog_name: "uid_catalog",
                 UID: container_uid
@@ -129,6 +132,9 @@ function AnalysisServiceEditView() {
                 return;
             }
             container_uid = container_uid[0];
+            if (container_uid === undefined || container_uid === null){
+              container_uid='';
+            }
             var request_data = {
                 catalog_name: "uid_catalog",
                 UID: container_uid

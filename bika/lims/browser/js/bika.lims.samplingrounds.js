@@ -44,6 +44,9 @@ function ClientSamplingRoundAddEditView() {
 
         // Getting the Sampling Round Template's data
         var srt_uid = $('select#form-widgets-sr_template').val();
+        if (srt_uid === undefined || srt_uid === null){
+          srt_uid='';
+        }
         var sampler, department, samp_freq, instructions, artemplates_uids;
         var request_data = {
             catalog_name: "portal_catalog",
