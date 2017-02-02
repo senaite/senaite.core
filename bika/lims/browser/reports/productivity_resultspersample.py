@@ -60,6 +60,7 @@ class Report(BrowserView):
 
         formats = {'columns': 5,
                    'col_heads': [
+                        _('Request ID'),
                         _('Date'),
                         _('Sample type'),
                         _('Storage location'),
@@ -75,6 +76,13 @@ class Report(BrowserView):
                 for analysis in analyses:
                     if allowd_services_uids == [] or analysis.getServiceUID() in allowd_services_uids:
                         dataline = []
+                        ars = sample.getAnalysisRequests()
+                        ars_ids = ''
+                        for ar in ars:
+                            ars_ids = ars_ids + ar.getId() + ' '
+                        dataitem = {
+                            'value': ars_ids}
+                        dataline.append(dataitem)
                         date = sample.getDateSampled() if\
                             sample.getDateSampled() else\
                             sample.getDateReceived()
