@@ -16,6 +16,8 @@ from bika.lims.permissions import *
 from bika.lims.utils import tmpID
 from bika.lims.catalog import setup_catalogs
 from bika.lims.catalog import getCatalogDefinitions
+import traceback
+import sys
 import transaction
 
 
@@ -73,9 +75,14 @@ def upgrade(tool):
     multi_verification(portal)
 
     # Update workflow permissions
-    logger.info("Updating role mappings...")
-    wf = getToolByName(portal, 'portal_workflow')
-    #wf.updateRoleMappings()
+    try:
+        logger.info("Updating role mappings...")
+        wf = getToolByName(portal, 'portal_workflow')
+        wf.updateRoleMappings()
+    except:
+        logger.error(traceback.format_exc())
+        e = sys.exc_info()
+        logger.error("Unable to update role maps due to: %s" % (str(e)))
 
     # Remove unused indexes and columns
     logger.info("Removing stale indexes...")
@@ -141,6 +148,7 @@ def migrate_instrument_locations(portal):
         instrument.setInstrumentLocation(instrument_location)
         instrument.reindexObject()
         logger.info("Linked Instrument Location {} to Instrument {}".format(location, instrument.id))
+    transaction.commit()
 
 
 def create_samplingcoordinator(portal):
@@ -202,10 +210,12 @@ def create_samplingcoordinator(portal):
         mp(permissions.View, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
         mp('Access contents information', ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'RegulatoryInspector', 'SamplingCoordinator'], 0)
         portal.samples.reindexObject()
+        transaction.commit()
 
     # Add the index for the catalog
     bc = getToolByName(portal, 'bika_catalog', None)
     addIndex(bc, 'getScheduledSamplingSampler', 'FieldIndex')
+    transaction.commit()
 
 def departments(portal):
     """ To add department indexes to the catalogs """
@@ -213,6 +223,7 @@ def departments(portal):
     bac = getToolByName(portal, 'bika_analysis_catalog')
     addIndex(bc, 'getDepartmentUIDs', 'KeywordIndex')
     addIndex(bac, 'getDepartmentUID', 'KeywordIndex')
+    transaction.commit()
 
 def create_CAS_IdentifierType(portal):
     """LIMS-1391 The CAS Nr IdentifierType is normally created by
@@ -236,6 +247,7 @@ def create_CAS_IdentifierType(portal):
         idtype.edit(title='CAS Nr',
                     description='Chemical Abstracts Registry number',
                     portal_types=['Analysis Service'])
+    transaction.commit()
 
 def multi_verification(portal):
     """
@@ -254,6 +266,7 @@ def multi_verification(portal):
                 if n<old_field:
                     new_value+=','
             obj.setVerificators(new_value)
+    transaction.commit()
 
 def reflex_rules(portal):
     at = getToolByName(portal, 'archetype_tool')
@@ -293,6 +306,7 @@ def reflex_rules(portal):
     addIndex(bac, 'getInstrumentUID', 'FieldIndex')
     addIndex(bac, 'getMethodUID', 'FieldIndex')
     addIndex(bac, 'getInstrumentUID', 'FieldIndex')
+    transaction.commit()
 
 def multi_department_to_labcontact(portal):
     """
@@ -310,6 +324,7 @@ def multi_department_to_labcontact(portal):
         obj = obj_brain.getObject()
         if not obj.getDepartments():
             obj.setDepartments(obj.getDepartment())
+    transaction.commit()
 
 
 # *********************
@@ -364,3 +379,4 @@ def cleanAndRebuildIfNeeded(portal):
         except:
             logger.info("Unable to clean and rebuild %s " % c)
             pass
+        transaction.commit()

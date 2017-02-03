@@ -15,13 +15,13 @@
                 plone_view context/@@plone;
                 dep_disabled python:request.cookies.get('dep_filter_disabled','');
                 deps python: here.portal_catalog(portal_type='Department',sort_on='sortable_title', sort_order='ascending',
-                                            inactive_state='active') if user_name=='admin'  else brains[0].getObject().getSortedDepartments();
+                                            inactive_state='active') if user_name=='admin' else brains[0].getObject().getSortedDepartments();
                 cookie python:request.cookies.get(
                     'filter_by_department_info','');
                 deps_from_cookie python: cookie.split(',') if cookie and len(deps)>0
                     else [];
-                first_from_cat python: deps[0].UID if user_name=='admin' else
-                          brains[0].getObject().getDefaultDepartment() if brains[0].getObject().getDefaultDepartment()
+                first_from_cat python: deps[0].UID if user_name=='admin' and deps else
+                          brains[0].getObject().getDefaultDepartment() if brains and brains[0].getObject().getDefaultDepartment()
                           else deps[0].UID() if deps else '';
                 first_dep python: deps_from_cookie[0] if len(deps_from_cookie)>1
                     else first_from_cat if not cookie else '';">
@@ -46,6 +46,7 @@
                 <input type="checkbox"
                     tal:define="dep_name python:dep.Title if user_name=='admin' else dep.Title();
                                 dep_uid python: dep.UID if user_name=='admin' else dep.UID()"
+                    tal:content="python: dep_name"
                     tal:attributes="
                         value python: dep_uid;
                         name python: 'chb_deps_'+ dep_name;
@@ -57,7 +58,7 @@
                 <label
                     i18n:translate=""
                     tal:condition="python: len(deps)<2"
-                    tal:content="python: deps[0].Title if user_name=='admin' else deps[0].Title() if deps else ''"
+                    tal:content="python: deps[0].Title if user_name=='admin' and deps else deps[0].Title() if deps else ''"
                     >Department</label>
             </dd><br>
             <!-- The submit form button -->
