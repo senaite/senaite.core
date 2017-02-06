@@ -2,6 +2,7 @@ import json
 from bika.lims.utils.sample import create_sample
 from bika.lims.workflow import doActionFor
 import plone
+import datetime
 from datetime import date
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
@@ -417,8 +418,9 @@ class ajaxAnalysisRequestSubmit():
             # checking if sampling date is not future
             if state.get('SamplingDate', ''):
                 samplingdate = state.get('SamplingDate', '')
-                today = date.today().strftime('%Y-%m-%d')
-                if not today >= samplingdate:
+                samp_date=datetime.datetime.strptime(samplingdate, "%Y-%m-%d %H:%M")
+                now = datetime.datetime.now()
+                if now < samp_date:
                     msg = t(_("Sampling Date can't be future"))
                     ajax_form_error(self.errors, arnum=arnum, message=msg)
                     continue
