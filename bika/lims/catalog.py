@@ -176,7 +176,6 @@ class BikaCatalog(CatalogTool):
                                 obj_metatypes=types,
                                 search_sub=True,
                                 apply_func=indexObject)
-        transaction.commit()
         logger.info('%s cleaned and rebuilt' % self.id)
 
 InitializeClass(BikaCatalog)
@@ -218,7 +217,6 @@ class BikaAnalysisCatalog(CatalogTool):
                                 obj_metatypes=types,
                                 search_sub=True,
                                 apply_func=indexObject)
-        transaction.commit()
         logger.info('%s cleaned and rebuilt' % self.id)
 
 InitializeClass(BikaAnalysisCatalog)
@@ -260,7 +258,6 @@ class BikaSetupCatalog(CatalogTool):
                                 obj_metatypes=types,
                                 search_sub=True,
                                 apply_func=indexObject)
-        transaction.commit()
         logger.info('%s cleaned and rebuilt' % self.id)
 
 InitializeClass(BikaSetupCatalog)
@@ -302,7 +299,6 @@ class BikaCatalogAnalysisRequestListing(CatalogTool):
             obj_metatypes=types,
             search_sub=True,
             apply_func=indexObject)
-        transaction.commit()
         logger.info('%s cleaned and rebuilt' % self.id)
 InitializeClass(BikaCatalogAnalysisRequestListing)
 
@@ -647,9 +643,10 @@ def _cleanAndRebuildIfNeeded(portal, cleanrebuild):
             if catalog:
                 catalog.clearFindAndRebuild()
             else:
-                logger.info('%s do not found' % cat)
+                logger.warning('%s do not found' % cat)
         except:
             logger.error(traceback.format_exc())
             e = sys.exc_info()
             logger.error(
                 "Unable to clean and rebuild %s due to: %s" % (cat, e))
+        transaction.commit()

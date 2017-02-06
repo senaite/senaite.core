@@ -92,7 +92,6 @@ def upgrade(tool):
     # Clean and rebuild affected catalogs (if required)
     logger.info("Cleaning and rebuilding...")
     cleanAndRebuildIfNeeded(portal)
-    transaction.commit()
     # Updating lims catalogs if there is any change in them
     logger.info("Updating catalogs if needed...")
     setup_catalogs(portal, getCatalogDefinitions())
@@ -217,6 +216,7 @@ def create_samplingcoordinator(portal):
     addIndex(bc, 'getScheduledSamplingSampler', 'FieldIndex')
     transaction.commit()
 
+
 def departments(portal):
     """ To add department indexes to the catalogs """
     bc = getToolByName(portal, 'bika_catalog')
@@ -224,6 +224,7 @@ def departments(portal):
     addIndex(bc, 'getDepartmentUIDs', 'KeywordIndex')
     addIndex(bac, 'getDepartmentUID', 'KeywordIndex')
     transaction.commit()
+
 
 def create_CAS_IdentifierType(portal):
     """LIMS-1391 The CAS Nr IdentifierType is normally created by
@@ -249,6 +250,7 @@ def create_CAS_IdentifierType(portal):
                     portal_types=['Analysis Service'])
     transaction.commit()
 
+
 def multi_verification(portal):
     """
     Getting all analyses with review_state in to_be_verified and
@@ -267,6 +269,7 @@ def multi_verification(portal):
                     new_value+=','
             obj.setVerificators(new_value)
     transaction.commit()
+
 
 def reflex_rules(portal):
     at = getToolByName(portal, 'archetype_tool')
@@ -307,6 +310,7 @@ def reflex_rules(portal):
     addIndex(bac, 'getMethodUID', 'FieldIndex')
     addIndex(bac, 'getInstrumentUID', 'FieldIndex')
     transaction.commit()
+
 
 def multi_department_to_labcontact(portal):
     """
