@@ -2552,8 +2552,9 @@ function AnalysisRequestAddByCol() {
     function form_submit() {
         $("[name='save_button']").click(
           function (event) {
-              event.preventDefault()
-              set_state_from_form_values()
+              $(this).attr('disabled','disabled');
+              event.preventDefault();
+              set_state_from_form_values();
               var request_data = {
                   _authenticator: $("input[name='_authenticator']").val(),
                   state: $.toJSON(bika.lims.ar_add.state)
