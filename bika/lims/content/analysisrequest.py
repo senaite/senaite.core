@@ -1469,19 +1469,19 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField(
         'ReceivedBy',
-        expression='here.getReceivedBy',
+        expression='here.getReceivedBy()',
         default='',
         widget=ComputedWidget(visible=False,),
     ),
     ComputedField(
         'DateVerified',
-        expression='here.getDateVerified',
+        expression='here.getDateVerified()',
         default='',
         widget=ComputedWidget(visible=False,),
     ),
     ComputedField(
         'DatePublished',
-        expression='here.getDatePublished',
+        expression='here.getDatePublished()',
         default='',
         widget=ComputedWidget(visible=False,),
     ),
@@ -1493,12 +1493,12 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField(
         'CreatorFullName',
-        expression="here._getCreatorFullName",
+        expression="here._getCreatorFullName()",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
         'CreatorEmail',
-        expression="here._getCreatorEmail",
+        expression="here._getCreatorEmail()",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
