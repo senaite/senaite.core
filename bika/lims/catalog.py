@@ -30,8 +30,8 @@ _catalogs_definition = {
         'types':   ['AnalysisRequest', ],
         'indexes': {
             # Minimum indexes for bika_listing
-            'id': 'FieldIndex',
             # TODO: Can be removed?
+            'id': 'FieldIndex',
             'getId': 'FieldIndex',
             'created': 'DateIndex',
             'Creator': 'FieldIndex',
@@ -67,10 +67,10 @@ _catalogs_definition = {
             'getPhysicalPath',
             'getSampleUID',
             # Used to print the ID of the Sample in lists
-            'getSampleId',
+            'getSampleID',
             # Used to create add an anchor to Sample ID that redirects to
             # the Sample view.
-            'getSampleUrl',
+            'getSampleURL',
             'getClientOrderNumber',
             'getClientReference',
             'getClientSampleID',
@@ -87,11 +87,13 @@ _catalogs_definition = {
             'getContactUID',
             'getContactUsername',
             'getContactEmail',
+            'getContactURL',
             'getSampleTypeUID',
             'getSampleTypeTitle',
             'getSamplePointUID',
             'getSamplePointTitle',
             'getStorageLocationUID',
+            'getStorageLocationTitle',
             'getPriority',
             'getSamplingDate',
             'getDateSampled',
@@ -105,6 +107,15 @@ _catalogs_definition = {
             'getTemplateUID',
             'getTemplateURL',
             'getTemplateTitle',
+            'getAnalysesNum',
+            'getPrinted',
+            'getSamplingDeviationTitle',
+            'getLate',
+            'getInvoiceExclude',
+            'getHazardous',
+            'getSamplingWorkflowEnabled',
+            'getDepartmentUIDs',
+
         ]
     }
 }

@@ -1502,17 +1502,12 @@ schema = BikaSchema.copy() + Schema((
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
-        'SampleId',
-        expression="here.getSample().getId()",
-        widget=ComputedWidget(visible=False),
-    ),
-    ComputedField(
         'SamplingRoundUID',
         expression="here.getSamplingRound().UID() if here.getSamplingRound() else ''",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
-        'SampleUrl',
+        'SampleURL',
         expression="here.getSample().absolute_url()",
         widget=ComputedWidget(visible=False),
     ),
@@ -1835,6 +1830,7 @@ class AnalysisRequest(BaseFolder):
             return self.aq_parent
         if self.aq_parent.portal_type == 'Batch':
             return self.aq_parent.getClient()
+        return ''
 
     def getClientPath(self):
         return "/".join(self.aq_parent.getPhysicalPath())
@@ -2761,15 +2757,81 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample and value:
             sample.setSamplingDeviation(value)
-        self.Schema()['SamplingDeviation'].set(self, value)
+            self.Schema()['SamplingDeviation'].set(self, value)
+        elif not sample:
+            logger.warning(
+                "setSamplingDeviation has failed for Analysis Request %s "
+                "because it hasn't got a sample." % self.id)
+        else:
+            logger.warning(
+                "setSamplingDeviation has failed for Analysis Request %s "
+                "because 'value' doesn't have a value'." % self.id)
 
     security.declarePublic('getSamplingDeviation')
 
     def getSamplingDeviation(self):
+        """
+        It works as a metacolumn.
+        """
         sample = self.getSample()
         if sample:
             return sample.getSamplingDeviation()
-        return self.Schema().getField('SamplingDeviation').get(self)
+        else:
+            logger.warning(
+                "getSamplingDeviation has failed for Analysis Request %s "
+                "because it hasn't got a sample." % self.id)
+            return ''
+
+    security.declarePublic('getSamplingDeviationTitle')
+
+    def getSamplingDeviationTitle(self):
+        """
+        It works as a metacolumn.
+        """
+        sd = self.getSamplingDeviation()
+        if sd:
+            return sd.Title()
+        else:
+            return ''
+
+    security.declarePublic('getHazardous')
+
+    def getHazardous(self):
+        """
+        It works as a metacolumn.
+        """
+        sample_type = self.getSampleType()
+        if sample_type:
+            return sample_type.getHazardous()
+        else:
+            return False
+
+    security.declarePublic('getContactURL')
+
+    def getContactURL(self):
+        """
+        It works as a metacolumn.
+        """
+        contact = self.getContact()
+        if contact:
+            return contact.absolute_url()
+        else:
+            return ''
+
+    security.declarePublic('getSamplingWorkflowEnabled')
+
+    def getSamplingWorkflowEnabled(self):
+        """
+        It works as a metacolumn.
+        """
+        sample = self.getSample()
+        if sample:
+            return sample.getSamplingWorkflowEnabled()
+        else:
+            logger.warning(
+                "getSamplingWorkflowEnabled has failed for Analysis Request %s"
+                " because it hasn't got a sample." % self.id)
+            return ''
 
     security.declarePublic('setSampleCondition')
 
@@ -3119,6 +3181,20 @@ class AnalysisRequest(BaseFolder):
                     canbeverified = False
                     break
             return canbeverified
+
+    def getObjectWorkflowStates(self):
+        """
+        This method is used as a metacolumn.
+        Returns a dictionary with the workflow id as key and workflow state as
+        value.
+        :return: {'review_state':'active',...}
+        """
+        workflow = getToolByName(self, 'portal_workflow')
+        states = {}
+        for w in workflow.getWorkflowsFor(self):
+            state = w._getWorkflowStateOf(self).id
+            states[w.state_var] = state
+        return states
 
     def isUserAllowedToVerify(self, member):
         """

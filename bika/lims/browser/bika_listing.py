@@ -839,6 +839,7 @@ class BikaListingView(BrowserView):
 
         :full_objects: a boolean, if True, each dictionary will contain an item
         with the cobject itself. item.get('obj') will return a object.
+        Only works with the 'classic' way.
         WARNING: :full_objects: could create a big performance hit!
         :classic: if True, the old way folderitems works will be executed. This
         function is mainly used to mantain the integrity with the old version.
@@ -900,10 +901,6 @@ class BikaListingView(BrowserView):
                 # Maximum number of items to be shown reached!
                 self.show_more = True
                 break
-
-            # Get the whole object if needed
-            obj = obj.getObject()\
-                if full_objects and hasattr(obj, 'getObject') else obj
 
             # check if the item must be rendered or not (prevents from
             # doing it later in folderitems) and dealing with paging
@@ -973,7 +970,29 @@ class BikaListingView(BrowserView):
             #             self.field_icons[auid].extend(alerts[auid])
             #         else:
             #             self.field_icons[auid] = alerts[auid]
+            # Search for values for all columns in obj
+            for key in self.columns.keys():
+                # if the key is already in the results dict
+                # then we don't replace it's value
+                value = results_dict.get(key, '')
+                if key not in results_dict:
+                    attrobj = getFromString(obj, key)
+                    value = attrobj if attrobj else value
 
+                    # Custom attribute? Inspect to set the value
+                    # for the current column dinamically
+                    vattr = self.columns[key].get('attr', None)
+                    if vattr:
+                        attrobj = getFromString(obj, vattr)
+                        value = attrobj if attrobj else value
+                    results_dict[key] = value
+                # Replace with an url?
+                replace_url = self.columns[key].get('replace_url', None)
+                if replace_url:
+                    attrobj = getFromString(obj, replace_url)
+                    if attrobj:
+                        results_dict['replace'][key] = \
+                            '<a href="%s">%s</a>' % (attrobj, value)
             # The item basics filled. Delegate additional actions to folderitem
             # service. folderitem service is frequently overriden by child
             # objects
