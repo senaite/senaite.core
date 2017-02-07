@@ -425,7 +425,8 @@ Table cells for each column from in review_state's column list.
                     isanalysis python:'obj' in item and item['obj'].portal_type == 'Analysis';
                     hasremarks python:True if item.get('Remarks','') else False;
                     remarksedit python: remarksenabled and 'Remarks' in item.get('allow_edit',[]);
-                    showremarks python:isanalysis and (hasremarks or remarksedit)">
+                    isforaggregatedlist python: True if review_state_id=='to_be_verified' else False;
+                    showremarks python:isanalysis and (hasremarks or remarksedit or isforaggregatedlist)">
 
         <tr tal:condition="showremarks"
             tal:define="keyword python:item.has_key('Keyword') and item['Keyword'] or '';"
@@ -457,7 +458,10 @@ Table cells for each column from in review_state's column list.
                 <span
                     autocomplete="off"
                     tal:condition="python:remarksedit==False"
-                    tal:content="python:item.get('Remarks', '')"/>
+                    tal:attributes="
+                        class python:'listing_remarks';
+                        name string:Remarks.${item/uid}:records;"
+                    tal:content="python:item.get('Remarks', '') if hasremarks else 'No Remarks.'"/>
             </td>
         </tr>
     </tal:remarks_condition>
