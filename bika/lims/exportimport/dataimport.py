@@ -85,6 +85,13 @@ class ImportView(BrowserView):
         else:
             return self.template()
 
+    def getInstruments(self):
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [('', '')] + [(o.UID, o.Title) for o in
+                               bsc(portal_type = 'Instrument',
+                                   inactive_state = 'active')]
+        items.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
+        return DisplayList(list(items))
 
 class ajaxGetImportTemplate(BrowserView):
 

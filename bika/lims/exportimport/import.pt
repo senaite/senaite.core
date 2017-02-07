@@ -29,11 +29,11 @@
         <fieldset id="fieldset-instrumentimport">
             <legend id="fieldsetlegend-instrumentimport" i18n:translate="">Instrument Import</legend>
             <select name="exim" id="exim"
-                tal:define="importers view/getDataInterfaces">
-                <tal:options repeat="option importers">
+                tal:define="instruments view/getInstruments">
+                <tal:options repeat="option instruments">
                     <option
                         tal:attributes="value python:option;"
-                        tal:content="python:importers.getValue(option)"/>
+                        tal:content="python:instruments.getValue(option)"/>
                 </tal:options>
             </select>
             <div id="import_form"/>
