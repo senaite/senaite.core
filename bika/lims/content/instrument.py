@@ -25,6 +25,7 @@ from zope.interface import implements
 from datetime import date
 from DateTime import DateTime
 from bika.lims.config import QCANALYSIS_TYPES
+from bika.lims import logger
 
 schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
 
@@ -779,6 +780,14 @@ class Instrument(ATFolder):
         ans = [p.getObject() for p in prox]
         return [a for a in ans if a.getRawInstrument() == self.UID()]
 
+    def setImportDataInterface(self, values):
+        """ Return the current list of import data interfaces
+        """
+        exims = self.getImportDataInterfacesList()
+        new_values = [value for value in values if value in exims]
+        if len(new_values) < len(values):
+            logger.warn("Some Interfaces weren't added...")
+        self.Schema().getField('ImportDataInterface').set(self, new_values)
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 
