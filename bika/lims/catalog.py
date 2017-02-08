@@ -88,6 +88,7 @@ _catalogs_definition = {
             'getContactUsername',
             'getContactEmail',
             'getContactURL',
+            'getContactFullName',
             'getSampleTypeUID',
             'getSampleTypeTitle',
             'getSamplePointUID',

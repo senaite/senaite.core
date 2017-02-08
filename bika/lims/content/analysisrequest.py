@@ -3213,6 +3213,8 @@ class AnalysisRequest(BaseFolder):
         if not allowed:
             return False
         # Check if the user is allowed to verify all the contained analyses
+        # TODO-performance: gettin all analysis each time this function is
+        # called
         notallowed = [a for a in self.getAnalyses(full_objects=True)
                       if not a.isUserAllowedToVerify(member)]
         return not notallowed

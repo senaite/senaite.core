@@ -89,6 +89,9 @@ def upgrade(tool):
     bc = getToolByName(portal, 'bika_catalog', None)
     delIndexAndColumn(bc, 'getProfilesTitle')
 
+    # Adding two columns for client data
+    addColumnsForClient(portal)
+
     # Clean and rebuild affected catalogs (if required)
     logger.info("Cleaning and rebuilding...")
     cleanAndRebuildIfNeeded(portal)
@@ -226,6 +229,17 @@ def departments(portal):
     transaction.commit()
 
 
+def addColumnsForClient(portal):
+    """
+    Add columns to portal catalog in order to use them in
+    analysisrequests listings.
+    """
+    pc = getToolByName(portal, 'portal_catalog')
+    addColumn(pc, 'getProvince')
+    addColumn(pc, 'getDistrict')
+    transaction.commit()
+
+
 def create_CAS_IdentifierType(portal):
     """LIMS-1391 The CAS Nr IdentifierType is normally created by
     setuphandlers during site initialisation.
@@ -359,6 +373,19 @@ def addIndex(catalog, index, indextype):
                 cleanrebuild.append(catalog.id)
         except:
             pass
+
+
+def addColumn(cat, col):
+    if col not in cat.schema():
+        try:
+            cat.addColumn(col)
+            logger.info('Column %s added to %s.' % (col, cat.id))
+            if catalog.id not in cleanrebuild:
+                cleanrebuild.append(catalog.id)
+        except:
+            logger.error(
+                'Catalog column %s error while adding to %s.' % (col, cat.id))
+
 
 def addIndexAndColumn(catalog, index, indextype):
     if index not in catalog.indexes():

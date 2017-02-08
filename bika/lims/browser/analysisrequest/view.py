@@ -43,6 +43,11 @@ class AnalysisRequestViewView(BrowserView):
 
     def __call__(self):
         ar = self.context
+        if 'check_edit' in self.request and\
+                self.request.get('check_edit') == '1':
+                # It mens we should redirect to manage_results
+                redirect = self.context.absolute_url() + '/manage_results'
+                self.request.response.redirect(redirect)
         workflow = getToolByName(self.context, 'portal_workflow')
         if 'transition' in self.request.form:
             doActionFor(self.context, self.request.form['transition'])

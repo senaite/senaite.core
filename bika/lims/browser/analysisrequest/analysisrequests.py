@@ -730,7 +730,7 @@ class AnalysisRequestsView(BikaListingView):
         on the department filter. It checks the department of each analysis
         service from each analysis belonguing to the given analysis request.
         If department filtering is disabled in bika_setup, will return True.
-        @Obj: it is an analysis request object.
+        @Obj: it is an analysis request brain.
         @return: boolean
         """
         if not self.context.bika_setup.getAllowDepartmentFiltering():
@@ -750,6 +750,9 @@ class AnalysisRequestsView(BikaListingView):
         return result
 
     def folderitems(self, full_objects=False, classic=True):
+        # We need to get the portal catalog here in roder to save process
+        # while iterating over folderitems
+        self.portal_catalog = getToolByName(self.context, 'portal_catalog')
         return BikaListingView.folderitems(self, full_objects, classic=False)
 
     def folderitem(self, obj, item, index):
@@ -760,20 +763,29 @@ class AnalysisRequestsView(BikaListingView):
         item = BikaListingView.folderitem(self, obj, item, index)
         if not item:
             return None
-        import pdb; pdb.set_trace()
-        # TODO: Deal with this from nrml
+        # This variable will contain the full analysis request if there is
+        # need to work with the full object instead of the brain
+        full_object = None
+        # TODO-performance: quering every time not good
         # extract province and district
-        item['Province'] = ''  # client.getProvince()
-        item['District'] = ''  # client.getDistrict()
-
-        item['Creator'] = self.user_fullname(obj.Creator())
+        client = self.portal_catalog(UID=obj.getClientUID)
+        if client:
+            item['Province'] = client[0].getProvince if\
+                client[0].getProvince else ''
+            item['District'] = client[0].getDistrict if\
+                client[0].getDistrict else ''
+        else:
+            item['Province'] = ''
+            item['District'] = ''
+        item['Creator'] = self.user_fullname(obj.Creator)
         # If we redirect from the folderitems view we should check if the
         # user has permissions to medify the element or not.
-        item['getRequestID'] = obj.getRequestID()
-        url = obj.getObjectURL + "?check_edit=1"
+        item['getRequestID'] = obj.getId
+        url = obj.getURL() + "?check_edit=1"
         item['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
             (url, item['getRequestID'])
-        item['replace']['getProfilesTitle'] = ", ".join(obj.getProfilesTitle())
+        item['replace']['getProfilesTitle'] =\
+            ", ".join(obj.getProfilesTitleStr)
 
         analysesnum = obj.getAnalysesNum
         if analysesnum:
@@ -781,8 +793,7 @@ class AnalysisRequestsView(BikaListingView):
                 str(analysesnum[0]) + '/' + str(analysesnum[1])
         else:
             item['getAnalysesNum'] = ''
-
-        item['BatchID'] = batch.getBatchID
+        item['BatchID'] = obj.getBatchID
         if obj.getBatchID:
             item['replace']['BatchID'] = "<a href='%s'>%s</a>" % \
                 (obj.getBatchURL, obj.getBatchID)
@@ -817,19 +828,18 @@ class AnalysisRequestsView(BikaListingView):
                 print_icon = "<img src='%s/++resource++bika.lims.images/exclamation.png' title='%s'>" % \
                     (self.portal_url, t(_("Republished after last print")))
             item['after']['Printed'] = print_icon
-
-        item['SamplingDeviation'] = obj.sample.getSamplingDeviationTitle and\
-            sample.getSamplingDeviationTitle or ''
+        item['SamplingDeviation'] = obj.getSamplingDeviationTitle
         item['Priority'] = obj.getPriority
 
         item['getStorageLocation'] = obj.getStorageLocationTitle
 
         after_icons = ""
+        # Getting a dictionary with each workflow id and current state in it
         states_dict = obj.getObjectWorkflowStates
-        if states.get('worksheetanalysis_review_state', '') == 'assigned':
+        if states_dict.get('worksheetanalysis_review_state', '') == 'assigned':
             after_icons += "<img src='%s/++resource++bika.lims.images/worksheet.png' title='%s'/>" % \
                 (self.portal_url, t(_("All analyses assigned")))
-        if states.get('review_state', '') == 'invalid':
+        if states_dict.get('review_state', '') == 'invalid':
             after_icons += "<img src='%s/++resource++bika.lims.images/delete.png' title='%s'/>" % \
                 (self.portal_url, t(_("Results have been withdrawn")))
         if obj.getLate:
@@ -848,19 +858,16 @@ class AnalysisRequestsView(BikaListingView):
             item['after']['getRequestID'] = after_icons
 
         item['Created'] = self.ulocalized_time(obj.created)
-
-        contact = obj.getContact()
-        if contact:
-            item['ClientContact'] = obj.getContactUsername
+        if obj.getContactUID:
+            item['ClientContact'] = obj.getContactFullName
             item['replace']['ClientContact'] = "<a href='%s'>%s</a>" % \
-                (obj.getContactURL, obj.getContactUsername)
+                (obj.getContactURL, obj.getContactFullName)
         else:
             item['ClientContact'] = ""
         # TODO-performance: If SamplingWorkflowEnabled, we have to get the
         # full object to check the user permissions, so far this is
         # a performance hit.
-        SamplingWorkflowEnabled = obj.getSamplingWorkflowEnabled
-        if SamplingWorkflowEnabled and\
+        if obj.getSamplingWorkflowEnabled and\
                 (not obj.getSamplingDate or not
                     obj.getSamplingDate > DateTime()):
             datesampled = self.ulocalized_time(
@@ -871,17 +878,17 @@ class AnalysisRequestsView(BikaListingView):
                 item['class']['getDateSampled'] = 'provisional'
             sampler = obj.getSampler
             if sampler:
-                item['replace']['getSampler'] = sampler.getSamplerFullName
+                item['replace']['getSampler'] = obj.getSamplerFullName
             if 'Sampler' in self.member.getRoles() and not sampler:
                 sampler = self.member.id
                 item['class']['getSampler'] = 'provisional'
             # sampling workflow - inline edits for Sampler and Date Sampled
-            checkPermission = self.context.portal_membership.checkPermission
-            review_state = states.get('review_state', '')
-            if review_state == 'to_be_sampled':
+            if states_dict.get('review_state', '') == 'to_be_sampled':
                 # We need to get the full object in order to check
                 # the permissions
                 full_object = obj.getObject()
+                checkPermission =\
+                    self.context.portal_membership.checkPermission
                 if checkPermission(SampleSample, full_object):
                     item['required'] = ['getSampler', 'getDateSampled']
                     item['allow_edit'] = ['getSampler', 'getDateSampled']
@@ -933,15 +940,21 @@ class AnalysisRequestsView(BikaListingView):
         #     item['class']['getDatePreserved'] = 'provisional'
 
         # Submitting user may not verify results
-        if item['review_state'] == 'to_be_verified':
+        # Thee conditions to improve performance, some functions to check
+        # the condition need to get the full analysis request.
+        if states_dict.get('review_state', '') == 'to_be_verified':
             allowed = api.user.has_permission(
                 VerifyPermission,
                 username=self.member.getUserName())
-            if allowed and not obj.isUserAllowedToVerify(self.member):
-                item['after']['state_title'] = \
-                     "<img src='++resource++bika.lims.images/submitted-by-current-user.png' title='%s'/>" % \
-                     t(_("Cannot verify: Submitted by current user"))
-
+            # TODO-performance: isUserAllowedToVerify getts all analysis
+            # objects inside the analysis request.
+            if allowed:
+                # Gettin the full object if not get before
+                full_object = full_object if full_object else obj.getObject()
+                if not full_object.isUserAllowedToVerify(self.member):
+                    item['after']['state_title'] = \
+                         "<img src='++resource++bika.lims.images/submitted-by-current-user.png' title='%s'/>" % \
+                         t(_("Cannot verify: Submitted by current user"))
         return item
 
     @property

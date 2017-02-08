@@ -863,6 +863,9 @@ class BikaGenerator:
         addIndex(pc, 'Analyst', 'FieldIndex')
         addIndex(pc, 'worksheettemplateUID', 'FieldIndex')
         addColumn(pc, 'Analyst')
+        # TODO: Nmrl
+        addColumn(pc, 'getProvince')
+        addColumn(pc, 'getDistrict')
 
         # CATALOG_ANALYSIS_REQUEST
         setup_catalogs(portal, getCatalogDefinitions())

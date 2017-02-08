@@ -373,7 +373,7 @@ class Analysis(BaseContent):
         catalog = getToolByName(self, "uid_catalog")
         brain = catalog(UID=service_uid)
         if brain:
-            return brain[0].getObject().getDepartmentUID().UID()
+            return brain[0].getObject().getDepartment().UID()
         return ''
 
     # TODO-performance: improve this function using another catalog and takeing
