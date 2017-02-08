@@ -28,13 +28,15 @@
 
         <fieldset id="fieldset-instrumentimport">
             <legend id="fieldsetlegend-instrumentimport" i18n:translate="">Instrument Import</legend>
-            <select name="exim" id="exim"
+            <select name="qcinstrument" id="qcinstrument"
                 tal:define="instruments view/getInstruments">
                 <tal:options repeat="option instruments">
                     <option
                         tal:attributes="value python:option;"
                         tal:content="python:instruments.getValue(option)"/>
                 </tal:options>
+            </select><br><br>
+            <select name="exim" id="exim">
             </select>
             <div id="import_form"/>
             <div id="intermediate" style="display:none"/>

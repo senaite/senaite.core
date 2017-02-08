@@ -10,6 +10,35 @@ function InstrumentImportView() {
      */
     that.load = function() {
 
+        // Load interfaces for selected Instrument
+        $("#qcinstrument").change(function(){
+            $('.portalMessage').remove();
+            $("#import_form").empty();
+            $("#intermediate").toggle(false);
+            if($(this).val() == ""){
+                $("#exim").empty();
+            } else {
+              $.ajax({
+                type: 'POST',
+                dataType: 'json',
+                url: window.location.href.replace("/import", "/getImportInterfaces"),
+                data: {'_authenticator': $('input[name="_authenticator"]').val(),
+                       'instrument_uid': $(this).val()
+                      },
+                success: function(data){
+                  $("#exim").empty();
+                  $('#exim').append($('<option>').text('Choose an Interface...')
+                            .attr('value', '').attr('selected', 'selected'));
+                  $('#exim').append($('<option>').text('Default')
+                            .attr('value', 'default'));
+                  $.each(data, function(i, value) {
+                     $('#exim').append($('<option>').text(value.title).attr('value', value.id));
+                  });
+                }
+              });
+            }
+        });
+
         // Load import form for selected data interface
         $("#exim").change(function(){
             $('.portalMessage').remove();

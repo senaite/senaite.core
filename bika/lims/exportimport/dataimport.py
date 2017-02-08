@@ -17,6 +17,7 @@ from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
 from pkg_resources import *
 from zope.component import getAdapters
+import json
 
 import plone
 
@@ -87,7 +88,7 @@ class ImportView(BrowserView):
 
     def getInstruments(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('', '')] + [(o.UID, o.Title) for o in
+        items = [('', '...Choose and Instrument...')] + [(o.UID, o.Title) for o in
                                bsc(portal_type = 'Instrument',
                                    inactive_state = 'active')]
         items.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
@@ -110,14 +111,6 @@ class ajaxGetImportTemplate(BrowserView):
         else:
             return ViewPageTemplateFile("instruments/instrument.pt")(self)
 
-    def getInstruments(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('', '')] + [(o.UID, o.Title) for o in
-                               bsc(portal_type = 'Instrument',
-                                   inactive_state = 'active')]
-        items.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
-        return DisplayList(list(items))
-
     def getAnalysisServicesDisplayList(self):
         ''' Returns a Display List with the active Analysis Services
             available. The value is the keyword and the title is the
@@ -129,3 +122,32 @@ class ajaxGetImportTemplate(BrowserView):
                                    inactive_state = 'active')]
         items.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
         return DisplayList(list(items))
+
+
+class ajaxGetImportInterfaces(BrowserView):
+    """ Returns a json list with the interfaces assigned to the instrument
+        with the following structure:
+        [{'id': <interface_id>,
+          'title': <interface_title>
+        ]
+    """
+    def __call__(self):
+        interfaces = []
+        try:
+            plone.protect.CheckAuthenticator(self.request)
+        except Forbidden:
+            return json.dumps(interfaces)
+
+        from bika.lims.exportimport import instruments
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        instrument=bsc(portal_type='Instrument',
+                       UID=self.request.get('instrument_uid', ''),
+                       inactive_state='active',)
+        if instrument and len(instrument) == 1:
+            instrument = instrument[0].getObject()
+            for i in instrument.getImportDataInterface():
+                if i:
+                    exim = instruments.getExim(i)
+                    interface = {'id': i, 'title': exim.title}
+                    interfaces.append(interface)
+        return json.dumps(interfaces)
