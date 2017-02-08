@@ -88,7 +88,7 @@ class ImportView(BrowserView):
 
     def getInstruments(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [('', '...Choose and Instrument...')] + [(o.UID, o.Title) for o in
+        items = [('', '...Choose an Instrument...')] + [(o.UID, o.Title) for o in
                                bsc(portal_type = 'Instrument',
                                    inactive_state = 'active')]
         items.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))

@@ -23,7 +23,7 @@ def Import(context, request):
     override = request.form['beckmancoulter_access_model2_override']
     sample = request.form.get('beckmancoulter_access_model2_sample',
                               'requestid')
-    instrument = request.form.get('beckmancoulter_access_model2_instrument', None)
+    instrument = request.form.get('instrument', None)
     errors = []
     logs = []
     warns = []

@@ -11,7 +11,7 @@ function InstrumentImportView() {
     that.load = function() {
 
         // Load interfaces for selected Instrument
-        $("#qcinstrument").change(function(){
+        $("#instrument_select").change(function(){
             $('.portalMessage').remove();
             $("#import_form").empty();
             $("#intermediate").toggle(false);

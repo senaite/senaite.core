@@ -22,7 +22,7 @@ def Import(context, request):
     artoapply = request.form['wsa_artoapply']
     override = request.form['wsa_override']
     sample = request.form.get('wsa_sample', 'requestid')
-    instrument = request.form.get('wsa_instrument', None)
+    instrument = request.form.get('instrument', None)
     errors = []
     logs = []
 
