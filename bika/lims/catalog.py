@@ -389,12 +389,18 @@ def setup_catalogs(
     archetype_tool = getToolByName(portal, 'archetype_tool')
     # Making a copy of catalogs_definition and adding the catalog extensions
     # if required
+    catalogs_definition_extended_copy = {}
+    if catalog_extensions:
+        catalogs_definition_extended_copy = _merge_both_catalogs(
+            getCatalogDefinitions(), catalog_extensions)
+    # Merging the extended catalogs definition with the catalogs definition
     catalogs_definition_copy = _merge_both_catalogs(
-        catalogs_definition, catalog_extensions)
+        catalogs_definition_extended_copy, catalogs_definition)
     # Mapping content types in catalogs
     # This variable will be used to clean reindex the catalog. Saves the
     # catalogs ids
-    clean_and_rebuild = _map_content_types(archetype_tool, catalogs_definition)
+    clean_and_rebuild = _map_content_types(
+        archetype_tool, catalogs_definition_copy)
     # Indexing
     for cat_id in catalogs_definition_copy.keys():
         reindex = False
@@ -478,11 +484,12 @@ def _merge_both_catalogs(catalogs_definition, catalog_extensions):
                     logger.error(traceback.format_exc())
             else:
                 # If catalog id is not found in the original catalog
-                # definition, definition, rise a warning
-                logger.warning(
+                # definition, definition, rise an info and create the new dict
+                logger.info(
                     "Catalog %s doesn't exist in Bika LIMS catalog "
-                    "definitions dictionary. Please check the defined "
-                    "dictionary with the catalog definitions." % ext_cat_id)
+                    "definitions dictionary. A new catalog definition"
+                    " might be created." % ext_cat_id)
+                result_dict[ext_cat_id] = catalog_extensions[ext_cat_id]
     return result_dict
 
 
