@@ -466,7 +466,7 @@ class DashboardView(BrowserView):
                           state: 1 }
                 outevo.append(currow)
         # Remove all those states for which there is no data
-        rstates = [k for k,v in statscounts.items() if v==0]
+        rstates = [k for k,v in statscount.items() if v==0]
         for o in outevo:
             for r in rstates:
                 del o[r]
