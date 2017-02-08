@@ -390,7 +390,7 @@ def setup_catalogs(
     # Making a copy of catalogs_definition and adding the catalog extensions
     # if required
     catalogs_definition_copy = _merge_both_catalogs(
-        getCatalogDefinitions(), catalog_extensions)
+        catalogs_definition, catalog_extensions)
     # Mapping content types in catalogs
     # This variable will be used to clean reindex the catalog. Saves the
     # catalogs ids
