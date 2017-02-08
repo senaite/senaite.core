@@ -35,7 +35,7 @@ class DashboardView(BrowserView):
     def _init_date_range(self):
         """ Sets the date range from which the data must be retrieved.
             Sets the values to the class parameters 'date_from',
-            'date_to', 'date_range', 'base_date_range' and self.periodicity
+            'date_to', 'date_range', and self.periodicity
             Calculates the date range according to the value of the
             request's 'p' parameter:
             - 'd' (daily)
@@ -44,6 +44,7 @@ class DashboardView(BrowserView):
             - 'q' (quarterly)
             - 'b' (biannual)
             - 'y' (yearly)
+            - 'a' (all-time)
         """
         # By default, weekly
         self.periodicity = self.request.get('p', 'w')
@@ -88,6 +89,14 @@ class DashboardView(BrowserView):
             # For time-evolution data, load last 15 years
             min_year = today.year - 15 if today.month == 12 else today.year - 16
             self.min_date = DateTime(min_year, 1, 1)
+        elif (self.periodicity == 'a'):
+            # All time
+            today = datetime.date.today()
+            self.date_from = DateTime('1990-01-01 00:00:00')
+            self.date_to = DateTime(today.year, 12, 31, 23, 59, 59)
+            # For time-evolution data, load last 15 years
+            min_year = today.year - 15 if today.month == 12 else today.year - 16
+            self.min_date = DateTime(min_year, 1, 1)
         else:
             # weekly
             today = datetime.date.today()
@@ -100,7 +109,7 @@ class DashboardView(BrowserView):
             self.min_date = DateTime(min_year, min_month, 1)
 
         self.date_range = {'query': (self.date_from, self.date_to), 'range': 'min:max'}
-        self.base_date_range = {'query': (DateTime('1990-01-01 00:00:00'), self.date_from - 1), 'range':'min:max'}
+        self.base_date_range = {'query': (DateTime('1990-01-01 00:00:00'), DateTime()+1), 'range':'min:max'}
         self.min_date_range = {'query': (self.min_date, self.date_to), 'range': 'min:max'}
 
     def get_sections(self):
@@ -110,11 +119,9 @@ class DashboardView(BrowserView):
                  'title': <section_title>,
                 'panels': <array of panels>}
         """
-        sections = [self.get_analysisrequests_section(),
+        sections = [self.get_analyses_section(),
+                    self.get_analysisrequests_section(),
                     self.get_worksheets_section()]
-        #sections = [self.get_analyses_section(),
-        #            self.get_analysisrequests_section(),
-        #            self.get_worksheets_section()]
         return sections
 
     def _getStatistics(self, name, description, url, catalog, criterias, total):
@@ -225,11 +232,9 @@ class DashboardView(BrowserView):
 
         # Chart with the evolution of ARs over a period, grouped by
         # periodicity
-        workflow = getToolByName(self.context, 'portal_workflow')
         del query['review_state']
         query['sort_on'] = 'created'
         query['created'] = self.min_date_range
-        outevo = []
         statesmap = {'to_be_sampled':       _('To be sampled'),
                      'to_be_preserved':     _('To be preserved'),
                      'scheduled_sampling':  _('Sampling scheduled'),
@@ -240,21 +245,7 @@ class DashboardView(BrowserView):
                      'to_be_verified':      _('To be verified'),
                      'verified':            _('Verified'),
                      'published':           _('Published')}
-        for ar in bc(query):
-            state = ar.review_state
-            state = statesmap[state] if state in statesmap else 'Other status'
-            created = self._getDateStr(self.periodicity, ar.getObject().created())
-            if (len(outevo) > 0 and outevo[-1]['date'] == created):
-                if state in outevo[-1]:
-                    outevo[-1][state] += 1
-                else:
-                    outevo[-1][state] = 1
-            else:
-                # Create new row
-                currow = {'date': created,
-                          state: 1 }
-                outevo.append(currow)
-
+        outevo = self._fill_dates_evo(bc, query, statesmap)
         out.append({'type':         'bar-chart-panel',
                     'name':         _('Evolution of Analysis Requests'),
                     'class':        'informative',
@@ -298,38 +289,22 @@ class DashboardView(BrowserView):
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Worksheets verified
-        name = _('To be verified')
-        desc =_('To be verified')
+        name = _('Verified')
+        desc =_('Verified')
         purl = 'worksheets?list_review_state=verified'
         query['review_state'] = ['verified', ]
         out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Chart with the evolution of WSs over a period, grouped by
         # periodicity
-        workflow = getToolByName(self.context, 'portal_workflow')
         del query['review_state']
         query['sort_on'] = 'created'
         query['created'] = self.min_date_range
-        outevo = []
         statesmap = {'open':            _('Results pending'),
                      'attachment_due':  _('Results pending'),
                      'to_be_verified':  _('To be verified'),
                      'verified':        _('Verified')}
-        for ws in bc(query):
-            state = ws.review_state
-            state = statesmap[state] if state in statesmap else 'Other status'
-            created = self._getDateStr(self.periodicity, ws.getObject().created())
-            if (len(outevo) > 0 and outevo[-1]['date'] == created):
-                if state in outevo[-1]:
-                    outevo[-1][state] += 1
-                else:
-                    outevo[-1][state] = 1
-            else:
-                # Create new row
-                currow = {'date': created,
-                          state: 1 }
-                outevo.append(currow)
-
+        outevo = self._fill_dates_evo(bc, query, statesmap)
         out.append({'type':         'bar-chart-panel',
                     'name':         _('Evolution of Worksheets'),
                     'class':        'informative',
@@ -351,110 +326,62 @@ class DashboardView(BrowserView):
             assigned
         """
         out = []
-        active_rs = ['sample_received',
-                     'assigned',
-                     'attachment_due',
-                     'to_be_verified',
-                     'verified']
-        bac = getToolByName(self.context, "bika_analysis_catalog")
-        filtering_allowed=self.context.bika_setup.getAllowDepartmentFiltering()
-        cookie_dep_uid = self.request.get('filter_by_department_info', '').split(',') if filtering_allowed else ''
-
-        query_dic = {'portal_type':"Analysis",
-                 'created':self.date_range,
-                 'cancellation_state':['active']}
+        bc = getToolByName(self.context, 'bika_analysis_catalog')
+        query = {'portal_type': "Analysis",
+                 'created': self.base_date_range,
+                 'cancellation_state': ['active']}
+        filtering_allowed = self.context.bika_setup.getAllowDepartmentFiltering()
         if filtering_allowed:
-            query_dic['getDepartmentUID'] = { "query":cookie_dep_uid,"operator":"or" }
-        numans = len(bac(query_dic))
+            cookie_dep_uid = self.request.get('filter_by_department_info', '').split(',') if filtering_allowed else ''
+            query['getDepartmentUIDs'] = { "query": cookie_dep_uid,"operator":"or" }
 
-        query_dic = {'portal_type':"Analysis",
-                 'created':self.base_date_range,
-                 'review_state':active_rs,
-                 'cancellation_state':['active']}
-        if filtering_allowed:
-            query_dic['getDepartmentUID'] = { "query":cookie_dep_uid,"operator":"or" }
-        numans += len(bac(query_dic))
+        # Active Analyses (All)
+        query['review_state'] = ['sample_received',
+                                 'assigned',
+                                 'attachment_due',
+                                 'to_be_verified',
+                                 'verified']
+        total = len(bc(query))
+
+        # Analyses to be assigned
+        name = _('Assignment pending')
+        desc = _('Assignment pending')
+        purl = 'aggregatedanalyses'
+        query['review_state'] = ['sample_received', ]
+        out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Analyses pending
-        review_state = ['sample_received',
-                        'assigned',
-                        'attachment_due']
-        query_dic = {'portal_type':"Analysis",
-                 'review_state':review_state}
-        if filtering_allowed:
-            query_dic['getDepartmentUID'] = { "query":cookie_dep_uid,"operator":"or" }
-        ans = len(bac(query_dic))
-        ratio = (float(ans)/float(numans))*100 if ans > 0 and numans > 0 else 0
-        ratio = str("%%.%sf" % 1) % ratio
-        msg = _("Analyses pending")
-        out.append({'type':         'simple-panel',
-                    'name':         _('Analyses pending'),
-                    'class':        'informative',
-                    'description':  msg,
-                    'number':       ans,
-                    'total':        numans,
-                    'legend':       _('of') + " " + str(numans) + ' (' + ratio +'%)',
-                    'link':         self.portal_url + '/aggregatedanalyses'})
+        name = _('Results pending')
+        desc = _('Results pending')
+        purl = 'aggregatedanalyses'
+        query['review_state'] = ['assigned','attachment_due']
+        out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Analyses to be verified
-        review_state = ['to_be_verified', ]
-        query_dic = {'portal_type':"Analysis",
-                 'review_state':review_state}
-        if filtering_allowed:
-            query_dic['getDepartmentUID'] = { "query":cookie_dep_uid,"operator":"or" }
-        ans = len(bac(query_dic))
-        ratio = (float(ans)/float(numans))*100 if ans > 0 and numans > 0 else 0
-        ratio = str("%%.%sf" % 1) % ratio
-        msg = _("To be verified")
-        out.append({'type':         'simple-panel',
-                    'name':         _('To be verified'),
-                    'class':        'informative',
-                    'description':  msg,
-                    'number':       ans,
-                    'total':        numans,
-                    'legend':       _('of') + " " + str(numans) + ' (' + ratio +'%)',
-                    'link':         self.portal_url + '/worksheets?list_review_state=to_be_verified'})
+        name = _('To be verified')
+        desc = _('To be verified')
+        purl = 'aggregatedanalyses'
+        query['review_state'] = ['to_be_verified', ]
+        out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
-        # Chart with the evolution of WSs over a period, grouped by
+        # Analyses verified
+        name = _('Verified')
+        desc = _('Verified')
+        purl = 'aggregatedanalyses'
+        query['review_state'] = ['verified', ]
+        out.append(self._getStatistics(name, desc, purl, bc, query, total))
+
+        # Chart with the evolution of Analyses over a period, grouped by
         # periodicity
-        workflow = getToolByName(self.context, 'portal_workflow')
-        query_dic = {'portal_type':"Analysis",
-                 'sort_on':"created",
-                 "created":self.min_date_range}
-        if filtering_allowed:
-            query_dic['getDepartmentUID'] = { "query":cookie_dep_uid,"operator":"or" }
-        allans = bac(query_dic)
-        outevo = []
-        for an in allans:
-            an = an.getObject()
-            state = 'other_status'
-            try:
-                state = workflow.getInfoFor(an, 'cancellation_state')
-                if (state == 'active'):
-                    state = workflow.getInfoFor(an, 'review_state')
-                else:
-                    state = 'inactive'
-            except:
-                pass
-
-            created = self._getDateStr(self.periodicity, an.created())
-
-            if (len(outevo) > 0 and outevo[-1]['date'] == created):
-                key = state if _(state) in outevo[-1] else 'other_status'
-                outevo[-1][_(key)] += 1
-            else:
-                currow = {'date': created,
-                   _('assigned'): 0,
-                   _('to_be_verified'): 0,
-                   _('attachment_due'): 0,
-                   _('verified'): 0,
-                   _('inactive'): 0,
-                   _('other_status'): 0,
-                   }
-                key = state if _(state) in currow else 'other_status'
-                currow[_(key)] += 1
-                outevo.append(currow)
-
+        del query['review_state']
+        query['sort_on'] = 'created'
+        query['created'] = self.min_date_range
+        statesmap = {'sample_received': _('Assignment pending'),
+                     'assigned':        _('Results pending'),
+                     'attachment_due':  _('Results pending'),
+                     'to_be_verified':  _('To be verified'),
+                     'verified':        _('Verified')}
+        outevo = self._fill_dates_evo(bc, query, statesmap)
         out.append({'type':         'bar-chart-panel',
                     'name':         _('Evolution of Analyses'),
                     'class':        'informative',
@@ -480,6 +407,67 @@ class DashboardView(BrowserView):
             year, weeknum, dow = created.asdatetime().isocalendar()
             created = created - dow
             created = '%s-%s-%s' % (str(created.year())[2:], str(created.month()).zfill(2), str(created.day()).zfill(2))
+        elif period == 'a':
+            # All time, but evolution chart grouped by year
+            created = created.year()
         else:
             created = '%s-%s-%s' % (str(created.year())[2:], str(created.month()).zfill(2), str(created.day()).zfill(2))
         return created
+
+    def _fill_dates_evo(self, catalog, query, statesmap):
+        outevoidx = {}
+        outevo = []
+        days = 1
+        if self.periodicity == 'y':
+            days = 336
+        elif self.periodicity == 'b':
+            days = 168
+        elif self.periodicity == 'q':
+            days = 84
+        elif self.periodicity == 'm':
+            days = 28
+        elif self.periodicity == 'w':
+            days = 7
+        elif self.periodicity == 'a':
+            days = 336
+
+        otherstate = _('Other status')
+        stats = statesmap.values()
+        stats.sort()
+        stats.append(otherstate)
+        statescount = {s:0 for s in stats}
+        # Add first all periods, cause we want all segments to be displayed
+        curr = self.min_date.asdatetime()
+        end = self.date_to.asdatetime()
+        while curr < end:
+            currstr = self._getDateStr(self.periodicity, DateTime(curr))
+            if currstr not in outevoidx:
+                outdict = {'date':currstr}
+                for k in stats:
+                    outdict[k] = 0
+                outevo.append(outdict)
+                outevoidx[currstr] = len(outevo)-1
+            curr = curr + datetime.timedelta(days=days)
+
+        for brain in catalog(query):
+            state = brain.review_state
+            state = statesmap[state] if state in statesmap else otherstate
+            created = self._getDateStr(self.periodicity, brain.getObject().created())
+            if created in outevoidx:
+                oidx = outevoidx[created]
+                statscount[state] += 1
+                if state in outevo[oidx]:
+                    outevo[oidx][state] += 1
+                else:
+                    outevo[oidx][state] = 1
+            else:
+                # Create new row
+                currow = {'date': created,
+                          state: 1 }
+                outevo.append(currow)
+        # Remove all those states for which there is no data
+        rstates = [k for k,v in statscounts.items() if v==0]
+        for o in outevo:
+            for r in rstates:
+                del o[r]
+        return outevo
