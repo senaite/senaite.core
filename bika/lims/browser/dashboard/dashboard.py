@@ -435,7 +435,7 @@ class DashboardView(BrowserView):
         stats = statesmap.values()
         stats.sort()
         stats.append(otherstate)
-        statescount = {s:0 for s in stats}
+        statscount = {s:0 for s in stats}
         # Add first all periods, cause we want all segments to be displayed
         curr = self.min_date.asdatetime()
         end = self.date_to.asdatetime()
