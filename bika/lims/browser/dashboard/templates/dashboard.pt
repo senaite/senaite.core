@@ -23,20 +23,28 @@
         display:none;
     }
     .dashboard-section {
-        padding: 20px 0 30px;
+        padding: 20px 0 0;
     }
 
     .dashboard-section h2 {
-        border-bottom: 1px solid #dcdcdc;
-        margin: 0 20px 0 0;
-        padding: 0 0 10px;
+        background-color: #ccc;
+        border-radius: 5px 5px 0 0;
+        font-size: 1.4em;
+        font-weight: bold;
+        padding: 3px 15px;
+    }
+    .dashboard-section .h2-legend {
+        font-size: 0.9em;
+        padding: 0 0 10px 2px;
     }
     .dashboard-panels {
-        padding-top:10px;
+        border: 1px solid #ccc;
+        border-radius: 0px 0px 5px 5px;
+        padding: 5px 0;
     }
     .dashboard-info-panel-wrapper {
         float:left;
-        margin: 0 20px 10px 0;
+        margin: 0 20px 0px 0;
     }
     .dashboard-info-panel {
         /*border: 1px dotted #cdcdcd;*/
@@ -62,12 +70,11 @@
         /*border: 1px dotted #205c90;*/
     }
     .dashboard-info-panel-number {
-        font-size: 3em;
+        font-size: 2.4em;
         font-weight: bold;
         line-height: 130%;
+        padding: 35px 0 0;
         text-align: center;
-        padding: 40px 0;
-        color:#777;
     }
     #content .dashboard-info-panel-wrapper {
         opacity:0.4;
@@ -82,25 +89,32 @@
         color:#ff7f0e;
     }
 
+    .dashboard-section .period-informative {
+        color: #666;
+        font-size: 0.85em;
+        padding: 10px;
+    }
 
     .dashboard-info-panel-description {
         color: #333;
-        display: block;
-        font-size: 0.85em;
-        line-height: 130%;
-        margin: 0 -11px;
-        padding: 10px 5px;
-        height: 40px;
+        font-size: 0.9em;
+        position: relative;
+        top: 15px;
     }
     .dashboard-info-panel-total {
-        font-size: 0.8em;
-        color:#666;
+        color: #666;
+        font-size: 0.85em;
+        font-weight: bold;
+        height: 40px;
+        margin: 0 auto;
+        max-width: 70px;
+        position: relative;
+        top: 0;
     }
     #content ul.dashboard-time-selector {
         list-style:none;
-        margin:10px 0;
+        margin: 10px 0 10px -5px;
         padding:0;
-
     }
     #content ul.dashboard-time-selector li {
         display:inline;
@@ -127,11 +141,20 @@
         width:100%;
         min-width:640px;
     }
+    .bar-chart-period {
+        padding: 0 0 0 15px;
+    }
     .bar-chart .axis path,
     .bar-chart .axis line {
       fill: none;
-      stroke: #000;
+      stroke: #aaa;
       shape-rendering: crispEdges;
+    }
+    .bar-chart .y.axis line {
+        stroke: #ddd;
+    }
+    .bar-chart .axis text {
+        fill:#777;
     }
     .bar-chart .bar {
       fill: steelblue;
@@ -141,9 +164,6 @@
     }
     .bar-chart .x.axis {
         font-size: 0.75em;
-    }
-    .bar-chart .x.axis path {
-      display: none;
     }
     .bar-chart .y.axis {
         font-size: 0.75em;
@@ -157,14 +177,16 @@
       font-size:1.2em;
     }
     .toggle-barchart {
-        padding: 5px 0 10px;
         text-align: left;
+        float:right;
     }
     .toggle-barchart a {
-        background-color: #dcdcdc;
-        border-radius: 5px;
-        color: #333;
-        padding: 5px 10px;
+        padding: 10px;
+    }
+    .bar-chart-no-data {
+        color: #b22222;
+        font-size: 0.9em;
+        padding: 20px;
     }
 </style>
 <script>
@@ -180,6 +202,8 @@
             var vis = readCookie('visible.'+id);
             if (vis == 1) {
                 $('#'+id).show();
+                $('#'+id+"-period").show();
+                $('#'+id).closest('div.dashboard-panels').find('.dashboard-info-panel-wrapper').hide();
                 $('#'+id).addClass('loaded');
                 loadBarChart(id);
             }
@@ -190,32 +214,39 @@
             var barchartid = $(this).attr('target-id');
             if ($('#'+barchartid).is(":visible")) {
                 createCookie('visible.'+barchartid, 0);
+                $('#'+barchartid+'-period').hide();
                 $('#'+barchartid).hide();
+                $('#'+barchartid).closest('div.dashboard-panels').find('.dashboard-info-panel-wrapper').show();
             } else {
                 createCookie('visible.'+barchartid, 1);
+                $('#'+barchartid+'-period').show();
                 $('#'+barchartid).show();
-                if (!$('#'+barchartid).hasClass('loaded')) {
+                $('#'+barchartid).closest('div.dashboard-panels').find('.dashboard-info-panel-wrapper').hide();
+                loadBarChart(barchartid);
+            /*    if (!$('#'+barchartid).hasClass('loaded')) {
                     loadBarChart(barchartid);
                     $('#'+barchartid).addClass('loaded');
-                }
+                }*/
             }
         });
     }
 
     function loadBarChart(id) {
         var container = $('#'+id);
+        $(container).find('svg').remove();
         var data = $.parseJSON($(container).attr('data'));
-        if (data.length == 0) {
-            $(container).hide();
+        if (data.length == 0 || Object.keys(data[0]).length < 2) {
             return;
         }
-        var margin = {top: 10, right: 120, bottom: 50, left: 50},
+        $(container).html("");
+        var margin = {top: 10, right: 200, bottom: 50, left: 50},
             width = $(container).innerWidth() - margin.left - margin.right,
             height = 200 - margin.top - margin.bottom;
 
         var x = d3.scale.ordinal().rangeRoundBands([0, width], .1);
         var y = d3.scale.linear().range([height, 0]);
-        var color = d3.scale.category20c();
+        colors = $.parseJSON($(container).attr('data-colors'));
+        var color = d3.scale.ordinal().range(colors);
         color.domain(d3.keys(data[0]).filter(function(key) { return key !== "date"; }));
 
         var xAxis = d3.svg.axis()
@@ -225,6 +256,7 @@
         var yAxis = d3.svg.axis()
             .scale(y)
             .orient("left")
+            .tickSize(-width, 0, 0)
             .tickFormat(d3.format(".2s"));
 
         var svg = d3.select("#"+id).append("svg")
@@ -279,7 +311,7 @@
                 .attr("data-date",function(d) { return d.x; })
                 .attr("data-value", function(d) { return d.y1-d.y0; })
                 .attr("data-name", function(d) { return d.name; })
-                .style("fill", function(d) { return color(d.name); })
+                .style("fill", function(d) { return colors[d.name]; })
                 .on("mouseout", function() {
                     d3.select(this.parentNode.children[this.parentNode.children.length-1])
                     .remove();
@@ -313,7 +345,7 @@
           .attr("x", width + 15)
           .attr("width", 6)
           .attr("height", 6)
-          .style("fill", color);
+          .style("fill", function(d) { return colors[d]; });
 
         legend.append("text")
           .attr("x", width + 30)
@@ -331,11 +363,12 @@
             var radius = height / 2 - 10;
 
             var arc = d3.svg.arc()
-                .innerRadius(radius - 3)
+                .innerRadius(radius - 4)
                 .outerRadius(radius);
 
             var pie = d3.layout.pie()
                 .padAngle(.02);
+            pie.sort(null);
 
             var color = d3.scale.category10();
 
@@ -348,26 +381,17 @@
             svg.selectAll("path")
                 .data(pie(data))
               .enter().append("path")
-                .style("fill", function(d, i) { return color(i); })
+                .style("fill", function(d, i) {
+                    if (i == 0) {
+                        return color(1);
+                    }
+                    return color(0); })
                 .attr("d", arc);
         });
       }
     }(jQuery));
 </script>
 
-<ul class='dashboard-time-selector'>
-    <li tal:attributes="class python:'selected' if view.periodicity == 'd' else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?p=d' i18n:translate="">Daily</a></li>
-    <li tal:attributes="class python:'selected' if view.periodicity == 'w' else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?p=w' i18n:translate="">Weekly</a></li>
-    <li tal:attributes="class python:'selected' if view.periodicity == 'm' else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?p=m' i18n:translate="">Monthly</a></li>
-    <li tal:attributes="class python:'selected' if view.periodicity == 'q' else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?p=q' i18n:translate="">Quarterly</a></li>
-    <li tal:attributes="class python:'selected' if view.periodicity == 'b' else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?p=b' i18n:translate="">Biannual</a></li>
-    <li tal:attributes="class python:'selected' if view.periodicity == 'y' else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?p=y' i18n:translate="">Yearly</a></li>
-</ul>
-<div class='dashboard-period'>
-  <span i18n:translate="">Period</span>:&nbsp;
-  <span tal:content="python:here.toLocalizedTime(view.date_from)"></span>&nbsp;-&nbsp;
-  <span tal:content="python:here.toLocalizedTime(view.date_to)"></span>
-</div>
 <tal:section repeat="section python:view.get_sections()">
 <div class='dashboard-section'>
     <h2 tal:content="section/title" class='dashboard-section-title'></h2>
@@ -381,10 +405,30 @@
                 <a tal:attributes='target-id python:"bar-chart-%s-%s" % (section["id"],itemnum);'
                    href="#" i18n:translate="">Show/hide timeline summary</a>
             </div>
+            <div class='bar-chart-period' tal:attributes='id python:"bar-chart-%s-%s-period" % (section["id"],itemnum)' style="display:none;">
+                <h3 tal:content="python:panel.get('name', '')"></h3>
+                <div class='h2-legend'>
+                    <span i18n:translate="">From</span>&nbsp;
+                    <span tal:content="python:here.toLocalizedTime(view.min_date)"></span>
+                    &nbsp;<span i18n:translate="">to</span>&nbsp;
+                    <span tal:content="python:here.toLocalizedTime(view.date_to)"></span>
+                </div>
+                <ul class='dashboard-time-selector'>
+                    <li tal:attributes="class python:'selected' if view.periodicity == 'd' else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?p=d' i18n:translate="">Daily</a></li>
+                    <li tal:attributes="class python:'selected' if view.periodicity == 'w' else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?p=w' i18n:translate="">Weekly</a></li>
+                    <li tal:attributes="class python:'selected' if view.periodicity == 'm' else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?p=m' i18n:translate="">Monthly</a></li>
+                    <li tal:attributes="class python:'selected' if view.periodicity == 'q' else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?p=q' i18n:translate="">Quarterly</a></li>
+                    <li tal:attributes="class python:'selected' if view.periodicity == 'b' else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?p=b' i18n:translate="">Biannual</a></li>
+                    <li tal:attributes="class python:'selected' if view.periodicity == 'y' else ''"><a tal:attributes='href string:${view/portal_url}/bika-dashboard?p=y' i18n:translate="">Yearly</a></li>
+                </ul>
+            </div>
             <div class='bar-chart'
                 tal:attributes='id python:"bar-chart-%s-%s" % (section["id"],itemnum);
-                                data panel/data;'
-                style='display:none'></div>
+                                data panel/data;
+                                data-colors panel/datacolors;'
+                style='display:none'>
+                <div class="bar-chart-no-data" i18n:translate="">There is no available data for the selected period</div>
+            </div>
         </div>
         </tal:barchart_panels>
 
