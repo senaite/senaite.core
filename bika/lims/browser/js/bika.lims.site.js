@@ -427,7 +427,7 @@ function SiteView() {
             if (deps.length===0) {
               deps.push($('input[name^=chb_deps_]:checkbox:not(:checked):visible:first').val());
             }
-            createCookie(cookiename, deps.toString());
+            setCookie(cookiename, deps.toString());
           }
           location.reload();
         });
@@ -439,11 +439,11 @@ function SiteView() {
                 $.each($("input[name^=chb_deps_]:checkbox"), function() {
                   deps.push($(this).val());
                 });
-                createCookie(cookiename, deps);
-                createCookie('dep_filter_disabled','true');
+                setCookie(cookiename, deps);
+                setCookie('dep_filter_disabled','true');
                 location.reload();
               }else{
-                createCookie('dep_filter_disabled','false');
+                setCookie('dep_filter_disabled','false');
                 location.reload();
               }
             });
@@ -460,9 +460,10 @@ function SiteView() {
         // Gettin the cookie
         var cookiename = 'filter_by_department_info';
         var cookie_val = readCookie(cookiename);
-        if (cookie_val === null || document.cookie.indexOf(cookiename)<1){
+
+        if (cookie_val === null || cookie_val===""){
             var dep_uid = $('input[name^=chb_deps_]:checkbox:visible:first').val();
-            createCookie(cookiename, dep_uid);
+            setCookie(cookiename, dep_uid);
         }
         var dep_filter_disabled=readCookie('dep_filter_disabled');
         if (dep_filter_disabled=="true" || dep_filter_disabled=='"true"'){
@@ -511,5 +512,36 @@ function SiteView() {
         option.selected="selected";
         def_deps.add(option);
       });
+    }
+
+    /**
+    This function sets cookie value
+    @param {String} cname is name of the cookie
+    @param {String} cvalue is value of the cookie
+    */
+    function setCookie(cname, cvalue) {
+        var d = new Date();
+        d.setTime(d.getTime() + (1 * 24 * 60 * 60 * 1000));
+        var expires = "expires="+d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+
+    /**
+    This function is to read cookie value
+    @param {String} cname is name of the cookie to be read 
+    */
+    function readCookie(cname) {
+        var name = cname + "=";
+        var ca = document.cookie.split(';');
+        for(var i = 0; i < ca.length; i++) {
+            var c = ca[i];
+            while (c.charAt(0) == ' ') {
+                c = c.substring(1);
+            }
+            if (c.indexOf(name) == 0) {
+                return c.substring(name.length, c.length);
+            }
+        }
+        return null;
     }
 }

@@ -427,8 +427,20 @@
           inline="False"
           insert-after="*"/>
 
+
   <javascript authenticated="False"
-          id="++resource++bika.lims.js/bika.lims.reflexrule.js"
+          id="++resource++bika.lims.js/bika.lims.samples.print.js"
+          cacheable="True"
+          compression="safe"
+          conditionalcomment=""
+          cookable="True"
+          enabled="on"
+          expression=""
+          inline="False"
+          insert-after="*"/>
+
+  <javascript authenticated="False"
+          id="++resource++bika.lims.js/bika.lims.samples.js"
           cacheable="True"
           compression="safe"
           conditionalcomment=""
@@ -450,7 +462,7 @@
           insert-after="*"/>
 
   <javascript authenticated="False"
-          id="++resource++bika.lims.js/bika.lims.samples.print.js"
+          id="++resource++bika.lims.js/bika.lims.reflexrule.js"
           cacheable="True"
           compression="safe"
           conditionalcomment=""
@@ -461,7 +473,7 @@
           insert-after="*"/>
 
   <javascript authenticated="False"
-          id="++resource++bika.lims.js/bika.lims.samples.js"
+          id="++resource++bika.lims.js/bika.lims.department.js"
           cacheable="True"
           compression="safe"
           conditionalcomment=""

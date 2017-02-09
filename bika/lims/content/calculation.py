@@ -22,6 +22,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
 from zExceptions import Redirect
 from zope.interface import implements
+import math
 import sys
 import re
 import transaction
@@ -134,6 +135,27 @@ class Calculation(BaseFolder, HistoryAwareMixin):
         """
         value = " ".join(self.getFormula().splitlines())
         return value
+
+    def getMappedFormula(self, analysis, mapping):
+        formula = self.getMinifiedFormula()
+        # XXX regex groups to replace only [x] where x in interim keys.
+        keywords = re.compile(r"\[([^\.^\]]+)\]").findall(formula)
+        for keyword in keywords:
+            if keyword in mapping:
+                try:
+                    formula = formula.replace('[%s]'%keyword, '%f'%mapping[keyword])
+                except TypeError:
+                    formula = formula.replace('[%s]'%keyword, '"%s"'%mapping[keyword])
+
+        mapped = eval("'%s'%%mapping" % formula,
+                       {"__builtins__": __builtins__,
+                        'math': math,
+                        'context': analysis},
+                       {'mapping': mapping})
+
+        print analysis, mapped, mapping
+        return mapped
+
 
     def getCalculationDependencies(self, flat=False, deps=None):
         """ Recursively calculates all dependencies of this calculation.

@@ -52,6 +52,7 @@ class ARAnalysesField(ObjectField):
         # If get_reflexed is false don't return the analyses that have been
         # reflexed, only the final ones
         get_reflexed = True
+
         if 'full_objects' in kwargs:
             full_objects = kwargs['full_objects']
             del kwargs['full_objects']
@@ -209,6 +210,9 @@ class ARAnalysesField(ObjectField):
         if delete_ids:
             # Note: subscriber might promote the AR
             instance.manage_delObjects(ids=delete_ids)
+
+        # reset cache
+        instance.resetCache()
         return new_analyses
 
     security.declarePublic('Vocabulary')

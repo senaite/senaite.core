@@ -15,7 +15,6 @@
     </assignment>
     <assignment
         name="portlet_department_filter-pt"
-        insert-before="navigation"
         category="context"
         key="/"
         manager="plone.leftcolumn"
@@ -34,6 +33,7 @@
 
     <assignment
         name="navigation"
+        insert-before="portlet_department_filter-pt"
         category="context"
         key="/"
         manager="plone.leftcolumn"

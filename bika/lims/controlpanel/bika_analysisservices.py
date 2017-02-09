@@ -300,6 +300,7 @@ class AnalysisServicesView(BikaListingView):
                            sort_on="sortable_title")
         self.an_cats_order = dict([(b.Title, "{:04}".format(a))
                                   for a, b in enumerate(self.an_cats)])
+                                  
     def isItemAllowed(self, obj):
         """
         It checks if the item can be added to the list depending on the

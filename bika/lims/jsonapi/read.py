@@ -41,6 +41,8 @@ def read(context, request):
     contentFilter = {}
     for index in indexes:
         if index in request:
+            if index == 'UID' and safe_unicode(request[index]) == "":
+                logger.error("Request with Null UID. Catalog Name: %s" % catalog_name)
             if index == 'review_state' and "{" in request[index]:
                 continue
             contentFilter[index] = safe_unicode(request[index])

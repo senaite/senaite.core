@@ -8,16 +8,17 @@
 """ Nuclisens EasyQ
 """
 import csv
-import types
-from cStringIO import StringIO
-from openpyxl import load_workbook
-
-from bika.lims.exportimport.instruments.resultsimport import \
-    AnalysisResultsImporter, InstrumentResultsFileParser
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 import json
 import traceback
+from cStringIO import StringIO
+
+import types
+from openpyxl import load_workbook
+
+from bika.lims import bikaMessageFactory as _
+from bika.lims.exportimport.instruments.resultsimport import \
+    AnalysisResultsImporter, InstrumentResultsFileParser
+from bika.lims.utils import t
 
 title = "Nuclisens EasyQ"
 
@@ -62,21 +63,27 @@ class EasyQParser(InstrumentResultsFileParser):
         for n, row in enumerate(reader):
             resid = row.get("SampleID", None)
             serial = row.get("SerialNumber", None)
+            # Convert empty values as "Invalid"
+            value = row.get("Value", None) or "Invalid"
 
             # no resid and no serial
             if not any([resid, serial]):
                 self.err("Result identification not found.", numline=n)
                 continue
 
-            # get the test name
-            testname = row.get("Description", None)
-            if testname is None:
-                self.err("Testname (Description) not found.", numline=n)
-                continue
-
             rawdict = row
+            rawdict["Value"] = value.rstrip(" cps/ml")
             rawdict['DefaultResult'] = 'Value'
+
+            # HEALTH-567 correction factor for calculation
+            # XXX HEALTH-567 Is this just for nmrl?
+            if 'Plasma' in rawdict.get('Matrix', 'Other'):
+                rawdict['CF'] = 1  # report value as-is
+            else:
+                rawdict['CF'] = 1.82  # report value * 1.82
+
             key = resid or serial
+            testname = row.get("Product", "EasyQDirector")
             self._addRawResult(key, {testname: rawdict}, False)
 
 
@@ -84,18 +91,27 @@ class EasyQImporter(AnalysisResultsImporter):
     """ Importer
     """
 
-    def __init__(self, parser, context, idsearchcriteria, override,
+    def _process_analysis(self, objid, analysis, values):
+        ret = AnalysisResultsImporter._process_analysis(self, objid, analysis,
+                                                         values)
+        # HEALTH-567
+        if values['Value'] and str(values['Value'])[0] in "<>":
+            analysis.setDetectionLimitOperand('<')
+        return ret
+
+
+def __init__(self, parser, context, idsearchcriteria, override,
                  allowed_ar_states=None, allowed_analysis_states=None,
                  instrument_uid=None):
 
         AnalysisResultsImporter.__init__(self,
                                          parser,
                                          context,
-                                         idsearchcriteria,
-                                         override,
-                                         allowed_ar_states,
-                                         allowed_analysis_states,
-                                         instrument_uid)
+                                         idsearchcriteria=['getSampleID', 'getRequestID', 'getClientSampleID'],
+                                         override=override,
+                                         allowed_ar_states=allowed_ar_states,
+                                         allowed_analysis_states=allowed_analysis_states,
+                                         instrument_uid=instrument_uid)
 
 
 def Import(context, request):

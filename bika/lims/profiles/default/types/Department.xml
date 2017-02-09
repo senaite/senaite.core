@@ -45,6 +45,17 @@
  </action>
 
  <action title="Lab Contacts"
+         action_id="labcontacts"
+         category="object"
+         condition_expr=""
+         icon_expr="string:${portal_url}/images/lab_contact.png"
+         url_expr="string:${object_url}/labcontacts"
+         i18n:attributes="title"
+         visible="True">
+  <permission value="View"/>
+ </action>
+
+ <action title="Lab Contacts"
           action_id="labcontacts"
           category="object"
           condition_expr=""

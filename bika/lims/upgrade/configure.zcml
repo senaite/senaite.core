@@ -573,8 +573,17 @@
  <genericsetup:upgradeStep
          title="Upgrade to Bika LIMS 3.2.0"
          description="This is the upgrade step to drive bikaLIMS ot 3.2 version."
+         source="320"
+         destination="3200"
+         handler="bika.lims.upgrade.to320.upgrade"
+         sortkey="1"
+         profile="bika.lims:default"/>
+
+ <genericsetup:upgradeStep
+         title="Upgrade to Bika LIMS 3.2.0"
+         description="This is the upgrade step to drive bikaLIMS ot 3.2 version."
          source="3111"
-         destination="320"
+         destination="3200"
          handler="bika.lims.upgrade.to320.upgrade"
          sortkey="1"
          profile="bika.lims:default"/>

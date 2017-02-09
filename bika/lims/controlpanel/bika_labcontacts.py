@@ -43,7 +43,6 @@ class LabContactsView(BikaListingView):
             'Fullname': {'title': _('Name'),
                          'index': 'getFullname'},
             'Department': {'title': _('Department'),
-                           'index': 'getDepartmentTitle',
                            'toggle': True},
             'BusinessPhone': {'title': _('Phone'),
                               'toggle': True},

@@ -44,6 +44,7 @@
   <include package=".analysisrequest"/>
   <include package=".batch"/>
   <include package=".client"/>
+  <include package=".department"/>
   <include package=".samplinground"/>
   <include package=".srtemplate"/>
   <include package=".sample"/>
@@ -85,6 +86,13 @@
       permission="zope2.View"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
+
+    <browser:view
+      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
+      name="fix-blobs"
+      class=".fixblobs.FixBlobs"
+      permission="cmf.ManagePortal"
+      />
 
   <!-- Zope 3 browser resources -->
 

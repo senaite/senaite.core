@@ -33,4 +33,5 @@
       permission="cmf.ModifyPortalContent"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
+
 </configure>

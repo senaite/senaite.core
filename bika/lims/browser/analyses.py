@@ -792,6 +792,7 @@ class AnalysesView(BikaListingView):
                     "<img src='++resource++bika.lims.images/warning.png' title='%s'/>" %
                     (t(_("Submited and verified by the same user- "+ submitter)))
                     )
+
             # add icon for assigned analyses in AR views
             if self.context.portal_type == 'AnalysisRequest':
                 obj = items[i]['obj']

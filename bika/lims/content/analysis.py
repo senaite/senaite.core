@@ -196,7 +196,7 @@ schema = BikaSchema.copy() + Schema((
     StringField('ReflexRuleAction', required=0, default=0),
     # Which is the 'local_id' inside the reflex rule
     StringField('ReflexRuleLocalID', required=0, default=0),
-    # Reflex rule triggered actions from which the current analysis is
+    # Reflex rule triggered actions which the current analysis is
     # responsible of. Separated by '|'
     StringField('ReflexRuleActionsTriggered', required=0, default=''),
     ComputedField('ClientUID',
@@ -354,6 +354,9 @@ class Analysis(BaseContent):
             else:
                 duetime = ''
             self.setDueDate(duetime)
+
+    def getDepartmentUID(self):
+        return self.getService().getDepartment().UID()
 
     def getReviewState(self):
         """ Return the current analysis' state"""
@@ -727,9 +730,8 @@ class Analysis(BaseContent):
             try:
                 ivalue = float(i['value'])
                 mapping[i['keyword']] = ivalue
-            except:
-                # Interim not float, abort
-                return False
+            except ValueError:
+                mapping[i['keyword']] = i['value']
 
         # Add dependencies results to mapping
         dependencies = self.getDependencies()
@@ -745,7 +747,10 @@ class Analysis(BaseContent):
                     return False
             if result:
                 try:
-                    result = float(str(result))
+                    try:
+                        result = float(str(result))
+                    except ValueError:
+                        pass
                     key = dependency.getKeyword()
                     ldl = dependency.getLowerDetectionLimit()
                     udl = dependency.getUpperDetectionLimit()
@@ -761,15 +766,13 @@ class Analysis(BaseContent):
                     return False
 
         # Calculate
-        formula = calc.getMinifiedFormula()
-        formula = formula.replace('[', '%(').replace(']', ')f')
+        formula = calc.getMappedFormula(self, mapping)
+
         try:
-            formula = eval("'%s'%%mapping" % formula,
-                               {"__builtins__": None,
-                                'math': math,
-                                'context': self},
-                               {'mapping': mapping})
-            result = eval(formula)
+            result = eval(formula,
+                          {"__builtins__": __builtins__,
+                           'math': math,
+                           'context': self})
         except TypeError:
             self.setResult("NA")
             return True

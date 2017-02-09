@@ -421,7 +421,7 @@ schema = BikaFolderSchema.copy() + Schema((
                 "(by default, managers, labmanagers and verifiers)."
                 "This setting can be overrided for a given Analysis in "
                 "Analysis Service edit view. By default, disabled."),
-        ),
+         ),
     ),
     IntegerField(
         'NumberOfRequiredVerifications',
@@ -429,13 +429,13 @@ schema = BikaFolderSchema.copy() + Schema((
         default=1,
         vocabulary="_getNumberOfRequiredVerificationsVocabulary",
         widget=SelectionWidget(
-            format="select",
             label=_("Number of required verifications"),
             description=_(
                 "Number of required verifications before a given result being "
                 "considered as 'verified'. This setting can be overrided for "
                 "any Analysis in Analysis Service edit view. By default, 1"),
-        ),
+            format="select",
+         ),
     ),
     StringField('TypeOfmultiVerification',
         schemata = "Analyses",

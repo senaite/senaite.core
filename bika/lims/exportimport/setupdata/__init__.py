@@ -137,8 +137,8 @@ class WorksheetImporter:
             for add_type in ['Physical', 'Postal', 'Billing']:
                 row[add_type] = {}
                 if add_type + "_Address" in row:
-                    for key in ['Address', 'City', 'State', 'Zip', 'Country']:
-                        row[add_type][key] = str(row["%s_%s" % (add_type, key)])
+                    for key in ['Address', 'City', 'State', 'District', 'Zip', 'Country']:
+                        row[add_type][key] = str(row.get("%s_%s" % (add_type, key), ''))
 
             yield row
 
@@ -214,7 +214,7 @@ class WorksheetImporter:
         addresses = {}
         for add_type in ['Physical', 'Postal', 'Billing', 'CountryState']:
             addresses[add_type] = {}
-            for key in ['Address', 'City', 'State', 'Zip', 'Country']:
+            for key in ['Address', 'City', 'State', 'District', 'Zip', 'Country']:
                 addresses[add_type][key.lower()] = str(row.get("%s_%s" % (add_type, key), ''))
 
         if addresses['CountryState']['country'] == '' \

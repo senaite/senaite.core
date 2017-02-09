@@ -29,7 +29,6 @@ from smtplib import SMTPServerDisconnected, SMTPRecipientsRefused
 import os
 import tempfile
 
-
 def create_analysisrequest(context, request, values, analyses=None,
                            partitions=None, specifications=None, prices=None):
     """This is meant for general use and should do everything necessary to
@@ -316,7 +315,6 @@ def notify_rejection(analysisrequest):
         email = to_utf8(contact.getEmailAddress())
         if email:
             mailto.append(formataddr((encode_header(name), email)))
-
     if not mailto:
         return False
     mime_msg = MIMEMultipart('related')

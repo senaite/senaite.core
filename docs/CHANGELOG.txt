@@ -1,5 +1,10 @@
 3.2.1 (unreleased)
 ------------------
+- Allow multi-approval (multi-verification) of results
+HEALTH-568: TaqMan 96 Interface not working well
+HEALTH-567: Nuclicens Interface not working well
+HEALTH-360: Enforce State (Province) and District if Zimbabwe is selected
+HEALTH-364: Added country/province/district columns to client listing table
 LIMS-2477: Reference Analysis has no dependencies; remove guard that assumes it does
 LIMS-2465: Not possible to translate Bika Listing Table Workflow Action Buttons
 LIMS-1391: Add configurable identifier types (CAS# for AnalysisService)
@@ -59,6 +64,13 @@ LIMS-2255: Switch to Chameleon (five.pt) for rendering TAL templates
 - Simplify instrument interface creation for basic CSV files
 - Pinned CairoSVG to 1.0.20 (support for Python 2 removed in later versions)
 
+3.1.x Long Term Support (LTS)
+-----------------------------
+HEALTH-498: Sampling Date accepting dates in the future
+3.1.11 (2016-04-22)
+-----------------------------
+LIMS-2181: An analysis is not stopped from using an invalid instrument
+3.1.12 (unreleased)
 3.1.12 (2016-12-15)
 -----------------------------
 HEALTH-569 Bar code printing not working on sample registration

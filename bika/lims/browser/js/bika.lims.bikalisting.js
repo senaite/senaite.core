@@ -66,6 +66,7 @@ function BikaListingTableView() {
 						$(tbody).append(rows)
 						// Increase limit_from so that next iteration uses correct start point
 						$('#'+formid+' a.bika_listing_show_more').attr('data-limitfrom', limit_from+pagesize);
+						loadNewRemarksEventHandlers();
 					}
 					catch (e) {
 						$('#' + formid + ' a.bika_listing_show_more').hide();
@@ -74,14 +75,32 @@ function BikaListingTableView() {
 				}).fail(function () {
 					$('#'+formid+' a.bika_listing_show_more').hide();
 					console.log("bika_listing_show_more failed");
-    			}).always(function() {
+    		}).always(function() {
 					var numitems = $('table.bika-listing-table[form_id="'+formid+'"] tbody.item-listing-tbody tr').length;
 					$('#'+formid+' span.number-items').html(numitems);
 					if (numitems % pagesize == 0) {
-						$('#'+formid+' a.bika_listing_show_more').show();
+						$('#'+formid+' a.bika_listing_show_more').fadeIn();
 					}
 				});
 		});
+	}
+
+	function loadNewRemarksEventHandlers() {
+			// Add a baloon icon before Analyses' name when you'd add a remark. If you click on, it'll display remarks textarea.
+			$('a.add-remark').remove();
+			var txt1 = '<a href="#" class="add-remark"><img src="'+window.portal_url+'/++resource++bika.lims.images/comment_ico.png" title="'+_('Add Remark')+'")"></a>';
+			var pointer = $(".listing_remarks:contains('')").closest('tr').prev().find('td.service_title span.before');
+
+			$(pointer).append(txt1);
+
+			$("a.add-remark").click(function(e){
+					e.preventDefault();
+					var rmks = $(this).closest('tr').next('tr').find('td.remarks');
+					if (rmks.length > 0) {
+							rmks.toggle();
+					}
+			});
+			$("td.remarks").hide();
 	}
 
 	function column_header_clicked() {
