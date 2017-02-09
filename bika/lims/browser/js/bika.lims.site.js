@@ -383,16 +383,6 @@ function SiteView() {
             stop_spinner();
             window.bika.lims.log("Error at " + settings.url + ": " + thrownError);
         });
-
-        //Disable submit button once its form submitted to avoid saving twice.
-        $('form').each(function() {
-          $(this).submit(function(){
-            $(this).find(':input[type=submit]').each(function() {
-                $(this).prop('disabled', true);
-            });
-          });
-        });
-
     }
 
     function portalAlert(html) {
