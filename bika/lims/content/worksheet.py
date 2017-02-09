@@ -898,13 +898,11 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                         success, message = doActionFor(analysis, 'verify')
                         if not success:
                             # If failed, delete last verificator.
-                            item.deleteLastVerificator()
+                            analysis.deleteLastVerificator()
                         elif analysis.aq_parent.portal_type == 'AnalysisRequest':
                             analysis.aq_parent.resetCache()
                 else:
                     doActionFor(analysis, 'verify')
-                    if analysis.aq_parent.portal_type == 'AnalysisRequest':
-                        analysis.aq_parent.resetCache()
 
     def workflow_script_reject(self):
         """Copy real analyses to RejectAnalysis, with link to real
