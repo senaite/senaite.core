@@ -231,23 +231,6 @@ class Client(Organisation):
         postal_address = self.getPostalAddress().get("district", default)
         return physical_address or postal_address
 
-    def validate_address(self, request, field, data):
-        """ Validates the Address Fields
-
-        If country is "Zimbabwe", the province and district fields are required.
-
-        :returns: (str) message if validation fails, otherwise (bool) True
-        """
-        country = data.get("country", None)
-        province = data.get("state", None)
-        district = data.get("district", None)
-
-        if country == "Zimbabwe" and not all([province, district]):
-            return "Province and district fields are mandatory"
-
-        return True
-
-
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 
 atapi.registerType(Client, PROJECTNAME)
