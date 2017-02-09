@@ -730,8 +730,9 @@ class Analysis(BaseContent):
             try:
                 ivalue = float(i['value'])
                 mapping[i['keyword']] = ivalue
-            except ValueError:
-                mapping[i['keyword']] = i['value']
+            except:
+                # Interim not float, abort
+                return False
 
         # Add dependencies results to mapping
         dependencies = self.getDependencies()
@@ -747,10 +748,7 @@ class Analysis(BaseContent):
                     return False
             if result:
                 try:
-                    try:
-                        result = float(str(result))
-                    except ValueError:
-                        pass
+                    result = float(str(result))
                     key = dependency.getKeyword()
                     ldl = dependency.getLowerDetectionLimit()
                     udl = dependency.getUpperDetectionLimit()
@@ -766,13 +764,15 @@ class Analysis(BaseContent):
                     return False
 
         # Calculate
-        formula = calc.getMappedFormula(self, mapping)
-
+        formula = calc.getMinifiedFormula()
+        formula = formula.replace('[', '%(').replace(']', ')f')
         try:
-            result = eval(formula,
-                          {"__builtins__": __builtins__,
-                           'math': math,
-                           'context': self})
+            formula = eval("'%s'%%mapping" % formula,
+                               {"__builtins__": None,
+                                'math': math,
+                                'context': self},
+                               {'mapping': mapping})
+            result = eval(formula)
         except TypeError:
             self.setResult("NA")
             return True
