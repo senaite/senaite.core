@@ -16,19 +16,17 @@
             text-transform: uppercase;
             padding:0 0 30pt;
         }
-        .client, .sample, .reasons, .patient {
+        .client, .sample, .reasons {
             padding:0 0 15pt;
         }
         .client table,
         .sample table,
-        .patient table,
         .reasons table {
             width:100%;
             font-size:9pt;
         }
         .client table tr td,
         .sample table tr td,
-        .patient table tr td,
         .reasons table tr td {
             vertical-align:top;
             padding:5pt;
@@ -68,17 +66,17 @@
         <div class="header-logo">
             <img tal:attributes="src python:'%s/logo_print.png' % portal.absolute_url()"/>
         </div>
-        <h2 i18n:translate="">Samples rejection reporting form</h2>
+        <h2 i18n:translate="">Analysis Request rejection reporting form</h2>
     </div>
 
     <div class="client">
         <table cellpadding="0" cellspacing="0" border="0">
             <tr>
-                <td class="label" i18n:translate="">Referring Facility/Requestor</td>
+                <td class="label" i18n:translate="">Client</td>
                 <td tal:content="python: client.Title()"></td>
             </tr>
             <tr>
-                <td class="label" i18n:translate="">Unique ID/Facility Code</td>
+                <td class="label" i18n:translate="">Unique ID</td>
                 <td tal:content="python: client.getClientID()"></td>
             </tr>
             <tr>
@@ -95,26 +93,10 @@
         </table>
     </div>
 
-    <tal:patient define="patient python:ar.Schema().getField('Patient');
-                         patient python:patient.get(ar) if patient else None;">
-    <div class="patient" tal:condition="patient">
-        <table cellpadding="0" cellspacing="0" border="0">
-            <tr>
-                <td class="label" i18n:translate="">Name of Patient</td>
-                <td tal:content="python: patient.getFullname()"></td>
-                <td class="label" i18n:translate="">Age</td>
-                <td tal:content="python: patient.getAgeSplittedStr()"></td>
-                <td class="label" i18n:translate="">Sex</td>
-                <td tal:content="python: patient.getGender()"></td>
-            </tr>
-        </table>
-    </div>
-    </tal:patient>
-
     <div class="sample">
         <table cellpadding="0" cellspacing="0" border="0">
             <tr>
-                <td class="label" i18n:translate="">Nature of specimen</td>
+                <td class="label" i18n:translate="">Sample Type</td>
                 <td tal:content="python: sample.getSampleType().Title()"></td>
                 <td class="label" i18n:translate="">Date collected</td>
                 <td tal:content="python:plone_view.toLocalizedTime(sample.getDateSampled())"></td>
@@ -122,14 +104,11 @@
                 <td tal:content="python:plone_view.toLocalizedTime(sample.created())"></td>
             </tr>
             <tr>
-                <td class="label" i18n:translate="">Sample Number/NMRL Number</td>
-                <td tal:condition="python: sample.getClientSampleID()"
-                    tal:content="python:'%s / %s' % (sample.getClientSampleID(), sample.getSampleID())" colspan="5"></td>
-                <td tal:condition="python: not sample.getClientSampleID()"
-                    tal:content="python:sample.getSampleID()" colspan="5"></td>
+                <td class="label" i18n:translate="">Sample Number</td>
+                <td tal:content="python:sample.getSampleID()" colspan="5"></td>
             </tr>
             <tr>
-                <td class="label" i18n:translate="">Tests requested/Measurement Procedure</td>
+                <td class="label" i18n:translate="">Tests requested</td>
                 <td colspan="5" tal:define="analyses python:ar.getAnalyses();
                                             analyses python:[an.getObject() for an in analyses];
                                             analyses python:[('%s (%s)' % (an.getService().Title(), an.getService().getKeyword())) for an in analyses];">
