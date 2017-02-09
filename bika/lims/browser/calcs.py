@@ -137,31 +137,19 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                     break;
                 key = analysisvalues.get('keyword',dependency.getService().getKeyword())
 
-
                 # Analysis result
-                # Try coerce values to float or int.
-                def tryfloat(x):
-                    try:
-                        return float(analysisvalues.get(x))
-                    except ValueError:
-                        return analysisvalues.get(x)
-                def tryint(x):
-                    try:
-                        return float(analysisvalues.get(x))
-                    except ValueError:
-                        return analysisvalues.get(x)
-
-                mapping[key] = tryfloat('result')
-                mapping['%s.%s' % (key, 'RESULT')] = tryfloat('result')
-                mapping['%s.%s' % (key, 'LDL')] = tryfloat('ldl')
-                mapping['%s.%s' % (key, 'UDL')] = tryfloat('udl')
-                mapping['%s.%s' % (key, 'BELOWLDL')] = tryfloat('belowldl')
-                mapping['%s.%s' % (key, 'ABOVEUDL')] = tryfloat('aboveudl')
-                mapping['%s.%s' % (key, 'RESULT')] = tryfloat('result')
-                mapping['%s.%s' % (key, 'LDL')] = tryfloat('ldl')
-                mapping['%s.%s' % (key, 'UDL')] = tryfloat('udl')
-                mapping['%s.%s' % (key, 'BELOWLDL')] = tryint('belowldl')
-                mapping['%s.%s' % (key, 'ABOVEUDL')] = tryint('aboveudl')
+                # All result mappings must be float, or they are ignored.
+                try:
+                    mapping[key] = float(analysisvalues.get('result'))
+                    mapping['%s.%s' % (key, 'RESULT')] = float(analysisvalues.get('result'))
+                    mapping['%s.%s' % (key, 'LDL')] = float(analysisvalues.get('ldl'))
+                    mapping['%s.%s' % (key, 'UDL')] = float(analysisvalues.get('udl'))
+                    mapping['%s.%s' % (key, 'BELOWLDL')] = int(analysisvalues.get('belowldl'))
+                    mapping['%s.%s' % (key, 'ABOVEUDL')] = int(analysisvalues.get('aboveudl'))
+                except:
+                    # If not floatable, then abort!
+                    unsatisfied = True
+                    break
 
             if unsatisfied:
                 # unsatisfied means that one or more result on which we depend
@@ -181,7 +169,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                                              'result': '',
                                              'formatted_result': ''})
                         return None
-                    # Try coerce values to float
+                    # All interims must be float, or they are ignored.
                     try:
                         i['value'] = float(i['value'])
                     except:
@@ -198,6 +186,8 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                         mapping[i['keyword']] = i['value']
 
             # Grab values for hidden InterimFields for only for current calculation
+            # we can't allow non-floats through here till we change the eval's
+            # interpolation
             hidden_fields = []
             c_fields = calculation.getInterimFields()
             s_fields = service.getInterimFields()
@@ -207,24 +197,26 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                     try:
                         mapping[field['keyword']] = float(field['value'])
                     except ValueError:
-                        mapping[field['keyword']] = field['value']
+                        pass
             # also grab stickier defaults from AnalysisService
             for field in s_fields:
                 if field['keyword'] in hidden_fields:
                     try:
                         mapping[field['keyword']] = float(field['value'])
                     except ValueError:
-                        mapping[field['keyword']] = field['value']
+                        pass
 
             # convert formula to a valid python string, ready for interpolation
             formula = calculation.getMinifiedFormula()
+            formula = formula.replace('[', '%(').replace(']', ')f')
             try:
-                formula = calculation.getMappedFormula(self.context, mapping)
+                formula = eval("'%s'%%mapping" % formula,
+                               {"__builtins__": None,
+                                'math': math,
+                                'context': self.context},
+                               {'mapping': mapping})
                 # calculate
-                result = eval(formula,
-                              {"__builtins__": __builtins__,
-                               'math': math,
-                               'context': self})
+                result = eval(formula)
                 Result['result'] = result
                 self.current_results[uid]['result'] = result
             except TypeError as e:
