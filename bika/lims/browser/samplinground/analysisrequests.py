@@ -273,39 +273,36 @@ class AnalysisRequestsView(_ARV, _ARAV):
                 'icon': '++resource++bika.lims.images/add.png'}
         return super(AnalysisRequestsView, self).__call__()
 
-    def folderitems(self, full_objects=True):
-        # In sampling rounds, analysis request list will be listed per Sample Partition/Container
+    def folderitem(self, obj, item, index):
+        # Call the folderitem method from the base class
+        item = _ARV.folderitem(self, obj, item, index)
+        # In sampling rounds, analysis request list will be listed per Sample
+        # Partition/Container
         # Obtaining analysis requests
-        items = _ARV.folderitems(self, full_objects)
-        new_items = []
-        for x in range(len(items)):
-            if 'obj' not in items[x]:
-                new_items.append(items[x])
-                continue
-            obj = items[x]['obj']
-            # Getting the sampling round template uid
-            srTemplateUID = obj.getSamplingRound().sr_template if obj.getSamplingRound().sr_template else ''
-            # Getting the sampling round object
-            catalog = getToolByName(self.context, 'uid_catalog')
-            srTemplateObj = catalog(UID=srTemplateUID)[0].getObject() if catalog(UID=srTemplateUID) else None
-            # Getting the partitions and creating a row per partition
-            partitions = obj.getPartitions()
-            for part in partitions:
-                item = items[x].copy()
-                # We ave to make a copy of 'replace' because it's a reference to a dict object
-                item['replace'] = items[x]['replace'].copy()
-                item['partition'] = part.id
-                if part.getContainer():
-                    img_url = '<img src="'+self.portal_url+'/++resource++bika.lims.images/ok.png"/>'
-                    item['securitySealIntact'] = part.getContainer().getSecuritySealIntact()
-                    item['replace']['securitySealIntact'] = img_url \
-                        if part.getContainer().getSecuritySealIntact() else ' '
-                else:
-                    item['securitySealIntact'] = ' '
-                item['replace']['partition'] = "<a href='%s'>%s</a>" % (part.absolute_url(), item['partition'])
-                item['samplingRoundTemplate'] = srTemplateObj.title if srTemplateObj else ''
-                if srTemplateObj:
-                    item['replace']['samplingRoundTemplate'] = \
-                        "<a href='%s'>%s</a>" % (srTemplateObj.absolute_url, item['samplingRoundTemplate'])
-                new_items.append(item)
-        return new_items
+        # TODO-performance: don't get the full object
+        obj = obj.getObject()
+        # Getting the sampling round template uid
+        srTemplateUID = obj.getSamplingRound().sr_template if obj.getSamplingRound().sr_template else ''
+        # Getting the sampling round object
+        catalog = getToolByName(self.context, 'uid_catalog')
+        srTemplateObj = catalog(UID=srTemplateUID)[0].getObject() if catalog(UID=srTemplateUID) else None
+        # Getting the partitions and creating a row per partition
+        partitions = obj.getPartitions()
+        for part in partitions:
+            item_copy = item.copy()
+            # We ave to make a copy of 'replace' because it's a reference to a dict object
+            item_copy['replace'] = item_copy[x]['replace'].copy()
+            item_copy['partition'] = part.id
+            if part.getContainer():
+                img_url = '<img src="'+self.portal_url+'/++resource++bika.lims.images/ok.png"/>'
+                item_copy['securitySealIntact'] = part.getContainer().getSecuritySealIntact()
+                item_copy['replace']['securitySealIntact'] = img_url \
+                    if part.getContainer().getSecuritySealIntact() else ' '
+            else:
+                item_copy['securitySealIntact'] = ' '
+            item_copy['replace']['partition'] = "<a href='%s'>%s</a>" % (part.absolute_url(), item_copy['partition'])
+            item_copy['samplingRoundTemplate'] = srTemplateObj.title if srTemplateObj else ''
+            if srTemplateObj:
+                item_copy['replace']['samplingRoundTemplate'] = \
+                    "<a href='%s'>%s</a>" % (srTemplateObj.absolute_url, item_copy['samplingRoundTemplate'])
+        return item_copy

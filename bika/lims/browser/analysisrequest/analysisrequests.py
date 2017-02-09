@@ -749,11 +749,11 @@ class AnalysisRequestsView(BikaListingView):
             result = len(matches) > 0
         return result
 
-    def folderitems(self, full_objects=False, classic=True):
+    def folderitems(self, full_objects=False, classic=False):
         # We need to get the portal catalog here in roder to save process
         # while iterating over folderitems
         self.portal_catalog = getToolByName(self.context, 'portal_catalog')
-        return BikaListingView.folderitems(self, full_objects, classic=False)
+        return BikaListingView.folderitems(self, full_objects, classic)
 
     def folderitem(self, obj, item, index):
         # Additional info from AnalysisRequest to be added in the item
