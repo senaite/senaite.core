@@ -2552,8 +2552,9 @@ function AnalysisRequestAddByCol() {
     function form_submit() {
         $("[name='save_button']").click(
           function (event) {
-              event.preventDefault()
-              set_state_from_form_values()
+              $('input[name="save_button"]').prop('disabled', true);
+              event.preventDefault();
+              set_state_from_form_values();
               var request_data = {
                   _authenticator: $("input[name='_authenticator']").val(),
                   state: $.toJSON(bika.lims.ar_add.state)
@@ -2589,6 +2590,7 @@ function AnalysisRequestAddByCol() {
                                 }
                                 msg = msg + e + data.errors[error] + "<br/>"
                             }
+                            $('input[name="save_button"]').prop('disabled', false);
                             window.bika.lims.portalMessage(msg)
                             window.scroll(0, 0)
                         }
