@@ -87,13 +87,6 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
-    <browser:view
-      for="Products.CMFPlone.interfaces.IPloneSiteRoot"
-      name="fix-blobs"
-      class=".fixblobs.FixBlobs"
-      permission="cmf.ManagePortal"
-      />
-
   <!-- Zope 3 browser resources -->
 
   <browser:resourceDirectory
