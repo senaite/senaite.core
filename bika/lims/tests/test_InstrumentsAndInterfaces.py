@@ -38,22 +38,30 @@ class Test_InstrumentsAndInterfaces(BikaFunctionalTestCase):
         super(Test_InstrumentsAndInterfaces, self).tearDown()
 
     def test_InstrumentsAndInterfaces(self):
+
+        # Only Interfaces exist in the system can be assigned to an Instrument
+        # Getting all interfaces and adding one with fake ID which shouldn't be
+        # accepted as an Import Interface
         exims = []
         for exim_id in instruments.__all__:
             exims.append((exim_id))
         exims.append(("Fake"))
 
-        instrument_names = self.portal.bika_setup.bika_instruments.keys()
-
+        # Getting all instruments
         bsc = getToolByName(self.portal, 'bika_setup_catalog')
         ins = bsc(portal_type='Instrument', inactive_state='active')
-        import pdb; pdb.set_trace()
         for instrument in ins:
-            instrument= instrument.getObject()
+            instrument = instrument.getObject()
             instrument.setImportDataInterface(exims)
-            added_ones= instrument.getImportDataInterface()
+            added_ones = instrument.getImportDataInterface()
+            # If length of added interfaces is equal to length of the list with
+            # fake Interface ID, then test fails.
             self.assertFalse(len(added_ones) == len(exims))
-
+            # browser = self.getBrowser(loggedIn=True)
+            # url=self.portal.absolute_url()+"/getImportInterfaces?instrument_uid="+instrument.UID()
+            # import pdb;pdb.set_trace()
+            # browser.open(url)
+            # content = browser.contents
 
 def test_suite():
     suite = unittest.TestSuite()
