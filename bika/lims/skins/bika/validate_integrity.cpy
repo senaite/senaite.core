@@ -25,9 +25,7 @@ else:
     stat = 'created'
 
     # Redirection after saving edition forms
-    redirects = {'Multifile': context.aq_parent.absolute_url_path() + '/multifile',
-                'Patient': context.absolute_url_path() + '/analysisrequests',
-                'Client': context.absolute_url_path() + '/contacts',}
+    redirects = {'Multifile': context.aq_parent.absolute_url_path() + '/multifile'}
     if context.portal_type in redirects:
         redirect = 'redirect_to:string:${portal_url}' + redirects[context.portal_type]
         state.setNextAction(redirect)
