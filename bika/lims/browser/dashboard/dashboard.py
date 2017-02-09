@@ -574,7 +574,7 @@ class DashboardView(BrowserView):
                     'number':       ans,
                     'total':        numans,
                     'legend':       _('of') + " " + str(numans) + ' (' + ratio +'%)',
-                    'link':         self.portal_url + '/worksheets?list_review_state=to_be_verified'})
+                    'link':         self.portal_url + '/aggregatedanalyses?analyses_form_review_state=to_be_verified'})
 
         # Chart with the evolution of WSs over a period, grouped by
         # periodicity
