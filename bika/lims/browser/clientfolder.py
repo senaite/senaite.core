@@ -43,6 +43,9 @@ class ClientFolderContentsView(BikaListingView):
         self.columns = {
             'title': {'title': _('Name')},
             'EmailAddress': {'title': _('Email Address')},
+            'getCountry': {'title': _('Country')},
+            'getProvince': {'title': _('Province')},
+            'getDistrict': {'title': _('District')},
             'Phone': {'title': _('Phone')},
             'Fax': {'title': _('Fax')},
         }
@@ -54,6 +57,9 @@ class ClientFolderContentsView(BikaListingView):
              'title': _('Active'),
              'transitions': [{'id':'deactivate'}, ],
              'columns':['title',
+                        'getCountry',
+                        'getProvince',
+                        'getDistrict',
                         'EmailAddress',
                         'Phone',
                         'Fax', ]
@@ -63,6 +69,9 @@ class ClientFolderContentsView(BikaListingView):
              'contentFilter': {'inactive_state': 'inactive'},
              'transitions': [{'id':'activate'}, ],
              'columns':['title',
+                        'getCountry',
+                        'getProvince',
+                        'getDistrict',
                         'EmailAddress',
                         'Phone',
                         'Fax', ]
@@ -72,6 +81,9 @@ class ClientFolderContentsView(BikaListingView):
              'contentFilter':{},
              'transitions': [],
              'columns':['title',
+                        'getCountry',
+                        'getProvince',
+                        'getDistrict',
                         'EmailAddress',
                         'Phone',
                         'Fax', ]
