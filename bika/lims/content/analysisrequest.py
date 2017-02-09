@@ -3030,12 +3030,12 @@ class AnalysisRequest(BaseFolder):
                     revers = analysis.getNumberOfRequiredVerifications()
                     nmvers = analysis.getNumberOfVerifications()
                     username=getToolByName(self,'portal_membership').getAuthenticatedMember().getUserName()
-                    item.addVerificator(username)
+                    analysis.addVerificator(username)
                     if revers-nmvers <= 1:
                         success, message = doActionFor(analysis, 'verify')
                         if not success:
                             # If failed, delete last verificator
-                            item.deleteLastVerificator()
+                            analysis.deleteLastVerificator()
                 else:
                     doActionFor(analysis, 'verify')
 
