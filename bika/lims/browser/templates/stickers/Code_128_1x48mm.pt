@@ -64,6 +64,7 @@
                 <td class="sample-point" tal:content="sample_point"/>
             </tr>
         </table>
+    <div>
 
     <!-- Sampling Date -->
     <div class="sampling-date-info">
