@@ -183,6 +183,11 @@
     .toggle-barchart a {
         padding: 10px;
     }
+    .bar-chart-no-data {
+        color: #b22222;
+        font-size: 0.9em;
+        padding: 20px;
+    }
 </style>
 <script>
     (function( $ ) {
@@ -230,18 +235,18 @@
         var container = $('#'+id);
         $(container).find('svg').remove();
         var data = $.parseJSON($(container).attr('data'));
-        if (data.length == 0) {
-            $(container).hide();
+        if (data.length == 0 || Object.keys(data[0]).length < 2) {
             return;
         }
+        $(container).html("");
         var margin = {top: 10, right: 200, bottom: 50, left: 50},
             width = $(container).innerWidth() - margin.left - margin.right,
             height = 200 - margin.top - margin.bottom;
 
         var x = d3.scale.ordinal().rangeRoundBands([0, width], .1);
         var y = d3.scale.linear().range([height, 0]);
-
-        var color = d3.scale.category20c();
+        colors = $.parseJSON($(container).attr('data-colors'));
+        var color = d3.scale.ordinal().range(colors);
         color.domain(d3.keys(data[0]).filter(function(key) { return key !== "date"; }));
 
         var xAxis = d3.svg.axis()
@@ -306,7 +311,7 @@
                 .attr("data-date",function(d) { return d.x; })
                 .attr("data-value", function(d) { return d.y1-d.y0; })
                 .attr("data-name", function(d) { return d.name; })
-                .style("fill", function(d) { return color(d.name); })
+                .style("fill", function(d) { return colors[d.name]; })
                 .on("mouseout", function() {
                     d3.select(this.parentNode.children[this.parentNode.children.length-1])
                     .remove();
@@ -340,7 +345,7 @@
           .attr("x", width + 15)
           .attr("width", 6)
           .attr("height", 6)
-          .style("fill", color);
+          .style("fill", function(d) { return colors[d]; });
 
         legend.append("text")
           .attr("x", width + 30)
@@ -419,8 +424,11 @@
             </div>
             <div class='bar-chart'
                 tal:attributes='id python:"bar-chart-%s-%s" % (section["id"],itemnum);
-                                data panel/data;'
-                style='display:none'></div>
+                                data panel/data;
+                                data-colors panel/datacolors;'
+                style='display:none'>
+                <div class="bar-chart-no-data" i18n:translate="">There is no available data for the selected period</div>
+            </div>
         </div>
         </tal:barchart_panels>
 

@@ -7,6 +7,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims.browser import BrowserView
 from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
 from calendar import monthrange
 from DateTime import DateTime
 import plone, json
@@ -151,7 +152,6 @@ class DashboardView(BrowserView):
         out = []
         bc = getToolByName(self.context, 'bika_catalog')
         query = {'portal_type': "AnalysisRequest",
-                 'created': self.base_date_range,
                  'cancellation_state': ['active']}
         filtering_allowed = self.context.bika_setup.getAllowDepartmentFiltering()
         if filtering_allowed:
@@ -159,15 +159,6 @@ class DashboardView(BrowserView):
             query['getDepartmentUIDs'] = { "query": cookie_dep_uid,"operator":"or" }
 
         # Active Analysis Requests (All)
-        query['review_state'] = ['to_be_sampled',
-                                 'to_be_preserved',
-                                 'scheduled_sampling',
-                                 'sample_due',
-                                 'sample_received',
-                                 'assigned',
-                                 'attachment_due',
-                                 'to_be_verified',
-                                 'verified']
         total = len(bc(query))
 
         # Sampling workflow enabled?
@@ -235,22 +226,13 @@ class DashboardView(BrowserView):
         del query['review_state']
         query['sort_on'] = 'created'
         query['created'] = self.min_date_range
-        statesmap = {'to_be_sampled':       _('To be sampled'),
-                     'to_be_preserved':     _('To be preserved'),
-                     'scheduled_sampling':  _('Sampling scheduled'),
-                     'sample_due':          _('Reception pending'),
-                     'sample_received':     _('Results pending'),
-                     'assigned':            _('Results pending'),
-                     'attachment_due':      _('Results pending'),
-                     'to_be_verified':      _('To be verified'),
-                     'verified':            _('Verified'),
-                     'published':           _('Published')}
-        outevo = self._fill_dates_evo(bc, query, statesmap)
+        outevo = self._fill_dates_evo(bc, query)
         out.append({'type':         'bar-chart-panel',
                     'name':         _('Evolution of Analysis Requests'),
                     'class':        'informative',
                     'description':  _('Evolution of Analysis Requests'),
-                    'data':         json.dumps(outevo)})
+                    'data':         json.dumps(outevo),
+                    'datacolors':   json.dumps(self.get_colors_palette())})
 
         return {'id': 'analysisrequests',
                 'title': _('Analysis Requests'),
@@ -263,15 +245,13 @@ class DashboardView(BrowserView):
         """
         out = []
         bc = getToolByName(self.context, "bika_catalog")
-        query = {'portal_type':"Worksheet",
-                 'created':self.base_date_range}
+        query = {'portal_type':"Worksheet",}
         filtering_allowed = self.context.bika_setup.getAllowDepartmentFiltering()
         if filtering_allowed:
             cookie_dep_uid = self.request.get('filter_by_department_info', '').split(',') if filtering_allowed else ''
             query['getDepartmentUIDs'] = { "query": cookie_dep_uid,"operator":"or" }
 
         # Active Worksheets (all)
-        query['review_state'] = ['open', 'to_be_verified', 'attachment_due', 'verified']
         total = len(bc(query))
 
         # Open worksheets
@@ -300,16 +280,13 @@ class DashboardView(BrowserView):
         del query['review_state']
         query['sort_on'] = 'created'
         query['created'] = self.min_date_range
-        statesmap = {'open':            _('Results pending'),
-                     'attachment_due':  _('Results pending'),
-                     'to_be_verified':  _('To be verified'),
-                     'verified':        _('Verified')}
-        outevo = self._fill_dates_evo(bc, query, statesmap)
+        outevo = self._fill_dates_evo(bc, query)
         out.append({'type':         'bar-chart-panel',
                     'name':         _('Evolution of Worksheets'),
                     'class':        'informative',
                     'description':  _('Evolution of Worksheets'),
-                    'data':         json.dumps(outevo)})
+                    'data':         json.dumps(outevo),
+                    'datacolors':   json.dumps(self.get_colors_palette())})
 
         return {'id': 'worksheets',
                 'title': _('Worksheets'),
@@ -328,7 +305,6 @@ class DashboardView(BrowserView):
         out = []
         bc = getToolByName(self.context, 'bika_analysis_catalog')
         query = {'portal_type': "Analysis",
-                 'created': self.base_date_range,
                  'cancellation_state': ['active']}
         filtering_allowed = self.context.bika_setup.getAllowDepartmentFiltering()
         if filtering_allowed:
@@ -336,11 +312,6 @@ class DashboardView(BrowserView):
             query['getDepartmentUIDs'] = { "query": cookie_dep_uid,"operator":"or" }
 
         # Active Analyses (All)
-        query['review_state'] = ['sample_received',
-                                 'assigned',
-                                 'attachment_due',
-                                 'to_be_verified',
-                                 'verified']
         total = len(bc(query))
 
         # Analyses to be assigned
@@ -376,20 +347,83 @@ class DashboardView(BrowserView):
         del query['review_state']
         query['sort_on'] = 'created'
         query['created'] = self.min_date_range
-        statesmap = {'sample_received': _('Assignment pending'),
-                     'assigned':        _('Results pending'),
-                     'attachment_due':  _('Results pending'),
-                     'to_be_verified':  _('To be verified'),
-                     'verified':        _('Verified')}
-        outevo = self._fill_dates_evo(bc, query, statesmap)
+        outevo = self._fill_dates_evo(bc, query)
         out.append({'type':         'bar-chart-panel',
                     'name':         _('Evolution of Analyses'),
                     'class':        'informative',
                     'description':  _('Evolution of Analyses'),
-                    'data':         json.dumps(outevo)})
+                    'data':         json.dumps(outevo),
+                    'datacolors':   json.dumps(self.get_colors_palette())})
         return {'id': 'analyses',
                 'title': _('Analyses'),
                 'panels': out}
+
+    def get_states_map(self, portal_type):
+        if portal_type == 'Analysis':
+            return {'sample_due':      _('Sample reception pending'),
+                    'sample_received': _('Assignment pending'),
+                    'assigned':        _('Results pending'),
+                    'attachment_due':  _('Results pending'),
+                    'to_be_verified':  _('To be verified'),
+                    'rejected':        _('Rejected'),
+                    'retracted':       _('Retracted'),
+                    'verified':        _('Verified'),
+                    'published':       _('Published')}
+        elif portal_type == 'AnalysisRequest':
+            return {'to_be_sampled':       _('To be sampled'),
+                    'to_be_preserved':     _('To be preserved'),
+                    'scheduled_sampling':  _('Sampling scheduled'),
+                    'sample_due':          _('Reception pending'),
+                    'rejected':            _('Rejected'),
+                    'sample_received':     _('Results pending'),
+                    'assigned':            _('Results pending'),
+                    'attachment_due':      _('Results pending'),
+                    'to_be_verified':      _('To be verified'),
+                    'verified':            _('Verified'),
+                    'published':           _('Published')}
+        elif portal_type == 'Worksheet':
+            return {'open':            _('Results pending'),
+                    'attachment_due':  _('Results pending'),
+                    'to_be_verified':  _('To be verified'),
+                    'verified':        _('Verified')}
+
+    def get_colors_palette(self):
+        return {
+            'to_be_sampled':                '#FA6900',
+            _('To be sampled'):             '#FA6900',
+
+            'to_be_preserved':              '#C44D58',
+            _('To be preserved'):           '#C44D58',
+
+            'scheduled_sampling':           '#FA6900',
+            _('Sampling scheduled'):        '#FA6900',
+
+            'sample_due':                   '#F38630',
+            _('Sample reception pending'):  '#F38630',
+            _('Reception pending'):         '#F38630',
+
+            'sample_received':              '#E0E4CC',
+            _('Assignment pending'):        '#E0E4CC',
+
+            'assigned':                     '#dcdcdc',
+            'attachment_due':               '#dcdcdc',
+            'open':                         '#dcdcdc',
+            _('Results pending'):           '#dcdcdc',
+
+            'rejected':                     '#FF6B6B',
+            'retracted':                    '#FF6B6B',
+            _('Rejected'):                  '#FF6B6B',
+            _('Retracted'):                 '#FF6B6B',
+
+            'to_be_verified':               '#A7DBD8',
+            _('To be verified'):            '#A7DBD8',
+
+            'verified':                     '#69D2E7',
+            _('Verified'):                  '#69D2E7',
+
+            'published':                    '#83AF9B',
+            _('Published'):                 '#83AF9B',
+        }
 
     def _getDateStr(self, period, created):
         if period == 'y':
@@ -414,7 +448,7 @@ class DashboardView(BrowserView):
             created = '%s-%s-%s' % (str(created.year())[2:], str(created.month()).zfill(2), str(created.day()).zfill(2))
         return created
 
-    def _fill_dates_evo(self, catalog, query, statesmap):
+    def _fill_dates_evo(self, catalog, query):
         outevoidx = {}
         outevo = []
         days = 1
@@ -432,6 +466,7 @@ class DashboardView(BrowserView):
             days = 336
 
         otherstate = _('Other status')
+        statesmap = self.get_states_map(query['portal_type'])
         stats = statesmap.values()
         stats.sort()
         stats.append(otherstate)
@@ -451,6 +486,8 @@ class DashboardView(BrowserView):
 
         for brain in catalog(query):
             state = brain.review_state
+            if state not in statesmap:
+                logger.warn("'%s' State for '%s' not available" % (state, query['portal_type']))
             state = statesmap[state] if state in statesmap else otherstate
             created = self._getDateStr(self.periodicity, brain.getObject().created())
             if created in outevoidx:
@@ -465,9 +502,11 @@ class DashboardView(BrowserView):
                 currow = {'date': created,
                           state: 1 }
                 outevo.append(currow)
+
         # Remove all those states for which there is no data
         rstates = [k for k,v in statscount.items() if v==0]
         for o in outevo:
             for r in rstates:
                 del o[r]
+
         return outevo
