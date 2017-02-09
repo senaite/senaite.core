@@ -59,7 +59,19 @@
     <div class="analysisrequest-info">
         <table cellpadding="0" cellspacing="0" border="0">
             <tr>
-                <td class="client-sample-id" tal:content="python:'%s: %s' % ('CSID', client_sample_id if client_sample_id else '---')"/>
+                <td class="sample-type" tal:content="sample_type"/>
+                <td class="preservation" tal:content="preservation"/>
+                <td class="sample-point" tal:content="sample_point"/>
+            </tr>
+        </table>
+
+    <!-- Sampling Date -->
+    <div class="sampling-date-info">
+        <table cellpadding="0" cellspacing="0" border="0">
+            <tr>
+                <td class='label' i18n:translate="">Sampling Date</td>
+                <td class='sampling-date' tal:content="sampling_date"></td>
+                <td class='sampler' tal:content="sampler"></td>
             </tr>
         </table>
     </div>
