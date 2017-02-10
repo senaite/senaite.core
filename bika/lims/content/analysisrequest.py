@@ -2925,6 +2925,8 @@ class AnalysisRequest(BaseFolder):
                  an.getService().getDepartment()]
         return set(depts)
 
+    # TODO-performance: This function is very time consuming because
+    # we are getting all the analysis objects, and services.
     def getDepartmentUIDs(self):
         return [dept.UID() for dept in self.getDepartments()]
 
