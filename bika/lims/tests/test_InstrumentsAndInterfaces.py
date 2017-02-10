@@ -50,6 +50,7 @@ class Test_InstrumentsAndInterfaces(BikaFunctionalTestCase):
         # Getting all instruments
         bsc = getToolByName(self.portal, 'bika_setup_catalog')
         ins = bsc(portal_type='Instrument', inactive_state='active')
+
         for instrument in ins:
             instrument = instrument.getObject()
             instrument.setImportDataInterface(exims)
@@ -57,11 +58,8 @@ class Test_InstrumentsAndInterfaces(BikaFunctionalTestCase):
             # If length of added interfaces is equal to length of the list with
             # fake Interface ID, then test fails.
             self.assertFalse(len(added_ones) == len(exims))
-            # browser = self.getBrowser(loggedIn=True)
-            # url=self.portal.absolute_url()+"/getImportInterfaces?instrument_uid="+instrument.UID()
-            # import pdb;pdb.set_trace()
-            # browser.open(url)
-            # content = browser.contents
+
+        # TODO - testing of ajax function.
 
 def test_suite():
     suite = unittest.TestSuite()
