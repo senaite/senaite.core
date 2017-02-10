@@ -1508,7 +1508,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField(
         'SampleURL',
-        expression="here.getSample().absolute_url()",
+        expression="here.getSample().absolute_url() if here.getSample() else ''",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
@@ -2580,9 +2580,6 @@ class AnalysisRequest(BaseFolder):
         if sample:
             return sample.getSamplingDate()
         else:
-            logger.warning(
-                "getSamplingDate has failed for Analysis Request %s because "
-                "it hasn't got a sample." % self.id)
             return ''
 
     security.declarePublic('setSampler')
@@ -2615,9 +2612,6 @@ class AnalysisRequest(BaseFolder):
         if sample:
             return sample.getSampler()
         else:
-            logger.warning(
-                "getSampler has failed for Analysis Request %s because "
-                "it hasn't got a sample." % self.id)
             return ''
 
     security.declarePublic('setDateSampled')
@@ -2650,9 +2644,6 @@ class AnalysisRequest(BaseFolder):
         if sample:
             return sample.getDateSampled()
         else:
-            logger.warning(
-                "getDateSampled has failed for Analysis Request %s because "
-                "it hasn't got a sample." % self.id)
             return ''
 
     security.declarePublic('getDatePublished')
@@ -2686,9 +2677,6 @@ class AnalysisRequest(BaseFolder):
         if sample:
             return sample.getSamplePoint()
         else:
-            logger.warning(
-                "getSamplePoint has failed for Analysis Request %s because "
-                "it hasn't got a sample." % self.id)
             return ''
 
     security.declarePublic('setSampleType')
@@ -2714,9 +2702,6 @@ class AnalysisRequest(BaseFolder):
         if sample:
             return sample.getSampleType()
         else:
-            logger.warning(
-                "getSampleType has failed for Analysis Request %s because "
-                "it hasn't got a sample." % self.id)
             return ''
 
     security.declarePublic('setClientReference')
@@ -2777,9 +2762,6 @@ class AnalysisRequest(BaseFolder):
         if sample:
             return sample.getSamplingDeviation()
         else:
-            logger.warning(
-                "getSamplingDeviation has failed for Analysis Request %s "
-                "because it hasn't got a sample." % self.id)
             return ''
 
     security.declarePublic('getSamplingDeviationTitle')
@@ -2828,9 +2810,6 @@ class AnalysisRequest(BaseFolder):
         if sample:
             return sample.getSamplingWorkflowEnabled()
         else:
-            logger.warning(
-                "getSamplingWorkflowEnabled has failed for Analysis Request %s"
-                " because it hasn't got a sample." % self.id)
             return ''
 
     security.declarePublic('setSampleCondition')
@@ -2904,9 +2883,6 @@ class AnalysisRequest(BaseFolder):
         if sample:
             return sample.getStorageLocation()
         else:
-            logger.warning(
-                "getStorageLocation has failed for Analysis Request %s because"
-                " it hasn't got a sample." % self.id)
             return ''
     security.declarePublic('setAdHoc')
 
