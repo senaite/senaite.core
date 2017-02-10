@@ -56,7 +56,7 @@ class AggregatedAnalysesView(AnalysesView):
             }
         self.review_states = [
             {'id': 'default',
-             'title':  _('All'),
+             'title':  _('Results pending'),
              'transitions': [{'id': 'sample'},
                              {'id': 'submit'},
                              {'id': 'cancel'},
@@ -76,6 +76,25 @@ class AggregatedAnalysesView(AnalysesView):
                          'state_title',
                          ]
              },
+             {'id': 'to_be_verified',
+              'title':  _('To be verified'),
+              'transitions': [{'id': 'verify'},
+                              {'id': 'cancel'}
+                              ],
+              'contentFilter': {'review_state': [
+                 'to_be_verified']},
+              'columns': ['AnalysisRequest',
+                          'Worksheet',
+                          'Service',
+                          'Result',
+                          'Uncertainty',
+                          'Partition',
+                          'Method',
+                          'Instrument',
+                          'Analyst',
+                          'state_title',
+                          ]
+              },
         ]
         if not context.bika_setup.getShowPartitions():
             self.review_states[0]['columns'].remove('Partition')

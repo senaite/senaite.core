@@ -7,6 +7,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims.browser import BrowserView
 from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
 from calendar import monthrange
 from DateTime import DateTime
 import plone, json
@@ -35,7 +36,7 @@ class DashboardView(BrowserView):
     def _init_date_range(self):
         """ Sets the date range from which the data must be retrieved.
             Sets the values to the class parameters 'date_from',
-            'date_to', 'date_range', 'base_date_range' and self.periodicity
+            'date_to', 'date_range', and self.periodicity
             Calculates the date range according to the value of the
             request's 'p' parameter:
             - 'd' (daily)
@@ -44,6 +45,7 @@ class DashboardView(BrowserView):
             - 'q' (quarterly)
             - 'b' (biannual)
             - 'y' (yearly)
+            - 'a' (all-time)
         """
         # By default, weekly
         self.periodicity = self.request.get('p', 'w')
@@ -88,6 +90,14 @@ class DashboardView(BrowserView):
             # For time-evolution data, load last 15 years
             min_year = today.year - 15 if today.month == 12 else today.year - 16
             self.min_date = DateTime(min_year, 1, 1)
+        elif (self.periodicity == 'a'):
+            # All time
+            today = datetime.date.today()
+            self.date_from = DateTime('1990-01-01 00:00:00')
+            self.date_to = DateTime(today.year, 12, 31, 23, 59, 59)
+            # For time-evolution data, load last 15 years
+            min_year = today.year - 15 if today.month == 12 else today.year - 16
+            self.min_date = DateTime(min_year, 1, 1)
         else:
             # weekly
             today = datetime.date.today()
@@ -100,7 +110,7 @@ class DashboardView(BrowserView):
             self.min_date = DateTime(min_year, min_month, 1)
 
         self.date_range = {'query': (self.date_from, self.date_to), 'range': 'min:max'}
-        self.base_date_range = {'query': (DateTime('1990-01-01 00:00:00'), self.date_from - 1), 'range':'min:max'}
+        self.base_date_range = {'query': (DateTime('1990-01-01 00:00:00'), DateTime()+1), 'range':'min:max'}
         self.min_date_range = {'query': (self.min_date, self.date_to), 'range': 'min:max'}
 
     def get_sections(self):
@@ -115,229 +125,114 @@ class DashboardView(BrowserView):
                     self.get_worksheets_section()]
         return sections
 
+    def _getStatistics(self, name, description, url, catalog, criterias, total):
+        out = {'type':        'simple-panel',
+               'name':        name,
+               'class':       'informative',
+               'description': description,
+               'total':       total,
+               'link':        self.portal_url + '/' + url}
+
+        results = 0
+        ratio = 0
+        if total > 0:
+            results = len(catalog(criterias))
+            results = results if total >= results else total
+            ratio = (float(results)/float(total))*100 if results > 0 else 0
+        ratio = str("%%.%sf" % 1) % ratio
+        out['legend'] = _('of') + " " + str(total) + ' (' + ratio +'%)'
+        out['number'] = results
+        return out
+
     def get_analysisrequests_section(self):
         """ Returns the section dictionary related with Analysis
             Requests, that contains some informative panels (like
             ARs to be verified, ARs to be published, etc.)
         """
         out = []
-        sampenabled = self.context.bika_setup.getSamplingWorkflowEnabled()
-        filtering_allowed=self.context.bika_setup.getAllowDepartmentFiltering()
-        cookie_dep_uid= self.request.get('filter_by_department_info', '').split(',') if filtering_allowed else ''
-
-        # Analysis Requests
-        active_rs = ['to_be_sampled',
-                     'to_be_preserved',
-                     'scheduled_sampling',
-                     'sample_due',
-                     'sample_received',
-                     'assigned',
-                     'to_be_verified',
-                     'attachment_due',
-                     'verified']
-        bc = getToolByName(self.context, "bika_catalog")
-
-        query_dic = {'portal_type':"AnalysisRequest",
-                     'created':self.date_range,
-                     'cancellation_state':['active']}
+        bc = getToolByName(self.context, 'bika_catalog')
+        query = {'portal_type': "AnalysisRequest",
+                 'cancellation_state': ['active']}
+        filtering_allowed = self.context.bika_setup.getAllowDepartmentFiltering()
         if filtering_allowed:
-            query_dic['getDepartmentUIDs'] = { "query":cookie_dep_uid,"operator":"or" }
-        numars = len(bc(query_dic))
-        query_dic = {'portal_type':"AnalysisRequest",
-                     'review_state':active_rs,
-                     'created':self.base_date_range,
-                     'cancellation_state':['active']}
-        if filtering_allowed:
-            query_dic['getDepartmentUIDs'] = { "query":cookie_dep_uid,"operator":"or" }
-        numars += len(bc(query_dic))
-        if (sampenabled):
+            cookie_dep_uid = self.request.get('filter_by_department_info', '').split(',') if filtering_allowed else ''
+            query['getDepartmentUIDs'] = { "query": cookie_dep_uid,"operator":"or" }
+
+        # Active Analysis Requests (All)
+        total = len(bc(query))
+
+        # Sampling workflow enabled?
+        if (self.context.bika_setup.getSamplingWorkflowEnabled()):
             # Analysis Requests awaiting to be sampled or scheduled
-            review_state = ['to_be_sampled',]
-            query_dic = {'portal_type':"AnalysisRequest",
-                     'review_state':review_state,
-                     'cancellation_state':['active']}
-            if filtering_allowed:
-                query_dic['getDepartmentUIDs'] = { "query":cookie_dep_uid,"operator":"or" }
-            ars = len(bc(query_dic))
-            ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
-            ratio = str("%%.%sf" % 1) % ratio
-            msg = _("To be sampled")
-            out.append({'type':         'simple-panel',
-                        'name':         _('Analysis Requests to be sampled'),
-                        'class':        'informative',
-                        'description':  msg,
-                        'number':       ars,
-                        'total':        numars,
-                        'legend':       _('of') + " " + str(numars) + ' (' + ratio +'%)',
-                        'link':        self.portal_url + '/samples?samples_review_state=to_be_sampled'})
+            name = _('Analysis Requests to be sampled')
+            desc = _("To be sampled")
+            purl = 'samples?samples_review_state=to_be_sampled'
+            query['review_state'] = ['to_be_sampled', ]
+            out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
             # Analysis Requests awaiting to be preserved
-            review_state = ['to_be_preserved',]
-            query_dic = {'portal_type':"AnalysisRequest",
-                     'review_state':review_state,
-                     'cancellation_state':['active']}
-            if filtering_allowed:
-                query_dic['getDepartmentUIDs'] = { "query":cookie_dep_uid,"operator":"or" }
-            ars = len(bc(query_dic))
-            ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
-            ratio = str("%%.%sf" % 1) % ratio
-            msg = _("To be preserved")
-            out.append({'type':         'simple-panel',
-                        'name':         _('Analysis Requests to be preserved'),
-                        'class':        'informative',
-                        'description':  msg,
-                        'number':       ars,
-                        'total':        numars,
-                        'legend':       _('of') + " " + str(numars) + ' (' + ratio +'%)',
-                        'link':         self.portal_url + '/analysisrequests?analysisrequests_review_state=to_be_preserved'})
+            name = _('Analysis Requests to be preserved')
+            desc = _("To be preserved")
+            purl = 'samples?samples_review_state=to_be_preserved'
+            query['review_state'] = ['to_be_preserved', ]
+            out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
-            # Analysis Requests awaiting to be sampled
-            review_state = ['scheduled_sampling',]
-            query_dic = {'portal_type':"AnalysisRequest",
-                     'review_state':review_state,
-                     'cancellation_state':['active']}
-            if filtering_allowed:
-                query_dic['getDepartmentUIDs'] = { "query":cookie_dep_uid,"operator":"or" }
-            ars = len(bc(query_dic))
-            ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
-            ratio = str("%%.%sf" % 1) % ratio
-            msg = _("Scheduled sampling")
-            out.append({'type':         'simple-panel',
-                        'name':         _('Analysis Requests with scheduled sampling'),
-                        'class':        'informative',
-                        'description':  msg,
-                        'number':       ars,
-                        'total':        numars,
-                        'legend':       _('of') + " " + str(numars) + ' (' + ratio +'%)',
-                        'link':          self.portal_url + '/samples?samples_review_state=to_be_sampled'})
+            # Analysis Requests scheduled for Sampling
+            name = _('Analysis Requests scheduled for sampling')
+            desc = _("Sampling scheduled")
+            purl = 'samples?samples_review_state=scheduled_sampling'
+            query['review_state'] = ['scheduled_sampling', ]
+            out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Analysis Requests awaiting for reception
-        review_state = ['sample_due',]
-        query_dic = {'portal_type':"AnalysisRequest",
-                 'review_state':review_state,
-                 'cancellation_state':['active']}
-        if filtering_allowed:
-            query_dic['getDepartmentUIDs'] = { "query":cookie_dep_uid,"operator":"or" }
-        ars = len(bc(query_dic))
-        ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
-        ratio = str("%%.%sf" % 1) % ratio
-        msg = _("Reception pending")
-        out.append({'type':         'simple-panel',
-                    'name':         _('Analysis Requests to be received'),
-                    'class':        'informative',
-                    'description':  msg,
-                    'number':       ars,
-                    'total':        numars,
-                    'legend':       _('of') + " " + str(numars) + ' (' + ratio +'%)',
-                    'link':         self.portal_url + '/analysisrequests?analysisrequests_review_state=sample_due'})
+        name = _('Analysis Requests to be received')
+        desc = _("Reception pending")
+        purl = 'analysisrequests?analysisrequests_review_state=sample_due'
+        query['review_state'] = ['sample_due', ]
+        out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Analysis Requests under way
-        review_state = ['attachment_due', 'sample_received', 'assigned']
-        query_dic = {'portal_type':"AnalysisRequest",
-                 'review_state':review_state,
-                 'cancellation_state':['active']}
-        if filtering_allowed:
-            query_dic['getDepartmentUIDs'] = { "query":cookie_dep_uid,"operator":"or" }
-        ars = len(bc(query_dic))
-        ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
-        ratio = str("%%.%sf" % 1) % ratio
-        msg = _("Results pending")
-        out.append({'type':         'simple-panel',
-                    'name':         _('Analysis Requests with results pending'),
-                    'class':        'informative',
-                    'description':  msg,
-                    'number':       ars,
-                    'total':        numars,
-                    'legend':       _('of') + " " + str(numars) + ' (' + ratio +'%)',
-                    'link':         self.portal_url + '/analysisrequests?analysisrequests_review_state=sample_received'})
+        name = _('Analysis Requests with results pending')
+        desc = _("Results pending")
+        purl = 'analysisrequests?analysisrequests_review_state=sample_received'
+        query['review_state'] = ['attachment_due',
+                                 'sample_received',
+                                 'assigned']
+        out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Analysis Requests to be verified
-        review_state = ['to_be_verified',]
-        query_dic = {'portal_type':"AnalysisRequest",
-                 'review_state':review_state,
-                 'cancellation_state':['active']}
-        if filtering_allowed:
-            query_dic['getDepartmentUIDs'] = { "query":cookie_dep_uid,"operator":"or" }
-        ars = len(bc(query_dic))
-        ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
-        ratio = str("%%.%sf" % 1) % ratio
-        msg = _("To be verified")
-        out.append({'type':         'simple-panel',
-                    'name':         _('Analysis Requests to be verified'),
-                    'class':        'informative',
-                    'description':  msg,
-                    'number':       ars,
-                    'total':        numars,
-                    'legend':       _('of') + " " + str(numars) + ' (' + ratio +'%)',
-                    'link':         self.portal_url + '/analysisrequests?analysisrequests_review_state=to_be_verified'})
+        name = _('Analysis Requests to be verified')
+        desc = _("To be verified")
+        purl = 'analysisrequests?analysisrequests_review_state=to_be_verified'
+        query['review_state'] = ['to_be_verified', ]
+        out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
-        # Analysis Requests to be published
-        review_state = ['verified',]
-        query_dic = {'portal_type':"AnalysisRequest",
-                 'review_state':review_state,
-                 'cancellation_state':['active']}
-        if filtering_allowed:
-            query_dic['getDepartmentUIDs'] = { "query":cookie_dep_uid,"operator":"or" }
-        ars = len(bc(query_dic))
-        ratio = (float(ars)/float(numars))*100 if ars > 0 and numars > 0 else 0
-        ratio = str("%%.%sf" % 1) % ratio
-        msg = _("To be published")
-        out.append({'type':         'simple-panel',
-                    'name':         _('Analysis Requests to be published'),
-                    'class':        'informative',
-                    'description':  msg,
-                    'number':       ars,
-                    'total':        numars,
-                    'legend':       _('of') + " " + str(numars) + ' (' + ratio +'%)',
-                    'link':         self.portal_url + '/analysisrequests?analysisrequests_review_state=verified'})
+        # Analysis Requests verified (to be published)
+        name = _('Analysis Requests verified')
+        desc = _("Verified")
+        purl = 'analysisrequests?analysisrequests_review_state=verified'
+        query['review_state'] = ['verified', ]
+        out.append(self._getStatistics(name, desc, purl, bc, query, total))
+
+        # Analysis Requests published
+        name = _('Analysis Requests published')
+        desc = _("Published")
+        purl = 'analysisrequests?analysisrequests_review_state=published'
+        query['review_state'] = ['published', ]
+        out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Chart with the evolution of ARs over a period, grouped by
         # periodicity
-        workflow = getToolByName(self.context, 'portal_workflow')
-        query_dic = {'portal_type':"AnalysisRequest",
-                     'sort_on':"created",
-                     'created':self.min_date_range}
-        if filtering_allowed:
-            query_dic['getDepartmentUIDs'] = { "query":cookie_dep_uid,"operator":"or" }
-        allars = bc(query_dic)
-        outevo = []
-        for ar in allars:
-            ar = ar.getObject()
-            state = 'other_status'
-            try:
-                state = workflow.getInfoFor(ar, 'cancellation_state')
-                if (state == 'active'):
-                    state = workflow.getInfoFor(ar, 'review_state')
-                else:
-                    state = 'inactive'
-            except:
-                pass
-
-            created = self._getDateStr(self.periodicity, ar.created())
-            state = 'sample_due' if state in ['to_be_sampled', 'to_be_preserved'] else state
-            state = 'sample_received' if state in ['assigned', 'attachment_due'] else state
-            if (len(outevo) > 0 and outevo[-1]['date'] == created):
-                key = state if _(state) in outevo[-1] else 'other_status'
-                outevo[-1][_(key)] += 1
-            else:
-                currow = {'date': created,
-                   _('sample_due'): 0,
-                   _('sample_received'): 0,
-                   _('to_be_verified'): 0,
-                   _('verified'): 0,
-                   _('published'): 0,
-                   _('inactive'): 0,
-                   _('other_status'): 0,
-                   }
-                key = state if _(state) in currow else 'other_status'
-                currow[_(key)] += 1
-                outevo.append(currow);
-
+        del query['review_state']
+        query['sort_on'] = 'created'
+        query['created'] = self.min_date_range
+        outevo = self._fill_dates_evo(bc, query)
         out.append({'type':         'bar-chart-panel',
                     'name':         _('Evolution of Analysis Requests'),
                     'class':        'informative',
                     'description':  _('Evolution of Analysis Requests'),
-                    'data':         json.dumps(outevo)})
+                    'data':         json.dumps(outevo),
+                    'datacolors':   json.dumps(self.get_colors_palette())})
 
         return {'id': 'analysisrequests',
                 'title': _('Analysis Requests'),
@@ -350,107 +245,48 @@ class DashboardView(BrowserView):
         """
         out = []
         bc = getToolByName(self.context, "bika_catalog")
-        filtering_allowed=self.context.bika_setup.getAllowDepartmentFiltering()
-        cookie_dep_uid = self.request.get('filter_by_department_info', '').split(',') if filtering_allowed else ''
-        active_ws = ['open', 'to_be_verified', 'attachment_due']
-
-        query_dic = {'portal_type':"Worksheet",
-                 'created':self.date_range}
+        query = {'portal_type':"Worksheet",}
+        filtering_allowed = self.context.bika_setup.getAllowDepartmentFiltering()
         if filtering_allowed:
-            query_dic['getDepartmentUIDs'] = { "query":cookie_dep_uid,"operator":"or" }
-        numws = len(bc(query_dic))
+            cookie_dep_uid = self.request.get('filter_by_department_info', '').split(',') if filtering_allowed else ''
+            query['getDepartmentUIDs'] = { "query": cookie_dep_uid,"operator":"or" }
 
-        query_dic = {'portal_type':"Worksheet",
-                 'review_state':active_ws,
-                 'created':self.base_date_range}
-        if filtering_allowed:
-            query_dic['getDepartmentUIDs'] = { "query":cookie_dep_uid,"operator":"or" }
-        numws += len(bc(query_dic))
+        # Active Worksheets (all)
+        total = len(bc(query))
 
         # Open worksheets
-        review_state = ['open', 'attachment_due']
-        query_dic = {'portal_type':"Worksheet",
-                 'review_state':review_state,
-                   'created':self.base_date_range}
-        if filtering_allowed:
-            query_dic['getDepartmentUIDs'] = { "query":cookie_dep_uid,"operator":"or" }
-        ws = len(bc(query_dic))
-        ratio = (float(ws)/float(numws))*100 if ws > 0 and numws > 0 else 0
-        ratio = str("%%.%sf" % 1) % ratio
-        msg = _("Results pending")
-        out.append({'type':         'simple-panel',
-                    'name':         _('Results pending'),
-                    'class':        'informative',
-                    'description':  msg,
-                    'number':       ws,
-                    'total':        numws,
-                    'legend':       _('of') + " " + str(numws) + ' (' + ratio +'%)',
-                    'link':         self.portal_url + '/worksheets?list_review_state=open'})
+        name = _('Results pending')
+        desc = _('Results pending')
+        purl = 'worksheets?list_review_state=open'
+        query['review_state'] = ['open', 'attachment_due']
+        out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Worksheets to be verified
-        review_state = ['to_be_verified', ]
-        query_dic = {'portal_type':"Worksheet",
-                 'review_state':review_state}
-        if filtering_allowed:
-            query_dic['getDepartmentUIDs'] = { "query":cookie_dep_uid,"operator":"or" }
-        ws = len(bc(query_dic))
-        ratio = (float(ws)/float(numws))*100 if ws > 0 and numws > 0 else 0
-        ratio = str("%%.%sf" % 1) % ratio
-        msg = _("To be verified")
-        out.append({'type':         'simple-panel',
-                    'name':         _('To be verified'),
-                    'class':        'informative',
-                    'description':  msg,
-                    'number':       ws,
-                    'total':        numws,
-                    'legend':       _('of') + " " + str(numws) + ' (' + ratio +'%)',
-                    'link':         self.portal_url + '/worksheets?list_review_state=to_be_verified'})
+        name = _('To be verified')
+        desc =_('To be verified')
+        purl = 'worksheets?list_review_state=to_be_verified'
+        query['review_state'] = ['to_be_verified', ]
+        out.append(self._getStatistics(name, desc, purl, bc, query, total))
+
+        # Worksheets verified
+        name = _('Verified')
+        desc =_('Verified')
+        purl = 'worksheets?list_review_state=verified'
+        query['review_state'] = ['verified', ]
+        out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Chart with the evolution of WSs over a period, grouped by
         # periodicity
-        workflow = getToolByName(self.context, 'portal_workflow')
-        query_dic = {'portal_type':"Worksheet",
-                 'sort_on':"created",
-                 'created':self.min_date_range}
-        if filtering_allowed:
-            query_dic['getDepartmentUIDs'] = { "query":cookie_dep_uid,"operator":"or" }
-        allws = bc(query_dic)
-        outevo = []
-        for ws in allws:
-            ws = ws.getObject()
-            state = 'other_status'
-            try:
-                state = workflow.getInfoFor(ws, 'cancellation_state')
-                if (state == 'active'):
-                    state = workflow.getInfoFor(ws, 'review_state')
-                else:
-                    state = 'inactive'
-            except:
-                pass
-
-            created = self._getDateStr(self.periodicity, ws.created())
-
-            if (len(outevo) > 0 and outevo[-1]['date'] == created):
-                key = state if _(state) in outevo[-1] else 'other_status'
-                outevo[-1][_(key)] += 1
-            else:
-                currow = {'date': created,
-                   _('open'): 0,
-                   _('to_be_verified'): 0,
-                   _('attachment_due'): 0,
-                   _('verified'): 0,
-                   _('inactive'): 0,
-                   _('other_status'): 0,
-                   }
-                key = state if _(state) in currow else 'other_status'
-                currow[_(key)] += 1
-                outevo.append(currow);
-
+        del query['review_state']
+        query['sort_on'] = 'created'
+        query['created'] = self.min_date_range
+        outevo = self._fill_dates_evo(bc, query)
         out.append({'type':         'bar-chart-panel',
                     'name':         _('Evolution of Worksheets'),
                     'class':        'informative',
                     'description':  _('Evolution of Worksheets'),
-                    'data':         json.dumps(outevo)})
+                    'data':         json.dumps(outevo),
+                    'datacolors':   json.dumps(self.get_colors_palette())})
 
         return {'id': 'worksheets',
                 'title': _('Worksheets'),
@@ -467,118 +303,127 @@ class DashboardView(BrowserView):
             assigned
         """
         out = []
-        active_rs = ['sample_received',
-                     'assigned',
-                     'attachment_due',
-                     'to_be_verified',
-                     'verified']
-        bac = getToolByName(self.context, "bika_analysis_catalog")
-        filtering_allowed=self.context.bika_setup.getAllowDepartmentFiltering()
-        cookie_dep_uid = self.request.get('filter_by_department_info', '').split(',') if filtering_allowed else ''
-
-        query_dic = {'portal_type':"Analysis",
-                 'created':self.date_range,
-                 'cancellation_state':['active']}
+        bc = getToolByName(self.context, 'bika_analysis_catalog')
+        query = {'portal_type': "Analysis",
+                 'cancellation_state': ['active']}
+        filtering_allowed = self.context.bika_setup.getAllowDepartmentFiltering()
         if filtering_allowed:
-            query_dic['getDepartmentUID'] = { "query":cookie_dep_uid,"operator":"or" }
-        numans = len(bac(query_dic))
+            cookie_dep_uid = self.request.get('filter_by_department_info', '').split(',') if filtering_allowed else ''
+            query['getDepartmentUIDs'] = { "query": cookie_dep_uid,"operator":"or" }
 
-        query_dic = {'portal_type':"Analysis",
-                 'created':self.base_date_range,
-                 'review_state':active_rs,
-                 'cancellation_state':['active']}
-        if filtering_allowed:
-            query_dic['getDepartmentUID'] = { "query":cookie_dep_uid,"operator":"or" }
-        numans += len(bac(query_dic))
+        # Active Analyses (All)
+        total = len(bc(query))
+
+        # Analyses to be assigned
+        name = _('Assignment pending')
+        desc = _('Assignment pending')
+        purl = 'aggregatedanalyses'
+        query['review_state'] = ['sample_received', ]
+        out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Analyses pending
-        review_state = ['sample_received',
-                        'assigned',
-                        'attachment_due']
-        query_dic = {'portal_type':"Analysis",
-                 'review_state':review_state}
-        if filtering_allowed:
-            query_dic['getDepartmentUID'] = { "query":cookie_dep_uid,"operator":"or" }
-        ans = len(bac(query_dic))
-        ratio = (float(ans)/float(numans))*100 if ans > 0 and numans > 0 else 0
-        ratio = str("%%.%sf" % 1) % ratio
-        msg = _("Analyses pending")
-        out.append({'type':         'simple-panel',
-                    'name':         _('Analyses pending'),
-                    'class':        'informative',
-                    'description':  msg,
-                    'number':       ans,
-                    'total':        numans,
-                    'legend':       _('of') + " " + str(numans) + ' (' + ratio +'%)',
-                    'link':         self.portal_url + '/aggregatedanalyses'})
+        name = _('Results pending')
+        desc = _('Results pending')
+        purl = 'aggregatedanalyses'
+        query['review_state'] = ['assigned','attachment_due']
+        out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
         # Analyses to be verified
-        review_state = ['to_be_verified', ]
-        query_dic = {'portal_type':"Analysis",
-                 'review_state':review_state}
-        if filtering_allowed:
-            query_dic['getDepartmentUID'] = { "query":cookie_dep_uid,"operator":"or" }
-        ans = len(bac(query_dic))
-        ratio = (float(ans)/float(numans))*100 if ans > 0 and numans > 0 else 0
-        ratio = str("%%.%sf" % 1) % ratio
-        msg = _("To be verified")
-        out.append({'type':         'simple-panel',
-                    'name':         _('To be verified'),
-                    'class':        'informative',
-                    'description':  msg,
-                    'number':       ans,
-                    'total':        numans,
-                    'legend':       _('of') + " " + str(numans) + ' (' + ratio +'%)',
-                    'link':         self.portal_url + '/worksheets?list_review_state=to_be_verified'})
+        name = _('To be verified')
+        desc = _('To be verified')
+        purl = 'aggregatedanalyses'
+        query['review_state'] = ['to_be_verified', ]
+        out.append(self._getStatistics(name, desc, purl, bc, query, total))
 
-        # Chart with the evolution of WSs over a period, grouped by
+        # Analyses verified
+        name = _('Verified')
+        desc = _('Verified')
+        purl = 'aggregatedanalyses'
+        query['review_state'] = ['verified', ]
+        out.append(self._getStatistics(name, desc, purl, bc, query, total))
+
+        # Chart with the evolution of Analyses over a period, grouped by
         # periodicity
-        workflow = getToolByName(self.context, 'portal_workflow')
-        query_dic = {'portal_type':"Analysis",
-                 'sort_on':"created",
-                 "created":self.min_date_range}
-        if filtering_allowed:
-            query_dic['getDepartmentUID'] = { "query":cookie_dep_uid,"operator":"or" }
-        allans = bac(query_dic)
-        outevo = []
-        for an in allans:
-            an = an.getObject()
-            state = 'other_status'
-            try:
-                state = workflow.getInfoFor(an, 'cancellation_state')
-                if (state == 'active'):
-                    state = workflow.getInfoFor(an, 'review_state')
-                else:
-                    state = 'inactive'
-            except:
-                pass
-
-            created = self._getDateStr(self.periodicity, an.created())
-
-            if (len(outevo) > 0 and outevo[-1]['date'] == created):
-                key = state if _(state) in outevo[-1] else 'other_status'
-                outevo[-1][_(key)] += 1
-            else:
-                currow = {'date': created,
-                   _('assigned'): 0,
-                   _('to_be_verified'): 0,
-                   _('attachment_due'): 0,
-                   _('verified'): 0,
-                   _('inactive'): 0,
-                   _('other_status'): 0,
-                   }
-                key = state if _(state) in currow else 'other_status'
-                currow[_(key)] += 1
-                outevo.append(currow)
-
+        del query['review_state']
+        query['sort_on'] = 'created'
+        query['created'] = self.min_date_range
+        outevo = self._fill_dates_evo(bc, query)
         out.append({'type':         'bar-chart-panel',
                     'name':         _('Evolution of Analyses'),
                     'class':        'informative',
                     'description':  _('Evolution of Analyses'),
-                    'data':         json.dumps(outevo)})
+                    'data':         json.dumps(outevo),
+                    'datacolors':   json.dumps(self.get_colors_palette())})
         return {'id': 'analyses',
                 'title': _('Analyses'),
                 'panels': out}
+
+    def get_states_map(self, portal_type):
+        if portal_type == 'Analysis':
+            return {'sample_due':      _('Sample reception pending'),
+                    'sample_received': _('Assignment pending'),
+                    'assigned':        _('Results pending'),
+                    'attachment_due':  _('Results pending'),
+                    'to_be_verified':  _('To be verified'),
+                    'rejected':        _('Rejected'),
+                    'retracted':       _('Retracted'),
+                    'verified':        _('Verified'),
+                    'published':       _('Published')}
+        elif portal_type == 'AnalysisRequest':
+            return {'to_be_sampled':       _('To be sampled'),
+                    'to_be_preserved':     _('To be preserved'),
+                    'scheduled_sampling':  _('Sampling scheduled'),
+                    'sample_due':          _('Reception pending'),
+                    'rejected':            _('Rejected'),
+                    'sample_received':     _('Results pending'),
+                    'assigned':            _('Results pending'),
+                    'attachment_due':      _('Results pending'),
+                    'to_be_verified':      _('To be verified'),
+                    'verified':            _('Verified'),
+                    'published':           _('Published')}
+        elif portal_type == 'Worksheet':
+            return {'open':            _('Results pending'),
+                    'attachment_due':  _('Results pending'),
+                    'to_be_verified':  _('To be verified'),
+                    'verified':        _('Verified')}
+
+    def get_colors_palette(self):
+        return {
+            'to_be_sampled':                '#FA6900',
+            _('To be sampled'):             '#FA6900',
+
+            'to_be_preserved':              '#C44D58',
+            _('To be preserved'):           '#C44D58',
+
+            'scheduled_sampling':           '#FA6900',
+            _('Sampling scheduled'):        '#FA6900',
+
+            'sample_due':                   '#F38630',
+            _('Sample reception pending'):  '#F38630',
+            _('Reception pending'):         '#F38630',
+
+            'sample_received':              '#E0E4CC',
+            _('Assignment pending'):        '#E0E4CC',
+
+            'assigned':                     '#dcdcdc',
+            'attachment_due':               '#dcdcdc',
+            'open':                         '#dcdcdc',
+            _('Results pending'):           '#dcdcdc',
+
+            'rejected':                     '#FF6B6B',
+            'retracted':                    '#FF6B6B',
+            _('Rejected'):                  '#FF6B6B',
+            _('Retracted'):                 '#FF6B6B',
+
+            'to_be_verified':               '#A7DBD8',
+            _('To be verified'):            '#A7DBD8',
+
+            'verified':                     '#69D2E7',
+            _('Verified'):                  '#69D2E7',
+
+            'published':                    '#83AF9B',
+            _('Published'):                 '#83AF9B',
+        }
 
     def _getDateStr(self, period, created):
         if period == 'y':
@@ -596,6 +441,72 @@ class DashboardView(BrowserView):
             year, weeknum, dow = created.asdatetime().isocalendar()
             created = created - dow
             created = '%s-%s-%s' % (str(created.year())[2:], str(created.month()).zfill(2), str(created.day()).zfill(2))
+        elif period == 'a':
+            # All time, but evolution chart grouped by year
+            created = created.year()
         else:
             created = '%s-%s-%s' % (str(created.year())[2:], str(created.month()).zfill(2), str(created.day()).zfill(2))
         return created
+
+    def _fill_dates_evo(self, catalog, query):
+        outevoidx = {}
+        outevo = []
+        days = 1
+        if self.periodicity == 'y':
+            days = 336
+        elif self.periodicity == 'b':
+            days = 168
+        elif self.periodicity == 'q':
+            days = 84
+        elif self.periodicity == 'm':
+            days = 28
+        elif self.periodicity == 'w':
+            days = 7
+        elif self.periodicity == 'a':
+            days = 336
+
+        otherstate = _('Other status')
+        statesmap = self.get_states_map(query['portal_type'])
+        stats = statesmap.values()
+        stats.sort()
+        stats.append(otherstate)
+        statscount = {s:0 for s in stats}
+        # Add first all periods, cause we want all segments to be displayed
+        curr = self.min_date.asdatetime()
+        end = self.date_to.asdatetime()
+        while curr < end:
+            currstr = self._getDateStr(self.periodicity, DateTime(curr))
+            if currstr not in outevoidx:
+                outdict = {'date':currstr}
+                for k in stats:
+                    outdict[k] = 0
+                outevo.append(outdict)
+                outevoidx[currstr] = len(outevo)-1
+            curr = curr + datetime.timedelta(days=days)
+
+        for brain in catalog(query):
+            state = brain.review_state
+            if state not in statesmap:
+                logger.warn("'%s' State for '%s' not available" % (state, query['portal_type']))
+            state = statesmap[state] if state in statesmap else otherstate
+            created = self._getDateStr(self.periodicity, brain.getObject().created())
+            if created in outevoidx:
+                oidx = outevoidx[created]
+                statscount[state] += 1
+                if state in outevo[oidx]:
+                    outevo[oidx][state] += 1
+                else:
+                    outevo[oidx][state] = 1
+            else:
+                # Create new row
+                currow = {'date': created,
+                          state: 1 }
+                outevo.append(currow)
+
+        # Remove all those states for which there is no data
+        rstates = [k for k,v in statscount.items() if v==0]
+        for o in outevo:
+            for r in rstates:
+                del o[r]
+
+        return outevo

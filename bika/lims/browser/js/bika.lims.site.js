@@ -528,7 +528,7 @@ function SiteView() {
 
     /**
     This function is to read cookie value
-    @param {String} cname is name of the cookie to be read 
+    @param {String} cname is name of the cookie to be read
     */
     function readCookie(cname) {
         var name = cname + "=";
