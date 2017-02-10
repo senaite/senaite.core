@@ -2281,7 +2281,7 @@ function AnalysisRequestAddByCol() {
         var service_uids = bika.lims.ar_add.state[arnum]['Analyses']
 
         // if no sampletype or no selected analyses:  remove partition markers
-        if (!st_uid || !service_uids) {
+        if (!st_uid || service_uids.length < 1) {
             d.resolve()
             return d.promise()
         }
