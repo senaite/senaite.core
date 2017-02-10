@@ -6,12 +6,15 @@
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims.browser import BrowserView
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from calendar import monthrange
 from DateTime import DateTime
-import plone, json
+import plone
+import json
 import datetime
+
 
 class DashboardView(BrowserView):
     template = ViewPageTemplateFile("templates/dashboard.pt")
@@ -150,7 +153,7 @@ class DashboardView(BrowserView):
             ARs to be verified, ARs to be published, etc.)
         """
         out = []
-        bc = getToolByName(self.context, 'bika_catalog')
+        catalog = getToolByName(self.context, CATALOG_ANALYSIS_REQUEST_LISTING)
         query = {'portal_type': "AnalysisRequest",
                  'cancellation_state': ['active']}
         filtering_allowed = self.context.bika_setup.getAllowDepartmentFiltering()
@@ -159,7 +162,7 @@ class DashboardView(BrowserView):
             query['getDepartmentUIDs'] = { "query": cookie_dep_uid,"operator":"or" }
 
         # Active Analysis Requests (All)
-        total = len(bc(query))
+        total = len(catalog(query))
 
         # Sampling workflow enabled?
         if (self.context.bika_setup.getSamplingWorkflowEnabled()):
@@ -168,28 +171,28 @@ class DashboardView(BrowserView):
             desc = _("To be sampled")
             purl = 'samples?samples_review_state=to_be_sampled'
             query['review_state'] = ['to_be_sampled', ]
-            out.append(self._getStatistics(name, desc, purl, bc, query, total))
+            out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
             # Analysis Requests awaiting to be preserved
             name = _('Analysis Requests to be preserved')
             desc = _("To be preserved")
             purl = 'samples?samples_review_state=to_be_preserved'
             query['review_state'] = ['to_be_preserved', ]
-            out.append(self._getStatistics(name, desc, purl, bc, query, total))
+            out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
             # Analysis Requests scheduled for Sampling
             name = _('Analysis Requests scheduled for sampling')
             desc = _("Sampling scheduled")
             purl = 'samples?samples_review_state=scheduled_sampling'
             query['review_state'] = ['scheduled_sampling', ]
-            out.append(self._getStatistics(name, desc, purl, bc, query, total))
+            out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Analysis Requests awaiting for reception
         name = _('Analysis Requests to be received')
         desc = _("Reception pending")
         purl = 'analysisrequests?analysisrequests_review_state=sample_due'
         query['review_state'] = ['sample_due', ]
-        out.append(self._getStatistics(name, desc, purl, bc, query, total))
+        out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Analysis Requests under way
         name = _('Analysis Requests with results pending')
@@ -198,35 +201,35 @@ class DashboardView(BrowserView):
         query['review_state'] = ['attachment_due',
                                  'sample_received',
                                  'assigned']
-        out.append(self._getStatistics(name, desc, purl, bc, query, total))
+        out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Analysis Requests to be verified
         name = _('Analysis Requests to be verified')
         desc = _("To be verified")
         purl = 'analysisrequests?analysisrequests_review_state=to_be_verified'
         query['review_state'] = ['to_be_verified', ]
-        out.append(self._getStatistics(name, desc, purl, bc, query, total))
+        out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Analysis Requests verified (to be published)
         name = _('Analysis Requests verified')
         desc = _("Verified")
         purl = 'analysisrequests?analysisrequests_review_state=verified'
         query['review_state'] = ['verified', ]
-        out.append(self._getStatistics(name, desc, purl, bc, query, total))
+        out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Analysis Requests published
         name = _('Analysis Requests published')
         desc = _("Published")
         purl = 'analysisrequests?analysisrequests_review_state=published'
         query['review_state'] = ['published', ]
-        out.append(self._getStatistics(name, desc, purl, bc, query, total))
+        out.append(self._getStatistics(name, desc, purl, catalog, query, total))
 
         # Chart with the evolution of ARs over a period, grouped by
         # periodicity
         del query['review_state']
         query['sort_on'] = 'created'
         query['created'] = self.min_date_range
-        outevo = self._fill_dates_evo(bc, query)
+        outevo = self._fill_dates_evo(catalog, query)
         out.append({'type':         'bar-chart-panel',
                     'name':         _('Evolution of Analysis Requests'),
                     'class':        'informative',
@@ -360,7 +363,8 @@ class DashboardView(BrowserView):
 
     def get_states_map(self, portal_type):
         if portal_type == 'Analysis':
-            return {'sample_due':      _('Sample reception pending'),
+            return {'to_be_sampled':   _('Sample reception pending'),
+                    'sample_due':      _('Sample reception pending'),
                     'sample_received': _('Assignment pending'),
                     'assigned':        _('Results pending'),
                     'attachment_due':  _('Results pending'),
@@ -483,13 +487,18 @@ class DashboardView(BrowserView):
                 outevo.append(outdict)
                 outevoidx[currstr] = len(outevo)-1
             curr = curr + datetime.timedelta(days=days)
-
         for brain in catalog(query):
+            # Check if we can use the brain
+            if query.get('portal_type', '') == 'AnalysisRequest':
+                created = brain.created
+            # I not, get the object
+            else:
+                created = brain.getObject().created()
             state = brain.review_state
             if state not in statesmap:
                 logger.warn("'%s' State for '%s' not available" % (state, query['portal_type']))
             state = statesmap[state] if state in statesmap else otherstate
-            created = self._getDateStr(self.periodicity, brain.getObject().created())
+            created = self._getDateStr(self.periodicity, created)
             if created in outevoidx:
                 oidx = outevoidx[created]
                 statscount[state] += 1
