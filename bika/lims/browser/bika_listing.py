@@ -235,12 +235,8 @@ class WorkflowAction:
                             if not success:
                                 # If failed, delete last verificator.
                                 item.deleteLastVerificator()
-                            elif item.aq_parent.portal_type == 'AnalysisRequest':
-                                item.aq_parent.resetCache()
                     else:
                         success, message = doActionFor(item, action)
-                        if item.aq_parent.portal_type == 'AnalysisRequest':
-                            item.aq_parent.resetCache()
                     if success:
                         transitioned.append(item.id)
                     else:

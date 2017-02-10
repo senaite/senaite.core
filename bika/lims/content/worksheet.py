@@ -878,18 +878,14 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                     revers = analysis.getNumberOfRequiredVerifications()
                     nmvers = analysis.getNumberOfVerifications()
                     username=getToolByName(self,'portal_membership').getAuthenticatedMember().getUserName()
-                    item.addVerificator(username)
+                    analysis.addVerificator(username)
                     if revers-nmvers <= 1:
                         success, message = doActionFor(analysis, 'verify')
                         if not success:
                             # If failed, delete last verificator.
-                            item.deleteLastVerificator()
-                        elif analysis.aq_parent.portal_type == 'AnalysisRequest':
-                            analysis.aq_parent.resetCache()
+                            analysis.deleteLastVerificator()
                 else:
                     doActionFor(analysis, 'verify')
-                    if analysis.aq_parent.portal_type == 'AnalysisRequest':
-                        analysis.aq_parent.resetCache()
 
     def workflow_script_reject(self):
         """Copy real analyses to RejectAnalysis, with link to real

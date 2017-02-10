@@ -1776,10 +1776,6 @@ schema = BikaSchema.copy() + Schema((
                      'edit': 'invisible'},
         ),
     ),
-
-    # Temporary performance optimizations (cached fields on runtime)
-    StringField('_CachedAnalysesNum', default=''),
-    StringField('_CachedProfilesTitle', default=''),
 )
 )
 
@@ -1836,13 +1832,7 @@ class AnalysisRequest(BaseFolder):
         return "/".join(self.aq_parent.getPhysicalPath())
 
     def getProfilesTitle(self):
-        titles = self.get_CachedProfilesTitle()
-        if titles:
-            return titles.split[',']
-        else:
-            titles = [profile.Title() for profile in self.getProfiles()]
-            self.set_CachedProfilesTitle(','.join(titles))
-            return titles
+        return [profile.Title() for profile in self.getProfiles()]
 
 
     def setPublicationSpecification(self, value):
@@ -1926,22 +1916,15 @@ class AnalysisRequest(BaseFolder):
 
     def _getAnalysesNum(self):
         """ Return the amount of analyses verified/total in the current AR """
-        annum = self.get_CachedAnalysesNum()
-        if annum:
-            annums = annum.split(',')
-            return int(annums[0]), int(annums[1])
-        else:
-            verified = 0
-            total = 0
-            for analysis in self.getAnalyses():
-                review_state = analysis.review_state
-                if review_state in ['verified' ,'published']:
-                    verified += 1
-                if review_state not in 'retracted':
-                    total += 1
-            annum = '%s,%s' % (verified, total)
-            self.set_CachedAnalysesNum(annum)
-            return verified,total
+        verified = 0
+        total = 0
+        for analysis in self.getAnalyses():
+            review_state = analysis.review_state
+            if review_state in ['verified' ,'published']:
+                verified += 1
+            if review_state not in 'retracted':
+                total += 1
+        return verified,total
 
     def getResponsible(self):
         """ Return all manager info of responsible departments """
@@ -2938,10 +2921,12 @@ class AnalysisRequest(BaseFolder):
             from this Analysis Request
         """
         ans = [an.getObject() for an in self.getAnalyses()]
-        depts = [an.getService().getDepartment() for an in ans if an.getService().getDepartment()]
-        uids = [dept.UID() for dept in depts]
-        uids = ','.join(uids);
+        depts = [an.getService().getDepartment() for an in ans if
+                 an.getService().getDepartment()]
         return set(depts)
+
+    def getDepartmentUIDs(self):
+        return [dept.UID() for dept in self.getDepartments()]
 
     def getResultsInterpretationByDepartment(self, department=None):
         """ Returns the results interpretation for this Analysis Request
@@ -3062,18 +3047,6 @@ class AnalysisRequest(BaseFolder):
             actor = items.get('actor')
             return mtool.getMemberById(actor)
         return None
-
-    # TODO-performance: this function must be optimized
-    def getDepartmentUIDs(self):
-        """ Returns department UIDs assigned to the Analyses
-            from this Analysis Request
-        """
-        # This will be imporved using brains
-        ans = [an.getObject() for an in self.getAnalyses()]
-        depts = [
-            an.getDepartmentUID()
-            for an in ans if an.getDepartmentUID()]
-        return depts
 
     def getReceivedBy(self):
         """
@@ -3361,18 +3334,14 @@ class AnalysisRequest(BaseFolder):
                     revers = analysis.getNumberOfRequiredVerifications()
                     nmvers = analysis.getNumberOfVerifications()
                     username=getToolByName(self,'portal_membership').getAuthenticatedMember().getUserName()
-                    item.addVerificator(username)
+                    analysis.addVerificator(username)
                     if revers-nmvers <= 1:
                         success, message = doActionFor(analysis, 'verify')
                         if not success:
                             # If failed, delete last verificator
-                            item.deleteLastVerificator()
-                        elif analysis.aq_parent.portal_type == 'AnalysisRequest':
-                            analysis.aq_parent.resetCache()
+                            analysis.deleteLastVerificator()
                 else:
                     doActionFor(analysis, 'verify')
-                    if analysis.aq_parent.portal_type == 'AnalysisRequest':
-                        analysis.aq_parent.resetCache()
 
     def workflow_script_publish(self):
         if skip(self, "publish"):
@@ -3431,8 +3400,5 @@ class AnalysisRequest(BaseFolder):
         if self.bika_setup.getNotifyOnRejection():
             # Notify the Client about the Rejection.
             notify_rejection(self)
-
-    def resetCache(self):
-        self.set_CachedAnalysesNum('')
 
 atapi.registerType(AnalysisRequest, PROJECTNAME)
