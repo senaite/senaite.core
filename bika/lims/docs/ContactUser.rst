@@ -18,6 +18,7 @@ Test Setup
     >>> from plone import api as ploneapi
     >>> from zope.lifecycleevent import modified
     >>> from AccessControl.PermissionRole import rolesForPermissionOn
+    >>> from plone.app.testing import setRoles
     >>> from plone.app.testing import TEST_USER_ID
     >>> from plone.app.testing import TEST_USER_PASSWORD
 
@@ -26,6 +27,7 @@ Test Setup
     >>> bika_setup = portal.bika_setup
     >>> bika_setup_url = portal_url + "/bika_setup"
     >>> browser = self.getBrowser()
+    >>> setRoles(portal, TEST_USER_ID, ['LabManager', 'Manager', 'Owner'])
 
     >>> def start_server():
     ...     from Testing.ZopeTestCase.utils import startZServer
@@ -38,6 +40,7 @@ Test Setup
     ...     browser.getControl(name='__ac_password').value = password
     ...     browser.getControl(name='submit').click()
     ...     assert("__ac_password" not in browser.contents)
+    ...     return ploneapi.user.get_current()
 
     >>> def logout():
     ...     browser.open(portal_url + "/logout")
@@ -93,8 +96,8 @@ A `user` is able to login to the system.
 
 Create a new user for the contact::
 
-    >>> user1 = ploneapi.user.create(email="contact-1@example.com", username="contact-1", password=TEST_USER_PASSWORD, properties=dict(fullname="Test User 1"))
-    >>> user2 = ploneapi.user.create(email="contact-2@example.com", username="contact-2", password=TEST_USER_PASSWORD, properties=dict(fullname="Test User 2"))
+    >>> user1 = ploneapi.user.create(email="contact-1@example.com", username="user-1", password=TEST_USER_PASSWORD, properties=dict(fullname="Test User 1"))
+    >>> user2 = ploneapi.user.create(email="contact-2@example.com", username="user-2", password=TEST_USER_PASSWORD, properties=dict(fullname="Test User 2"))
     >>> transaction.commit()
 
 
@@ -103,7 +106,7 @@ Client Browser Test
 
 Login with the first user::
 
-    >>> login(user1.id)
+    >>> user = login(user1.id)
 
 The user is not allowed to access any clients folder::
 
@@ -198,3 +201,49 @@ The user can not access the `client` anymore::
     Traceback (most recent call last):
     ...
     Unauthorized: ...
+
+
+Login Details View
+------------------
+
+The login details view manages to link/unlink users to contacts.
+
+Get the `login_details` view for the first contact::
+
+    >>> login_details_view = contact1.restrictedTraverse("login_details")
+
+The form expects a searchstring coming from the request. We fake it here::
+
+    >>> login_details_view.searchstring = ""
+
+Search for linkable users::
+
+    >>> linkable_users = login_details_view.linkable_users()
+    >>> linkable_user_ids = map(lambda x: x.get("id"), linkable_users)
+
+Both users should be in the search results::
+
+    >>> user1.id in linkable_user_ids
+    True
+
+    >>> user2.id in linkable_user_ids
+    True
+
+This contact is not linked to a user::
+
+    >>> contact1.hasUser()
+    False
+
+Now we link a user over the view::
+
+    >>> login_details_view._link_user(user1.id)
+
+    >>> contact1.hasUser()
+    True
+
+The search should now omit this user from the search, so that it can not be linked anymore::
+
+    >>> linkable_users = login_details_view.linkable_users()
+    >>> linkable_user_ids = map(lambda x: x.get("id"), linkable_users)
+    >>> user1.id in linkable_user_ids
+    False
