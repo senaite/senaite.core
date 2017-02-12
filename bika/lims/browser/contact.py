@@ -196,11 +196,13 @@ class ContactLoginDetailsView(BrowserView):
     def _create_user(self):
         """Create a new user
         """
+
         def error(field, message):
             if field:
                 message = "%s: %s" % (field, message)
             self.context.plone_utils.addPortalMessage(message, 'error')
-            return self.template()
+            return self.request.response.redirect(
+                self.context.absolute_url() + "/login_details")
 
         form = self.request.form
         contact = self.context
@@ -217,8 +219,7 @@ class ContactLoginDetailsView(BrowserView):
             return error('email', PMF("Input is required but not given."))
 
         reg_tool = self.context.portal_registration
-        properties = self.context.portal_properties.site_properties
-
+        # properties = self.context.portal_properties.site_properties
         # if properties.validate_email:
         #     password = reg_tool.generatePassword()
         # else:
@@ -252,7 +253,8 @@ class ContactLoginDetailsView(BrowserView):
             return error(None, msg)
 
         contact.setUser(username)
-
+        # TODO: Not sure if this is the correct behaviour after
+        # senaite-integration since there have been changes in permissions.
         # If we're being created in a Client context, then give
         # the contact an Owner local role on client.
         if contact.aq_parent.portal_type == 'Client':
@@ -279,12 +281,13 @@ class ContactLoginDetailsView(BrowserView):
                 reg_tool.registeredNotify(username)
             except:
                 transaction.abort()
-                return error(
-                    None, PMF("SMTP server disconnected."))
+                message = _("SMTP server disconnected. User creation aborted.")
+                return error(None, message)
         contact.reindexObject()
-        message = PMF("Member registered.")
+        message = _("Member registered and linked to the current Contact.")
         self.context.plone_utils.addPortalMessage(message, 'info')
-        return self.template()
+        return self.request.response.redirect(
+            self.context.absolute_url() + "/login_details")
 
     def tabindex(self):
         i = 0
