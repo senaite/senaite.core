@@ -46,7 +46,12 @@
             <span tal:replace="structure context/@@authenticator/authenticator"/>
             <input type="hidden" name="submitted" value="1"/>
 
-            <table class="plain">
+            <div class="field error" tal:condition="not: userprops" i18n:translate="">
+              No user profile could be found for the linked user.
+              Please contact the lab administrator to get further support or try to relink the user.
+            </div>
+
+            <table class="plain" tal:condition="userprops">
               <tbody>
                 <tr>
                   <td rowspan="5">
