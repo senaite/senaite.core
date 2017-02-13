@@ -43,7 +43,7 @@ bika_catalog_analysisrequest_listing_definition = {
             'getBatchUID': 'FieldIndex',
             'getClientUID': 'FieldIndex',
             'getSampleUID': 'FieldIndex',
-            'getDepartmentUIDs': 'KeywordIndex',
+            'getDepartmentUID': 'KeywordIndex',
             'getDateSampled': 'DateIndex',
             'getSamplingDate': 'DateIndex',
             'getSampler': 'FieldIndex',

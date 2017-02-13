@@ -8,7 +8,6 @@
 
     <adapter name="BatchDate" factory=".batch.BatchDate" />
     <!--adapter name="getDepartmentUID" factory=".analysis.getDepartmentUID" /-->
-    <adapter name="Priority" factory=".analysis.Priority" />
     <adapter name="Priority" factory=".worksheet.Priority" />
     <adapter name="worksheettemplateUID" factory=".worksheet.worksheettemplateUID" />
     <adapter name="analysisRequestTemplates" factory=".samplinground.analysisRequestTemplates" />

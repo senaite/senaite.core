@@ -10,14 +10,21 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
 from bika.lims.catalog.analysisrequest_catalog import\
     bika_catalog_analysisrequest_listing_definition
+from bika.lims.catalog.analysis_catalog import \
+    bika_catalog_analysis_listing_definition
 
 
 def getCatalogDefinitions():
     """
     Returns a dictionary with catalog definitions
     """
+    final = {}
     analysis_request = bika_catalog_analysisrequest_listing_definition
-    return analysis_request
+    analysis = bika_catalog_analysis_listing_definition
+    # Merging the catalogs
+    final.update(analysis_request)
+    final.update(analysis)
+    return final
 
 
 def getCatalog(instance, field='UID'):

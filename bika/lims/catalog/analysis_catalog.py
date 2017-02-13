@@ -17,6 +17,67 @@ from bika.lims import logger
 from bika.lims.interfaces import IBikaAnalysisCatalog
 
 
+# Using a variable to avoid plain strings in code
+CATALOG_ANALYSIS_LISTING = 'bika_analysis_catalog'
+
+bika_catalog_analysis_listing_definition = {
+    # This catalog contains the metacolumns to list
+    # analysisrequests in bikalisting
+    CATALOG_ANALYSIS_LISTING: {
+        'types':   ['Analysis', 'ReferenceAnalysis', 'DuplicateAnalysis', ],
+        'indexes': {
+            # Minimum indexes for bika_listing
+            # TODO: Can be removed?
+            'id': 'FieldIndex',
+            'getId': 'FieldIndex',
+            'created': 'DateIndex',
+            'Creator': 'FieldIndex',
+            # TODO: Can be removed? Same as id
+            'sortable_title': 'FieldIndex',
+            'review_state': 'FieldIndex',
+            'worksheetanalysis_review_state': 'FieldIndex',
+            'cancellation_state': 'FieldIndex',
+            'portal_type': 'FieldIndex',
+            'UID': 'FieldIndex',
+            'allowedRolesAndUsers': 'KeywordIndex',
+            'getDepartmentUIDs': 'KeywordIndex',
+            'getDueDate': 'DateIndex',
+            'getDateSampled': 'DateIndex',
+            'getDateReceived': 'DateIndex',
+            'getResultCaptureDate': 'DateIndex',
+            'getDateAnalysisPublished': 'DateIndex',
+            'getClientUID': 'FieldIndex',
+            'getAnalyst': 'FieldIndex',
+            'getRequestID': 'FieldIndex',
+            'getClientOrderNumber': 'FieldIndex',
+            'getKeyword': 'FieldIndex',
+            'getServiceUID': 'FieldIndex',
+            'getCategoryUID': 'FieldIndex',
+            'getPointOfCapture': 'FieldIndex',
+            'getSampleTypeUID': 'FieldIndex',
+            'getSamplePointUID': 'FieldIndex',
+            'getRetested': 'FieldIndex',
+            'getReferenceAnalysesGroupID': 'FieldIndex',
+            'getMethodUID': 'FieldIndex',
+            'getInstrumentUID': 'FieldIndex',
+        },
+        'columns': [
+            'UID',
+            'getId',
+            'Title',
+            'created',
+            'Creator',
+            'portal_type',
+            'getObjectWorkflowStates',
+            'getRequestID',
+            'getReferenceAnalysesGroupID',
+            'getResultCaptureDate',
+            'getPriority',
+        ]
+    }
+}
+
+
 class BikaAnalysisCatalog(CatalogTool):
 
     """Catalog for analysis types"""
@@ -27,7 +88,7 @@ class BikaAnalysisCatalog(CatalogTool):
     _properties = ({'id': 'title', 'type': 'string', 'mode': 'w'},)
 
     title = 'Bika Analysis Catalog'
-    id = 'bika_analysis_catalog'
+    id = CATALOG_ANALYSIS_LISTING
     portal_type = meta_type = 'BikaAnalysisCatalog'
     plone_tool = 1
 
@@ -37,9 +98,10 @@ class BikaAnalysisCatalog(CatalogTool):
     security.declareProtected(ManagePortal, 'clearFindAndRebuild')
 
     def clearFindAndRebuild(self):
+        """Empties catalog, then finds all contentish objects (i.e. objects
+           with an indexObject method), and reindexes them.
+           This may take a long time.
         """
-        """
-
         def indexObject(obj, path):
             self.reindexObject(obj)
         logger.info('Cleaning and rebuilding %s...' % self.id)

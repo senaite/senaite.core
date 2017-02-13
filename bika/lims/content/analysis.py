@@ -52,20 +52,6 @@ import cgi
 import datetime
 import math
 
-@indexer(IAnalysis)
-def Priority(instance):
-    priority = instance.getPriority()
-    if priority:
-        return priority.getSortKey()
-
-@indexer(IAnalysis)
-def sortable_title_with_sort_key(instance):
-    service = instance.getServiceUsingQuery()
-    if service:
-        sort_key = service.getSortKey()
-        if sort_key:
-            return "{:010.3f}{}".format(sort_key, service.Title())
-        return service.Title()
 
 schema = BikaSchema.copy() + Schema((
     HistoryAwareReferenceField('Service',
@@ -1236,6 +1222,20 @@ class Analysis(BaseContent):
 
         # All checks pass
         return True
+
+    def getObjectWorkflowStates(self):
+        """
+        This method is used as a metacolumn.
+        Returns a dictionary with the workflow id as key and workflow state as
+        value.
+        :return: {'review_state':'active',...}
+        """
+        workflow = getToolByName(self, 'portal_workflow')
+        states = {}
+        for w in workflow.getWorkflowsFor(self):
+            state = w._getWorkflowStateOf(self).id
+            states[w.state_var] = state
+        return states
 
     def getSubmittedBy(self):
         """
