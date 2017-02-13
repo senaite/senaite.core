@@ -136,7 +136,7 @@ class ContactLoginDetailsView(BrowserView):
             # filter out users which do not match the searchstring
             if self.searchstring:
                 s = self.searchstring.lower()
-                if not any(map(lambda v: re.search(s, v.lower()), userdata.values())):
+                if not any(map(lambda v: re.search(s, str(v).lower()), userdata.values())):
                     continue
 
             # update data (maybe for later use)
