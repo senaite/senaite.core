@@ -39,7 +39,7 @@ class InstrumentsView(BikaListingView):
         self.show_select_row = False
         self.show_select_column = True
         self.pagesize = 25
-        
+
         self.columns = {
             'Title': {'title': _('Instrument'),
                       'index': 'sortable_title'},
@@ -56,7 +56,7 @@ class InstrumentsView(BikaListingView):
                            'toggle': True},
             'WeeksToExpire': {'title': _('Weeks To Expire'),
                            'toggle': False},
-            'Method': {'title': _('Method'),
+            'Methods': {'title': _('Methods'),
                            'toggle': True},
             }
 
@@ -71,7 +71,7 @@ class InstrumentsView(BikaListingView):
                          'Model',
                          'ExpiryDate',
                          'WeeksToExpire',
-                         'Method']},
+                         'Methods']},
             {'id':'inactive',
              'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
@@ -82,7 +82,7 @@ class InstrumentsView(BikaListingView):
                          'Model',
                          'ExpiryDate',
                          'WeeksToExpire',
-                         'Method']},
+                         'Methods']},
             {'id':'all',
              'title': _('All'),
              'contentFilter':{},
@@ -92,7 +92,7 @@ class InstrumentsView(BikaListingView):
                          'Model',
                          'ExpiryDate',
                          'WeeksToExpire',
-                         'Method']},
+                         'Methods']},
             ]
 
     def folderitems(self):
@@ -112,22 +112,28 @@ class InstrumentsView(BikaListingView):
                 items[x]['ExpiryDate'] = "No date avaliable"
             else:
                 items[x]['ExpiryDate'] = data.asdatetime().strftime(self.date_format_short)
-                
+
             if obj.isOutOfDate():
                 items[x]['WeeksToExpire'] = "Out of date"
             else:
                 date = int(str(obj.getWeeksToExpire()).split(',')[0].split(' ')[0])
                 weeks,days = divmod(date,7)
                 items[x]['WeeksToExpire'] = str(weeks)+" weeks"+" "+str(days)+" days"
-                
-            if obj.getMethod():
-                items[x]['Method'] = obj.getMethod().Title() 
-                items[x]['replace']['Method'] = "<a href='%s'>%s</a>" % \
-                    (obj.getMethod().absolute_url(), items[x]['Method'])
-            else:
-                items[x]['Method'] = ''
-            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                (items[x]['url'], items[x]['Title'])
+
+            methods = obj.getMethods()
+            item["Methods"] = methods
+            urls = []
+            titles = []
+            for method in methods:
+                url = method.absolute_url()
+                title = method.Title()
+                titles.append(title)
+                urls.append("<a href='{0}'>{1}</a>".format(url, title))
+
+            item["Method"] = ", ".join(titles)
+            item["replace"]["Methods"] = ", ".join(urls)
+            item["replace"]["Title"] = "<a href='{0}'>{1}</a>".format(
+                obj.absolute_url(), obj.Title())
 
         return items
 

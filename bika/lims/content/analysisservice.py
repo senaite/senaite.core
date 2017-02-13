@@ -1186,14 +1186,12 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
             If Instrument Entry of Results is not selected, returns the
             method assigned directly by the user using the _Method Field
         """
+        # TODO This function has been modified after enabling multiple methods
+        # for instruments. Make sure that returning the value of _Method field
+        # is correct.
         method = None
-        if (self.getInstrumentEntryOfResults() == True):
-            method = self.getInstrument().getMethod() \
-                if (self.getInstrument() \
-                    and self.getInstrument().getMethod()) \
-                else None
-        else:
-            method = self.get_Method();
+        if (self.getInstrumentEntryOfResults() is True):
+            method = self.get_Method()
         return method
 
     def getAvailableMethods(self):
@@ -1211,10 +1209,10 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
             # Add the methods from the instruments capable to perform
             # this analysis service
             for ins in self.getInstruments():
-                method = ins.getMethod()
-                if method and method.UID() not in muids:
-                    methods.append(method)
-                    muids.append(method.UID())
+                for method in ins.getMethods():
+                    if method and method.UID() not in muids:
+                        methods.append(method)
+                        muids.append(method.UID())
 
         return methods
 

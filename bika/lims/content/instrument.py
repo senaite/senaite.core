@@ -90,6 +90,18 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         ),
     ),
 
+    HistoryAwareReferenceField('Methods',
+        vocabulary='_getAvailableMethods',
+        allowed_types=('Method',),
+        relationship='InstrumentMethods',
+        required=0,
+        multiValued=1,
+        widget=ReferenceWidget(
+            format='select',
+            label=_("Method"),
+        ),
+    ),
+
     BooleanField('DisposeUntilNextCalibrationTest',
         default = False,
         widget = BooleanWidget(
@@ -381,10 +393,10 @@ class Instrument(ATFolder):
             instrument can only be used in one method.
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [(c.UID, c.Title) \
-                for c in bsc(portal_type='Method',
-                             inactive_state = 'active')]
-        items.sort(lambda x,y:cmp(x[1], y[1]))
+        items = [(c.UID, c.Title)
+                 for c in bsc(portal_type='Method',
+                              inactive_state='active')]
+        items.sort(lambda x, y: cmp(x[1], y[1]))
         items.insert(0, ('', t(_('None'))))
         return DisplayList(items)
 
