@@ -644,45 +644,42 @@ class Instrument(ATFolder):
     def getCertificateExpireDate(self):
         """ Returns the current instrument's data expiration certificate
         """
-        cert = self.getLatestValidCertification()
-        if cert is None:
-            return None
-        return cert.getValidTo()
+        certification = self.getLatestValidCertification()
+        if certification:
+            return certification.getValidTo()
+        return None
 
     def getWeeksToExpire(self):
         """ Returns the amount of weeks and days untils it's certification expire
         """
-        cert = self.getLatestValidCertification()
-        if cert:
-            return cert.getWeeksAndDaysToExpire()
+        certification = self.getLatestValidCertification()
+        if certification:
+            return certification.getWeeksAndDaysToExpire()
         return 0, 0
 
     def getLatestValidCertification(self):
-        """ Returns the latest valid certification. If no latest valid
-            certification found, returns None
+        """Returns the certification with the most remaining days until expiration.
+           If no certification was found, it returns None.
         """
-        saved_cert = None
-        lastfrom = None
-        lastto = None
-        for cert in self.getCertifications():
-            if not cert.isValid():
-                continue
-            validfrom = cert.getValidFrom() if cert else None
-            validto = cert.getValidTo() if validfrom else None
-            if not validfrom or not validto:
-                continue
-            validfrom = validfrom.asdatetime().date()
-            validto = validto.asdatetime().date()
-            if not saved_cert \
-                or validto > lastto \
-                or (validto == lastto and validfrom > lastfrom):
-                saved_cert = cert
-                lastfrom = validfrom
-                lastto = validto
-        return saved_cert
+
+        # 1. get all certifications
+        certifications = self.getCertifications()
+
+        # 2. filter out certifications which are invalid
+        valid_certifications = filter(lambda x: x.isValid(), certifications)
+
+        # 3. sort by the remaining days to expire, e.g. [10, 7, 6, 1]
+        def sort_func(x, y):
+            return cmp(x.getDaysToExpire(), y.getDaysToExpire())
+        sorted_certifications = sorted(valid_certifications, cmp=sort_func, reverse=True)
+
+        # 4. return the certification with the most remaining days
+        if len(sorted_certifications) > 0:
+            return sorted_certifications[0]
+        return None
 
     def getLatestValidValidation(self):
-        """ Returns the latest *done* validation. If no latest *done*
+        """ Returns the latest valid validation. If no latest valid
             validation found, returns None
         """
         validation = None
