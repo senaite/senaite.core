@@ -55,7 +55,6 @@ from bika.lims.config import QCANALYSIS_TYPES
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims import bikaMessageFactory as _
-from bika.lims import deprecated
 
 schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
 
@@ -506,7 +505,8 @@ class Instrument(ATFolder):
         return self.objectValues('InstrumentMaintenanceTask')
 
     def getCalibrations(self):
-        """ Return all calibration objects related with the instrument
+        """
+        Return all calibration objects related with the instrument
         """
         return self.objectValues('InstrumentCalibration')
 
@@ -616,9 +616,9 @@ class Instrument(ATFolder):
         """ Returns if the current instrument is out-of-date regards to
             its certifications
         """
-        cert = self.getLatestValidCertification()
-        if cert:
-            return not cert.isValid()
+        certification = self.getLatestValidCertification()
+        if certification:
+            return not certification.isValid()
         return True
 
     def isValidationInProgress(self):
@@ -695,16 +695,16 @@ class Instrument(ATFolder):
             validfrom = validfrom.asdatetime().date()
             validto = validto.asdatetime().date()
             if not validation \
-                or validto > lastto \
-                or (validto == lastto and validfrom > lastfrom):
+               or validto > lastto \
+               or (validto == lastto and validfrom > lastfrom):
                 validation = v
                 lastfrom = validfrom
                 lastto = validto
         return validation
 
     def getLatestValidCalibration(self):
-        """ Returns the latest valid calibration. If no latest valid
-            calibration found, returns None
+        """Returns the calibration with the most remaining days in calibration.
+           If no calibration was found, it returns None.
         """
         # 1. get all calibrations
         calibrations = self.getCalibrations()
@@ -713,8 +713,8 @@ class Instrument(ATFolder):
         active_calibrations = filter(lambda x: x.isCalibrationInProgress(), calibrations)
 
         # 3. sort by the remaining days in calibration, e.g. [10, 7, 6, 1]
-        sort_func = lambda x, y: cmp(x.getRemainingDaysInCalibration(),
-                                     y.getRemainingDaysInCalibration())
+        def sort_func(x, y):
+            return cmp(x.getRemainingDaysInCalibration(), y.getRemainingDaysInCalibration())
         sorted_calibrations = sorted(active_calibrations, cmp=sort_func, reverse=True)
 
         # 4. return the calibration with the most remaining days
