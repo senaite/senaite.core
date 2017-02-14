@@ -79,6 +79,7 @@ All instruments live in the `/bika_setup/bika_instruments` folder::
     >>> instruments = bika_setup.bika_instruments
     >>> instrument1 = create(instruments, "Instrument", title="Instrument-1")
     >>> instrument2 = create(instruments, "Instrument", title="Instrument-2")
+    >>> instrument3 = create(instruments, "Instrument", title="Instrument-3")
 
 
 Calibrations
@@ -114,6 +115,11 @@ With this valid date range, the calibration is in progress::
     >>> calibration1.isCalibrationInProgress()
     True
 
+The instrument will return in 7 days::
+
+    >>> calibration1.getRemainingDaysInCalibration()
+    7
+
 Only valid date ranges switch the calibration to "in progress"::
 
     >>> calibration2.setDownFrom(DateTime() + 7)
@@ -122,6 +128,9 @@ Only valid date ranges switch the calibration to "in progress"::
     >>> calibration2.isCalibrationInProgress()
     False
 
+    >>> calibration2.getRemainingDaysInCalibration()
+    0
+
 The instrument knows if a calibration is in progress::
 
     >>> instrument1.isCalibrationInProgress()
@@ -129,6 +138,36 @@ The instrument knows if a calibration is in progress::
 
     >>> instrument2.isCalibrationInProgress()
     False
+
+Since multiple calibrations might be in place, the instrument needs to know
+about the calibration which takes the longes time::
+
+    >>> calibration3 = create(instrument1, "InstrumentCalibration", title="Calibration-3")
+    >>> calibration3.setDownFrom(down_from)
+    >>> calibration3.setDownTo(down_to + 7)
+
+    >>> instrument1.getLatestValidCalibration()
+    <InstrumentCalibration at /plone/bika_setup/bika_instruments/instrument-1/instrumentcalibration-3>
+
+Only calibrations which are currently in progress are returned.
+So if it would start tomorrow, it should not be returned::
+
+    >>> calibration3.setDownFrom(down_from + 1)
+    >>> calibration3.isCalibrationInProgress()
+    False
+    >>> instrument1.getLatestValidCalibration()
+    <InstrumentCalibration at /plone/bika_setup/bika_instruments/instrument-1/instrumentcalibration-1>
+
+If all calibrations are dated in the future, it should return none::
+
+    >>> calibration1.setDownFrom(down_from + 1)
+    >>> calibration1.isCalibrationInProgress()
+    False
+    >>> instrument1.getLatestValidCalibration()
+
+Instruments w/o any calibration should also no valid calibrations::
+
+    >>> instrument3.getLatestValidCalibration()
 
 
 Calibration Certificates

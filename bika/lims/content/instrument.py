@@ -636,9 +636,9 @@ class Instrument(ATFolder):
     def isCalibrationInProgress(self):
         """ Returns if the current instrument is under calibration progress
         """
-        for calibration in self.getCalibrations():
-            if calibration.isCalibrationInProgress():
-                return True
+        calibration = self.getLatestValidCalibration()
+        if calibration is not None:
+            return calibration.isCalibrationInProgress()
         return False
 
     def getCertificateExpireDate(self):
@@ -706,23 +706,24 @@ class Instrument(ATFolder):
         return validation
 
     def getLatestValidCalibration(self):
-        """ Returns the latest *done* calibration. If no latest *done*
+        """ Returns the latest valid calibration. If no latest valid
             calibration found, returns None
         """
-        calibration = None
-        lastto = None
-        for cal in self.getCalibrations():
-            if cal.isCalibrationInProgress() or cal.isFutureCalibration():
-                continue
-            validfrom = cal.getDownFrom() if cal else None
-            validto = cal.getDownTo() if validfrom else None
-            if not validfrom or not validto:
-                continue
-            validto = validto.asdatetime().date()
-            if calibration is None or validto > lastto:
-                calibration = cal
-                lastto = validto
-        return calibration
+        # 1. get all calibrations
+        calibrations = self.getCalibrations()
+
+        # 2. filter out calibrations which are not in progress
+        active_calibrations = filter(lambda x: x.isCalibrationInProgress(), calibrations)
+
+        # 3. sort by the remaining days in calibration, e.g. [10, 7, 6, 1]
+        sort_func = lambda x, y: cmp(x.getRemainingDaysInCalibration(),
+                                     y.getRemainingDaysInCalibration())
+        sorted_calibrations = sorted(active_calibrations, cmp=sort_func, reverse=True)
+
+        # 4. return the calibration with the most remaining days
+        if len(sorted_calibrations) > 0:
+            return sorted_calibrations[0]
+        return None
 
     def getValidations(self):
         """
