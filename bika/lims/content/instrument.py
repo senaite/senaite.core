@@ -839,6 +839,8 @@ class Instrument(ATFolder):
                 wf.doActionFor(ref_analysis, 'assign')
             addedanalyses.append(ref_analysis)
 
+        self.setAnalyses(self.getAnalyses() + addedanalyses)
+
         # Initialize LatestReferenceAnalyses cache
         self.cleanReferenceAnalysesCache()
 
