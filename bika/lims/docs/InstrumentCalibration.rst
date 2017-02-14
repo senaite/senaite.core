@@ -171,8 +171,8 @@ For exactly 7 days::
 
 Or one week::
 
-    >>> certification1.getWeeksToExpire()
-    1
+    >>> certification1.getWeeksAndDaysToExpire()
+    (1, 0)
 
 Only valid date ranges switch the certification to "valid"::
 
@@ -185,8 +185,8 @@ Only valid date ranges switch the certification to "valid"::
     >>> certification2.getDaysToExpire()
     0
 
-    >>> certification2.getWeeksToExpire()
-    0
+    >>> certification2.getWeeksAndDaysToExpire()
+    (0, 0)
 
 The instrument knows if a certification is valid/out of date::
 
