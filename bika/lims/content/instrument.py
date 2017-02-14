@@ -373,11 +373,22 @@ class Instrument(ATFolder):
         items.sort(lambda x,y:cmp(x[1], y[1]))
         return DisplayList(items)
 
+    from bika.lims import deprecated
+
+    @deprecated(comment="bika.lims.content.instrument.getMethodUID is \
+                deprecated and will be removed in Bika LIMS 3.3")
     def getMethodUID(self):
-        if self.getMethod():
-            return self.getMethod().UID()
+        # TODO Avoid using this function. Returns first method's UID for now.
+        if self.getMethods():
+            return self.getMethods()[0].UID()
         else:
             return ''
+
+    def getMethodUIDs(self):
+        uids = []
+        if self.getMethods():
+            uids = [m.UID() for m in self.getMethods()]
+        return uids
 
     def getSuppliers(self):
         bsc = getToolByName(self, 'bika_setup_catalog')

@@ -304,7 +304,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """
         cfilter = {'portal_type': 'Instrument', 'inactive_state': 'active'}
         if self.getMethod():
-            cfilter['getMethodUID'] = self.getMethod().UID()
+            cfilter['getMethodUIDs'] = {"query": self.getMethod().UID(),
+                                        "operator": "or"}
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [('', 'No instrument')] + [
             (o.UID, o.Title) for o in

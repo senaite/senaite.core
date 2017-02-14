@@ -125,7 +125,9 @@ class WorksheetTemplate(BaseContent):
     def getInstruments(self):
         cfilter = {'portal_type': 'Instrument', 'inactive_state': 'active'}
         if self.getRestrictToMethod():
-            cfilter['getMethodUID'] = self.getRestrictToMethod().UID()
+            cfilter['getMethodUIDs'] = {
+                                    "query": self.getRestrictToMethod().UID(),
+                                    "operator": "or"}
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [('', 'No instrument')] + [
             (o.UID, o.Title) for o in

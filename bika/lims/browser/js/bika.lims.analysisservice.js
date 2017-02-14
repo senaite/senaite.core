@@ -189,16 +189,9 @@ function AnalysisServiceEditView() {
         $(manual_chk).change(function() {
             if ($(this).is(':checked')) {
 
-                // The user can select the Analysis Service methods
-                // manually. The default method will be retrieved from
-                // the methods selected in the multiselect box
-
-                // Show the methods multiselector
-                $(methods_fd).fadeIn('slow');
-
-                // Show the default method selector
-                $(method_fd).show();
-                $(method_sel).unbind("focus");
+                // Insert all methods without instruments into the
+                // methods InOut options widget.
+                insert_manual_methods();
 
                 // Delegate remaining actions to Methods change event
                 $(methods_ms).change();
@@ -532,7 +525,7 @@ function AnalysisServiceEditView() {
             url: window.portal_url + "/get_instrument_methods",
             type: 'POST',
             data: {'_authenticator': $('input[name="_authenticator"]').val(),
-                   'uid': $(default_instr_select).val() },
+                   'uid': $(instr_sel).val() },
             dataType: 'json',
             async: false
         }).done(function(data) {
@@ -555,7 +548,7 @@ function AnalysisServiceEditView() {
                 $(method_sel).val('');
             }
             // Delegate the action to Default Calc change event
-            $(default_calc_checkbox).change();
+            $(defcalc_chk).change();
         });
     }
 
