@@ -617,11 +617,8 @@ class Instrument(ATFolder):
             its certifications
         """
         cert = self.getLatestValidCertification()
-        today = date.today()
-        if cert and cert.getValidTo():
-            validto = cert.getValidTo().asdatetime().date();
-            if validto > today:
-                return False
+        if cert:
+            return not cert.isValid()
         return True
 
     def isValidationInProgress(self):
