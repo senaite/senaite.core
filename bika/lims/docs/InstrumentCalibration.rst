@@ -185,8 +185,7 @@ Certifications can be in valid or not, depending on the entered dates::
 
 The `ValidFrom` field specifies the start date of the certification::
 
-    >>> valid_from = DateTime()
-    >>> certification1.setValidFrom(valid_from)
+    >>> certification1.setValidFrom(DateTime())
 
 The certification shouldn't be valid with only this field set::
 
@@ -195,8 +194,7 @@ The certification shouldn't be valid with only this field set::
 
 The `ValidTo` field specifies the expiration date of the certification::
 
-    >>> valid_to = valid_from + 7  # one week until expiration
-    >>> certification1.setValidTo(valid_to)
+    >>> certification1.setValidTo(DateTime() + 7)  # one week until expiration
 
 With this valid date range, the certification is in valid::
 
@@ -239,8 +237,8 @@ Since multiple certifications might be in place, the instrument needs to know
 about the certification with the longest validity::
 
     >>> certification3 = create(instrument1, "InstrumentCertification", title="Certification-3")
-    >>> certification3.setValidTo(valid_from)
-    >>> certification3.setValidTo(valid_to + 7)
+    >>> certification3.setValidFrom(DateTime())
+    >>> certification3.setValidTo(DateTime() + 365)  # one year until expiration
 
     >>> instrument1.getLatestValidCertification()
     <InstrumentCertification at /plone/bika_setup/bika_instruments/instrument-1/instrumentcertification-3>
@@ -248,18 +246,28 @@ about the certification with the longest validity::
 Only certifications which are valid are returned.
 So if the validation would start tomorrow, it should not be returned::
 
-    >>> certification3.setValidFrom(valid_from + 1)
+    >>> certification3.setValidFrom(DateTime() + 1)
     >>> certification3.isValid()
     False
     >>> instrument1.getLatestValidCertification()
     <InstrumentCertification at /plone/bika_setup/bika_instruments/instrument-1/instrumentcertification-1>
 
-If all certifications are dated in the future, it should return none::
+If all certifications are dated in the future, it shouldn't be returned::
 
-    >>> certification1.setValidFrom(valid_from + 1)
+    >>> certification1.setValidFrom(DateTime() + 1)
+    >>> certification1.setValidTo(DateTime() + 7)
+    >>> instrument1.getLatestValidCertification()
+
+It should also marked as invalid:
+
     >>> certification1.isValid()
     False
-    >>> instrument1.getLatestValidCertification()
+
+But the days to expire are calculated until the `ValidTo` date from today.
+Thus, the full 7 days are returned::
+
+    >>> certification1.getDaysToExpire()
+    7
 
 Instruments w/o any certifications should also return no valid certifications::
 
