@@ -164,6 +164,16 @@ With this valid date range, the certification is in valid::
     >>> certification1.isValid()
     True
 
+For exactly 7 days::
+
+    >>> certification1.getDaysToExpire()
+    7
+
+Or one week::
+
+    >>> certification1.getWeeksToExpire()
+    1
+
 Only valid date ranges switch the certification to "valid"::
 
     >>> certification2.setValidFrom(DateTime() + 7)
@@ -171,3 +181,17 @@ Only valid date ranges switch the certification to "valid"::
 
     >>> certification2.isValid()
     False
+
+    >>> certification2.getDaysToExpire()
+    0
+
+    >>> certification2.getWeeksToExpire()
+    0
+
+The instrument knows if a certification is valid/out of date::
+
+    >>> instrument1.isOutOfDate()
+    False
+
+    >>> instrument2.isOutOfDate()
+    True
