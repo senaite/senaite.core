@@ -114,8 +114,7 @@ Calibrations can be in progress or not, depending on the entered dates::
 
 The `DownFrom` field specifies the start date of the calibration::
 
-    >>> down_from = DateTime()
-    >>> calibration1.setDownFrom(down_from)
+    >>> calibration1.setDownFrom(DateTime())
 
 The calibration shouldn't be in progress with only this field set::
 
@@ -124,8 +123,7 @@ The calibration shouldn't be in progress with only this field set::
 
 The `DownTo` field specifies the end date of the calibration::
 
-    >>> down_to = down_from + 7  # one week in calibration
-    >>> calibration1.setDownTo(down_to)
+    >>> calibration1.setDownTo(DateTime() + 7) # In calibration for 7 days
 
 With this valid date range, the calibration is in progress::
 
@@ -160,8 +158,8 @@ Since multiple calibrations might be in place, the instrument needs to know
 about the calibration which takes the longes time::
 
     >>> calibration3 = create(instrument1, "InstrumentCalibration", title="Calibration-3")
-    >>> calibration3.setDownFrom(down_from)
-    >>> calibration3.setDownTo(down_to + 7)
+    >>> calibration3.setDownFrom(DateTime())
+    >>> calibration3.setDownTo(DateTime() + 365)
 
     >>> instrument1.getLatestValidCalibration()
     <InstrumentCalibration at /plone/bika_setup/bika_instruments/instrument-1/instrumentcalibration-3>
@@ -169,7 +167,7 @@ about the calibration which takes the longes time::
 Only calibrations which are currently in progress are returned.
 So if it would start tomorrow, it should not be returned::
 
-    >>> calibration3.setDownFrom(down_from + 1)
+    >>> calibration3.setDownFrom(DateTime() + 1)
     >>> calibration3.isCalibrationInProgress()
     False
     >>> instrument1.getLatestValidCalibration()
@@ -177,7 +175,7 @@ So if it would start tomorrow, it should not be returned::
 
 If all calibrations are dated in the future, it should return none::
 
-    >>> calibration1.setDownFrom(down_from + 1)
+    >>> calibration1.setDownFrom(DateTime() + 1)
     >>> calibration1.isCalibrationInProgress()
     False
     >>> instrument1.getLatestValidCalibration()
