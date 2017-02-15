@@ -1,14 +1,19 @@
-======================
-Instrument Calibration
-======================
+====================================================
+Instrument Calibration, Certification and Validation
+====================================================
 
 Instruments represent the physical gadgets of the lab.
 
-Each instruments needs some calibration from time to time, which can be done
-inhouse or externally.
+Each instrument needs calibration from time to time, which can be done inhouse
+or externally.
 
-If the instrument is in calibration, it can not be used to fetch analysis results.
+If an instrument is calibrated, an instrument certification is issued.
+Certifications are only valid within a specified date range.
 
+Instruments can also be validated by the lab personell for a given time.
+
+Only valid instruments, which are not currently calibrated or validated are
+available in the system and can be used to fetch results for analysis.
 
 
 Test Setup
@@ -81,6 +86,12 @@ All instruments live in the `/bika_setup/bika_instruments` folder::
     >>> instrument2 = create(instruments, "Instrument", title="Instrument-2")
     >>> instrument3 = create(instruments, "Instrument", title="Instrument-3")
 
+Instruments provide the `IInstrument` interface::
+
+    >>> from bika.lims.interfaces import IInstrument
+    >>> IInstrument.providedBy(instrument1)
+    True
+
 
 Calibrations
 ============
@@ -89,6 +100,12 @@ Instrument calibrations live inside an instrument::
 
     >>> calibration1 = create(instrument1, "InstrumentCalibration", title="Calibration-1")
     >>> calibration2 = create(instrument2, "InstrumentCalibration", title="Calibration-2")
+
+Calibrations provide the `IInstrumentCalibration` interface::
+
+    >>> from bika.lims.interfaces import IInstrumentCalibration
+    >>> IInstrumentCalibration.providedBy(calibration1)
+    True
 
 Calibrations can be in progress or not, depending on the entered dates::
 
@@ -177,6 +194,12 @@ Certification live inside an instrument::
 
     >>> certification1 = create(instrument1, "InstrumentCertification", title="Certification-1")
     >>> certification2 = create(instrument2, "InstrumentCertification", title="Certification-2")
+
+Certifications provide the `IInstrumentCertification` interface::
+
+    >>> from bika.lims.interfaces import IInstrumentCertification
+    >>> IInstrumentCertification.providedBy(certification1)
+    True
 
 Certifications can be in valid or not, depending on the entered dates::
 
@@ -296,3 +319,18 @@ Setting an interval of 1 year (365 days) will calculate the `ValidTo` field auto
 
     >>> certification1.getDaysToExpire()
     365
+
+
+Validation
+==========
+
+Validations live inside an instrument::
+
+    >>> validation1 = create(instrument1, "InstrumentValidation", title="Validation-1")
+    >>> validation2 = create(instrument2, "InstrumentValidation", title="Validation-2")
+
+Validations provide the `IInstrumentValidation` interface::
+
+    >>> from bika.lims.interfaces import IInstrumentValidation
+    >>> IInstrumentValidation.providedBy(validation1)
+    True

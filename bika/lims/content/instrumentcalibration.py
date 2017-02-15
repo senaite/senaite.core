@@ -17,6 +17,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.utils import getToolByName
 
 from zope.interface import implements
+from zope.interface import implements
 
 # Schema and Fields
 from Products.Archetypes.atapi import Schema
