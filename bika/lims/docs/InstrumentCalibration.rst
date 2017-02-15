@@ -272,3 +272,27 @@ Thus, the full 7 days are returned::
 Instruments w/o any certifications should also return no valid certifications::
 
     >>> instrument3.getLatestValidCertification()
+
+
+Certification Expiration Intervals
+==================================
+
+Besides the `ValidFrom` and `ValidTo` date range, users might also specify an `ExpirationInterval`,
+which calculates the expiration date automatically on save.
+
+Removing the `ValidTo` field makes the certificate invalid::
+
+    >>> certification1.setValidFrom(DateTime())
+    >>> certification1.setValidTo(None)
+
+    >>> certification1.isValid()
+    False
+
+Setting an interval of 1 year (365 days) will calculate the `ValidTo` field automatically::
+
+    >>> certification1.setExpirationInterval(365)
+    >>> certification1.isValid()
+    True
+
+    >>> certification1.getDaysToExpire()
+    365
