@@ -87,6 +87,20 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         widget=SelectionWidget(
             format='select',
             label=_("Method"),
+            visible=False,
+        ),
+    ),
+
+    ReferenceField('Methods',
+        vocabulary='_getAvailableMethods',
+        allowed_types=('Method',),
+        relationship='InstrumentMethods',
+        required=0,
+        multiValued=1,
+        widget=ReferenceWidget(
+            checkbox_bound=0,
+            format='select',
+            label=_("Methods"),
         ),
     ),
 
@@ -361,11 +375,22 @@ class Instrument(ATFolder):
         items.sort(lambda x,y:cmp(x[1], y[1]))
         return DisplayList(items)
 
+    from bika.lims import deprecated
+
+    @deprecated(comment="bika.lims.content.instrument.getMethodUID is \
+                deprecated and will be removed in Bika LIMS 3.3")
     def getMethodUID(self):
-        if self.getMethod():
-            return self.getMethod().UID()
+        # TODO Avoid using this function. Returns first method's UID for now.
+        if self.getMethods():
+            return self.getMethods()[0].UID()
         else:
             return ''
+
+    def getMethodUIDs(self):
+        uids = []
+        if self.getMethods():
+            uids = [m.UID() for m in self.getMethods()]
+        return uids
 
     def getSuppliers(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
@@ -381,10 +406,10 @@ class Instrument(ATFolder):
             instrument can only be used in one method.
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [(c.UID, c.Title) \
-                for c in bsc(portal_type='Method',
-                             inactive_state = 'active')]
-        items.sort(lambda x,y:cmp(x[1], y[1]))
+        items = [(c.UID, c.Title)
+                 for c in bsc(portal_type='Method',
+                              inactive_state='active')]
+        items.sort(lambda x, y: cmp(x[1], y[1]))
         items.insert(0, ('', t(_('None'))))
         return DisplayList(items)
 

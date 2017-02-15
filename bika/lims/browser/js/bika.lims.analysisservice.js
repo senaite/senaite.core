@@ -189,17 +189,10 @@ function AnalysisServiceEditView() {
         $(manual_chk).change(function() {
             if ($(this).is(':checked')) {
 
-                // The user can select the Analysis Service methods
-                // manually. The default method will be retrieved from
-                // the methods selected in the multiselect box
-
-                // Show the methods multiselector
+                // Insert all methods without instruments into the
+                // methods InOut options widget.
+                insert_manual_methods();
                 $(methods_fd).fadeIn('slow');
-
-                // Show the default method selector
-                $(method_fd).show();
-                $(method_sel).unbind("focus");
-
                 // Delegate remaining actions to Methods change event
                 $(methods_ms).change();
 
@@ -426,7 +419,7 @@ function AnalysisServiceEditView() {
             $(method_sel).append("<option value=''>"+_("None")+"</option>");
             $(method_sel).val('');
             $.ajax({
-                url: window.portal_url + "/get_instrument_method",
+                url: window.portal_url + "/get_instrument_methods",
                 type: 'POST',
                 data: {'_authenticator': $('input[name="_authenticator"]').val(),
                        'uid': $(instr_sel).val() },
@@ -434,11 +427,17 @@ function AnalysisServiceEditView() {
                 async: false
             }).done(function(data) {
                 $(method_sel).find('option').remove();
-                if (data != null && data['uid']) {
-                    // Set the instrument's method
-                    var option = '<option value="'+data['uid']+'">'+data['title']+'</option>';
-                    $(method_sel).append(option);
-                    $(method_sel).val(data['uid']);
+                // Handle multiple methods
+                 if (data != null && data.methods.length > 0) {
+                     // Set the instrument's methods
+                     $.each(data.methods, function(index, value) {
+                         var uid = value.uid;
+                         var title = value.title;
+                         console.debug("Adding Method " + title + " to the Selection");
+                         var option = '<option value="'+uid+'">'+title+'</option>';
+                         $(method_sel).append(option);
+                         $(method_sel).val(uid);
+                     });
                 } else {
                     // Oooopps. The instrument has no method assigned
                     $(method_sel).append("<option value=''>"+_("None")+"</option>");
@@ -519,6 +518,38 @@ function AnalysisServiceEditView() {
 
         // Grab original values
         catchOriginalValues();
+    }
+
+    function insert_manual_methods(){
+        $.ajax({
+            url: window.portal_url + "/get_instrument_methods",
+            type: 'POST',
+            data: {'_authenticator': $('input[name="_authenticator"]').val(),
+                   'uid': $(instr_sel).val() },
+            dataType: 'json',
+            async: false
+        }).done(function(data) {
+            $(method_sel).find('option').remove();
+            // Handle multiple methods
+
+            if (data != null && data.methods.length > 0) {
+                // Set the instrument's methods
+                $.each(data.methods, function(index, value) {
+                    var uid = value.uid;
+                    var title = value.title;
+                    console.debug("Adding Method " + title + " to the Selection");
+                    var option = '<option value="'+uid+'">'+title+'</option>';
+                    $(method_sel).append(option);
+                    $(method_sel).val(uid);
+                });
+            } else {
+                // Oooopps. The instrument has no method assigned
+                $(method_sel).append("<option value=''>"+_("None")+"</option>");
+                $(method_sel).val('');
+            }
+            // Delegate the action to Default Calc change event
+            $(defcalc_chk).change();
+        });
     }
 
     function catchOriginalValues() {

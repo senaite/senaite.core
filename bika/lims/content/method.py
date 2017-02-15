@@ -165,7 +165,7 @@ class Method(BaseFolder):
     def getInstruments(self):
         """ Instruments capable to perform this method
         """
-        return self.getBackReferences('InstrumentMethod')
+        return self.getBackReferences('InstrumentMethods')
 
     def getInstrumentUIDs(self):
         """ UIDs of the instruments capable to perform this method
