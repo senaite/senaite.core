@@ -309,9 +309,15 @@ Removing the `ValidTo` field makes the certificate invalid::
     >>> certification1.isValid()
     False
 
-Setting an interval of 1 year (365 days) will calculate the `ValidTo` field automatically::
+Setting an interval of 1 year (365 days)::
 
     >>> certification1.setExpirationInterval(365)
+
+The interval takes now precedence over the `ValidTo` date, but only if the
+custom `setValidTo` setter is called. This setter is always called when using
+the `edit` form in Plone::
+
+    >>> certification1.setValidTo(None)
     >>> certification1.isValid()
     True
 
