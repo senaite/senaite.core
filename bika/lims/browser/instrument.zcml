@@ -62,8 +62,8 @@
 
     <browser:page
       for="*"
-      name="get_instrument_method"
-      class="bika.lims.browser.instrument.ajaxGetInstrumentMethod"
+      name="get_instrument_methods"
+      class="bika.lims.browser.instrument.ajaxGetInstrumentMethods"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
