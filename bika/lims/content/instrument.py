@@ -660,7 +660,7 @@ class Instrument(ATFolder):
         # 1. get all certifications
         certifications = self.getCertifications()
 
-        # 2. filter out certifications which are invalid
+        # 2. filter out certifications, which are invalid
         valid_certifications = filter(lambda x: x.isValid(), certifications)
 
         # 3. sort by the remaining days to expire, e.g. [10, 7, 6, 1]
@@ -674,28 +674,24 @@ class Instrument(ATFolder):
         return None
 
     def getLatestValidValidation(self):
-        """ Returns the latest valid validation. If no latest valid
-            validation found, returns None
+        """Returns the validation with the most remaining days in validation.
+           If no validation was found, it returns None.
         """
-        validation = None
-        lastfrom = None
-        lastto = None
-        for v in self.getValidations():
-            if v.isValidationInProgress() or v.isFutureValidation():
-                continue
-            validfrom = v.getDownFrom() if v else None
-            validto = v.getDownTo() if validfrom else None
-            if not validfrom or not validto:
-                continue
-            validfrom = validfrom.asdatetime().date()
-            validto = validto.asdatetime().date()
-            if not validation \
-               or validto > lastto \
-               or (validto == lastto and validfrom > lastfrom):
-                validation = v
-                lastfrom = validfrom
-                lastto = validto
-        return validation
+        # 1. get all validations
+        validations = self.getValidations()
+
+        # 2. filter out validations, which are not in progress
+        active_validations = filter(lambda x: x.isValidationInProgress(), validations)
+
+        # 3. sort by the remaining days in validation, e.g. [10, 7, 6, 1]
+        def sort_func(x, y):
+            return cmp(x.getRemainingDaysInValidation(), y.getRemainingDaysInValidation())
+        sorted_validations = sorted(active_validations, cmp=sort_func, reverse=True)
+
+        # 4. return the validation with the most remaining days
+        if len(sorted_validations) > 0:
+            return sorted_validations[0]
+        return None
 
     def getLatestValidCalibration(self):
         """Returns the calibration with the most remaining days in calibration.
@@ -704,7 +700,7 @@ class Instrument(ATFolder):
         # 1. get all calibrations
         calibrations = self.getCalibrations()
 
-        # 2. filter out calibrations which are not in progress
+        # 2. filter out calibrations, which are not in progress
         active_calibrations = filter(lambda x: x.isCalibrationInProgress(), calibrations)
 
         # 3. sort by the remaining days in calibration, e.g. [10, 7, 6, 1]

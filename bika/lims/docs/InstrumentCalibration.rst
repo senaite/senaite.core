@@ -180,7 +180,7 @@ If all calibrations are dated in the future, it should return none::
     False
     >>> instrument1.getLatestValidCalibration()
 
-Instruments w/o any calibration should also no valid calibrations::
+Instruments w/o any calibration should return no valid calibrations::
 
     >>> instrument3.getLatestValidCalibration()
 
@@ -360,3 +360,33 @@ The instrument will be available after 7 days::
 
     >>> validation1.getRemainingDaysInValidation()
     7
+
+Since multiple validations might be in place, the instrument needs to know
+about the validation which takes the longes time::
+
+    >>> validation3 = create(instrument1, "InstrumentValidation", title="Validation-3")
+    >>> validation3.setDownFrom(DateTime())
+    >>> validation3.setDownTo(DateTime() + 365)
+
+    >>> instrument1.getLatestValidValidation()
+    <InstrumentValidation at /plone/bika_setup/bika_instruments/instrument-1/instrumentvalidation-3>
+
+Only validations which are currently in progress are returned.
+So if it would start tomorrow, it should not be returned::
+
+    >>> validation3.setDownFrom(DateTime() + 1)
+    >>> validation3.isValidationInProgress()
+    False
+    >>> instrument1.getLatestValidValidation()
+    <InstrumentValidation at /plone/bika_setup/bika_instruments/instrument-1/instrumentvalidation-1>
+
+If all validations are dated in the future, it should return none::
+
+    >>> validation1.setDownFrom(DateTime() + 1)
+    >>> validation1.isValidationInProgress()
+    False
+    >>> instrument1.getLatestValidValidation()
+
+Instruments w/o any validation should return no valid validations::
+
+    >>> instrument3.getLatestValidValidation()
