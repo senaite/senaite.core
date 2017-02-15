@@ -505,8 +505,7 @@ class Instrument(ATFolder):
         return self.objectValues('InstrumentMaintenanceTask')
 
     def getCalibrations(self):
-        """
-        Return all calibration objects related with the instrument
+        """ Return all calibration objects related with the instrument
         """
         return self.objectValues('InstrumentCalibration')
 
@@ -514,7 +513,7 @@ class Instrument(ATFolder):
         """ Returns the certifications of the instrument. Both internal
             and external certifitions
         """
-        return [c for c in self.objectValues('InstrumentCertification') if c]
+        return self.objectValues('InstrumentCertification')
 
     def getValidCertifications(self):
         """ Returns the certifications fully valid
@@ -723,14 +722,12 @@ class Instrument(ATFolder):
         return None
 
     def getValidations(self):
-        """
-        Return all the validations objects related with the instrument
+        """ Return all the validations objects related with the instrument
         """
         return self.objectValues('InstrumentValidation')
 
     def getDocuments(self):
-        """
-        Return all the multifile objects related with the instrument
+        """ Return all the multifile objects related with the instrument
         """
         return self.objectValues('Multifile')
 
