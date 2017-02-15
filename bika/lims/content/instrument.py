@@ -87,18 +87,20 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         widget=SelectionWidget(
             format='select',
             label=_("Method"),
+            visible=False,
         ),
     ),
 
-    HistoryAwareReferenceField('Methods',
+    ReferenceField('Methods',
         vocabulary='_getAvailableMethods',
         allowed_types=('Method',),
         relationship='InstrumentMethods',
         required=0,
         multiValued=1,
         widget=ReferenceWidget(
+            checkbox_bound=0,
             format='select',
-            label=_("Method"),
+            label=_("Methods"),
         ),
     ),
 

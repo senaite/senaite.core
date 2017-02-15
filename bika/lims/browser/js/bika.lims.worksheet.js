@@ -407,7 +407,7 @@ function WorksheetManageResultsView() {
     function load_analysis_method_constraint(analysis_uid, method_uid) {
         if (method_uid === null) {
             // Assume to load the constraints for the currently selected method
-            muid = $('select.listing_select_entry[field="Method"][uid="'+analysis_uid+'"]').val();
+            muid = $('select.listing_string_entry[field="Method"][uid="'+analysis_uid+'"]').val();
             muid = muid ? muid : '';
             load_analysis_method_constraint(analysis_uid, muid);
             return;
@@ -420,8 +420,8 @@ function WorksheetManageResultsView() {
         if (!constraints || constraints.length < 7) {
             return;
         }
-        m_selector = $('select.listing_select_entry[field="Method"][uid="'+analysis_uid+'"]');
-        i_selector = $('select.listing_select_entry[field="Instrument"][uid="'+analysis_uid+'"]');
+        m_selector = $('select.listing_string_entry[field="Method"][uid="'+analysis_uid+'"]');
+        i_selector = $('select.listing_string_entry[field="Instrument"][uid="'+analysis_uid+'"]');
 
         // None option in method selector?
         $(m_selector).find('option[value=""]').remove();
@@ -539,8 +539,8 @@ function WorksheetManageResultsView() {
                    // Set the selected instrument to all the analyses which
                    // that can be done using that instrument. The rest of
                    // of the instrument picklist will not be changed
-                   $('select.listing_select_entry[field="Instrument"] option[value="'+instruid+'"]').parent().find('option[value="'+instruid+'"]').prop("selected", false);
-                   $('select.listing_select_entry[field="Instrument"] option[value="'+instruid+'"]').prop("selected", true);
+                   $('select.listing_string_entry[field="Instrument"] option[value="'+instruid+'"]').parent().find('option[value="'+instruid+'"]').prop("selected", false);
+                   $('select.listing_string_entry[field="Instrument"] option[value="'+instruid+'"]').prop("selected", true);
               },
               error: function(data, jqXHR, textStatus, errorThrown){
                     $(".manage_results_header .instrument")
@@ -557,7 +557,8 @@ function WorksheetManageResultsView() {
      * Change the instruments to be shown for an analysis when the method selected changes
      */
     function loadMethodEventHandlers() {
-        $('table.bika-listing-table select.listing_select_entry[field="Method"]').change(function() {
+        $('table.bika-listing-table select.listing_string_entry[field="Method"]').change(function() {
+          console.log('test');
             var auid = $(this).attr('uid');
             var muid = $(this).val();
             load_analysis_method_constraint(auid, muid);

@@ -121,7 +121,7 @@ class InstrumentsView(BikaListingView):
                 items[x]['WeeksToExpire'] = str(weeks)+" weeks"+" "+str(days)+" days"
 
             methods = obj.getMethods()
-            item["Methods"] = methods
+            items[x]["Methods"] = methods
             urls = []
             titles = []
             for method in methods:
@@ -130,9 +130,9 @@ class InstrumentsView(BikaListingView):
                 titles.append(title)
                 urls.append("<a href='{0}'>{1}</a>".format(url, title))
 
-            item["Method"] = ", ".join(titles)
-            item["replace"]["Methods"] = ", ".join(urls)
-            item["replace"]["Title"] = "<a href='{0}'>{1}</a>".format(
+            items[x]["Methods"] = ", ".join(titles)
+            items[x]["replace"]["Methods"] = ", ".join(urls)
+            items[x]["replace"]["Title"] = "<a href='{0}'>{1}</a>".format(
                 obj.absolute_url(), obj.Title())
 
         return items

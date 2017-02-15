@@ -636,7 +636,7 @@ class ajaxGetInstrumentMethods(BrowserView):
             plone.protect.CheckAuthenticator(self.request)
         except Forbidden:
             return json.dumps(out)
-        bsc = api.get_catalog('bika_setup_catalog')
+        bsc = getToolByName(self, 'bika_setup_catalog')
         results = bsc(portal_type='Instrument', UID=self.request.get("uid", '0'))
         instrument = results[0] if results and len(results) == 1 else None
         if instrument:

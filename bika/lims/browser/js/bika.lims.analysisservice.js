@@ -192,7 +192,7 @@ function AnalysisServiceEditView() {
                 // Insert all methods without instruments into the
                 // methods InOut options widget.
                 insert_manual_methods();
-
+                $(methods_fd).fadeIn('slow');
                 // Delegate remaining actions to Methods change event
                 $(methods_ms).change();
 
