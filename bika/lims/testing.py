@@ -161,8 +161,7 @@ class BikaTestLayer(SimpleTestLayer):
         lsd = LoadSetupData(portal, self.request)
         logger.info('Loading datas...')
         lsd()
-        logger.info('Loading datas finished...')
-
+        logger.info('Loading data finished...')
         logout()
 
 

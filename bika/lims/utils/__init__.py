@@ -594,3 +594,31 @@ def getFromString(obj, string):
             attrobj = None
             break
     return attrobj if attrobj else None
+
+
+def user_fullname(obj, userid):
+    """
+    Returns the user full name as string.
+    """
+    member = obj.portal_membership.getMemberById(userid)
+    if member is None:
+        return userid
+    member_fullname = member.getProperty('fullname')
+    portal_catalog = getToolByName(obj, 'portal_catalog')
+    c = portal_catalog(portal_type='Contact', getUsername=userid)
+    contact_fullname = c[0].getObject().getFullname() if c else None
+    return contact_fullname or member_fullname or userid
+
+
+def user_email(obj, userid):
+    """
+    This function returns the user email as string.
+    """
+    member = obj.portal_membership.getMemberById(userid)
+    if member is None:
+        return userid
+    member_email = member.getProperty('email')
+    portal_catalog = getToolByName(obj, 'portal_catalog')
+    c = portal_catalog(portal_type='Contact', getUsername=userid)
+    contact_email = c[0].getObject().getEmailAddress() if c else None
+    return contact_email or member_email or ''

@@ -15,6 +15,7 @@ from bika.lims.workflow import getTransitionDate
 from bika.lims.permissions import *
 from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.utils import to_utf8, getUsers
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from DateTime import DateTime
 from Products.Archetypes import PloneMessageFactory as PMF
 from plone.app.layout.globals.interfaces import IViewView
@@ -34,9 +35,8 @@ class AnalysisRequestsView(BikaListingView):
 
         request.set('disable_plone.rightcolumn', 1)
 
-        self.catalog = "bika_catalog"
-        self.contentFilter = {'portal_type': 'AnalysisRequest',
-                              'sort_on': 'Created',
+        self.catalog = CATALOG_ANALYSIS_REQUEST_LISTING
+        self.contentFilter = {'sort_on': 'Created',
                               'sort_order': 'reverse',
                               'path': {"query": "/", "level": 0},
                               'cancellation_state': 'active',
@@ -69,7 +69,9 @@ class AnalysisRequestsView(BikaListingView):
 
         self.columns = {
             'getRequestID': {'title': _('Request ID'),
-                             'index': 'getRequestID'},
+                            'attr': 'getRequestID',
+                            'replace_url': 'getSampleURL',
+                            'index': 'getRequestID'},
             'getClientOrderNumber': {'title': _('Client Order'),
                                      'index': 'getClientOrderNumber',
                                      'toggle': True},
@@ -80,10 +82,18 @@ class AnalysisRequestsView(BikaListingView):
                         'index': 'created',
                         'toggle': False},
             'getSample': {'title': _("Sample"),
-                          'toggle': True, },
+                        'attr': 'getSampleID',
+                        'replace_url': 'getSampleURL',
+                        'toggle': True, },
             'BatchID': {'title': _("Batch ID"), 'toggle': True},
-            'SubGroup': {'title': _('Sub-group')},
+            # 'SubGroup': {'title': _('Sub-group')},
             'Client': {'title': _('Client'),
+                    'attr': 'getClientTitle',
+                    'replace_url': 'getClientURL',
+                    'toggle': True},
+            'Province': {'title': _('Province'),
+                       'toggle': True},
+            'District': {'title': _('District'),
                        'toggle': True},
             'getClientReference': {'title': _('Client Ref'),
                                    'index': 'getClientReference',
@@ -107,8 +117,8 @@ class AnalysisRequestsView(BikaListingView):
                             'toggle': True,
                             'index': 'Priority',
                             'sortable': True},
-            'AdHoc': {'title': _('Ad-Hoc'),
-                      'toggle': False},
+            # 'AdHoc': {'title': _('Ad-Hoc'),
+            #           'toggle': False},
             'SamplingDate': {'title': _('Sampling Date'),
                              'index': 'getSamplingDate',
                              'toggle': True},
@@ -146,8 +156,8 @@ class AnalysisRequestsView(BikaListingView):
             'getTemplateTitle': {'title': _('Template'),
                                  'index': 'getTemplateTitle',
                                  'toggle': False},
-            'Printed':          {'title': _('Printed'),
-                                 'toggle': False},
+            'Printed': {'title': _('Printed'),
+                                      'toggle': False},
         }
 
         self.review_states = [
@@ -169,8 +179,10 @@ class AnalysisRequestsView(BikaListingView):
              'columns': ['getRequestID',
                         'getSample',
                         'BatchID',
-                        'SubGroup',
+                        # 'SubGroup',
                         'Client',
+                        'Province',
+                        'District',
                         'Creator',
                         'Created',
                         'getClientOrderNumber',
@@ -184,7 +196,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getStorageLocation',
                         'SamplingDeviation',
                         'Priority',
-                        'AdHoc',
+                        # 'AdHoc',
                         'SamplingDate',
                         'getDateSampled',
                         'getSampler',
@@ -207,8 +219,10 @@ class AnalysisRequestsView(BikaListingView):
              'columns': ['getRequestID',
                         'getSample',
                         'BatchID',
-                        'SubGroup',
+                        # 'SubGroup',
                         'Client',
+                        'Province',
+                        'District',
                         'getProfilesTitle',
                         'getTemplateTitle',
                         'Creator',
@@ -226,7 +240,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getStorageLocation',
                         'SamplingDeviation',
                         'Priority',
-                        'AdHoc',
+                        # 'AdHoc',
                         'getAnalysesNum',
                         'getDateVerified',
                         'state_title']},
@@ -242,7 +256,7 @@ class AnalysisRequestsView(BikaListingView):
              'columns': ['getRequestID',
                         'getSample',
                         'BatchID',
-                        'SubGroup',
+                        # 'SubGroup',
                         'Client',
                         'getProfilesTitle',
                         'getTemplateTitle',
@@ -261,7 +275,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getStorageLocation',
                         'SamplingDeviation',
                         'Priority',
-                        'AdHoc',
+                        # 'AdHoc',
                         'getAnalysesNum',
                         'getDateVerified',
                         'state_title']},
@@ -277,8 +291,10 @@ class AnalysisRequestsView(BikaListingView):
              'columns': ['getRequestID',
                         'getSample',
                         'BatchID',
-                        'SubGroup',
+                        # 'SubGroup',
                         'Client',
+                        'Province',
+                        'District',
                         'getProfilesTitle',
                         'getTemplateTitle',
                         'Creator',
@@ -296,7 +312,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getStorageLocation',
                         'SamplingDeviation',
                         'Priority',
-                        'AdHoc',
+                        # 'AdHoc',
                         'getAnalysesNum',
                         'getDateVerified',
                         'state_title']},
@@ -316,8 +332,10 @@ class AnalysisRequestsView(BikaListingView):
              'columns': ['getRequestID',
                         'getSample',
                         'BatchID',
-                        'SubGroup',
+                        # 'SubGroup',
                         'Client',
+                        'Province',
+                        'District',
                         'getProfilesTitle',
                         'getTemplateTitle',
                         'Creator',
@@ -335,7 +353,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getStorageLocation',
                         'SamplingDeviation',
                         'Priority',
-                        'AdHoc',
+                        # 'AdHoc',
                         'getAnalysesNum',
                         'getDateVerified',
                         'state_title']},
@@ -351,8 +369,10 @@ class AnalysisRequestsView(BikaListingView):
              'columns': ['getRequestID',
                         'getSample',
                         'BatchID',
-                        'SubGroup',
+                        # 'SubGroup',
                         'Client',
+                        'Province',
+                        'District',
                         'getProfilesTitle',
                         'getTemplateTitle',
                         'Creator',
@@ -366,7 +386,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getStorageLocation',
                         'SamplingDeviation',
                         'Priority',
-                        'AdHoc',
+                        # 'AdHoc',
                         'getDateSampled',
                         'getSampler',
                         'getDatePreserved',
@@ -388,8 +408,10 @@ class AnalysisRequestsView(BikaListingView):
              'columns': ['getRequestID',
                         'getSample',
                         'BatchID',
-                        'SubGroup',
+                        # 'SubGroup',
                         'Client',
+                        'Province',
+                        'District',
                         'getProfilesTitle',
                         'getTemplateTitle',
                         'Creator',
@@ -403,7 +425,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getStorageLocation',
                         'SamplingDeviation',
                         'Priority',
-                        'AdHoc',
+                        # 'AdHoc',
                         'getDateSampled',
                         'getSampler',
                         'getDatePreserved',
@@ -423,8 +445,10 @@ class AnalysisRequestsView(BikaListingView):
              'columns': ['getRequestID',
                         'getSample',
                         'BatchID',
-                        'SubGroup',
+                        # 'SubGroup',
                         'Client',
+                        'Province',
+                        'District',
                         'getProfilesTitle',
                         'getTemplateTitle',
                         'Creator',
@@ -438,7 +462,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getStorageLocation',
                         'SamplingDeviation',
                         'Priority',
-                        'AdHoc',
+                        # 'AdHoc',
                         'getDateSampled',
                         'getSampler',
                         'getDatePreserved',
@@ -456,8 +480,10 @@ class AnalysisRequestsView(BikaListingView):
              'columns': ['getRequestID',
                         'getSample',
                         'BatchID',
-                        'SubGroup',
+                        # 'SubGroup',
                         'Client',
+                        'Province',
+                        'District',
                         'getProfilesTitle',
                         'getTemplateTitle',
                         'Creator',
@@ -471,7 +497,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getStorageLocation',
                         'SamplingDeviation',
                         'Priority',
-                        'AdHoc',
+                        # 'AdHoc',
                         'getDateSampled',
                         'getSampler',
                         'getDatePreserved',
@@ -501,8 +527,10 @@ class AnalysisRequestsView(BikaListingView):
              'columns': ['getRequestID',
                         'getSample',
                         'BatchID',
-                        'SubGroup',
+                        # 'SubGroup',
                         'Client',
+                        'Province',
+                        'District',
                         'getProfilesTitle',
                         'getTemplateTitle',
                         'Creator',
@@ -516,7 +544,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getStorageLocation',
                         'SamplingDeviation',
                         'Priority',
-                        'AdHoc',
+                        # 'AdHoc',
                         'getDateSampled',
                         'getSampler',
                         'getDatePreserved',
@@ -536,8 +564,10 @@ class AnalysisRequestsView(BikaListingView):
              'columns':['getRequestID',
                         'getSample',
                         'BatchID',
-                        'SubGroup',
+                        # 'SubGroup',
                         'Client',
+                        'Province',
+                        'District',
                         'getProfilesTitle',
                         'getTemplateTitle',
                         'Creator',
@@ -551,7 +581,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getStorageLocation',
                         'SamplingDeviation',
                         'Priority',
-                        'AdHoc',
+                        # 'AdHoc',
                         'getDateSampled',
                         'getSampler',
                         'getDatePreserved',
@@ -581,8 +611,10 @@ class AnalysisRequestsView(BikaListingView):
              'columns': ['getRequestID',
                         'getSample',
                         'BatchID',
-                        'SubGroup',
+                        # 'SubGroup',
                         'Client',
+                        'Province',
+                        'District',
                         'getProfilesTitle',
                         'getTemplateTitle',
                         'Creator',
@@ -596,7 +628,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getStorageLocation',
                         'SamplingDeviation',
                         'Priority',
-                        'AdHoc',
+                        # 'AdHoc',
                         'getDateSampled',
                         'getSampler',
                         'getDatePreserved',
@@ -627,8 +659,10 @@ class AnalysisRequestsView(BikaListingView):
              'columns': ['getRequestID',
                         'getSample',
                         'BatchID',
-                        'SubGroup',
+                        # 'SubGroup',
                         'Client',
+                        'Province',
+                        'District',
                         'getProfilesTitle',
                         'getTemplateTitle',
                         'Creator',
@@ -642,7 +676,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getStorageLocation',
                         'SamplingDeviation',
                         'Priority',
-                        'AdHoc',
+                        # 'AdHoc',
                         'SamplingDate',
                         'getDateSampled',
                         'getSampler',
@@ -662,8 +696,10 @@ class AnalysisRequestsView(BikaListingView):
              'columns': ['getRequestID',
                         'getSample',
                         'BatchID',
-                        'SubGroup',
+                        # 'SubGroup',
                         'Client',
+                        'Province',
+                        'District',
                         'getProfilesTitle',
                         'getTemplateTitle',
                         'Creator',
@@ -677,7 +713,7 @@ class AnalysisRequestsView(BikaListingView):
                         'getStorageLocation',
                         'SamplingDeviation',
                         'Priority',
-                        'AdHoc',
+                        # 'AdHoc',
                         'getDateSampled',
                         'getSampler',
                         'getDatePreserved',
@@ -694,13 +730,14 @@ class AnalysisRequestsView(BikaListingView):
         on the department filter. It checks the department of each analysis
         service from each analysis belonguing to the given analysis request.
         If department filtering is disabled in bika_setup, will return True.
-        @Obj: it is an analysis request object.
+        @Obj: it is an analysis request brain.
         @return: boolean
         """
         if not self.context.bika_setup.getAllowDepartmentFiltering():
             return True
         # Gettin the department from analysis service
-        deps = obj.getDepartmentUIDs() if hasattr(obj, 'getDepartmentUIDs') else []
+        deps = obj.getDepartmentUIDs if hasattr(obj, 'getDepartmentUIDs')\
+            else []
         result = True
         if deps:
             # Getting the cookie value
@@ -712,195 +749,212 @@ class AnalysisRequestsView(BikaListingView):
             result = len(matches) > 0
         return result
 
+    def folderitems(self, full_objects=False, classic=False):
+        # We need to get the portal catalog here in roder to save process
+        # while iterating over folderitems
+        self.portal_catalog = getToolByName(self.context, 'portal_catalog')
+        return BikaListingView.folderitems(self, full_objects, classic)
+
     def folderitem(self, obj, item, index):
-        # Additional info from AnalysisRequest to be added in the item generated
-        # by default by bikalisting.
+        # Additional info from AnalysisRequest to be added in the item
+        # generated by default by bikalisting.
 
         # Call the folderitem method from the base class
         item = BikaListingView.folderitem(self, obj, item, index)
         if not item:
             return None
-
-        sample = obj.getSample()
-        url = obj.absolute_url()
-        if self.editresults == -1:
-            self.editresults = 1 if getSecurityManager().checkPermission(EditResults, obj) else 0
-        elif self.editresults == 1:
-            url += "/manage_results"
-
-        clientuid = obj.getClientUID()
-        client = self.clients.get(clientuid,None)
-        if not client:
-            client = obj.aq_parent
-            self.clients[clientuid]=client
-
-        item['Client'] = client.Title()
-        if (self.hideclientlink == False):
-            item['replace']['Client'] = "<a href='%s'>%s</a>" % \
-                (client.absolute_url(), client.Title())
-
-        item['Creator'] = self.user_fullname(obj.Creator())
-        item['getRequestID'] = obj.getRequestID()
+        # This variable will contain the full analysis request if there is
+        # need to work with the full object instead of the brain
+        full_object = None
+        # TODO-performance: quering every time not good
+        # extract province and district
+        client = self.portal_catalog(UID=obj.getClientUID)
+        if client:
+            item['Province'] = client[0].getProvince if\
+                client[0].getProvince else ''
+            item['District'] = client[0].getDistrict if\
+                client[0].getDistrict else ''
+        else:
+            item['Province'] = ''
+            item['District'] = ''
+        item['Creator'] = self.user_fullname(obj.Creator)
+        # If we redirect from the folderitems view we should check if the
+        # user has permissions to medify the element or not.
+        item['getRequestID'] = obj.getId
+        url = obj.getURL() + "?check_edit=1"
         item['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
-             (url, item['getRequestID'])
-        item['getSample'] = sample
-        item['replace']['getSample'] = \
-            "<a href='%s'>%s</a>" % (sample.absolute_url(), sample.Title())
+            (url, item['getRequestID'])
+        item['replace']['getProfilesTitle'] =\
+            ", ".join(obj.getProfilesTitleStr)
 
-        item['replace']['getProfilesTitle'] = ", ".join(obj.getProfilesTitle())
-
-        analysesnum = obj.getAnalysesNum()
+        analysesnum = obj.getAnalysesNum
         if analysesnum:
-            item['getAnalysesNum'] = str(analysesnum[0]) + '/' + str(analysesnum[1])
+            item['getAnalysesNum'] = \
+                str(analysesnum[0]) + '/' + str(analysesnum[1])
         else:
             item['getAnalysesNum'] = ''
-
-        batch = obj.getBatch()
-        if batch:
-            item['BatchID'] = batch.getBatchID()
+        item['BatchID'] = obj.getBatchID
+        if obj.getBatchID:
             item['replace']['BatchID'] = "<a href='%s'>%s</a>" % \
-                 (batch.absolute_url(), item['BatchID'])
-        else:
-            item['BatchID'] = ''
+                (obj.getBatchURL, obj.getBatchID)
+        # TODO: SubGroup ???
+        # val = obj.Schema().getField('SubGroup').get(obj)
+        # item['SubGroup'] = val.Title() if val else ''
 
-        val = obj.Schema().getField('SubGroup').get(obj)
-        item['SubGroup'] = val.Title() if val else ''
-
-        sd = obj.getSample().getSamplingDate()
+        date = obj.getSamplingDate
         item['SamplingDate'] = \
-            self.ulocalized_time(sd, long_format=1) if sd else ''
+            self.ulocalized_time(date, long_format=1) if date else ''
+        date = obj.getDateReceived
         item['getDateReceived'] = \
-            self.ulocalized_time(obj.getDateReceived())
+            self.ulocalized_time(date, long_format=1) if date else ''
+        date = obj.getDatePublished
         item['getDatePublished'] = \
-            self.ulocalized_time(getTransitionDate(obj, 'publish'))
+            self.ulocalized_time(date, long_format=1) if date else ''
+        date = obj.getDateVerified
         item['getDateVerified'] = \
-            self.ulocalized_time(getTransitionDate(obj, 'verify'))
+            self.ulocalized_time(date, long_format=1) if date else ''
 
         if self.printwfenabled:
-            item['Printed']= ''
-            printed = obj.getPrinted() if hasattr(obj, 'getPrinted') else "0"
-            print_icon=''
-            if printed=="0":
-                print_icon="<img src='%s/++resource++bika.lims.images/delete.png' title='%s'>" % \
+            item['Printed'] = ''
+            printed = obj.getPrinted if hasattr(obj, 'getPrinted') else "0"
+            print_icon = ''
+            if printed == "0":
+                print_icon = "<img src='%s/++resource++bika.lims.images/delete.png' title='%s'>" % \
                     (self.portal_url, t(_("Not printed yet")))
-            elif printed=="1":
+            elif printed == "1":
                 print_icon="<img src='%s/++resource++bika.lims.images/ok.png' title='%s'>" % \
                     (self.portal_url, t(_("Printed")))
-            elif printed=="2":
-                print_icon="<img src='%s/++resource++bika.lims.images/exclamation.png' title='%s'>" % \
+            elif printed == "2":
+                print_icon = "<img src='%s/++resource++bika.lims.images/exclamation.png' title='%s'>" % \
                     (self.portal_url, t(_("Republished after last print")))
-            item['after']['Printed']=print_icon
+            item['after']['Printed'] = print_icon
+        item['SamplingDeviation'] = obj.getSamplingDeviationTitle
+        item['Priority'] = obj.getPriority
 
-        deviation = sample.getSamplingDeviation()
-        item['SamplingDeviation'] = deviation and deviation.Title() or ''
-        priority = obj.getPriority()
-        item['Priority'] = '' # priority.Title()
-
-        item['getStorageLocation'] = sample.getStorageLocation() and sample.getStorageLocation().Title() or ''
-        item['AdHoc'] = sample.getAdHoc() and True or ''
+        item['getStorageLocation'] = obj.getStorageLocationTitle
 
         after_icons = ""
-        state = self.workflow.getInfoFor(obj, 'worksheetanalysis_review_state')
-        if state == 'assigned':
+        # Getting a dictionary with each workflow id and current state in it
+        states_dict = obj.getObjectWorkflowStates
+        if states_dict.get('worksheetanalysis_review_state', '') == 'assigned':
             after_icons += "<img src='%s/++resource++bika.lims.images/worksheet.png' title='%s'/>" % \
                 (self.portal_url, t(_("All analyses assigned")))
-        if self.workflow.getInfoFor(obj, 'review_state') == 'invalid':
+        if states_dict.get('review_state', '') == 'invalid':
             after_icons += "<img src='%s/++resource++bika.lims.images/delete.png' title='%s'/>" % \
                 (self.portal_url, t(_("Results have been withdrawn")))
-        if obj.getLate():
+        if obj.getLate:
             after_icons += "<img src='%s/++resource++bika.lims.images/late.png' title='%s'>" % \
                 (self.portal_url, t(_("Late Analyses")))
-        if sd and sd > DateTime():
+        if obj.getSamplingDate and obj.getSamplingDate > DateTime():
             after_icons += "<img src='%s/++resource++bika.lims.images/calendar.png' title='%s'>" % \
                 (self.portal_url, t(_("Future dated sample")))
-        if obj.getInvoiceExclude():
+        if obj.getInvoiceExclude:
             after_icons += "<img src='%s/++resource++bika.lims.images/invoice_exclude.png' title='%s'>" % \
                 (self.portal_url, t(_("Exclude from invoice")))
-        if sample.getSampleType().getHazardous():
+        if obj.getHazardous:
             after_icons += "<img src='%s/++resource++bika.lims.images/hazardous.png' title='%s'>" % \
                 (self.portal_url, t(_("Hazardous")))
         if after_icons:
             item['after']['getRequestID'] = after_icons
 
-        item['Created'] = self.ulocalized_time(obj.created())
-
-        contact = obj.getContact()
-        if contact:
-            item['ClientContact'] = contact.Title()
+        item['Created'] = self.ulocalized_time(obj.created)
+        if obj.getContactUID:
+            item['ClientContact'] = obj.getContactFullName
             item['replace']['ClientContact'] = "<a href='%s'>%s</a>" % \
-                (contact.absolute_url(), contact.Title())
+                (obj.getContactURL, obj.getContactFullName)
         else:
             item['ClientContact'] = ""
-
-        SamplingWorkflowEnabled = sample.getSamplingWorkflowEnabled()
-        if SamplingWorkflowEnabled and (not sd or not sd > DateTime()):
+        # TODO-performance: If SamplingWorkflowEnabled, we have to get the
+        # full object to check the user permissions, so far this is
+        # a performance hit.
+        if obj.getSamplingWorkflowEnabled and\
+                (not obj.getSamplingDate or not
+                    obj.getSamplingDate > DateTime()):
             datesampled = self.ulocalized_time(
-                sample.getDateSampled(), long_format=True)
+                obj.getDateSampled, long_format=True)
             if not datesampled:
                 datesampled = self.ulocalized_time(
                     DateTime(), long_format=True)
                 item['class']['getDateSampled'] = 'provisional'
-            sampler = sample.getSampler().strip()
+            sampler = obj.getSampler
             if sampler:
-                item['replace']['getSampler'] = self.user_fullname(sampler)
+                item['replace']['getSampler'] = obj.getSamplerFullName
             if 'Sampler' in self.member.getRoles() and not sampler:
                 sampler = self.member.id
                 item['class']['getSampler'] = 'provisional'
+            # sampling workflow - inline edits for Sampler and Date Sampled
+            if states_dict.get('review_state', '') == 'to_be_sampled':
+                # We need to get the full object in order to check
+                # the permissions
+                full_object = obj.getObject()
+                checkPermission =\
+                    self.context.portal_membership.checkPermission
+                if checkPermission(SampleSample, full_object):
+                    item['required'] = ['getSampler', 'getDateSampled']
+                    item['allow_edit'] = ['getSampler', 'getDateSampled']
+                    # TODO-performance: hit performance while getting the
+                    # sample object...
+                    samplers = getUsers(
+                        full_object.getSample(),
+                        ['Sampler', 'LabManager', 'Manager'])
+                    username = self.member.getUserName()
+                    users = [({
+                        'ResultValue': u,
+                        'ResultText': samplers.getValue(u)})
+                            for u in samplers]
+                    item['choices'] = {'getSampler': users}
+                    Sampler = sampler and sampler or \
+                        (username in samplers.keys() and username) or ''
+                    item['getSampler'] = Sampler
+                else:
+                    datesampled = ''
+                    sampler = ''
         else:
             datesampled = ''
             sampler = ''
         item['getDateSampled'] = datesampled
         item['getSampler'] = sampler
 
-        # sampling workflow - inline edits for Sampler and Date Sampled
-        checkPermission = self.context.portal_membership.checkPermission
-        state = self.workflow.getInfoFor(obj, 'review_state')
-        if state == 'to_be_sampled' \
-                and checkPermission(SampleSample, obj) \
-                and (not sd or not sd > DateTime()):
-            item['required'] = ['getSampler', 'getDateSampled']
-            item['allow_edit'] = ['getSampler', 'getDateSampled']
-            samplers = getUsers(sample, ['Sampler', 'LabManager', 'Manager'])
-            username = self.member.getUserName()
-            users = [({'ResultValue': u, 'ResultText': samplers.getValue(u)})
-                     for u in samplers]
-            item['choices'] = {'getSampler': users}
-            Sampler = sampler and sampler or \
-                (username in samplers.keys() and username) or ''
-            item['getSampler'] = Sampler
-
         # These don't exist on ARs
         # XXX This should be a list of preservers...
         item['getPreserver'] = ''
         item['getDatePreserved'] = ''
-
+        # TODO-performance: If inline preservation wants to be used, we
+        # have to get the full object to check the user permissions, so
+        # far this is a performance hit.
         # inline edits for Preserver and Date Preserved
-        if checkPermission(PreserveSample, obj):
-            item['required'] = ['getPreserver', 'getDatePreserved']
-            item['allow_edit'] = ['getPreserver', 'getDatePreserved']
-            preservers = getUsers(obj, ['Preserver', 'LabManager', 'Manager'])
-            username = self.member.getUserName()
-            users = [({'ResultValue': u, 'ResultText': preservers.getValue(u)})
-                     for u in preservers]
-            item['choices'] = {'getPreserver': users}
-            preserver = username in preservers.keys() and username or ''
-            item['getPreserver'] = preserver
-            item['getDatePreserved'] = self.ulocalized_time(
-                DateTime(),
-                long_format=1)
-            item['class']['getPreserver'] = 'provisional'
-            item['class']['getDatePreserved'] = 'provisional'
+        # if checkPermission(PreserveSample, obj):
+        #     item['required'] = ['getPreserver', 'getDatePreserved']
+        #     item['allow_edit'] = ['getPreserver', 'getDatePreserved']
+        #     preservers = getUsers(obj, ['Preserver', 'LabManager', 'Manager'])
+        #     username = self.member.getUserName()
+        #     users = [({'ResultValue': u, 'ResultText': preservers.getValue(u)})
+        #              for u in preservers]
+        #     item['choices'] = {'getPreserver': users}
+        #     preserver = username in preservers.keys() and username or ''
+        #     item['getPreserver'] = preserver
+        #     item['getDatePreserved'] = self.ulocalized_time(
+        #         DateTime(),
+        #         long_format=1)
+        #     item['class']['getPreserver'] = 'provisional'
+        #     item['class']['getDatePreserved'] = 'provisional'
 
         # Submitting user may not verify results
-        if item['review_state'] == 'to_be_verified':
+        # Thee conditions to improve performance, some functions to check
+        # the condition need to get the full analysis request.
+        if states_dict.get('review_state', '') == 'to_be_verified':
             allowed = api.user.has_permission(
                 VerifyPermission,
                 username=self.member.getUserName())
-            if allowed and not obj.isUserAllowedToVerify(self.member):
-                item['after']['state_title'] = \
-                     "<img src='++resource++bika.lims.images/submitted-by-current-user.png' title='%s'/>" % \
-                     t(_("Cannot verify: Submitted by current user"))
-
+            # TODO-performance: isUserAllowedToVerify getts all analysis
+            # objects inside the analysis request.
+            if allowed:
+                # Gettin the full object if not get before
+                full_object = full_object if full_object else obj.getObject()
+                if not full_object.isUserAllowedToVerify(self.member):
+                    item['after']['state_title'] = \
+                         "<img src='++resource++bika.lims.images/submitted-by-current-user.png' title='%s'/>" % \
+                         t(_("Cannot verify: Submitted by current user"))
         return item
 
     @property

@@ -434,6 +434,10 @@ class IBikaSetupCatalog(Interface):
     "Marker interface for custom catalog"
 
 
+class IBikaCatalogAnalysisRequestListing(Interface):
+    "Marker interface for custom catalog"
+
+
 class IIdServer(Interface):
 
     """ Interface for ID server """

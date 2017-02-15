@@ -144,21 +144,31 @@ class BrowserView(BrowserView):
     def checkPermission(self, perm, obj):
         return self.portal_membership.checkPermission(perm, obj)
 
+    # TODO: user_fullname is deprecated and will be removed in Bika LIMS 3.3.
+    # Use bika.utils.user_fullnameinstead
+    # I was having a problem trying to import the function from bika.lims.utils
+    # so i copied the code here.
     def user_fullname(self, userid):
         member = self.portal_membership.getMemberById(userid)
         if member is None:
             return userid
         member_fullname = member.getProperty('fullname')
-        c = self.portal_catalog(portal_type='Contact', getUsername=userid)
+        portal_catalog = getToolByName(self, 'portal_catalog')
+        c = portal_catalog(portal_type='Contact', getUsername=userid)
         contact_fullname = c[0].getObject().getFullname() if c else None
         return contact_fullname or member_fullname or userid
 
+    # TODO: user_fullname is deprecated and will be removed in Bika LIMS 3.3.
+    # Use bika.utils.user_fullnameinstead.
+    # I was having a problem trying to import the function from bika.lims.utils
+    # so i copied the code here.
     def user_email(self, userid):
         member = self.portal_membership.getMemberById(userid)
         if member is None:
             return userid
         member_email = member.getProperty('email')
-        c = self.portal_catalog(portal_type='Contact', getUsername=userid)
+        portal_catalog = getToolByName(self, 'portal_catalog')
+        c = portal_catalog(portal_type='Contact', getUsername=userid)
         contact_email = c[0].getObject().getEmailAddress() if c else None
         return contact_email or member_email or ''
 

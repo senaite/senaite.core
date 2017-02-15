@@ -55,7 +55,6 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('ClientReference',
-        searchable=True,
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
@@ -79,7 +78,6 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     StringField('ClientSampleID',
-        searchable=True,
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
@@ -147,7 +145,6 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ComputedField('SampleTypeTitle',
-        searchable=True,
         expression="here.getSampleType() and here.getSampleType().Title() or ''",
         widget=ComputedWidget(
             visible=False,
@@ -184,7 +181,6 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ComputedField('SamplePointTitle',
-        searchable = True,
         expression = "here.getSamplePoint() and here.getSamplePoint().Title() or ''",
         widget = ComputedWidget(
             visible=False,
@@ -439,6 +435,12 @@ schema = BikaSchema.copy() + Schema((
             size=20,
         ),
     ),
+    # Another way to obtain a transition date is using getTransitionDate
+    # function. We are using a DateTimeField/Widget here because in some
+    # cases the user may want to change the Received Date.
+    # AnalysisRequest and Sample's DateReceived fields needn't to have
+    # the same value.
+    # This field is updated in workflow_script_receive method.
     DateTimeField('DateReceived',
         mode="rw",
         read_permission=permissions.View,
@@ -595,7 +597,6 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     TextField('Remarks',
-        searchable=True,
         default_content_type='text/x-web-intelligent',
         allowable_content_types = ('text/plain', ),
         default_output_type="text/plain",

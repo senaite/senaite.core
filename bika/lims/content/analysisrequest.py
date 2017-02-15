@@ -37,13 +37,16 @@ from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.browser.widgets import SelectionWidget
 from bika.lims.browser.widgets import RejectionWidget
 from bika.lims.workflow import skip, isBasicTransitionAllowed, getTransitionDate
+from bika.lims.workflow import getTransitionUsers
 from bika.lims.workflow import doActionFor
 from decimal import Decimal
 from zope.interface import implements
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import getUsers, dicts_to_dict
 from bika.lims.utils.analysisrequest import notify_rejection
-
+from bika.lims.utils import user_fullname
+from bika.lims.utils import user_email
+from bika.lims import logger
 from bika.lims.browser.fields import DateTimeField
 from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
 
@@ -57,53 +60,13 @@ except ImportError:
     from zope.app.component.hooks import getSite
 
 
-@indexer(IAnalysisRequest)
-def Priority(instance):
-    priority = instance.getPriority()
-    if priority:
-        return priority.getSortKey()
-
-
-@indexer(IAnalysisRequest)
-def BatchUID(instance):
-    batch = instance.getBatch()
-    if batch:
-        return batch.UID()
-
-
-@indexer(IAnalysisRequest)
-def getDatePublished(instance):
-    return getTransitionDate(instance, 'publish')
-
-
-@indexer(IAnalysisRequest)
-def SamplingRoundUID(instance):
-    sr = instance.getSamplingRound()
-    if sr:
-        return sr.UID()
-
-@indexer(IAnalysisRequest)
-def getDepartmentUIDs(instance):
-    """ Returns department UIDs assigned to the Analyses
-        from this Analysis Request
-    """
-    ans = [an.getObject() for an in instance.getAnalyses()]
-    depts = [an.getService().getDepartment().UID() for an in ans if an.getService().getDepartment()]
-    return depts
-
 schema = BikaSchema.copy() + Schema((
-    StringField(
+    # The ID assigned to the client's request by the lab
+    ComputedField(
         'RequestID',
         searchable=True,
-        mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
-        widget=StringWidget(
-            label=_("Request ID"),
-            description=_("The ID assigned to the client's request by the lab"),
-            visible={'view': 'invisible',
-                     'edit': 'invisible'},
-        ),
+        expression="here.getId()",
+        widget=ComputedWidget(visible=False),
     ),
     ReferenceField(
         'Contact',
@@ -348,6 +311,13 @@ schema = BikaSchema.copy() + Schema((
             showOn=True,
         ),
     ),
+    ComputedField(
+        'BatchUID',
+        expression='here.getBatch().UID() if here.getBatch() else ""',
+        widget=ComputedWidget(
+            visible=False,
+        ),
+    ),
     ReferenceField(
         'SamplingRound',
         allowed_types=('SamplingRound',),
@@ -530,7 +500,7 @@ schema = BikaSchema.copy() + Schema((
             showOn=True,
         ),
     ),
-    # Sample field
+    # This field is a mirror of a field in Sample with the same name
     DateTimeField(
         'DateSampled',
         mode="rw",
@@ -563,7 +533,7 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
         ),
     ),
-    # Sample field
+    # This field is a mirror of a field in Sample with the same name
     StringField(
         'Sampler',
         mode="rw",
@@ -622,7 +592,7 @@ schema = BikaSchema.copy() + Schema((
             },
             render_own_label=True,
         ),
-    ),
+    ),# This field is a mirror of a Sample field with the same name
     DateTimeField(
         'SamplingDate',
         required=1,
@@ -905,7 +875,6 @@ schema = BikaSchema.copy() + Schema((
     ),
     StringField(
         'ClientOrderNumber',
-        searchable=True,
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
@@ -939,7 +908,6 @@ schema = BikaSchema.copy() + Schema((
     # Sample field
     StringField(
         'ClientReference',
-        searchable=True,
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
@@ -974,7 +942,6 @@ schema = BikaSchema.copy() + Schema((
     # Sample field
     StringField(
         'ClientSampleID',
-        searchable=True,
         mode="rw",
         read_permission=permissions.View,
         write_permission=permissions.ModifyPortalContent,
@@ -1336,6 +1303,12 @@ schema = BikaSchema.copy() + Schema((
             },
         )
     ),
+    # Another way to obtain a transition date is using getTransitionDate
+    # function. We are using a DateTimeField/Widget here because in some
+    # cases the user may want to change the Received Date.
+    # AnalysisRequest and Sample's DateReceived fields needn't to have
+    # the same value.
+    # This field is updated in workflow_script_receive method.
     DateTimeField(
         'DateReceived',
         mode="rw",
@@ -1398,7 +1371,6 @@ schema = BikaSchema.copy() + Schema((
     ),
     TextField(
         'Remarks',
-        searchable=True,
         default_content_type='text/x-web-intelligent',
         allowable_content_types=('text/plain',),
         default_output_type="text/plain",
@@ -1438,7 +1410,6 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField(
         'ClientUID',
-        searchable=True,
         expression='here.aq_parent.UID()',
         widget=ComputedWidget(
             visible=False,
@@ -1446,7 +1417,6 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField(
         'SampleTypeTitle',
-        searchable=True,
         expression="here.getSampleType().Title() if here.getSampleType() "
                    "else ''",
         widget=ComputedWidget(
@@ -1455,7 +1425,6 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField(
         'SamplePointTitle',
-        searchable=True,
         expression="here.getSamplePoint().Title() if here.getSamplePoint() "
                    "else ''",
         widget=ComputedWidget(
@@ -1485,8 +1454,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField(
         'ProfilesUID',
-        expression="here.getProfiles() and "
-                   "[profile.UID() for profile in here.getProfiles()] or []",
+        expression="[p.UID() for p in here.getProfiles()] if here.getProfiles() else []",
         widget=ComputedWidget(
             visible=False,
         ),
@@ -1498,6 +1466,160 @@ schema = BikaSchema.copy() + Schema((
         widget=ComputedWidget(
             visible=False,
         ),
+    ),
+    ComputedField(
+        'ReceivedBy',
+        expression='here.getReceivedBy()',
+        default='',
+        widget=ComputedWidget(visible=False,),
+    ),
+    ComputedField(
+        'DateVerified',
+        expression='here.getDateVerified()',
+        default='',
+        widget=ComputedWidget(visible=False,),
+    ),
+    ComputedField(
+        'DatePublished',
+        expression='here.getDatePublished()',
+        default='',
+        widget=ComputedWidget(visible=False,),
+    ),
+    ComputedField(
+        'Priority',
+        searchable=True,
+        expression="here.getPriority().getSortKey() if here.getPriority() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'CreatorFullName',
+        expression="here._getCreatorFullName()",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'CreatorEmail',
+        expression="here._getCreatorEmail()",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'SamplingRoundUID',
+        expression="here.getSamplingRound().UID() if here.getSamplingRound() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'SampleURL',
+        expression="here.getSample().absolute_url() if here.getSample() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'ClientSampleID',
+        expression="here.getSample().getClientSampleID() if here.getSample() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'SamplerFullName',
+        expression="here._getSamplerFullName()",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'SamplerEmail',
+        expression="here._getSamplerEmail()",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'BatchID',
+        expression="here.getBatch().getId() if here.getBatch() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'BatchURL',
+        expression="here.getBatch().getId() if here.getBatch() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'ClientUID',
+        expression="here.getClient().UID() if here.getClient() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'ClientTitle',
+        expression="here.getClient().Title() if here.getClient() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'ClientURL',
+        expression="here.getClient().absolute_url() if here.getClient() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'ContactUsername',
+        expression="here.getContact().getUsername() if here.getContact() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'ContactFullName',
+        expression="here.getContact().getFullname() if here.getContact() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'ContactEmail',
+        expression="here.getContact().getEmailAddress() if here.getContact() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'SampleTypeUID',
+        expression="here.getSampleType().UID() if here.getSampleType() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'SamplePointUID',
+        expression="here.getSamplePoint().UID() if here.getSamplePoint() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'StorageLocationUID',
+        expression="here.getStorageLocation().UID() if here.getStorageLocation() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'ProfilesURL',
+        expression="[p.absolute_url() for p in here.getProfiles()] if here.getProfiles() else []",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'ProfilesTitle',
+        expression="[p.Title() for p in here.getProfiles()] if here.getProfiles() else []",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'ProfilesTitleStr',
+        expression="' '.join([p.Title() for p in here.getProfiles()]) if here.getProfiles() else []",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'TemplateUID',
+        expression="here.getTemplate().UID() if here.getTemplate() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'TemplateURL',
+        expression="here.getTemplate().absolute_url() if here.getTemplate() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'TemplateURL',
+        expression="here.getTemplate().absolute_url() if here.getTemplate() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'TemplateTitle',
+        expression="here.getTemplate().Title() if here.getTemplate() else ''",
+        widget=ComputedWidget(visible=False),
+    ),
+    ComputedField(
+        'AnalysesNum',
+        expression="here._getAnalysesNum()",
+        widget=ComputedWidget(visible=False),
     ),
     ReferenceField(
         'ChildAnalysisRequest',
@@ -1608,7 +1730,6 @@ schema = BikaSchema.copy() + Schema((
     # ResultsInterpretationDepts (due to LIMS-1628)
     TextField(
         'ResultsInterpretation',
-        searchable=True,
         mode="rw",
         default_content_type='text/html',
         # Input content type for the textfield
@@ -1646,7 +1767,6 @@ schema = BikaSchema.copy() + Schema((
                  ),
     StringField(
         'Printed',
-        searchable=True,
         mode="rw",
         read_permission=permissions.View,
         widget=StringWidget(
@@ -1692,18 +1812,13 @@ class AnalysisRequest(BaseFolder):
         from bika.lims.catalog import getCatalog
         return getCatalog(self)
 
-    def getRequestID(self):
-        """ Return the id as RequestID
-        """
-        return safe_unicode(self.getId()).encode('utf-8')
-
     def Title(self):
         """ Return the Request ID as title """
-        return self.getRequestID()
+        return self.getId()
 
     def Description(self):
         """ Return searchable data as Description """
-        descr = " ".join((self.getRequestID(), self.aq_parent.Title()))
+        descr = " ".join((self.getId(), self.aq_parent.Title()))
         return safe_unicode(descr).encode('utf-8')
 
     def getClient(self):
@@ -1711,27 +1826,21 @@ class AnalysisRequest(BaseFolder):
             return self.aq_parent
         if self.aq_parent.portal_type == 'Batch':
             return self.aq_parent.getClient()
+        return ''
 
     def getClientPath(self):
         return "/".join(self.aq_parent.getPhysicalPath())
 
-    def getClientTitle(self):
-        return self.getClient().Title() if self.getClient() else ''
-
-    def getContactTitle(self):
-        return self.getContact().Title() if self.getContact() else ''
-
     def getProfilesTitle(self):
         return [profile.Title() for profile in self.getProfiles()]
 
-    def getTemplateTitle(self):
-        return self.getTemplate().Title() if self.getTemplate() else ''
 
     def setPublicationSpecification(self, value):
         """Never contains a value; this field is here for the UI." \
         """
         return value
 
+    # TODO-performance: Don't get the whole object"
     def getAnalysisCategory(self):
         proxies = self.getAnalyses(full_objects=True)
         value = []
@@ -1741,6 +1850,7 @@ class AnalysisRequest(BaseFolder):
                 value.append(val)
         return value
 
+    # TODO-performance: Don't get the whole object"
     def getAnalysisCategoryIDs(self):
         proxies = self.getAnalyses(full_objects=True)
         value = []
@@ -1804,7 +1914,7 @@ class AnalysisRequest(BaseFolder):
 
     security.declareProtected(View, 'getResponsible')
 
-    def getAnalysesNum(self):
+    def _getAnalysesNum(self):
         """ Return the amount of analyses verified/total in the current AR """
         verified = 0
         total = 0
@@ -2426,52 +2536,105 @@ class AnalysisRequest(BaseFolder):
     security.declarePublic('setSamplingDate')
 
     def setSamplingDate(self, value):
+        """
+        Sets the specified sampling date from the sample.
+        :value: a date as a date object.
+        """
         sample = self.getSample()
         if sample and value:
             sample.setSamplingDate(value)
+            self.Schema()['DateSampled'].set(self, value)
+        elif not sample:
+            logger.warning(
+                "setSamplingDate has failed for Analysis Request %s because "
+                "it hasn't got a sample." % self.id)
+        else:
+            logger.warning(
+                "setSamplingDate has failed for Analysis Request %s because "
+                "'value' doesn't have a value'." % self.id)
 
     security.declarePublic('getSamplingDate')
 
     def getSamplingDate(self):
+        """
+        Gets the specified sampling date from the sample.
+        """
         sample = self.getSample()
         if sample:
             return sample.getSamplingDate()
+        else:
+            return ''
 
     security.declarePublic('setSampler')
 
     def setSampler(self, value):
+        """
+        Sets the sampler to the sample.
+        :value: a user id.
+        """
         sample = self.getSample()
         if sample and value:
             sample.setSampler(value)
-        self.Schema()['Sampler'].set(self, value)
+            self.Schema()['Sampler'].set(self, value)
+        elif not sample:
+            logger.warning(
+                "setSampler has failed for Analysis Request %s because "
+                "it hasn't got a sample." % self.id)
+        else:
+            logger.warning(
+                "setSampler has failed for Analysis Request %s because "
+                "'value' doesn't have a value'." % self.id)
 
     security.declarePublic('getSampler')
 
     def getSampler(self):
+        """
+        Returns the sampler (as a user id) from the sample
+        """
         sample = self.getSample()
         if sample:
             return sample.getSampler()
-        return self.Schema().getField('Sampler').get(self)
+        else:
+            return ''
 
     security.declarePublic('setDateSampled')
 
     def setDateSampled(self, value):
+        """
+        sets the date when the sample has been sampled.
+        :value: the time value
+        """
         sample = self.getSample()
         if sample and value:
             sample.setDateSampled(value)
-        self.Schema()['DateSampled'].set(self, value)
+            self.Schema()['DateSampled'].set(self, value)
+        elif not sample:
+            logger.warning(
+                "setDateSampled has failed for Analysis Request %s because "
+                "it hasn't got a sample." % self.id)
+        else:
+            logger.warning(
+                "setDateSampled has failed for Analysis Request %s because "
+                "'value' doesn't have a value'." % self.id)
 
     security.declarePublic('getDateSampled')
 
     def getDateSampled(self):
+        """
+        Returns the date when the sample has been sampled.
+        """
         sample = self.getSample()
         if sample:
             return sample.getDateSampled()
-        return self.Schema().getField('DateSampled').get(self)
+        else:
+            return ''
 
     security.declarePublic('getDatePublished')
 
     def getDatePublished(self):
+        """
+        Returns the transition date from the Analysis Request object
+        """
         return getTransitionDate(self, 'publish')
 
     security.declarePublic('setSamplePoint')
@@ -2480,7 +2643,15 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample and value:
             sample.setSamplePoint(value)
-        self.Schema()['SamplePoint'].set(self, value)
+            self.Schema()['SamplePoint'].set(self, value)
+        elif not sample:
+            logger.warning(
+                "setSamplePoint has failed for Analysis Request %s because "
+                "it hasn't got a sample." % self.id)
+        else:
+            logger.warning(
+                "setSamplePoint has failed for Analysis Request %s because "
+                "'value' doesn't have a value'." % self.id)
 
     security.declarePublic('getSamplepoint')
 
@@ -2488,7 +2659,8 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getSamplePoint()
-        return self.Schema().getField('SamplePoint').get(self)
+        else:
+            return ''
 
     security.declarePublic('setSampleType')
 
@@ -2496,7 +2668,15 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample and value:
             sample.setSampleType(value)
-        self.Schema()['SampleType'].set(self, value)
+            self.Schema()['SampleType'].set(self, value)
+        elif not sample:
+            logger.warning(
+                "setSampleType has failed for Analysis Request %s because "
+                "it hasn't got a sample." % self.id)
+        else:
+            logger.warning(
+                "setSampleType has failed for Analysis Request %s because "
+                "'value' doesn't have a value'." % self.id)
 
     security.declarePublic('getSampleType')
 
@@ -2504,7 +2684,8 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getSampleType()
-        return self.Schema().getField('SampleType').get(self)
+        else:
+            return ''
 
     security.declarePublic('setClientReference')
 
@@ -2544,15 +2725,75 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample and value:
             sample.setSamplingDeviation(value)
-        self.Schema()['SamplingDeviation'].set(self, value)
+            self.Schema()['SamplingDeviation'].set(self, value)
+        elif not sample:
+            logger.warning(
+                "setSamplingDeviation has failed for Analysis Request %s "
+                "because it hasn't got a sample." % self.id)
+        else:
+            logger.warning(
+                "setSamplingDeviation has failed for Analysis Request %s "
+                "because 'value' doesn't have a value'." % self.id)
 
     security.declarePublic('getSamplingDeviation')
 
     def getSamplingDeviation(self):
+        """
+        It works as a metacolumn.
+        """
         sample = self.getSample()
         if sample:
             return sample.getSamplingDeviation()
-        return self.Schema().getField('SamplingDeviation').get(self)
+        else:
+            return ''
+
+    security.declarePublic('getSamplingDeviationTitle')
+
+    def getSamplingDeviationTitle(self):
+        """
+        It works as a metacolumn.
+        """
+        sd = self.getSamplingDeviation()
+        if sd:
+            return sd.Title()
+        else:
+            return ''
+
+    security.declarePublic('getHazardous')
+
+    def getHazardous(self):
+        """
+        It works as a metacolumn.
+        """
+        sample_type = self.getSampleType()
+        if sample_type:
+            return sample_type.getHazardous()
+        else:
+            return False
+
+    security.declarePublic('getContactURL')
+
+    def getContactURL(self):
+        """
+        It works as a metacolumn.
+        """
+        contact = self.getContact()
+        if contact:
+            return contact.absolute_url()
+        else:
+            return ''
+
+    security.declarePublic('getSamplingWorkflowEnabled')
+
+    def getSamplingWorkflowEnabled(self):
+        """
+        It works as a metacolumn.
+        """
+        sample = self.getSample()
+        if sample:
+            return sample.getSamplingWorkflowEnabled()
+        else:
+            return ''
 
     security.declarePublic('setSampleCondition')
 
@@ -2608,7 +2849,15 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample and value:
             sample.setStorageLocation(value)
-        self.Schema()['StorageLocation'].set(self, value)
+            self.Schema()['StorageLocation'].set(self, value)
+        elif not sample:
+            logger.warning(
+                "setStorageLocation has failed for Analysis Request %s because"
+                " it hasn't got a sample." % self.id)
+        else:
+            logger.warning(
+                "setStorageLocation has failed for Analysis Request %s because"
+                " 'value' doesn't have a value'." % self.id)
 
     security.declarePublic('getStorageLocation')
 
@@ -2616,8 +2865,8 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         if sample:
             return sample.getStorageLocation()
-        return self.Schema().getField('StorageLocation').get(self)
-
+        else:
+            return ''
     security.declarePublic('setAdHoc')
 
     def setAdHoc(self, value):
@@ -2676,6 +2925,8 @@ class AnalysisRequest(BaseFolder):
                  an.getService().getDepartment()]
         return set(depts)
 
+    # TODO-performance: This function is very time consuming because
+    # we are getting all the analysis objects, and services.
     def getDepartmentUIDs(self):
         return [dept.UID() for dept in self.getDepartments()]
 
@@ -2799,6 +3050,44 @@ class AnalysisRequest(BaseFolder):
             return mtool.getMemberById(actor)
         return None
 
+    def getReceivedBy(self):
+        """
+        Returns the User who received the analysis request.
+        :return: the user id
+        """
+        user = getTransitionUsers(self, 'receive', last_user=True)
+        return user[0] if user else ''
+
+    def getDateVerified(self):
+        """
+        Returns the user id who has verified the analysis request.
+        """
+        return getTransitionDate(self, 'verify')
+
+    def _getCreatorFullName(self):
+        """
+        Returns the full name of this analysis request's creator.
+        """
+        return user_fullname(self, self.Creator())
+
+    def _getCreatorEmail(self):
+        """
+        Returns the email of this analysis request's creator.
+        """
+        return user_email(self, self.Creator())
+
+    def _getSamplerFullName(self):
+        """
+        Returns the full name's defined sampler.
+        """
+        return user_fullname(self, self.getSampler())
+
+    def _getSamplerEmail(self):
+        """
+        Returns the email of this analysis request's sampler.
+        """
+        return user_email(self, self.Creator())
+
     def isVerifiable(self):
         """
         Checks it the current Analysis Request can be verified. This is, its
@@ -2844,6 +3133,20 @@ class AnalysisRequest(BaseFolder):
                     break
             return canbeverified
 
+    def getObjectWorkflowStates(self):
+        """
+        This method is used as a metacolumn.
+        Returns a dictionary with the workflow id as key and workflow state as
+        value.
+        :return: {'review_state':'active',...}
+        """
+        workflow = getToolByName(self, 'portal_workflow')
+        states = {}
+        for w in workflow.getWorkflowsFor(self):
+            state = w._getWorkflowStateOf(self).id
+            states[w.state_var] = state
+        return states
+
     def isUserAllowedToVerify(self, member):
         """
         Checks if the specified user has enough privileges to verify the
@@ -2861,6 +3164,8 @@ class AnalysisRequest(BaseFolder):
         if not allowed:
             return False
         # Check if the user is allowed to verify all the contained analyses
+        # TODO-performance: gettin all analysis each time this function is
+        # called
         notallowed = [a for a in self.getAnalyses(full_objects=True)
                       if not a.isUserAllowedToVerify(member)]
         return not notallowed
@@ -2935,7 +3240,8 @@ class AnalysisRequest(BaseFolder):
         workflow = getToolByName(self, 'portal_workflow')
         # noinspection PyCallingNonCallable
         self.setDateReceived(DateTime())
-        self.reindexObject(idxs=["review_state", "getDateReceived", ])
+        self.reindexObject(idxs=[
+            "review_state", "getDateReceived", "getReceivedBy" ])
         # receive the AR's sample
         sample = self.getSample()
         if not skip(sample, 'receive', peek=True):
@@ -3015,7 +3321,7 @@ class AnalysisRequest(BaseFolder):
     def workflow_script_verify(self):
         if skip(self, "verify"):
             return
-        self.reindexObject(idxs=["review_state", ])
+        self.reindexObject(idxs=["review_state", "getDateVerified"])
         if "verify all analyses" not in self.REQUEST['workflow_skiplist']:
             # verify all analyses in this AR.
             analyses = self.getAnalyses(review_state='to_be_verified')
@@ -3042,7 +3348,8 @@ class AnalysisRequest(BaseFolder):
     def workflow_script_publish(self):
         if skip(self, "publish"):
             return
-        self.reindexObject(idxs=["review_state", "getDatePublished", ])
+        self.reindexObject(idxs=[
+            "review_state", "getDatePublished", "getDatePublished"])
         if "publish all analyses" not in self.REQUEST['workflow_skiplist']:
             # publish all analyses in this AR. (except not requested ones)
             analyses = self.getAnalyses(review_state='verified')

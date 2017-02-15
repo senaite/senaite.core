@@ -14,6 +14,8 @@ from Products.CMFPlone.utils import _createObjectByType
 from bika.lims.utils import tmpID
 from bika.lims.permissions import *
 from bika.lims.utils import tmpID
+from bika.lims.catalog import setup_catalogs
+from bika.lims.catalog import getCatalogDefinitions
 import traceback
 import sys
 import transaction
@@ -44,6 +46,7 @@ def upgrade(tool):
     setup.runImportStepFromProfile('profile-bika.lims:default', 'catalog')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'propertiestool')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'skins')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'toolset')
     setup.runImportStepFromProfile(
         'profile-bika.lims:default', 'portlets', run_dependencies=False)
 
@@ -90,9 +93,16 @@ def upgrade(tool):
     bc = getToolByName(portal, 'bika_catalog', None)
     delIndexAndColumn(bc, 'getProfilesTitle')
 
+    # Adding two columns for client data
+    addColumnsForClient(portal)
+
     # Clean and rebuild affected catalogs (if required)
     logger.info("Cleaning and rebuilding...")
     cleanAndRebuildIfNeeded(portal)
+    # Updating lims catalogs if there is any change in them
+    logger.info("Updating catalogs if needed...")
+    setup_catalogs(portal, getCatalogDefinitions())
+    logger.info("Catalogs updated")
 
     return True
 
@@ -213,6 +223,7 @@ def create_samplingcoordinator(portal):
     addIndex(bc, 'getScheduledSamplingSampler', 'FieldIndex')
     transaction.commit()
 
+
 def departments(portal):
     """ To add department indexes to the catalogs """
     bc = getToolByName(portal, 'bika_catalog')
@@ -220,6 +231,18 @@ def departments(portal):
     addIndex(bc, 'getDepartmentUIDs', 'KeywordIndex')
     addIndex(bac, 'getDepartmentUID', 'KeywordIndex')
     transaction.commit()
+
+
+def addColumnsForClient(portal):
+    """
+    Add columns to portal catalog in order to use them in
+    analysisrequests listings.
+    """
+    pc = getToolByName(portal, 'portal_catalog')
+    addColumn(pc, 'getProvince')
+    addColumn(pc, 'getDistrict')
+    transaction.commit()
+
 
 def create_CAS_IdentifierType(portal):
     """LIMS-1391 The CAS Nr IdentifierType is normally created by
@@ -361,6 +384,19 @@ def addIndex(catalog, index, indextype):
         except:
             pass
 
+
+def addColumn(cat, col):
+    if col not in cat.schema():
+        try:
+            cat.addColumn(col)
+            logger.info('Column %s added to %s.' % (col, cat.id))
+            if catalog.id not in cleanrebuild:
+                cleanrebuild.append(catalog.id)
+        except:
+            logger.error(
+                'Catalog column %s error while adding to %s.' % (col, cat.id))
+
+
 def addIndexAndColumn(catalog, index, indextype):
     if index not in catalog.indexes():
         try:
@@ -378,7 +414,6 @@ def addIndexAndColumn(catalog, index, indextype):
 
 def cleanAndRebuildIfNeeded(portal):
     for c in cleanrebuild:
-        logger.info('Cleaning and rebuilding %s...' % c)
         try:
             catalog = getToolByName(portal, c)
             catalog.clearFindAndRebuild()

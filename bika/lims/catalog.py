@@ -12,10 +12,121 @@ from Products.ZCatalog.ZCatalog import ZCatalog
 from bika.lims.interfaces import IBikaCatalog
 from bika.lims.interfaces import IBikaAnalysisCatalog
 from bika.lims.interfaces import IBikaSetupCatalog
+from bika.lims.interfaces import IBikaCatalogAnalysisRequestListing
 from bika.lims import logger
 import sys
 import traceback
+import copy
 from zope.interface import implements
+import transaction
+
+
+# Using a variable to avoid plain strings in code
+CATALOG_ANALYSIS_REQUEST_LISTING = 'bika_catalog_analysisrequest_listing'
+
+_catalogs_definition = {
+    # This catalog contains the metacolumns to list patients in bikalisting
+    CATALOG_ANALYSIS_REQUEST_LISTING: {
+        'types':   ['AnalysisRequest', ],
+        'indexes': {
+            # Minimum indexes for bika_listing
+            # TODO: Can be removed?
+            'id': 'FieldIndex',
+            'getId': 'FieldIndex',
+            'created': 'DateIndex',
+            'Creator': 'FieldIndex',
+            # TODO: Can be removed? Same as id
+            'sortable_title': 'FieldIndex',
+            'review_state': 'FieldIndex',
+            'cancellation_state': 'FieldIndex',
+            # TODO-catalog: can be removed?
+            'portal_type': 'FieldIndex',
+            'UID': 'FieldIndex',
+            'getBatchUID': 'FieldIndex',
+            'getClientUID': 'FieldIndex',
+            'getSampleUID': 'FieldIndex',
+            'getDepartmentUIDs': 'KeywordIndex',
+            'getDateSampled': 'DateIndex',
+            'getSamplingDate': 'DateIndex',
+            'getSampler': 'FieldIndex',
+            'getDateReceived': 'DateIndex',
+            'getReceivedBy': 'FieldIndex',
+            'getDateVerified': 'DateIndex',
+            'getDatePublished': 'DateIndex'
+        },
+        'columns': [
+            'UID',
+            'getId',
+            'Title',
+            'created',
+            'Creator',
+            'getCreatorFullName',
+            'getCreatorEmail',
+            'review_state',
+            'getObjectWorkflowStates',
+            'getPhysicalPath',
+            'getSampleUID',
+            # Used to print the ID of the Sample in lists
+            'getSampleID',
+            # Used to create add an anchor to Sample ID that redirects to
+            # the Sample view.
+            'getSampleURL',
+            'getClientOrderNumber',
+            'getClientReference',
+            'getClientSampleID',
+            'getSampler',
+            'getSamplerFullName',
+            'getSamplerEmail',
+            'getBatchUID',
+            #  Used to print the ID of the Batch in lists
+            'getBatchID',
+            'getBatchURL',
+            'getClientUID',
+            'getClientTitle',
+            'getClientURL',
+            'getContactUID',
+            'getContactUsername',
+            'getContactEmail',
+            'getContactURL',
+            'getContactFullName',
+            'getSampleTypeUID',
+            'getSampleTypeTitle',
+            'getSamplePointUID',
+            'getSamplePointTitle',
+            'getStorageLocationUID',
+            'getStorageLocationTitle',
+            'getPriority',
+            'getSamplingDate',
+            'getDateSampled',
+            'getDateReceived',
+            'getDateVerified',
+            'getDatePublished',
+            'getProfilesUID',
+            'getProfilesURL',
+            'getProfilesTitle',
+            'getProfilesTitleStr',
+            'getTemplateUID',
+            'getTemplateURL',
+            'getTemplateTitle',
+            'getAnalysesNum',
+            'getPrinted',
+            'getSamplingDeviationTitle',
+            'getLate',
+            'getInvoiceExclude',
+            'getHazardous',
+            'getSamplingWorkflowEnabled',
+            'getDepartmentUIDs',
+
+        ]
+    }
+}
+
+
+def getCatalogDefinitions():
+    """
+    Returns a dictionary with catalog definitions
+    """
+    return _catalogs_definition
 
 
 def getCatalog(instance, field='UID'):
@@ -64,17 +175,25 @@ class BikaCatalog(CatalogTool):
 
         def indexObject(obj, path):
             self.reindexObject(obj)
+        logger.info('Cleaning and rebuilding %s...' % self.id)
+        try:
+            at = getToolByName(self, 'archetype_tool')
+            types = [k for k, v in at.catalog_map.items()
+                     if self.id in v]
 
-        at = getToolByName(self, 'archetype_tool')
-        types = [k for k, v in at.catalog_map.items()
-                 if self.id in v]
+            self.manage_catalogClear()
+            portal = getToolByName(self, 'portal_url').getPortalObject()
+            portal.ZopeFindAndApply(portal,
+                                    obj_metatypes=types,
+                                    search_sub=True,
+                                    apply_func=indexObject)
+        except:
+            logger.error(traceback.format_exc())
+            e = sys.exc_info()
+            logger.error(
+                "Unable to clean and rebuild %s due to: %s" % (self.id, e))
+        logger.info('%s cleaned and rebuilt' % self.id)
 
-        self.manage_catalogClear()
-        portal = getToolByName(self, 'portal_url').getPortalObject()
-        portal.ZopeFindAndApply(portal,
-                                obj_metatypes=types,
-                                search_sub=True,
-                                apply_func=indexObject)
 
 InitializeClass(BikaCatalog)
 
@@ -104,17 +223,25 @@ class BikaAnalysisCatalog(CatalogTool):
 
         def indexObject(obj, path):
             self.reindexObject(obj)
+        logger.info('Cleaning and rebuilding %s...' % self.id)
+        try:
+            at = getToolByName(self, 'archetype_tool')
+            types = [k for k, v in at.catalog_map.items()
+                     if self.id in v]
 
-        at = getToolByName(self, 'archetype_tool')
-        types = [k for k, v in at.catalog_map.items()
-                 if self.id in v]
+            self.manage_catalogClear()
+            portal = getToolByName(self, 'portal_url').getPortalObject()
+            portal.ZopeFindAndApply(portal,
+                                    obj_metatypes=types,
+                                    search_sub=True,
+                                    apply_func=indexObject)
+        except:
+            logger.error(traceback.format_exc())
+            e = sys.exc_info()
+            logger.error(
+                "Unable to clean and rebuild %s due to: %s" % (self.id, e))
+        logger.info('%s cleaned and rebuilt' % self.id)
 
-        self.manage_catalogClear()
-        portal = getToolByName(self, 'portal_url').getPortalObject()
-        portal.ZopeFindAndApply(portal,
-                                obj_metatypes=types,
-                                search_sub=True,
-                                apply_func=indexObject)
 
 InitializeClass(BikaAnalysisCatalog)
 
@@ -144,22 +271,81 @@ class BikaSetupCatalog(CatalogTool):
 
         def indexObject(obj, path):
             self.reindexObject(obj)
+        logger.info('Cleaning and rebuilding %s...' % self.id)
+        try:
+            at = getToolByName(self, 'archetype_tool')
+            types = [k for k, v in at.catalog_map.items()
+                     if self.id in v]
 
-        at = getToolByName(self, 'archetype_tool')
-        types = [k for k, v in at.catalog_map.items()
-                 if self.id in v]
+            self.manage_catalogClear()
+            portal = getToolByName(self, 'portal_url').getPortalObject()
+            portal.ZopeFindAndApply(portal,
+                                    obj_metatypes=types,
+                                    search_sub=True,
+                                    apply_func=indexObject)
+        except:
+            logger.error(traceback.format_exc())
+            e = sys.exc_info()
+            logger.error(
+                "Unable to clean and rebuild %s due to: %s" % (self.id, e))
+        logger.info('%s cleaned and rebuilt' % self.id)
 
-        self.manage_catalogClear()
-        portal = getToolByName(self, 'portal_url').getPortalObject()
-        portal.ZopeFindAndApply(portal,
-                                obj_metatypes=types,
-                                search_sub=True,
-                                apply_func=indexObject)
 
 InitializeClass(BikaSetupCatalog)
 
 
-def setup_catalogs(portal, catalogs_definition):
+class BikaCatalogAnalysisRequestListing(CatalogTool):
+    """
+    Catalog to list analysis requests in BikaListing
+    """
+    implements(IBikaCatalogAnalysisRequestListing)
+    title = 'Bika Catalog Analysis Request Listing'
+    id = CATALOG_ANALYSIS_REQUEST_LISTING
+    portal_type = meta_type = 'BikaCatalogAnalysisRequestListing'
+    plone_tool = 1
+    security = ClassSecurityInfo()
+    _properties = (
+      {'id': 'title', 'type': 'string', 'mode': 'w'},)
+
+    def __init__(self):
+        ZCatalog.__init__(self, self.id)
+
+    security.declareProtected(ManagePortal, 'clearFindAndRebuild')
+
+    def clearFindAndRebuild(self):
+        """Empties catalog, then finds all contentish objects (i.e. objects
+           with an indexObject method), and reindexes them.
+           This may take a long time.
+        """
+        def indexObject(obj, path):
+            self.reindexObject(obj)
+            transaction.commit()
+        logger.info('Cleaning and rebuilding %s...' % self.id)
+        try:
+            at = getToolByName(self, 'archetype_tool')
+            types = [k for k, v in at.catalog_map.items()
+                     if self.id in v]
+            self.manage_catalogClear()
+            portal = getToolByName(self, 'portal_url').getPortalObject()
+            portal.ZopeFindAndApply(
+                portal,
+                obj_metatypes=types,
+                search_sub=True,
+                apply_func=indexObject)
+        except:
+            logger.error(traceback.format_exc())
+            e = sys.exc_info()
+            logger.error(
+                "Unable to clean and rebuild %s due to: %s" % (self.id, e))
+        logger.info('%s cleaned and rebuilt' % self.id)
+
+
+InitializeClass(BikaCatalogAnalysisRequestListing)
+
+
+def setup_catalogs(
+        portal, catalogs_definition={},
+        force_reindex=False, catalog_extensions={}):
     """
     Setup the given catalogs. Redefines the map between content types and
     catalogs and then checks the indexes and metacolumns, if one index/column
@@ -180,23 +366,131 @@ def setup_catalogs(portal, catalogs_definition):
                 ]
             }
         }
+    :force_reindex: boolean to reindex the catalogs even if there is no need
+        to do so.
+    :catalog_extensions: a list of dictionaris with more elements to add to the
+        ones defined in catalogs_definition. This variable should be used to
+        add more columns in a catalog from another addon of bika.
+        {
+            'types': ['ContentType', ],
+            'indexes': {
+                'getDoctorUID': 'FieldIndex',
+                ...
+            },
+            'columns': [
+                'AnotherTitle',
+                ...
+            ]
+        }
     """
-
+    # If not given catalogs_definition, use the LIMS one
+    if not catalogs_definition:
+        catalogs_definition = getCatalogDefinitions()
     archetype_tool = getToolByName(portal, 'archetype_tool')
+    # Making a copy of catalogs_definition and adding the catalog extensions
+    # if required
+    catalogs_definition_extended_copy = {}
+    if catalog_extensions:
+        catalogs_definition_extended_copy = _merge_both_catalogs(
+            getCatalogDefinitions(), catalog_extensions)
+    # Merging the extended catalogs definition with the catalogs definition
+    catalogs_definition_copy = _merge_both_catalogs(
+        catalogs_definition_extended_copy, catalogs_definition)
     # Mapping content types in catalogs
     # This variable will be used to clean reindex the catalog. Saves the
     # catalogs ids
-    clean_and_rebuild = _map_content_types(archetype_tool, catalogs_definition)
+    clean_and_rebuild = _map_content_types(
+        archetype_tool, catalogs_definition_copy)
     # Indexing
-    for cat_id in catalogs_definition.keys():
+    for cat_id in catalogs_definition_copy.keys():
         reindex = False
         reindex = _setup_catalog(
-            portal, cat_id, catalogs_definition.get(cat_id, {}))
-        if reindex and cat_id not in clean_and_rebuild:
+            portal, cat_id, catalogs_definition_copy.get(cat_id, {}))
+        if (reindex or force_reindex) and (cat_id not in clean_and_rebuild):
             # add the catalog if it has not been added before
             clean_and_rebuild.append(cat_id)
     # Reindex the catalogs which needs it
     _cleanAndRebuildIfNeeded(portal, clean_and_rebuild)
+
+
+def _merge_both_catalogs(catalogs_definition, catalog_extensions):
+    """
+    Merges two dictionaries and returns a new one with the merge of both
+    :catalogs_definition: a dictionary like
+        {
+            CATALOG_ID: {
+                'types':   ['ContentType', ...],
+                'indexes': {
+                    'UID': 'FieldIndex',
+                    ...
+                },
+                'columns': [
+                    'Title',
+                    ...
+                ]
+            }
+        }
+    :catalog_extensions: the catalog to merge into catalogs_definition
+        {
+            CATALOG_ID: {
+                'types':   ['ContentType', ...],
+                'indexes': {
+                    'UID': 'FieldIndex',
+                    ...
+                },
+                'columns': [
+                    'Title',
+                    ...
+                ]
+            }
+        }
+    :return: a merge of the dictionaries from above with the same format.
+    """
+
+    result_dict = copy.deepcopy(catalogs_definition)
+    ext_cat_ids = catalog_extensions.keys()
+    if ext_cat_ids:
+        original_dict_keys = result_dict.keys()
+        for ext_cat_id in ext_cat_ids:
+            if ext_cat_id in original_dict_keys:
+                try:
+                    # If catalog id is found in the original catalog
+                    # definition, add the extension info to it
+                    # Getting the types to add
+                    ext_cat_types_info =\
+                        catalog_extensions[ext_cat_id].get('types', [])
+                    # Getting the indexes to add
+                    ext_cat_indexes_info = \
+                        catalog_extensions[ext_cat_id].get('indexes', {})
+                    # Getting the columns to add
+                    ext_cat_columns_info =\
+                        catalog_extensions[ext_cat_id].get('columns', [])
+                    # Adding the types
+                    l_types = result_dict[ext_cat_id].get('types', [])
+                    l_types += ext_cat_types_info
+                    result_dict[ext_cat_id]['types'] = l_types
+                    # Adding the indexes
+                    d_idx = result_dict[ext_cat_id].get('indexes', {})
+                    d_idx.update(ext_cat_indexes_info)
+                    result_dict[ext_cat_id]['indexes'] = d_idx
+                    # Adding the columns
+                    l_cols = result_dict[ext_cat_id].get('columns', [])
+                    l_cols += ext_cat_columns_info
+                    result_dict[ext_cat_id]['columns'] = l_cols
+                except:
+                    logger.error(
+                        'An error occured while updating the catalog %s due '
+                        'to the following errot:' % ext_cat_id)
+                    logger.error(traceback.format_exc())
+            else:
+                # If catalog id is not found in the original catalog
+                # definition, definition, rise an info and create the new dict
+                logger.info(
+                    "Catalog %s doesn't exist in Bika LIMS catalog "
+                    "definitions dictionary. A new catalog definition"
+                    " might be created." % ext_cat_id)
+                result_dict[ext_cat_id] = catalog_extensions[ext_cat_id]
+    return result_dict
 
 
 def _map_content_types(archetype_tool, catalogs_definition):
@@ -352,7 +646,7 @@ def _delIndex(catalog, index):
     """
     if index in catalog.indexes():
         try:
-            catalog.delIndex(index, indextype)
+            catalog.delIndex(index)
             logger.info(
                 'Catalog index %s deleted from %s.' % (index, catalog.id))
             return True
@@ -391,16 +685,8 @@ def _cleanAndRebuildIfNeeded(portal, cleanrebuild):
     :cleanrebuild: a list with catalog ids
     """
     for cat in cleanrebuild:
-        logger.info('Cleaning and rebuilding %s...' % cat)
-        try:
-            catalog = getToolByName(portal, cat)
-            if catalog:
-                catalog.clearFindAndRebuild()
-                logger.info('%s cleaned and rebuilt' % cat)
-            else:
-                logger.info('%s do not found' % cat)
-        except:
-            logger.error(traceback.format_exc())
-            e = sys.exc_info()
-            logger.error(
-                "Unable to clean and rebuild %s due to: %s" % (cat, e))
+        catalog = getToolByName(portal, cat)
+        if catalog:
+            catalog.clearFindAndRebuild()
+        else:
+            logger.warning('%s do not found' % cat)
