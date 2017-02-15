@@ -22,9 +22,11 @@ CATALOG_ANALYSIS_LISTING = 'bika_analysis_catalog'
 
 bika_catalog_analysis_listing_definition = {
     # This catalog contains the metacolumns to list
-    # analysisrequests in bikalisting
+    # analyses in bikalisting
     CATALOG_ANALYSIS_LISTING: {
         'types':   ['Analysis', 'ReferenceAnalysis', 'DuplicateAnalysis', ],
+        # If it is a an Analysis, its parent will be a Analysis Request
+        # If it is a an Reference Analysis its parent is a Reference Sample
         'indexes': {
             # Minimum indexes for bika_listing
             # TODO: Can be removed?
@@ -40,7 +42,8 @@ bika_catalog_analysis_listing_definition = {
             'portal_type': 'FieldIndex',
             'UID': 'FieldIndex',
             'allowedRolesAndUsers': 'KeywordIndex',
-            'getDepartmentUIDs': 'KeywordIndex',
+            'getParentUID': 'FieldIndex',
+            'getDepartmentUID': 'FieldIndex',
             'getDueDate': 'DateIndex',
             'getDateSampled': 'DateIndex',
             'getDateReceived': 'DateIndex',
@@ -68,11 +71,57 @@ bika_catalog_analysis_listing_definition = {
             'created',
             'Creator',
             'portal_type',
+            # TODO-catalog: review_state and getObjectWorkflowStates contains
+            # the same state
+            'review_state',
+            'worksheetanalysis_review_state',
             'getObjectWorkflowStates',
             'getRequestID',
             'getReferenceAnalysesGroupID',
             'getResultCaptureDate',
             'getPriority',
+            'getParentURL',
+            'getParentTitle',
+            'getAllowedMethodsAsTuples',
+            'getResult',
+            'getCalculation'
+            'getUnit',
+            'getKeyword',
+            'getCategoryTitle',
+            'getInterimFields,'
+            'getSamplePartitionID',
+            'getRemarks',
+            'getRetested',
+            'getExpiryDate',
+            'getDueDate',
+            # Used in duplicated analysis objects
+            'getAnalysisPortalType',
+            'isInstrumentValid',
+            'getCanMethodBeChanged',
+            # Columns from method
+            'getMethodUID',
+            'getMethodTitle',
+            'getMethodURL',
+            'getInstrumentUID',
+            'getAnalyst',
+            'getAnalystName',
+            'hasAttachment',
+            'getNumberOfRequiredVerifications',
+            'getSubmittedBy',
+            'getVerificators',
+            'getIsReflexAnalysis',
+            # TODO-performance: All that comes from services could be
+            # defined as a service metacolumn instead of an analysis one
+            'getServiceTitle',
+            'getResultOptionsFromService',
+            'getServiceUID',
+            'getDepartmentUID',
+            'getInstrumentEntryOfResults',
+            'getServiceDefaultInstrumentUID',
+            'getServiceDefaultInstrumentTitle',
+            'getServiceDefaultInstrumentURL',
+
+
         ]
     }
 }

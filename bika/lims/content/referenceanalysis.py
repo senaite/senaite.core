@@ -419,6 +419,12 @@ class ReferenceAnalysis(BaseContent):
         else:
             return serv.getPrecision(result)
 
+    def getParentUID(self):
+        """
+        It is used as metacolumn
+        """
+        return self.aq_parent.UID()
+
     def isVerifiable(self):
         """
         Checks it the current analysis can be verified. This is, its not a

@@ -10,12 +10,13 @@ from bika.lims.browser.analyses import AnalysesView
 from bika.lims.permissions import *
 from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
+from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 
 
 class AggregatedAnalysesView(AnalysesView):
     """ Displays a list of Analyses in a table.
         Visible InterimFields from all analyses are added to self.columns[].
-        Keyword arguments are passed directly to bika_analysis_catalog.
+        Keyword arguments are passed directly to CATALOG_ANALYSIS_LISTING.
     """
 
     def __init__(self, context, request, **kwargs):
@@ -24,7 +25,7 @@ class AggregatedAnalysesView(AnalysesView):
                                            show_categories=False,
                                            expand_all_categories=False)
         self.title = _("Analyses pending")
-        self.catalog = "bika_analysis_catalog"
+        self.catalog = CATALOG_ANALYSIS_LISTING
         self.contentFilter = dict(kwargs)
         self.contentFilter['portal_type'] = 'Analysis'
         self.contentFilter['sort_on'] = 'created'
@@ -41,6 +42,8 @@ class AggregatedAnalysesView(AnalysesView):
         self.form_id = 'analyses_form'
         self.portal = getToolByName(context, 'portal_url').getPortalObject()
         self.portal_url = self.portal.absolute_url()
+        # Get temp objects that are too time consuming to obtain every time
+        self.bika_catalog = getToolByName(context, 'bika_catalog')
 
         # each editable item needs it's own allow_edit
         # which is a list of field names.
@@ -116,27 +119,32 @@ class AggregatedAnalysesView(AnalysesView):
         if not self.context.bika_setup.getAllowDepartmentFiltering():
             return True
         # Gettin the department from analysis service
-        serv_dep = obj.getService().getDepartment()
+        serv_dep = obj.getDepartmentUID
         result = True
         if serv_dep:
             # Getting the cookie value
             cookie_dep_uid = self.request.get('filter_by_department_info', '')
             # Comparing departments' UIDs
-            result = True if serv_dep.UID() in\
+            result = True if serv_dep in\
                 cookie_dep_uid.split(',') else False
         return result
 
     def folderitem(self, obj, item, index):
-        parent = obj.aq_parent
         # Analysis Request
-        item['AnalysisRequest'] = parent.Title()
-        anchor = '<a href="%s">%s</a>' % (parent.absolute_url(), parent.Title())
+        item['AnalysisRequest'] = obj.getAnalysisRequestTitle
+        anchor = \
+            '<a href="%s">%s</a>' % \
+            (obj.getAnalysisRequestURL, obj.getAnalysisRequestTitle)
         item['replace']['AnalysisRequest'] = anchor
         # Worksheet
         item['Worksheet'] = ''
-        wss = obj.getBackReferences('WorksheetAnalysis')
+        wss = self.bika_catalog(getAnalysesUIDs={
+                    "query": obj.UID,
+                    "operator": "or"
+                })
         if wss and len(wss) > 0:
-            ws = wss[0]
+            # TODO-performance: don't get the whole object
+            ws = wss[0].getObject()
             item['Worksheet'] = ws.Title()
             anchor = '<a href="%s">%s</a>' % (ws.absolute_url(), ws.Title())
             item['replace']['Worksheet'] = anchor

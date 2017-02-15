@@ -661,6 +661,25 @@ class Analysis(BaseContent):
             return self.getAnalysis().aq_parent.getSample()
         return self.aq_parent.getSample()
 
+    def getSampleTypeUID(self):
+        """
+        It is a metacolumn
+        """
+        sample = self.getSample()
+        if sample:
+            return sample.getSampleType().UID()
+        else:
+            ''
+
+    def getResultOptionsFromService(self):
+        """
+        It is a metacolumn.
+        Returns a list of dictionaries from the field ResultOptions from the
+        analysis service.
+        """
+        service = self.getService()
+        return service.getResultOptions()
+
     def getResultsRange(self, specification=None):
         """ Returns the valid results range for this analysis, a
             dictionary with the following keys: 'keyword', 'uid', 'min',
@@ -916,28 +935,63 @@ class Analysis(BaseContent):
         return uid in self.getAllowedMethods()
 
     def getAllowedMethods(self, onlyuids=True):
-        """ Returns the allowed methods for this analysis. If manual
-            entry of results is set, only returns the methods set
-            manually. Otherwise (if Instrument Entry Of Results is set)
-            returns the methods assigned to the instruments allowed for
-            this Analysis
+        """
+        Returns the allowed methods for this analysis. If manual
+        entry of results is set, only returns the methods set
+        manually. Otherwise (if Instrument Entry Of Results is set)
+        returns the methods assigned to the instruments allowed for
+        this Analysis
         """
         service = self.getService()
         uids = []
 
-        if service.getInstrumentEntryOfResults() == True:
+        if service.getInstrumentEntryOfResults():
             uids = [ins.getRawMethod() for ins in service.getInstruments()]
 
         else:
             # Get only the methods set manually
             uids = service.getRawMethods()
 
-        if onlyuids == False:
+        if not onlyuids:
             uc = getToolByName(self, 'uid_catalog')
             meths = [item.getObject() for item in uc(UID=uids)]
             return meths
 
         return uids
+
+    def getAllowedMethodsAsTuples(self):
+        """
+        This works a a metadata column.
+        Returns the allowed methods for this analysis. If manual
+        entry of results is set, only returns the methods set
+        manually. Otherwise (if Instrument Entry Of Results is set)
+        returns the methods assigned to the instruments allowed for
+        this Analysis
+        @return: a list of tuples as [(UID,Title),(),...]
+        """
+        service = self.getService()
+        result = []
+        # manual entry of results is set, only returns the methods set manually
+        if service.getInstrumentEntryOfResults():
+            result = [
+                (ins.getRawMethod(), ins.getMethod().Title()) for ins in
+                service.getInstruments()]
+        # Otherwise (if Instrument Entry Of Results is set)
+        # returns the methods assigned to the instruments allowed for
+        # this Analysis
+        else:
+            # Get only the methods set manually
+            result = [
+                (method.UID(), method.Title()) for
+                method in service.getMethods()]
+        return result
+
+    def getInstrumentEntryOfResults(self):
+        """
+        It is a metacolumn.
+        Returns the same value as the service.
+        """
+        return self.getService().getInstrumentEntryOfResults()
 
     def getAllowedInstruments(self, onlyuids=True):
         """ Returns the allowed instruments for this analysis. Gets the
@@ -1252,6 +1306,96 @@ class Analysis(BaseContent):
                     return event.get("actor")
         except WorkflowException:
             return ''
+
+    def getParentUID(self):
+        """
+        This works as a metacolumn
+        This function returns the analysis' parent UID
+        """
+        return self.aq_parent.UID()
+
+    def getParentURL(self):
+        """
+        This works as a metacolumn
+        This function returns the analysis' parent URL
+        """
+        return self.aq_parent.absolute_url()
+
+    def getUnit(self):
+        """
+        This works as a metadatacolumn
+        """
+        return self.getService().getUnit()
+
+    def getSamplePartitionID(self):
+        """
+        This works as a metadatacolumn
+        Returns the sample partition ID
+        """
+        partition = self.getSamplePartition()
+        if partition:
+            return partition.getId()
+        else:
+            return ''
+
+    def getExpiryDate(self):
+        """
+        It is used as a metacolumn.
+        Returns the expiration date from the analysis request.
+        """
+        return self.aq_parent.getExpiryDate()
+
+    def getMethodURL(self):
+        """
+        It is used as a metacolumn.
+        Returns the method url if this analysis has a method assigned
+        """
+        method = self.getMethod()
+        if method:
+            return method.absolute_url()
+        else:
+            return ''
+
+    def getMethodTitle(self):
+        """
+        It is used as a metacolumn.
+        Returns the method title if this analysis has a method assigned
+        """
+        method = self.getMethod()
+        if method:
+            return method.Title()
+        else:
+            return ''
+
+    def getServiceDefaultInstrumentUID(self):
+        """
+        It is used as a metacolumn.
+        Returns the default service's instrument UID
+        """
+        return self.getService().getInstrument().UID()
+
+    def getServiceDefaultInstrumentTitle(self):
+        """
+        It is used as a metacolumn.
+        Returns the default service's instrument UID
+        """
+        return self.getService().getInstrument().Title()
+
+    def getServiceDefaultInstrumentURL(self):
+        """
+        It is used as a metacolumn.
+        Returns the default service's instrument UID
+        """
+        return self.getService().getInstrument().absolute_url()
+
+    def hasAttachment(self):
+        """
+        It is used as a metacolumn.
+        Checks if the object has attachments or not.
+        Returns a boolean.
+        """
+        attachments = self.obj.getAttachment()
+        return len(attachments) > 0
 
     def guard_sample_transition(self):
         workflow = getToolByName(self, "portal_workflow")

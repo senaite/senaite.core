@@ -78,7 +78,7 @@ def upgrade(tool):
     try:
         logger.info("Updating role mappings...")
         wf = getToolByName(portal, 'portal_workflow')
-        wf.updateRoleMappings()
+        #wf.updateRoleMappings()
     except:
         logger.error(traceback.format_exc())
         e = sys.exc_info()
@@ -88,6 +88,8 @@ def upgrade(tool):
     logger.info("Removing stale indexes...")
     bc = getToolByName(portal, 'bika_catalog', None)
     delIndexAndColumn(bc, 'getProfilesTitle')
+    # Add new indexes
+    addIndex(bc, 'getAnalysesUIDs', 'KeywordIndex')
 
     # Adding two columns for client data
     addColumnsForClient(portal)
