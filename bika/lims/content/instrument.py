@@ -624,12 +624,8 @@ class Instrument(ATFolder):
         """ Returns if the current instrument is under validation progress
         """
         validation = self.getLatestValidValidation()
-        today = date.today()
-        if validation and validation.getDownTo():
-            validfrom = validation.getDownFrom().asdatetime().date()
-            validto = validation.getDownTo().asdatetime().date()
-            if validfrom <= today <= validto:
-                return True
+        if validation:
+            return validation.isValidationInProgress()
         return False
 
     def isCalibrationInProgress(self):

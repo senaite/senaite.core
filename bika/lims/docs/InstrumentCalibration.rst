@@ -334,3 +334,31 @@ Validations provide the `IInstrumentValidation` interface::
     >>> from bika.lims.interfaces import IInstrumentValidation
     >>> IInstrumentValidation.providedBy(validation1)
     True
+
+Validations can be in progress or not, depending on the entered dates::
+
+    >>> validation1.isValidationInProgress()
+    False
+
+The `DownFrom` field specifies the start date of the validation::
+
+    >>> validation1.setDownFrom(DateTime())
+
+The validation shouldn't be in progress with only this field set::
+
+    >>> validation1.isValidationInProgress()
+    False
+
+The `DownTo` field specifies the end date of the validation::
+
+    >>> validation1.setDownTo(DateTime() + 7)  # Down for 7 days
+
+With this valid date range, the calibration is in progress::
+
+    >>> validation1.isValidationInProgress()
+    True
+
+The instrument will be available after 7 days::
+
+    >>> validation1.getRemainingDaysInValidation()
+    7
