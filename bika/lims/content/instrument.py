@@ -25,6 +25,7 @@ from zope.interface import implements
 from datetime import date
 from DateTime import DateTime
 from bika.lims.config import QCANALYSIS_TYPES
+from bika.lims import logger
 
 schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
 
@@ -126,6 +127,19 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
             checkbox_bound = 0,
             label=_("Data Interface"),
             description=_("Select an Export interface for this instrument."),
+            format='select',
+            default='',
+            visible = True,
+        ),
+    ),
+
+    StringField('ImportDataInterface',
+        vocabulary = "getImportDataInterfacesList",
+        multiValued=1,
+        widget = MultiSelectionWidget(
+            checkbox_bound = 0,
+            label=_("Import Data Interface"),
+            description=_("Select an Import interface for this instrument."),
             format='select',
             default='',
             visible = True,
@@ -284,6 +298,21 @@ def getDataInterfaces(context, export_only=False):
     exims.insert(0, ('', t(_('None'))))
     return DisplayList(exims)
 
+def getImportDataInterfaces(context, import_only=False):
+    """ Return the current list of import data interfaces
+    """
+    from bika.lims.exportimport import instruments
+    exims = []
+    for exim_id in instruments.__all__:
+        exim = instruments.getExim(exim_id)
+        if import_only and not hasattr(exim, 'Import'):
+            pass
+        else:
+            exims.append((exim_id, exim.title))
+    exims.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
+    exims.insert(0, ('', t(_('None'))))
+    return DisplayList(exims)
+
 def getMaintenanceTypes(context):
     types = [('preventive', 'Preventive'),
              ('repair', 'Repair'),
@@ -311,6 +340,9 @@ class Instrument(ATFolder):
 
     def getExportDataInterfacesList(self):
         return getDataInterfaces(self, export_only=True)
+
+    def getImportDataInterfacesList(self):
+        return getImportDataInterfaces(self, import_only=True)
 
     def getScheduleTaskTypesList(self):
         return getMaintenanceTypes(self)
@@ -748,6 +780,14 @@ class Instrument(ATFolder):
         ans = [p.getObject() for p in prox]
         return [a for a in ans if a.getRawInstrument() == self.UID()]
 
+    def setImportDataInterface(self, values):
+        """ Return the current list of import data interfaces
+        """
+        exims = self.getImportDataInterfacesList()
+        new_values = [value for value in values if value in exims]
+        if len(new_values) < len(values):
+            logger.warn("Some Interfaces weren't added...")
+        self.Schema().getField('ImportDataInterface').set(self, new_values)
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 

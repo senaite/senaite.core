@@ -24,6 +24,14 @@
     layer="bika.lims.interfaces.IBikaLIMS"
   />
 
+  <browser:page
+    for="*"
+    name="getImportInterfaces"
+    class="bika.lims.exportimport.dataimport.ajaxGetImportInterfaces"
+    permission="zope.Public"
+    layer="bika.lims.interfaces.IBikaLIMS"
+  />
+
   <adapter
     for="Products.CMFPlone.interfaces.IPloneSiteRoot"
     factory="bika.lims.exportimport.dataimport.SetupDataSetList"

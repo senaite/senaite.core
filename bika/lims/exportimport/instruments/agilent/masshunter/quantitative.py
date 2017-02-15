@@ -41,7 +41,7 @@ def Import(context, request):
     artoapply = request.form['amhq_artoapply']
     override = request.form['amhq_override']
     sample = request.form.get('amhq_sample', 'requestid')
-    instrument = request.form.get('amhq_instrument', None)
+    instrument = request.form.get('instrument', None)
     errors = []
     logs = []
 

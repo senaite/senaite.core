@@ -122,7 +122,7 @@ def Import(context, request):
     artoapply = request.form['nuclisens_easyq_artoapply']
     override = request.form['nuclisens_easyq_override']
     sample = request.form.get('nuclisens_easyq_sample', 'requestid')
-    instrument = request.form.get('nuclisens_easyq_instrument', None)
+    instrument = request.form.get('instrument', None)
     errors = []
     logs = []
     warns = []

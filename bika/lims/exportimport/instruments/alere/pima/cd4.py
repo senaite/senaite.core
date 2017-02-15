@@ -24,7 +24,7 @@ def Import(context, request):
     override = request.form['alere_pima_cd4_override']
     sample = request.form.get('alere_pima_cd4_sample',
                               'requestid')
-    instrument = request.form.get('alere_pima_cd4_instrument', None)
+    instrument = request.form.get('instrument', None)
     errors = []
     logs = []
     warns = []

@@ -22,7 +22,7 @@ def Import(context, request):
     override = request.form['panalytical_omnia_axios_override']
     sample = request.form.get('panalytical_omnia_axios_sample',
                               'requestid')
-    instrument = request.form.get('panalytical_omnia_axios_instrument', None)
+    instrument = request.form.get('instrument', None)
     errors = []
     logs = []
     warns = []
