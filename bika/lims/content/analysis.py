@@ -711,6 +711,12 @@ class Analysis(BaseContent):
                 rr['uid'] = self.UID()
         return rr
 
+    def getResultsRangeNoSpecs(self, specification=None):
+        """
+        This is used as a metacolumn
+        """
+        return self.getResultsRange()
+
     def getAnalysisSpecs(self, specification=None):
         """ Retrieves the analysis specs to be applied to this analysis.
             Allowed values for specification= 'client', 'lab', None
@@ -1338,13 +1344,6 @@ class Analysis(BaseContent):
         else:
             return ''
 
-    def getExpiryDate(self):
-        """
-        It is used as a metacolumn.
-        Returns the expiration date from the analysis request.
-        """
-        return self.aq_parent.getExpiryDate()
-
     def getMethodURL(self):
         """
         It is used as a metacolumn.
@@ -1372,21 +1371,33 @@ class Analysis(BaseContent):
         It is used as a metacolumn.
         Returns the default service's instrument UID
         """
-        return self.getService().getInstrument().UID()
+        ins = self.getService().getInstrument()
+        if ins:
+            return ins.UID()
+        else:
+            return ''
 
     def getServiceDefaultInstrumentTitle(self):
         """
         It is used as a metacolumn.
         Returns the default service's instrument UID
         """
-        return self.getService().getInstrument().Title()
+        ins = self.getService().getInstrument()
+        if ins:
+            return ins.Title()
+        else:
+            return ''
 
     def getServiceDefaultInstrumentURL(self):
         """
         It is used as a metacolumn.
         Returns the default service's instrument UID
         """
-        return self.getService().getInstrument().absolute_url()
+        ins = self.getService().getInstrument()
+        if ins:
+            return ins.absolute_url()
+        else:
+            return ''
 
     def hasAttachment(self):
         """
@@ -1394,7 +1405,7 @@ class Analysis(BaseContent):
         Checks if the object has attachments or not.
         Returns a boolean.
         """
-        attachments = self.obj.getAttachment()
+        attachments = self.getAttachment()
         return len(attachments) > 0
 
     def guard_sample_transition(self):

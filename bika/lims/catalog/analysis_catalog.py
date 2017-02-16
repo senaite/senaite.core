@@ -84,16 +84,17 @@ bika_catalog_analysis_listing_definition = {
             'getParentTitle',
             'getAllowedMethodsAsTuples',
             'getResult',
-            'getCalculation'
+            'getCalculation',
             'getUnit',
             'getKeyword',
             'getCategoryTitle',
-            'getInterimFields,'
+            'getInterimFields',
             'getSamplePartitionID',
             'getRemarks',
             'getRetested',
             'getExpiryDate',
             'getDueDate',
+            'getReferenceResults',
             # Used in duplicated analysis objects
             'getAnalysisPortalType',
             'isInstrumentValid',
@@ -120,8 +121,7 @@ bika_catalog_analysis_listing_definition = {
             'getServiceDefaultInstrumentUID',
             'getServiceDefaultInstrumentTitle',
             'getServiceDefaultInstrumentURL',
-
-
+            'getResultsRangeNoSpecs',
         ]
     }
 }

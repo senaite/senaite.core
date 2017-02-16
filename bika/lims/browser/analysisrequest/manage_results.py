@@ -43,7 +43,8 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
                                      self.request,
                                      getPointOfCapture=poc,
                                      sort_on='getServiceTitle',
-                                     show_categories=show_cats)
+                                     show_categories=show_cats,
+                                     getParentUID=ar.UID())
                     t.form_id = "ar_manage_results_%s" % poc
                     t.allow_edit = True
                     t.review_states[0]['transitions'] = [{'id': 'submit'},

@@ -933,6 +933,7 @@ class BikaListingView(BrowserView):
                 before={},  # { before : "<a href=..>" }
                 after={},
                 replace={},
+                choices={},
             )
             # Getting the state title, if the review_state doesn't have a title
             # use the title of the first workflow found for the object

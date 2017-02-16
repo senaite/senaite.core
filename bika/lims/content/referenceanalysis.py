@@ -425,6 +425,19 @@ class ReferenceAnalysis(BaseContent):
         """
         return self.aq_parent.UID()
 
+    def getExpiryDate(self):
+        """
+        It is used as a metacolumn.
+        Returns the expiration date from the reference sample.
+        """
+        return self.aq_parent.getExpiryDate()
+
+    def getReferenceResults(self):
+        """
+        It is used as metacolumn
+        """
+        return self.aq_parent.getReferenceResults()
+
     def isVerifiable(self):
         """
         Checks it the current analysis can be verified. This is, its not a

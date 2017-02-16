@@ -41,6 +41,7 @@ class AggregatedAnalysesView(AnalysesView):
     """
 
     def __init__(self, context, request, **kwargs):
+        import pdb; pdb.set_trace()
         super(AggregatedAnalysesView, self).__init__(context,
                                            request,
                                            show_categories=False,
