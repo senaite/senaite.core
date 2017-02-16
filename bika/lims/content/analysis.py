@@ -208,19 +208,19 @@ schema = BikaSchema.copy() + Schema((
         expression = 'context.aq_parent.getClientOrderNumber()',
     ),
     ComputedField('Keyword',
-        expression = 'context.getServiceUsingQuery().getKeyword()',
+        expression = 'context.getServiceUsingQuery().getKeyword() if context.getServiceUsingQuery() else ""',
     ),
     ComputedField('ServiceUID',
-        expression = 'context.getServiceUsingQuery().UID()',
+        expression = 'context.getServiceUsingQuery().UID() if context.getServiceUsingQuery() else ""',
     ),
     ComputedField('SampleTypeUID',
         expression = 'context.aq_parent.getSample().getSampleType().UID()',
     ),
     ComputedField('SamplePointUID',
-        expression = 'context.aq_parent.getSample().getSamplePoint().UID() if context.aq_parent.getSample().getSamplePoint() else None',
+        expression = 'context.aq_parent.getSample().getSamplePoint().UID() if context.aq_parent.getSample().getSamplePoint() else ""',
     ),
     ComputedField('CategoryUID',
-        expression = 'context.getServiceUsingQuery().getCategoryUID()',
+        expression = 'context.getServiceUsingQuery().getCategoryUID() if context.getServiceUsingQuery() else ""',
     ),
     ComputedField(
         'MethodUID',
@@ -237,7 +237,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ComputedField('PointOfCapture',
-        expression = 'context.getServiceUsingQuery().getPointOfCapture()',
+        expression = 'context.getServiceUsingQuery().getPointOfCapture() if context.getServiceUsingQuery() else ""',
     ),
     ComputedField('DateReceived',
         expression = 'context.aq_parent.getDateReceived()',
@@ -314,12 +314,19 @@ class Analysis(BaseContent):
         """
         # Getting the service like that because otherwise gives an error
         # when rebuilding the catalogs.
-        service_uid = self.getRawService()
-        catalog = getToolByName(self, "uid_catalog")
-        brain = catalog(UID=service_uid)
-        if brain:
-            return brain[0].getObject()
-        return ''
+        obj = None
+        try:
+            service_uid = self.getRawService()
+            catalog = getToolByName(self, "uid_catalog")
+            brain = catalog(UID=service_uid)
+            obj = brain[0].getObject() if brain else None
+        except:
+            pass
+        if not obj:
+            logger.error("Corrupt Analysis UID=%s . Cannot obtain its "
+                         "Service. Try to purge the catalog or try to fix it "
+                         " at %s" % (self.UID(), self.absolute_path()))
+        return obj
 
     def Title(self):
         """ Return the service title as title.
@@ -328,12 +335,11 @@ class Analysis(BaseContent):
         """
         try:
             s = self.getServiceUsingQuery()
-            if s:
-                s = s.Title()
-            if not s:
-                s = ''
-        except ArchivistRetrieveError:
-            s = ''
+            s = s.Title() if s else ''
+        except:
+            pass
+        if not s:
+            logger.error("Unable to obtain the Service Title for Analysis with UID %s " % self.UID())
         return safe_unicode(s).encode('utf-8')
 
     def updateDueDate(self):
