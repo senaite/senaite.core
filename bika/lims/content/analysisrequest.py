@@ -2036,6 +2036,7 @@ class AnalysisRequest(BaseFolder):
         last_report=sorted(self.objectValues('ARReport'),key=lambda report: report.getDatePublished())[-1]
         if last_report and not last_report.getDatePrinted():
             last_report.setDatePrinted(DateTime())
+            self.reindexObject(idxs=['getPrinted'])
 
     security.declareProtected(View, 'getBillableItems')
 
@@ -3241,7 +3242,8 @@ class AnalysisRequest(BaseFolder):
         # noinspection PyCallingNonCallable
         self.setDateReceived(DateTime())
         self.reindexObject(idxs=[
-            "review_state", "getDateReceived", "getReceivedBy" ])
+            "review_state", 'getObjectWorkflowStates', "getDateReceived",
+            "getReceivedBy", ])
         # receive the AR's sample
         sample = self.getSample()
         if not skip(sample, 'receive', peek=True):
@@ -3258,6 +3260,7 @@ class AnalysisRequest(BaseFolder):
         if skip(self, "preserve"):
             return
         workflow = getToolByName(self, 'portal_workflow')
+        self.reindexObject(idxs=["review_state",  'getObjectWorkflowStates', ])
         # transition our sample
         sample = self.getSample()
         if not skip(sample, "preserve", peek=True):
@@ -3266,7 +3269,7 @@ class AnalysisRequest(BaseFolder):
     def workflow_script_submit(self):
         if skip(self, "submit"):
             return
-        self.reindexObject(idxs=["review_state", ])
+        self.reindexObject(idxs=["review_state",  'getObjectWorkflowStates', ])
 
     def workflow_script_sampling_workflow(self):
         if skip(self, "sampling_workflow"):
@@ -3274,6 +3277,7 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         sd = sample.getSamplingDate()
         # noinspection PyCallingNonCallable
+        self.reindexObject(idxs=["review_state",  'getObjectWorkflowStates', ])
         if sd and sd > DateTime():
             sample.future_dated = True
 
@@ -3282,6 +3286,7 @@ class AnalysisRequest(BaseFolder):
             return
         sample = self.getSample()
         sd = sample.getSamplingDate()
+        self.reindexObject(idxs=["review_state",  'getObjectWorkflowStates', ])
         # noinspection PyCallingNonCallable
         if sd and sd > DateTime():
             sample.future_dated = True
@@ -3289,7 +3294,7 @@ class AnalysisRequest(BaseFolder):
     def workflow_script_attach(self):
         if skip(self, "attach"):
             return
-        self.reindexObject(idxs=["review_state", ])
+        self.reindexObject(idxs=["review_state",  'getObjectWorkflowStates', ])
         # Don't cascade. Shouldn't be attaching ARs for now (if ever).
         return
 
@@ -3300,6 +3305,9 @@ class AnalysisRequest(BaseFolder):
         # transition our sample
         workflow = getToolByName(self, 'portal_workflow')
         sample = self.getSample()
+        self.reindexObject(idxs=[
+            "review_state", 'getObjectWorkflowStates', 'getDateSampled',
+            'getSampler', 'getSamplerFullName', 'getSamplerEmail'])
         if not skip(sample, "sample", peek=True):
             workflow.doActionFor(sample, "sample")
 
@@ -3321,7 +3329,8 @@ class AnalysisRequest(BaseFolder):
     def workflow_script_verify(self):
         if skip(self, "verify"):
             return
-        self.reindexObject(idxs=["review_state", "getDateVerified"])
+        self.reindexObject(idxs=[
+            "review_state", 'getObjectWorkflowStates', "getDateVerified"])
         if "verify all analyses" not in self.REQUEST['workflow_skiplist']:
             # verify all analyses in this AR.
             analyses = self.getAnalyses(review_state='to_be_verified')
@@ -3349,7 +3358,7 @@ class AnalysisRequest(BaseFolder):
         if skip(self, "publish"):
             return
         self.reindexObject(idxs=[
-            "review_state", "getDatePublished", "getDatePublished"])
+            "review_state", 'getObjectWorkflowStates', "getDatePublished"])
         if "publish all analyses" not in self.REQUEST['workflow_skiplist']:
             # publish all analyses in this AR. (except not requested ones)
             analyses = self.getAnalyses(review_state='verified')
@@ -3359,7 +3368,8 @@ class AnalysisRequest(BaseFolder):
     def workflow_script_reinstate(self):
         if skip(self, "reinstate"):
             return
-        self.reindexObject(idxs=["cancellation_state", ])
+        self.reindexObject(idxs=[
+            "cancellation_state", 'getObjectWorkflowStates' ])
         # activate all analyses in this AR.
         analyses = self.getAnalyses(cancellation_state='cancelled')
         for analysis in analyses:
@@ -3368,7 +3378,8 @@ class AnalysisRequest(BaseFolder):
     def workflow_script_cancel(self):
         if skip(self, "cancel"):
             return
-        self.reindexObject(idxs=["cancellation_state", ])
+        self.reindexObject(idxs=[
+            "cancellation_state", 'getObjectWorkflowStates'])
         # deactivate all analyses in this AR.
         analyses = self.getAnalyses(cancellation_state='active')
         for analysis in analyses:
@@ -3380,6 +3391,9 @@ class AnalysisRequest(BaseFolder):
         """
         workflow = getToolByName(self, 'portal_workflow')
         sample = self.getSample()
+        self.reindexObject(idxs=[
+            'review_state', "getSamplingDate", 'getObjectWorkflowStates',
+            'getSamplingDate'])
         # We have to set the defined sampling date and sampler and
         # produce a transition in it
         if workflow.getInfoFor(sample, 'review_state') == \
@@ -3390,7 +3404,8 @@ class AnalysisRequest(BaseFolder):
     def workflow_script_reject(self):
         workflow = getToolByName(self, 'portal_workflow')
         sample = self.getSample()
-        self.reindexObject(idxs=["review_state", ])
+        self.reindexObject(idxs=[
+            "review_state", 'getObjectWorkflowStates'])
         if workflow.getInfoFor(sample, 'review_state') != 'rejected':
             # Setting the rejection reasons in sample
             sample.setRejectionReasons(self.getRejectionReasons())
