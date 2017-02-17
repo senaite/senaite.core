@@ -1237,6 +1237,12 @@ class Analysis(BaseContent):
         # All checks pass
         return True
 
+    def getAnalysisRequestUID(self):
+        """
+        This is a column.
+        """
+        return self.aq_parent.UID()
+
     def getSubmittedBy(self):
         """
         Returns the identifier of the user who submitted the result if the

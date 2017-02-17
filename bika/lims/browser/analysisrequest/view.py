@@ -87,7 +87,8 @@ class AnalysisRequestViewView(BrowserView):
                 t = self.createAnalysesView(ar,
                                  self.request,
                                  getPointOfCapture=poc,
-                                 show_categories=self.context.bika_setup.getCategoriseAnalysisServices())
+                                 show_categories=self.context.bika_setup.getCategoriseAnalysisServices(),
+                                 getAnalysisRequestUID=self.context.UID())
                 t.allow_edit = True
                 t.form_id = "%s_analyses" % poc
                 t.review_states[0]['transitions'] = [{'id': 'submit'},

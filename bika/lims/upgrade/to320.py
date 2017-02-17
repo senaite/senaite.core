@@ -96,6 +96,9 @@ def upgrade(tool):
     # Adding two columns for client data
     addColumnsForClient(portal)
 
+    # Adding getAnalysisRequestUID column in analysis catalog
+    addgetAnalysisRequestUID(portal)
+
     # Clean and rebuild affected catalogs (if required)
     logger.info("Cleaning and rebuilding...")
     cleanAndRebuildIfNeeded(portal)
@@ -241,6 +244,16 @@ def addColumnsForClient(portal):
     pc = getToolByName(portal, 'portal_catalog')
     addColumn(pc, 'getProvince')
     addColumn(pc, 'getDistrict')
+    transaction.commit()
+
+
+def addgetAnalysisRequestUID(portal):
+    """
+    Add an index to analysis catalog in order to use them in
+    analysisrequests listings.
+    """
+    catalog = getToolByName(portal, 'bika_analysis_catalog')
+    addIndex(catalog, 'getAnalysisRequestUID', 'KeywordIndex')
     transaction.commit()
 
 
