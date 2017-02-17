@@ -405,7 +405,14 @@ class Analysis(BaseContent):
         """
         # Getting the service like that because otherwise gives an error
         # when rebuilding the catalogs.
-        service_uid = self.getRawService()
+        try:
+            service_uid = self.getService().UID()
+        except:
+            logger.error(traceback.format_exc())
+            logger.error(
+                "Unable to get the service of analysis %s. Using getRawService"
+                " now" % self.getId())
+            service_uid = self.getRawService()
         catalog = getToolByName(self, "uid_catalog")
         brain = catalog(UID=service_uid)
         if brain:

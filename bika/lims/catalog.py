@@ -446,7 +446,6 @@ def _merge_both_catalogs(catalogs_definition, catalog_extensions):
         }
     :return: a merge of the dictionaries from above with the same format.
     """
-
     result_dict = copy.deepcopy(catalogs_definition)
     ext_cat_ids = catalog_extensions.keys()
     if ext_cat_ids:
@@ -484,11 +483,7 @@ def _merge_both_catalogs(catalogs_definition, catalog_extensions):
                     logger.error(traceback.format_exc())
             else:
                 # If catalog id is not found in the original catalog
-                # definition, definition, rise an info and create the new dict
-                logger.info(
-                    "Catalog %s doesn't exist in Bika LIMS catalog "
-                    "definitions dictionary. A new catalog definition"
-                    " might be created." % ext_cat_id)
+                # definition, definition
                 result_dict[ext_cat_id] = catalog_extensions[ext_cat_id]
     return result_dict
 
