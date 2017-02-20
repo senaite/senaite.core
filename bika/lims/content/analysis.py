@@ -312,6 +312,9 @@ class Analysis(BaseContent):
         Be aware that this method doesn't care about the history for the
         service.
         """
+        if self._service_obj is not None:
+            return self.service_obj
+        
         # Getting the service like that because otherwise gives an error
         # when rebuilding the catalogs.
         service_uid = ''
@@ -329,15 +332,15 @@ class Analysis(BaseContent):
                 return None
         catalog = getToolByName(self, "uid_catalog")
         brain = catalog(UID=service_uid)
-        obj = None
+        self._service_obj = None
         if len(brain) == 1:
-            obj = brain[0].getObject()
+            self._service_obj = brain[0].getObject()
         elif len(brain) == 0:
             log.error("No Service found for UID %s" % service_uid)
         else len(brain) > 1:
             raise RuntimeError(
                 "More than one Service found for UID %s" % service_uid)
-        return obj
+        return self._service_obj
 
     def Title(self):
         """ Return the service title as title.
