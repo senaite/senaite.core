@@ -160,6 +160,24 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         ),
     ),
 
+    RecordsField(
+        'ResultFilesFolder',
+        subfields=('InterfaceName', 'Folder'),
+        required_subfields=('InterfaceName', 'Folder'),
+        subfield_labels={'InterfaceName': _('Interface'),
+                         'Folder': _('Folder that resuls will be saved')},
+        subfield_readonly={'InterfaceName': False,
+                           'Folder': False},
+        widget=RecordsWidget(
+            label=_("Result files folders"),
+            description=_("For each interface of this instrument, \
+                          you can define a folder where \
+                          the system should look for results files while \
+                          automatically importing results."),
+            visible=True,
+        ),
+    ),
+
     RecordsField('DataInterfaceOptions',
         type = 'interfaceoptions',
         subfields = ('Key','Value'),

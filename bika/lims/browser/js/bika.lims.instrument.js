@@ -29,6 +29,21 @@ function InstrumentCertificationEditView() {
         }
     }
 }
+/**
+ * Controller class for Instrument Edit view
+ */
+function InstrumentEditView() {
+
+    var that = this;
+
+    /**
+     * Entry-point method for InstrumentEditView
+     */
+    that.load = function() {
+        $('#ResultFilesFolder_more')[0].disabled = true;
+    }
+
+}
 
 
 /**
