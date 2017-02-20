@@ -308,17 +308,25 @@ class Analysis(BaseContent):
     def getServiceUsingQuery(self):
         """
         This function returns the asociated service.
-        Use this method to avoid some errores while rebuilding a catalog.
-        Be aware that this method doesn't care about the history for the
-        service.
+        Use this method to avoid some errors while rebuilding a catalog.
         """
-        # Getting the service like that because otherwise gives an error
-        # when rebuilding the catalogs.
-        service_uid = ''
+        obj = None
         try:
-            service_uid = self.getService().UID()
+            # Try to obtain the object as usual.
+            obj = self.getService()
         except:
+            # Getting the service like that because otherwise gives an error
+            # when rebuilding the catalogs.
             logger.error(traceback.format_exc())
+            obj = None
+
+        if not obj:
+            # Try to obtain the object by using the getRawService getter and
+            # query against the catalog
+            logger.warn("Unable to retrieve the Service for Analysis %s "
+                        "via a direct call to getService(). Retrying by using "
+                        "getRawService() and querying against uid_catalog."
+                        % self.UID())
             try:
                 service_uid = self.getRawService()
             except:
@@ -327,16 +335,18 @@ class Analysis(BaseContent):
                              "Service. Try to purge the catalog or try to fix"
                              " it at %s" % (self.UID(), self.absolute_path()))
                 return None
-        catalog = getToolByName(self, "uid_catalog")
-        brain = catalog(UID=service_uid)
-        obj = None
-        if len(brain) == 1:
-            obj = brain[0].getObject()
-        elif len(brain) == 0:
-            log.error("No Service found for UID %s" % service_uid)
-        else len(brain) > 1:
-            raise RuntimeError(
-                "More than one Service found for UID %s" % service_uid)
+
+            # We got an UID, query agains the catalog to obtain the Service
+            catalog = getToolByName(self, "uid_catalog")
+            brain = catalog(UID=service_uid)
+            if len(brain) == 1:
+                obj = brain[0].getObject()
+            elif len(brain) == 0:
+                log.error("No Service found for UID %s" % service_uid)
+            else:
+                raise RuntimeError(
+                    "More than one Service found for UID %s" % service_uid)
+
         return obj
 
     def Title(self):
