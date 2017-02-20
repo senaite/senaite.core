@@ -54,7 +54,6 @@ def duplicateAnalysis(base):
     analysis.setResult(base.getResult())
     analysis.setNumberOfRequiredVerifications(
         base.getNumberOfRequiredVerifications())
-    analysis.setVerificators(base.getVerificators())
     analysis.unmarkCreationFlag()
     # zope.event.notify(ObjectInitializedEvent(analysis))
     changeWorkflowState(analysis,
