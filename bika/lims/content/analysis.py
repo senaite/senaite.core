@@ -419,7 +419,7 @@ class Analysis(BaseContent):
         """
         Returns the Title of the asociated service.
         """
-        obj = this.getServiceUsingQuery()
+        obj = self.getServiceUsingQuery()
         return obj.Title() if obj else ''
 
     def getReviewState(self):
