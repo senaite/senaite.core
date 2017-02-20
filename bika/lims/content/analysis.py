@@ -208,19 +208,19 @@ schema = BikaSchema.copy() + Schema((
         expression = 'context.aq_parent.getClientOrderNumber()',
     ),
     ComputedField('Keyword',
-        expression = 'context.getServiceUsingQuery().getKeyword()',
+        expression = 'context.getServiceUsingQuery().getKeyword() if context.getServiceUsingQuery() else ""',
     ),
     ComputedField('ServiceUID',
-        expression = 'context.getServiceUsingQuery().UID()',
+        expression = 'context.getServiceUsingQuery().UID() if context.getServiceUsingQuery() else ""',
     ),
     ComputedField('SampleTypeUID',
         expression = 'context.aq_parent.getSample().getSampleType().UID()',
     ),
     ComputedField('SamplePointUID',
-        expression = 'context.aq_parent.getSample().getSamplePoint().UID() if context.aq_parent.getSample().getSamplePoint() else None',
+        expression = 'context.aq_parent.getSample().getSamplePoint().UID() if context.aq_parent.getSample().getSamplePoint() else ""',
     ),
     ComputedField('CategoryUID',
-        expression = 'context.getServiceUsingQuery().getCategoryUID()',
+        expression = 'context.getServiceUsingQuery().getCategoryUID() if context.getServiceUsingQuery() else ""',
     ),
     ComputedField(
         'MethodUID',
@@ -237,7 +237,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ComputedField('PointOfCapture',
-        expression = 'context.getServiceUsingQuery().getPointOfCapture()',
+        expression = 'context.getServiceUsingQuery().getPointOfCapture() if context.getServiceUsingQuery() else ""',
     ),
     ComputedField('DateReceived',
         expression = 'context.aq_parent.getDateReceived()',
@@ -309,31 +309,43 @@ class Analysis(BaseContent):
         """
         This function returns the asociated service.
         Use this method to avoid some errores while rebuilding a catalog.
-        Be aware that this method doesn't care about the history fo the
+        Be aware that this method doesn't care about the history for the
         service.
         """
         # Getting the service like that because otherwise gives an error
         # when rebuilding the catalogs.
-        service_uid = self.getRawService()
+        service_uid = ''
+        try:
+            service_uid = self.getService().UID()
+        except:
+            logger.error(traceback.format_exc())
+            try:
+                service_uid = self.getRawService()
+            except:
+                logger.error(traceback.format_exc())
+                logger.error("Corrupt Analysis UID=%s . Cannot obtain its "
+                             "Service. Try to purge the catalog or try to fix"
+                             " it at %s" % (self.UID(), self.absolute_path()))
+                return None
         catalog = getToolByName(self, "uid_catalog")
         brain = catalog(UID=service_uid)
-        if brain:
-            return brain[0].getObject()
-        return ''
+        obj = None
+        if len(brain) == 1:
+            obj = brain[0].getObject()
+        elif len(brain) == 0:
+            log.error("No Service found for UID %s" % service_uid)
+        else len(brain) > 1:
+            raise RuntimeError(
+                "More than one Service found for UID %s" % service_uid)
+        return obj
 
     def Title(self):
         """ Return the service title as title.
         Some silliness here, for premature indexing, when the service
         is not yet configured.
         """
-        try:
-            s = self.getServiceUsingQuery()
-            if s:
-                s = s.Title()
-            if not s:
-                s = ''
-        except ArchivistRetrieveError:
-            s = ''
+        s = self.getServiceUsingQuery()
+        s = s.Title() if s else ''
         return safe_unicode(s).encode('utf-8')
 
     def updateDueDate(self):
@@ -397,14 +409,8 @@ class Analysis(BaseContent):
         """
         Returns the Title of the asociated service.
         """
-        # Getting the service like that because otherwise gives an error
-        # when rebuilding the catalogs.
-        service_uid = self.getRawService()
-        catalog = getToolByName(self, "uid_catalog")
-        brain = catalog(UID=service_uid)
-        if brain:
-            return brain[0].title
-        return ''
+        obj = this.getServiceUsingQuery()
+        return obj.Title() if obj else ''
 
     def getReviewState(self):
         """ Return the current analysis' state"""
