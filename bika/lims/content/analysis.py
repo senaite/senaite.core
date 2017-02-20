@@ -343,7 +343,7 @@ class Analysis(BaseContent):
                 obj = brain[0].getObject()
             elif len(brain) == 0:
                 log.error("No Service found for UID %s" % service_uid)
-            else len(brain) > 1:
+            else:
                 raise RuntimeError(
                     "More than one Service found for UID %s" % service_uid)
 
