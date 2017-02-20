@@ -309,23 +309,27 @@ class Analysis(BaseContent):
         """
         This function returns the asociated service.
         Use this method to avoid some errores while rebuilding a catalog.
-        Be aware that this method doesn't care about the history fo the
+        Be aware that this method doesn't care about the history for the
         service.
         """
         # Getting the service like that because otherwise gives an error
         # when rebuilding the catalogs.
-        obj = None
+        service_uid = ''
         try:
-            service_uid = self.getRawService()
-            catalog = getToolByName(self, "uid_catalog")
-            brain = catalog(UID=service_uid)
-            obj = brain[0].getObject() if brain else None
+            service_uid = self.getService().UID()
         except:
-            pass
-        if not obj:
-            logger.error("Corrupt Analysis UID=%s . Cannot obtain its "
-                         "Service. Try to purge the catalog or try to fix it "
-                         " at %s" % (self.UID(), self.absolute_path()))
+            logger.error(traceback.format_exc())
+            try:
+                service_uid = self.getRawService()
+            except:
+                logger.error(traceback.format_exc())
+                logger.error("Corrupt Analysis UID=%s . Cannot obtain its "
+                             "Service. Try to purge the catalog or try to fix"
+                             " it at %s" % (self.UID(), self.absolute_path()))
+                return None
+        catalog = getToolByName(self, "uid_catalog")
+        brain = catalog(UID=service_uid)
+        obj = brain[0].getObject() if brain else None
         return obj
 
     def Title(self):
@@ -333,13 +337,8 @@ class Analysis(BaseContent):
         Some silliness here, for premature indexing, when the service
         is not yet configured.
         """
-        try:
-            s = self.getServiceUsingQuery()
-            s = s.Title() if s else ''
-        except:
-            pass
-        if not s:
-            logger.error("Unable to obtain the Service Title for Analysis with UID %s " % self.UID())
+        s = self.getServiceUsingQuery()
+        s = s.Title() if s else ''
         return safe_unicode(s).encode('utf-8')
 
     def updateDueDate(self):
@@ -403,21 +402,8 @@ class Analysis(BaseContent):
         """
         Returns the Title of the asociated service.
         """
-        # Getting the service like that because otherwise gives an error
-        # when rebuilding the catalogs.
-        try:
-            service_uid = self.getService().UID()
-        except:
-            logger.error(traceback.format_exc())
-            logger.error(
-                "Unable to get the service of analysis %s. Using getRawService"
-                " now" % self.getId())
-            service_uid = self.getRawService()
-        catalog = getToolByName(self, "uid_catalog")
-        brain = catalog(UID=service_uid)
-        if brain:
-            return brain[0].title
-        return ''
+        obj = this.getServiceUsingQuery()
+        return obj.Title() if obj else ''
 
     def getReviewState(self):
         """ Return the current analysis' state"""
