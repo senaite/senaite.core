@@ -254,7 +254,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         # overwrite saved context UID for event subscriber
         self.REQUEST['context_uid'] = self.UID()
-        workflow.doActionFor(analysis, 'unassign')
+        if workflow.getInfoFor(analysis, 'worksheetanalysis_review_state') ==\
+                'assigned':
+                workflow.doActionFor(analysis, 'unassign')
         # Note: subscriber might unassign the AR and/or promote the worksheet
 
         # remove analysis from context.Analyses *after* unassign,
