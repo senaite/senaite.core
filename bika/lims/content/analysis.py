@@ -329,7 +329,14 @@ class Analysis(BaseContent):
                 return None
         catalog = getToolByName(self, "uid_catalog")
         brain = catalog(UID=service_uid)
-        obj = brain[0].getObject() if brain else None
+        obj = None
+        if len(brain) == 1:
+            obj = brain[0].getObject()
+        elif len(brain) == 0:
+            log.error("No Service found for UID %s" % service_uid)
+        else len(brain) > 1:
+            raise RuntimeError(
+                "More than one Service found for UID %s" % service_uid)
         return obj
 
     def Title(self):
