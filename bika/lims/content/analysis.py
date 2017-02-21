@@ -1259,6 +1259,28 @@ class Analysis(BaseContent):
         """
         return self.aq_parent.UID()
 
+    def getBatchUID(self):
+        """
+        This is an index
+        """
+        return self.aq_parent.getBatchUID()
+
+    def getSampleConditionUID(self):
+        """
+        This is an index
+        """
+        sample_cond = self.getSample().getSampleCondition()
+        if sample_cond:
+            return sample_cond.UID()
+        else:
+            return ''
+
+    def getAnalysisRequestPrintStatus(self):
+        """
+        This is an index
+        """
+        return self.aq_parent.getPrinted()
+
     def getSubmittedBy(self):
         """
         Returns the identifier of the user who submitted the result if the

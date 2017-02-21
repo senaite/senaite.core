@@ -8,6 +8,11 @@
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.permissions import *
+from bika.lims.browser.bika_listing import BikaListingFilterBar\
+    as BaseBikaListingFilterBar
+from Products.Archetypes.public import DisplayList
+import json
+from datetime import datetime, date
 from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
 
@@ -41,6 +46,9 @@ class AggregatedAnalysesView(AnalysesView):
         self.form_id = 'analyses_form'
         self.portal = getToolByName(context, 'portal_url').getPortalObject()
         self.portal_url = self.portal.absolute_url()
+        # Check if the filter bar functionality is activated or not
+        self.filter_bar_enabled =\
+            self.context.bika_setup.getSamplingBarEnabledAnalyses()
 
         # each editable item needs it's own allow_edit
         # which is a list of field names.
@@ -116,6 +124,8 @@ class AggregatedAnalysesView(AnalysesView):
         if not self.context.bika_setup.getAllowDepartmentFiltering():
             return True
         # Gettin the department from analysis service
+        if self.filter_bar_enabled and not self.filter_bar_check_item(obj):
+            return False
         serv_dep = obj.getService().getDepartment()
         result = True
         if serv_dep:
@@ -141,3 +151,148 @@ class AggregatedAnalysesView(AnalysesView):
             anchor = '<a href="%s">%s</a>' % (ws.absolute_url(), ws.Title())
             item['replace']['Worksheet'] = anchor
         return item
+
+    def getFilterBar(self):
+        """
+        This function creates an instance of BikaListingFilterBar if the
+        class has not created one yet.
+        :return: a BikaListingFilterBar instance
+        """
+        self._advfilterbar = self._advfilterbar if self._advfilterbar else \
+            BikaListingFilterBar(context=self.context, request=self.request)
+        return self._advfilterbar
+
+
+class BikaListingFilterBar(BaseBikaListingFilterBar):
+    """
+    This class defines a filter bar to make advanced queries in
+    BikaListingView. This filter shouldn't override the 'filter by state'
+    functionality
+    """
+    # TODO-performance: Improve filter bar using catalogs
+    def get_filter_bar_queryaddition(self):
+        """
+        This function gets the values from the filter bar inputs in order to
+        create a query accordingly.
+        Only returns the once that can be added to contentFilter dictionary.
+        in this case, the catalog is bika_catalog
+        In this case the keys with index representation are:
+        - date_received - getDateReceived
+        - date_received - BatchUID
+        :return: a dictionary to be added to contentFilter.
+        """
+        query_dict = {}
+        filter_dict = self.get_filter_bar_dict()
+        # Date received filter
+        if filter_dict.get('date_received_0', '') or\
+                filter_dict.get('date_received_1', ''):
+            date_0 = filter_dict.get('date_received_0') \
+                if filter_dict.get('date_received_0', '')\
+                else '1900-01-01'
+            date_1 = filter_dict.get('date_received_1')\
+                if filter_dict.get('date_received_1', '')\
+                else datetime.strftime(date.today(), "%Y-%m-%d")
+            date_range_query = {
+                'query':
+                (date_0 + ' 00:00', date_1 + ' 23:59'), 'range': 'min:max'}
+            query_dict['getDateReceived'] = date_range_query
+        # Batch(case) filter
+        if filter_dict.get('case', ''):
+            # removing the empty and space values and gettin their UIDs
+            clean_list_ids = [
+                a.strip() for a in filter_dict.get('case', '').split(',')
+                if a.strip()]
+            # Now we have the case(batch) ids, lets get their UIDs
+            catalog = getToolByName(self, 'bika_catalog')
+            brains = catalog(
+                portal_type='Batch',
+                cancellation_state='active',
+                review_state='open',
+                id=clean_list_ids
+                )
+            query_dict['getBatchUID'] = [a.UID for a in brains]
+        # sample type filter
+        if filter_dict.get('sample_type', ''):
+            query_dict['getSampleTypeUID'] = filter_dict.get('sample_type', '')
+        # Sample condition filter
+        if filter_dict.get('sample_condition', ''):
+            query_dict['getSampleConditionUID'] =\
+                filter_dict.get('sample_condition', '')
+        # Print state filter
+        if filter_dict.get('print_state', ''):
+            query_dict['getAnalysisRequestPrintStatus'] =\
+                filter_dict.get('print_state', '')
+        return query_dict
+
+    def filter_bar_builder(self):
+        """
+        The template is going to call this method to create the filter bar in
+        bika_listing_filter_bar.pt
+        If the method returns None, the filter bar will not be shown.
+        :return: a list of dictionaries as the filtering fields or None.
+        """
+        fields_dict = [{
+            'name': 'sample_condition',
+            'label': _('Sample condition'),
+            'type': 'select',
+            'voc': self._getSampleConditionsVoc(),
+        }, {
+            'name': 'print_state',
+            'label': _('Print state'),
+            'type': 'select',
+            'voc': self._getPrintStatesVoc(),
+        }, {
+            'name': 'sample_type',
+            'label': _('Sample type'),
+            'type': 'select',
+            'voc': self._getSampleTypesVoc(),
+        }, {
+            'name': 'case',
+            'label': _('Cases'),
+            'type': 'autocomplete_text',
+            'voc': json.dumps(self._getCasesVoc()),
+        }, {
+            'name': 'date_received',
+            'label': _('Date received'),
+            'type': 'date_range',
+        },
+        ]
+        return fields_dict
+
+    def _getSampleConditionsVoc(self):
+        """
+        Returns a DisplayList object with sample condtions.
+        """
+        cons = self.context.bika_setup.\
+            bika_sampleconditions.listFolderContents()
+        return DisplayList(
+            [(element.UID(), element.Title()) for element in cons])
+
+    def _getPrintStatesVoc(self):
+        """
+        Returns a DisplayList object with print states.
+        """
+        return DisplayList([
+            ('0', _('Never printed')),
+            ('1', _('Printed after last publish')),
+            ('2', _('Printed but republished afterwards')),
+            ])
+
+    def _getSampleTypesVoc(self):
+        """
+        Returns a DisplayList object with sample types.
+        """
+        types = self.context.bika_setup.bika_sampletypes.listFolderContents()
+        return DisplayList(
+            [(element.UID(), element.Title()) for element in types])
+
+    def _getCasesVoc(self):
+        """
+        Returns a list object with active cases ids.
+        """
+        catalog = getToolByName(self.context, "portal_catalog")
+        brains = catalog({
+            'portal_type': 'Batch',
+            'review_state': 'open',
+        })
+        return [brain.id for brain in brains]

@@ -455,6 +455,15 @@ class BikaListingView(BrowserView):
         self.show_all = False
         self.show_more = False
         self.limit_from = 0
+        # The listing object is bound to a class called BikaListingFilterBar
+        # which can display an additional filter bar in the listing view in
+        # order to filter the items by some terms. These terms should be
+        # difined in the BikaListingFilterBar class following the descripton
+        # and examples. This variable is overriden in other views, in order to
+        # show the bar or not depending on the list. For example, Analysis
+        # Requests view checks bika_setup.getSamplingBarEnabledAnalysisRequests
+        # to know if the functionality is activeated or not for its views.
+        self.filter_bar_enabled = False
 
     @property
     def review_state(self):
@@ -1560,7 +1569,7 @@ class BikaListingFilterBar(BrowserView):
         If the method returns None, the filter bar will not be shown.
         :return: a list of dictionaries as the filtering fields or None.
 
-        Eaxh dictionary defines a field, those are the expected elements
+        Each dictionary defines a field, those are the expected elements
         for each field type by the default template:
         - select/multiple:
             {

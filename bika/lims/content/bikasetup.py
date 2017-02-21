@@ -757,6 +757,45 @@ schema = BikaFolderSchema.copy() + Schema((
                           "will be displayed too. By default, disabled.")
         )
     ),
+    BooleanField(
+        'SamplingBarEnabledAnalysisRequests',
+        schemata="Analyses",
+        default=False,
+        widget=BooleanWidget(
+            label=_("Enable the sampling bar in Analysis Requests lists"),
+            description=_(
+                "If you enable this field, the Analysis Requests Lists will"
+                " display an additional filter bar which will allow the user "
+                "to filter the listed items by some terms."
+                "Warning: This may affect the listing performance."),
+        ),
+    ),
+    BooleanField(
+        'SamplingBarEnabledSamples',
+        schemata="Analyses",
+        default=False,
+        widget=BooleanWidget(
+            label=_("Enable the sampling bar in Samples lists"),
+            description=_(
+                "If you enable this field, the Samples Lists will"
+                " display an additional filter bar which will allow the user "
+                "to filter the listed items by some terms."
+                "Warning: This may affect the listing performance."),
+        ),
+    ),
+    BooleanField(
+        'SamplingBarEnabledAnalyses',
+        schemata="Analyses",
+        default=False,
+        widget=BooleanWidget(
+            label=_("Enable the sampling bar in Analyses lists"),
+            description=_(
+                "If you enable this field, the Analyses Lists will"
+                " display an additional filter bar which will allow the user "
+                "to filter the listed items by some terms."
+                "Warning: This may affect the listing performance."),
+        ),
+    ),
 ))
 
 schema['title'].validators = ()
