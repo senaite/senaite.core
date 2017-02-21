@@ -40,7 +40,9 @@ function InstrumentEditView() {
      * Entry-point method for InstrumentEditView
      */
     that.load = function() {
+      // Removing 'More' button of RecordsWidget
       $('#ResultFilesFolder_more').remove();
+      // Removing 'Delete' button of rows and also deleting last empty row.
       var rows=$('.records_row_ResultFilesFolder');
       for(i=0;i< rows.length;i++){
         if (i==(rows.length-1)) {
@@ -55,11 +57,19 @@ function InstrumentEditView() {
         updateFolders();
     });
 
+    /**
+    When user adds/removes an Interface from select of Interfaces,
+    Interface Results Folder will be updated.
+    */
     function updateFolders() {
+        // First we delete all rows, and then adding new ones accordingly to
+        // selected Interfaces.
         var table = $("#ResultFilesFolder_table");
         var rows = $(".records_row_ResultFilesFolder");
         var values = $('#ImportDataInterface').val();
         rows.remove();
+
+        // If no interface is selected we will add empty row
         if (values == null || (values.length==1 && values[0]=='')) {
           var new_row = $(rows[rows.length-1]).clone();
           for(i=0; i<$(new_row).children().length; i++){
@@ -81,10 +91,14 @@ function InstrumentEditView() {
               $(new_row).appendTo($(table));
             }
           }
+          // Checking if ids are Unique
           renameInputs();
         }
     }
 
+    /**
+    Updating IDs Interface Name and Folder inputs to be sure they are unique
+    */
     function renameInputs() {
       var table = $("#ResultFilesFolder_table");
       var rows = $(".records_row_ResultFilesFolder");

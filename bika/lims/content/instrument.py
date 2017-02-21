@@ -171,8 +171,12 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
             label=_("Result files folders"),
             description=_("For each interface of this instrument, \
                           you can define a folder where \
-                          the system should look for results files while \
-                          automatically importing results."),
+                          the system should look for the results files while \
+                          automatically importing results. Having a folder \
+                          for each Instrument and inside that folder creating \
+                          different folders for each of its Interfaces \
+                          can be a good approach. You can use Interface codes \
+                          to be sure that folder names are unique."),
             visible=True,
         ),
     ),
