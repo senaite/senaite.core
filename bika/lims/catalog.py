@@ -37,22 +37,23 @@ _catalogs_definition = {
             'Creator': 'FieldIndex',
             # TODO: Can be removed? Same as id
             'sortable_title': 'FieldIndex',
-            'review_state': 'FieldIndex',
-            'cancellation_state': 'FieldIndex',
             # TODO-catalog: can be removed?
             'portal_type': 'FieldIndex',
             'UID': 'FieldIndex',
-            'getBatchUID': 'FieldIndex',
             'getClientUID': 'FieldIndex',
             'getSampleUID': 'FieldIndex',
-            'getDepartmentUIDs': 'KeywordIndex',
+            # Index that should be reindexed after some object modifications
+            'review_state': 'FieldIndex',
+            'cancellation_state': 'FieldIndex',
+            'getBatchUID': 'FieldIndex',
             'getDateSampled': 'DateIndex',
             'getSamplingDate': 'DateIndex',
-            'getSampler': 'FieldIndex',
             'getDateReceived': 'DateIndex',
-            'getReceivedBy': 'FieldIndex',
             'getDateVerified': 'DateIndex',
-            'getDatePublished': 'DateIndex'
+            'getDatePublished': 'DateIndex',
+            'getSampler': 'FieldIndex',
+            'getReceivedBy': 'FieldIndex',
+            'getDepartmentUIDs': 'KeywordIndex',
         },
         'columns': [
             'UID',
@@ -111,12 +112,12 @@ _catalogs_definition = {
             'getAnalysesNum',
             'getPrinted',
             'getSamplingDeviationTitle',
+            # TODO: This should be updated through a clock
             'getLate',
             'getInvoiceExclude',
             'getHazardous',
             'getSamplingWorkflowEnabled',
             'getDepartmentUIDs',
-
         ]
     }
 }
@@ -368,27 +369,28 @@ def setup_catalogs(
         }
     :force_reindex: boolean to reindex the catalogs even if there is no need
         to do so.
-    :catalog_extensions: a list of dictionaris with more elements to add to the
+    :catalog_extensions: a dict of dictionaris with more elements to add to the
         ones defined in catalogs_definition. This variable should be used to
         add more columns in a catalog from another addon of bika.
         {
-            'types': ['ContentType', ],
-            'indexes': {
-                'getDoctorUID': 'FieldIndex',
-                ...
-            },
-            'columns': [
-                'AnotherTitle',
-                ...
-            ]
+            CATALOG_ID: {
+                'types':   ['ContentType', ...],
+                'indexes': {
+                    'UID': 'FieldIndex',
+                    ...
+                },
+                'columns': [
+                    'Title',
+                    ...
+                ]
+            }
         }
     """
     # If not given catalogs_definition, use the LIMS one
     if not catalogs_definition:
         catalogs_definition = getCatalogDefinitions()
     archetype_tool = getToolByName(portal, 'archetype_tool')
-    # Making a copy of catalogs_definition and adding the catalog extensions
-    # if required
+    # Making a copy of the merge of catalog extensions and LIMS definitions
     catalogs_definition_extended_copy = {}
     if catalog_extensions:
         catalogs_definition_extended_copy = _merge_both_catalogs(
@@ -446,7 +448,6 @@ def _merge_both_catalogs(catalogs_definition, catalog_extensions):
         }
     :return: a merge of the dictionaries from above with the same format.
     """
-
     result_dict = copy.deepcopy(catalogs_definition)
     ext_cat_ids = catalog_extensions.keys()
     if ext_cat_ids:
@@ -484,11 +485,7 @@ def _merge_both_catalogs(catalogs_definition, catalog_extensions):
                     logger.error(traceback.format_exc())
             else:
                 # If catalog id is not found in the original catalog
-                # definition, definition, rise an info and create the new dict
-                logger.info(
-                    "Catalog %s doesn't exist in Bika LIMS catalog "
-                    "definitions dictionary. A new catalog definition"
-                    " might be created." % ext_cat_id)
+                # definition, add the definition from extension
                 result_dict[ext_cat_id] = catalog_extensions[ext_cat_id]
     return result_dict
 

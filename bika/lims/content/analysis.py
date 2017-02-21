@@ -208,19 +208,19 @@ schema = BikaSchema.copy() + Schema((
         expression = 'context.aq_parent.getClientOrderNumber()',
     ),
     ComputedField('Keyword',
-        expression = 'context.getServiceUsingQuery().getKeyword()',
+        expression = 'context.getServiceUsingQuery().getKeyword() if context.getServiceUsingQuery() else ""',
     ),
     ComputedField('ServiceUID',
-        expression = 'context.getServiceUsingQuery().UID()',
+        expression = 'context.getServiceUsingQuery().UID() if context.getServiceUsingQuery() else ""',
     ),
     ComputedField('SampleTypeUID',
         expression = 'context.aq_parent.getSample().getSampleType().UID()',
     ),
     ComputedField('SamplePointUID',
-        expression = 'context.aq_parent.getSample().getSamplePoint().UID() if context.aq_parent.getSample().getSamplePoint() else None',
+        expression = 'context.aq_parent.getSample().getSamplePoint().UID() if context.aq_parent.getSample().getSamplePoint() else ""',
     ),
     ComputedField('CategoryUID',
-        expression = 'context.getServiceUsingQuery().getCategoryUID()',
+        expression = 'context.getServiceUsingQuery().getCategoryUID() if context.getServiceUsingQuery() else ""',
     ),
     ComputedField(
         'MethodUID',
@@ -237,7 +237,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
     ComputedField('PointOfCapture',
-        expression = 'context.getServiceUsingQuery().getPointOfCapture()',
+        expression = 'context.getServiceUsingQuery().getPointOfCapture() if context.getServiceUsingQuery() else ""',
     ),
     ComputedField('DateReceived',
         expression = 'context.aq_parent.getDateReceived()',
@@ -308,32 +308,54 @@ class Analysis(BaseContent):
     def getServiceUsingQuery(self):
         """
         This function returns the asociated service.
-        Use this method to avoid some errores while rebuilding a catalog.
-        Be aware that this method doesn't care about the history fo the
-        service.
+        Use this method to avoid some errors while rebuilding a catalog.
         """
-        # Getting the service like that because otherwise gives an error
-        # when rebuilding the catalogs.
-        service_uid = self.getRawService()
-        catalog = getToolByName(self, "uid_catalog")
-        brain = catalog(UID=service_uid)
-        if brain:
-            return brain[0].getObject()
-        return ''
+        obj = None
+        try:
+            # Try to obtain the object as usual.
+            obj = self.getService()
+        except:
+            # Getting the service like that because otherwise gives an error
+            # when rebuilding the catalogs.
+            logger.error(traceback.format_exc())
+            obj = None
+
+        if not obj:
+            # Try to obtain the object by using the getRawService getter and
+            # query against the catalog
+            logger.warn("Unable to retrieve the Service for Analysis %s "
+                        "via a direct call to getService(). Retrying by using "
+                        "getRawService() and querying against uid_catalog."
+                        % self.UID())
+            try:
+                service_uid = self.getRawService()
+            except:
+                logger.error(traceback.format_exc())
+                logger.error("Corrupt Analysis UID=%s . Cannot obtain its "
+                             "Service. Try to purge the catalog or try to fix"
+                             " it at %s" % (self.UID(), self.absolute_path()))
+                return None
+
+            # We got an UID, query agains the catalog to obtain the Service
+            catalog = getToolByName(self, "uid_catalog")
+            brain = catalog(UID=service_uid)
+            if len(brain) == 1:
+                obj = brain[0].getObject()
+            elif len(brain) == 0:
+                log.error("No Service found for UID %s" % service_uid)
+            else:
+                raise RuntimeError(
+                    "More than one Service found for UID %s" % service_uid)
+
+        return obj
 
     def Title(self):
         """ Return the service title as title.
         Some silliness here, for premature indexing, when the service
         is not yet configured.
         """
-        try:
-            s = self.getServiceUsingQuery()
-            if s:
-                s = s.Title()
-            if not s:
-                s = ''
-        except ArchivistRetrieveError:
-            s = ''
+        s = self.getServiceUsingQuery()
+        s = s.Title() if s else ''
         return safe_unicode(s).encode('utf-8')
 
     def updateDueDate(self):
@@ -397,14 +419,8 @@ class Analysis(BaseContent):
         """
         Returns the Title of the asociated service.
         """
-        # Getting the service like that because otherwise gives an error
-        # when rebuilding the catalogs.
-        service_uid = self.getRawService()
-        catalog = getToolByName(self, "uid_catalog")
-        brain = catalog(UID=service_uid)
-        if brain:
-            return brain[0].title
-        return ''
+        obj = self.getServiceUsingQuery()
+        return obj.Title() if obj else ''
 
     def getReviewState(self):
         """ Return the current analysis' state"""
@@ -1237,6 +1253,12 @@ class Analysis(BaseContent):
         # All checks pass
         return True
 
+    def getAnalysisRequestUID(self):
+        """
+        This is a column.
+        """
+        return self.aq_parent.UID()
+
     def getSubmittedBy(self):
         """
         Returns the identifier of the user who submitted the result if the
@@ -1672,10 +1694,11 @@ class Analysis(BaseContent):
         if self.portal_type == "DuplicateAnalysis":
             return
         workflow = getToolByName(self, "portal_workflow")
-        self.reindexObject(idxs=["worksheetanalysis_review_state", ])
-        self.reindexObject(idxs=["review_state", ])
+        self.reindexObject(idxs=[
+            "review_state", "worksheetanalysis_review_state" ])
         # If it is assigned to a worksheet, unassign it.
-        if workflow.getInfoFor(self, 'worksheetanalysis_review_state') == 'assigned':
+        if workflow.getInfoFor(self, 'worksheetanalysis_review_state') ==\
+                'assigned':
             ws = self.getBackReferences("WorksheetAnalysis")[0]
             ws.removeAnalysis(self)
 

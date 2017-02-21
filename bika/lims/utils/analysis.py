@@ -52,6 +52,8 @@ def duplicateAnalysis(base):
         SamplePartition=base.getSamplePartition())
     analysis.setDetectionLimitOperand(base.getDetectionLimitOperand())
     analysis.setResult(base.getResult())
+    analysis.setNumberOfRequiredVerifications(
+        base.getNumberOfRequiredVerifications())
     analysis.unmarkCreationFlag()
     # zope.event.notify(ObjectInitializedEvent(analysis))
     changeWorkflowState(analysis,
