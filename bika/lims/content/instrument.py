@@ -163,10 +163,9 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
     RecordsField(
         'ResultFilesFolder',
         subfields=('InterfaceName', 'Folder'),
-        required_subfields=('InterfaceName', 'Folder'),
-        subfield_labels={'InterfaceName': _('Interface'),
-                         'Folder': _('Folder that resuls will be saved')},
-        subfield_readonly={'InterfaceName': False,
+        subfield_labels={'InterfaceName': _('Interface Code'),
+                         'Folder': _('Folder that results will be saved')},
+        subfield_readonly={'InterfaceName': True,
                            'Folder': False},
         widget=RecordsWidget(
             label=_("Result files folders"),

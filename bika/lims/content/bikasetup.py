@@ -757,16 +757,6 @@ schema = BikaFolderSchema.copy() + Schema((
                           "will be displayed too. By default, disabled.")
         )
     ),
-
-    StringField(
-        'InstrumentResultsFolder',
-        default='/home/lims/instruments/',
-        widget=StringWidget(
-            label=_("Instrument Results Folder"),
-            description=_(
-                "The folder that instruments result files will be saved."),
-            )
-    ),
 ))
 
 schema['title'].validators = ()
