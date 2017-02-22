@@ -61,6 +61,37 @@ __all__ = ['abaxis.vetscan.vs2',
            'nuclisens.easyq',
            ]
 
+# Parsers are for auto-import. If empty, then auto-import won't wun for that
+# interface
+PARSERS = [
+           ['abaxis.vetscan.vs2', 'AbaxisVetScanCSVVS2Parser'],
+           ['agilent.masshunter.quantitative', 'MasshunterQuantCSVParser'],
+           ['alere.pima.beads', 'AlerePimaSLKParser'],
+           ['alere.pima.cd4', 'AlerePimacd4SLKParser'],
+           ['beckmancoulter.access.model2', 'BeckmancoulterAccess2CSVParser'],
+           ['biodrop.ulite.ulite', 'BioDropCSVParser'],
+           ['eltra.cs.cs2000', 'EltraCS2000CSVParser'],
+           ['foss.fiastar.fiastar', 'FOSSFIAStarCSVParser'],
+           ['foss.winescan.auto', 'WinescanAutoCSVParser'],
+           ['foss.winescan.ft120', 'WinescanFT120CSVParser'],
+           # ['generic.xml', ''],
+           ['horiba.jobinyvon.icp', 'HoribaJobinYvonCSVParser'],
+           ['rigaku.supermini.wxrf', 'RigakuSuperminiWXRFCSVParser'],
+           ['rochecobas.taqman.model48', 'RocheCobasTaqmanRSFParser'],
+           ['rochecobas.taqman.model96', 'RocheCobasTaqmanRSFParser'],
+           ['thermoscientific.arena.xt20', 'ThermoArena20XTRPRCSVParser'],
+           ['thermoscientific.gallery.Ts9861x', 'ThermoGallery9861xTSVParser'],
+           ['panalytical.omnia.axios_xrf', 'AxiosXrfCSVParser'],
+           ['lifetechnologies.qubit.qubit', 'QuBitCSVParser'],
+           ['sysmex.xs.i500', 'SysmexXS500iCSVParser'],
+           ['sysmex.xs.i1000', 'SysmexXS500iCSVParser'],
+           ['scilvet.abc.plus', 'AbaxisVetScanCSVVS2Parser'],
+           ['sealanalytical.aq2.aq2', 'SealAnalyticsAQ2CSVParser'],
+           ['tescan.tima.tima', 'TimaCSVParser'],
+           ['thermoscientific.multiskan.go', 'ThermoScientificMultiskanGOCSVParser'],
+           ['myself.myinstrument', 'MyInstrumentCSVParser'],
+           ['nuclisens.easyq', 'EasyQParser'],
+           ]
 
 def getExim(exim_id):
     currmodule = sys.modules[__name__]
@@ -68,3 +99,10 @@ def getExim(exim_id):
                if hasattr(obj, '__name__') \
                and obj.__name__.endswith(exim_id)]
     return members[0] if len(members)>0 else None
+
+
+def getParserName(exim_id):
+    for pair in PARSERS:
+        if pair[0] == exim_id:
+            return pair[1]
+    return None
