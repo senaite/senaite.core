@@ -68,7 +68,6 @@ class AnalysisRequestsView(BikaListingView):
 
         SamplingWorkflowEnabled = self.context.bika_setup.getSamplingWorkflowEnabled()
 
-        self.user_is_preserver = False
         # Check if the filter bar functionality is activated or not
         self.filter_bar_enabled =\
             self.context.bika_setup.getSamplingBarEnabledAnalysisRequests()
@@ -138,12 +137,12 @@ class AnalysisRequestsView(BikaListingView):
             'getSampler': {'title': _('Sampler'),
                            'toggle': SamplingWorkflowEnabled},
             'getDatePreserved': {'title': _('Date Preserved'),
-                                 'toggle': self.user_is_preserver,
+                                 'toggle': False,
                                  'input_class': 'datetimepicker_nofuture',
                                  'input_width': '10',
                                  'sortable': False},  # no datesort without index
             'getPreserver': {'title': _('Preserver'),
-                             'toggle': self.user_is_preserver},
+                             'toggle': False},
             'getDateReceived': {'title': _('Date Received'),
                                 'index': 'getDateReceived',
                                 'toggle': False},
@@ -985,7 +984,7 @@ class AnalysisRequestsView(BikaListingView):
 
         self.editresults = -1
         self.clients = {}
-        self.user_is_preserver = 'Preserver' in self.roles
+        # self.user_is_preserver = 'Preserver' in self.roles
         # Printing workflow enabled?
         # If not, remove the Column
         self.printwfenabled = self.context.bika_setup.getPrintingWorkflowEnabled()
