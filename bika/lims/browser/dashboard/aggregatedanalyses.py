@@ -48,7 +48,7 @@ class AggregatedAnalysesView(AnalysesView):
         self.portal_url = self.portal.absolute_url()
         # Check if the filter bar functionality is activated or not
         self.filter_bar_enabled =\
-            self.context.bika_setup.getSamplingBarEnabledAnalyses()
+            self.context.bika_setup.getDisplayAdvancedFilterBarForAnalyses()
 
         # each editable item needs it's own allow_edit
         # which is a list of field names.

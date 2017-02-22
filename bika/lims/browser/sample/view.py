@@ -79,7 +79,7 @@ class SamplesView(BikaListingView):
         user_is_preserver = 'Preserver' in member.getRoles()
         # Check if the filter bar functionality is activated or not
         self.filter_bar_enabled =\
-            self.context.bika_setup.getSamplingBarEnabledSamples()
+            self.context.bika_setup.getDisplayAdvancedFilterBarForSamples()
         # Defined in the __init__.py
         self.columns = {
             'getSampleID': {'title': _('Sample ID'),

@@ -70,7 +70,8 @@ class AnalysisRequestsView(BikaListingView):
 
         # Check if the filter bar functionality is activated or not
         self.filter_bar_enabled =\
-            self.context.bika_setup.getSamplingBarEnabledAnalysisRequests()
+            self.context.bika_setup.\
+            getDisplayAdvancedFilterBarForAnalysisRequests()
 
         self.columns = {
             'getRequestID': {'title': _('Request ID'),
