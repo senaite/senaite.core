@@ -46,6 +46,7 @@ from zope.component._api import getMultiAdapter
 from zope.i18nmessageid import MessageFactory
 from zope.interface import Interface
 from zope.interface import implements
+from Products.Archetypes.public import DisplayList
 import types
 
 try:
@@ -1605,3 +1606,100 @@ class BikaListingFilterBar(BrowserView):
             },
         """
         return None
+
+    def createQueryForDateReceived(self, filter_dict, query_dict):
+        """
+        If the dictionary variable 'filter_dict' contains a 'data_received_*'
+        key, this function will get the date ranges from 'filter_dict' and
+        will create a range query to query a catalog by getDateReceived index.
+        @filter_dict: This dictionary contains the filter bar values to filter
+        by.
+        @query_dict: is the final quering dictionary that will be used to
+        filter the list elements.
+        """
+        if filter_dict.get('date_received_0', '') or\
+                filter_dict.get('date_received_1', ''):
+            date_0 = filter_dict.get('date_received_0') \
+                if filter_dict.get('date_received_0', '')\
+                else '1900-01-01'
+            date_1 = filter_dict.get('date_received_1')\
+                if filter_dict.get('date_received_1', '')\
+                else datetime.strftime(date.today(), "%Y-%m-%d")
+            date_range_query = {
+                'query':
+                (date_0 + ' 00:00', date_1 + ' 23:59'), 'range': 'min:max'}
+            query_dict['getDateReceived'] = date_range_query
+        return query_dict
+
+    def createQueryForBatch(self, filter_dict, query_dict):
+        """
+        If the dictionary variable 'filter_dict' contains a 'batch'
+        key, this function will get all the methods' UIDs in order to build
+        a query dictionary with them.
+        @filter_dict: This dictionary contains the filter bar values to filter
+        by.
+        @query_dict: is the final quering dictionary that will be used to
+        filter the list elements.
+        """
+        if filter_dict.get('batch', ''):
+            # removing the empty and space values and gettin their UIDs
+            clean_list_ids = [
+                a.strip() for a in filter_dict.get('batch', '').split(',')
+                if a.strip()]
+            # Now we have the case(batch) ids, lets get their UIDs
+            catalog = getToolByName(self, 'bika_catalog')
+            brains = catalog(
+                portal_type='Batch',
+                cancellation_state='active',
+                review_state='open',
+                id=clean_list_ids
+                )
+            query_dict['getBatchUID'] = [a.UID for a in brains]
+        return query_dict
+
+    def getSampleConditionsVoc(self):
+        """
+        Returns a DisplayList object with sample condtions.
+        """
+        cons = self.context.bika_setup.\
+            bika_sampleconditions.listFolderContents()
+        return DisplayList(
+            [(element.UID(), element.Title()) for element in cons])
+
+    def getPrintStatesVoc(self):
+        """
+        Returns a DisplayList object with print states.
+        """
+        return DisplayList([
+            ('0', _('Never printed')),
+            ('1', _('Printed after last publish')),
+            ('2', _('Printed but republished afterwards')),
+            ])
+
+    def getSampleTypesVoc(self):
+        """
+        Returns a DisplayList object with sample types.
+        """
+        types = self.context.bika_setup.bika_sampletypes.listFolderContents()
+        return DisplayList(
+            [(element.UID(), element.Title()) for element in types])
+
+    def getCasesVoc(self):
+        """
+        Returns a list object with active cases ids.
+        """
+        catalog = getToolByName(self.context, "portal_catalog")
+        brains = catalog({
+            'portal_type': 'Batch',
+            'review_state': 'open',
+        })
+        return [brain.id for brain in brains]
+
+    def getAnalysesNamesVoc(self):
+        """
+        Returns a DisplayList object with analyses names.
+        """
+        ans = self.context.bika_setup.\
+            bika_analysisservices.listFolderContents()
+        return DisplayList(
+            [(element.UID(), element.Title()) for element in ans])

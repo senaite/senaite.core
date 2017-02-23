@@ -7,7 +7,6 @@ from plone import api
 from AccessControl import getSecurityManager
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from Products.Archetypes.public import DisplayList
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
@@ -1075,17 +1074,17 @@ class BikaListingFilterBar(BaseBikaListingFilterBar):
             'name': 'analysis_name',
             'label': _('Analysis name'),
             'type': 'select',
-            'voc': self._getAnalysesNamesVoc(),
+            'voc': self.getAnalysesNamesVoc(),
         }, {
             'name': 'print_state',
             'label': _('Print state'),
             'type': 'select',
-            'voc': self._getPrintStatesVoc(),
+            'voc': self.getPrintStatesVoc(),
         }, {
-            'name': 'case',
-            'label': _('Cases'),
+            'name': 'batch',
+            'label': _('Batch'),
             'type': 'autocomplete_text',
-            'voc': json.dumps(self._getCasesVoc()),
+            'voc': json.dumps(self.getCasesVoc()),
         }, {
             'name': 'date_received',
             'label': _('Date received'),
@@ -1093,35 +1092,6 @@ class BikaListingFilterBar(BaseBikaListingFilterBar):
         },
         ]
         return fields_dict
-
-    def _getAnalysesNamesVoc(self):
-        """
-        Returns a DisplayList object with analyses names.
-        """
-        l = self.context.bika_setup.bika_analysisservices.listFolderContents()
-        return DisplayList(
-            [(element.UID(), element.Title()) for element in l])
-
-    def _getPrintStatesVoc(self):
-        """
-        Returns a DisplayList object with print states.
-        """
-        return DisplayList([
-            ('0', _('Never printed')),
-            ('1', _('Printed after last publish')),
-            ('2', _('Printed but republished afterwards')),
-            ])
-
-    def _getCasesVoc(self):
-        """
-        Returns a list object with active cases ids.
-        """
-        catalog = getToolByName(self.context, "portal_catalog")
-        brains = catalog({
-            'portal_type': 'Batch',
-            'review_state': 'open',
-        })
-        return [brain.id for brain in brains]
 
     def get_filter_bar_queryaddition(self):
         """
@@ -1137,33 +1107,13 @@ class BikaListingFilterBar(BaseBikaListingFilterBar):
         query_dict = {}
         filter_dict = self.get_filter_bar_dict()
         # Date received filter
-        if filter_dict.get('date_received_0', '') or\
-                filter_dict.get('date_received_1', ''):
-            date_0 = filter_dict.get('date_received_0') \
-                if filter_dict.get('date_received_0', '')\
-                else '1900-01-01'
-            date_1 = filter_dict.get('date_received_1')\
-                if filter_dict.get('date_received_1', '')\
-                else datetime.strftime(date.today(), "%Y-%m-%d")
-            date_range_query = {
-                'query':
-                (date_0 + ' 00:00', date_1 + ' 23:59'), 'range': 'min:max'}
-            query_dict['getDateReceived'] = date_range_query
-        # Batch(case) filter
-        if filter_dict.get('case', ''):
-            # removing the empty and space values and gettin their UIDs
-            clean_list_ids = [
-                a.strip() for a in filter_dict.get('case', '').split(',')
-                if a.strip()]
-            # Now we have the case(batch) ids, lets get their UIDs
-            catalog = getToolByName(self, 'bika_catalog')
-            brains = catalog(
-                portal_type='Batch',
-                cancellation_state='active',
-                review_state='open',
-                id=clean_list_ids
-                )
-            query_dict['BatchUID'] = [a.UID for a in brains]
+        query_dict = self.createQueryForDateReceived(filter_dict, query_dict)
+        # Batch filter
+        query_dict = self.createQueryForBatch(filter_dict, query_dict)
+        # Print state filter
+        if filter_dict.get('print_state', ''):
+            query_dict['getPrinted'] =\
+                filter_dict.get('print_state', '')
         return query_dict
 
     def filter_bar_check_item(self, item):
@@ -1187,8 +1137,5 @@ class BikaListingFilterBar(BaseBikaListingFilterBar):
                     analysis.getService().UID() for analysis in
                     item_obj.getAnalyses(full_objects=True)]
                 if dbar.get(key, '') not in uids:
-                    return False
-            if key == 'print_state' and dbar.get(key, '') != '':
-                if dbar.get(key, '') != item.getPrinted:
                     return False
         return True
