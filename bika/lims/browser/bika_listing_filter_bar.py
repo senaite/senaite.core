@@ -1,7 +1,10 @@
+# -*- coding: utf-8 -*-
+#
 # This file is part of Bika LIMS
 #
-# Copyright 2011-2016 by it's authors.
+# Copyright 2011-2017 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from datetime import datetime
 from datetime import date
 from Products.CMFCore.utils import getToolByName
@@ -13,9 +16,8 @@ from bika.lims.browser import BrowserView
 
 class BikaListingFilterBar(BrowserView):
     """
-    This class defines a filter bar to make advanced queries in
-    BikaListingView. This filter shouldn't override the 'filter by state'
-    functionality
+    Defines a filter bar to make advanced queries in BikaListingView. This
+    filter doesn't override the 'filter by state' functionality
     """
     _render = ViewPageTemplateFile("templates/bika_listing_filter_bar.pt")
     _filter_bar_dict = {}
