@@ -4,18 +4,13 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 import csv
-import os
 from DateTime.DateTime import DateTime
-from bika.lims import bikaMessageFactory as _
-from bika.lims.browser import BrowserView, ulocalized_time
+from bika.lims.browser import BrowserView
 from bika.lims.utils import tmpID
-from plone.protect import CheckAuthenticator
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType
 from bika.lims.exportimport import instruments
 from bika.lims.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter
-import json
 import traceback
 from os import listdir
 from os.path import isfile, join
@@ -67,10 +62,11 @@ class ResultsImportView(BrowserView):
                              if isfile(join(folder, f))]
                 imported_list = self.getAlreadyImportedFiles(folder)
                 if not imported_list:
+                    self.add_to_logs(i, interface,
+                                     'imported.csv File not found...', '')
                     continue
                 for file_name in all_files:
                     if file_name in imported_list:
-                        print 'File imported...'
                         continue
                     temp_file = open(folder+'/'+file_name)
                     # Parsers work with UploadFile object from
@@ -83,8 +79,10 @@ class ResultsImportView(BrowserView):
                     parser_function = getattr(exim, parser_name) \
                         if hasattr(exim, parser_name) else ''
                     if not parser_function:
+                        self.add_to_logs(i, interface,
+                                         'Parser not found...', file_name)
                         continue
-                    # We will run imoprt with some default parameters
+                    # We will run import with some default parameters
                     # Expected to be modified in the future.
                     parser = parser_function(result_file)
                     importer = GeneralImporter(
@@ -104,21 +102,58 @@ class ResultsImportView(BrowserView):
                         tbex = traceback.format_exc()
                     errors = importer.errors
                     logs = importer.logs
-                    warns = importer.warns
                     if tbex:
                         errors.append(tbex)
-                    results = {'errors': errors,
-                               'log': logs, 'warns': warns}
-                    return results
-        return 'Nothing happened...'
+                    final_log = ''
+                    success_log = self.getInfoFromLog(logs, 'Import finished')
+                    if success_log:
+                        final_log = success_log
+                    else:
+                        final_log = errors
+                    self.insert_file_name(folder, file_name)
+                    self.add_to_logs(i, interface, final_log, file_name)
+
+        return 'Auto-Import finished...'
 
     def getAlreadyImportedFiles(self, folder):
         try:
-            with open(folder+'/imported.csv') as f:
+            with open(folder+'/imported.csv', 'r') as f:
                 imported = f.readlines()
+                imported = [i.strip() for i in imported]
                 return imported
         except:
+            with open(folder+'/imported.csv', 'w') as f:
+                f.write('imported.csv\n')
+                f.close()
+            return ['']
+        return None
+
+    def insert_file_name(self, folder, name):
+        try:
+            with open(folder+'/imported.csv', 'a') as fd:
+                fd.write(name+'\n')
+                fd.close()
+        except:
+            pass
+
+    def getInfoFromLog(self, logs, keyword):
+        try:
+            for log in logs:
+                if keyword in log:
+                    return log
             return None
+        except:
+            return None
+
+    def add_to_logs(self, instrument, interface, log, filename):
+        _id = self.portal.invokeFactory("AutoImportLog", id=tmpID(),
+                                        Instrument=instrument,
+                                        Interface=interface,
+                                        Results=log,
+                                        ImportedFile=filename)
+        item = self.portal[_id]
+        item.markCreationFlag()
+
 
 class GeneralImporter(AnalysisResultsImporter):
 
@@ -140,7 +175,7 @@ class ConvertToUploadFile:
     this attribute to our File object.
     """
     def __init__(self, orig_file):
-        if hasattr(file, '__methods__'):
+        if hasattr(orig_file, '__methods__'):
             methods = orig_file.__methods__
         else:
             methods = ['close', 'fileno', 'flush', 'isatty',
