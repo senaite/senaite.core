@@ -46,7 +46,7 @@ class ResultsImportView(BrowserView):
         interfaces = []
         for brain in brains:
             i = brain.getObject()
-            # If Import Interface Name is specified in request, then auto-import
+            # If Import Interface ID is specified in request, then auto-import
             # will run only that interface. Otherwise all available interfaces
             # of this instruments
             if request.get('interface', ''):
@@ -61,51 +61,67 @@ class ResultsImportView(BrowserView):
                 for pairs in i.getResultFilesFolder():
                     if pairs['InterfaceName'] == interface:
                         folder = pairs.get('Folder', '')
-                if folder:
-                    # TODO Filter not to insert same files again. We are
-                    # getting all files from the folder.
-                    all_files = [f for f in listdir(folder)
-                                 if isfile(join(folder, f))]
-                    for file_name in all_files:
-                        temp_file = open(folder+'/'+file_name)
-                        # Parsers work with UploadFile object from
-                        # zope.HTTPRequest which has filename attribute.
-                        # To add this attribute we convert the file.
-                        # CHECK should we add headers too?
-                        result_file = ConvertToUploadFile(temp_file)
-                        exim = instruments.getExim(interface)
-                        parser_name = instruments.getParserName(interface)
-                        parser_function = getattr(exim, parser_name) \
-                            if hasattr(exim, parser_name) else ''
-                        if parser_function:
-                            # We will run imoprt with some default parameters
-                            # Expected to be modified in the future.
-                            parser = parser_function(result_file)
-                            importer = GeneralImporter(
-                                        parser=parser,
-                                        context=self.portal,
-                                        idsearchcriteria=['getRequestID',
-                                                          'getSampleID',
-                                                          'getClientSampleID'],
-                                        allowed_ar_states=['sample_received'],
-                                        allowed_analysis_states=None,
-                                        override=[False, False],
-                                        instrument_uid=i.UID())
-                            tbex = ''
-                            try:
-                                importer.process()
-                            except:
-                                tbex = traceback.format_exc()
-                            errors = importer.errors
-                            logs = importer.logs
-                            warns = importer.warns
-                            if tbex:
-                                errors.append(tbex)
-                            results = {'errors': errors,
-                                       'log': logs, 'warns': warns}
-                            return results
+                if not folder:
+                    continue
+                # TODO Filter not to insert same files again. We are
+                # getting all files from the folder.
+                all_files = [f for f in listdir(folder)
+                             if isfile(join(folder, f))]
+                imported_list = self.getAlreadyImportedFiles(folder)
+                if not imported_list:
+                    print 'Can not open imported list...'
+                    continue
+                for file_name in all_files:
+                    if file_name in imported_list:
+                        print 'File imported...'
+                        continue
+                    temp_file = open(folder+'/'+file_name)
+                    # Parsers work with UploadFile object from
+                    # zope.HTTPRequest which has filename attribute.
+                    # To add this attribute we convert the file.
+                    # CHECK should we add headers too?
+                    result_file = ConvertToUploadFile(temp_file)
+                    exim = instruments.getExim(interface)
+                    parser_name = instruments.getParserName(interface)
+                    parser_function = getattr(exim, parser_name) \
+                        if hasattr(exim, parser_name) else ''
+                    if not parser_function:
+                        continue
+                    # We will run imoprt with some default parameters
+                    # Expected to be modified in the future.
+                    parser = parser_function(result_file)
+                    importer = GeneralImporter(
+                                parser=parser,
+                                context=self.portal,
+                                idsearchcriteria=['getRequestID',
+                                                  'getSampleID',
+                                                  'getClientSampleID'],
+                                allowed_ar_states=['sample_received'],
+                                allowed_analysis_states=None,
+                                override=[False, False],
+                                instrument_uid=i.UID())
+                    tbex = ''
+                    try:
+                        importer.process()
+                    except:
+                        tbex = traceback.format_exc()
+                    errors = importer.errors
+                    logs = importer.logs
+                    warns = importer.warns
+                    if tbex:
+                        errors.append(tbex)
+                    results = {'errors': errors,
+                               'log': logs, 'warns': warns}
+                    return results
         return 'Nothing happened...'
 
+    def getAlreadyImportedFiles(self, folder):
+        try:
+            with open(folder+'/imported.csv') as f:
+                imported = f.readlines()
+                return imported
+        except:
+            return None
 
 class GeneralImporter(AnalysisResultsImporter):
 
