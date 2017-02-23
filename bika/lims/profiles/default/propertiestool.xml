@@ -106,6 +106,7 @@
     <element value="SamplingRound"/>
     <element value="ReflexRule"/>
     <element value="BikaCache"/>
+    <element value="AutoImportLog"/>
   </property>
   <property name="enable_wf_state_filtering" type="boolean">False</property>
   <property name="wf_states_to_show" type="lines"/>

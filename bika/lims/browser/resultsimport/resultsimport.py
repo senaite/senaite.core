@@ -63,13 +63,10 @@ class ResultsImportView(BrowserView):
                         folder = pairs.get('Folder', '')
                 if not folder:
                     continue
-                # TODO Filter not to insert same files again. We are
-                # getting all files from the folder.
                 all_files = [f for f in listdir(folder)
                              if isfile(join(folder, f))]
                 imported_list = self.getAlreadyImportedFiles(folder)
                 if not imported_list:
-                    print 'Can not open imported list...'
                     continue
                 for file_name in all_files:
                     if file_name in imported_list:
