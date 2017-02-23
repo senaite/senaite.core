@@ -50,6 +50,7 @@
   <include package=".sample"/>
   <include package=".worksheet"/>
   <include package=".dashboard"/>
+  <include package=".aggregatedanalyses"/>
 
   <include package=".fields"/>
   <include package=".widgets"/>

@@ -557,6 +557,9 @@ class BikaGenerator:
         addIndex(bac, 'getMethodUID', 'FieldIndex')
         addIndex(bac, 'getInstrumentUID', 'FieldIndex')
         addIndex(bac, 'getAnalysisRequestUID', 'FieldIndex')
+        addIndex(bac, 'getBatchUID', 'FieldIndex')
+        addIndex(bac, 'getSampleConditionUID', 'FieldIndex')
+        addIndex(bac, 'getAnalysisRequestPrintStatus', 'FieldIndex')
 
         addColumn(bac, 'path')
         addColumn(bac, 'UID')

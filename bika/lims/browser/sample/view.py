@@ -11,9 +11,13 @@ from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.permissions import *
 from bika.lims.utils import getUsers
+from bika.lims.browser.sample.samples_filter_bar\
+    import SamplesBikaListingFilterBar
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
 from . import SampleEdit
+import json
+from datetime import datetime, date
 import plone
 import App
 
@@ -72,6 +76,9 @@ class SamplesView(BikaListingView):
         mtool = getToolByName(self.context, 'portal_membership')
         member = mtool.getAuthenticatedMember()
         user_is_preserver = 'Preserver' in member.getRoles()
+        # Check if the filter bar functionality is activated or not
+        self.filter_bar_enabled =\
+            self.context.bika_setup.getDisplayAdvancedFilterBarForSamples()
         # Defined in the __init__.py
         self.columns = {
             'getSampleID': {'title': _('Sample ID'),
@@ -514,3 +521,26 @@ class SamplesView(BikaListingView):
         roles = member.getRoles()
         return self.context.bika_setup.getScheduleSamplingEnabled() and\
             ('SamplingCoordinator' in roles or 'Manager' in roles)
+
+    def isItemAllowed(self, obj):
+        """
+        Checks the BikaLIMS conditions and also checks filter bar conditions
+        @Obj: it is a sample object.
+        @return: boolean
+        """
+        # TODO-performance:we are expecting for the sample object.
+        # Should be only a brain
+        if self.filter_bar_enabled and not self.filter_bar_check_item(obj):
+            return False
+        return super(SamplesView, self).isItemAllowed(obj)
+
+    def getFilterBar(self):
+        """
+        This function creates an instance of BikaListingFilterBar if the
+        class has not created one yet.
+        :return: a BikaListingFilterBar instance
+        """
+        self._advfilterbar = self._advfilterbar if self._advfilterbar else \
+            SamplesBikaListingFilterBar(
+                context=self.context, request=self.request)
+        return self._advfilterbar

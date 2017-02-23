@@ -98,6 +98,12 @@ def upgrade(tool):
 
     # Adding getAnalysisRequestUID column in analysis catalog
     addgetAnalysisRequestUID(portal)
+    # Adding getBatchUID column in analysis catalog
+    addgetBatchUID(portal)
+    # Adding getSampleConditionUID column in analysis catalog
+    addgetSampleConditionUID(portal)
+    # Adding getAnalysisRequestPrintStatus column in analysis catalog
+    addgetAnalysisRequestPrintStatus(portal)
 
     # Clean and rebuild affected catalogs (if required)
     logger.info("Cleaning and rebuilding...")
@@ -253,7 +259,37 @@ def addgetAnalysisRequestUID(portal):
     analysisrequests listings.
     """
     catalog = getToolByName(portal, 'bika_analysis_catalog')
-    addIndex(catalog, 'getAnalysisRequestUID', 'KeywordIndex')
+    addIndex(catalog, 'getAnalysisRequestUID', 'FieldIndex')
+    transaction.commit()
+
+
+def addgetBatchUID(portal):
+    """
+    Add an index to analysis catalog in order to use them in
+    analysisrequests listings.
+    """
+    catalog = getToolByName(portal, 'bika_analysis_catalog')
+    addIndex(catalog, 'getBatchUID', 'FieldIndex')
+    transaction.commit()
+
+
+def addgetSampleConditionUID(portal):
+    """
+    Add an index to analysis catalog in order to use them in
+    analysisrequests listings.
+    """
+    catalog = getToolByName(portal, 'bika_analysis_catalog')
+    addIndex(catalog, 'getSampleConditionUID', 'FieldIndex')
+    transaction.commit()
+
+
+def addgetAnalysisRequestPrintStatus(portal):
+    """
+    Add an index to analysis catalog in order to use them in
+    analysisrequests listings.
+    """
+    catalog = getToolByName(portal, 'bika_analysis_catalog')
+    addIndex(catalog, 'getAnalysisRequestPrintStatus', 'FieldIndex')
     transaction.commit()
 
 
