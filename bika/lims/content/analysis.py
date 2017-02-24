@@ -342,11 +342,10 @@ class Analysis(BaseContent):
             if len(brain) == 1:
                 obj = brain[0].getObject()
             elif len(brain) == 0:
-                log.error("No Service found for UID %s" % service_uid)
+                logger.error("No Service found for UID %s" % service_uid)
             else:
                 raise RuntimeError(
                     "More than one Service found for UID %s" % service_uid)
-
         return obj
 
     def Title(self):
