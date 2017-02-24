@@ -11,4 +11,12 @@
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />
+
+    <browser:page
+      for="*"
+      name="autoimportlogs"
+      class="bika.lims.browser.resultsimport.autoimportlogs.AutoImportLogsView"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
 </configure>
