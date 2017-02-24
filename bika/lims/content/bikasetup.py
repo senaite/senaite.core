@@ -758,41 +758,42 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     BooleanField(
-        'SamplingBarEnabledAnalysisRequests',
+        'DisplayAdvancedFilterBarForAnalysisRequests',
         schemata="Analyses",
         default=False,
         widget=BooleanWidget(
-            label=_("Enable the sampling bar in Analysis Requests lists"),
+            label=_(
+                "Display an advanced filter bar in Analysis Requests lists"),
             description=_(
-                "If you enable this field, the Analysis Requests Lists will"
-                " display an additional filter bar which will allow the user "
-                "to filter the listed items by some terms."
+                "If enabled, the Analysis Requests Lists will"
+                " display an additional filter bar which allows the user "
+                "to filter the listed items by some several criteria."
                 "Warning: This may affect the listing performance."),
         ),
     ),
     BooleanField(
-        'SamplingBarEnabledSamples',
+        'DisplayAdvancedFilterBarForSamples',
         schemata="Analyses",
         default=False,
         widget=BooleanWidget(
-            label=_("Enable the sampling bar in Samples lists"),
+            label=_("Display an advanced filter bar in Samples lists"),
             description=_(
-                "If you enable this field, the Samples Lists will"
-                " display an additional filter bar which will allow the user "
-                "to filter the listed items by some terms."
+                "If enabled, the Samples Lists will"
+                " display an additional filter bar which allows the user "
+                "to filter the listed items by some several criteria."
                 "Warning: This may affect the listing performance."),
         ),
     ),
     BooleanField(
-        'SamplingBarEnabledAnalyses',
+        'DisplayAdvancedFilterBarForAnalyses',
         schemata="Analyses",
         default=False,
         widget=BooleanWidget(
-            label=_("Enable the sampling bar in Analyses lists"),
+            label=_("Display an advanced filter bar in Analyses lists"),
             description=_(
-                "If you enable this field, the Analyses Lists will"
-                " display an additional filter bar which will allow the user "
-                "to filter the listed items by some terms."
+                "If enabled, the Analyses Lists will"
+                " display an additional filter bar which allows the user "
+                "to filter the listed items by some several criteria."
                 "Warning: This may affect the listing performance."),
         ),
     ),

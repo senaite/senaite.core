@@ -4,5 +4,3 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from dashboard import DashboardView
-from aggregatedanalyses import AggregatedAnalysesView
-from workflow import AggregatedAnalysesWorkflowAction
