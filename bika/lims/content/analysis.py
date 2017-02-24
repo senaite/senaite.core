@@ -1293,6 +1293,23 @@ class Analysis(BaseContent):
             for event in review_history:
                 if event.get("action") == "submit":
                     return event.get("actor")
+            return ''
+        except WorkflowException:
+            return ''
+
+    def getDateSubmitted(self):
+        """
+        Returns the time the result was submitted.
+        :return: a DateTime object.
+        """
+        workflow = getToolByName(self, "portal_workflow")
+        try:
+            review_history = workflow.getInfoFor(self, "review_history")
+            review_history = self.reverseList(review_history)
+            for event in review_history:
+                if event.get("action") == "submit":
+                    return event.get("time")
+            return ''
         except WorkflowException:
             return ''
 

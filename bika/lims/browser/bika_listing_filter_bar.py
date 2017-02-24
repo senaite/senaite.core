@@ -137,23 +137,28 @@ class BikaListingFilterBar(BrowserView):
         """
         return None
 
-    def createQueryForDateReceived(self, filter_dict, query_dict):
+    def createQueryForDateRange(
+            self, filter_dict, query_dict, term_name, cat_index):
         """
-        If the dictionary variable 'filter_dict' contains a 'data_received_*'
-        key, this function will get the date ranges from 'filter_dict' and
+        If the dictionary variable 'filter_dict' contains a 'term_name',
+        this function will get the date ranges from 'filter_dict' and
         will create a range query to query a catalog by getDateReceived index.
-        @filter_dict: This dictionary contains the filter bar values to filter
-        by.
-        @query_dict: is the final quering dictionary that will be used to
-        filter the list elements.
+        :filter_dict: This dictionary contains the filter bar keys and values.
+        :query_dict: is the final quering dictionary that will be used to
+        filter the list of elements in the acatalog.
+        :term_name: It is a string with the name of a filter bar's field with
+        'date_range' type.
+        :cat_index: It is a catalog index as string.
         """
-        if filter_dict.get('date_received_0', '') or\
-                filter_dict.get('date_received_1', ''):
-            date_0 = filter_dict.get('date_received_0') \
-                if filter_dict.get('date_received_0', '')\
+        key_date_0 = term_name + '_0'
+        Key_date_1 = term_name + '_1'
+        if filter_dict.get(key_date_0, '') or\
+                filter_dict.get(Key_date_1, ''):
+            date_0 = filter_dict.get(key_date_0) \
+                if filter_dict.get(key_date_0, '')\
                 else '1900-01-01'
-            date_1 = filter_dict.get('date_received_1')\
-                if filter_dict.get('date_received_1', '')\
+            date_1 = filter_dict.get(Key_date_1)\
+                if filter_dict.get(Key_date_1, '')\
                 else datetime.strftime(date.today(), "%Y-%m-%d")
             date_range_query = {
                 'query':
