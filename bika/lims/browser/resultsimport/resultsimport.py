@@ -112,6 +112,8 @@ class ResultsImportView(BrowserView):
                         final_log = errors
                     self.insert_file_name(folder, file_name)
                     self.add_to_logs(i, interface, final_log, file_name)
+                    self.add_to_log_file(i.Title(), interface, final_log,
+                                         file_name, folder)
 
         return 'Auto-Import finished...'
 
@@ -124,6 +126,7 @@ class ResultsImportView(BrowserView):
         except:
             with open(folder+'/imported.csv', 'w') as f:
                 f.write('imported.csv\n')
+                f.write('logs.log\n')
                 f.close()
             return ['']
         return None
@@ -153,6 +156,26 @@ class ResultsImportView(BrowserView):
                                         ImportedFile=filename)
         item = self.portal[_id]
         item.markCreationFlag()
+
+    def add_to_log_file(self, instrument, interface, log, filename, folder):
+        log = self.format_log_data(instrument, interface, log, filename)
+        try:
+            with open(folder+'/logs.log', 'a') as fd:
+                fd.write(log+'\n')
+                fd.close()
+        except:
+            with open(folder+'/logs.log', 'w') as f:
+                f.write(log+'\n')
+                f.close()
+
+    def format_log_data(self, instrument, interface, result, filename):
+        log = DateTime.strftime(DateTime(), '%Y-%m-%d %H:%M:%S')
+        log += ' - ' + instrument
+        log += ' - ' + interface
+        log += ' - ' + filename
+        r = ''.join(result)
+        log += ' - ' + r
+        return log
 
 
 class GeneralImporter(AnalysisResultsImporter):
