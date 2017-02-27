@@ -89,8 +89,12 @@
             <legend id="fieldsetlegend-autoimport" i18n:translate="">Auto Import Instrument Results</legend>
             <br>
             <label>Auto Import</label><br>
+            <a href="autoimportlogs">
+               <input type="button" value="Show Last Results" />
+            </a>
+            <br><br>
             <a href="auto_import_results">
-               <input type="button" value="Start" />
+               <input type="button" value="Start Auto-Import" />
             </a>
             <div id="intermediate" style="display:none"/>
         </fieldset>

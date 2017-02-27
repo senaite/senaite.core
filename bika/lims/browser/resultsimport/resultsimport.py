@@ -151,6 +151,7 @@ class ResultsImportView(BrowserView):
 
     def add_to_logs(self, instrument, interface, log, filename):
         _id = instrument.invokeFactory("AutoImportLog", id=tmpID(),
+                                       Instrument=instrument,
                                        Interface=interface,
                                        Results=log,
                                        ImportedFile=filename)
