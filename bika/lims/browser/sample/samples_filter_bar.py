@@ -55,16 +55,13 @@ class SamplesBikaListingFilterBar(BikaListingFilterBar):
         This function gets the values from the filter bar inputs in order to
         create a query accordingly.
         Only returns the once that can be added to contentFilter dictionary.
-        in this case, the catalog is bika_catalog
-        In this case the keys with index representation are:
-        - date_received - getDateReceived
-        - date_received - BatchUID
         :return: a dictionary to be added to contentFilter.
         """
         query_dict = {}
         filter_dict = self.get_filter_bar_dict()
         # Date received filter
-        query_dict = self.createQueryForDateReceived(filter_dict, query_dict)
+        query_dict = self.createQueryForDateRange(
+            filter_dict, query_dict, 'date_received', 'getDateReceived')
         # Batch filter
         query_dict = self.createQueryForBatch(filter_dict, query_dict)
         # Sample type filter

@@ -342,11 +342,10 @@ class Analysis(BaseContent):
             if len(brain) == 1:
                 obj = brain[0].getObject()
             elif len(brain) == 0:
-                log.error("No Service found for UID %s" % service_uid)
+                logger.error("No Service found for UID %s" % service_uid)
             else:
                 raise RuntimeError(
                     "More than one Service found for UID %s" % service_uid)
-
         return obj
 
     def Title(self):
@@ -1294,6 +1293,23 @@ class Analysis(BaseContent):
             for event in review_history:
                 if event.get("action") == "submit":
                     return event.get("actor")
+            return ''
+        except WorkflowException:
+            return ''
+
+    def getDateSubmitted(self):
+        """
+        Returns the time the result was submitted.
+        :return: a DateTime object.
+        """
+        workflow = getToolByName(self, "portal_workflow")
+        try:
+            review_history = workflow.getInfoFor(self, "review_history")
+            review_history = self.reverseList(review_history)
+            for event in review_history:
+                if event.get("action") == "submit":
+                    return event.get("time")
+            return ''
         except WorkflowException:
             return ''
 

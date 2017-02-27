@@ -104,6 +104,8 @@ def upgrade(tool):
     addgetSampleConditionUID(portal)
     # Adding getAnalysisRequestPrintStatus column in analysis catalog
     addgetAnalysisRequestPrintStatus(portal)
+    # Adding getDateSubmitted column in analysis catalog
+    addgetDateSubmitted(portal)
 
     # Clean and rebuild affected catalogs (if required)
     logger.info("Cleaning and rebuilding...")
@@ -290,6 +292,16 @@ def addgetAnalysisRequestPrintStatus(portal):
     """
     catalog = getToolByName(portal, 'bika_analysis_catalog')
     addIndex(catalog, 'getAnalysisRequestPrintStatus', 'FieldIndex')
+    transaction.commit()
+
+
+def addgetDateSubmitted(portal):
+    """
+    Add an index to analysis catalog in order to use them in
+    analysisrequests listings.
+    """
+    catalog = getToolByName(portal, 'bika_analysis_catalog')
+    addIndex(catalog, 'getDateSubmitted', 'DateIndex')
     transaction.commit()
 
 
