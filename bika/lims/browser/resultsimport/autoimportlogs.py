@@ -9,6 +9,7 @@ from bika.lims.utils import tmpID
 from Products.CMFCore.utils import getToolByName
 from bika.lims.exportimport import instruments
 from bika.lims import bikaMessageFactory as _
+from bika.lims.catalog import CATALOG_AUTOIMPORTLOGS_LISTING
 
 import traceback
 from os import listdir
@@ -21,7 +22,7 @@ class AutoImportLogsView(BikaListingView):
     """
     def __init__(self, context, request):
         super(AutoImportLogsView, self).__init__(context, request)
-        self.catalog = 'portal_catalog'
+        self.catalog = CATALOG_AUTOIMPORTLOGS_LISTING
         self.contentFilter = {'portal_type': 'AutoImportLog',
                               'sort_on': 'Created',
                               'sort_order': 'reverse'
@@ -53,17 +54,18 @@ class AutoImportLogsView(BikaListingView):
              },
         ]
 
-    def folderitem(self, obj, item, index):
-        item['ImportTime'] = obj.getLogTime().strftime('%Y-%m-%d  \
-                                                            %H:%M:%S')
+    def folderitems(self, full_objects=False, classic=False):
+        self.portal_catalog = getToolByName(self.context,
+                                            CATALOG_AUTOIMPORTLOGS_LISTING)
+        return BikaListingView.folderitems(self, full_objects, classic)
 
-        item['Instrument'] = ''
-        instrument = obj.getInstrument()
-        if instrument:
-            item['Instrument'] = instrument.Title()
-            item['replace']['Instrument'] = "<a href='%s'>%s</a>" % \
-                (instrument.absolute_url(), instrument.Title())
-        results = ''.join(obj.getResults())
+    def folderitem(self, obj, item, index):
+        item['ImportTime'] = obj.getLogTime.strftime('%Y-%m-%d  \
+                                                            %H:%M:%S')
+        item['Instrument'] = obj.getInstrumentTitle
+        item['replace']['Instrument'] = "<a href='%s'>%s</a>" % \
+            (obj.getInstrumentUrl, obj.getInstrumentTitle)
+        results = ''.join(obj.getResults)
         summ = results[:80]+'...' if len(results) > 80 else results
         item['Results'] = summ
         return item

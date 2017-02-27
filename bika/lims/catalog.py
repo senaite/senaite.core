@@ -133,7 +133,11 @@ _catalogs_definition = {
         },
         'columns': [
             'UID',
+            'getId',
+            'Title',
             'created',
+            'review_state',
+            'getObjectWorkflowStates',
             'getInstrumentUrl',
             'getInstrumentTitle',
             'getImportedFile',

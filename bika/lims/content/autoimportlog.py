@@ -11,6 +11,7 @@ from Products.Archetypes.references import HoldingReference
 from bika.lims import bikaMessageFactory as _
 from bika.lims import config
 from DateTime import DateTime
+from Products.CMFCore.utils import getToolByName
 
 
 schema = BikaSchema.copy() + atapi.Schema((
@@ -54,6 +55,21 @@ class AutoImportLog(BaseContent):
         if self.getInstrument():
             return self.getInstrument().absolute_url()
         return None
+
+    def getObjectWorkflowStates(self):
+        """
+        This method is used as a metacolumn.
+        Returns a dictionary with the workflow id as key and workflow state as
+        value.
+        :return: {'review_state':'active',...}
+        """
+        workflow = getToolByName(self, 'portal_workflow')
+        states = {}
+        for w in workflow.getWorkflowsFor(self):
+            state = w._getWorkflowStateOf(self).id
+            states[w.state_var] = state
+        return states
+
 
 # Activating the content type in Archetypes' internal types registry
 atapi.registerType(AutoImportLog, config.PROJECTNAME)
