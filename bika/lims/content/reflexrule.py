@@ -175,7 +175,15 @@ class ReflexRule(BaseContent):
         if rr_actions_triggered in\
                 analysis.getReflexRuleActionsTriggered().split('|'):
             return False
-        # To save the analysis realted in the same action_set
+        # Check that rules are not repited: lets supose that some conditions
+        # are met and an analysis with id analysis-1 is reflexed using a
+        # duplicate action. Now we have analysis-1 and analysis1-dup. If the
+        # same conditions are met while submitting/verifying analysis1-dup, the
+        # duplicated shouldn't trigger the reflex action again.
+        if forceuid and analysis.IsReflexAnalysis and rr_actions_triggered in\
+                analysis.getReflexRuleActionsTriggered().split('|'):
+            return False
+        # To save the analysis related in the same action_set
         ans_related_to_set = []
         for condition in conditions:
             # analysisservice can be either a service uid (if it is the first
@@ -184,7 +192,7 @@ class ReflexRule(BaseContent):
             ans_cond = condition.get('analysisservice', '')
             ans_uid_cond = action_set.get('mother_service_uid', '')
             # Be aware that we already know that the local_id for 'analysis'
-            # has been founf inside the conditions fo this action_set
+            # has been found inside the conditions for this action_set
             if ans_cond != alocalid:
                 # If the 'analysisservice' item from the condition is not the
                 # same as the local_id from the analysis, the system
@@ -199,9 +207,9 @@ class ReflexRule(BaseContent):
                 # local_id in the condition, we will use it as the current
                 # analysis
                 curranalysis = analysis
-            ans_related_to_set.append(curranalysis)
             if not curranalysis:
                 continue
+            ans_related_to_set.append(curranalysis)
             # the value of the analysis' result as string
             result = curranalysis.getResult()
             if len(service.getResultOptions()) > 0:
@@ -319,6 +327,9 @@ def doActionToAnalysis(base, action):
     analysis.setReflexRuleAction(action.get('action', ''))
     analysis.setIsReflexAnalysis(True)
     analysis.setReflexAnalysisOf(base)
+    analysis.setReflexRuleActionsTriggered(
+        base.getReflexRuleActionsTriggered()
+    )
     # Setting the original reflected analysis
     if base.getOriginalReflexedAnalysis():
         analysis.setOriginalReflexedAnalysis(
