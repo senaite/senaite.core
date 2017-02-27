@@ -13,6 +13,7 @@ from bika.lims.interfaces import IBikaCatalog
 from bika.lims.interfaces import IBikaAnalysisCatalog
 from bika.lims.interfaces import IBikaSetupCatalog
 from bika.lims.interfaces import IBikaCatalogAnalysisRequestListing
+from bika.lims.interfaces import IBikaCatalogAutoImportLogsListing
 from bika.lims import logger
 import sys
 import traceback
@@ -23,6 +24,7 @@ import transaction
 
 # Using a variable to avoid plain strings in code
 CATALOG_ANALYSIS_REQUEST_LISTING = 'bika_catalog_analysisrequest_listing'
+CATALOG_AUTOIMPORTLOGS_LISTING = 'bika_catalog_autoimportlogs_listing'
 
 _catalogs_definition = {
     # This catalog contains the metacolumns to list patients in bikalisting
@@ -118,6 +120,26 @@ _catalogs_definition = {
             'getHazardous',
             'getSamplingWorkflowEnabled',
             'getDepartmentUIDs',
+        ]
+    },
+    CATALOG_AUTOIMPORTLOGS_LISTING: {
+        'types':   ['AutoImportLog', ],
+        'indexes': {
+            # Minimum indexes for bika_listing
+            'created': 'DateIndex',
+            'portal_type': 'FieldIndex',
+            'UID': 'FieldIndex',
+            'getInstrumentUID': 'FieldIndex'
+        },
+        'columns': [
+            'UID',
+            'created',
+            'getInstrumentUrl',
+            'getInstrumentTitle',
+            'getImportedFile',
+            'getInterface',
+            'getResults',
+            'getLogTime'
         ]
     }
 }
@@ -342,6 +364,55 @@ class BikaCatalogAnalysisRequestListing(CatalogTool):
 
 
 InitializeClass(BikaCatalogAnalysisRequestListing)
+
+
+class BikaCatalogAutoImportLogsListing(CatalogTool):
+    """
+    Catalog to list auto-import logs in BikaListing
+    """
+    implements(IBikaCatalogAutoImportLogsListing)
+    title = 'Bika Catalog Auto-Import Logs Listing'
+    id = CATALOG_AUTOIMPORTLOGS_LISTING
+    portal_type = meta_type = 'BikaCatalogAutoImportLogsListing'
+    plone_tool = 1
+    security = ClassSecurityInfo()
+    _properties = (
+      {'id': 'title', 'type': 'string', 'mode': 'w'},)
+
+    def __init__(self):
+        ZCatalog.__init__(self, self.id)
+
+    security.declareProtected(ManagePortal, 'clearFindAndRebuild')
+
+    def clearFindAndRebuild(self):
+        """Empties catalog, then finds all contentish objects (i.e. objects
+           with an indexObject method), and reindexes them.
+           This may take a long time.
+        """
+        def indexObject(obj, path):
+            self.reindexObject(obj)
+            transaction.commit()
+        logger.info('Cleaning and rebuilding %s...' % self.id)
+        try:
+            at = getToolByName(self, 'archetype_tool')
+            types = [k for k, v in at.catalog_map.items()
+                     if self.id in v]
+            self.manage_catalogClear()
+            portal = getToolByName(self, 'portal_url').getPortalObject()
+            portal.ZopeFindAndApply(
+                portal,
+                obj_metatypes=types,
+                search_sub=True,
+                apply_func=indexObject)
+        except:
+            logger.error(traceback.format_exc())
+            e = sys.exc_info()
+            logger.error(
+                "Unable to clean and rebuild %s due to: %s" % (self.id, e))
+        logger.info('%s cleaned and rebuilt' % self.id)
+
+
+InitializeClass(BikaCatalogAutoImportLogsListing)
 
 
 def setup_catalogs(

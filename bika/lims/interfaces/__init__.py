@@ -438,6 +438,10 @@ class IBikaCatalogAnalysisRequestListing(Interface):
     "Marker interface for custom catalog"
 
 
+class IBikaCatalogAutoImportLogsListing(Interface):
+    "Marker interface for custom catalog"
+
+
 class IIdServer(Interface):
 
     """ Interface for ID server """

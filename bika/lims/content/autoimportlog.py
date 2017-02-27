@@ -40,6 +40,20 @@ class AutoImportLog(BaseContent):
     """
     schema = schema
 
+    def getInstrumentUID(self):
+        if self.getInstrument():
+            return self.getInstrument().UID()
+        return None
+
+    def getInstrumentTitle(self):
+        if self.getInstrument():
+            return self.getInstrument().Title()
+        return None
+
+    def getInstrumentUrl(self):
+        if self.getInstrument():
+            return self.getInstrument().absolute_url()
+        return None
 
 # Activating the content type in Archetypes' internal types registry
 atapi.registerType(AutoImportLog, config.PROJECTNAME)
