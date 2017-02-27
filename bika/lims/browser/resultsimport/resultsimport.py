@@ -14,6 +14,7 @@ from bika.lims.exportimport.instruments.resultsimport import \
 import traceback
 from os import listdir
 from os.path import isfile, join
+from bika.lims.idserver import renameAfterCreation
 
 
 class ResultsImportView(BrowserView):
@@ -45,7 +46,7 @@ class ResultsImportView(BrowserView):
             # will run only that interface. Otherwise all available interfaces
             # of this instruments
             if request.get('interface', ''):
-                interfaces.add(request.get('interface'))
+                interfaces.append(request.get('interface'))
             else:
                 interfaces = [pairs.get('InterfaceName', '') for pairs
                               in i.getResultFilesFolder()]
@@ -149,13 +150,13 @@ class ResultsImportView(BrowserView):
             return None
 
     def add_to_logs(self, instrument, interface, log, filename):
-        _id = self.portal.invokeFactory("AutoImportLog", id=tmpID(),
-                                        Instrument=instrument,
-                                        Interface=interface,
-                                        Results=log,
-                                        ImportedFile=filename)
-        item = self.portal[_id]
-        item.markCreationFlag()
+        _id = instrument.invokeFactory("AutoImportLog", id=tmpID(),
+                                       Interface=interface,
+                                       Results=log,
+                                       ImportedFile=filename)
+        item = instrument[_id]
+        item.unmarkCreationFlag()
+        renameAfterCreation(item)
 
     def add_to_log_file(self, instrument, interface, log, filename, folder):
         log = self.format_log_data(instrument, interface, log, filename)

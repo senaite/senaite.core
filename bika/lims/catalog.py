@@ -126,6 +126,8 @@ _catalogs_definition = {
         'types':   ['AutoImportLog', ],
         'indexes': {
             # Minimum indexes for bika_listing
+            'id': 'FieldIndex',
+            'getId': 'FieldIndex',
             'created': 'DateIndex',
             'portal_type': 'FieldIndex',
             'UID': 'FieldIndex',
