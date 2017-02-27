@@ -20,6 +20,14 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <browser:page
+      for="bika.lims.interfaces.IInstrument"
+      name="instrumentautoimportlogs"
+      class="bika.lims.browser.instrument.InstrumentAutoImportLogsView"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
     <!--browser:page
       for="bika.lims.interfaces.IInstrument"
       name="schedule"

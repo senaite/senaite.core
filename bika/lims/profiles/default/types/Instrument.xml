@@ -126,4 +126,14 @@
         visible="True">
     <permission value="Modify portal content"/>
  </action>
+
+ <action title="Auto-Import Logs"
+       action_id="instrumentautoimportlogs"
+       category="object"
+       condition_expr=""
+       url_expr="string:${object_url}/instrumentautoimportlogs"
+       i18n:attributes="title"
+       visible="True">
+   <permission value="Modify portal content"/>
+</action>
 </object>

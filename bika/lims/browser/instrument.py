@@ -28,6 +28,7 @@ from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zExceptions import Forbidden
 from operator import itemgetter
+from bika.lims.catalog import CATALOG_AUTOIMPORTLOGS_LISTING
 
 import plone
 import json
@@ -608,6 +609,58 @@ class InstrumentCertificationsView(BikaListingView):
                 items[x]['state_class'] = '%s %s' % (items[x]['state_class'], 'inactive')
 
         return items
+
+
+class InstrumentAutoImportLogsView(BikaListingView):
+    """ Logs of Auto-Imports of this instrument.
+    """
+
+    def __init__(self, context, request, **kwargs):
+        BikaListingView.__init__(self, context, request, **kwargs)
+        self.columns = {'ImportTime': {'title': _('Time'),
+                                       'sortable': False},
+                        'Interface': {'title': _('Interface'),
+                                      'sortable': False,
+                                      'attr': 'getInterface'},
+                        'ImportFile': {'title': _('Imported File'),
+                                       'sortable': False,
+                                       'attr': 'getImportedFile'},
+                        'Results': {'title': _('Results'),
+                                    'sortable': False},
+                        }
+        self.review_states = [
+            {'id': 'default',
+             'title':  _('All'),
+             'contentFilter': {},
+             'columns': ['ImportTime',
+                         'Interface',
+                         'ImportFile',
+                         'Results']
+             },
+        ]
+
+        self.show_select_column = False
+        self.show_workflow_action_buttons = False
+        self.catalog = CATALOG_AUTOIMPORTLOGS_LISTING
+        self.contentFilter = {'portal_type': 'AutoImportLog',
+                              'getInstrumentUID': self.context.UID(),
+                              'sort_on': 'Created',
+                              'sort_order': 'reverse'}
+        self.title = self.context.translate(_("Auto Import Logs of %s" %
+                                              self.context.Title()))
+
+    def folderitems(self, full_objects=False, classic=False):
+        self.portal_catalog = getToolByName(self.context,
+                                            CATALOG_AUTOIMPORTLOGS_LISTING)
+        return BikaListingView.folderitems(self, full_objects, classic)
+
+    def folderitem(self, obj, item, index):
+        item['ImportTime'] = obj.getLogTime.strftime('%Y-%m-%d  \
+                                                            %H:%M:%S')
+        results = ''.join(obj.getResults)
+        summ = results[:100]+'...' if len(results) > 100 else results
+        item['Results'] = summ
+        return item
 
 
 class InstrumentMultifileView(MultifileView):

@@ -62,9 +62,11 @@ class AutoImportLogsView(BikaListingView):
     def folderitem(self, obj, item, index):
         item['ImportTime'] = obj.getLogTime.strftime('%Y-%m-%d  \
                                                             %H:%M:%S')
-        item['Instrument'] = obj.getInstrumentTitle
-        item['replace']['Instrument'] = "<a href='%s'>%s</a>" % \
-            (obj.getInstrumentUrl, obj.getInstrumentTitle)
+        item['Instrument'] = ''
+        if obj.getInstrumentTitle:
+            item['Instrument'] = obj.getInstrumentTitle
+            item['replace']['Instrument'] = "<a href='%s'>%s</a>" % \
+                (obj.getInstrumentUrl, obj.getInstrumentTitle)
         results = ''.join(obj.getResults)
         summ = results[:80]+'...' if len(results) > 80 else results
         item['Results'] = summ

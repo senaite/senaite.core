@@ -45,7 +45,7 @@ function InstrumentEditView() {
       // Removing 'Delete' button of rows and also deleting last empty row.
       var rows=$('.records_row_ResultFilesFolder');
       for(i=0;i< rows.length;i++){
-        if (i==(rows.length-1)) {
+        if (i>0 && i==(rows.length-1)) {
           rows[i].remove();
         }else{
           rows[i].children[2].remove();
