@@ -61,7 +61,8 @@ class AnalysisRequestsBikaListingFilterBar(BikaListingFilterBar):
         query_dict = {}
         filter_dict = self.get_filter_bar_dict()
         # Date received filter
-        query_dict = self.createQueryForDateReceived(filter_dict, query_dict)
+        query_dict = self.createQueryForDateRange(
+            filter_dict, query_dict, 'date_received', 'getDateReceived')
         # Batch filter
         query_dict = self.createQueryForBatch(filter_dict, query_dict)
         # Print state filter
