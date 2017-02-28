@@ -33,9 +33,7 @@ class ResultsImportView(BrowserView):
 
     def __call__(self):
         request = self.request
-        logger.info('Auto import Request...')
         if not self.is_import_allowed():
-            logger.info('Skipping...')
             return 'Auto-import skipped due to interval...'
         bsc = getToolByName(self, 'bika_setup_catalog')
         # Getting instrumnets to run auto-import
