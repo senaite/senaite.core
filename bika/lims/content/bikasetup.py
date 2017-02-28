@@ -541,6 +541,17 @@ schema = BikaFolderSchema.copy() + Schema((
         )
     ),
     StringField(
+        'AutoImportInterval',
+        schemata="Analyses",
+        default="30",
+        widget=StringWidget(
+            label=_("Interval of Auto-Importing Files in minutes"),
+            description=_("System will upload result files of different \
+                          instruments/interfaces periodically in the interval \
+                          of this value (Minutes).")
+        )
+    ),
+    StringField(
         'WorksheetLayout',
         schemata="Analyses",
         default='1',

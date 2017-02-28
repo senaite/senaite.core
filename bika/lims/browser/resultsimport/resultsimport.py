@@ -15,6 +15,8 @@ import traceback
 from os import listdir
 from os.path import isfile, join
 from bika.lims.idserver import renameAfterCreation
+from bika.lims import logger
+from datetime import datetime
 
 
 class ResultsImportView(BrowserView):
@@ -31,7 +33,10 @@ class ResultsImportView(BrowserView):
 
     def __call__(self):
         request = self.request
-
+        logger.info('Auto import Request...')
+        if not self.is_import_allowed():
+            logger.info('Skipping...')
+            return 'Auto-import skipped due to interval...'
         bsc = getToolByName(self, 'bika_setup_catalog')
         # Getting instrumnets to run auto-import
         query = {'portal_type': 'Instrument',
@@ -42,6 +47,7 @@ class ResultsImportView(BrowserView):
         interfaces = []
         for brain in brains:
             i = brain.getObject()
+            logger.info('Auto import for ' + i.Title())
             # If Import Interface ID is specified in request, then auto-import
             # will run only that interface. Otherwise all available interfaces
             # of this instruments
@@ -59,10 +65,12 @@ class ResultsImportView(BrowserView):
                         folder = pairs.get('Folder', '')
                 if not folder:
                     continue
+                logger.info('Auto import for ' + interface)
                 all_files = [f for f in listdir(folder)
                              if isfile(join(folder, f))]
                 imported_list = self.getAlreadyImportedFiles(folder)
                 if not imported_list:
+                    logger.warn('imported.csv file not found ' + interface)
                     self.add_to_logs(i, interface,
                                      'imported.csv File not found...', '')
                     continue
@@ -85,6 +93,7 @@ class ResultsImportView(BrowserView):
                         continue
                     # We will run import with some default parameters
                     # Expected to be modified in the future.
+                    logger.info('Parsing ' + file_name)
                     parser = parser_function(result_file)
                     importer = GeneralImporter(
                                 parser=parser,
@@ -115,7 +124,7 @@ class ResultsImportView(BrowserView):
                     self.add_to_logs(i, interface, final_log, file_name)
                     self.add_to_log_file(i.Title(), interface, final_log,
                                          file_name, folder)
-
+        logger.info('End of auto import...')
         return 'Auto-Import finished...'
 
     def getAlreadyImportedFiles(self, folder):
@@ -169,6 +178,34 @@ class ResultsImportView(BrowserView):
             with open(folder+'/logs.log', 'w') as f:
                 f.write(log+'\n')
                 f.close()
+
+    def is_import_allowed(self):
+        try:
+            interval = int(self.portal.bika_setup.getAutoImportInterval())
+        except:
+            interval = 10
+        caches = self.portal.listFolderContents(contentFilter={
+                                                "portal_type": 'BikaCache'})
+        cache = None
+        for c in caches:
+            if c and c.getKey() == 'LastAutoImport':
+                cache = c
+        now = DateTime.strftime(DateTime(), '%Y-%m-%d %H:%M:%S')
+        if not cache:
+            _id = self.portal.invokeFactory("BikaCache", id=tmpID(),
+                                            Key='LastAutoImport',
+                                            Value=now)
+            item = self.portal[_id]
+            item.markCreationFlag()
+            return True
+        else:
+            last_import = cache.getValue()
+            diff = datetime.now() - datetime.strptime(last_import,
+                                                      '%Y-%m-%d %H:%M:%S')
+            if diff.seconds < interval * 60:
+                return False
+            cache.edit(Value=now)
+            return True
 
     def format_log_data(self, instrument, interface, result, filename):
         log = DateTime.strftime(DateTime(), '%Y-%m-%d %H:%M:%S')
