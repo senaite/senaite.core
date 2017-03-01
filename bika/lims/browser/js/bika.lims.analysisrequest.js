@@ -322,7 +322,10 @@ function AnalysisRequestViewView() {
          * Given a dict with a fieldname and a fieldvalue, save this data via ajax petition.
          * @requestdata should has the format  {fieldname=fieldvalue} ->  { ReportDryMatter=false}.
          */
-        var url = window.location.href.replace('/base_view', '');
+        var url = window.location.href
+            .replace('/base_view', '')
+            .replace('?check_edit=1', '')
+            .replace('?check_edit=0', '');
         var obj_path = url.replace(window.portal_url, '');
         // Staff for the notification
         var element,name = $.map(requestdata, function(element,index) {return element, index});
