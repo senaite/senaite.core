@@ -26,6 +26,7 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.utils import safe_unicode, _createObjectByType
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from smtplib import SMTPServerDisconnected, SMTPRecipientsRefused
+from smtplib import SMTPAuthenticationError
 from zope.component import getAdapters, getUtility
 
 from plone.registry import Record
@@ -892,6 +893,8 @@ class AnalysisRequestPublishView(BrowserView):
                     logger.warn("SMTPServerDisconnected: %s." % msg)
                 except SMTPRecipientsRefused as msg:
                     raise WorkflowException(str(msg))
+                except SMTPAuthenticationError as msg:
+                    logger.warn("SMTPAuthenticationFailed: %s." % msg)
 
         # Send report to recipients
         recips = self.get_recipients(ar)
@@ -938,6 +941,8 @@ class AnalysisRequestPublishView(BrowserView):
                 logger.warn("SMTPServerDisconnected: %s." % msg)
             except SMTPRecipientsRefused as msg:
                 raise WorkflowException(str(msg))
+            except SMTPAuthenticationError as msg:
+                logger.warn("SMTPAuthenticationFailed: %s." % msg)
 
         return [ar]
 
