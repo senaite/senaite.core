@@ -157,6 +157,9 @@ class ResultsImportView(BrowserView):
             return None
 
     def add_to_logs(self, instrument, interface, log, filename):
+        if log:
+            log = ''.join(log)
+            log = log[:80]+'...' if len(log) > 80 else log
         _id = instrument.invokeFactory("AutoImportLog", id=tmpID(),
                                        Instrument=instrument,
                                        Interface=interface,
@@ -178,10 +181,10 @@ class ResultsImportView(BrowserView):
                 f.close()
 
     def is_import_allowed(self):
-        try:
-            interval = int(self.portal.bika_setup.getAutoImportInterval())
-        except:
-            interval = 10
+        # Checking if auto-import enabled in bika setup. Return False if not.
+        interval = self.portal.bika_setup.getAutoImportInterval()
+        if interval < 10:
+            return False
         caches = self.portal.listFolderContents(contentFilter={
                                                 "portal_type": 'BikaCache'})
         cache = None

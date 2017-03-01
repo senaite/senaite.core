@@ -32,7 +32,9 @@ class AutoImportLogsView(BikaListingView):
         self.columns = {'ImportTime': {'title': _('Time'),
                                        'sortable': False},
                         'Instrument': {'title': _('Instrument'),
-                                       'sortable': False},
+                                       'sortable': False,
+                                       'attr': 'getInstrumentTitle',
+                                       'replace_url': 'getInstrumentUrl'},
                         'Interface': {'title': _('Interface'),
                                       'sortable': False,
                                       'attr': 'getInterface'},
@@ -40,7 +42,8 @@ class AutoImportLogsView(BikaListingView):
                                        'sortable': False,
                                        'attr': 'getImportedFile'},
                         'Results': {'title': _('Results'),
-                                    'sortable': False},
+                                    'sortable': False,
+                                    'attr': 'getResults'},
                         }
         self.review_states = [
             {'id': 'default',
@@ -55,19 +58,10 @@ class AutoImportLogsView(BikaListingView):
         ]
 
     def folderitems(self, full_objects=False, classic=False):
-        self.portal_catalog = getToolByName(self.context,
-                                            CATALOG_AUTOIMPORTLOGS_LISTING)
-        return BikaListingView.folderitems(self, full_objects, classic)
+        return BikaListingView.folderitems(self, full_objects=False,
+                                           classic=False)
 
     def folderitem(self, obj, item, index):
         item['ImportTime'] = obj.getLogTime.strftime('%Y-%m-%d  \
                                                             %H:%M:%S')
-        item['Instrument'] = ''
-        if obj.getInstrumentTitle:
-            item['Instrument'] = obj.getInstrumentTitle
-            item['replace']['Instrument'] = "<a href='%s'>%s</a>" % \
-                (obj.getInstrumentUrl, obj.getInstrumentTitle)
-        results = ''.join(obj.getResults)
-        summ = results[:80]+'...' if len(results) > 80 else results
-        item['Results'] = summ
         return item
