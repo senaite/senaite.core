@@ -157,9 +157,10 @@ class ResultsImportView(BrowserView):
             return None
 
     def add_to_logs(self, instrument, interface, log, filename):
-        if log:
-            log = ''.join(log)
-            log = log[:80]+'...' if len(log) > 80 else log
+        if not log:
+            return
+        log = ''.join(log)
+        log = log[:80]+'...' if len(log) > 80 else log
         _id = instrument.invokeFactory("AutoImportLog", id=tmpID(),
                                        Instrument=instrument,
                                        Interface=interface,
