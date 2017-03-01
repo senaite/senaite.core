@@ -51,6 +51,7 @@
   <include package=".worksheet"/>
   <include package=".dashboard"/>
   <include package=".resultsimport"/>
+  <include package=".aggregatedanalyses"/>
 
   <include package=".fields"/>
   <include package=".widgets"/>

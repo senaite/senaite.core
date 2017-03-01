@@ -34,6 +34,7 @@ $(document).ready(function(){
         .click(function(){$(this).attr("value", "");})
         .focus();
     });
+
     $('[datepicker_nofuture="1"]').change(function() {
       if (new Date(this.value)>new Date()) {
           alert("Please enter valid date");
@@ -41,11 +42,19 @@ $(document).ready(function(){
           this.value='';
       }
     });
-    $('[datepicker_nofuture="1"]').change(function() {
-      if (new Date(this.value)>new Date()) {
-          alert("Please enter valid date");
+
+    $('[datepicker="1"]').change(function() {
+      if(!this.value.includes("-")){
+        alert("Please enter valid date");
+        this.text='';
+        this.value='';
+      }else{
+        var d = $(this).datepicker('getDate');
+        if (d && d.getFullYear() < 1901){
+          alert("Please choose a valid year...");
           this.text='';
           this.value='';
+        }
       }
     });
 });
