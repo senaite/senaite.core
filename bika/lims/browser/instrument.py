@@ -7,6 +7,7 @@ from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.browser.resultsimport.autoimportlogs import AutoImportLogsView
 from bika.lims.content.instrumentmaintenancetask import InstrumentMaintenanceTaskStatuses as mstatus
 from bika.lims.subscribers import doActionFor, skip
 from operator import itemgetter
@@ -28,6 +29,7 @@ from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zExceptions import Forbidden
 from operator import itemgetter
+from bika.lims.catalog import CATALOG_AUTOIMPORTLOGS_LISTING
 
 import plone
 import json
@@ -608,6 +610,22 @@ class InstrumentCertificationsView(BikaListingView):
                 items[x]['state_class'] = '%s %s' % (items[x]['state_class'], 'inactive')
 
         return items
+
+
+class InstrumentAutoImportLogsView(AutoImportLogsView):
+    """ Logs of Auto-Imports of this instrument.
+    """
+
+    def __init__(self, context, request, **kwargs):
+        AutoImportLogsView.__init__(self, context, request, **kwargs)
+        del self.columns['Instrument']
+        self.review_states[0]['columns'].remove('Instrument')
+        self.contentFilter = {'portal_type': 'AutoImportLog',
+                              'getInstrumentUID': self.context.UID(),
+                              'sort_on': 'Created',
+                              'sort_order': 'reverse'}
+        self.title = self.context.translate(_("Auto Import Logs of %s" %
+                                              self.context.Title()))
 
 
 class InstrumentMultifileView(MultifileView):

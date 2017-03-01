@@ -125,6 +125,7 @@ def initialize(context):
     from content.worksheetfolder import WorksheetFolder
     from content.worksheettemplate import WorksheetTemplate
     from content.reflexrule import ReflexRule
+    from content.autoimportlog import AutoImportLog
 
     from controlpanel.bika_analysiscategories import AnalysisCategories
     from controlpanel.bika_analysisservices import AnalysisServices

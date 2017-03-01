@@ -85,7 +85,15 @@
             </div>
             <input type="hidden" name="projectname" tal:attributes="value view/getProjectName"/>
         </fieldset>
-
+        <fieldset id="fieldset-autoimport">
+            <legend id="fieldsetlegend-autoimport" i18n:translate="">Auto Import Instrument Results</legend>
+            <br>
+            <label>Auto Import</label><br>
+            <a href="autoimportlogs">
+               <input type="button" value="Show Last Results" />
+            </a>
+            <div id="intermediate" style="display:none"/>
+        </fieldset>
     </form>
 
 </metal:content-core>

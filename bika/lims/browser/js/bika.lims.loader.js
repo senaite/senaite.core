@@ -66,6 +66,8 @@ window.bika.lims.controllers =  {
     ".portaltype-instrumentcertification.template-base_edit":
         ['InstrumentCertificationEditView'],
 
+    ".portaltype-instrument.template-base_edit":
+            ['InstrumentEditView'],
 
     // Bika Setup
     ".portaltype-bikasetup.template-base_edit":
