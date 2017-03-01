@@ -47,7 +47,7 @@ class AnalysisRequestViewView(BrowserView):
                 self.request.get('check_edit') == '1':
                 # Another check, here to increase performance, is it stupid?
                 state = ar.getObjectWorkflowStates().get('review_state', '')
-                if state not in ['to_be_sampled', 'sample_due']:
+                if state in ['to_be_verified', 'sample_received']:
                     # It mens we should redirect to manage_results
                     redirect = self.context.absolute_url() + '/manage_results'
                     self.request.response.redirect(redirect)
