@@ -14,6 +14,7 @@ from zope.interface import implements
 from datetime import datetime
 import string
 import re
+import types
 
 
 class IdentifierTypeAttributesValidator:
