@@ -147,8 +147,10 @@ class AnalysisServicesView(ASV):
             # The parent folder can be a client or a batch, but we need the
             # client.  It is possible that this will be None!  This happens
             # when the AR is inside a batch, and the batch has no Client set.
-            client = self.context.aq_parent if self.context.aq_parent.portal_type == 'Client'\
-                else self.context.aq_parent.getClient()
+            client = ''
+            if not self.context.aq_parent.portal_type == "AnalysisRequestsFolder":
+                client = self.context.aq_parent if self.context.aq_parent.portal_type == 'Client'\
+                    else self.context.aq_parent.getClient()
             items = super(AnalysisServicesView, self).folderitems()
             for x, item in enumerate(items):
                 if 'obj' not in items[x]:
