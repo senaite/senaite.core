@@ -32,6 +32,9 @@ bika_catalog_analysis_listing_definition = {
             # TODO: Can be removed?
             'id': 'FieldIndex',
             'getId': 'FieldIndex',
+            # Necessary to avoid reindexing whole catalog when we need to
+            # reindex only one object. ExtendedPathIndex also could be used.
+            'path': 'PathIndex',
             'created': 'DateIndex',
             'Creator': 'FieldIndex',
             # TODO: Can be removed? Same as id
