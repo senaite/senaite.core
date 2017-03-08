@@ -15,6 +15,7 @@ import App
 import pkg_resources
 import plone
 import transaction
+from AccessControl import getSecurityManager
 from Acquisition import aq_parent, aq_inner
 from DateTime import DateTime
 from OFS.interfaces import IOrderedContainer
@@ -427,6 +428,11 @@ class BikaListingView(BrowserView):
     # The advanced filter bar instance, it is initialized using
     # getAdvancedFilterBar
     _advfilterbar = None
+    # The following variable will contain an instance that checks whether the
+    # logged in user has a certain permission for some object.
+    # Save getSecurityManager() in this variable and then use
+    # security_manager.checkPermission(ModifyPortalContent, obj)
+    security_manager = None
 
     def __init__(self, context, request, **kwargs):
         self.field_icons = {}
@@ -850,6 +856,8 @@ class BikaListingView(BrowserView):
         :classic: if True, the old way folderitems works will be executed. This
         function is mainly used to mantain the integrity with the old version.
         """
+        # Getting a security manager instance for the current reques
+        self.security_manager = getSecurityManager()
         # If the classic is True,, use the old way.
         if classic:
             return self._folderitems(full_objects)
@@ -919,6 +927,7 @@ class BikaListingView(BrowserView):
                 state_class += "state-%s " % states.get(w_id, '')
             # Building the dictionary with basic items
             results_dict = dict(
+                # obj can be an object or a brain!!
                 obj=obj,
                 uid=obj.UID,
                 url=obj.getURL(),

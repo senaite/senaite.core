@@ -28,23 +28,14 @@ class AggregatedAnalysesView(AnalysesView):
                                            show_categories=False,
                                            expand_all_categories=False)
         self.title = _("Analyses pending")
-        self.catalog = CATALOG_ANALYSIS_LISTING
         self.contentFilter = dict(kwargs)
-        self.contentFilter['portal_type'] = 'Analysis'
         self.contentFilter['sort_on'] = 'created'
         self.sort_order = 'ascending'
         self.contentFilter['sort_order'] = self.sort_order
-        self.context_actions = {}
-        self.show_sort_column = False
-        self.show_select_row = False
-        self.show_select_column = False
-        self.show_column_toggles = False
         self.show_select_all_checkbox = False
         self.show_categories = False
         self.pagesize = 50
         self.form_id = 'analyses_form'
-        self.portal = getToolByName(context, 'portal_url').getPortalObject()
-        self.portal_url = self.portal.absolute_url()
         # Get temp objects that are too time consuming to obtain every time
         self.bika_catalog = getToolByName(context, 'bika_catalog')
         # Check if the filter bar functionality is activated or not
@@ -117,7 +108,7 @@ class AggregatedAnalysesView(AnalysesView):
         department filter. If the analysis service is not assigned to a
         department, show it.
         If department filtering is disabled in bika_setup, will return True.
-        @Obj: it is an analysis object.
+        @Obj: it is an analysis brain.
         @return: boolean
         """
         if not obj:
@@ -138,6 +129,10 @@ class AggregatedAnalysesView(AnalysesView):
         return result
 
     def folderitem(self, obj, item, index):
+        """
+        In this case obj should be a brain
+        """
+        item = AnalysesView.folderitem(self, obj, item, index)
         # Analysis Request
         item['AnalysisRequest'] = obj.getAnalysisRequestTitle
         anchor = \

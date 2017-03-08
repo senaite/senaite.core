@@ -4,7 +4,6 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from plone import api
-from AccessControl import getSecurityManager
 from Products.CMFCore.permissions import ModifyPortalContent
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _

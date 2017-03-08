@@ -398,6 +398,18 @@ class Analysis(BaseContent):
             return brain[0].getObject().getCategoryTitle()
         return ''
 
+    def getAnalysisRequestTitle(self):
+        """
+        This is  a column
+        """
+        return self.aq_parent.Title()
+
+    def getAnalysisRequestURL(self):
+        """
+        This is  a column
+        """
+        return self.aq_parent.absolute_url()
+
     # TODO-performance: improve this function using another catalog and takeing
     # advantatge of the column in service, not getting the full object.
     def getServiceTitle(self):
@@ -416,7 +428,10 @@ class Analysis(BaseContent):
         """ Calls self.Service.getUncertainty with either the provided
             result value or self.Result
         """
-        return self.getService().getUncertainty(result and result or self.getResult())
+        service = self.getService()
+        if not service:
+            return None
+        return service.getUncertainty(result and result or self.getResult())
 
     def getUncertainty(self, result=None):
         """ Returns the uncertainty for this analysis and result.
@@ -474,7 +489,10 @@ class Analysis(BaseContent):
                             "detection limit, but not floatable: '%s'. "
                             "Returnig AS's default LDL." %
                             (self.id, result))
-        return self.getService().getLowerDetectionLimit()
+        service = self.getService()
+        if not service:
+            return None
+        return service.getLowerDetectionLimit()
 
     def getUpperDetectionLimit(self):
         """ Returns the Upper Detection Limit (UDL) that applies to
@@ -493,7 +511,10 @@ class Analysis(BaseContent):
                             "detection limit, but not floatable: '%s'. "
                             "Returnig AS's default LDL." %
                             (self.id, result))
-        return self.getService().getUpperDetectionLimit()
+        service = self.getService()
+        if not service:
+            return None
+        return service.getUpperDetectionLimit()
 
     def isBelowLowerDetectionLimit(self):
         """ Returns True if the result is below the Lower Detection
@@ -693,6 +714,8 @@ class Analysis(BaseContent):
         analysis service.
         """
         service = self.getService()
+        if not service:
+            return None
         return service.getResultOptions()
 
     def getResultsRange(self, specification=None):
@@ -919,8 +942,11 @@ class Analysis(BaseContent):
         """ Returns the default instrument for this analysis according
             to its parent analysis service
         """
-        return self.getService().getInstrument() \
-            if self.getService().getInstrumentEntryOfResults() \
+        service = self.getService()
+        if not service:
+            return None
+        return service.getInstrument() \
+            if service.getInstrumentEntryOfResults() \
             else None
 
     def isInstrumentAllowed(self, instrument):
@@ -991,6 +1017,8 @@ class Analysis(BaseContent):
         @return: a list of tuples as [(UID,Title),(),...]
         """
         service = self.getService()
+        if not service:
+            return None
         result = []
         # manual entry of results is set, only returns the methods set manually
         if service.getInstrumentEntryOfResults():
@@ -1012,7 +1040,10 @@ class Analysis(BaseContent):
         It is a metacolumn.
         Returns the same value as the service.
         """
-        return self.getService().getInstrumentEntryOfResults()
+        service = self.getService()
+        if not service:
+            return None
+        return service.getInstrumentEntryOfResults()
 
     def getAllowedInstruments(self, onlyuids=True):
         """ Returns the allowed instruments for this analysis. Gets the
@@ -1020,7 +1051,8 @@ class Analysis(BaseContent):
         """
         uids = []
         service = self.getService()
-
+        if not service:
+            return None
         if service.getInstrumentEntryOfResults() == True:
             uids = service.getRawInstruments()
 
@@ -1312,6 +1344,7 @@ class Analysis(BaseContent):
             states[w.state_var] = state
         return states
 
+    # TODO:This function is doesn't work in the correct way.
     def getAnalysisRequestUID(self):
         """
         This is a column.
@@ -1391,7 +1424,10 @@ class Analysis(BaseContent):
         """
         This works as a metadatacolumn
         """
-        return self.getService().getUnit()
+        service = self.getService()
+        if not service:
+            return None
+        return service.getUnit()
 
     def getSamplePartitionID(self):
         """
@@ -1431,7 +1467,10 @@ class Analysis(BaseContent):
         It is used as a metacolumn.
         Returns the default service's instrument UID
         """
-        ins = self.getService().getInstrument()
+        service = self.getService()
+        if not service:
+            return None
+        ins = service.getInstrument()
         if ins:
             return ins.UID()
         else:
@@ -1442,7 +1481,10 @@ class Analysis(BaseContent):
         It is used as a metacolumn.
         Returns the default service's instrument UID
         """
-        ins = self.getService().getInstrument()
+        service = self.getService()
+        if not service:
+            return None
+        ins = service.getInstrument()
         if ins:
             return ins.Title()
         else:
@@ -1453,7 +1495,10 @@ class Analysis(BaseContent):
         It is used as a metacolumn.
         Returns the default service's instrument UID
         """
-        ins = self.getService().getInstrument()
+        service = self.getService()
+        if not service:
+            return None
+        ins = service.getInstrument()
         if ins:
             return ins.absolute_url()
         else:

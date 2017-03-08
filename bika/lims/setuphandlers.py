@@ -493,10 +493,6 @@ class BikaGenerator:
         zc_extras.index_type = 'Okapi BM25 Rank'
         zc_extras.lexicon_id = 'Lexicon'
 
-        addIndex(bac, 'getAnalysisRequestUID', 'FieldIndex')
-        addIndex(bac, 'getBatchUID', 'FieldIndex')
-        addIndex(bac, 'getSampleConditionUID', 'FieldIndex')
-        addIndex(bac, 'getAnalysisRequestPrintStatus', 'FieldIndex')
         # bika_catalog
 
         bc = getToolByName(portal, 'bika_catalog', None)

@@ -46,6 +46,7 @@ bika_catalog_analysis_listing_definition = {
             'UID': 'FieldIndex',
             'allowedRolesAndUsers': 'KeywordIndex',
             'getParentUID': 'FieldIndex',
+            'getAnalysisRequestUID': 'FieldIndex',
             'getDepartmentUID': 'FieldIndex',
             'getDueDate': 'DateIndex',
             'getDateSampled': 'DateIndex',
@@ -66,6 +67,9 @@ bika_catalog_analysis_listing_definition = {
             'getReferenceAnalysesGroupID': 'FieldIndex',
             'getMethodUID': 'FieldIndex',
             'getInstrumentUID': 'FieldIndex',
+            'getBatchUID': 'FieldIndex',
+            'getSampleConditionUID': 'FieldIndex',
+            'getAnalysisRequestPrintStatus': 'FieldIndex',
         },
         'columns': [
             'UID',
@@ -84,7 +88,9 @@ bika_catalog_analysis_listing_definition = {
             'getResultCaptureDate',
             'getPriority',
             'getParentURL',
+            'getAnalysisRequestURL',
             'getParentTitle',
+            'getAnalysisRequestTitle',
             'getAllowedMethodsAsTuples',
             'getResult',
             'getCalculation',
@@ -125,6 +131,7 @@ bika_catalog_analysis_listing_definition = {
             'getServiceDefaultInstrumentTitle',
             'getServiceDefaultInstrumentURL',
             'getResultsRangeNoSpecs',
+            'getSampleTypeUID'
         ]
     }
 }
