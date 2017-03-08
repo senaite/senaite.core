@@ -190,8 +190,12 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         # is allowed, set it
         instr = self.getInstrument()
         if instr and analysis.isInstrumentAllowed(instr):
-            # Set the method assigned to the selected instrument
-            analysis.setMethod(instr.getMethod())
+            # TODO After enabling multiple methods for instruments, we are
+            # setting intrument's first method as a method.
+            methods = instr.getMethods()
+            if len(methods) > 0:
+                # Set the first method assigned to the selected instrument
+                analysis.setMethod(methods[0])
             analysis.setInstrument(instr)
         # If the ws DOESN'T have an instrument assigned but it has a method,
         # set the method to the analysis
@@ -250,7 +254,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         # overwrite saved context UID for event subscriber
         self.REQUEST['context_uid'] = self.UID()
-        workflow.doActionFor(analysis, 'unassign')
+        if workflow.getInfoFor(analysis, 'worksheetanalysis_review_state') ==\
+                'assigned':
+                workflow.doActionFor(analysis, 'unassign')
         # Note: subscriber might unassign the AR and/or promote the worksheet
 
         # remove analysis from context.Analyses *after* unassign,
@@ -285,7 +291,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """
         cfilter = {'portal_type': 'Instrument', 'inactive_state': 'active'}
         if self.getMethod():
-            cfilter['getMethodUID'] = self.getMethod().UID()
+            cfilter['getMethodUIDs'] = {"query": self.getMethod().UID(),
+                                        "operator": "or"}
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [('', 'No instrument')] + [
             (o.UID, o.Title) for o in
@@ -689,8 +696,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             # the WS manage results view will display the an's default
             # method and its instruments displaying, only the instruments
             # for the default method in the picklist.
-            meth = instrument.getMethod()
-            if an.isMethodAllowed(meth):
+            meth = instrument.getMethods()[0] if instrument.getMethods() \
+                    else None
+            if meth and an.isMethodAllowed(meth):
                 an.setMethod(meth)
             success = an.setInstrument(instrument)
             if success is True:

@@ -20,7 +20,8 @@ class AJAXGetWorksheetTemplateInstruments(BrowserView):
             cfilter = {
                 'portal_type': 'Instrument',
                 'inactive_state': 'active',
-                'getMethodUID': method_uid}
+                'getMethodUIDs': {"query": method_uid,
+                                  "operator": "or"}}
             bsc = getToolByName(self, 'bika_setup_catalog')
             items = [{'uid': '', 'm_title': 'No instrument'}] + [
                 {'uid': o.UID, 'm_title': o.Title} for o in

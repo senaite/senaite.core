@@ -47,7 +47,7 @@ class AnalysisRequestViewView(BrowserView):
                 self.request.get('check_edit') == '1':
                 # Another check, here to increase performance, is it stupid?
                 state = ar.getObjectWorkflowStates().get('review_state', '')
-                if state not in ['to_be_sampled', ]:
+                if state in ['to_be_verified', 'sample_received']:
                     # It mens we should redirect to manage_results
                     redirect = self.context.absolute_url() + '/manage_results'
                     self.request.response.redirect(redirect)
@@ -87,7 +87,8 @@ class AnalysisRequestViewView(BrowserView):
                 t = self.createAnalysesView(ar,
                                  self.request,
                                  getPointOfCapture=poc,
-                                 show_categories=self.context.bika_setup.getCategoriseAnalysisServices())
+                                 show_categories=self.context.bika_setup.getCategoriseAnalysisServices(),
+                                 getAnalysisRequestUID=self.context.UID())
                 t.allow_edit = True
                 t.form_id = "%s_analyses" % poc
                 t.review_states[0]['transitions'] = [{'id': 'submit'},

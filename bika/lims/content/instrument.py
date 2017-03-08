@@ -25,6 +25,7 @@ from zope.interface import implements
 from datetime import date
 from DateTime import DateTime
 from bika.lims.config import QCANALYSIS_TYPES
+from bika.lims import logger
 
 schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
 
@@ -86,6 +87,20 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         widget=SelectionWidget(
             format='select',
             label=_("Method"),
+            visible=False,
+        ),
+    ),
+
+    ReferenceField('Methods',
+        vocabulary='_getAvailableMethods',
+        allowed_types=('Method',),
+        relationship='InstrumentMethods',
+        required=0,
+        multiValued=1,
+        widget=ReferenceWidget(
+            checkbox_bound=0,
+            format='select',
+            label=_("Methods"),
         ),
     ),
 
@@ -129,6 +144,40 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
             format='select',
             default='',
             visible = True,
+        ),
+    ),
+
+    StringField('ImportDataInterface',
+        vocabulary = "getImportDataInterfacesList",
+        multiValued=1,
+        widget = MultiSelectionWidget(
+            checkbox_bound = 0,
+            label=_("Import Data Interface"),
+            description=_("Select an Import interface for this instrument."),
+            format='select',
+            default='',
+            visible = True,
+        ),
+    ),
+
+    RecordsField(
+        'ResultFilesFolder',
+        subfields=('InterfaceName', 'Folder'),
+        subfield_labels={'InterfaceName': _('Interface Code'),
+                         'Folder': _('Folder that results will be saved')},
+        subfield_readonly={'InterfaceName': True,
+                           'Folder': False},
+        widget=RecordsWidget(
+            label=_("Result files folders"),
+            description=_("For each interface of this instrument, \
+                          you can define a folder where \
+                          the system should look for the results files while \
+                          automatically importing results. Having a folder \
+                          for each Instrument and inside that folder creating \
+                          different folders for each of its Interfaces \
+                          can be a good approach. You can use Interface codes \
+                          to be sure that folder names are unique."),
+            visible=True,
         ),
     ),
 
@@ -284,6 +333,21 @@ def getDataInterfaces(context, export_only=False):
     exims.insert(0, ('', t(_('None'))))
     return DisplayList(exims)
 
+def getImportDataInterfaces(context, import_only=False):
+    """ Return the current list of import data interfaces
+    """
+    from bika.lims.exportimport import instruments
+    exims = []
+    for exim_id in instruments.__all__:
+        exim = instruments.getExim(exim_id)
+        if import_only and not hasattr(exim, 'Import'):
+            pass
+        else:
+            exims.append((exim_id, exim.title))
+    exims.sort(lambda x, y: cmp(x[1].lower(), y[1].lower()))
+    exims.insert(0, ('', t(_('None'))))
+    return DisplayList(exims)
+
 def getMaintenanceTypes(context):
     types = [('preventive', 'Preventive'),
              ('repair', 'Repair'),
@@ -312,6 +376,9 @@ class Instrument(ATFolder):
     def getExportDataInterfacesList(self):
         return getDataInterfaces(self, export_only=True)
 
+    def getImportDataInterfacesList(self):
+        return getImportDataInterfaces(self, import_only=True)
+
     def getScheduleTaskTypesList(self):
         return getMaintenanceTypes(self)
 
@@ -329,11 +396,22 @@ class Instrument(ATFolder):
         items.sort(lambda x,y:cmp(x[1], y[1]))
         return DisplayList(items)
 
+    from bika.lims import deprecated
+
+    @deprecated(comment="bika.lims.content.instrument.getMethodUID is \
+                deprecated and will be removed in Bika LIMS 3.3")
     def getMethodUID(self):
-        if self.getMethod():
-            return self.getMethod().UID()
+        # TODO Avoid using this function. Returns first method's UID for now.
+        if self.getMethods():
+            return self.getMethods()[0].UID()
         else:
             return ''
+
+    def getMethodUIDs(self):
+        uids = []
+        if self.getMethods():
+            uids = [m.UID() for m in self.getMethods()]
+        return uids
 
     def getSuppliers(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
@@ -349,10 +427,10 @@ class Instrument(ATFolder):
             instrument can only be used in one method.
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [(c.UID, c.Title) \
-                for c in bsc(portal_type='Method',
-                             inactive_state = 'active')]
-        items.sort(lambda x,y:cmp(x[1], y[1]))
+        items = [(c.UID, c.Title)
+                 for c in bsc(portal_type='Method',
+                              inactive_state='active')]
+        items.sort(lambda x, y: cmp(x[1], y[1]))
         items.insert(0, ('', t(_('None'))))
         return DisplayList(items)
 
@@ -748,6 +826,14 @@ class Instrument(ATFolder):
         ans = [p.getObject() for p in prox]
         return [a for a in ans if a.getRawInstrument() == self.UID()]
 
+    def setImportDataInterface(self, values):
+        """ Return the current list of import data interfaces
+        """
+        exims = self.getImportDataInterfacesList()
+        new_values = [value for value in values if value in exims]
+        if len(new_values) < len(values):
+            logger.warn("Some Interfaces weren't added...")
+        self.Schema().getField('ImportDataInterface').set(self, new_values)
 
 schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
 

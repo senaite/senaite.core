@@ -22,7 +22,7 @@ def Import(context, request):
     override = request.form['thermoscientific_arena_20XT_override']
     sample = request.form.get('thermoscientific_arena_20XT_sample',
                               'requestid')
-    instrument = request.form.get('thermoscientific_arena_20XT_instrument', None)
+    instrument = request.form.get('instrument', None)
     errors = []
     logs = []
     warns = []

@@ -7,6 +7,7 @@ from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.browser.resultsimport.autoimportlogs import AutoImportLogsView
 from bika.lims.content.instrumentmaintenancetask import InstrumentMaintenanceTaskStatuses as mstatus
 from bika.lims.subscribers import doActionFor, skip
 from operator import itemgetter
@@ -28,6 +29,7 @@ from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zExceptions import Forbidden
 from operator import itemgetter
+from bika.lims.catalog import CATALOG_AUTOIMPORTLOGS_LISTING
 
 import plone
 import json
@@ -610,6 +612,22 @@ class InstrumentCertificationsView(BikaListingView):
         return items
 
 
+class InstrumentAutoImportLogsView(AutoImportLogsView):
+    """ Logs of Auto-Imports of this instrument.
+    """
+
+    def __init__(self, context, request, **kwargs):
+        AutoImportLogsView.__init__(self, context, request, **kwargs)
+        del self.columns['Instrument']
+        self.review_states[0]['columns'].remove('Instrument')
+        self.contentFilter = {'portal_type': 'AutoImportLog',
+                              'getInstrumentUID': self.context.UID(),
+                              'sort_on': 'Created',
+                              'sort_order': 'reverse'}
+        self.title = self.context.translate(_("Auto Import Logs of %s" %
+                                              self.context.Title()))
+
+
 class InstrumentMultifileView(MultifileView):
     implements(IFolderContentsView, IViewView)
 
@@ -620,24 +638,37 @@ class InstrumentMultifileView(MultifileView):
         self.description = "Different interesting documents and files to be attached to the instrument"
 
 
-class ajaxGetInstrumentMethod(BrowserView):
+class ajaxGetInstrumentMethods(BrowserView):
     """ Returns the method assigned to the defined instrument.
         uid: unique identifier of the instrument
     """
+    # Modified to return multiple methods after enabling multiple method
+    # for intruments.
     def __call__(self):
-        methoddict = {}
+        out = {
+            "title": None,
+            "instrument": None,
+            "methods": [],
+        }
         try:
             plone.protect.CheckAuthenticator(self.request)
         except Forbidden:
-            return json.dumps(methoddict)
+            return json.dumps(out)
         bsc = getToolByName(self, 'bika_setup_catalog')
-        instrument = bsc(portal_type='Instrument', UID=self.request.get("uid", '0'))
-        if instrument and len(instrument) == 1:
-            method = instrument[0].getObject().getMethod()
-            if method:
-                methoddict = {'uid': method.UID(),
-                              'title': method.Title()}
-        return json.dumps(methoddict)
+        results = bsc(portal_type='Instrument', UID=self.request.get("uid", '0'))
+        instrument = results[0] if results and len(results) == 1 else None
+        if instrument:
+            instrument_obj = instrument.getObject()
+            out["title"] = instrument_obj.Title()
+            out["instrument"] = instrument.UID
+            # Handle multiple Methods per instrument
+            methods = instrument_obj.getMethods()
+            for method in methods:
+                out["methods"].append({
+                    "uid": method.UID(),
+                    "title": method.Title(),
+                })
+        return json.dumps(out)
 
 
 class InstrumentQCFailuresViewlet(ViewletBase):

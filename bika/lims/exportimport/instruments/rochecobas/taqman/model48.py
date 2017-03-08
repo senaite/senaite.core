@@ -103,7 +103,7 @@ def Import(context, request):
     override = request.form['rochecobas_taqman_model48_override']
     sample = request.form.get('rochecobas_taqman_model48_sample',
                               'requestid')
-    instrument = request.form.get('rochecobas_taqman_model48_instrument', None)
+    instrument = request.form.get('instrument', None)
     errors = []
     logs = []
     warns = []

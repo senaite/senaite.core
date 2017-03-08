@@ -46,6 +46,7 @@ from zope.component._api import getMultiAdapter
 from zope.i18nmessageid import MessageFactory
 from zope.interface import Interface
 from zope.interface import implements
+from bika.lims.browser.bika_listing_filter_bar import BikaListingFilterBar
 import types
 
 try:
@@ -455,6 +456,15 @@ class BikaListingView(BrowserView):
         self.show_all = False
         self.show_more = False
         self.limit_from = 0
+        # The listing object is bound to a class called BikaListingFilterBar
+        # which can display an additional filter bar in the listing view in
+        # order to filter the items by some terms. These terms should be
+        # difined in the BikaListingFilterBar class following the descripton
+        # and examples. This variable is overriden in other views, in order to
+        # show the bar or not depending on the list. For example, Analysis
+        # Requests view checks bika_setup.getSamplingBarEnabledAnalysisRequests
+        # to know if the functionality is activeated or not for its views.
+        self.filter_bar_enabled = False
 
     @property
     def review_state(self):
@@ -1472,128 +1482,3 @@ class BikaListingTable(tableview.Table):
         while True:
             i += 1
             yield i
-
-
-class BikaListingFilterBar(BrowserView):
-    """
-    This class defines a filter bar to make advanced queries in
-    BikaListingView. This filter shouldn't override the 'filter by state'
-    functionality
-    """
-    _render = ViewPageTemplateFile("templates/bika_listing_filter_bar.pt")
-    _filter_bar_dict = {}
-
-    def render(self):
-        """
-        Returns a ViewPageTemplateFile instance with the filter inputs and
-        submit button.
-        """
-        return self._render()
-
-    def setRender(self, new_template):
-        """
-        Defines a new template to render.
-        :new_template: should be a ViewPageTemplateFile object such as
-            'ViewPageTemplateFile("templates/bika_listing_filter_bar.pt")'
-        """
-        if new_template:
-            self._render = new_template
-
-    def filter_bar_button_title(self):
-        """
-        This function returns a string with the name for the input. A function
-        is used in order to translate the name.
-        :return: an string with the title.
-        """
-        return _('Filter')
-
-    def save_filter_bar_values(self, filter_bar_items={}):
-        """
-        This function saves the values to filter the bika_listing inside the
-        BikaListingFilterBar object.
-        The dictionary is saved inside a class attribute.
-        This function tranforms the unicodes to strings and removes the
-        'bika_listing_filter_bar_' starting string of each key.
-        :filter_bar_items: a dictionary with the items to define the
-        query.
-        """
-        if filter_bar_items:
-            new_dict = {}
-            for k in filter_bar_items.keys():
-                value = str(filter_bar_items[k])
-                key = str(k).replace("bika_listing_filter_bar_", "")
-                new_dict[key] = value
-            self._filter_bar_dict = new_dict
-
-    def get_filter_bar_dict(self):
-        """
-        Returns the _filter_bar_dict attribute
-        """
-        return self._filter_bar_dict
-
-    def get_filter_bar_queryaddition(self):
-        """
-        This function gets the values from the filter bar inputs in order to
-        create a catalog query accordingly.
-        Only returns the items that can be added to contentFilter dictionary,
-        this means that only the dictionary items (key-value) with index
-        representations should be returned.
-        :return: a dictionary to be added to contentFilter.
-        """
-        return {}
-
-    def filter_bar_check_item(self, item):
-        """
-        This functions receives a key-value items, and checks if it should be
-        displayed.
-        It is recomended to be used in isItemAllowed() method.
-        This function should be only used for those fields without
-        representation as an index in the catalog.
-        :item: The item to check.
-        :return: boolean.
-        """
-        return True
-
-    def filter_bar_builder(self):
-        """
-        The template is going to call this method to create the filter bar in
-        bika_listing_filter_bar.pt
-        If the method returns None, the filter bar will not be shown.
-        :return: a list of dictionaries as the filtering fields or None.
-
-        Eaxh dictionary defines a field, those are the expected elements
-        for each field type by the default template:
-        - select/multiple:
-            {
-                'name': 'field_name',
-                'label': _('Field name'),
-                'type': 'select/multiple',
-                'voc': <a DisplayList object containing the options>,
-            }
-        - simple text input:
-            {
-                'name': 'field_name',
-                'label': _('Field name'),
-                'type': 'text',
-            }
-        - autocomplete text input:
-            {
-                'name': 'field_name',
-                'label': _('Field name'),
-                'type': 'autocomplete_text',
-                'voc': <a List object containing the options in JSON>,
-            }
-        - value range input:
-            {
-                'name': 'field_name',
-                'label': _('Field name'),
-                'type': 'range',
-            },
-        - date range input:
-            {
-                'name': 'field_name',
-                'label': _('Field name'),
-                'type': 'date_range',
-            },
-        """
-        return None

@@ -48,6 +48,7 @@ class ServicesView(BikaListingView):
         self.categories = []
         self.method_filter = None
         # Filter by method
+        # TODO Check if filtering by multiple UIDs should be enabled
         if hasattr(self.context, 'getRestrictToMethod') and\
                 getattr(self.context, 'getMethodUID')():
             self.method_filter = {

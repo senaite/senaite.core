@@ -20,6 +20,14 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <browser:page
+      for="bika.lims.interfaces.IInstrument"
+      name="instrumentautoimportlogs"
+      class="bika.lims.browser.instrument.InstrumentAutoImportLogsView"
+      permission="zope.Public"
+      layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
     <!--browser:page
       for="bika.lims.interfaces.IInstrument"
       name="schedule"
@@ -62,8 +70,8 @@
 
     <browser:page
       for="*"
-      name="get_instrument_method"
-      class="bika.lims.browser.instrument.ajaxGetInstrumentMethod"
+      name="get_instrument_methods"
+      class="bika.lims.browser.instrument.ajaxGetInstrumentMethods"
       permission="zope.Public"
       layer="bika.lims.interfaces.IBikaLIMS"
     />

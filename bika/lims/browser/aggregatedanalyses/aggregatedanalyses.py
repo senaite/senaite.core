@@ -1,13 +1,16 @@
-# coding=utf-8
-
+# -*- coding: utf-8 -*-
+#
 # This file is part of Bika LIMS
 #
-# Copyright 2011-2016 by it's authors.
+# Copyright 2011-2017 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.analyses import AnalysesView
 from bika.lims.permissions import *
+from bika.lims.browser.aggregatedanalyses.aggregatedanalyses_filter_bar\
+    import AggregatedanalysesBikaListingFilterBar
+import json
 from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
@@ -44,6 +47,9 @@ class AggregatedAnalysesView(AnalysesView):
         self.portal_url = self.portal.absolute_url()
         # Get temp objects that are too time consuming to obtain every time
         self.bika_catalog = getToolByName(context, 'bika_catalog')
+        # Check if the filter bar functionality is activated or not
+        self.filter_bar_enabled =\
+            self.context.bika_setup.getDisplayAdvancedFilterBarForAnalyses()
 
         # each editable item needs it's own allow_edit
         # which is a list of field names.
@@ -119,6 +125,8 @@ class AggregatedAnalysesView(AnalysesView):
         if not self.context.bika_setup.getAllowDepartmentFiltering():
             return True
         # Gettin the department from analysis service
+        if self.filter_bar_enabled and not self.filter_bar_check_item(obj):
+            return False
         serv_dep = obj.getDepartmentUID
         result = True
         if serv_dep:
@@ -149,3 +157,14 @@ class AggregatedAnalysesView(AnalysesView):
             anchor = '<a href="%s">%s</a>' % (ws.absolute_url(), ws.Title())
             item['replace']['Worksheet'] = anchor
         return item
+
+    def getFilterBar(self):
+        """
+        This function creates an instance of BikaListingFilterBar if the
+        class has not created one yet.
+        :return: a BikaListingFilterBar instance
+        """
+        self._advfilterbar = self._advfilterbar if self._advfilterbar else \
+            AggregatedanalysesBikaListingFilterBar(
+                context=self.context, request=self.request)
+        return self._advfilterbar

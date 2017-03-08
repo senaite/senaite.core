@@ -52,6 +52,8 @@ def duplicateAnalysis(base):
         SamplePartition=base.getSamplePartition())
     analysis.setDetectionLimitOperand(base.getDetectionLimitOperand())
     analysis.setResult(base.getResult())
+    analysis.setNumberOfRequiredVerifications(
+        base.getNumberOfRequiredVerifications())
     analysis.unmarkCreationFlag()
     # zope.event.notify(ObjectInitializedEvent(analysis))
     changeWorkflowState(analysis,
@@ -404,7 +406,7 @@ def get_method_instrument_constraints(context, uids):
             else:
                 # What about instruments without a method assigned?
                 instrs = [i for i in service.getInstruments()
-                          if i.UID() in s_instrums and not i.getMethod()]
+                          if i.UID() in s_instrums and not i.getMethods()]
 
             instuids = [i.UID() for i in instrs]
             v_instrobjs = [i for i in instrs if i.isValid()]

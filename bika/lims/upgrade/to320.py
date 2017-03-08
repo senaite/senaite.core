@@ -74,6 +74,10 @@ def upgrade(tool):
     logger.info("Multiverification of Analyses...")
     multi_verification(portal)
 
+    # Adding old method of instrument as a set .
+    logger.info("Assigning Multiple method to instruments...")
+    instrument_multiple_methods(portal)
+
     # Update workflow permissions
     try:
         logger.info("Updating role mappings...")
@@ -93,6 +97,17 @@ def upgrade(tool):
 
     # Adding two columns for client data
     addColumnsForClient(portal)
+
+    # Adding getAnalysisRequestUID column in analysis catalog
+    addgetAnalysisRequestUID(portal)
+    # Adding getBatchUID column in analysis catalog
+    addgetBatchUID(portal)
+    # Adding getSampleConditionUID column in analysis catalog
+    addgetSampleConditionUID(portal)
+    # Adding getAnalysisRequestPrintStatus column in analysis catalog
+    addgetAnalysisRequestPrintStatus(portal)
+    # Adding getDateSubmitted column in analysis catalog
+    addgetDateSubmitted(portal)
 
     # Clean and rebuild affected catalogs (if required)
     logger.info("Cleaning and rebuilding...")
@@ -242,19 +257,60 @@ def addColumnsForClient(portal):
     transaction.commit()
 
 
+def addgetAnalysisRequestUID(portal):
+    """
+    Add an index to analysis catalog in order to use them in
+    analysisrequests listings.
+    """
+    catalog = getToolByName(portal, 'bika_analysis_catalog')
+    addIndex(catalog, 'getAnalysisRequestUID', 'FieldIndex')
+    transaction.commit()
+
+
+def addgetBatchUID(portal):
+    """
+    Add an index to analysis catalog in order to use them in
+    analysisrequests listings.
+    """
+    catalog = getToolByName(portal, 'bika_analysis_catalog')
+    addIndex(catalog, 'getBatchUID', 'FieldIndex')
+    transaction.commit()
+
+
+def addgetSampleConditionUID(portal):
+    """
+    Add an index to analysis catalog in order to use them in
+    analysisrequests listings.
+    """
+    catalog = getToolByName(portal, 'bika_analysis_catalog')
+    addIndex(catalog, 'getSampleConditionUID', 'FieldIndex')
+    transaction.commit()
+
+
+def addgetAnalysisRequestPrintStatus(portal):
+    """
+    Add an index to analysis catalog in order to use them in
+    analysisrequests listings.
+    """
+    catalog = getToolByName(portal, 'bika_analysis_catalog')
+    addIndex(catalog, 'getAnalysisRequestPrintStatus', 'FieldIndex')
+    transaction.commit()
+
+
+def addgetDateSubmitted(portal):
+    """
+    Add an index to analysis catalog in order to use them in
+    analysisrequests listings.
+    """
+    catalog = getToolByName(portal, 'bika_analysis_catalog')
+    addIndex(catalog, 'getDateSubmitted', 'DateIndex')
+    transaction.commit()
+
+
 def create_CAS_IdentifierType(portal):
     """LIMS-1391 The CAS Nr IdentifierType is normally created by
     setuphandlers during site initialisation.
     """
-    pc = getToolByName(portal, 'portal_catalog', None)
-    objs = pc(portal_type="Analyses",review_state="to_be_verified")
-    for obj_brain in objs:
-        obj = obj_brain.getObject()
-        old_field = obj.Schema().get("NumberOfVerifications", None)
-        if old_field:
-            new_value=''
-            for n in range(0,old_field):
-                new_value+='admin'
     bsc = getToolByName(portal, 'bika_catalog', None)
     idtypes = bsc(portal_type = 'IdentifierType', title='CAS Nr')
     if not idtypes:
@@ -273,16 +329,16 @@ def multi_verification(portal):
     adding "admin" as a verificator as many times as this analysis verified before.
     """
     pc = getToolByName(portal, 'portal_catalog', None)
-    objs = pc(portal_type="Analyses",review_state="to_be_verified")
+    objs = pc(portal_type="Analyses", review_state="to_be_verified")
     for obj_brain in objs:
         obj = obj_brain.getObject()
-        old_field = obj.Schema().get("NumberOfVerifications", None)
+        old_field = obj.Schema().get("NumberOfVerifications", None).get(obj)
         if old_field:
-            new_value=''
-            for n in range(0,old_field):
-                new_value+='admin'
-                if n<old_field:
-                    new_value+=','
+            new_value = ''
+            for n in range(0, old_field):
+                new_value += 'admin'
+                if n < old_field:
+                    new_value += ','
             obj.setVerificators(new_value)
     transaction.commit()
 
@@ -344,6 +400,21 @@ def multi_department_to_labcontact(portal):
         obj = obj_brain.getObject()
         if not obj.getDepartments():
             obj.setDepartments(obj.getDepartment())
+    transaction.commit()
+
+
+def instrument_multiple_methods(portal):
+    # An instrument had only a single relevant field called "Method".
+    # This field has been replaced with a multiValued "Methods" field.
+
+    # First adding new index
+    bsc = getToolByName(portal, 'bika_setup_catalog')
+    addIndex(bsc, 'getMethodUIDs', 'KeywordIndex')
+
+    for instrument in portal.bika_setup.bika_instruments.objectValues():
+        value = instrument.Schema().get("Method", None).get(instrument)
+        if value:
+            instrument.setMethods([value])
     transaction.commit()
 
 

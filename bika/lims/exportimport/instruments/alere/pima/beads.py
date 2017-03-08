@@ -23,7 +23,7 @@ def Import(context, request):
     override = request.form['alere_pima_beads_override']
     sample = request.form.get('alere_pima_beads_sample',
                               'requestid')
-    instrument = request.form.get('alere_pima_beads_instrument', None)
+    instrument = request.form.get('instrument', None)
     errors = []
     logs = []
     warns = []

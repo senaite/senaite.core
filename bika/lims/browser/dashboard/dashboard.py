@@ -313,7 +313,7 @@ class DashboardView(BrowserView):
         filtering_allowed = self.context.bika_setup.getAllowDepartmentFiltering()
         if filtering_allowed:
             cookie_dep_uid = self.request.get('filter_by_department_info', '').split(',') if filtering_allowed else ''
-            query['getDepartmentUIDs'] = { "query": cookie_dep_uid,"operator":"or" }
+            query['getDepartmentUID'] = { "query": cookie_dep_uid,"operator":"or" }
 
         # Active Analyses (All)
         total = len(bc(query))

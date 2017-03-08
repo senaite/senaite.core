@@ -10,6 +10,8 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.browser.bika_listing import BikaListingView
+from bika.lims.browser.analysisrequest.analysisrequests_filter_bar\
+    import AnalysisRequestsBikaListingFilterBar
 from bika.lims.utils import getUsers
 from bika.lims.workflow import getTransitionDate
 from bika.lims.permissions import *
@@ -21,6 +23,8 @@ from Products.Archetypes import PloneMessageFactory as PMF
 from plone.app.layout.globals.interfaces import IViewView
 from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
+from datetime import datetime, date
+import json
 
 
 class AnalysisRequestsView(BikaListingView):
@@ -34,7 +38,7 @@ class AnalysisRequestsView(BikaListingView):
         super(AnalysisRequestsView, self).__init__(context, request)
 
         request.set('disable_plone.rightcolumn', 1)
-
+        # Setting up the catalog and query dictionary
         self.catalog = CATALOG_ANALYSIS_REQUEST_LISTING
         self.contentFilter = {'sort_on': 'Created',
                               'sort_order': 'reverse',
@@ -63,9 +67,10 @@ class AnalysisRequestsView(BikaListingView):
 
         SamplingWorkflowEnabled = self.context.bika_setup.getSamplingWorkflowEnabled()
 
-        mtool = getToolByName(self.context, 'portal_membership')
-        member = mtool.getAuthenticatedMember()
-        user_is_preserver = 'Preserver' in member.getRoles()
+        # Check if the filter bar functionality is activated or not
+        self.filter_bar_enabled =\
+            self.context.bika_setup.\
+            getDisplayAdvancedFilterBarForAnalysisRequests()
 
         self.columns = {
             'getRequestID': {'title': _('Request ID'),
@@ -132,12 +137,12 @@ class AnalysisRequestsView(BikaListingView):
             'getSampler': {'title': _('Sampler'),
                            'toggle': SamplingWorkflowEnabled},
             'getDatePreserved': {'title': _('Date Preserved'),
-                                 'toggle': user_is_preserver,
+                                 'toggle': False,
                                  'input_class': 'datetimepicker_nofuture',
                                  'input_width': '10',
                                  'sortable': False},  # no datesort without index
             'getPreserver': {'title': _('Preserver'),
-                             'toggle': user_is_preserver},
+                             'toggle': False},
             'getDateReceived': {'title': _('Date Received'),
                                 'index': 'getDateReceived',
                                 'toggle': False},
@@ -735,6 +740,8 @@ class AnalysisRequestsView(BikaListingView):
         """
         if not self.context.bika_setup.getAllowDepartmentFiltering():
             return True
+        if self.filter_bar_enabled and not self.filter_bar_check_item(obj):
+            return False
         # Gettin the department from analysis service
         deps = obj.getDepartmentUIDs if hasattr(obj, 'getDepartmentUIDs')\
             else []
@@ -879,7 +886,7 @@ class AnalysisRequestsView(BikaListingView):
             sampler = obj.getSampler
             if sampler:
                 item['replace']['getSampler'] = obj.getSamplerFullName
-            if 'Sampler' in self.member.getRoles() and not sampler:
+            if 'Sampler' in self.roles and not sampler:
                 sampler = self.member.id
                 item['class']['getSampler'] = 'provisional'
             # sampling workflow - inline edits for Sampler and Date Sampled
@@ -968,17 +975,16 @@ class AnalysisRequestsView(BikaListingView):
     def __call__(self):
         self.workflow = getToolByName(self.context, "portal_workflow")
         self.mtool = getToolByName(self.context, 'portal_membership')
-
         self.member = self.mtool.getAuthenticatedMember()
-        roles = self.member.getRoles()
-        self.hideclientlink = 'RegulatoryInspector' in roles \
-            and 'Manager' not in roles \
-            and 'LabManager' not in roles \
-            and 'LabClerk' not in roles
+        self.roles = self.member.getRoles()
+        self.hideclientlink = 'RegulatoryInspector' in self.roles \
+            and 'Manager' not in self.roles \
+            and 'LabManager' not in self.roles \
+            and 'LabClerk' not in self.roles
 
         self.editresults = -1
         self.clients = {}
-
+        # self.user_is_preserver = 'Preserver' in self.roles
         # Printing workflow enabled?
         # If not, remove the Column
         self.printwfenabled = self.context.bika_setup.getPrintingWorkflowEnabled()
@@ -1038,3 +1044,14 @@ class AnalysisRequestsView(BikaListingView):
         self.review_states = new_states
 
         return super(AnalysisRequestsView, self).__call__()
+
+    def getFilterBar(self):
+        """
+        This function creates an instance of BikaListingFilterBar if the
+        class has not created one yet.
+        :return: a BikaListingFilterBar instance
+        """
+        self._advfilterbar = self._advfilterbar if self._advfilterbar else \
+            AnalysisRequestsBikaListingFilterBar(
+                context=self.context, request=self.request)
+        return self._advfilterbar

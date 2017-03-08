@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<object name="AutoImportLog"
+        meta_type="Factory-based Type Information with dynamic views"
+        i18n:domain="bika.lims" xmlns:i18n="http://xml.zope.org/namespaces/i18n">
+    <property name="title" i18n:translate="">AutoImportLog</property>
+    <property name="description"
+              i18n:translate="">A contenttype to log auto-import results</property>
+    <property name="content_meta_type">AutoImportLog</property>
+    <property name="product">bika.lims</property>
+    <property name="factory">addAutoImportLog</property>
+    <property name="global_allow">True</property>
+    <property name="filter_content_types">True</property>
+    <property name="allow_discussion">False</property>
+
+</object>

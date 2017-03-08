@@ -73,27 +73,28 @@ def setup_catalogs(
         }
     :force_reindex: boolean to reindex the catalogs even if there is no need
         to do so.
-    :catalog_extensions: a list of dictionaris with more elements to add to the
+    :catalog_extensions: a dict of dictionaris with more elements to add to the
         ones defined in catalogs_definition. This variable should be used to
         add more columns in a catalog from another addon of bika.
         {
-            'types': ['ContentType', ],
-            'indexes': {
-                'getDoctorUID': 'FieldIndex',
-                ...
-            },
-            'columns': [
-                'AnotherTitle',
-                ...
-            ]
+            CATALOG_ID: {
+                'types':   ['ContentType', ...],
+                'indexes': {
+                    'UID': 'FieldIndex',
+                    ...
+                },
+                'columns': [
+                    'Title',
+                    ...
+                ]
+            }
         }
     """
     # If not given catalogs_definition, use the LIMS one
     if not catalogs_definition:
         catalogs_definition = getCatalogDefinitions()
     archetype_tool = getToolByName(portal, 'archetype_tool')
-    # Making a copy of catalogs_definition and adding the catalog extensions
-    # if required
+    # Making a copy of the merge of catalog extensions and LIMS definitions
     catalogs_definition_extended_copy = {}
     if catalog_extensions:
         catalogs_definition_extended_copy = _merge_both_catalogs(
@@ -189,11 +190,7 @@ def _merge_both_catalogs(catalogs_definition, catalog_extensions):
                     logger.error(traceback.format_exc())
             else:
                 # If catalog id is not found in the original catalog
-                # definition, definition, rise an info and create the new dict
-                logger.info(
-                    "Catalog %s doesn't exist in Bika LIMS catalog "
-                    "definitions dictionary. A new catalog definition"
-                    " might be created." % ext_cat_id)
+                # definition, add the definition from extension
                 result_dict[ext_cat_id] = catalog_extensions[ext_cat_id]
     return result_dict
 

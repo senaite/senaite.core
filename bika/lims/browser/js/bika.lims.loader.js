@@ -66,6 +66,8 @@ window.bika.lims.controllers =  {
     ".portaltype-instrumentcertification.template-base_edit":
         ['InstrumentCertificationEditView'],
 
+    ".portaltype-instrument.template-base_edit":
+            ['InstrumentEditView'],
 
     // Bika Setup
     ".portaltype-bikasetup.template-base_edit":
@@ -106,7 +108,11 @@ window.bika.lims.controllers =  {
     ".portaltype-analysisrequest":
         ['SampleView',
          'AnalysisRequestView',
-         'RejectionKickOff',],
+     ],
+     // Analysis request, but not in ARAdd view
+     ".portaltype-analysisrequest:not(.template-ar_add)":
+        [
+        'RejectionKickOff',],
 
     ".portaltype-analysisrequest.template-base_view":
         ['WorksheetManageResultsView',

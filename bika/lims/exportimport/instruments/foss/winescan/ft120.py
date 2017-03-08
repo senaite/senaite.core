@@ -22,7 +22,7 @@ def Import(context, request):
     artoapply = request.form['wsf_artoapply']
     override = request.form['wsf_override']
     sample = request.form.get('wsf_sample', 'requestid')
-    instrument = request.form.get('wsf_instrument', None)
+    instrument = request.form.get('instrument', None)
     errors = []
     warns = []
     logs = []
