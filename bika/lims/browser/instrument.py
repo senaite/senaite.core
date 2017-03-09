@@ -405,15 +405,17 @@ class InstrumentReferenceAnalysesView(AnalysesView):
 
         analyses = self.context.getReferenceAnalyses()
         asuids = [an.UID() for an in analyses]
-        self.catalog = 'bika_analysis_catalog'
         self.contentFilter = {'UID': asuids}
         self.anjson = {}
 
+    # TODO-performance: Use folderitem and brains
     def folderitems(self):
         items = AnalysesView.folderitems(self)
         items.sort(key=itemgetter('CaptureDate'), reverse=True)
         for i in range(len(items)):
             obj = items[i]['obj']
+            # TODO-performance: getting an object
+            obj = obj.getObject()
             imgtype = ""
             if obj.portal_type == 'ReferenceAnalysis':
                 antype = QCANALYSIS_TYPES.getValue(obj.getReferenceType())
