@@ -60,13 +60,9 @@ class AnalysesView(BikaListingView):
         self.interim_columns = {}
         self.specs = {}
         self.bsc = getToolByName(context, 'bika_setup_catalog')
-        self.mtool = getToolByName(context, 'portal_membership')
-        self.checkPermission = self.mtool.checkPermission
         self.portal = getToolByName(context, 'portal_url').getPortalObject()
         self.portal_url = self.portal.absolute_url()
         self.rc = getToolByName(context, REFERENCE_CATALOG)
-        # Getting the current user
-        self.member = self.mtool.getAuthenticatedMember()
         # Initializing the deximal mark variable
         self.dmk = ''
         request.set('disable_plone.rightcolumn', 1)
@@ -361,12 +357,13 @@ class AnalysesView(BikaListingView):
 
         # Call the folderitem method from the base class
         item = BikaListingView.folderitem(self, obj, item, index)
+        checkPermission = self.mtool.checkPermission
         if not item:
             return None
         if not ('obj' in item):
             return None
         if obj.review_state == 'retracted' \
-                and not self.checkPermission(ViewRetractedAnalyses, self.context):
+                and not checkPermission(ViewRetractedAnalyses, self.context):
             return None
         # Getting the dictionary values
         result = obj.getResult
@@ -421,7 +418,7 @@ class AnalysesView(BikaListingView):
         else:
             item['st_uid'] = obj.getSampleTypeUID
 
-        if self.checkPermission(ManageBika, self.context):
+        if checkPermission(ManageBika, self.context):
             latest = self.rc.lookupObject(obj.getServiceUID).version_id
             item['Service'] = obj.getServiceTitle
             item['class']['Service'] = "service_title"
@@ -450,13 +447,13 @@ class AnalysesView(BikaListingView):
             'sample_registered',
             'sampled',
             'assigned']
+        can_edit_analysis = can_edit_analysis and\
+            obj.review_state in allowed_method_states
         # Prevent from being edited if the instrument assigned
         # is not valid (out-of-date or uncalibrated), except if
         # the analysis is a QC with assigned status
-        can_edit_analysis = can_edit_analysis\
-            and (obj.isInstrumentValid
-                or (obj.portal_type == 'ReferenceAnalysis'
-                    and obj.review_state in allowed_method_states))
+        can_edit_analysis = can_edit_analysis and\
+            (obj.isInstrumentValid or (obj.portal_type == 'ReferenceAnalysis'))
         if can_edit_analysis:
             item['allow_edit'].extend([
                 'Analyst',
@@ -745,6 +742,7 @@ class AnalysesView(BikaListingView):
                      t(_("Late Analysis")))
 
         after_icons = []
+        submitter = obj.getSubmittedBy
         # Submitting user may not verify results unless the user is labman
         # or manager and the AS has isSelfVerificationEnabled set to True
         if item['review_state'] == 'to_be_verified':
@@ -767,25 +765,58 @@ class AnalysesView(BikaListingView):
                                    t(_("verification(s) pending")),
                                    scale, str(done), str(numverifications))
                 after_icons.append(anchor)
+            # Are they the same? TODO
             username = self.member.getUserName()
-            allowed = api.user.has_permission(VerifyPermission,
-                                              username=username)
-            if allowed:
+            user_id = self.member.getUser().getId()
+            # Check if the user has "Bika: Verify" privileges
+            verify_permission = api.user.has_permission(
+                VerifyPermission,
+                username=username)
+            isUserAllowedToVerify = True
+            # Check if the user who submited the result is the same as the
+            # current one
+            self_submitted = submitter == user_id
+            # The submitter and the user must be different unless the analysis
+            # has the option SelfVerificationEnabled set to true
+            selfverification = obj.isSelfVerificationEnabled
+            if verify_permission and self_submitted and not selfverification:
+                isUserAllowedToVerify = False
+            # Checking verifiability depending on multi-verification type
+            # of bika_setup
+            if isUserAllowedToVerify and numverifications > 1:
+                # If user verified before and self_multi_disabled, then
+                # return False
+                if self.mv_type == 'self_multi_disabled' and\
+                        username in obj.getVerificators.split(','):
+                    isUserAllowedToVerify = False
+                # If user is the last verificator and consecutively
+                # multi-verification is disabled, then return False
+                # Comparing was added just to check if this method is called
+                # before/after verification
+                elif mv_type == 'self_multi_not_cons' and\
+                        username == obj.getLastVerificator and pending > 0:
+                    isUserAllowedToVerify = False
+            if verify_permission and not isUserAllowedToVerify:
                 after_icons.append(
-                    "<img src='++resource++bika.lims.images/submitted-by-current-user.png' title='%s'/>" %
-                    (t(_("Cannot verify, submitted or verified by current user before")))
+                    "<img src='++resource++bika.lims.images/submitted"
+                    "-by-current-user.png' title='%s'/>" %
+                    (t(_(
+                        "Cannot verify, submitted or"
+                        " verified by current user before")))
                     )
-            elif allowed:
-                if obj.getSubmittedBy == self.member.getUser().getId():
+            elif verify_permission and isUserAllowedToVerify:
+                if submitter == user_id:
                     after_icons.append(
-                    "<img src='++resource++bika.lims.images/warning.png' title='%s'/>" %
-                    (t(_("Can verify, but submitted by current user")))
-                    )
-        # If analysis Submitted and Verified by the same person, then warning icon will appear.
-        submitter = obj.getSubmittedBy
+                        "<img src='++resource++bika.lims.images/warning.png'"
+                        " title='%s'/>" %
+                        (t(_("Can verify, but submitted by current user")))
+                        )
+        # If analysis Submitted and Verified by the same person, then warning
+        # icon will appear.
         if submitter and submitter in obj.getVerificators.split(','):
             after_icons.append(
-                "<img src='++resource++bika.lims.images/warning.png' title='%s'/>" %
+                "<img src='++resource++bika.lims.images/warning.png'"
+                " title='%s'/>" %
                 (t(_("Submited and verified by the same user- " + submitter)))
                 )
         # add icon for assigned analyses in AR views
@@ -814,6 +845,12 @@ class AnalysesView(BikaListingView):
         return item
 
     def folderitems(self):
+        # Check if mtool has been initialized
+        self.mtool = self.mtool if self.mtool\
+            else getToolByName(self.context, 'portal_membership')
+        # Getting the current user
+        self.member = self.member if self.member\
+            else self.mtool.getAuthenticatedMember()
         # Getting analysis categories
         analysis_categories = self.bsc(
             portal_type="AnalysisCategory",
@@ -827,15 +864,18 @@ class AnalysesView(BikaListingView):
         if not self.allow_edit:
             can_edit_analyses = False
         else:
+            checkPermission = self.mtool.checkPermission
             if self.contentFilter.get('getPointOfCapture', '') == 'field':
-                can_edit_analyses = self.checkPermission(
+                can_edit_analyses = checkPermission(
                     EditFieldResults, self.context)
             else:
-                can_edit_analyses = self.checkPermission(EditResults, self.context)
+                can_edit_analyses = checkPermission(EditResults, self.context)
             self.allow_edit = can_edit_analyses
         self.show_select_column = self.allow_edit
 
         self.categories = []
+        # Getting the multi-verification type of bika_setup
+        self.mv_type = self.context.bika_setup.getTypeOfmultiVerification()
         # Gettin all the items
         items = super(AnalysesView, self).folderitems(classic=False)
         # Getting the methods

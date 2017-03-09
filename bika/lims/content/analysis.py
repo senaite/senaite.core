@@ -1285,6 +1285,17 @@ class Analysis(BaseContent):
         # All checks passsed
         return True
 
+    def isSelfVerificationEnabled(self):
+        """
+        Checks if the service allows self verification of the analysis.
+        :return: boolean
+        """
+        service = self.getService()
+        if service:
+            return service.isSelfVerificationEnabled()
+        else:
+            return False
+
     def isUserAllowedToVerify(self, member):
         """
         Checks if the specified user has enough privileges to verify the

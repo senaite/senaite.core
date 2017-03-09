@@ -117,8 +117,10 @@ bika_catalog_analysis_listing_definition = {
             'getAnalystName',
             'hasAttachment',
             'getNumberOfRequiredVerifications',
+            'isSelfVerificationEnabled',
             'getSubmittedBy',
             'getVerificators',
+            'getLastVerificator',
             'getIsReflexAnalysis',
             # TODO-performance: All that comes from services could be
             # defined as a service metacolumn instead of an analysis one

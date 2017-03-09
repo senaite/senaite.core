@@ -462,6 +462,8 @@ class BikaListingView(BrowserView):
         self.show_all = False
         self.show_more = False
         self.limit_from = 0
+        self.mtool = None
+        self.member = None
         # The listing object is bound to a class called BikaListingFilterBar
         # which can display an additional filter bar in the listing view in
         # order to filter the items by some terms. These terms should be
@@ -779,6 +781,8 @@ class BikaListingView(BrowserView):
             cookie_data[k] = v
         self.save_filter_bar_values(cookie_data)
         self._process_request()
+        self.mtool = getToolByName(self.context, 'portal_membership')
+        self.member = self.mtool.getAuthenticatedMember()
 
         # ajax_category_expand is included in the form if this form submission
         # is an asynchronous one triggered by a category being expanded.
