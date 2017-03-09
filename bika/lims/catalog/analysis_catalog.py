@@ -61,6 +61,7 @@ bika_catalog_analysis_listing_definition = {
             'getServiceUID': 'FieldIndex',
             'getCategoryUID': 'FieldIndex',
             'getPointOfCapture': 'FieldIndex',
+            'getSampleUID': 'FieldIndex',
             'getSampleTypeUID': 'FieldIndex',
             'getSamplePointUID': 'FieldIndex',
             'getRetested': 'FieldIndex',
