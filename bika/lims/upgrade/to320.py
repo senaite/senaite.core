@@ -82,7 +82,7 @@ def upgrade(tool):
     try:
         logger.info("Updating role mappings...")
         wf = getToolByName(portal, 'portal_workflow')
-        #wf.updateRoleMappings()
+        wf.updateRoleMappings()
     except:
         logger.error(traceback.format_exc())
         e = sys.exc_info()
