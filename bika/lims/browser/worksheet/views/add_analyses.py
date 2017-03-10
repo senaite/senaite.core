@@ -13,7 +13,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.i18nl10n import ulocalized_time
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from zope.interface import implements
-
+from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims import bikaMessageFactory as _
 from bika.lims import EditResults, EditWorksheet, ManageWorksheets
 from bika.lims import PMF, logger
@@ -32,7 +32,7 @@ class AddAnalysesView(BikaListingView):
         self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
         self.title = self.context.translate(_("Add Analyses"))
         self.description = ""
-        self.catalog = "bika_analysis_catalog"
+        self.catalog = CATALOG_ANALYSIS_LISTING
         self.context_actions = {}
         # initial review state for first form display of the worksheet
         # add_analyses search view - first batch of analyses, latest first.
@@ -136,65 +136,64 @@ class AddAnalysesView(BikaListingView):
         department filter. If the analysis service is not assigned to a
         department, show it.
         If department filtering is disabled in bika_setup, will return True.
-        @Obj: it is an analysis object.
+        @Obj: it is an analysis brain.
         @return: boolean
         """
-        if not self.context.bika_setup.getAllowDepartmentFiltering():
+        if not self.isAllowDepartmentFiltering:
             return True
         # Gettin the department from analysis service
-        serv_dep = obj.getService().getDepartment()
+        serv_dep = obj.getDepartmentUID
         result = True
         if serv_dep:
             # Getting the cookie value
             cookie_dep_uid = self.request.get('filter_by_department_info', '')
             # Comparing departments' UIDs
-            result = True if serv_dep.UID() in\
+            result = True if serv_dep in\
                 cookie_dep_uid.split(',') else False
         return result
 
     def folderitems(self):
-
-        items = BikaListingView.folderitems(self)
-        mtool = getToolByName(self.context, 'portal_membership')
-        member = mtool.getAuthenticatedMember()
-        roles = member.getRoles()
-        hideclientlink = 'RegulatoryInspector' in roles \
-            and 'Manager' not in roles \
-            and 'LabManager' not in roles \
-            and 'LabClerk' not in roles
-
-        for x in range(len(items)):
-            if not items[x].has_key('obj'):
-                continue
-            obj = items[x]['obj']
-            service = obj.getService()
-            client = obj.aq_parent.aq_parent
-            items[x]['getClientOrderNumber'] = obj.getClientOrderNumber()
-            items[x]['getDateReceived'] = self.ulocalized_time(obj.getDateReceived())
-            DueDate = obj.getDueDate()
-            items[x]['getDueDate'] = self.ulocalized_time(DueDate)
-            if DueDate < DateTime():
-                items[x]['after']['DueDate'] = '<img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
-                    (self.context.absolute_url(),
-                     t(_("Late Analysis")))
-            items[x]['CategoryTitle'] = service.getCategory() and service.getCategory().Title() or ''
-
-            if getSecurityManager().checkPermission(EditResults, obj.aq_parent):
-                url = obj.aq_parent.absolute_url() + "/manage_results"
-            else:
-                url = obj.aq_parent.absolute_url()
-            items[x]['getRequestID'] = obj.aq_parent.getRequestID()
-            items[x]['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
-                 (url, items[x]['getRequestID'])
-            items[x]['Priority'] = ''
-
-
-            items[x]['Client'] = client.Title()
-            if hideclientlink == False:
-                items[x]['replace']['Client'] = "<a href='%s'>%s</a>" % \
-                    (client.absolute_url(), client.Title())
-
+        self.isAllowDepartmentFiltering =\
+            self.context.bika_setup.getAllowDepartmentFiltering()
+        # Check if mtool has been initialized
+        self.mtool = self.mtool if self.mtool\
+            else getToolByName(self.context, 'portal_membership')
+        # Getting the current user
+        self.member = self.member if self.member\
+            else self.mtool.getAuthenticatedMember()
+        self.roles = self.member.getRoles()
+        self.hideclientlink = 'RegulatoryInspector' in self.roles \
+            and 'Manager' not in self.roles \
+            and 'LabManager' not in self.roles \
+            and 'LabClerk' not in self.roles
+        items = BikaListingView.folderitems(self, classic=False)
         return items
+
+    def folderitem(self, obj, item, index):
+        """
+        :obj: is a brain
+        """
+        # Call the folderitem method from the base class
+        item = BikaListingView.folderitem(self, obj, item, index)
+        item['getClientOrderNumber'] = obj.getClientOrderNumber
+        item['getDateReceived'] = self.ulocalized_time(obj.getDateReceived)
+        DueDate = obj.getDueDate
+        item['getDueDate'] = self.ulocalized_time(DueDate)
+        if DueDate < DateTime():
+            item['after']['DueDate'] = '<img width="16" height="16"'
+            ' src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
+                (self.context.absolute_url(),
+                 t(_("Late Analysis")))
+        item['CategoryTitle'] = obj.getCategoryTitle
+        item['getRequestID'] = obj.getRequestID
+        item['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
+            (obj.getAnalysisRequestURL, item['getRequestID'])
+        item['Priority'] = ''
+        item['Client'] = obj.getClientTitle
+        if not self.hideclientlink:
+            item['replace']['Client'] = "<a href='%s'>%s</a>" % \
+                (obj.getClientURL, obj.getClientTitle)
+        return item
 
     def getServices(self):
         bsc = getToolByName(self.context, 'bika_setup_catalog')

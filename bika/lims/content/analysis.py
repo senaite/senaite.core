@@ -1431,6 +1431,18 @@ class Analysis(BaseContent):
         """
         return self.aq_parent.absolute_url()
 
+    def getClientTitle(self):
+        """
+        This works as a column
+        """
+        return self.aq_parent.aq_parent.Title()
+
+    def getClientURL(self):
+        """
+        This works as a column
+        """
+        return self.aq_parent.aq_parent.absolute_url()
+
     def getUnit(self):
         """
         This works as a metadatacolumn

@@ -91,6 +91,8 @@ bika_catalog_analysis_listing_definition = {
             'getParentURL',
             'getAnalysisRequestURL',
             'getParentTitle',
+            'getClientTitle',
+            'getClientURL',
             'getAnalysisRequestTitle',
             'getAllowedMethodsAsTuples',
             'getResult',
@@ -134,7 +136,9 @@ bika_catalog_analysis_listing_definition = {
             'getServiceDefaultInstrumentTitle',
             'getServiceDefaultInstrumentURL',
             'getResultsRangeNoSpecs',
-            'getSampleTypeUID'
+            'getSampleTypeUID',
+            'getClientOrderNumber',
+            'getDateReceived',
         ]
     }
 }
