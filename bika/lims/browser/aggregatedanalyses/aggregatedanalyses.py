@@ -28,7 +28,6 @@ class AggregatedAnalysesView(AnalysesView):
                                            show_categories=False,
                                            expand_all_categories=False)
         self.title = _("Analyses pending")
-        self.contentFilter = dict(kwargs)
         self.contentFilter['sort_on'] = 'created'
         self.sort_order = 'ascending'
         self.contentFilter['sort_order'] = self.sort_order
