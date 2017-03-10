@@ -345,7 +345,7 @@ class AnalysesView(BikaListingView):
             dep = obj.getService().getDepartment()
             depuid = dep.UID() if dep else ''
         deps = self.request.get('filter_by_department_info', '')
-        return not depuid or depuid in deps.split(','):
+        return not depuid or depuid in deps.split(',')
 
     def folderitem(self, obj, item, index):
         """
