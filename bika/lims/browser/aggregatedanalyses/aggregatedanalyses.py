@@ -133,7 +133,7 @@ class AggregatedAnalysesView(AnalysesView):
         """
         In this case obj should be a brain
         """
-        item = AnalysesView.folderitem(self, obj, item, index)
+        item = super(AnalysesView, self).folderitem(obj, item, index)
         # Analysis Request
         item['AnalysisRequest'] = obj.getAnalysisRequestTitle
         anchor = \
@@ -158,9 +158,10 @@ class AggregatedAnalysesView(AnalysesView):
         """
         This function creates an instance of BikaListingFilterBar if the
         class has not created one yet.
-        :return: a BikaListingFilterBar instance
+        :returns: a BikaListingFilterBar instance
+        :rtype: bika.lims.browser.BikaListingFilterBar
         """
-        self._advfilterbar = self._advfilterbar if self._advfilterbar else \
-            AggregatedanalysesBikaListingFilterBar(
-                context=self.context, request=self.request)
+        if not self._advfilterbar:
+            self._advfilterbar = AggregatedanalysesBikaListingFilterBar(
+                                    context=self.context, request=self.request)
         return self._advfilterbar
