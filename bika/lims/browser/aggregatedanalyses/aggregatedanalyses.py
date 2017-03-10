@@ -96,8 +96,6 @@ class AggregatedAnalysesView(AnalysesView):
                           ]
               },
         ]
-        if not context.bika_setup.getShowPartitions():
-            self.review_states[0]['columns'].remove('Partition')
 
     def getPOSTAction(self):
         return 'aggregatedanalyses_workflow_action'
