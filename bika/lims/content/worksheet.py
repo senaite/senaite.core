@@ -142,11 +142,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
     def Title(self):
         return safe_unicode(self.getId()).encode('utf-8')
 
-    def getFolderContents(self, contentFilter):
-        # The bika_listing machine passes contentFilter to all
-        # contentsMethod methods.  We ignore it.
-        return list(self.getAnalyses())
-
     def setWorksheetTemplate(self, worksheettemplate, **kw):
         """
         Once a worksheettemplate has been set, the function looks for the

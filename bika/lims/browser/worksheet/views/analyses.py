@@ -17,18 +17,14 @@ class AnalysesView(BaseView):
     """
     def __init__(self, context, request):
         BaseView.__init__(self, context, request)
-        self.catalog = 'bika_analysis_catalog'
-        self.contentFilter = {'portal_type':'Analysis',
-                              'review_state':'sample_received',
-                              'worksheetanalysis_review_state':'unassigned'}
+        self.contentFilter = {
+                        'getWorksheetUID': context.UID(), }
         self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
-        self.contentFilter = {}
         self.show_select_row = False
         self.show_sort_column = False
         self.allow_edit = True
         self.show_categories = False
         self.expand_all_categories = False
-
         self.columns = {
             'Pos': {'title': _('Position')},
             'DueDate': {'title': _('Due Date')},
@@ -74,16 +70,16 @@ class AnalysesView(BaseView):
              },
         ]
 
+    # TODO-performance: Refactor this folderitems
     def folderitems(self):
         self.analyst = self.context.getAnalyst().strip()
         self.instrument = self.context.getInstrument()
-        self.contentsMethod = self.context.getFolderContents
         items = BaseView.folderitems(self)
         layout = self.context.getLayout()
         highest_position = 0
         new_items = []
         for x, item in enumerate(items):
-            obj = item['obj']
+            obj = item['obj'].getObject()
             pos = [slot['position'] for slot in layout if
                    slot['analysis_uid'] == obj.UID()][0]
 
@@ -199,8 +195,8 @@ class AnalysesView(BaseView):
                 if isanalysis and (hasremarks or remarksedit):
                     rowspan += 1
             items[x]['rowspan'] = {'Pos': rowspan}
-
-            obj = items[x]['obj']
+            # TODO-performance: getting the object here...
+            obj = item['obj'].getObject()
             # fill the rowspan with a little table
             # parent is either an AR, a Worksheet, or a
             # ReferenceSample (analysis parent).

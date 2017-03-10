@@ -71,6 +71,7 @@ bika_catalog_analysis_listing_definition = {
             'getBatchUID': 'FieldIndex',
             'getSampleConditionUID': 'FieldIndex',
             'getAnalysisRequestPrintStatus': 'FieldIndex',
+            'getWorksheetUID': 'FieldIndex',
         },
         'columns': [
             'UID',

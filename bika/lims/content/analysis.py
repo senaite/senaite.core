@@ -1424,6 +1424,21 @@ class Analysis(BaseContent):
         """
         return self.aq_parent.UID()
 
+    def getWorksheetUID(self):
+        """
+        This is an index
+        """
+        worksheet = self.getBackReferences("WorksheetAnalysis")
+        if worksheet and len(worksheet) > 1:
+            logger.error(
+                "Analysis %s is assigned to more than one worksheet."
+                % self.getId())
+            return worksheet[0].UID()
+        elif worksheet:
+            return worksheet[0].UID()
+        else:
+            return ''
+
     def getParentURL(self):
         """
         This works as a metacolumn
