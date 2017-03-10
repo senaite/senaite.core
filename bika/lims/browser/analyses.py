@@ -315,38 +315,37 @@ class AnalysesView(BikaListingView):
 
     def isItemAllowed(self, obj):
         """
-        It checks if the item can be added to the list depending on the
-        department filter. If the analysis service is not assigned to a
-        department, show it.
-        If department filtering is disabled in bika_setup, will return True.
-        @Obj: it is an analysis brain or object.
-        @return: boolean
+        Checks if the passed in Analysis must be displayed in the list. If the
+        'filtering by department' option is enabled in Bika Setup, this
+        function checks if the Analysis Service associated to the Analysis
+        is assigned to any of the currently selected departments (information
+        stored in a cookie).
+        If department filtering is disabled in bika_setup, returns True.
+        If the obj is None or empty, returns False.
+
+        :param obj: A single Analysis brain or content object
+        :type obj: ATContentType/CatalogBrain
+        :returns: True if the item can be added to the list.
+        :rtype: bool
         """
+        if not obj:
+            return False
+
         if not self.context.bika_setup.getAllowDepartmentFiltering():
+            # Filtering by department is disabled. Return True
             return True
-        # Is it a brain?
+
+        # Department filtering is enabled. Check if the Analysis Service
+        # associated to this Analysis is assigned to at least one of the
+        # departments currently selected.
+        depuid = ''
         if ICatalogBrain.providedBy(obj):
-            # Gettin the department from analysis service
-            serv_dep = obj.getDepartmentUID
-            result = True
-            if serv_dep:
-                # Getting the cookie value
-                cookie_dep_uid = self.request.get('filter_by_department_info', '')
-                # Comparing departments' UIDs
-                result = True if serv_dep in\
-                    cookie_dep_uid.split(',') else False
-            return result
+            depuid = obj.getDepartmentUID
         else:
-            # Gettin the department from analysis service
-            serv_dep = obj.getService().getDepartment()
-            result = True
-            if serv_dep:
-                # Getting the cookie value
-                cookie_dep_uid = self.request.get('filter_by_department_info', '')
-                # Comparing departments' UIDs
-                result = True if serv_dep.UID() in\
-                    cookie_dep_uid.split(',') else False
-            return result
+            dep = obj.getService().getDepartment()
+            depuid = dep.UID() if dep else ''
+        deps = self.request.get('filter_by_department_info', '')
+        return not depuid or depuid in deps.split(','):
 
     def folderitem(self, obj, item, index):
         """

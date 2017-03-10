@@ -101,29 +101,33 @@ class AggregatedAnalysesView(AnalysesView):
 
     def isItemAllowed(self, obj):
         """
-        It checks if the item can be added to the list depending on the
-        department filter. If the analysis service is not assigned to a
-        department, show it.
-        If department filtering is disabled in bika_setup, will return True.
-        @Obj: it is an analysis brain.
-        @return: boolean
+        Checks if the passed in Analysis must be displayed in the list. If the
+        'filtering by department' option is enabled in Bika Setup, this
+        function checks if the Analysis Service associated to the Analysis
+        is assigned to any of the currently selected departments (information
+        stored in a cookie). In addition, the function checks if the Analysis
+        matches with the filtering criterias set in the advanced filter bar.
+        If no criteria in the advanced filter bar has been set and the option
+        'filtering by department' is disblaed, returns True.
+
+        :param obj: A single Analysis brain
+        :type obj: CatalogBrain
+        :returns: True if the item can be added to the list. Otherwise, False
+        :rtype: bool
         """
-        if not obj:
-            return None
-        if not self.context.bika_setup.getAllowDepartmentFiltering():
-            return True
-        # Gettin the department from analysis service
-        if self.filter_bar_enabled and not self.filter_bar_check_item(obj):
+        # The isItemAllowed function from the base class AnalysesView already
+        # takes into account filtering by department
+        allowed = super(AnalysesView, self).isItemAllowed(obj)
+        if not allowed:
             return False
-        serv_dep = obj.getDepartmentUID
-        result = True
-        if serv_dep:
-            # Getting the cookie value
-            cookie_dep_uid = self.request.get('filter_by_department_info', '')
-            # Comparing departments' UIDs
-            result = True if serv_dep in\
-                cookie_dep_uid.split(',') else False
-        return result
+
+        if self.filter_bar_enabled:
+            # Advanced filter bar is enabled. Check if the Analysis matches
+            # with the filtering criterias.
+            return self.filter_bar_check_item(obj)
+
+        # By default, display the analysis
+        return True
 
     def folderitem(self, obj, item, index):
         """
