@@ -100,7 +100,6 @@ class ReferenceAnalysesView(AnalysesView):
         self.show_sort_column = False
         self.show_select_column = False
         self.allow_edit = False
-        self.show_categories = True
         self.columns = {
             'id': {'title': _('ID'), 'toggle':False},
             'getReferenceAnalysesGroupID': {'title': _('QC Sample ID'), 'toggle': True},
