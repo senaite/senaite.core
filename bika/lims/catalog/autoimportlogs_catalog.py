@@ -54,50 +54,15 @@ bika_catalog_autoimportlogs_listing_definition = {
 }
 
 
-class BikaCatalogAutoImportLogsListing(CatalogTool):
+class BikaCatalogAutoImportLogsListing(BikaCatalogTool):
     """
-    Catalog to list auto-import logs in BikaListing
+    Catalog for Auto import listings
     """
     implements(IBikaCatalogAutoImportLogsListing)
-    title = 'Bika Catalog Auto-Import Logs Listing'
-    id = CATALOG_AUTOIMPORTLOGS_LISTING
-    portal_type = meta_type = 'BikaCatalogAutoImportLogsListing'
-    plone_tool = 1
-    security = ClassSecurityInfo()
-    _properties = (
-      {'id': 'title', 'type': 'string', 'mode': 'w'},)
 
     def __init__(self):
-        ZCatalog.__init__(self, self.id)
-
-    security.declareProtected(ManagePortal, 'clearFindAndRebuild')
-
-    def clearFindAndRebuild(self):
-        """Empties catalog, then finds all contentish objects (i.e. objects
-           with an indexObject method), and reindexes them.
-           This may take a long time.
-        """
-        def indexObject(obj, path):
-            self.reindexObject(obj)
-            transaction.commit()
-        logger.info('Cleaning and rebuilding %s...' % self.id)
-        try:
-            at = getToolByName(self, 'archetype_tool')
-            types = [k for k, v in at.catalog_map.items()
-                     if self.id in v]
-            self.manage_catalogClear()
-            portal = getToolByName(self, 'portal_url').getPortalObject()
-            portal.ZopeFindAndApply(
-                portal,
-                obj_metatypes=types,
-                search_sub=True,
-                apply_func=indexObject)
-        except:
-            logger.error(traceback.format_exc())
-            e = sys.exc_info()
-            logger.error(
-                "Unable to clean and rebuild %s due to: %s" % (self.id, e))
-        logger.info('%s cleaned and rebuilt' % self.id)
-
+        BikaCatalogTool.__init__(self, CATALOG_AUTOIMPORTLOGS_LISTING,
+                                 'Bika Catalog Auto-Import Logs Listing',
+                                 'BikaCatalogAutoImportLogsListing')
 
 InitializeClass(BikaCatalogAutoImportLogsListing)

@@ -3,17 +3,8 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-import sys
-import traceback
-from zope.interface import implements
-from AccessControl import ClassSecurityInfo
 from App.class_init import InitializeClass
-from Products.CMFCore.permissions import ManagePortal
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.CatalogTool import CatalogTool
-from Products.ZCatalog.ZCatalog import ZCatalog
-# Bika LIMS imports
-from bika.lims import logger
+from bika.lims.catalog.bika_catalog_tool import BikaCatalogTool
 from bika.lims.interfaces import IBikaAnalysisCatalog
 
 
@@ -145,50 +136,15 @@ bika_catalog_analysis_listing_definition = {
 }
 
 
-class BikaAnalysisCatalog(CatalogTool):
-
-    """Catalog for analysis types"""
-
+class BikaAnalysisCatalog(BikaCatalogTool):
+    """
+    Catalog for Analysis content types
+    """
     implements(IBikaAnalysisCatalog)
 
-    security = ClassSecurityInfo()
-    _properties = ({'id': 'title', 'type': 'string', 'mode': 'w'},)
-
-    title = 'Bika Analysis Catalog'
-    id = CATALOG_ANALYSIS_LISTING
-    portal_type = meta_type = 'BikaAnalysisCatalog'
-    plone_tool = 1
-
     def __init__(self):
-        ZCatalog.__init__(self, self.id)
-
-    security.declareProtected(ManagePortal, 'clearFindAndRebuild')
-
-    def clearFindAndRebuild(self):
-        """Empties catalog, then finds all contentish objects (i.e. objects
-           with an indexObject method), and reindexes them.
-           This may take a long time.
-        """
-        def indexObject(obj, path):
-            self.reindexObject(obj)
-        logger.info('Cleaning and rebuilding %s...' % self.id)
-        try:
-            at = getToolByName(self, 'archetype_tool')
-            types = [k for k, v in at.catalog_map.items()
-                     if self.id in v]
-
-            self.manage_catalogClear()
-            portal = getToolByName(self, 'portal_url').getPortalObject()
-            portal.ZopeFindAndApply(portal,
-                                    obj_metatypes=types,
-                                    search_sub=True,
-                                    apply_func=indexObject)
-        except:
-            logger.error(traceback.format_exc())
-            e = sys.exc_info()
-            logger.error(
-                "Unable to clean and rebuild %s due to: %s" % (self.id, e))
-        logger.info('%s cleaned and rebuilt' % self.id)
-
+        BikaCatalogTool.__init__(self, CATALOG_ANALYSIS_LISTING,
+                                 'Bika Analysis Catalog',
+                                 'BikaAnalysisCatalog')
 
 InitializeClass(BikaAnalysisCatalog)
