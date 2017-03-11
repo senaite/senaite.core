@@ -159,8 +159,22 @@ class AnalysesView(BikaListingView):
 
     def get_analysis_spec(self, analysis):
         """
-        Returns the specifications defined for the analysis.
-        @analysis:
+        Returns the dictionary with the result specifications (min, max,
+        error, etc.) that apply to the passed in Analysis or ReferenceAnalysis.
+        If no specifications are found, returns a basic specifications dict
+        with the following structure:
+            {'keyword': <analysis_service_keyword,
+             'uid': <analysis_uid>,
+             'min': ''
+             'max': ''
+             'error': ''}
+
+        :param analysis: A single Analysis brain or Content object
+        :type analysis: bika.lims.content.analysis.Analysis
+                        bika.lims.content.referenceanalysis.ReferenceAnalysis
+                        CatalogBrain
+        :returns: The result specifications that apply to the Analysis.
+        :rtype: dict
         """
         # Is it a brain?
         if hasattr(analysis, 'getObject'):
@@ -221,21 +235,23 @@ class AnalysesView(BikaListingView):
 
     def get_methods_vocabulary(self, analysis=None):
         """
-        Returns a vocabulary with the methods available for the
-        analysis specified.
-        If the service has the getInstrumentEntryOfResults(), returns
-        the methods available from the instruments capable to perform
-        the service, as well as the methods set manually for the
-        analysis on its edit view. If getInstrumentEntryOfResults()
-        is unset, only the methods assigned manually to that service
-        are returned. If the Analysis service method is set to None,
-        but have also at least one method available, adds the 'None'
-        option to the vocabulary.
-        If the analysis is None, retrieves all the
-        active methods from the catalog.
-        @analysis: Analysis should be an analysis brain.
-        @return: a list of dictionaries. Each dictionary contains the medoth
-        UID and its title.
+        Returns a vocabulary with all the methods available for the passed in
+        analysis, either those assigned to an instrument that are capable to
+        perform the test (option "Allow Entry of Results") and those assigned
+        manually in the associated Analysis Service. If the associated
+        Analysis Service has a "None" method assigned by default (also if
+        the Analysis Service has instruments with methods assigned), a "None"
+        option is added in the vocabulary.
+        If the analysis passed in is None, returns a vocabulary with all the
+        methods available in the system.
+        The vocabulary is a list of dictionaries. Each dictionary has the
+        following structure:
+            {'ResultValue': <method_UID>,
+             'ResultText': <method_Title>}
+
+        :param analysis: A single Analysis brain
+        :type analysis: CatalogBrain
+        :returns: A list of dicts
         """
         ret = []
         if analysis:
@@ -256,18 +272,27 @@ class AnalysesView(BikaListingView):
         return ret
 
     def get_instruments_vocabulary(self, analysis = None):
-        """ Returns a vocabulary with the instruments available (active,
-            not out-of-date, with valid internal calibrations) for
-            the analysis specified. If the analysis is None, retrieves
-            all the active instruments from the catalog.
-            If the instrument is not None and the instrument has a method
-            assigned, returns the instruments capable to perform the
-            method. If the instrument hasn't any method assigned, returns
-            all the instruments available from the service default method.
-            If the instrument's Service has the property
-            getInstrumentEntryOfResults unset, always returns empty.
-            If the analysis is a QC, the invalid instruments not
-            out-of-date are also returned.
+        """
+        Returns a vocabulary with the valid and active instruments available
+        for the analysis passed in.
+        If the analysis is None, the function returns all the active and
+        valid instruments registered in the system.
+        If the option "Allow instrument entry of results" for the Analysis
+        Service associated to the analysis is disabled, the function returns
+        an empty vocabulary.
+        If the analysis passed in is a Reference Analysis (Blank or Control),
+        the voculabury, the invalid instruments will be included in the
+        vocabulary too.
+        The vocabulary is a list of dictionaries. Each dictionary has the
+        following structure:
+            {'ResultValue': <instrument_UID>,
+             'ResultText': <instrument_Title>}
+
+        :param analysis: A single Analysis or ReferenceAnalysis content object
+        :type analysis: bika.lims.content.analysis.Analysis
+                        bika.lims.content.referenceAnalysis.ReferenceAnalysis
+        :returns: A vocabulary with the instruments for the analysis
+        :rtype: A list of dicts
         """
         ret = []
         instruments = []
