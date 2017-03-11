@@ -165,10 +165,15 @@ class ReferenceAnalysesView(AnalysesView):
             return None
         service = obj.getService()
         item['Category'] = service.getCategoryTitle()
-        brefs = obj.getBackReferences("WorksheetAnalysis")
-        item['Worksheet'] = brefs and brefs[0].Title() or ''
-
+        wss = obj.getBackReferences("WorksheetAnalysis")
+        if wss and len(wss) == 1:
+            ws = wss[0].getObject()
+            item['Worksheet'] = ws.Title()
+            anchor = '<a href="%s">%s</a>' % (ws.absolute_url(), ws.Title())
+            item['replace']['Worksheet'] = anchor
         self.addToJSON(obj, service, item)
+        return item
+
     # TODO-catalog: memoize here?
     def addToJSON(self, analysis, service, item):
         """ Adds an analysis item to the self.anjson dict that will be used
