@@ -379,8 +379,9 @@ class Analysis(BaseContent):
         service_uid = self.getRawService()
         catalog = getToolByName(self, "uid_catalog")
         brain = catalog(UID=service_uid)
-        if brain:
-            return brain[0].getObject().getDepartment().UID()
+        if brain and len(brain) == 1:
+            dep = brain[0].getObject().getDepartment()
+            return dep.UID() if dep else ''
         return ''
 
     # TODO-performance: improve this function using another catalog and takeing
