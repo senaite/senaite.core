@@ -582,7 +582,7 @@ class BikaListingView(BrowserView):
                 # We cannot sort for a column that doesn't exist!
                 msg = "{}: sort_on is '{}', not a valid column".format(
                     self, self.sort_on)
-                logger.warn(msg)
+                logger.error(msg)
                 self.sort_on = None
 
         if self.manual_sort_on:
