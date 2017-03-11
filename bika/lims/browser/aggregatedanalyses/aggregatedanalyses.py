@@ -28,13 +28,9 @@ class AggregatedAnalysesView(AnalysesView):
                                            show_categories=False,
                                            expand_all_categories=False)
         self.title = _("Analyses pending")
-        self.contentFilter['sort_on'] = 'created'
-        self.sort_order = 'ascending'
-        self.contentFilter['sort_order'] = self.sort_order
         self.show_select_all_checkbox = False
         self.show_categories = False
         self.pagesize = 50
-        self.form_id = 'analyses_form'
         # Get temp objects that are too time consuming to obtain every time
         self.bika_catalog = getToolByName(context, 'bika_catalog')
         # Check if the filter bar functionality is activated or not
@@ -47,6 +43,8 @@ class AggregatedAnalysesView(AnalysesView):
 
         self.columns['AnalysisRequest'] = {
             'title': _('Analysis Request'),
+            'attr': 'getAnalysisRequestTitle',
+            'replace_url': 'getAnalysisRequestURL',
             'sortable': False
             }
         self.columns['Worksheet'] = {
@@ -134,19 +132,13 @@ class AggregatedAnalysesView(AnalysesView):
         In this case obj should be a brain
         """
         item = super(AnalysesView, self).folderitem(obj, item, index)
-        # Analysis Request
-        item['AnalysisRequest'] = obj.getAnalysisRequestTitle
-        anchor = \
-            '<a href="%s">%s</a>' % \
-            (obj.getAnalysisRequestURL, obj.getAnalysisRequestTitle)
-        item['replace']['AnalysisRequest'] = anchor
         # Worksheet
         item['Worksheet'] = ''
         wss = self.bika_catalog(getAnalysesUIDs={
                     "query": obj.UID,
                     "operator": "or"
                 })
-        if wss and len(wss) > 0:
+        if wss and len(wss) == 1:
             # TODO-performance: don't get the whole object
             ws = wss[0].getObject()
             item['Worksheet'] = ws.Title()

@@ -51,7 +51,9 @@ class AnalysesView(BikaListingView):
         self.catalog = CATALOG_ANALYSIS_LISTING
         self.contentFilter = dict(kwargs)
         self.contentFilter['portal_type'] = 'Analysis'
-        self.contentFilter['sort_on'] = 'sortable_title'
+        self.contentFilter['sort_on'] = 'created'
+        self.contentFilter['sort_order'] = 'ascending'
+        self.sort_order = 'ascending'
         self.context_actions = {}
         self.show_sort_column = False
         self.show_select_row = False
@@ -77,6 +79,12 @@ class AnalysesView(BikaListingView):
         self.allow_edit = False
 
         self.columns = {
+            # Although 'created' column is not displayed in the list (see
+            # review_states to check the columns that will be rendered), this
+            # column is needed to sort the list by create date
+            'created': {
+                'title': _('Date Created'),
+                'toggle': False},
             'Service': {
                 'title': _('Analysis'),
                 'attr': 'getServiceTitle',
