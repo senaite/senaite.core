@@ -18,7 +18,7 @@ from bika.lims.catalog.autoimportlogs_catalog import \
 
 def getCatalogDefinitions():
     """
-    Returns a dictionary with catalog definitions
+    Returns a dictionary with catalogs definitions.
     """
     final = {}
     analysis_request = bika_catalog_analysisrequest_listing_definition
@@ -32,9 +32,14 @@ def getCatalogDefinitions():
 
 
 def getCatalog(instance, field='UID'):
-    """ Return the catalog which indexes objects of instance's type.
+    """
+    Returns the catalog that stores objects of instance passed in type.
     If an object is indexed by more than one catalog, the first match
     will be returned.
+
+    :param instance: A single object
+    :type instance: ATContentType
+    :returns: The first catalog that stores the type of object passed in
     """
     uid = instance.UID()
     if 'workflow_skiplist' in instance.REQUEST and \
@@ -51,17 +56,17 @@ def getCatalog(instance, field='UID'):
         catalog = getToolByName(plone, catalog_name)
         return catalog
 
-
 def setup_catalogs(
         portal, catalogs_definition={},
-        force_reindex=False, catalog_extensions={}):
+        force_reindex=False, catalogs_extension={}):
     """
     Setup the given catalogs. Redefines the map between content types and
     catalogs and then checks the indexes and metacolumns, if one index/column
     doesn't exist in the catalog_definition any more it will be
     removed, otherwise, if a new index/column is found, it will be created.
-    :portal: the Plone portal
-    :catalogs_definition: a dictionary like
+
+    :param portal: The Plone's Portal object
+    :param catalogs_definition: a dictionary with the following structure
         {
             CATALOG_ID: {
                 'types':   ['ContentType', ...],
@@ -75,58 +80,47 @@ def setup_catalogs(
                 ]
             }
         }
-    :force_reindex: boolean to reindex the catalogs even if there is no need
-        to do so.
-    :catalog_extensions: a dict of dictionaris with more elements to add to the
-        ones defined in catalogs_definition. This variable should be used to
-        add more columns in a catalog from another addon of bika.
-        {
-            CATALOG_ID: {
-                'types':   ['ContentType', ...],
-                'indexes': {
-                    'UID': 'FieldIndex',
-                    ...
-                },
-                'columns': [
-                    'Title',
-                    ...
-                ]
-            }
-        }
+    :type catalogs_definition: dict
+    :param force_reindex: Force to reindex the catalogs even if there's no need
+    :type force_reindex: bool
+    :param catalog_extensions: An extension for the primary catalogs definition
+        Same dict structure as param catalogs_definition. Allows to add
+        columns and indexes required by Bika-specific add-ons.
+    :type catalog_extensions: dict
     """
     # If not given catalogs_definition, use the LIMS one
     if not catalogs_definition:
         catalogs_definition = getCatalogDefinitions()
-    archetype_tool = getToolByName(portal, 'archetype_tool')
-    # Making a copy of the merge of catalog extensions and LIMS definitions
-    catalogs_definition_extended_copy = {}
-    if catalog_extensions:
-        catalogs_definition_extended_copy = _merge_both_catalogs(
-            getCatalogDefinitions(), catalog_extensions)
-    # Merging the extended catalogs definition with the catalogs definition
-    catalogs_definition_copy = _merge_both_catalogs(
-        catalogs_definition_extended_copy, catalogs_definition)
+
+    # Merge the catalogs definition of the extension with the primary
+    # catalog definition
+    definition = _merge_catalog_definitions(catalogs_definition,
+                                            catalogs_extension)
+
     # Mapping content types in catalogs
     # This variable will be used to clean reindex the catalog. Saves the
     # catalogs ids
-    clean_and_rebuild = _map_content_types(
-        archetype_tool, catalogs_definition_copy)
+    archetype_tool = getToolByName(portal, 'archetype_tool')
+    clean_and_rebuild = _map_content_types(archetype_tool, definition)
+
     # Indexing
-    for cat_id in catalogs_definition_copy.keys():
+    for cat_id in definition.keys():
         reindex = False
         reindex = _setup_catalog(
-            portal, cat_id, catalogs_definition_copy.get(cat_id, {}))
+            portal, cat_id, definition.get(cat_id, {}))
         if (reindex or force_reindex) and (cat_id not in clean_and_rebuild):
             # add the catalog if it has not been added before
             clean_and_rebuild.append(cat_id)
     # Reindex the catalogs which needs it
     _cleanAndRebuildIfNeeded(portal, clean_and_rebuild)
 
-
-def _merge_both_catalogs(catalogs_definition, catalog_extensions):
+def _merge_catalog_definitions(dict1, dict2):
     """
-    Merges two dictionaries and returns a new one with the merge of both
-    :catalogs_definition: a dictionary like
+    Merges two dictionaries that represent catalogs definitions. The first
+    dictionary contains the catalogs structure by default and the second dict
+    contains additional information. Usually, the former is the Bika LIMS
+    catalogs definition and the latter is the catalogs definition of an add-on
+    The structure of each dict as follows:
         {
             CATALOG_ID: {
                 'types':   ['ContentType', ...],
@@ -140,64 +134,45 @@ def _merge_both_catalogs(catalogs_definition, catalog_extensions):
                 ]
             }
         }
-    :catalog_extensions: the catalog to merge into catalogs_definition
-        {
-            CATALOG_ID: {
-                'types':   ['ContentType', ...],
-                'indexes': {
-                    'UID': 'FieldIndex',
-                    ...
-                },
-                'columns': [
-                    'Title',
-                    ...
-                ]
-            }
-        }
-    :return: a merge of the dictionaries from above with the same format.
+
+    :param dict1: The dictionary to be used as the main template (defaults)
+    :type dict1: dict
+    :param dict2: The dictionary with additional information
+    :type dict2: dict
+    :returns: A merged dict with the same structure as the dicts passed in
+    :rtype: dict
     """
+    if not dict2:
+        return dict1.copy()
 
-    result_dict = copy.deepcopy(catalogs_definition)
-    ext_cat_ids = catalog_extensions.keys()
-    if ext_cat_ids:
-        original_dict_keys = result_dict.keys()
-        for ext_cat_id in ext_cat_ids:
-            if ext_cat_id in original_dict_keys:
-                try:
-                    # If catalog id is found in the original catalog
-                    # definition, add the extension info to it
-                    # Getting the types to add
-                    ext_cat_types_info =\
-                        catalog_extensions[ext_cat_id].get('types', [])
-                    # Getting the indexes to add
-                    ext_cat_indexes_info = \
-                        catalog_extensions[ext_cat_id].get('indexes', {})
-                    # Getting the columns to add
-                    ext_cat_columns_info =\
-                        catalog_extensions[ext_cat_id].get('columns', [])
-                    # Adding the types
-                    l_types = result_dict[ext_cat_id].get('types', [])
-                    l_types += ext_cat_types_info
-                    result_dict[ext_cat_id]['types'] = l_types
-                    # Adding the indexes
-                    d_idx = result_dict[ext_cat_id].get('indexes', {})
-                    d_idx.update(ext_cat_indexes_info)
-                    result_dict[ext_cat_id]['indexes'] = d_idx
-                    # Adding the columns
-                    l_cols = result_dict[ext_cat_id].get('columns', [])
-                    l_cols += ext_cat_columns_info
-                    result_dict[ext_cat_id]['columns'] = l_cols
-                except:
-                    logger.error(
-                        'An error occured while updating the catalog %s due '
-                        'to the following errot:' % ext_cat_id)
-                    logger.error(traceback.format_exc())
-            else:
-                # If catalog id is not found in the original catalog
-                # definition, add the definition from extension
-                result_dict[ext_cat_id] = catalog_extensions[ext_cat_id]
-    return result_dict
+    outdict = {}
+    # Use dict1 as a template
+    for k, v in dict1.items():
+        if k not in dict2:
+            outdict[k] = v.copy()
+            continue
+        if k == 'indexes':
+            sdict1 = v.copy()
+            sdict2 = dict2[k].copy()
+            sdict1.update(sdict2)
+            outdict[k] = sdict1
+            continue
+        if k in ['types', 'columns']:
+            list1 = v
+            list2 = dict2[k]
+            outdict[k] = list(set(list1 + list2))
+            continue
+        if isinstance(v, dict):
+            sdict1 = v.copy()
+            sdict2 = dict2[k].copy()
+            outdict[k] = _merge_catalog_definitions(sdict1, sdict2)
 
+    # Now, add the rest of keys from dict2 that don't exist in dict1
+    for k, v in dict2.items():
+        if k in outdict:
+            continue
+        outdict[k] = v.copy()
+    return outdict
 
 def _map_content_types(archetype_tool, catalogs_definition):
     """
