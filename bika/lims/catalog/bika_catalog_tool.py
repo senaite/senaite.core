@@ -5,9 +5,7 @@
 
 import sys
 import traceback
-from zope.interface import implements
 from AccessControl import ClassSecurityInfo
-from App.class_init import InitializeClass
 from Products.CMFCore.permissions import ManagePortal
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.CatalogTool import CatalogTool
