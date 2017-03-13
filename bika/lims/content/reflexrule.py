@@ -22,6 +22,7 @@ from bika.lims.utils import changeWorkflowState
 from bika.lims.idserver import renameAfterCreation
 from bika.lims import logger
 from bika.lims.workflow import doActionFor
+from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 import sys
 
 schema = BikaSchema.copy() + Schema((
@@ -432,9 +433,8 @@ def doWorksheetLogic(base, action, analysis):
         # Checking if the action defines a worksheet template
         worksheettemplate = action.get('worksheettemplate', '')
         # Creating the query
-        pc = getToolByName(base, 'portal_catalog')
+        catalog = getToolByName(base, CATALOG_WORKSHEET_LISTING)
         contentFilter = {
-            'portal_type': 'Worksheet',
             'review_state': 'open',
             'sort_on': 'created',
             'sort_order': 'reverse'}
@@ -447,7 +447,7 @@ def doWorksheetLogic(base, action, analysis):
             # Adding the worksheettemplate filter
             contentFilter['worksheettemplateUID'] = worksheettemplate
         # Run the filter
-        wss = pc(contentFilter)
+        wss = catalog(contentFilter)
         # 'repeat' actions takes advantatge of the 'retract' workflow action.
         # the retract process assigns the new analysis to the same worksheet
         # as the base analysis, so we need to desassign it now.

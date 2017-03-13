@@ -25,7 +25,7 @@ from bika.lims.permissions import EditWorksheet
 from bika.lims.permissions import ManageWorksheets
 from bika.lims.utils import getUsers, tmpID, t
 from bika.lims.utils import to_utf8 as _c
-
+from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 import logging
 import plone
 import json
@@ -39,9 +39,8 @@ class FolderView(BikaListingView):
 
     def __init__(self, context, request):
         super(FolderView, self).__init__(context, request)
-        self.catalog = 'bika_catalog'
+        self.catalog = CATALOG_WORKSHEET_LISTING
         self.contentFilter = {
-            'portal_type': 'Worksheet',
             'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
             'sort_on':'CreationDate',
             'sort_order': 'reverse'}
@@ -126,8 +125,7 @@ class FolderView(BikaListingView):
         self.review_states = [
             {'id':'default',
              'title': _('All'),
-             'contentFilter': {'portal_type': 'Worksheet',
-                               'review_state':['open', 'to_be_verified',],
+             'contentFilter': {'review_state':['open', 'to_be_verified',],
                                'sort_on':'CreationDate',
                                'sort_order': 'reverse'},
              'transitions':[{'id':'retract'},
@@ -149,8 +147,7 @@ class FolderView(BikaListingView):
             # so 'mine' is configured further in 'folderitems' below.
             {'id':'mine',
              'title': _('Mine'),
-             'contentFilter': {'portal_type': 'Worksheet',
-                               'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
+             'contentFilter': {'review_state':['open', 'to_be_verified', 'verified', 'rejected'],
                                'sort_on':'CreationDate',
                                'sort_order': 'reverse'},
              'transitions':[{'id':'retract'},
@@ -170,8 +167,7 @@ class FolderView(BikaListingView):
                         'state_title']},
             {'id':'open',
              'title': _('Open'),
-             'contentFilter': {'portal_type': 'Worksheet',
-                               'review_state':'open',
+             'contentFilter': {'review_state':'open',
                                'sort_on':'CreationDate',
                                'sort_order': 'reverse'},
              'transitions':[],
@@ -189,8 +185,7 @@ class FolderView(BikaListingView):
                         'state_title']},
             {'id':'to_be_verified',
              'title': _('To be verified'),
-             'contentFilter': {'portal_type': 'Worksheet',
-                               'review_state':'to_be_verified',
+             'contentFilter': {'review_state':'to_be_verified',
                                'sort_on':'CreationDate',
                                'sort_order': 'reverse'},
              'transitions':[{'id':'retract'},
@@ -210,8 +205,7 @@ class FolderView(BikaListingView):
                         'state_title']},
             {'id':'verified',
              'title': _('Verified'),
-             'contentFilter': {'portal_type': 'Worksheet',
-                               'review_state':'verified',
+             'contentFilter': {'review_state':'verified',
                                'sort_on':'CreationDate',
                                'sort_order': 'reverse'},
              'transitions':[],
