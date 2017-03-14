@@ -19,6 +19,7 @@ bika_catalog_worksheet_listing_definition = {
         'indexes': {
             'id': 'FieldIndex',
             'getId': 'FieldIndex',
+            'review_state': 'FieldIndex',
             # Necessary to avoid reindexing whole catalog when we need to
             # reindex only one object. ExtendedPathIndex also could be used.
             'path': 'PathIndex',
@@ -35,11 +36,10 @@ bika_catalog_worksheet_listing_definition = {
             'UID',
             'getId',
             'Title',
-            'created',
             'review_state',
             'state_title',
+            'getAnalyst',
             'getDepartmentUIDs',
-            'getInstrumentTitle',
             'getWorksheetTemplateUID',
             'getWorksheetTemplateTitle',
             'getWorksheetTemplateURL',
@@ -47,8 +47,10 @@ bika_catalog_worksheet_listing_definition = {
             # TODO-catalog: getLayout returns a dictionary, too big?
             'getLayout',
             # Only used to list
-            'getServicesURLandTitles'
-
+            'getNumberOfQCAnalyses',
+            'getNumberOfRegularAnalyses',
+            'getNumberOfRegularSamples',
+            'getObjectWorkflowStates',
         ]
     }
 }

@@ -760,6 +760,13 @@ class BikaListingView(BrowserView):
             url = url + "?" + "&".join(["%s=%s"%(x,y) for x,y in query.items()])
         return url
 
+    def before_render(self):
+        """
+        This function should be overriden in order to set value that should be
+        loaded before the template being rendered.
+        """
+        pass
+
     def __call__(self):
         """ Handle request parameters and render the form."""
 
@@ -790,6 +797,7 @@ class BikaListingView(BrowserView):
             # - get nice formatted category contents (tr rows only)
             return self.rendered_items()
 
+        self.before_render()
         if self.request.get('table_only', '') == self.form_id \
             or self.request.get('rows_only', '') == self.form_id:
             return self.contents_table(table_only=self.form_id)

@@ -620,7 +620,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """
         ws = self.getWorksheetTemplate()
         if ws:
-            return ws.absolute_url()
+            return ws.absolute_url_path()
         else:
             return ''
 
@@ -633,6 +633,64 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             if service not in services:
                 services.append(service)
         return services
+
+    def getQCAnalyses(self):
+        """
+        Return the Quality Control analyses.
+        :return: a list of QC analyses
+        :rtype: List of ReferenceAnalysis/DuplicateAnalysis
+        """
+        qc_types = ['ReferenceAnalysis', 'DuplicateAnalysis']
+        analyses = self.getAnalyses()
+        return [a for a in analyses if a.portal_type in qc_types]
+
+    def getRegularAnalyses(self):
+        """
+        Return the regular analyses.
+        :return: a list of regular analyses
+        :rtype: List of ReferenceAnalysis/DuplicateAnalysis
+        """
+        qc_types = ['ReferenceAnalysis', 'DuplicateAnalysis']
+        analyses = self.getAnalyses()
+        return [a for a in analyses if a.portal_type not in qc_types]
+
+    def getNumberOfQCAnalyses(self):
+        """
+        Returns the number of Quality Control analyses.
+        :return: number of QC analyses
+        :rtype: integer
+        """
+        return len(self.getQCAnalyses())
+
+    def getNumberOfRegularAnalyses(self):
+        """
+        Returns the number of Regular analyses.
+        :return: number of analyses
+        :rtype: integer
+        """
+        return len(self.getRegularAnalyses())
+
+    def getNumberOfQCSamples(self):
+        """
+        Returns the number of Quality Control samples.
+        :return: number of QC samples
+        :rtype: integer
+        """
+        qc_analyses = self.getQCAnalyses()
+        qc_samples = [a.getSample().UID() for a in qc_analyses]
+        # discarding any duplicate values
+        return len(set(qc_samples))
+
+    def getNumberOfRegularSamples(self):
+        """
+        Returns the number of regular samples.
+        :return: number of regular samples
+        :rtype: integer
+        """
+        analyses = self.getRegularAnalyses()
+        samples = [a.getSample().UID() for a in analyses]
+        # discarding any duplicate values
+        return len(set(samples))
 
     security.declareProtected(EditWorksheet, 'resequenceWorksheet')
 
@@ -747,24 +805,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         self.getField('Method').set(self, method)
         return total
 
-    def getServicesURLandTitles(self):
-        """
-        This function gets all the analyses assigned to the worksheet and
-        returns the URL and Title for each one.
-        It is a column, only used in lists
-        :return: a string with all the URL and Titles with the following format
-            "Title1,URL1|Title2,URL2|..."
-        :rtype: string
-        """
-        services = self.getWorksheetServices()
-        result = []
-        for service in services:
-            new_part = service.Title() + ',' + service.absolute_url_path()
-            if new_part not in result:
-                result.append(new_part)
-        result = '|'.join(result)
-        return result
-
     def getAnalystName(self):
         """ Returns the name of the currently assigned analyst
         """
@@ -857,6 +897,21 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             member = mtool.getAuthenticatedMember()
             return self.isUserAllowedToVerify(member)
         return False
+
+    def getObjectWorkflowStates(self):
+        """
+        This method is used as a metacolumn.
+        Returns a dictionary with the workflow id as key and workflow state as
+        value.
+        :return: {'review_state':'active',...}
+        :rtype: dict
+        """
+        workflow = getToolByName(self, 'portal_workflow')
+        states = {}
+        for w in workflow.getWorkflowsFor(self):
+            state = w._getWorkflowStateOf(self).id
+            states[w.state_var] = state
+        return states
 
     def workflow_script_submit(self):
         # Don't cascade. Shouldn't be submitting WSs directly for now,

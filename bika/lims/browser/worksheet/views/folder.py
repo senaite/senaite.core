@@ -15,7 +15,7 @@ from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.layout.globals.interfaces import IViewView
 from zope.interface import implements
-
+from bika.lims.utils import user_fullname
 from bika.lims import bikaMessageFactory as _
 from bika.lims import PMF, logger
 from bika.lims.browser import BrowserView
@@ -30,6 +30,7 @@ import logging
 import plone
 import json
 import zope
+
 
 class FolderView(BikaListingView):
 
@@ -53,7 +54,6 @@ class FolderView(BikaListingView):
         self.show_select_row = False
         self.show_select_all_checkbox = True
         self.show_select_column = True
-        self.pagesize = 25
         self.restrict_results = False
         self.wf = getToolByName(self, 'portal_workflow')
         self.rc = getToolByName(self, REFERENCE_CATALOG)
@@ -92,37 +92,25 @@ class FolderView(BikaListingView):
         self.columns = {
             'Title': {'title': _('Worksheet'),
                       'index': 'sortable_title'},
-            'Priority': {'title': _('Priority'),
-                        'index':'Priority',
-                        'toggle': True},
             'Analyst': {'title': _('Analyst'),
-                        'index':'getAnalyst',
-                        'toggle': True},
+                        'index': 'getAnalyst', },
             'Template': {'title': _('Template'),
-                         'toggle': True},
-            'Services': {'title': _('Services'),
-                         'sortable':False,
-                         'toggle': False},
-            'SampleTypes': {'title': _('Sample Types'),
-                            'sortable':False,
-                            'toggle': False},
-            'Instrument': {'title': _('Instrument'),
-                            'sortable':False,
-                            'toggle': False},
-            'QC': {'title': _('QC'),
-                   'sortable':False,
-                   'toggle': False},
-            'QCTotals': {'title': _('QC Samples (Analyses)'),
-                   'sortable':False,
-                   'toggle': False},
-            'RoutineTotals': {'title': _('Routine Samples (Analyses)'),
-                   'sortable':False,
-                   'toggle': False},
+                         'attr': 'getWorksheetTemplateTitle',
+                         'replace_url': 'getWorksheetTemplateURL', },
+            'NumRegularSamples': {
+                'title': _('Samples'),
+                'sortable': False, },
+            'NumQCAnalyses': {
+                'title': _('QC Analyses'),
+                'sortable': False, },
+            'NumRegularAnalyses': {
+                'title': _('Routine Analyses'),
+                'sortable': False, },
             'CreationDate': {'title': PMF('Date Created'),
-                             'toggle': True,
                              'index': 'created'},
             'state_title': {'title': _('State'),
-                            'index': 'review_state'},
+                            'index': 'review_state',
+                            'attr': 'state_title'},
         }
         self.review_states = [
             {'id':'default',
@@ -134,15 +122,11 @@ class FolderView(BikaListingView):
                             {'id':'verify'},
                             {'id':'reject'}],
              'columns':['Title',
-                        'Priority',
                         'Analyst',
                         'Template',
-                        'Services',
-                        'SampleTypes',
-                        'Instrument',
-                        'QC',
-                        'QCTotals',
-                        'RoutineTotals',
+                        'NumRegularSamples',
+                        'NumQCAnalyses',
+                        'NumRegularAnalyses',
                         'CreationDate',
                         'state_title']},
             # getAuthenticatedMember does not work in __init__
@@ -156,15 +140,11 @@ class FolderView(BikaListingView):
                             {'id':'verify'},
                             {'id':'reject'}],
              'columns':['Title',
-                        'Priority',
                         'Analyst',
                         'Template',
-                        'Services',
-                        'SampleTypes',
-                        'Instrument',
-                        'QC',
-                        'QCTotals',
-                        'RoutineTotals',
+                        'NumRegularSamples',
+                        'NumQCAnalyses',
+                        'NumRegularAnalyses',
                         'CreationDate',
                         'state_title']},
             {'id':'open',
@@ -174,15 +154,11 @@ class FolderView(BikaListingView):
                                'sort_order': 'reverse'},
              'transitions':[],
              'columns':['Title',
-                        'Priority',
                         'Analyst',
                         'Template',
-                        'Services',
-                        'SampleTypes',
-                        'Instrument',
-                        'QC',
-                        'QCTotals',
-                        'RoutineTotals',
+                        'NumRegularSamples',
+                        'NumQCAnalyses',
+                        'NumRegularAnalyses',
                         'CreationDate',
                         'state_title']},
             {'id':'to_be_verified',
@@ -194,15 +170,11 @@ class FolderView(BikaListingView):
                             {'id':'verify'},
                             {'id':'reject'}],
              'columns':['Title',
-                        'Priority',
                         'Analyst',
                         'Template',
-                        'Services',
-                        'SampleTypes',
-                        'Instrument',
-                        'QC',
-                        'QCTotals',
-                        'RoutineTotals',
+                        'NumRegularSamples',
+                        'NumQCAnalyses',
+                        'NumRegularAnalyses',
                         'CreationDate',
                         'state_title']},
             {'id':'verified',
@@ -212,27 +184,23 @@ class FolderView(BikaListingView):
                                'sort_order': 'reverse'},
              'transitions':[],
              'columns':['Title',
-                        'Priority',
                         'Analyst',
                         'Template',
-                        'Services',
-                        'SampleTypes',
-                        'Instrument',
-                        'QC',
-                        'QCTotals',
-                        'RoutineTotals',
+                        'NumRegularSamples',
+                        'NumQCAnalyses',
+                        'NumRegularAnalyses',
                         'CreationDate',
                         'state_title']},
         ]
 
-    def __call__(self):
-        super(FolderView, self).__call__()
+    def before_render(self):
+        """
+        This function is called before the template is being rendered.
+        """
         if not self.isManagementAllowed():
             # The current has no prvileges to manage WS.
             # Remove the add button
             self.context_actions = {}
-
-        self.member = self.pm.getAuthenticatedMember()
         roles = self.member.getRoles()
         self.restrict_results = 'Manager' not in roles \
             and 'LabManager' not in roles \
@@ -307,18 +275,8 @@ class FolderView(BikaListingView):
 
         # Call the folderitem method from the base class
         item = BikaListingView.folderitem(self, obj, item, index)
-        if not item:
-            return None
-
-        item['CreationDate'] = self.ulocalized_time(obj.CreationDate)
-        item['Analyst'] = obj.getAnalyst
-        item['Priority'] = ''
-        item['getPriority'] = ''
-        item['Instrument'] = obj.getInstrumentTitle
-        item['Template'] = obj.getWorksheetTemplateTitle
-        if obj.getWorksheetTemplateTitle:
-            item['replace']['Template'] = "<a href='%s'>%s</a>" % \
-                (obj.getWorksheetTemplateURL, obj.getWorksheetTemplateTitle)
+        item['CreationDate'] = self.ulocalized_time(obj.created())
+        item['Analyst'] = user_fullname(obj.getAnalyst)
 
         if len(obj.getAnalysesUIDs) == 0:
             item['table_row_class'] = 'state-empty-worksheet'
@@ -329,18 +287,6 @@ class FolderView(BikaListingView):
         item['replace']['Title'] = "<a href='%s/%s'>%s</a>" % \
             (item['url'], turl, item['Title'])
 
-        # Set services
-        ws_services = {}
-        for service_and_url in services_and_urls:
-            title, url = service_and_url.split(',')
-            ws_services[title] = "<a href='%s'>%s</a>" % \
-                (url, title)
-        keys = list(ws_services.keys())
-        keys.sort()
-        services = [ws_services[k] for k in keys]
-        item['Services'] = ""
-        item['replace']['Services'] = ", ".join(services)
-
         pos_parent = {}
         for slot in layout:
             # compensate for bad data caused by a stupid bug.
@@ -350,52 +296,20 @@ class FolderView(BikaListingView):
                 continue
             if slot['position'] in pos_parent:
                 continue
-            pos_parent[slot['position']] = self.rc.lookupObject(slot['container_uid'])
+            pos_parent[slot['position']] =\
+                self.rc.lookupObject(slot['container_uid'])
 
-        # Set Sample Types and QC Samples
-        sampletypes = []
-        qcsamples = []
-        for container in pos_parent.values():
-            if container.portal_type == 'AnalysisRequest':
-                sampletype = "<a href='%s'>%s</a>" % \
-                           (container.getSample().getSampleType().absolute_url(),
-                            container.getSample().getSampleType().Title())
-                sampletypes.append(sampletype)
-            if container.portal_type == 'ReferenceSample':
-                qcsample = "<a href='%s'>%s</a>" % \
-                        (container.absolute_url(),
-                         container.Title())
-                qcsamples.append(qcsample)
-
-        sampletypes = list(set(sampletypes))
-        sampletypes.sort()
-        item['SampleTypes'] = ""
-        item['replace']['SampleTypes'] = ", ".join(sampletypes)
-        qcsamples = list(set(qcsamples))
-        qcsamples.sort()
-        item['QC'] = ""
-        item['replace']['QC'] = ", ".join(qcsamples)
-        item['QCTotals'] = ''
-
-        # Total QC Samples (Total Routine Analyses)
-        analyses = obj.getAnalyses()
-        totalQCAnalyses = [a for a in analyses
-                               if a.portal_type == 'ReferenceAnalysis'
-                               or a.portal_type == 'DuplicateAnalysis']
-        totalQCSamples = [a.getSample().UID() for a in totalQCAnalyses]
-        totalQCSamples = list(set(totalQCSamples))
-        item['QCTotals'] = str(len(totalQCSamples)) + ' (' + str(len(totalQCAnalyses)) + ')'
-
-        # Total Routine Samples (Total Routine Analyses)
-        totalRoutineAnalyses = [a for a in analyses if a not in totalQCAnalyses]
-        totalRoutineSamples = [a.getSample().UID() for a in totalRoutineAnalyses]
-        totalRoutineSamples = list(set(totalRoutineSamples))
-        item['RoutineTotals'] = str(len(totalRoutineSamples)) + ' (' + str(len(totalRoutineAnalyses)) + ')'
+        # Total QC Analyses
+        item['NumQCAnalyses'] = str(obj.getNumberOfQCAnalyses)
+        # Total Routine Analyses
+        item['NumRegularAnalyses'] = str(obj.getNumberOfRegularAnalyses)
+        # Total Number of Samples
+        item['NumRegularSamples'] = str(obj.getNumberOfRegularSamples)
 
         if item['review_state'] == 'open' \
             and self.allow_edit \
-            and self.restrict_results == False \
-            and self.can_manage == True:
+            and not self.restrict_results \
+                and self.can_manage:
             item['allow_edit'] = ['Analyst', ]
             item['required'] = ['Analyst', ]
             item['choices'] = {'Analyst': self.analyst_choices}
@@ -404,7 +318,7 @@ class FolderView(BikaListingView):
         return item
 
     def folderitems(self):
-        items = BikaListingView.folderitems(self)
+        items = BikaListingView.folderitems(self, classic=False)
 
         # can_reassigned value is assigned in folderitem(obj,item,index) function
         if self.can_reassign:
