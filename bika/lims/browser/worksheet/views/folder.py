@@ -55,18 +55,19 @@ class FolderView(BikaListingView):
         self.show_select_column = True
         self.pagesize = 25
         self.restrict_results = False
-
+        self.wf = getToolByName(self, 'portal_workflow')
+        self.rc = getToolByName(self, REFERENCE_CATALOG)
+        self.pm = getToolByName(self.context, "portal_membership")
         request.set('disable_border', 1)
 
         self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
         self.title = self.context.translate(_("Worksheets"))
         self.description = ""
 
-        pm = getToolByName(context, "portal_membership")
         # this is a property of self, because self.getAnalysts returns it
         self.analysts = getUsers(self, ['Manager', 'LabManager', 'Analyst'])
         self.analysts = self.analysts.sortedByKey()
-
+        # TODO: To worksheet catalog
         bsc = getToolByName(context, 'bika_setup_catalog')
         templates = [t for t in bsc(portal_type = 'WorksheetTemplate',
                                     inactive_state = 'active')]
@@ -78,7 +79,8 @@ class FolderView(BikaListingView):
                             bsc(portal_type = 'Instrument',
                                 inactive_state = 'active')]
         self.instruments.sort(lambda x, y: cmp(x[1], y[1]))
-
+        self.allowed_department_filtering = \
+            self.context.bika_setup.getAllowDepartmentFiltering()
         self.templateinstruments = {}
         for t in templates:
             i = t.getObject().getInstrument()
@@ -224,10 +226,7 @@ class FolderView(BikaListingView):
         ]
 
     def __call__(self):
-        self.wf = getToolByName(self, 'portal_workflow')
-        self.rc = getToolByName(self, REFERENCE_CATALOG)
-        self.pm = getToolByName(self.context, "portal_membership")
-
+        super(FolderView, self).__call__()
         if not self.isManagementAllowed():
             # The current has no prvileges to manage WS.
             # Remove the add button
@@ -236,37 +235,34 @@ class FolderView(BikaListingView):
         self.member = self.pm.getAuthenticatedMember()
         roles = self.member.getRoles()
         self.restrict_results = 'Manager' not in roles \
-                and 'LabManager' not in roles \
-                and 'LabClerk' not in roles \
-                and 'RegulatoryInspector' not in roles \
-                and self.context.bika_setup.getRestrictWorksheetUsersAccess()
-        if self.restrict_results == True:
+            and 'LabManager' not in roles \
+            and 'LabClerk' not in roles \
+            and 'RegulatoryInspector' not in roles \
+            and self.context.bika_setup.getRestrictWorksheetUsersAccess()
+        if self.restrict_results:
             # Remove 'Mine' button and hide 'Analyst' column
-            del self.review_states[1] # Mine
+            del self.review_states[1]  # Mine
             self.columns['Analyst']['toggle'] = False
 
-        self.can_manage = self.pm.checkPermission(ManageWorksheets, self.context)
-        self.selected_state = self.request.get("%s_review_state"%self.form_id,
-                                                'default')
+        self.can_manage = self.pm.\
+            checkPermission(ManageWorksheets, self.context)
+        self.selected_state = self.request\
+            .get("%s_review_state" % self.form_id, 'default')
 
         self.analyst_choices = []
         for a in self.analysts:
-            self.analyst_choices.append({'ResultValue': a,
-                                         'ResultText': self.analysts.getValue(a)})
+            self.analyst_choices.append(
+                {'ResultValue': a, 'ResultText': self.analysts.getValue(a)})
 
         self.allow_edit = self.isEditionAllowed()
 
         # Default value for this attr
         self.can_reassign = False
 
-        return super(FolderView, self).__call__()
-
     def isManagementAllowed(self):
-        mtool = getToolByName(self.context, 'portal_membership')
-        return mtool.checkPermission(ManageWorksheets, self.context)
+        return self.pm.checkPermission(ManageWorksheets, self.context)
 
     def isEditionAllowed(self):
-        pm = getToolByName(self.context, "portal_membership")
         checkPermission = self.context.portal_membership.checkPermission
         return checkPermission(EditWorksheet, self.context)
 
@@ -279,19 +275,17 @@ class FolderView(BikaListingView):
         on the department filter. It checks the department of each analysis
         service from each analysis belonguing to the given worksheet.
         If department filtering is disabled in bika_setup, will return True.
-        @Obj: it is a worksheet object.
+        @Obj: it is a worksheet brain.
         @return: boolean
         """
-        if self.selected_state == 'mine' or self.restrict_results == True:
-            analyst = obj.getAnalyst().strip()
+        if self.selected_state == 'mine' or self.restrict_results:
+            analyst = obj.getAnalyst
             if analyst != _c(self.member.getId()):
                 return False
-        if not self.context.bika_setup.getAllowDepartmentFiltering():
+        if not self.allowed_department_filtering:
             return True
         # Gettin the department from worksheet
-        deps = [an.getDepartment().UID() for
-                an in obj.getWorksheetServices() if
-                an.getDepartment()]
+        deps = obj.getDepartmentUIDs()
         result = True
         if deps:
             # Getting the cookie value
@@ -305,6 +299,9 @@ class FolderView(BikaListingView):
         return result
 
     def folderitem(self, obj, item, index):
+        """
+        :obj: is a worksheet brain.
+        """
         # Additional info from Worksheet to be added in the item generated by
         # default by bikalisting.
 
@@ -313,25 +310,21 @@ class FolderView(BikaListingView):
         if not item:
             return None
 
-        item['CreationDate'] = self.ulocalized_time(obj.creation_date)
-        item['Analyst'] = obj.getAnalyst().strip()
+        item['CreationDate'] = self.ulocalized_time(obj.CreationDate)
+        item['Analyst'] = obj.getAnalyst
         item['Priority'] = ''
         item['getPriority'] = ''
-
-        instrument = obj.getInstrument()
-        item['Instrument'] = instrument.Title() if instrument else ''
-
-        wst = obj.getWorksheetTemplate()
-        item['Template'] = wst.Title() if wst else ''
-        if wst:
+        item['Instrument'] = obj.getInstrumentTitle
+        item['Template'] = obj.getWorksheetTemplateTitle
+        if obj.getWorksheetTemplateTitle:
             item['replace']['Template'] = "<a href='%s'>%s</a>" % \
-                (wst.absolute_url(), wst.Title())
+                (obj.getWorksheetTemplateURL, obj.getWorksheetTemplateTitle)
 
-        if len(obj.getAnalyses()) == 0:
+        if len(obj.getAnalysesUIDs) == 0:
             item['table_row_class'] = 'state-empty-worksheet'
 
         layout = obj.getLayout()
-        item['Title'] = obj.Title()
+        item['Title'] = obj.Title
         turl = "manage_results" if len(layout) > 0 else "add_analyses"
         item['replace']['Title'] = "<a href='%s/%s'>%s</a>" % \
             (item['url'], turl, item['Title'])

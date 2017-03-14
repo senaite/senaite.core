@@ -13,6 +13,8 @@ from bika.lims.catalog.analysis_catalog import \
     bika_catalog_analysis_listing_definition
 from bika.lims.catalog.autoimportlogs_catalog import \
     bika_catalog_autoimportlogs_listing_definition
+from bika.lims.catalog.worksheet_catalog import \
+    bika_catalog_worksheet_listing_definition
 
 
 def getCatalogDefinitions():
@@ -23,10 +25,12 @@ def getCatalogDefinitions():
     analysis_request = bika_catalog_analysisrequest_listing_definition
     analysis = bika_catalog_analysis_listing_definition
     autoimportlogs = bika_catalog_autoimportlogs_listing_definition
+    worksheet = bika_catalog_worksheet_listing_definition
     # Merging the catalogs
     final.update(analysis_request)
     final.update(analysis)
     final.update(autoimportlogs)
+    final.update(worksheet)
     return final
 
 
@@ -147,8 +151,11 @@ def _merge_catalog_definitions(dict1, dict2):
     outdict = {}
     # Use dict1 as a template
     for k, v in dict1.items():
-        if k not in dict2:
+        if k not in dict2 and isinstance(v, dict):
             outdict[k] = v.copy()
+            continue
+        if k not in dict2 and isinstance(v, list):
+            outdict[k] = v[:]
             continue
         if k == 'indexes':
             sdict1 = v.copy()

@@ -25,6 +25,16 @@ bika_catalog_worksheet_listing_definition = {
             'created': 'DateIndex',
             'portal_type': 'FieldIndex',
             'UID': 'FieldIndex',
+            'CreationDate': 'DateIndex',
+            'getPriority': 'FieldIndex',
+            'getAnalyst': 'FieldIndex',
+            'getWorksheetTemplate': 'FieldIndex',
+            #Services
+            SampleTypes
+            QC
+            QCTotals
+            RoutineTotals
+
         },
         'columns': [
             'UID',
@@ -32,6 +42,13 @@ bika_catalog_worksheet_listing_definition = {
             'Title',
             'created',
             'review_state',
+            'state_title',
+            'getDepartmentUIDs',
+            'getInstrumentTitle',
+            'getWorksheetTemplateUID',
+            'getWorksheetTemplateTitle',
+            'getWorksheetTemplateURL',
+            'getAnalysesUIDs',
 
         ]
     }

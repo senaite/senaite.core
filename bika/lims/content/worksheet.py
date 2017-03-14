@@ -33,38 +33,11 @@ from zope.interface import implements
 import re
 import sys
 
-@indexer(IWorksheet)
-def Priority(instance):
-    priority = instance.getPriority()
-    if priority:
-        return priority.getSortKey()
-
-
-@indexer(IWorksheet)
-def Analyst(instance):
-    return instance.getAnalyst()
-
-
-@indexer(IWorksheet)
-def worksheettemplateUID(instance):
-    worksheettemplate = instance.getWorksheetTemplate()
-    if worksheettemplate:
-        return worksheettemplate.UID()
-    else:
-        return ''
-
 
 schema = BikaSchema.copy() + Schema((
     HistoryAwareReferenceField('WorksheetTemplate',
         allowed_types=('WorksheetTemplate',),
         relationship='WorksheetAnalysisTemplate',
-    ),
-    ComputedField('WorksheetTemplateTitle',
-        searchable=True,
-        expression="context.getWorksheetTemplate() and context.getWorksheetTemplate().Title() or ''",
-        widget=ComputedWidget(
-            visible=False,
-        ),
     ),
     RecordsField('Layout',
         required=1,
@@ -603,6 +576,54 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
     security.declarePublic('getWorksheetServices')
 
+    def getInstrumentTitle(self):
+        """
+        Returns the instrument title
+        :return: instrument's title
+        :rtype: string
+        """
+        instrument = self.getInstrument()
+        if instrument:
+            return instrument.Title()
+        else:
+            return ''
+
+    def getWorksheetTemplateUID(self):
+        """
+        Returns the template's UID assigned to this worksheet
+        :return: worksheet's UID
+        :rtype: UID as string
+        """
+        ws = self.getWorksheetTemplate()
+        if ws:
+            return ws.UID()
+        else:
+            return ''
+
+    def getWorksheetTemplateTitle(self):
+        """
+        Returns the template's Title assigned to this worksheet
+        :return: worksheet's Title
+        :rtype: string
+        """
+        ws = self.getWorksheetTemplate()
+        if ws:
+            return ws.Title()
+        else:
+            return ''
+
+    def getWorksheetTemplateURL(self):
+        """
+        Returns the template's URL assigned to this worksheet
+        :return: worksheet's URL
+        :rtype: string
+        """
+        ws = self.getWorksheetTemplate()
+        if ws:
+            return ws.absolute_url()
+        else:
+            return ''
+
     def getWorksheetServices(self):
         """ get list of analysis services present on this worksheet
         """
@@ -725,6 +746,15 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         self.getField('Method').set(self, method)
         return total
+
+    def getAnalyst(self):
+        """
+        Return the analyst id assigned to this worksheet.
+        This function works as an index.
+        :return: analyist id
+        :rtype: string
+        """
+        return self.getAnalyst().strip()
 
     def getAnalystName(self):
         """ Returns the name of the currently assigned analyst
@@ -1130,6 +1160,18 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         priorities = sorted(priorities, key = itemgetter('sortKey'))
         if priorities:
             return priorities[-1]
+
+    def getAnalysesUIDs(self):
+        """
+        Returns the analyses UIDs from the analyses assigned to this worksheet
+        :return: a list of UIDs
+        :rtype: a list of strings
+        """
+        analyses = self.getAnalyses()
+        if isinstance(analyses, list):
+            return [an.UID() for an in analyses]
+        else:
+            []
 
     def getDepartmentUIDs(self):
         return [an.getDepartmentUID() for an in self.getAnalyses()]
