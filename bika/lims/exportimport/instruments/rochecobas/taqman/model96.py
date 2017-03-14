@@ -20,7 +20,7 @@ import traceback
 title = "Roche Cobas - Taqman - 96"
 
 # see: https://jira.bikalabs.com/browse/HEALTH-568
-NUM_FIELDS = ["CTM Elbow CH1", "CTM Elbow CH2", "CTM Elbow CH3",
+NUM_FIELDS = ["Result", "CTM Elbow CH1", "CTM Elbow CH2", "CTM Elbow CH3",
               "CTM Elbow CH4", "CTM RFI CH1", "CTM RFI CH2",
               "CTM RFI CH3", "CTM RFI CH4", "CTM AFI CH1", "CTM AFI CH2",
               "CTM AFI CH3", "CTM AFI CH4", "CTM Calib Coeff a",
