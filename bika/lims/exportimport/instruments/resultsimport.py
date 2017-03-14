@@ -15,6 +15,7 @@ from bika.lims.utils import tmpID
 from Products.Archetypes.config import REFERENCE_CATALOG
 from datetime import datetime
 from DateTime import DateTime
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 import os
 
 class InstrumentResultsFileParser(Logger):
@@ -264,6 +265,8 @@ class AnalysisResultsImporter(Logger):
         self._priorizedsearchcriteria = ''
         self.bsc = getToolByName(self.context, 'bika_setup_catalog')
         self.bac = getToolByName(self.context, 'bika_analysis_catalog')
+        self.ar_catalog = getToolByName(
+            self.context, CATALOG_ANALYSIS_REQUEST_LISTING)
         self.pc = getToolByName(self.context, 'portal_catalog')
         self.bc = getToolByName(self.context, 'bika_catalog')
         self.wf = getToolByName(self.context, 'portal_workflow')
@@ -552,19 +555,19 @@ class AnalysisResultsImporter(Logger):
         #self.log("Criteria: %s %s") % (criteria, obji))
         obj = []
         if (criteria == 'arid'):
-            obj = self.bc(portal_type='AnalysisRequest',
+            obj = self.ar_catalog(
                            getRequestID=objid,
                            review_state=states)
         elif (criteria == 'sid'):
-            obj = self.bc(portal_type='AnalysisRequest',
+            obj = self.ar_catalog(
                            getSampleID=objid,
                            review_state=states)
         elif (criteria == 'csid'):
-            obj = self.bc(portal_type='AnalysisRequest',
+            obj = self.ar_catalog(
                            getClientSampleID=objid,
                            review_state=states)
         elif (criteria == 'aruid'):
-            obj = self.bc(portal_type='AnalysisRequest',
+            obj = self.ar_catalog(
                            UID=objid,
                            review_state=states)
         elif (criteria == 'rgid'):
