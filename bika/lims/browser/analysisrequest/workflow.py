@@ -259,6 +259,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             tmpl = self.context.bika_setup.getAutoStickerTemplate()
             q = "/sticker?autoprint=1&template=%s&items=" % tmpl
             q += ",".join(transitioned)
+            if items[0]:
+                q += "&ctype=%s" % items[0].portal_type
             self.request.response.redirect(self.context.absolute_url() + q)
         elif trans:
             message = PMF('Changes saved.')
