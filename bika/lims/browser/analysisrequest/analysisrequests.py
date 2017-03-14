@@ -74,9 +74,9 @@ class AnalysisRequestsView(BikaListingView):
 
         self.columns = {
             'getRequestID': {'title': _('Request ID'),
-                            'attr': 'getRequestID',
+                            'attr': 'getId',
                             'replace_url': 'getSampleURL',
-                            'index': 'getRequestID'},
+                            'index': 'getId'},
             'getClientOrderNumber': {'title': _('Client Order'),
                                      'index': 'getClientOrderNumber',
                                      'toggle': True},
@@ -981,6 +981,13 @@ class AnalysisRequestsView(BikaListingView):
             and 'Manager' not in self.roles \
             and 'LabManager' not in self.roles \
             and 'LabClerk' not in self.roles
+
+        if self.context.portal_type == "AnalysisRequestsFolder" and \
+                (self.mtool.checkPermission(AddAnalysisRequest, self.context)):
+            self.context_actions[_('Add')] = \
+                {'url': "portal_factory/AnalysisRequest/Request new analyses/"
+                        + "ar_add?ar_count=1",
+                 'icon': '++resource++bika.lims.images/add.png'}
 
         self.editresults = -1
         self.clients = {}

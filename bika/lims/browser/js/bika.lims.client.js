@@ -38,3 +38,29 @@ function ClientEditView() {
         }
     }
 }
+/**
+* Client's overlay edit view Handler. Used by add buttons to
+* manage the behaviour of the overlay.
+*/
+function ClientOverlayHandler() {
+  var that = this;
+
+  // Needed for bika.lims.loader to register the object at runtime
+  that.load = function() {}
+
+  /**
+   * Event fired on overlay.onLoad()
+   * Hides undesired contents from inside the overlay and also
+   * loads additional javascripts still not managed by the bika.lims
+   * loader
+   */
+  that.onLoad = function(event) {
+
+      // Address widget
+      $.ajax({
+          url: 'bika_widgets/addresswidget.js',
+          dataType: 'script',
+          async: false
+      });
+  }
+}
