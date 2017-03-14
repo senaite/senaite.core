@@ -17,7 +17,6 @@ from plone.i18n.normalizer.interfaces import IFileNameNormalizer
 from plone.i18n.normalizer.interfaces import IIDNormalizer
 from zope.component import getUtility
 from zope.interface import providedBy
-from bika.lims.utils import tmpID
 import copy,re,urllib
 import plone.protect
 import transaction
@@ -132,7 +131,7 @@ def generateUniqueId(context):
         # No external id-server.
 
         def next_id(prefix):
-             # normalize before anything
+            # normalize before anything
             prefix = fn_normalize(prefix)
             plone = context.portal_url.getPortalObject()
             # grab the first catalog we are indexed in.
