@@ -7,9 +7,6 @@
     i18n_domain="bika">
 
     <adapter name="BatchDate" factory=".batch.BatchDate" />
-    <!--adapter name="getDepartmentUID" factory=".analysis.getDepartmentUID" /-->
-    <adapter name="Priority" factory=".worksheet.Priority" />
-    <adapter name="worksheettemplateUID" factory=".worksheet.worksheettemplateUID" />
     <adapter name="analysisRequestTemplates" factory=".samplinground.analysisRequestTemplates" />
     <adapter name="samplingRoundSamplingDate" factory=".samplinground.samplingRoundSamplingDate" />
     <!--

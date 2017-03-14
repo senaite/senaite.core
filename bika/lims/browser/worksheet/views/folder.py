@@ -323,7 +323,7 @@ class FolderView(BikaListingView):
         if len(obj.getAnalysesUIDs) == 0:
             item['table_row_class'] = 'state-empty-worksheet'
 
-        layout = obj.getLayout()
+        layout = obj.getLayout
         item['Title'] = obj.Title
         turl = "manage_results" if len(layout) > 0 else "add_analyses"
         item['replace']['Title'] = "<a href='%s/%s'>%s</a>" % \
@@ -331,18 +331,10 @@ class FolderView(BikaListingView):
 
         # Set services
         ws_services = {}
-        for slot in [s for s in layout if s['type'] == 'a']:
-            analysis = self.rc.lookupObject(slot['analysis_uid'])
-            if not analysis:
-                error = "Analysis with uid '%s' NOT FOUND in Reference Catalog.\n Worksheet: '%s'. Layout: '%s'" % \
-                        (slot['analysis_uid'], obj, layout)
-                logging.info(error)
-                continue
-            service = analysis.getService()
-            title = service.Title()
-            if title not in ws_services:
-                ws_services[title] = "<a href='%s'>%s</a>" % \
-                    (service.absolute_url(), title)
+        for service_and_url in services_and_urls:
+            title, url = service_and_url.split(',')
+            ws_services[title] = "<a href='%s'>%s</a>" % \
+                (url, title)
         keys = list(ws_services.keys())
         keys.sort()
         services = [ws_services[k] for k in keys]

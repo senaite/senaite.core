@@ -29,11 +29,6 @@ bika_catalog_worksheet_listing_definition = {
             'getPriority': 'FieldIndex',
             'getAnalyst': 'FieldIndex',
             'getWorksheetTemplate': 'FieldIndex',
-            #Services
-            SampleTypes
-            QC
-            QCTotals
-            RoutineTotals
 
         },
         'columns': [
@@ -49,6 +44,10 @@ bika_catalog_worksheet_listing_definition = {
             'getWorksheetTemplateTitle',
             'getWorksheetTemplateURL',
             'getAnalysesUIDs',
+            # TODO-catalog: getLayout returns a dictionary, too big?
+            'getLayout',
+            # Only used to list
+            'getServicesURLandTitles'
 
         ]
     }

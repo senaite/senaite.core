@@ -747,14 +747,23 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         self.getField('Method').set(self, method)
         return total
 
-    def getAnalyst(self):
+    def getServicesURLandTitles(self):
         """
-        Return the analyst id assigned to this worksheet.
-        This function works as an index.
-        :return: analyist id
+        This function gets all the analyses assigned to the worksheet and
+        returns the URL and Title for each one.
+        It is a column, only used in lists
+        :return: a string with all the URL and Titles with the following format
+            "Title1,URL1|Title2,URL2|..."
         :rtype: string
         """
-        return self.getAnalyst().strip()
+        services = self.getWorksheetServices()
+        result = []
+        for service in services:
+            new_part = service.Title() + ',' + service.absolute_url_path()
+            if new_part not in result:
+                result.append(new_part)
+        result = '|'.join(result)
+        return result
 
     def getAnalystName(self):
         """ Returns the name of the currently assigned analyst
