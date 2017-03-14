@@ -280,7 +280,7 @@ class AnalysisResultsImporter(Logger):
                                            'attachment_due',
                                            'to_be_verified']
         if not self._idsearch:
-            self._idsearch=['getRequestID']
+            self._idsearch=['getId']
         self.instrument_uid=instrument_uid
 
     def getParser(self):
@@ -316,7 +316,7 @@ class AnalysisResultsImporter(Logger):
     def getIdSearchCriteria(self):
         """ Returns the search criteria for retrieving analyses.
             Example:
-            serachcriteria=['getRequestID', 'getSampleID', 'getClientSampleID']
+            serachcriteria=['getId', 'getSampleID', 'getClientSampleID']
         """
         return self._idsearch
 
@@ -470,11 +470,11 @@ class AnalysisResultsImporter(Logger):
                         else:
                             ar = analysis.portal_type == 'Analysis' and analysis.aq_parent or None
                             if ar and ar.UID:
-                                importedar = ar.getRequestID() in importedars.keys() \
-                                            and importedars[ar.getRequestID()] or []
+                                importedar = ar.getId() in importedars.keys() \
+                                            and importedars[ar.getId()] or []
                                 if acode not in importedar:
                                     importedar.append(acode)
-                                importedars[ar.getRequestID()] = importedar
+                                importedars[ar.getId()] = importedar
 
                         # Create the AttachmentType for mime type if not exists
                         attuid = None
@@ -522,7 +522,7 @@ class AnalysisResultsImporter(Logger):
                             except:
     #                            self.err(_("Unable to attach results file '${file_name}' to AR ${request_id}",
     #                                       mapping={"file_name": self._parser.getInputFile().filename,
-    #                                                "request_id": ar.getRequestID()}))
+    #                                                "request_id": ar.getId()}))
                                 pass
 
         for arid, acodes in importedars.iteritems():
@@ -556,7 +556,7 @@ class AnalysisResultsImporter(Logger):
         obj = []
         if (criteria == 'arid'):
             obj = self.ar_catalog(
-                           getRequestID=objid,
+                           getId=objid,
                            review_state=states)
         elif (criteria == 'sid'):
             obj = self.ar_catalog(
@@ -597,7 +597,7 @@ class AnalysisResultsImporter(Logger):
         analyses = []
         # HACK: Use always the full search workflow
         #searchcriteria = self.getIdSearchCriteria()
-        searchcriteria = ['getRequestID', 'getSampleID', 'getClientSampleID']
+        searchcriteria = ['getId', 'getSampleID', 'getClientSampleID']
         allowed_ar_states = self.getAllowedARStates()
         allowed_an_states = self.getAllowedAnalysisStates()
         allowed_ar_states_msg = [_(s) for s in allowed_ar_states]
@@ -640,10 +640,10 @@ class AnalysisResultsImporter(Logger):
         else:
             sortorder = ['arid', 'sid', 'csid', 'aruid'];
             for crit in sortorder:
-                if (crit == 'arid' and 'getRequestID' in allowedsearches) \
+                if (crit == 'arid' and 'getId' in allowedsearches) \
                     or (crit == 'sid' and 'getSampleID' in allowedsearches) \
                     or (crit == 'csid' and 'getClientSampleID' in allowedsearches) \
-                    or (crit == 'aruid' and 'getRequestID' in allowedsearches):
+                    or (crit == 'aruid' and 'getId' in allowedsearches):
                     ars = self._getObjects(objid, crit, arstates)
                     if ars and len(ars) > 0:
                         break

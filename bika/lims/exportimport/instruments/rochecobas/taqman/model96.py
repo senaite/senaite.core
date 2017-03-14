@@ -133,9 +133,9 @@ def Import(context, request):
         elif override == 'overrideempty':
             over = [True, True]
 
-        sam = ['getRequestID', 'getSampleID', 'getClientSampleID']
+        sam = ['getId', 'getSampleID', 'getClientSampleID']
         if sample == 'requestid':
-            sam = ['getRequestID']
+            sam = ['getId']
         if sample == 'sampleid':
             sam = ['getSampleID']
         elif sample == 'clientsid':

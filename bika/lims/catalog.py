@@ -60,6 +60,8 @@ _catalogs_definition = {
             'getReceivedBy': 'FieldIndex',
             'getDepartmentUIDs': 'KeywordIndex',
             'getPrinted': 'FieldIndex',
+            'getClientSampleID': 'FieldIndex',
+            'getSampleID': 'FieldIndex',
         },
         'columns': [
             'UID',

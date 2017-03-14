@@ -96,7 +96,7 @@ class ResultsImportView(BrowserView):
                     importer = GeneralImporter(
                                 parser=parser,
                                 context=self.portal,
-                                idsearchcriteria=['getRequestID',
+                                idsearchcriteria=['getId',
                                                   'getSampleID',
                                                   'getClientSampleID'],
                                 allowed_ar_states=['sample_received'],

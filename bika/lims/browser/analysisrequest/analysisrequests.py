@@ -74,9 +74,9 @@ class AnalysisRequestsView(BikaListingView):
 
         self.columns = {
             'getRequestID': {'title': _('Request ID'),
-                            'attr': 'getRequestID',
+                            'attr': 'getId',
                             'replace_url': 'getSampleURL',
-                            'index': 'getRequestID'},
+                            'index': 'getId'},
             'getClientOrderNumber': {'title': _('Client Order'),
                                      'index': 'getClientOrderNumber',
                                      'toggle': True},
