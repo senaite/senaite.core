@@ -468,12 +468,11 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             self.request.response.redirect(self.context.absolute_url())
             return
         # AR publish preview
-        uids = self.request.form.get('uids')
-        if uids:
-            items=",".join(uids)
-            self.request.response.redirect(self.context.portal_url() + "analysisrequests/publish?items="+items)
-        else:
-            self.request.response.redirect(self.context.absolute_url() + "/publish")
+        uids = self.request.form.get('uids', [self.context.UID()])
+        items = ",".join(uids)
+        self.request.response.redirect(
+            self.context.portal_url() + "/analysisrequests/publish?items="
+            + items)
 
     def workflow_action_verify(self):
         # default bika_listing.py/WorkflowAction, but then go to view screen.
