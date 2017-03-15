@@ -27,9 +27,9 @@ class Sticker(BrowserView):
 
     def __call__(self):
         self.rendered_items = []
-        catalog = getToolByName(self.context, 'uid_catalog')
         items = self.request.get('items', '')
         if items:
+            catalog = getToolByName(self.context, 'uid_catalog')
             self.items = [o.getObject() for o in catalog(UID=items.split(","))]
         else:
             self.items = [self.context, ]

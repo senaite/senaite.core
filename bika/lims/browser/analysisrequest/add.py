@@ -456,7 +456,7 @@ class ajaxAnalysisRequestSubmit():
 
         # Now, we will create the specified ARs.
         ARs = []
-        uid_dict = {}
+        new_ar_uids = []
         for arnum, state in valid_states.items():
             # Create the Analysis Request
             ar = crar(
@@ -465,7 +465,10 @@ class ajaxAnalysisRequestSubmit():
                 state
             )
             ARs.append(ar.Title())
-            uid_dict[ar.Title()] = ar.UID()
+            # Automatic label printing won't print "register" labels for
+            # Secondary ARs
+            if ar.Title()[-2:] == '01':
+                new_ar_uids.append(ar.UID())
 
         # Display the appropriate message after creation
         if len(ARs) > 1:
@@ -475,11 +478,9 @@ class ajaxAnalysisRequestSubmit():
             message = _('Analysis request ${AR} was successfully created.',
                         mapping={'AR': safe_unicode(ARs[0])})
         self.context.plone_utils.addPortalMessage(message, 'info')
-        # Automatic label printing won't print "register" labels for Secondary. ARs
-        new_ars = [ar for ar in ARs if ar[-2:] == '01']
-        new_ar_uids = [uid_dict[ar_id] for ar_id in new_ars]
-        if 'register' in self.context.bika_setup.getAutoPrintStickers() \
-                and new_ar_uids:
+
+        if new_ar_uids and 'register'\
+                in self.context.bika_setup.getAutoPrintStickers():
             return json.dumps({
                 'success': message,
                 'stickers': new_ar_uids,
