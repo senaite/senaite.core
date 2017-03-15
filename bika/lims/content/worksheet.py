@@ -212,6 +212,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 # add it.
                 if dma not in self.getAnalyses():
                     self.addAnalysis(dma)
+        # Reindex the worksheet in order to update its columns
+        self.reindexObject()
 
     security.declareProtected(EditWorksheet, 'removeAnalysis')
 
@@ -238,6 +240,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         if analysis.portal_type == "DuplicateAnalysis":
             self._delObject(analysis.id)
+        # Reindex the worksheet in order to update its columns
+        self.reindexObject()
 
     def _getMethodsVoc(self):
         """
@@ -322,6 +326,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             self.setAnalyses(
                 self.getAnalyses() + [ref_analysis, ])
             workflow.doActionFor(ref_analysis, 'assign')
+            # Reindex the worksheet in order to update its columns
+            self.reindexObject()
 
     def nextReferenceAnalysesGroupID(self, reference):
         """ Returns the next ReferenceAnalysesGroupID for the given reference

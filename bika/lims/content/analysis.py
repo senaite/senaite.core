@@ -1689,7 +1689,6 @@ class Analysis(BaseContent):
         if workflow.getInfoFor(self, 'cancellation_state', 'active') == "cancelled":
             return False
         ar = self.aq_parent
-        self.reindexObject(idxs=["review_state", ])
         # Dependencies are submitted already, ignore them.
         #-------------------------------------------------
         # Submit our dependents
@@ -1767,7 +1766,9 @@ class Analysis(BaseContent):
             try:
                 workflow.doActionFor(self, "attach")
             except WorkflowException:
-                pass
+                logger.error(
+                    "attach action failed for analysis %s" % self.getId())
+        self.reindexObject()
 
     def workflow_script_retract(self):
         # DuplicateAnalysis doesn't have analysis_workflow.
@@ -1872,6 +1873,7 @@ class Analysis(BaseContent):
                     "type": "a"}
             layout.append(slot)
             ws.setLayout(layout)
+        self.reindexObject()
 
     def workflow_script_verify(self):
         # DuplicateAnalysis doesn't have analysis_workflow.
@@ -1882,7 +1884,6 @@ class Analysis(BaseContent):
         workflow = getToolByName(self, "portal_workflow")
         if workflow.getInfoFor(self, 'cancellation_state', 'active') == "cancelled":
             return False
-        self.reindexObject(idxs=["review_state", ])
         # Do all the reflex rules process
         self._reflex_rule_process('verify')
         # If all analyses in this AR are verified
@@ -1921,6 +1922,7 @@ class Analysis(BaseContent):
                     if not "verify all analyses" in self.REQUEST['workflow_skiplist']:
                         self.REQUEST["workflow_skiplist"].append("verify all analyses")
                     workflow.doActionFor(ws, "verify")
+        self.reindexObject()
 
     def workflow_script_publish(self):
         workflow = getToolByName(self, "portal_workflow")
@@ -1959,25 +1961,24 @@ class Analysis(BaseContent):
         if self.portal_type == "DuplicateAnalysis":
             return
         workflow = getToolByName(self, "portal_workflow")
-        self.reindexObject(idxs=["worksheetanalysis_review_state", ])
         # If it is assigned to a worksheet, unassign it.
         if workflow.getInfoFor(self, 'worksheetanalysis_review_state') == 'assigned':
             ws = self.getBackReferences("WorksheetAnalysis")[0]
             skip(self, "cancel", unskip=True)
             ws.removeAnalysis(self)
+        self.reindexObject()
 
     def workflow_script_reject(self):
         # DuplicateAnalysis doesn't have analysis_workflow.
         if self.portal_type == "DuplicateAnalysis":
             return
         workflow = getToolByName(self, "portal_workflow")
-        self.reindexObject(idxs=[
-            "review_state", "worksheetanalysis_review_state" ])
         # If it is assigned to a worksheet, unassign it.
         if workflow.getInfoFor(self, 'worksheetanalysis_review_state') ==\
                 'assigned':
             ws = self.getBackReferences("WorksheetAnalysis")[0]
             ws.removeAnalysis(self)
+        self.reindexObject()
 
     def workflow_script_attach(self):
         # DuplicateAnalysis doesn't have analysis_workflow.
@@ -1986,7 +1987,6 @@ class Analysis(BaseContent):
         if skip(self, "attach"):
             return
         workflow = getToolByName(self, "portal_workflow")
-        self.reindexObject(idxs=["review_state", ])
         # If all analyses in this AR have been attached
         # escalate the action to the parent AR
         ar = self.aq_parent
@@ -2018,6 +2018,7 @@ class Analysis(BaseContent):
                         break
                 if can_attach:
                     workflow.doActionFor(ws, "attach")
+        self.reindexObject()
 
     def workflow_script_assign(self):
         # DuplicateAnalysis doesn't have analysis_workflow.
@@ -2026,7 +2027,6 @@ class Analysis(BaseContent):
         if skip(self, "assign"):
             return
         workflow = getToolByName(self, "portal_workflow")
-        self.reindexObject(idxs=["worksheetanalysis_review_state", ])
         rc = getToolByName(self, REFERENCE_CATALOG)
         wsUID = self.REQUEST["context_uid"]
         ws = rc.lookupObject(wsUID)
@@ -2049,7 +2049,9 @@ class Analysis(BaseContent):
                     if "assign" in allowed_transitions:
                         workflow.doActionFor(self, "assign")
                 except:
-                    pass
+                    logger.error(
+                        "assign action failed for analysis %s" % self.getId())
+        self.reindexObject()
 
     def workflow_script_unassign(self):
         # DuplicateAnalysis doesn't have analysis_workflow.
@@ -2058,7 +2060,6 @@ class Analysis(BaseContent):
         if skip(self, "unassign"):
             return
         workflow = getToolByName(self, "portal_workflow")
-        self.reindexObject(idxs=["worksheetanalysis_review_state", ])
         rc = getToolByName(self, REFERENCE_CATALOG)
         wsUID = self.REQUEST["context_uid"]
         ws = rc.lookupObject(wsUID)
@@ -2115,6 +2116,7 @@ class Analysis(BaseContent):
             if workflow.getInfoFor(ws, "review_state") != "open":
                 workflow.doActionFor(ws, "retract")
                 skip(ws, "retract", unskip=True)
+        self.reindexObject()
 
 
 atapi.registerType(Analysis, PROJECTNAME)

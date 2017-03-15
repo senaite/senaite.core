@@ -553,7 +553,6 @@ class ReferenceAnalysis(BaseContent):
         if skip(self, "submit"):
             return
         workflow = getToolByName(self, "portal_workflow")
-        self.reindexObject(idxs=["review_state", ])
         # If all analyses on the worksheet have been submitted,
         # then submit the worksheet.
         ws = self.getBackReferences('WorksheetAnalysis')
@@ -576,13 +575,12 @@ class ReferenceAnalysis(BaseContent):
                 can_attach = False
         if can_attach:
             workflow.doActionFor(self, 'attach')
+        self.reindexObject()
 
     def workflow_script_attach(self):
         if skip(self, "attach"):
             return
         workflow = getToolByName(self, 'portal_workflow')
-        self.reindexObject(idxs=["review_state", ])
-
         # If all analyses on the worksheet have been attached,
         # then attach the worksheet.
         ws = self.getBackReferences('WorksheetAnalysis')
@@ -597,12 +595,12 @@ class ReferenceAnalysis(BaseContent):
                     break
             if can_attach:
                 workflow.doActionFor(ws, 'attach')
+        self.reindexObject()
 
     def workflow_script_retract(self):
         if skip(self, "retract"):
             return
         workflow = getToolByName(self, 'portal_workflow')
-        self.reindexObject(idxs=["review_state", ])
         # Escalate action to the Worksheet.
         ws = self.getBackReferences('WorksheetAnalysis')
         ws = ws[0]
@@ -613,13 +611,12 @@ class ReferenceAnalysis(BaseContent):
                 if not "retract all analyses" in self.REQUEST['workflow_skiplist']:
                     self.REQUEST["workflow_skiplist"].append("retract all analyses")
                 workflow.doActionFor(ws, 'retract')
+        self.reindexObject()
 
     def workflow_script_verify(self):
         if skip(self, "verify"):
             return
         workflow = getToolByName(self, 'portal_workflow')
-        self.reindexObject(idxs=["review_state", ])
-
         # If all other analyses on the worksheet are verified,
         # then verify the worksheet.
         ws = self.getBackReferences('WorksheetAnalysis')
@@ -637,12 +634,12 @@ class ReferenceAnalysis(BaseContent):
                     if not "verify all analyses" in self.REQUEST['workflow_skiplist']:
                         self.REQUEST["workflow_skiplist"].append("verify all analyses")
                     workflow.doActionFor(ws, "verify")
+        self.reindexObject()
 
     def workflow_script_assign(self):
         if skip(self, "assign"):
             return
         workflow = getToolByName(self, 'portal_workflow')
-        self.reindexObject(idxs=["review_state", ])
         rc = getToolByName(self, REFERENCE_CATALOG)
         if 'context_uid' in self.REQUEST:
             wsUID = self.REQUEST['context_uid']
@@ -656,12 +653,12 @@ class ReferenceAnalysis(BaseContent):
                 else:
                     self.REQUEST["workflow_skiplist"].append('retract all analyses')
                 workflow.doActionFor(ws, 'retract')
+        self.reindexObject()
 
     def workflow_script_unassign(self):
         if skip(self, "unassign"):
             return
         workflow = getToolByName(self, 'portal_workflow')
-        self.reindexObject(idxs=["review_state", ])
         rc = getToolByName(self, REFERENCE_CATALOG)
         wsUID = self.REQUEST['context_uid']
         ws = rc.lookupObject(wsUID)
@@ -716,6 +713,7 @@ class ReferenceAnalysis(BaseContent):
             if workflow.getInfoFor(ws, 'review_state') != 'open':
                 workflow.doActionFor(ws, 'retract')
                 skip(ws, 'retract', unskip=True)
+        self.reindexObject()
 
 
 registerType(ReferenceAnalysis, PROJECTNAME)
