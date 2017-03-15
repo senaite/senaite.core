@@ -79,25 +79,25 @@ class AggregatedAnalysesView(AnalysesView):
                          'state_title',
                          ]
              },
-             {'id': 'to_be_verified',
-              'title':  _('To be verified'),
-              'transitions': [{'id': 'verify'},
-                              {'id': 'cancel'}
-                              ],
-              'contentFilter': {'review_state': [
+            {'id': 'to_be_verified',
+             'title':  _('To be verified'),
+             'transitions': [{'id': 'verify'},
+                             {'id': 'cancel'}
+                             ],
+             'contentFilter': {'review_state': [
                  'to_be_verified']},
-              'columns': ['AnalysisRequest',
-                          'Worksheet',
-                          'Service',
-                          'Result',
-                          'Uncertainty',
-                          'Partition',
-                          'Method',
-                          'Instrument',
-                          'Analyst',
-                          'state_title',
-                          ]
-              },
+             'columns': ['AnalysisRequest',
+                         'Worksheet',
+                         'Service',
+                         'Result',
+                         'Uncertainty',
+                         'Partition',
+                         'Method',
+                         'Instrument',
+                         'Analyst',
+                         'state_title',
+                         ]
+             },
         ]
 
     def getPOSTAction(self):
