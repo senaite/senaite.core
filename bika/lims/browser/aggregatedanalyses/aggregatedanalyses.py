@@ -32,10 +32,7 @@ class AggregatedAnalysesView(AnalysesView):
     """
 
     def __init__(self, context, request, **kwargs):
-        super(AggregatedAnalysesView, self).__init__(context,
-                                           request,
-                                           show_categories=False,
-                                           expand_all_categories=False)
+        super(AggregatedAnalysesView, self).__init__(context, request)
         self.title = _("Analyses pending")
         self.show_select_all_checkbox = False
         self.show_categories = False
