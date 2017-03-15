@@ -92,7 +92,7 @@ class AnalysesView(BikaListingView):
             'Partition': {
                 'title': _("Partition"),
                 'attr': 'getSamplePartitionID',
-                'sortable':False},
+                'sortable': False},
             'Method': {
                 'title': _('Method'),
                 'sortable': False,
@@ -184,8 +184,7 @@ class AnalysesView(BikaListingView):
         :returns: The result specifications that apply to the Analysis.
         :rtype: dict
         """
-        # Is it a brain?
-        if hasattr(analysis, 'getObject'):
+        if ICatalogBrain.providedBy(analysis):
             # It is a brain
             if analysis.getResultsRangeNoSpecs and not\
                     isinstance(analysis.getResultsRangeNoSpecs, list):
@@ -204,6 +203,7 @@ class AnalysesView(BikaListingView):
                 'keyword': keyword, 'uid': uid, 'min': '',
                 'max': '', 'error': ''}
         else:
+            # It is an object
             if hasattr(analysis, 'getResultsRange'):
                 return analysis.getResultsRange()
             if hasattr(analysis.aq_parent, 'getResultsRange'):
