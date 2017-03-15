@@ -27,21 +27,10 @@ class Sticker(BrowserView):
 
     def __call__(self):
         self.rendered_items = []
-        # Trying to find a catalog for given content type.
-        content_type = self.request.get('ctype', '')
-        catalog = None
-        if content_type:
-            archetype_tool = getToolByName(self.context, 'archetype_tool')
-            catalogs_list = archetype_tool.catalog_map.get(content_type, [])
-            if len(catalogs_list) > 0:
-                catalog_id = catalogs_list[0]
-                catalog = getToolByName(self.context, catalog_id)
-        # Just in case, if no catalog found, use bika_catalog
-        if not catalog:
-            catalog = getToolByName(self.context, 'bika_catalog')
+        catalog = getToolByName(self.context, 'uid_catalog')
         items = self.request.get('items', '')
         if items:
-            self.items = [o.getObject() for o in catalog(id=items.split(","))]
+            self.items = [o.getObject() for o in catalog(UID=items.split(","))]
         else:
             self.items = [self.context, ]
 

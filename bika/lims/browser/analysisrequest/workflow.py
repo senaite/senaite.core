@@ -255,12 +255,10 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 else self._get_selected_items().values()
         trans, dest = self.submitTransition(action, came_from, items)
         if trans and 'receive' in self.context.bika_setup.getAutoPrintStickers():
-            transitioned = [item.id for item in items]
+            transitioned = [item.UID() for item in items]
             tmpl = self.context.bika_setup.getAutoStickerTemplate()
             q = "/sticker?autoprint=1&template=%s&items=" % tmpl
             q += ",".join(transitioned)
-            if items[0]:
-                q += "&ctype=%s" % items[0].portal_type
             self.request.response.redirect(self.context.absolute_url() + q)
         elif trans:
             message = PMF('Changes saved.')

@@ -207,7 +207,6 @@ class WorkflowAction:
         dest = None
         transitioned = []
         workflow = getToolByName(self.context, 'portal_workflow')
-        content_type = None
         # transition selected items from the bika_listing/Table.
         for item in items:
             # the only actions allowed on inactive/cancelled
@@ -239,17 +238,15 @@ class WorkflowAction:
                     else:
                         success, message = doActionFor(item, action)
                     if success:
-                        transitioned.append(item.id)
-                        content_type = item.portal_type
+                        transitioned.append(item.UID())
                     else:
                         self.context.plone_utils.addPortalMessage(message, 'error')
         # automatic label printing
         if transitioned and action == 'receive' \
             and 'receive' in self.portal.bika_setup.getAutoPrintStickers():
             q = "/sticker?template=%s&items=" % (self.portal.bika_setup.getAutoStickerTemplate())
-            # selected_items is a list of UIDs (stickers for AR_add use IDs)
+            # selected_items is a list of UIDs
             q += ",".join(transitioned)
-            q += "&ctype=%s" % content_type
             dest = self.context.absolute_url() + q
 
         return len(transitioned), dest
