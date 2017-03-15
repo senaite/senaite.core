@@ -237,15 +237,26 @@ class AnalysesView(BikaListingView):
         # By default, not out of range
         return False
 
+    from bika.lims import deprecated
+    @deprecated(comment="bika.lims.browser.analyses.getAnalysisSpecsStr is \
+                deprecated and will be removed in Bika LIMS 3.3")
     def getAnalysisSpecsStr(self, spec):
-        specstr = ''
+        """
+        Generates a string representation of the specifications passed in. If
+        neither min nor max values found, returns an empty string
+
+        :param spec: specifications dict, with 'min' and 'max' keys
+        :type spec: dict
+        :returns: a string representation of the passed in specs
+        :rtype: string
+        """
         if spec['min'] and spec['max']:
-            specstr = '%s - %s' % (spec['min'], spec['max'])
-        elif spec['min']:
-            specstr = '> %s' % spec['min']
-        elif spec['max']:
-            specstr = '< %s' % spec['max']
-        return specstr
+            return '%s - %s' % (spec['min'], spec['max'])
+        if spec['min']:
+            return '> %s' % spec['min']
+        if spec['max']:
+            return '< %s' % spec['max']
+        return ''
 
     def get_methods_vocabulary(self, analysis=None):
         """
