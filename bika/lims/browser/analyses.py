@@ -223,13 +223,19 @@ class AnalysesView(BikaListingView):
         We scan IResultOutOfRange adapters, and return True if any IAnalysis
         adapters trigger a result.
         """
-        adapters = getAdapters((analysis, ), IResultOutOfRange)
         spec = self.get_analysis_spec(analysis)
+        # The function get_analysis_spec ALWAYS return a dict. If no specs
+        # are found for the analysis, returns a dict with empty values for
+        # min and max keys.
+        if not spec or (not spec.get('min') and not spec.get('max')):
+            return False
+        # The analysis has specs defined, evaluate if is out of range
+        adapters = getAdapters((analysis, ), IResultOutOfRange)
         for name, adapter in adapters:
-            if not spec:
-                return False
             if adapter(specification=spec):
                 return True
+        # By default, not out of range
+        return False
 
     def getAnalysisSpecsStr(self, spec):
         specstr = ''
