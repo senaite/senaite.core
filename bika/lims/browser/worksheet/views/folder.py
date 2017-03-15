@@ -275,8 +275,9 @@ class FolderView(BikaListingView):
 
         # Call the folderitem method from the base class
         item = BikaListingView.folderitem(self, obj, item, index)
-        item['CreationDate'] = self.ulocalized_time(obj.created())
-        item['Analyst'] = user_fullname(obj.getAnalyst)
+        created_date = obj.created()
+        item['CreationDate'] = self.ulocalized_time(created_date)
+        item['Analyst'] = user_fullname(self.context, obj.getAnalyst)
 
         if len(obj.getAnalysesUIDs) == 0:
             item['table_row_class'] = 'state-empty-worksheet'

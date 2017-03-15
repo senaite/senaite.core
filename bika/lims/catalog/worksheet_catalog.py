@@ -23,9 +23,11 @@ bika_catalog_worksheet_listing_definition = {
             # Necessary to avoid reindexing whole catalog when we need to
             # reindex only one object. ExtendedPathIndex also could be used.
             'path': 'PathIndex',
+            # created returns a DataTime object
             'created': 'DateIndex',
             'portal_type': 'FieldIndex',
             'UID': 'FieldIndex',
+            # created returns a string object with date format
             'CreationDate': 'DateIndex',
             'getPriority': 'FieldIndex',
             'getAnalyst': 'FieldIndex',
