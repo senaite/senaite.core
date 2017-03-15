@@ -255,7 +255,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 else self._get_selected_items().values()
         trans, dest = self.submitTransition(action, came_from, items)
         if trans and 'receive' in self.context.bika_setup.getAutoPrintStickers():
-            transitioned = [item.id for item in items]
+            transitioned = [item.UID() for item in items]
             tmpl = self.context.bika_setup.getAutoStickerTemplate()
             q = "/sticker?autoprint=1&template=%s&items=" % tmpl
             q += ",".join(transitioned)
