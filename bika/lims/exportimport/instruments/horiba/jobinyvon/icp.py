@@ -109,7 +109,7 @@ class Importer:
     def get_id_search_criteria(self):
         sample = self.request.form.get('sample', 'requestid')
         if sample == 'requestid':
-            sam = ['getRequestID']
+            sam = ['getId']
         if sample == 'sampleid':
             sam = ['getSampleID']
         elif sample == 'clientsid':
@@ -117,7 +117,7 @@ class Importer:
         elif sample == 'sample_clientsid':
             sam = ['getSampleID', 'getClientSampleID']
         else:
-            sam = ['getRequestID', 'getSampleID', 'getClientSampleID']
+            sam = ['getId', 'getSampleID', 'getClientSampleID']
         return sam
 
 

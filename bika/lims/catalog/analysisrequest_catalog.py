@@ -28,22 +28,26 @@ bika_catalog_analysisrequest_listing_definition = {
             'Creator': 'FieldIndex',
             # TODO: Can be removed? Same as id
             'sortable_title': 'FieldIndex',
-            'review_state': 'FieldIndex',
-            'cancellation_state': 'FieldIndex',
             # TODO-catalog: can be removed?
             'portal_type': 'FieldIndex',
             'UID': 'FieldIndex',
-            'getBatchUID': 'FieldIndex',
             'getClientUID': 'FieldIndex',
             'getSampleUID': 'FieldIndex',
-            'getDepartmentUID': 'KeywordIndex',
+            # Index that should be reindexed after some object modifications
+            'review_state': 'FieldIndex',
+            'cancellation_state': 'FieldIndex',
+            'getBatchUID': 'FieldIndex',
             'getDateSampled': 'DateIndex',
             'getSamplingDate': 'DateIndex',
-            'getSampler': 'FieldIndex',
             'getDateReceived': 'DateIndex',
-            'getReceivedBy': 'FieldIndex',
             'getDateVerified': 'DateIndex',
-            'getDatePublished': 'DateIndex'
+            'getDatePublished': 'DateIndex',
+            'getSampler': 'FieldIndex',
+            'getReceivedBy': 'FieldIndex',
+            'getDepartmentUIDs': 'KeywordIndex',
+            'getPrinted': 'FieldIndex',
+            'getClientSampleID': 'FieldIndex',
+            'getSampleID': 'FieldIndex',
         },
         'columns': [
             'UID',
@@ -102,12 +106,12 @@ bika_catalog_analysisrequest_listing_definition = {
             'getAnalysesNum',
             'getPrinted',
             'getSamplingDeviationTitle',
+            # TODO: This should be updated through a clock
             'getLate',
             'getInvoiceExclude',
             'getHazardous',
             'getSamplingWorkflowEnabled',
             'getDepartmentUIDs',
-
         ]
     }
 }
