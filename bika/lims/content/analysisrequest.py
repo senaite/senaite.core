@@ -1415,6 +1415,7 @@ schema = BikaSchema.copy() + Schema((
             },
         ),
     ),
+    # TODO-catalog: move all these computed fields to methods
     ComputedField(
         'ClientUID',
         expression='here.aq_parent.UID()',
@@ -1515,7 +1516,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField(
         'SampleURL',
-        expression="here.getSample().absolute_url() if here.getSample() else ''",
+        expression="here.getSample().absolute_url_path() if here.getSample() else ''",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
@@ -1540,7 +1541,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField(
         'BatchURL',
-        expression="here.getBatch().getId() if here.getBatch() else ''",
+        expression="here.getBatch().absolute_url_path() if here.getBatch() else ''",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
@@ -1555,7 +1556,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField(
         'ClientURL',
-        expression="here.getClient().absolute_url() if here.getClient() else ''",
+        expression="here.getClient().absolute_url_path() if here.getClient() else ''",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
@@ -1590,7 +1591,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField(
         'ProfilesURL',
-        expression="[p.absolute_url() for p in here.getProfiles()] if here.getProfiles() else []",
+        expression="[p.absolute_url_path() for p in here.getProfiles()] if here.getProfiles() else []",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
@@ -1610,12 +1611,7 @@ schema = BikaSchema.copy() + Schema((
     ),
     ComputedField(
         'TemplateURL',
-        expression="here.getTemplate().absolute_url() if here.getTemplate() else ''",
-        widget=ComputedWidget(visible=False),
-    ),
-    ComputedField(
-        'TemplateURL',
-        expression="here.getTemplate().absolute_url() if here.getTemplate() else ''",
+        expression="here.getTemplate().absolute_url_path() if here.getTemplate() else ''",
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
@@ -2787,7 +2783,7 @@ class AnalysisRequest(BaseFolder):
         """
         contact = self.getContact()
         if contact:
-            return contact.absolute_url()
+            return contact.absolute_url_path()
         else:
             return ''
 
