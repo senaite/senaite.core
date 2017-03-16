@@ -8,6 +8,7 @@
 from plone import api
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
+from bika.lims import deprecated
 from bika.lims.utils import t, dicts_to_dict, format_supsub
 from bika.lims.utils.analysis import format_uncertainty
 from bika.lims.browser import BrowserView
@@ -237,9 +238,7 @@ class AnalysesView(BikaListingView):
         # By default, not out of range
         return False
 
-    from bika.lims import deprecated
-    @deprecated(comment="bika.lims.browser.analyses.getAnalysisSpecsStr is \
-                deprecated and will be removed in Bika LIMS 3.3")
+    @deprecated('Flagged in 17.03')
     def getAnalysisSpecsStr(self, spec):
         """
         Generates a string representation of the specifications passed in. If
