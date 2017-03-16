@@ -1063,7 +1063,7 @@ class QCAnalysesView(AnalysesView):
         wsid = wss[0].id if wss and len(wss) > 0 else ''
         wshref = wss[0].absolute_url() if wss and len(wss) > 0 else None
         if wshref:
-            items[i]['replace']['Worksheet'] = "<a href='%s'>%s</a>" % (wshref, wsid)
+            item['replace']['Worksheet'] = "<a href='%s'>%s</a>" % (wshref, wsid)
 
         imgtype = ""
         if obj.portal_type == 'ReferenceAnalysis':
@@ -1072,11 +1072,11 @@ class QCAnalysesView(AnalysesView):
                 imgtype = "<img title='%s' src='%s/++resource++bika.lims.images/control.png'/>&nbsp;" % (antype, self.context.absolute_url())
             if obj.getReferenceType() == 'b':
                 imgtype = "<img title='%s' src='%s/++resource++bika.lims.images/blank.png'/>&nbsp;" % (antype, self.context.absolute_url())
-            items[i]['replace']['Partition'] = "<a href='%s'>%s</a>" % (obj.aq_parent.absolute_url(), obj.aq_parent.id)
+            item['replace']['Partition'] = "<a href='%s'>%s</a>" % (obj.aq_parent.absolute_url(), obj.aq_parent.id)
         elif obj.portal_type == 'DuplicateAnalysis':
             antype = QCANALYSIS_TYPES.getValue('d')
             imgtype = "<img title='%s' src='%s/++resource++bika.lims.images/duplicate.png'/>&nbsp;" % (antype, self.context.absolute_url())
-            items[i]['sortcode'] = '%s_%s' % (obj.getSample().id, obj.getService().getKeyword())
+            item['sortcode'] = '%s_%s' % (obj.getSample().id, obj.getService().getKeyword())
 
         item['before']['Service'] = imgtype
         item['sortcode'] = '%s_%s' % (obj.getReferenceAnalysesGroupID(),
