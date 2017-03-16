@@ -147,4 +147,5 @@ class BikaAnalysisCatalog(BikaCatalogTool):
                                  'Bika Analysis Catalog',
                                  'BikaAnalysisCatalog')
 
+
 InitializeClass(BikaAnalysisCatalog)

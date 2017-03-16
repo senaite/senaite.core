@@ -409,7 +409,7 @@ class Analysis(BaseContent):
         """
         This is  a column
         """
-        return self.aq_parent.absolute_url()
+        return self.aq_parent.absolute_url_path()
 
     # TODO-performance: improve this function using another catalog and takeing
     # advantatge of the column in service, not getting the full object.
@@ -1445,7 +1445,7 @@ class Analysis(BaseContent):
         This works as a metacolumn
         This function returns the analysis' parent URL
         """
-        return self.aq_parent.absolute_url()
+        return self.aq_parent.absolute_url_path()
 
     def getClientTitle(self):
         """
@@ -1457,7 +1457,7 @@ class Analysis(BaseContent):
         """
         This works as a column
         """
-        return self.aq_parent.aq_parent.absolute_url()
+        return self.aq_parent.aq_parent.absolute_url_path()
 
     def getUnit(self):
         """
@@ -1486,7 +1486,7 @@ class Analysis(BaseContent):
         """
         method = self.getMethod()
         if method:
-            return method.absolute_url()
+            return method.absolute_url_path()
         else:
             return ''
 
@@ -1539,7 +1539,7 @@ class Analysis(BaseContent):
             return None
         ins = service.getInstrument()
         if ins:
-            return ins.absolute_url()
+            return ins.absolute_url_path()
         else:
             return ''
 

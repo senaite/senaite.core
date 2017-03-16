@@ -497,7 +497,7 @@ class AnalysesView(BikaListingView):
 
             # if there isn't a calculation then result must be re-testable,
             # and if there are interim fields, they too must be re-testable.
-            if not item['calculation'] or \
+            if not item.get('calculation') or \
                (item['calculation'] and self.interim_fields[obj.UID]):
                 item['allow_edit'].append('retested')
 
