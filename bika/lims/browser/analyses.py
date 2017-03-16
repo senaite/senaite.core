@@ -203,21 +203,21 @@ class AnalysesView(BikaListingView):
             return {
                 'keyword': keyword, 'uid': uid, 'min': '',
                 'max': '', 'error': ''}
-        else:
-            # It is an object
-            if hasattr(analysis, 'getResultsRange'):
-                return analysis.getResultsRange()
-            if hasattr(analysis.aq_parent, 'getResultsRange'):
-                rr = dicts_to_dict(analysis.aq_parent.getResultsRange(), 'keyword')
-                return rr.get(analysis.getKeyword(), None)
-            if hasattr(analysis.aq_parent, 'getReferenceResults'):
-                rr = dicts_to_dict(analysis.aq_parent.getReferenceResults(), 'uid')
-                return rr.get(analysis.UID(), None)
-            keyword = analysis.getService().getKeyword()
-            uid = analysis.UID()
-            return {
-                'keyword': keyword, 'uid': uid, 'min': '',
-                'max': '', 'error': ''}
+
+        # It is an object
+        if hasattr(analysis, 'getResultsRange'):
+            return analysis.getResultsRange()
+        if hasattr(analysis.aq_parent, 'getResultsRange'):
+            rr = dicts_to_dict(analysis.aq_parent.getResultsRange(), 'keyword')
+            return rr.get(analysis.getKeyword(), None)
+        if hasattr(analysis.aq_parent, 'getReferenceResults'):
+            rr = dicts_to_dict(analysis.aq_parent.getReferenceResults(), 'uid')
+            return rr.get(analysis.UID(), None)
+        keyword = analysis.getService().getKeyword()
+        uid = analysis.UID()
+        return {
+            'keyword': keyword, 'uid': uid, 'min': '',
+            'max': '', 'error': ''}
 
     def ResultOutOfRange(self, analysis):
         """ Template wants to know, is this analysis out of range?
