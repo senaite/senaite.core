@@ -185,7 +185,7 @@ function AnalysisRequestAddByCol() {
         $("#singleservice").parents("[uid]").attr("uid", "new")
         $("#singleservice").parents("[keyword]").attr("keyword", "")
         $("#singleservice").parents("[title]").attr("title", "")
-        $("input[type='checkbox']").removeAttr("checked")
+        $("input[type='checkbox']").not("[name^='chb_deps_']").removeAttr("checked")
         $(".min,.max,.error").val("")
 
         // filter fields based on the selected Client
@@ -2598,7 +2598,7 @@ function AnalysisRequestAddByCol() {
                             var destination = window.location.href.split("/portal_factory")[0]
                             var ars = data['stickers']
                             var stickertemplate = data['stickertemplate']
-                            var q = "/sticker?autoprint=1&template=" + stickertemplate + "&items=" + ars.join(",")
+                            var q = "/sticker?autoprint=1&template=" + stickertemplate + "&items=" + ars.join(",") + ''
                             window.location.replace(destination + q)
                         }
                         else {

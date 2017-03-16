@@ -27,12 +27,12 @@ class Sticker(BrowserView):
 
     def __call__(self):
         self.rendered_items = []
-        bc = getToolByName(self.context, 'bika_catalog')
         items = self.request.get('items', '')
         if items:
-            self.items = [o.getObject() for o in bc(id=items.split(","))]
+            catalog = getToolByName(self.context, 'uid_catalog')
+            self.items = [o.getObject() for o in catalog(UID=items.split(","))]
         else:
-            self.items = [self.context,]
+            self.items = [self.context, ]
 
         new_items = []
         for i in self.items:

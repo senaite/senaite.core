@@ -147,8 +147,10 @@ class AnalysisServicesView(ASV):
             # The parent folder can be a client or a batch, but we need the
             # client.  It is possible that this will be None!  This happens
             # when the AR is inside a batch, and the batch has no Client set.
-            client = self.context.aq_parent if self.context.aq_parent.portal_type == 'Client'\
-                else self.context.aq_parent.getClient()
+            client = ''
+            if not self.context.aq_parent.portal_type == "AnalysisRequestsFolder":
+                client = self.context.aq_parent if self.context.aq_parent.portal_type == 'Client'\
+                    else self.context.aq_parent.getClient()
             items = super(AnalysisServicesView, self).folderitems()
             for x, item in enumerate(items):
                 if 'obj' not in items[x]:
@@ -454,6 +456,7 @@ class ajaxAnalysisRequestSubmit():
 
         # Now, we will create the specified ARs.
         ARs = []
+        new_ar_uids = []
         for arnum, state in valid_states.items():
             # Create the Analysis Request
             ar = crar(
@@ -462,6 +465,10 @@ class ajaxAnalysisRequestSubmit():
                 state
             )
             ARs.append(ar.Title())
+            # Automatic label printing won't print "register" labels for
+            # Secondary ARs
+            if ar.Title()[-2:] == '01':
+                new_ar_uids.append(ar.UID())
 
         # Display the appropriate message after creation
         if len(ARs) > 1:
@@ -471,13 +478,12 @@ class ajaxAnalysisRequestSubmit():
             message = _('Analysis request ${AR} was successfully created.',
                         mapping={'AR': safe_unicode(ARs[0])})
         self.context.plone_utils.addPortalMessage(message, 'info')
-        # Automatic label printing won't print "register" labels for Secondary. ARs
-        new_ars = [ar for ar in ARs if ar[-2:] == '01']
-        if 'register' in self.context.bika_setup.getAutoPrintStickers() \
-                and new_ars:
+
+        if new_ar_uids and 'register'\
+                in self.context.bika_setup.getAutoPrintStickers():
             return json.dumps({
                 'success': message,
-                'stickers': new_ars,
+                'stickers': new_ar_uids,
                 'stickertemplate': self.context.bika_setup.getAutoStickerTemplate()
             })
         else:

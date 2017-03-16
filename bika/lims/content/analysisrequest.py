@@ -230,6 +230,13 @@ schema = BikaSchema.copy() + Schema((
             },
             base_query={'inactive_state': 'active'},
             showOn=True,
+            add_button={
+                    'visible': True,
+                    'url': 'clients/createObject?type_name=Client',
+                    'return_fields': ['Title'],
+                    'js_controllers': ['#client-base-edit'],
+                    'overlay_handler': 'ClientOverlayHandler',
+                }
         ),
     ),
     ReferenceField(
