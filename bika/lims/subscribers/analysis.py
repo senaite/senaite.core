@@ -51,6 +51,7 @@ def ObjectInitializedEventHandler(instance, event):
         ar.REQUEST['workflow_skiplist'].remove("retract all analyses")
 
     if ar_ws_state == 'assigned':
+        # TODO workflow: analysis request can be 'assigned'?
         wf_tool.doActionFor(ar, 'unassign')
         skip(ar, 'unassign', unskip=True)
 

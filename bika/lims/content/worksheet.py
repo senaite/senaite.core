@@ -235,11 +235,14 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if analysis in Analyses:
             Analyses.remove(analysis)
             self.setAnalyses(Analyses)
-        layout = [slot for slot in self.getLayout() if slot['analysis_uid'] != analysis.UID()]
+            analysis.reindexObject()
+        layout = [
+            slot for slot in self.getLayout()
+            if slot['analysis_uid'] != analysis.UID()]
         self.setLayout(layout)
 
         if analysis.portal_type == "DuplicateAnalysis":
-            self._delObject(analysis.id)
+            self.manage_delObjects(ids=[analysis.id])
         # Reindex the worksheet in order to update its columns
         self.reindexObject()
 

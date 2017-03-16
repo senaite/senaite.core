@@ -32,7 +32,9 @@ bika_catalog_worksheet_listing_definition = {
             'getPriority': 'FieldIndex',
             'getAnalyst': 'FieldIndex',
             'getWorksheetTemplate': 'FieldIndex',
-
+            # allowedRolesAndUsers is obligatory if we are going to run
+            # advancedqueries in this catalog.
+            'allowedRolesAndUsers': 'KeywordIndex',
         },
         'columns': [
             'UID',
@@ -40,6 +42,9 @@ bika_catalog_worksheet_listing_definition = {
             'Title',
             'review_state',
             'state_title',
+            # allowedRolesAndUsers is obligatory if we are going to run
+            # advancedqueries in this catalog.
+            'allowedRolesAndUsers',
             'getAnalyst',
             'getDepartmentUIDs',
             'getWorksheetTemplateUID',

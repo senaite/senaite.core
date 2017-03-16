@@ -277,8 +277,6 @@ class FolderView(BikaListingView):
         item = BikaListingView.folderitem(self, obj, item, index)
         created_date = obj.created()
         item['CreationDate'] = self.ulocalized_time(created_date)
-        item['Analyst'] = user_fullname(self.context, obj.getAnalyst)
-
         if len(obj.getAnalysesUIDs) == 0:
             item['table_row_class'] = 'state-empty-worksheet'
 
@@ -311,10 +309,13 @@ class FolderView(BikaListingView):
             and self.allow_edit \
             and not self.restrict_results \
                 and self.can_manage:
+            item['Analyst'] = obj.getAnalyst
             item['allow_edit'] = ['Analyst', ]
             item['required'] = ['Analyst', ]
             item['choices'] = {'Analyst': self.analyst_choices}
             self.can_reassign = True
+        else:
+            item['Analyst'] = user_fullname(self.context, obj.getAnalyst)
 
         return item
 

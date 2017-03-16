@@ -196,7 +196,7 @@ class AnalysesView(BaseView):
                     rowspan += 1
             items[x]['rowspan'] = {'Pos': rowspan}
             # TODO-performance: getting the object here...
-            obj = item['obj'].getObject()
+            obj = items[x]['obj'].getObject()
             # fill the rowspan with a little table
             # parent is either an AR, a Worksheet, or a
             # ReferenceSample (analysis parent).
