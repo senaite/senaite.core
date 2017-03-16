@@ -281,9 +281,7 @@ class AnalysesView(BikaListingView):
         if analysis:
             # This function returns  a list of tuples as [(UID,Title),(),...]
             methods = analysis.getAllowedMethodsAsTuples
-            if not methods:
-                ret.append({'ResultValue': '',
-                            'ResultText': _('None')})
+            methods = methods if methods else []
             for uid, title in methods:
                 ret.append({'ResultValue': uid,
                             'ResultText': title})
@@ -293,6 +291,9 @@ class AnalysesView(BikaListingView):
             for brain in brains:
                 ret.append({'ResultValue': brain.UID,
                             'ResultText': brain.title})
+        if not ret:
+            ret = [{'ResultValue': '',
+                    'ResultText': _('None')}]
         return ret
 
     def get_instruments_vocabulary(self, analysis = None):
