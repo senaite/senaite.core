@@ -121,6 +121,7 @@ class Report(BrowserView):
 
         if self.request.get('output_format', '') == 'CSV':
             fieldnames = [
+                _('Request ID'),
                 _('Date'),
                 _('Sample type'),
                 _('Storage location'),
@@ -133,11 +134,12 @@ class Report(BrowserView):
             dw.writerow(dict((fn, fn) for fn in fieldnames))
             for row in datalines:
                 dw.writerow({
-                    'Date': row[0]['value'],
-                    'Sample type': row[1]['value'],
-                    'Storage location': row[2]['value'],
-                    'Analysis': row[3]['value'],
-                    'Result': row[4]['value'],
+                    'Request ID': row[0]['value'],
+                    'Date': row[1]['value'],
+                    'Sample type': row[2]['value'],
+                    'Storage location': row[3]['value'],
+                    'Analysis': row[4]['value'],
+                    'Result': row[5]['value'],
                 })
             report_data = output.getvalue()
             output.close()
