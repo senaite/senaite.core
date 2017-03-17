@@ -133,8 +133,11 @@ class Report(BrowserView):
             dw.writerow(dict((fn, fn) for fn in fieldnames))
             for row in datalines:
                 dw.writerow({
-                    'Sample Type': row[0]['value'],
-                    'Analyses': row[1]['value'],
+                    'Date': row[0]['value'],
+                    'Sample type': row[1]['value'],
+                    'Storage location': row[2]['value'],
+                    'Analysis': row[3]['value'],
+                    'Result': row[4]['value'],
                 })
             report_data = output.getvalue()
             output.close()
