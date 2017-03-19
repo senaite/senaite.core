@@ -372,6 +372,7 @@ class AnalysesView(BikaListingView):
         stored in a cookie).
         If department filtering is disabled in bika_setup, returns True.
         If the obj is None or empty, returns False.
+        If the obj has no department assigned, returns True
 
         :param obj: A single Analysis brain or content object
         :type obj: ATContentType/CatalogBrain
