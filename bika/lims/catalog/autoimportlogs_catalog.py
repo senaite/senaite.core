@@ -22,6 +22,7 @@ bika_catalog_autoimportlogs_listing_definition = {
             # reindex only one object. ExtendedPathIndex also could be used.
             'path': 'PathIndex',
             'created': 'DateIndex',
+            'allowedRolesAndUsers': 'KeywordIndex',
             'portal_type': 'FieldIndex',
             'UID': 'FieldIndex',
             'getInstrumentUID': 'FieldIndex'
@@ -31,6 +32,7 @@ bika_catalog_autoimportlogs_listing_definition = {
             'getId',
             'Title',
             'created',
+            'allowedRolesAndUsers',
             'review_state',
             'getObjectWorkflowStates',
             'getInstrumentUrl',

@@ -24,6 +24,7 @@ bika_catalog_analysisrequest_listing_definition = {
             # Necessary to avoid reindexing whole catalog when we need to
             # reindex only one object. ExtendedPathIndex also could be used.
             'path': 'PathIndex',
+            'allowedRolesAndUsers': 'KeywordIndex',
             'created': 'DateIndex',
             'Creator': 'FieldIndex',
             # TODO: Can be removed? Same as id
@@ -55,6 +56,7 @@ bika_catalog_analysisrequest_listing_definition = {
             'Title',
             'created',
             'Creator',
+            'allowedRolesAndUsers',
             'getCreatorFullName',
             'getCreatorEmail',
             'review_state',
