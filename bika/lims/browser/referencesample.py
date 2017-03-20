@@ -149,19 +149,19 @@ class ReferenceAnalysesView(AnalysesView):
         allowed = super(ReferenceAnalysesView, self).isItemAllowed(obj)
         return allowed if not allowed else obj.getResult != ''
 
-    # TODO-performance: We are getting the object here...
     def folderitem(self, obj, item, index):
         """
         :obj: it is a brain
         """
-        obj = obj.getObject()
         item = super(ReferenceAnalysesView, self).folderitem(obj, item, index)
         if not item:
             return None
-        service = obj.getService()
-        item['Category'] = service.getCategoryTitle()
-        wss = obj.getBackReferences("WorksheetAnalysis")
+        item['Category'] = obj.getCategoryTitle
+        wss = self.rc.getBackReferences(
+            obj.UID,
+            relationship="WorksheetAnalysis")
         if wss and len(wss) == 1:
+            # TODO-performance: We are getting the object here...
             ws = wss[0].getObject()
             item['Worksheet'] = ws.Title()
             anchor = '<a href="%s">%s</a>' % (ws.absolute_url(), ws.Title())
