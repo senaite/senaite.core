@@ -50,19 +50,24 @@ class AddAnalysesView(BikaListingView):
         self.columns = {
             'Client': {
                 'title': _('Client'),
+                'attr': 'getClientTitle',
+                'replace_url': 'getClientURL',
                 'index':'getClientTitle'},
             'getClientOrderNumber': {
                 'title': _('Order'),
                 'index': 'getClientOrderNumber'},
             'getRequestID': {
                 'title': _('Request ID'),
+                'attr': 'getRequestID',
+                'replace_url': 'getAnalysisRequestURL',
                 'index': 'getRequestID'},
             'Priority': {
                 'title': _('Priority'),
                 'index': 'Priority'},
             'CategoryTitle': {
                 'title': _('Category'),
-                'index':'getCategoryTitle'},
+                'attr': 'getCategoryTitle',
+                'index': 'getCategoryTitle'},
             'Title': {
                 'title': _('Analysis'),
                 'index':'sortable_title'},
@@ -182,7 +187,6 @@ class AddAnalysesView(BikaListingView):
         """
         # Call the folderitem method from the base class
         item = BikaListingView.folderitem(self, obj, item, index)
-        item['getClientOrderNumber'] = obj.getClientOrderNumber
         item['getDateReceived'] = self.ulocalized_time(obj.getDateReceived)
         DueDate = obj.getDueDate
         item['getDueDate'] = self.ulocalized_time(DueDate)
@@ -191,15 +195,9 @@ class AddAnalysesView(BikaListingView):
             ' src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
                 (self.context.absolute_url(),
                  t(_("Late Analysis")))
-        item['CategoryTitle'] = obj.getCategoryTitle
-        item['getRequestID'] = obj.getRequestID
-        item['replace']['getRequestID'] = "<a href='%s'>%s</a>" % \
-            (obj.getAnalysisRequestURL, item['getRequestID'])
         item['Priority'] = ''
-        item['Client'] = obj.getClientTitle
-        if not self.hideclientlink:
-            item['replace']['Client'] = "<a href='%s'>%s</a>" % \
-                (obj.getClientURL, obj.getClientTitle)
+        if self.hideclientlink:
+            del item['replace']['Client']
         return item
 
     def getServices(self):
