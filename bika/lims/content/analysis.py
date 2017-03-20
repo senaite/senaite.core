@@ -705,8 +705,7 @@ class Analysis(BaseContent):
         sample = self.getSample()
         if sample:
             return sample.getSampleType().UID()
-        else:
-            return ''
+        return ''
 
     def getResultOptionsFromService(self):
         """
@@ -1207,8 +1206,7 @@ class Analysis(BaseContent):
             if uncertainty == 0:
                 return 1
             return get_significant_digits(uncertainty)
-        else:
-            return serv.getPrecision(result)
+        return serv.getPrecision(result)
 
     def getAnalyst(self):
         """ Returns the identifier of the assigned analyst. If there is
@@ -1234,8 +1232,7 @@ class Analysis(BaseContent):
         analyst_member = mtool.getMemberById(analyst)
         if analyst_member != None:
             return analyst_member.getProperty('fullname')
-        else:
-            return ''
+        return ''
 
     def setReflexAnalysisOf(self, analysis):
         """ Sets the analysis that has been reflexed in order to create this
@@ -1294,8 +1291,7 @@ class Analysis(BaseContent):
         service = self.getService()
         if service:
             return service.isSelfVerificationEnabled()
-        else:
-            return False
+        return False
 
     def isUserAllowedToVerify(self, member):
         """
@@ -1376,8 +1372,7 @@ class Analysis(BaseContent):
         sample_cond = self.getSample().getSampleCondition()
         if sample_cond:
             return sample_cond.UID()
-        else:
-            return ''
+        return ''
 
     def getAnalysisRequestPrintStatus(self):
         """
@@ -1437,8 +1432,7 @@ class Analysis(BaseContent):
             return worksheet[0].UID()
         elif worksheet:
             return worksheet[0].UID()
-        else:
-            return ''
+        return ''
 
     def getParentURL(self):
         """
@@ -1476,8 +1470,7 @@ class Analysis(BaseContent):
         partition = self.getSamplePartition()
         if partition:
             return partition.getId()
-        else:
-            return ''
+        return ''
 
     def getMethodURL(self):
         """
@@ -1487,8 +1480,7 @@ class Analysis(BaseContent):
         method = self.getMethod()
         if method:
             return method.absolute_url_path()
-        else:
-            return ''
+        return ''
 
     def getMethodTitle(self):
         """
@@ -1498,8 +1490,7 @@ class Analysis(BaseContent):
         method = self.getMethod()
         if method:
             return method.Title()
-        else:
-            return ''
+        return ''
 
     def getServiceDefaultInstrumentUID(self):
         """
@@ -1512,8 +1503,7 @@ class Analysis(BaseContent):
         ins = service.getInstrument()
         if ins:
             return ins.UID()
-        else:
-            return ''
+        return ''
 
     def getServiceDefaultInstrumentTitle(self):
         """
@@ -1526,8 +1516,7 @@ class Analysis(BaseContent):
         ins = service.getInstrument()
         if ins:
             return ins.Title()
-        else:
-            return ''
+        return ''
 
     def getServiceDefaultInstrumentURL(self):
         """
@@ -1540,8 +1529,7 @@ class Analysis(BaseContent):
         ins = service.getInstrument()
         if ins:
             return ins.absolute_url_path()
-        else:
-            return ''
+        return ''
 
     def hasAttachment(self):
         """
