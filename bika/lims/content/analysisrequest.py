@@ -1519,11 +1519,6 @@ schema = BikaSchema.copy() + Schema((
         widget=ComputedWidget(visible=False),
     ),
     ComputedField(
-        'ClientSampleID',
-        expression="here.getSample().getClientSampleID() if here.getSample() else ''",
-        widget=ComputedWidget(visible=False),
-    ),
-    ComputedField(
         'SamplerFullName',
         expression="here._getSamplerFullName()",
         widget=ComputedWidget(visible=False),
