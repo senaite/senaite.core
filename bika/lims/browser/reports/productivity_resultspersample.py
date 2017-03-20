@@ -58,9 +58,11 @@ class Report(BrowserView):
             query[val['contentFilter'][0]] = val['contentFilter'][1]
             parms.append(val['parms'])
 
-        formats = {'columns': 5,
+        formats = {'columns': 8,
                    'col_heads': [
                         _('Request ID'),
+                        _('Client reference'),
+                        _('Client Sample ID'),
                         _('Date'),
                         _('Sample type'),
                         _('Storage location'),
@@ -78,25 +80,36 @@ class Report(BrowserView):
                         dataline = []
                         ars = sample.getAnalysisRequests()
                         ars_ids = ''
+                        # Request ID
                         for ar in ars:
                             ars_ids = ars_ids + ar.getId() + ' '
                         dataitem = {
                             'value': ars_ids}
                         dataline.append(dataitem)
+                        # Client reference
+                        dataline.append({'value':  sample.getClientSampleID()})
+                        # Client Sample ID
+                        dataline.append(
+                            {'value':  sample.getClientReference()})
+                        # Date
                         date = sample.getDateSampled() if\
                             sample.getDateSampled() else\
                             sample.getDateReceived()
                         dataitem = {
                             'value': self.ulocalized_time(date)}
                         dataline.append(dataitem)
+                        # Sample type
                         dataitem = {'value': sample.getSampleType().Title()}
                         dataline.append(dataitem)
+                        # Storage location
                         location = sample.getStorageLocation().Title()\
                             if sample.getStorageLocation() else ''
                         dataitem = {'value': location}
                         dataline.append(dataitem)
+                        # Analysis
                         dataitem = {'value': analysis.Title()}
                         dataline.append(dataitem)
+                        # Result
                         dataitem = {'value': analysis.getFormattedResult()}
                         dataline.append(dataitem)
                         count_all += 1
@@ -122,6 +135,8 @@ class Report(BrowserView):
         if self.request.get('output_format', '') == 'CSV':
             fieldnames = [
                 _('Request ID'),
+                _('Client reference'),
+                _('Client Sample ID'),
                 _('Date'),
                 _('Sample type'),
                 _('Storage location'),
@@ -135,11 +150,13 @@ class Report(BrowserView):
             for row in datalines:
                 dw.writerow({
                     'Request ID': row[0]['value'],
-                    'Date': row[1]['value'],
-                    'Sample type': row[2]['value'],
-                    'Storage location': row[3]['value'],
-                    'Analysis': row[4]['value'],
-                    'Result': row[5]['value'],
+                    'Client reference': row[1]['value'],
+                    'Client sample ID': row[2]['value'],
+                    'Date': row[3]['value'],
+                    'Sample type': row[4]['value'],
+                    'Storage location': row[5]['value'],
+                    'Analysis': row[6]['value'],
+                    'Result': row[7]['value'],
                 })
             report_data = output.getvalue()
             output.close()
