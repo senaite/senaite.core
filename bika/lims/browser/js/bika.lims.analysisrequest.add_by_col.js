@@ -2598,7 +2598,7 @@ function AnalysisRequestAddByCol() {
                             var destination = window.location.href.split("/portal_factory")[0]
                             var ars = data['stickers']
                             var stickertemplate = data['stickertemplate']
-                            var q = "/sticker?autoprint=1&template=" + stickertemplate + "&items=" + ars.join(",")
+                            var q = "/sticker?autoprint=1&template=" + stickertemplate + "&items=" + ars.join(",") + ''
                             window.location.replace(destination + q)
                         }
                         else {
