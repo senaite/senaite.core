@@ -706,7 +706,7 @@ class Analysis(BaseContent):
         if sample:
             return sample.getSampleType().UID()
         else:
-            ''
+            return ''
 
     def getResultOptionsFromService(self):
         """
