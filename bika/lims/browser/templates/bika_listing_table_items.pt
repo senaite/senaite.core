@@ -194,8 +194,8 @@ Table cells for each column from in review_state's column list.
     </span>
     <tal:comment replace="nothing"><!-- regular field --></tal:comment>
     <span tal:omit-tag="python:True"
-        tal:condition="python:type(item[column]) != type({}) and
-                        not (column == 'Result' and item.get('calculation'))">
+        tal:condition="python:not isinstance(item[column], dict) and
+                        not (column == 'Result' and 'calculation' in item)">
         <tal:comment replace="nothing"><!-- edit --></tal:comment>
         <input
             type="text" style="font-size: 100%"
@@ -247,7 +247,7 @@ Table cells for each column from in review_state's column list.
     <tal:comment replace="nothing"><!-- calculated result field. --></tal:comment>
     <span tal:omit-tag="python:True"
         tal:condition="python:column == 'Result' and
-                            item.get('calculation')">
+                            'calculation' in item">
         <span
             tal:attributes="
                 field string:formatted_result;
