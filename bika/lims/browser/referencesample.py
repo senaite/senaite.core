@@ -160,12 +160,20 @@ class ReferenceAnalysesView(AnalysesView):
         wss = self.rc.getBackReferences(
             obj.UID,
             relationship="WorksheetAnalysis")
-        if wss and len(wss) == 1:
+        if not wss:
+            logger.warn(
+                'No Worksheet found for ReferenceAnalysis {}'
+                .format(obj.getId))
+        elif wss and len(wss) == 1:
             # TODO-performance: We are getting the object here...
             ws = wss[0].getObject()
             item['Worksheet'] = ws.Title()
             anchor = '<a href="%s">%s</a>' % (ws.absolute_url(), ws.Title())
             item['replace']['Worksheet'] = anchor
+        else:
+            logger.warn(
+                'More than one Worksheet found for ReferenceAnalysis {}'
+                .format(obj.getId))
         self.addToJSON(obj, service, item)
         return item
 
