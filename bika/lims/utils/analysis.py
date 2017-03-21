@@ -96,7 +96,6 @@ def create_analysis(context, service, keyword, interim_fields):
         logger.error(
             'The analysis %s may have been transitioned already' %
             analysis.getId())
-        pass
     # Return the newly created analysis
     return analysis
 
