@@ -305,6 +305,7 @@ class Analysis(BaseContent):
     def getLastVerificator(self):
         return self.getVerificators().split(',')[-1]
 
+    # TODO: This method can be improved, and maybe removed.
     def getServiceUsingQuery(self):
         """
         This function returns the asociated service.
@@ -326,7 +327,7 @@ class Analysis(BaseContent):
             logger.warn("Unable to retrieve the Service for Analysis %s "
                         "via a direct call to getService(). Retrying by using "
                         "getRawService() and querying against uid_catalog."
-                        % self.UID())
+                        % self.getId())
             try:
                 service_uid = self.getRawService()
             except:
@@ -335,7 +336,11 @@ class Analysis(BaseContent):
                              "Service. Try to purge the catalog or try to fix"
                              " it at %s" % (self.UID(), self.absolute_path()))
                 return None
-
+            if not service_uid:
+                logger.warn("Unable to retrieve the Service for Analysis %s "
+                            "via a direct call to getRawService()."
+                            % self.getId())
+                return None
             # We got an UID, query agains the catalog to obtain the Service
             catalog = getToolByName(self, "uid_catalog")
             brain = catalog(UID=service_uid)
