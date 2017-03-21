@@ -62,6 +62,9 @@ _catalogs_definition = {
             'getPrinted': 'FieldIndex',
             'getClientSampleID': 'FieldIndex',
             'getSampleID': 'FieldIndex',
+            # allowedRolesAndUsers is obligatory if we are going to run
+            # advancedqueries in this catalog.
+            'allowedRolesAndUsers': 'KeywordIndex',
         },
         'columns': [
             'UID',
@@ -140,7 +143,10 @@ _catalogs_definition = {
             'created': 'DateIndex',
             'portal_type': 'FieldIndex',
             'UID': 'FieldIndex',
-            'getInstrumentUID': 'FieldIndex'
+            'getInstrumentUID': 'FieldIndex',
+            # allowedRolesAndUsers is obligatory if we are going to run
+            # advancedqueries in this catalog.
+            'allowedRolesAndUsers': 'KeywordIndex',
         },
         'columns': [
             'UID',
