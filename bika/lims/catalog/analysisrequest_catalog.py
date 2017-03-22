@@ -26,6 +26,9 @@ bika_catalog_analysisrequest_listing_definition = {
             'path': 'PathIndex',
             'allowedRolesAndUsers': 'KeywordIndex',
             'created': 'DateIndex',
+            # allowedRolesAndUsers is obligatory if we are going to
+            # run advancedqueries against this catalog.
+            'allowedRolesAndUsers': 'KeywordIndex',
             'Creator': 'FieldIndex',
             # TODO: Can be removed? Same as id
             'sortable_title': 'FieldIndex',
@@ -49,9 +52,8 @@ bika_catalog_analysisrequest_listing_definition = {
             'getPrinted': 'FieldIndex',
             'getClientSampleID': 'FieldIndex',
             'getSampleID': 'FieldIndex',
-            # allowedRolesAndUsers is obligatory if we are going to
-            # run advancedqueries against this catalog.
-            'allowedRolesAndUsers': 'KeywordIndex',
+            # To sort in lists
+            'getClientTitle': 'FieldIndex',
         },
         'columns': [
             'UID',
@@ -132,5 +134,6 @@ class BikaCatalogAnalysisRequestListing(BikaCatalogTool):
         BikaCatalogTool.__init__(self, CATALOG_ANALYSIS_REQUEST_LISTING,
                                  'Bika Catalog Analysis Request Listing',
                                  'BikaCatalogAnalysisRequestListing')
+
 
 InitializeClass(BikaCatalogAnalysisRequestListing)
