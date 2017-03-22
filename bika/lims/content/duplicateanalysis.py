@@ -160,6 +160,12 @@ class DuplicateAnalysis(Analysis):
         if hasattr(analysis_parent, 'getSample'):
             return analysis_parent.getSample()
 
+    def getAnalysisPortalType(self):
+        """
+        It is sued as metacolumn
+        """
+        return self.getAnalysis().portal_type
+
     def workflow_script_submit(self):
         workflow = getToolByName(self, 'portal_workflow')
         self.reindexObject(idxs=["review_state", ])

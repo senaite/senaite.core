@@ -52,20 +52,6 @@ import cgi
 import datetime
 import math
 
-@indexer(IAnalysis)
-def Priority(instance):
-    priority = instance.getPriority()
-    if priority:
-        return priority.getSortKey()
-
-@indexer(IAnalysis)
-def sortable_title_with_sort_key(instance):
-    service = instance.getServiceUsingQuery()
-    if service:
-        sort_key = service.getSortKey()
-        if sort_key:
-            return "{:010.3f}{}".format(sort_key, service.Title())
-        return service.Title()
 
 schema = BikaSchema.copy() + Schema((
     HistoryAwareReferenceField('Service',
@@ -305,6 +291,7 @@ class Analysis(BaseContent):
     def getLastVerificator(self):
         return self.getVerificators().split(',')[-1]
 
+    # TODO: This method can be improved, and maybe removed.
     def getServiceUsingQuery(self):
         """
         This function returns the asociated service.
@@ -326,7 +313,7 @@ class Analysis(BaseContent):
             logger.warn("Unable to retrieve the Service for Analysis %s "
                         "via a direct call to getService(). Retrying by using "
                         "getRawService() and querying against uid_catalog."
-                        % self.UID())
+                        % self.getId())
             try:
                 service_uid = self.getRawService()
             except:
@@ -335,7 +322,11 @@ class Analysis(BaseContent):
                              "Service. Try to purge the catalog or try to fix"
                              " it at %s" % (self.UID(), self.absolute_path()))
                 return None
-
+            if not service_uid:
+                logger.warn("Unable to retrieve the Service for Analysis %s "
+                            "via a direct call to getRawService()."
+                            % self.getId())
+                return None
             # We got an UID, query agains the catalog to obtain the Service
             catalog = getToolByName(self, "uid_catalog")
             brain = catalog(UID=service_uid)
@@ -393,8 +384,9 @@ class Analysis(BaseContent):
         service_uid = self.getRawService()
         catalog = getToolByName(self, "uid_catalog")
         brain = catalog(UID=service_uid)
-        if brain:
-            return brain[0].getObject().getDepartment().UID()
+        if brain and len(brain) == 1:
+            dep = brain[0].getObject().getDepartment()
+            return dep.UID() if dep else ''
         return ''
 
     # TODO-performance: improve this function using another catalog and takeing
@@ -411,6 +403,18 @@ class Analysis(BaseContent):
         if brain:
             return brain[0].getObject().getCategoryTitle()
         return ''
+
+    def getAnalysisRequestTitle(self):
+        """
+        This is  a column
+        """
+        return self.aq_parent.Title()
+
+    def getAnalysisRequestURL(self):
+        """
+        This is  a column
+        """
+        return self.aq_parent.absolute_url_path()
 
     # TODO-performance: improve this function using another catalog and takeing
     # advantatge of the column in service, not getting the full object.
@@ -430,7 +434,10 @@ class Analysis(BaseContent):
         """ Calls self.Service.getUncertainty with either the provided
             result value or self.Result
         """
-        return self.getService().getUncertainty(result and result or self.getResult())
+        service = self.getService()
+        if not service:
+            return None
+        return service.getUncertainty(result and result or self.getResult())
 
     def getUncertainty(self, result=None):
         """ Returns the uncertainty for this analysis and result.
@@ -488,7 +495,10 @@ class Analysis(BaseContent):
                             "detection limit, but not floatable: '%s'. "
                             "Returnig AS's default LDL." %
                             (self.id, result))
-        return self.getService().getLowerDetectionLimit()
+        service = self.getService()
+        if not service:
+            return None
+        return service.getLowerDetectionLimit()
 
     def getUpperDetectionLimit(self):
         """ Returns the Upper Detection Limit (UDL) that applies to
@@ -507,7 +517,10 @@ class Analysis(BaseContent):
                             "detection limit, but not floatable: '%s'. "
                             "Returnig AS's default LDL." %
                             (self.id, result))
-        return self.getService().getUpperDetectionLimit()
+        service = self.getService()
+        if not service:
+            return None
+        return service.getUpperDetectionLimit()
 
     def isBelowLowerDetectionLimit(self):
         """ Returns True if the result is below the Lower Detection
@@ -690,6 +703,26 @@ class Analysis(BaseContent):
             return self.getAnalysis().aq_parent.getSample()
         return self.aq_parent.getSample()
 
+    def getSampleTypeUID(self):
+        """
+        It is a metacolumn
+        """
+        sample = self.getSample()
+        if sample:
+            return sample.getSampleType().UID()
+        return ''
+
+    def getResultOptionsFromService(self):
+        """
+        It is a metacolumn.
+        Returns a list of dictionaries from the field ResultOptions from the
+        analysis service.
+        """
+        service = self.getService()
+        if not service:
+            return None
+        return service.getResultOptions()
+
     def getResultsRange(self, specification=None):
         """ Returns the valid results range for this analysis, a
             dictionary with the following keys: 'keyword', 'uid', 'min',
@@ -720,6 +753,12 @@ class Analysis(BaseContent):
             if rr:
                 rr['uid'] = self.UID()
         return rr
+
+    def getResultsRangeNoSpecs(self, specification=None):
+        """
+        This is used as a metacolumn
+        """
+        return self.getResultsRange()
 
     def getAnalysisSpecs(self, specification=None):
         """ Retrieves the analysis specs to be applied to this analysis.
@@ -908,8 +947,11 @@ class Analysis(BaseContent):
         """ Returns the default instrument for this analysis according
             to its parent analysis service
         """
-        return self.getService().getInstrument() \
-            if self.getService().getInstrumentEntryOfResults() \
+        service = self.getService()
+        if not service:
+            return None
+        return service.getInstrument() \
+            if service.getInstrumentEntryOfResults() \
             else None
 
     def isInstrumentAllowed(self, instrument):
@@ -945,28 +987,68 @@ class Analysis(BaseContent):
         return uid in self.getAllowedMethods()
 
     def getAllowedMethods(self, onlyuids=True):
-        """ Returns the allowed methods for this analysis. If manual
-            entry of results is set, only returns the methods set
-            manually. Otherwise (if Instrument Entry Of Results is set)
-            returns the methods assigned to the instruments allowed for
-            this Analysis
+        """
+        Returns the allowed methods for this analysis. If manual
+        entry of results is set, only returns the methods set
+        manually. Otherwise (if Instrument Entry Of Results is set)
+        returns the methods assigned to the instruments allowed for
+        this Analysis
         """
         service = self.getService()
         uids = []
 
-        if service.getInstrumentEntryOfResults() == True:
+        if service.getInstrumentEntryOfResults():
             uids = [ins.getRawMethod() for ins in service.getInstruments()]
 
         else:
             # Get only the methods set manually
             uids = service.getRawMethods()
 
-        if onlyuids == False:
+        if not onlyuids:
             uc = getToolByName(self, 'uid_catalog')
             meths = [item.getObject() for item in uc(UID=uids)]
             return meths
 
         return uids
+
+    def getAllowedMethodsAsTuples(self):
+        """
+        This works a a metadata column.
+        Returns the allowed methods for this analysis. If manual
+        entry of results is set, only returns the methods set
+        manually. Otherwise (if Instrument Entry Of Results is set)
+        returns the methods assigned to the instruments allowed for
+        this Analysis
+        @return: a list of tuples as [(UID,Title),(),...]
+        """
+        service = self.getService()
+        if not service:
+            return None
+        result = []
+        # manual entry of results is set, only returns the methods set manually
+        if service.getInstrumentEntryOfResults():
+            result = [
+                (ins.getRawMethod(), ins.getMethod().Title()) for ins in
+                service.getInstruments()]
+        # Otherwise (if Instrument Entry Of Results is set)
+        # returns the methods assigned to the instruments allowed for
+        # this Analysis
+        else:
+            # Get only the methods set manually
+            result = [
+                (method.UID(), method.Title()) for
+                method in service.getMethods()]
+        return result
+
+    def getInstrumentEntryOfResults(self):
+        """
+        It is a metacolumn.
+        Returns the same value as the service.
+        """
+        service = self.getService()
+        if not service:
+            return None
+        return service.getInstrumentEntryOfResults()
 
     def getAllowedInstruments(self, onlyuids=True):
         """ Returns the allowed instruments for this analysis. Gets the
@@ -974,7 +1056,8 @@ class Analysis(BaseContent):
         """
         uids = []
         service = self.getService()
-
+        if not service:
+            return None
         if service.getInstrumentEntryOfResults() == True:
             uids = service.getRawInstruments()
 
@@ -1128,8 +1211,7 @@ class Analysis(BaseContent):
             if uncertainty == 0:
                 return 1
             return get_significant_digits(uncertainty)
-        else:
-            return serv.getPrecision(result)
+        return serv.getPrecision(result)
 
     def getAnalyst(self):
         """ Returns the identifier of the assigned analyst. If there is
@@ -1155,8 +1237,7 @@ class Analysis(BaseContent):
         analyst_member = mtool.getMemberById(analyst)
         if analyst_member != None:
             return analyst_member.getProperty('fullname')
-        else:
-            return ''
+        return ''
 
     def setReflexAnalysisOf(self, analysis):
         """ Sets the analysis that has been reflexed in order to create this
@@ -1207,6 +1288,16 @@ class Analysis(BaseContent):
         # All checks passsed
         return True
 
+    def isSelfVerificationEnabled(self):
+        """
+        Checks if the service allows self verification of the analysis.
+        :return: boolean
+        """
+        service = self.getService()
+        if service:
+            return service.isSelfVerificationEnabled()
+        return False
+
     def isUserAllowedToVerify(self, member):
         """
         Checks if the specified user has enough privileges to verify the
@@ -1252,6 +1343,21 @@ class Analysis(BaseContent):
         # All checks pass
         return True
 
+    def getObjectWorkflowStates(self):
+        """
+        This method is used as a metacolumn.
+        Returns a dictionary with the workflow id as key and workflow state as
+        value.
+        :return: {'review_state':'active',...}
+        """
+        workflow = getToolByName(self, 'portal_workflow')
+        states = {}
+        for w in workflow.getWorkflowsFor(self):
+            state = w._getWorkflowStateOf(self).id
+            states[w.state_var] = state
+        return states
+
+    # TODO:This function is doesn't work in the correct way.
     def getAnalysisRequestUID(self):
         """
         This is a column.
@@ -1271,8 +1377,7 @@ class Analysis(BaseContent):
         sample_cond = self.getSample().getSampleCondition()
         if sample_cond:
             return sample_cond.UID()
-        else:
-            return ''
+        return ''
 
     def getAnalysisRequestPrintStatus(self):
         """
@@ -1312,6 +1417,133 @@ class Analysis(BaseContent):
             return ''
         except WorkflowException:
             return ''
+
+    def getParentUID(self):
+        """
+        This works as a metacolumn
+        This function returns the analysis' parent UID
+        """
+        return self.aq_parent.UID()
+
+    def getWorksheetUID(self):
+        """
+        This is an index
+        """
+        worksheet = self.getBackReferences("WorksheetAnalysis")
+        if worksheet and len(worksheet) > 1:
+            logger.error(
+                "Analysis %s is assigned to more than one worksheet."
+                % self.getId())
+            return worksheet[0].UID()
+        elif worksheet:
+            return worksheet[0].UID()
+        return ''
+
+    def getParentURL(self):
+        """
+        This works as a metacolumn
+        This function returns the analysis' parent URL
+        """
+        return self.aq_parent.absolute_url_path()
+
+    def getClientTitle(self):
+        """
+        This works as a column
+        """
+        return self.aq_parent.aq_parent.Title()
+
+    def getClientURL(self):
+        """
+        This works as a column
+        """
+        return self.aq_parent.aq_parent.absolute_url_path()
+
+    def getUnit(self):
+        """
+        This works as a metadatacolumn
+        """
+        service = self.getService()
+        if not service:
+            return None
+        return service.getUnit()
+
+    def getSamplePartitionID(self):
+        """
+        This works as a metadatacolumn
+        Returns the sample partition ID
+        """
+        partition = self.getSamplePartition()
+        if partition:
+            return partition.getId()
+        return ''
+
+    def getMethodURL(self):
+        """
+        It is used as a metacolumn.
+        Returns the method url if this analysis has a method assigned
+        """
+        method = self.getMethod()
+        if method:
+            return method.absolute_url_path()
+        return ''
+
+    def getMethodTitle(self):
+        """
+        It is used as a metacolumn.
+        Returns the method title if this analysis has a method assigned
+        """
+        method = self.getMethod()
+        if method:
+            return method.Title()
+        return ''
+
+    def getServiceDefaultInstrumentUID(self):
+        """
+        It is used as a metacolumn.
+        Returns the default service's instrument UID
+        """
+        service = self.getService()
+        if not service:
+            return None
+        ins = service.getInstrument()
+        if ins:
+            return ins.UID()
+        return ''
+
+    def getServiceDefaultInstrumentTitle(self):
+        """
+        It is used as a metacolumn.
+        Returns the default service's instrument UID
+        """
+        service = self.getService()
+        if not service:
+            return None
+        ins = service.getInstrument()
+        if ins:
+            return ins.Title()
+        return ''
+
+    def getServiceDefaultInstrumentURL(self):
+        """
+        It is used as a metacolumn.
+        Returns the default service's instrument UID
+        """
+        service = self.getService()
+        if not service:
+            return None
+        ins = service.getInstrument()
+        if ins:
+            return ins.absolute_url_path()
+        return ''
+
+    def hasAttachment(self):
+        """
+        It is used as a metacolumn.
+        Checks if the object has attachments or not.
+        Returns a boolean.
+        """
+        attachments = self.getAttachment()
+        return len(attachments) > 0
 
     def guard_sample_transition(self):
         workflow = getToolByName(self, "portal_workflow")

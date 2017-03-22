@@ -19,13 +19,15 @@ class SampleAnalysesView(AnalysesView):
     """
     def __init__(self, context, request, **kwargs):
         AnalysesView.__init__(self, context, request)
-        self.show_select_column = False
-        self.allow_edit = False
         self.show_workflow_action_buttons = False
         for k,v in kwargs.items():
             self.contentFilter[k] = v
-        self.columns['Request'] = {'title': _("Request"),
-                                   'sortable':False}
+        self.contentFilter['getSampleUID'] = context.UID()
+        self.columns['Request'] = {
+            'title': _("Request"),
+            'attr': 'getParentTitle',
+            'replace_url': 'getParentURL',
+            'sortable': False}
         self.columns['Priority'] = {'title': _("Priority"),
                                    'sortable':False}
         # Add Request and Priority columns
@@ -34,15 +36,12 @@ class SampleAnalysesView(AnalysesView):
         pos += 1
         self.review_states[0]['columns'].insert(pos, 'Priority')
 
-    def folderitems(self):
-        self.contentsMethod = self.context.getAnalyses
-        items = AnalysesView.folderitems(self)
-        for x in range(len(items)):
-            if not items[x].has_key('obj'):
-                continue
-            obj = items[x]['obj']
-            ar = obj.aq_parent
-            items[x]['replace']['Request'] = \
-                "<a href='%s'>%s</a>"%(ar.absolute_url(), ar.Title())
-            items[x]['replace']['Priority'] = ' ' #TODO this space is required for it to work
-        return items
+    def folderitem(self, obj, item, index):
+        """
+        :obj: a brain
+        """
+        # Call the folderitem method from the base class
+        item = AnalysesView.folderitem(self, obj, item, index)
+        # TODO this space is required for it to work
+        item['replace']['Priority'] = ' '
+        return item

@@ -193,6 +193,21 @@ class ReferenceAnalysis(BaseContent):
         workflow = getToolByName(self, "portal_workflow")
         return workflow.getInfoFor(self, "review_state")
 
+    def getWorksheetUID(self):
+        """
+        This is an index
+        """
+        worksheet = self.getBackReferences("WorksheetAnalysis")
+        if worksheet and len(worksheet) > 1:
+            logger.error(
+                "Reference analysis %s is assigned to more than one worksheet."
+                % self.getId())
+            return worksheet[0].UID()
+        elif worksheet:
+            return worksheet[0].UID()
+        else:
+            return ''
+
     def getDefaultUncertainty(self, result=None):
         """ Calls self.Service.getUncertainty with either the provided
             result value or self.Result
@@ -337,6 +352,21 @@ class ReferenceAnalysis(BaseContent):
     def getDepartmentUID(self):
         return self.getService().getDepartment().UID()
 
+    # TODO-performance: improve this function using another catalog and takeing
+    # advantatge of the column in service, not getting the full object.
+    def getCategoryTitle(self):
+        """
+        Returns the Title of the asociated service's department.
+        """
+        # Getting the service like that because otherwise gives an error
+        # when rebuilding the catalogs.
+        service_uid = self.getRawService()
+        catalog = getToolByName(self, "uid_catalog")
+        brain = catalog(UID=service_uid)
+        if brain:
+            return brain[0].getObject().getCategoryTitle()
+        return ''
+
     def getFormattedResult(self, specs=None, decimalmark='.', sciformat=1):
         """Formatted result:
         1. If the result is not floatable, return it without being formatted
@@ -418,6 +448,25 @@ class ReferenceAnalysis(BaseContent):
             return get_significant_digits(uncertainty)
         else:
             return serv.getPrecision(result)
+
+    def getParentUID(self):
+        """
+        It is used as metacolumn
+        """
+        return self.aq_parent.UID()
+
+    def getExpiryDate(self):
+        """
+        It is used as a metacolumn.
+        Returns the expiration date from the reference sample.
+        """
+        return self.aq_parent.getExpiryDate()
+
+    def getReferenceResults(self):
+        """
+        It is used as metacolumn
+        """
+        return self.aq_parent.getReferenceResults()
 
     def isVerifiable(self):
         """
