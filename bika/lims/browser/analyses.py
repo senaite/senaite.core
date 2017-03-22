@@ -6,9 +6,9 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from plone import api
-from AccessControl import getSecurityManager
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
+from bika.lims import deprecated
 from bika.lims.utils import t, dicts_to_dict, format_supsub
 from bika.lims.utils.analysis import format_uncertainty
 from bika.lims.browser import BrowserView
@@ -26,14 +26,15 @@ from operator import itemgetter
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.CMFCore.utils import getToolByName
 from Products.CMFCore.WorkflowCore import WorkflowException
+from Products.ZCatalog.interfaces import ICatalogBrain
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims.utils.analysis import format_numeric_result
 from zope.interface import implements
 from zope.interface import Interface
 from zope.component import getAdapters
+from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 
 import json
-
 
 
 class AnalysesView(BikaListingView):
@@ -43,10 +44,17 @@ class AnalysesView(BikaListingView):
     """
 
     def __init__(self, context, request, **kwargs):
-        self.catalog = "bika_analysis_catalog"
+        super(AnalysesView, self).__init__(
+            context,
+            request,
+            show_categories=context.bika_setup.getCategoriseAnalysisServices(),
+            expand_all_categories=True)
+        self.catalog = CATALOG_ANALYSIS_LISTING
         self.contentFilter = dict(kwargs)
         self.contentFilter['portal_type'] = 'Analysis'
-        self.contentFilter['sort_on'] = 'sortable_title'
+        self.contentFilter['sort_on'] = 'created'
+        self.contentFilter['sort_order'] = 'ascending'
+        self.sort_order = 'ascending'
         self.context_actions = {}
         self.show_sort_column = False
         self.show_select_row = False
@@ -54,23 +62,38 @@ class AnalysesView(BikaListingView):
         self.show_column_toggles = False
         self.pagesize = 999999
         self.form_id = 'analyses_form'
-
+        # Initializing attributs for this view
+        self.context_active = isActive(context)
+        self.interim_fields = {}
+        self.interim_columns = {}
+        self.specs = {}
+        self.bsc = getToolByName(context, 'bika_setup_catalog')
         self.portal = getToolByName(context, 'portal_url').getPortalObject()
         self.portal_url = self.portal.absolute_url()
-
-        request.set('disable_plone.rightcolumn', 1);
+        self.rc = getToolByName(context, REFERENCE_CATALOG)
+        # Initializing the deximal mark variable
+        self.dmk = ''
+        request.set('disable_plone.rightcolumn', 1)
 
         # each editable item needs it's own allow_edit
         # which is a list of field names.
         self.allow_edit = False
 
         self.columns = {
+            # Although 'created' column is not displayed in the list (see
+            # review_states to check the columns that will be rendered), this
+            # column is needed to sort the list by create date
+            'created': {
+                'title': _('Date Created'),
+                'toggle': False},
             'Service': {
                 'title': _('Analysis'),
+                'attr': 'getServiceTitle',
                 'sortable': False},
             'Partition': {
                 'title': _("Partition"),
-                'sortable':False},
+                'attr': 'getSamplePartitionID',
+                'sortable': False},
             'Method': {
                 'title': _('Method'),
                 'sortable': False,
@@ -143,12 +166,45 @@ class AnalysesView(BikaListingView):
         if not context.bika_setup.getShowPartitions():
             self.review_states[0]['columns'].remove('Partition')
 
-        super(AnalysesView, self).__init__(context,
-                                           request,
-                                           show_categories=context.bika_setup.getCategoriseAnalysisServices(),
-                                           expand_all_categories=True)
-
     def get_analysis_spec(self, analysis):
+        """
+        Returns the dictionary with the result specifications (min, max,
+        error, etc.) that apply to the passed in Analysis or ReferenceAnalysis.
+        If no specifications are found, returns a basic specifications dict
+        with the following structure:
+            {'keyword': <analysis_service_keyword,
+             'uid': <analysis_uid>,
+             'min': ''
+             'max': ''
+             'error': ''}
+
+        :param analysis: A single Analysis brain or Content object
+        :type analysis: bika.lims.content.analysis.Analysis
+                        bika.lims.content.referenceanalysis.ReferenceAnalysis
+                        CatalogBrain
+        :returns: The result specifications that apply to the Analysis.
+        :rtype: dict
+        """
+        if ICatalogBrain.providedBy(analysis):
+            # It is a brain
+            if analysis.getResultsRangeNoSpecs and not\
+                    isinstance(analysis.getResultsRangeNoSpecs, list):
+                return analysis.getResultsRangeNoSpecs
+            if analysis.getResultsRangeNoSpecs and\
+                    isinstance(analysis.getResultsRangeNoSpecs, list):
+                rr = dicts_to_dict(
+                    analysis.getResultsRangeNoSpecs, 'keyword')
+                return rr.get(analysis.getKeyword, None)
+            if analysis.getReferenceResults:
+                rr = dicts_to_dict(analysis.getReferenceResults, 'uid')
+                return rr.get(analysis.UID, None)
+            keyword = analysis.getKeyword
+            uid = analysis.UID
+            return {
+                'keyword': keyword, 'uid': uid, 'min': '',
+                'max': '', 'error': ''}
+
+        # It is an object
         if hasattr(analysis, 'getResultsRange'):
             return analysis.getResultsRange()
         if hasattr(analysis.aq_parent, 'getResultsRange'):
@@ -159,77 +215,109 @@ class AnalysesView(BikaListingView):
             return rr.get(analysis.UID(), None)
         keyword = analysis.getService().getKeyword()
         uid = analysis.UID()
-        return {'keyword':keyword, 'uid':uid, 'min':'', 'max':'', 'error':''}
+        return {
+            'keyword': keyword, 'uid': uid, 'min': '',
+            'max': '', 'error': ''}
 
     def ResultOutOfRange(self, analysis):
         """ Template wants to know, is this analysis out of range?
         We scan IResultOutOfRange adapters, and return True if any IAnalysis
         adapters trigger a result.
         """
-        adapters = getAdapters((analysis, ), IResultOutOfRange)
         spec = self.get_analysis_spec(analysis)
+        # The function get_analysis_spec ALWAYS return a dict. If no specs
+        # are found for the analysis, returns a dict with empty values for
+        # min and max keys.
+        if not spec or (not spec.get('min') and not spec.get('max')):
+            return False
+        # The analysis has specs defined, evaluate if is out of range
+        adapters = getAdapters((analysis, ), IResultOutOfRange)
         for name, adapter in adapters:
-            if not spec:
-                return False
             if adapter(specification=spec):
                 return True
+        # By default, not out of range
+        return False
 
+    @deprecated('Flagged in 17.03')
     def getAnalysisSpecsStr(self, spec):
-        specstr = ''
-        if spec['min'] and spec['max']:
-            specstr = '%s - %s' % (spec['min'], spec['max'])
-        elif spec['min']:
-            specstr = '> %s' % spec['min']
-        elif spec['max']:
-            specstr = '< %s' % spec['max']
-        return specstr
+        """
+        Generates a string representation of the specifications passed in. If
+        neither min nor max values found, returns an empty string
 
-    def get_methods_vocabulary(self, analysis = None):
-        """ Returns a vocabulary with the methods available for the
-            analysis specified.
-            If the service has the getInstrumentEntryOfResults(), returns
-            the methods available from the instruments capable to perform
-            the service, as well as the methods set manually for the
-            analysis on its edit view. If getInstrumentEntryOfResults()
-            is unset, only the methods assigned manually to that service
-            are returned. If the Analysis service method is set to None,
-            but have also at least one method available, adds the 'None'
-            option to the vocabulary.
-            If the analysis is None, retrieves all the
-            active methods from the catalog.
+        :param spec: specifications dict, with 'min' and 'max' keys
+        :type spec: dict
+        :returns: a string representation of the passed in specs
+        :rtype: string
+        """
+        if spec['min'] and spec['max']:
+            return '%s - %s' % (spec['min'], spec['max'])
+        if spec['min']:
+            return '> %s' % spec['min']
+        if spec['max']:
+            return '< %s' % spec['max']
+        return ''
+
+    def get_methods_vocabulary(self, analysis=None):
+        """
+        Returns a vocabulary with all the methods available for the passed in
+        analysis, either those assigned to an instrument that are capable to
+        perform the test (option "Allow Entry of Results") and those assigned
+        manually in the associated Analysis Service. If the associated
+        Analysis Service has a "None" method assigned by default (also if
+        the Analysis Service has instruments with methods assigned), a "None"
+        option is added in the vocabulary.
+        If the analysis passed in is None, returns a vocabulary with all the
+        methods available in the system.
+        The vocabulary is a list of dictionaries. Each dictionary has the
+        following structure:
+            {'ResultValue': <method_UID>,
+             'ResultText': <method_Title>}
+
+        :param analysis: A single Analysis brain
+        :type analysis: CatalogBrain
+        :returns: A list of dicts
         """
         ret = []
         if analysis:
-            service = analysis.getService()
-            methods = service.getAvailableMethods()
-            if methods and not service.getMethod():
-                ret.append({'ResultValue': '',
-                            'ResultText': _('None')})
-            for method in methods:
-                ret.append({'ResultValue': method.UID(),
-                            'ResultText': method.Title()})
+            # This function returns  a list of tuples as [(UID,Title),(),...]
+            methods = analysis.getAllowedMethodsAsTuples
+            methods = methods if methods else []
+            for uid, title in methods:
+                ret.append({'ResultValue': uid,
+                            'ResultText': title})
         else:
             # All active methods
-            bsc = getToolByName(self.context, 'bika_setup_catalog')
-            brains = bsc(portal_type='Method', inactive_state='active')
+            brains = self.bsc(portal_type='Method', inactive_state='active')
             for brain in brains:
                 ret.append({'ResultValue': brain.UID,
                             'ResultText': brain.title})
+        if not ret:
+            ret = [{'ResultValue': '',
+                    'ResultText': _('None')}]
         return ret
 
     def get_instruments_vocabulary(self, analysis = None):
-        """ Returns a vocabulary with the instruments available (active,
-            not out-of-date, with valid internal calibrations) for
-            the analysis specified. If the analysis is None, retrieves
-            all the active instruments from the catalog.
-            If the instrument is not None and the instrument has a method
-            assigned, returns the instruments capable to perform the
-            method. If the instrument hasn't any method assigned, returns
-            all the instruments available from the service default method.
-            If the instrument's Service has the property
-            getInstrumentEntryOfResults unset, always returns empty.
-            If the analysis is a QC, the invalid instruments not
-            out-of-date are also returned.
+        """
+        Returns a vocabulary with the valid and active instruments available
+        for the analysis passed in.
+        If the analysis is None, the function returns all the active and
+        valid instruments registered in the system.
+        If the option "Allow instrument entry of results" for the Analysis
+        Service associated to the analysis is disabled, the function returns
+        an empty vocabulary.
+        If the analysis passed in is a Reference Analysis (Blank or Control),
+        the voculabury, the invalid instruments will be included in the
+        vocabulary too.
+        The vocabulary is a list of dictionaries. Each dictionary has the
+        following structure:
+            {'ResultValue': <instrument_UID>,
+             'ResultText': <instrument_Title>}
+
+        :param analysis: A single Analysis or ReferenceAnalysis content object
+        :type analysis: bika.lims.content.analysis.Analysis
+                        bika.lims.content.referenceAnalysis.ReferenceAnalysis
+        :returns: A vocabulary with the instruments for the analysis
+        :rtype: A list of dicts
         """
         ret = []
         instruments = []
@@ -245,8 +333,7 @@ class AnalysesView(BikaListingView):
 
         else:
             # All active instruments
-            bsc = getToolByName(self.context, 'bika_setup_catalog')
-            brains = bsc(portal_type='Instrument', inactive_state='active')
+            brains = self.bsc(portal_type='Instrument', inactive_state='active')
             instruments = [brain.getObject() for brain in brains]
 
         for ins in instruments:
@@ -278,544 +365,574 @@ class AnalysesView(BikaListingView):
 
     def isItemAllowed(self, obj):
         """
-        It checks if the item can be added to the list depending on the
-        department filter. If the analysis service is not assigned to a
-        department, show it.
-        If department filtering is disabled in bika_setup, will return True.
-        @Obj: it is an analysis object.
-        @return: boolean
+        Checks if the passed in Analysis must be displayed in the list. If the
+        'filtering by department' option is enabled in Bika Setup, this
+        function checks if the Analysis Service associated to the Analysis
+        is assigned to any of the currently selected departments (information
+        stored in a cookie).
+        If department filtering is disabled in bika_setup, returns True.
+        If the obj is None or empty, returns False.
+        If the obj has no department assigned, returns True
+
+        :param obj: A single Analysis brain or content object
+        :type obj: ATContentType/CatalogBrain
+        :returns: True if the item can be added to the list.
+        :rtype: bool
         """
+        if not obj:
+            return False
+
         if not self.context.bika_setup.getAllowDepartmentFiltering():
+            # Filtering by department is disabled. Return True
             return True
-        # Gettin the department from analysis service
-        serv_dep = obj.getService().getDepartment()
-        result = True
-        if serv_dep:
-            # Getting the cookie value
-            cookie_dep_uid = self.request.get('filter_by_department_info', '')
-            # Comparing departments' UIDs
-            result = True if serv_dep.UID() in\
-                cookie_dep_uid.split(',') else False
-        return result
+
+        # Department filtering is enabled. Check if the Analysis Service
+        # associated to this Analysis is assigned to at least one of the
+        # departments currently selected.
+        depuid = ''
+        if ICatalogBrain.providedBy(obj):
+            depuid = obj.getDepartmentUID
+        else:
+            dep = obj.getService().getDepartment()
+            depuid = dep.UID() if dep else ''
+        deps = self.request.get('filter_by_department_info', '')
+        return not depuid or depuid in deps.split(',')
+
+    def folderitem(self, obj, item, index):
+        """
+        Obj should be a brain
+        """
+        # Additional info from AnalysisRequest to be added in the item
+        # generated by default by bikalisting.
+
+        # Call the folderitem method from the base class
+        item = BikaListingView.folderitem(self, obj, item, index)
+        checkPermission = self.mtool.checkPermission
+        if not item:
+            return None
+        if not ('obj' in item):
+            return None
+        if obj.review_state == 'retracted' \
+                and not checkPermission(ViewRetractedAnalyses, self.context):
+            return None
+        # Getting the dictionary values
+        result = obj.getResult
+        unit = obj.getUnit
+        if self.show_categories:
+            cat = obj.getCategoryTitle
+            cat_order = self.analysis_categories_order.get(cat)
+            item['category'] = cat
+            if (cat, cat_order) not in self.categories:
+                self.categories.append((cat, cat_order))
+        # Check for InterimFields attribute on our object,
+        interim_fields = obj.getInterimFields
+        full_obj = None
+        # kick some pretty display values in.
+        for x in range(len(interim_fields)):
+            interim_fields[x]['formatted_value'] = \
+                formatDecimalMark(interim_fields[x]['value'], self.dmk)
+        self.interim_fields[obj.UID] = interim_fields
+        item['service_uid'] = obj.getServiceUID
+        item['Keyword'] = obj.getKeyword
+        item['Unit'] = format_supsub(unit) if unit else ''
+        item['Result'] = ''
+        item['formatted_result'] = ''
+        item['interim_fields'] = interim_fields
+        item['Remarks'] = obj.getRemarks
+        item['Uncertainty'] = ''
+        item['DetectionLimit'] = ''
+        item['retested'] = obj.getRetested
+        item['class']['retested'] = 'center'
+        item['result_captured'] = self.ulocalized_time(
+            obj.getResultCaptureDate, long_format=0)
+        item['calculation'] = obj.getCalculation and True or False
+        if obj.portal_type == "ReferenceAnalysis":
+            item['DueDate'] = self.ulocalized_time(
+                obj.getExpiryDate, long_format=0)
+        else:
+            item['DueDate'] = self.ulocalized_time(
+                obj.getDueDate, long_format=1)
+        cd = obj.getResultCaptureDate
+        item['CaptureDate'] = cd and self.ulocalized_time(
+            cd, long_format=1) or ''
+        tblrowclass = item.get('table_row_class', '')
+
+        if obj.portal_type == 'ReferenceAnalysis':
+            item['st_uid'] = obj.getParentUID
+            item['table_row_class'] = ' '.join([tblrowclass, 'qc-analysis'])
+        elif obj.portal_type == 'DuplicateAnalysis' and \
+                obj.getAnalysisPortalType == 'ReferenceAnalysis':
+            item['st_uid'] = obj.getParentUID
+            item['table_row_class'] =\
+                ' '.join([tblrowclass, 'qc-analysis'])
+        else:
+            item['st_uid'] = obj.getSampleTypeUID
+
+        if checkPermission(ManageBika, self.context):
+            latest = self.rc.lookupObject(obj.getServiceUID).version_id
+            item['Service'] = obj.getServiceTitle
+            item['class']['Service'] = "service_title"
+
+        # choices defined on Service apply to result fields.
+        choices = obj.getResultOptionsFromService
+        if choices:
+            item['choices']['Result'] = choices
+        # Editing Field Results is possible while in Sample Due.
+        poc = self.contentFilter.get("getPointOfCapture", 'lab')
+        # Getting the first edit_analysis permission
+        can_edit_analysis = self.allow_edit and self.context_active
+        # If the view has edit permissions, lets check if the user has them
+        if can_edit_analysis and poc == 'field':
+            can_edit_analysis = \
+                self.security_manager.checkPermission(
+                    EditFieldResults, full_obj)
+        if can_edit_analysis and poc != 'field':
+            can_edit_analysis = \
+                self.security_manager.checkPermission(EditResults, obj)
+
+        allowed_method_states = [
+            'to_be_sampled',
+            'to_be_preserved',
+            'sample_received',
+            'sample_registered',
+            'sampled',
+            'assigned']
+        can_edit_analysis = can_edit_analysis and\
+            obj.review_state in allowed_method_states
+        # Prevent from being edited if the instrument assigned
+        # is not valid (out-of-date or uncalibrated), except if
+        # the analysis is a QC with assigned status
+        can_edit_analysis = can_edit_analysis and\
+            (obj.isInstrumentValid or (obj.portal_type == 'ReferenceAnalysis'))
+        if can_edit_analysis:
+            item['allow_edit'].extend([
+                'Analyst',
+                'Result',
+                'Remarks'])
+            # if the Result field is editable, our interim fields are too
+            for f in self.interim_fields[obj.UID]:
+                item['allow_edit'].append(f['keyword'])
+
+            # if there isn't a calculation then result must be re-testable,
+            # and if there are interim fields, they too must be re-testable.
+            if not item.get('calculation') or \
+               (item['calculation'] and self.interim_fields[obj.UID]):
+                item['allow_edit'].append('retested')
+
+        # TODO: Only the labmanager should be able to change the method
+        can_set_method = can_edit_analysis \
+            and item['review_state'] in allowed_method_states\
+            and obj.getCanMethodBeChanged
+
+        # Display the methods selector if the AS has at least one
+        # method assigned
+        item['Method'] = ''
+        item['replace']['Method'] = ''
+        if can_set_method:
+            voc = self.get_methods_vocabulary(obj)
+            if voc:
+                # The service has at least one method available
+                item['Method'] = obj.getMethodUID
+                item['choices']['Method'] = voc
+                item['allow_edit'].append('Method')
+                show_methodinstr_columns = True
+            elif method:
+                # This should never happen
+                # The analysis has set a method, but its parent
+                # service hasn't any method available O_o
+                item['Method'] = obj.getMethodTitle
+                item['replace']['Method'] = "<a href='%s'>%s</a>" % \
+                    (obj.getMethodURL, obj.getMethodTitle)
+                show_methodinstr_columns = True
+        elif obj.getMethodUID:
+            # Edition not allowed, but method set
+            item['Method'] = obj.getMethodTitle
+            item['replace']['Method'] = "<a href='%s'>%s</a>" % \
+                (obj.getMethodURL, obj.getMethodTitle)
+            show_methodinstr_columns = True
+
+        # TODO: Instrument selector dynamic behavior in worksheet Results
+        # Only the labmanager must be able to change the instrument to be used.
+        # Also, the instrument selection should be done in accordance with the
+        # method selected
+        # can_set_instrument = service.getInstrumentEntryOfResults() and
+        # getSecurityManager().checkPermission(SetAnalysisInstrument, obj)
+        can_set_instrument = obj.getInstrumentEntryOfResults \
+            and can_edit_analysis \
+            and item['review_state'] in allowed_method_states
+
+        item['Instrument'] = ''
+        item['replace']['Instrument'] = ''
+        if obj.getInstrumentEntryOfResults:
+            instrumentUID = None
+
+            # If the analysis has an instrument already assigned, use it
+            if obj.getInstrumentEntryOfResults and obj.getInstrumentUID:
+                instrumentUID = obj.getInstrumentUID
+
+            # Otherwise, use the Service's default instrument
+        elif obj.getInstrumentEntryOfResults:
+            instrumentUID = obj.getServiceDefaultInstrumentUID
+
+            if can_set_instrument:
+                # Edition allowed
+                voc = self.get_instruments_vocabulary(obj)
+                if voc:
+                    # The service has at least one instrument available
+                    item['Instrument'] = instrumentUID
+                    item['choices']['Instrument'] = voc
+                    item['allow_edit'].append('Instrument')
+                    show_methodinstr_columns = True
+
+                elif instrumentUID:
+                    # This should never happen
+                    # The analysis has an instrument set, but the
+                    # service hasn't any available instrument
+                    item['Instrument'] = obj.getServiceDefaultInstrumentTitle
+                    item['replace']['Instrument'] = "<a href='%s'>%s</a>" % \
+                        (obj.getServiceDefaultInstrumentURL,
+                            obj.getServiceDefaultInstrumentTitle)
+                    show_methodinstr_columns = True
+
+            elif instrumentUID:
+                # Edition not allowed, but instrument set
+                item['Instrument'] = obj.getServiceDefaultInstrumentTitle
+                item['replace']['Instrument'] = "<a href='%s'>%s</a>" % \
+                    (obj.getServiceDefaultInstrumentURL,
+                        obj.getServiceDefaultInstrumentTitle)
+                show_methodinstr_columns = True
+
+        else:
+            # Manual entry of results, instrument not allowed
+            item['Instrument'] = _('Manual')
+            msgtitle = t(_(
+                "Instrument entry of results not allowed for ${service}",
+                mapping={"service": safe_unicode(
+                    obj.getServiceDefaultInstrumentTitle)},
+            ))
+            item['replace']['Instrument'] = \
+                '<a href="#" title="%s">%s</a>' % (msgtitle, t(_('Manual')))
+
+        # Sets the analyst assigned to this analysis
+        if can_edit_analysis:
+            analyst = obj.getAnalyst
+            # widget default: current user
+            if not analyst:
+                analyst = self.mtool.getAuthenticatedMember().getUserName()
+            item['Analyst'] = analyst
+            item['choices']['Analyst'] = self.getAnalysts()
+        else:
+            item['Analyst'] = obj.getAnalystName
+        # permission to view this item's results and add attachment to it
+        can_view_result = \
+            self.security_manager.checkPermission(ViewResults, obj)
+        can_add_attachment = \
+            self.security_manager.checkPermission(AddAttachment, obj)
+        # If the analysis service has the option 'attachment' enabled
+        if can_add_attachment or can_view_result:
+            attachments = ""
+            if obj.hasAttachment:
+                # TODO-performance: This is vey time consuming
+                full_obj = full_obj if full_obj else obj.getObject()
+                for attachment in full_obj.getAttachment():
+                    af = attachment.getAttachmentFile()
+                    icon = af.icon
+                    attachments +=\
+                        "<span class='attachment' attachment_uid='%s'>" %\
+                        (attachment.UID())
+                    if icon:
+                        attachments += "<img src='%s/%s'/>" % \
+                            (self.portal_url, icon)
+                    attachments +=\
+                        '<a href="%s/at_download/AttachmentFile"/>%s</a>' %\
+                            (attachment.absolute_url(), af.filename)
+                    if can_edit_analysis:
+                        attachments += "<img class='deleteAttachmentButton' attachment_uid='%s' src='%s'/>" % (attachment.UID(), "++resource++bika.lims.images/delete.png")
+                    attachments += "</br></span>"
+            item['replace']['Attachments'] = attachments[:-12] + "</span>"
+        # TODO-performance: This part gets the full object...
+        # Only display data bearing fields if we have ViewResults
+        # permission, otherwise just put an icon in Result column.
+        if can_view_result:
+            full_obj = full_obj if full_obj else obj.getObject()
+            service = full_obj.getService()
+            item['Result'] = result
+            scinot = self.context.bika_setup.getScientificNotationResults()
+            item['formatted_result'] =\
+                full_obj.getFormattedResult(
+                    sciformat=int(scinot), decimalmark=self.dmk)
+
+            # LIMS-1379 Allow manual uncertainty value input
+            # https://jira.bikalabs.com/browse/LIMS-1379
+            fu = format_uncertainty(
+                full_obj, result, decimalmark=self.dmk, sciformat=int(scinot))
+            fu = fu if fu else ''
+            if can_edit_analysis and service.getAllowManualUncertainty():
+                unc = full_obj.getUncertainty(result)
+                item['allow_edit'].append('Uncertainty')
+                item['Uncertainty'] = unc if unc else ''
+                item['before']['Uncertainty'] = '&plusmn;&nbsp;'
+                item['after']['Uncertainty'] = '<em class="discreet" style="white-space:nowrap;"> %s</em>' % item['Unit']
+                item['structure'] = False
+            elif fu:
+                item['Uncertainty'] = fu
+                item['before']['Uncertainty'] = '&plusmn;&nbsp;'
+                item['after']['Uncertainty'] = '<em class="discreet" style="white-space:nowrap;"> %s</em>' % item['Unit']
+                item['structure'] = True
+
+            # LIMS-1700. Allow manual input of Detection Limits
+            # LIMS-1775. Allow to select LDL or UDL defaults in results
+            # with readonly mode
+            # https://jira.bikalabs.com/browse/LIMS-1700
+            # https://jira.bikalabs.com/browse/LIMS-1775
+            if can_edit_analysis and \
+                hasattr(full_obj, 'getDetectionLimitOperand') and \
+                hasattr(service, 'getDetectionLimitSelector') and \
+                    service.getDetectionLimitSelector():
+                isldl = full_obj.isBelowLowerDetectionLimit()
+                isudl = full_obj.isAboveUpperDetectionLimit()
+                dlval = ''
+                if isldl or isudl:
+                    dlval = '<' if isldl else '>'
+                item['allow_edit'].append('DetectionLimit')
+                item['DetectionLimit'] = dlval
+                choices = [
+                    {'ResultValue': '<', 'ResultText': '<'},
+                    {'ResultValue': '>', 'ResultText': '>'}]
+                item['choices']['DetectionLimit'] = choices
+                self.columns['DetectionLimit']['toggle'] = True
+                srv = full_obj.getService()
+                defdls = {'min': srv.getLowerDetectionLimit(),
+                          'max': srv.getUpperDetectionLimit(),
+                          'manual': srv.getAllowManualDetectionLimit()}
+                defin =\
+                    '<input type="hidden" id="DefaultDLS.%s" value=\'%s\'/>'
+                defin = defin % (full_obj.UID(), json.dumps(defdls))
+                item['after']['DetectionLimit'] = defin
+
+            # LIMS-1769. Allow to use LDL and UDL in calculations.
+            # https://jira.bikalabs.com/browse/LIMS-1769
+            # Since LDL, UDL, etc. are wildcards that can be used
+            # in calculations, these fields must be loaded always
+            # for 'live' calculations.
+            if can_edit_analysis:
+                dls = {'default_ldl': 'none',
+                       'default_udl': 'none',
+                       'below_ldl': False,
+                       'above_udl': False,
+                       'is_ldl': False,
+                       'is_udl': False,
+                       'manual_allowed': False,
+                       'dlselect_allowed': False}
+                if hasattr(full_obj, 'getDetectionLimits'):
+                    dls['below_ldl'] = full_obj.isBelowLowerDetectionLimit()
+                    dls['above_udl'] = full_obj.isBelowLowerDetectionLimit()
+                    dls['is_ldl'] = full_obj.isLowerDetectionLimit()
+                    dls['is_udl'] = full_obj.isUpperDetectionLimit()
+                    dls['default_ldl'] = service.getLowerDetectionLimit()
+                    dls['default_udl'] = service.getUpperDetectionLimit()
+                    dls['manual_allowed'] =\
+                        service.getAllowManualDetectionLimit()
+                    dls['dlselect_allowed'] =\
+                        service.getDetectionLimitSelector()
+                dlsin =\
+                    '<input type="hidden" id="AnalysisDLS.%s" value=\'%s\'/>'
+                dlsin = dlsin % (full_obj.UID(), json.dumps(dls))
+                item['after']['Result'] = dlsin
+
+        else:
+            item['Specification'] = ""
+            if 'Result' in item['allow_edit']:
+                item['allow_edit'].remove('Result')
+            item['before']['Result'] = \
+                '<img width="16" height="16" ' + \
+                'src="%s/++resource++bika.lims.images/to_follow.png"/>' % \
+                (self.portal_url)
+
+        # Everyone can see valid-ranges
+        spec = self.get_analysis_spec(obj)
+        if spec:
+            min_val = spec.get('min', '')
+            min_str = ">{0}".format(min_val) if min_val else ''
+            max_val = spec.get('max', '')
+            max_str = "<{0}".format(max_val) if max_val else ''
+            error_val = spec.get('error', '')
+            error_str = "{0}%".format(error_val) if error_val else ''
+            rngstr = ",".join([x for x in [min_str, max_str, error_str] if x])
+        else:
+            rngstr = ""
+
+        item['Specification'] = rngstr
+        # Add this analysis' interim fields to the interim_columns list
+        for f in self.interim_fields[obj.UID]:
+            if f['keyword'] not in self.interim_columns and not f.get('hidden', False):
+                self.interim_columns[f['keyword']] = f['title']
+            # and to the item itself
+            item[f['keyword']] = f
+            item['class'][f['keyword']] = 'interim'
+        # check if this analysis is late/overdue
+        resultdate = obj.getDateSampled \
+            if obj.portal_type == 'ReferenceAnalysis' \
+            else obj.getResultCaptureDate
+        duedate = obj.aq_parent.getExpiryDate \
+            if obj.portal_type == 'ReferenceAnalysis' \
+            else obj.getDueDate
+        item['replace']['DueDate'] = \
+            self.ulocalized_time(duedate, long_format=1)
+
+        if item['review_state'] not in ['to_be_sampled',
+                                        'to_be_preserved',
+                                        'sample_due',
+                                        'published']:
+            if (resultdate and resultdate > duedate) \
+                or (not resultdate and DateTime() > duedate):
+                item['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
+                    (self.ulocalized_time(duedate, long_format=1),
+                     self.portal_url,
+                     t(_("Late Analysis")))
+
+        after_icons = []
+        submitter = obj.getSubmittedBy
+        # Submitting user may not verify results unless the user is labman
+        # or manager and the AS has isSelfVerificationEnabled set to True
+        if item['review_state'] == 'to_be_verified':
+            # If multi-verification required, place an informative icon
+            numverifications = obj.getNumberOfRequiredVerifications
+            if numverifications > 1:
+                # More than one verification required, place an icon
+                # Get the number of verifications already done:
+                done = obj.getNumberOfVerifications
+                pending = numverifications - done
+                ratio = float(done)/float(numverifications) \
+                    if done > 0 else 0
+                scale = '' if ratio < 0.25 else '25' \
+                        if ratio < 0.50 else '50' \
+                        if ratio < 0.75 else '75'
+                anchor = "<a href='#' title='%s &#13;%s %s' " \
+                         "class='multi-verification scale-%s'>%s/%s</a>"
+                anchor = anchor % (t(_("Multi-verification required")),
+                                   str(pending),
+                                   t(_("verification(s) pending")),
+                                   scale, str(done), str(numverifications))
+                after_icons.append(anchor)
+            # Are they the same? TODO
+            username = self.member.getUserName()
+            user_id = self.member.getUser().getId()
+            # Check if the user has "Bika: Verify" privileges
+            verify_permission = api.user.has_permission(
+                VerifyPermission,
+                username=username)
+            isUserAllowedToVerify = True
+            # Check if the user who submited the result is the same as the
+            # current one
+            self_submitted = submitter == user_id
+            # The submitter and the user must be different unless the analysis
+            # has the option SelfVerificationEnabled set to true
+            selfverification = obj.isSelfVerificationEnabled
+            if verify_permission and self_submitted and not selfverification:
+                isUserAllowedToVerify = False
+            # Checking verifiability depending on multi-verification type
+            # of bika_setup
+            if isUserAllowedToVerify and numverifications > 1:
+                # If user verified before and self_multi_disabled, then
+                # return False
+                if self.mv_type == 'self_multi_disabled' and\
+                        username in obj.getVerificators.split(','):
+                    isUserAllowedToVerify = False
+                # If user is the last verificator and consecutively
+                # multi-verification is disabled, then return False
+                # Comparing was added just to check if this method is called
+                # before/after verification
+                elif mv_type == 'self_multi_not_cons' and\
+                        username == obj.getLastVerificator and pending > 0:
+                    isUserAllowedToVerify = False
+            if verify_permission and not isUserAllowedToVerify:
+                after_icons.append(
+                    "<img src='++resource++bika.lims.images/submitted"
+                    "-by-current-user.png' title='%s'/>" %
+                    (t(_(
+                        "Cannot verify, submitted or"
+                        " verified by current user before")))
+                    )
+            elif verify_permission and isUserAllowedToVerify:
+                if submitter == user_id:
+                    after_icons.append(
+                        "<img src='++resource++bika.lims.images/warning.png'"
+                        " title='%s'/>" %
+                        (t(_("Can verify, but submitted by current user")))
+                        )
+        # If analysis Submitted and Verified by the same person, then warning
+        # icon will appear.
+        if submitter and submitter in obj.getVerificators.split(','):
+            after_icons.append(
+                "<img src='++resource++bika.lims.images/warning.png'"
+                " title='%s'/>" %
+                (t(_("Submited and verified by the same user- " + submitter)))
+                )
+        # add icon for assigned analyses in AR views
+        if self.context.portal_type == 'AnalysisRequest':
+            if obj.portal_type in ['ReferenceAnalysis',
+                                   'DuplicateAnalysis'] or \
+               obj.worksheetanalysis_review_state == 'assigned':
+                full_obj = full_obj if full_obj else obj.getObject()
+                br = full_obj.getBackReferences('WorksheetAnalysis')
+                if len(br) > 0:
+                    ws = br[0]
+                    after_icons.append("<a href='%s'><img src='++resource++bika.lims.images/worksheet.png' title='%s'/></a>" %
+                    (ws.absolute_url(),
+                     t(_("Assigned to: ${worksheet_id}",
+                         mapping={'worksheet_id': safe_unicode(ws.id)}))))
+        item['after']['state_title'] = '&nbsp;'.join(after_icons)
+        after_icons = []
+        if obj.getIsReflexAnalysis:
+            after_icons.append("<img\
+            src='%s/++resource++bika.lims.images/reflexrule.png'\
+            title='%s'>" % (
+                self.portal_url,
+                t(_('It comes form a reflex rule'))
+            ))
+        item['after']['Service'] = '&nbsp;'.join(after_icons)
+        return item
 
     def folderitems(self):
-        rc = getToolByName(self.context, REFERENCE_CATALOG)
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
-        analysis_categories = bsc(portal_type="AnalysisCategory", sort_on="sortable_title")
-        analysis_categories_order = dict([(b.Title, "{:04}".format(a)) for a, b in enumerate(analysis_categories)])
+        # Check if mtool has been initialized
+        self.mtool = self.mtool if self.mtool\
+            else getToolByName(self.context, 'portal_membership')
+        # Getting the current user
+        self.member = self.member if self.member\
+            else self.mtool.getAuthenticatedMember()
+        # Getting analysis categories
+        analysis_categories = self.bsc(
+            portal_type="AnalysisCategory",
+            sort_on="sortable_title")
+        # Sorting analysis categories
+        self.analysis_categories_order = dict([
+            (b.Title, "{:04}".format(a)) for a, b in
+            enumerate(analysis_categories)])
         workflow = getToolByName(self.context, 'portal_workflow')
-        mtool = getToolByName(self.context, 'portal_membership')
-        checkPermission = mtool.checkPermission
+        # Can the user edit?
         if not self.allow_edit:
             can_edit_analyses = False
         else:
+            checkPermission = self.mtool.checkPermission
             if self.contentFilter.get('getPointOfCapture', '') == 'field':
-                can_edit_analyses = checkPermission(EditFieldResults, self.context)
+                can_edit_analyses = checkPermission(
+                    EditFieldResults, self.context)
             else:
                 can_edit_analyses = checkPermission(EditResults, self.context)
             self.allow_edit = can_edit_analyses
         self.show_select_column = self.allow_edit
-        context_active = isActive(self.context)
 
         self.categories = []
-        items = super(AnalysesView, self).folderitems(full_objects = True)
-
-        member = mtool.getAuthenticatedMember()
-
-        # manually skim retracted analyses from the list
-        new_items = []
-        for i,item in enumerate(items):
-            # self.contentsMethod may return brains or objects.
-            if not ('obj' in items[i]):
-                continue
-            obj = hasattr(items[i]['obj'], 'getObject') and \
-                items[i]['obj'].getObject() or \
-                items[i]['obj']
-            if workflow.getInfoFor(obj, 'review_state') == 'retracted' \
-                and not checkPermission(ViewRetractedAnalyses, self.context):
-                continue
-            new_items.append(item)
-        items = new_items
-
+        # Getting the multi-verification type of bika_setup
+        self.mv_type = self.context.bika_setup.getTypeOfmultiVerification()
+        # Gettin all the items
+        items = super(AnalysesView, self).folderitems(classic=False)
+        # Getting the methods
         methods = self.get_methods_vocabulary()
 
-        self.interim_fields = {}
-        self.interim_columns = {}
-        self.specs = {}
         show_methodinstr_columns = False
-        dmk = self.context.bika_setup.getResultsDecimalMark()
-        for i, item in enumerate(items):
-            # self.contentsMethod may return brains or objects.
-            obj = hasattr(items[i]['obj'], 'getObject') and \
-                items[i]['obj'].getObject() or \
-                items[i]['obj']
-            if workflow.getInfoFor(obj, 'review_state') == 'retracted' \
-                and not checkPermission(ViewRetractedAnalyses, self.context):
-                continue
-
-            result = obj.getResult()
-            service = obj.getService()
-            calculation = service.getCalculation()
-            unit = service.getUnit()
-            keyword = service.getKeyword()
-
-            if self.show_categories:
-                cat = obj.getService().getCategoryTitle()
-                cat_order = analysis_categories_order.get(cat)
-                items[i]['category'] = cat
-                if (cat, cat_order) not in self.categories:
-                    self.categories.append((cat, cat_order))
-
-            # Check for InterimFields attribute on our object,
-            interim_fields = hasattr(obj, 'getInterimFields') \
-                and obj.getInterimFields() or []
-            # kick some pretty display values in.
-            for x in range(len(interim_fields)):
-                interim_fields[x]['formatted_value'] = \
-                    formatDecimalMark(interim_fields[x]['value'], dmk)
-            self.interim_fields[obj.UID()] = interim_fields
-            items[i]['service_uid'] = service.UID()
-            items[i]['Service'] = service.Title()
-            items[i]['Keyword'] = keyword
-            items[i]['Unit'] = format_supsub(unit) if unit else ''
-            items[i]['Result'] = ''
-            items[i]['formatted_result'] = ''
-            items[i]['interim_fields'] = interim_fields
-            items[i]['Remarks'] = obj.getRemarks()
-            items[i]['Uncertainty'] = ''
-            items[i]['DetectionLimit'] = ''
-            items[i]['retested'] = obj.getRetested()
-            items[i]['class']['retested'] = 'center'
-            items[i]['result_captured'] = self.ulocalized_time(
-                obj.getResultCaptureDate(), long_format=0)
-            items[i]['calculation'] = calculation and True or False
-            try:
-                items[i]['Partition'] = obj.getSamplePartition().getId()
-            except AttributeError:
-                items[i]['Partition'] = ''
-            if obj.portal_type == "ReferenceAnalysis":
-                items[i]['DueDate'] = self.ulocalized_time(obj.aq_parent.getExpiryDate(), long_format=0)
-            else:
-                items[i]['DueDate'] = self.ulocalized_time(obj.getDueDate(), long_format=1)
-            cd = obj.getResultCaptureDate()
-            items[i]['CaptureDate'] = cd and self.ulocalized_time(cd, long_format=1) or ''
-            items[i]['Attachments'] = ''
-
-            item['allow_edit'] = []
-            client_or_lab = ""
-
-            tblrowclass = items[i].get('table_row_class');
-            if obj.portal_type == 'ReferenceAnalysis':
-                items[i]['st_uid'] = obj.aq_parent.UID()
-                items[i]['table_row_class'] = ' '.join([tblrowclass, 'qc-analysis']);
-            elif obj.portal_type == 'DuplicateAnalysis' and \
-                obj.getAnalysis().portal_type == 'ReferenceAnalysis':
-                items[i]['st_uid'] = obj.aq_parent.UID()
-                items[i]['table_row_class'] = ' '.join([tblrowclass, 'qc-analysis']);
-            else:
-                sample = None
-                if self.context.portal_type == 'AnalysisRequest':
-                    sample = self.context.getSample()
-                elif self.context.portal_type == 'Worksheet':
-                    if obj.portal_type in ('DuplicateAnalysis', 'RejectAnalysis'):
-                        sample = obj.getAnalysis().getSample()
-                    else:
-                        sample = obj.aq_parent.getSample()
-                elif self.context.portal_type == 'Sample':
-                    sample = self.context
-                st_uid = sample.getSampleType().UID() if sample else ''
-                items[i]['st_uid'] = st_uid
-
-            if checkPermission(ManageBika, self.context):
-                service_uid = service.UID()
-                latest = rc.lookupObject(service_uid).version_id
-                items[i]['Service'] = service.Title()
-                items[i]['class']['Service'] = "service_title"
-
-            # Show version number of out-of-date objects
-            # No: This should be done in another column, if at all.
-            # The (vX) value confuses some more fragile forms.
-            #     if hasattr(obj, 'reference_versions') and \
-            #        service_uid in obj.reference_versions and \
-            #        latest != obj.reference_versions[service_uid]:
-            #         items[i]['after']['Service'] = "(v%s)" % \
-            #              (obj.reference_versions[service_uid])
-
-            # choices defined on Service apply to result fields.
-            choices = service.getResultOptions()
-            if choices:
-                item['choices']['Result'] = choices
-
-            # permission to view this item's results
-            can_view_result = \
-                getSecurityManager().checkPermission(ViewResults, obj)
-
-            # permission to edit this item's results
-            # Editing Field Results is possible while in Sample Due.
-            poc = self.contentFilter.get("getPointOfCapture", 'lab')
-            can_edit_analysis = self.allow_edit and context_active and \
-                ( (poc == 'field' and getSecurityManager().checkPermission(EditFieldResults, obj))
-                  or
-                  (poc != 'field' and getSecurityManager().checkPermission(EditResults, obj)) )
-
-
-            allowed_method_states = ['to_be_sampled',
-                                     'to_be_preserved',
-                                     'sample_received',
-                                     'sample_registered',
-                                     'sampled',
-                                     'assigned']
-
-            # Prevent from being edited if the instrument assigned
-            # is not valid (out-of-date or uncalibrated), except if
-            # the analysis is a QC with assigned status
-            can_edit_analysis = can_edit_analysis \
-                and (obj.isInstrumentValid() \
-                    or (obj.portal_type == 'ReferenceAnalysis' \
-                        and item['review_state'] in allowed_method_states))
-
-            if can_edit_analysis:
-                items[i]['allow_edit'].extend(['Analyst',
-                                               'Result',
-                                               'Remarks'])
-                # if the Result field is editable, our interim fields are too
-                for f in self.interim_fields[obj.UID()]:
-                    items[i]['allow_edit'].append(f['keyword'])
-
-                # if there isn't a calculation then result must be re-testable,
-                # and if there are interim fields, they too must be re-testable.
-                if not items[i]['calculation'] or \
-                   (items[i]['calculation'] and self.interim_fields[obj.UID()]):
-                    items[i]['allow_edit'].append('retested')
-
-
-            # TODO: Only the labmanager must be able to change the method
-            # can_set_method = getSecurityManager().checkPermission(SetAnalysisMethod, obj)
-            can_set_method = can_edit_analysis \
-                and item['review_state'] in allowed_method_states\
-                and obj.getCanMethodBeChanged()
-            method = obj.getMethod() \
-                        if hasattr(obj, 'getMethod') and obj.getMethod() \
-                        else service.getMethod()
-
-            # Display the methods selector if the AS has at least one
-            # method assigned
-            item['Method'] = ''
-            item['replace']['Method'] = ''
-            if can_set_method:
-                voc = self.get_methods_vocabulary(obj)
-                if voc:
-                    # The service has at least one method available
-                    item['Method'] = method.UID() if method else ''
-                    item['choices']['Method'] = voc
-                    item['allow_edit'].append('Method')
-                    show_methodinstr_columns = True
-
-                elif method:
-                    # This should never happen
-                    # The analysis has set a method, but its parent
-                    # service hasn't any method available O_o
-                    item['Method'] = method.Title()
-                    item['replace']['Method'] = "<a href='%s'>%s</a>" % \
-                        (method.absolute_url(), method.Title())
-                    show_methodinstr_columns = True
-
-            elif method:
-                # Edition not allowed, but method set
-                item['Method'] = method.Title()
-                item['replace']['Method'] = "<a href='%s'>%s</a>" % \
-                    (method.absolute_url(), method.Title())
-                show_methodinstr_columns = True
-
-            # TODO: Instrument selector dynamic behavior in worksheet Results
-            # Only the labmanager must be able to change the instrument to be used. Also,
-            # the instrument selection should be done in accordance with the method selected
-            # can_set_instrument = service.getInstrumentEntryOfResults() and getSecurityManager().checkPermission(SetAnalysisInstrument, obj)
-            can_set_instrument = service.getInstrumentEntryOfResults() \
-                and can_edit_analysis \
-                and item['review_state'] in allowed_method_states
-
-            item['Instrument'] = ''
-            item['replace']['Instrument'] = ''
-            if service.getInstrumentEntryOfResults():
-                instrument = None
-
-                # If the analysis has an instrument already assigned, use it
-                if service.getInstrumentEntryOfResults() \
-                    and hasattr(obj, 'getInstrument') \
-                    and obj.getInstrument():
-                        instrument = obj.getInstrument()
-
-                # Otherwise, use the Service's default instrument
-                elif service.getInstrumentEntryOfResults():
-                        instrument = service.getInstrument()
-
-                if can_set_instrument:
-                    # Edition allowed
-                    voc = self.get_instruments_vocabulary(obj)
-                    if voc:
-                        # The service has at least one instrument available
-                        item['Instrument'] = instrument.UID() if instrument else ''
-                        item['choices']['Instrument'] = voc
-                        item['allow_edit'].append('Instrument')
-                        show_methodinstr_columns = True
-
-                    elif instrument:
-                        # This should never happen
-                        # The analysis has an instrument set, but the
-                        # service hasn't any available instrument
-                        item['Instrument'] = instrument.Title()
-                        item['replace']['Instrument'] = "<a href='%s'>%s</a>" % \
-                            (instrument.absolute_url(), instrument.Title())
-                        show_methodinstr_columns = True
-
-                elif instrument:
-                    # Edition not allowed, but instrument set
-                    item['Instrument'] = instrument.Title()
-                    item['replace']['Instrument'] = "<a href='%s'>%s</a>" % \
-                        (instrument.absolute_url(), instrument.Title())
-                    show_methodinstr_columns = True
-
-            else:
-                # Manual entry of results, instrument not allowed
-                item['Instrument'] = _('Manual')
-                msgtitle = t(_(
-                    "Instrument entry of results not allowed for ${service}",
-                    mapping={"service": safe_unicode(service.Title())},
-                ))
-                item['replace']['Instrument'] = \
-                    '<a href="#" title="%s">%s</a>' % (msgtitle, t(_('Manual')))
-
-            # Sets the analyst assigned to this analysis
-            if can_edit_analysis:
-                analyst = obj.getAnalyst()
-                # widget default: current user
-                if not analyst:
-                    analyst = mtool.getAuthenticatedMember().getUserName()
-                items[i]['Analyst'] = analyst
-                item['choices']['Analyst'] = self.getAnalysts()
-            else:
-                items[i]['Analyst'] = obj.getAnalystName()
-
-            # If the user can attach files to analyses, show the attachment col
-            can_add_attachment = \
-                getSecurityManager().checkPermission(AddAttachment, obj)
-            if can_add_attachment or can_view_result:
-                attachments = ""
-                if hasattr(obj, 'getAttachment'):
-                    for attachment in obj.getAttachment():
-                        af = attachment.getAttachmentFile()
-                        icon = af.icon
-                        attachments += "<span class='attachment' attachment_uid='%s'>" % (attachment.UID())
-                        if icon: attachments += "<img src='%s/%s'/>" % (self.portal_url, icon)
-                        attachments += '<a href="%s/at_download/AttachmentFile"/>%s</a>' % (attachment.absolute_url(), af.filename)
-                        if can_edit_analysis:
-                            attachments += "<img class='deleteAttachmentButton' attachment_uid='%s' src='%s'/>" % (attachment.UID(), "++resource++bika.lims.images/delete.png")
-                        attachments += "</br></span>"
-                items[i]['replace']['Attachments'] = attachments[:-12] + "</span>"
-
-            # Only display data bearing fields if we have ViewResults
-            # permission, otherwise just put an icon in Result column.
-            if can_view_result:
-                items[i]['Result'] = result
-                scinot = self.context.bika_setup.getScientificNotationResults()
-                items[i]['formatted_result'] = obj.getFormattedResult(sciformat=int(scinot),decimalmark=dmk)
-
-                # LIMS-1379 Allow manual uncertainty value input
-                # https://jira.bikalabs.com/browse/LIMS-1379
-                fu = format_uncertainty(obj, result, decimalmark=dmk, sciformat=int(scinot))
-                fu = fu if fu else ''
-                if can_edit_analysis and service.getAllowManualUncertainty() == True:
-                    unc = obj.getUncertainty(result)
-                    item['allow_edit'].append('Uncertainty')
-                    items[i]['Uncertainty'] = unc if unc else ''
-                    items[i]['before']['Uncertainty'] = '&plusmn;&nbsp;';
-                    items[i]['after']['Uncertainty'] = '<em class="discreet" style="white-space:nowrap;"> %s</em>' % items[i]['Unit'];
-                    items[i]['structure'] = False;
-                elif fu:
-                    items[i]['Uncertainty'] = fu
-                    items[i]['before']['Uncertainty'] = '&plusmn;&nbsp;';
-                    items[i]['after']['Uncertainty'] = '<em class="discreet" style="white-space:nowrap;"> %s</em>' % items[i]['Unit'];
-                    items[i]['structure'] = True
-
-                # LIMS-1700. Allow manual input of Detection Limits
-                # LIMS-1775. Allow to select LDL or UDL defaults in results with readonly mode
-                # https://jira.bikalabs.com/browse/LIMS-1700
-                # https://jira.bikalabs.com/browse/LIMS-1775
-                if can_edit_analysis and \
-                    hasattr(obj, 'getDetectionLimitOperand') and \
-                    hasattr(service, 'getDetectionLimitSelector') and \
-                    service.getDetectionLimitSelector() == True:
-                    isldl = obj.isBelowLowerDetectionLimit()
-                    isudl = obj.isAboveUpperDetectionLimit()
-                    dlval=''
-                    if isldl or isudl:
-                        dlval = '<' if isldl else '>'
-                    item['allow_edit'].append('DetectionLimit')
-                    item['DetectionLimit'] = dlval
-                    choices=[{'ResultValue': '<', 'ResultText': '<'},
-                             {'ResultValue': '>', 'ResultText': '>'}]
-                    item['choices']['DetectionLimit'] = choices
-                    self.columns['DetectionLimit']['toggle'] = True
-                    srv = obj.getService()
-                    defdls = {'min':srv.getLowerDetectionLimit(),
-                              'max':srv.getUpperDetectionLimit(),
-                              'manual':srv.getAllowManualDetectionLimit()}
-                    defin = '<input type="hidden" id="DefaultDLS.%s" value=\'%s\'/>'
-                    defin = defin % (obj.UID(), json.dumps(defdls))
-                    item['after']['DetectionLimit'] = defin
-
-                # LIMS-1769. Allow to use LDL and UDL in calculations.
-                # https://jira.bikalabs.com/browse/LIMS-1769
-                # Since LDL, UDL, etc. are wildcards that can be used
-                # in calculations, these fields must be loaded always
-                # for 'live' calculations.
-                if can_edit_analysis:
-                    dls = {'default_ldl': 'none',
-                           'default_udl': 'none',
-                           'below_ldl': False,
-                           'above_udl': False,
-                           'is_ldl': False,
-                           'is_udl': False,
-                           'manual_allowed': False,
-                           'dlselect_allowed': False}
-                    if hasattr(obj, 'getDetectionLimits'):
-                        dls['below_ldl'] = obj.isBelowLowerDetectionLimit()
-                        dls['above_udl'] = obj.isBelowLowerDetectionLimit()
-                        dls['is_ldl'] = obj.isLowerDetectionLimit()
-                        dls['is_udl'] = obj.isUpperDetectionLimit()
-                        dls['default_ldl'] = service.getLowerDetectionLimit()
-                        dls['default_udl'] = service.getUpperDetectionLimit()
-                        dls['manual_allowed'] = service.getAllowManualDetectionLimit()
-                        dls['dlselect_allowed'] = service.getDetectionLimitSelector()
-                    dlsin = '<input type="hidden" id="AnalysisDLS.%s" value=\'%s\'/>'
-                    dlsin = dlsin % (obj.UID(), json.dumps(dls))
-                    item['after']['Result'] = dlsin
-
-            else:
-                items[i]['Specification'] = ""
-                if 'Result' in items[i]['allow_edit']:
-                    items[i]['allow_edit'].remove('Result')
-                items[i]['before']['Result'] = \
-                    '<img width="16" height="16" ' + \
-                    'src="%s/++resource++bika.lims.images/to_follow.png"/>' % \
-                    (self.portal_url)
-            # Everyone can see valid-ranges
-            spec = self.get_analysis_spec(obj)
-            if spec:
-                min_val = spec.get('min', '')
-                min_str = ">{0}".format(min_val) if min_val else ''
-                max_val = spec.get('max', '')
-                max_str = "<{0}".format(max_val) if max_val else ''
-                error_val = spec.get('error', '')
-                error_str = "{0}%".format(error_val) if error_val else ''
-                rngstr = ",".join([x for x in [min_str, max_str, error_str] if x])
-            else:
-                rngstr = ""
-            items[i]['Specification'] = rngstr
-            # Add this analysis' interim fields to the interim_columns list
-            for f in self.interim_fields[obj.UID()]:
-                if f['keyword'] not in self.interim_columns and not f.get('hidden', False):
-                    self.interim_columns[f['keyword']] = f['title']
-                # and to the item itself
-                items[i][f['keyword']] = f
-                items[i]['class'][f['keyword']] = 'interim'
-
-            # check if this analysis is late/overdue
-
-            resultdate = obj.aq_parent.getDateSampled() \
-                if obj.portal_type == 'ReferenceAnalysis' \
-                else obj.getResultCaptureDate()
-
-            duedate = obj.aq_parent.getExpiryDate() \
-                if obj.portal_type == 'ReferenceAnalysis' \
-                else obj.getDueDate()
-
-            items[i]['replace']['DueDate'] = \
-                self.ulocalized_time(duedate, long_format=1)
-
-            if items[i]['review_state'] not in ['to_be_sampled',
-                                                'to_be_preserved',
-                                                'sample_due',
-                                                'published']:
-
-                if (resultdate and resultdate > duedate) \
-                    or (not resultdate and DateTime() > duedate):
-
-                    items[i]['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
-                        (self.ulocalized_time(duedate, long_format=1),
-                         self.portal_url,
-                         t(_("Late Analysis")))
-
-            after_icons = []
-            # Submitting user may not verify results unless the user is labman
-            # or manager and the AS has isSelfVerificationEnabled set to True
-            if items[i]['review_state'] == 'to_be_verified':
-                # If multi-verification required, place an informative icon
-                numverifications = obj.getNumberOfRequiredVerifications()
-                if numverifications > 1:
-                    # More than one verification required, place an icon
-                    # Get the number of verifications already done:
-                    done = obj.getNumberOfVerifications()
-                    pending = numverifications - done
-                    ratio = float(done)/float(numverifications) \
-                        if done > 0 else 0
-                    scale = '' if ratio < 0.25 else '25' \
-                            if ratio < 0.50 else '50' \
-                            if ratio < 0.75 else '75'
-                    anchor = "<a href='#' title='%s &#13;%s %s' " \
-                             "class='multi-verification scale-%s'>%s/%s</a>"
-                    anchor = anchor % (t(_("Multi-verification required")),
-                                       str(pending),
-                                       t(_("verification(s) pending")),
-                                       scale, str(done), str(numverifications))
-                    after_icons.append(anchor)
-
-                username = member.getUserName()
-                allowed = api.user.has_permission(VerifyPermission,
-                                                  username=username)
-                if allowed and not obj.isUserAllowedToVerify(member):
-                    after_icons.append(
-                        "<img src='++resource++bika.lims.images/submitted-by-current-user.png' title='%s'/>" %
-                        (t(_("Cannot verify, submitted or verified by current user before")))
-                        )
-                elif allowed:
-                    if obj.getSubmittedBy() == member.getUser().getId():
-                        after_icons.append(
-                        "<img src='++resource++bika.lims.images/warning.png' title='%s'/>" %
-                        (t(_("Can verify, but submitted by current user")))
-                        )
-            #If analysis Submitted and Verified by the same person, then warning icon will appear.
-            submitter=obj.getSubmittedBy()
-            if submitter and obj.wasVerifiedByUser(submitter):
-                after_icons.append(
-                    "<img src='++resource++bika.lims.images/warning.png' title='%s'/>" %
-                    (t(_("Submited and verified by the same user- "+ submitter)))
-                    )
-
-            # add icon for assigned analyses in AR views
-            if self.context.portal_type == 'AnalysisRequest':
-                obj = items[i]['obj']
-                if obj.portal_type in ['ReferenceAnalysis',
-                                       'DuplicateAnalysis'] or \
-                   workflow.getInfoFor(obj, 'worksheetanalysis_review_state') == 'assigned':
-                    br = obj.getBackReferences('WorksheetAnalysis')
-                    if len(br) > 0:
-                        ws = br[0]
-                        after_icons.append("<a href='%s'><img src='++resource++bika.lims.images/worksheet.png' title='%s'/></a>" %
-                        (ws.absolute_url(),
-                         t(_("Assigned to: ${worksheet_id}",
-                             mapping={'worksheet_id': safe_unicode(ws.id)}))))
-            items[i]['after']['state_title'] = '&nbsp;'.join(after_icons)
-            after_icons = []
-            if obj.getIsReflexAnalysis():
-                after_icons.append("<img\
-                src='%s/++resource++bika.lims.images/reflexrule.png'\
-                title='%s'>" % (
-                    self.portal_url,
-                    t(_('It comes form a reflex rule'))
-                ))
-            items[i]['after']['Service'] = '&nbsp;'.join(after_icons)
+        self.dmk = self.context.bika_setup.getResultsDecimalMark()
 
         # the TAL requires values for all interim fields on all
         # items, so we set blank values in unused cells
@@ -931,40 +1048,44 @@ class QCAnalysesView(AnalysesView):
 
         qcanalyses = context.getQCAnalyses()
         asuids = [an.UID() for an in qcanalyses]
-        self.catalog = 'bika_analysis_catalog'
         self.contentFilter = {'UID': asuids,
                               'sort_on': 'sortable_title'}
         self.icon = self.portal_url + \
                     "/++resource++bika.lims.images/referencesample.png"
 
+    # TODO-performance: Do not use object
+    def folderitem(self, obj, item, index):
+        """
+        obj should be a brain
+        """
+        obj = obj.getObject()
+        # Group items by RefSample - Worksheet - Position
+        wss = obj.getBackReferences('WorksheetAnalysis')
+        wsid = wss[0].id if wss and len(wss) > 0 else ''
+        wshref = wss[0].absolute_url() if wss and len(wss) > 0 else None
+        if wshref:
+            item['replace']['Worksheet'] = "<a href='%s'>%s</a>" % (wshref, wsid)
+
+        imgtype = ""
+        if obj.portal_type == 'ReferenceAnalysis':
+            antype = QCANALYSIS_TYPES.getValue(obj.getReferenceType())
+            if obj.getReferenceType() == 'c':
+                imgtype = "<img title='%s' src='%s/++resource++bika.lims.images/control.png'/>&nbsp;" % (antype, self.context.absolute_url())
+            if obj.getReferenceType() == 'b':
+                imgtype = "<img title='%s' src='%s/++resource++bika.lims.images/blank.png'/>&nbsp;" % (antype, self.context.absolute_url())
+            item['replace']['Partition'] = "<a href='%s'>%s</a>" % (obj.aq_parent.absolute_url(), obj.aq_parent.id)
+        elif obj.portal_type == 'DuplicateAnalysis':
+            antype = QCANALYSIS_TYPES.getValue('d')
+            imgtype = "<img title='%s' src='%s/++resource++bika.lims.images/duplicate.png'/>&nbsp;" % (antype, self.context.absolute_url())
+            item['sortcode'] = '%s_%s' % (obj.getSample().id, obj.getService().getKeyword())
+
+        item['before']['Service'] = imgtype
+        item['sortcode'] = '%s_%s' % (obj.getReferenceAnalysesGroupID(),
+                                          obj.getService().getKeyword())
+        return item
+
     def folderitems(self):
         items = AnalysesView.folderitems(self)
-        # Group items by RefSample - Worksheet - Position
-        for i in range(len(items)):
-            obj = items[i]['obj']
-            wss = obj.getBackReferences('WorksheetAnalysis')
-            wsid = wss[0].id if wss and len(wss) > 0 else ''
-            wshref = wss[0].absolute_url() if wss and len(wss) > 0 else None
-            if wshref:
-                items[i]['replace']['Worksheet'] = "<a href='%s'>%s</a>" % (wshref, wsid)
-
-            imgtype = ""
-            if obj.portal_type == 'ReferenceAnalysis':
-                antype = QCANALYSIS_TYPES.getValue(obj.getReferenceType())
-                if obj.getReferenceType() == 'c':
-                    imgtype = "<img title='%s' src='%s/++resource++bika.lims.images/control.png'/>&nbsp;" % (antype, self.context.absolute_url())
-                if obj.getReferenceType() == 'b':
-                    imgtype = "<img title='%s' src='%s/++resource++bika.lims.images/blank.png'/>&nbsp;" % (antype, self.context.absolute_url())
-                items[i]['replace']['Partition'] = "<a href='%s'>%s</a>" % (obj.aq_parent.absolute_url(), obj.aq_parent.id)
-            elif obj.portal_type == 'DuplicateAnalysis':
-                antype = QCANALYSIS_TYPES.getValue('d')
-                imgtype = "<img title='%s' src='%s/++resource++bika.lims.images/duplicate.png'/>&nbsp;" % (antype, self.context.absolute_url())
-                items[i]['sortcode'] = '%s_%s' % (obj.getSample().id, obj.getService().getKeyword())
-
-            items[i]['before']['Service'] = imgtype
-            items[i]['sortcode'] = '%s_%s' % (obj.getReferenceAnalysesGroupID(),
-                                              obj.getService().getKeyword())
-
         # Sort items
         items = sorted(items, key = itemgetter('sortcode'))
         return items

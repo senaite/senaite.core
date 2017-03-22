@@ -20,6 +20,7 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.permissions import ListFolderContents, View
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
+from bika.lims import deprecated
 from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.widgets import AnalysisSpecificationWidget
@@ -226,6 +227,7 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
 
         return DisplayList(sampletypes)
 
+    @deprecated('Flagged in 17.03')
     def getAnalysisSpecsStr(self, keyword):
         specstr = ''
         specs = self.getResultsRangeDict()

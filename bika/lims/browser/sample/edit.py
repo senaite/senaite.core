@@ -73,12 +73,11 @@ class SampleEdit(BrowserView):
         self.tables = {}
         if not self.allow_edit:
             for poc in POINTS_OF_CAPTURE:
-                if not self.context.getAnalyses({'getPointOfCapture': poc}):
-                    continue
-                t = SampleAnalysesView(self.context,
-                                 self.request,
-                                 getPointOfCapture = poc,
-                                 sort_on = 'getServiceTitle')
+                t = SampleAnalysesView(
+                    self.context,
+                    self.request,
+                    getPointOfCapture=poc,
+                    sort_on='getId')
                 t.form_id = "sample_%s_analyses" % poc
                 if poc == 'field':
                     t.review_states[0]['columns'].remove('DueDate')

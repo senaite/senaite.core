@@ -7,6 +7,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims.browser import BrowserView
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
+from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from calendar import monthrange
@@ -306,7 +307,7 @@ class DashboardView(BrowserView):
             assigned
         """
         out = []
-        bc = getToolByName(self.context, 'bika_analysis_catalog')
+        bc = getToolByName(self.context, CATALOG_ANALYSIS_LISTING)
         query = {'portal_type': "Analysis",
                  'cancellation_state': ['active']}
         filtering_allowed = self.context.bika_setup.getAllowDepartmentFiltering()
@@ -489,7 +490,7 @@ class DashboardView(BrowserView):
             curr = curr + datetime.timedelta(days=days)
         for brain in catalog(query):
             # Check if we can use the brain
-            if query.get('portal_type', '') == 'AnalysisRequest':
+            if query.get('portal_type', '') in ['AnalysisRequest', 'Analysis']:
                 created = brain.created
             # I not, get the object
             else:

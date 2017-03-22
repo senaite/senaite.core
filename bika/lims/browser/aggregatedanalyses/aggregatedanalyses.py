@@ -13,37 +13,32 @@ from bika.lims.browser.aggregatedanalyses.aggregatedanalyses_filter_bar\
 import json
 from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
+from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 
 
 class AggregatedAnalysesView(AnalysesView):
-    """ Displays a list of Analyses in a table.
-        Visible InterimFields from all analyses are added to self.columns[].
-        Keyword arguments are passed directly to bika_analysis_catalog.
+    """
+    View the displays a list of analyses with results pending, regardless of
+    the Analysis Requests or Worksheets to which they belong. Thus, analyses
+    of received samples, but without results or with verification pending.
+    This view is similar to other "manage_results" views (the user can submit
+    results, etc.). The view's main purpose is to provide a fast overview of
+    analyses with results pending, as well as results introduction, without
+    the need of browsing through Analysis Requests and/or Worksheets.
+    Eventhough, the recommended process for the introduction of results is
+    by using worksheets instead.
+    This view makes use of CATALOG_ANALYSIS_LISTING for items retrieval and
+    minimises the use of Analysis objects.
     """
 
     def __init__(self, context, request, **kwargs):
-        super(AggregatedAnalysesView, self).__init__(context,
-                                           request,
-                                           show_categories=False,
-                                           expand_all_categories=False)
+        super(AggregatedAnalysesView, self).__init__(context, request)
         self.title = _("Analyses pending")
-        self.catalog = "bika_analysis_catalog"
-        self.contentFilter = dict(kwargs)
-        self.contentFilter['portal_type'] = 'Analysis'
-        self.contentFilter['sort_on'] = 'created'
-        self.sort_order = 'ascending'
-        self.contentFilter['sort_order'] = self.sort_order
-        self.context_actions = {}
-        self.show_sort_column = False
-        self.show_select_row = False
-        self.show_select_column = False
-        self.show_column_toggles = False
         self.show_select_all_checkbox = False
         self.show_categories = False
         self.pagesize = 50
-        self.form_id = 'analyses_form'
-        self.portal = getToolByName(context, 'portal_url').getPortalObject()
-        self.portal_url = self.portal.absolute_url()
+        # Get temp objects that are too time consuming to obtain every time
+        self.bika_catalog = getToolByName(context, 'bika_catalog')
         # Check if the filter bar functionality is activated or not
         self.filter_bar_enabled =\
             self.context.bika_setup.getDisplayAdvancedFilterBarForAnalyses()
@@ -54,6 +49,8 @@ class AggregatedAnalysesView(AnalysesView):
 
         self.columns['AnalysisRequest'] = {
             'title': _('Analysis Request'),
+            'attr': 'getAnalysisRequestTitle',
+            'replace_url': 'getAnalysisRequestURL',
             'sortable': False
             }
         self.columns['Worksheet'] = {
@@ -82,81 +79,91 @@ class AggregatedAnalysesView(AnalysesView):
                          'state_title',
                          ]
              },
-             {'id': 'to_be_verified',
-              'title':  _('To be verified'),
-              'transitions': [{'id': 'verify'},
-                              {'id': 'cancel'}
-                              ],
-              'contentFilter': {'review_state': [
+            {'id': 'to_be_verified',
+             'title':  _('To be verified'),
+             'transitions': [{'id': 'verify'},
+                             {'id': 'cancel'}
+                             ],
+             'contentFilter': {'review_state': [
                  'to_be_verified']},
-              'columns': ['AnalysisRequest',
-                          'Worksheet',
-                          'Service',
-                          'Result',
-                          'Uncertainty',
-                          'Partition',
-                          'Method',
-                          'Instrument',
-                          'Analyst',
-                          'state_title',
-                          ]
-              },
+             'columns': ['AnalysisRequest',
+                         'Worksheet',
+                         'Service',
+                         'Result',
+                         'Uncertainty',
+                         'Partition',
+                         'Method',
+                         'Instrument',
+                         'Analyst',
+                         'state_title',
+                         ]
+             },
         ]
-        if not context.bika_setup.getShowPartitions():
-            self.review_states[0]['columns'].remove('Partition')
 
     def getPOSTAction(self):
         return 'aggregatedanalyses_workflow_action'
 
     def isItemAllowed(self, obj):
         """
-        It checks if the item can be added to the list depending on the
-        department filter. If the analysis service is not assigned to a
-        department, show it.
-        If department filtering is disabled in bika_setup, will return True.
-        @Obj: it is an analysis object.
-        @return: boolean
+        Checks if the passed in Analysis must be displayed in the list. If the
+        'filtering by department' option is enabled in Bika Setup, this
+        function checks if the Analysis Service associated to the Analysis
+        is assigned to any of the currently selected departments (information
+        stored in a cookie). In addition, the function checks if the Analysis
+        matches with the filtering criterias set in the advanced filter bar.
+        If no criteria in the advanced filter bar has been set and the option
+        'filtering by department' is disblaed, returns True.
+
+        :param obj: A single Analysis brain
+        :type obj: CatalogBrain
+        :returns: True if the item can be added to the list. Otherwise, False
+        :rtype: bool
         """
-        if not obj:
-            return None
-        if not self.context.bika_setup.getAllowDepartmentFiltering():
-            return True
-        # Gettin the department from analysis service
-        if self.filter_bar_enabled and not self.filter_bar_check_item(obj):
+        # The isItemAllowed function from the base class AnalysesView already
+        # takes into account filtering by department
+        allowed = super(AnalysesView, self).isItemAllowed(obj)
+        if not allowed:
             return False
-        serv_dep = obj.getService().getDepartment()
-        result = True
-        if serv_dep:
-            # Getting the cookie value
-            cookie_dep_uid = self.request.get('filter_by_department_info', '')
-            # Comparing departments' UIDs
-            result = True if serv_dep.UID() in\
-                cookie_dep_uid.split(',') else False
-        return result
+
+        if self.filter_bar_enabled:
+            # Advanced filter bar is enabled. Check if the Analysis matches
+            # with the filtering criterias.
+            return self.filter_bar_check_item(obj)
+
+        # By default, display the analysis
+        return True
 
     def folderitem(self, obj, item, index):
-        parent = obj.aq_parent
-        # Analysis Request
-        item['AnalysisRequest'] = parent.Title()
-        anchor = '<a href="%s">%s</a>' % (parent.absolute_url(), parent.Title())
-        item['replace']['AnalysisRequest'] = anchor
+        """
+        In this case obj should be a brain
+        """
+        item = super(AnalysesView, self).folderitem(obj, item, index)
+        if not item:
+            return None
+
         # Worksheet
         item['Worksheet'] = ''
-        wss = obj.getBackReferences('WorksheetAnalysis')
-        if wss and len(wss) > 0:
-            ws = wss[0]
+        wss = self.bika_catalog(getAnalysesUIDs={
+                    "query": obj.UID,
+                    "operator": "or"
+                })
+        if wss and len(wss) == 1:
+            # TODO-performance: don't get the whole object
+            ws = wss[0].getObject()
             item['Worksheet'] = ws.Title()
             anchor = '<a href="%s">%s</a>' % (ws.absolute_url(), ws.Title())
             item['replace']['Worksheet'] = anchor
+
         return item
 
     def getFilterBar(self):
         """
         This function creates an instance of BikaListingFilterBar if the
         class has not created one yet.
-        :return: a BikaListingFilterBar instance
+        :returns: a BikaListingFilterBar instance
+        :rtype: bika.lims.browser.BikaListingFilterBar
         """
-        self._advfilterbar = self._advfilterbar if self._advfilterbar else \
-            AggregatedanalysesBikaListingFilterBar(
-                context=self.context, request=self.request)
+        if not self._advfilterbar:
+            self._advfilterbar = AggregatedanalysesBikaListingFilterBar(
+                                    context=self.context, request=self.request)
         return self._advfilterbar

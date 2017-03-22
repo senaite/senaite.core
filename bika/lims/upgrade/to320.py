@@ -92,6 +92,8 @@ def upgrade(tool):
     logger.info("Removing stale indexes...")
     bc = getToolByName(portal, 'bika_catalog', None)
     delIndexAndColumn(bc, 'getProfilesTitle')
+    # Add new indexes
+    addIndex(bc, 'getAnalysesUIDs', 'KeywordIndex')
 
     # Adding two columns for client data
     addColumnsForClient(portal)
