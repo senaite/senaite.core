@@ -144,8 +144,7 @@ class AnalysisRequestsView(BikaListingView):
                 'toggle': True,
                 # TODO: This will change to 'True' once we have finished with
                 # the new priority type.
-                'sortable': False,
-                'sortable': True},
+                'sortable': False, },
             # 'AdHoc': {'title': _('Ad-Hoc'),
             #           'toggle': False},
             'SamplingDate': {
