@@ -81,64 +81,89 @@ class SamplesView(BikaListingView):
             self.context.bika_setup.getDisplayAdvancedFilterBarForSamples()
         # Defined in the __init__.py
         self.columns = {
-            'getSampleID': {'title': _('Sample ID'),
-                            'index':'getSampleID'},
-            'Client': {'title': _("Client"),
-                       'toggle': True,},
-            'Creator': {'title': PMF('Creator'),
-                        'index': 'Creator',
-                        'toggle': True},
-            'Created': {'title': PMF('Date Created'),
-                        'index': 'created',
-                        'toggle': False},
-            'Requests': {'title': _('Requests'),
-                         'sortable': False,
-                         'toggle': False},
-            'getClientReference': {'title': _('Client Ref'),
-                                   'index': 'getClientReference',
-                                   'toggle': True},
-            'getClientSampleID': {'title': _('Client SID'),
-                                  'index': 'getClientSampleID',
-                                  'toggle': True},
-            'getSampleTypeTitle': {'title': _('Sample Type'),
-                                   'index': 'getSampleTypeTitle'},
-            'getSamplePointTitle': {'title': _('Sample Point'),
-                                    'index': 'getSamplePointTitle',
-                                    'toggle': False},
-            'getStorageLocation': {'title': _('Storage Location'),
-                                    'toggle': False},
-            'SamplingDeviation': {'title': _('Sampling Deviation'),
-                                  'toggle': False},
-            'AdHoc': {'title': _('Ad-Hoc'),
-                      'toggle': False},
-            'SamplingDate': {'title': _('Sampling Date'),
-                                'index': 'getSamplingDate',
-                                'input_class': 'datetimepicker_nofuture autosave',
-                                'input_width': '10',
-                                'toggle': True},
-            'DateSampled': {'title': _('Date Sampled'),
-                               'index':'getDateSampled',
-                               'toggle': SamplingWorkflowEnabled,
-                               'input_class': 'datetimepicker_nofuture autosave',
-                               'input_width': '10'},
-            'getSampler': {'title': _('Sampler'),
-                           'toggle': SamplingWorkflowEnabled},
+            'getSampleID': {
+                'title': _('Sample ID'),
+                'index': 'getSampleID'},
+            'Client': {
+                'title': _("Client"),
+                'index': 'getClientTitle',
+                'toggle': True, },
+            'Creator': {
+                'title': PMF('Creator'),
+                'index': 'Creator',
+                'toggle': True},
+            'Created': {
+                'title': PMF('Date Created'),
+                'index': 'created',
+                'toggle': False},
+            'Requests': {
+                'title': _('Requests'),
+                'sortable': False,
+                'toggle': False},
+            'getClientReference': {
+                'title': _('Client Ref'),
+                'index': 'getClientReference',
+                'toggle': True},
+            'getClientSampleID': {
+                'title': _('Client SID'),
+                'index': 'getClientSampleID',
+                'toggle': True},
+            'getSampleTypeTitle': {
+                'title': _('Sample Type'),
+                'index': 'getSampleTypeTitle'},
+            'getSamplePointTitle': {
+                'title': _('Sample Point'),
+                'index': 'getSamplePointTitle',
+                'toggle': False},
+            'getStorageLocation': {
+                'sortable': False,
+                'title': _('Storage Location'),
+                'toggle': False},
+            'SamplingDeviation': {
+                'title': _('Sampling Deviation'),
+                'sortable': False,
+                'toggle': False},
+            'AdHoc': {
+                'title': _('Ad-Hoc'),
+                'sortable': False,
+                'toggle': False},
+            'SamplingDate': {
+                'title': _('Sampling Date'),
+                'index': 'getSamplingDate',
+                'input_class': 'datetimepicker_nofuture autosave',
+                'input_width': '10',
+                'toggle': True},
+            'DateSampled': {
+                'title': _('Date Sampled'),
+                'index': 'getDateSampled',
+                'toggle': SamplingWorkflowEnabled,
+                'input_class': 'datetimepicker_nofuture autosave',
+                'input_width': '10'},
+            'getSampler': {
+                'title': _('Sampler'),
+                'toggle': SamplingWorkflowEnabled},
             'getScheduledSamplingSampler': {
                 'title': _('Sampler for scheduled sampling'),
                 'input_class': 'autosave',
+                'sortable': False,
                 'toggle': self.context.bika_setup.getScheduleSamplingEnabled()
                 },
-            'getDatePreserved': {'title': _('Date Preserved'),
-                                 'toggle': user_is_preserver,
-                                 'input_class': 'datepicker_nofuture',
-                                 'input_width': '10'},
-            'getPreserver': {'title': _('Preserver'),
-                             'toggle': user_is_preserver},
-            'DateReceived': {'title': _('Date Received'),
-                             'index': 'getDateReceived',
-                             'toggle': False},
-            'state_title': {'title': _('State'),
-                            'index':'review_state'},
+            'getDatePreserved': {
+                'title': _('Date Preserved'),
+                'toggle': user_is_preserver,
+                'input_class': 'datepicker_nofuture',
+                'input_width': '10'},
+            'getPreserver': {
+                'title': _('Preserver'),
+                'toggle': user_is_preserver},
+            'DateReceived': {
+                'title': _('Date Received'),
+                'index': 'getDateReceived',
+                'toggle': False},
+            'state_title': {
+                'title': _('State'),
+                'sortable': False,
+                'index': 'review_state'},
         }
 
         self.review_states = [
