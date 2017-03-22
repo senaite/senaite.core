@@ -198,7 +198,7 @@ class AnalysisRequestsView(BikaListingView):
             'Printed': {
                 'title': _('Printed'),
                 'sortable': False,
-                'index': 'getPrinted'
+                'index': 'getPrinted',
                 'toggle': False},
         }
 
