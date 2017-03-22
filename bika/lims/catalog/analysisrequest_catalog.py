@@ -49,9 +49,6 @@ bika_catalog_analysisrequest_listing_definition = {
             'getPrinted': 'FieldIndex',
             'getClientSampleID': 'FieldIndex',
             'getSampleID': 'FieldIndex',
-            # allowedRolesAndUsers is obligatory if we are going to
-            # run advancedqueries against this catalog.
-            'allowedRolesAndUsers': 'KeywordIndex',
         },
         'columns': [
             'UID',
