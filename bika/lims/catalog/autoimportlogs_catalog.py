@@ -26,8 +26,8 @@ bika_catalog_autoimportlogs_listing_definition = {
             'portal_type': 'FieldIndex',
             'UID': 'FieldIndex',
             'getInstrumentUID': 'FieldIndex',
-             # allowedRolesAndUsers is obligatory if we are going to
-+            # run advancedqueries against this catalog.
+            # allowedRolesAndUsers is obligatory if we are going to
+            # run advancedqueries against this catalog.
             'allowedRolesAndUsers': 'KeywordIndex',
         },
         'columns': [
