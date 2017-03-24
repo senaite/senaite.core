@@ -72,82 +72,133 @@ class AnalysisRequestsView(BikaListingView):
             getDisplayAdvancedFilterBarForAnalysisRequests()
 
         self.columns = {
-            'getRequestID': {'title': _('Request ID'),
-                            'attr': 'getId',
-                            'replace_url': 'absolute_url',
-                            'index': 'getId'},
-            'getClientOrderNumber': {'title': _('Client Order'),
-                                     'toggle': True},
-            'Creator': {'title': PMF('Creator'),
-                                     'toggle': True},
-            'Created': {'title': PMF('Date Created'),
-                        'index': 'created',
-                        'toggle': False},
-            'getSample': {'title': _("Sample"),
-                        'attr': 'getSampleID',
-                        'replace_url': 'getSampleURL',
-                        'toggle': True, },
-            'BatchID': {'title': _("Batch ID"), 'toggle': True},
-            # 'SubGroup': {'title': _('Sub-group')},
-            'Client': {'title': _('Client'),
-                    'attr': 'getClientTitle',
-                    'replace_url': 'getClientURL',
-                    'toggle': True},
-            'Province': {'title': _('Province'),
-                       'toggle': True},
-            'District': {'title': _('District'),
-                       'toggle': True},
-            'getClientReference': {'title': _('Client Ref'),
-                                   'toggle': True},
-            'getClientSampleID': {'title': _('Client SID'),
-                                  'toggle': True},
-            'ClientContact': {'title': _('Contact'),
-                                 'toggle': False},
-            'getSampleTypeTitle': {'title': _('Sample Type'),
-                                   'toggle': True},
-            'getSamplePointTitle': {'title': _('Sample Point'),
-                                    'toggle': False},
-            'getStorageLocation': {'title': _('Storage Location'),
-                                    'toggle': False},
-            'SamplingDeviation': {'title': _('Sampling Deviation'),
-                                  'toggle': False},
-            'Priority': {'title': _('Priority'),
-                            'toggle': True,
-                            'sortable': True},
+            'getRequestID': {
+                'title': _('Request ID'),
+                'attr': 'getId',
+                'replace_url': 'absolute_url',
+                'index': 'getId'},
+            'getClientOrderNumber': {
+                'title': _('Client Order'),
+                'sortable': False,
+                'toggle': True},
+            'Creator': {
+                'title': PMF('Creator'),
+                'sortable': False,
+                'toggle': True},
+            'Created': {
+                'title': PMF('Date Created'),
+                'index': 'created',
+                'toggle': False},
+            'getSample': {
+                'title': _("Sample"),
+                'attr': 'getSampleID',
+                'index': 'getSampleID',
+                'replace_url': 'getSampleURL',
+                'toggle': True, },
+            'BatchID': {
+                'title': _("Batch ID"),
+                'sortable': False,
+                'toggle': True},
+            'Client': {
+                'title': _('Client'),
+                'attr': 'getClientTitle',
+                'replace_url': 'getClientURL',
+                'toggle': True},
+            'Province': {
+                'title': _('Province'),
+                'sortable': False,
+                'toggle': True},
+            'District': {
+                'title': _('District'),
+                'sortable': False,
+                'toggle': True},
+            'getClientReference': {
+                'title': _('Client Ref'),
+                'sortable': False,
+                'toggle': True},
+            'getClientSampleID': {
+                'title': _('Client SID'),
+                'toggle': True},
+            'ClientContact': {
+                'title': _('Contact'),
+                'sortable': False,
+                'toggle': False},
+            'getSampleTypeTitle': {
+                'title': _('Sample Type'),
+                'sortable': False,
+                'toggle': True},
+            'getSamplePointTitle': {
+                'title': _('Sample Point'),
+                'sortable': False,
+                'toggle': False},
+            'getStorageLocation': {
+                'title': _('Storage Location'),
+                'sortable': False,
+                'toggle': False},
+            'SamplingDeviation': {
+                'title': _('Sampling Deviation'),
+                'sortable': False,
+                'toggle': False},
+            'Priority': {
+                'title': _('Priority'),
+                'toggle': True,
+                # TODO: This will change to 'True' once we have finished with
+                # the new priority type.
+                'sortable': False, },
             # 'AdHoc': {'title': _('Ad-Hoc'),
             #           'toggle': False},
-            'SamplingDate': {'title': _('Sampling Date'),
-                             'toggle': True},
-            'getDateSampled': {'title': _('Date Sampled'),
-                               'toggle': SamplingWorkflowEnabled,
-                               'input_class': 'datetimepicker_nofuture',
-                               'input_width': '10'},
-            'getDateVerified': {'title': _('Date Verified'),
-                                'input_width': '10'},
-            'getSampler': {'title': _('Sampler'),
-                           'toggle': SamplingWorkflowEnabled},
-            'getDatePreserved': {'title': _('Date Preserved'),
-                                 'toggle': False,
-                                 'input_class': 'datetimepicker_nofuture',
-                                 'input_width': '10',
-                                 'sortable': False},  # no datesort without index
-            'getPreserver': {'title': _('Preserver'),
-                             'toggle': False},
-            'getDateReceived': {'title': _('Date Received'),
-                                'toggle': False},
-            'getDatePublished': {'title': _('Date Published'),
-                                 'toggle': False},
-            'state_title': {'title': _('State'),
-                            'index': 'review_state'},
-            'getProfilesTitle': {'title': _('Profile'),
-                                'toggle': False},
-            'getAnalysesNum': {'title': _('Number of Analyses'),
-                               'sortable': True,
-                               'toggle': False},
-            'getTemplateTitle': {'title': _('Template'),
-                                 'toggle': False},
-            'Printed': {'title': _('Printed'),
-                                      'toggle': False},
+            'SamplingDate': {
+                'title': _('Sampling Date'),
+                'index': 'getSamplingDate',
+                'toggle': True},
+            'getDateSampled': {
+                'title': _('Date Sampled'),
+                'toggle': SamplingWorkflowEnabled,
+                'input_class': 'datetimepicker_nofuture',
+                'input_width': '10'},
+            'getDateVerified': {
+                'title': _('Date Verified'),
+                'input_width': '10'},
+            'getSampler': {
+                'title': _('Sampler'),
+                'toggle': SamplingWorkflowEnabled},
+            'getDatePreserved': {
+                'title': _('Date Preserved'),
+                'toggle': False,
+                'input_class': 'datetimepicker_nofuture',
+                'input_width': '10',
+                'sortable': False},  # no datesort without index
+            'getPreserver': {
+                'title': _('Preserver'),
+                'sortable': False,
+                'toggle': False},
+            'getDateReceived': {
+                'title': _('Date Received'),
+                'toggle': False},
+            'getDatePublished': {
+                'title': _('Date Published'),
+                'toggle': False},
+            'state_title': {
+                'title': _('State'),
+                'sortable': False,
+                'index': 'review_state'},
+            'getProfilesTitle': {
+                'title': _('Profile'),
+                'sortable': False,
+                'toggle': False},
+            'getAnalysesNum': {
+                'title': _('Number of Analyses'),
+                'sortable': False,
+                'toggle': False},
+            'getTemplateTitle': {
+                'title': _('Template'),
+                'sortable': False,
+                'toggle': False},
+            'Printed': {
+                'title': _('Printed'),
+                'sortable': False,
+                'index': 'getPrinted',
+                'toggle': False},
         }
 
         self.review_states = [
