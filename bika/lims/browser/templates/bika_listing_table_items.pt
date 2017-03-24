@@ -194,8 +194,8 @@ Table cells for each column from in review_state's column list.
     </span>
     <tal:comment replace="nothing"><!-- regular field --></tal:comment>
     <span tal:omit-tag="python:True"
-        tal:condition="python:type(item[column]) != type({}) and
-                        not (column == 'Result' and item['calculation'])">
+        tal:condition="python:not isinstance(item[column], dict) and
+                        not (column == 'Result' and 'calculation' in item)">
         <tal:comment replace="nothing"><!-- edit --></tal:comment>
         <input
             type="text" style="font-size: 100%"
@@ -220,7 +220,7 @@ Table cells for each column from in review_state's column list.
             tal:attributes="class item/state_class"/>
         <span
             tal:condition="python:not allow_edit and column == 'Result' and not item.get('formatted_result', '')"
-            tal:content="python:item['formatted_result']"
+            tal:content="python:item.get('formatted_result', '')"
             tal:attributes="class item/state_class"/>
         <tal:regularlabel condition="python:not allow_edit and column != 'Result'">
         <span tal:condition="python:item.get('structure',False)"
@@ -247,14 +247,14 @@ Table cells for each column from in review_state's column list.
     <tal:comment replace="nothing"><!-- calculated result field. --></tal:comment>
     <span tal:omit-tag="python:True"
         tal:condition="python:column == 'Result' and
-                            item['calculation']">
+                            'calculation' in item">
         <span
             tal:attributes="
                 field string:formatted_result;
                 uid item/uid;
                 objectId string:${item/id};
                 size input_width;"
-            tal:content="structure python:item['formatted_result']"/>
+            tal:content="structure python:item.get('formatted_result', '')"/>
         <input
             type="hidden"
             tal:attributes="

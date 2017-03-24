@@ -20,8 +20,6 @@ class AnalysesView(BaseView):
         self.contentFilter = {
                         'getWorksheetUID': context.UID(), }
         self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
-        self.show_select_row = False
-        self.show_sort_column = False
         self.allow_edit = True
         self.show_categories = False
         self.expand_all_categories = False

@@ -107,7 +107,7 @@ def __init__(self, parser, context, idsearchcriteria, override,
         AnalysisResultsImporter.__init__(self,
                                          parser,
                                          context,
-                                         idsearchcriteria=['getSampleID', 'getRequestID', 'getClientSampleID'],
+                                         idsearchcriteria=['getSampleID', 'getId', 'getClientSampleID'],
                                          override=override,
                                          allowed_ar_states=allowed_ar_states,
                                          allowed_analysis_states=allowed_analysis_states,
@@ -153,9 +153,9 @@ def Import(context, request):
         elif override == 'overrideempty':
             over = [True, True]
 
-        sam = ['getRequestID', 'getSampleID', 'getClientSampleID']
+        sam = ['getId', 'getSampleID', 'getClientSampleID']
         if sample == 'requestid':
-            sam = ['getRequestID']
+            sam = ['getId']
         if sample == 'sampleid':
             sam = ['getSampleID']
         elif sample == 'clientsid':

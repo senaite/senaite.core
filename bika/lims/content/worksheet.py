@@ -18,6 +18,7 @@ from bika.lims.permissions import EditWorksheet, ManageWorksheets
 from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import skip
+from bika.lims import deprecated
 from bika.lims import logger
 from DateTime import DateTime
 from operator import itemgetter
@@ -813,6 +814,14 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         self.getField('Method').set(self, method)
         return total
+
+    @deprecated('Flagged in 17.03')
+    def getFolderContents(self, contentFilter):
+        """
+        """
+        # The bika_listing machine passes contentFilter to all
+        # contentsMethod methods.  We ignore it.
+        return list(self.getAnalyses())
 
     def getAnalystName(self):
         """ Returns the name of the currently assigned analyst

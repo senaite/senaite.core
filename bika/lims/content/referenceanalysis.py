@@ -352,6 +352,21 @@ class ReferenceAnalysis(BaseContent):
     def getDepartmentUID(self):
         return self.getService().getDepartment().UID()
 
+    # TODO-performance: improve this function using another catalog and takeing
+    # advantatge of the column in service, not getting the full object.
+    def getCategoryTitle(self):
+        """
+        Returns the Title of the asociated service's department.
+        """
+        # Getting the service like that because otherwise gives an error
+        # when rebuilding the catalogs.
+        service_uid = self.getRawService()
+        catalog = getToolByName(self, "uid_catalog")
+        brain = catalog(UID=service_uid)
+        if brain:
+            return brain[0].getObject().getCategoryTitle()
+        return ''
+
     def getFormattedResult(self, specs=None, decimalmark='.', sciformat=1):
         """Formatted result:
         1. If the result is not floatable, return it without being formatted

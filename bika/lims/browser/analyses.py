@@ -8,6 +8,7 @@
 from plone import api
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
+from bika.lims import deprecated
 from bika.lims.utils import t, dicts_to_dict, format_supsub
 from bika.lims.utils.analysis import format_uncertainty
 from bika.lims.browser import BrowserView
@@ -92,7 +93,7 @@ class AnalysesView(BikaListingView):
             'Partition': {
                 'title': _("Partition"),
                 'attr': 'getSamplePartitionID',
-                'sortable':False},
+                'sortable': False},
             'Method': {
                 'title': _('Method'),
                 'sortable': False,
@@ -184,8 +185,7 @@ class AnalysesView(BikaListingView):
         :returns: The result specifications that apply to the Analysis.
         :rtype: dict
         """
-        # Is it a brain?
-        if hasattr(analysis, 'getObject'):
+        if ICatalogBrain.providedBy(analysis):
             # It is a brain
             if analysis.getResultsRangeNoSpecs and not\
                     isinstance(analysis.getResultsRangeNoSpecs, list):
@@ -203,43 +203,59 @@ class AnalysesView(BikaListingView):
             return {
                 'keyword': keyword, 'uid': uid, 'min': '',
                 'max': '', 'error': ''}
-        else:
-            if hasattr(analysis, 'getResultsRange'):
-                return analysis.getResultsRange()
-            if hasattr(analysis.aq_parent, 'getResultsRange'):
-                rr = dicts_to_dict(analysis.aq_parent.getResultsRange(), 'keyword')
-                return rr.get(analysis.getKeyword(), None)
-            if hasattr(analysis.aq_parent, 'getReferenceResults'):
-                rr = dicts_to_dict(analysis.aq_parent.getReferenceResults(), 'uid')
-                return rr.get(analysis.UID(), None)
-            keyword = analysis.getService().getKeyword()
-            uid = analysis.UID()
-            return {
-                'keyword': keyword, 'uid': uid, 'min': '',
-                'max': '', 'error': ''}
+
+        # It is an object
+        if hasattr(analysis, 'getResultsRange'):
+            return analysis.getResultsRange()
+        if hasattr(analysis.aq_parent, 'getResultsRange'):
+            rr = dicts_to_dict(analysis.aq_parent.getResultsRange(), 'keyword')
+            return rr.get(analysis.getKeyword(), None)
+        if hasattr(analysis.aq_parent, 'getReferenceResults'):
+            rr = dicts_to_dict(analysis.aq_parent.getReferenceResults(), 'uid')
+            return rr.get(analysis.UID(), None)
+        keyword = analysis.getService().getKeyword()
+        uid = analysis.UID()
+        return {
+            'keyword': keyword, 'uid': uid, 'min': '',
+            'max': '', 'error': ''}
 
     def ResultOutOfRange(self, analysis):
         """ Template wants to know, is this analysis out of range?
         We scan IResultOutOfRange adapters, and return True if any IAnalysis
         adapters trigger a result.
         """
-        adapters = getAdapters((analysis, ), IResultOutOfRange)
         spec = self.get_analysis_spec(analysis)
+        # The function get_analysis_spec ALWAYS return a dict. If no specs
+        # are found for the analysis, returns a dict with empty values for
+        # min and max keys.
+        if not spec or (not spec.get('min') and not spec.get('max')):
+            return False
+        # The analysis has specs defined, evaluate if is out of range
+        adapters = getAdapters((analysis, ), IResultOutOfRange)
         for name, adapter in adapters:
-            if not spec:
-                return False
             if adapter(specification=spec):
                 return True
+        # By default, not out of range
+        return False
 
+    @deprecated('Flagged in 17.03')
     def getAnalysisSpecsStr(self, spec):
-        specstr = ''
+        """
+        Generates a string representation of the specifications passed in. If
+        neither min nor max values found, returns an empty string
+
+        :param spec: specifications dict, with 'min' and 'max' keys
+        :type spec: dict
+        :returns: a string representation of the passed in specs
+        :rtype: string
+        """
         if spec['min'] and spec['max']:
-            specstr = '%s - %s' % (spec['min'], spec['max'])
-        elif spec['min']:
-            specstr = '> %s' % spec['min']
-        elif spec['max']:
-            specstr = '< %s' % spec['max']
-        return specstr
+            return '%s - %s' % (spec['min'], spec['max'])
+        if spec['min']:
+            return '> %s' % spec['min']
+        if spec['max']:
+            return '< %s' % spec['max']
+        return ''
 
     def get_methods_vocabulary(self, analysis=None):
         """
@@ -265,9 +281,7 @@ class AnalysesView(BikaListingView):
         if analysis:
             # This function returns  a list of tuples as [(UID,Title),(),...]
             methods = analysis.getAllowedMethodsAsTuples
-            if not methods:
-                ret.append({'ResultValue': '',
-                            'ResultText': _('None')})
+            methods = methods if methods else []
             for uid, title in methods:
                 ret.append({'ResultValue': uid,
                             'ResultText': title})
@@ -277,6 +291,9 @@ class AnalysesView(BikaListingView):
             for brain in brains:
                 ret.append({'ResultValue': brain.UID,
                             'ResultText': brain.title})
+        if not ret:
+            ret = [{'ResultValue': '',
+                    'ResultText': _('None')}]
         return ret
 
     def get_instruments_vocabulary(self, analysis = None):
@@ -355,6 +372,7 @@ class AnalysesView(BikaListingView):
         stored in a cookie).
         If department filtering is disabled in bika_setup, returns True.
         If the obj is None or empty, returns False.
+        If the obj has no department assigned, returns True
 
         :param obj: A single Analysis brain or content object
         :type obj: ATContentType/CatalogBrain
@@ -497,7 +515,7 @@ class AnalysesView(BikaListingView):
 
             # if there isn't a calculation then result must be re-testable,
             # and if there are interim fields, they too must be re-testable.
-            if not item['calculation'] or \
+            if not item.get('calculation') or \
                (item['calculation'] and self.interim_fields[obj.UID]):
                 item['allow_edit'].append('retested')
 
@@ -1046,7 +1064,7 @@ class QCAnalysesView(AnalysesView):
         wsid = wss[0].id if wss and len(wss) > 0 else ''
         wshref = wss[0].absolute_url() if wss and len(wss) > 0 else None
         if wshref:
-            items[i]['replace']['Worksheet'] = "<a href='%s'>%s</a>" % (wshref, wsid)
+            item['replace']['Worksheet'] = "<a href='%s'>%s</a>" % (wshref, wsid)
 
         imgtype = ""
         if obj.portal_type == 'ReferenceAnalysis':
@@ -1055,11 +1073,11 @@ class QCAnalysesView(AnalysesView):
                 imgtype = "<img title='%s' src='%s/++resource++bika.lims.images/control.png'/>&nbsp;" % (antype, self.context.absolute_url())
             if obj.getReferenceType() == 'b':
                 imgtype = "<img title='%s' src='%s/++resource++bika.lims.images/blank.png'/>&nbsp;" % (antype, self.context.absolute_url())
-            items[i]['replace']['Partition'] = "<a href='%s'>%s</a>" % (obj.aq_parent.absolute_url(), obj.aq_parent.id)
+            item['replace']['Partition'] = "<a href='%s'>%s</a>" % (obj.aq_parent.absolute_url(), obj.aq_parent.id)
         elif obj.portal_type == 'DuplicateAnalysis':
             antype = QCANALYSIS_TYPES.getValue('d')
             imgtype = "<img title='%s' src='%s/++resource++bika.lims.images/duplicate.png'/>&nbsp;" % (antype, self.context.absolute_url())
-            items[i]['sortcode'] = '%s_%s' % (obj.getSample().id, obj.getService().getKeyword())
+            item['sortcode'] = '%s_%s' % (obj.getSample().id, obj.getService().getKeyword())
 
         item['before']['Service'] = imgtype
         item['sortcode'] = '%s_%s' % (obj.getReferenceAnalysesGroupID(),

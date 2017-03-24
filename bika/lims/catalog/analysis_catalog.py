@@ -74,6 +74,7 @@ bika_catalog_analysis_listing_definition = {
             # TODO-catalog: review_state and getObjectWorkflowStates contains
             # the same state
             'review_state',
+            'allowedRolesAndUsers',
             'worksheetanalysis_review_state',
             'getObjectWorkflowStates',
             'getRequestID',
@@ -146,5 +147,6 @@ class BikaAnalysisCatalog(BikaCatalogTool):
         BikaCatalogTool.__init__(self, CATALOG_ANALYSIS_LISTING,
                                  'Bika Analysis Catalog',
                                  'BikaAnalysisCatalog')
+
 
 InitializeClass(BikaAnalysisCatalog)
