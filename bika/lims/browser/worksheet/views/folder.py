@@ -377,6 +377,8 @@ class FolderView(BikaListingView):
         sampletypes = []
         qcsamples = []
         for container in pos_parent.values():
+            if not container:
+                continue
             if container.portal_type == 'AnalysisRequest':
                 sampletype = "<a href='%s'>%s</a>" % \
                            (container.getSample().getSampleType().absolute_url(),
