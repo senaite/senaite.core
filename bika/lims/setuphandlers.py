@@ -787,7 +787,7 @@ class BikaGenerator:
         addColumn(pc, 'getProvince')
         addColumn(pc, 'getDistrict')
 
-        # CATALOG_ANALYSIS_REQUEST
+        # Setting up all LIMS catalogs defined in catalog folder
         setup_catalogs(portal, getCatalogDefinitions())
 
     def setupTopLevelFolders(self, context):
