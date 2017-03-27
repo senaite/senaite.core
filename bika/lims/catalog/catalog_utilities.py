@@ -147,8 +147,11 @@ def _merge_catalog_definitions(dict1, dict2):
     outdict = {}
     # Use dict1 as a template
     for k, v in dict1.items():
-        if k not in dict2:
+        if k not in dict2 and isinstance(v, dict):
             outdict[k] = v.copy()
+            continue
+        if k not in dict2 and isinstance(v, list):
+            outdict[k] = v[:]
             continue
         if k == 'indexes':
             sdict1 = v.copy()
