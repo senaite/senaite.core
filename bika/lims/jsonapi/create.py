@@ -368,7 +368,6 @@ class Create(object):
         brains = resolve_request_lookup(context, request, 'Services')
         service_uids = [p.UID for p in brains]
         new_analyses = ar.setAnalyses(service_uids, specs=specs)
-        ar.setRequestID(ar.getId())
         ar.reindexObject()
         event.notify(ObjectInitializedEvent(ar))
         ar.at_post_create_script()

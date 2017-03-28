@@ -61,13 +61,6 @@ except ImportError:
 
 
 schema = BikaSchema.copy() + Schema((
-    # The ID assigned to the client's request by the lab
-    ComputedField(
-        'RequestID',
-        searchable=True,
-        expression="here.getId()",
-        widget=ComputedWidget(visible=False),
-    ),
     ReferenceField(
         'Contact',
         required=1,
@@ -1818,6 +1811,15 @@ class AnalysisRequest(BaseFolder):
         """ Return searchable data as Description """
         descr = " ".join((self.getId(), self.aq_parent.Title()))
         return safe_unicode(descr).encode('utf-8')
+
+    # TODO: This method should be deleted, it has the same use as getId
+    def getRequestID(self):
+        """
+        Another way to return the object ID. It is used as a column and index.
+        :returns: The object ID
+        :rtype: str
+        """
+        return self.getId()
 
     def getClient(self):
         if self.aq_parent.portal_type == 'Client':
