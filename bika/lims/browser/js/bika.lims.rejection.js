@@ -135,6 +135,7 @@
          // [{'checkbox': u'on', 'textfield-2': u'b', 'textfield-1': u'c', 'textfield-0': u'a'}]
          var fieldvalue = getRejectionWidgetValues();
          requestdata.RejectionReasons = fieldvalue;
+         var msg = '';
          $.ajax({
              type: "POST",
              url: window.portal_url+"/@@API/update",
@@ -169,17 +170,23 @@
                     bika.lims.SiteView.notificationPanel('Rejecting', "succeed");
                     window.location.href = redirect_state;
                 }
+            } else if (data.success === false) {
+                bika.lims.SiteView.notificationPanel('Error while rejecting the analysis request. Unsuccesful AJAX call.', 'error');
+                msg = '[bika.lims.analysisrequest.js] Error while rejecting the analysis request. Unsuccesful AJAX call.';
+                console.warn(msg);
+                window.bika.lims.error(msg);
+                $('#semioverlay input[name="semioverlay.cancel"]').click();
             } else {
-                 bika.lims.SiteView.notificationPanel('Error while rejection the analysis request', 'error');
-                 var msg = '[bika.lims.analysisrequest.js] Error while rejection the analysis request';
-                 console.warn(msg);
-                 window.bika.lims.error(msg);
-                 $('#semioverlay input[name="semioverlay.cancel"]').click();
+                bika.lims.SiteView.notificationPanel('Error while rejecting the analysis request. No data returned.', 'error');
+                msg = '[bika.lims.analysisrequest.js] Error while rejecting the analysis request. No data returned.';
+                console.warn(msg);
+                window.bika.lims.error(msg);
+                $('#semioverlay input[name="semioverlay.cancel"]').click();
             }
          })
          .fail(function(){
-             bika.lims.SiteView.notificationPanel('Error while rejection the analysis request','error');
-             var msg = '[bika.lims.analysisrequest.js] Error while rejection the analysis request';
+             bika.lims.SiteView.notificationPanel('Error while rejection the analysis request. AJAX POST failed.','error');
+             var msg = '[bika.lims.analysisrequest.js] Error while rejection the analysis request. AJAX POST failed.';
              console.warn(msg);
              window.bika.lims.error(msg);
              $('#semioverlay input[name="semioverlay.cancel"]').click();
