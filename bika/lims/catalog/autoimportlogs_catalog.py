@@ -33,6 +33,7 @@ bika_catalog_autoimportlogs_listing_definition = {
         'columns': [
             'UID',
             'getId',
+            'meta_type',
             'Title',
             'created',
             'allowedRolesAndUsers',
@@ -59,5 +60,6 @@ class BikaCatalogAutoImportLogsListing(BikaCatalogTool):
         BikaCatalogTool.__init__(self, CATALOG_AUTOIMPORTLOGS_LISTING,
                                  'Bika Catalog Auto-Import Logs Listing',
                                  'BikaCatalogAutoImportLogsListing')
+
 
 InitializeClass(BikaCatalogAutoImportLogsListing)
