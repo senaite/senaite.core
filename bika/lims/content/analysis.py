@@ -8,6 +8,7 @@
 
 "DuplicateAnalysis uses this as it's base.  This accounts for much confusion."
 
+import traceback
 from plone import api
 from AccessControl import getSecurityManager
 from AccessControl import ClassSecurityInfo
