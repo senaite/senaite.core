@@ -67,6 +67,7 @@ bika_catalog_analysis_listing_definition = {
         'columns': [
             'UID',
             'getId',
+            'meta_type',
             'Title',
             'created',
             'Creator',
