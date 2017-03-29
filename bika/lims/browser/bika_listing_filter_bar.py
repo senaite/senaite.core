@@ -42,7 +42,7 @@ class BikaListingFilterBar(BrowserView):
         """
         This function returns a string with the name for the input. A function
         is used in order to translate the name.
-        :return: an string with the title.
+        :returns: an string with the title.
         """
         return _('Filter')
 
@@ -77,7 +77,7 @@ class BikaListingFilterBar(BrowserView):
         Only returns the items that can be added to contentFilter dictionary,
         this means that only the dictionary items (key-value) with index
         representations should be returned.
-        :return: a dictionary to be added to contentFilter.
+        :returns: a dictionary to be added to contentFilter.
         """
         return {}
 
@@ -89,7 +89,7 @@ class BikaListingFilterBar(BrowserView):
         This function should be only used for those fields without
         representation as an index in the catalog.
         :item: The item to check.
-        :return: boolean.
+        :returns: boolean.
         """
         return True
 
@@ -98,7 +98,7 @@ class BikaListingFilterBar(BrowserView):
         The template is going to call this method to create the filter bar in
         bika_listing_filter_bar.pt
         If the method returns None, the filter bar will not be shown.
-        :return: a list of dictionaries as the filtering fields or None.
+        :returns: a list of dictionaries as the filtering fields or None.
 
         Each dictionary defines a field, those are the expected elements
         for each field type by the default template:

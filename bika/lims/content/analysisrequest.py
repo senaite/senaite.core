@@ -2048,7 +2048,7 @@ class AnalysisRequest(BaseFolder):
         If an analysis belongs to a profile, this analysis will only be
         included in the analyses list if the profile
         has disabled "Use Analysis Profile Price".
-        :return: a tuple of two lists. The first one only contains analysis
+        :returns: a tuple of two lists. The first one only contains analysis
         services not belonging to a profile
                  with active "Use Analysis Profile Price".
                  The second list contains the profiles with activated "Use
@@ -2106,7 +2106,7 @@ class AnalysisRequest(BaseFolder):
         """
         This function gets all analysis services and all profiles and removes
         the services belonging to a profile.
-        :return: a tuple of three lists, where the first list contains the
+        :returns: a tuple of three lists, where the first list contains the
         analyses and the second list the profiles.
                  The third contains the analyses objects used by the profiles.
         """
@@ -2183,7 +2183,7 @@ class AnalysisRequest(BaseFolder):
         It computes the VAT amount from (subtotal-discount.)*VAT/100,
         but each analysis has its
         own VAT!
-        :return: the analysis request VAT amount with the discount
+        :returns: the analysis request VAT amount with the discount
         """
         has_client_discount = self.aq_parent.getMemberDiscountApplies()
         VATAmount = self.getSubtotalVATAmount()
@@ -2200,7 +2200,7 @@ class AnalysisRequest(BaseFolder):
         It gets the discounted price from analyses and profiles to obtain the
         total value with the VAT
         and the discount applied
-        :return: the analysis request's total price including the VATs and
+        :returns: the analysis request's total price including the VATs and
         discounts
         """
         price = (self.getSubtotal() - self.getDiscountAmount() +
@@ -2476,7 +2476,7 @@ class AnalysisRequest(BaseFolder):
     def getSamplingRoundUID(self):
         """
         Obtains the sampling round UID
-        :return: a UID
+        :returns: a UID
         """
         if self.getSamplingRound():
             return self.getSamplingRound().UID()
@@ -2986,7 +2986,7 @@ class AnalysisRequest(BaseFolder):
         """
         This functions returns the partitions from the analysis request's
         analyses.
-        :return: a list with the full partition objects
+        :returns: a list with the full partition objects
         """
         analyses = self.getRequestedAnalyses()
         partitions = []
@@ -2999,7 +2999,7 @@ class AnalysisRequest(BaseFolder):
         """
         This functions returns the containers from the analysis request's
         analyses
-        :return: a list with the full partition objects
+        :returns: a list with the full partition objects
         """
         partitions = self.getPartitions()
         containers = []
@@ -3054,7 +3054,7 @@ class AnalysisRequest(BaseFolder):
     def getReceivedBy(self):
         """
         Returns the User who received the analysis request.
-        :return: the user id
+        :returns: the user id
         """
         user = getTransitionUsers(self, 'receive', last_user=True)
         return user[0] if user else ''
@@ -3100,7 +3100,7 @@ class AnalysisRequest(BaseFolder):
         it contains. This is why this function checks if the analyses
         contained are verifiable, cause otherwise, the Analysis Request will
         never be able to reach a 'verified' state.
-        :return: True or False
+        :returns: True or False
         """
         # Check if the analysis request is active
         workflow = getToolByName(self, "portal_workflow")
@@ -3139,7 +3139,7 @@ class AnalysisRequest(BaseFolder):
         This method is used as a metacolumn.
         Returns a dictionary with the workflow id as key and workflow state as
         value.
-        :return: {'review_state':'active',...}
+        :returns: {'review_state':'active',...}
         """
         workflow = getToolByName(self, 'portal_workflow')
         states = {}
@@ -3157,7 +3157,7 @@ class AnalysisRequest(BaseFolder):
         user can verify the analysis request according to his/her privileges
         and the analyses contained (see isVerifiable function)
         :member: user to be tested
-        :return: true or false
+        :returns: true or false
         """
         # Check if the user has "Bika: Verify" privileges
         username = member.getUserName()
@@ -3176,7 +3176,7 @@ class AnalysisRequest(BaseFolder):
         Checks if the verify transition can be performed to the current
         Analysis Request by the current user depending on the user roles, as
         well as the statuses of the analyses assigned to this Analysis Request
-        :return: true or false
+        :returns: true or false
         """
         mtool = getToolByName(self, "portal_membership")
         # Check if the Analysis Request is in a "verifiable" state

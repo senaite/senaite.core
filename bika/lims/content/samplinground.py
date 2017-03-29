@@ -288,7 +288,7 @@ class SamplingRound(Item):
     def getAnalysisRequestTemplates(self):
         """
         This functions builds a list of tuples with the object AnalysisRequestTemplates' uids and names.
-        :return: A list of tuples where the first value of the tuple is the AnalysisRequestTemplate name and the
+        :returns: A list of tuples where the first value of the tuple is the AnalysisRequestTemplate name and the
         second one is the AnalysisRequestTemplate UID. --> [(ART.title),(ART.UID),...]
         """
         l = []
@@ -401,7 +401,7 @@ class SamplingRound(Item):
         Checks if the current user has privileges to access to the editing view.
         From Jira LIMS-1549:
            - Creation/Edit: Lab manager, Client Contact, Lab Clerk, Client Contact (for Client-specific SRTs)
-        :return: True/False
+        :returns: True/False
         """
         mtool = getToolByName(self, 'portal_membership')
         checkPermission = mtool.checkPermission

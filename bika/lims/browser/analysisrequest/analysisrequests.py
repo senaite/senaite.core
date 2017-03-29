@@ -1034,7 +1034,7 @@ class AnalysisRequestsView(BikaListingView):
         """
         This function creates an instance of BikaListingFilterBar if the
         class has not created one yet.
-        :return: a BikaListingFilterBar instance
+        :returns: a BikaListingFilterBar instance
         """
         self._advfilterbar = self._advfilterbar if self._advfilterbar else \
             AnalysisRequestsBikaListingFilterBar(

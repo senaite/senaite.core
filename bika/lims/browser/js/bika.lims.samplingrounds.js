@@ -29,7 +29,7 @@ function ClientSamplingRoundAddEditView() {
     function hasSamplingRoundTemplateData() {
         /**
          * Checks if the sampling rounds template field has a sampling rounds template selected.
-         * :return: True if the field has data and False if the field contains "--NOVALUE--"
+         * :returns: True if the field has data and False if the field contains "--NOVALUE--"
          */
         var value = $('select#form-widgets-sr_template').val();
         return value != "--NOVALUE--";

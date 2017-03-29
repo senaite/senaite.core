@@ -898,7 +898,7 @@ class Analysis(BaseContent):
     def getPrice(self):
         """
         The function obtains the analysis' price without VAT and without member discount
-        :return: the price (without VAT or Member Discount) in decimal format
+        :returns: the price (without VAT or Member Discount) in decimal format
         """
         analysis_request = self.aq_parent
         client = analysis_request.aq_parent
@@ -916,7 +916,7 @@ class Analysis(BaseContent):
     def getVATAmount(self):
         """
         Compute the VAT amount without member discount.
-        :return: the result as a float
+        :returns: the result as a float
         """
         vat = self.getService().getVAT()
         price = self.getPrice()
@@ -926,7 +926,7 @@ class Analysis(BaseContent):
         """
         Obtain the total price without client's member discount. The function keeps in mind the
         client's bulk discount.
-        :return: the result as a float
+        :returns: the result as a float
         """
         return float(self.getPrice()) + float(self.getVATAmount())
 
@@ -1262,7 +1262,7 @@ class Analysis(BaseContent):
         """
         Checks it the current analysis can be verified. This is, its not a
         cancelled analysis and has no dependenant analyses not yet verified
-        :return: True or False
+        :returns: True or False
         """
         # Check if the analysis is active
         workflow = getToolByName(self, "portal_workflow")
@@ -1289,7 +1289,7 @@ class Analysis(BaseContent):
     def isSelfVerificationEnabled(self):
         """
         Checks if the service allows self verification of the analysis.
-        :return: boolean
+        :returns: boolean
         """
         service = self.getService()
         if service:
@@ -1307,7 +1307,7 @@ class Analysis(BaseContent):
         function only returns if the user can verify the analysis, but not if
         the analysis is ready to be verified (see isVerifiable)
         :member: user to be tested
-        :return: true or false
+        :returns: true or false
         """
         # Check if the user has "Bika: Verify" privileges
         username = member.getUserName()
@@ -1347,7 +1347,7 @@ class Analysis(BaseContent):
         This method is used as a metacolumn.
         Returns a dictionary with the workflow id as key and workflow state as
         value.
-        :return: {'review_state':'active',...}
+        :returns: {'review_state':'active',...}
         """
         workflow = getToolByName(self, 'portal_workflow')
         states = {}
@@ -1389,7 +1389,7 @@ class Analysis(BaseContent):
         """
         Returns the identifier of the user who submitted the result if the
         state of the current analysis is "to_be_verified" or "verified"
-        :return: the user_id of the user who did the last submission of result
+        :returns: the user_id of the user who did the last submission of result
         """
         workflow = getToolByName(self, "portal_workflow")
         try:
@@ -1405,7 +1405,7 @@ class Analysis(BaseContent):
     def getDateSubmitted(self):
         """
         Returns the time the result was submitted.
-        :return: a DateTime object.
+        :returns: a DateTime object.
         """
         workflow = getToolByName(self, "portal_workflow")
         try:
@@ -1605,7 +1605,7 @@ class Analysis(BaseContent):
         Checks if the verify transition can be performed to the current
         Analysis by the current user depending on the user roles, as
         well as the status of the analysis
-        :return: true or false
+        :returns: true or false
         """
         mtool = getToolByName(self, "portal_membership")
         checkPermission = mtool.checkPermission

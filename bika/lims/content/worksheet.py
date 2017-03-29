@@ -588,7 +588,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
     def getInstrumentTitle(self):
         """
         Returns the instrument title
-        :return: instrument's title
+        :returns: instrument's title
         :rtype: string
         """
         instrument = self.getInstrument()
@@ -599,7 +599,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
     def getWorksheetTemplateUID(self):
         """
         Returns the template's UID assigned to this worksheet
-        :return: worksheet's UID
+        :returns: worksheet's UID
         :rtype: UID as string
         """
         ws = self.getWorksheetTemplate()
@@ -610,7 +610,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
     def getWorksheetTemplateTitle(self):
         """
         Returns the template's Title assigned to this worksheet
-        :return: worksheet's Title
+        :returns: worksheet's Title
         :rtype: string
         """
         ws = self.getWorksheetTemplate()
@@ -621,7 +621,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
     def getWorksheetTemplateURL(self):
         """
         Returns the template's URL assigned to this worksheet
-        :return: worksheet's URL
+        :returns: worksheet's URL
         :rtype: string
         """
         ws = self.getWorksheetTemplate()
@@ -642,7 +642,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
     def getQCAnalyses(self):
         """
         Return the Quality Control analyses.
-        :return: a list of QC analyses
+        :returns: a list of QC analyses
         :rtype: List of ReferenceAnalysis/DuplicateAnalysis
         """
         qc_types = ['ReferenceAnalysis', 'DuplicateAnalysis']
@@ -652,7 +652,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
     def getRegularAnalyses(self):
         """
         Return the regular analyses.
-        :return: a list of regular analyses
+        :returns: a list of regular analyses
         :rtype: List of ReferenceAnalysis/DuplicateAnalysis
         """
         qc_types = ['ReferenceAnalysis', 'DuplicateAnalysis']
@@ -662,7 +662,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
     def getNumberOfQCAnalyses(self):
         """
         Returns the number of Quality Control analyses.
-        :return: number of QC analyses
+        :returns: number of QC analyses
         :rtype: integer
         """
         return len(self.getQCAnalyses())
@@ -670,7 +670,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
     def getNumberOfRegularAnalyses(self):
         """
         Returns the number of Regular analyses.
-        :return: number of analyses
+        :returns: number of analyses
         :rtype: integer
         """
         return len(self.getRegularAnalyses())
@@ -678,7 +678,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
     def getNumberOfQCSamples(self):
         """
         Returns the number of Quality Control samples.
-        :return: number of QC samples
+        :returns: number of QC samples
         :rtype: integer
         """
         qc_analyses = self.getQCAnalyses()
@@ -689,7 +689,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
     def getNumberOfRegularSamples(self):
         """
         Returns the number of regular samples.
-        :return: number of regular samples
+        :returns: number of regular samples
         :rtype: integer
         """
         analyses = self.getRegularAnalyses()
@@ -831,7 +831,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         it contains. This is why this function checks if the analyses
         contained are verifiable, cause otherwise, the Worksheet will
         never be able to reach a 'verified' state.
-        :return: True or False
+        :returns: True or False
         """
         # Check if the worksheet is active
         workflow = getToolByName(self, "portal_workflow")
@@ -874,7 +874,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         user can verify the worksheet according to his/her privileges
         and the analyses contained (see isVerifiable function)
         :member: user to be tested
-        :return: true or false
+        :returns: true or false
         """
         # Check if the user has "Bika: Verify" privileges
         username = member.getUserName()
@@ -891,7 +891,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         Checks if the verify transition can be performed to the current
         Worksheet by the current user depending on the user roles, as
         well as the statuses of the analyses assigned to this Worksheet
-        :return: true or false
+        :returns: true or false
         """
         mtool = getToolByName(self, "portal_membership")
         checkPermission = mtool.checkPermission
@@ -907,7 +907,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         This method is used as a metacolumn.
         Returns a dictionary with the workflow id as key and workflow state as
         value.
-        :return: {'review_state':'active',...}
+        :returns: {'review_state':'active',...}
         :rtype: dict
         """
         workflow = getToolByName(self, 'portal_workflow')
@@ -1232,7 +1232,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
     def getAnalysesUIDs(self):
         """
         Returns the analyses UIDs from the analyses assigned to this worksheet
-        :return: a list of UIDs
+        :returns: a list of UIDs
         :rtype: a list of strings
         """
         analyses = self.getAnalyses()

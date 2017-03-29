@@ -288,7 +288,7 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         in a new AR.  Used in add_by_row view popup, and add_by_col add view.
 
         :param ar_count: number of AR columns to generate columns for.
-        :return: string: rendered HTML content of bika_listing_table.pt.
+        :returns: string: rendered HTML content of bika_listing_table.pt.
             If no items are found, returns "".
         """
 

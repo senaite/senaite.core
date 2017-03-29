@@ -134,7 +134,7 @@ class ReflexRule(BaseContent):
             'trigger': 'submit'}
         :forceuid: a boolean used to get the analysis service's UID from the
         analysis even if the analysis has been reflected and has a local_id.
-        :return: a Boolean.
+        :returns: a Boolean.
         """
         conditions = action_set.get('conditions', [])
         service = analysis.getService()
@@ -253,7 +253,7 @@ class ReflexRule(BaseContent):
             rules for.
         :wf_action: it is the workflow action that the analysis is doing, we
             have to act in consideration of the action_set 'trigger' variable
-        :return: [{'action': 'duplicate', ...}, {,}, ...]
+        :returns: [{'action': 'duplicate', ...}, {,}, ...]
         """
         # Getting the action sets, those that contain action rows
         action_sets = self.getReflexRules()

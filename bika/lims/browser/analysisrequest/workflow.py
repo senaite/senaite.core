@@ -672,7 +672,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         """
         This function prevent the transition if the fields "SamplingDate"
         and "ScheduledSamplingSampler" are uncompleted.
-        :return: bool
+        :returns: bool
         """
         from bika.lims.utils.workflow import schedulesampling
         message = 'Not expected transition.'

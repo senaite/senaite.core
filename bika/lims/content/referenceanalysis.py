@@ -457,7 +457,7 @@ class ReferenceAnalysis(BaseContent):
         """
         Checks it the current analysis can be verified. This is, its not a
         cancelled analysis and has no dependenant analyses not yet verified
-        :return: True or False
+        :returns: True or False
         """
         # Check if the analysis is active
         workflow = getToolByName(self, "portal_workflow")
@@ -483,7 +483,7 @@ class ReferenceAnalysis(BaseContent):
         function only returns if the user can verify the analysis, but not if
         the analysis is ready to be verified (see isVerifiable)
         :member: user to be tested
-        :return: true or false
+        :returns: true or false
         """
         # Check if the user has "Bika: Verify" privileges
         username = member.getUserName()
@@ -538,7 +538,7 @@ class ReferenceAnalysis(BaseContent):
         Checks if the verify transition can be performed to the current
         Analysis by the current user depending on the user roles, as
         well as the status of the analysis
-        :return: true or false
+        :returns: true or false
         """
         mtool = getToolByName(self, "portal_membership")
         checkPermission = mtool.checkPermission

@@ -22,7 +22,7 @@ class AnalysisRequestsBikaListingFilterBar(BikaListingFilterBar):
         The template is going to call this method to create the filter bar in
         bika_listing_filter_bar.pt
         If the method returns None, the filter bar will not be shown.
-        :return: a list of dictionaries as the filtering fields or None.
+        :returns: a list of dictionaries as the filtering fields or None.
         """
         fields_dict = [{
             'name': 'analysis_name',
@@ -56,7 +56,7 @@ class AnalysisRequestsBikaListingFilterBar(BikaListingFilterBar):
         In this case the keys with index representation are:
         - date_received - getDateReceived
         - date_received - BatchUID
-        :return: a dictionary to be added to contentFilter.
+        :returns: a dictionary to be added to contentFilter.
         """
         query_dict = {}
         filter_dict = self.get_filter_bar_dict()
@@ -79,7 +79,7 @@ class AnalysisRequestsBikaListingFilterBar(BikaListingFilterBar):
         This function should be only used for those fields without
         representation as an index in the catalog.
         :item: The item to check. This is a brain
-        :return: boolean.
+        :returns: boolean.
         """
         dbar = self.get_filter_bar_dict()
         keys = dbar.keys()

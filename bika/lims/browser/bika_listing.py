@@ -479,7 +479,7 @@ class BikaListingView(BrowserView):
         """Get workflow state of object in wf_id.
         First try request: <form_id>_review_state
         Then try 'default': self.default_review_state
-        :return: item from self.review_states
+        :returns: item from self.review_states
         """
         if not self.review_states:
             logger.error("%s.review_states is undefined." % self)
@@ -812,7 +812,7 @@ class BikaListingView(BrowserView):
         items are always expanded.
 
         :param items: A list of items returned from self.folderitems().
-        :return: a list of strings, self.categories contains the complete list.
+        :returns: a list of strings, self.categories contains the complete list.
         """
         cats = []
         for item in items:
@@ -831,7 +831,7 @@ class BikaListingView(BrowserView):
         batch total.
 
         :param items: A list of items returned from self.folderitems().
-        :return: a list of AnalysisCategory instances.
+        :returns: a list of AnalysisCategory instances.
         """
         return []
 
@@ -1378,7 +1378,7 @@ class BikaListingView(BrowserView):
         """
         This function creates an instance of BikaListingFilterBar if the
         class has not created one yet.
-        :return: a BikaListingFilterBar instance
+        :returns: a BikaListingFilterBar instance
         """
         self._advfilterbar = self._advfilterbar if self._advfilterbar else \
             BikaListingFilterBar(context=self.context, request=self.request)
@@ -1408,7 +1408,7 @@ class BikaListingView(BrowserView):
         """
         This function calls the filter bar get_filter_bar_dict
         from the filterbar object in order to obtain the filter values.
-        :return: a dictionary
+        :returns: a dictionary
         """
         return self.getFilterBar().get_filter_bar_dict()
 
@@ -1420,7 +1420,7 @@ class BikaListingView(BrowserView):
         This function should be only used for those fields without
         representation as an index in the catalog.
         :item: The item to check.
-        :return: boolean
+        :returns: boolean
         """
         if self.getFilterBar():
             return self.getFilterBar().filter_bar_check_item(item)
@@ -1464,7 +1464,7 @@ class BikaListingTable(tableview.Table):
         :param kwargs: all other keyword args are set as attributes of
                        self and self.bika_listing, for injecting attributes
                        that templates require.
-        :return: rendered HTML text
+        :returns: rendered HTML text
         """
         self.cat = cat
         for key,val in kwargs.items():

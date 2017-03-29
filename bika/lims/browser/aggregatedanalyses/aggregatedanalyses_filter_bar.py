@@ -21,7 +21,7 @@ class AggregatedanalysesBikaListingFilterBar(SamplesBikaListingFilterBar):
         The template is going to call this method to create the filter bar in
         bika_listing_filter_bar.pt
         If the method returns None, the filter bar will not be shown.
-        :return: a list of dictionaries as the filtering fields or None.
+        :returns: a list of dictionaries as the filtering fields or None.
         """
         fields_dict = SamplesBikaListingFilterBar.filter_bar_builder(self)
         fields_dict.append({
@@ -36,7 +36,7 @@ class AggregatedanalysesBikaListingFilterBar(SamplesBikaListingFilterBar):
         This function gets the values from the filter bar inputs in order to
         create a query accordingly.
         Only returns the once that can be added to contentFilter dictionary.
-        :return: a dictionary to be added to contentFilter.
+        :returns: a dictionary to be added to contentFilter.
         """
         filter_dict = self.get_filter_bar_dict()
         query_dict =\
