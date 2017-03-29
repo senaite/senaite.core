@@ -897,7 +897,7 @@ class BikaSetup(folder.ATFolder):
         """
         Returns a DisplayList with the available options for the
         multi-verification list: '1', '2', '3', '4'
-        :return: DisplayList with the available options for the
+        :returns: DisplayList with the available options for the
             multi-verification list
         """
         items = [(1, '1'), (2, '2'), (3, '3'), (4, '4')]

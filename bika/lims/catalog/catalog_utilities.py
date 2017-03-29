@@ -13,6 +13,8 @@ from bika.lims.catalog.analysis_catalog import \
     bika_catalog_analysis_listing_definition
 from bika.lims.catalog.autoimportlogs_catalog import \
     bika_catalog_autoimportlogs_listing_definition
+from bika.lims.catalog.worksheet_catalog import \
+    bika_catalog_worksheet_listing_definition
 
 
 def getCatalogDefinitions():
@@ -23,10 +25,12 @@ def getCatalogDefinitions():
     analysis_request = bika_catalog_analysisrequest_listing_definition
     analysis = bika_catalog_analysis_listing_definition
     autoimportlogs = bika_catalog_autoimportlogs_listing_definition
+    worksheet = bika_catalog_worksheet_listing_definition
     # Merging the catalogs
     final.update(analysis_request)
     final.update(analysis)
     final.update(autoimportlogs)
+    final.update(worksheet)
     return final
 
 
@@ -284,7 +288,7 @@ def _addIndex(catalog, index, indextype):
     :catalog: a catalog object
     :index: an index id as string
     :indextype: the type of the index as string
-    :return: a boolean as True if the element has been indexed and it returns
+    :returns: a boolean as True if the element has been indexed and it returns
     False otherwise.
     """
     if index not in catalog.indexes():
@@ -304,7 +308,7 @@ def _addColumn(cat, col):
     This function adds a metadata column to the acatalog.
     :cat: a catalog object
     :col: a column id as string
-    :return: a boolean as True if the element has been added and
+    :returns: a boolean as True if the element has been added and
         False otherwise
     """
     # First check if the metadata column already exists
@@ -324,7 +328,7 @@ def _delIndex(catalog, index):
     This function desindexes the index element from the catalog.
     :catalog: a catalog object
     :index: an index id as string
-    :return: a boolean as True if the element has been desindexed and it
+    :returns: a boolean as True if the element has been desindexed and it
     returns False otherwise.
     """
     if index in catalog.indexes():
@@ -345,7 +349,7 @@ def _delColumn(cat, col):
     This function deletes a metadata column of the acatalog.
     :cat: a catalog object
     :col: a column id as string
-    :return: a boolean as True if the element has been removed and
+    :returns: a boolean as True if the element has been removed and
         False otherwise
     """
     # First check if the metadata column already exists

@@ -903,7 +903,7 @@ class Analysis(BaseContent):
     def getPrice(self):
         """
         The function obtains the analysis' price without VAT and without member discount
-        :return: the price (without VAT or Member Discount) in decimal format
+        :returns: the price (without VAT or Member Discount) in decimal format
         """
         analysis_request = self.aq_parent
         client = analysis_request.aq_parent
@@ -921,7 +921,7 @@ class Analysis(BaseContent):
     def getVATAmount(self):
         """
         Compute the VAT amount without member discount.
-        :return: the result as a float
+        :returns: the result as a float
         """
         vat = self.getService().getVAT()
         price = self.getPrice()
@@ -931,7 +931,7 @@ class Analysis(BaseContent):
         """
         Obtain the total price without client's member discount. The function keeps in mind the
         client's bulk discount.
-        :return: the result as a float
+        :returns: the result as a float
         """
         return float(self.getPrice()) + float(self.getVATAmount())
 
@@ -1265,7 +1265,7 @@ class Analysis(BaseContent):
         """
         Checks it the current analysis can be verified. This is, its not a
         cancelled analysis and has no dependenant analyses not yet verified
-        :return: True or False
+        :returns: True or False
         """
         # Check if the analysis is active
         workflow = getToolByName(self, "portal_workflow")
@@ -1292,7 +1292,7 @@ class Analysis(BaseContent):
     def isSelfVerificationEnabled(self):
         """
         Checks if the service allows self verification of the analysis.
-        :return: boolean
+        :returns: boolean
         """
         service = self.getService()
         if service:
@@ -1309,7 +1309,7 @@ class Analysis(BaseContent):
         function only returns if the user can verify the analysis, but not if
         the analysis is ready to be verified (see isVerifiable)
         :member: user to be tested
-        :return: true or false
+        :returns: true or false
         """
         # Check if the user has "Bika: Verify" privileges
         username = member.getUserName()
@@ -1349,7 +1349,7 @@ class Analysis(BaseContent):
         This method is used as a metacolumn.
         Returns a dictionary with the workflow id as key and workflow state as
         value.
-        :return: {'review_state':'active',...}
+        :returns: {'review_state':'active',...}
         """
         workflow = getToolByName(self, 'portal_workflow')
         states = {}
@@ -1390,7 +1390,7 @@ class Analysis(BaseContent):
         """
         Returns the identifier of the user who submitted the result if the
         state of the current analysis is "to_be_verified" or "verified"
-        :return: the user_id of the user who did the last submission of result
+        :returns: the user_id of the user who did the last submission of result
         """
         workflow = getToolByName(self, "portal_workflow")
         try:
@@ -1406,7 +1406,7 @@ class Analysis(BaseContent):
     def getDateSubmitted(self):
         """
         Returns the time the result was submitted.
-        :return: a DateTime object.
+        :returns: a DateTime object.
         """
         workflow = getToolByName(self, "portal_workflow")
         try:
@@ -1599,7 +1599,7 @@ class Analysis(BaseContent):
         Checks if the verify transition can be performed to the current
         Analysis by the current user depending on the user roles, as
         well as the status of the analysis
-        :return: true or false
+        :returns: true or false
         """
         mtool = getToolByName(self, "portal_membership")
         checkPermission = mtool.checkPermission
@@ -1683,7 +1683,6 @@ class Analysis(BaseContent):
         if workflow.getInfoFor(self, 'cancellation_state', 'active') == "cancelled":
             return False
         ar = self.aq_parent
-        self.reindexObject(idxs=["review_state", ])
         # Dependencies are submitted already, ignore them.
         #-------------------------------------------------
         # Submit our dependents
@@ -1761,7 +1760,10 @@ class Analysis(BaseContent):
             try:
                 workflow.doActionFor(self, "attach")
             except WorkflowException:
-                pass
+                logger.error(
+                    "Workflow transition error: 'attach' "
+                    "action failed for analysis {0}".format(self.getId()))
+        self.reindexObject()
 
     def workflow_script_retract(self):
         # DuplicateAnalysis doesn't have analysis_workflow.
@@ -1866,6 +1868,7 @@ class Analysis(BaseContent):
                     "type": "a"}
             layout.append(slot)
             ws.setLayout(layout)
+        self.reindexObject()
 
     def workflow_script_verify(self):
         # DuplicateAnalysis doesn't have analysis_workflow.
@@ -1876,7 +1879,6 @@ class Analysis(BaseContent):
         workflow = getToolByName(self, "portal_workflow")
         if workflow.getInfoFor(self, 'cancellation_state', 'active') == "cancelled":
             return False
-        self.reindexObject(idxs=["review_state", ])
         # Do all the reflex rules process
         self._reflex_rule_process('verify')
         # If all analyses in this AR are verified
@@ -1915,6 +1917,7 @@ class Analysis(BaseContent):
                     if not "verify all analyses" in self.REQUEST['workflow_skiplist']:
                         self.REQUEST["workflow_skiplist"].append("verify all analyses")
                     workflow.doActionFor(ws, "verify")
+        self.reindexObject()
 
     def workflow_script_publish(self):
         workflow = getToolByName(self, "portal_workflow")
@@ -1953,25 +1956,24 @@ class Analysis(BaseContent):
         if self.portal_type == "DuplicateAnalysis":
             return
         workflow = getToolByName(self, "portal_workflow")
-        self.reindexObject(idxs=["worksheetanalysis_review_state", ])
         # If it is assigned to a worksheet, unassign it.
         if workflow.getInfoFor(self, 'worksheetanalysis_review_state') == 'assigned':
             ws = self.getBackReferences("WorksheetAnalysis")[0]
             skip(self, "cancel", unskip=True)
             ws.removeAnalysis(self)
+        self.reindexObject()
 
     def workflow_script_reject(self):
         # DuplicateAnalysis doesn't have analysis_workflow.
         if self.portal_type == "DuplicateAnalysis":
             return
         workflow = getToolByName(self, "portal_workflow")
-        self.reindexObject(idxs=[
-            "review_state", "worksheetanalysis_review_state" ])
         # If it is assigned to a worksheet, unassign it.
         if workflow.getInfoFor(self, 'worksheetanalysis_review_state') ==\
                 'assigned':
             ws = self.getBackReferences("WorksheetAnalysis")[0]
             ws.removeAnalysis(self)
+        self.reindexObject()
 
     def workflow_script_attach(self):
         # DuplicateAnalysis doesn't have analysis_workflow.
@@ -1980,7 +1982,6 @@ class Analysis(BaseContent):
         if skip(self, "attach"):
             return
         workflow = getToolByName(self, "portal_workflow")
-        self.reindexObject(idxs=["review_state", ])
         # If all analyses in this AR have been attached
         # escalate the action to the parent AR
         ar = self.aq_parent
@@ -2012,6 +2013,7 @@ class Analysis(BaseContent):
                         break
                 if can_attach:
                     workflow.doActionFor(ws, "attach")
+        self.reindexObject()
 
     def workflow_script_assign(self):
         # DuplicateAnalysis doesn't have analysis_workflow.
@@ -2020,7 +2022,6 @@ class Analysis(BaseContent):
         if skip(self, "assign"):
             return
         workflow = getToolByName(self, "portal_workflow")
-        self.reindexObject(idxs=["worksheetanalysis_review_state", ])
         rc = getToolByName(self, REFERENCE_CATALOG)
         wsUID = self.REQUEST["context_uid"]
         ws = rc.lookupObject(wsUID)
@@ -2043,7 +2044,9 @@ class Analysis(BaseContent):
                     if "assign" in allowed_transitions:
                         workflow.doActionFor(self, "assign")
                 except:
-                    pass
+                    logger.error(
+                        "assign action failed for analysis %s" % self.getId())
+        self.reindexObject()
 
     def workflow_script_unassign(self):
         # DuplicateAnalysis doesn't have analysis_workflow.
@@ -2052,7 +2055,6 @@ class Analysis(BaseContent):
         if skip(self, "unassign"):
             return
         workflow = getToolByName(self, "portal_workflow")
-        self.reindexObject(idxs=["worksheetanalysis_review_state", ])
         rc = getToolByName(self, REFERENCE_CATALOG)
         wsUID = self.REQUEST["context_uid"]
         ws = rc.lookupObject(wsUID)
@@ -2109,6 +2111,7 @@ class Analysis(BaseContent):
             if workflow.getInfoFor(ws, "review_state") != "open":
                 workflow.doActionFor(ws, "retract")
                 skip(ws, "retract", unskip=True)
+        self.reindexObject()
 
 
 atapi.registerType(Analysis, PROJECTNAME)

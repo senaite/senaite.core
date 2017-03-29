@@ -107,7 +107,6 @@ class WorksheetWorkflowAction(WorkflowAction):
 
             selected_analyses = WorkflowAction._get_selected_items(self)
             selected_analysis_uids = selected_analyses.keys()
-
             if selected_analyses:
                 for uid in selected_analysis_uids:
                     analysis = rc.lookupObject(uid)

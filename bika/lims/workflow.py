@@ -154,7 +154,7 @@ def getTransitionUsers(obj, action_id, last_user=False):
     :action_id: a sring as the transition id.
     :last_user: a boolean to return only the last user triggering the
         transition or all of them.
-    :return: a list of user ids.
+    :returns: a list of user ids.
     """
     workflow = getToolByName(obj, 'portal_workflow')
     users = []

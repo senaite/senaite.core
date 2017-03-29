@@ -17,7 +17,7 @@ def doTransition(obj):
     """
     This function prevent the transition if the fields "SamplingDate"
     and "ScheduledSamplingSampler" are uncompleted.
-    :return: bool, 'an error message'
+    :returns: bool, 'an error message'
     """
     errmsg = ''
     if interfaces.ISample.providedBy(obj)\

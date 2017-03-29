@@ -53,17 +53,37 @@ def strptime(context, value):
 
 def ulocalized_time(time, long_format=None, time_only=None, context=None,
                     request=None):
+    """
+    This function gets ans string as time or a DateTime objects and returns a
+    string with the time formatted
+
+    :param time: The time to process
+    :type time: str/DateTime
+    :param long_format:  If True, return time in ling format
+    :type portal_type: boolean/null
+    :param time_only: If True, only returns time.
+    :type title: boolean/null
+    :param context: The current context
+    :type context: ATContentType
+    :param request: The current request
+    :type request: HTTPRequest object
+    :returns: The formatted date as string
+    :rtype: string
+    """
     # if time is a string, we'll try pass it through strptime with the various
     # formats defined.
     if isinstance(time, basestring):
         time = strptime(context, time)
-    if time:
+    if time and isinstance(time, DateTime):
         # no printing times if they were not specified in inputs
         if time.second() + time.minute() + time.hour() == 0:
             long_format = False
-        time_str = _ut(time, long_format, time_only, context,
-                                   'bika', request)
+        time_str = _ut(time, long_format, time_only, context, 'bika', request)
         return time_str
+    logger.warning(
+        "No time attribute or incorrect time type. Got {} and expecting"
+        " String or DateTime.".format(type(time)))
+    return ''
 
 
 class updateFilerByDepartmentCookie(BrowserView):

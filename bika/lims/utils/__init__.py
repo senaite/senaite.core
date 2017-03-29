@@ -194,7 +194,7 @@ def formatDecimalMark(value, decimalmark='.'):
         Assumes that 'value' uses '.' as decimal mark and ',' as
         thousand mark.
         ::value:: is a string
-        ::return:: is a string with the decimal mark if needed
+        ::returns:: is a string with the decimal mark if needed
     """
     # We have to consider the possibility of working with decimals such as
     # X.000 where those decimals are important because of the precission

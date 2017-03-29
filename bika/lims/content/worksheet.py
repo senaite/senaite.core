@@ -34,38 +34,11 @@ from zope.interface import implements
 import re
 import sys
 
-@indexer(IWorksheet)
-def Priority(instance):
-    priority = instance.getPriority()
-    if priority:
-        return priority.getSortKey()
-
-
-@indexer(IWorksheet)
-def Analyst(instance):
-    return instance.getAnalyst()
-
-
-@indexer(IWorksheet)
-def worksheettemplateUID(instance):
-    worksheettemplate = instance.getWorksheetTemplate()
-    if worksheettemplate:
-        return worksheettemplate.UID()
-    else:
-        return ''
-
 
 schema = BikaSchema.copy() + Schema((
     HistoryAwareReferenceField('WorksheetTemplate',
         allowed_types=('WorksheetTemplate',),
         relationship='WorksheetAnalysisTemplate',
-    ),
-    ComputedField('WorksheetTemplateTitle',
-        searchable=True,
-        expression="context.getWorksheetTemplate() and context.getWorksheetTemplate().Title() or ''",
-        widget=ComputedWidget(
-            visible=False,
-        ),
     ),
     RecordsField('Layout',
         required=1,
@@ -240,6 +213,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 # add it.
                 if dma not in self.getAnalyses():
                     self.addAnalysis(dma)
+        # Reindex the worksheet in order to update its columns
+        self.reindexObject()
 
     security.declareProtected(EditWorksheet, 'removeAnalysis')
 
@@ -261,11 +236,16 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if analysis in Analyses:
             Analyses.remove(analysis)
             self.setAnalyses(Analyses)
-        layout = [slot for slot in self.getLayout() if slot['analysis_uid'] != analysis.UID()]
+            analysis.reindexObject()
+        layout = [
+            slot for slot in self.getLayout()
+            if slot['analysis_uid'] != analysis.UID()]
         self.setLayout(layout)
 
         if analysis.portal_type == "DuplicateAnalysis":
-            self._delObject(analysis.id)
+            self.manage_delObjects(ids=[analysis.id])
+        # Reindex the worksheet in order to update its columns
+        self.reindexObject()
 
     def _getMethodsVoc(self):
         """
@@ -350,6 +330,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             self.setAnalyses(
                 self.getAnalyses() + [ref_analysis, ])
             workflow.doActionFor(ref_analysis, 'assign')
+            # Reindex the worksheet in order to update its columns
+            self.reindexObject()
 
     def nextReferenceAnalysesGroupID(self, reference):
         """ Returns the next ReferenceAnalysesGroupID for the given reference
@@ -604,6 +586,50 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
     security.declarePublic('getWorksheetServices')
 
+    def getInstrumentTitle(self):
+        """
+        Returns the instrument title
+        :returns: instrument's title
+        :rtype: string
+        """
+        instrument = self.getInstrument()
+        if instrument:
+            return instrument.Title()
+        return ''
+
+    def getWorksheetTemplateUID(self):
+        """
+        Returns the template's UID assigned to this worksheet
+        :returns: worksheet's UID
+        :rtype: UID as string
+        """
+        ws = self.getWorksheetTemplate()
+        if ws:
+            return ws.UID()
+        return ''
+
+    def getWorksheetTemplateTitle(self):
+        """
+        Returns the template's Title assigned to this worksheet
+        :returns: worksheet's Title
+        :rtype: string
+        """
+        ws = self.getWorksheetTemplate()
+        if ws:
+            return ws.Title()
+        return ''
+
+    def getWorksheetTemplateURL(self):
+        """
+        Returns the template's URL assigned to this worksheet
+        :returns: worksheet's URL
+        :rtype: string
+        """
+        ws = self.getWorksheetTemplate()
+        if ws:
+            return ws.absolute_url_path()
+        return ''
+
     def getWorksheetServices(self):
         """ get list of analysis services present on this worksheet
         """
@@ -613,6 +639,64 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             if service not in services:
                 services.append(service)
         return services
+
+    def getQCAnalyses(self):
+        """
+        Return the Quality Control analyses.
+        :returns: a list of QC analyses
+        :rtype: List of ReferenceAnalysis/DuplicateAnalysis
+        """
+        qc_types = ['ReferenceAnalysis', 'DuplicateAnalysis']
+        analyses = self.getAnalyses()
+        return [a for a in analyses if a.portal_type in qc_types]
+
+    def getRegularAnalyses(self):
+        """
+        Return the regular analyses.
+        :returns: a list of regular analyses
+        :rtype: List of ReferenceAnalysis/DuplicateAnalysis
+        """
+        qc_types = ['ReferenceAnalysis', 'DuplicateAnalysis']
+        analyses = self.getAnalyses()
+        return [a for a in analyses if a.portal_type not in qc_types]
+
+    def getNumberOfQCAnalyses(self):
+        """
+        Returns the number of Quality Control analyses.
+        :returns: number of QC analyses
+        :rtype: integer
+        """
+        return len(self.getQCAnalyses())
+
+    def getNumberOfRegularAnalyses(self):
+        """
+        Returns the number of Regular analyses.
+        :returns: number of analyses
+        :rtype: integer
+        """
+        return len(self.getRegularAnalyses())
+
+    def getNumberOfQCSamples(self):
+        """
+        Returns the number of Quality Control samples.
+        :returns: number of QC samples
+        :rtype: integer
+        """
+        qc_analyses = self.getQCAnalyses()
+        qc_samples = [a.getSample().UID() for a in qc_analyses]
+        # discarding any duplicate values
+        return len(set(qc_samples))
+
+    def getNumberOfRegularSamples(self):
+        """
+        Returns the number of regular samples.
+        :returns: number of regular samples
+        :rtype: integer
+        """
+        analyses = self.getRegularAnalyses()
+        samples = [a.getSample().UID() for a in analyses]
+        # discarding any duplicate values
+        return len(set(samples))
 
     security.declareProtected(EditWorksheet, 'resequenceWorksheet')
 
@@ -743,8 +827,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         analyst_member = mtool.getMemberById(analyst)
         if analyst_member != None:
             return analyst_member.getProperty('fullname')
-        else:
-            return analyst
+        return analyst
 
     def isVerifiable(self):
         """
@@ -757,7 +840,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         it contains. This is why this function checks if the analyses
         contained are verifiable, cause otherwise, the Worksheet will
         never be able to reach a 'verified' state.
-        :return: True or False
+        :returns: True or False
         """
         # Check if the worksheet is active
         workflow = getToolByName(self, "portal_workflow")
@@ -800,7 +883,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         user can verify the worksheet according to his/her privileges
         and the analyses contained (see isVerifiable function)
         :member: user to be tested
-        :return: true or false
+        :returns: true or false
         """
         # Check if the user has "Bika: Verify" privileges
         username = member.getUserName()
@@ -817,7 +900,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         Checks if the verify transition can be performed to the current
         Worksheet by the current user depending on the user roles, as
         well as the statuses of the analyses assigned to this Worksheet
-        :return: true or false
+        :returns: true or false
         """
         mtool = getToolByName(self, "portal_membership")
         checkPermission = mtool.checkPermission
@@ -827,6 +910,21 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             member = mtool.getAuthenticatedMember()
             return self.isUserAllowedToVerify(member)
         return False
+
+    def getObjectWorkflowStates(self):
+        """
+        This method is used as a metacolumn.
+        Returns a dictionary with the workflow id as key and workflow state as
+        value.
+        :returns: {'review_state':'active',...}
+        :rtype: dict
+        """
+        workflow = getToolByName(self, 'portal_workflow')
+        states = {}
+        for w in workflow.getWorkflowsFor(self):
+            state = w._getWorkflowStateOf(self).id
+            states[w.state_var] = state
+        return states
 
     def workflow_script_submit(self):
         # Don't cascade. Shouldn't be submitting WSs directly for now,
@@ -1139,6 +1237,17 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         priorities = sorted(priorities, key = itemgetter('sortKey'))
         if priorities:
             return priorities[-1]
+
+    def getAnalysesUIDs(self):
+        """
+        Returns the analyses UIDs from the analyses assigned to this worksheet
+        :returns: a list of UIDs
+        :rtype: a list of strings
+        """
+        analyses = self.getAnalyses()
+        if isinstance(analyses, list):
+            return [an.UID() for an in analyses]
+        return []
 
     def getDepartmentUIDs(self):
         return [an.getDepartmentUID() for an in self.getAnalyses()]

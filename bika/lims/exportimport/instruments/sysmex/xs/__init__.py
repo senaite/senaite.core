@@ -62,7 +62,7 @@ class SysmexXSCSVParser(InstrumentCSVResultsFileParser):
         """
         Parse the data line. If an AS was selected it can distinguish between data rows and information rows.
         :param sline: a split data line to parse
-        :return: the number of rows to jump and parse the next data line or return the code error -1
+        :returns: the number of rows to jump and parse the next data line or return the code error -1
         """
         # if there are less values founded than headers, it's an error
         if len(sline) != len(self._columns):

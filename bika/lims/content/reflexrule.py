@@ -22,6 +22,7 @@ from bika.lims.utils import changeWorkflowState
 from bika.lims.idserver import renameAfterCreation
 from bika.lims import logger
 from bika.lims.workflow import doActionFor
+from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 import sys
 
 schema = BikaSchema.copy() + Schema((
@@ -133,7 +134,7 @@ class ReflexRule(BaseContent):
             'trigger': 'submit'}
         :forceuid: a boolean used to get the analysis service's UID from the
         analysis even if the analysis has been reflected and has a local_id.
-        :return: a Boolean.
+        :returns: a Boolean.
         """
         conditions = action_set.get('conditions', [])
         service = analysis.getService()
@@ -252,7 +253,7 @@ class ReflexRule(BaseContent):
             rules for.
         :wf_action: it is the workflow action that the analysis is doing, we
             have to act in consideration of the action_set 'trigger' variable
-        :return: [{'action': 'duplicate', ...}, {,}, ...]
+        :returns: [{'action': 'duplicate', ...}, {,}, ...]
         """
         # Getting the action sets, those that contain action rows
         action_sets = self.getReflexRules()
@@ -432,9 +433,8 @@ def doWorksheetLogic(base, action, analysis):
         # Checking if the action defines a worksheet template
         worksheettemplate = action.get('worksheettemplate', '')
         # Creating the query
-        pc = getToolByName(base, 'portal_catalog')
+        catalog = getToolByName(base, CATALOG_WORKSHEET_LISTING)
         contentFilter = {
-            'portal_type': 'Worksheet',
             'review_state': 'open',
             'sort_on': 'created',
             'sort_order': 'reverse'}
@@ -445,9 +445,9 @@ def doWorksheetLogic(base, action, analysis):
             contentFilter['Analyst'] = new_analyst
         if worksheettemplate:
             # Adding the worksheettemplate filter
-            contentFilter['worksheettemplateUID'] = worksheettemplate
+            contentFilter['getWorksheetTemplateUID'] = worksheettemplate
         # Run the filter
-        wss = pc(contentFilter)
+        wss = catalog(contentFilter)
         # 'repeat' actions takes advantatge of the 'retract' workflow action.
         # the retract process assigns the new analysis to the same worksheet
         # as the base analysis, so we need to desassign it now.

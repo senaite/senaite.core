@@ -61,7 +61,7 @@ class AutoImportLog(BaseContent):
         This method is used as a metacolumn.
         Returns a dictionary with the workflow id as key and workflow state as
         value.
-        :return: {'review_state':'active',...}
+        :returns: {'review_state':'active',...}
         """
         workflow = getToolByName(self, 'portal_workflow')
         states = {}

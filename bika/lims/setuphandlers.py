@@ -512,7 +512,6 @@ class BikaGenerator:
         at.setCatalogsByType('SamplePartition', ['bika_catalog', 'portal_catalog'])
         at.setCatalogsByType('ReferenceSample', ['bika_catalog', 'portal_catalog'])
         at.setCatalogsByType('Report', ['bika_catalog', ])
-        at.setCatalogsByType('Worksheet', ['bika_catalog', 'portal_catalog'])
 
         addIndex(bc, 'path', 'ExtendedPathIndex', ('getPhysicalPath'))
         addIndex(bc, 'allowedRolesAndUsers', 'KeywordIndex')
@@ -781,7 +780,6 @@ class BikaGenerator:
             logger.warning('Could not find the portal_catalog tool.')
             return
         addIndex(pc, 'Analyst', 'FieldIndex')
-        addIndex(pc, 'worksheettemplateUID', 'FieldIndex')
         addColumn(pc, 'Analyst')
         # TODO: Nmrl
         addColumn(pc, 'getProvince')

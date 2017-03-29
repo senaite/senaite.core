@@ -370,7 +370,6 @@ def reflex_rules(portal):
     ntp.manage_changeProperties(MetaTypesNotToQuery=types)
 
     pc = getToolByName(portal, 'portal_catalog')
-    addIndex(pc, 'worksheettemplateUID', 'FieldIndex')
     addIndexAndColumn(pc, 'Analyst', 'FieldIndex')
 
     bsc = getToolByName(portal, 'bika_setup_catalog')

@@ -44,7 +44,7 @@ class RocheCobasTaqmanRSFParser(InstrumentCSVResultsFileParser):
         """
         Parses the data line and builds the dictionary.
         :param sline: a split data line to parse
-        :return: the number of rows to jump and parse the next data line or return the code error -1
+        :returns: the number of rows to jump and parse the next data line or return the code error -1
         """
         # if there are less values founded than headers, it's an error
         if len(sline) != len(self._columns):

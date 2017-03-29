@@ -107,7 +107,7 @@ def get_significant_digits(numeric_value):
     Will return positive values if the result is below 1 and will
     return 0 values if the result is above or equal to 1.
     :param numeric_value: the value to get the precision from
-    :return: the numeric_value's precision
+    :returns: the numeric_value's precision
             Examples:
             numeric_value     Returns
             0               0
@@ -254,7 +254,7 @@ def format_uncertainty(analysis, result, decimalmark='.', sciformat=1):
                   4. The sci notation has to be formatted as a·10^b
                   5. As 4, but with super html entity for exp
                   By default 1
-    :return: the formatted uncertainty
+    :returns: the formatted uncertainty
     """
     try:
         result = float(result)
@@ -340,7 +340,7 @@ def format_numeric_result(analysis, result, decimalmark='.', sciformat=1):
                       5. As 4, but with super html entity for exp
                       By default 1
     :result: should be a string to preserve the decimal precision.
-    :return: the formatted result as string
+    :returns: the formatted result as string
     """
     try:
         result = float(result)

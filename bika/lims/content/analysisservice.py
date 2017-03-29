@@ -1328,7 +1328,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
                        used to retrieve the uncertainty from which the
                        precision must be calculated. Otherwise, the
                        fixed-precision will be used.
-        :return: the precision
+        :returns: the precision
         """
         if self.getPrecisionFromUncertainty() == False:
             return self.Schema().getField('Precision').get(self)
@@ -1380,7 +1380,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
                        used to retrieve the uncertainty from which the
                        precision must be calculated. Otherwise, the
                        fixed-precision will be used.
-        :return: the precision
+        :returns: the precision
         """
         if not result or self.getPrecisionFromUncertainty() == False:
             return self.Schema().getField('ExponentialFormatPrecision').get(self)
@@ -1421,7 +1421,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         """
         Returns if the user that submitted a result for this analysis must also
         be able to verify the result
-        :return: true or false
+        :returns: true or false
         """
         bsve = self.bika_setup.getSelfVerificationEnabled()
         vs = self.getSelfVerification()
@@ -1431,7 +1431,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         """
         Returns a DisplayList with the available options for the
         self-verification list: 'system default', 'true', 'false'
-        :return: DisplayList with the available options for the
+        :returns: DisplayList with the available options for the
             self-verification list
         """
         bsve = self.bika_setup.getSelfVerificationEnabled()
@@ -1444,7 +1444,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         """
         Returns the number of required verifications a test for this analysis
         requires before being transitioned to 'verified' state
-        :return: number of required verifications
+        :returns: number of required verifications
         """
         num = self.get_NumberOfRequiredVerifications()
         if num < 1:
@@ -1455,7 +1455,7 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         """
         Returns a DisplayList with the available options for the
         multi-verification list: 'system default', '1', '2', '3', '4'
-        :return: DisplayList with the available options for the
+        :returns: DisplayList with the available options for the
             multi-verification list
         """
         bsve = self.bika_setup.getNumberOfRequiredVerifications()
