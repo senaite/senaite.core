@@ -594,8 +594,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         instrument = self.getInstrument()
         if instrument:
             return instrument.Title()
-        else:
-            return ''
+        return ''
 
     def getWorksheetTemplateUID(self):
         """
@@ -606,8 +605,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         ws = self.getWorksheetTemplate()
         if ws:
             return ws.UID()
-        else:
-            return ''
+        return ''
 
     def getWorksheetTemplateTitle(self):
         """
@@ -618,8 +616,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         ws = self.getWorksheetTemplate()
         if ws:
             return ws.Title()
-        else:
-            return ''
+        return ''
 
     def getWorksheetTemplateURL(self):
         """
@@ -630,8 +627,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         ws = self.getWorksheetTemplate()
         if ws:
             return ws.absolute_url_path()
-        else:
-            return ''
+        return ''
 
     def getWorksheetServices(self):
         """ get list of analysis services present on this worksheet
@@ -822,8 +818,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         analyst_member = mtool.getMemberById(analyst)
         if analyst_member != None:
             return analyst_member.getProperty('fullname')
-        else:
-            return analyst
+        return analyst
 
     def isVerifiable(self):
         """
@@ -1243,8 +1238,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         analyses = self.getAnalyses()
         if isinstance(analyses, list):
             return [an.UID() for an in analyses]
-        else:
-            []
+        return []
 
     def getDepartmentUIDs(self):
         return [an.getDepartmentUID() for an in self.getAnalyses()]

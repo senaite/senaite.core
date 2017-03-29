@@ -1767,7 +1767,8 @@ class Analysis(BaseContent):
                 workflow.doActionFor(self, "attach")
             except WorkflowException:
                 logger.error(
-                    "attach action failed for analysis %s" % self.getId())
+                    "Workflow transition error: 'attach' "
+                    "action failed for analysis {0}".format(self.getId()))
         self.reindexObject()
 
     def workflow_script_retract(self):

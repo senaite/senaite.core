@@ -243,8 +243,11 @@ class FolderView(BikaListingView):
         on the department filter. It checks the department of each analysis
         service from each analysis belonguing to the given worksheet.
         If department filtering is disabled in bika_setup, will return True.
-        @Obj: it is a worksheet brain.
-        @return: boolean
+        :param obj: An object that represents a Worksheet
+        :type obj: CatalogBrain
+        :returns: True if the worksheet object meets with the criteria for
+            being displayed
+        :rtype: bool
         """
         if self.selected_state == 'mine' or self.restrict_results:
             analyst = obj.getAnalyst
@@ -275,8 +278,7 @@ class FolderView(BikaListingView):
 
         # Call the folderitem method from the base class
         item = BikaListingView.folderitem(self, obj, item, index)
-        created_date = obj.created()
-        item['CreationDate'] = self.ulocalized_time(created_date)
+        item['CreationDate'] = self.ulocalized_time(obj.created)
         if len(obj.getAnalysesUIDs) == 0:
             item['table_row_class'] = 'state-empty-worksheet'
 

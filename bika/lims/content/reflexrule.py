@@ -445,7 +445,7 @@ def doWorksheetLogic(base, action, analysis):
             contentFilter['Analyst'] = new_analyst
         if worksheettemplate:
             # Adding the worksheettemplate filter
-            contentFilter['worksheettemplateUID'] = worksheettemplate
+            contentFilter['getWorksheetTemplateUID'] = worksheettemplate
         # Run the filter
         wss = catalog(contentFilter)
         # 'repeat' actions takes advantatge of the 'retract' workflow action.
