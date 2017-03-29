@@ -65,12 +65,24 @@ def create_analysis(context, service, keyword, interim_fields):
     # Determine if the sampling workflow is enabled
     workflow_enabled = context.bika_setup.getSamplingWorkflowEnabled()
     # Create the analysis
-    analysis = _createObjectByType("Analysis", context, keyword)
-    analysis.setService(service)
+    # To know how _createObjectByType works:
+    # https://github.com/plone/Products.CMFPlone/blob/4.2.x/Products/CMFPlone/utils.py#L322
+    # '_createObjectByType' calls '_constructInstance' from 'TypesTool', and
+    # 'TypesTools' inherits from
+    # https://github.com/plone/Products.CMFPlone/blob/4.2.x/Products/CMFPlone/TypesTool.py#L6
+    # So, the base function that creates objects is
+    # CMFCore.TypesTool._constructInstance
+    # And lives here:
+    # https://github.com/zopefoundation/Products.CMFCore/blob/2.2/Products/CMFCore/TypesTool.py#L535
+    analysis = _createObjectByType(
+        "Analysis",
+        context,
+        keyword,
+        Service=service)
     analysis.setInterimFields(interim_fields)
     analysis.setMaxTimeAllowed(service.getMaxTimeAllowed())
+    # unmarkCreationFlag also reindex the object
     analysis.unmarkCreationFlag()
-    analysis.reindexObject()
     # Trigger the intitialization event of the new object
     zope.event.notify(ObjectInitializedEvent(analysis))
     # Perform the appropriate workflow action
@@ -81,7 +93,9 @@ def create_analysis(context, service, keyword, interim_fields):
     except WorkflowException:
         # The analysis may have been transitioned already!
         # I am leaving this code here though, to prevent regression.
-        pass
+        logger.error(
+            'The analysis %s may have been transitioned already' %
+            analysis.getId())
     # Return the newly created analysis
     return analysis
 

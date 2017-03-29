@@ -1190,8 +1190,11 @@ class AnalysisService(BaseContent, HistoryAwareMixin):
         # for instruments. Make sure that returning the value of _Method field
         # is correct.
         method = None
-        if (self.getInstrumentEntryOfResults() is True):
+        if self.getInstrumentEntryOfResults():
             method = self.get_Method()
+        else:
+            methods = self.getMethods()
+            method = methods[0] if methods else None
         return method
 
     def getAvailableMethods(self):

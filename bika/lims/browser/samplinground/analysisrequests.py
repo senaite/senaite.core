@@ -31,7 +31,7 @@ class AnalysisRequestsView(_ARV, _ARAV):
             'samplingRoundTemplate': {'title': _('Sampling Round Template'),
                                       'toggle': True},
             'getRequestID': {'title': _('Request ID'),
-                             'index': 'getRequestID'},
+                             'index': 'getId'},
             'getSample': {'title': _("Sample"),
                           'toggle': True, },
             'Priority': {'title': _('Priority'),

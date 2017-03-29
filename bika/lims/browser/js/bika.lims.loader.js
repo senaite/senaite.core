@@ -77,6 +77,9 @@ window.bika.lims.controllers =  {
     // Clients
     ".portaltype-client.template-base_edit":
         ['ClientEditView'],
+        
+    "div.overlay #client-base-edit":
+        ['ClientOverlayHandler'],
 
     // Client Sampling Rounds
     ".template-bika-lims-content-samplingsround.portaltype-client":

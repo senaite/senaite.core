@@ -23,8 +23,11 @@ class SampleAnalysesView(AnalysesView):
         for k,v in kwargs.items():
             self.contentFilter[k] = v
         self.contentFilter['getSampleUID'] = context.UID()
-        self.columns['Request'] = {'title': _("Request"),
-                                   'sortable':False}
+        self.columns['Request'] = {
+            'title': _("Request"),
+            'attr': 'getParentTitle',
+            'replace_url': 'getParentURL',
+            'sortable': False}
         self.columns['Priority'] = {'title': _("Priority"),
                                    'sortable':False}
         # Add Request and Priority columns
@@ -39,8 +42,6 @@ class SampleAnalysesView(AnalysesView):
         """
         # Call the folderitem method from the base class
         item = AnalysesView.folderitem(self, obj, item, index)
-        item['replace']['Request'] = \
-            "<a href='%s'>%s</a>" % (obj.getParentURL, obj.getParentTitle)
         # TODO this space is required for it to work
         item['replace']['Priority'] = ' '
         return item

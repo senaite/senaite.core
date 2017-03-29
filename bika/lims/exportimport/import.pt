@@ -92,7 +92,6 @@
             <a href="autoimportlogs">
                <input type="button" value="Show Last Results" />
             </a>
-            <div id="intermediate" style="display:none"/>
         </fieldset>
     </form>
 

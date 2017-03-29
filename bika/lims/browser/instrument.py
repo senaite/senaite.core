@@ -415,6 +415,8 @@ class InstrumentReferenceAnalysesView(AnalysesView):
         for i in range(len(items)):
             obj = items[i]['obj']
             # TODO-performance: getting an object
+            # Note here the object in items[i]['obj'] is a brain, cause the
+            # base class (AnalysesView), calls folderitems(.., classic=False).
             obj = obj.getObject()
             imgtype = ""
             if obj.portal_type == 'ReferenceAnalysis':

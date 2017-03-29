@@ -291,6 +291,7 @@ class Analysis(BaseContent):
     def getLastVerificator(self):
         return self.getVerificators().split(',')[-1]
 
+    # TODO: This method can be improved, and maybe removed.
     def getServiceUsingQuery(self):
         """
         This function returns the asociated service.
@@ -312,7 +313,7 @@ class Analysis(BaseContent):
             logger.warn("Unable to retrieve the Service for Analysis %s "
                         "via a direct call to getService(). Retrying by using "
                         "getRawService() and querying against uid_catalog."
-                        % self.UID())
+                        % self.getId())
             try:
                 service_uid = self.getRawService()
             except:
@@ -321,7 +322,11 @@ class Analysis(BaseContent):
                              "Service. Try to purge the catalog or try to fix"
                              " it at %s" % (self.UID(), self.absolute_path()))
                 return None
-
+            if not service_uid:
+                logger.warn("Unable to retrieve the Service for Analysis %s "
+                            "via a direct call to getRawService()."
+                            % self.getId())
+                return None
             # We got an UID, query agains the catalog to obtain the Service
             catalog = getToolByName(self, "uid_catalog")
             brain = catalog(UID=service_uid)
@@ -409,7 +414,7 @@ class Analysis(BaseContent):
         """
         This is  a column
         """
-        return self.aq_parent.absolute_url()
+        return self.aq_parent.absolute_url_path()
 
     # TODO-performance: improve this function using another catalog and takeing
     # advantatge of the column in service, not getting the full object.
@@ -705,8 +710,7 @@ class Analysis(BaseContent):
         sample = self.getSample()
         if sample:
             return sample.getSampleType().UID()
-        else:
-            ''
+        return ''
 
     def getResultOptionsFromService(self):
         """
@@ -1207,8 +1211,7 @@ class Analysis(BaseContent):
             if uncertainty == 0:
                 return 1
             return get_significant_digits(uncertainty)
-        else:
-            return serv.getPrecision(result)
+        return serv.getPrecision(result)
 
     def getAnalyst(self):
         """ Returns the identifier of the assigned analyst. If there is
@@ -1234,8 +1237,7 @@ class Analysis(BaseContent):
         analyst_member = mtool.getMemberById(analyst)
         if analyst_member != None:
             return analyst_member.getProperty('fullname')
-        else:
-            return ''
+        return ''
 
     def setReflexAnalysisOf(self, analysis):
         """ Sets the analysis that has been reflexed in order to create this
@@ -1294,8 +1296,7 @@ class Analysis(BaseContent):
         service = self.getService()
         if service:
             return service.isSelfVerificationEnabled()
-        else:
-            return False
+        return False
 
     def isUserAllowedToVerify(self, member):
         """
@@ -1376,8 +1377,7 @@ class Analysis(BaseContent):
         sample_cond = self.getSample().getSampleCondition()
         if sample_cond:
             return sample_cond.UID()
-        else:
-            return ''
+        return ''
 
     def getAnalysisRequestPrintStatus(self):
         """
@@ -1437,15 +1437,14 @@ class Analysis(BaseContent):
             return worksheet[0].UID()
         elif worksheet:
             return worksheet[0].UID()
-        else:
-            return ''
+        return ''
 
     def getParentURL(self):
         """
         This works as a metacolumn
         This function returns the analysis' parent URL
         """
-        return self.aq_parent.absolute_url()
+        return self.aq_parent.absolute_url_path()
 
     def getClientTitle(self):
         """
@@ -1457,7 +1456,7 @@ class Analysis(BaseContent):
         """
         This works as a column
         """
-        return self.aq_parent.aq_parent.absolute_url()
+        return self.aq_parent.aq_parent.absolute_url_path()
 
     def getUnit(self):
         """
@@ -1476,8 +1475,7 @@ class Analysis(BaseContent):
         partition = self.getSamplePartition()
         if partition:
             return partition.getId()
-        else:
-            return ''
+        return ''
 
     def getMethodURL(self):
         """
@@ -1486,9 +1484,8 @@ class Analysis(BaseContent):
         """
         method = self.getMethod()
         if method:
-            return method.absolute_url()
-        else:
-            return ''
+            return method.absolute_url_path()
+        return ''
 
     def getMethodTitle(self):
         """
@@ -1498,8 +1495,7 @@ class Analysis(BaseContent):
         method = self.getMethod()
         if method:
             return method.Title()
-        else:
-            return ''
+        return ''
 
     def getServiceDefaultInstrumentUID(self):
         """
@@ -1512,8 +1508,7 @@ class Analysis(BaseContent):
         ins = service.getInstrument()
         if ins:
             return ins.UID()
-        else:
-            return ''
+        return ''
 
     def getServiceDefaultInstrumentTitle(self):
         """
@@ -1526,8 +1521,7 @@ class Analysis(BaseContent):
         ins = service.getInstrument()
         if ins:
             return ins.Title()
-        else:
-            return ''
+        return ''
 
     def getServiceDefaultInstrumentURL(self):
         """
@@ -1539,9 +1533,8 @@ class Analysis(BaseContent):
             return None
         ins = service.getInstrument()
         if ins:
-            return ins.absolute_url()
-        else:
-            return ''
+            return ins.absolute_url_path()
+        return ''
 
     def hasAttachment(self):
         """

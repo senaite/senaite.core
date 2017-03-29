@@ -96,10 +96,6 @@ class ReferenceAnalysesView(AnalysesView):
         self.contentFilter = {'portal_type':'ReferenceAnalysis',
                               'path': {'query':"/".join(self.context.getPhysicalPath()),
                                        'level':0}}
-        self.show_select_row = False
-        self.show_sort_column = False
-        self.show_select_column = False
-        self.allow_edit = False
         self.columns = {
             'id': {'title': _('ID'), 'toggle':False},
             'getReferenceAnalysesGroupID': {'title': _('QC Sample ID'), 'toggle': True},
@@ -153,23 +149,31 @@ class ReferenceAnalysesView(AnalysesView):
         allowed = super(ReferenceAnalysesView, self).isItemAllowed(obj)
         return allowed if not allowed else obj.getResult != ''
 
-    # TODO-performance: We are getting the object here...
     def folderitem(self, obj, item, index):
         """
         :obj: it is a brain
         """
-        obj = obj.getObject()
         item = super(ReferenceAnalysesView, self).folderitem(obj, item, index)
         if not item:
             return None
-        service = obj.getService()
-        item['Category'] = service.getCategoryTitle()
-        wss = obj.getBackReferences("WorksheetAnalysis")
-        if wss and len(wss) == 1:
+        item['Category'] = obj.getCategoryTitle
+        wss = self.rc.getBackReferences(
+            obj.UID,
+            relationship="WorksheetAnalysis")
+        if not wss:
+            logger.warn(
+                'No Worksheet found for ReferenceAnalysis {}'
+                .format(obj.getId))
+        elif wss and len(wss) == 1:
+            # TODO-performance: We are getting the object here...
             ws = wss[0].getObject()
             item['Worksheet'] = ws.Title()
             anchor = '<a href="%s">%s</a>' % (ws.absolute_url(), ws.Title())
             item['replace']['Worksheet'] = anchor
+        else:
+            logger.warn(
+                'More than one Worksheet found for ReferenceAnalysis {}'
+                .format(obj.getId))
         self.addToJSON(obj, service, item)
         return item
 

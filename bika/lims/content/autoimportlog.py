@@ -53,7 +53,7 @@ class AutoImportLog(BaseContent):
 
     def getInstrumentUrl(self):
         if self.getInstrument():
-            return self.getInstrument().absolute_url()
+            return self.getInstrument().absolute_url_path()
         return None
 
     def getObjectWorkflowStates(self):

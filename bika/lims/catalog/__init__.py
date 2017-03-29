@@ -19,3 +19,17 @@ from .worksheet_catalog import BikaCatalogWorksheetListing
 from .catalog_utilities import getCatalogDefinitions
 from .catalog_utilities import setup_catalogs
 from .catalog_utilities import getCatalog
+
+# --Some important information:--
+#
+# - CatalogTool module. Here we can find the default indexes that plone
+#  expects from its acatlogs. Be aware that if any of those indexes and
+#  columns are missing, some specific queries or actions over the acatalog
+#  might fail:
+# https://github.com/plone/Products.CMFPlone/blob/4.3.x/Products/CMFPlone/CatalogTool.py
+#
+# - Here we have the portal_catalog definition, we can take some tips from its
+# index definitions:
+# https://github.com/plone/Products.CMFPlone/blob/4.2.x/Products/CMFPlone/profiles/default/catalog.xml
+# and
+# https://github.com/plone/Products.CMFPlone/blob/4.2.x/Products/CMFPlone/catalog.zcml

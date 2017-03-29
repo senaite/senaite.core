@@ -17,16 +17,22 @@ from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 
 
 class AggregatedAnalysesView(AnalysesView):
-    """ Displays a list of Analyses in a table.
-        Visible InterimFields from all analyses are added to self.columns[].
-        Keyword arguments are passed directly to CATALOG_ANALYSIS_LISTING.
+    """
+    View the displays a list of analyses with results pending, regardless of
+    the Analysis Requests or Worksheets to which they belong. Thus, analyses
+    of received samples, but without results or with verification pending.
+    This view is similar to other "manage_results" views (the user can submit
+    results, etc.). The view's main purpose is to provide a fast overview of
+    analyses with results pending, as well as results introduction, without
+    the need of browsing through Analysis Requests and/or Worksheets.
+    Eventhough, the recommended process for the introduction of results is
+    by using worksheets instead.
+    This view makes use of CATALOG_ANALYSIS_LISTING for items retrieval and
+    minimises the use of Analysis objects.
     """
 
     def __init__(self, context, request, **kwargs):
-        super(AggregatedAnalysesView, self).__init__(context,
-                                           request,
-                                           show_categories=False,
-                                           expand_all_categories=False)
+        super(AggregatedAnalysesView, self).__init__(context, request)
         self.title = _("Analyses pending")
         self.show_select_all_checkbox = False
         self.show_categories = False
@@ -73,25 +79,25 @@ class AggregatedAnalysesView(AnalysesView):
                          'state_title',
                          ]
              },
-             {'id': 'to_be_verified',
-              'title':  _('To be verified'),
-              'transitions': [{'id': 'verify'},
-                              {'id': 'cancel'}
-                              ],
-              'contentFilter': {'review_state': [
+            {'id': 'to_be_verified',
+             'title':  _('To be verified'),
+             'transitions': [{'id': 'verify'},
+                             {'id': 'cancel'}
+                             ],
+             'contentFilter': {'review_state': [
                  'to_be_verified']},
-              'columns': ['AnalysisRequest',
-                          'Worksheet',
-                          'Service',
-                          'Result',
-                          'Uncertainty',
-                          'Partition',
-                          'Method',
-                          'Instrument',
-                          'Analyst',
-                          'state_title',
-                          ]
-              },
+             'columns': ['AnalysisRequest',
+                         'Worksheet',
+                         'Service',
+                         'Result',
+                         'Uncertainty',
+                         'Partition',
+                         'Method',
+                         'Instrument',
+                         'Analyst',
+                         'state_title',
+                         ]
+             },
         ]
 
     def getPOSTAction(self):
@@ -132,6 +138,9 @@ class AggregatedAnalysesView(AnalysesView):
         In this case obj should be a brain
         """
         item = super(AnalysesView, self).folderitem(obj, item, index)
+        if not item:
+            return None
+
         # Worksheet
         item['Worksheet'] = ''
         wss = self.bika_catalog(getAnalysesUIDs={
@@ -144,6 +153,7 @@ class AggregatedAnalysesView(AnalysesView):
             item['Worksheet'] = ws.Title()
             anchor = '<a href="%s">%s</a>' % (ws.absolute_url(), ws.Title())
             item['replace']['Worksheet'] = anchor
+
         return item
 
     def getFilterBar(self):
