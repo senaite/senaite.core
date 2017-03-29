@@ -80,10 +80,9 @@ def ulocalized_time(time, long_format=None, time_only=None, context=None,
             long_format = False
         time_str = _ut(time, long_format, time_only, context, 'bika', request)
         return time_str
-    if time and not isinstance(time, DateTime):
-        logger.error(
-            "No correct time type. Got %s and expecting"
-            " String or DateTime." % type(time))
+    logger.warning(
+        "No time attribute or incorrect time type. Got {} and expecting"
+        " String or DateTime.".format(type(time)))
     return ''
 
 
