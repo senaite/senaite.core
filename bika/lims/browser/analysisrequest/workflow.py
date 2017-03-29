@@ -660,7 +660,6 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         newar.reindexObject()
         newar.aq_parent.reindexObject()
         renameAfterCreation(newar)
-        newar.setRequestID(newar.getId())
 
         if hasattr(ar, 'setChildAnalysisRequest'):
             ar.setChildAnalysisRequest(newar)

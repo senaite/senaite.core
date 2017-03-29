@@ -49,7 +49,7 @@ from bika.lims.utils import user_email
 from bika.lims import logger
 from bika.lims.browser.fields import DateTimeField
 from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
-
+from bika.lims import deprecated
 import sys
 
 try:
@@ -61,13 +61,6 @@ except ImportError:
 
 
 schema = BikaSchema.copy() + Schema((
-    # The ID assigned to the client's request by the lab
-    ComputedField(
-        'RequestID',
-        searchable=True,
-        expression="here.getId()",
-        widget=ComputedWidget(visible=False),
-    ),
     ReferenceField(
         'Contact',
         required=1,
@@ -1818,6 +1811,26 @@ class AnalysisRequest(BaseFolder):
         """ Return searchable data as Description """
         descr = " ".join((self.getId(), self.aq_parent.Title()))
         return safe_unicode(descr).encode('utf-8')
+
+    # TODO: This method should be deleted, it has the same use as getId
+    @deprecated('Flagged on 170328. Use getId() instead')
+    def getRequestID(self):
+        """
+        Another way to return the object ID. It is used as a column and index.
+        :returns: The object ID
+        :rtype: str
+        """
+        return self.getId()
+
+    @deprecated(
+        'Flagged on 170328. Use setId() instead, but only as a last resort')
+    def setRequestID(self, new_id):
+        """
+        Delegates to setId() function
+        :param new_id: The new id to define
+        :type spec: str
+        """
+        self.setId(new_id)
 
     def getClient(self):
         if self.aq_parent.portal_type == 'Client':
