@@ -6,59 +6,51 @@
 from zope.interface import implements
 from App.class_init import InitializeClass
 from bika.lims.catalog.bika_catalog_tool import BikaCatalogTool
+from bika.lims.catalog.catalog_basic_template import BASE_CATALOG_INDEXES
+from bika.lims.catalog.catalog_basic_template import BASE_CATALOG_COLUMNS
 # Bika LIMS imports
 from bika.lims.interfaces import IBikaCatalogWorksheetListing
 
 
 # Using a variable to avoid plain strings in code
 CATALOG_WORKSHEET_LISTING = 'bika_catalog_worksheet_listing'
+# Defining the types for this catalog
+_types_list = ['Worksheet', ]
+# Defining the indexes for this catalog
+_indexes_dict = {
+    'getPriority': 'FieldIndex',
+    'getAnalyst': 'FieldIndex',
+    'getWorksheetTemplate': 'FieldIndex',
+}
+# Defining the columns for this catalog
+_columns_list = [
+    'getAnalyst',
+    'getDepartmentUIDs',
+    'getWorksheetTemplateUID',
+    'getWorksheetTemplateTitle',
+    'getWorksheetTemplateURL',
+    'getAnalysesUIDs',
+    # TODO-catalog: getLayout returns a dictionary, too big?
+    'getLayout',
+    # Only used to list
+    'getNumberOfQCAnalyses',
+    'getNumberOfRegularAnalyses',
+    'getNumberOfRegularSamples',
+    'getObjectWorkflowStates',
+]
+# Adding basic indexes
+_base_indexes_copy = BASE_CATALOG_INDEXES.copy()
+_indexes_dict.update(_base_indexes_copy)
+# Adding basic columns
+_base_columns_copy = BASE_CATALOG_COLUMNS[:]
+_columns_list += _base_columns_copy
 
+# Defining the catalog
 bika_catalog_worksheet_listing_definition = {
     CATALOG_WORKSHEET_LISTING: {
-        'types':   ['Worksheet', ],
-        'indexes': {
-            'id': 'FieldIndex',
-            'getId': 'FieldIndex',
-            'review_state': 'FieldIndex',
-            # Necessary to avoid reindexing whole catalog when we need to
-            # reindex only one object. ExtendedPathIndex also could be used.
-            'path': 'PathIndex',
-            # created returns a DataTime object
-            'created': 'DateIndex',
-            'portal_type': 'FieldIndex',
-            'UID': 'FieldIndex',
-            # created returns a string object with date format
-            'CreationDate': 'DateIndex',
-            'getPriority': 'FieldIndex',
-            'getAnalyst': 'FieldIndex',
-            'getWorksheetTemplate': 'FieldIndex',
-            # allowedRolesAndUsers is obligatory if we are going to run
-            # advancedqueries in this catalog.
-            'allowedRolesAndUsers': 'KeywordIndex',
-        },
-        'columns': [
-            'UID',
-            'getId',
-            'Title',
-            'review_state',
-            'state_title',
-            # allowedRolesAndUsers is obligatory if we are going to run
-            # advancedqueries in this catalog.
-            'allowedRolesAndUsers',
-            'getAnalyst',
-            'getDepartmentUIDs',
-            'getWorksheetTemplateUID',
-            'getWorksheetTemplateTitle',
-            'getWorksheetTemplateURL',
-            'getAnalysesUIDs',
-            # TODO-catalog: getLayout returns a dictionary, too big?
-            'getLayout',
-            # Only used to list
-            'getNumberOfQCAnalyses',
-            'getNumberOfRegularAnalyses',
-            'getNumberOfRegularSamples',
-            'getObjectWorkflowStates',
-        ]
+        'types':   _types_list,
+        'indexes': _indexes_dict,
+        'columns': _columns_list
     }
 }
 
