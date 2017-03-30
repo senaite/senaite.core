@@ -65,12 +65,17 @@ def ulocalized_time(time, long_format=None, time_only=None, context=None,
             time_str = _ut(time, long_format, time_only, context,
                                    'bika', request)
         except ValueError:
-            # dividing by 1000 is necessary because your JavaScript returns
-            # the timestamp in milliseconds, and ulocalized_time()
-            # expects a timestamp in seconds.
-            time = time/1000
-            time_str = _ut(time, long_format, time_only, context,
-                                   'bika', request)
+            # TODO: Clean-up this mess
+            # Maybe the date was captured with js, which returns the timestamp
+            # in milliseconds, while ulocalized_time() expects a timestamp in
+            # seconds.
+            try:
+                time = time/1000
+                time_str = _ut(time, long_format, time_only, context,
+                               'bika', request)
+            except:
+                time_str = ''
+
         return time_str
 
 
