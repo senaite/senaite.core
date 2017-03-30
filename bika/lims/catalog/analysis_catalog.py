@@ -111,7 +111,7 @@ _base_columns_copy = BASE_CATALOG_COLUMNS[:]
 _columns_list += _base_columns_copy
 
 # Defining the types for this catalog
-_types_list = ['Analysis', 'ReferenceAnalysis', 'DuplicateAnalysis', ],
+_types_list = ['Analysis', 'ReferenceAnalysis', 'DuplicateAnalysis', ]
 
 bika_catalog_analysis_listing_definition = {
     CATALOG_ANALYSIS_LISTING: {
