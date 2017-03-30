@@ -40978,7 +40978,6 @@ DISTRICTS = [
 class ajaxGetCountries(BrowserView):
 
     def __call__(self):
-        plone.protect.CheckAuthenticator(self.request)
         searchTerm = self.request['searchTerm'].lower()
         page = self.request['page']
         nr_rows = self.request['rows']
@@ -41022,11 +41021,12 @@ class ajaxGetStates(BrowserView):
 class ajaxGetDistricts(BrowserView):
 
     def __call__(self):
-        plone.protect.CheckAuthenticator(self.request)
         country = self.request.get('country', '')
         state = self.request.get('state', '')
         items = []
         if not country or not state:
+            if self.request.get('getAll',''):
+                return json.dumps(DISTRICTS)
             return json.dumps(items)
         # get ISO code for country
         iso = [c for c in COUNTRIES if c['Country'] == country][0]['ISO']
