@@ -298,9 +298,7 @@ class FolderView(BikaListingView):
             if slot['position'] in pos_parent:
                 continue
             pos_parent[slot['position']] =\
-                self.rc.lookupObject(slot['container_uid'])
-            if not container:
-                continue
+                self.rc.lookupObject(slot.get('container_uid'))
 
         # Total QC Analyses
         item['NumQCAnalyses'] = str(obj.getNumberOfQCAnalyses)
