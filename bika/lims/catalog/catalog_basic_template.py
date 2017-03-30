@@ -33,4 +33,6 @@ BASE_CATALOG_COLUMNS = [
     # allowedRolesAndUsers is compulsory if we are going to run
     # advancedqueries in this catalog.
     'allowedRolesAndUsers',
+    'created',
+    'getObjectWorkflowStates',
 ]
