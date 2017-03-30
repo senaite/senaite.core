@@ -36,7 +36,6 @@ _columns_list = [
     'getNumberOfQCAnalyses',
     'getNumberOfRegularAnalyses',
     'getNumberOfRegularSamples',
-    'getObjectWorkflowStates',
 ]
 # Adding basic indexes
 _base_indexes_copy = BASE_CATALOG_INDEXES.copy()
