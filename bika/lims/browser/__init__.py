@@ -61,7 +61,15 @@ def ulocalized_time(time, long_format=None, time_only=None, context=None,
         # no printing times if they were not specified in inputs
         if time.second() + time.minute() + time.hour() == 0:
             long_format = False
-        time_str = _ut(time, long_format, time_only, context,
+        try:
+            time_str = _ut(time, long_format, time_only, context,
+                                   'bika', request)
+        except ValueError:
+            # dividing by 1000 is necessary because your JavaScript returns
+            # the timestamp in milliseconds, and ulocalized_time()
+            # expects a timestamp in seconds.
+            time = time/1000
+            time_str = _ut(time, long_format, time_only, context,
                                    'bika', request)
         return time_str
 
