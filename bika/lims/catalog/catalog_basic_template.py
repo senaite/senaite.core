@@ -9,19 +9,20 @@ BASE_CATALOG_INDEXES = {
     'id': 'FieldIndex',
     # Return the object id
     'getId': 'FieldIndex',
+    'portal_type': 'FieldIndex',
+    'UID': 'UUIDIndex',
+    # created returns a DataTime object
+    'created': 'DateIndex',
+    # created returns a string object with date format
+    'CreationDate': 'DateIndex',
+    'Creator': 'FieldIndex',
+    # allowedRolesAndUsers is compulsory if we are going to run
+    # advancedqueries in this catalog.
+    'allowedRolesAndUsers': 'KeywordIndex',
     'review_state': 'FieldIndex',
     # Necessary to avoid reindexing whole catalog when we need to
     # reindex only one object. ExtendedPathIndex also could be used.
     'path': 'PathIndex',
-    # created returns a DataTime object
-    'created': 'DateIndex',
-    'portal_type': 'FieldIndex',
-    'UID': 'UUIDIndex',
-    # created returns a string object with date format
-    'CreationDate': 'DateIndex',
-    # allowedRolesAndUsers is compulsory if we are going to run
-    # advancedqueries in this catalog.
-    'allowedRolesAndUsers': 'KeywordIndex',
 }
 BASE_CATALOG_COLUMNS = [
     'UID',
@@ -34,5 +35,6 @@ BASE_CATALOG_COLUMNS = [
     # advancedqueries in this catalog.
     'allowedRolesAndUsers',
     'created',
+    'Creator',
     'getObjectWorkflowStates',
 ]
