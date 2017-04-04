@@ -41010,8 +41010,6 @@ class ajaxGetStates(BrowserView):
         country = self.request.get('country', '')
         items = []
         if not country:
-            if self.request.get('getAll',''):
-                return json.dumps(STATES)
             return json.dumps(items)
         # get ISO code for country
         iso = [c for c in COUNTRIES if c['Country'] == country][0]['ISO']
@@ -41025,14 +41023,18 @@ class ajaxGetDistricts(BrowserView):
         country = self.request.get('country', '')
         state = self.request.get('state', '')
         items = []
-        if not country or not state:
-            if self.request.get('getAll',''):
-                return json.dumps(DISTRICTS)
+        if not country:
             return json.dumps(items)
-        # get ISO code for country
-        iso = [c for c in COUNTRIES if c['Country'] == country][0]['ISO']
-        # get NUMBER of the state for lookup
-        snr = [s for s in STATES if s[0] == iso and s[2] == state][0][1]
-        items = [x for x in DISTRICTS if x[0] == iso and x[1] == snr]
-        items.sort(lambda x,y: cmp(x[1], y[1]))
-        return json.dumps(items)
+        if not state:
+            # get ISO code for country
+            iso = [c for c in COUNTRIES if c['Country'] == country][0]['ISO']
+            items = [x for x in DISTRICTS if x[0] == iso]
+            return json.dumps(items)
+        else:
+            # get ISO code for country
+            iso = [c for c in COUNTRIES if c['Country'] == country][0]['ISO']
+            # get NUMBER of the state for lookup
+            snr = [s for s in STATES if s[0] == iso and s[2] == state][0][1]
+            items = [x for x in DISTRICTS if x[0] == iso and x[1] == snr]
+            items.sort(lambda x,y: cmp(x[1], y[1]))
+            return json.dumps(items)
