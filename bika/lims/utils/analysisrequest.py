@@ -86,7 +86,7 @@ def create_analysisrequest(context, request, values, analyses=None,
 
     # Set analysis request analyses. 'Analyses' param are analyses services
     analyses = analyses if analyses else []
-    service_uids = _get_services_uids(
+    service_uids = get_services_uids(
         context=context, analyses_serv=analyses, values=values)
     # processForm already has created the analyses, but here we create the
     # analyses with specs and prices. This function, even it is called 'set',
@@ -186,7 +186,7 @@ def get_sample_from_values(context, values):
     return sample
 
 
-def _get_services_uids(context=None, analyses_serv=[], values={}):
+def get_services_uids(context=None, analyses_serv=[], values={}):
     """
     This function returns a list of UIDs from analyses services from its
     parameters.
@@ -199,7 +199,7 @@ def _get_services_uids(context=None, analyses_serv=[], values={}):
     """
     if not context or (not analyses_serv and not values):
         raise RuntimeError(
-            "_get_services_uids: Missing or wrong parameters.")
+            "get_services_uids: Missing or wrong parameters.")
     uid_catalog = getToolByName(context, 'uid_catalog')
     anv = values['Analyses'] if values.get('Analyses', None) else []
     analyses_services = anv + analyses_serv

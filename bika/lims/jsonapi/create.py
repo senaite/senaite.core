@@ -10,6 +10,7 @@ from bika.lims.jsonapi import set_fields_from_request
 from bika.lims.jsonapi import resolve_request_lookup
 from bika.lims.permissions import AccessJSONAPI
 from bika.lims.utils import tmpID, dicts_to_dict
+from bika.lims.utils.analysisrequest import get_services_uids
 from bika.lims.workflow import doActionFor
 from plone.jsonapi.core import router
 from plone.jsonapi.core.interfaces import IRouteProvider
@@ -367,6 +368,13 @@ class Create(object):
         ret['ar_id'] = ar.getId()
         brains = resolve_request_lookup(context, request, 'Services')
         service_uids = [p.UID for p in brains]
+        # If there is a profile, add its services' UIDs
+        brains = resolve_request_lookup(context, request, 'Profiles')
+        profiles_uids = [p.UID for p in brains]
+        profiles_uids = ','.join(profiles_uids)
+        profiles_dict = {'Profiles': profiles_uids}
+        service_uids = get_services_uids(
+            context=context, analyses_serv=service_uids, values=profiles_dict)
         new_analyses = ar.setAnalyses(service_uids, specs=specs)
         ar.reindexObject()
         event.notify(ObjectInitializedEvent(ar))
