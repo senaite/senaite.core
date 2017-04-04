@@ -41007,10 +41007,11 @@ class ajaxGetCountries(BrowserView):
 class ajaxGetStates(BrowserView):
 
     def __call__(self):
-        plone.protect.CheckAuthenticator(self.request)
         country = self.request.get('country', '')
         items = []
         if not country:
+            if self.request.get('getAll',''):
+                return json.dumps(STATES)
             return json.dumps(items)
         # get ISO code for country
         iso = [c for c in COUNTRIES if c['Country'] == country][0]['ISO']
