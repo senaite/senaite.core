@@ -57,20 +57,9 @@ def create_analysisrequest(context, request, values, analyses=None,
     # Gather neccesary tools
     workflow = getToolByName(context, 'portal_workflow')
     bc = getToolByName(context, 'bika_catalog')
-    # Analyses are analyses services
-    analyses_services = analyses
-    analyses = []
     # It's necessary to modify these and we don't want to pollute the
     # parent's data
     values = values.copy()
-    analyses_services = analyses_services if analyses_services else []
-    anv = values['Analyses'] if values.get('Analyses', None) else []
-    analyses_services = anv + analyses_services
-
-    if not analyses_services:
-        raise RuntimeError(
-                "create_analysisrequest: no analyses services provided")
-
     # Create new sample or locate the existing for secondary AR
     if not values.get('Sample', False):
         secondary = False
@@ -95,8 +84,10 @@ def create_analysisrequest(context, request, values, analyses=None,
     action = '{0}sampling_workflow'.format('' if workflow_enabled else 'no_')
     workflow.doActionFor(ar, action)
 
-    # Set analysis request analyses
-    service_uids = _resolve_items_to_service_uids(analyses_services)
+    # Set analysis request analyses. 'Analyses' param are analyses services
+    analyses = analyses if analyses else []
+    service_uids = get_services_uids(
+        context=context, analyses_serv=analyses, values=values)
     # processForm already has created the analyses, but here we create the
     # analyses with specs and prices. This function, even it is called 'set',
     # deletes the old analyses, so eventually we obtain the desired analyses.
@@ -193,6 +184,46 @@ def get_sample_from_values(context, values):
         raise RuntimeError(
             "create_analysisrequest: invalid sample value provided. values=%s" % values)
     return sample
+
+
+def get_services_uids(context=None, analyses_serv=[], values={}):
+    """
+    This function returns a list of UIDs from analyses services from its
+    parameters.
+    :param analyses_serv: A list (or one object) of service-related info items.
+        see _resolve_items_to_service_uids() docstring.
+    :type analyses_serv: list
+    :param values: a dict, where keys are AR|Sample schema field names.
+    :type values: dict
+    :returns: a list of analyses services UIDs
+    """
+    if not context or (not analyses_serv and not values):
+        raise RuntimeError(
+            "get_services_uids: Missing or wrong parameters.")
+    uid_catalog = getToolByName(context, 'uid_catalog')
+    anv = values['Analyses'] if values.get('Analyses', None) else []
+    analyses_services = anv + analyses_serv
+    # It is possible to create analysis requests
+    # by JSON petitions and services, profiles or types aren't allways send.
+    # Sometimes we can get analyses and profiles that doesn't match and we
+    # should act in consequence.
+    # Getting the analyses profiles
+    analyses_profiles = values.get('Profiles')
+    if analyses_profiles:
+        analyses_profiles = analyses_profiles.split(',')
+    if not analyses_services and not analysis_profile:
+        raise RuntimeError(
+                "create_analysisrequest: no analyses services or analysis"
+                " profile provided")
+    # Add analysis services UIDs from profiles to analyses_services variable.
+    for profile_uid in analyses_profiles:
+        profile = uid_catalog(UID=profile_uid)
+        profile = profile[0].getObject()
+        # Only services UIDs
+        services_uids = profile.getRawService()
+        # _resolve_items_to_service_uids() will remove duplicates
+        analyses_services += services_uids
+    return _resolve_items_to_service_uids(analyses_services)
 
 
 def _resolve_items_to_service_uids(items):
