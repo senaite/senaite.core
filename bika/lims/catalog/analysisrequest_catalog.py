@@ -51,6 +51,8 @@ bika_catalog_analysisrequest_listing_definition = {
             'getSampleID': 'FieldIndex',
             # To sort in lists
             'getClientTitle': 'FieldIndex',
+            'getProvince': 'FieldIndex',
+            'getDistrict': 'FieldIndex',
         },
         'columns': [
             'UID',
