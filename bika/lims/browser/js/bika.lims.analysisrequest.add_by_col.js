@@ -364,10 +364,7 @@ function AnalysisRequestAddByCol() {
     }
 
     function select_contact_if_one(client_uid, arnum) {
-        /** If client only has one contact, and the analysis request comes from
-          * a client, then Auto-complete first Contact field.
-          * If client only has one contect, and the analysis request comes from
-          * a batch, then Auto-complete all Contact field.
+        /** If client only has one contact, then Auto-complete Contact field.
           */
         if (client_uid === undefined || client_uid === ''){
                 return;}
@@ -385,8 +382,7 @@ function AnalysisRequestAddByCol() {
              * in 2 parts
              */
             if (data.success &&
-                data.total_objects == 1 &&
-                window.location.pathname.split('batches').length <= 2) {
+                data.total_objects == 1) {
                 var contact = data.objects[0];
                 $('input#Contact-' + arnum)
                     .attr('uid', contact['UID'])
