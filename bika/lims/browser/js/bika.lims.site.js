@@ -429,7 +429,7 @@ function SiteView() {
             }
             setCookie(cookiename, deps.toString());
           }
-          location.reload();
+          window.location.reload(true);
         });
 
         $('#admin_dep_filter_enabled').change(function() {
@@ -441,10 +441,10 @@ function SiteView() {
                 });
                 setCookie(cookiename, deps);
                 setCookie('dep_filter_disabled','true');
-                location.reload();
+                window.location.reload(true);
               }else{
                 setCookie('dep_filter_disabled','false');
-                location.reload();
+                window.location.reload(true);
               }
             });
           loadFilterByDepartmentCookie();
