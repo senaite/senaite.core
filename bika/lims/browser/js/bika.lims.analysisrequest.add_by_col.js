@@ -362,10 +362,14 @@ function AnalysisRequestAddByCol() {
         element = $("tr[fieldname=Specification] td[arnum=" + arnum + "] input")[0]
         filter_combogrid(element, "getClientUID", uids)
     }
-
+    /**
+    * If client only has one contact, then Auto-complete the Contact field.
+    * @param {String} client_uid the client UID to filter
+    * @param {Number} arnum the analysisrequest column number
+    * @return {None} nothing
+    */
     function select_contact_if_one(client_uid, arnum) {
-        /** If client only has one contact, then Auto-complete Contact field.
-          */
+
         if (client_uid === undefined || client_uid === ''){
                 return;}
         if (arnum === undefined || arnum === ''){
