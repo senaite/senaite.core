@@ -23,6 +23,7 @@ from Products.Archetypes import PloneMessageFactory as PMF
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType, safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from zope.component import getAdapter
 from zope.interface import implements
 
@@ -223,6 +224,8 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
     def __call__(self):
         self.request.set('disable_border', 1)
         self.ShowPrices = self.context.bika_setup.getShowPrices()
+        self.analysisrequest_catalog =\
+            getToolByName(self.context, CATALOG_ANALYSIS_REQUEST_LISTING)
         if 'ajax_category_expand' in self.request.keys():
             cat = self.request.get('cat')
             asv = AnalysisServicesView(self.context,
@@ -239,16 +242,16 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         copy_from = self.request.get('copy_from', "")
         if not copy_from:
             return {}
-        uids =  copy_from.split(",")
-
+        uids = copy_from.split(",")
         n = 0
         for uid in uids:
-            proxies = self.bika_catalog(UID=uid)
-            rr = proxies[0].getObject().getResultsRange()
+            proxies = self.analysisrequest_catalog(UID=uid)
+            rr = proxies[0].getObject().getResultsRange() if proxies else []
             new_rr = []
             for i, r in enumerate(rr):
-                s_uid = self.bika_setup_catalog(portal_type='AnalysisService',
-                                              getKeyword=r['keyword'])[0].UID
+                s_uid = self.bika_setup_catalog(
+                    portal_type='AnalysisService',
+                    getKeyword=r['keyword'])[0].UID
                 r['uid'] = s_uid
                 new_rr.append(r)
             specs[n] = new_rr
