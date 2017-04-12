@@ -91,7 +91,7 @@ class FolderView(BikaListingView):
 
         self.columns = {
             'Title': {'title': _('Worksheet'),
-                      'index': 'sortable_title'},
+                      'index': 'getId'},
             'Analyst': {'title': _('Analyst'),
                         'index': 'getAnalyst', },
             'Template': {'title': _('Template'),
