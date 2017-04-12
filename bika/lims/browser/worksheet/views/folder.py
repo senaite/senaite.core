@@ -256,7 +256,7 @@ class FolderView(BikaListingView):
         if not self.allowed_department_filtering:
             return True
         # Gettin the department from worksheet
-        deps = obj.getDepartmentUIDs()
+        deps = obj.getDepartmentUIDs
         result = True
         if deps:
             # Getting the cookie value
