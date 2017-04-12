@@ -72,9 +72,11 @@ def ulocalized_time(time, long_format=None, time_only=None, context=None,
     """
     # if time is a string, we'll try pass it through strptime with the various
     # formats defined.
+    if not time:
+        return ''
     if isinstance(time, basestring):
         time = strptime(context, time)
-    if time and isinstance(time, DateTime):
+    if isinstance(time, DateTime):
         # no printing times if they were not specified in inputs
         if time.second() + time.minute() + time.hour() == 0:
             long_format = False
@@ -94,8 +96,6 @@ def ulocalized_time(time, long_format=None, time_only=None, context=None,
                 time_str = ''
 
         return time_str
-    if time is None:
-        return ''
     logger.warning(
         "No time attribute or incorrect time type. Got {} and expecting"
         " String or DateTime.".format(type(time)))
