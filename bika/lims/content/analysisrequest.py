@@ -1807,6 +1807,12 @@ class AnalysisRequest(BaseFolder):
         """ Return the Request ID as title """
         return self.getId()
 
+    def sortable_title(self):
+        """
+        Some lists expects this index
+        """
+        return self.getId()
+
     def Description(self):
         """ Return searchable data as Description """
         descr = " ".join((self.getId(), self.aq_parent.Title()))
