@@ -256,7 +256,7 @@ class FolderView(BikaListingView):
         if not self.allowed_department_filtering:
             return True
         # Gettin the department from worksheet
-        deps = obj.getDepartmentUIDs()
+        deps = obj.getDepartmentUIDs
         result = True
         if deps:
             # Getting the cookie value
@@ -298,9 +298,7 @@ class FolderView(BikaListingView):
             if slot['position'] in pos_parent:
                 continue
             pos_parent[slot['position']] =\
-                self.rc.lookupObject(slot['container_uid'])
-            if not container:
-                continue
+                self.rc.lookupObject(slot.get('container_uid'))
 
         # Total QC Analyses
         item['NumQCAnalyses'] = str(obj.getNumberOfQCAnalyses)

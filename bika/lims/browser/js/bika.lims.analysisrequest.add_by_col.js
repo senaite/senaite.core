@@ -197,60 +197,6 @@ function AnalysisRequestAddByCol() {
                 filter_by_client(arnum)
             }
         }, 250);
-        /** If client only has one contect, and the analysis request comes from
-          * a client, then Auto-complete first Contact field.
-          * If client only has one contect, and the analysis request comes from
-          * a batch, then Auto-complete all Contact field.
-          */
-        var uid = $($("tr[fieldname='Client'] input")[0]).attr("uid");
-        if (uid === undefined || uid === null){
-          uid='';
-        }
-        var request_data = {
-            catalog_name: "portal_catalog",
-            portal_type: "Contact",
-            getParentUID: uid,
-            inactive_state: "active"
-        };
-        window.bika.lims.jsonapi_read(request_data, function (data) {
-            /** If the analysis request comes from a client
-             * window.location.pathname.split('batches') should not be splitted
-             * in 2 parts
-             */
-            if (data.success &&
-                data.total_objects == 1 &&
-                window.location.pathname.split('batches').length < 2) {
-                var contact = data.objects[0];
-                $('input#Contact-0')
-                    .attr('uid', contact['UID'])
-                    .val(contact['Title'])
-                    .attr('uid_check', contact['UID'])
-                    .attr('val_check', contact['UID']);
-                $('#Contact-0_uid').val(contact['UID']);
-                state_set(0, 'Contact', contact['UID']);
-                cc_contacts_set(0);
-            }
-            /** If the analysis request comes from a batch
-             * window.location.pathname.split('batches') should be splitted in
-             * 2 parts
-             */
-            else if (data.success &&
-                data.total_objects == 1 &&
-                window.location.pathname.split('batches').length == 2) {
-                var nr_ars = parseInt($("#ar_count").val(), 10);
-                var contact = data.objects[0];
-                $('input[id^="Contact-"]')
-                    .attr('uid', contact['UID'])
-                    .val(contact['Title'])
-                    .attr('uid_check', contact['UID'])
-                    .attr('val_check', contact['UID']);
-                $('[id^="Contact-"][id$="_uid"]').val(contact['UID']);
-                for (var i=0; i<nr_ars; i++){
-                    state_set(i, 'Contact', contact['UID']);
-                    cc_contacts_set(i);
-                }
-            };
-        });
     };
 
     function state_set(arnum, fieldname, value) {
@@ -393,10 +339,12 @@ function AnalysisRequestAddByCol() {
          * cases, the 'getParentUID' or 'getClientUID' index is used
          * to filter against Lab and Client folders.
          */
-        var element, uids
+        var element,uids
         var uid = $($("tr[fieldname='Client'] td[arnum='" + arnum + "'] input")[0]).attr("uid")
         element = $("tr[fieldname=Contact] td[arnum=" + arnum + "] input")[0]
         filter_combogrid(element, "getParentUID", uid)
+        // If client only has one contact then Auto-complete first Contact field.
+        select_contact_if_one(uid, arnum);
         element = $("tr[fieldname=CCContact] td[arnum=" + arnum + "] input")[0]
         filter_combogrid(element, "getParentUID", uid)
         element = $("tr[fieldname=InvoiceContact] td[arnum=" + arnum + "] input")[0]
@@ -413,6 +361,43 @@ function AnalysisRequestAddByCol() {
         uids = [uid, $("#bika_setup").attr("bika_analysisspecs_uid")]
         element = $("tr[fieldname=Specification] td[arnum=" + arnum + "] input")[0]
         filter_combogrid(element, "getClientUID", uids)
+    }
+    /**
+    * If client only has one contact, then Auto-complete the Contact field.
+    * @param {String} client_uid the client UID to filter
+    * @param {Number} arnum the analysisrequest column number
+    * @return {None} nothing
+    */
+    function select_contact_if_one(client_uid, arnum) {
+
+        if (client_uid === undefined || client_uid === ''){
+                return;}
+        if (arnum === undefined || arnum === ''){
+                return;}
+        var request_data = {
+            catalog_name: "portal_catalog",
+            portal_type: "Contact",
+            getParentUID: client_uid,
+            inactive_state: "active"
+        };
+        window.bika.lims.jsonapi_read(request_data, function (data) {
+            /** If the analysis request comes from a client
+             * window.location.pathname.split('batches') should not be splitted
+             * in 2 parts
+             */
+            if (data.success &&
+                data.total_objects == 1) {
+                var contact = data.objects[0];
+                $('input#Contact-' + arnum)
+                    .attr('uid', contact['UID'])
+                    .val(contact['Title'])
+                    .attr('uid_check', contact['UID'])
+                    .attr('val_check', contact['UID']);
+                $('#Contact-' + arnum + '_uid').val(contact['UID']);
+                state_set(arnum, 'Contact', contact['UID']);
+                cc_contacts_set(arnum);
+            }
+        });
     }
 
     function hashes_to_hash(hashlist, key) {

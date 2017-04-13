@@ -211,7 +211,7 @@ def get_services_uids(context=None, analyses_serv=[], values={}):
     analyses_profiles = values.get('Profiles')
     if analyses_profiles:
         analyses_profiles = analyses_profiles.split(',')
-    if not analyses_services and not analysis_profile:
+    if not analyses_services and not analyses_profiles:
         raise RuntimeError(
                 "create_analysisrequest: no analyses services or analysis"
                 " profile provided")
