@@ -3,6 +3,8 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 from Products.CMFCore.utils import getToolByName
+from bika.lims import logger
+
 
 def SetDepartmentCookies(event):
     """
@@ -26,8 +28,20 @@ def SetDepartmentCookies(event):
                 dep_for_cookie+=dep.UID+','
             response.setCookie('dep_filter_disabled','true',  path = '/', max_age = 24 * 3600)
         else:
-            lab_con=context.portal_catalog(portal_type='LabContact',
-                                getUsername=username)[0].getObject()
+            brain = context.portal_catalog(portal_type='LabContact',
+                                getUsername=username)
+            if not brain:
+                # It is possible that current user is created by Plone ZMI and
+                # it is not a LabContact. In this case we will just disable
+                # department filtering.
+                logger.warn("No lab Contact found... Log in with Plone user. "
+                            + username)
+                response.setCookie('filter_by_department_info', None,
+                                   path='/', max_age=0)
+                response.setCookie('dep_filter_disabled', None,
+                                   path='/', max_age=0)
+                return
+            lab_con = brain[0].getObject()
             if lab_con.getDefaultDepartment():
                 dep_for_cookie=lab_con.getDefaultDepartment()
             else:

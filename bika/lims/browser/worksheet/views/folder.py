@@ -267,7 +267,6 @@ class FolderView(BikaListingView):
         allowed = [d for d in obj.getDepartmentUIDs if d in cdepuids]
         return len(allowed) > 0
 
-
     def folderitem(self, obj, item, index):
         """
         :obj: is a worksheet brain.
