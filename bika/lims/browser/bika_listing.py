@@ -934,6 +934,7 @@ class BikaListingView(BrowserView):
             modified = self.ulocalized_time(obj.modified()),
             state_class = ''
             states = obj.getObjectWorkflowStates
+            states = states if states else {}
             for w_id in states.keys():
                 state_class += "state-%s " % states.get(w_id, '')
             # Building the dictionary with basic items
