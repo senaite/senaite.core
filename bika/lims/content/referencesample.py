@@ -316,31 +316,34 @@ class ReferenceSample(BaseFolder):
 
     security.declarePublic('addReferenceAnalysis')
     def addReferenceAnalysis(self, service_uid, reference_type):
-        """ add an analysis to the sample """
+        """
+        Creates a new Reference Analysis object based on this Sample
+        Reference, with the type passed in and associates the newly
+        created object to the Analysis Service passed in.
+
+        :param service_uid: The UID of the Analysis Service to be
+            associated to the newly created Reference Analysis
+        :type service_uid: A string
+        :param reference_type: type of ReferenceAnalysis, where 'b' is
+            is Blank and 'c' is Control
+        :type reference_type: A String
+        :returns: the UID of the newly created Reference Analysis
+        :rtype: A string
+        """
         rc = getToolByName(self, REFERENCE_CATALOG)
         service = rc.lookupObject(service_uid)
+        calc = service.getCalculation()
+        interim_fields = calc.getInterimFields() if calc else None
+        interim_fields = interim_fields if interim_fields else []
 
-        analysis = _createObjectByType("ReferenceAnalysis", self, tmpID())
+        analysis = _createObjectByType("ReferenceAnalysis",
+                                        self,
+                                        id=tmpID(),
+                                        Service=service,
+                                        ReferenceType=reference_type,
+                                        InterimFields=interim_fields)
         analysis.unmarkCreationFlag()
-
-        calculation = service.getCalculation()
-        interim_fields = calculation and calculation.getInterimFields() or []
         renameAfterCreation(analysis)
-
-        # maxtime = service.getMaxTimeAllowed() and service.getMaxTimeAllowed() \
-        #     or {'days':0, 'hours':0, 'minutes':0}
-        # starttime = DateTime()
-        # max_days = float(maxtime.get('days', 0)) + \
-        #          (
-        #              (float(maxtime.get('hours', 0)) * 3600 + \
-        #               float(maxtime.get('minutes', 0)) * 60)
-        #              / 86400
-        #          )
-        # duetime = starttime + max_days
-
-        analysis.setReferenceType(reference_type)
-        analysis.setService(service_uid)
-        analysis.setInterimFields(interim_fields)
         return analysis.UID()
 
 
