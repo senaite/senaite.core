@@ -44,7 +44,7 @@ def read(context, request):
             if index == 'UID' and safe_unicode(request[index]) == "":
                 msg = 'Request with no UID (catalog='{0}'). Dismissing UID ' \
                       'while filtering'.format(catalog_name)
-                logger.warn(msg)
+                logger.warning(msg)
             if index == 'review_state' and "{" in request[index]:
                 continue
             contentFilter[index] = safe_unicode(request[index])
