@@ -37,6 +37,7 @@ class AnalysisProfileAnalysesView(BikaListingView):
         self.allow_edit = allow_edit
         self.form_id = "analyses"
         self.profile = None
+        self.pagesize = 999999
 
         self.categories = []
         self.do_cats = self.context.bika_setup.getCategoriseAnalysisServices()
