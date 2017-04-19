@@ -158,6 +158,9 @@ function click_uid_checkbox(){
 
 $(document).ready(function(){
 	$("[name='uids:list']").live("click", click_uid_checkbox);
+  var url = $('a.bika_listing_show_more').attr('data-ajax-url');
+  var new_url = url.replace('base_edit','analysisprofile_analysesview');
+  $('a.bika_listing_show_more').attr('data-ajax-url',new_url);
 });
 
 }(jQuery));
