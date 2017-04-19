@@ -158,6 +158,10 @@ function click_uid_checkbox(){
 
 $(document).ready(function(){
 	$("[name='uids:list']").live("click", click_uid_checkbox);
+
+  // Replacing data-ajax-url attribute of the button because by default show
+  // more buttons send request to the current view but in the case of this widget,
+  // requests should be sent to AnalysisProfileAnalysesView  to get more ASes. 
   var url = $('a.bika_listing_show_more').attr('data-ajax-url');
   var new_url = url.replace('base_edit','analysisprofile_analysesview');
   $('a.bika_listing_show_more').attr('data-ajax-url',new_url);
