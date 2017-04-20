@@ -577,6 +577,7 @@ class BikaGenerator:
         addColumn(bc, 'path')
         addColumn(bc, 'UID')
         addColumn(bc, 'id')
+        addColumn(bc, 'getId')
         addColumn(bc, 'Type')
         addColumn(bc, 'portal_type')
         addColumn(bc, 'creator')
