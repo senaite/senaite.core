@@ -70,7 +70,7 @@ class AddAnalysesView(BikaListingView):
                 'index': 'getCategoryTitle'},
             'Title': {
                 'title': _('Analysis'),
-                'index':'sortable_title'},
+                'index':'getId'},
             'getDateReceived': {
                 'title': _('Date Received'),
                 'index': 'getDateReceived'},
@@ -130,7 +130,8 @@ class AddAnalysesView(BikaListingView):
 
         self._process_request()
 
-        if self.request.get('table_only', '') == self.form_id:
+        if self.request.get('table_only', '') == self.form_id or \
+                self.request.get('rows_only', '') == self.form_id:
             return self.contents_table()
         else:
             return self.template()

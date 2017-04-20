@@ -1250,6 +1250,13 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         return []
 
     def getDepartmentUIDs(self):
-        return [an.getDepartmentUID() for an in self.getAnalyses()]
+        """
+        Returns a list of department uids to which the analyses from
+        this Worksheet belong to. The list has no duplicates.
+        :returns: a list of uids
+        :rtype: list
+        """
+        analyses = self.getAnalyses()
+        return list(set([an.getDepartmentUID() for an in analyses]))
 
 registerType(Worksheet, PROJECTNAME)

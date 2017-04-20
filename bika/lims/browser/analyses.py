@@ -1049,7 +1049,7 @@ class QCAnalysesView(AnalysesView):
         qcanalyses = context.getQCAnalyses()
         asuids = [an.UID() for an in qcanalyses]
         self.contentFilter = {'UID': asuids,
-                              'sort_on': 'sortable_title'}
+                              'sort_on': 'getId'}
         self.icon = self.portal_url + \
                     "/++resource++bika.lims.images/referencesample.png"
 

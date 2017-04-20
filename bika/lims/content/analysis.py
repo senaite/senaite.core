@@ -1030,7 +1030,7 @@ class Analysis(BaseContent):
         if service.getInstrumentEntryOfResults():
             result = [
                 (ins.getRawMethod(), ins.getMethod().Title()) for ins in
-                service.getInstruments()]
+                service.getInstruments() if ins.getMethod()]
         # Otherwise (if Instrument Entry Of Results is set)
         # returns the methods assigned to the instruments allowed for
         # this Analysis

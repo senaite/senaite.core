@@ -28,10 +28,10 @@ class Sticker(BrowserView):
     def __call__(self):
         self.rendered_items = []
         items = self.request.get('items', '')
-        if items:
-            catalog = getToolByName(self.context, 'uid_catalog')
-            self.items = [o.getObject() for o in catalog(UID=items.split(","))]
-        else:
+        catalog = getToolByName(self.context, 'uid_catalog')
+        self.items = [o.getObject() for o in catalog(UID=items.split(","))]
+        if not self.items:
+            # Default fallback, load from context
             self.items = [self.context, ]
 
         new_items = []

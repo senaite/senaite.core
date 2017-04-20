@@ -249,25 +249,23 @@ class FolderView(BikaListingView):
             being displayed
         :rtype: bool
         """
-        if self.selected_state == 'mine' or self.restrict_results:
-            analyst = obj.getAnalyst
-            if analyst != _c(self.member.getId()):
-                return False
+        if (self.selected_state == 'mine' or self.restrict_results) \
+            and obj.getAnalyst != _c(self.member.getId()):
+            # Check if the current WS is assigned to the current user
+            return False
+
         if not self.allowed_department_filtering:
+            # Filtering by department is disabled. Return True
             return True
-        # Gettin the department from worksheet
-        deps = obj.getDepartmentUIDs()
-        result = True
-        if deps:
-            # Getting the cookie value
-            cookie_dep_uid = self.request.get('filter_by_department_info', '')
-            # Comparing departments' UIDs
-            deps_uids = set(deps)
-            filter_uids = set(
-                cookie_dep_uid.split(','))
-            matches = deps_uids & filter_uids
-            result = len(matches) > 0
-        return result
+
+        # Department filtering is enabled. Check if at least one of the
+        # analyses associated to this worksheet belongs to at least one
+        # of the departments currently selected.
+        cdepuids = self.request.get('filter_by_department_info', '')
+        cdepuids = cdepuids.split(',') if cdepuids else []
+        deps = obj.getDepartmentUIDs
+        allowed = [d for d in obj.getDepartmentUIDs if d in cdepuids]
+        return len(allowed) > 0
 
     def folderitem(self, obj, item, index):
         """
@@ -298,9 +296,7 @@ class FolderView(BikaListingView):
             if slot['position'] in pos_parent:
                 continue
             pos_parent[slot['position']] =\
-                self.rc.lookupObject(slot['container_uid'])
-            if not container:
-                continue
+                self.rc.lookupObject(slot.get('container_uid'))
 
         # Total QC Analyses
         item['NumQCAnalyses'] = str(obj.getNumberOfQCAnalyses)
