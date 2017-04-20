@@ -101,16 +101,19 @@ class AnalysisRequestsView(BikaListingView):
                 'toggle': True},
             'Client': {
                 'title': _('Client'),
+                'index': 'getClientTitle',
                 'attr': 'getClientTitle',
                 'replace_url': 'getClientURL',
                 'toggle': True},
             'Province': {
                 'title': _('Province'),
-                'sortable': False,
+                'sortable': True,
+                'index': 'getProvince',
                 'toggle': True},
             'District': {
                 'title': _('District'),
-                'sortable': False,
+                'sortable': True,
+                'index': 'getDistrict',
                 'toggle': True},
             'getClientReference': {
                 'title': _('Client Ref'),

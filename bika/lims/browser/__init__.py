@@ -74,30 +74,28 @@ def ulocalized_time(time, long_format=None, time_only=None, context=None,
     # formats defined.
     if isinstance(time, basestring):
         time = strptime(context, time)
-    if time and isinstance(time, DateTime):
-        # no printing times if they were not specified in inputs
-        if time.second() + time.minute() + time.hour() == 0:
-            long_format = False
-        try:
-            time_str = _ut(time, long_format, time_only, context,
-                                   'bika', request)
-        except ValueError:
-            # TODO: Clean-up this mess
-            # Maybe the date was captured with js, which returns the timestamp
-            # in milliseconds, while ulocalized_time() expects a timestamp in
-            # seconds.
-            try:
-                time = time/1000
-                time_str = _ut(time, long_format, time_only, context,
-                               'bika', request)
-            except:
-                time_str = ''
 
-        return time_str
-    logger.warning(
-        "No time attribute or incorrect time type. Got {} and expecting"
-        " String or DateTime.".format(type(time)))
-    return ''
+    if not time or not isinstance(time, DateTime):
+        return ''
+
+    # no printing times if they were not specified in inputs
+    if time.second() + time.minute() + time.hour() == 0:
+        long_format = False
+    try:
+        time_str = _ut(time, long_format, time_only, context, 'bika', request)
+    except ValueError:
+        # TODO: Clean-up this mess
+        # Maybe the date was captured with js, which returns the timestamp
+        # in milliseconds, while ulocalized_time() expects a timestamp in
+        # seconds.
+        try:
+            time = time/1000
+            time_str = _ut(time, long_format, time_only, context,
+                           'bika', request)
+        except:
+            time_str = ''
+
+    return time_str
 
 
 class updateFilerByDepartmentCookie(BrowserView):

@@ -843,7 +843,7 @@ class AnalysesView(BikaListingView):
                 # multi-verification is disabled, then return False
                 # Comparing was added just to check if this method is called
                 # before/after verification
-                elif mv_type == 'self_multi_not_cons' and\
+                elif self.mv_type == 'self_multi_not_cons' and\
                         username == obj.getLastVerificator and pending > 0:
                     isUserAllowedToVerify = False
             if verify_permission and not isUserAllowedToVerify:
