@@ -1895,6 +1895,14 @@ class AnalysisRequest(BaseFolder):
                 value.append(val)
         return value
 
+    def getDistrict(self):
+        client = self.aq_parent
+        return client.getDistrict()
+
+    def getProvince(self):
+        client = self.aq_parent
+        return client.getProvince()
+
     def getBatch(self):
         # The parent type may be "Batch" during ar_add.
         # This function fills the hidden field in ar_add.pt

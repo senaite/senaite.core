@@ -23,6 +23,7 @@ from Products.Archetypes import PloneMessageFactory as PMF
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType, safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from zope.component import getAdapter
 from zope.interface import implements
 
@@ -223,6 +224,8 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
     def __call__(self):
         self.request.set('disable_border', 1)
         self.ShowPrices = self.context.bika_setup.getShowPrices()
+        self.analysisrequest_catalog =\
+            getToolByName(self.context, CATALOG_ANALYSIS_REQUEST_LISTING)
         if 'ajax_category_expand' in self.request.keys():
             cat = self.request.get('cat')
             asv = AnalysisServicesView(self.context,
@@ -238,19 +241,24 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         specs = {}
         copy_from = self.request.get('copy_from', "")
         if not copy_from:
-            return {}
-        uids =  copy_from.split(",")
-
+            return json.dumps(specs)
+        uids = copy_from.split(",")
+        proxies = self.analysisrequest_catalog(UID=uids)
+        if not proxies:
+            logger.warning(
+                'No object found for UIDs {0} while copying specs'
+                .format(copy_from))
+            return json.dumps(specs)
         n = 0
-        for uid in uids:
-            proxies = self.bika_catalog(UID=uid)
-            rr = proxies[0].getObject().getResultsRange()
+        for proxie in proxies:
+            res_range = proxie.getObject().getResultsRange()
             new_rr = []
-            for i, r in enumerate(rr):
-                s_uid = self.bika_setup_catalog(portal_type='AnalysisService',
-                                              getKeyword=r['keyword'])[0].UID
-                r['uid'] = s_uid
-                new_rr.append(r)
+            for i, rr in enumerate(res_range):
+                s_uid = self.bika_setup_catalog(
+                    portal_type='AnalysisService',
+                    getKeyword=rr['keyword'])[0].UID
+                rr['uid'] = s_uid
+                new_rr.append(rr)
             specs[n] = new_rr
             n += 1
         return json.dumps(specs)

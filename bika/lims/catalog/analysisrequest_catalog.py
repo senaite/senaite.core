@@ -29,6 +29,8 @@ _indexes_dict = {
     'getReceivedBy': 'FieldIndex',
     'getDepartmentUIDs': 'KeywordIndex',
     'getPrinted': 'FieldIndex',
+    'getProvince': 'FieldIndex',
+    'getDistrict': 'FieldIndex',
     'getClientSampleID': 'FieldIndex',
     'getSampleID': 'FieldIndex',
     # To sort in lists
