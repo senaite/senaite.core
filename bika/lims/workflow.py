@@ -63,30 +63,98 @@ def doActionFor(instance, action_id):
 
 
 def BeforeTransitionEventHandler(instance, event):
-    """This will run the workflow_before_* on any
-    content type that has one.
+    """ This event is executed before each transition and delegates further
+    actions to 'before_x_transition_event' function if exists in the instance
+    passed in, where 'x' is the id of the event's transition.
+
+    If the passed in instance has not a function with the abovementioned
+    signature, or if there is no transition for the state change (like the
+    'creation' state, then the function does nothing.
+
+    :param instance: the instance to be transitioned
+    :type instance: ATContentType
+    :param event: event that holds the transition to be performed
+    :type event: IObjectEvent
     """
-    # creation doesn't have a 'transition'
+    # there is no transition for the state change (creation doesn't have a
+    # 'transition')
     if not event.transition:
         return
-    key = 'workflow_before_' + event.transition.id
+
+    clazzname = instance.__class__.__name__
+    msg = "Starting transtion {0} for object {1} with id {2}".format(
+        event.transition.id,  clazzname, instance.getId())
+    logger.debug(msg)
+
+    key = 'before_{0}_transition_event'.format(event.transition.id)
     method = getattr(instance, key, False)
-    if method:
-        method()
+    if not method:
+        # TODO: this conditional is only for backwards compatibility, to be
+        # removed when all workflow_before_* methods in contents are replaced
+        # by the more explicity signature 'before_*_transition_event_handler'
+        key = 'workflow_before_' + event.transition.id
+        method = getattr(instance, key, False)
+
+    if not method:
+        return
+
+    msg = "Calling BeforeTransitionEvent function '{0}' from {1}".format(
+        key, clazzname)
+    logger.debug(msg)
+    method()
 
 
 def AfterTransitionEventHandler(instance, event):
-    """This will run the workflow_script_* on any
-    content type that has one.
+    """ This event is executed after each transition and delegates further
+    actions to 'after_x_transition_event' function if exists in the instance
+    passed in, where 'x' is the id of the event's transition.
+
+    If the passed in instance has not a function with the abovementioned
+    signature, or if there is no transition for the state change (like the
+    'creation' state) or the same transition has already been run for the
+    the passed in instance during the current server request, then the
+    function does nothing.
+
+    :param instance: the instance that has been transitioned
+    :type instance: ATContentType
+    :param event: event that holds the transition performed
+    :type event: IObjectEvent
     """
-    # creation doesn't have a 'transition'
+    # there is no transition for the state change (creation doesn't have a
+    # 'transition')
     if not event.transition:
         return
-    key = 'workflow_script_' + event.transition.id
-    method = getattr(instance, key, False)
-    if method:
-        method()
 
+    # Set the request variable preventing cascade's from re-transitioning.
+    if skip(instance, event.transition.id):
+        return
+
+    clazzname = instance.__class__.__name__
+    msg = "Transition {0} performed for object {1} with id {2}".format(
+        event.transition.id,  clazzname, instance.getId())
+    logger.debug(msg)
+
+    # Because at this point, the object has been transitioned already, but
+    # further actions are probably needed still, so be sure is reindexed
+    # before going forward.
+    instance.reindexObject()
+
+    key = 'after_{0}_transition_event'.format(event.transition.id)
+    method = getattr(instance, key, False)
+    if not method:
+        # TODO: this conditional is only for backwards compatibility, to be
+        # removed when all workflow_script_* methods in contents are replaced
+        # by the more explicity signature 'after_*_transition_event_handler'
+        key = 'workflow_script_' + event.transition.id
+        method = getattr(instance, key, False)
+
+    if not method:
+        return
+
+    msg = "Calling AfterTransitionEvent function '{0}' from {1}".format(
+        key, clazzname)
+    logger.debug(msg)
+    method()
 
 def get_workflow_actions(obj):
     """ Compile a list of possible workflow transitions for this object
@@ -119,13 +187,19 @@ def isBasicTransitionAllowed(context, permission=None):
         return False
     return True
 
+def isTransitionAllowed(instance, transition_id):
+    wftool = getToolByName(instance, "portal_workflow")
+    transitions = wftool.getTransitionsFor(instance)
+    trans = [trans for trans in transitions if trans.id == transition_id]
+    return len(trans) >= 1
 
-def getCurrentState(obj, stateflowid):
+def getCurrentState(obj, stateflowid='review_state'):
     """ The current state of the object for the state flow id specified
         Return empty if there's no workflow state for the object and flow id
     """
     wf = getToolByName(obj, 'portal_workflow')
     return wf.getInfoFor(obj, stateflowid, '')
+
 
 def getTransitionDate(obj, action_id):
     workflow = getToolByName(obj, 'portal_workflow')

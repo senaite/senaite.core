@@ -28,6 +28,7 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode, _createObjectByType
 from Products.CMFEditions.ArchivistTool import ArchivistRetrieveError
 from bika.lims import bikaMessageFactory as _
+from bika.lims import deprecated
 from bika.lims.utils import t
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import HistoryAwareReferenceField
@@ -1386,6 +1387,9 @@ class Analysis(BaseContent):
         """
         return self.aq_parent.getPrinted()
 
+    def isSubmitted(self):
+        return self.getSubmittedBy() != ''
+
     def getSubmittedBy(self):
         """
         Returns the identifier of the user who submitted the result if the
@@ -1638,8 +1642,7 @@ class Analysis(BaseContent):
         # DuplicateAnalysis doesn't have analysis_workflow.
         if self.portal_type == "DuplicateAnalysis":
             return
-        if skip(self, "receive"):
-            return
+
         self.updateDueDate()
         self.reindexObject()
 
@@ -1673,97 +1676,92 @@ class Analysis(BaseContent):
                 # instructions if the result has the expected result.
                 doReflexRuleAction(self, action_row)
 
-    def workflow_script_submit(self):
+    def after_submit_transition_event(self):
+        """
+        Method triggered after a 'submit' transition for the current analysis
+        is performed. Responsible of triggering cascade actions such as
+        transitioning dependent analyses, transitioning worksheets, etc
+        depending on the current analysis and other analyses that belong to the
+        same Analysis Request or Worksheet.
+        This function is called automatically by
+        bika.lims.workfow.AfterTransitionEventHandler
+        """
         # DuplicateAnalysis doesn't have analysis_workflow.
         if self.portal_type == "DuplicateAnalysis":
+            # TODO: this shouldn't be like this. DuplicateAnalysis must follow
+            #   the same logic as the one used for Regular Analyses
             return
-        if skip(self, "submit"):
-            return
-        workflow = getToolByName(self, "portal_workflow")
-        if workflow.getInfoFor(self, 'cancellation_state', 'active') == "cancelled":
-            return False
-        ar = self.aq_parent
-        # Dependencies are submitted already, ignore them.
-        #-------------------------------------------------
-        # Submit our dependents
-        # Need to check for result and status of dependencies first
-        dependents = self.getDependents()
-        for dependent in dependents:
-            if not skip(dependent, "submit", peek=True):
-                can_submit = True
-                if not dependent.getResult():
-                    can_submit = False
-                else:
-                    interim_fields = False
-                    service = dependent.getService()
-                    calculation = service.getCalculation()
-                    if calculation:
-                        interim_fields = calculation.getInterimFields()
-                    if interim_fields:
-                        can_submit = False
-                if can_submit:
-                    dependencies = dependent.getDependencies()
-                    for dependency in dependencies:
-                        if workflow.getInfoFor(dependency, "review_state") in \
-                           ("to_be_sampled", "to_be_preserved",
-                            "sample_due", "sample_received",):
-                            can_submit = False
-                if can_submit:
-                    workflow.doActionFor(dependent, "submit")
+
+        wf = getToolByName(self, "portal_workflow")
+
+        # The analyses that depends on this analysis to calculate their results
+        # must be transitioned too, otherwise the user will be forced to submit
+        # them individually. Note that the automatic transition of dependents
+        # must only take place if all their dependencies have been submitted
+        # already.
+        for dependent in self.getDependents():
+            # If this submit transition has already been done for this
+            # dependent analysis within the current request, continue.
+            if skip(dependent, 'submit', peek=True):
+                continue
+
+            # TODO: All below and inside this loop should be moved to a
+            #   guard_submit_transition inside analysis
+
+            # If this dependent has already been submitted, omit
+            if dependent.isSubmitted():
+                continue
+
+            # The dependent cannot be transitioned if doesn't have result
+            if not dependent.getResult():
+                continue
+
+            # If the calculation associated to the dependent analysis requires
+            # the manual introduction of interim fields, do not transition the
+            # dependent automatically, force the user to do it manually.
+            service = dependent.getService()
+            calculation = service.getCalculation()
+            if calculation and calculation.getInterimFields():
+                continue
+
+            # All dependencies from this dependent analysis are ok?
+            dependencies = [dep for dep in dependent.getDependencies()
+                            if dep.UID() != self.UID()]
+            allowed = [dep for dep in dependencies if dep.isSubmitted()]
+            if len(dependencies) == len(allowed):
+                # The statuses of all dependencies of this dependent are ok
+                # (at least, all of them have been submitted already)
+                wf.doActionFor(dependent, 'submit')
+
         # Do all the reflex rules process
         self._reflex_rule_process('submit')
-        # If all analyses in this AR have been submitted
-        # escalate the action to the parent AR
+
+        # If all analyses from the Analysis Request to which this Analysis
+        # belongs have been submitted, then escalate the action to the parent
+        # Analysis Request
+        ar = self.aq_parent
         if not skip(ar, "submit", peek=True):
-            all_submitted = True
-            for a in ar.getAnalyses():
-                if a.review_state in \
-                   ("to_be_sampled", "to_be_preserved",
-                    "sample_due", "sample_received",):
-                    all_submitted = False
-                    break
-            if all_submitted:
-                workflow.doActionFor(ar, "submit")
+            analyses = [an.getObject() for an in ar.getAnalyses()
+                        if an.UID() != self.UID()]
+            ansubmitted = [an.UID() for an in analyses if an.isSubmitted()]
+            if len(analyses) == len(ansubmitted):
+                wf.doActionFor(ar, 'submit')
 
-        # If assigned to a worksheet and all analyses on the worksheet have been submitted,
-        # then submit the worksheet.
+        # If assigned to a worksheet and all analyses on the worksheet have
+        # been submitted, then submit the worksheet. If the worksheet analyst
+        # is not assigned, the worksheet can't be transitioned.
         ws = self.getBackReferences("WorksheetAnalysis")
-        if ws:
-            ws = ws[0]
-            # if the worksheet analyst is not assigned, the worksheet can't  be transitioned.
-            if ws.getAnalyst() and not skip(ws, "submit", peek=True):
-                all_submitted = True
-                for a in ws.getAnalyses():
-                    if workflow.getInfoFor(a, "review_state") in \
-                       ("to_be_sampled", "to_be_preserved",
-                        "sample_due", "sample_received", "assigned",):
-                        # Note: referenceanalyses and duplicateanalyses can still have review_state = "assigned".
-                        all_submitted = False
-                        break
-                if all_submitted:
-                    workflow.doActionFor(ws, "submit")
+        ws = ws[0] if ws else None
+        if ws and ws.getAnalyst() and not skip(ws, "submit", peek=True):
+            analyses = [an for an in ws.getAnalyses()
+                        if an.UID() != self.UID()]
+            ansubmitted = [an.UID() for an in analyses if an.isSubmitted()]
+            if len(analyses) == len(ansubmitted):
+                wf.doActionFor(ws, 'submit')
 
-        # If no problem with attachments, do 'attach' action for this instance.
-        can_attach = True
-        if not self.getAttachment():
-            service = self.getService()
-            if service.getAttachmentOption() == "r":
-                can_attach = False
-        if can_attach:
-            dependencies = self.getDependencies()
-            for dependency in dependencies:
-                if workflow.getInfoFor(dependency, "review_state") in \
-                   ("to_be_sampled", "to_be_preserved", "sample_due",
-                    "sample_received", "attachment_due",):
-                    can_attach = False
-        if can_attach:
-            try:
-                workflow.doActionFor(self, "attach")
-            except WorkflowException:
-                logger.error(
-                    "Workflow transition error: 'attach' "
-                    "action failed for analysis {0}".format(self.getId()))
-        self.reindexObject()
+    @deprecated('Flagged in 17.04. Use after_submit_transition_event instead')
+    def workflow_script_submit(self):
+        self.after_submit_transition_event()
 
     def workflow_script_retract(self):
         # DuplicateAnalysis doesn't have analysis_workflow.
