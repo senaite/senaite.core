@@ -70,7 +70,7 @@ class AddAnalysesView(BikaListingView):
                 'index': 'getCategoryTitle'},
             'Title': {
                 'title': _('Analysis'),
-                'index':'sortable_title'},
+                'index':'getId'},
             'getDateReceived': {
                 'title': _('Date Received'),
                 'index': 'getDateReceived'},
