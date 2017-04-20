@@ -243,14 +243,13 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         if not copy_from:
             return json.dumps(specs)
         uids = copy_from.split(",")
-        n = 0
-        import pdb; pdb.set_trace()
         proxies = self.analysisrequest_catalog(UID=uids)
         if not proxies:
             logger.warning(
                 'No object found for UIDs {0} while copying specs'
                 .format(copy_from))
             return json.dumps(specs)
+        n = 0
         for proxie in proxies:
             res_range = proxie.getObject().getResultsRange()
             new_rr = []
