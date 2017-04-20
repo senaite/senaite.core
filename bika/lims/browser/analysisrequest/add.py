@@ -241,19 +241,25 @@ class AnalysisRequestAddView(AnalysisRequestViewView):
         specs = {}
         copy_from = self.request.get('copy_from', "")
         if not copy_from:
-            return {}
+            return json.dumps(specs)
         uids = copy_from.split(",")
         n = 0
-        for uid in uids:
-            proxies = self.analysisrequest_catalog(UID=uid)
-            rr = proxies[0].getObject().getResultsRange() if proxies else []
+        import pdb; pdb.set_trace()
+        proxies = self.analysisrequest_catalog(UID=uids)
+        if not proxies:
+            logger.warning(
+                'No object found for UIDs {0} while copying specs'
+                .format(copy_from))
+            return json.dumps(specs)
+        for proxie in proxies:
+            res_range = proxie.getObject().getResultsRange()
             new_rr = []
-            for i, r in enumerate(rr):
+            for i, rr in enumerate(res_range):
                 s_uid = self.bika_setup_catalog(
                     portal_type='AnalysisService',
-                    getKeyword=r['keyword'])[0].UID
-                r['uid'] = s_uid
-                new_rr.append(r)
+                    getKeyword=rr['keyword'])[0].UID
+                rr['uid'] = s_uid
+                new_rr.append(rr)
             specs[n] = new_rr
             n += 1
         return json.dumps(specs)
