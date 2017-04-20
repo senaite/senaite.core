@@ -56,7 +56,7 @@ class AnalysisRequestAnalysesView(BikaListingView):
 
         self.columns = {
             'Title': {'title': _('Service'),
-                      'index': 'sortable_title',
+                      'index': 'getId',
                       'sortable': False, },
             'Hidden': {'title': _('Hidden'),
                        'sortable': False,
