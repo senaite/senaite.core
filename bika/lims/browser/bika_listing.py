@@ -939,6 +939,12 @@ class BikaListingView(BrowserView):
             modified = self.ulocalized_time(obj.modified()),
             state_class = ''
             states = obj.getObjectWorkflowStates
+            if not states:
+                logger.warning(
+                    'No workflow states found for object with id {0}'
+                    .format(obj.getId))
+                states = {}
+            states = states if states else {}
             for w_id in states.keys():
                 state_class += "state-%s " % states.get(w_id, '')
             # Building the dictionary with basic items
@@ -947,7 +953,7 @@ class BikaListingView(BrowserView):
                 obj=obj,
                 uid=obj.UID,
                 url=obj.getURL(),
-                id=obj.id,
+                id=obj.getId,
                 title=obj.Title,
                 # To colour the list items by state
                 state_class=state_class,
@@ -978,7 +984,7 @@ class BikaListingView(BrowserView):
                 st_title = t(PMF(st_title))
             except:
                 logger.warning(
-                    "Workflow title doesn't obtined for object %s" % obj.id)
+                    "Workflow title doesn't obtined for object %s" % obj.getId)
                 rs = 'active'
                 st_title = None
             for state_var, state in states.items():
