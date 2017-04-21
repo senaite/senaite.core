@@ -2007,16 +2007,22 @@ class AnalysisRequest(BaseFolder):
             review_state = workflow.getInfoFor(analysis, 'review_state', '')
             if review_state == 'published':
                 continue
-            calculation = analysis.getService().getCalculation()
+            service = analysis.getService()
+            # This situation can be met during analysis request creation
+            if service is None:
+                logger.warning(
+                    "No service for analysis '{}'".format(analysis.getId()))
+                calculation = None
+            else:
+                calculation = service.getCalculation()
             if not calculation or (
-                        calculation and not calculation.getDependentServices()):
+                    calculation and not calculation.getDependentServices()):
                 resultdate = analysis.getResultCaptureDate()
             duedate = analysis.getDueDate()
             # noinspection PyCallingNonCallable
             if (resultdate and resultdate > duedate) \
                     or (not resultdate and DateTime() > duedate):
                 return True
-
         return False
 
     def getPrinted(self):
@@ -3291,7 +3297,7 @@ class AnalysisRequest(BaseFolder):
         sample = self.getSample()
         sd = sample.getSamplingDate()
         # noinspection PyCallingNonCallable
-        self.reindexObject(idxs=["review_state",  'getObjectWorkflowStates', ])
+        self.reindexObject()
         if sd and sd > DateTime():
             sample.future_dated = True
 
@@ -3300,7 +3306,7 @@ class AnalysisRequest(BaseFolder):
             return
         sample = self.getSample()
         sd = sample.getSamplingDate()
-        self.reindexObject(idxs=["review_state",  'getObjectWorkflowStates', ])
+        self.reindexObject()
         # noinspection PyCallingNonCallable
         if sd and sd > DateTime():
             sample.future_dated = True
