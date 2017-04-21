@@ -66,7 +66,8 @@ class AggregatedAnalysesView(AnalysesView):
                              # {'id': 'assign'}
                              ],
              'contentFilter': {'review_state': [
-                'sample_received', 'assigned', 'attachment_due']},
+                'sample_received', 'assigned', 'attachment_due'],
+                'cancellation_state': 'active', },
              'columns': ['AnalysisRequest',
                          'Worksheet',
                          'Service',
@@ -84,8 +85,9 @@ class AggregatedAnalysesView(AnalysesView):
              'transitions': [{'id': 'verify'},
                              {'id': 'cancel'}
                              ],
-             'contentFilter': {'review_state': [
-                 'to_be_verified']},
+             'contentFilter': {
+                'review_state': ['to_be_verified'],
+                'cancellation_state': 'active', },
              'columns': ['AnalysisRequest',
                          'Worksheet',
                          'Service',
