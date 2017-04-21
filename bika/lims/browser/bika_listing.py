@@ -236,6 +236,11 @@ class WorkflowAction:
                             if not success:
                                 # If failed, delete last verificator.
                                 item.deleteLastVerificator()
+                        # If no transition done, but a verificator added, we
+                        # have to reindex the object in order to update the
+                        # metadata columns
+                        else:
+                            item.reindexObject()
                     else:
                         success, message = doActionFor(item, action)
                     if success:
