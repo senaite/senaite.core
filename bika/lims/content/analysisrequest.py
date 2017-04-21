@@ -3067,7 +3067,7 @@ class AnalysisRequest(BaseFolder):
 
     def getDateVerified(self):
         """
-        Returns the user id who has verified the analysis request.
+        Returns the date of verification as a DateTime object.
         """
         return getTransitionDate(self, 'verify', not_as_string=True)
 
