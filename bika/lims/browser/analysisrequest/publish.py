@@ -275,7 +275,7 @@ class AnalysisRequestPublishView(BrowserView):
         if ar.UID() in self._cache['_ar_data']:
             return self._cache['_ar_data'][ar.UID()]
         data = {'obj': ar,
-                'id': ar.getRequestID(),
+                'id': ar.getId(),
                 'client_order_num': ar.getClientOrderNumber(),
                 'client_reference': ar.getClientReference(),
                 'client_sampleid': ar.getClientSampleID(),
