@@ -40,11 +40,9 @@ def skip_pre315(portal):
     # Hack prevent out-of-date upgrading
     # Related: PR #1484
     # https://github.com/bikalabs/Bika-LIMS/pull/1484
-    qi = portal.portal_quickinstaller
-    info = qi.upgradeInfo('bika.lims')
-    if info['installedVersion'] > '315':
-        return True
-    return False
+    from bika.lims.upgrade.utils import UpgradeUtils
+    ut = UpgradeUtils(portal)
+    return ut.isOlderVersion('bika.lims', '315')
 
 
 def upgradestep(upgrade_product, version):

@@ -14,6 +14,42 @@ class UpgradeUtils(object):
         self.reindexcatalog = {}
         self.refreshcatalog = []
 
+    def getInstalledVersion(self, product):
+        qi = self.portal.portal_quickinstaller
+        info = qi.upgradeInfo(product)
+        return info['installedVersion']
+
+    def isOlderVersion(self, product, version):
+        # If the version to upgrade is lower than te actual version of the
+        # product, skip the step to prevent out-of-date upgrade
+        # Since there are heteregeneous names of versioning before v3.2.0, we
+        # need to convert the version string to numbers, format and compare
+        iver = self.getInstalledVersion(product)
+        iver = self.normalizeVersion(iver)
+        nver = self.normalizeVersion(version)
+        logger.debug('{0} versions: Installed {1} - Target {2}'
+                     .format(product, nver, iver))
+        return nver < iver
+
+    def normalizeVersion(self, version):
+        ver = version.replace('.', '')
+        major = ver[0] if len(ver) >= 1 else '0'
+        minor = ver[1] if len(ver) >= 2 else '0'
+        rev = ver[2:] if len(ver) >= 3 else '0'
+        patch = 0
+        if len(rev) == 5:
+            patch = rev[1:]
+            rev = rev[:1]
+        elif len(rev) > 2:
+            patch = rev[2:]
+            rev = rev[:2]
+
+        return '{0}.{1}.{2}.{3}'.format(
+                '{:02d}'.format(int(major)),
+                '{:02d}'.format(int(minor)),
+                '{:02d}'.format(int(rev)),
+                '{:04d}'.format(int(patch)))
+
     def delIndexAndColumn(self, catalog, index):
         self.delIndex(catalog, index)
         self.delColumn(catalog, index)
@@ -44,6 +80,7 @@ class UpgradeUtils(object):
             logger.error(
                 'Unable to delete index {0} from catalog {1}'.format(
                     index, cat.id))
+            raise
 
     def delColumn(self, catalog, column):
         cat = self._getCatalog(catalog)
@@ -58,6 +95,7 @@ class UpgradeUtils(object):
             logger.error(
                 'Unable to delete column {0} from catalog {1}'.format(
                     column, cat.id))
+            raise
 
     def addIndex(self, catalog, index, indextype):
         cat = self._getCatalog(catalog)
@@ -75,6 +113,7 @@ class UpgradeUtils(object):
             logger.error(
                 'Unable to add index {0} to catalog {1}'.format(
                     index, cat.id))
+            raise
 
     def addColumn(self, catalog, column):
         cat = self._getCatalog(catalog)
@@ -91,6 +130,7 @@ class UpgradeUtils(object):
             logger.error(
                 'Unable to add column {0} to catalog {1}'.format(
                     column, cat.id))
+            raise
 
     def refreshCatalogs(self):
         cats = self.refreshcatalog + self.reindexcatalog.keys()
@@ -103,6 +143,7 @@ class UpgradeUtils(object):
                 transaction.commit()
             except:
                 logger.error('Unable to refresh catalog {0}'.format(catalogid))
+                raise
 
     def cleanAndRebuildCatalogs(self):
         cats = self.refreshcatalog + self.reindexcatalog.keys()
@@ -115,3 +156,4 @@ class UpgradeUtils(object):
             except:
                 logger.error('Unable to clean and rebuild catalog {0}'.format(
                             catid))
+                raise

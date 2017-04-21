@@ -18,11 +18,16 @@ version = '3.2.0.1704'
 @upgradestep(product, version)
 def upgrade(tool):
     portal = aq_parent(aq_inner(tool))
-    qi = portal.portal_quickinstaller
-    ufrom = qi.upgradeInfo(product)['installedVersion']
-    logger.info("Upgrading {0}: {1} -> {2}".format(product, ufrom, version))
-
     ut = UpgradeUtils(portal)
+    ufrom = ut.getInstalledVersion(product)
+    if ut.isOlderVersion(product, version):
+        logger.info("Skipping upgrade of {0}: {1} > {2}".format(
+                    product, ufrom, version))
+        # The currently installed version is more recent than the target
+        # version of this upgradestep
+        return True
+
+    logger.info("Upgrading {0}: {1} -> {2}".format(product, ufrom, version))
 
     # Add getId column to bika_catalog
     ut.addColumn('bika_catalog', 'getId')
