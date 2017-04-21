@@ -979,7 +979,7 @@ class BikaListingView(BrowserView):
                 st_title = t(PMF(st_title))
             except:
                 logger.warning(
-                    "Workflow title doesn't obtined for object %s" % obj.id)
+                    "Workflow title doesn't obtined for object %s" % obj.getId)
                 rs = 'active'
                 st_title = None
             for state_var, state in states.items():
