@@ -4,7 +4,6 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
