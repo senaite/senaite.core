@@ -1474,18 +1474,7 @@ schema = BikaSchema.copy() + Schema((
         default='',
         widget=ComputedWidget(visible=False,),
     ),
-    ComputedField(
-        'DateVerified',
-        expression='here.getDateVerified()',
-        default='',
-        widget=ComputedWidget(visible=False,),
-    ),
-    ComputedField(
-        'DatePublished',
-        expression='here.getDatePublished()',
-        default='',
-        widget=ComputedWidget(visible=False,),
-    ),
+
     ComputedField(
         'Priority',
         searchable=True,
@@ -2661,7 +2650,7 @@ class AnalysisRequest(BaseFolder):
         """
         Returns the transition date from the Analysis Request object
         """
-        return getTransitionDate(self, 'publish')
+        return getTransitionDate(self, 'publish', not_as_string=True)
 
     security.declarePublic('setSamplePoint')
 
@@ -3086,9 +3075,9 @@ class AnalysisRequest(BaseFolder):
 
     def getDateVerified(self):
         """
-        Returns the user id who has verified the analysis request.
+        Returns the date of verification as a DateTime object.
         """
-        return getTransitionDate(self, 'verify')
+        return getTransitionDate(self, 'verify', not_as_string=True)
 
     def _getCreatorFullName(self):
         """
