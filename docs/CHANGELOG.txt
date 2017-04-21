@@ -1,4 +1,4 @@
-3.2.1 (unreleased)
+3.2.0 (unreleased)
 ------------------
 - Allow multi-approval (multi-verification) of results
 HEALTH-568: TaqMan 96 Interface not working well

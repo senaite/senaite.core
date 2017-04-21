@@ -17,9 +17,11 @@ version = '3.2.0.1704'
 
 @upgradestep(product, version)
 def upgrade(tool):
-    logger.info("Upgrading {0} to {1}".format(product, version))
-
     portal = aq_parent(aq_inner(tool))
+    qi = portal.portal_quickinstaller
+    ufrom = qi.upgradeInfo(product)['installedVersion']
+    logger.info("Upgrading {0}: {1} -> {2}".format(product, ufrom, version))
+
     ut = UpgradeUtils(portal)
 
     # Add getId column to bika_catalog
