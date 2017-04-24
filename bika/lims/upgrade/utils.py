@@ -1,6 +1,7 @@
 
 from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
+from bika.lims.catalog.catalog_utilities import addZCTextIndex
 
 import traceback
 import sys
@@ -102,7 +103,10 @@ class UpgradeUtils(object):
         if index in cat.indexes():
             return
         try:
-            cat.addIndex(index, indextype)
+            if indextype == 'ZCTextIndex':
+                addZCTextIndex(cat, index)
+            else:
+                cat.addIndex(index, indextype)
             logger.info('Catalog index %s added.' % index)
             indexes = self.reindexcatalog.get(cat.id, [])
             indexes.append(index)
