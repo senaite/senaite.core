@@ -680,6 +680,11 @@ class BikaListingView(BrowserView):
                     continue
                 ##logger.info("Or: %s=%s"%(index, value))
                 if idx.meta_type in('ZCTextIndex', 'FieldIndex'):
+                    # For SearchableText index, we search for any value
+                    # starting with keyword. Unfortunately for ZCTextIndexes
+                    # regex cannot start with special character like '*'
+                    if idx.meta_type == 'ZCTextIndex':
+                        value += '*'
                     self.Or.append(MatchRegexp(index, value))
                     self.expand_all_categories = True
                     # https://github.com/bikalabs/Bika-LIMS/issues/1069
