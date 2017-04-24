@@ -394,7 +394,6 @@ def addZCTextIndex(catalog, index_name):
                                                                'Lexicon', elem)
     except:
         logger.warning('Could not add ZCTextIndex to '+str(catalog))
-        pass
 
     catalog.addIndex(index_name, 'ZCTextIndex', zc_extras)
 
@@ -414,4 +413,8 @@ def _cleanAndRebuildIfNeeded(portal, cleanrebuild):
 
 
 class Empty:
+    """
+    Just a class to use when we need an object with some attributes to send to
+    another objects an a parameter.
+    """
     pass
