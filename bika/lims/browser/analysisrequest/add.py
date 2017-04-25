@@ -1,6 +1,4 @@
 import json
-from bika.lims.utils.sample import create_sample
-from bika.lims.workflow import doActionFor
 import plone
 import datetime
 from datetime import date
@@ -8,24 +6,21 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analysisrequest import AnalysisRequestViewView
-from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.content.analysisrequest import schema as AnalysisRequestSchema
 from bika.lims.controlpanel.bika_analysisservices import \
     AnalysisServicesView as ASV
-from bika.lims.interfaces import IAnalysisRequestAddView, ISample
-from bika.lims.utils import getHiddenAttributesForClass, dicts_to_dict
+from bika.lims.interfaces import IAnalysisRequestAddView
 from bika.lims.utils import t
-from bika.lims.utils import tmpID
 from bika.lims.utils.analysisrequest import create_analysisrequest as crar
-from magnitude import mg
 from plone.app.layout.globals.interfaces import IViewView
 from Products.Archetypes import PloneMessageFactory as PMF
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType, safe_unicode
+from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from zope.component import getAdapter
 from zope.interface import implements
+import traceback
 
 
 class AnalysisServicesView(ASV):
@@ -428,7 +423,18 @@ class ajaxAnalysisRequestSubmit():
             # checking if sampling date is not future
             if state.get('SamplingDate', ''):
                 samplingdate = state.get('SamplingDate', '')
-                samp_date=datetime.datetime.strptime(samplingdate, "%Y-%m-%d %H:%M")
+                try:
+                    samp_date = datetime.datetime.strptime(
+                        samplingdate, "%Y-%m-%d %H:%M")
+                except ValueError:
+                    print traceback.format_exc()
+                    msg =\
+                        "Bad time formatting: Getting '{}' but expecting an"\
+                        " string with '%Y-%m-%d %H:%M' format."\
+                        .format(samplingdate)
+                    logger.error(msg)
+                    ajax_form_error(self.errors, arnum=arnum, message=msg)
+                    continue
                 now = datetime.datetime.now()
                 if now < samp_date:
                     msg = t(_("Sampling Date can't be future"))
