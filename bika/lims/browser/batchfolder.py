@@ -46,6 +46,7 @@ class BatchFolderContentsView(BikaListingView):
             'BatchDate': {'title': _('Date')},
             'Client': {'title': _('Client')},
             'state_title': {'title': _('State'), 'sortable': False},
+            'created': {'title': _('Created'), },
         }
 
         self.review_states = [  # leave these titles and ids alone
@@ -118,6 +119,8 @@ class BatchFolderContentsView(BikaListingView):
             return True
         # Gettin the departments from the batch
         ars = obj.getAnalysisRequests()
+        if not ars:
+            return True
         # Getting the cookie value
         cookie_dep_uid = self.request.get('filter_by_department_info', '')
         filter_uids = set(
