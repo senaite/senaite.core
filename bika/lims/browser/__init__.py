@@ -93,8 +93,11 @@ def ulocalized_time(time, long_format=None, time_only=None, context=None,
             time_str = _ut(time, long_format, time_only, context,
                            'bika', request)
         except:
+            err_msg = traceback.format_exc() + '\n'
+            logger.error(
+                err_msg +
+                "Error converting '{}' time to string.".format(time))
             time_str = ''
-
     return time_str
 
 
