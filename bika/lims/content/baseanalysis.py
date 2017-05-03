@@ -1,0 +1,1250 @@
+# -*- coding: utf-8 -*-
+
+# This file is part of Bika LIMS
+#
+# Copyright 2011-2016 by it's authors.
+# Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
+import sys
+
+from AccessControl import ClassSecurityInfo
+from Products.ATExtensions.ateapi import RecordsField
+from Products.Archetypes.public import DisplayList, ReferenceField, \
+    ComputedField, ComputedWidget, BooleanField, BooleanWidget, StringField, \
+    SelectionWidget, FixedPointField, IntegerField, IntegerWidget, \
+    StringWidget, BaseContent, Schema, MultiSelectionWidget, FloatField, \
+    DecimalWidget
+from Products.Archetypes.references import HoldingReference
+from Products.Archetypes.utils import IntDisplayList
+from Products.CMFCore.utils import getToolByName
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import *
+from bika.lims.browser.widgets.durationwidget import DurationWidget
+from bika.lims.browser.widgets.recordswidget import RecordsWidget
+from bika.lims.browser.widgets.referencewidget import ReferenceWidget
+from bika.lims.config import ATTACHMENT_OPTIONS, SERVICE_POINT_OF_CAPTURE
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.utils import to_utf8 as _c
+from bika.lims.utils.analysis import get_significant_digits
+
+ShortTitle = StringField(
+    'ShortTitle',
+    schemata="Description",
+    widget=StringWidget(
+        label=_("Short title"),
+        description=_(
+            "If text is entered here, it is used instead of the title when "
+            "the service is listed in column headings. HTML formatting is "
+            "allowed.")
+    )
+)
+
+SortKey = FloatField(
+    'SortKey',
+    schemata="Description",
+    validators=('SortKeyValidator',),
+    widget=DecimalWidget(
+        label=_("Sort Key"),
+        description=_(
+            "Float value from 0.0 - 1000.0 indicating the sort order. "
+            "Duplicate values are ordered alphabetically."),
+    )
+)
+
+ScientificName = BooleanField(
+    'ScientificName',
+    schemata="Description",
+    default=False,
+    widget=BooleanWidget(
+        label=_("Scientific name"),
+        description=_(
+            "If enabled, the name of the analysis will be written in italics."),
+    )
+)
+
+Unit = StringField(
+    'Unit',
+    schemata="Description",
+    widget=StringWidget(
+        label=_("Unit"),
+        description=_(
+            "The measurement units for this analysis service' results, e.g. "
+            "mg/l, ppm, dB, mV, etc."),
+    )
+)
+
+Precision = IntegerField(
+    'Precision',
+    schemata="Analysis",
+    widget=IntegerWidget(
+        label=_("Precision as number of decimals"),
+        description=_(
+            "Define the number of decimals to be used for this result."),
+    )
+)
+
+ExponentialFormatPrecision = IntegerField(
+    'ExponentialFormatPrecision',
+    schemata="Analysis",
+    default=7,
+    widget=IntegerWidget(
+        label=_("Exponential format precision"),
+        description=_(
+            "Define the precision when converting values to exponent "
+            "notation.  The default is 7."),
+    )
+)
+
+LowerDetectionLimit = FixedPointField(
+    'LowerDetectionLimit',
+    schemata="Analysis",
+    default='0.0',
+    precision=7,
+    widget=DecimalWidget(
+        label=_("Lower Detection Limit (LDL)"),
+        description=_(
+            "The Lower Detection Limit is the lowest value to which the "
+            "measured parameter can be measured using the specified testing "
+            "methodology. Results entered which are less than this value will "
+            "be reported as < LDL")
+    )
+)
+
+UpperDetectionLimit = FixedPointField(
+    'UpperDetectionLimit',
+    schemata="Analysis",
+    default='1000000000.0',
+    precision=7,
+    widget=DecimalWidget(
+        label=_("Upper Detection Limit (UDL)"),
+        description=_(
+            "The Upper Detection Limit is the highest value to which the "
+            "measured parameter can be measured using the specified testing "
+            "methodology. Results entered which are greater than this value "
+            "will be reported as > UDL")
+    )
+)
+
+# LIMS-1775 Allow to select LDL or UDL defaults in results with readonly mode
+# https://jira.bikalabs.com/browse/LIMS-1775
+# Some behavior controlled with javascript: If checked, the field
+# "AllowManualDetectionLimit" will be displayed.
+# See browser/js/bika.lims.analysisservice.edit.js
+#
+# Use cases:
+# a) If "DetectionLimitSelector" is enabled and
+# "AllowManualDetectionLimit" is enabled too, then:
+# the analyst will be able to select an '>', '<' operand from the
+# selection list and also set the LD manually.
+#
+# b) If "DetectionLimitSelector" is enabled and
+# "AllowManualDetectionLimit" is unchecked, the analyst will be
+# able to select an operator from the selection list, but not set
+# the LD manually: the default LD will be displayed in the result
+# field as usuall, but in read-only mode.
+#
+# c) If "DetectionLimitSelector" is disabled, no LD selector will be
+# displayed in the results table.
+DetectionLimitSelector = BooleanField(
+    'DetectionLimitSelector',
+    schemata="Analysis",
+    default=False,
+    widget=BooleanWidget(
+        label=_("Display a Detection Limit selector"),
+        description=_(
+            "If checked, a selection list will be displayed next to the "
+            "analysis' result field in results entry views. By using this "
+            "selector, the analyst will be able to set the value as a "
+            "Detection Limit (LDL or UDL) instead of a regular result"),
+    )
+)
+
+# Behavior controlled with javascript: Only visible when the
+# "DetectionLimitSelector" is checked
+# See browser/js/bika.lims.analysisservice.edit.js
+# Check inline comment for "DetecionLimitSelector" field for
+# further information.
+AllowManualDetectionLimit = BooleanField(
+    'AllowManualDetectionLimit',
+    schemata="Analysis",
+    default=False,
+    widget=BooleanWidget(
+        label=_("Allow Manual Detection Limit input"),
+        description=_(
+            "Allow the analyst to manually replace the default Detection "
+            "Limits (LDL and UDL) on results entry views"),
+    )
+)
+
+ReportDryMatter = BooleanField(
+    'ReportDryMatter',
+    schemata="Analysis",
+    default=False,
+    widget=BooleanWidget(
+        label=_("Report as Dry Matter"),
+        description=_("These results can be reported as dry matter"),
+    )
+)
+
+AttachmentOption = StringField(
+    'AttachmentOption',
+    schemata="Analysis",
+    default='p',
+    vocabulary=ATTACHMENT_OPTIONS,
+    widget=SelectionWidget(
+        label=_("Attachment Option"),
+        description=_(
+            "Indicates whether file attachments, e.g. microscope images, "
+            "are required for this analysis and whether file upload function "
+            "will be available for it on data capturing screens"),
+        format='select',
+    )
+)
+
+Keyword = StringField(
+    'Keyword',
+    schemata="Description",
+    required=1,
+    searchable=True,
+    validators=('servicekeywordvalidator',),
+    widget=StringWidget(
+        label=_("Analysis Keyword"),
+        description=_(
+            "The unique keyword used to identify the analysis service in "
+            "import files of bulk AR requests and results imports from "
+            "instruments. It is also used to identify dependent analysis "
+            "services in user defined results calculations"),
+    )
+)
+
+# Allow/Disallow manual entry of results
+# Behavior controlled by javascript depending on Instruments field:
+# - If InstrumentEntry not checked, set checked and readonly
+# - If InstrumentEntry checked, set as not readonly
+# See browser/js/bika.lims.analysisservice.edit.js
+ManualEntryOfResults = BooleanField(
+    'ManualEntryOfResults',
+    schemata="Method",
+    default=True,
+    widget=BooleanWidget(
+        label=_("Instrument assignment is not required"),
+        description=_(
+            "Select if the results for tests of this type of analysis can be "
+            "set manually. If selected, the user will be able to set a result "
+            "for a test of this type of analysis in manage results view "
+            "without the need of selecting an instrument, even though the "
+            "method selected for the test has instruments assigned."),
+    )
+)
+
+# Allow/Disallow instrument entry of results
+# Behavior controlled by javascript depending on Instruments field:
+# - If no instruments available, hide and uncheck
+# - If at least one instrument selected, checked, but not readonly
+# See browser/js/bika.lims.analysisservice.edit.js
+InstrumentEntryOfResults = BooleanField(
+    'InstrumentEntryOfResults',
+    schemata="Method",
+    default=False,
+    widget=BooleanWidget(
+        label=_("Instrument assignment is allowed"),
+        description=_(
+            "Select if the results for tests of this type of analysis can be "
+            "set by using an instrument. If disabled, no instruments will be "
+            "available for tests of this type of analysis in manage results "
+            "view, even though the method selected for the test has "
+            "instruments assigned."),
+    )
+)
+
+# Instruments associated to the AS
+# List of instruments capable to perform the Analysis Service. The
+# Instruments selected here are displayed in the Analysis Request
+# Add view, closer to this Analysis Service if selected.
+# - If InstrumentEntry not checked, hide and unset
+# - If InstrumentEntry checked, set the first selected and show
+Instruments = UIDReferenceField(
+    'Instruments',
+    schemata="Method",
+    required=0,
+    multiValued=1,
+    vocabulary_display_path_bound=sys.maxint,
+    vocabulary='_getAvailableInstrumentsDisplayList',
+    allowed_types=('Instrument',),
+    relationship='AnalysisServiceInstruments',
+    referenceClass=HoldingReference,
+    widget=MultiSelectionWidget(
+        label=_("Instruments"),
+        description=_(
+            "More than one instrument can be used in a test of this type of "
+            "analysis. A selection list with the instruments selected here is "
+            "populated in the results manage view for each test of this type "
+            "of analysis. The available instruments in the selection list "
+            "will change in accordance with the method selected by the user "
+            "for that test in the manage results view. Although a method can "
+            "have more than one instrument assigned, the selection list is "
+            "only populated with the instruments that are both set here and "
+            "allowed for the selected method."),
+    )
+)
+
+# Default instrument to be used.
+# Gets populated with the instruments selected in the multiselection
+# box above.
+# Behavior controlled by js depending on ManualEntry/Instruments:
+# - Populate dynamically with selected Instruments
+# - If InstrumentEntry checked, set first selected instrument
+# - If InstrumentEntry not checked, hide and set None
+# See browser/js/bika.lims.analysisservice.edit.js
+Instrument = HistoryAwareReferenceField(
+    'Instrument',
+    schemata="Method",
+    searchable=True,
+    required=0,
+    vocabulary_display_path_bound=sys.maxint,
+    vocabulary='_getAvailableInstrumentsDisplayList',
+    allowed_types=('Instrument',),
+    relationship='AnalysisServiceInstrument',
+    referenceClass=HoldingReference,
+    widget=SelectionWidget(
+        format='select',
+        label=_("Default Instrument"),
+        description=_(
+            "This is the instrument the system will assign by default to "
+            "tests from this type of analysis in manage results view. The "
+            "method associated to this instrument will be assigned as the "
+            "default method too.Note the instrument's method will prevail "
+            "over any of the methods choosen if the 'Instrument assignment is "
+            "not required' option is enabled.")
+    )
+)
+
+# Returns the Default's instrument title. If no default instrument
+# set, returns string.empty
+InstrumentTitle = ComputedField(
+    'InstrumentTitle',
+    expression=""
+        "context.getInstrument() and context.getInstrument().Title() or ''",
+    widget=ComputedWidget(
+        visible=False,
+    )
+)
+
+# Manual methods associated to the AS
+# List of methods capable to perform the Analysis Service. The
+# Methods selected here are displayed in the Analysis Request
+# Add view, closer to this Analysis Service if selected.
+# Use getAvailableMethods() to retrieve the list with methods both
+# from selected instruments and manually entered.
+# Behavior controlled by js depending on ManualEntry/Instrument:
+# - If InsrtumentEntry not checked, show
+# See browser/js/bika.lims.analysisservice.edit.js
+Methods = UIDReferenceField(
+    'Methods',
+    schemata="Method",
+    required=0,
+    multiValued=1,
+    vocabulary_display_path_bound=sys.maxint,
+    vocabulary='_getAvailableMethodsDisplayList',
+    allowed_types=('Method',),
+    relationship='AnalysisServiceMethods',
+    referenceClass=HoldingReference,
+    widget=MultiSelectionWidget(
+        label=_("Methods"),
+        description=_(
+            "The tests of this type of analysis can be performed by using "
+            "more than one method with the 'Manual entry of results' option "
+            "enabled. A selection list with the methods selected here is "
+            "populated in the manage results view for each test of this type "
+            "of analysis. Note that only methods with 'Allow manual entry' "
+            "option enabled are displayed here; if you want the user to be "
+            "able to assign a method that requires instrument entry, enable "
+            "the 'Instrument assignment is allowed' option."),
+    )
+)
+
+CalculationTitle = ComputedField(
+    'CalculationTitle',
+    expression=""
+        "context.getCalculation() and context.getCalculation().Title() or ''",
+    searchable=True,
+    widget=ComputedWidget(
+        visible=False,
+    )
+)
+
+CalculationUID = ComputedField(
+    'CalculationUID',
+    expression=""
+        "context.getCalculation() and context.getCalculation().UID() or ''",
+    widget=ComputedWidget(
+        visible=False,
+    )
+)
+
+InterimFields = InterimFieldsField(
+    'InterimFields',
+    schemata='Method',
+    widget=RecordsWidget(
+        label=_("Calculation Interim Fields"),
+        description=_(
+            "Values can be entered here which will override the defaults "
+            "specified in the Calculation Interim Fields."),
+    )
+)
+
+MaxTimeAllowed = DurationField(
+    'MaxTimeAllowed',
+    schemata="Analysis",
+    widget=DurationWidget(
+        label=_("Maximum turn-around time"),
+        description=_(
+            "Maximum time allowed for completion of the analysis. A late "
+            "analysis alert is raised when this period elapses"),
+    )
+)
+
+DuplicateVariation = FixedPointField(
+    'DuplicateVariation',
+    schemata="Method",
+    widget=DecimalWidget(
+        label=_("Duplicate Variation %"),
+        description=_(
+            "When the results of duplicate analyses on worksheets, carried "
+            "out on the same sample, differ with more than this percentage, "
+            "an alert is raised"),
+    )
+)
+
+Accredited = BooleanField(
+    'Accredited',
+    schemata="Method",
+    default=False,
+    widget=BooleanWidget(
+        label=_("Accredited"),
+        description=_(
+            "Check this box if the analysis service is included in the "
+            "laboratory's schedule of accredited analyses"),
+    )
+)
+
+PointOfCapture = StringField(
+    'PointOfCapture',
+    schemata="Description",
+    required=1,
+    default='lab',
+    vocabulary=SERVICE_POINT_OF_CAPTURE,
+    widget=SelectionWidget(
+        format='flex',
+        label=_("Point of Capture"),
+        description=_(
+            "The results of field analyses are captured during sampling at "
+            "the sample point, e.g. the temperature of a water sample in the "
+            "river where it is sampled. Lab analyses are done in the "
+            "laboratory"),
+    )
+)
+
+Category = UIDReferenceField(
+    'Category',
+    schemata="Description",
+    required=1,
+    vocabulary_display_path_bound=sys.maxint,
+    allowed_types=('AnalysisCategory',),
+    relationship='AnalysisServiceAnalysisCategory',
+    referenceClass=HoldingReference,
+    vocabulary='getAnalysisCategories',
+    widget=ReferenceWidget(
+        checkbox_bound=0,
+        label=_("Analysis Category"),
+        description=_("The category the analysis service belongs to"),
+        catalog_name='bika_setup_catalog',
+        base_query={'inactive_state': 'active'},
+    )
+)
+
+CategoryTitle = ComputedField(
+    'CategoryTitle',
+    expression=""
+        "context.getCategory() and context.getCategory().Title() or ''",
+    widget=ComputedWidget(
+        visible=False,
+    )
+)
+
+CategoryUID = ComputedField(
+    'CategoryUID',
+    expression=""
+        "context.getCategory() and context.getCategory().UID() or ''",
+    widget=ComputedWidget(
+        visible=False,
+    )
+)
+
+Price = FixedPointField(
+    'Price',
+    schemata="Description",
+    default='0.00',
+    widget=DecimalWidget(
+        label=_("Price (excluding VAT)"),
+    )
+)
+
+# read access permission
+BulkPrice = FixedPointField(
+    'BulkPrice',
+    schemata="Description",
+    default='0.00',
+    widget=DecimalWidget(
+        label=_("Bulk price (excluding VAT)"),
+        description=_(
+            "The price charged per analysis for clients who qualify for bulk "
+            "discounts"),
+    )
+)
+
+VATAmount = ComputedField(
+    'VATAmount',
+    schemata="Description",
+    expression='context.getVATAmount()',
+    widget=ComputedWidget(
+        label=_("VAT"),
+        visible={'edit': 'hidden', }
+    )
+)
+
+TotalPrice = ComputedField(
+    'TotalPrice',
+    schemata="Description",
+    expression='context.getTotalPrice()',
+    widget=ComputedWidget(
+        label=_("Total price"),
+        visible={'edit': 'hidden', }
+    )
+)
+
+VAT = FixedPointField(
+    'VAT',
+    schemata="Description",
+    default_method='getDefaultVAT',
+    widget=DecimalWidget(
+        label=_("VAT %"),
+        description=_("Enter percentage value eg. 14.0"),
+    )
+)
+
+Department = UIDReferenceField(
+    'Department',
+    schemata="Description",
+    required=0,
+    vocabulary_display_path_bound=sys.maxint,
+    allowed_types=('Department',),
+    vocabulary='getDepartments',
+    relationship='AnalysisServiceDepartment',
+    referenceClass=HoldingReference,
+    widget=ReferenceWidget(
+        checkbox_bound=0,
+        label=_("Department"),
+        description=_("The laboratory department"),
+        catalog_name='bika_setup_catalog',
+        base_query={'inactive_state': 'active'},
+    )
+)
+
+DepartmentTitle = ComputedField(
+    'DepartmentTitle',
+    expression=""
+        "context.getDepartment() and context.getDepartment().Title() or ''",
+    searchable=True,
+    widget=ComputedWidget(
+        visible=False,
+    )
+)
+
+Uncertainties = RecordsField(
+    'Uncertainties',
+    schemata="Uncertainties",
+    type='uncertainties',
+    subfields=('intercept_min', 'intercept_max', 'errorvalue'),
+    required_subfields=(
+        'intercept_min', 'intercept_max', 'errorvalue'),
+    subfield_sizes={'intercept_min': 10,
+                    'intercept_max': 10,
+                    'errorvalue': 10,
+                    },
+    subfield_labels={'intercept_min': _('Range min'),
+                     'intercept_max': _('Range max'),
+                     'errorvalue': _('Uncertainty value'),
+                     },
+    subfield_validators={'intercept_min': 'uncertainties_validator',
+                         'intercept_max': 'uncertainties_validator',
+                         'errorvalue': 'uncertainties_validator',
+                         },
+    widget=RecordsWidget(
+        label=_("Uncertainty"),
+        description=_(
+            "Specify the uncertainty value for a given range, e.g. for "
+            "results in a range with minimum of 0 and maximum of 10, "
+            "where the uncertainty value is 0.5 - a result of 6.67 will be "
+            "reported as 6.67 +- 0.5. You can also specify the uncertainty "
+            "value as a percentage of the result value, by adding a '%' to "
+            "the value entered in the 'Uncertainty Value' column, e.g. for "
+            "results in a range with minimum of 10.01 and a maximum of 100, "
+            "where the uncertainty value is 2% - a result of 100 will be "
+            "reported as 100 +- 2. Please ensure successive ranges are "
+            "continuous, e.g. 0.00 - 10.00 is followed by 10.01 - 20.00, "
+            "20.01 - 30 .00 etc."),
+    )
+)
+
+# Calculate the precision from Uncertainty value
+# Behavior controlled by javascript
+# - If checked, Precision and ExponentialFormatPrecision are not displayed.
+#   The precision will be calculated according to the uncertainty.
+# - If checked, Precision and ExponentialFormatPrecision will be displayed.
+# See browser/js/bika.lims.analysisservice.edit.js
+PrecisionFromUncertainty = BooleanField(
+    'PrecisionFromUncertainty',
+    schemata="Uncertainties",
+    default=False,
+    widget=BooleanWidget(
+        label=_("Calculate Precision from Uncertainties"),
+        description=_(
+            "Precision as the number of significant digits according to the "
+            "uncertainty. The decimal position will be given by the first "
+            "number different from zero in the uncertainty, at that position "
+            "the system will round up the uncertainty and results. For "
+            "example, with a result of 5.243 and an uncertainty of 0.22, "
+            "the system will display correctly as 5.2+-0.2. If no uncertainty "
+            "range is set for the result, the system will use the fixed "
+            "precision set."),
+    )
+)
+
+# If checked, an additional input with the default uncertainty will
+# be displayed in the manage results view. The value set by the user
+# in this field will override the default uncertainty for the analysis
+# result
+AllowManualUncertainty = BooleanField(
+    'AllowManualUncertainty',
+    schemata="Uncertainties",
+    default=False,
+    widget=BooleanWidget(
+        label=_("Allow manual uncertainty value input"),
+        description=_(
+            "Allow the analyst to manually replace the default uncertainty "
+            "value."),
+    )
+)
+
+ResultOptions = RecordsField(
+    'ResultOptions',
+    schemata="Result Options",
+    type='resultsoptions',
+    subfields=('ResultValue', 'ResultText'),
+    required_subfields=('ResultValue', 'ResultText'),
+    subfield_labels={'ResultValue': _('Result Value'),
+                     'ResultText': _('Display Value'), },
+    subfield_validators={'ResultValue': 'resultoptionsvalidator',
+                         'ResultText': 'resultoptionsvalidator'},
+    subfield_sizes={'ResultValue': 5,
+                    'ResultText': 25,
+                    },
+    widget=RecordsWidget(
+        label=_("Result Options"),
+        description=_(
+            "Please list all options for the analysis result if you want to "
+            "restrict it to specific options only, e.g. 'Positive', "
+            "'Negative' and 'Indeterminable'.  The option's result value must "
+            "be a number"),
+    )
+)
+
+Hidden = BooleanField(
+    'Hidden',
+    schemata="Analysis",
+    default=False,
+    widget=BooleanWidget(
+        label=_("Hidden"),
+        description=_(
+            "If enabled, this analysis and its results will not be displayed "
+            "by default in reports. This setting can be overrided in Analysis "
+            "Profile and/or Analysis Request"),
+    )
+)
+
+SelfVerification = IntegerField(
+    'SelfVerification',
+    schemata="Analysis",
+    default=-1,
+    vocabulary="_getSelfVerificationVocabulary",
+    widget=SelectionWidget(
+        label=_("Self-verification of results"),
+        description=_(
+            "If enabled, a user who submitted a result for this analysis "
+            "will also be able to verify it. This setting take effect for "
+            "those users with a role assigned that allows them to verify "
+            "results (by default, managers, labmanagers and verifiers). "
+            "The option set here has priority over the option set in Bika "
+            "Setup"),
+        format="select",
+    )
+)
+
+_NumberOfRequiredVerifications = IntegerField(
+    '_NumberOfRequiredVerifications',
+    schemata="Analysis",
+    default=-1,
+    vocabulary="_getNumberOfRequiredVerificationsVocabulary",
+    widget=SelectionWidget(
+        label=_("Number of required verifications"),
+        description=_(
+            "Number of required verifications from different users with "
+            "enough privileges before a given result for this analysis "
+            "being considered as 'verified'. The option set here has "
+            "priority over the option set in Bika Setup"),
+        format="select",
+    )
+)
+
+CommercialID = StringField(
+    'CommercialID',
+    searchable=1,
+    schemata='Description',
+    required=0,
+    widget=StringWidget(
+        label=_("Commercial ID"),
+        description=_("The service's commercial ID for accounting purposes")
+    )
+)
+
+ProtocolID = StringField(
+    'ProtocolID',
+    searchable=1,
+    schemata='Description',
+    required=0,
+    widget=StringWidget(
+        label=_("Protocol ID"),
+        description=_("The service's analytical protocol ID")
+    )
+)
+
+# XXX Keep synced to service duplication code in bika_analysisservices.py
+
+schema = BikaSchema.copy() + Schema((
+    ShortTitle,
+    SortKey,
+    ScientificName,
+    Unit,
+    Precision,
+    ExponentialFormatPrecision,
+    LowerDetectionLimit,
+    UpperDetectionLimit,
+    DetectionLimitSelector,
+    AllowManualDetectionLimit,
+    ReportDryMatter,
+    AttachmentOption,
+    Keyword,
+    ManualEntryOfResults,
+    InstrumentEntryOfResults,
+    Instruments,
+    Instrument,
+    InstrumentTitle,
+    Methods,
+    CalculationTitle,
+    CalculationUID,
+    InterimFields,
+    MaxTimeAllowed,
+    DuplicateVariation,
+    Accredited,
+    PointOfCapture,
+    Category,
+    Price,
+    BulkPrice,
+    VATAmount,
+    TotalPrice,
+    VAT,
+    CategoryTitle,
+    CategoryUID,
+    Department,
+    DepartmentTitle,
+    Uncertainties,
+    PrecisionFromUncertainty,
+    AllowManualUncertainty,
+    ResultOptions,
+    Hidden,
+    SelfVerification,
+    _NumberOfRequiredVerifications,
+    CommercialID,
+    ProtocolID,
+))
+
+schema['id'].widget.visible = False
+schema['description'].schemata = 'Description'
+schema['description'].widget.visible = True
+schema['title'].required = True
+schema['title'].widget.visible = True
+schema['title'].schemata = 'Description'
+schema['title'].validators = ()
+# Update the validation layer after change the validator in runtime
+schema['title']._validationLayer()
+schema.moveField('ShortTitle', after='title')
+schema.moveField('SortKey', after='ShortTitle')
+schema.moveField('CommercialID', after='SortKey')
+schema.moveField('ProtocolID', after='CommercialID')
+
+
+class BaseAnalysis(BaseContent):
+    security = ClassSecurityInfo()
+    schema = schema
+    displayContentsTab = False
+
+    security.declarePublic('Title')
+
+    def Title(self):
+        return _c(self.title)
+
+    security.declarePublic('getDiscountedPrice')
+
+    def getDiscountedPrice(self):
+        """ compute discounted price excl. vat """
+        price = self.getPrice()
+        price = price and price or 0
+        discount = self.bika_setup.getMemberDiscount()
+        discount = discount and discount or 0
+        return float(price) - (float(price) * float(discount)) / 100
+
+    security.declarePublic('getDiscountedBulkPrice')
+
+    def getDiscountedBulkPrice(self):
+        """ compute discounted bulk discount excl. vat """
+        price = self.getBulkPrice()
+        price = price and price or 0
+        discount = self.bika_setup.getMemberDiscount()
+        discount = discount and discount or 0
+        return float(price) - (float(price) * float(discount)) / 100
+
+    security.declarePublic('getTotalPrice')
+
+    def getTotalPrice(self):
+        """ compute total price """
+        price = self.getPrice()
+        vat = self.getVAT()
+        price = price and price or 0
+        vat = vat and vat or 0
+        return float(price) + (float(price) * float(vat)) / 100
+
+    security.declarePublic('getTotalBulkPrice')
+
+    def getTotalBulkPrice(self):
+        """ compute total price """
+        price = self.getBulkPrice()
+        vat = self.getVAT()
+        price = price and price or 0
+        vat = vat and vat or 0
+        return float(price) + (float(price) * float(vat)) / 100
+
+    security.declarePublic('getTotalDiscountedPrice')
+
+    def getTotalDiscountedPrice(self):
+        """ compute total discounted price """
+        price = self.getDiscountedPrice()
+        vat = self.getVAT()
+        price = price and price or 0
+        vat = vat and vat or 0
+        return float(price) + (float(price) * float(vat)) / 100
+
+    security.declarePublic('getTotalDiscountedCorporatePrice')
+
+    def getTotalDiscountedBulkPrice(self):
+        """ compute total discounted corporate price """
+        price = self.getDiscountedCorporatePrice()
+        vat = self.getVAT()
+        price = price and price or 0
+        vat = vat and vat or 0
+        return float(price) + (float(price) * float(vat)) / 100
+
+    security.declarePublic('getDefaultVAT')
+
+    def getDefaultVAT(self):
+        """ return default VAT from bika_setup """
+        try:
+            vat = self.bika_setup.getVAT()
+            return vat
+        except ValueError:
+            return "0.00"
+
+    security.declarePublic('getVATAmount')
+
+    def getVATAmount(self):
+        """ Compute VATAmount
+        """
+        price, vat = self.getPrice(), self.getVAT()
+        return float(price) * (float(vat) / 100)
+
+    security.declarePublic('getAnalysisCategories')
+
+    def getAnalysisCategories(self):
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [(o.UID, o.Title) for o in
+                 bsc(portal_type='AnalysisCategory',
+                     inactive_state='active')]
+        o = self.getCategory()
+        if o and o.UID() not in [i[0] for i in items]:
+            items.append((o.UID(), o.Title()))
+        items.sort(lambda x, y: cmp(x[1], y[1]))
+        return DisplayList(list(items))
+
+    security.declarePublic('_getAvailableInstrumentsDisplayList')
+
+    def _getAvailableInstrumentsDisplayList(self):
+        """ Returns a DisplayList with the available Instruments
+            registered in Bika-Setup. Only active Instruments are
+            fetched. Used to fill the Instruments MultiSelectionWidget
+        """
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [(i.UID, i.Title)
+                 for i in bsc(portal_type='Instrument',
+                              inactive_state='active')]
+        items.sort(lambda x, y: cmp(x[1], y[1]))
+        return DisplayList(list(items))
+
+    security.declarePublic('_getAvailableMethodsDisplayList')
+
+    def _getAvailableMethodsDisplayList(self):
+        """ Returns a DisplayList with the available Methods
+            registered in Bika-Setup. Only active Methods and those
+            with Manual Entry field active are fetched.
+            Used to fill the Methods MultiSelectionWidget when 'Allow
+            Instrument Entry of Results is not selected'.
+        """
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [(i.UID, i.Title)
+                 for i in bsc(portal_type='Method',
+                              inactive_state='active')
+                 if i.getObject().isManualEntryOfResults()]
+        items.sort(lambda x, y: cmp(x[1], y[1]))
+        items.insert(0, ('', _("None")))
+        return DisplayList(list(items))
+
+    security.declarePublic('_getAvailableCalculationsDisplayList')
+
+    def _getAvailableCalculationsDisplayList(self):
+        """ Returns a DisplayList with the available Calculations
+            registered in Bika-Setup. Only active Calculations are
+            fetched. Used to fill the _Calculation and DeferredCalculation
+            List fields
+        """
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [(i.UID, i.Title)
+                 for i in bsc(portal_type='Calculation',
+                              inactive_state='active')]
+        items.sort(lambda x, y: cmp(x[1], y[1]))
+        items.insert(0, ('', _("None")))
+        return DisplayList(list(items))
+
+    security.declarePublic('getCalculation')
+
+    def getCalculation(self):
+        """ Returns the calculation to be used in this AS.
+            If UseDefaultCalculation() is set, returns the calculation
+            from the default method selected or none (if method hasn't
+            defined any calculation). If UseDefaultCalculation is set
+            to false, returns the Deferred Calculation (manually set)
+        """
+        if self.getUseDefaultCalculation():
+            method = self.getMethod()
+            if method:
+                calculation = method.getCalculation()
+                return calculation if calculation else None
+        else:
+            return self.getDeferredCalculation()
+
+    security.declarePublic('getMethod')
+
+    def getMethod(self):
+        """ Returns the method assigned by default to the AS.
+            If Instrument Entry Of Results selected, returns the method
+            from the Default Instrument or None.
+            If Instrument Entry of Results is not selected, returns the
+            method assigned directly by the user using the _Method Field
+        """
+        # TODO This function has been modified after enabling multiple methods
+        # for instruments. Make sure that returning the value of _Method field
+        # is correct.
+        if self.getInstrumentEntryOfResults():
+            method = self.get_Method()
+        else:
+            methods = self.getMethods()
+            method = methods[0] if methods else None
+        return method
+
+    security.declarePublic('getAvailableMethods')
+
+    def getAvailableMethods(self):
+        """ Returns the methods available for this analysis.
+            If the service has the getInstrumentEntryOfResults(), returns
+            the methods available from the instruments capable to perform
+            the service, as well as the methods set manually for the
+            analysis on its edit view. If getInstrumentEntryOfResults()
+            is unset, only the methods assigned manually to that service
+            are returned.
+        """
+        methods = self.getMethods()
+        muids = [m.UID() for m in methods]
+        if self.getInstrumentEntryOfResults():
+            # Add the methods from the instruments capable to perform
+            # this analysis service
+            for ins in self.getInstruments():
+                for method in ins.getMethods():
+                    if method and method.UID() not in muids:
+                        methods.append(method)
+                        muids.append(method.UID())
+
+        return methods
+
+    security.declarePublic('getAvailableMethodsUIDs')
+
+    def getAvailableMethodsUIDs(self):
+        """ Returns the UIDs of the available method.
+        """
+        return [m.UID() for m in self.getAvailableMethods()]
+
+    security.declarePublic('getAvailableInstruments')
+
+    def getAvailableInstruments(self):
+        """ Returns the instruments available for this analysis.
+            If the service has the getInstrumentEntryOfResults(), returns
+            the instruments capable to perform this service. Otherwhise,
+            returns an empty list.
+        """
+        instruments = self.getInstruments() \
+            if self.getInstrumentEntryOfResults() is True \
+            else None
+        return instruments if instruments else []
+
+    security.declarePublic('getDepartments')
+
+    def getDepartments(self):
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [('', '')] + [(o.UID, o.Title) for o in
+                              bsc(portal_type='Department',
+                                  inactive_state='active')]
+        o = self.getDepartment()
+        if o and o.UID() not in [i[0] for i in items]:
+            items.append((o.UID(), o.Title()))
+        items.sort(lambda x, y: cmp(x[1], y[1]))
+        return DisplayList(list(items))
+
+    security.declarePublic('getUncertainty')
+
+    def getUncertainty(self, result=None):
+        """
+        Return the uncertainty value, if the result falls within
+        specified ranges for this service.
+        """
+
+        if result is None:
+            return None
+
+        uncertainties = self.getUncertainties()
+        if uncertainties:
+            try:
+                result = float(result)
+            except ValueError:
+                # if analysis result is not a number, then we assume in range
+                return None
+
+            for d in uncertainties:
+                if float(d['intercept_min']) <= result <= float(
+                        d['intercept_max']):
+                    if str(d['errorvalue']).strip().endswith('%'):
+                        try:
+                            percvalue = float(d['errorvalue'].replace('%', ''))
+                        except ValueError:
+                            return None
+                        unc = result / 100 * percvalue
+                    else:
+                        unc = float(d['errorvalue'])
+
+                    return unc
+        return None
+
+    security.declarePublic('getLowerDetectionLimit')
+
+    def getLowerDetectionLimit(self):
+        """ Returns the Lower Detection Limit for this service as a
+            floatable
+        """
+        ldl = self.Schema().getField('LowerDetectionLimit').get(self)
+        try:
+            return float(ldl)
+        except ValueError:
+            return 0
+
+    security.declarePublic('getUpperDetectionLimit')
+
+    def getUpperDetectionLimit(self):
+        """ Returns the Upper Detection Limit for this service as a
+            floatable
+        """
+        udl = self.Schema().getField('UpperDetectionLimit').get(self)
+        try:
+            return float(udl)
+        except ValueError:
+            return 0
+
+    security.declarePublic('getPrecision')
+
+    def getPrecision(self, result=None):
+        """
+        Returns the precision for the Analysis Service. If the
+        option Calculate Precision according to Uncertainty is not
+        set, the method will return the precision value set in the
+        Schema. Otherwise, will calculate the precision value
+        according to the Uncertainty and the result.
+        If Calculate Precision to Uncertainty is set but no result
+        provided neither uncertainty values are set, returns the
+        fixed precision.
+
+        Examples:
+        Uncertainty     Returns
+        0               1
+        0.22            1
+        1.34            0
+        0.0021          3
+        0.013           2
+        2               0
+        22              0
+
+        For further details, visit
+        https://jira.bikalabs.com/browse/LIMS-1334
+
+        :param result: if provided and "Calculate Precision according
+                       to the Uncertainty" is set, the result will be
+                       used to retrieve the uncertainty from which the
+                       precision must be calculated. Otherwise, the
+                       fixed-precision will be used.
+        :returns: the precision
+        """
+        if not self.getPrecisionFromUncertainty():
+            return self.Schema().getField('Precision').get(self)
+        else:
+            uncertainty = self.getUncertainty(result)
+            if uncertainty is None:
+                return self.Schema().getField('Precision').get(self)
+
+            # Calculate precision according to uncertainty
+            # https://jira.bikalabs.com/browse/LIMS-1334
+            if uncertainty == 0:
+                return 1
+            return get_significant_digits(uncertainty)
+
+    security.declarePublic('getExponentialFormatPrecision')
+
+    def getExponentialFormatPrecision(self, result=None):
+        """
+        Returns the precision for the Analysis Service and result
+        provided. Results with a precision value above this exponential
+        format precision should be formatted as scientific notation.
+
+        If the Calculate Precision according to Uncertainty is not set,
+        the method will return the exponential precision value set in
+        the Schema. Otherwise, will calculate the precision value
+        according to the Uncertainty and the result.
+
+        If Calculate Precision from the Uncertainty is set but no
+        result provided neither uncertainty values are set, returns the
+        fixed exponential precision.
+
+        Will return positive values if the result is below 0 and will
+        return 0 or positive values if the result is above 0.
+
+        Given an analysis service with fixed exponential format
+        precision of 4:
+        Result      Uncertainty     Returns
+        5.234           0.22           0
+        13.5            1.34           1
+        0.0077          0.008         -3
+        32092           0.81           4
+        456021          423            5
+
+        For further details, visit
+        https://jira.bikalabs.com/browse/LIMS-1334
+
+        :param result: if provided and "Calculate Precision according
+                       to the Uncertainty" is set, the result will be
+                       used to retrieve the uncertainty from which the
+                       precision must be calculated. Otherwise, the
+                       fixed-precision will be used.
+        :returns: the precision
+        """
+        field = self.Schema().getField('ExponentialFormatPrecision')
+        if not result or self.getPrecisionFromUncertainty() is False:
+            return field.get(self)
+        else:
+            uncertainty = self.getUncertainty(result)
+            if uncertainty is None:
+                return field.get(self)
+
+            try:
+                float(result)
+            except ValueError:
+                # if analysis result is not a number, then we assume in range
+                return field.get(self)
+
+            return get_significant_digits(uncertainty)
+
+    security.declarePublic('isSelfVerificationEnabled')
+
+    def isSelfVerificationEnabled(self):
+        """
+        Returns if the user that submitted a result for this analysis must also
+        be able to verify the result
+        :returns: true or false
+        """
+        bsve = self.bika_setup.getSelfVerificationEnabled()
+        vs = self.getSelfVerification()
+        return bsve if vs == -1 else vs == 1
+
+    security.declarePublic('_getSelfVerificationVocabulary')
+
+    def _getSelfVerificationVocabulary(self):
+        """
+        Returns a DisplayList with the available options for the
+        self-verification list: 'system default', 'true', 'false'
+        :returns: DisplayList with the available options for the
+            self-verification list
+        """
+        bsve = self.bika_setup.getSelfVerificationEnabled()
+        bsve = _('Yes') if bsve else _('No')
+        bsval = "%s (%s)" % (_("System default"), bsve)
+        items = [(-1, bsval), (0, _('No')), (1, _('Yes'))]
+        return IntDisplayList(list(items))
+
+    security.declarePublic('getNumberOfRequiredVerifications')
+
+    def getNumberOfRequiredVerifications(self):
+        """
+        Returns the number of required verifications a test for this analysis
+        requires before being transitioned to 'verified' state
+        :returns: number of required verifications
+        """
+        num = self.get_NumberOfRequiredVerifications()
+        if num < 1:
+            return self.bika_setup.getNumberOfRequiredVerifications()
+        return num
+
+    security.declarePublic('_getNumberOfRequiredVerificationsVocabulary')
+
+    def _getNumberOfRequiredVerificationsVocabulary(self):
+        """
+        Returns a DisplayList with the available options for the
+        multi-verification list: 'system default', '1', '2', '3', '4'
+        :returns: DisplayList with the available options for the
+            multi-verification list
+        """
+        bsve = self.bika_setup.getNumberOfRequiredVerifications()
+        bsval = "%s (%s)" % (_("System default"), str(bsve))
+        items = [(-1, bsval), (1, '1'), (2, '2'), (3, '3'), (4, '4')]
+        return IntDisplayList(list(items))

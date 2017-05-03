@@ -174,12 +174,7 @@ class ARAnalysesField(ObjectField):
             if shasattr(instance, keyword):
                 analysis = instance._getOb(keyword)
             else:
-                analysis = create_analysis(
-                    instance,
-                    service,
-                    keyword,
-                    interim_fields
-                )
+                analysis = create_analysis(instance, service)
                 new_analyses.append(analysis)
             for i, r in enumerate(rr):
                 if r['keyword'] == analysis.getService().getKeyword():

@@ -5,263 +5,346 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
+"""DuplicateAnalysis uses this as it's base.  This accounts for much confusion.
+"""
 
-"DuplicateAnalysis uses this as it's base.  This accounts for much confusion."
+import math
 
-import traceback
-from plone import api
-from AccessControl import getSecurityManager
+import cgi
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
-from bika.lims import logger
-from bika.lims.utils.analysis import format_numeric_result
-from plone.indexer import indexer
-from Products.ATContentTypes.content import schemata
-from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget, RecordsField
+from Products.ATExtensions.ateapi import DateTimeWidget
 from Products.Archetypes import atapi
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode, _createObjectByType
-from Products.CMFEditions.ArchivistTool import ArchivistRetrieveError
+from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from bika.lims.browser.fields import DurationField
+from bika.lims import logger
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.fields import InterimFieldsField
-from bika.lims.permissions import *
-from bika.lims.permissions import Verify as VerifyPermission
-from bika.lims.browser.widgets import DurationWidget
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
 from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.content.baseanalysis import schema as BaseAnalysisSchema, \
+    BaseAnalysis
+from bika.lims.content.reflexrule import doReflexRuleAction
 from bika.lims.interfaces import IAnalysis, IDuplicateAnalysis, IReferenceAnalysis, \
-    IRoutineAnalysis, ISamplePrepWorkflow
+    ISamplePrepWorkflow
 from bika.lims.interfaces import IReferenceSample
+from bika.lims.permissions import *
+from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.utils import changeWorkflowState, formatDecimalMark
 from bika.lims.utils import drop_trailing_zeros_decimal
+from bika.lims.utils.analysis import format_numeric_result
 from bika.lims.utils.analysis import get_significant_digits
 from bika.lims.workflow import skip
-from bika.lims.workflow import doActionFor
-from bika.lims.content.reflexrule import doReflexRuleAction
 from decimal import Decimal
+from plone import api
 from zope.interface import implements
-import cgi
-import datetime
-import math
 
+# Although attributes of the service are stored directly in the Analysis,
+# the originating ServiceUID is required to prevent duplication of analyses.
+ServiceUID = StringField(
+    'ServiceUID',
+)
 
-schema = BikaSchema.copy() + Schema((
-    HistoryAwareReferenceField('Service',
-        required=1,
-        allowed_types=('AnalysisService',),
-        relationship='AnalysisAnalysisService',
-        referenceClass=HoldingReference,
-        widget=ReferenceWidget(
-            label = _("Analysis Service"),
-        )
-    ),
-    HistoryAwareReferenceField('Calculation',
-        allowed_types=('Calculation',),
-        relationship='AnalysisCalculation',
-        referenceClass=HoldingReference,
-    ),
-    ReferenceField('Attachment',
-        multiValued=1,
-        allowed_types=('Attachment',),
-        referenceClass = HoldingReference,
-        relationship = 'AnalysisAttachment',
-    ),
-    InterimFieldsField('InterimFields',
-        widget = BikaRecordsWidget(
-            label = _("Calculation Interim Fields"),
-        )
-    ),
-    StringField('Result',
-    ),
-    DateTimeField('ResultCaptureDate',
-        widget = ComputedWidget(
-            visible=False,
-        ),
-    ),
-    StringField('ResultDM',
-    ),
-    BooleanField('Retested',
-        default = False,
-    ),
-    DurationField('MaxTimeAllowed',
-        widget = DurationWidget(
-            label = _("Maximum turn-around time"),
-            description=_("Maximum time allowed for completion of the analysis. "
-                            "A late analysis alert is raised when this period elapses"),
-        ),
-    ),
-    DateTimeField('DateAnalysisPublished',
-        widget = DateTimeWidget(
-            label = _("Date Published"),
-        ),
-    ),
-    DateTimeField('DueDate',
-        widget = DateTimeWidget(
-            label = _("Due Date"),
-        ),
-    ),
-    IntegerField('Duration',
-        widget = IntegerWidget(
-            label = _("Duration"),
-        )
-    ),
-    IntegerField('Earliness',
-        widget = IntegerWidget(
-            label = _("Earliness"),
-        )
-    ),
-    BooleanField('ReportDryMatter',
-        default = False,
-    ),
-    StringField('Analyst',
-    ),
-    TextField('Remarks',
-    ),
-    ReferenceField('Instrument',
-        required = 0,
-        allowed_types = ('Instrument',),
-        relationship = 'AnalysisInstrument',
-        referenceClass = HoldingReference,
-    ),
-    ReferenceField('Method',
-        required = 0,
-        allowed_types = ('Method',),
-        relationship = 'AnalysisMethod',
-        referenceClass = HoldingReference,
-    ),
-    # The analysis method can't be changed when the analysis belongs
-    # to a worksheet and that worksheet has a method.
-    BooleanField(
-        'CanMethodBeChanged',
-        default=True,
-        required=0,
-        visible=False,
-    ),
-    ReferenceField('SamplePartition',
-        required = 0,
-        allowed_types = ('SamplePartition',),
-        relationship = 'AnalysisSamplePartition',
-        referenceClass = HoldingReference,
-    ),
-    # True if the analysis is created by a reflex rule
-    BooleanField(
-        'IsReflexAnalysis',
-        default=False,
-        required=0,
-    ),
-    # This field contains the original analysis which was reflected
-    ReferenceField(
-        'OriginalReflexedAnalysis',
-        required=0,
-        allowed_types=('Analysis',),
-        relationship='OriginalAnalysisReflectedAnalysis',
-        referenceClass=HoldingReference,
-    ),
-    # This field contains the analysis which has been reflected
-    # following a reflex rule
-    ReferenceField(
-        'ReflexAnalysisOf',
-        required=0,
-        allowed_types=('Analysis',),
-        relationship='AnalysisReflectedAnalysis',
-        referenceClass=HoldingReference,
-    ),
-    # Which is the Reflex Rule action that has created this analysis
-    StringField('ReflexRuleAction', required=0, default=0),
-    # Which is the 'local_id' inside the reflex rule
-    StringField('ReflexRuleLocalID', required=0, default=0),
-    # Reflex rule triggered actions which the current analysis is
-    # responsible of. Separated by '|'
-    StringField('ReflexRuleActionsTriggered', required=0, default=''),
-    ComputedField('ClientUID',
-        expression = 'context.aq_parent.aq_parent.UID()',
-    ),
-    ComputedField('ClientTitle',
-        expression = 'context.aq_parent.aq_parent.Title()',
-    ),
-    ComputedField('RequestID',
-        expression = 'context.aq_parent.getRequestID()',
-    ),
-    ComputedField('ClientOrderNumber',
-        expression = 'context.aq_parent.getClientOrderNumber()',
-    ),
-    ComputedField('Keyword',
-        expression = 'context.getServiceUsingQuery().getKeyword() if context.getServiceUsingQuery() else ""',
-    ),
-    ComputedField('ServiceUID',
-        expression = 'context.getServiceUsingQuery().UID() if context.getServiceUsingQuery() else ""',
-    ),
-    ComputedField('SampleTypeUID',
-        expression = 'context.aq_parent.getSample().getSampleType().UID()',
-    ),
-    ComputedField('SamplePointUID',
-        expression = 'context.aq_parent.getSample().getSamplePoint().UID() if context.aq_parent.getSample().getSamplePoint() else ""',
-    ),
-    ComputedField('CategoryUID',
-        expression = 'context.getServiceUsingQuery().getCategoryUID() if context.getServiceUsingQuery() else ""',
-    ),
-    ComputedField(
-        'MethodUID',
-        expression="context.getMethod() and context.getMethod().UID() or ''",
-        widget=ComputedWidget(
-            visible=False,
-        ),
-    ),
-    ComputedField(
-        'InstrumentUID',
-        expression="context.getInstrument() and context.getInstrument().UID() or ''",
-        widget=ComputedWidget(
-            visible=False,
-        ),
-    ),
-    ComputedField('PointOfCapture',
-        expression = 'context.getServiceUsingQuery().getPointOfCapture() if context.getServiceUsingQuery() else ""',
-    ),
-    ComputedField('DateReceived',
-        expression = 'context.aq_parent.getDateReceived()',
-    ),
-    ComputedField('DateSampled',
-        expression = 'context.aq_parent.getSample().getDateSampled()',
-    ),
-    ComputedField('InstrumentValid',
-        expression = 'context.isInstrumentValid()'
-    ),
-    FixedPointField('Uncertainty',
-        precision=10,
-        widget=DecimalWidget(
-            label = _("Uncertainty"),
-        ),
-    ),
-    StringField('DetectionLimitOperand',),
+Calculation = HistoryAwareReferenceField(
+    'Calculation',
+    allowed_types=('Calculation',),
+    relationship='AnalysisCalculation',
+    referenceClass=HoldingReference,
+)
 
-    # Required number of required verifications before this analysis being
-    # transitioned to a 'verified' state. This value is set automatically
-    # when the analysis is created, based on the value set for the property
-    # NumberOfRequiredVerifications from the Analysis Service
-    IntegerField('NumberOfRequiredVerifications', default=1),
+Attachment = ReferenceField(
+    'Attachment',
+    multiValued=1,
+    allowed_types=('Attachment',),
+    referenceClass=HoldingReference,
+    relationship='AnalysisAttachment',
+)
 
-    # This field keeps the user_ids of members who verified this analysis.
-    # After each verification, user_id will be added end of this string
-    # seperated by comma- ',' .
-    StringField('Verificators',default='')
-),
+Result = StringField(
+    'Result'
+)
+
+ResultCaptureDate = DateTimeField(
+    'ResultCaptureDate',
+    widget=ComputedWidget(
+        visible=False
+    )
+)
+
+ResultDM = StringField(
+    'ResultDM'
+)
+
+Retested = BooleanField(
+    'Retested',
+    default=False
+)
+
+DateAnalysisPublished = DateTimeField(
+    'DateAnalysisPublished',
+    widget=DateTimeWidget(
+        label=_("Date Published")
+    )
+)
+
+DueDate = DateTimeField(
+    'DueDate',
+    widget=DateTimeWidget(
+        label=_("Due Date")
+    )
+)
+
+Duration = IntegerField(
+    'Duration',
+    widget=IntegerWidget(
+        label=_("Duration")
+    )
+)
+
+Earliness = IntegerField(
+    'Earliness',
+    widget=IntegerWidget(
+        label=_("Earliness")
+    )
+)
+
+Analyst = StringField(
+    'Analyst'
+)
+
+Remarks = TextField(
+    'Remarks'
+)
+
+Method = ReferenceField(
+    'Method',
+    required=0,
+    allowed_types=('Method',),
+    relationship='AnalysisMethod',
+    referenceClass=HoldingReference
+)
+
+# The analysis method can't be changed when the analysis belongs
+# to a worksheet and that worksheet has a method.
+CanMethodBeChanged = BooleanField(
+    'CanMethodBeChanged',
+    default=True,
+    required=0,
+    visible=False
+)
+
+SamplePartition = ReferenceField(
+    'SamplePartition',
+    required=0,
+    allowed_types=('SamplePartition',),
+    relationship='AnalysisSamplePartition',
+    referenceClass=HoldingReference
+)
+
+# True if the analysis is created by a reflex rule
+IsReflexAnalysis = BooleanField(
+    'IsReflexAnalysis',
+    default=False,
+    required=0
+)
+
+# This field contains the original analysis which was reflected
+OriginalReflexedAnalysis = ReferenceField(
+    'OriginalReflexedAnalysis',
+    required=0,
+    allowed_types=('Analysis',),
+    relationship='OriginalAnalysisReflectedAnalysis',
+    referenceClass=HoldingReference
+)
+
+# This field contains the analysis which has been reflected
+# following a reflex rule
+ReflexAnalysisOf = ReferenceField(
+    'ReflexAnalysisOf',
+    required=0,
+    allowed_types=('Analysis',),
+    relationship='AnalysisReflectedAnalysis',
+    referenceClass=HoldingReference
+)
+
+# Which is the Reflex Rule action that has created this analysis
+ReflexRuleAction = StringField(
+    'ReflexRuleAction',
+    required=0,
+    default=0
+)
+
+# Which is the 'local_id' inside the reflex rule
+ReflexRuleLocalID = StringField(
+    'ReflexRuleLocalID',
+    required=0,
+    default=0
+)
+
+# Reflex rule triggered actions which the current analysis is
+# responsible of. Separated by '|'
+ReflexRuleActionsTriggered = StringField(
+    'ReflexRuleActionsTriggered',
+    required=0,
+    default=''
+)
+
+ClientUID = ComputedField(
+    'ClientUID',
+    expression='context.aq_parent.aq_parent.UID()'
+)
+
+ClientTitle = ComputedField(
+    'ClientTitle',
+    expression='context.aq_parent.aq_parent.Title()'
+)
+
+RequestID = ComputedField(
+    'RequestID',
+    expression='context.aq_parent.getRequestID()'
+)
+
+ClientOrderNumber = ComputedField(
+    'ClientOrderNumber',
+    expression='context.aq_parent.getClientOrderNumber()'
+)
+
+SampleTypeUID = ComputedField(
+    'SampleTypeUID',
+    expression='context.aq_parent.getSample().getSampleType().UID()'
+)
+
+SamplePointUID = ComputedField(
+    'SamplePointUID',
+    expression='context.aq_parent.getSample().getSamplePoint().UID('
+               ') if context.aq_parent.getSample().getSamplePoint()'
+               ' else ""'
+)
+
+MethodUID = ComputedField(
+    'MethodUID',
+    expression="context.getMethod() and context.getMethod().UID() or ''",
+    widget=ComputedWidget(
+        visible=False
+    )
+)
+
+InstrumentUID = ComputedField(
+    'InstrumentUID',
+    expression=""
+        "context.getInstrument() and context.getInstrument().UID() or ''",
+    widget=ComputedWidget(
+        visible=False
+    )
+)
+
+DateReceived = ComputedField(
+    'DateReceived',
+    expression='context.aq_parent.getDateReceived()'
+)
+
+DateSampled = ComputedField(
+    'DateSampled',
+    expression='context.aq_parent.getSample().getDateSampled()'
+)
+
+InstrumentValid = ComputedField(
+    'InstrumentValid',
+    expression='context.isInstrumentValid()'
+)
+
+Uncertainty = FixedPointField(
+    'Uncertainty',
+    precision=10,
+    widget=DecimalWidget(
+        label=_("Uncertainty")
+    )
+)
+
+DetectionLimitOperand = StringField(
+    'DetectionLimitOperand'
+)
+
+# Required number of required verifications before this analysis being
+# transitioned to a 'verified' state. This value is set automatically
+# when the analysis is created, based on the value set for the property
+# NumberOfRequiredVerifications from the Analysis Service
+NumberOfRequiredVerifications = IntegerField(
+    'NumberOfRequiredVerifications',
+    default=1
+)
+
+# This field keeps the user_ids of members who verified this analysis.
+# After each verification, user_id will be added end of this string
+# seperated by comma- ',' .
+Verificators = StringField(
+    'Verificators',
+    default=''
 )
 
 
-class Analysis(BaseContent):
+schema = BaseAnalysisSchema.copy() + Schema((
+    ServiceUID,
+    Calculation,
+    Attachment,
+    Result,
+    ResultCaptureDate,
+    ResultDM,
+    Retested,
+    DateAnalysisPublished,
+    DueDate,
+    Duration,
+    Earliness,
+    Analyst,
+    Remarks,
+    Method,
+    CanMethodBeChanged,
+    SamplePartition,
+    IsReflexAnalysis,
+    OriginalReflexedAnalysis,
+    ReflexAnalysisOf,
+    ReflexRuleAction,
+    ReflexRuleLocalID,
+    ReflexRuleActionsTriggered,
+    ClientUID,
+    ClientTitle,
+    RequestID,
+    ClientOrderNumber,
+    ServiceUID,
+    SampleTypeUID,
+    SamplePointUID,
+    MethodUID,
+    InstrumentUID,
+    DateReceived,
+    DateSampled,
+    InstrumentValid,
+    Uncertainty,
+    DetectionLimitOperand,
+    NumberOfRequiredVerifications,
+    Verificators
+))
+
+
+class Analysis(BaseAnalysis):
     implements(IAnalysis, ISamplePrepWorkflow)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
+
+    def getServiceUID(self):
+        import pdb;pdb.set_trace();pass
+        print "XXX analysis.getServiceUID(!!!)"%self
+        return self.UID()
+
+    def getService(self):
+        import pdb;pdb.set_trace();pass
+        print "XXX analysis.getService(!!!)"%self
+        return self.UID()
 
     def _getCatalogTool(self):
         from bika.lims.catalog import getCatalog
@@ -292,63 +375,6 @@ class Analysis(BaseContent):
     def getLastVerificator(self):
         return self.getVerificators().split(',')[-1]
 
-    # TODO: This method can be improved, and maybe removed.
-    def getServiceUsingQuery(self):
-        """
-        This function returns the asociated service.
-        Use this method to avoid some errors while rebuilding a catalog.
-        """
-        obj = None
-        try:
-            # Try to obtain the object as usual.
-            obj = self.getService()
-        except:
-            # Getting the service like that because otherwise gives an error
-            # when rebuilding the catalogs.
-            logger.error(traceback.format_exc())
-            obj = None
-
-        if not obj:
-            # Try to obtain the object by using the getRawService getter and
-            # query against the catalog
-            logger.warn("Unable to retrieve the Service for Analysis %s "
-                        "via a direct call to getService(). Retrying by using "
-                        "getRawService() and querying against uid_catalog."
-                        % self.getId())
-            try:
-                service_uid = self.getRawService()
-            except:
-                logger.error(traceback.format_exc())
-                logger.error("Corrupt Analysis UID=%s . Cannot obtain its "
-                             "Service. Try to purge the catalog or try to fix"
-                             " it at %s" % (self.UID(), self.absolute_path()))
-                return None
-            if not service_uid:
-                logger.warn("Unable to retrieve the Service for Analysis %s "
-                            "via a direct call to getRawService()."
-                            % self.getId())
-                return None
-            # We got an UID, query agains the catalog to obtain the Service
-            catalog = getToolByName(self, "uid_catalog")
-            brain = catalog(UID=service_uid)
-            if len(brain) == 1:
-                obj = brain[0].getObject()
-            elif len(brain) == 0:
-                logger.error("No Service found for UID %s" % service_uid)
-            else:
-                raise RuntimeError(
-                    "More than one Service found for UID %s" % service_uid)
-        return obj
-
-    def Title(self):
-        """ Return the service title as title.
-        Some silliness here, for premature indexing, when the service
-        is not yet configured.
-        """
-        s = self.getServiceUsingQuery()
-        s = s.Title() if s else ''
-        return safe_unicode(s).encode('utf-8')
-
     def updateDueDate(self):
         # set the max hours allowed
 
@@ -374,37 +400,6 @@ class Analysis(BaseContent):
                 duetime = ''
             self.setDueDate(duetime)
 
-    # TODO-performance: improve this function using another catalog and takeing
-    # advantatge of the column in service, not getting the full object.
-    def getDepartmentUID(self):
-        """
-        Returns the UID of the asociated service's department.
-        """
-        # Getting the service like that because otherwise gives an error
-        # when rebuilding the catalogs.
-        service_uid = self.getRawService()
-        catalog = getToolByName(self, "uid_catalog")
-        brain = catalog(UID=service_uid)
-        if brain and len(brain) == 1:
-            dep = brain[0].getObject().getDepartment()
-            return dep.UID() if dep else ''
-        return ''
-
-    # TODO-performance: improve this function using another catalog and takeing
-    # advantatge of the column in service, not getting the full object.
-    def getCategoryTitle(self):
-        """
-        Returns the Title of the asociated service's department.
-        """
-        # Getting the service like that because otherwise gives an error
-        # when rebuilding the catalogs.
-        service_uid = self.getRawService()
-        catalog = getToolByName(self, "uid_catalog")
-        brain = catalog(UID=service_uid)
-        if brain:
-            return brain[0].getObject().getCategoryTitle()
-        return ''
-
     def getAnalysisRequestTitle(self):
         """
         This is  a column
@@ -417,14 +412,13 @@ class Analysis(BaseContent):
         """
         return self.aq_parent.absolute_url_path()
 
-    # TODO-performance: improve this function using another catalog and takeing
-    # advantatge of the column in service, not getting the full object.
+    def getService(self):
+        return self
+
     def getServiceTitle(self):
+        """ Returns the Title of the asociated service.
         """
-        Returns the Title of the asociated service.
-        """
-        obj = self.getServiceUsingQuery()
-        return obj.Title() if obj else ''
+        return self.Title()
 
     def getReviewState(self):
         """ Return the current analysis' state"""
@@ -1041,16 +1035,6 @@ class Analysis(BaseContent):
                 method in service.getMethods()]
         return result
 
-    def getInstrumentEntryOfResults(self):
-        """
-        It is a metacolumn.
-        Returns the same value as the service.
-        """
-        service = self.getService()
-        if not service:
-            return None
-        return service.getInstrumentEntryOfResults()
-
     def getAllowedInstruments(self, onlyuids=True):
         """ Returns the allowed instruments for this analysis. Gets the
             instruments assigned to the allowed methods
@@ -1289,16 +1273,6 @@ class Analysis(BaseContent):
         # All checks passsed
         return True
 
-    def isSelfVerificationEnabled(self):
-        """
-        Checks if the service allows self verification of the analysis.
-        :returns: boolean
-        """
-        service = self.getService()
-        if service:
-            return service.isSelfVerificationEnabled()
-        return False
-
     def isUserAllowedToVerify(self, member):
         """
         Checks if the specified user has enough privileges to verify the
@@ -1458,15 +1432,6 @@ class Analysis(BaseContent):
         This works as a column
         """
         return self.aq_parent.aq_parent.absolute_url_path()
-
-    def getUnit(self):
-        """
-        This works as a metadatacolumn
-        """
-        service = self.getService()
-        if not service:
-            return None
-        return service.getUnit()
 
     def getSamplePartitionID(self):
         """

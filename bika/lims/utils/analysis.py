@@ -8,7 +8,7 @@
 
 import math
 import zope.event
-from bika.lims import bikaMessageFactory as _
+from bika.lims import bikaMessageFactory as _, logger
 from bika.lims.utils import formatDecimalMark
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.CMFCore.WorkflowCore import WorkflowException
@@ -61,7 +61,11 @@ def duplicateAnalysis(base):
     return analysis
 
 
-def create_analysis(context, service, keyword, interim_fields):
+def create_analysis(context, source):
+    """Create a new Analysis.  The source can be an Analysis Service or
+    an existing Analysis, and all possible field values will be set to the
+    values found in the source object.
+    """
     # Determine if the sampling workflow is enabled
     workflow_enabled = context.bika_setup.getSamplingWorkflowEnabled()
     # Create the analysis
@@ -74,13 +78,14 @@ def create_analysis(context, service, keyword, interim_fields):
     # CMFCore.TypesTool._constructInstance
     # And lives here:
     # https://github.com/zopefoundation/Products.CMFCore/blob/2.2/Products/CMFCore/TypesTool.py#L535
-    analysis = _createObjectByType(
-        "Analysis",
-        context,
-        keyword,
-        Service=service)
-    analysis.setInterimFields(interim_fields)
-    analysis.setMaxTimeAllowed(service.getMaxTimeAllowed())
+    analysis = _createObjectByType("Analysis", context, source.getKeyword())
+    src_schema = source.getSchema()
+    dst_schema = analysis.getSchema()
+    for field in src_schema.fields():
+        fieldname = field.getName()
+        if fieldname in dst_schema:
+            value = field.get(source)
+            dst_schema[fieldname].set(analysis, value)
     # unmarkCreationFlag also reindex the object
     analysis.unmarkCreationFlag()
     # Trigger the intitialization event of the new object
