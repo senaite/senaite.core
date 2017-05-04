@@ -293,7 +293,10 @@ def _addIndex(catalog, index, indextype):
     """
     if index not in catalog.indexes():
         try:
-            catalog.addIndex(index, indextype)
+            if indextype == 'ZCTextIndex':
+                addZCTextIndex(catalog, index)
+            else:
+                catalog.addIndex(index, indextype)
             logger.info('Catalog index %s added to %s.' % (index, catalog.id))
             return True
         except:
@@ -365,6 +368,36 @@ def _delColumn(cat, col):
     return False
 
 
+def addZCTextIndex(catalog, index_name):
+
+    if catalog is None:
+        logger.warning('Could not find the catalog tool.' + catalog)
+        return
+
+    # Create lexicon to be able to add ZCTextIndex
+    wordSplitter = Empty()
+    wordSplitter.group = 'Word Splitter'
+    wordSplitter.name = 'Unicode Whitespace splitter'
+    caseNormalizer = Empty()
+    caseNormalizer.group = 'Case Normalizer'
+    caseNormalizer.name = 'Unicode Case Normalizer'
+    stopWords = Empty()
+    stopWords.group = 'Stop Words'
+    stopWords.name = 'Remove listed and single char words'
+    elem = [wordSplitter, caseNormalizer, stopWords]
+    zc_extras = Empty()
+    zc_extras.index_type = 'Okapi BM25 Rank'
+    zc_extras.lexicon_id = 'Lexicon'
+
+    try:
+        catalog.manage_addProduct['ZCTextIndex'].manage_addLexicon('Lexicon',
+                                                               'Lexicon', elem)
+    except:
+        logger.warning('Could not add ZCTextIndex to '+str(catalog))
+
+    catalog.addIndex(index_name, 'ZCTextIndex', zc_extras)
+
+
 def _cleanAndRebuildIfNeeded(portal, cleanrebuild):
     """
     Rebuild the given catalogs.
@@ -377,3 +410,11 @@ def _cleanAndRebuildIfNeeded(portal, cleanrebuild):
             catalog.clearFindAndRebuild()
         else:
             logger.warning('%s do not found' % cat)
+
+
+class Empty:
+    """
+    Just a class to use when we need an object with some attributes to send to
+    another objects an a parameter.
+    """
+    pass
