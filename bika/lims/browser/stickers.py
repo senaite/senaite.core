@@ -14,11 +14,36 @@ import glob, os, os.path, sys, traceback
 
 import os
 
+
 class Sticker(BrowserView):
     """ Invoked via URL on an object or list of objects from the types
         AnalysisRequest, Sample, SamplePartition or ReferenceSample.
         Renders a preview for the objects, a control to allow the user to
         select the stcker template to be invoked and print.
+
+        In order to create a sticker inside an Add-on you have to create a
+        resource directory. Look at those examples:
+        - bika/addon/stickers/configure.zcml
+            ...
+            **Defining stickers for samples, analysisrequests and partitions
+            <plone:static
+              directory="templates"
+              type="stickers"
+              name="ADDON stickers" />
+            **Defining stickers for worksheets
+            <plone:static
+              directory="templates/worksheet"
+              type="stickers/worksheet"
+              name="ADDON worksheet stickers" />
+            ...
+
+        - bika/addon/stickers/templates/
+            -- code_39_40x20mm.{css,pt}
+            -- other_{sample,ar,partition}_stickers_...
+
+        - bika/addon/stickers/templates/worksheet
+            -- code_...mm.{css,pt}
+            -- other_worksheet_stickers_...
     """
     template = ViewPageTemplateFile("templates/stickers_preview.pt")
     item_index = 0
@@ -28,6 +53,11 @@ class Sticker(BrowserView):
     def __call__(self):
         self.rendered_items = []
         items = self.request.get('items', '')
+        # If filter by type is given in the request, only the templates under
+        # the path with the type name will be rendered given as vocabulary.
+        # Example: If filter_by_type=='worksheet', only *.tp files under a
+        # folder with this name will be displayed.
+        self.filter_by_type = self.request.get('filter_by_type', False)
         catalog = getToolByName(self.context, 'uid_catalog')
         self.items = [o.getObject() for o in catalog(UID=items.split(","))]
         if not self.items:
@@ -41,7 +71,8 @@ class Sticker(BrowserView):
 
         self.items = new_items
         if not self.items:
-            logger.warning("Cannot print stickers: no items specified in request")
+            logger.warning(
+                "Cannot print stickers: no items specified in request")
             self.request.response.redirect(self.context.absolute_url())
             return
 
@@ -68,31 +99,36 @@ class Sticker(BrowserView):
                  [None, sample, sample_partition-2],
                  ...
                 ]
-
             If the item is an object from ReferenceSample type, returns an
             array with the following structure:
                 [[None, refsample, None]]
             Note that in this case, the array always have a length=1
+
+            If the type of the item is a worksheet, returns an iterable with
+            the following structure:
+                [[None, AssignedAnalyst, workhseet]]
         """
         ar = None
         sample = None
         parts = []
-        if item.portal_type == 'AnalysisRequest':
+        portal_type = item.portal_type
+        if portal_type == 'AnalysisRequest':
             ar = item
             sample = item.getSample()
             parts = sample.objectValues('SamplePartition')
-        elif item.portal_type == 'Sample':
+        elif portal_type == 'Sample':
             sample = item
             parts = sample.objectValues('SamplePartition')
-        elif item.portal_type == 'SamplePartition':
+        elif portal_type == 'SamplePartition':
             sample = item.aq_parent
-            parts = [item,]
-        elif item.portal_type == 'ReferenceSample':
+            parts = [item, ]
+        elif portal_type == 'ReferenceSample':
             sample = item
-
+        elif portal_type == 'Worksheet':
+            return [[None, item.getAnalystName(), item]]
         items = []
-        for p in parts:
-            items.append([ar, sample, p])
+        for part in parts:
+            items.append([ar, sample, part])
         return items
 
     def getAvailableTemplates(self):
@@ -104,7 +140,7 @@ class Sticker(BrowserView):
         """
         seltemplate = self.getSelectedTemplate()
         templates = []
-        for temp in getStickerTemplates():
+        for temp in getStickerTemplates(filter_by_type=self.filter_by_type):
             out = temp
             out['selected'] = temp.get('id', '') == seltemplate
             templates.append(out)
@@ -119,18 +155,29 @@ class Sticker(BrowserView):
             If no template selected but size param, get the sticker template
             set as default in Bika Setup for the size set.
         """
-        bs_template = self.context.bika_setup.getAutoStickerTemplate()
+        # Default sticker
+        bs_template =\
+            'bika.lims:' + self.context.bika_setup.getAutoStickerTemplate()
         size = self.request.get('size', '')
-        if size == 'small':
-            bs_template = self.context.bika_setup.getSmallStickerTemplate()
+        resource_type = 'stickers'
+        if self.filter_by_type:
+            templates = getStickerTemplates(filter_by_type=self.filter_by_type)
+            # Get the first sticker
+            bs_template = templates[0].get('id', '') if templates else ''
+        elif size == 'small':
+            bs_template = 'bika.lims:' + \
+                self.context.bika_setup.getSmallStickerTemplate()
         elif size == 'large':
-            bs_template = self.context.bika_setup.getLargeStickerTemplate()
+            bs_template = 'bika.lims:' + \
+                self.context.bika_setup.getLargeStickerTemplate()
         rq_template = self.request.get('template', bs_template)
         # Check if the template exists. If not, fallback to default's
+        # 'prefix' is also the resource folder's name
         prefix = ''
+        templates_dir = ''
         if rq_template.find(':') >= 0:
             prefix, rq_template = rq_template.split(':')
-            templates_dir = queryResourceDirectory('stickers', prefix).directory
+            templates_dir = self._getStickersTemplatesDirectory(prefix)
         else:
             this_dir = os.path.dirname(os.path.abspath(__file__))
             templates_dir = os.path.join(this_dir, 'templates/stickers/')
@@ -189,7 +236,7 @@ class Sticker(BrowserView):
         embedt = self.getSelectedTemplate()
         if embedt.find(':') >= 0:
             prefix, embedt = embedt.split(':')
-            templates_dir = queryResourceDirectory('stickers', prefix).directory
+            templates_dir = self._getStickersTemplatesDirectory(prefix)
         fullpath = os.path.join(templates_dir, embedt)
         try:
             embed = ViewPageTemplateFile(fullpath)
@@ -223,3 +270,12 @@ class Sticker(BrowserView):
         # Getting the real client object
         client = ars[0].aq_parent.aq_inner
         return client
+
+    def _getStickersTemplatesDirectory(self, resource_name):
+        """
+        """
+        templates_dir =\
+            queryResourceDirectory('stickers', resource_name).directory
+        if self.filter_by_type:
+            templates_dir = templates_dir + '/' + self.filter_by_type
+        return templates_dir

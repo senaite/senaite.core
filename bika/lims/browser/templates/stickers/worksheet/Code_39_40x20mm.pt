@@ -1,0 +1,34 @@
+<!--
+    Template used to render one barcode with dimensions of 40x20mm.
+
+    To retrieve the item, use view.current_item, that will return an array with
+    the following structure:
+
+    [None, AssignedAnalyst, workhseet]
+-->
+<tal:sticker define="
+    portal_state      context/@@plone_portal_state;
+    portal_url        portal_state/portal_url;
+    item              view/current_item;
+    analyst          python:item[1];
+    worksheet_id      python:item[2].getId();
+    ">
+
+    <!-- Barcode -->
+    <div class="barcode"
+        tal:attributes="data-id worksheet_id;"
+        data-code="code93"
+        data-barHeight="14"
+        data-addQuietZone="true"
+        data-showHRI="false">
+    </div>
+
+    <!-- Some additional info about the worksheet -->
+    <div class="worksheet-info">
+        <table cellpadding="0" cellspacing="0" border="0">
+            <tr>
+                <td tal:content="python: analyst"/>
+            </tr>
+        </table>
+    </div>
+</tal:sticker>

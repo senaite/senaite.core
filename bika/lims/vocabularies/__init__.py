@@ -402,7 +402,7 @@ class ARPrioritiesVocabulary(BikaContentVocabulary):
                                        ['ARPriority', ])
 
 
-def getTemplates(bikalims_path, restype):
+def getTemplates(bikalims_path, restype, filter_by_type=False):
     """ Returns an array with the Templates available in the Bika LIMS path
         specified plus the templates from the resources directory specified and
         available on each additional product (restype).
@@ -421,18 +421,32 @@ def getTemplates(bikalims_path, restype):
         dictionary will look like:
             {'id': 'my.product:My_cool_report.pt',
              'title': 'my.product: My cool report'}
+
+        :param bikalims_path: the path inside bika lims to find the stickers.
+        :type bikalims_path: an string as a path
+        :param restype: the resource directory type to search for inside
+            an addon.
+        :type restype: string
+        :param filter_by_type: the folder name to look for inside the
+        templates path
+        :type filter_by_type: string/boolean
     """
     # Retrieve the templates from bika.lims add-on
     templates_dir = resource_filename("bika.lims", bikalims_path)
     tempath = os.path.join(templates_dir, '*.pt')
-    templates = [os.path.split(x)[-1] for x in glob.glob(tempath)]
+    templates =\
+        ['bika.lims:' + os.path.split(x)[-1] for x in glob.glob(tempath)]
 
     # Retrieve the templates from other add-ons
     for templates_resource in iterDirectoriesOfType(restype):
         prefix = templates_resource.__name__
         if prefix == 'bika.lims':
             continue
-        dirlist = templates_resource.listDirectory()
+        directory = templates_resource.directory
+        # Only use the directory asked in 'filter_by_type'
+        if filter_by_type:
+            directory = directory + '/' + filter_by_type
+        dirlist = os.listdir(directory)
         exts = ['{0}:{1}'.format(prefix, tpl) for tpl in dirlist if
                 tpl.endswith('.pt')]
         templates.extend(exts)
@@ -485,7 +499,7 @@ class ARReportTemplatesVocabulary(object):
         return SimpleVocabulary(out)
 
 
-def getStickerTemplates():
+def getStickerTemplates(filter_by_type=False):
     """ Returns an array with the sticker templates available. Retrieves the
         TAL templates saved in templates/stickers folder.
 
@@ -503,11 +517,27 @@ def getStickerTemplates():
         dictionary will look like:
             {'id': 'my.product:EAN128_default_small.pt',
              'title': 'my.product: EAN128 default small'}
+        If filter by type is given in the request, only the templates under
+        the path with the type name will be rendered given as vocabulary.
+        Example: If filter_by_type=='worksheet', only *.tp files under a
+        folder with this name will be displayed.
+
+        :param filter_by_type: 
+        :type filter_by_type: string/bool.
+        :returns: an array with the sticker templates available
     """
     # Retrieve the templates from bika.lims add-on
+    # resdirname
     resdirname = 'stickers'
-    p = os.path.join("browser", "templates", resdirname)
-    return getTemplates(p, resdirname)
+    if filter_by_type:
+        bikalims_path = os.path.join(
+            "browser", "templates", resdirname, filter_by_type)
+    else:
+        bikalims_path = os.path.join("browser", "templates", resdirname)
+    # getTemplates needs two parameters, the first one is the bikalims path
+    # where the stickers will be found. The second one is the resource
+    # directory type. This allows us to filter stickers by the type we want.
+    return getTemplates(bikalims_path, resdirname, filter_by_type)
 
 
 class StickerTemplatesVocabulary(object):
