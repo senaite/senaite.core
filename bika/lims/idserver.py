@@ -20,6 +20,9 @@ from zope.interface import providedBy
 import copy,re,urllib
 import plone.protect
 import transaction
+from zope.component import getAdapters
+from bika.lims.interfaces import IIdServer
+
 
 class IDServerUnavailable(Exception):
     pass
@@ -189,10 +192,23 @@ def generateUniqueId(context):
         new_id = next_id(prefix)
         return ('%s' + separator + '%s') % (prefix, new_id)
 
+
 def renameAfterCreation(obj):
+    """
+    Renaming object right after it is created...
+    In some cases we may want to override generate_id function. To do this,
+    an adapter must be added (providing bika.lims.interfaces.IIdServer) for
+    that content type.
+    """
     # Can't rename without a subtransaction commit when using portal_factory
     transaction.savepoint(optimistic=True)
     # The id returned should be normalized already
-    new_id = generateUniqueId(obj)
+    new_id = None
+    # Checking if an adapter exists for this content type. If yes, we will
+    # get new_id from adapter.
+    for name, adapter in getAdapters((obj, ), IIdServer):
+        new_id = adapter.generate_id(obj.portal_type)
+    if not new_id:
+        new_id = generateUniqueId(obj)
     obj.aq_inner.aq_parent.manage_renameObject(obj.id, new_id)
     return new_id
