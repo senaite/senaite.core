@@ -20,6 +20,7 @@ from zope.component import adapts
 from zope.interface import implementer
 from zope.interface import implements
 from zope.interface import Interface
+import traceback
 
 
 def skip(instance, action, peek=False, unskip=False):
@@ -234,7 +235,14 @@ def SamplePrepWorkflowChain(ob, wftool):
     """
     # use catalog to retrieve review_state: getInfoFor causes recursion loop
     chain = list(ToolWorkflowChain(ob, wftool))
-    bc = getToolByName(ob, 'bika_catalog')
+    try:
+        bc = getToolByName(ob, 'bika_catalog')
+    except AttributeError:
+        logger.error(traceback.format_exc())
+        logger.error(
+            "Error getting 'bika_catalog' using 'getToolByName' with '{0}'"
+            " as context.".format(ob))
+        return chain
     proxies = bc(UID=ob.UID())
     if not proxies or proxies[0].review_state != 'sample_prep':
         return chain
