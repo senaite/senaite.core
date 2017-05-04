@@ -15,6 +15,7 @@ from bika.lims import logger
 from zope.cachedescriptors.property import Lazy as lazy_property
 from zope.i18n import translate
 from time import strptime as _strptime
+import traceback
 
 
 def strptime(context, value):
