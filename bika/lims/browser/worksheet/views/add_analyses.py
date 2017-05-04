@@ -63,6 +63,7 @@ class AddAnalysesView(BikaListingView):
                 'index': 'getRequestID'},
             'Priority': {
                 'title': _('Priority'),
+                'sortable': False,
                 'index': 'Priority'},
             'CategoryTitle': {
                 'title': _('Category'),
