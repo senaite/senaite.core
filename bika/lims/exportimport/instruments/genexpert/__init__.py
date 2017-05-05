@@ -9,17 +9,17 @@
 """ GenExpert
 """
 from bika.lims.exportimport.instruments.resultsimport import \
-    AnalysisResultsImporter, InstrumentCSVResultsFileParser
+    AnalysisResultsImporter, InstrumentResultsFileParser
 
 from hl7apy.parser import parse_message
 from util.constants import STX, CR, LF, CRLF, ACK, NAK, ENQ, EOT
 from util.extractresults import ExtractResults
 
 
-class GenExpertParser(InstrumentCSVResultsFileParser):
+class GenExpertParser(InstrumentResultsFileParser):
 
-    def __init__(self, csv):
-        InstrumentCSVResultsFileParser.__init__(self, csv)
+    def __init__(self, infile):
+        InstrumentResultsFileParser.__init__(self, infile, 'gxx')
         self._columns = {}
         self._linedata = {}
         self._rownum = None
@@ -64,7 +64,7 @@ class GenExpertParser(InstrumentCSVResultsFileParser):
 
             data_byte = rfile.read(1)
 
-        if not message and not parse_message(message):
+        if message:
             return parse_message(message)
         else:
             return False
