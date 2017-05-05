@@ -22,7 +22,7 @@ class Sticker(BrowserView):
         select the stcker template to be invoked and print.
 
         In order to create a sticker inside an Add-on you have to create a
-        resource directory. Look at those examples:
+        directory inside the resource directory. Look at those examples:
         - bika/addon/stickers/configure.zcml
             ...
             **Defining stickers for samples, analysisrequests and partitions
@@ -30,13 +30,7 @@ class Sticker(BrowserView):
               directory="templates"
               type="stickers"
               name="ADDON stickers" />
-            **Defining stickers for worksheets
-            <plone:static
-              directory="templates/worksheet"
-              type="stickers/worksheet"
-              name="ADDON worksheet stickers" />
             ...
-
         - bika/addon/stickers/templates/
             -- code_39_40x20mm.{css,pt}
             -- other_{sample,ar,partition}_stickers_...
@@ -54,9 +48,9 @@ class Sticker(BrowserView):
         self.rendered_items = []
         items = self.request.get('items', '')
         # If filter by type is given in the request, only the templates under
-        # the path with the type name will be rendered given as vocabulary.
+        # the path with the type name will be given as vocabulary.
         # Example: If filter_by_type=='worksheet', only *.tp files under a
-        # folder with this name will be displayed.
+        # folder with filter_by_type as name will be displayed.
         self.filter_by_type = self.request.get('filter_by_type', False)
         catalog = getToolByName(self.context, 'uid_catalog')
         self.items = [o.getObject() for o in catalog(UID=items.split(","))]
@@ -156,8 +150,7 @@ class Sticker(BrowserView):
             set as default in Bika Setup for the size set.
         """
         # Default sticker
-        bs_template =\
-            'bika.lims:' + self.context.bika_setup.getAutoStickerTemplate()
+        bs_template = self.context.bika_setup.getAutoStickerTemplate()
         size = self.request.get('size', '')
         resource_type = 'stickers'
         if self.filter_by_type:
@@ -165,11 +158,9 @@ class Sticker(BrowserView):
             # Get the first sticker
             bs_template = templates[0].get('id', '') if templates else ''
         elif size == 'small':
-            bs_template = 'bika.lims:' + \
-                self.context.bika_setup.getSmallStickerTemplate()
+            bs_template = self.context.bika_setup.getSmallStickerTemplate()
         elif size == 'large':
-            bs_template = 'bika.lims:' + \
-                self.context.bika_setup.getLargeStickerTemplate()
+            bs_template = self.context.bika_setup.getLargeStickerTemplate()
         rq_template = self.request.get('template', bs_template)
         # Check if the template exists. If not, fallback to default's
         # 'prefix' is also the resource folder's name
@@ -181,6 +172,8 @@ class Sticker(BrowserView):
         else:
             this_dir = os.path.dirname(os.path.abspath(__file__))
             templates_dir = os.path.join(this_dir, 'templates/stickers/')
+            if self.filter_by_type:
+                templates_dir = templates_dir + '/' + self.filter_by_type
         if not os.path.isfile(os.path.join(templates_dir, rq_template)):
             rq_template = 'Code_128_1x48mm.pt'
         return '%s:%s' % (prefix, rq_template) if prefix else rq_template
@@ -197,13 +190,19 @@ class Sticker(BrowserView):
         if template.find(':') >= 0:
             # A template from another add-on
             prefix, template = template.split(':')
-            resource = queryResourceDirectory('stickers', prefix)
+            templates_dir = self._getStickersTemplatesDirectory(prefix)
             css = '{0}.css'.format(template[:-3])
-            if css in resource.listDirectory():
-                content = resource.readFile(css)
+            if css in os.listdir(templates_dir):
+                path = '%s/%s.css' % (templates_dir, template[:-3])
+                if os.path.isfile(path):
+                    with open(path, 'r') as content_file:
+                        content = content_file.read()
         else:
             this_dir = os.path.dirname(os.path.abspath(__file__))
             templates_dir = os.path.join(this_dir, 'templates/stickers/')
+            # Only use the directory asked in 'filter_by_type'
+            if self.filter_by_type:
+                templates_dir = templates_dir + '/' + self.filter_by_type
             path = '%s/%s.css' % (templates_dir, template[:-3])
             if os.path.isfile(path):
                 with open(path, 'r') as content_file:
@@ -237,6 +236,8 @@ class Sticker(BrowserView):
         if embedt.find(':') >= 0:
             prefix, embedt = embedt.split(':')
             templates_dir = self._getStickersTemplatesDirectory(prefix)
+        elif self.filter_by_type:
+            templates_dir = '/'.join([templates_dir, self.filter_by_type])
         fullpath = os.path.join(templates_dir, embedt)
         try:
             embed = ViewPageTemplateFile(fullpath)
@@ -273,6 +274,11 @@ class Sticker(BrowserView):
 
     def _getStickersTemplatesDirectory(self, resource_name):
         """
+        Returns the paths for the directory containing the css and pt files
+        for the stickers deppending on the filter_by_type.
+        :param resource_name: The name of the resource folder.
+        :type resource_name: string
+        :resturns: a string as a path
         """
         templates_dir =\
             queryResourceDirectory('stickers', resource_name).directory

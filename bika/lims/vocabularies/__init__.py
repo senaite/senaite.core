@@ -434,8 +434,7 @@ def getTemplates(bikalims_path, restype, filter_by_type=False):
     # Retrieve the templates from bika.lims add-on
     templates_dir = resource_filename("bika.lims", bikalims_path)
     tempath = os.path.join(templates_dir, '*.pt')
-    templates =\
-        ['bika.lims:' + os.path.split(x)[-1] for x in glob.glob(tempath)]
+    templates = [os.path.split(x)[-1] for x in glob.glob(tempath)]
 
     # Retrieve the templates from other add-ons
     for templates_resource in iterDirectoriesOfType(restype):
@@ -522,7 +521,7 @@ def getStickerTemplates(filter_by_type=False):
         Example: If filter_by_type=='worksheet', only *.tp files under a
         folder with this name will be displayed.
 
-        :param filter_by_type: 
+        :param filter_by_type:
         :type filter_by_type: string/bool.
         :returns: an array with the sticker templates available
     """
