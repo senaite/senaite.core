@@ -207,6 +207,9 @@ def renameAfterCreation(obj):
     # Checking if an adapter exists for this content type. If yes, we will
     # get new_id from adapter.
     for name, adapter in getAdapters((obj, ), IIdServer):
+        if new_id:
+            logger.warn(('More than one ID Generator Adapter found for\
+                            content type -> %s') % (obj.portal_type))
         new_id = adapter.generate_id(obj.portal_type)
     if not new_id:
         new_id = generateUniqueId(obj)
