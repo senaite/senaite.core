@@ -23,7 +23,8 @@ class Sticker(BrowserView):
 
         In order to create a sticker inside an Add-on you have to create a
         directory inside the resource directory. Look at those examples:
-        - bika/addon/stickers/configure.zcml
+        This defines the resource folder to look for.
+        - path: bika/addon/stickers/configure.zcml
             ...
             **Defining stickers for samples, analysisrequests and partitions
             <plone:static
@@ -31,10 +32,15 @@ class Sticker(BrowserView):
               type="stickers"
               name="ADDON stickers" />
             ...
+        This is how to add general stickers for analysis requests, samples
+        and partitions.
         - bika/addon/stickers/templates/
             -- code_39_40x20mm.{css,pt}
             -- other_{sample,ar,partition}_stickers_...
 
+        This is the wasy to create specific sticker for a content type.
+        Note that in this case the directory '/worksheet' should contain the
+        sticker templates for worksheet objects.
         - bika/addon/stickers/templates/worksheet
             -- code_...mm.{css,pt}
             -- other_worksheet_stickers_...
