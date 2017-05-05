@@ -79,13 +79,21 @@ def create_analysis(context, source):
     # And lives here:
     # https://github.com/zopefoundation/Products.CMFCore/blob/2.2/Products/CMFCore/TypesTool.py#L535
     analysis = _createObjectByType("Analysis", context, source.getKeyword())
-    src_schema = source.getSchema()
-    dst_schema = analysis.getSchema()
+    src_schema = source.Schema()
+    dst_schema = analysis.Schema()
+
+    # Some fields should not be copied from source!
+    IGNORE = ['UID', 'id']
+
     for field in src_schema.fields():
         fieldname = field.getName()
         if fieldname in dst_schema:
             value = field.get(source)
-            dst_schema[fieldname].set(analysis, value)
+            if value:
+                if 'ategory' in fieldname:
+                    import pdb;pdb.set_trace();pass
+                dst_schema[fieldname].set(analysis, value)
+    import pdb;pdb.set_trace();pass
     # unmarkCreationFlag also reindex the object
     analysis.unmarkCreationFlag()
     # Trigger the intitialization event of the new object

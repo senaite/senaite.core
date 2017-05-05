@@ -24,14 +24,13 @@ from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser.fields import HistoryAwareReferenceField
-from bika.lims.browser.fields import InterimFieldsField
-from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.baseanalysis import schema as BaseAnalysisSchema, \
     BaseAnalysis
 from bika.lims.content.reflexrule import doReflexRuleAction
-from bika.lims.interfaces import IAnalysis, IDuplicateAnalysis, IReferenceAnalysis, \
-    ISamplePrepWorkflow
+from bika.lims.interfaces import IAnalysis, IDuplicateAnalysis, \
+    IReferenceAnalysis, ISamplePrepWorkflow
 from bika.lims.interfaces import IReferenceSample
 from bika.lims.permissions import *
 from bika.lims.permissions import Verify as VerifyPermission
@@ -57,12 +56,10 @@ Calculation = HistoryAwareReferenceField(
     referenceClass=HoldingReference,
 )
 
-Attachment = ReferenceField(
+Attachment = UIDReferenceField(
     'Attachment',
     multiValued=1,
     allowed_types=('Attachment',),
-    referenceClass=HoldingReference,
-    relationship='AnalysisAttachment',
 )
 
 Result = StringField(
@@ -121,12 +118,10 @@ Remarks = TextField(
     'Remarks'
 )
 
-Method = ReferenceField(
+Method = UIDReferenceField(
     'Method',
     required=0,
     allowed_types=('Method',),
-    relationship='AnalysisMethod',
-    referenceClass=HoldingReference
 )
 
 # The analysis method can't be changed when the analysis belongs
@@ -138,12 +133,10 @@ CanMethodBeChanged = BooleanField(
     visible=False
 )
 
-SamplePartition = ReferenceField(
+SamplePartition = UIDReferenceField(
     'SamplePartition',
     required=0,
     allowed_types=('SamplePartition',),
-    relationship='AnalysisSamplePartition',
-    referenceClass=HoldingReference
 )
 
 # True if the analysis is created by a reflex rule
@@ -154,22 +147,18 @@ IsReflexAnalysis = BooleanField(
 )
 
 # This field contains the original analysis which was reflected
-OriginalReflexedAnalysis = ReferenceField(
+OriginalReflexedAnalysis = UIDReferenceField(
     'OriginalReflexedAnalysis',
     required=0,
     allowed_types=('Analysis',),
-    relationship='OriginalAnalysisReflectedAnalysis',
-    referenceClass=HoldingReference
 )
 
 # This field contains the analysis which has been reflected
 # following a reflex rule
-ReflexAnalysisOf = ReferenceField(
+ReflexAnalysisOf = UIDReferenceField(
     'ReflexAnalysisOf',
     required=0,
     allowed_types=('Analysis',),
-    relationship='AnalysisReflectedAnalysis',
-    referenceClass=HoldingReference
 )
 
 # Which is the Reflex Rule action that has created this analysis
@@ -326,7 +315,7 @@ schema = BaseAnalysisSchema.copy() + Schema((
     Uncertainty,
     DetectionLimitOperand,
     NumberOfRequiredVerifications,
-    Verificators
+    Verificators,
 ))
 
 

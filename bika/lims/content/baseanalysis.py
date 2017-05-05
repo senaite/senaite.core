@@ -257,37 +257,6 @@ InstrumentEntryOfResults = BooleanField(
     )
 )
 
-# Instruments associated to the AS
-# List of instruments capable to perform the Analysis Service. The
-# Instruments selected here are displayed in the Analysis Request
-# Add view, closer to this Analysis Service if selected.
-# - If InstrumentEntry not checked, hide and unset
-# - If InstrumentEntry checked, set the first selected and show
-Instruments = UIDReferenceField(
-    'Instruments',
-    schemata="Method",
-    required=0,
-    multiValued=1,
-    vocabulary_display_path_bound=sys.maxint,
-    vocabulary='_getAvailableInstrumentsDisplayList',
-    allowed_types=('Instrument',),
-    relationship='AnalysisServiceInstruments',
-    referenceClass=HoldingReference,
-    widget=MultiSelectionWidget(
-        label=_("Instruments"),
-        description=_(
-            "More than one instrument can be used in a test of this type of "
-            "analysis. A selection list with the instruments selected here is "
-            "populated in the results manage view for each test of this type "
-            "of analysis. The available instruments in the selection list "
-            "will change in accordance with the method selected by the user "
-            "for that test in the manage results view. Although a method can "
-            "have more than one instrument assigned, the selection list is "
-            "only populated with the instruments that are both set here and "
-            "allowed for the selected method."),
-    )
-)
-
 # Default instrument to be used.
 # Gets populated with the instruments selected in the multiselection
 # box above.
@@ -296,16 +265,13 @@ Instruments = UIDReferenceField(
 # - If InstrumentEntry checked, set first selected instrument
 # - If InstrumentEntry not checked, hide and set None
 # See browser/js/bika.lims.analysisservice.edit.js
-Instrument = HistoryAwareReferenceField(
+Instrument = UIDReferenceField(
     'Instrument',
     schemata="Method",
     searchable=True,
     required=0,
-    vocabulary_display_path_bound=sys.maxint,
     vocabulary='_getAvailableInstrumentsDisplayList',
     allowed_types=('Instrument',),
-    relationship='AnalysisServiceInstrument',
-    referenceClass=HoldingReference,
     widget=SelectionWidget(
         format='select',
         label=_("Default Instrument"),
@@ -327,39 +293,6 @@ InstrumentTitle = ComputedField(
         "context.getInstrument() and context.getInstrument().Title() or ''",
     widget=ComputedWidget(
         visible=False,
-    )
-)
-
-# Manual methods associated to the AS
-# List of methods capable to perform the Analysis Service. The
-# Methods selected here are displayed in the Analysis Request
-# Add view, closer to this Analysis Service if selected.
-# Use getAvailableMethods() to retrieve the list with methods both
-# from selected instruments and manually entered.
-# Behavior controlled by js depending on ManualEntry/Instrument:
-# - If InsrtumentEntry not checked, show
-# See browser/js/bika.lims.analysisservice.edit.js
-Methods = UIDReferenceField(
-    'Methods',
-    schemata="Method",
-    required=0,
-    multiValued=1,
-    vocabulary_display_path_bound=sys.maxint,
-    vocabulary='_getAvailableMethodsDisplayList',
-    allowed_types=('Method',),
-    relationship='AnalysisServiceMethods',
-    referenceClass=HoldingReference,
-    widget=MultiSelectionWidget(
-        label=_("Methods"),
-        description=_(
-            "The tests of this type of analysis can be performed by using "
-            "more than one method with the 'Manual entry of results' option "
-            "enabled. A selection list with the methods selected here is "
-            "populated in the manage results view for each test of this type "
-            "of analysis. Note that only methods with 'Allow manual entry' "
-            "option enabled are displayed here; if you want the user to be "
-            "able to assign a method that requires instrument entry, enable "
-            "the 'Instrument assignment is allowed' option."),
     )
 )
 
@@ -449,10 +382,7 @@ Category = UIDReferenceField(
     'Category',
     schemata="Description",
     required=1,
-    vocabulary_display_path_bound=sys.maxint,
     allowed_types=('AnalysisCategory',),
-    relationship='AnalysisServiceAnalysisCategory',
-    referenceClass=HoldingReference,
     vocabulary='getAnalysisCategories',
     widget=ReferenceWidget(
         checkbox_bound=0,
@@ -537,11 +467,8 @@ Department = UIDReferenceField(
     'Department',
     schemata="Description",
     required=0,
-    vocabulary_display_path_bound=sys.maxint,
     allowed_types=('Department',),
     vocabulary='getDepartments',
-    relationship='AnalysisServiceDepartment',
-    referenceClass=HoldingReference,
     widget=ReferenceWidget(
         checkbox_bound=0,
         label=_("Department"),
@@ -747,10 +674,8 @@ schema = BikaSchema.copy() + Schema((
     Keyword,
     ManualEntryOfResults,
     InstrumentEntryOfResults,
-    Instruments,
     Instrument,
     InstrumentTitle,
-    Methods,
     CalculationTitle,
     CalculationUID,
     InterimFields,
@@ -893,54 +818,6 @@ class BaseAnalysis(BaseContent):
         if o and o.UID() not in [i[0] for i in items]:
             items.append((o.UID(), o.Title()))
         items.sort(lambda x, y: cmp(x[1], y[1]))
-        return DisplayList(list(items))
-
-    security.declarePublic('_getAvailableInstrumentsDisplayList')
-
-    def _getAvailableInstrumentsDisplayList(self):
-        """ Returns a DisplayList with the available Instruments
-            registered in Bika-Setup. Only active Instruments are
-            fetched. Used to fill the Instruments MultiSelectionWidget
-        """
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [(i.UID, i.Title)
-                 for i in bsc(portal_type='Instrument',
-                              inactive_state='active')]
-        items.sort(lambda x, y: cmp(x[1], y[1]))
-        return DisplayList(list(items))
-
-    security.declarePublic('_getAvailableMethodsDisplayList')
-
-    def _getAvailableMethodsDisplayList(self):
-        """ Returns a DisplayList with the available Methods
-            registered in Bika-Setup. Only active Methods and those
-            with Manual Entry field active are fetched.
-            Used to fill the Methods MultiSelectionWidget when 'Allow
-            Instrument Entry of Results is not selected'.
-        """
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [(i.UID, i.Title)
-                 for i in bsc(portal_type='Method',
-                              inactive_state='active')
-                 if i.getObject().isManualEntryOfResults()]
-        items.sort(lambda x, y: cmp(x[1], y[1]))
-        items.insert(0, ('', _("None")))
-        return DisplayList(list(items))
-
-    security.declarePublic('_getAvailableCalculationsDisplayList')
-
-    def _getAvailableCalculationsDisplayList(self):
-        """ Returns a DisplayList with the available Calculations
-            registered in Bika-Setup. Only active Calculations are
-            fetched. Used to fill the _Calculation and DeferredCalculation
-            List fields
-        """
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [(i.UID, i.Title)
-                 for i in bsc(portal_type='Calculation',
-                              inactive_state='active')]
-        items.sort(lambda x, y: cmp(x[1], y[1]))
-        items.insert(0, ('', _("None")))
         return DisplayList(list(items))
 
     security.declarePublic('getCalculation')

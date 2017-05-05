@@ -8,6 +8,7 @@ is some confusion.
 """
 from AccessControl import ClassSecurityInfo
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.utils import t
 from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.config import PROJECTNAME
@@ -20,122 +21,178 @@ from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.utils import getToolByName
 from zope.interface import implements
 
+AnalysisField = UIDReferenceField(
+    'Analysis',
+    required=1,
+    allowed_types=('Analysis',),
+)
+
+InterimFields = InterimFieldsField(
+    'InterimFields',
+)
+
+Result = StringField(
+    'Result',
+)
+
+ResultDM = StringField(
+    'ResultDM',
+)
+
+Retested = BooleanField(
+    'Retested',
+)
+
+Analyst = StringField(
+    'Analyst',
+)
+
+SamplePartition = ComputedField(
+    'SamplePartition',
+    expression='context.getAnalysis() and context.getAnalysis('
+               ').aq_parent.portal_type=="AnalysisRequest" and '
+               'context.getAnalysis().getSamplePartition()',
+)
+
+ClientOrderNumber = ComputedField(
+    'ClientOrderNumber',
+    expression='context.getAnalysis() and context.getAnalysis('
+               ').aq_parent.portal_type=="AnalysisRequest" and '
+               'context.getAnalysis().getClientOrderNumber()',
+)
+
+Service = ComputedField(
+    'Service',
+    expression='context.getAnalysis() and context.getAnalysis().getService() '
+               'or ""',
+)
+
+ServiceUID = ComputedField(
+    'ServiceUID',
+    expression='context.getAnalysis() and context.getAnalysis('
+               ').getServiceUID()',
+)
+
+CategoryUID = ComputedField(
+    'CategoryUID',
+    expression='context.getAnalysis() and context.getAnalysis('
+               ').aq_parent.portal_type=="AnalysisRequest" and '
+               'context.getAnalysis().getCategoryUID()',
+)
+
+Calculation = ComputedField(
+    'Calculation',
+    expression='context.getAnalysis() and context.getAnalysis('
+               ').aq_parent.portal_type=="AnalysisRequest" and '
+               'context.getAnalysis().getCalculation()',
+)
+
+ReportDryMatter = ComputedField(
+    'ReportDryMatter',
+    expression='context.getAnalysis() and context.getAnalysis('
+               ').aq_parent.portal_type=="AnalysisRequest" and '
+               'context.getAnalysis().getReportDryMatter()',
+)
+
+DateReceived = ComputedField(
+    'DateReceived',
+    expression='context.getAnalysis() and context.getAnalysis('
+               ').aq_parent.portal_type=="AnalysisRequest" and '
+               'context.getAnalysis().getDateReceived()',
+)
+
+MaxTimeAllowed = ComputedField(
+    'MaxTimeAllowed',
+    expression='context.getAnalysis() and context.getAnalysis('
+               ').aq_parent.portal_type=="AnalysisRequest" and '
+               'context.getAnalysis().getMaxTimeAllowed()',
+)
+
+DueDate = ComputedField(
+    'DueDate',
+    expression='context.getAnalysis() and context.getAnalysis('
+               ').aq_parent.portal_type=="AnalysisRequest" and '
+               'context.getAnalysis().getDueDate()',
+)
+
+Duration = ComputedField(
+    'Duration',
+    expression='context.getAnalysis() and context.getAnalysis('
+               ').aq_parent.portal_type=="AnalysisRequest" and '
+               'context.getAnalysis().getDuration()',
+)
+
+Earliness = ComputedField(
+    'Earliness',
+    expression='context.getAnalysis() and context.getAnalysis('
+               ').aq_parent.portal_type=="AnalysisRequest" and '
+               'context.getAnalysis().getEarliness()',
+)
+
+ClientUID = ComputedField(
+    'ClientUID',
+    expression='context.getAnalysis() and context.getAnalysis('
+               ').aq_parent.portal_type=="AnalysisRequest" and '
+               'context.getAnalysis().getClientUID()',
+)
+
+RequestID = ComputedField(
+    'RequestID',
+    expression='context.getAnalysis() and context.getAnalysis('
+               ').aq_parent.portal_type=="AnalysisRequest" and '
+               'context.getAnalysis().getRequestID() or ""',
+)
+
+PointOfCapture = ComputedField(
+    'PointOfCapture',
+    expression='context.getAnalysis() and context.getAnalysis('
+               ').getPointOfCapture()',
+)
+
+ReferenceAnalysesGroupID = StringField(
+    'ReferenceAnalysesGroupID',
+    widget=StringWidget(
+        label=_("ReferenceAnalysesGroupID"),
+        visible=False,
+    ),
+)
+
+Keyword = ComputedField(
+    'Keyword',
+    expression="context.getAnalysis().getKeyword()",
+)
+
+NumberOfRequiredVerifications = ComputedField(
+    'NumberOfRequiredVerifications',
+    expression='context.getAnalysis().getNumberOfRequiredVerifications()',
+)
 
 schema = schema.copy() + Schema((
-    ReferenceField(
-        'Analysis',
-        required=1,
-        allowed_types=('Analysis',),
-        referenceClass=HoldingReference,
-        relationship='DuplicateAnalysisAnalysis',
-    ),
-    InterimFieldsField(
-        'InterimFields',
-    ),
-    StringField(
-        'Result',
-    ),
-    StringField(
-        'ResultDM',
-    ),
-    BooleanField(
-        'Retested',
-    ),
-    ReferenceField(
-        'Attachment',
-        multiValued=1,
-        allowed_types=('Attachment',),
-        referenceClass=HoldingReference,
-        relationship='DuplicateAnalysisAttachment',
-    ),
-
-    StringField(
-        'Analyst',
-    ),
-    ReferenceField(
-        'Instrument',
-        required=0,
-        allowed_types=('Instrument',),
-        relationship='AnalysisInstrument',
-        referenceClass=HoldingReference,
-    ),
-    ComputedField(
-        'SamplePartition',
-        expression='context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getSamplePartition()',
-    ),
-    ComputedField(
-        'ClientOrderNumber',
-        expression='context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getClientOrderNumber()',
-    ),
-    ComputedField(
-        'Service',
-        expression='context.getAnalysis() and context.getAnalysis().getService() or ""',
-    ),
-    ComputedField(
-        'ServiceUID',
-        expression='context.getAnalysis() and context.getAnalysis().getServiceUID()',
-    ),
-    ComputedField(
-        'CategoryUID',
-        expression='context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getCategoryUID()',
-    ),
-    ComputedField(
-        'Calculation',
-        expression='context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getCalculation()',
-    ),
-    ComputedField(
-        'ReportDryMatter',
-        expression='context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getReportDryMatter()',
-    ),
-    ComputedField(
-        'DateReceived',
-        expression='context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getDateReceived()',
-    ),
-    ComputedField(
-        'MaxTimeAllowed',
-        expression='context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getMaxTimeAllowed()',
-    ),
-    ComputedField(
-        'DueDate',
-        expression='context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getDueDate()',
-    ),
-    ComputedField(
-        'Duration',
-        expression='context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getDuration()',
-    ),
-    ComputedField(
-        'Earliness',
-        expression='context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getEarliness()',
-    ),
-    ComputedField(
-        'ClientUID',
-        expression='context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getClientUID()',
-    ),
-    ComputedField(
-        'RequestID',
-        expression='context.getAnalysis() and context.getAnalysis().aq_parent.portal_type=="AnalysisRequest" and context.getAnalysis().getRequestID() or ""',
-    ),
-    ComputedField(
-        'PointOfCapture',
-        expression='context.getAnalysis() and context.getAnalysis().getPointOfCapture()',
-    ),
-    StringField(
-        'ReferenceAnalysesGroupID',
-        widget=StringWidget(
-            label=_("ReferenceAnalysesGroupID"),
-            visible=False,
-        ),
-    ),
-    ComputedField(
-        'Keyword',
-        expression="context.getAnalysis().getKeyword()",
-    ),
-    ComputedField(
-        'NumberOfRequiredVerifications',
-        expression='context.getAnalysis().getNumberOfRequiredVerifications()',
-    )
-),
-)
+    AnalysisField,
+    InterimFields,
+    Result,
+    ResultDM,
+    Retested,
+    Analyst,
+    SamplePartition,
+    ClientOrderNumber,
+    Service,
+    ServiceUID,
+    CategoryUID,
+    Calculation,
+    ReportDryMatter,
+    DateReceived,
+    MaxTimeAllowed,
+    DueDate,
+    Duration,
+    Earliness,
+    ClientUID,
+    RequestID,
+    PointOfCapture,
+    ReferenceAnalysesGroupID,
+    Keyword,
+    NumberOfRequiredVerifications,
+))
 
 
 class DuplicateAnalysis(Analysis):

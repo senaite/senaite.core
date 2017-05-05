@@ -13,7 +13,8 @@ from AccessControl import ClassSecurityInfo
 from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes.Registry import registerField
 from Products.Archetypes.public import DisplayList, ReferenceField, \
-    BooleanField, BooleanWidget, Schema, registerType, SelectionWidget
+    BooleanField, BooleanWidget, Schema, registerType, SelectionWidget, \
+    MultiSelectionWidget
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
@@ -198,12 +199,10 @@ Separate = BooleanField(
     )
 )
 
-Preservation = ReferenceField(
+Preservation = UIDReferenceField(
     'Preservation',
     schemata='Container and Preservation',
     allowed_types=('Preservation',),
-    relationship='AnalysisServicePreservation',
-    referenceClass=HoldingReference,
     vocabulary='getPreservations',
     required=0,
     multiValued=0,
@@ -219,12 +218,10 @@ Preservation = ReferenceField(
     )
 )
 
-Container = ReferenceField(
+Container = UIDReferenceField(
     'Container',
     schemata='Container and Preservation',
     allowed_types=('Container', 'ContainerType'),
-    relationship='AnalysisServiceContainer',
-    referenceClass=HoldingReference,
     vocabulary='getContainers',
     required=0,
     multiValued=0,
@@ -252,6 +249,36 @@ PartitionSetup = PartitionSetupField(
     )
 )
 
+# Manual methods associated to the AS
+# List of methods capable to perform the Analysis Service. The
+# Methods selected here are displayed in the Analysis Request
+# Add view, closer to this Analysis Service if selected.
+# Use getAvailableMethods() to retrieve the list with methods both
+# from selected instruments and manually entered.
+# Behavior controlled by js depending on ManualEntry/Instrument:
+# - If InsrtumentEntry not checked, show
+# See browser/js/bika.lims.analysisservice.edit.js
+Methods = UIDReferenceField(
+    'Methods',
+    schemata="Method",
+    required=0,
+    multiValued=1,
+    vocabulary='_getAvailableMethodsDisplayList',
+    allowed_types=('Method',),
+    widget=MultiSelectionWidget(
+        label=_("Methods"),
+        description=_(
+            "The tests of this type of analysis can be performed by using "
+            "more than one method with the 'Manual entry of results' option "
+            "enabled. A selection list with the methods selected here is "
+            "populated in the manage results view for each test of this type "
+            "of analysis. Note that only methods with 'Allow manual entry' "
+            "option enabled are displayed here; if you want the user to be "
+            "able to assign a method that requires instrument entry, enable "
+            "the 'Instrument assignment is allowed' option."),
+    )
+)
+
 # Default method to be used. This field is used in Analysis Service
 # Edit view, use getMethod() to retrieve the Method to be used in
 # this Analysis Service.
@@ -270,8 +297,6 @@ _Method = UIDReferenceField(
     vocabulary_display_path_bound=sys.maxint,
     allowed_types=('Method',),
     vocabulary='_getAvailableMethodsDisplayList',
-    relationship='AnalysisServiceMethod',
-    referenceClass=HoldingReference,
     widget=SelectionWidget(
         format='select',
         label=_("Default Method"),
@@ -279,6 +304,34 @@ _Method = UIDReferenceField(
             "If 'Allow instrument entry of results' is selected, the method "
             "from the default instrument will be used. Otherwise, only the "
             "methods selected above will be displayed.")
+    )
+)
+
+# Instruments associated to the AS
+# List of instruments capable to perform the Analysis Service. The
+# Instruments selected here are displayed in the Analysis Request
+# Add view, closer to this Analysis Service if selected.
+# - If InstrumentEntry not checked, hide and unset
+# - If InstrumentEntry checked, set the first selected and show
+Instruments = UIDReferenceField(
+    'Instruments',
+    schemata="Method",
+    required=0,
+    multiValued=1,
+    vocabulary='_getAvailableInstrumentsDisplayList',
+    allowed_types=('Instrument',),
+    widget=MultiSelectionWidget(
+        label=_("Instruments"),
+        description=_(
+            "More than one instrument can be used in a test of this type of "
+            "analysis. A selection list with the instruments selected here is "
+            "populated in the results manage view for each test of this type "
+            "of analysis. The available instruments in the selection list "
+            "will change in accordance with the method selected by the user "
+            "for that test in the manage results view. Although a method can "
+            "have more than one instrument assigned, the selection list is "
+            "only populated with the instruments that are both set here and "
+            "allowed for the selected method."),
     )
 )
 
@@ -315,8 +368,6 @@ _Calculation = UIDReferenceField(
     vocabulary_display_path_bound=sys.maxint,
     vocabulary='_getAvailableCalculationsDisplayList',
     allowed_types=('Calculation',),
-    relationship='AnalysisServiceCalculation',
-    referenceClass=HoldingReference,
     widget=SelectionWidget(
         format='select',
         label=_("Default Calculation"),
@@ -348,8 +399,6 @@ DeferredCalculation = UIDReferenceField(
     vocabulary_display_path_bound=sys.maxint,
     vocabulary='_getAvailableCalculationsDisplayList',
     allowed_types=('Calculation',),
-    relationship='AnalysisServiceDeferredCalculation',
-    referenceClass=HoldingReference,
     widget=SelectionWidget(
         format='select',
         label=_("Alternative Calculation"),
@@ -368,7 +417,9 @@ schema = BaseAnalysisSchema.copy() + Schema((
     Preservation,
     Container,
     PartitionSetup,
+    Methods,
     _Method,
+    Instruments,
     UseDefaultCalculation,
     _Calculation,
     DeferredCalculation,
@@ -404,6 +455,51 @@ class AnalysisService(BaseAnalysis):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(o.UID, o.Title) for o in
                  bsc(portal_type='Preservation', inactive_state='active')]
+        items.sort(lambda x, y: cmp(x[1], y[1]))
+        return DisplayList(list(items))
+
+    @security.private
+    def _getAvailableMethodsDisplayList(self):
+        """ Returns a DisplayList with the available Methods
+            registered in Bika-Setup. Only active Methods and those
+            with Manual Entry field active are fetched.
+            Used to fill the Methods MultiSelectionWidget when 'Allow
+            Instrument Entry of Results is not selected'.
+        """
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [(i.UID, i.Title)
+                 for i in bsc(portal_type='Method',
+                              inactive_state='active')
+                 if i.getObject().isManualEntryOfResults()]
+        items.sort(lambda x, y: cmp(x[1], y[1]))
+        items.insert(0, ('', _("None")))
+        return DisplayList(list(items))
+
+    @security.private
+    def _getAvailableCalculationsDisplayList(self):
+        """ Returns a DisplayList with the available Calculations
+            registered in Bika-Setup. Only active Calculations are
+            fetched. Used to fill the _Calculation and DeferredCalculation
+            List fields
+        """
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [(i.UID, i.Title)
+                 for i in bsc(portal_type='Calculation',
+                              inactive_state='active')]
+        items.sort(lambda x, y: cmp(x[1], y[1]))
+        items.insert(0, ('', _("None")))
+        return DisplayList(list(items))
+
+    @security.private
+    def _getAvailableInstrumentsDisplayList(self):
+        """ Returns a DisplayList with the available Instruments
+            registered in Bika-Setup. Only active Instruments are
+            fetched. Used to fill the Instruments MultiSelectionWidget
+        """
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        items = [(i.UID, i.Title)
+                 for i in bsc(portal_type='Instrument',
+                              inactive_state='active')]
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
