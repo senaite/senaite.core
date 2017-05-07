@@ -4,12 +4,17 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 from Acquisition import aq_inner
 from Acquisition import aq_parent
+from Products.Archetypes.BaseObject import BaseObject
+from Products.ZCatalog.interfaces import ICatalogBrain
 from bika.lims import logger
+from bika.lims.browser.fields.uidreferencefield import ReferenceException
+from bika.lims.catalog import getCatalog
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 import traceback
 import sys
 import transaction
+from plone.api.portal import get_tool
 
 product = 'bika.lims'
 version = '3.2.0.1704'
