@@ -12,7 +12,6 @@ import json
 import traceback
 import types
 from cStringIO import StringIO
-from . import GenExpertParser, GenExpertImporter
 from bika.lims.exportimport.instruments.resultsimport import \
     AnalysisResultsImporter, InstrumentCSVResultsFileParser
 
