@@ -10,10 +10,11 @@
 import csv
 import json
 import traceback
+import types
 from cStringIO import StringIO
 from . import GenExpertParser, GenExpertImporter
-
-import types
+from bika.lims.exportimport.instruments.resultsimport import \
+    AnalysisResultsImporter, InstrumentCSVResultsFileParser
 
 from bika.lims import bikaMessageFactory as _
 
@@ -92,3 +93,24 @@ def Import(context, request):
     results = {'errors': errors, 'log': logs, 'warns': warns}
 
     return json.dumps(results)
+
+
+class GenExpertParser(InstrumentCSVResultsFileParser):
+
+    def __init__(self, infile):
+        InstrumentCSVResultsFileParser.__init__(self, csv)
+
+    def _parseline(self, line):
+        return 0
+
+
+class GenExpertImporter(AnalysisResultsImporter):
+
+    def __init__(self, parser, context, idsearchcriteria, override,
+                 allowed_ar_states=None, allowed_analysis_states=None,
+                 instrument_uid=None):
+        AnalysisResultsImporter.__init__(self, parser, context,
+                                         idsearchcriteria, override,
+                                         allowed_ar_states,
+                                         allowed_analysis_states,
+                                         instrument_uid)
