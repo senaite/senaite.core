@@ -107,6 +107,10 @@ class Sticker(BrowserView):
             If the type of the item is a worksheet, returns an iterable with
             the following structure:
                 [[None, AssignedAnalyst, workhseet]]
+
+            If the type of the item is a worksheet, returns an iterable with
+            the following structure:
+                [[None, None, batch]]
         """
         ar = None
         sample = None
@@ -126,6 +130,8 @@ class Sticker(BrowserView):
             sample = item
         elif portal_type == 'Worksheet':
             return [[None, item.getAnalystName(), item]]
+        elif portal_type == 'Batch':
+            return [[None, None, item]]
         items = []
         for part in parts:
             items.append([ar, sample, part])

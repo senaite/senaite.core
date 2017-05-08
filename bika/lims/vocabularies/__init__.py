@@ -445,10 +445,11 @@ def getTemplates(bikalims_path, restype, filter_by_type=False):
         # Only use the directory asked in 'filter_by_type'
         if filter_by_type:
             directory = directory + '/' + filter_by_type
-        dirlist = os.listdir(directory)
-        exts = ['{0}:{1}'.format(prefix, tpl) for tpl in dirlist if
-                tpl.endswith('.pt')]
-        templates.extend(exts)
+        if os.path.isdir(directory):
+            dirlist = os.listdir(directory)
+            exts = ['{0}:{1}'.format(prefix, tpl) for tpl in dirlist if
+                    tpl.endswith('.pt')]
+            templates.extend(exts)
 
     out = []
     templates.sort()

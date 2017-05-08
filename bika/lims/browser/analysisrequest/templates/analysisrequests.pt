@@ -25,7 +25,7 @@
             <a tal:attributes="
 				style python:'background: url(%s) 2px 50%% no-repeat'%(view.context_actions[add_item]['icon']);
 				href python:view.context_actions[add_item]['url'];
-				class python:'context_action_link %s' % (view.context_actions[add_item].get('class',''))">
+				class python:'context_action_link %s %s' % (view.context_actions[add_item].get('class',''), 'ar_count')">
                 <span tal:replace="python:add_item"/>
             </a>
             <input name="ar_count"
@@ -36,7 +36,7 @@
                    tal:condition="python:len(view.context_actions) > 0"/>
             <a tal:attributes="
 				href python:view.context_actions[add_item]['url'];
-				class python:'context_action_link %s' % (view.context_actions[add_item].get('class',''))"
+				class python:'context_action_link %s %s' % (view.context_actions[add_item].get('class',''), 'ar_count')"
                style="padding:5px 1px 3px 1px;"
                tal:condition="python:len(view.context_actions) > 0">ARs
             </a>
@@ -46,8 +46,10 @@
 	(function( $ ) {
 	$(document).ready(function(){
 		$('input.ar_count').change(function(){
-			url = $(".context_action_link").attr('href').split("?")[0];
-			$(".context_action_link").attr('href', url + "?ar_count="+$(this).val());
+			url = $("a.ar_count.context_action_link")
+                .attr('href').split("?")[0];
+			$("a.ar_count.context_action_link")
+                .attr('href', url + "?ar_count="+$(this).val());
 		});
 		$('input.ar_count').click(function(e){e.preventDefault();})
 		$('input.ar_count').change();

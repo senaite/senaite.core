@@ -1,0 +1,30 @@
+<!--
+    Template used to render one barcode with dimensions of 40x20mm.
+
+    To retrieve the item, use view.current_item, that will return an array with
+    the following structure:
+
+    [None, None, batch]
+-->
+<tal:sticker define="
+    portal_state      context/@@plone_portal_state;
+    portal_url        portal_state/portal_url;
+    item              view/current_item;
+    batch_id      python:item[2].getId();
+    ">
+
+    <!-- Barcode -->
+    <div class="barcode"
+        tal:attributes="data-id batch_id;"
+        data-code="code93"
+        data-barHeight="14"
+        data-addQuietZone="true"
+        data-showHRI="false">
+    </div>
+
+    <!-- Some additional info about the batch -->
+    <div class="batch-info">
+        <table cellpadding="0" cellspacing="0" border="0">
+        </table>
+    </div>
+</tal:sticker>
