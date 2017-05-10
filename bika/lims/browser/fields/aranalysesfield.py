@@ -3,22 +3,18 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from AccessControl import ClassSecurityInfo
-from bika.lims import bikaMessageFactory as _
-from bika.lims import logger
-from bika.lims.permissions import ViewRetractedAnalyses
-from bika.lims.utils import t, dicts_to_dict
-from bika.lims.utils.analysis import create_analysis
 from decimal import Decimal
-from Products.Archetypes.public import *
+
+from AccessControl import ClassSecurityInfo
 from Products.Archetypes.Registry import registerField
+from Products.Archetypes.public import *
 from Products.Archetypes.utils import shasattr
-from Products.CMFCore.utils import getToolByName
-from types import ListType, TupleType, DictType
+from bika.lims.permissions import ViewRetractedAnalyses
+from bika.lims.utils.analysis import create_analysis
+from plone.api.portal import get_tool
 
 
 class ARAnalysesField(ObjectField):
-
     """A field that stores Analyses instances
 
     get() returns the list of Analyses contained inside the AnalysesRequest
@@ -64,11 +60,11 @@ class ARAnalysesField(ObjectField):
             retracted = kwargs['retracted']
             del kwargs['retracted']
         else:
-            mtool = getToolByName(instance, 'portal_membership')
+            mtool = get_tool('portal_membership')
             retracted = mtool.checkPermission(ViewRetractedAnalyses,
                                               instance)
 
-        bac = getToolByName(instance, 'bika_analysis_catalog')
+        bac = get_tool('bika_analysis_catalog')
         contentFilter = dict([(k, v) for k, v in kwargs.items()
                               if k in bac.indexes()])
         contentFilter['portal_type'] = "Analysis"
@@ -84,8 +80,8 @@ class ARAnalysesField(ObjectField):
                 if full_objects or not get_reflexed:
                     a_obj = a.getObject()
                     # Check if analysis has been reflexed
-                    if not get_reflexed and \
-                            a_obj.getReflexRuleActionsTriggered() != '':
+                    if not get_reflexed \
+                            and a_obj.getReflexRuleActionsTriggered() != '':
                         continue
                     if full_objects:
                         a = a_obj
@@ -117,8 +113,8 @@ class ARAnalysesField(ObjectField):
 
         assert type(service_uids) in (list, tuple)
 
-        bsc = getToolByName(instance, 'bika_setup_catalog')
-        workflow = getToolByName(instance, 'portal_workflow')
+        bsc = get_tool('bika_setup_catalog')
+        workflow = get_tool('portal_workflow')
 
         # one can only edit Analyses up to a certain state.
         ar_state = workflow.getInfoFor(instance, 'review_state', '')
@@ -127,10 +123,10 @@ class ARAnalysesField(ObjectField):
                             'sample_due', 'sample_received',
                             'attachment_due', 'to_be_verified')
 
-        # -  Modify existing AR specs with new form values for selected analyses.
-        # -  new analysis requests are also using this function, so ResultsRange
-        #    may be undefined.  in this case, specs= will contain the entire
-        #    AR spec.
+        # - Modify existing AR specs with new form values for selected analyses.
+        # - new analysis requests are also using this function, so ResultsRange
+        #   may be undefined.  in this case, specs= will contain the entire
+        #   AR spec.
         rr = instance.getResultsRange()
         specs = specs if specs else []
         for s in specs:
@@ -147,11 +143,7 @@ class ARAnalysesField(ObjectField):
         proxies = bsc(UID=service_uids)
         for proxy in proxies:
             service = proxy.getObject()
-            service_uid = service.UID()
             keyword = service.getKeyword()
-            price = prices[service_uid] if prices and service_uid in prices \
-                else service.getPrice()
-            vat = Decimal(service.getVAT())
 
             # analysis->InterimFields
             calc = service.getCalculation()
@@ -177,25 +169,22 @@ class ARAnalysesField(ObjectField):
                 analysis = create_analysis(instance, service)
                 new_analyses.append(analysis)
             for i, r in enumerate(rr):
-                if r['keyword'] == analysis.getService().getKeyword():
+                if r['keyword'] == analysis.getKeyword():
                     r['uid'] = analysis.UID()
-
-            # XXX Price?
-            # analysis.setPrice(price)
-
-        # We add rr to the AR after we create all the analyses
-        instance.setResultsRange(rr)
 
         # delete analyses
         delete_ids = []
         for analysis in instance.objectValues('Analysis'):
-            service_uid = analysis.Schema()['Service'].getRaw(analysis)
+            service_uid = analysis.getServiceUID()
             if service_uid not in service_uids:
                 # If it is verified or published, don't delete it.
-                if workflow.getInfoFor(analysis, 'review_state') in ('verified', 'published'):
-                    continue  # log it
+                state = workflow.getInfoFor(analysis, 'review_state')
+                if state in ('verified', 'published'):
+                    continue
                 # If it is assigned to a worksheet, unassign it before deletion.
-                elif workflow.getInfoFor(analysis, 'worksheetanalysis_review_state') == 'assigned':
+                state = workflow.getInfoFor(analysis,
+                                            'worksheetanalysis_review_state')
+                if state == 'assigned':
                     ws = analysis.getBackReferences("WorksheetAnalysis")[0]
                     ws.removeAnalysis(analysis)
                 # Unset the partition reference
@@ -219,16 +208,16 @@ class ARAnalysesField(ObjectField):
 
     security.declarePublic('Services')
 
-    def Services(self):
+    @staticmethod
+    def Services():
         """ Return analysis services
         """
-        bsc = getToolByName(self.context, 'bika_setup_catalog')
-        if not shasattr(self, '_v_services'):
-            self._v_services = [service.getObject()
-                                for service in bsc(portal_type='AnalysisService')]
-        return self._v_services
+        bsc = get_tool('bika_setup_catalog')
+        brains = bsc(portal_type='AnalysisService')
+        return [proxy.getObject() for proxy in brains]
+
 
 registerField(ARAnalysesField,
               title='Analyses',
-              description=('Used for Analysis instances')
+              description='Used for Analysis instances'
               )

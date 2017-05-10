@@ -13,6 +13,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
+from bika.lims.utils.analysis import create_analysis
 from zope.interface import implements
 from pkg_resources import resource_filename
 import datetime
@@ -2156,30 +2157,26 @@ class Analysis_Requests(WorksheetImporter):
             service = bsc(portal_type='AnalysisService',
                           title=row['AnalysisService_title'])[0].getObject()
             # analyses are keyed/named by keyword
-            keyword = service.getKeyword()
             ar = bc(portal_type='AnalysisRequest', id=row['AnalysisRequest_id'])[0].getObject()
-            obj = _createObjectByType("Analysis", ar, keyword)
-            MTA = {
-                'days': int(row['MaxTimeAllowed_days'] and row['MaxTimeAllowed_days'] or 0),
-                'hours': int(row['MaxTimeAllowed_hours'] and row['MaxTimeAllowed_hours'] or 0),
-                'minutes': int(row['MaxTimeAllowed_minutes'] and row['MaxTimeAllowed_minutes'] or 0),
-            }
-            obj.edit(
-                Calculation=service.getCalculation(),
+            obj = create_analysis(
+                ar, service,
                 Result=row['Result'],
                 ResultCaptureDate=row['ResultCaptureDate'],
                 ResultDM=row['ResultDM'],
                 Analyst=row['Analyst'],
                 Instrument=row['Instrument'],
                 Retested=self.to_bool(row['Retested']),
-                MaxTimeAllowed=MTA,
+                MaxTimeAllowed={
+                    'days': int(row.get('MaxTimeAllowed_days', 0)),
+                    'hours': int(row.get('MaxTimeAllowed_hours', 0)),
+                    'minutes': int(row.get('MaxTimeAllowed_minutes', 0)),
+                },
                 ReportDryMatter=self.to_bool(row['ReportDryMatter']),
-                Service=service,
-                )
+            )
+
             obj.updateDueDate()
             part = sample.objectValues()[0].UID()
             obj.setSamplePartition(part)
-            obj.setService(service.UID())
             analyses = ar.objectValues('Analyses')
             analyses = list(analyses)
             analyses.append(obj)

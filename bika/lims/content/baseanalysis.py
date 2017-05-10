@@ -996,7 +996,7 @@ class BaseAnalysis(BaseContent):
         analysis requires before being transitioned to 'verified' state
         :returns: number of required verifications
         """
-        num = self.get_NumberOfRequiredVerifications()
+        num = self.getField('NumberOfRequiredVerifications').get(self)
         if num < 1:
             return self.bika_setup.getNumberOfRequiredVerifications()
         return num
@@ -1068,3 +1068,11 @@ class BaseAnalysis(BaseContent):
         department = self.getDepartment()
         if department:
             return department.Title()
+
+    @security.public
+    def getDepartmentUID(self):
+        """Used to populate catalog values
+        """
+        department = self.getDepartment()
+        if department:
+            return department.UID()

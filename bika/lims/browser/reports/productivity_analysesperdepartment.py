@@ -65,8 +65,7 @@ class Report(BrowserView):
         totalperformedcount = 0
         for analysis in analyses:
             analysis = analysis.getObject()
-            analysisservice = analysis.getService()
-            department = analysisservice.getDepartment()
+            department = analysis.getDepartment()
             department = department.Title() if department else ''
             daterequested = analysis.created()
 

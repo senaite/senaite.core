@@ -9,6 +9,7 @@
 from bika.lims.content.analysis import Analysis
 from bika.lims.testing import BIKA_FUNCTIONAL_TESTING
 from bika.lims.tests.base import BikaFunctionalTestCase
+from bika.lims.utils.analysis import create_analysis
 from plone.app.testing import login, logout
 from plone.app.testing import TEST_USER_NAME
 from Products.CMFCore.utils import getToolByName
@@ -55,9 +56,8 @@ class Test_MultiVerificationType(BikaFunctionalTestCase):
         servs = self.portal.bika_setup.bika_analysisservices
         service=servs['analysisservice-3']
         service.setSelfVerification(True)
-        an = _createObjectByType('Analysis', ar, tmpID())
+        an = create_analysis(ar, service)
         member = self.portal.portal_membership.getMemberById('admin')
-        an.setService(service)
         an.setVerificators(member.getUserName())
         an.setNumberOfRequiredVerifications(4)
         self.assertEquals(an.isUserAllowedToVerify(member), True)

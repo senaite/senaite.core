@@ -206,7 +206,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             dmk = dms.getKeyword()
             deps = analysis.getDependents()
             # if dry matter service in my dependents:
-            if dmk in [a.getService().getKeyword() for a in deps]:
+            if dmk in [a.getKeyword() for a in deps]:
                 # get dry matter analysis from AR
                 dma = analysis.aq_parent.getAnalyses(getKeyword=dmk,
                                                      full_objects=True)[0]
@@ -404,12 +404,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             processed.append(analysis.UID())
 
             # services with dependents don't belong in duplicates
-            service = analysis.getService()
-            calc = service.getCalculation()
+            calc = analysis.getCalculation()
             if calc and calc.getDependentServices():
                 continue
-            service = analysis.getService()
-            _id = self._findUniqueId(service.getKeyword())
+            _id = self._findUniqueId(analysis.getKeyword())
             duplicate = _createObjectByType("DuplicateAnalysis", self, _id)
             duplicate.setAnalysis(analysis)
 
@@ -631,13 +629,15 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         return ''
 
     def getWorksheetServices(self):
-        """ get list of analysis services present on this worksheet
+        """Get list of analysis services present on this worksheet This is 
+        just a list of dictionaries containing 'UID' and 'Title' for each 
+        service.
         """
         services = []
         for analysis in self.getAnalyses():
-            service = analysis.getService()
-            if service not in services:
-                services.append(service)
+            srv = {'UID': analysis.getServiceUID(), 'Title': analysis.Title()}
+            if srv not in services:
+                services.append(srv)
         return services
 
     def getQCAnalyses(self):
@@ -1113,7 +1113,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             # - Create a new reference analysis in the new worksheet
             # - Transition the original analysis to 'rejected' state
             if analysis.portal_type == 'ReferenceAnalysis':
-                service_uid = analysis.getService().UID()
+                service_uid = analysis.getServiceUID()
                 reference = analysis.aq_parent
                 reference_type = analysis.getReferenceType()
                 new_analysis_uid = reference.addReferenceAnalysis(service_uid,
@@ -1139,7 +1139,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             if analysis.portal_type == 'DuplicateAnalysis':
                 src_analysis = analysis.getAnalysis()
                 ar = src_analysis.aq_parent
-                service = src_analysis.getService()
                 duplicate_id = new_ws.generateUniqueId('DuplicateAnalysis')
                 new_duplicate = _createObjectByType('DuplicateAnalysis',
                                                     new_ws, duplicate_id)

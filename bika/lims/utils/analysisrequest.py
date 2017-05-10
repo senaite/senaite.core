@@ -106,7 +106,7 @@ def create_analysisrequest(context, request, values, analyses=None,
 
     # Set the state of analyses we created.
     for analysis in analyses:
-        revers = analysis.getService().getNumberOfRequiredVerifications()
+        revers = analysis.getNumberOfRequiredVerifications()
         analysis.setNumberOfRequiredVerifications(revers)
         doActionFor(analysis, 'sample_due')
         analysis_state = workflow.getInfoFor(analysis, 'review_state')
@@ -254,8 +254,7 @@ def _resolve_items_to_service_uids(items):
 
         # Analysis objects (shortcut for eg copying analyses from other AR)
         if IAnalysis.providedBy(item):
-            uid = item.getService().UID()
-            service_uids.append(uid)
+            service_uids.append(item.getServiceUID())
             continue
 
         # An object UID already there?
@@ -323,7 +322,7 @@ def notify_rejection(analysisrequest):
         att.unmarkCreationFlag()
         renameAfterCreation(att)
         atts = analysisrequest.getAttachment() + [att] if \
-                analysisrequest.getAttachment() else [att]
+            analysisrequest.getAttachment() else [att]
         atts = [a.UID() for a in atts]
         analysisrequest.setAttachment(atts)
         os.remove(pdf_fn)

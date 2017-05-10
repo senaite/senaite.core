@@ -97,7 +97,7 @@ class ResultOutOfRange(object):
             result = float(str(result))
         except ValueError:
             return None
-        service_uid = self.context.getService().UID()
+        service_uid = self.context.getServiceUID()
         specification = self.context.aq_parent.getResultsRangeDict()
         # Analysis without specification values. Assume in range
         if service_uid not in specification:
@@ -214,7 +214,7 @@ class AnalysesRetractedListReport(BrowserView):
         added = []
         to = ''
         for analysis in self.analyses:
-            department = analysis.getService().getDepartment()
+            department = analysis.getDepartment()
             if department is None:
                 continue
             department_id = department.UID()

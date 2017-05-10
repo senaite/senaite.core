@@ -244,8 +244,7 @@ class DuplicateAnalysis(Analysis):
         # If no problem with attachments, do 'attach' action.
         can_attach = True
         if not self.getAttachment():
-            service = self.getService()
-            if service.getAttachmentOption() == 'r':
+            if self.getAttachmentOption() == 'r':
                 can_attach = False
         if can_attach:
             workflow.doActionFor(self, 'attach')

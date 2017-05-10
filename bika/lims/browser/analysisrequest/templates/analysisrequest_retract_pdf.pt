@@ -132,7 +132,7 @@
                 <td class="label" i18n:translate="">Tests requested/Measurement Procedure</td>
                 <td colspan="5" tal:define="analyses python:ar.getAnalyses();
                                             analyses python:[an.getObject() for an in analyses];
-                                            analyses python:[('%s (%s)' % (an.getService().Title(), an.getService().getKeyword())) for an in analyses];">
+                                            analyses python:[('%s (%s)' % (an.Title(), an.getKeyword())) for an in analyses];">
                     <span tal:replace="python: ', '.join(analyses)"></span>
                 </td>
             </tr>

@@ -137,11 +137,10 @@ class ReflexRule(BaseContent):
         :returns: a Boolean.
         """
         conditions = action_set.get('conditions', [])
-        service = analysis.getService()
         eval_str = ''
         # Getting the analysis local id or its uid instead
         alocalid = analysis.getReflexRuleLocalID() if \
-            analysis.getIsReflexAnalysis() and not forceuid else service.UID()
+            analysis.getIsReflexAnalysis() and not forceuid else analysis.getServiceUID()
         # Getting the local ids (or analysis service uid) from the condition
         # with the same local id (or analysis service uid) as the analysis
         # attribute
@@ -213,7 +212,7 @@ class ReflexRule(BaseContent):
             ans_related_to_set.append(curranalysis)
             # the value of the analysis' result as string
             result = curranalysis.getResult()
-            if len(service.getResultOptions()) > 0:
+            if len(analysis.getResultOptions()) > 0:
                 # Discrete result as expacted value
                 exp_val = condition.get('discreteresult', '')
             else:

@@ -193,7 +193,7 @@ class JSONReadExtender(object):
         ar = self.context.aq_parent
         rr = dicts_to_dict(ar.getResultsRange(),'keyword')
 
-        return rr[self.context.getService().getKeyword()]
+        return rr[self.context.getKeyword()]
 
     def __call__(self, request, data):
         self.request = request

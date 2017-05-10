@@ -260,10 +260,20 @@ class Analysis(BaseAnalysis):
         from bika.lims.catalog import getCatalog
         return getCatalog(self)
 
-    @deprecated("Currently it simply returns the analysis object.")
+    @deprecated("Currently returns the Analysis object itself.  If you really "
+                "need to get the service, use getAnalysisService instead.")
     @security.public
     def getService(self):
         return self
+
+    @security.public
+    def getAnalysisService(self):
+        uc = get_tool('uid_catalog')
+        service_uid = self.getServiceUID()
+        brains = uc(UID=service_uid)
+        if not brains:
+            return None
+        return brains[0].getObject()
 
     @security.public
     def getNumberOfVerifications(self):
@@ -323,6 +333,7 @@ class Analysis(BaseAnalysis):
         """
         return self.aq_parent.absolute_url_path()
 
+    @deprecated("You should simply refer to the analysis' Title directly.")
     @security.public
     def getServiceTitle(self):
         """Returns the Title of the associated service. Analysis titles are
@@ -600,7 +611,7 @@ class Analysis(BaseAnalysis):
             # Reset DL
             self.setDetectionLimitOperand(None)
 
-        self.setResult(val)
+        self.getField('Result').set(self, val)
 
         # Uncertainty calculation on DL
         # https://jira.bikalabs.com/browse/LIMS-1808
@@ -851,9 +862,11 @@ class Analysis(BaseAnalysis):
         Instrument Entry Of Results is set) returns the methods assigned to 
         the instruments allowed for this Analysis
         """
-        service = self.getService()
+        service = self.getAnalysisService()
+        if not service:
+            return []
 
-        if service.getInstrumentEntryOfResults():
+        if self.getInstrumentEntryOfResults():
             uids = [ins.getRawMethod() for ins in service.getInstruments()]
 
         else:
@@ -875,31 +888,32 @@ class Analysis(BaseAnalysis):
         the instruments allowed for this Analysis
         :return: a list of tuples as [(UID,Title),(),...]
         """
-        service = self.getService()
+        service = self.getAnalysisService()
         if not service:
-            return None
+            return []
+
         # manual entry of results is set, only returns the methods set manually
-        if service.getInstrumentEntryOfResults():
-            result = [(ins.getRawMethod(), ins.getMethod().Title())
+        if self.getInstrumentEntryOfResults():
+            res = [(ins.getRawMethod(), ins.getMethod().Title())
                       for ins in service.getInstruments() if ins.getMethod()]
         # Otherwise (if Instrument Entry Of Results is set)
         # returns the methods assigned to the instruments allowed for
         # this Analysis
         else:
             # Get only the methods set manually
-            result = [(method.UID(), method.Title())
+            res = [(method.UID(), method.Title())
                       for method in service.getMethods()]
-        return result
+        return res
 
     def getAllowedInstruments(self, onlyuids=True):
         """Returns the allowed instruments for this analysis. Gets the 
         instruments assigned to the allowed methods
         """
-        uids = []
-        service = self.getService()
+        service = self.getAnalysisService()
         if not service:
-            return None
+            return []
 
+        uids = []
         if service.getInstrumentEntryOfResults():
             uids = service.getRawInstruments()
 
@@ -970,8 +984,7 @@ class Analysis(BaseAnalysis):
                     "but not floatable: %s" % (self.id, result))
                 return formatDecimalMark(result, decimalmark=decimalmark)
 
-        service = self.getService()
-        choices = service.getResultOptions()
+        choices = self.getResultOptions()
 
         # 2. Print ResultText of matching ResulOptions
         match = [x['ResultText'] for x in choices
@@ -1047,16 +1060,15 @@ class Analysis(BaseAnalysis):
 
         Further information at BaseAnalysis.getPrecision()
         """
-        serv = self.getService()
         schu = self.Schema().getField('Uncertainty').get(self)
         if all([schu,
-                serv.getAllowManualUncertainty(),
-                serv.getPrecisionFromUncertainty()]):
+                self.getAllowManualUncertainty(),
+                self.getPrecisionFromUncertainty()]):
             uncertainty = self.getUncertainty(result)
             if uncertainty == 0:
                 return 1
             return get_significant_digits(uncertainty)
-        return serv.getPrecision(result)
+        return self.getPrecision(result)
 
     def getAnalyst(self):
         """Returns the identifier of the assigned analyst. If there is no  
@@ -1088,7 +1100,7 @@ class Analysis(BaseAnalysis):
         one, but if the analysis is the same as self, do nothing.
         :param analysis: an analysis object or UID
         """
-        if analysis.UID() == self.UID():
+        if not analysis or analysis.UID() == self.UID():
             pass
         else:
             self.Schema().getField('ReflexAnalysisOf').set(self, analysis)
@@ -1154,7 +1166,7 @@ class Analysis(BaseAnalysis):
 
         # The submitter and the user must be different unless the analysis has
         # the option SelfVerificationEnabled set to true
-        selfverification = self.getService().isSelfVerificationEnabled()
+        selfverification = self.isSelfVerificationEnabled()
         if self_submitted and not selfverification:
             return False
 
@@ -1306,9 +1318,7 @@ class Analysis(BaseAnalysis):
     def getClientOrderNumber(self):
         """Used to populate catalog values.
         """
-        client = self.aq_parent.getClient()
-        if client:
-            return client.getClientOrderNumber()
+        return self.aq_parent.getClientOrderNumber()
 
     # The DateReceived of the sample associated with this Analysis.
     def getDateReceived(self):
@@ -1381,38 +1391,15 @@ class Analysis(BaseAnalysis):
             return method.Title()
         return ''
 
-    def getServiceDefaultInstrumentUID(self):
-        """This method is used to populate catalog values
-        Returns the default service's instrument UID
-        """
-        ins = self.getInstrument()
-        if ins:
-            return ins.UID()
-        return ''
+    def getInstrumentTitle(self):
+        instrument = self.getInstrument()
+        if instrument:
+            return instrument.Title()
 
-    def getServiceDefaultInstrumentTitle(self):
-        """This method is used to populate catalog values
-        Returns the default service's instrument UID
-        """
-        service = self.getService()
-        if not service:
-            return None
-        ins = service.getInstrument()
-        if ins:
-            return ins.Title()
-        return ''
-
-    def getServiceDefaultInstrumentURL(self):
-        """This method is used to populate catalog values
-        Returns the default service's instrument UID
-        """
-        service = self.getService()
-        if not service:
-            return None
-        ins = service.getInstrument()
-        if ins:
-            return ins.absolute_url_path()
-        return ''
+    def getInstrumentUID(self):
+        instrument = self.getInstrument()
+        if instrument:
+            return instrument.UID()
 
     def hasAttachment(self):
         """This method is used to populate catalog values
@@ -1494,8 +1481,7 @@ class Analysis(BaseAnalysis):
 
     def guard_attach_transition(self):
         if not self.getAttachment():
-            service = self.getService()
-            if service.getAttachmentOption() == "r":
+            if self.getAttachmentOption() == "r":
                 return False
         return True
 
@@ -1566,8 +1552,7 @@ class Analysis(BaseAnalysis):
                     can_submit = False
                 else:
                     interim_fields = False
-                    service = dependent.getService()
-                    calculation = service.getCalculation()
+                    calculation = dependent.getCalculation()
                     if calculation:
                         interim_fields = calculation.getInterimFields()
                     if interim_fields:
@@ -1617,8 +1602,7 @@ class Analysis(BaseAnalysis):
         # If no problem with attachments, do 'attach' action for this instance.
         can_attach = True
         if not self.getAttachment():
-            service = self.getService()
-            if service.getAttachmentOption() == "r":
+            if self.getAttachmentOption() == "r":
                 can_attach = False
         if can_attach:
             dependencies = self.getDependencies()
@@ -1788,8 +1772,7 @@ class Analysis(BaseAnalysis):
         self.setDateAnalysisPublished(endtime)
         starttime = self.aq_parent.getDateReceived()
         starttime = starttime or self.created()
-        service = self.getService()
-        maxtime = service.getMaxTimeAllowed()
+        maxtime = self.getMaxTimeAllowed()
         # set the instance duration value to default values
         # in case of no calendars or max hours
         if maxtime:

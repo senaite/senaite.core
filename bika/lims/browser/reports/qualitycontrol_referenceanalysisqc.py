@@ -103,7 +103,6 @@ class Report(BrowserView):
 
         for analysis in proxies:
             analysis = analysis.getObject()
-            service = analysis.getService()
             resultsrange = \
             [x for x in sample.getReferenceResults() if x['uid'] == service_uid][
                 0]
@@ -190,7 +189,7 @@ class Report(BrowserView):
                          {
                              'title': "",
                              'xlabel': "",
-                             'ylabel': service.getUnit(),
+                             'ylabel': analysis.getUnit(),
                              'x_start': "%s" % min(result_dates).strftime(
                                  self.date_format_short),
                              'x_end': "%s" % max(result_dates).strftime(
@@ -214,8 +213,8 @@ class Report(BrowserView):
         table = {
             'title': "%s: %s (%s)" % (
                 t(_("Analysis Service")),
-                service.Title(),
-                service.getKeyword()
+                analysis.Title(),
+                analysis.getKeyword()
             ),
             'columns': [_('Analysis'),
                         _('Result'),

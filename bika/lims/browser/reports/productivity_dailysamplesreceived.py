@@ -59,7 +59,7 @@ class Report(BrowserView):
                 analysis = analysis.getObject()
                 sd = sample.getSamplingDate()
                 dataline = {'AnalysisKeyword': analysis.getKeyword(),
-                            'AnalysisTitle': analysis.getServiceTitle(),
+                            'AnalysisTitle': analysis.Title(),
                             'SampleID': sample.getSampleID(),
                             'SampleType': sample.getSampleType().Title(),
                             'SampleDateReceived': self.ulocalized_time(

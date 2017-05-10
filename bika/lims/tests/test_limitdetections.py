@@ -372,10 +372,10 @@ class TestLimitDetections(BikaFunctionalTestCase):
                   'analysisservice-7': 2}
         for a in ar.getAnalyses():
             an = a.getObject()
-            idx = asidxs[an.getService().id]
+            idx = asidxs[an.id]
             self.assertEqual(an.getLowerDetectionLimit(), float(self.lds[idx]['min']))
             self.assertEqual(an.getUpperDetectionLimit(), float(self.lds[idx]['max']))
-            self.assertEqual(an.getService().getAllowManualDetectionLimit(), self.lds[idx]['manual'])
+            self.assertEqual(an.getAllowManualDetectionLimit(), self.lds[idx]['manual'])
 
             # Empty result
             self.assertFalse(an.getDetectionLimitOperand())

@@ -271,7 +271,7 @@ class Batch(ATFolder):
             analyses += list(ar.getAnalyses(full_objects=True))
         value = []
         for analysis in analyses:
-            val = analysis.getServiceTitle()
+            val = analysis.Title()
             if val not in value:
                 value.append(val)
         return value

@@ -92,8 +92,10 @@ def BaseAnalysisRefactoring(portal):
     """
 
     # Miscellaneous fixes
-    logger.info('Removing bika_analysis_catalog/getServiceDefaultInstrumentUID')
+    logger.info('Removing bika_analysis_catalog/getServiceDefaultInstrument*')
+    ut.delColumn('bika_analysis_catalog', 'getServiceDefaultInstrumentTitle')
     ut.delColumn('bika_analysis_catalog', 'getServiceDefaultInstrumentUID')
+    ut.delColumn('bika_analysis_catalog', 'getServiceDefaultInstrumentURL')
 
     # Analysis Services ========================================================
     bsc = get_tool('bika_setup_catalog')

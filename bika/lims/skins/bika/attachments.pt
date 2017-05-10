@@ -154,7 +154,7 @@
                <table
                   tal:define="
                   analyses python:here.getAnalyses(full_objects=True);
-                  analyses python:[a for a in analyses if a.getService().getAttachmentOption() in ['p', 'r'] and a.getReviewState() not in ['retracted']];
+                  analyses python:[a for a in analyses if a.getAttachmentOption() in ['p', 'r'] and a.getReviewState() not in ['retracted']];
                   sort_on python:(('id', 'nocase', 'asc'),);
                   analyses python:sequence.sort(analyses, sort_on);
                   a_analyses python:[a for a in analyses if a.portal_type == 'Analysis'];

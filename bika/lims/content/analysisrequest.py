@@ -1858,19 +1858,19 @@ class AnalysisRequest(BaseFolder):
 
     # TODO-performance: Don't get the whole object"
     def getAnalysisCategoryIDs(self):
-        proxies = self.getAnalyses(full_objects=True)
+        analyses = self.getAnalyses(full_objects=True)
         value = []
-        for proxy in proxies:
-            val = proxy.getService().getCategory().id
+        for analysis in analyses:
+            val = analysis.getCategory().id
             if val not in value:
                 value.append(val)
         return value
 
     def getAnalysisService(self):
-        proxies = self.getAnalyses(full_objects=True)
+        analyses = self.getAnalyses(full_objects=True)
         value = []
-        for proxy in proxies:
-            val = proxy.getServiceTitle()
+        for analysis in analyses:
+            val = analysis.getServiceTitle()
             if val not in value:
                 value.append(val)
         return value
@@ -2007,14 +2007,8 @@ class AnalysisRequest(BaseFolder):
             review_state = workflow.getInfoFor(analysis, 'review_state', '')
             if review_state == 'published':
                 continue
-            service = analysis.getService()
             # This situation can be met during analysis request creation
-            if service is None:
-                logger.warning(
-                    "No service for analysis '{}'".format(analysis.getId()))
-                calculation = None
-            else:
-                calculation = service.getCalculation()
+            calculation = analysis.getCalculation()
             if not calculation or (
                     calculation and not calculation.getDependentServices()):
                 resultdate = analysis.getResultCaptureDate()
@@ -2114,11 +2108,8 @@ class AnalysisRequest(BaseFolder):
         for profile in analysis_profiles:
             for analysis_service in profile.getService():
                 for analysis in analyses:
-                    if analysis_service.getKeyword() == analysis.getService(
-
-                    ).getKeyword() and \
-                                    analysis.getService().getKeyword() not in \
-                                    to_be_billed:
+                    if analysis_service.getKeyword() == analysis.getKeyword() \
+                            and analysis.getKeyword() not in to_be_billed:
                         analyses.remove(analysis)
         return analyses, analysis_profiles
 
@@ -2148,9 +2139,7 @@ class AnalysisRequest(BaseFolder):
         for profile in analysis_profiles:
             for analysis_service in profile.getService():
                 for analysis in analyses:
-                    if analysis_service.getKeyword() == analysis.getService(
-
-                    ).getKeyword():
+                    if analysis_service.getKeyword() == analysis.getKeyword():
                         analyses.remove(analysis)
                         profile_analyses.append(analysis)
         return analyses, analysis_profiles, profile_analyses
@@ -2479,8 +2468,7 @@ class AnalysisRequest(BaseFolder):
             review_state = workflow.getInfoFor(analysis, 'review_state')
             if review_state == 'not_requested':
                 continue
-            service = analysis.getService()
-            category_name = service.getCategoryTitle()
+            category_name = analysis.getCategoryTitle()
             if category_name not in cats:
                 cats[category_name] = {}
             cats[category_name][analysis.Title()] = analysis
@@ -2941,9 +2929,8 @@ class AnalysisRequest(BaseFolder):
         """ Returns a set with the departments assigned to the Analyses
             from this Analysis Request
         """
-        ans = [an.getObject() for an in self.getAnalyses()]
-        depts = [an.getService().getDepartment() for an in ans if
-                 an.getService().getDepartment()]
+        ans = self.getAnalyses(full_objects=True)
+        depts = [an.getDepartment() for an in ans if an.getDepartment()]
         return set(depts)
 
     # TODO-performance: This function is very time consuming because

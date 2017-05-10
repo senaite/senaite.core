@@ -188,7 +188,6 @@ class PrintForm(BrowserView):
                 partans = part.getAnalyses()
                 numpartans = len(partans)
                 for analysis in partans:
-                    service = analysis.getService()
                     row = {
                         'sample_id': {
                             'hidden': True if arcell else False,
@@ -221,8 +220,8 @@ class PrintForm(BrowserView):
                             'value': container,
                             },
                         'analyses': {
-                            'title': service.title,
-                            'units': service.getUnit(),
+                            'title': analysis.Title(),
+                            'units': analysis.getUnit(),
                         },
                     }
                     rows.append(row)
