@@ -5,18 +5,13 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-import sys
-
 from AccessControl import ClassSecurityInfo
 from Products.ATExtensions.ateapi import RecordsField
-from Products.Archetypes.public import DisplayList, ReferenceField, \
-    ComputedField, ComputedWidget, BooleanField, BooleanWidget, StringField, \
-    SelectionWidget, FixedPointField, IntegerField, IntegerWidget, \
-    StringWidget, BaseContent, Schema, MultiSelectionWidget, FloatField, \
-    DecimalWidget
-from Products.Archetypes.references import HoldingReference
+from Products.Archetypes.public import DisplayList, BooleanField, \
+    BooleanWidget, StringField, SelectionWidget, FixedPointField, \
+    IntegerField, IntegerWidget, StringWidget, BaseContent, Schema, \
+    FloatField, DecimalWidget
 from Products.Archetypes.utils import IntDisplayList
-from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import *
 from bika.lims.browser.widgets.durationwidget import DurationWidget
@@ -26,7 +21,11 @@ from bika.lims.config import ATTACHMENT_OPTIONS, SERVICE_POINT_OF_CAPTURE
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.utils import to_utf8 as _c
 from bika.lims.utils.analysis import get_significant_digits
+from plone.api.portal import get_tool
 
+# Anywhere that there just isn't space for unpredictably long names,
+# this value will be used instead.  It's set on the AnalysisService,
+# but accessed on all analysis objects.
 ShortTitle = StringField(
     'ShortTitle',
     schemata="Description",
@@ -39,6 +38,7 @@ ShortTitle = StringField(
     )
 )
 
+# A simple integer to sort items.
 SortKey = FloatField(
     'SortKey',
     schemata="Description",
@@ -51,6 +51,7 @@ SortKey = FloatField(
     )
 )
 
+# Is the title of the analysis a proper Scientific Name?
 ScientificName = BooleanField(
     'ScientificName',
     schemata="Description",
@@ -62,6 +63,8 @@ ScientificName = BooleanField(
     )
 )
 
+# The units of measurement used for representing results in reports and in
+# manage_results screen.
 Unit = StringField(
     'Unit',
     schemata="Description",
@@ -73,6 +76,7 @@ Unit = StringField(
     )
 )
 
+# Decimal precision for printing normal decimal results.
 Precision = IntegerField(
     'Precision',
     schemata="Analysis",
@@ -83,6 +87,8 @@ Precision = IntegerField(
     )
 )
 
+# If the precision of the results as entered is higher than this value,
+# the results will be represented in scientific notation.
 ExponentialFormatPrecision = IntegerField(
     'ExponentialFormatPrecision',
     schemata="Analysis",
@@ -95,6 +101,9 @@ ExponentialFormatPrecision = IntegerField(
     )
 )
 
+# If the value is below this limit, it means that the measurement lacks
+# accuracy and this will be shown in manage_results and also on the final
+# report.
 LowerDetectionLimit = FixedPointField(
     'LowerDetectionLimit',
     schemata="Analysis",
@@ -110,6 +119,9 @@ LowerDetectionLimit = FixedPointField(
     )
 )
 
+# If the value is above this limit, it means that the measurement lacks
+# accuracy and this will be shown in manage_results and also on the final
+# report.
 UpperDetectionLimit = FixedPointField(
     'UpperDetectionLimit',
     schemata="Analysis",
@@ -125,10 +137,9 @@ UpperDetectionLimit = FixedPointField(
     )
 )
 
-# LIMS-1775 Allow to select LDL or UDL defaults in results with readonly mode
-# https://jira.bikalabs.com/browse/LIMS-1775
-# Some behavior controlled with javascript: If checked, the field
-# "AllowManualDetectionLimit" will be displayed.
+# Allow to select LDL or UDL defaults in results with readonly mode
+# Some behavior of AnalysisServices is controlled with javascript: If checked,
+# the field "AllowManualDetectionLimit" will be displayed.
 # See browser/js/bika.lims.analysisservice.edit.js
 #
 # Use cases:
@@ -159,7 +170,7 @@ DetectionLimitSelector = BooleanField(
     )
 )
 
-# Behavior controlled with javascript: Only visible when the
+# Behavior of AnalysisService controlled with javascript: Only visible when the
 # "DetectionLimitSelector" is checked
 # See browser/js/bika.lims.analysisservice.edit.js
 # Check inline comment for "DetecionLimitSelector" field for
@@ -176,6 +187,8 @@ AllowManualDetectionLimit = BooleanField(
     )
 )
 
+# Indicates that the result should be calculated against the system "Dry Matter"
+# service, and the modified result stored in Analysis.ResultDM field.
 ReportDryMatter = BooleanField(
     'ReportDryMatter',
     schemata="Analysis",
@@ -186,6 +199,7 @@ ReportDryMatter = BooleanField(
     )
 )
 
+# Specify attachment requirements for these analyses
 AttachmentOption = StringField(
     'AttachmentOption',
     schemata="Analysis",
@@ -201,6 +215,8 @@ AttachmentOption = StringField(
     )
 )
 
+# The keyword for the service is used as an identifier during instrument
+# imports, and other places too.  It's also used as the ID analyses.
 Keyword = StringField(
     'Keyword',
     schemata="Description",
@@ -218,7 +234,8 @@ Keyword = StringField(
 )
 
 # Allow/Disallow manual entry of results
-# Behavior controlled by javascript depending on Instruments field:
+# Behavior of AnalysisServices controlled by javascript depending on
+# Instruments field:
 # - If InstrumentEntry not checked, set checked and readonly
 # - If InstrumentEntry checked, set as not readonly
 # See browser/js/bika.lims.analysisservice.edit.js
@@ -258,9 +275,9 @@ InstrumentEntryOfResults = BooleanField(
 )
 
 # Default instrument to be used.
-# Gets populated with the instruments selected in the multiselection
-# box above.
-# Behavior controlled by js depending on ManualEntry/Instruments:
+# Gets populated with the instruments selected in the Instruments field.
+# Behavior of AnalysisServices controlled by js depending on
+# ManualEntry/Instruments:
 # - Populate dynamically with selected Instruments
 # - If InstrumentEntry checked, set first selected instrument
 # - If InstrumentEntry not checked, hide and set None
@@ -276,45 +293,73 @@ Instrument = UIDReferenceField(
         format='select',
         label=_("Default Instrument"),
         description=_(
-            "This is the instrument the system will assign by default to "
-            "tests from this type of analysis in manage results view. The "
-            "method associated to this instrument will be assigned as the "
-            "default method too.Note the instrument's method will prevail "
-            "over any of the methods choosen if the 'Instrument assignment is "
-            "not required' option is enabled.")
+            "This is the instrument that is assigned to  tests from this type "
+            "of analysis in manage results view. The method associated to "
+            "this instrument will be assigned as the default method too.Note "
+            "the instrument's method will prevail over any of the methods "
+            "choosen if the 'Instrument assignment is not required' option is "
+            "enabled.")
     )
 )
 
-# Returns the Default's instrument title. If no default instrument
-# set, returns string.empty
-InstrumentTitle = ComputedField(
-    'InstrumentTitle',
-    expression=""
-        "context.getInstrument() and context.getInstrument().Title() or ''",
-    widget=ComputedWidget(
-        visible=False,
-    )
-)
-
-CalculationTitle = ComputedField(
-    'CalculationTitle',
-    expression=""
-        "context.getCalculation() and context.getCalculation().Title() or ''",
+# Default method to be used. This field is used in Analysis Service
+# Edit view, use getMethod() to retrieve the Method to be used in
+# this Analysis Service.
+# Gets populated with the methods selected in the multiselection
+# box above or with the default instrument's method.
+# Behavior controlled by js depending on ManualEntry/Instrument/Methods:
+# - If InstrumentEntry checked, set instrument's default method, and readonly
+# - If InstrumentEntry not checked, populate dynamically with
+#   selected Methods, set the first method selected and non-readonly
+# See browser/js/bika.lims.analysisservice.edit.js
+Method = UIDReferenceField(
+    'Method',
+    schemata="Method",
+    required=0,
     searchable=True,
-    widget=ComputedWidget(
-        visible=False,
+    allowed_types=('Method',),
+    vocabulary='_getAvailableMethodsDisplayList',
+    widget=SelectionWidget(
+        format='select',
+        label=_("Default Method"),
+        description=_(
+            "If 'Allow instrument entry of results' is selected, the method "
+            "from the default instrument will be used. Otherwise, only the "
+            "methods selected above will be displayed.")
     )
 )
 
-CalculationUID = ComputedField(
-    'CalculationUID',
-    expression=""
-        "context.getCalculation() and context.getCalculation().UID() or ''",
-    widget=ComputedWidget(
-        visible=False,
+# Default calculation to be used. This field is used in Analysis Service
+# Edit view, use getCalculation() to retrieve the Calculation to be used in
+# this Analysis Service.
+# The default calculation is the one linked to the default method
+# Behavior controlled by js depending on UseDefaultCalculation:
+# - If UseDefaultCalculation is set to False, show this field
+# - If UseDefaultCalculation is set to True, show this field
+# See browser/js/bika.lims.analysisservice.edit.js
+Calculation = UIDReferenceField(
+    'Calculation',
+    schemata="Method",
+    required=0,
+    vocabulary='_getAvailableCalculationsDisplayList',
+    allowed_types=('Calculation',),
+    widget=SelectionWidget(
+        format='select',
+        label=_("Default Calculation"),
+        description=_(
+            "Default calculation to be used from the default Method selected. "
+            "The Calculation for a method can be assigned in the Method edit "
+            "view."),
+        catalog_name='bika_setup_catalog',
+        base_query={'inactive_state': 'active'},
     )
 )
 
+# InterimFields are defined in Calculations, Services, and Analyses.
+# In Analysis Services, the default values are taken from Calculation.
+# In Analyses, the default values are taken from the Analysis Service.
+# When instrument results are imported, the values in analysis are overridden
+# before the calculation is performed.
 InterimFields = InterimFieldsField(
     'InterimFields',
     schemata='Method',
@@ -326,6 +371,9 @@ InterimFields = InterimFieldsField(
     )
 )
 
+# Maximum time (from sample reception) allowed for the analysis to be performed.
+# After this amount of time, a late alert is printed, and the analysis will be
+# flagged in turnaround time report.
 MaxTimeAllowed = DurationField(
     'MaxTimeAllowed',
     schemata="Analysis",
@@ -337,6 +385,7 @@ MaxTimeAllowed = DurationField(
     )
 )
 
+# The amount of difference allowed between this analysis, and any duplicates.
 DuplicateVariation = FixedPointField(
     'DuplicateVariation',
     schemata="Method",
@@ -349,6 +398,8 @@ DuplicateVariation = FixedPointField(
     )
 )
 
+# True if the accreditation body has approved this lab's method for
+# accreditation.
 Accredited = BooleanField(
     'Accredited',
     schemata="Method",
@@ -361,6 +412,10 @@ Accredited = BooleanField(
     )
 )
 
+# The physical location that the analysis is tested; for some analyses,
+# the sampler may capture results at the point where the sample is taken,
+# and these results can be captured using different rules.  For example,
+# the results may be entered before the sample is received.
 PointOfCapture = StringField(
     'PointOfCapture',
     schemata="Description",
@@ -378,6 +433,8 @@ PointOfCapture = StringField(
     )
 )
 
+# The category of the analysis service, used for filtering, collapsing and
+# reporting on analyses.
 Category = UIDReferenceField(
     'Category',
     schemata="Description",
@@ -393,24 +450,7 @@ Category = UIDReferenceField(
     )
 )
 
-CategoryTitle = ComputedField(
-    'CategoryTitle',
-    expression=""
-        "context.getCategory() and context.getCategory().Title() or ''",
-    widget=ComputedWidget(
-        visible=False,
-    )
-)
-
-CategoryUID = ComputedField(
-    'CategoryUID',
-    expression=""
-        "context.getCategory() and context.getCategory().UID() or ''",
-    widget=ComputedWidget(
-        visible=False,
-    )
-)
-
+# The base price for this analysis
 Price = FixedPointField(
     'Price',
     schemata="Description",
@@ -420,7 +460,7 @@ Price = FixedPointField(
     )
 )
 
-# read access permission
+# Some clients qualify for bulk discounts.
 BulkPrice = FixedPointField(
     'BulkPrice',
     schemata="Description",
@@ -433,26 +473,8 @@ BulkPrice = FixedPointField(
     )
 )
 
-VATAmount = ComputedField(
-    'VATAmount',
-    schemata="Description",
-    expression='context.getVATAmount()',
-    widget=ComputedWidget(
-        label=_("VAT"),
-        visible={'edit': 'hidden', }
-    )
-)
-
-TotalPrice = ComputedField(
-    'TotalPrice',
-    schemata="Description",
-    expression='context.getTotalPrice()',
-    widget=ComputedWidget(
-        label=_("Total price"),
-        visible={'edit': 'hidden', }
-    )
-)
-
+# If VAT is charged, a different VAT value can be entered for each
+# service.  The default value is taken from BikaSetup
 VAT = FixedPointField(
     'VAT',
     schemata="Description",
@@ -463,6 +485,8 @@ VAT = FixedPointField(
     )
 )
 
+# The analysis service's Department.  This is used to filter analyses,
+# and for indicating the responsibile lab manager in reports.
 Department = UIDReferenceField(
     'Department',
     schemata="Description",
@@ -478,16 +502,8 @@ Department = UIDReferenceField(
     )
 )
 
-DepartmentTitle = ComputedField(
-    'DepartmentTitle',
-    expression=""
-        "context.getDepartment() and context.getDepartment().Title() or ''",
-    searchable=True,
-    widget=ComputedWidget(
-        visible=False,
-    )
-)
-
+# Uncertainty percentages in results can change depending on the results
+# themselves.
 Uncertainties = RecordsField(
     'Uncertainties',
     schemata="Uncertainties",
@@ -564,6 +580,10 @@ AllowManualUncertainty = BooleanField(
     )
 )
 
+# Results can be selected from a dropdown list.  This prevents the analyst
+# from entering arbitrary values.  Each result must have a ResultValue, which
+# must be a number - it is this number which is interpreted as the actual
+# "Result" when applying calculations.
 ResultOptions = RecordsField(
     'ResultOptions',
     schemata="Result Options",
@@ -587,6 +607,9 @@ ResultOptions = RecordsField(
     )
 )
 
+# If the service is meant for providing an interim result to another analysis,
+# or if the result is only used for internal processes, then it can be hidden
+# from the client in the final report (and in manage_results view)
 Hidden = BooleanField(
     'Hidden',
     schemata="Analysis",
@@ -600,6 +623,8 @@ Hidden = BooleanField(
     )
 )
 
+# Permit a user to verify their own results.  This could invalidate the
+# accreditation for the results of this analysis!
 SelfVerification = IntegerField(
     'SelfVerification',
     schemata="Analysis",
@@ -618,8 +643,9 @@ SelfVerification = IntegerField(
     )
 )
 
-_NumberOfRequiredVerifications = IntegerField(
-    '_NumberOfRequiredVerifications',
+# Require more than one verification by separate Verifier or LabManager users.
+NumberOfRequiredVerifications = IntegerField(
+    'NumberOfRequiredVerifications',
     schemata="Analysis",
     default=-1,
     vocabulary="_getNumberOfRequiredVerificationsVocabulary",
@@ -634,6 +660,7 @@ _NumberOfRequiredVerifications = IntegerField(
     )
 )
 
+# Just a string displayed on various views
 CommercialID = StringField(
     'CommercialID',
     searchable=1,
@@ -645,6 +672,7 @@ CommercialID = StringField(
     )
 )
 
+# Just a string displayed on various views
 ProtocolID = StringField(
     'ProtocolID',
     searchable=1,
@@ -655,8 +683,6 @@ ProtocolID = StringField(
         description=_("The service's analytical protocol ID")
     )
 )
-
-# XXX Keep synced to service duplication code in bika_analysisservices.py
 
 schema = BikaSchema.copy() + Schema((
     ShortTitle,
@@ -675,9 +701,8 @@ schema = BikaSchema.copy() + Schema((
     ManualEntryOfResults,
     InstrumentEntryOfResults,
     Instrument,
-    InstrumentTitle,
-    CalculationTitle,
-    CalculationUID,
+    Method,
+    Calculation,
     InterimFields,
     MaxTimeAllowed,
     DuplicateVariation,
@@ -686,20 +711,15 @@ schema = BikaSchema.copy() + Schema((
     Category,
     Price,
     BulkPrice,
-    VATAmount,
-    TotalPrice,
     VAT,
-    CategoryTitle,
-    CategoryUID,
     Department,
-    DepartmentTitle,
     Uncertainties,
     PrecisionFromUncertainty,
     AllowManualUncertainty,
     ResultOptions,
     Hidden,
     SelfVerification,
-    _NumberOfRequiredVerifications,
+    NumberOfRequiredVerifications,
     CommercialID,
     ProtocolID,
 ))
@@ -724,186 +744,105 @@ class BaseAnalysis(BaseContent):
     schema = schema
     displayContentsTab = False
 
-    security.declarePublic('Title')
-
+    @security.public
     def Title(self):
         return _c(self.title)
 
-    security.declarePublic('getDiscountedPrice')
-
-    def getDiscountedPrice(self):
-        """ compute discounted price excl. vat """
-        price = self.getPrice()
-        price = price and price or 0
-        discount = self.bika_setup.getMemberDiscount()
-        discount = discount and discount or 0
-        return float(price) - (float(price) * float(discount)) / 100
-
-    security.declarePublic('getDiscountedBulkPrice')
-
-    def getDiscountedBulkPrice(self):
-        """ compute discounted bulk discount excl. vat """
-        price = self.getBulkPrice()
-        price = price and price or 0
-        discount = self.bika_setup.getMemberDiscount()
-        discount = discount and discount or 0
-        return float(price) - (float(price) * float(discount)) / 100
-
-    security.declarePublic('getTotalPrice')
-
-    def getTotalPrice(self):
-        """ compute total price """
-        price = self.getPrice()
-        vat = self.getVAT()
-        price = price and price or 0
-        vat = vat and vat or 0
-        return float(price) + (float(price) * float(vat)) / 100
-
-    security.declarePublic('getTotalBulkPrice')
-
-    def getTotalBulkPrice(self):
-        """ compute total price """
-        price = self.getBulkPrice()
-        vat = self.getVAT()
-        price = price and price or 0
-        vat = vat and vat or 0
-        return float(price) + (float(price) * float(vat)) / 100
-
-    security.declarePublic('getTotalDiscountedPrice')
-
-    def getTotalDiscountedPrice(self):
-        """ compute total discounted price """
-        price = self.getDiscountedPrice()
-        vat = self.getVAT()
-        price = price and price or 0
-        vat = vat and vat or 0
-        return float(price) + (float(price) * float(vat)) / 100
-
-    security.declarePublic('getTotalDiscountedCorporatePrice')
-
-    def getTotalDiscountedBulkPrice(self):
-        """ compute total discounted corporate price """
-        price = self.getDiscountedCorporatePrice()
-        vat = self.getVAT()
-        price = price and price or 0
-        vat = vat and vat or 0
-        return float(price) + (float(price) * float(vat)) / 100
-
-    security.declarePublic('getDefaultVAT')
-
+    @security.public
     def getDefaultVAT(self):
-        """ return default VAT from bika_setup """
+        """Return default VAT from bika_setup 
+        """
         try:
             vat = self.bika_setup.getVAT()
             return vat
         except ValueError:
             return "0.00"
 
-    security.declarePublic('getVATAmount')
-
+    @security.public
     def getVATAmount(self):
-        """ Compute VATAmount
+        """Compute VAT Amount from the Price and system configured VAT 
         """
         price, vat = self.getPrice(), self.getVAT()
         return float(price) * (float(vat) / 100)
 
-    security.declarePublic('getAnalysisCategories')
+    @security.public
+    def getDiscountedPrice(self):
+        """Compute discounted price excl. VAT
+        """
+        price = self.getPrice()
+        price = price and price or 0
+        discount = self.bika_setup.getMemberDiscount()
+        discount = discount and discount or 0
+        return float(price) - (float(price) * float(discount)) / 100
 
+    @security.public
+    def getDiscountedBulkPrice(self):
+        """Compute discounted bulk discount excl. VAT
+        """
+        price = self.getBulkPrice()
+        price = price and price or 0
+        discount = self.bika_setup.getMemberDiscount()
+        discount = discount and discount or 0
+        return float(price) - (float(price) * float(discount)) / 100
+
+    @security.public
+    def getTotalPrice(self):
+        """Compute total price including VAT
+        """
+        price = self.getPrice()
+        vat = self.getVAT()
+        price = price and price or 0
+        vat = vat and vat or 0
+        return float(price) + (float(price) * float(vat)) / 100
+
+    @security.public
+    def getTotalBulkPrice(self):
+        """Compute total bulk price
+        """
+        price = self.getBulkPrice()
+        vat = self.getVAT()
+        price = price and price or 0
+        vat = vat and vat or 0
+        return float(price) + (float(price) * float(vat)) / 100
+
+    @security.public
+    def getTotalDiscountedPrice(self):
+        """Compute total discounted price
+        """
+        price = self.getDiscountedPrice()
+        vat = self.getVAT()
+        price = price and price or 0
+        vat = vat and vat or 0
+        return float(price) + (float(price) * float(vat)) / 100
+
+    @security.public
+    def getTotalDiscountedBulkPrice(self):
+        """Compute total discounted corporate bulk price 
+        """
+        price = self.getDiscountedCorporatePrice()
+        vat = self.getVAT()
+        price = price and price or 0
+        vat = vat and vat or 0
+        return float(price) + (float(price) * float(vat)) / 100
+
+    @security.public
     def getAnalysisCategories(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [(o.UID, o.Title) for o in
-                 bsc(portal_type='AnalysisCategory',
-                     inactive_state='active')]
+        """A vocabulary listing available (and activated) categories.
+        """
+        bsc = get_tool('bika_setup_catalog')
+        cats = bsc(portal_type='AnalysisCategory', inactive_state='active')
+        items = [(o.UID, o.Title) for o in cats]
         o = self.getCategory()
         if o and o.UID() not in [i[0] for i in items]:
             items.append((o.UID(), o.Title()))
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
-    security.declarePublic('getCalculation')
-
-    def getCalculation(self):
-        """ Returns the calculation to be used in this AS.
-            If UseDefaultCalculation() is set, returns the calculation
-            from the default method selected or none (if method hasn't
-            defined any calculation). If UseDefaultCalculation is set
-            to false, returns the Deferred Calculation (manually set)
-        """
-        if self.getUseDefaultCalculation():
-            method = self.getMethod()
-            if method:
-                calculation = method.getCalculation()
-                return calculation if calculation else None
-        else:
-            return self.getDeferredCalculation()
-
-    security.declarePublic('getMethod')
-
-    def getMethod(self):
-        """ Returns the method assigned by default to the AS.
-            If Instrument Entry Of Results selected, returns the method
-            from the Default Instrument or None.
-            If Instrument Entry of Results is not selected, returns the
-            method assigned directly by the user using the _Method Field
-        """
-        # TODO This function has been modified after enabling multiple methods
-        # for instruments. Make sure that returning the value of _Method field
-        # is correct.
-        if self.getInstrumentEntryOfResults():
-            method = self.get_Method()
-        else:
-            methods = self.getMethods()
-            method = methods[0] if methods else None
-        return method
-
-    security.declarePublic('getAvailableMethods')
-
-    def getAvailableMethods(self):
-        """ Returns the methods available for this analysis.
-            If the service has the getInstrumentEntryOfResults(), returns
-            the methods available from the instruments capable to perform
-            the service, as well as the methods set manually for the
-            analysis on its edit view. If getInstrumentEntryOfResults()
-            is unset, only the methods assigned manually to that service
-            are returned.
-        """
-        methods = self.getMethods()
-        muids = [m.UID() for m in methods]
-        if self.getInstrumentEntryOfResults():
-            # Add the methods from the instruments capable to perform
-            # this analysis service
-            for ins in self.getInstruments():
-                for method in ins.getMethods():
-                    if method and method.UID() not in muids:
-                        methods.append(method)
-                        muids.append(method.UID())
-
-        return methods
-
-    security.declarePublic('getAvailableMethodsUIDs')
-
-    def getAvailableMethodsUIDs(self):
-        """ Returns the UIDs of the available method.
-        """
-        return [m.UID() for m in self.getAvailableMethods()]
-
-    security.declarePublic('getAvailableInstruments')
-
-    def getAvailableInstruments(self):
-        """ Returns the instruments available for this analysis.
-            If the service has the getInstrumentEntryOfResults(), returns
-            the instruments capable to perform this service. Otherwhise,
-            returns an empty list.
-        """
-        instruments = self.getInstruments() \
-            if self.getInstrumentEntryOfResults() is True \
-            else None
-        return instruments if instruments else []
-
-    security.declarePublic('getDepartments')
-
+    @security.public
     def getDepartments(self):
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        """A vocabulary listing available (and activated) departments.
+        """
+        bsc = get_tool('bika_setup_catalog')
         items = [('', '')] + [(o.UID, o.Title) for o in
                               bsc(portal_type='Department',
                                   inactive_state='active')]
@@ -913,45 +852,9 @@ class BaseAnalysis(BaseContent):
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
-    security.declarePublic('getUncertainty')
-
-    def getUncertainty(self, result=None):
-        """
-        Return the uncertainty value, if the result falls within
-        specified ranges for this service.
-        """
-
-        if result is None:
-            return None
-
-        uncertainties = self.getUncertainties()
-        if uncertainties:
-            try:
-                result = float(result)
-            except ValueError:
-                # if analysis result is not a number, then we assume in range
-                return None
-
-            for d in uncertainties:
-                if float(d['intercept_min']) <= result <= float(
-                        d['intercept_max']):
-                    if str(d['errorvalue']).strip().endswith('%'):
-                        try:
-                            percvalue = float(d['errorvalue'].replace('%', ''))
-                        except ValueError:
-                            return None
-                        unc = result / 100 * percvalue
-                    else:
-                        unc = float(d['errorvalue'])
-
-                    return unc
-        return None
-
-    security.declarePublic('getLowerDetectionLimit')
-
+    @security.public
     def getLowerDetectionLimit(self):
-        """ Returns the Lower Detection Limit for this service as a
-            floatable
+        """Returns the Lower Detection Limit for this service as a floatable
         """
         ldl = self.Schema().getField('LowerDetectionLimit').get(self)
         try:
@@ -959,11 +862,9 @@ class BaseAnalysis(BaseContent):
         except ValueError:
             return 0
 
-    security.declarePublic('getUpperDetectionLimit')
-
+    @security.public
     def getUpperDetectionLimit(self):
-        """ Returns the Upper Detection Limit for this service as a
-            floatable
+        """Returns the Upper Detection Limit for this service as a floatable
         """
         udl = self.Schema().getField('UpperDetectionLimit').get(self)
         try:
@@ -971,11 +872,9 @@ class BaseAnalysis(BaseContent):
         except ValueError:
             return 0
 
-    security.declarePublic('getPrecision')
-
+    @security.public
     def getPrecision(self, result=None):
-        """
-        Returns the precision for the Analysis Service. If the
+        """Returns the precision for the Analysis Service. If the
         option Calculate Precision according to Uncertainty is not
         set, the method will return the precision value set in the
         Schema. Otherwise, will calculate the precision value
@@ -1017,25 +916,23 @@ class BaseAnalysis(BaseContent):
                 return 1
             return get_significant_digits(uncertainty)
 
-    security.declarePublic('getExponentialFormatPrecision')
-
+    @security.public
     def getExponentialFormatPrecision(self, result=None):
-        """
-        Returns the precision for the Analysis Service and result
-        provided. Results with a precision value above this exponential
+        """ Returns the precision for the Analysis Service and result 
+        provided. Results with a precision value above this exponential 
         format precision should be formatted as scientific notation.
 
-        If the Calculate Precision according to Uncertainty is not set,
-        the method will return the exponential precision value set in
-        the Schema. Otherwise, will calculate the precision value
-        according to the Uncertainty and the result.
+        If the Calculate Precision according to Uncertainty is not set, 
+        the method will return the exponential precision value set in the 
+        Schema. Otherwise, will calculate the precision value according to 
+        the Uncertainty and the result.
 
-        If Calculate Precision from the Uncertainty is set but no
-        result provided neither uncertainty values are set, returns the
-        fixed exponential precision.
+        If Calculate Precision from the Uncertainty is set but no result 
+        provided neither uncertainty values are set, returns the fixed 
+        exponential precision.
 
-        Will return positive values if the result is below 0 and will
-        return 0 or positive values if the result is above 0.
+        Will return positive values if the result is below 0 and will return 
+        0 or positive values if the result is above 0.
 
         Given an analysis service with fixed exponential format
         precision of 4:
@@ -1046,14 +943,12 @@ class BaseAnalysis(BaseContent):
         32092           0.81           4
         456021          423            5
 
-        For further details, visit
-        https://jira.bikalabs.com/browse/LIMS-1334
+        For further details, visit https://jira.bikalabs.com/browse/LIMS-1334
 
-        :param result: if provided and "Calculate Precision according
-                       to the Uncertainty" is set, the result will be
-                       used to retrieve the uncertainty from which the
-                       precision must be calculated. Otherwise, the
-                       fixed-precision will be used.
+        :param result: if provided and "Calculate Precision according to the  
+        Uncertainty" is set, the result will be used to retrieve the 
+        uncertainty from which the precision must be calculated. Otherwise, 
+        the fixed-precision will be used.
         :returns: the precision
         """
         field = self.Schema().getField('ExponentialFormatPrecision')
@@ -1072,26 +967,22 @@ class BaseAnalysis(BaseContent):
 
             return get_significant_digits(uncertainty)
 
-    security.declarePublic('isSelfVerificationEnabled')
-
+    @security.public
     def isSelfVerificationEnabled(self):
-        """
-        Returns if the user that submitted a result for this analysis must also
-        be able to verify the result
+        """Returns if the user that submitted a result for this analysis must 
+        also be able to verify the result
         :returns: true or false
         """
         bsve = self.bika_setup.getSelfVerificationEnabled()
         vs = self.getSelfVerification()
         return bsve if vs == -1 else vs == 1
 
-    security.declarePublic('_getSelfVerificationVocabulary')
-
+    @security.public
     def _getSelfVerificationVocabulary(self):
-        """
-        Returns a DisplayList with the available options for the
+        """Returns a DisplayList with the available options for the 
         self-verification list: 'system default', 'true', 'false'
-        :returns: DisplayList with the available options for the
-            self-verification list
+        :returns: DisplayList with the available options for the 
+        self-verification list
         """
         bsve = self.bika_setup.getSelfVerificationEnabled()
         bsve = _('Yes') if bsve else _('No')
@@ -1099,12 +990,10 @@ class BaseAnalysis(BaseContent):
         items = [(-1, bsval), (0, _('No')), (1, _('Yes'))]
         return IntDisplayList(list(items))
 
-    security.declarePublic('getNumberOfRequiredVerifications')
-
+    @security.public
     def getNumberOfRequiredVerifications(self):
-        """
-        Returns the number of required verifications a test for this analysis
-        requires before being transitioned to 'verified' state
+        """Returns the number of required verifications a test for this 
+        analysis requires before being transitioned to 'verified' state
         :returns: number of required verifications
         """
         num = self.get_NumberOfRequiredVerifications()
@@ -1112,16 +1001,70 @@ class BaseAnalysis(BaseContent):
             return self.bika_setup.getNumberOfRequiredVerifications()
         return num
 
-    security.declarePublic('_getNumberOfRequiredVerificationsVocabulary')
-
+    @security.public
     def _getNumberOfRequiredVerificationsVocabulary(self):
-        """
-        Returns a DisplayList with the available options for the
+        """Returns a DisplayList with the available options for the 
         multi-verification list: 'system default', '1', '2', '3', '4'
-        :returns: DisplayList with the available options for the
-            multi-verification list
+        :returns: DisplayList with the available options for the 
+        multi-verification list
         """
         bsve = self.bika_setup.getNumberOfRequiredVerifications()
         bsval = "%s (%s)" % (_("System default"), str(bsve))
         items = [(-1, bsval), (1, '1'), (2, '2'), (3, '3'), (4, '4')]
         return IntDisplayList(list(items))
+
+    @security.public
+    def getMethodUID(self):
+        """This is used to populate catalog values
+        """
+        method = self.getMethod()
+        if method:
+            return method.UID()
+
+    @security.public
+    def getInstrumentTitle(self):
+        """Used to populate catalog values
+        """
+        instrument = self.getInstrument()
+        if instrument:
+            return instrument.Title()
+
+    @security.public
+    def getCalculationTitle(self):
+        """Used to populate catalog values
+        """
+        calculation = self.getCalculation()
+        if calculation:
+            return calculation.Title()
+
+    @security.public
+    def getCalculationUID(self):
+        """Used to populate catalog values
+        """
+        calculation = self.getCalculation()
+        if calculation:
+            return calculation.UID()
+
+    @security.public
+    def getCategoryTitle(self):
+        """Used to populate catalog values
+        """
+        category = self.getCategory()
+        if category:
+            return category.Title()
+
+    @security.public
+    def getCategoryUID(self):
+        """Used to populate catalog values
+        """
+        category = self.getCategory()
+        if category:
+            return category.UID()
+
+    @security.public
+    def getDepartmentTitle(self):
+        """Used to populate catalog values
+        """
+        department = self.getDepartment()
+        if department:
+            return department.Title()

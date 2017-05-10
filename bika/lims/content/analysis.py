@@ -5,83 +5,85 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-"""DuplicateAnalysis uses this as it's base.  This accounts for much confusion.
-"""
-
-import math
-
 import cgi
+import math
+from decimal import Decimal
+
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
-from Products.ATExtensions.ateapi import DateTimeWidget
 from Products.Archetypes import atapi
-from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import _createObjectByType
-from bika.lims import bikaMessageFactory as _
+from bika.lims import bikaMessageFactory as _, deprecated
 from bika.lims import logger
-from bika.lims.browser.fields import HistoryAwareReferenceField
-from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.fields import UIDReferenceField, \
+    HistoryAwareReferenceField
+from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.config import PROJECTNAME
-from bika.lims.content.baseanalysis import schema as BaseAnalysisSchema, \
-    BaseAnalysis
+from bika.lims.content.baseanalysis import BaseAnalysis
+from bika.lims.content.baseanalysis import schema as BaseAnalysisSchema
 from bika.lims.content.reflexrule import doReflexRuleAction
-from bika.lims.interfaces import IAnalysis, IDuplicateAnalysis, \
-    IReferenceAnalysis, ISamplePrepWorkflow
-from bika.lims.interfaces import IReferenceSample
+from bika.lims.interfaces import IAnalysis, ISamplePrepWorkflow
 from bika.lims.permissions import *
 from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.utils import changeWorkflowState, formatDecimalMark
 from bika.lims.utils import drop_trailing_zeros_decimal
-from bika.lims.utils.analysis import format_numeric_result
+from bika.lims.utils.analysis import format_numeric_result, create_analysis
 from bika.lims.utils.analysis import get_significant_digits
-from bika.lims.workflow import skip
-from decimal import Decimal
-from plone import api
+from bika.lims.workflow import skip, getTransitionDate
+from plone.api.portal import get_tool
+from plone.api.user import has_permission
 from zope.interface import implements
 
-# Although attributes of the service are stored directly in the Analysis,
-# the originating ServiceUID is required to prevent duplication of analyses.
+# The originating Service UID is required to prevent duplication of analyses.
+# It's also used to populate catalog values.
 ServiceUID = StringField(
     'ServiceUID',
 )
 
+# This overrides the Calculation UIDReferenceField from BaseAnalysis
+# so that analysis always refers to the calculation as it was when created.
 Calculation = HistoryAwareReferenceField(
     'Calculation',
     allowed_types=('Calculation',),
     relationship='AnalysisCalculation',
-    referenceClass=HoldingReference,
+    referenceClass=HoldingReference
 )
 
+# Attachments which are added manually in the UI, or automatically when
+# results are imported from a file supplied by an instrument.
 Attachment = UIDReferenceField(
     'Attachment',
     multiValued=1,
     allowed_types=('Attachment',),
 )
 
+# The final result of the analysis is stored here.
 Result = StringField(
     'Result'
 )
 
+# When the result is changed, this value is updated to the current time.
 ResultCaptureDate = DateTimeField(
     'ResultCaptureDate',
-    widget=ComputedWidget(
-        visible=False
-    )
 )
 
+# If ReportDryMatter is True in the AnalysisService, the adjusted result
+# is stored here.
 ResultDM = StringField(
     'ResultDM'
 )
 
+# If the analysis has previously been retracted, this flag is set True
+# to indicate that this is a re-test.
 Retested = BooleanField(
     'Retested',
     default=False
 )
 
+# When the AR is published, the date of publication is recorded here.
+# It's used to populate catalog values.
 DateAnalysisPublished = DateTimeField(
     'DateAnalysisPublished',
     widget=DateTimeWidget(
@@ -89,6 +91,9 @@ DateAnalysisPublished = DateTimeField(
     )
 )
 
+# DueDate is calculated by adding the MaxTimeAllowed to the date that the
+# Analysis' sample was received.  It's used to create alerts when analyses
+# are "late", and also to populate catalog values.
 DueDate = DateTimeField(
     'DueDate',
     widget=DateTimeWidget(
@@ -96,6 +101,8 @@ DueDate = DateTimeField(
     )
 )
 
+# This is used to calculate turnaround time reports.
+# The value is set when the Analysis is published.
 Duration = IntegerField(
     'Duration',
     widget=IntegerWidget(
@@ -103,6 +110,8 @@ Duration = IntegerField(
     )
 )
 
+# This is used to calculate turnaround time reports.
+# The value is set when the Analysis is published.
 Earliness = IntegerField(
     'Earliness',
     widget=IntegerWidget(
@@ -110,18 +119,14 @@ Earliness = IntegerField(
     )
 )
 
+# The ID of the logged in user who submitted the result for this Analysis.
 Analyst = StringField(
     'Analyst'
 )
 
+# Remarks entered in the manage_results screen are stored here
 Remarks = TextField(
     'Remarks'
-)
-
-Method = UIDReferenceField(
-    'Method',
-    required=0,
-    allowed_types=('Method',),
 )
 
 # The analysis method can't be changed when the analysis belongs
@@ -133,6 +138,7 @@ CanMethodBeChanged = BooleanField(
     visible=False
 )
 
+# The physical sample partition linked to the Analysis.
 SamplePartition = UIDReferenceField(
     'SamplePartition',
     required=0,
@@ -150,15 +156,15 @@ IsReflexAnalysis = BooleanField(
 OriginalReflexedAnalysis = UIDReferenceField(
     'OriginalReflexedAnalysis',
     required=0,
-    allowed_types=('Analysis',),
+    allowed_types=('Analysis',)
 )
 
-# This field contains the analysis which has been reflected
-# following a reflex rule
+# This field contains the analysis which has been reflected following
+# a reflex rule
 ReflexAnalysisOf = UIDReferenceField(
     'ReflexAnalysisOf',
     required=0,
-    allowed_types=('Analysis',),
+    allowed_types=('Analysis',)
 )
 
 # Which is the Reflex Rule action that has created this analysis
@@ -175,78 +181,16 @@ ReflexRuleLocalID = StringField(
     default=0
 )
 
-# Reflex rule triggered actions which the current analysis is
-# responsible of. Separated by '|'
+# Reflex rule triggered actions which the current analysis is responsible for.
+# Separated by '|'
 ReflexRuleActionsTriggered = StringField(
     'ReflexRuleActionsTriggered',
     required=0,
     default=''
 )
 
-ClientUID = ComputedField(
-    'ClientUID',
-    expression='context.aq_parent.aq_parent.UID()'
-)
-
-ClientTitle = ComputedField(
-    'ClientTitle',
-    expression='context.aq_parent.aq_parent.Title()'
-)
-
-RequestID = ComputedField(
-    'RequestID',
-    expression='context.aq_parent.getRequestID()'
-)
-
-ClientOrderNumber = ComputedField(
-    'ClientOrderNumber',
-    expression='context.aq_parent.getClientOrderNumber()'
-)
-
-SampleTypeUID = ComputedField(
-    'SampleTypeUID',
-    expression='context.aq_parent.getSample().getSampleType().UID()'
-)
-
-SamplePointUID = ComputedField(
-    'SamplePointUID',
-    expression='context.aq_parent.getSample().getSamplePoint().UID('
-               ') if context.aq_parent.getSample().getSamplePoint()'
-               ' else ""'
-)
-
-MethodUID = ComputedField(
-    'MethodUID',
-    expression="context.getMethod() and context.getMethod().UID() or ''",
-    widget=ComputedWidget(
-        visible=False
-    )
-)
-
-InstrumentUID = ComputedField(
-    'InstrumentUID',
-    expression=""
-        "context.getInstrument() and context.getInstrument().UID() or ''",
-    widget=ComputedWidget(
-        visible=False
-    )
-)
-
-DateReceived = ComputedField(
-    'DateReceived',
-    expression='context.aq_parent.getDateReceived()'
-)
-
-DateSampled = ComputedField(
-    'DateSampled',
-    expression='context.aq_parent.getSample().getDateSampled()'
-)
-
-InstrumentValid = ComputedField(
-    'InstrumentValid',
-    expression='context.isInstrumentValid()'
-)
-
+# The actual uncertainty for this analysis' result, populated when the result
+# is submitted.
 Uncertainty = FixedPointField(
     'Uncertainty',
     precision=10,
@@ -255,6 +199,8 @@ Uncertainty = FixedPointField(
     )
 )
 
+# If the result is outside of the detection limits of the method or instrument,
+# the operand (< or >) is stored here.
 DetectionLimitOperand = StringField(
     'DetectionLimitOperand'
 )
@@ -276,10 +222,8 @@ Verificators = StringField(
     default=''
 )
 
-
 schema = BaseAnalysisSchema.copy() + Schema((
     ServiceUID,
-    Calculation,
     Attachment,
     Result,
     ResultCaptureDate,
@@ -291,7 +235,6 @@ schema = BaseAnalysisSchema.copy() + Schema((
     Earliness,
     Analyst,
     Remarks,
-    Method,
     CanMethodBeChanged,
     SamplePartition,
     IsReflexAnalysis,
@@ -300,18 +243,6 @@ schema = BaseAnalysisSchema.copy() + Schema((
     ReflexRuleAction,
     ReflexRuleLocalID,
     ReflexRuleActionsTriggered,
-    ClientUID,
-    ClientTitle,
-    RequestID,
-    ClientOrderNumber,
-    ServiceUID,
-    SampleTypeUID,
-    SamplePointUID,
-    MethodUID,
-    InstrumentUID,
-    DateReceived,
-    DateSampled,
-    InstrumentValid,
     Uncertainty,
     DetectionLimitOperand,
     NumberOfRequiredVerifications,
@@ -325,190 +256,216 @@ class Analysis(BaseAnalysis):
     displayContentsTab = False
     schema = schema
 
-    def getServiceUID(self):
-        import pdb;pdb.set_trace();pass
-        print "XXX analysis.getServiceUID(!!!)"%self
-        return self.UID()
-
-    def getService(self):
-        import pdb;pdb.set_trace();pass
-        print "XXX analysis.getService(!!!)"%self
-        return self.UID()
-
     def _getCatalogTool(self):
         from bika.lims.catalog import getCatalog
         return getCatalog(self)
 
+    @deprecated("Currently it simply returns the analysis object.")
+    @security.public
+    def getService(self):
+        return self
+
+    @security.public
     def getNumberOfVerifications(self):
-        verificators=self.getVerificators()
+        verificators = self.getVerificators()
         if not verificators:
             return 0
         return len(verificators.split(','))
 
-    def addVerificator(self,username):
-        verificators=self.getVerificators()
+    @security.public
+    def addVerificator(self, username):
+        verificators = self.getVerificators()
         if not verificators:
             self.setVerificators(username)
         else:
-            self.setVerificators(verificators+","+username)
+            self.setVerificators(verificators + "," + username)
 
+    @security.public
     def deleteLastVerificator(self):
-        verificators=self.getVerificators().split(',')
+        verificators = self.getVerificators().split(',')
         del verificators[-1]
         self.setVerificators(",".join(verificators))
 
-    def wasVerifiedByUser(self,username):
-        verificators=self.getVerificators().split(',')
+    @security.public
+    def wasVerifiedByUser(self, username):
+        verificators = self.getVerificators().split(',')
         return username in verificators
 
+    @security.public
     def getLastVerificator(self):
         return self.getVerificators().split(',')[-1]
 
+    @security.public
     def updateDueDate(self):
-        # set the max hours allowed
-
-        service = self.getService()
-        maxtime = service.getMaxTimeAllowed()
+        maxtime = self.getMaxTimeAllowed()
         if not maxtime:
             maxtime = {'days': 0, 'hours': 0, 'minutes': 0}
-        self.setMaxTimeAllowed(maxtime)
-        # set the due date
-        # default to old calc in case no calendars
-        max_days = float(maxtime.get('days', 0)) + \
-                 (
-                     (float(maxtime.get('hours', 0)) * 3600 +
-                      float(maxtime.get('minutes', 0)) * 60)
-                     / 86400
-                 )
+        max_days = float(maxtime.get('days', 0)) + (
+            (float(maxtime.get('hours', 0)) * 3600 +
+             float(maxtime.get('minutes', 0)) * 60)
+            / 86400
+        )
         part = self.getSamplePartition()
         if part:
             starttime = part.getDateReceived()
-            if starttime:
-                duetime = starttime + max_days
-            else:
-                duetime = ''
+            duetime = starttime + max_days if starttime else ''
             self.setDueDate(duetime)
 
+    @security.public
     def getAnalysisRequestTitle(self):
-        """
-        This is  a column
+        """This is a catalog metadata column
         """
         return self.aq_parent.Title()
 
+    @security.public
     def getAnalysisRequestURL(self):
-        """
-        This is  a column
+        """This is a catalog metadata column
         """
         return self.aq_parent.absolute_url_path()
 
-    def getService(self):
-        return self
-
+    @security.public
     def getServiceTitle(self):
-        """ Returns the Title of the asociated service.
+        """Returns the Title of the associated service. Analysis titles are
+        always the same as the title of the service from which they are derived.
         """
         return self.Title()
 
+    @security.public
     def getReviewState(self):
-        """ Return the current analysis' state"""
-        workflow = getToolByName(self, "portal_workflow")
+        """Return the current analysis' state
+        """
+        workflow = get_tool("portal_workflow")
         return workflow.getInfoFor(self, "review_state")
 
+    @security.public
     def getDefaultUncertainty(self, result=None):
-        """ Calls self.Service.getUncertainty with either the provided
-            result value or self.Result
+        """Return the uncertainty value, if the result falls within
+        specified ranges for the service from which this analysis was derived.
         """
-        service = self.getService()
-        if not service:
-            return None
-        return service.getUncertainty(result and result or self.getResult())
 
+        if result is None:
+            result = self.getResult()
+
+        uncertainties = self.getUncertainties()
+        if uncertainties:
+            try:
+                res = float(result)
+            except (TypeError, ValueError):
+                # if analysis result is not a number, then we assume in range
+                return None
+
+            for d in uncertainties:
+                _min = float(d['intercept_min'])
+                _max = float(d['intercept_max'])
+                if _min <= res and res <= _max:
+                    if str(d['errorvalue']).strip().endswith('%'):
+                        try:
+                            percvalue = float(d['errorvalue'].replace('%', ''))
+                        except ValueError:
+                            return None
+                        uncertainty = res / 100 * percvalue
+                    else:
+                        uncertainty = float(d['errorvalue'])
+
+                    return uncertainty
+        return None
+
+    @security.public
     def getUncertainty(self, result=None):
-        """ Returns the uncertainty for this analysis and result.
-            Returns the value from Schema's Uncertainty field if the
-            Service has the option 'Allow manual uncertainty'. Otherwise,
-            do a callback to getDefaultUncertainty().
-            Returns None if no result specified and the current result
-            for this analysis is below or above detections limits.
+        """Returns the uncertainty for this analysis and result.
+        Returns the value from Schema's Uncertainty field if the Service has 
+        the option 'Allow manual uncertainty'. Otherwise, do a callback to 
+        getDefaultUncertainty(). Returns None if no result specified and the 
+        current result for this analysis is below or above detections limits.
         """
-        serv = self.getService()
-        schu = self.Schema().getField('Uncertainty').get(self)
-        if result is None and (self.isAboveUpperDetectionLimit() or \
+        uncertainty = self.Schema().getField('Uncertainty').get(self)
+        if result is None and (self.isAboveUpperDetectionLimit() or
                                self.isBelowLowerDetectionLimit()):
             return None
 
-        if schu and serv.getAllowManualUncertainty() == True:
+        if uncertainty and self.getAllowManualUncertainty() is True:
             try:
-                schu = float(schu)
-                return schu
-            except ValueError:
+                uncertainty = float(uncertainty)
+                return uncertainty
+            except (TypeError, ValueError):
                 # if uncertainty is not a number, return default value
-                return self.getDefaultUncertainty(result)
+                pass
         return self.getDefaultUncertainty(result)
 
-    def setDetectionLimitOperand(self, value):
-        """ Sets the detection limit operand for this analysis, so
-            the result will be interpreted as a detection limit.
-            The value will only be set if the Service has
-            'DetectionLimitSelector' field set to True, otherwise,
-            the detection limit operand will be set to None.
-            See LIMS-1775 for further information about the relation
-            amongst 'DetectionLimitSelector' and
-            'AllowManualDetectionLimit'.
-            https://jira.bikalabs.com/browse/LIMS-1775
+    @security.public
+    def setUncertainty(self, unc):
+        """Sets the uncertainty for this analysis. If the result is a 
+        Detection Limit or the value is below LDL or upper UDL, sets the 
+        uncertainty value to 0
         """
-        srv = self.getService()
-        md = srv.getDetectionLimitSelector() if srv else False
-        val = value if (md and value in ('>', '<')) else None
+        # Uncertainty calculation on DL
+        # https://jira.bikalabs.com/browse/LIMS-1808
+        if self.isAboveUpperDetectionLimit() or \
+                self.isBelowLowerDetectionLimit():
+            self.Schema().getField('Uncertainty').set(self, None)
+        else:
+            self.Schema().getField('Uncertainty').set(self, unc)
+
+    @security.public
+    def setDetectionLimitOperand(self, value):
+        """Sets the detection limit operand for this analysis, so the result 
+        will be interpreted as a detection limit. The value will only be set 
+        if the Service has 'DetectionLimitSelector' field set to True, 
+        otherwise, the detection limit operand will be set to None. See 
+        LIMS-1775 for further information about the relation amongst 
+        'DetectionLimitSelector' and 'AllowManualDetectionLimit'. 
+        https://jira.bikalabs.com/browse/LIMS-1775
+        """
+        md = self.getDetectionLimitSelector()
+        val = value if (md and value in '<>') else None
         self.Schema().getField('DetectionLimitOperand').set(self, val)
 
+    # Method getLowerDetectionLimit overrides method of class BaseAnalysis
+    @security.public
     def getLowerDetectionLimit(self):
-        """ Returns the Lower Detection Limit (LDL) that applies to
-            this analysis in particular. If no value set or the
-            analysis service doesn't allow manual input of detection
-            limits, returns the value set by default in the Analysis
-            Service
+        """Returns the Lower Detection Limit (LDL) that applies to this 
+        analysis in particular. If no value set or the analysis service 
+        doesn't allow manual input of detection limits, returns the value set 
+        by default in the Analysis Service
         """
         operand = self.getDetectionLimitOperand()
         if operand and operand == '<':
             result = self.getResult()
             try:
+                # in this case, the result itself is the LDL.
                 return float(result)
-            except:
+            except (TypeError, ValueError):
                 logger.warn("The result for the analysis %s is a lower "
                             "detection limit, but not floatable: '%s'. "
                             "Returnig AS's default LDL." %
                             (self.id, result))
-        service = self.getService()
-        if not service:
-            return None
-        return service.getLowerDetectionLimit()
+        return BaseAnalysis.getLowerDetectionLimit(self)
 
+    # Method getUpperDetectionLimit overrides method of class BaseAnalysis
+    @security.public
     def getUpperDetectionLimit(self):
-        """ Returns the Upper Detection Limit (UDL) that applies to
-            this analysis in particular. If no value set or the
-            analysis service doesn't allow manual input of detection
-            limits, returns the value set by default in the Analysis
-            Service
+        """Returns the Upper Detection Limit (UDL) that applies to this 
+        analysis in particular. If no value set or the analysis service 
+        doesn't allow manual input of detection limits, returns the value set 
+        by default in the Analysis Service
         """
         operand = self.getDetectionLimitOperand()
         if operand and operand == '>':
             result = self.getResult()
             try:
+                # in this case, the result itself is the LDL.
                 return float(result)
-            except:
+            except (TypeError, ValueError):
                 logger.warn("The result for the analysis %s is a lower "
                             "detection limit, but not floatable: '%s'. "
                             "Returnig AS's default LDL." %
                             (self.id, result))
-        service = self.getService()
-        if not service:
-            return None
-        return service.getUpperDetectionLimit()
+        return BaseAnalysis.getUpperDetectionLimit(self)
 
+    @security.public
     def isBelowLowerDetectionLimit(self):
-        """ Returns True if the result is below the Lower Detection
-            Limit or if Lower Detection Limit has been manually set
+        """Returns True if the result is below the Lower Detection Limit or 
+        if Lower Detection Limit has been manually set
         """
         dl = self.getDetectionLimitOperand()
         if dl and dl == '<':
@@ -521,13 +478,14 @@ class Analysis(BaseAnalysis):
             try:
                 result = float(result)
                 return result < ldl
-            except:
+            except (TypeError, ValueError):
                 pass
         return False
 
+    @security.public
     def isAboveUpperDetectionLimit(self):
-        """ Returns True if the result is above the Upper Detection
-            Limit or if Upper Detection Limit has been manually set
+        """Returns True if the result is above the Upper Detection Limit or 
+        if Upper Detection Limit has been manually set
         """
         dl = self.getDetectionLimitOperand()
         if dl and dl == '>':
@@ -540,190 +498,136 @@ class Analysis(BaseAnalysis):
             try:
                 result = float(result)
                 return result > udl
-            except:
+            except (TypeError, ValueError):
                 pass
         return False
 
+    @security.public
     def getDetectionLimits(self):
-        """ Returns a two-value array with the limits of detection
-            (LDL and UDL) that applies to this analysis in particular.
-            If no value set or the analysis service doesn't allow
-            manual input of detection limits, returns the value set by
-            default in the Analysis Service
+        """Returns a two-value array with the limits of detection (LDL and 
+        UDL) that applies to this analysis in particular. If no value set or 
+        the analysis service doesn't allow manual input of detection limits, 
+        returns the value set by default in the Analysis Service
         """
         return [self.getLowerDetectionLimit(), self.getUpperDetectionLimit()]
 
+    @security.public
     def isLowerDetectionLimit(self):
-        """ Returns True if the result for this analysis represents
-            a Lower Detection Limit. Otherwise, returns False
+        """Returns True if the result for this analysis represents a Lower 
+        Detection Limit. Otherwise, returns False
         """
-        return self.isBelowLowerDetectionLimit() and \
-                self.getDetectionLimitOperand() == '<'
+        if self.isBelowLowerDetectionLimit():
+            if self.getDetectionLimitOperand() == '<':
+                return True
 
+    @security.public
     def isUpperDetectionLimit(self):
-        """ Returns True if the result for this analysis represents
-            an Upper Detection Limit. Otherwise, returns False
+        """Returns True if the result for this analysis represents an Upper 
+        Detection Limit. Otherwise, returns False
         """
-        return self.isAboveUpperDetectionLimit() and \
-                self.getDetectionLimitOperand() == '>'
+        if self.isAboveLowerDetectionLimit():
+            if self.getDetectionLimitOperand() == '>':
+                return True
 
+    @security.public
     def getDependents(self):
-        """ Return a list of analyses who depend on us
-            to calculate their result
+        """Return a list of analyses who depend on us to calculate their result
         """
-        rc = getToolByName(self, REFERENCE_CATALOG)
         dependents = []
-        service = self.getService()
         ar = self.aq_parent
         for sibling in ar.getAnalyses(full_objects=True):
             if sibling == self:
                 continue
-            service = rc.lookupObject(sibling.getServiceUID())
-            calculation = service.getCalculation()
+            calculation = sibling.getCalculation()
             if not calculation:
                 continue
             depservices = calculation.getDependentServices()
             dep_keywords = [x.getKeyword() for x in depservices]
-            if self.getService().getKeyword() in dep_keywords:
+            if self.getKeyword() in dep_keywords:
                 dependents.append(sibling)
         return dependents
 
+    @security.public
     def getDependencies(self):
-        """ Return a list of analyses who we depend on
-            to calculate our result.
+        """Return a list of analyses who we depend on to calculate our result.
         """
         siblings = self.aq_parent.getAnalyses(full_objects=True)
-        calculation = self.getService().getCalculation()
+        calculation = self.getCalculation()
         if not calculation:
             return []
         dep_services = [d.UID() for d in calculation.getDependentServices()]
-        dep_analyses = [a for a in siblings if a.getServiceUID() in dep_services]
+        dep_analyses = [a for a in siblings if
+                        a.getServiceUID() in dep_services]
         return dep_analyses
 
-    def setResult(self, value, **kw):
-        """ :value: must be a string
+    def setResult(self, value):
+        """Validate and set a value into the Result field, taking into
+        account the Detection Limits.
+        :param value: is expected to be a string.
         """
         # Always update ResultCapture date when this field is modified
         self.setResultCaptureDate(DateTime())
         # Only allow DL if manually enabled in AS
-        val = str(value)
-        if val and (val.strip().startswith('>') or val.strip().startswith('<')):
-            self.Schema().getField('DetectionLimitOperand').set(self, None)
-            oper = '<' if val.strip().startswith('<') else '>'
-            srv = self.getService()
-            if srv and srv.getDetectionLimitSelector():
-                if srv.getAllowManualDetectionLimit():
+        val = str(value).strip()
+        if val and val[0] in '<>':
+            self.setDetectionLimitOperand(None)
+            oper = val[0]
+            val = val.replace(oper, '', 1)
+
+            # Check if the value is indeterminate / non-floatable
+            try:
+                str(float(val))
+            except (ValueError, TypeError):
+                val = value
+
+            if self.getDetectionLimitSelector():
+                if self.getAllowManualDetectionLimit():
                     # DL allowed, try to remove the operator and set the
                     # result as a detection limit
-                    try:
-                        val = val.replace(oper, '', 1)
-                        val = str(float(val))
-                        self.Schema().getField('DetectionLimitOperand').set(self, oper)
-                    except:
-                        val = value
+                    self.setDetectionLimitOperand(oper)
                 else:
                     # Trying to set a result with an '<,>' operator,
                     # but manual DL not allowed, so override the
                     # value with the service's default LDL or UDL
                     # according to the operator, but only if the value
                     # is not an indeterminate.
-                    try:
-                        val = val.replace(oper, '', 1)
-                        val = str(float(val)) # An indeterminate?
-                        if oper == '<':
-                            val = srv.getLowerDetectionLimit()
-                        else:
-                            val = srv.getUpperDetectionLimit()
-                        self.Schema().getField('DetectionLimitOperand').set(self, oper)
-                    except:
-                        # Oops, an indeterminate. Do nothing.
-                        val = value
-            elif srv:
-                # Ooopps. Trying to set a result with an '<,>' operator,
-                # but the service doesn't allow this in any case!
-                # No need to check for AllowManualDetectionLimit, cause
-                # we assume that this will always be False unless
-                # DetectionLimitSelector is True. See LIMS-1775 for
-                # further information about the relation amongst
-                # 'DetectionLimitSelector' and 'AllowManualDetectionLimit'.
-                # https://jira.bikalabs.com/browse/LIMS-1775
-                # Let's try to remove the operator and set the value as
-                # a regular result, but only if not an indeterminate
-                try:
-                    val = val.replace(oper, '', 1)
-                    val = str(float(val))
-                except:
-                    val = value
-        elif not val:
+                    if oper == '<':
+                        val = self.getLowerDetectionLimit()
+                    else:
+                        val = self.getUpperDetectionLimit()
+                    self.setDetectionLimitOperand(oper)
+        elif val is '':
             # Reset DL
-            self.Schema().getField('DetectionLimitOperand').set(self, None)
-        self.getField('Result').set(self, val, **kw)
+            self.setDetectionLimitOperand(None)
+
+        self.setResult(val)
 
         # Uncertainty calculation on DL
         # https://jira.bikalabs.com/browse/LIMS-1808
         if self.isAboveUpperDetectionLimit() or \
-           self.isBelowLowerDetectionLimit():
+                self.isBelowLowerDetectionLimit():
             self.Schema().getField('Uncertainty').set(self, None)
 
-    def setUncertainty(self, unc):
-        """ Sets the uncertainty for this analysis. If the result is
-            a Detection Limit or the value is below LDL or upper UDL,
-            sets the uncertainty value to 0
-        """
-        # Uncertainty calculation on DL
-        # https://jira.bikalabs.com/browse/LIMS-1808
-        if self.isAboveUpperDetectionLimit() or \
-           self.isBelowLowerDetectionLimit():
-            self.Schema().getField('Uncertainty').set(self, None)
-        else:
-            self.Schema().getField('Uncertainty').set(self, unc)
-
-    def getSample(self):
-        # ReferenceSample cannot provide a 'getSample'
-        if IReferenceAnalysis.providedBy(self):
-            return None
-        if IDuplicateAnalysis.providedBy(self) \
-                or self.portal_type == 'RejectAnalysis':
-            return self.getAnalysis().aq_parent.getSample()
-        return self.aq_parent.getSample()
-
-    def getSampleTypeUID(self):
-        """
-        It is a metacolumn
-        """
-        sample = self.getSample()
-        if sample:
-            return sample.getSampleType().UID()
-        return ''
-
+    @deprecated("use Analysis.getResultOptions instead")
     def getResultOptionsFromService(self):
+        """This method is used to populate catalog values
+        Returns a list of dictionaries from the ResultOptions field.
         """
-        It is a metacolumn.
-        Returns a list of dictionaries from the field ResultOptions from the
-        analysis service.
-        """
-        service = self.getService()
-        if not service:
-            return None
-        return service.getResultOptions()
+        return self.getResultOptions()
 
     def getResultsRange(self, specification=None):
-        """ Returns the valid results range for this analysis, a
-            dictionary with the following keys: 'keyword', 'uid', 'min',
-            'max', 'error', 'hidemin', 'hidemax', 'rangecomment'
-            Allowed values for specification='ar', 'client', 'lab', None
-            If specification is None, the following is the priority to
-            get the results range: AR > Client > Lab
-            If no specification available for this analysis, returns {}
+        """Returns the valid results range for this analysis, a dictionary 
+        with the following keys: 'keyword', 'uid', 'min', 'max ', 'error', 
+        'hidemin', 'hidemax', 'rangecomment' Allowed values for 
+        specification='ar', 'client', 'lab', None If specification is None, 
+        the following is the priority to get the results range: AR > Client > 
+        Lab If no specification available for this analysis, returns {}
         """
         rr = {}
         an = self
-        while an and an.portal_type in ('DuplicateAnalysis', 'RejectAnalysis'):
-            an = an.getAnalysis()
 
         if specification == 'ar' or specification is None:
             if an.aq_parent and an.aq_parent.portal_type == 'AnalysisRequest':
-                key = an.getKeyword()
                 rr = an.aq_parent.getResultsRange()
                 rr = [r for r in rr if r.get('keyword', '') == an.getKeyword()]
                 rr = rr[0] if rr and len(rr) > 0 else {}
@@ -738,29 +642,24 @@ class Analysis(BaseAnalysis):
                 rr['uid'] = self.UID()
         return rr
 
-    def getResultsRangeNoSpecs(self, specification=None):
-        """
-        This is used as a metacolumn
+    @deprecated("use Analysis.getResultsRange instead")
+    def getResultsRangeNoSpecs(self):
+        """This method is used to populate catalog values
         """
         return self.getResultsRange()
 
     def getAnalysisSpecs(self, specification=None):
-        """ Retrieves the analysis specs to be applied to this analysis.
-            Allowed values for specification= 'client', 'lab', None
-            If specification is None, client specification gets priority from
-            lab specification.
-            If no specification available for this analysis, returns None
+        """Retrieves the analysis specs to be applied to this analysis. 
+        Allowed values for specification= 'client', 'lab', None If 
+        specification is None, client specification gets priority from lab 
+        specification. If no specification available for this analysis, 
+        returns None
         """
 
         sample = self.getSample()
-
-        # No specifications available for ReferenceSamples
-        if IReferenceSample.providedBy(sample):
-            return None
-
         sampletype = sample.getSampleType()
         sampletype_uid = sampletype and sampletype.UID() or ''
-        bsc = getToolByName(self, 'bika_setup_catalog')
+        bsc = get_tool('bika_setup_catalog')
 
         # retrieves the desired specs if None specs defined
         if not specification:
@@ -770,15 +669,14 @@ class Analysis(BaseAnalysis):
 
             if len(proxies) == 0:
                 # No client specs available, retrieve lab specs
-                labspecsuid = self.bika_setup.bika_analysisspecs.UID()
-                proxies = bsc(portal_type = 'AnalysisSpec',
-                          getSampleTypeUID = sampletype_uid)
+                proxies = bsc(portal_type='AnalysisSpec',
+                              getSampleTypeUID=sampletype_uid)
         else:
             specuid = specification == "client" and self.getClientUID() or \
-                    self.bika_setup.bika_analysisspecs.UID()
+                      self.bika_setup.bika_analysisspecs.UID()
             proxies = bsc(portal_type='AnalysisSpec',
-                              getSampleTypeUID=sampletype_uid,
-                              getClientUID=specuid)
+                          getSampleTypeUID=sampletype_uid,
+                          getClientUID=specuid)
 
         outspecs = None
         for spec in (p.getObject() for p in proxies):
@@ -789,25 +687,21 @@ class Analysis(BaseAnalysis):
         return outspecs
 
     def calculateResult(self, override=False, cascade=False):
-        """ Calculates the result for the current analysis if it depends of
-            other analysis/interim fields. Otherwise, do nothing
+        """Calculates the result for the current analysis if it depends of 
+        other analysis/interim fields. Otherwise, do nothing
         """
-        if self.getResult() and override == False:
+        if self.getResult() and override is False:
             return False
 
-        serv = self.getService()
-        calc = self.getCalculation() if self.getCalculation() \
-                                     else serv.getCalculation()
+        calc = self.getCalculation()
         if not calc:
             return False
 
         mapping = {}
 
         # Interims' priority order (from low to high):
-        # Calculation < Analysis Service < Analysis
-        interims = calc.getInterimFields() + \
-                   serv.getInterimFields() + \
-                   self.getInterimFields()
+        # Calculation < Analysis
+        interims = calc.getInterimFields() + self.getInterimFields()
 
         # Add interims to mapping
         for i in interims:
@@ -816,7 +710,7 @@ class Analysis(BaseAnalysis):
             try:
                 ivalue = float(i['value'])
                 mapping[i['keyword']] = ivalue
-            except:
+            except (TypeError, ValueError):
                 # Interim not float, abort
                 return False
 
@@ -840,13 +734,13 @@ class Analysis(BaseAnalysis):
                     udl = dependency.getUpperDetectionLimit()
                     bdl = dependency.isBelowLowerDetectionLimit()
                     adl = dependency.isAboveUpperDetectionLimit()
-                    mapping[key]=result
-                    mapping['%s.%s' % (key, 'RESULT')]=result
-                    mapping['%s.%s' % (key, 'LDL')]=ldl
-                    mapping['%s.%s' % (key, 'UDL')]=udl
-                    mapping['%s.%s' % (key, 'BELOWLDL')]=int(bdl)
-                    mapping['%s.%s' % (key, 'ABOVEUDL')]=int(adl)
-                except:
+                    mapping[key] = result
+                    mapping['%s.%s' % (key, 'RESULT')] = result
+                    mapping['%s.%s' % (key, 'LDL')] = ldl
+                    mapping['%s.%s' % (key, 'UDL')] = udl
+                    mapping['%s.%s' % (key, 'BELOWLDL')] = int(bdl)
+                    mapping['%s.%s' % (key, 'ABOVEUDL')] = int(adl)
+                except (TypeError, ValueError):
                     return False
 
         # Calculate
@@ -854,10 +748,10 @@ class Analysis(BaseAnalysis):
         formula = formula.replace('[', '%(').replace(']', ')f')
         try:
             formula = eval("'%s'%%mapping" % formula,
-                               {"__builtins__": None,
-                                'math': math,
-                                'context': self},
-                               {'mapping': mapping})
+                           {"__builtins__": None,
+                            'math': math,
+                            'context': self},
+                           {'mapping': mapping})
             result = eval(formula)
         except TypeError:
             self.setResult("NA")
@@ -865,7 +759,7 @@ class Analysis(BaseAnalysis):
         except ZeroDivisionError:
             self.setResult('0/0')
             return True
-        except KeyError as e:
+        except KeyError:
             self.setResult("NA")
             return True
 
@@ -873,81 +767,63 @@ class Analysis(BaseAnalysis):
         return True
 
     def getPriority(self):
-        """ get priority from AR
+        """get priority from AR
         """
-        # this analysis may be a Duplicate or Reference Analysis - CAREFUL
-        # these types still subclass Analysis.
-        if self.portal_type != 'Analysis':
-            return None
         # this analysis could be in a worksheet or instrument, careful
-        return self.aq_parent.getPriority() \
-            if hasattr(self.aq_parent, 'getPriority') else None
+        if hasattr(self.aq_parent, 'getPriority'):
+            return self.aq_parent.getPriority()
 
     def getPrice(self):
-        """
-        The function obtains the analysis' price without VAT and without member discount
-        :returns: the price (without VAT or Member Discount) in decimal format
+        """The function obtains the analysis' price without VAT and without 
+        member discount
+        :return: the price (without VAT or Member Discount) in decimal format
         """
         analysis_request = self.aq_parent
         client = analysis_request.aq_parent
         if client.getBulkDiscount():
-            price = self.getService().getBulkPrice()
+            price = self.getBulkPrice()
         else:
-            price = self.getService().getPrice()
+            price = self.getPrice()
         priority = self.getPriority()
         if priority and priority.getPricePremium() > 0:
-            price = Decimal(price) + (
-                      Decimal(price) * Decimal(priority.getPricePremium())
-                      / 100)
+            price = Decimal(price) + \
+                    (Decimal(price) * Decimal(priority.getPricePremium()) / 100)
         return price
 
     def getVATAmount(self):
+        """Compute the VAT amount without member discount.
+        :return: the result as a float
         """
-        Compute the VAT amount without member discount.
-        :returns: the result as a float
-        """
-        vat = self.getService().getVAT()
+        vat = self.getVAT()
         price = self.getPrice()
-        return float(price) * float(vat) / 100
+        return Decimal(price) * Decimal(vat) / 100
 
     def getTotalPrice(self):
+        """Obtain the total price without client's member discount. The function
+        keeps in mind the client's bulk discount.
+        :return: the result as a float
         """
-        Obtain the total price without client's member discount. The function keeps in mind the
-        client's bulk discount.
-        :returns: the result as a float
-        """
-        return float(self.getPrice()) + float(self.getVATAmount())
+        return Decimal(self.getPrice()) + Decimal(self.getVATAmount())
 
     def isInstrumentValid(self):
-        """ Checks if the instrument selected for this analysis service
-            is valid. Returns false if an out-of-date or uncalibrated
-            instrument is assigned. Returns true if the Analysis has
-            no instrument assigned or is valid.
+        """Checks if the instrument selected for this analysis is valid. 
+        Returns false if an out-of-date or uncalibrated instrument is 
+        assigned. Returns true if the Analysis has no instrument assigned or 
+        is valid.
         """
-        return self.getInstrument().isValid() \
-                if self.getInstrument() else True
-
-    def getDefaultInstrument(self):
-        """ Returns the default instrument for this analysis according
-            to its parent analysis service
-        """
-        service = self.getService()
-        if not service:
-            return None
-        return service.getInstrument() \
-            if service.getInstrumentEntryOfResults() \
-            else None
+        if self.getInstrument():
+            return self.getInstrument().isValid()
+        return True
 
     def isInstrumentAllowed(self, instrument):
-        """ Checks if the specified instrument can be set for this
-            analysis, according to the Method and Analysis Service.
-            If the Analysis Service hasn't set 'Allows instrument entry'
-            of results, returns always False. Otherwise, checks if the
-            method assigned is supported by the instrument specified.
-            Returns false, If the analysis hasn't any method assigned.
-            NP: The methods allowed for selection are defined at
-            Analysis Service level.
-            instrument param can be either an uid or an object
+        """Checks if the specified instrument can be set for this analysis, 
+        according to the Method and Analysis Service. If the Analysis Service 
+        hasn't set 'Allows instrument entry' of results, returns always 
+        False. Otherwise, checks if the method assigned is supported by the 
+        instrument specified. Returns false, If the analysis hasn't any 
+        method assigned. NP: The methods allowed for selection are defined at 
+        Analysis Service level. instrument param can be either an uid or an 
+        object
         """
         if isinstance(instrument, str):
             uid = instrument
@@ -957,11 +833,10 @@ class Analysis(BaseAnalysis):
         return uid in self.getAllowedInstruments()
 
     def isMethodAllowed(self, method):
-        """ Checks if the analysis can follow the method specified.
-            Looks for manually selected methods when AllowManualEntry
-            is set and instruments methods when AllowInstrumentResultsEntry
-            is set.
-            method param can be either an uid or an object
+        """Checks if the analysis can follow the method specified. Looks for 
+        manually selected methods when AllowManualEntry is set and 
+        instruments methods when AllowInstrumentResultsEntry is set. method 
+        param can be either a uid or an object
         """
         if isinstance(method, str):
             uid = method
@@ -971,15 +846,12 @@ class Analysis(BaseAnalysis):
         return uid in self.getAllowedMethods()
 
     def getAllowedMethods(self, onlyuids=True):
-        """
-        Returns the allowed methods for this analysis. If manual
-        entry of results is set, only returns the methods set
-        manually. Otherwise (if Instrument Entry Of Results is set)
-        returns the methods assigned to the instruments allowed for
-        this Analysis
+        """Returns the allowed methods for this analysis. If manual entry of 
+        results is set, only returns the methods set manually. Otherwise (if 
+        Instrument Entry Of Results is set) returns the methods assigned to 
+        the instruments allowed for this Analysis
         """
         service = self.getService()
-        uids = []
 
         if service.getInstrumentEntryOfResults():
             uids = [ins.getRawMethod() for ins in service.getInstruments()]
@@ -989,75 +861,72 @@ class Analysis(BaseAnalysis):
             uids = service.getRawMethods()
 
         if not onlyuids:
-            uc = getToolByName(self, 'uid_catalog')
+            uc = get_tool('uid_catalog')
             meths = [item.getObject() for item in uc(UID=uids)]
             return meths
 
         return uids
 
     def getAllowedMethodsAsTuples(self):
-        """
-        This works a a metadata column.
-        Returns the allowed methods for this analysis. If manual
-        entry of results is set, only returns the methods set
-        manually. Otherwise (if Instrument Entry Of Results is set)
-        returns the methods assigned to the instruments allowed for
-        this Analysis
-        @return: a list of tuples as [(UID,Title),(),...]
+        """This method is used to populate catalog values
+        Returns the allowed methods for this analysis. If manual entry of 
+        results is set, only returns the methods set manually. Otherwise (if 
+        Instrument Entry Of Results is set) returns the methods assigned to 
+        the instruments allowed for this Analysis
+        :return: a list of tuples as [(UID,Title),(),...]
         """
         service = self.getService()
         if not service:
             return None
-        result = []
         # manual entry of results is set, only returns the methods set manually
         if service.getInstrumentEntryOfResults():
-            result = [
-                (ins.getRawMethod(), ins.getMethod().Title()) for ins in
-                service.getInstruments() if ins.getMethod()]
+            result = [(ins.getRawMethod(), ins.getMethod().Title())
+                      for ins in service.getInstruments() if ins.getMethod()]
         # Otherwise (if Instrument Entry Of Results is set)
         # returns the methods assigned to the instruments allowed for
         # this Analysis
         else:
             # Get only the methods set manually
-            result = [
-                (method.UID(), method.Title()) for
-                method in service.getMethods()]
+            result = [(method.UID(), method.Title())
+                      for method in service.getMethods()]
         return result
 
     def getAllowedInstruments(self, onlyuids=True):
-        """ Returns the allowed instruments for this analysis. Gets the
-            instruments assigned to the allowed methods
+        """Returns the allowed instruments for this analysis. Gets the 
+        instruments assigned to the allowed methods
         """
         uids = []
         service = self.getService()
         if not service:
             return None
-        if service.getInstrumentEntryOfResults() == True:
+
+        if service.getInstrumentEntryOfResults():
             uids = service.getRawInstruments()
 
-        elif service.getManualEntryOfResults() == True:
+        elif service.getManualEntryOfResults():
             meths = self.getAllowedMethods(False)
             for meth in meths:
                 uids += meth.getInstrumentUIDs()
             set(uids)
 
-        if onlyuids == False:
-            uc = getToolByName(self, 'uid_catalog')
+        if onlyuids is False:
+            uc = get_tool('uid_catalog')
             instrs = [item.getObject() for item in uc(UID=uids)]
             return instrs
 
         return uids
 
     def getDefaultMethod(self):
-        """ Returns the default method for this Analysis
-            according to its current instrument. If the Analysis hasn't
-            set yet an Instrument, looks to the Service
+        """Returns the default method for this Analysis according to its 
+        current instrument. If the Analysis hasn't set yet an Instrument, 
+        looks to the Service
         """
         instr = self.getInstrument() \
             if self.getInstrument() else self.getDefaultInstrument()
         return instr.getMethod() if instr else None
 
-    def getFormattedResult(self, specs=None, decimalmark='.', sciformat=1, html=True):
+    def getFormattedResult(
+            self, specs=None, decimalmark='.', sciformat=1, html=True):
         """Formatted result:
         1. If the result is a detection limit, returns '< LDL' or '> UDL'
         2. Print ResultText of matching ResultOptions
@@ -1067,12 +936,14 @@ class Analysis(BaseAnalysis):
         5. If the result is below Lower Detection Limit, show '<LDL'
         6. If the result is above Upper Detecion Limit, show '>UDL'
         7. Otherwise, render numerical value
-        specs param is optional. A dictionary as follows:
+        :param specs: Optional result specifications, a dictionary as follows:
             {'min': <min_val>,
              'max': <max_val>,
              'error': <error>,
              'hidemin': <hidemin_val>,
              'hidemax': <hidemax_val>}
+        :param decimalmark: The string to be used as a decimal separator.
+            default is '.'
         :param sciformat: 1. The sci notation has to be formatted as aE^+b
                           2. The sci notation has to be formatted as a·10^b
                           3. As 2, but with super html entity for exp
@@ -1088,15 +959,15 @@ class Analysis(BaseAnalysis):
         dl = self.getDetectionLimitOperand()
         if dl:
             try:
-                res = float(result) # required, check if floatable
+                res = float(result)  # required, check if floatable
                 res = drop_trailing_zeros_decimal(res)
                 fdm = formatDecimalMark(res, decimalmark)
                 hdl = cgi.escape(dl) if html else dl
                 return '%s %s' % (hdl, fdm)
-            except:
-                logger.warn("The result for the analysis %s is a "
-                            "detection limit, but not floatable: %s" %
-                            (self.id, result))
+            except (TypeError, ValueError):
+                logger.warn(
+                    "The result for the analysis %s is a detection limit, "
+                    "but not floatable: %s" % (self.id, result))
                 return formatDecimalMark(result, decimalmark=decimalmark)
 
         service = self.getService()
@@ -1111,26 +982,22 @@ class Analysis(BaseAnalysis):
         # 3. If the result is not floatable, return it without being formatted
         try:
             result = float(result)
-        except:
+        except (TypeError, ValueError):
             return formatDecimalMark(result, decimalmark=decimalmark)
 
         # 4. If the analysis specs has enabled hidemin or hidemax and the
         #    result is out of range, render result as '<min' or '>max'
-        belowmin = False
-        abovemax = False
         specs = specs if specs else self.getResultsRange()
         hidemin = specs.get('hidemin', '')
         hidemax = specs.get('hidemax', '')
         try:
             belowmin = hidemin and result < float(hidemin) or False
-        except:
+        except (TypeError, ValueError):
             belowmin = False
-            pass
         try:
             abovemax = hidemax and result > float(hidemax) or False
-        except:
+        except (TypeError, ValueError):
             abovemax = False
-            pass
 
         # 4.1. If result is below min and hidemin enabled, return '<min'
         if belowmin:
@@ -1162,25 +1029,29 @@ class Analysis(BaseAnalysis):
 
         # Render numerical values
         return format_numeric_result(self, self.getResult(),
-                        decimalmark=decimalmark,
-                        sciformat=sciformat)
+                                     decimalmark=decimalmark,
+                                     sciformat=sciformat)
 
     def getPrecision(self, result=None):
-        """
-        Returns the precision for the Analysis.
+        """Returns the precision for the Analysis.
+
         - ManualUncertainty not set: returns the precision from the
             AnalysisService.
+
         - ManualUncertainty set and Calculate Precision from Uncertainty
           is also set in Analysis Service: calculates the precision of the
           result according to the manual uncertainty set.
+
         - ManualUncertainty set and Calculatet Precision from Uncertainty
           not set in Analysis Service: returns the result as-is.
-        Further information at AnalysisService.getPrecision()
+
+        Further information at BaseAnalysis.getPrecision()
         """
         serv = self.getService()
         schu = self.Schema().getField('Uncertainty').get(self)
-        if schu and serv.getAllowManualUncertainty() == True \
-            and serv.getPrecisionFromUncertainty() == True:
+        if all([schu,
+                serv.getAllowManualUncertainty(),
+                serv.getPrecisionFromUncertainty()]):
             uncertainty = self.getUncertainty(result)
             if uncertainty == 0:
                 return 1
@@ -1188,10 +1059,9 @@ class Analysis(BaseAnalysis):
         return serv.getPrecision(result)
 
     def getAnalyst(self):
-        """ Returns the identifier of the assigned analyst. If there is
-            no analyst assigned, and this analysis is attached to a
-            worksheet, retrieves the analyst assigned to the parent
-            worksheet
+        """Returns the identifier of the assigned analyst. If there is no  
+        analyst assigned, and this analysis is attached to a worksheet, 
+        retrieves the analyst assigned to the parent worksheet
         """
         field = self.getField('Analyst')
         analyst = field and field.get(self) or ''
@@ -1204,19 +1074,19 @@ class Analysis(BaseAnalysis):
         return analyst if analyst else ''
 
     def getAnalystName(self):
-        """ Returns the name of the currently assigned analyst
+        """Returns the name of the currently assigned analyst
         """
-        mtool = getToolByName(self, 'portal_membership')
+        mtool = get_tool('portal_membership')
         analyst = self.getAnalyst().strip()
         analyst_member = mtool.getMemberById(analyst)
-        if analyst_member != None:
+        if analyst_member:
             return analyst_member.getProperty('fullname')
         return ''
 
     def setReflexAnalysisOf(self, analysis):
-        """ Sets the analysis that has been reflexed in order to create this
+        """Sets the analysis that has been reflexed in order to create this
         one, but if the analysis is the same as self, do nothing.
-        :analysis: an analysis object or UID
+        :param analysis: an analysis object or UID
         """
         if analysis.UID() == self.UID():
             pass
@@ -1224,24 +1094,23 @@ class Analysis(BaseAnalysis):
             self.Schema().getField('ReflexAnalysisOf').set(self, analysis)
 
     def addReflexRuleActionsTriggered(self, text):
-        """
-        This function adds a new item to the string field
-        ReflexRuleActionsTriggered.
-        From the field: Reflex rule triggered actions from which the current
-        analysis is responsible of. Separated by '|'
-        :text: is na str object with the format '<UID>.<rulename>' -> '123354.1'
+        """This function adds a new item to the string field 
+        ReflexRuleActionsTriggered. From the field: Reflex rule triggered 
+        actions from which the current analysis is responsible of. Separated 
+        by '|'
+        :param text: is a str object with the format '<UID>.<rulename>' -> 
+        '123354.1'
         """
         old = self.getReflexRuleActionsTriggered()
         self.setReflexRuleActionsTriggered(old + text + '|')
 
     def isVerifiable(self):
-        """
-        Checks it the current analysis can be verified. This is, its not a
+        """Checks it the current analysis can be verified. This is, its not a
         cancelled analysis and has no dependenant analyses not yet verified
-        :returns: True or False
+        :return: True or False
         """
         # Check if the analysis is active
-        workflow = getToolByName(self, "portal_workflow")
+        workflow = get_tool("portal_workflow")
         objstate = workflow.getInfoFor(self, 'cancellation_state', 'active')
         if objstate == "cancelled":
             return False
@@ -1272,11 +1141,11 @@ class Analysis(BaseAnalysis):
         function only returns if the user can verify the analysis, but not if
         the analysis is ready to be verified (see isVerifiable)
         :member: user to be tested
-        :returns: true or false
+        :return: true or false
         """
         # Check if the user has "Bika: Verify" privileges
         username = member.getUserName()
-        allowed = api.user.has_permission(VerifyPermission, username=username)
+        allowed = has_permission(VerifyPermission, username=username)
         if not allowed:
             return False
 
@@ -1289,54 +1158,55 @@ class Analysis(BaseAnalysis):
         if self_submitted and not selfverification:
             return False
 
-        #Checking verifiability depending on multi-verification type of bika_setup
-        if self.bika_setup.getNumberOfRequiredVerifications()>1:
-            mv_type=self.bika_setup.getTypeOfmultiVerification()
-            #If user verified before and self_multi_disabled, then return False
-            if mv_type=='self_multi_disabled' and self.wasVerifiedByUser(username):
+        # Checking verifiability depending on multi-verification type of
+        # bika_setup
+        if self.bika_setup.getNumberOfRequiredVerifications() > 1:
+            mv_type = self.bika_setup.getTypeOfmultiVerification()
+            # If user verified before and self_multi_disabled, then return False
+            if mv_type == 'self_multi_disabled' and self.wasVerifiedByUser(
+                    username):
                 return False
 
-            # If user is the last verificator and consecutively multi-verification
+            # If user is the last verificator and consecutively
+            # multi-verification
             # is disabled, then return False
-            # Comparing was added just to check if this method is called before/after
+            # Comparing was added just to check if this method is called
+            # before/after
             # verification
-            elif mv_type=='self_multi_not_cons' and username==self.getLastVerificator() and \
-                self.getNumberOfVerifications()<self.getNumberOfRequiredVerifications():
+            elif mv_type == 'self_multi_not_cons' and username == \
+                    self.getLastVerificator() and \
+                            self.getNumberOfVerifications() < \
+                            self.getNumberOfRequiredVerifications():
                 return False
 
         # All checks pass
         return True
 
     def getObjectWorkflowStates(self):
-        """
-        This method is used as a metacolumn.
+        """This method is used to populate catalog values
         Returns a dictionary with the workflow id as key and workflow state as
         value.
-        :returns: {'review_state':'active',...}
+        :return: {'review_state':'active',...}
         """
-        workflow = getToolByName(self, 'portal_workflow')
+        workflow = get_tool('portal_workflow')
         states = {}
         for w in workflow.getWorkflowsFor(self):
             state = w._getWorkflowStateOf(self).id
             states[w.state_var] = state
         return states
 
-    # TODO:This function is doesn't work in the correct way.
     def getAnalysisRequestUID(self):
-        """
-        This is a column.
+        """This method is used to populate catalog values
         """
         return self.aq_parent.UID()
 
     def getBatchUID(self):
-        """
-        This is an index
+        """This method is used to populate catalog values
         """
         return self.aq_parent.getBatchUID()
 
     def getSampleConditionUID(self):
-        """
-        This is an index
+        """This method is used to populate catalog values
         """
         sample_cond = self.getSample().getSampleCondition()
         if sample_cond:
@@ -1344,8 +1214,7 @@ class Analysis(BaseAnalysis):
         return ''
 
     def getAnalysisRequestPrintStatus(self):
-        """
-        This is an index
+        """This method is used to populate catalog values
         """
         return self.aq_parent.getPrinted()
 
@@ -1353,9 +1222,9 @@ class Analysis(BaseAnalysis):
         """
         Returns the identifier of the user who submitted the result if the
         state of the current analysis is "to_be_verified" or "verified"
-        :returns: the user_id of the user who did the last submission of result
+        :return: the user_id of the user who did the last submission of result
         """
-        workflow = getToolByName(self, "portal_workflow")
+        workflow = get_tool("portal_workflow")
         try:
             review_history = workflow.getInfoFor(self, "review_history")
             review_history = self.reverseList(review_history)
@@ -1367,11 +1236,10 @@ class Analysis(BaseAnalysis):
             return ''
 
     def getDateSubmitted(self):
+        """Returns the time the result was submitted.
+        :return: a DateTime object.
         """
-        Returns the time the result was submitted.
-        :returns: a DateTime object.
-        """
-        workflow = getToolByName(self, "portal_workflow")
+        workflow = get_tool("portal_workflow")
         try:
             review_history = workflow.getInfoFor(self, "review_history")
             review_history = self.reverseList(review_history)
@@ -1383,15 +1251,13 @@ class Analysis(BaseAnalysis):
             return ''
 
     def getParentUID(self):
-        """
-        This works as a metacolumn
+        """This method is used to populate catalog values
         This function returns the analysis' parent UID
         """
         return self.aq_parent.UID()
 
     def getWorksheetUID(self):
-        """
-        This is an index
+        """This method is used to populate catalog values
         """
         worksheet = self.getBackReferences("WorksheetAnalysis")
         if worksheet and len(worksheet) > 1:
@@ -1403,24 +1269,89 @@ class Analysis(BaseAnalysis):
             return worksheet[0].UID()
         return ''
 
-    def getParentURL(self):
+    def getRequestID(self):
+        """Used to populate catalog values.
         """
-        This works as a metacolumn
+        ar = self.aq_parent
+        if ar:
+            return ar.getRequestID()
+
+    def getParentURL(self):
+        """This method is used to populate catalog values
         This function returns the analysis' parent URL
         """
         return self.aq_parent.absolute_url_path()
 
+    def getClientUID(self):
+        """Used to populate catalog values.
+        """
+        client = self.aq_parent.getClient()
+        if client:
+            return client.UID()
+
     def getClientTitle(self):
+        """Used to populate catalog values.
         """
-        This works as a column
-        """
-        return self.aq_parent.aq_parent.Title()
+        client = self.aq_parent.getClient()
+        if client:
+            return client.Title()
 
     def getClientURL(self):
+        """This method is used to populate catalog values
         """
-        This works as a column
+        client = self.aq_parent.getClient()
+        if client:
+            return client.absolute_url_path()
+
+    def getClientOrderNumber(self):
+        """Used to populate catalog values.
         """
-        return self.aq_parent.aq_parent.absolute_url_path()
+        client = self.aq_parent.getClient()
+        if client:
+            return client.getClientOrderNumber()
+
+    # The DateReceived of the sample associated with this Analysis.
+    def getDateReceived(self):
+        """Used to populate catalog values.
+        """
+        sample = self.getSample()
+        if sample:
+            getTransitionDate(self, 'receive')
+
+    def getDateSampled(self):
+        """Used to populate catalog values.
+        """
+        sample = self.getSample()
+        if sample:
+            getTransitionDate(self, 'sample')
+
+    def getInstrumentValid(self):
+        """Used to populate catalog values.
+        """
+        return self.isInstrumentValid()
+
+    def getSample(self):
+        """Return the Sample associated with this Analysis
+        """
+        return self.aq_parent.getSample()
+
+    def getSampleTypeUID(self):
+        """Used to populate catalog values.
+        """
+        sample = self.getSample()
+        if sample:
+            sampletype = sample.getSampleType()
+            if sampletype:
+                return sampletype.UID()
+
+    def getSamplePointUID(self):
+        """Used to populate catalog values.
+        """
+        sample = self.getSample()
+        if sample:
+            samplepoint = sample.getSamplePoint()
+            if samplepoint:
+                return samplepoint.UID()
 
     def getSamplePartitionID(self):
         """
@@ -1433,8 +1364,7 @@ class Analysis(BaseAnalysis):
         return ''
 
     def getMethodURL(self):
-        """
-        It is used as a metacolumn.
+        """This method is used to populate catalog values
         Returns the method url if this analysis has a method assigned
         """
         method = self.getMethod()
@@ -1443,8 +1373,7 @@ class Analysis(BaseAnalysis):
         return ''
 
     def getMethodTitle(self):
-        """
-        It is used as a metacolumn.
+        """This method is used to populate catalog values
         Returns the method title if this analysis has a method assigned
         """
         method = self.getMethod()
@@ -1453,21 +1382,16 @@ class Analysis(BaseAnalysis):
         return ''
 
     def getServiceDefaultInstrumentUID(self):
-        """
-        It is used as a metacolumn.
+        """This method is used to populate catalog values
         Returns the default service's instrument UID
         """
-        service = self.getService()
-        if not service:
-            return None
-        ins = service.getInstrument()
+        ins = self.getInstrument()
         if ins:
             return ins.UID()
         return ''
 
     def getServiceDefaultInstrumentTitle(self):
-        """
-        It is used as a metacolumn.
+        """This method is used to populate catalog values
         Returns the default service's instrument UID
         """
         service = self.getService()
@@ -1479,8 +1403,7 @@ class Analysis(BaseAnalysis):
         return ''
 
     def getServiceDefaultInstrumentURL(self):
-        """
-        It is used as a metacolumn.
+        """This method is used to populate catalog values
         Returns the default service's instrument UID
         """
         service = self.getService()
@@ -1492,118 +1415,17 @@ class Analysis(BaseAnalysis):
         return ''
 
     def hasAttachment(self):
-        """
-        It is used as a metacolumn.
-        Checks if the object has attachments or not.
-        Returns a boolean.
+        """This method is used to populate catalog values
+        Checks if the object has attachments or not. Returns a boolean.
         """
         attachments = self.getAttachment()
         return len(attachments) > 0
 
-    def guard_sample_transition(self):
-        workflow = getToolByName(self, "portal_workflow")
-        if workflow.getInfoFor(self, "cancellation_state", "active") == "cancelled":
-            return False
-        return True
-
-    def guard_retract_transition(self):
-        workflow = getToolByName(self, "portal_workflow")
-        if workflow.getInfoFor(self, "cancellation_state", "active") == "cancelled":
-            return False
-        return True
-
-    def guard_sample_prep_transition(self):
-        sample = self.aq_parent.getSample()
-        return sample.guard_sample_prep_transition()
-
-    def guard_sample_prep_complete_transition(self):
-        sample = self.aq_parent.getSample()
-        return sample.guard_sample_prep_complete_transition()
-
-    def guard_receive_transition(self):
-        workflow = getToolByName(self, "portal_workflow")
-        if workflow.getInfoFor(self, "cancellation_state", "active") == "cancelled":
-            return False
-        return True
-
-    def guard_publish_transition(self):
-        workflow = getToolByName(self, "portal_workflow")
-        if workflow.getInfoFor(self, "cancellation_state", "active") == "cancelled":
-            return False
-        return True
-
-    def guard_import_transition(self):
-        workflow = getToolByName(self, "portal_workflow")
-        if workflow.getInfoFor(self, "cancellation_state", "active") == "cancelled":
-            return False
-        return True
-
-    def guard_attach_transition(self):
-        if self.portal_type in ("Analysis",
-                                "ReferenceAnalysis",
-                                "DuplicateAnalysis"):
-            if not self.getAttachment():
-                service = self.getService()
-                if service.getAttachmentOption() == "r":
-                    return False
-        return True
-
-    def guard_verify_transition(self):
-        """
-        Checks if the verify transition can be performed to the current
-        Analysis by the current user depending on the user roles, as
-        well as the status of the analysis
-        :returns: true or false
-        """
-        mtool = getToolByName(self, "portal_membership")
-        checkPermission = mtool.checkPermission
-        # Check if the analysis is in a "verifiable" state
-        if self.isVerifiable():
-            # Check if the user can verify the analysis
-            member = mtool.getAuthenticatedMember()
-            return self.isUserAllowedToVerify(member)
-        return False
-
-    def guard_assign_transition(self):
-        workflow = getToolByName(self, "portal_workflow")
-        if workflow.getInfoFor(self, 'cancellation_state', 'active') == "cancelled":
-            return False
-        return True
-
-    def guard_unassign_transition(self):
-        """ Check permission against parent worksheet
-        """
-        workflow = getToolByName(self, "portal_workflow")
-        mtool = getToolByName(self, "portal_membership")
-        ws = self.getBackReferences("WorksheetAnalysis")
-        if not ws:
-            return False
-        ws = ws[0]
-        if workflow.getInfoFor(ws, "cancellation_state", "") == "cancelled":
-            return False
-        if mtool.checkPermission(Unassign, ws):
-            return True
-        return False
-
-    def workflow_script_receive(self):
-        workflow = getToolByName(self, "portal_workflow")
-        if workflow.getInfoFor(self, 'cancellation_state', 'active') == "cancelled":
-            return False
-        # DuplicateAnalysis doesn't have analysis_workflow.
-        if self.portal_type == "DuplicateAnalysis":
-            return
-        if skip(self, "receive"):
-            return
-        self.updateDueDate()
-        self.reindexObject()
-
     def _reflex_rule_process(self, wf_action):
+        """This function does all the reflex rule process.
+        :param wf_action: is a string containing the workflow action triggered
         """
-        This function does all the reflex rule process.
-        :wf_action: is a variable containing a string with the workflow
-        action triggered
-        """
-        workflow = getToolByName(self, 'portal_workflow')
+        workflow = get_tool('portal_workflow')
         # Check out if the analysis has any reflex rule bound to it.
         # First we have get the analysis' method because the Reflex Rule
         # objects are related to a method.
@@ -1615,9 +1437,9 @@ class Analysis(BaseAnalysis):
             # Once we have all the Reflex Rules with the same method as the
             # analysis has, it is time to get the rules that are bound to the
             # same analysis service that is using the analysis.
-            rrs = []
             for rule in all_rrs:
-                if workflow.getInfoFor(rule, 'inactive_state') == 'inactive':
+                state = workflow.getInfoFor(rule, 'inactive_state')
+                if state == 'inactive':
                     continue
                 # Getting the rules to be done from the reflex rule taking
                 # in consideration the analysis service, the result and
@@ -1627,18 +1449,113 @@ class Analysis(BaseAnalysis):
                 # instructions if the result has the expected result.
                 doReflexRuleAction(self, action_row)
 
-    def workflow_script_submit(self):
-        # DuplicateAnalysis doesn't have analysis_workflow.
-        if self.portal_type == "DuplicateAnalysis":
+    def guard_sample_transition(self):
+        workflow = get_tool("portal_workflow")
+        state = workflow.getInfoFor(self, "cancellation_state", "active")
+        if state == "cancelled":
+            return False
+        return True
+
+    def guard_retract_transition(self):
+        workflow = get_tool("portal_workflow")
+        state = workflow.getInfoFor(self, "cancellation_state", "active")
+        if state == "cancelled":
+            return False
+        return True
+
+    def guard_sample_prep_transition(self):
+        sample = self.getSample()
+        return sample.guard_sample_prep_transition()
+
+    def guard_sample_prep_complete_transition(self):
+        sample = self.getSample()
+        return sample.guard_sample_prep_complete_transition()
+
+    def guard_receive_transition(self):
+        workflow = get_tool("portal_workflow")
+        state = workflow.getInfoFor(self, "cancellation_state", "active")
+        if state == "cancelled":
+            return False
+        return True
+
+    def guard_publish_transition(self):
+        workflow = get_tool("portal_workflow")
+        state = workflow.getInfoFor(self, "cancellation_state", "active")
+        if state == "cancelled":
+            return False
+        return True
+
+    def guard_import_transition(self):
+        workflow = get_tool("portal_workflow")
+        state = workflow.getInfoFor(self, "cancellation_state", "active")
+        if state == "cancelled":
+            return False
+        return True
+
+    def guard_attach_transition(self):
+        if not self.getAttachment():
+            service = self.getService()
+            if service.getAttachmentOption() == "r":
+                return False
+        return True
+
+    def guard_verify_transition(self):
+        """Checks if the verify transition can be performed to the current 
+        Analysis by the current user depending on the user roles, as well as 
+        the status of the analysis
+        :return: Boolean
+        """
+        mtool = get_tool("portal_membership")
+        # Check if the analysis is in a "verifiable" state
+        if self.isVerifiable():
+            # Check if the user can verify the analysis
+            member = mtool.getAuthenticatedMember()
+            return self.isUserAllowedToVerify(member)
+        return False
+
+    def guard_assign_transition(self):
+        workflow = get_tool("portal_workflow")
+        state = workflow.getInfoFor(self, 'cancellation_state', 'active')
+        if state == "cancelled":
+            return False
+        return True
+
+    def guard_unassign_transition(self):
+        """Check permission against parent worksheet
+        """
+        workflow = get_tool("portal_workflow")
+        mtool = get_tool("portal_membership")
+        ws = self.getBackReferences("WorksheetAnalysis")
+        if not ws:
+            return False
+        ws = ws[0]
+        state = workflow.getInfoFor(ws, "cancellation_state", "")
+        if state == "cancelled":
+            return False
+        if mtool.checkPermission(Unassign, ws):
+            return True
+        return False
+
+    def workflow_script_receive(self):
+        if skip(self, "receive"):
             return
+        workflow = get_tool("portal_workflow")
+        state = workflow.getInfoFor(self, 'cancellation_state', 'active')
+        if state == "cancelled":
+            return False
+        self.updateDueDate()
+        self.reindexObject()
+
+    def workflow_script_submit(self):
         if skip(self, "submit"):
             return
-        workflow = getToolByName(self, "portal_workflow")
-        if workflow.getInfoFor(self, 'cancellation_state', 'active') == "cancelled":
+        workflow = get_tool("portal_workflow")
+        state = workflow.getInfoFor(self, 'cancellation_state', 'active')
+        if state == "cancelled":
             return False
         ar = self.aq_parent
         # Dependencies are submitted already, ignore them.
-        #-------------------------------------------------
+        # -------------------------------------------------
         # Submit our dependents
         # Need to check for result and status of dependencies first
         dependents = self.getDependents()
@@ -1658,9 +1575,9 @@ class Analysis(BaseAnalysis):
                 if can_submit:
                     dependencies = dependent.getDependencies()
                     for dependency in dependencies:
-                        if workflow.getInfoFor(dependency, "review_state") in \
-                           ("to_be_sampled", "to_be_preserved",
-                            "sample_due", "sample_received",):
+                        state = workflow.getInfoFor(dependency, "review_state")
+                        if state in ("to_be_sampled", "to_be_preserved",
+                                     "sample_due", "sample_received"):
                             can_submit = False
                 if can_submit:
                     workflow.doActionFor(dependent, "submit")
@@ -1671,27 +1588,27 @@ class Analysis(BaseAnalysis):
         if not skip(ar, "submit", peek=True):
             all_submitted = True
             for a in ar.getAnalyses():
-                if a.review_state in \
-                   ("to_be_sampled", "to_be_preserved",
-                    "sample_due", "sample_received",):
+                if a.review_state in ("to_be_sampled", "to_be_preserved",
+                                      "sample_due", "sample_received"):
                     all_submitted = False
                     break
             if all_submitted:
                 workflow.doActionFor(ar, "submit")
 
-        # If assigned to a worksheet and all analyses on the worksheet have been submitted,
+        # If assigned to a worksheet and all analyses on the worksheet have
+        # been submitted,
         # then submit the worksheet.
         ws = self.getBackReferences("WorksheetAnalysis")
         if ws:
             ws = ws[0]
-            # if the worksheet analyst is not assigned, the worksheet can't  be transitioned.
+            # if the worksheet analyst is not assigned, the worksheet can't
+            # be transitioned.
             if ws.getAnalyst() and not skip(ws, "submit", peek=True):
                 all_submitted = True
                 for a in ws.getAnalyses():
                     if workflow.getInfoFor(a, "review_state") in \
-                       ("to_be_sampled", "to_be_preserved",
-                        "sample_due", "sample_received", "assigned",):
-                        # Note: referenceanalyses and duplicateanalyses can still have review_state = "assigned".
+                            ("to_be_sampled", "to_be_preserved",
+                             "sample_due", "sample_received", "assigned",):
                         all_submitted = False
                         break
                 if all_submitted:
@@ -1707,8 +1624,8 @@ class Analysis(BaseAnalysis):
             dependencies = self.getDependencies()
             for dependency in dependencies:
                 if workflow.getInfoFor(dependency, "review_state") in \
-                   ("to_be_sampled", "to_be_preserved", "sample_due",
-                    "sample_received", "attachment_due",):
+                        ("to_be_sampled", "to_be_preserved", "sample_due",
+                         "sample_received", "attachment_due",):
                     can_attach = False
         if can_attach:
             try:
@@ -1720,79 +1637,62 @@ class Analysis(BaseAnalysis):
         self.reindexObject()
 
     def workflow_script_retract(self):
-        # DuplicateAnalysis doesn't have analysis_workflow.
-        if self.portal_type == "DuplicateAnalysis":
-            return
         if skip(self, "retract"):
             return
         ar = self.aq_parent
-        workflow = getToolByName(self, "portal_workflow")
-        if workflow.getInfoFor(self, 'cancellation_state', 'active') == "cancelled":
+        workflow = get_tool("portal_workflow")
+        state = workflow.getInfoFor(self, 'cancellation_state', 'active')
+        if state == "cancelled":
             return False
-        # We'll assign the new analysis to this same worksheet, if any.
-        ws = self.getBackReferences("WorksheetAnalysis")
-        if ws:
-            ws = ws[0]
         # Rename the analysis to make way for it's successor.
         # Support multiple retractions by renaming to *-0, *-1, etc
         parent = self.aq_parent
         kw = self.getKeyword()
         analyses = [x for x in parent.objectValues("Analysis")
                     if x.getId().startswith(self.getId())]
-        # LIMS-1290 - Analyst must be able to retract, which creates a new Analysis.
-        parent._verifyObjectPaste = str   # I cancel the permission check with this.
+        # LIMS-1290 - Analyst must be able to retract, which creates a new
+        # Analysis.  So, _verifyObjectPaste permission check must be cancelled:
+        parent._verifyObjectPaste = str
         parent.manage_renameObject(kw, "{0}-{1}".format(kw, len(analyses)))
         delattr(parent, '_verifyObjectPaste')
-        # Create new analysis and copy values from retracted
-        analysis = _createObjectByType("Analysis", parent, kw)
-        analysis.edit(
-            Service=self.getService(),
-            Calculation=self.getCalculation(),
-            InterimFields=self.getInterimFields(),
-            ResultDM=self.getResultDM(),
-            Retested=True,  # True
-            MaxTimeAllowed=self.getMaxTimeAllowed(),
-            DueDate=self.getDueDate(),
-            Duration=self.getDuration(),
-            ReportDryMatter=self.getReportDryMatter(),
-            Analyst=self.getAnalyst(),
-            Instrument=self.getInstrument(),
-            SamplePartition=self.getSamplePartition())
-        analysis.setDetectionLimitOperand(self.getDetectionLimitOperand())
-        analysis.setResult(self.getResult())
-        # Required number of verifications
-        reqvers = self.getNumberOfRequiredVerifications()
-        analysis.setNumberOfRequiredVerifications(reqvers)
-        analysis.unmarkCreationFlag()
-
-        # zope.event.notify(ObjectInitializedEvent(analysis))
-        changeWorkflowState(analysis,
-                            "bika_analysis_workflow", "sample_received")
+        # Create new analysis from the retracted self
+        analysis = create_analysis(parent, self)
+        changeWorkflowState(
+            analysis, "bika_analysis_workflow", "sample_received")
+        # We'll assign the new analysis to this same worksheet, if any.
+        ws = self.getBackReferences("WorksheetAnalysis")
         if ws:
+            ws = ws[0]
             ws.addAnalysis(analysis)
         analysis.reindexObject()
         # retract our dependencies
-        if not "retract all dependencies" in self.REQUEST["workflow_skiplist"]:
+        if "retract all dependencies" not in self.REQUEST["workflow_skiplist"]:
             for dependency in self.getDependencies():
                 if not skip(dependency, "retract", peek=True):
-                    if workflow.getInfoFor(dependency, "review_state") in ("attachment_due", "to_be_verified",):
+                    state = workflow.getInfoFor(dependency, "review_state")
+                    if state in ("attachment_due", "to_be_verified",):
                         # (NB: don"t retract if it"s verified)
                         workflow.doActionFor(dependency, "retract")
         # Retract our dependents
         for dep in self.getDependents():
             if not skip(dep, "retract", peek=True):
-                if workflow.getInfoFor(dep, "review_state") not in ("sample_received", "retracted"):
-                    self.REQUEST["workflow_skiplist"].append("retract all dependencies")
+                state = workflow.getInfoFor(dep, "review_state")
+                if state not in ("sample_received", "retracted"):
+                    self.REQUEST["workflow_skiplist"].append(
+                        "retract all dependencies")
                     # just return to "received" state, no cascade
                     workflow.doActionFor(dep, 'retract')
-                    self.REQUEST["workflow_skiplist"].remove("retract all dependencies")
+                    self.REQUEST["workflow_skiplist"].remove(
+                        "retract all dependencies")
         # Escalate action to the parent AR
         if not skip(ar, "retract", peek=True):
             if workflow.getInfoFor(ar, "review_state") == "sample_received":
                 skip(ar, "retract")
             else:
-                if not "retract all analyses" in self.REQUEST["workflow_skiplist"]:
-                    self.REQUEST["workflow_skiplist"].append("retract all analyses")
+                if "retract all analyses" \
+                        not in self.REQUEST["workflow_skiplist"]:
+                    self.REQUEST["workflow_skiplist"].append(
+                        "retract all analyses")
                 workflow.doActionFor(ar, "retract")
         # Escalate action to the Worksheet (if it's on one).
         ws = self.getBackReferences("WorksheetAnalysis")
@@ -1802,8 +1702,10 @@ class Analysis(BaseAnalysis):
                 if workflow.getInfoFor(ws, "review_state") == "open":
                     skip(ws, "retract")
                 else:
-                    if not "retract all analyses" in self.REQUEST['workflow_skiplist']:
-                        self.REQUEST["workflow_skiplist"].append("retract all analyses")
+                    if "retract all analyses" \
+                            not in self.REQUEST['workflow_skiplist']:
+                        self.REQUEST["workflow_skiplist"].append(
+                            "retract all analyses")
                     try:
                         workflow.doActionFor(ws, "retract")
                     except WorkflowException:
@@ -1825,30 +1727,30 @@ class Analysis(BaseAnalysis):
         self.reindexObject()
 
     def workflow_script_verify(self):
-        # DuplicateAnalysis doesn't have analysis_workflow.
-        if self.portal_type == "DuplicateAnalysis":
-            return
         if skip(self, "verify"):
             return
-        workflow = getToolByName(self, "portal_workflow")
-        if workflow.getInfoFor(self, 'cancellation_state', 'active') == "cancelled":
+        workflow = get_tool("portal_workflow")
+        state = workflow.getInfoFor(self, 'cancellation_state', 'active')
+        if state == "cancelled":
             return False
         # Do all the reflex rules process
         self._reflex_rule_process('verify')
-        # If all analyses in this AR are verified
-        # escalate the action to the parent AR
+        # If all analyses in this AR are verified escalate the action to the
+        # parent AR
         ar = self.aq_parent
         if not skip(ar, "verify", peek=True):
             all_verified = True
             for a in ar.getAnalyses():
-                if a.review_state in \
-                   ("to_be_sampled", "to_be_preserved", "sample_due",
-                    "sample_received", "attachment_due", "to_be_verified"):
+                if a.review_state in ("to_be_sampled", "to_be_preserved",
+                                      "sample_due", "sample_received",
+                                      "attachment_due", "to_be_verified"):
                     all_verified = False
                     break
             if all_verified:
-                if not "verify all analyses" in self.REQUEST['workflow_skiplist']:
-                    self.REQUEST["workflow_skiplist"].append("verify all analyses")
+                if "verify all analyses" \
+                        not in self.REQUEST['workflow_skiplist']:
+                    self.REQUEST["workflow_skiplist"].append(
+                        "verify all analyses")
                 workflow.doActionFor(ar, "verify")
         # If this is on a worksheet and all it's other analyses are verified,
         # then verify the worksheet.
@@ -1856,32 +1758,32 @@ class Analysis(BaseAnalysis):
         if ws:
             ws = ws[0]
             ws_state = workflow.getInfoFor(ws, "review_state")
-            if ws_state == "to_be_verified" and not skip(ws, "verify", peek=True):
+            if ws_state == "to_be_verified" and not skip(ws, "verify",
+                                                         peek=True):
                 all_verified = True
                 for a in ws.getAnalyses():
-                    if workflow.getInfoFor(a, "review_state") in \
-                       ("to_be_sampled", "to_be_preserved", "sample_due",
-                        "sample_received", "attachment_due", "to_be_verified",
-                        "assigned"):
-                        # Note: referenceanalyses and duplicateanalyses can
-                        # still have review_state = "assigned".
+                    state = workflow.getInfoFor(a, "review_state")
+                    if state in ("to_be_sampled", "to_be_preserved",
+                                 "sample_due", "sample_received",
+                                 "attachment_due", "to_be_verified",
+                                 "assigned"):
                         all_verified = False
                         break
                 if all_verified:
-                    if not "verify all analyses" in self.REQUEST['workflow_skiplist']:
-                        self.REQUEST["workflow_skiplist"].append("verify all analyses")
+                    if "verify all analyses" \
+                            not in self.REQUEST['workflow_skiplist']:
+                        self.REQUEST["workflow_skiplist"].append(
+                            "verify all analyses")
                     workflow.doActionFor(ws, "verify")
         self.reindexObject()
 
     def workflow_script_publish(self):
-        workflow = getToolByName(self, "portal_workflow")
-        if workflow.getInfoFor(self, 'cancellation_state', 'active') == "cancelled":
-            return False
-        # DuplicateAnalysis doesn't have analysis_workflow.
-        if self.portal_type == "DuplicateAnalysis":
-            return
         if skip(self, "publish"):
             return
+        workflow = get_tool("portal_workflow")
+        state = workflow.getInfoFor(self, 'cancellation_state', 'active')
+        if state == "cancelled":
+            return False
         endtime = DateTime()
         self.setDateAnalysisPublished(endtime)
         starttime = self.aq_parent.getDateReceived()
@@ -1906,63 +1808,58 @@ class Analysis(BaseAnalysis):
     def workflow_script_cancel(self):
         if skip(self, "cancel"):
             return
-        # DuplicateAnalysis doesn't have analysis_workflow.
-        if self.portal_type == "DuplicateAnalysis":
-            return
-        workflow = getToolByName(self, "portal_workflow")
+        workflow = get_tool("portal_workflow")
         # If it is assigned to a worksheet, unassign it.
-        if workflow.getInfoFor(self, 'worksheetanalysis_review_state') == 'assigned':
+        state = workflow.getInfoFor(self, 'worksheetanalysis_review_state')
+        if state == 'assigned':
             ws = self.getBackReferences("WorksheetAnalysis")[0]
             skip(self, "cancel", unskip=True)
             ws.removeAnalysis(self)
         self.reindexObject()
 
     def workflow_script_reject(self):
-        # DuplicateAnalysis doesn't have analysis_workflow.
-        if self.portal_type == "DuplicateAnalysis":
+        if skip(self, "reject"):
             return
-        workflow = getToolByName(self, "portal_workflow")
+        workflow = get_tool("portal_workflow")
         # If it is assigned to a worksheet, unassign it.
-        if workflow.getInfoFor(self, 'worksheetanalysis_review_state') ==\
-                'assigned':
+        state = workflow.getInfoFor(self, 'worksheetanalysis_review_state')
+        if state == 'assigned':
             ws = self.getBackReferences("WorksheetAnalysis")[0]
             ws.removeAnalysis(self)
         self.reindexObject()
 
     def workflow_script_attach(self):
-        # DuplicateAnalysis doesn't have analysis_workflow.
-        if self.portal_type == "DuplicateAnalysis":
-            return
         if skip(self, "attach"):
             return
-        workflow = getToolByName(self, "portal_workflow")
-        # If all analyses in this AR have been attached
-        # escalate the action to the parent AR
+        workflow = get_tool("portal_workflow")
+        # If all analyses in this AR have been attached escalate the action
+        # to the parent AR
         ar = self.aq_parent
-        ar_state = workflow.getInfoFor(ar, "review_state")
-        if ar_state == "attachment_due" and not skip(ar, "attach", peek=True):
+        state = workflow.getInfoFor(ar, "review_state")
+        if state == "attachment_due" and not skip(ar, "attach", peek=True):
             can_attach = True
             for a in ar.getAnalyses():
-                if a.review_state in \
-                   ("to_be_sampled", "to_be_preserved",
-                    "sample_due", "sample_received", "attachment_due",):
+                if a.review_state in ("to_be_sampled", "to_be_preserved",
+                                      "sample_due", "sample_received",
+                                      "attachment_due"):
                     can_attach = False
                     break
             if can_attach:
                 workflow.doActionFor(ar, "attach")
-        # If assigned to a worksheet and all analyses on the worksheet have been attached,
-        # then attach the worksheet.
+        # If assigned to a worksheet and all analyses on the worksheet have
+        # been attached, then attach the worksheet.
         ws = self.getBackReferences('WorksheetAnalysis')
         if ws:
             ws = ws[0]
             ws_state = workflow.getInfoFor(ws, "review_state")
-            if ws_state == "attachment_due" and not skip(ws, "attach", peek=True):
+            if ws_state == "attachment_due" \
+                    and not skip(ws, "attach", peek=True):
                 can_attach = True
                 for a in ws.getAnalyses():
-                    if workflow.getInfoFor(a, "review_state") in \
-                       ("to_be_sampled", "to_be_preserved", "sample_due",
-                        "sample_received", "attachment_due", "assigned",):
-                        # Note: referenceanalyses and duplicateanalyses can still have review_state = "assigned".
+                    state = workflow.getInfoFor(a, "review_state")
+                    if state in ("to_be_sampled", "to_be_preserved",
+                                 "sample_due", "sample_received",
+                                 "attachment_due", "assigned"):
                         can_attach = False
                         break
                 if can_attach:
@@ -1970,15 +1867,11 @@ class Analysis(BaseAnalysis):
         self.reindexObject()
 
     def workflow_script_assign(self):
-        # DuplicateAnalysis doesn't have analysis_workflow.
-        if self.portal_type == "DuplicateAnalysis":
-            return
         if skip(self, "assign"):
             return
-        workflow = getToolByName(self, "portal_workflow")
-        rc = getToolByName(self, REFERENCE_CATALOG)
-        wsUID = self.REQUEST["context_uid"]
-        ws = rc.lookupObject(wsUID)
+        workflow = get_tool("portal_workflow")
+        uc = get_tool("uid_catalog")
+        ws = uc(UID=self.REQUEST["context_uid"])[0].getObject()
         # retract the worksheet to 'open'
         ws_state = workflow.getInfoFor(ws, "review_state")
         if ws_state != "open":
@@ -1986,36 +1879,37 @@ class Analysis(BaseAnalysis):
                 self.REQUEST["workflow_skiplist"] = ["retract all analyses", ]
             else:
                 self.REQUEST["workflow_skiplist"].append("retract all analyses")
-            allowed_transitions = [t["id"] for t in workflow.getTransitionsFor(ws)]
+            allowed_transitions = \
+                [t["id"] for t in workflow.getTransitionsFor(ws)]
             if "retract" in allowed_transitions:
                 workflow.doActionFor(ws, "retract")
         # If all analyses in this AR have been assigned,
         # escalate the action to the parent AR
         if not skip(self, "assign", peek=True):
-            if not self.getAnalyses(worksheetanalysis_review_state="unassigned"):
+            if not self.getAnalyses(
+                    worksheetanalysis_review_state="unassigned"):
                 try:
-                    allowed_transitions = [t["id"] for t in workflow.getTransitionsFor(self)]
+                    allowed_transitions = \
+                        [t["id"] for t in workflow.getTransitionsFor(self)]
                     if "assign" in allowed_transitions:
                         workflow.doActionFor(self, "assign")
-                except:
+                except WorkflowException:
                     logger.error(
                         "assign action failed for analysis %s" % self.getId())
         self.reindexObject()
 
     def workflow_script_unassign(self):
-        # DuplicateAnalysis doesn't have analysis_workflow.
-        if self.portal_type == "DuplicateAnalysis":
-            return
         if skip(self, "unassign"):
             return
-        workflow = getToolByName(self, "portal_workflow")
-        rc = getToolByName(self, REFERENCE_CATALOG)
-        wsUID = self.REQUEST["context_uid"]
-        ws = rc.lookupObject(wsUID)
+        workflow = get_tool("portal_workflow")
+        uc = get_tool("uid_catalog")
+        ws = uc(UID=self.REQUEST["context_uid"])[0].getObject()
         # Escalate the action to the parent AR if it is assigned
         # Note: AR adds itself to the skiplist so we have to take it off again
-        #       to allow multiple promotions/demotions (maybe by more than one instance).
-        if workflow.getInfoFor(self, "worksheetanalysis_review_state") == "assigned":
+        #       to allow multiple promotions/demotions (maybe by more than
+        #       one instance).
+        state = workflow.getInfoFor(self, "worksheetanalysis_review_state")
+        if state == "assigned":
             workflow.doActionFor(self, "unassign")
             skip(self, "unassign", unskip=True)
         # If it has been duplicated on the worksheet, delete the duplicates.
@@ -2023,9 +1917,8 @@ class Analysis(BaseAnalysis):
         for dup in dups:
             ws.removeAnalysis(dup)
         # May need to promote the Worksheet's review_state
-        #  if all other analyses are at a higher state than this one was.
+        # if all other analyses are at a higher state than this one was.
         # (or maybe retract it if there are no analyses left)
-        # Note: duplicates, controls and blanks have 'assigned' as a review_state.
         can_submit = True
         can_attach = True
         can_verify = True
@@ -2033,31 +1926,33 @@ class Analysis(BaseAnalysis):
         for a in ws.getAnalyses():
             ws_empty = False
             a_state = workflow.getInfoFor(a, "review_state")
-            if a_state in \
-               ("to_be_sampled", "to_be_preserved", "assigned",
-                "sample_due", "sample_received",):
+            if a_state in ("to_be_sampled", "to_be_preserved", "assigned",
+                           "sample_due", "sample_received"):
                 can_submit = False
             else:
                 if not ws.getAnalyst():
                     can_submit = False
-            if a_state in \
-               ("to_be_sampled", "to_be_preserved", "assigned",
-                "sample_due", "sample_received", "attachment_due",):
+            if a_state in ("to_be_sampled", "to_be_preserved", "assigned",
+                           "sample_due", "sample_received", "attachment_due"):
                 can_attach = False
-            if a_state in \
-               ("to_be_sampled", "to_be_preserved", "assigned", "sample_due",
-                "sample_received", "attachment_due", "to_be_verified",):
+            if a_state in ("to_be_sampled", "to_be_preserved", "assigned",
+                           "sample_due", "sample_received", "attachment_due",
+                           "to_be_verified"):
                 can_verify = False
         if not ws_empty:
-        # Note: WS adds itself to the skiplist so we have to take it off again
-        #       to allow multiple promotions (maybe by more than one instance).
-            if can_submit and workflow.getInfoFor(ws, "review_state") == "open":
+            # Note: WS adds itself to the skiplist so we have to take it
+            # off again to allow multiple promotions (maybe by more than
+            # one instance).
+            state = workflow.getInfoFor(ws, "review_state")
+            if can_submit and state == "open":
                 workflow.doActionFor(ws, "submit")
                 skip(ws, 'unassign', unskip=True)
-            if can_attach and workflow.getInfoFor(ws, "review_state") == "attachment_due":
+            state = workflow.getInfoFor(ws, "review_state")
+            if can_attach and state == "attachment_due":
                 workflow.doActionFor(ws, "attach")
                 skip(ws, 'unassign', unskip=True)
-            if can_verify and workflow.getInfoFor(ws, "review_state") == "to_be_verified":
+            state = workflow.getInfoFor(ws, "review_state")
+            if can_verify and state == "to_be_verified":
                 self.REQUEST['workflow_skiplist'].append("verify all analyses")
                 workflow.doActionFor(ws, "verify")
                 skip(ws, 'unassign', unskip=True)
