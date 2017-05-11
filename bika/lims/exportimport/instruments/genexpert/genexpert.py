@@ -105,7 +105,8 @@ RESULT_VALUE_POSITIVE = 3
 class GenExpertParser(InstrumentCSVResultsFileParser):
 
     def __init__(self, infile):
-        InstrumentCSVResultsFileParser.__init__(self, infile)
+        InstrumentCSVResultsFileParser.__init__(self, infile,
+                                                encoding='utf-16-le')
         self._cur_section = ''  # Current section of CSV
         self._cur_sub_section = ''  # Current subsection of CSV
         self._cur_res_id = ''  # Sample or Patient ID of the current record
