@@ -205,3 +205,21 @@ class Sticker(BrowserView):
         req_items = req_items if req_items else self.context.getId()
         req = '%s?items=%s' % (self.request.URL, req_items)
         return req
+
+    def getClientFromCurrentItem(self):
+        """
+        This function tries to return the client from the current item.
+        :returns: A client object or None.
+        :rtype: ATContentType/NoneType
+        """
+        # 'current' will be an array such as [None, sample, sample_partition-1]
+        current = self.current_item
+        # Since the second item in the array is always a sample or reference
+        # sample, we can start getting it in order to get the client.
+        sample = current[1]
+        ars = sample.getAnalysisRequests()
+        if not ars:
+            return None
+        # Getting the real client object
+        client = ars[0].aq_parent.aq_inner
+        return client
