@@ -97,6 +97,9 @@ def Import(context, request):
 SEPARATOR = ','
 SECTION_RESULT_TABLE = 'RESULT TABLE'
 SUBSECTION_ANALYTE_RESULT = 'Analyte Result'
+RESULT_VALUE_INDETERMINE = 1
+RESULT_VALUE_NEGATIVE = 2
+RESULT_VALUE_POSITIVE = 3
 
 
 class GenExpertParser(InstrumentCSVResultsFileParser):
@@ -109,6 +112,7 @@ class GenExpertParser(InstrumentCSVResultsFileParser):
         self._cur_values = {}  # Values of the last record
         self._is_header_line = False  # To get headers of Analyte Result table
         self._columns = []  # Column names of Analyte Result table
+        self._keyword = ''  # Keyword of Analysis Service
 
     def _parseline(self, line):
         """
@@ -126,9 +130,13 @@ class GenExpertParser(InstrumentCSVResultsFileParser):
         # from the RESULT TABLE section.
         elif not self._cur_section == SECTION_RESULT_TABLE:
             return 0
-        # If line start with Sample ID, then it is res_id of current record.
+        # If line starts with 'Sample ID', then it is res_id of current record.
         elif sline[0].lower() == 'Sample ID'.lower():
             self._cur_res_id = sline[1].strip()
+            return 0
+        # If line starts with 'Assay' column,it is keyword of Analysis Service.
+        elif sline[0].lower() == 'Assay'.lower():
+            self._keyword = self._format_keyword(sline[1])
             return 0
         # Results are in Analyte Result subsection. We can skip other lines.
         elif not self._cur_sub_section == SUBSECTION_ANALYTE_RESULT:
@@ -149,20 +157,21 @@ class GenExpertParser(InstrumentCSVResultsFileParser):
         """
         # All characters UPPER CASE means it is a Section.
         if sline[0].isupper():
-            self._cur_section == sline[0]
-            if sline[0] == SECTION_RESULT_TABLE:
-                # We are going to go through new results table. Add the last
-                # record as a raw result and reset everything.
-                self._addRawResult(self._cur_res_id, self._cur_values)
-                self._reset()
+            self._cur_section = sline[0]
+            self._cur_sub_section = ''
             return 0
         else:
-            self._cur_sub_section == sline[0]
+            self._cur_sub_section = sline[0]
             if sline[0] == SUBSECTION_ANALYTE_RESULT:
                 # This is Analyte Result Line, next line will be headers of
                 # results table
                 self._is_header_line = True
-            return 0
+                return 0
+            elif sline[0] in ('Detail', 'Errors', 'Messages'):
+                # It is end of Analyte Result sub-section. Add the last
+                # record as a raw result and reset everything.
+                self._submit_result()
+                return 0
 
     def _handle_result_line(self, sline):
         """
@@ -183,15 +192,22 @@ class GenExpertParser(InstrumentCSVResultsFileParser):
             elif self._columns[idx] == 'Analyte Result':
                 result = self._convert_result(val)
 
-        # Adding line to result values
+        if not self._cur_values.get(self._keyword, None):
+            self._cur_values[self._keyword] = {}
+
+        self._cur_values[self._keyword][name] = result
+
+        # Each line goes to result values as well in case AS'es for each
+        # Analyte is created in Bika. For those kind of AS'es, keywords must be
+        # the same as Analyte Name field from CSV.
         self._cur_values[name] = {
                 'DefaultResult': 'Analyte Result',
                 'Remarks': '',
                 'Analyte Result': result,
                 }
 
-        # Maybe not necessary but adding this result to the previous results
-        # in the self._cur_values dictionary.
+        # Adding this result to the previous results
+        # in the self._cur_values dictionary, as an interim field.
         for key in self._cur_values:
             if key == name:
                 continue
@@ -199,22 +215,44 @@ class GenExpertParser(InstrumentCSVResultsFileParser):
 
         return 0
 
+    def _submit_result(self):
+        """
+        Adding current values as a Raw Result and Resetting everything.
+        """
+        if self._cur_res_id and self._cur_values:
+            # Setting DefaultResult just because it is obligatory. However,
+            # it won't be used because AS must have a Calculation based on
+            # GP and NP results.
+            self._cur_values[self._keyword]['DefaultResult'] = 'DefResult'
+            self._cur_values[self._keyword]['DefResult'] = ''
+            self._addRawResult(self._cur_res_id, self._cur_values)
+            self._reset()
+
+    def _format_keyword(self, keyword):
+        import re
+        result = ''
+        if keyword:
+            result = re.sub(r"\W", "", keyword)
+        return result
+
     def _convert_result(self, value):
         if not value:
-            return 0
-        elif value.lower() == 'neg':
-            return 2
-        elif value.lower() == 'pass':
-            return 3
+            return RESULT_VALUE_INDETERMINE
+        elif value.upper() == 'NEG':
+            return RESULT_VALUE_NEGATIVE
+        elif value.upper() == 'POS':
+            return RESULT_VALUE_POSITIVE
         else:
-            return 1
+            return RESULT_VALUE_INDETERMINE
 
     def _reset(self):
+        self._cur_section = ''
         self._cur_sub_section = ''
         self._cur_res_id = ''
         self._cur_values = {}
         self._is_header_line = False
         self._columns = []
+        self._keyword = ''
 
 
 class GenExpertImporter(AnalysisResultsImporter):
