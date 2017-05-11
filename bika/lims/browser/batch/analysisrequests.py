@@ -25,7 +25,11 @@ class AnalysisRequestsView(_ARV, _ARAV):
         super(AnalysisRequestsView, self).__init__(context, request)
 
     def contentsMethod(self, contentFilter):
-        return self.context.getAnalysisRequests(**contentFilter)
+        """
+        Using batch's 'getAnalysisRequests' method in order to get the
+        analysisrequests assigned to it.
+        """
+        return self.context.getAnalysisRequestsBrains(**contentFilter)
 
     def __call__(self):
         self.context_actions = {}
