@@ -321,6 +321,8 @@ class AnalysesView(BikaListingView):
         """
         ret = []
         instruments = []
+        if ICatalogBrain.providedBy(analysis):
+            analysis = analysis.getObject()
         if analysis:
             service = analysis.getService()
             if service.getInstrumentEntryOfResults() == False:
@@ -535,7 +537,7 @@ class AnalysesView(BikaListingView):
                 item['Method'] = obj.getMethodUID
                 item['choices']['Method'] = voc
                 item['allow_edit'].append('Method')
-                show_methodinstr_columns = True
+                self.show_methodinstr_columns = True
             elif method:
                 # This should never happen
                 # The analysis has set a method, but its parent
@@ -543,13 +545,13 @@ class AnalysesView(BikaListingView):
                 item['Method'] = obj.getMethodTitle
                 item['replace']['Method'] = "<a href='%s'>%s</a>" % \
                     (obj.getMethodURL, obj.getMethodTitle)
-                show_methodinstr_columns = True
+                self.show_methodinstr_columns = True
         elif obj.getMethodUID:
             # Edition not allowed, but method set
             item['Method'] = obj.getMethodTitle
             item['replace']['Method'] = "<a href='%s'>%s</a>" % \
                 (obj.getMethodURL, obj.getMethodTitle)
-            show_methodinstr_columns = True
+            self.show_methodinstr_columns = True
 
         # TODO: Instrument selector dynamic behavior in worksheet Results
         # Only the labmanager must be able to change the instrument to be used.
@@ -567,12 +569,11 @@ class AnalysesView(BikaListingView):
             instrumentUID = None
 
             # If the analysis has an instrument already assigned, use it
-            if obj.getInstrumentEntryOfResults and obj.getInstrumentUID:
+            if obj.getInstrumentUID:
                 instrumentUID = obj.getInstrumentUID
-
             # Otherwise, use the Service's default instrument
-        elif obj.getInstrumentEntryOfResults:
-            instrumentUID = obj.getServiceDefaultInstrumentUID
+            else:
+                instrumentUID = obj.getServiceDefaultInstrumentUID
 
             if can_set_instrument:
                 # Edition allowed
@@ -582,7 +583,7 @@ class AnalysesView(BikaListingView):
                     item['Instrument'] = instrumentUID
                     item['choices']['Instrument'] = voc
                     item['allow_edit'].append('Instrument')
-                    show_methodinstr_columns = True
+                    self.show_methodinstr_columns = True
 
                 elif instrumentUID:
                     # This should never happen
@@ -592,7 +593,7 @@ class AnalysesView(BikaListingView):
                     item['replace']['Instrument'] = "<a href='%s'>%s</a>" % \
                         (obj.getServiceDefaultInstrumentURL,
                             obj.getServiceDefaultInstrumentTitle)
-                    show_methodinstr_columns = True
+                    self.show_methodinstr_columns = True
 
             elif instrumentUID:
                 # Edition not allowed, but instrument set
@@ -600,7 +601,7 @@ class AnalysesView(BikaListingView):
                 item['replace']['Instrument'] = "<a href='%s'>%s</a>" % \
                     (obj.getServiceDefaultInstrumentURL,
                         obj.getServiceDefaultInstrumentTitle)
-                show_methodinstr_columns = True
+                self.show_methodinstr_columns = True
 
         else:
             # Manual entry of results, instrument not allowed
@@ -926,12 +927,12 @@ class AnalysesView(BikaListingView):
         self.categories = []
         # Getting the multi-verification type of bika_setup
         self.mv_type = self.context.bika_setup.getTypeOfmultiVerification()
+        self.show_methodinstr_columns = False
         # Gettin all the items
         items = super(AnalysesView, self).folderitems(classic=False)
         # Getting the methods
         methods = self.get_methods_vocabulary()
 
-        show_methodinstr_columns = False
         self.dmk = self.context.bika_setup.getResultsDecimalMark()
 
         # the TAL requires values for all interim fields on all
@@ -1013,9 +1014,8 @@ class AnalysesView(BikaListingView):
         # same time, because the value assigned to one causes
         # a value reassignment to the other (one method can be performed
         # by different instruments)
-        self.columns['Method']['toggle'] = show_methodinstr_columns
-        self.columns['Instrument']['toggle'] = show_methodinstr_columns
-
+        self.columns['Method']['toggle'] = self.show_methodinstr_columns
+        self.columns['Instrument']['toggle'] = self.show_methodinstr_columns
         return items
 
 
