@@ -37,13 +37,11 @@ def upgrade(tool):
     logger.info('{0} upgraded to version {1}'.format(product, version))
     return True
 
-
 def BaseAnalysisRefactoring(portal):
-    ut = UpgradeUtils(portal)
-    field_ = """Upgrade steps to be taken after radical BaseAnalysis refactoring
-    Includes migration of ReferenceField values to the new UIDReferenceField.
+    """Upgrade steps to be taken after radical Abstract analysis class
+    refactoring, also with migration from ReferenceField to UIDReferenceField.
 
-    Old-style references before BaseAnalysis refactoring:
+    References that exist before Abstract* analysis refactoring:
     
     AnalysisService
     ===============
@@ -75,60 +73,99 @@ def BaseAnalysisRefactoring(portal):
         Ref=Method                    rel=AnalysisMethod
     DupplicateAnalysis
     ==================
+        Ref=Analysis                  rel=DuplicateAnalysisAnalysis
+        Ref=Attachment                rel=DuplicateAnalysisAttachment
 
     After refactoring, the following references exist
 
     BaseAnalysis
     ============
-        Instrument                    (UIDReferenceField)
-        Method                        (UIDReferenceField)
-        Calculation                   (UIDReferenceField
-        Category                      (UIDReferenceField)
-        Department                    (UIDReferenceField)
+        Instrument                (UIDReferenceField)
+        Method                    (UIDReferenceField)
+        Calculation               (UIDReferenceField
+        Category                  (UIDReferenceField)
+        Department                (UIDReferenceField)
     AnalysisService
     ===============
-        Preservation                  (UIDReferenceField)
-        Container                     (UIDReferenceField)
-        Instruments                   (UIDReferenceField)
-        Methods                       (UIDReferenceField)
+        Preservation              (UIDReferenceField)
+        Container                 (UIDReferenceField)
+        Instruments               (UIDReferenceField)
+        Methods                   (UIDReferenceField)
     Analysis
     ========
-        Calculation                   (HistoryAwareReferenceField
-        Attachment                    (UIDReferenceField)
-        SamplePartition               (UIDReferenceField)
-        OriginalReflexedAnalysis      (UIDReferenceField)
-        ReflexAnalysisOf              (UIDReferenceField)
+        Calculation               (HistoryAwareReferenceField
+        Attachment                (UIDReferenceField)
+        SamplePartition           (UIDReferenceField)
+        OriginalReflexedAnalysis  (UIDReferenceField)
+        ReflexAnalysisOf          (UIDReferenceField)
     ReferenceAnalysis
-        Service                      (UIDReferenceField)
-        Attachment                   (UIDReferenceField)
-        Instrument                   (UIDReferenceField)
-        Method                       (UIDReferenceField)
     =================
+        Service                   (UIDReferenceField)
+        Attachment                (UIDReferenceField)
+        Instrument                (UIDReferenceField)
+        Method                    (UIDReferenceField)
     DuplicateAnalysis
     =================
-relationship='',
-relationship='DuplicateAnalysisAttachment',
-relationship='AnalysisInstrument',
-        Analysis                      (UIDReferenceField)
-        Attachment                    (UIDReferenceField)
-        Instrument                    (UIDReferenceField)
+        Analysis                  (UIDReferenceField)
+        Attachment                (UIDReferenceField)
+        Instrument                (UIDReferenceField)
 
     """
+    ut = UpgradeUtils(portal)
+    at = get_tool('archetype_tool')
+
+    # Attachment indexing in portal_catalog is expensive and not used.
+    logger.info('Removing Attachment portal_type from portal_catalog.')
+    at.setCatalogsByType('Attachment', [])
 
     # Miscellaneous index and column updates
-    logger.info('Removing bika_analysis_catalog/getServiceDefaultInstrument*')
+    # getServiceDefaultInstrument* were not being used.
     ut.delColumn('bika_analysis_catalog', 'getServiceDefaultInstrumentTitle')
     ut.delColumn('bika_analysis_catalog', 'getServiceDefaultInstrumentUID')
     ut.delColumn('bika_analysis_catalog', 'getServiceDefaultInstrumentURL')
+    # getAllowedMethodsAsTuples was used once; no negative impace from replacing
+    # it's usage with the actual vocabulary instead of indexing the value.
     ut.delColumn('bika_analysis_catalog', 'getAllowedMethodsAsTuples')
+    # getResultOptionsFromService is an alias for getResultOptions
     ut.delColumn('bika_analysis_catalog', 'getResultOptionsFromService')
     ut.addColumn('bika_analysis_catalog', 'getResultOptions')
+    # getResultsRangeNoSpecs is an alias for getResultsRange
     ut.delColumn('bika_analysis_catalog', 'getResultsRangeNoSpecs')
-    ut.addColumn('bika_analysis_catalog', 'getResultsRane')
+    ut.addColumn('bika_analysis_catalog', 'getResultsRange')
     # Analysis Titles are identical to Service titles.
-    ut.delIndex('bika_analysis_catalog', 'getServiceTitle')
-    ut.delIndex('bika_setup_catalog', 'getServiceTitle')
-    ut.delIndex('bika_catalog', 'getServiceTitle')
+    ut.delIndexAndColumn('bika_analysis_catalog', 'getServiceTitle')
+    ut.delIndexAndColumn('bika_setup_catalog', 'getServiceTitle')
+    ut.delIndexAndColumn('bika_catalog', 'getServiceTitle')
+    # This was not being used at all.
+    ut.delIndexAndColumn('bika_catalog', 'getAnalysisCategory')
+
+    # The following relations were used somewhere in the code for
+    # backreferences and are refactored to use regular catalog searches on
+    # either new or existing indexes (this is definitely going to be cheaper
+    # than AT References):
+    # - AnalysisServiceMethods
+    #   Updated ReflexRuleValidator to use getAvailableMethodsUIDs index on AS.
+    ut.addIndex('bika_setup_catalog', 'getAvailableMethodsUIDs', 'KeywordIndex')
+    # - AnalysisServiceCalculation
+    #   This was only referenced in a needless JSONReadExtender for ASes, which
+    #   I removed.
+    # - AnalysisAttachment
+    # - DuplicateAnalysisAttachment
+    #   These were used for cleaning up after attachment deletion But
+    #   UIDReferenceField handles this on it's own, so I removed that code.
+    #   Also used for generating attachment titles, ridiculous.
+    # - AnalysisSamplePartition
+    #   This is used quite a lot; I replaced it with a bika_analysis_catalog
+    #   index getSamplePartitionUID, and fixed samplepartition.getAnalyses().
+    ut.addIndex('bika_analysis_catalog', 'getSamplePartitionUID', 'FieldIndex')
+    # - DuplicateAnalysisAnalysis
+    #   It was used to remove Duplicates when an Analysis was unassigned from
+    #   a worksheet.  So I replaced it with a simple loop.
+
+    # - XXX CAMPBELL OriginalAnalysisReflectedAnalysis
+
+    # I'm using the backreferences below for discovering objects to migrate.
+    # This will work, because reference_catalog has not been rebuilt yet.
 
     # Analysis Services ========================================================
     bsc = get_tool('bika_setup_catalog')
@@ -148,7 +185,8 @@ relationship='AnalysisInstrument',
 
         # Analyses =============================================================
         ans = srv.getBRefs(relationship='AnalysisAnalysisService')
-        logger.info('Migrating %s analyses on %s' % (len(ans), srv))
+        if ans:
+            logger.info('Migrating %s analyses on %s' % (len(ans), srv))
         for an in ans:
             # retain analysis.ServiceUID
             an.setServiceUID(srv.UID())
@@ -168,18 +206,18 @@ relationship='AnalysisInstrument',
             dups = an.getBRefs(relationship='DuplicateAnalysisAnalysis')
             if dups:
                 logger.info('%s has %s duplicates' % (an, len(dups)))
-                for dup in dups:
-                    dup.setServiceUID(srv.UID())
-                    touidref(dup, dup, 'DuplicateAnalysisAnalysis', 'Analysis')
-                    touidref(dup, dup, 'DuplicateAnalysisAttachment',
-                             'Attachment')
-                    touidref(dup, dup, 'AnalysisInstrument', 'Instrument')
-                    # Then scoop the rest of the fields out of service
-                    copy_field_values(srv, dup)
+            for dup in dups:
+                dup.setServiceUID(srv.UID())
+                touidref(dup, dup, 'DuplicateAnalysisAnalysis', 'Analysis')
+                touidref(dup, dup, 'DuplicateAnalysisAttachment', 'Attachment')
+                touidref(dup, dup, 'AnalysisInstrument', 'Instrument')
+                # Then scoop the rest of the fields out of service
+                copy_field_values(srv, dup)
         # Reference Analyses
         # =============================================================
         ans = srv.getBRefs(relationship='ReferenceAnalysisAnalysisService')
-        logger.info('Migrating %s reference analyses on %s' % (len(ans), srv))
+        if ans:
+            logger.info('Migrating %s references on %s' % (len(ans), srv))
         for an in ans:
             # retain analysis.ServiceUID
             an.setServiceUID(srv.UID())
@@ -189,6 +227,7 @@ relationship='AnalysisInstrument',
             touidref(an, an, 'AnalysisMethod', 'Method')
             # Then scoop the rest of the fields out of service
             copy_field_values(srv, an)
+
 
 def touidref(src, dst, src_relation, fieldname):
     """Convert an archetypes reference in src/src_relation to a UIDReference 

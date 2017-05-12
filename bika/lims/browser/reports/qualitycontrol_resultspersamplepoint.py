@@ -142,7 +142,7 @@ class Report(BrowserView):
                 # XXX Unfloatable analysis results should be indicated
                 continue
             analyses[service_title].append({
-                # The report should not mind taking 'analysis' in leu of
+                # The report should not mind taking 'analysis' in place of
                 # 'service' - the service field values are placed in analysis.
                 'service': analysis,
                 'obj': analysis,

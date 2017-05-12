@@ -9,7 +9,8 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import Schema
 from bika.lims.content.abstractroutineanalysis import AbstractRoutineAnalysis
 from bika.lims.content.abstractroutineanalysis import schema
-from bika.lims.interfaces import IAnalysis, ISamplePrepWorkflow
+from bika.lims.interfaces import IAnalysis, ISamplePrepWorkflow, \
+    IRoutineAnalysis
 from zope.interface import implements
 
 schema = schema.copy() + Schema((
@@ -18,7 +19,7 @@ schema = schema.copy() + Schema((
 
 
 class Analysis(AbstractRoutineAnalysis):
-    implements(IAnalysis, ISamplePrepWorkflow)
+    implements(IAnalysis, IRoutineAnalysis, ISamplePrepWorkflow)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema

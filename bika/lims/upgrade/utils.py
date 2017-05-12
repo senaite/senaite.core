@@ -1,4 +1,3 @@
-
 from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
 from bika.lims.catalog.catalog_utilities import addZCTextIndex
@@ -9,7 +8,6 @@ import transaction
 
 
 class UpgradeUtils(object):
-
     def __init__(self, portal):
         self.portal = portal
         self.reindexcatalog = {}
@@ -28,7 +26,7 @@ class UpgradeUtils(object):
         iver = self.getInstalledVersion(product)
         iver = self.normalizeVersion(iver)
         nver = self.normalizeVersion(version)
-        logger.debug('{0} versions: Installed {1} - Target {2}'
+        logger.debug('{} versions: Installed {} - Target {}'
                      .format(product, nver, iver))
         return nver < iver
 
@@ -45,11 +43,11 @@ class UpgradeUtils(object):
             patch = rev[2:]
             rev = rev[:2]
 
-        return '{0}.{1}.{2}.{3}'.format(
-                '{:02d}'.format(int(major)),
-                '{:02d}'.format(int(minor)),
-                '{:02d}'.format(int(rev)),
-                '{:04d}'.format(int(patch)))
+        return '{}.{}.{}.{}'.format(
+            '{:02d}'.format(int(major)),
+            '{:02d}'.format(int(minor)),
+            '{:02d}'.format(int(rev)),
+            '{:04d}'.format(int(patch)))
 
     def delIndexAndColumn(self, catalog, index):
         self.delIndex(catalog, index)
@@ -74,13 +72,11 @@ class UpgradeUtils(object):
             return
         try:
             cat.delIndex(index)
-            logger.info('Deleted index {0} from catalog {1}'.format(
-                        index, cat.id))
+            logger.info('Deleted index {} from {}'.format(index, cat.id))
             transaction.commit()
         except:
             logger.error(
-                'Unable to delete index {0} from catalog {1}'.format(
-                    index, cat.id))
+                'Unable to delete index {} from {}'.format(index, cat.id))
             raise
 
     def delColumn(self, catalog, column):
@@ -89,13 +85,11 @@ class UpgradeUtils(object):
             return
         try:
             cat.delColumn(column)
-            logger.info('Deleted column {0} from catalog {1} deleted.'.format(
-                        column, cat.id))
+            logger.info('Deleted column {} from {}.'.format(column, cat.id))
             transaction.commit()
         except:
             logger.error(
-                'Unable to delete column {0} from catalog {1}'.format(
-                    column, cat.id))
+                'Unable to delete column {} from {}'.format(column, cat.id))
             raise
 
     def addIndex(self, catalog, index, indextype):
@@ -107,16 +101,14 @@ class UpgradeUtils(object):
                 addZCTextIndex(cat, index)
             else:
                 cat.addIndex(index, indextype)
-            logger.info('Catalog index %s added.' % index)
+            logger.info('Added index {} to {}'.format(index, cat.id))
             indexes = self.reindexcatalog.get(cat.id, [])
             indexes.append(index)
             indexes = list(set(indexes))
             self.reindexcatalog[cat.id] = indexes
             transaction.commit()
         except:
-            logger.error(
-                'Unable to add index {0} to catalog {1}'.format(
-                    index, cat.id))
+            logger.error('Unable to add index {} to {}'.format(index, cat.id))
             raise
 
     def addColumn(self, catalog, column):
@@ -125,15 +117,12 @@ class UpgradeUtils(object):
             return
         try:
             cat.addColumn(column)
-            logger.info('Added column {0} to catalog {1}'.format(
-                column, cat.id))
+            logger.info('Added column {} to {}'.format(column, cat.id))
             if cat.id not in self.refreshcatalog:
                 self.refreshcatalog.append(cat.id)
             transaction.commit()
         except:
-            logger.error(
-                'Unable to add column {0} to catalog {1}'.format(
-                    column, cat.id))
+            logger.error('Unable to add column {} to {}'.format(column, cat.id))
             raise
 
     def refreshCatalogs(self):
@@ -143,10 +132,10 @@ class UpgradeUtils(object):
             try:
                 catalog = getToolByName(self.portal, catalogid)
                 catalog.refreshCatalog()
-                logger.info('Catalog {0} refreshed'.format(catalogid))
+                logger.info('Catalog {} refreshed'.format(catalogid))
                 transaction.commit()
             except:
-                logger.error('Unable to refresh catalog {0}'.format(catalogid))
+                logger.error('Unable to refresh {}'.format(catalogid))
                 raise
 
     def cleanAndRebuildCatalogs(self):
@@ -155,9 +144,8 @@ class UpgradeUtils(object):
             try:
                 catalog = getToolByName(self.portal, catid)
                 catalog.clearFindAndRebuild()
-                logger.info('Catalog {0} cleaned and rebuilt'.format(catid))
+                logger.info('Catalog {} cleaned and rebuilt'.format(catid))
                 transaction.commit()
             except:
-                logger.error('Unable to clean and rebuild catalog {0}'.format(
-                            catid))
+                logger.error('Unable to clean and rebuild {}'.format(catid))
                 raise

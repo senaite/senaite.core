@@ -88,7 +88,7 @@ class Report(BrowserView):
                 sizeunit = "Mb"
             dateloaded = attachment.getDateLoaded()
             dataline = []
-            dataitem = {'value': attachment.getTextTitle()}
+            dataitem = {'value': attachment.Title()}
             dataline.append(dataitem)
             dataitem = {'value': filename,
                         'img_before': icon}

@@ -10,6 +10,7 @@ from bika.lims.utils import to_utf8
 from Products.CMFCore.utils import getToolByName
 from Products.validation import validation
 from Products.validation.interfaces.IValidator import IValidator
+from plone.api.portal import get_tool
 from zope.interface import implements
 from datetime import datetime
 import string
@@ -1153,12 +1154,13 @@ class ReflexRuleValidator:
         # request = kwargs.get('REQUEST', {})
         # form = request.get('form', {})
         method = instance.getMethod()
-        method_ans_uids = [
-            ans.UID() for ans in
-            method.getBackReferences('AnalysisServiceMethods')]
+        bsc = get_tool('bika_setup_catalog')
+        query = {'portal_type': 'AnalysisService',
+                 'getAvailableMethodsUIDs': method.UID()}
+        method_ans_uids = [b.UID for b in bsc(query)]
         rules = instance.getReflexRules()
         error = ''
-        pc = getToolByName(instance, 'portal_catalog')
+        pc = get_tool('portal_catalog')
         for rule in rules:
             as_uid = rule.get('analysisservice', '')
             as_brain = pc(
@@ -1170,6 +1172,7 @@ class ReflexRuleValidator:
             else:
                 error += as_brain['title'] + ' '
         if error:
+            translate = get_tool('translation_service').translate
             msg = _("The following analysis services don't belong to the"
                     "current method: " + error)
             return to_utf8(translate(msg))

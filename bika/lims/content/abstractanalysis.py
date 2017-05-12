@@ -24,14 +24,15 @@ from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.content.abstractbaseanalysis import AbstractBaseAnalysis
 from bika.lims.content.abstractbaseanalysis import schema
 from bika.lims.content.reflexrule import doReflexRuleAction
-from bika.lims.interfaces import IAnalysis, ISamplePrepWorkflow
+from bika.lims.interfaces import IAnalysis, ISamplePrepWorkflow, \
+    IDuplicateAnalysis
 from bika.lims.permissions import *
 from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.utils import changeWorkflowState, formatDecimalMark
 from bika.lims.utils import drop_trailing_zeros_decimal
 from bika.lims.utils.analysis import create_analysis, format_numeric_result
 from bika.lims.utils.analysis import get_significant_digits
-from bika.lims.workflow import getTransitionDate, skip
+from bika.lims.workflow import skip
 from plone.api.portal import get_tool
 from plone.api.user import has_permission
 from zope.interface import implements
@@ -280,9 +281,9 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         getDefaultUncertainty(). Returns None if no result specified and the 
         current result for this analysis is below or above detections limits.
         """
-        uncertainty = self.Schema().getField('Uncertainty').get(self)
+        uncertainty = self.getField('Uncertainty').get(self)
         if result is None and (self.isAboveUpperDetectionLimit() or
-                                   self.isBelowLowerDetectionLimit()):
+                               self.isBelowLowerDetectionLimit()):
             return None
 
         if uncertainty and self.getAllowManualUncertainty() is True:
@@ -304,9 +305,9 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         # https://jira.bikalabs.com/browse/LIMS-1808
         if self.isAboveUpperDetectionLimit() or \
                 self.isBelowLowerDetectionLimit():
-            self.Schema().getField('Uncertainty').set(self, None)
+            self.getField('Uncertainty').set(self, None)
         else:
-            self.Schema().getField('Uncertainty').set(self, unc)
+            self.getField('Uncertainty').set(self, unc)
 
     @security.public
     def setDetectionLimitOperand(self, value):
@@ -320,7 +321,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """
         md = self.getDetectionLimitSelector()
         val = value if (md and value in '<>') else None
-        self.Schema().getField('DetectionLimitOperand').set(self, val)
+        self.getField('DetectionLimitOperand').set(self, val)
 
     # Method getLowerDetectionLimit overrides method of class BaseAnalysis
     @security.public
@@ -509,7 +510,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         # https://jira.bikalabs.com/browse/LIMS-1808
         if self.isAboveUpperDetectionLimit() or \
                 self.isBelowLowerDetectionLimit():
-            self.Schema().getField('Uncertainty').set(self, None)
+            self.getField('Uncertainty').set(self, None)
 
     @security.public
     def getAnalysisSpecs(self, specification=None):
@@ -813,6 +814,57 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return instr.getMethod() if instr else None
 
     @security.public
+    def getExponentialFormatPrecision(self, result=None):
+        """ Returns the precision for the Analysis Service and result 
+        provided. Results with a precision value above this exponential 
+        format precision should be formatted as scientific notation.
+
+        If the Calculate Precision according to Uncertainty is not set, 
+        the method will return the exponential precision value set in the 
+        Schema. Otherwise, will calculate the precision value according to 
+        the Uncertainty and the result.
+
+        If Calculate Precision from the Uncertainty is set but no result 
+        provided neither uncertainty values are set, returns the fixed 
+        exponential precision.
+
+        Will return positive values if the result is below 0 and will return 
+        0 or positive values if the result is above 0.
+
+        Given an analysis service with fixed exponential format
+        precision of 4:
+        Result      Uncertainty     Returns
+        5.234           0.22           0
+        13.5            1.34           1
+        0.0077          0.008         -3
+        32092           0.81           4
+        456021          423            5
+
+        For further details, visit https://jira.bikalabs.com/browse/LIMS-1334
+
+        :param result: if provided and "Calculate Precision according to the  
+        Uncertainty" is set, the result will be used to retrieve the 
+        uncertainty from which the precision must be calculated. Otherwise, 
+        the fixed-precision will be used.
+        :returns: the precision
+        """
+        field = self.getField('ExponentialFormatPrecision')
+        if not result or self.getPrecisionFromUncertainty() is False:
+            return field.get(self)
+        else:
+            uncertainty = self.getUncertainty(result)
+            if uncertainty is None:
+                return field.get(self)
+
+            try:
+                float(result)
+            except ValueError:
+                # if analysis result is not a number, then we assume in range
+                return field.get(self)
+
+            return get_significant_digits(uncertainty)
+
+    @security.public
     def getFormattedResult(self, specs=None, decimalmark='.', sciformat=1,
                            html=True):
         """Formatted result:
@@ -933,9 +985,9 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         - ManualUncertainty set and Calculatet Precision from Uncertainty
           not set in Analysis Service: returns the result as-is.
 
-        Further information at BaseAnalysis.getPrecision()
+        Further information at AbstractBaseAnalysis.getPrecision()
         """
-        schu = self.Schema().getField('Uncertainty').get(self)
+        schu = self.getField('Uncertainty').get(self)
         if all([schu,
                 self.getAllowManualUncertainty(),
                 self.getPrecisionFromUncertainty()]):
@@ -943,7 +995,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             if uncertainty == 0:
                 return 1
             return get_significant_digits(uncertainty)
-        return self.getPrecision(result)
+        return self.getField('Precision').get(self)
 
     @security.public
     def getAnalyst(self):
@@ -971,29 +1023,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         if analyst_member:
             return analyst_member.getProperty('fullname')
         return ''
-
-    @security.public
-    def setReflexAnalysisOf(self, analysis):
-        """Sets the analysis that has been reflexed in order to create this
-        one, but if the analysis is the same as self, do nothing.
-        :param analysis: an analysis object or UID
-        """
-        if not analysis or analysis.UID() == self.UID():
-            pass
-        else:
-            self.Schema().getField('ReflexAnalysisOf').set(self, analysis)
-
-    @security.public
-    def addReflexRuleActionsTriggered(self, text):
-        """This function adds a new item to the string field 
-        ReflexRuleActionsTriggered. From the field: Reflex rule triggered 
-        actions from which the current analysis is responsible of. Separated 
-        by '|'
-        :param text: is a str object with the format '<UID>.<rulename>' -> 
-        '123354.1'
-        """
-        old = self.getReflexRuleActionsTriggered()
-        self.setReflexRuleActionsTriggered(old + text + '|')
 
     @security.public
     def isVerifiable(self):
@@ -1692,6 +1721,15 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                         "assign action failed for analysis %s" % self.getId())
         self.reindexObject()
 
+    def remove_duplicates(self, ws):
+        """When this analysis is unassigned from a worksheet, this function
+        is responsible for deleting DuplicateAnalysis objects from the ws.
+        """
+        for analysis in ws.objectValues():
+            if IDuplicateAnalysis.providedBy(analysis) \
+                    and analysis.getAnalysis().UID() == self.UID():
+                ws.removeAnalysis(analysis)
+
     @security.public
     def workflow_script_unassign(self):
         if skip(self, "unassign"):
@@ -1708,9 +1746,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             workflow.doActionFor(self, "unassign")
             skip(self, "unassign", unskip=True)
         # If it has been duplicated on the worksheet, delete the duplicates.
-        dups = self.getBackReferences("DuplicateAnalysisAnalysis")
-        for dup in dups:
-            ws.removeAnalysis(dup)
+        self.remove_duplicates(ws)
         # May need to promote the Worksheet's review_state
         # if all other analyses are at a higher state than this one was.
         # (or maybe retract it if there are no analyses left)

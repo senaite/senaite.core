@@ -1846,26 +1846,6 @@ class AnalysisRequest(BaseFolder):
         """
         return value
 
-    # TODO-performance: Don't get the whole object"
-    def getAnalysisCategory(self):
-        proxies = self.getAnalyses(full_objects=True)
-        value = []
-        for proxy in proxies:
-            val = proxy.getCategoryTitle()
-            if val not in value:
-                value.append(val)
-        return value
-
-    # TODO-performance: Don't get the whole object"
-    def getAnalysisCategoryIDs(self):
-        analyses = self.getAnalyses(full_objects=True)
-        value = []
-        for analysis in analyses:
-            val = analysis.getCategory().id
-            if val not in value:
-                value.append(val)
-        return value
-
     def getAnalysisService(self):
         analyses = self.getAnalyses(full_objects=True)
         value = []

@@ -77,7 +77,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         if nr_existing > nr_parts:
             for i in range(nr_existing - nr_parts):
                 part = sample['%s%s' % (part_prefix, nr_existing - i)]
-                for a in part.getBackReferences("AnalysisSamplePartition"):
+                for a in part.getAnalyses():
                     a.setSamplePartition(None)
                 sample.manage_delObjects(['%s%s' % (part_prefix, nr_existing - i), ])
         # modify part container/preservation

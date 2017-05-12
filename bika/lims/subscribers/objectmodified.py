@@ -20,15 +20,6 @@ def ObjectModifiedEventHandler(obj, event):
         obj = uc(UID=obj.UID())[0].getObject()
         version_id = obj.version_id if hasattr(obj, 'version_id') else 0
 
-        backrefs = obj.getBackReferences('AnalysisServiceCalculation')
-        for i, target in enumerate(backrefs):
-            target = uc(UID=target.UID())[0].getObject()
-            pr.save(obj=target, comment="Calculation updated to version %s" %
-                (version_id + 1,))
-            reference_versions = getattr(target, 'reference_versions', {})
-            reference_versions[obj.UID()] = version_id + 1
-            target.reference_versions = reference_versions
-
         backrefs = obj.getBackReferences('MethodCalculation')
         for i, target in enumerate(backrefs):
             target = uc(UID=target.UID())[0].getObject()

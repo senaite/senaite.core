@@ -179,6 +179,8 @@ class AnalysesView(BikaListingView):
         """
         if ICatalogBrain.providedBy(analysis):
             # It is a brain
+            if not 'getResultsRange' in dir(analysis):
+                pass
             if analysis.getResultsRange and not\
                     isinstance(analysis.getResultsRange, list):
                 return analysis.getResultsRange

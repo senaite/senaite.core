@@ -17,8 +17,14 @@ class AnalysesView(BaseView):
     """
     def __init__(self, context, request):
         BaseView.__init__(self, context, request)
+        self.context = context
+        self.request = request
+        self.analyst = None
+        self.instrument = None
         self.contentFilter = {
-                        'getWorksheetUID': context.UID(), }
+            'portal_type': 'Analysis',
+            'getWorksheetUID': context.UID(),
+        }
         self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
         self.allow_edit = True
         self.show_categories = False

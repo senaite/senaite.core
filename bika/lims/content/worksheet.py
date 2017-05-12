@@ -625,15 +625,13 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         return ''
 
     def getWorksheetServices(self):
-        """Get list of analysis services present on this worksheet This is 
-        just a list of dictionaries containing 'UID' and 'Title' for each 
-        service.
+        """get list of analysis services present on this worksheet
         """
         services = []
         for analysis in self.getAnalyses():
-            srv = {'UID': analysis.getServiceUID(), 'Title': analysis.Title()}
-            if srv not in services:
-                services.append(srv)
+            service = analysis.getAnalysisService()
+            if service not in services:
+                services.append(service)
         return services
 
     def getQCAnalyses(self):

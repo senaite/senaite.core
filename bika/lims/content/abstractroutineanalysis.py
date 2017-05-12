@@ -272,6 +272,12 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
             getTransitionDate(self, 'sample')
 
     @security.public
+    def getSamplePartitionUID(self):
+        part = self.getSamplePartition()
+        if part:
+            return part.UID()
+
+    @security.public
     def getSamplePointUID(self):
         """Used to populate catalog values.
         """
@@ -334,4 +340,27 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
             sampletype = sample.getSampleType()
             if sampletype:
                 return sampletype.UID()
+
+    @security.public
+    def setReflexAnalysisOf(self, analysis):
+        """Sets the analysis that has been reflexed in order to create this
+        one, but if the analysis is the same as self, do nothing.
+        :param analysis: an analysis object or UID
+        """
+        if not analysis or analysis.UID() == self.UID():
+            pass
+        else:
+            self.getField('ReflexAnalysisOf').set(self, analysis)
+
+    @security.public
+    def addReflexRuleActionsTriggered(self, text):
+        """This function adds a new item to the string field 
+        ReflexRuleActionsTriggered. From the field: Reflex rule triggered 
+        actions from which the current analysis is responsible of. Separated 
+        by '|'
+        :param text: is a str object with the format '<UID>.<rulename>' -> 
+        '123354.1'
+        """
+        old = self.getReflexRuleActionsTriggered()
+        self.setReflexRuleActionsTriggered(old + text + '|')
 

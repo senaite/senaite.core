@@ -765,7 +765,6 @@ class AbstractBaseAnalysis(BaseContent):  # XXX BaseContent?  is really needed?
     @security.public
     def Title(self):
         return _c(self.title)
-
     @security.public
     def getDefaultVAT(self):
         """Return default VAT from bika_setup 
@@ -874,7 +873,7 @@ class AbstractBaseAnalysis(BaseContent):  # XXX BaseContent?  is really needed?
     def getLowerDetectionLimit(self):
         """Returns the Lower Detection Limit for this service as a floatable
         """
-        ldl = self.Schema().getField('LowerDetectionLimit').get(self)
+        ldl = self.getField('LowerDetectionLimit').get(self)
         try:
             return float(ldl)
         except ValueError:
@@ -884,106 +883,11 @@ class AbstractBaseAnalysis(BaseContent):  # XXX BaseContent?  is really needed?
     def getUpperDetectionLimit(self):
         """Returns the Upper Detection Limit for this service as a floatable
         """
-        udl = self.Schema().getField('UpperDetectionLimit').get(self)
+        udl = self.getField('UpperDetectionLimit').get(self)
         try:
             return float(udl)
         except ValueError:
             return 0
-
-    @security.public
-    def getPrecision(self, result=None):
-        """Returns the precision for the Analysis Service. If the
-        option Calculate Precision according to Uncertainty is not
-        set, the method will return the precision value set in the
-        Schema. Otherwise, will calculate the precision value
-        according to the Uncertainty and the result.
-        If Calculate Precision to Uncertainty is set but no result
-        provided neither uncertainty values are set, returns the
-        fixed precision.
-
-        Examples:
-        Uncertainty     Returns
-        0               1
-        0.22            1
-        1.34            0
-        0.0021          3
-        0.013           2
-        2               0
-        22              0
-
-        For further details, visit
-        https://jira.bikalabs.com/browse/LIMS-1334
-
-        :param result: if provided and "Calculate Precision according
-                       to the Uncertainty" is set, the result will be
-                       used to retrieve the uncertainty from which the
-                       precision must be calculated. Otherwise, the
-                       fixed-precision will be used.
-        :returns: the precision
-        """
-        if not self.getPrecisionFromUncertainty():
-            return self.Schema().getField('Precision').get(self)
-        else:
-            uncertainty = self.getUncertainty(result)
-            if uncertainty is None:
-                return self.Schema().getField('Precision').get(self)
-
-            # Calculate precision according to uncertainty
-            # https://jira.bikalabs.com/browse/LIMS-1334
-            if uncertainty == 0:
-                return 1
-            return get_significant_digits(uncertainty)
-
-    @security.public
-    def getExponentialFormatPrecision(self, result=None):
-        """ Returns the precision for the Analysis Service and result 
-        provided. Results with a precision value above this exponential 
-        format precision should be formatted as scientific notation.
-
-        If the Calculate Precision according to Uncertainty is not set, 
-        the method will return the exponential precision value set in the 
-        Schema. Otherwise, will calculate the precision value according to 
-        the Uncertainty and the result.
-
-        If Calculate Precision from the Uncertainty is set but no result 
-        provided neither uncertainty values are set, returns the fixed 
-        exponential precision.
-
-        Will return positive values if the result is below 0 and will return 
-        0 or positive values if the result is above 0.
-
-        Given an analysis service with fixed exponential format
-        precision of 4:
-        Result      Uncertainty     Returns
-        5.234           0.22           0
-        13.5            1.34           1
-        0.0077          0.008         -3
-        32092           0.81           4
-        456021          423            5
-
-        For further details, visit https://jira.bikalabs.com/browse/LIMS-1334
-
-        :param result: if provided and "Calculate Precision according to the  
-        Uncertainty" is set, the result will be used to retrieve the 
-        uncertainty from which the precision must be calculated. Otherwise, 
-        the fixed-precision will be used.
-        :returns: the precision
-        """
-        field = self.Schema().getField('ExponentialFormatPrecision')
-        if not result or self.getPrecisionFromUncertainty() is False:
-            return field.get(self)
-        else:
-            uncertainty = self.getUncertainty(result)
-            if uncertainty is None:
-                return field.get(self)
-
-            try:
-                float(result)
-            except ValueError:
-                # if analysis result is not a number, then we assume in range
-                return field.get(self)
-
-            return get_significant_digits(uncertainty)
 
     @security.public
     def isSelfVerificationEnabled(self):
