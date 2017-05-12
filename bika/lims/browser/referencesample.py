@@ -81,7 +81,7 @@ class ReferenceAnalysesViewView(BrowserView):
         return self._analysesview
 
     def getReferenceSampleId(self):
-        return self.context.id;
+        return self.context.id
 
     def get_analyses_json(self):
         return self.get_analyses_view().get_analyses_json()

@@ -40,7 +40,7 @@ def upgrade(tool):
 
 def BaseAnalysisRefactoring(portal):
     ut = UpgradeUtils(portal)
-    """Upgrade steps to be taken after radical BaseAnalysis refactoring
+    field_ = """Upgrade steps to be taken after radical BaseAnalysis refactoring
     Includes migration of ReferenceField values to the new UIDReferenceField.
 
     Old-style references before BaseAnalysis refactoring:
@@ -67,6 +67,14 @@ def BaseAnalysisRefactoring(portal):
         Ref=SamplePartition           rel=AnalysisSamplePartition
         Ref=OriginalReflexedAnalysis  rel=OriginalAnalysisReflectedAnalysis
         Ref=ReflexAnalysisOf          rel=AnalysisReflectedAnalysis
+    ReferenceAnalysis
+    =================
+        Hist=Service                  rel=ReferenceAnalysisAnalysisService
+        Ref=Attachment                rel=ReferenceAnalysisAttachment
+        Ref=Instrument                rel=AnalysisInstrument
+        Ref=Method                    rel=AnalysisMethod
+    DupplicateAnalysis
+    ==================
 
     After refactoring, the following references exist
 
@@ -74,7 +82,7 @@ def BaseAnalysisRefactoring(portal):
     ============
         Instrument                    (UIDReferenceField)
         Method                        (UIDReferenceField)
-        Calculation                   (HistoryAwareReferenceField
+        Calculation                   (UIDReferenceField
         Category                      (UIDReferenceField)
         Department                    (UIDReferenceField)
     AnalysisService
@@ -85,17 +93,42 @@ def BaseAnalysisRefactoring(portal):
         Methods                       (UIDReferenceField)
     Analysis
     ========
+        Calculation                   (HistoryAwareReferenceField
         Attachment                    (UIDReferenceField)
         SamplePartition               (UIDReferenceField)
         OriginalReflexedAnalysis      (UIDReferenceField)
         ReflexAnalysisOf              (UIDReferenceField)
+    ReferenceAnalysis
+        Service                      (UIDReferenceField)
+        Attachment                   (UIDReferenceField)
+        Instrument                   (UIDReferenceField)
+        Method                       (UIDReferenceField)
+    =================
+    DuplicateAnalysis
+    =================
+relationship='',
+relationship='DuplicateAnalysisAttachment',
+relationship='AnalysisInstrument',
+        Analysis                      (UIDReferenceField)
+        Attachment                    (UIDReferenceField)
+        Instrument                    (UIDReferenceField)
+
     """
 
-    # Miscellaneous fixes
+    # Miscellaneous index and column updates
     logger.info('Removing bika_analysis_catalog/getServiceDefaultInstrument*')
     ut.delColumn('bika_analysis_catalog', 'getServiceDefaultInstrumentTitle')
     ut.delColumn('bika_analysis_catalog', 'getServiceDefaultInstrumentUID')
     ut.delColumn('bika_analysis_catalog', 'getServiceDefaultInstrumentURL')
+    ut.delColumn('bika_analysis_catalog', 'getAllowedMethodsAsTuples')
+    ut.delColumn('bika_analysis_catalog', 'getResultOptionsFromService')
+    ut.addColumn('bika_analysis_catalog', 'getResultOptions')
+    ut.delColumn('bika_analysis_catalog', 'getResultsRangeNoSpecs')
+    ut.addColumn('bika_analysis_catalog', 'getResultsRane')
+    # Analysis Titles are identical to Service titles.
+    ut.delIndex('bika_analysis_catalog', 'getServiceTitle')
+    ut.delIndex('bika_setup_catalog', 'getServiceTitle')
+    ut.delIndex('bika_catalog', 'getServiceTitle')
 
     # Analysis Services ========================================================
     bsc = get_tool('bika_setup_catalog')
@@ -114,10 +147,9 @@ def BaseAnalysisRefactoring(portal):
         touidref(srv, srv, 'AnalysisServiceContainer', 'Container')
 
         # Analyses =============================================================
-        analyses = srv.getBRefs(relationship='AnalysisAnalysisService')
-        logger.info('Migrating Analyses schema for %s analyses on %s'
-                    % (len(analyses), srv.Title()))
-        for an in analyses:
+        ans = srv.getBRefs(relationship='AnalysisAnalysisService')
+        logger.info('Migrating %s analyses on %s' % (len(ans), srv))
+        for an in ans:
             # retain analysis.ServiceUID
             an.setServiceUID(srv.UID())
             # Migrate refs to UIDReferenceField
@@ -131,9 +163,32 @@ def BaseAnalysisRefactoring(portal):
                      'OriginalReflexedAnalysis')
             touidref(an, an, 'AnalysisReflectedAnalysis', 'ReflexAnalysisOf')
 
+            # Duplicates of this analysis:
+            # ==================================================================
+            dups = an.getBRefs(relationship='DuplicateAnalysisAnalysis')
+            if dups:
+                logger.info('%s has %s duplicates' % (an, len(dups)))
+                for dup in dups:
+                    dup.setServiceUID(srv.UID())
+                    touidref(dup, dup, 'DuplicateAnalysisAnalysis', 'Analysis')
+                    touidref(dup, dup, 'DuplicateAnalysisAttachment',
+                             'Attachment')
+                    touidref(dup, dup, 'AnalysisInstrument', 'Instrument')
+                    # Then scoop the rest of the fields out of service
+                    copy_field_values(srv, dup)
+        # Reference Analyses
+        # =============================================================
+        ans = srv.getBRefs(relationship='ReferenceAnalysisAnalysisService')
+        logger.info('Migrating %s reference analyses on %s' % (len(ans), srv))
+        for an in ans:
+            # retain analysis.ServiceUID
+            an.setServiceUID(srv.UID())
+            touidref(an, an, 'ReferenceAnalysisAnalysisService', 'Service')
+            touidref(an, an, 'ReferenceAnalysisAttachment', 'Attachment')
+            touidref(an, an, 'AnalysisInstrument', 'Instrument')
+            touidref(an, an, 'AnalysisMethod', 'Method')
             # Then scoop the rest of the fields out of service
             copy_field_values(srv, an)
-
 
 def touidref(src, dst, src_relation, fieldname):
     """Convert an archetypes reference in src/src_relation to a UIDReference 

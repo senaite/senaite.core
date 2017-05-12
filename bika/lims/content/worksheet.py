@@ -172,10 +172,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if not instr and method and analysis.isMethodAllowed(method):
             # Set the method
             analysis.setMethod(method)
-        if analysis.getMethod():
-            # The analysis method can't be changed when the analysis belongs
-            # to a worksheet and that worksheet has a method.
-            analysis.setCanMethodBeChanged(False)
         self.setAnalyses(analyses + [analysis, ])
 
         # if our parent has a position, use that one.
@@ -776,13 +772,14 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             # the WS manage results view will display the an's default
             # method and its instruments displaying, only the instruments
             # for the default method in the picklist.
-            meth = instrument.getMethods()[0] if instrument.getMethods() \
-                    else None
+            instr_methods = instrument.getMethods()
+            meth = instr_methods[0] if instr_methods else None
             if meth and an.isMethodAllowed(meth):
-                an.setMethod(meth)
-            success = an.setInstrument(instrument)
-            if success is True:
-                total += 1
+                if an.getMethod() not in instr_methods:
+                    an.setMethod(meth)
+
+            an.setInstrument(instrument)
+            total += 1
 
         self.getField('Instrument').set(self, instrument)
         return total
@@ -804,7 +801,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             success = False
             if an.isMethodAllowed(method):
                 success = an.setMethod(method)
-                an.setCanMethodBeChanged(False)
             if success is True:
                 total += 1
 

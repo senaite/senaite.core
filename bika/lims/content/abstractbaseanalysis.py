@@ -7,13 +7,16 @@
 
 from AccessControl import ClassSecurityInfo
 from Products.ATExtensions.ateapi import RecordsField
-from Products.Archetypes.public import DisplayList, BooleanField, \
-    BooleanWidget, StringField, SelectionWidget, FixedPointField, \
-    IntegerField, IntegerWidget, StringWidget, BaseContent, Schema, \
-    FloatField, DecimalWidget
-from Products.Archetypes.utils import IntDisplayList
+from Products.Archetypes.BaseContent import BaseContent
+from Products.Archetypes.Field import BooleanField, FixedPointField, \
+    FloatField, IntegerField, StringField, TextField
+from Products.Archetypes.Schema import Schema
+from Products.Archetypes.Widget import BooleanWidget, DecimalWidget, \
+    IntegerWidget, SelectionWidget, StringWidget
+from Products.Archetypes.utils import DisplayList, IntDisplayList
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.fields import *
+from bika.lims.browser.fields import DurationField, InterimFieldsField, \
+    UIDReferenceField
 from bika.lims.browser.widgets.durationwidget import DurationWidget
 from bika.lims.browser.widgets.recordswidget import RecordsWidget
 from bika.lims.browser.widgets.referencewidget import ReferenceWidget
@@ -329,11 +332,11 @@ Method = UIDReferenceField(
     )
 )
 
-# Default calculation to be used. This field is used in Analysis Service
-# Edit view, use getCalculation() to retrieve the Calculation to be used in
-# this Analysis Service.
-# The default calculation is the one linked to the default method
-# Behavior controlled by js depending on UseDefaultCalculation:
+# Calculation to be used. This field is used in Analysis Service Edit view,
+# use getCalculation() to retrieve the Calculation to be used in this
+# Analysis Service.
+# The default calculation is the one linked to the default method Behavior
+# controlled by js depending on UseDefaultCalculation:
 # - If UseDefaultCalculation is set to False, show this field
 # - If UseDefaultCalculation is set to True, show this field
 # See browser/js/bika.lims.analysisservice.edit.js
@@ -684,6 +687,11 @@ ProtocolID = StringField(
     )
 )
 
+# Remarks are used in various ways by almost all objects in the system.
+Remarks = TextField(
+    'Remarks'
+)
+
 schema = BikaSchema.copy() + Schema((
     ShortTitle,
     SortKey,
@@ -722,6 +730,7 @@ schema = BikaSchema.copy() + Schema((
     NumberOfRequiredVerifications,
     CommercialID,
     ProtocolID,
+    Remarks
 ))
 
 schema['id'].widget.visible = False
@@ -739,10 +748,19 @@ schema.moveField('CommercialID', after='SortKey')
 schema.moveField('ProtocolID', after='CommercialID')
 
 
-class BaseAnalysis(BaseContent):
+class AbstractBaseAnalysis(BaseContent):  # XXX BaseContent?  is really needed?
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
+
+    # noinspection PyMissingConstructor
+    def __init__(self):
+        raise NotImplementedError("This class cannot be instantiated directly.")
+
+    @security.public
+    def _getCatalogTool(self):
+        from bika.lims.catalog import getCatalog
+        return getCatalog(self)
 
     @security.public
     def Title(self):
@@ -1014,6 +1032,14 @@ class BaseAnalysis(BaseContent):
         return IntDisplayList(list(items))
 
     @security.public
+    def getMethodTitle(self):
+        """This is used to populate catalog values
+        """
+        method = self.getMethod()
+        if method:
+            return method.Title()
+
+    @security.public
     def getMethodUID(self):
         """This is used to populate catalog values
         """
@@ -1022,12 +1048,36 @@ class BaseAnalysis(BaseContent):
             return method.UID()
 
     @security.public
+    def getMethodURL(self):
+        """This is used to populate catalog values
+        """
+        method = self.getMethod()
+        if method:
+            return method.absolute_url_path()
+
+    @security.public
     def getInstrumentTitle(self):
         """Used to populate catalog values
         """
         instrument = self.getInstrument()
         if instrument:
             return instrument.Title()
+
+    @security.public
+    def getInstrumentUID(self):
+        """Used to populate catalog values
+        """
+        instrument = self.getInstrument()
+        if instrument:
+            return instrument.UID()
+
+    @security.public
+    def getInstrumentURL(self):
+        """Used to populate catalog values
+        """
+        instrument = self.getInstrument()
+        if instrument:
+            return instrument.absolute_url_path()
 
     @security.public
     def getCalculationTitle(self):

@@ -389,7 +389,7 @@ class ReferenceAnalysisQC_Services(BrowserView):
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         # get Sample from request
-        sample = self.request.form.get('ReferenceSampleUID', '')
+        sample = self.request.form.get('SampleUID', '')
         sample = self.reference_catalog.lookupObject(sample)
         if sample:
             # get ReferenceSamples for this supplier

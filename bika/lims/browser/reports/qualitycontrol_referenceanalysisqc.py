@@ -49,7 +49,7 @@ class Report(BrowserView):
         self.parms = []
         titles = []
 
-        sample_uid = self.request.form.get('ReferenceSampleUID', '')
+        sample_uid = self.request.form.get('SampleUID', '')
         sample = self.reference_catalog.lookupObject(sample_uid)
         if not sample:
             message = _("No reference sample was selected.")

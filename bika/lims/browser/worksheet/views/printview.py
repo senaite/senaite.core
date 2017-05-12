@@ -305,8 +305,8 @@ class PrintView(BrowserView):
             # Build the analysis-specific dict
             if an.portal_type == "DuplicateAnalysis":
                 andict = self._analysis_data(an.getAnalysis())
-                andict['id'] = an.getReferenceAnalysesGroupID();
-                andict['obj'] = an;
+                andict['id'] = an.getReferenceAnalysesGroupID()
+                andict['obj'] = an
                 andict['type'] = "DuplicateAnalysis"
                 andict['reftype'] = 'd'
             else:

@@ -6,14 +6,12 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 
-import sys
-
 import transaction
 from AccessControl import ClassSecurityInfo
 from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes.Registry import registerField
-from Products.Archetypes.public import DisplayList, BooleanField, \
-    BooleanWidget, Schema, registerType, SelectionWidget, MultiSelectionWidget
+from Products.Archetypes.public import BooleanField, BooleanWidget, \
+    DisplayList, MultiSelectionWidget, Schema, SelectionWidget, registerType
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from bika.lims import PMF, bikaMessageFactory as _
@@ -21,8 +19,8 @@ from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets.partitionsetupwidget import PartitionSetupWidget
 from bika.lims.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.config import PROJECTNAME
-from bika.lims.content.baseanalysis import BaseAnalysis
-from bika.lims.content.baseanalysis import schema as BaseAnalysisSchema
+from bika.lims.content.abstractbaseanalysis import AbstractBaseAnalysis
+from bika.lims.content.abstractbaseanalysis import schema
 from bika.lims.interfaces import IAnalysisService, IHaveIdentifiers
 from bika.lims.utils import to_utf8 as _c
 from magnitude import mg
@@ -186,6 +184,7 @@ def sortable_title_with_sort_key(instance):
         return "{:010.3f}{}".format(sort_key, instance.Title())
     return instance.Title()
 
+
 # If this flag is true, then analyses created from this service will be linked
 # to their own Sample Partition, and no other analyses will be linked to that
 # partition.
@@ -261,6 +260,31 @@ PartitionSetup = PartitionSetupField(
     )
 )
 
+# Manually configured calculation to be used for analyses derived from this
+# service.  This field is used if UseDefaultCalculation is set to false.
+# The default calculation is the one linked to the default method
+# Behavior controlled by js depending on UseDefaultCalculation:
+# - If UseDefaultCalculation is set to False, show this field
+# - If UseDefaultCalculation is set to True, show this field
+# See browser/js/bika.lims.analysisservice.edit.js
+Calculation = UIDReferenceField(
+    'Calculation',
+    schemata="Method",
+    required=0,
+    vocabulary='_getAvailableCalculationsDisplayList',
+    allowed_types=('Calculation',),
+    widget=SelectionWidget(
+        format='select',
+        label=_("Default Calculation"),
+        description=_("Default calculation to be used from the "
+                      "default Method selected. The Calculation "
+                      "for a method can be assigned in the Method "
+                      "edit view."),
+        catalog_name='bika_setup_catalog',
+        base_query={'inactive_state': 'active'}
+    )
+)
+
 # Allow/Disallow to set the calculation manually
 # Behavior controlled by javascript depending on Instruments field:
 # - If no instruments available, hide and uncheck
@@ -286,7 +310,7 @@ UseDefaultCalculation = BooleanField(
 # Use getAvailableMethods() to retrieve the list with methods both
 # from selected instruments and manually entered.
 # Behavior controlled by js depending on ManualEntry/Instrument:
-# - If InsrtumentEntry not checked, show
+# - If InstrumentEntry not checked, show
 # See browser/js/bika.lims.analysisservice.edit.js
 Methods = UIDReferenceField(
     'Methods',
@@ -337,22 +361,23 @@ Instruments = UIDReferenceField(
     )
 )
 
-schema = BaseAnalysisSchema.copy() + Schema((
+schema = schema.copy() + Schema((
     Separate,
     Preservation,
     Container,
     PartitionSetup,
     UseDefaultCalculation,
+    Calculation,
     Methods,
     Instruments,
 ))
 
 
-class AnalysisService(BaseAnalysis):
+class AnalysisService(AbstractBaseAnalysis):
+    implements(IAnalysisService, IHaveIdentifiers)
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
-    implements(IAnalysisService, IHaveIdentifiers)
 
     _at_rename_after_creation = True
 

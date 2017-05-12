@@ -80,7 +80,7 @@ class AnalysesView(BikaListingView):
                 'toggle': False},
             'Service': {
                 'title': _('Analysis'),
-                'attr': 'getServiceTitle',
+                'attr': 'Title',
                 'sortable': False},
             'Partition': {
                 'title': _("Partition"),
@@ -179,13 +179,13 @@ class AnalysesView(BikaListingView):
         """
         if ICatalogBrain.providedBy(analysis):
             # It is a brain
-            if analysis.getResultsRangeNoSpecs and not\
-                    isinstance(analysis.getResultsRangeNoSpecs, list):
-                return analysis.getResultsRangeNoSpecs
-            if analysis.getResultsRangeNoSpecs and\
-                    isinstance(analysis.getResultsRangeNoSpecs, list):
+            if analysis.getResultsRange and not\
+                    isinstance(analysis.getResultsRange, list):
+                return analysis.getResultsRange
+            if analysis.getResultsRange and\
+                    isinstance(analysis.getResultsRange, list):
                 rr = dicts_to_dict(
-                    analysis.getResultsRangeNoSpecs, 'keyword')
+                    analysis.getResultsRange, 'keyword')
                 return rr.get(analysis.getKeyword, None)
             if analysis.getReferenceResults:
                 rr = dicts_to_dict(analysis.getReferenceResults, 'uid')
@@ -249,6 +249,31 @@ class AnalysesView(BikaListingView):
             return '< %s' % spec['max']
         return ''
 
+    @staticmethod
+    def getAllowedMethodsAsTuples(analysis):
+        """Returns the allowed methods for this analysis. If manual entry of
+        results is set, only returns the methods set manually. Otherwise 
+        (if Instrument Entry Of Results is set) returns the methods assigned to 
+        the instruments allowed for this Analysis
+        :return: a list of tuples as [(UID,Title),(),...]
+        """
+        service = analysis.getAnalysisService()
+        if not service:
+            return []
+
+        # manual entry of results is set, only returns the methods set manually
+        if analysis.getInstrumentEntryOfResults():
+            res = [(ins.getRawMethod(), ins.getMethod().Title())
+                   for ins in service.getInstruments() if ins.getMethod()]
+        # Otherwise (if Instrument Entry Of Results is set)
+        # returns the methods assigned to the instruments allowed for
+        # this Analysis
+        else:
+            # Get only the methods set manually
+            res = [(method.UID(), method.Title())
+                   for method in service.getMethods()]
+        return res
+
     def get_methods_vocabulary(self, analysis=None):
         """
         Returns a vocabulary with all the methods available for the passed in
@@ -272,7 +297,7 @@ class AnalysesView(BikaListingView):
         ret = []
         if analysis:
             # This function returns  a list of tuples as [(UID,Title),(),...]
-            methods = analysis.getAllowedMethodsAsTuples
+            methods = self.getAllowedMethodsAsTuples(analysis)
             methods = methods if methods else []
             for uid, title in methods:
                 ret.append({'ResultValue': uid,
@@ -458,11 +483,11 @@ class AnalysesView(BikaListingView):
 
         if checkPermission(ManageBika, self.context):
             latest = self.rc.lookupObject(obj.getServiceUID).version_id
-            item['Service'] = obj.getServiceTitle
+            item['Service'] = obj.Title
             item['class']['Service'] = "service_title"
 
         # choices defined on Service apply to result fields.
-        choices = obj.getResultOptionsFromService
+        choices = obj.getResultOptions
         if choices:
             item['choices']['Result'] = choices
         # Editing Field Results is possible while in Sample Due.
@@ -509,8 +534,7 @@ class AnalysesView(BikaListingView):
 
         # TODO: Only the labmanager should be able to change the method
         can_set_method = can_edit_analysis \
-            and item['review_state'] in allowed_method_states\
-            and obj.getCanMethodBeChanged
+            and item['review_state'] in allowed_method_states
 
         # Display the methods selector if the AS has at least one
         # method assigned
