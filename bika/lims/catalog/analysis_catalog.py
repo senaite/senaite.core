@@ -83,6 +83,7 @@ _columns_list = [
     'getAnalystName',
     'hasAttachment',
     'getNumberOfRequiredVerifications',
+    'getNumberOfVerifications',
     'isSelfVerificationEnabled',
     'getSubmittedBy',
     'getVerificators',
