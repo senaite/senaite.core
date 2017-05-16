@@ -14,7 +14,6 @@ from bika.lims.utils import encode_header
 from bika.lims.utils import isActive
 from bika.lims.utils import tmpID
 from bika.lims.utils import to_utf8
-from bika.lims.utils.analysis import create_analysis
 from bika.lims.workflow import doActionFor
 from DateTime import DateTime
 from string import Template
@@ -23,9 +22,9 @@ from email.mime.text import MIMEText
 from email.Utils import formataddr
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.event import ObjectInitializedEvent
+from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode, _createObjectByType
 from bika.lims import interfaces
-from plone.api.portal import get_tool
 
 import json
 import plone
@@ -77,7 +76,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         if nr_existing > nr_parts:
             for i in range(nr_existing - nr_parts):
                 part = sample['%s%s' % (part_prefix, nr_existing - i)]
-                for a in part.getAnalyses():
+                for a in part.getBackReferences("AnalysisSamplePartition"):
                     a.setSamplePartition(None)
                 sample.manage_delObjects(['%s%s' % (part_prefix, nr_existing - i), ])
         # modify part container/preservation
@@ -90,7 +89,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
             part.reindexObject()
             # Adding the Security Seal Intact checkbox's value to the container object
             container_uid = form['getContainer'][0][part_uid]
-            uc = get_tool('uid_catalog')
+            uc = getToolByName(self.context, 'uid_catalog')
             cbr = uc(UID=container_uid)
             if cbr and len(cbr) > 0:
                 container_obj = cbr[0].getObject()
@@ -114,7 +113,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
 
     def workflow_action_save_analyses_button(self):
         form = self.request.form
-        workflow = get_tool('portal_workflow')
+        workflow = getToolByName(self.context, 'portal_workflow')
         bsc = self.context.bika_setup_catalog
         action, came_from = WorkflowAction._get_form_workflow_action(self)
         # AR Manage Analyses: save Analyses
@@ -192,7 +191,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
 
     def workflow_action_preserve(self):
         form = self.request.form
-        workflow = get_tool('portal_workflow')
+        workflow = getToolByName(self.context, 'portal_workflow')
         action, came_from = WorkflowAction._get_form_workflow_action(self)
         checkPermission = self.context.portal_membership.checkPermission
         # Partition Preservation
@@ -269,7 +268,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
 
     def workflow_action_submit(self):
         form = self.request.form
-        rc = get_tool(REFERENCE_CATALOG)
+        rc = getToolByName(self.context, REFERENCE_CATALOG)
         action, came_from = WorkflowAction._get_form_workflow_action(self)
         checkPermission = self.context.portal_membership.checkPermission
         if not isActive(self.context):
@@ -306,7 +305,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                 continue
             # Prevent saving data if the analysis is already transitioned
             if not (checkPermission(EditResults, analysis) or checkPermission(EditFieldResults, analysis)):
-                title = safe_unicode(analysis.Title())
+                title = safe_unicode(analysis.getService().Title())
                 msgid = _('Result for ${analysis} could not be saved because '
                           'it was already submitted by another user.',
                           mapping={'analysis': title})
@@ -454,7 +453,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
     def workflow_action_print(self):
         # Calls printLastReport method for selected ARs
         uids = self.request.get('uids',[])
-        uc = get_tool('uid_catalog')
+        uc = getToolByName(self.context, 'uid_catalog')
         for obj in uc(UID=uids):
             ar=obj.getObject()
             ar.printLastReport()
@@ -484,7 +483,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         return self.workflow_action_default(action='verify', came_from=came_from)
 
     def workflow_action_retract_ar(self):
-        workflow = get_tool('portal_workflow')
+        workflow = getToolByName(self.context, 'portal_workflow')
         # AR should be retracted
         # Can't transition inactive ARs
         if not isActive(self.context):
@@ -564,7 +563,7 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         mime_msg.preamble = 'This is a multi-part MIME message.'
         mime_msg.attach(msg_txt)
         try:
-            host = get_tool('MailHost')
+            host = getToolByName(self.context, 'MailHost')
             host.send(mime_msg.as_string(), immediate=True)
         except Exception as msg:
             message = _('Unable to send an email to alert lab '
@@ -628,13 +627,34 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         ans = ar.getAnalyses(full_objects=True)
         # If a whole AR is retracted and contains retracted Analyses, these
         # retracted analyses won't be created/shown in the new AR
-        workflow = get_tool("portal_workflow")
+        workflow = getToolByName(self, "portal_workflow")
         analyses = [x for x in ans
-                    if workflow.getInfoFor(x, "review_state") != "retracted"]
+                if workflow.getInfoFor(x, "review_state") not in ("retracted")]
         for an in analyses:
-            nan = create_analysis(newar, an)
-            changeWorkflowState(
-                nan, 'bika_analysis_workflow', 'to_be_verified')
+            try:
+                nan = _createObjectByType("Analysis", newar, an.getKeyword())
+            except Exception as e:
+                from bika.lims import logger
+                logger.warn('Cannot create analysis %s inside %s (%s)'%
+                            an.getService().Title(), newar, e)
+                continue
+            nan.setService(an.getService())
+            nan.setCalculation(an.getCalculation())
+            nan.setInterimFields(an.getInterimFields())
+            nan.setResult(an.getResult())
+            nan.setResultDM(an.getResultDM())
+            nan.setRetested = False,
+            nan.setMaxTimeAllowed(an.getMaxTimeAllowed())
+            nan.setDueDate(an.getDueDate())
+            nan.setDuration(an.getDuration())
+            nan.setReportDryMatter(an.getReportDryMatter())
+            nan.setAnalyst(an.getAnalyst())
+            nan.setInstrument(an.getInstrument())
+            nan.setSamplePartition(an.getSamplePartition())
+            nan.unmarkCreationFlag()
+            zope.event.notify(ObjectInitializedEvent(nan))
+            changeWorkflowState(nan, 'bika_analysis_workflow',
+                                'to_be_verified')
             nan.reindexObject()
 
         newar.reindexObject()
