@@ -9,6 +9,7 @@ from bika.lims import logger
 from bika.lims.permissions import ViewRetractedAnalyses
 from bika.lims.utils import t, dicts_to_dict
 from bika.lims.utils.analysis import create_analysis
+from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from decimal import Decimal
 from Products.Archetypes.public import *
 from Products.Archetypes.Registry import registerField
@@ -68,7 +69,7 @@ class ARAnalysesField(ObjectField):
             retracted = mtool.checkPermission(ViewRetractedAnalyses,
                                               instance)
 
-        bac = getToolByName(instance, 'bika_analysis_catalog')
+        bac = getToolByName(instance, CATALOG_ANALYSIS_LISTING)
         contentFilter = dict([(k, v) for k, v in kwargs.items()
                               if k in bac.indexes()])
         contentFilter['portal_type'] = "Analysis"
