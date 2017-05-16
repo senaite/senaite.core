@@ -259,12 +259,14 @@ class AnalysesView(BikaListingView):
         the instruments allowed for this Analysis
         :return: a list of tuples as [(UID,Title),(),...]
         """
-        service = analysis.getAnalysisService()
+        bsc = get_tool('bika_setup_catalog')
+        brains = bsc(portal_type='AnalysisService', UID=analysis.getServiceUID)
+        service = brains[0].getObject()
         if not service:
             return []
 
         # manual entry of results is set, only returns the methods set manually
-        if analysis.getInstrumentEntryOfResults():
+        if analysis.getInstrumentEntryOfResults:
             res = [(ins.getRawMethod(), ins.getMethod().Title())
                    for ins in service.getInstruments() if ins.getMethod()]
         # Otherwise (if Instrument Entry Of Results is set)
@@ -338,7 +340,7 @@ class AnalysesView(BikaListingView):
         """
         ret = []
         if analysis:
-            if not analysis.getInstrumentEntryOfResults():
+            if not analysis.getInstrumentEntryOfResults:
                 return []
 
             method = analysis.getMethod() \
