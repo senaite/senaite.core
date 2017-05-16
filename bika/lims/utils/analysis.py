@@ -384,10 +384,12 @@ def get_method_instrument_constraints(context, uids):
             cached_servs[cachedkey][suid] = {}
         constraints[auid] = {}
 
+        allowed_instruments = analysis.getAllowedInstruments()
+
         # Analysis allows manual/instrument entry?
         s_mentry = analysis.getManualEntryOfResults()
         s_ientry = analysis.getInstrumentEntryOfResults()
-        s_instrums = analysis.getAllowedInstruments() if s_ientry else []
+        s_instrums = allowed_instruments if s_ientry else []
         a_dinstrum = analysis.getInstrument() if s_ientry else None
         s_methods = analysis.getAllowedMethods()
         s_dmethod = analysis.getMethod()
@@ -411,7 +413,7 @@ def get_method_instrument_constraints(context, uids):
                           if i.UID() in s_instrums]
             else:
                 # What about instruments without a method assigned?
-                instrs = [i for i in analysis.getAllowedInstruments()
+                instrs = [i for i in allowed_instruments
                           if i.UID() in s_instrums and not i.getMethods()]
 
             instuids = [i.UID() for i in instrs]

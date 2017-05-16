@@ -428,7 +428,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """Returns True if the result for this analysis represents an Upper 
         Detection Limit. Otherwise, returns False
         """
-        if self.isAboveLowerDetectionLimit():
+        if self.isAboveUpperDetectionLimit():
             if self.getDetectionLimitOperand() == '>':
                 return True
 
@@ -753,7 +753,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return uid in self.getAllowedMethods()
 
     @security.public
-    def getAllowedMethods(self, onlyuids=True):
+    def getAllowedMethods(self):
         """Returns the allowed methods for this analysis. If manual entry of 
         results is set, only returns the methods set manually. Otherwise (if 
         Instrument Entry Of Results is set) returns the methods assigned to 
@@ -763,45 +763,31 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         if not service:
             return []
 
+        methods = []
         if self.getInstrumentEntryOfResults():
-            uids = [ins.getRawMethod() for ins in service.getInstruments()]
-
+            for instrument in service.getInstruments():
+                methods.extend(instrument.getMethods())
         else:
             # Get only the methods set manually
-            uids = service.getRawMethods()
-
-        if not onlyuids:
-            uc = get_tool('uid_catalog')
-            meths = [item.getObject() for item in uc(UID=uids)]
-            return meths
-
-        return uids
+            methods = service.getMethods()
+        return list(set(methods))
 
     @security.public
-    def getAllowedInstruments(self, onlyuids=True):
-        """Returns the allowed instruments for this analysis. Gets the 
-        instruments assigned to the allowed methods
+    def getAllowedInstruments(self):
+        """Returns the allowed instruments for this Analysis Service. Gets the 
+        instruments assigned to the allowed methods.
         """
         service = self.getAnalysisService()
         if not service:
             return []
 
-        uids = []
-        if service.getInstrumentEntryOfResults():
-            uids = service.getRawInstruments()
-
-        elif service.getManualEntryOfResults():
-            meths = self.getAllowedMethods(False)
-            for meth in meths:
-                uids += meth.getInstrumentUIDs()
-            set(uids)
-
-        if onlyuids is False:
-            uc = get_tool('uid_catalog')
-            instrs = [item.getObject() for item in uc(UID=uids)]
-            return instrs
-
-        return uids
+        instruments = []
+        if self.getInstrumentEntryOfResults():
+            instruments = service.getInstruments()
+        elif self.getManualEntryOfResults():
+            for meth in self.getAllowedMethods():
+                instruments += meth.getInstruments()
+        return list(set(instruments))
 
     @security.public
     def getDefaultMethod(self):

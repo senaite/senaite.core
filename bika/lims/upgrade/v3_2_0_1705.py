@@ -123,6 +123,8 @@ def BaseAnalysisRefactoring(portal):
     ut.delColumn('bika_analysis_catalog', 'getServiceDefaultInstrumentTitle')
     ut.delColumn('bika_analysis_catalog', 'getServiceDefaultInstrumentUID')
     ut.delColumn('bika_analysis_catalog', 'getServiceDefaultInstrumentURL')
+    # xxx
+    ut.addColumn('bika_analysis_catalog', 'getAllowedInstrumentUIDs')
     # getAllowedMethodsAsTuples was used once; no negative impace from replacing
     # it's usage with the actual vocabulary instead of indexing the value.
     ut.delColumn('bika_analysis_catalog', 'getAllowedMethodsAsTuples')

@@ -317,7 +317,7 @@ class AnalysesView(BikaListingView):
                     'ResultText': _('None')}]
         return ret
 
-    def get_instruments_vocabulary(self, analysis = None):
+    def get_instruments_vocabulary(self, analysis_brain):
         """Returns a vocabulary with the valid and active instruments available
         for the analysis passed in.
         If the analysis is None, the function returns all the active and
@@ -336,28 +336,30 @@ class AnalysesView(BikaListingView):
         :type analysis: bika.lims.content.analysis.Analysis
                         bika.lims.content.referenceAnalysis.ReferenceAnalysis
         :returns: A vocabulary with the instruments for the analysis
-        :rtype: A list of dicts
+        :rtype: A list of dicts: [{'ResultValue':UID, 'ResultText':Title}]
         """
         ret = []
-        if analysis:
-            if not analysis.getInstrumentEntryOfResults:
-                return []
+        if not analysis_brain or not analysis_brain.getInstrumentEntryOfResults:
+            return []
 
-            method = analysis.getMethod() \
-                if hasattr(analysis, 'getMethod') else None
-            instruments = method.getInstruments() \
-                if method else analysis.getAllowedInstruments()
+        bsc = get_tool('bika_setup_catalog')
 
+        m_uid = analysis_brain.getMethodUID
+        method = None
+        if m_uid:
+            brains = bsc(portal_type='Method', UID=m_uid)
+            method = brains[0].getObject() if brains else None
+        if method:
+            instruments = method.getInstruments()
         else:
-            # All active instruments
-            brains = self.bsc(portal_type='Instrument', inactive_state='active')
-            instruments = [brain.getObject() for brain in brains]
+            i_uids = analysis_brain.getAllowedInstrumentUIDs
+            brains = bsc(portal_type='Instrument', UID=i_uids)
+            instruments = [b.getObject() for b in brains]
 
         for ins in instruments:
-            if analysis \
-                and analysis.portal_type in ['ReferenceAnalysis',
-                                             'DuplicateAnalysis'] \
-                and not ins.isOutOfDate():
+            if analysis_brain.portal_type in [
+                'ReferenceAnalysis', 'DuplicateAnalysis'] \
+                    and not ins.isOutOfDate():
                 # Add the 'invalid', but in-date instrument
                 ret.append({'ResultValue': ins.UID(),
                             'ResultText': ins.Title()})
@@ -486,7 +488,6 @@ class AnalysesView(BikaListingView):
             item['st_uid'] = obj.getSampleTypeUID
 
         if checkPermission(ManageBika, self.context):
-            latest = self.rc.lookupObject(obj.getServiceUID).version_id
             item['Service'] = obj.Title
             item['class']['Service'] = "service_title"
 

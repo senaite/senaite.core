@@ -97,6 +97,7 @@ _columns_list = [
     'getServiceUID',
     'getDepartmentUID',
     'getInstrumentEntryOfResults',
+    'getAllowedInstrumentUIDs',
     'getInstrumentUID',
     'getResultsRange',
     'getSampleTypeUID',
