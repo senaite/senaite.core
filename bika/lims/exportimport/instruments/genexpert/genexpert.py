@@ -23,7 +23,10 @@ title = "GenExpert"
 
 
 def Import(context, request):
-    """ Import Form
+    """
+    This function handles requests when user uploads a file and submits. Gets
+    requests parameters, and creates a Parser object. Then based on that
+    parser object, creates an Importer object and calls its importer.
     """
     infile = request.form['genexpert_file']
     fileformat = request.form['format']
@@ -97,6 +100,7 @@ def Import(context, request):
 SEPARATOR = ','
 SECTION_RESULT_TABLE = 'RESULT TABLE'
 SUBSECTION_ANALYTE_RESULT = 'Analyte Result'
+# Results values should match the ones from Analysis Services from Bika.
 RESULT_VALUE_INDETERMINE = 1
 RESULT_VALUE_NEGATIVE = 2
 RESULT_VALUE_POSITIVE = 3
@@ -219,6 +223,9 @@ class GenExpertParser(InstrumentCSVResultsFileParser):
     def _submit_result(self):
         """
         Adding current values as a Raw Result and Resetting everything.
+        Notice that we are not calculating final result of assay. We just set
+        NP and GP values and in Bika, AS will have a Calculation to generate
+        final result based on NP and GP values.
         """
         if self._cur_res_id and self._cur_values:
             # Setting DefaultResult just because it is obligatory. However,
@@ -226,10 +233,18 @@ class GenExpertParser(InstrumentCSVResultsFileParser):
             # GP and NP results.
             self._cur_values[self._keyword]['DefaultResult'] = 'DefResult'
             self._cur_values[self._keyword]['DefResult'] = ''
+            # If we add results as a raw result, AnalysisResultsImporter will
+            # automatically import them to the system. The only important thing
+            # here is to respect the dictionary format.
             self._addRawResult(self._cur_res_id, self._cur_values)
             self._reset()
 
     def _format_keyword(self, keyword):
+        """
+        Removing special character from a keyword. Analysis Services must have
+        this kind of keywords. E.g. if assay name from GenExpert Instrument is
+        'Ebola RUO', an AS must be created on Bika with the keyword 'EbolaRUO'
+        """
         import re
         result = ''
         if keyword:

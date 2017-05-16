@@ -93,6 +93,7 @@ PARSERS = [
            ['thermoscientific.multiskan.go', 'ThermoScientificMultiskanGOCSVParser'],
            ['myself.myinstrument', 'MyInstrumentCSVParser'],
            ['nuclisens.easyq', 'EasyQParser'],
+           ['genexpert.genexpert', 'GenExpertParser'],
            ]
 
 def getExim(exim_id):
