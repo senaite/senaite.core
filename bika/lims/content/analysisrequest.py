@@ -2943,7 +2943,7 @@ class AnalysisRequest(BaseFolder):
         """
         ans = [an.getObject() for an in self.getAnalyses()]
         depts = [an.getService().getDepartment() for an in ans if
-                 an.getService().getDepartment()]
+                 an.getService()]
         return set(depts)
 
     # TODO-performance: This function is very time consuming because
