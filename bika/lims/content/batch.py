@@ -22,6 +22,7 @@ from bika.lims.permissions import EditBatch
 from plone.indexer import indexer
 from Products.Archetypes.references import HoldingReference
 from Products.ATExtensions.ateapi import RecordsField
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.browser.widgets import RecordsWidget as bikaRecordsWidget
 
 from bika.lims.browser.widgets import ReferenceWidget
@@ -291,15 +292,20 @@ class Batch(ATFolder):
             ret.append((p.UID, p.Title))
         return DisplayList(ret)
 
-    def getAnalysisRequests(self, **kwargs):
-        """ Return all the Analysis Requests linked to the Batch
+    def getAnalysisRequestsBrains(self, **kwargs):
+        """ Return all the Analysis Requests brains linked to the Batch
         kargs are passed directly to the catalog.
         """
-        query = kwargs
-        query['portal_type'] = 'AnalysisRequest'
-        query['BatchUID'] = self.UID()
-        bc = api.portal.get_tool('bika_catalog')
-        brains = bc(query)
+        kwargs['getBatchUID'] = self.UID()
+        catalog = getToolByName(self, CATALOG_ANALYSIS_REQUEST_LISTING)
+        brains = catalog(kwargs)
+        return brains
+
+    def getAnalysisRequests(self, **kwargs):
+        """ Return all the Analysis Requests objects linked to the Batch
+        kargs are passed directly to the catalog.
+        """
+        brains = self.getAnalysisRequestsBrains(kwargs)
         return [b.getObject() for b in brains]
 
     def isOpen(self):

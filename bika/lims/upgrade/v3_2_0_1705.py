@@ -34,7 +34,7 @@ def upgrade(tool):
     # Refresh affected catalogs
     ut.refreshCatalogs()
 
-    logger.info('{0} upgraded to version {1}'.format(product, version))
+    logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
 def BaseAnalysisRefactoring(portal):
@@ -123,6 +123,8 @@ def BaseAnalysisRefactoring(portal):
     ut.delColumn('bika_analysis_catalog', 'getServiceDefaultInstrumentTitle')
     ut.delColumn('bika_analysis_catalog', 'getServiceDefaultInstrumentUID')
     ut.delColumn('bika_analysis_catalog', 'getServiceDefaultInstrumentURL')
+    #
+    ut.addColumn('bika_analysis_catalog', 'getNumberOfVerifications')
     # xxx
     ut.addColumn('bika_analysis_catalog', 'getAllowedInstrumentUIDs')
     # getAllowedMethodsAsTuples was used once; no negative impace from replacing

@@ -3,12 +3,11 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from decimal import Decimal
-
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.Registry import registerField
 from Products.Archetypes.public import *
 from Products.Archetypes.utils import shasattr
+from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.permissions import ViewRetractedAnalyses
 from bika.lims.utils.analysis import create_analysis
 from plone.api.portal import get_tool
@@ -64,7 +63,7 @@ class ARAnalysesField(ObjectField):
             retracted = mtool.checkPermission(ViewRetractedAnalyses,
                                               instance)
 
-        bac = get_tool('bika_analysis_catalog')
+        bac = get_tool(CATALOG_ANALYSIS_LISTING)
         contentFilter = dict([(k, v) for k, v in kwargs.items()
                               if k in bac.indexes()])
         contentFilter['portal_type'] = "Analysis"
@@ -80,8 +79,8 @@ class ARAnalysesField(ObjectField):
                 if full_objects or not get_reflexed:
                     a_obj = a.getObject()
                     # Check if analysis has been reflexed
-                    if not get_reflexed \
-                            and a_obj.getReflexRuleActionsTriggered() != '':
+                    if not get_reflexed and \
+                            a_obj.getReflexRuleActionsTriggered() != '':
                         continue
                     if full_objects:
                         a = a_obj
