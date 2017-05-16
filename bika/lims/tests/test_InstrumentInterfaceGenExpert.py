@@ -17,7 +17,7 @@ from Products.CMFPlone.utils import _createObjectByType
 from bika.lims.utils.analysisrequest import create_analysisrequest
 from bika.lims.exportimport import instruments
 from bika.lims.exportimport.instruments.genexpert.genexpert \
-                    import GenExpertParser, GenExpertImporter
+                    import GeneXpertParser, GeneXpertImporter
 from bika.lims.browser.resultsimport.resultsimport import ConvertToUploadFile
 import unittest
 import transaction
@@ -30,21 +30,21 @@ except ImportError:
     import unittest
 
 
-class Test_InstrumentInterfaceGenExpert(BikaFunctionalTestCase):
+class Test_InstrumentInterfaceGeneXpert(BikaFunctionalTestCase):
     """
-    Tests of GenExpert Interface import.
+    Tests of GeneXpert Interface import.
     """
     layer = BIKA_FUNCTIONAL_TESTING
 
     def setUp(self):
-        super(Test_InstrumentInterfaceGenExpert, self).setUp()
+        super(Test_InstrumentInterfaceGeneXpert, self).setUp()
         login(self.portal, TEST_USER_NAME)
 
     def tearDown(self):
         logout()
-        super(Test_InstrumentInterfaceGenExpert, self).tearDown()
+        super(Test_InstrumentInterfaceGeneXpert, self).tearDown()
 
-    def test_InstrumentInterfaceGenExpert(self):
+    def test_InstrumentInterfaceGeneXpert(self):
 
         # Checking if genexpert has already been added to Interface list.
         exims = []
@@ -78,12 +78,11 @@ class Test_InstrumentInterfaceGenExpert(BikaFunctionalTestCase):
         # Importing test file.
         import os
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        temp_file = codecs.open(dir_path+"/files/GenExpert.csv",
+        temp_file = codecs.open(dir_path+"/files/GeneXpert.csv",
                                 encoding='utf-16-le')
         test_file = ConvertToUploadFile(temp_file)
-        genex_parser = GenExpertParser(test_file)
-        genex_parser = GenExpertParser(test_file)
-        importer = GenExpertImporter(parser=genex_parser,
+        genex_parser = GeneXpertParser(test_file)
+        importer = GeneXpertImporter(parser=genex_parser,
                                      context=self.portal,
                                      idsearchcriteria=['getId', 'getSampleID', 'getClientSampleID'],
                                      allowed_ar_states=['sample_received', 'attachment_due', 'to_be_verified'],
@@ -103,6 +102,6 @@ class Test_InstrumentInterfaceGenExpert(BikaFunctionalTestCase):
 
 def test_suite():
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(Test_InstrumentInterfaceGenExpert))
+    suite.addTest(unittest.makeSuite(Test_InstrumentInterfaceGeneXpert))
     suite.layer = BIKA_FUNCTIONAL_TESTING
     return suite

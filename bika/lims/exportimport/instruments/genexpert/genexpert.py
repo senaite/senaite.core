@@ -5,7 +5,7 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-""" GenExpert
+""" GeneXpert
 """
 import csv
 import json
@@ -19,7 +19,7 @@ from bika.lims import bikaMessageFactory as _
 
 from bika.lims.utils import t
 
-title = "GenExpert"
+title = "GeneXpert"
 
 
 def Import(context, request):
@@ -43,7 +43,7 @@ def Import(context, request):
     if not hasattr(infile, 'filename'):
         errors.append(_("No file selected"))
     if fileformat == 'csv':
-        parser = GenExpertParser(infile)
+        parser = GeneXpertParser(infile)
     else:
         errors.append(t(_("Unrecognized file format ${fileformat}",
                           mapping={"fileformat": fileformat})))
@@ -74,7 +74,7 @@ def Import(context, request):
         elif sample == 'sample_clientsid':
             sam = ['getSampleID', 'getClientSampleID']
 
-        importer = GenExpertImporter(parser=parser,
+        importer = GeneXpertImporter(parser=parser,
                                      context=context,
                                      idsearchcriteria=sam,
                                      allowed_ar_states=status,
@@ -106,7 +106,7 @@ RESULT_VALUE_NEGATIVE = 2
 RESULT_VALUE_POSITIVE = 3
 
 
-class GenExpertParser(InstrumentCSVResultsFileParser):
+class GeneXpertParser(InstrumentCSVResultsFileParser):
 
     def __init__(self, infile):
         InstrumentCSVResultsFileParser.__init__(self, infile,
@@ -242,7 +242,7 @@ class GenExpertParser(InstrumentCSVResultsFileParser):
     def _format_keyword(self, keyword):
         """
         Removing special character from a keyword. Analysis Services must have
-        this kind of keywords. E.g. if assay name from GenExpert Instrument is
+        this kind of keywords. E.g. if assay name from GeneXpert Instrument is
         'Ebola RUO', an AS must be created on Bika with the keyword 'EbolaRUO'
         """
         import re
@@ -271,7 +271,7 @@ class GenExpertParser(InstrumentCSVResultsFileParser):
         self._keyword = ''
 
 
-class GenExpertImporter(AnalysisResultsImporter):
+class GeneXpertImporter(AnalysisResultsImporter):
 
     def __init__(self, parser, context, idsearchcriteria, override,
                  allowed_ar_states=None, allowed_analysis_states=None,
