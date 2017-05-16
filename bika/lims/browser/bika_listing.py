@@ -586,7 +586,7 @@ class BikaListingView(BrowserView):
                 # We cannot sort for a column that doesn't exist!
                 msg = "{}: sort_on is '{}', not a valid column".format(
                     self, self.sort_on)
-                logger.error(msg)
+                logger.warning(msg)
                 self.sort_on = None
 
         if self.manual_sort_on:
@@ -597,7 +597,7 @@ class BikaListingView(BrowserView):
                 # We cannot sort for a column that doesn't exist!
                 msg = "{}: manual_sort_on is '{}', not a valid column".format(
                     self, self.manual_sort_on)
-                logger.error(msg)
+                logger.warning(msg)
                 self.manual_sort_on = None
 
         if self.sort_on or self.manual_sort_on:
