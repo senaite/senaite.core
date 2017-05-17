@@ -251,33 +251,6 @@ class AnalysesView(BikaListingView):
             return '< %s' % spec['max']
         return ''
 
-    @staticmethod
-    def getAllowedMethodsAsTuples(analysis):
-        """Returns the allowed methods for this analysis. If manual entry of
-        results is set, only returns the methods set manually. Otherwise 
-        (if Instrument Entry Of Results is set) returns the methods assigned to 
-        the instruments allowed for this Analysis
-        :return: a list of tuples as [(UID,Title),(),...]
-        """
-        bsc = get_tool('bika_setup_catalog')
-        brains = bsc(portal_type='AnalysisService', UID=analysis.getServiceUID)
-        service = brains[0].getObject()
-        if not service:
-            return []
-
-        # manual entry of results is set, only returns the methods set manually
-        if analysis.getInstrumentEntryOfResults:
-            res = [(ins.getRawMethod(), ins.getMethod().Title())
-                   for ins in service.getInstruments() if ins.getMethod()]
-        # Otherwise (if Instrument Entry Of Results is set)
-        # returns the methods assigned to the instruments allowed for
-        # this Analysis
-        else:
-            # Get only the methods set manually
-            res = [(method.UID(), method.Title())
-                   for method in service.getMethods()]
-        return res
-
     def get_methods_vocabulary(self, analysis=None):
         """
         Returns a vocabulary with all the methods available for the passed in
@@ -301,17 +274,17 @@ class AnalysesView(BikaListingView):
         ret = []
         if analysis:
             # This function returns  a list of tuples as [(UID,Title),(),...]
-            methods = self.getAllowedMethods(analysis)
-            methods = methods if methods else []
-            for uid, title in methods:
-                ret.append({'ResultValue': uid,
-                            'ResultText': title})
+            uids = analysis.getAllowedMethodUIDs
+            # inactive_state is not specified below, because it is not relevant.
+            # If the analysis was created with some method, that is the method
+            # we want to permit the user select.
+            brains = self.bsc(portal_type='Method', UID=uids)
         else:
             # All active methods
             brains = self.bsc(portal_type='Method', inactive_state='active')
-            for brain in brains:
-                ret.append({'ResultValue': brain.UID,
-                            'ResultText': brain.title})
+        for brain in brains:
+            ret.append({'ResultValue': brain.UID,
+                        'ResultText': brain.Title})
         if not ret:
             ret = [{'ResultValue': '',
                     'ResultText': _('None')}]
@@ -347,13 +320,17 @@ class AnalysesView(BikaListingView):
         m_uid = analysis_brain.getMethodUID
         method = None
         if m_uid:
+            # inactive_state is not specified below, because it is not relevant.
+            # If the analysis was created with some method, that is the method
+            # we want to permit the user select.
             brains = bsc(portal_type='Method', UID=m_uid)
             method = brains[0].getObject() if brains else None
         if method:
             instruments = method.getInstruments()
         else:
             i_uids = analysis_brain.getAllowedInstrumentUIDs
-            brains = bsc(portal_type='Instrument', UID=i_uids)
+            brains = bsc(
+                portal_type='Instrument', UID=i_uids, inactive_state='active')
             instruments = [b.getObject() for b in brains]
 
         for ins in instruments:

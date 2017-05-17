@@ -773,6 +773,12 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return list(set(methods))
 
     @security.public
+    def getAllowedMethodUIDs(self):
+        """Used to populate getAllowedMethodUIDs metadata
+        """
+        return [m.UID() for m in self.getAllowedMethods()]
+
+    @security.public
     def getAllowedInstruments(self):
         """Returns the allowed instruments for this Analysis Service. Gets the 
         instruments assigned to the allowed methods.
@@ -788,6 +794,12 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             for meth in self.getAllowedMethods():
                 instruments += meth.getInstruments()
         return list(set(instruments))
+
+    @security.public
+    def getAllowedInstrumentUIDs(self):
+        """Used to populate getAllowedInstrumentUIDs metadata
+        """
+        return [i.UID() for i in self.getAllowedInstruments()]
 
     @security.public
     def getDefaultMethod(self):

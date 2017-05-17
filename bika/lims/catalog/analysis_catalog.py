@@ -82,6 +82,7 @@ _columns_list = [
     'getMethodUID',
     'getMethodTitle',
     'getMethodURL',
+    'getAllowedMethodUIDs',
     'getAnalyst',
     'getAnalystName',
     'hasAttachment',
