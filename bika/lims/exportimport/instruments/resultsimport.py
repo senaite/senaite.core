@@ -193,8 +193,11 @@ class InstrumentResultsFileParser(Logger):
 
 class InstrumentCSVResultsFileParser(InstrumentResultsFileParser):
 
-    def __init__(self, infile):
+    def __init__(self, infile, encoding=None):
         InstrumentResultsFileParser.__init__(self, infile, 'CSV')
+        # Some Instruments can generate files with different encodings, so we
+        # may need this parameter
+        self._encoding = encoding
 
     def parse(self):
         infile = self.getInputFile()
@@ -202,7 +205,11 @@ class InstrumentCSVResultsFileParser(InstrumentResultsFileParser):
         jump = 0
         # We test in import functions if the file was uploaded
         try:
-            f = open(infile.name, 'rU')
+            if self._encoding:
+                import codecs
+                f = codecs.open(infile.name, 'r', encoding=self._encoding)
+            else:
+                f = open(infile.name, 'rU')
         except AttributeError:
             f = infile
         for line in f.readlines():
