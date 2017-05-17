@@ -378,7 +378,6 @@ class AnalysisService(AbstractBaseAnalysis):
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
-
     _at_rename_after_creation = True
 
     def _renameAfterCreation(self, check_auto_id=False):

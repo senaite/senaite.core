@@ -84,7 +84,7 @@ def create_analysis(context, source, **kwargs):
     except WorkflowException:
         # The analysis may have been transitioned already!
         # I am leaving this code here though, to prevent regression.
-        logger.error('The analysis %s may have been transitioned already' %
+        logger.warning('The analysis %s may have been transitioned already' %
                      analysis.getId())
     # Return the newly created analysis
     return analysis

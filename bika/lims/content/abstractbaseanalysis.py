@@ -753,10 +753,6 @@ class AbstractBaseAnalysis(BaseContent):  # XXX BaseContent?  is really needed?
     schema = schema
     displayContentsTab = False
 
-    # noinspection PyMissingConstructor
-    def __init__(self):
-        raise NotImplementedError("This class cannot be instantiated directly.")
-
     @security.public
     def _getCatalogTool(self):
         from bika.lims.catalog import getCatalog
@@ -765,6 +761,7 @@ class AbstractBaseAnalysis(BaseContent):  # XXX BaseContent?  is really needed?
     @security.public
     def Title(self):
         return _c(self.title)
+
     @security.public
     def getDefaultVAT(self):
         """Return default VAT from bika_setup 

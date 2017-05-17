@@ -182,7 +182,7 @@ schema = schema.copy() + Schema((
 
 
 class AbstractAnalysis(AbstractBaseAnalysis):
-    implements(IAnalysis, ISamplePrepWorkflow)
+    implements(ISamplePrepWorkflow)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
