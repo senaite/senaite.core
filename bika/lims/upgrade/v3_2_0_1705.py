@@ -8,6 +8,7 @@ from bika.lims import logger
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 import traceback
 import sys
 import transaction
@@ -32,6 +33,12 @@ def upgrade(tool):
 
     # Add getId column to bika_catalog
     ut.addColumn(CATALOG_ANALYSIS_LISTING, 'getNumberOfVerifications')
+
+    # Reindexing bika_catalog_analysisrequest_listing in order to obtain the
+    # correct getDateXXXs
+    ut.addIndexAndColumn(CATALOG_ANALYSIS_REQUEST_LISTING, 'getDateVerified', 'DateIndex')
+    if CATALOG_ANALYSIS_REQUEST_LISTING not in ut.refreshcatalog:
+        ut.refreshcatalog.append(CATALOG_ANALYSIS_REQUEST_LISTING)
 
     # Refresh affected catalogs
     ut.refreshCatalogs()
