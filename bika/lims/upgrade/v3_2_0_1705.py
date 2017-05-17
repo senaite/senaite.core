@@ -36,6 +36,7 @@ def upgrade(tool):
 
     # Reindexing bika_catalog_analysisrequest_listing in order to obtain the
     # correct getDateXXXs
+    ut.addIndexAndColumn(CATALOG_ANALYSIS_REQUEST_LISTING, 'getDateVerified', 'DateIndex')
     if CATALOG_ANALYSIS_REQUEST_LISTING not in ut.refreshcatalog:
         ut.refreshcatalog.append(CATALOG_ANALYSIS_REQUEST_LISTING)
 
