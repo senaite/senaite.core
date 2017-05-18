@@ -766,10 +766,12 @@ class AnalysisResultsImporter(Logger):
             else:
                 interimsout.append(interim)
 
+        fields_to_reindex = []
         if len(interimsout) > 0:
             analysis.setInterimFields(interimsout)
             # won't be doing setResult below, so manually calculate result.
-            analysis.calculateResult()
+            analysis.calculateResult(override=self._override[1])
+            fields_to_reindex.append('Result')
 
         if resultsaved == False and (values.get(defresultkey, '')
                                      or values.get(defresultkey, '') == 0
@@ -798,5 +800,8 @@ class AnalysisResultsImporter(Logger):
             and analysis.portal_type == 'Analysis' \
             and (analysis.getRemarks() != '' or self._override[1] == True):
             analysis.setRemarks(values['Remarks'])
+            fields_to_reindex.append('Remarks')
 
+        if len(fields_to_reindex):
+            analysis.reindexObject(idxs=fields_to_reindex)
         return resultsaved or len(interimsout) > 0
