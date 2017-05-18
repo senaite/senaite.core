@@ -342,7 +342,6 @@ class TestLimitDetections(BikaFunctionalTestCase):
             self.assertEqual(an.isLowerDetectionLimit(), case['isldl'])
             self.assertEqual(an.isUpperDetectionLimit(), case['isudl'])
             self.assertEqual(float(an.getResult()), case['expresult'])
-            #import pdb; pdb.set_trace()
             self.assertEqual(an.getFormattedResult(html=False), case['expformattedresult'])
             expres = case['expformattedresult']
             expres = expres.replace('< ', '&lt; ') if an.isBelowLowerDetectionLimit() else expres
