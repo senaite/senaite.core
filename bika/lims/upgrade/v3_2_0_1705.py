@@ -33,10 +33,14 @@ def upgrade(tool):
 
     # Add getId column to bika_catalog
     ut.addColumn(CATALOG_ANALYSIS_LISTING, 'getNumberOfVerifications')
+    # Add SearchableText index to analysis requests catalog
+    ut.addIndex(
+        CATALOG_ANALYSIS_REQUEST_LISTING, 'SearchableText', 'ZCTextIndex')
 
     # Reindexing bika_catalog_analysisrequest_listing in order to obtain the
     # correct getDateXXXs
-    ut.addIndexAndColumn(CATALOG_ANALYSIS_REQUEST_LISTING, 'getDateVerified', 'DateIndex')
+    ut.addIndexAndColumn(
+        CATALOG_ANALYSIS_REQUEST_LISTING, 'getDateVerified', 'DateIndex')
     if CATALOG_ANALYSIS_REQUEST_LISTING not in ut.refreshcatalog:
         ut.refreshcatalog.append(CATALOG_ANALYSIS_REQUEST_LISTING)
 
