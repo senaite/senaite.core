@@ -31,6 +31,7 @@ from eltra.cs import cs2000
 from rigaku.supermini import wxrf
 from myself import myinstrument
 from nuclisens import easyq
+from genexpert import genexpert
 
 __all__ = ['abaxis.vetscan.vs2',
            'agilent.masshunter.quantitative',
@@ -59,6 +60,7 @@ __all__ = ['abaxis.vetscan.vs2',
            'thermoscientific.multiskan.go',
            'myself.myinstrument',
            'nuclisens.easyq',
+           'genexpert.genexpert'
            ]
 
 # Parsers are for auto-import. If empty, then auto-import won't wun for that
@@ -91,6 +93,7 @@ PARSERS = [
            ['thermoscientific.multiskan.go', 'ThermoScientificMultiskanGOCSVParser'],
            ['myself.myinstrument', 'MyInstrumentCSVParser'],
            ['nuclisens.easyq', 'EasyQParser'],
+           ['genexpert.genexpert', 'GeneXpertParser'],
            ]
 
 def getExim(exim_id):
