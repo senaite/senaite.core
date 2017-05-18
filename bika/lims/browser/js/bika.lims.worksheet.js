@@ -153,7 +153,7 @@ function WorksheetAddQCAnalysesView() {
             }
             // tell the form handler which services were selected
             selected_service_uids = [];
-            $.each($("input:checked"), function(i,e){
+            $.each($(".worksheet_add_control_services .bika-listing-table input:checked"), function(i,e){
                 selected_service_uids.push($(e).val());
             });
             ssuids = selected_service_uids.join(",");

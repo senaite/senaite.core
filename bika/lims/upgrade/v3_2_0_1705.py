@@ -33,6 +33,9 @@ def upgrade(tool):
 
     # Add getId column to bika_catalog
     ut.addColumn(CATALOG_ANALYSIS_LISTING, 'getNumberOfVerifications')
+    # For reference samples
+    ut.addColumn(CATALOG_ANALYSIS_LISTING, 'getParentUID')
+    ut.addColumn(CATALOG_ANALYSIS_LISTING, 'getDateSampled')
 
     # Reindexing bika_catalog_analysisrequest_listing in order to obtain the
     # correct getDateXXXs
