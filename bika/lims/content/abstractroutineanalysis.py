@@ -5,33 +5,20 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-import cgi
-import math
-from decimal import Decimal
-
 from AccessControl import ClassSecurityInfo
-from DateTime import DateTime
-from Products.Archetypes.Field import StringField, BooleanField, IntegerField, \
-    TextField, FixedPointField
+
+from Products.Archetypes.Field import BooleanField, FixedPointField, \
+    IntegerField, StringField, TextField
 from Products.Archetypes.Schema import Schema
-from Products.CMFCore.WorkflowCore import WorkflowException
-from bika.lims import bikaMessageFactory as _, deprecated
-from bika.lims import logger
-from bika.lims.browser.fields import UIDReferenceField, DateTimeField
-from bika.lims.browser.widgets import DateTimeWidget, IntegerWidget, \
-    DecimalWidget
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import DateTimeField, UIDReferenceField
+from bika.lims.browser.widgets import DateTimeWidget, DecimalWidget, \
+    IntegerWidget
 from bika.lims.content.abstractanalysis import AbstractAnalysis
 from bika.lims.content.abstractanalysis import schema
-from bika.lims.content.reflexrule import doReflexRuleAction
-from bika.lims.interfaces import IAnalysis, ISamplePrepWorkflow
-from bika.lims.permissions import Verify as VerifyPermission
-from bika.lims.utils import changeWorkflowState, formatDecimalMark
-from bika.lims.utils import drop_trailing_zeros_decimal
-from bika.lims.utils.analysis import create_analysis, format_numeric_result
-from bika.lims.utils.analysis import get_significant_digits
-from bika.lims.workflow import getTransitionDate, skip
-from plone.api.portal import get_tool
-from plone.api.user import has_permission
+from bika.lims.interfaces import IAnalysis, ISamplePrepWorkflow, \
+    IRoutineAnalysis
+from bika.lims.workflow import getTransitionDate
 from zope.interface import implements
 
 # Attachments which are added manually in the UI, or automatically when
@@ -194,7 +181,7 @@ schema = schema.copy() + Schema((
 
 
 class AbstractRoutineAnalysis(AbstractAnalysis):
-    implements(IAnalysis, ISamplePrepWorkflow)
+    implements(IAnalysis, IRoutineAnalysis, ISamplePrepWorkflow)
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
@@ -363,4 +350,3 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         """
         old = self.getReflexRuleActionsTriggered()
         self.setReflexRuleActionsTriggered(old + text + '|')
-

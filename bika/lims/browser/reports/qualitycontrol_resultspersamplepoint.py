@@ -34,10 +34,9 @@ class Report(BrowserView):
         return rr.get(analysis.getKeyword(), None)
 
     def ResultOutOfRange(self, analysis):
-        """ Template wants to know, is this analysis out of range?
-        We scan IResultOutOfRange adapters, and return True if any IAnalysis
-        adapters trigger a result.
-        """
+        """Template wants to know, is this analysis out of range? We scan 
+        IResultOutOfRange adapters, and return True if any IAnalysis adapters 
+        trigger a result. """
         adapters = getAdapters((analysis, ), IResultOutOfRange)
         spec = self.get_analysis_spec(analysis)
         for name, adapter in adapters:

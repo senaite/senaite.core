@@ -81,11 +81,6 @@ class ResultOutOfRange(object):
         self.context = context
 
     def __call__(self, result=None, specification=None):
-        # Other types of analysis depend on Analysis base class, and therefore
-        # also provide IAnalysis.  We allow them to register their own adapters
-        # for range checking, and manually ignore them here. etc.
-        if self.context.portal_type != 'ReferenceAnalysis':
-            return None
         workflow = getToolByName(self.context, 'portal_workflow')
         # We don't care about retracted objects
         astate = workflow.getInfoFor(self.context, 'review_state')

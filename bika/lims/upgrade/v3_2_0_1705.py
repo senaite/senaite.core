@@ -38,45 +38,37 @@ def upgrade(tool):
     return True
 
 def BaseAnalysisRefactoring(portal):
-    """Upgrade steps to be taken after radical Abstract analysis class
-    refactoring, also with migration from ReferenceField to UIDReferenceField.
-
-    References that exist before Abstract* analysis refactoring:
+    """The relationship between AnalysisService and the various types of
+    Analysis has been refactored.  The class heirarchy now looks like this:
     
-    AnalysisService
-    ===============
-        Ref=Instruments               rel=AnalysisServiceInstruments
-        Hist=Instrument               rel=AnalysisServiceInstrument
-        Ref=Methods                   rel=AnalysisServiceMethods
-        Ref=_Method                   rel=AnalysisServiceMethod
-        Ref=_Calculation              rel=AnalysisServiceCalculation
-        Ref=DeferredCalculation       rel=AnalysisServiceDeferredCalculation
-        Ref=Category                  rel=AnalysisServiceAnalysisCategory
-        Ref=Department                rel=AnalysisServiceDepartment
-        Ref=Preservation              rel=AnalysisServicePreservation
-        Ref=Container                 rel=AnalysisServiceContainer
-    Analysis
-    ========
-        Hist=Service                  rel=AnalysisAnalysisService
-        Hist=Calculation              rel=AnalysisCalculation
-        Ref=Attachment                rel=AnalysisAttachment
-        Ref=Instrument                rel=AnalysisInstrument
-        Ref=Method                    rel=AnalysisMethod
-        Ref=SamplePartition           rel=AnalysisSamplePartition
-        Ref=OriginalReflexedAnalysis  rel=OriginalAnalysisReflectedAnalysis
-        Ref=ReflexAnalysisOf          rel=AnalysisReflectedAnalysis
-    ReferenceAnalysis
-    =================
-        Hist=Service                  rel=ReferenceAnalysisAnalysisService
-        Ref=Attachment                rel=ReferenceAnalysisAttachment
-        Ref=Instrument                rel=AnalysisInstrument
-        Ref=Method                    rel=AnalysisMethod
-    DupplicateAnalysis
-    ==================
-        Ref=Analysis                  rel=DuplicateAnalysisAnalysis
-        Ref=Attachment                rel=DuplicateAnalysisAttachment
+    - AbstractBaseAnalysis(BaseObject)
+        Fields and methods common to to AnalysisService and all types of
+        analysis
+    - AbstractAnalysis(AbstractBaseAnalysis)
+        Fields and methods common to all types of Analysis.
+    - AbstractRoutineAnalysis(AbstractBaseAnalysis)
+        Fields and methods common to Routine Analyses (Analysis, Duplicate).
+    - AnalysisService(AbstractBaseAnalysis)
+    - ReferenceAnalysis(AbstractAnalysis)
+    - DuplicateAnalysis(AbstractRoutineAnalysis)
+    - Analysis(AbstractRoutineAnalysis)
+        In the final schema for Analysis objects, the following fields are 
+        removed to be replaced by accessor methods on the class:
+            - Service
+            - ClientUID
+            - ClientTitle
+            - SampleTypeUID
+            - SamplePointUID
+            - CategoryUID
+            - MethodUID
+            - InstrumentUID
+            - DateReceived
+            - DateSampled
+            - InstrumentValid
 
-    After refactoring, the following references exist
+    Many ReferenceFields and HistoryAwareReferenceFields were migrated to 
+    UIDReferenceField which uses simple StringFields to store the UIDs. After 
+    refactoring, the following references exist
 
     BaseAnalysis
     ============

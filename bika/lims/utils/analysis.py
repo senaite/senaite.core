@@ -14,8 +14,10 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 from bika.lims import bikaMessageFactory as _, logger
+from bika.lims.interfaces import IAnalysisService
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import formatDecimalMark
+from plone.api.portal import get_tool
 
 
 def duplicateAnalysis(analysis):
@@ -37,20 +39,9 @@ def duplicateAnalysis(analysis):
     return dup
 
 
-def create_analysis(context, source, **kwargs):
-    """Create a new Analysis.  The source can be an Analysis Service or
-    an existing Analysis, and all possible field values will be set to the
-    values found in the source object.
-    :param context: The analysis will be created inside this object.
-    :param source: The schema of this object will be used to populate analysis.
-    :param kwargs: The values of any keys which match schema fieldnames will
-    be inserted into the corrosponding fields in the new analysis.
-    """
-    an_id = kwargs.get('id', source.getKeyword())
-    analysis = _createObjectByType("Analysis", context, an_id)
+def copy_analysis_field_values(source, analysis, **kwargs):
     src_schema = source.Schema()
     dst_schema = analysis.Schema()
-
     # Some fields should not be copied from source!
     # BUT, if these fieldnames are present in kwargs, the value will
     # be set accordingly.
@@ -70,23 +61,52 @@ def create_analysis(context, source, **kwargs):
         if value:
             dst_schema[fieldname].set(analysis, value)
 
-    # unmarkCreationFlag also reindex the object
-    analysis.unmarkCreationFlag()
-    # Trigger the intitialization event of the new object
-    zope.event.notify(ObjectInitializedEvent(analysis))
-    # Determine if the sampling workflow is enabled and perform the
-    # appropriate workflow action
-    workflow_enabled = context.bika_setup.getSamplingWorkflowEnabled()
+
+def init_sampling_workflow(analysis):
+    """Perform the intitial analysis workflow step depending on whether
+    or not the sampling workflow is enabled.
+    """
+    bika_setup = get_tool('bika_setup')
+    wst = bika_setup.getSamplingWorkflowEnabled()
+    action = 'sampling_workflow' if wst else 'no_sampling_workflow'
+    workflow = get_tool('portal_workflow')
     try:
-        workflow_action = 'sampling_workflow' if workflow_enabled \
-            else 'no_sampling_workflow'
-        context.portal_workflow.doActionFor(analysis, workflow_action)
-    except WorkflowException:
-        # The analysis may have been transitioned already!
-        # I am leaving this code here though, to prevent regression.
-        logger.warning('The analysis %s may have been transitioned already' %
-                     analysis.getId())
-    # Return the newly created analysis
+        workflow.doActionFor(analysis, action)
+        state = workflow.getInfoFor(analysis, 'review_state')
+        logger.info(
+            '%s/%s: transition %s passed. state=%s' %
+            (analysis.aq_parent.absolute_url(),
+             analysis.getId(), action, state))
+    except WorkflowException:  # XXX CAMPBELL ???
+        state = workflow.getInfoFor(analysis, 'review_state')
+        logger.info('%s/%s: transition %s failed. state=%s' %
+                    (analysis.aq_parent.absolute_url(), analysis.getId(),
+                     action, state))
+
+
+def create_analysis(context, source, **kwargs):
+    """Create a new Analysis.  The source can be an Analysis Service or
+    an existing Analysis, and all possible field values will be set to the
+    values found in the source object.
+    :param context: The analysis will be created inside this object.
+    :param source: The schema of this object will be used to populate analysis.
+    :param kwargs: The values of any keys which match schema fieldnames will
+    be inserted into the corrosponding fields in the new analysis.
+    :returns: Analysis object that was created
+    :rtype: Analysis
+    """
+    an_id = kwargs.get('id', source.getKeyword())
+    analysis = _createObjectByType("Analysis", context, an_id)
+    copy_analysis_field_values(source, analysis, **kwargs)
+
+    # AnalysisService field is not present on actual AnalysisServices.
+    if IAnalysisService.providedBy(source):
+        analysis.setAnalysisService(source)
+    else:
+        analysis.setAnalysisService(source.getAnalysisService())
+    analysis.unmarkCreationFlag()
+    zope.event.notify(ObjectInitializedEvent(analysis))
+    init_sampling_workflow(analysis)
     return analysis
 
 
@@ -170,14 +190,14 @@ def _format_decimal_or_sci(result, precision, threshold, sciformat):
         elif sciformat == 3:
             # ax10<super>b</super> or ax10<super>-b</super>
             formatted = "%s%s%s%s%s" % (
-            res, "x10<sup>", sign, sig_digits, "</sup>")
+                res, "x10<sup>", sign, sig_digits, "</sup>")
         elif sciformat == 4:
             # ax10^b or ax10^-b
             formatted = "%s%s%s%s" % (res, "·10^", sign, sig_digits)
         elif sciformat == 5:
             # ax10<super>b</super> or ax10<super>-b</super>
             formatted = "%s%s%s%s%s" % (
-            res, "·10<sup>", sign, sig_digits, "</sup>")
+                res, "·10<sup>", sign, sig_digits, "</sup>")
         else:
             # Default format: aE^+b
             sig_digits = "%02d" % sig_digits
