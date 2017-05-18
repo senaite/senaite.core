@@ -8,6 +8,7 @@ from bika.lims import logger
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 import traceback
 import sys
 import transaction
@@ -32,7 +33,9 @@ def upgrade(tool):
 
     # Add getId column to bika_catalog
     ut.addColumn(CATALOG_ANALYSIS_LISTING, 'getNumberOfVerifications')
-
+    # Add SearchableText index to analysis requests catalog
+    ut.addIndex(
+        CATALOG_ANALYSIS_REQUEST_LISTING, 'SearchableText', 'ZCTextIndex')
     # Refresh affected catalogs
     ut.refreshCatalogs()
 
