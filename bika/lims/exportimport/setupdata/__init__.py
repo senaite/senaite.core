@@ -2174,7 +2174,6 @@ class Analysis_Requests(WorksheetImporter):
                 ReportDryMatter=self.to_bool(row['ReportDryMatter']),
             )
 
-            obj.updateDueDate()
             part = sample.objectValues()[0].UID()
             obj.setSamplePartition(part)
             analyses = ar.objectValues('Analyses')

@@ -24,8 +24,7 @@ from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.content.abstractbaseanalysis import AbstractBaseAnalysis
 from bika.lims.content.abstractbaseanalysis import schema
 from bika.lims.content.reflexrule import doReflexRuleAction
-from bika.lims.interfaces import IAnalysis, ISamplePrepWorkflow, \
-    IDuplicateAnalysis
+from bika.lims.interfaces import ISamplePrepWorkflow, IDuplicateAnalysis
 from bika.lims.permissions import *
 from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.utils import changeWorkflowState, formatDecimalMark
@@ -103,16 +102,6 @@ DetectionLimitOperand = StringField(
     'DetectionLimitOperand'
 )
 
-# DueDate is calculated by adding the MaxTimeAllowed to the date that the
-# Analysis' sample was received.  It's used to create alerts when analyses
-# are "late", and also to populate catalog values.
-DueDate = DateTimeField(
-    'DueDate',
-    widget=DateTimeWidget(
-        label=_("Due Date")
-    )
-)
-
 # This is used to calculate turnaround time reports.
 # The value is set when the Analysis is published.
 Duration = IntegerField(
@@ -161,7 +150,6 @@ schema = schema.copy() + Schema((
     Calculation,
     DateAnalysisPublished,
     DetectionLimitOperand,
-    DueDate,
     Duration,
     Earliness,
     # NumberOfRequiredVerifications overrides AbstractBaseClass
@@ -193,6 +181,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         service = self.getAnalysisService()
         if service:
             return service.UID()
+        logger.error("Cannot get ServiceUID for %s"%self)
 
     @security.public
     def getNumberOfVerifications(self):
@@ -1164,6 +1153,15 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             return ''
 
     @security.public
+    def getDueDate(self):
+        """Used to populate getDueDate index and metadata.
+        This very simply returns the expiry date of the parent reference sample.
+        """
+        ref_sample = self.aq_parent
+        expiry_date = ref_sample.getExpiryDate()
+        return expiry_date
+
+    @security.public
     def getParentUID(self):
         """This method is used to populate catalog values
         This function returns the analysis' parent UID
@@ -1351,7 +1349,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         state = workflow.getInfoFor(self, 'cancellation_state', 'active')
         if state == "cancelled":
             return False
-        self.updateDueDate()
         self.reindexObject()
 
     @security.public
