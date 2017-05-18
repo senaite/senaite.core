@@ -107,6 +107,7 @@ class ARAnalysesField(ObjectField):
             value = dictionary: defined in ResultsRange field definition
 
         """
+        import pdb;pdb.set_trace();pass
         if not service_uids:
             return
 

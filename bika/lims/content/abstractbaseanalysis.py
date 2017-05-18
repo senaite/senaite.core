@@ -23,7 +23,6 @@ from bika.lims.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.config import ATTACHMENT_OPTIONS, SERVICE_POINT_OF_CAPTURE
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.utils import to_utf8 as _c
-from bika.lims.utils.analysis import get_significant_digits
 from plone.api.portal import get_tool
 
 # Anywhere that there just isn't space for unpredictably long names,

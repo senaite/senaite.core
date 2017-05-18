@@ -42,11 +42,6 @@ AnalysisService = UIDReferenceField(
     'AnalysisService'
 )
 
-# A string on this object storing the AnalysisService UID
-ServiceUID = StringField(
-    'ServiceUID'
-)
-
 # Overrides the AbstractBaseAnalysis. Analyses have a versioned link to the
 # calculation as it was when created.
 Calculation = HistoryAwareReferenceField(
@@ -160,7 +155,6 @@ Verificators = StringField(
 
 schema = schema.copy() + Schema((
     AnalysisService,
-    ServiceUID,
     Analyst,
     Attachment,
     # Calculation overrides AbstractBaseClass
@@ -193,14 +187,12 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     def getService(self):
         return self
 
-    @security.public
-    def getAnalysisService(self):
-        uc = get_tool('uid_catalog')
-        service_uid = self.getServiceUID()
-        brains = uc(UID=service_uid)
-        if not brains:
-            return None
-        return brains[0].getObject()
+    def getServiceUID(self):
+        """Return the UID of the associated service.
+        """
+        service = self.getAnalysisService()
+        if service:
+            return service.UID()
 
     @security.public
     def getNumberOfVerifications(self):

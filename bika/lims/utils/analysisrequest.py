@@ -75,8 +75,6 @@ def create_analysisrequest(context, request, values, analyses=None,
     # Create the Analysis Request
     ar = _createObjectByType('AnalysisRequest', context, tmpID())
 
-    import pdb;pdb.set_trace();pass
-
     # Set some required fields manually before processForm is called
     ar.setSample(sample)
     values['Sample'] = sample
