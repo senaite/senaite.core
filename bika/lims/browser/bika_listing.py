@@ -468,6 +468,7 @@ class BikaListingView(BrowserView):
         self.limit_from = 0
         self.mtool = None
         self.member = None
+        self.workflow = None
         # The listing object is bound to a class called BikaListingFilterBar
         # which can display an additional filter bar in the listing view in
         # order to filter the items by some terms. These terms should be
@@ -799,6 +800,7 @@ class BikaListingView(BrowserView):
         self._process_request()
         self.mtool = getToolByName(self.context, 'portal_membership')
         self.member = self.mtool.getAuthenticatedMember()
+        self.workflow = getToolByName(self.context, 'portal_workflow')
 
         # ajax_category_expand is included in the form if this form submission
         # is an asynchronous one triggered by a category being expanded.
@@ -879,16 +881,15 @@ class BikaListingView(BrowserView):
         """
         # Getting a security manager instance for the current reques
         self.security_manager = getSecurityManager()
+        if self.workflow is None:
+            self.workflow = getToolByName(self.context, 'portal_workflow')
         # If the classic is True,, use the old way.
         if classic:
             return self._folderitems(full_objects)
-
         if not hasattr(self, 'contentsMethod'):
             self.contentsMethod = getToolByName(self.context, self.catalog)
         # Setting up some attributes
         context = aq_inner(self.context)
-        workflow = getToolByName(context, 'portal_workflow')
-
         # Creating a copy of the contentFilter dictionary in order to include
         # the filter bar's filtering additions in the query. We don't want to
         # modify contentFilter with those 'extra' filtering elements to be
@@ -985,7 +986,8 @@ class BikaListingView(BrowserView):
             # use the title of the first workflow found for the object
             try:
                 rs = obj.review_state
-                st_title = workflow.getTitleForStateOnType(rs, obj.portal_type)
+                st_title =\
+                    self.workflow.getTitleForStateOnType(rs, obj.portal_type)
                 st_title = t(PMF(st_title))
             except:
                 logger.warning(
@@ -994,7 +996,7 @@ class BikaListingView(BrowserView):
                 st_title = None
             for state_var, state in states.items():
                 if not st_title:
-                    st_title = workflow.getTitleForStateOnType(
+                    st_title = self.workflow.getTitleForStateOnType(
                         state, obj.portal_type)
                 results_dict[state_var] = state
             results_dict['state_title'] = st_title
@@ -1073,7 +1075,6 @@ class BikaListingView(BrowserView):
         plone_view = getMultiAdapter((context, self.request), name = u'plone')
         portal_properties = getToolByName(context, 'portal_properties')
         portal_types = getToolByName(context, 'portal_types')
-        workflow = getToolByName(context, 'portal_workflow')
         site_properties = portal_properties.site_properties
         norm = getUtility(IIDNormalizer).normalize
         if self.request.get('show_all', '').lower() == 'true' \
@@ -1168,7 +1169,7 @@ class BikaListingView(BrowserView):
 
             state_class = ''
             states = {}
-            for w in workflow.getWorkflowsFor(obj):
+            for w in self.workflow.getWorkflowsFor(obj):
                 state = w._getWorkflowStateOf(obj).id
                 states[w.state_var] = state
                 state_class += "state-%s " % state
@@ -1217,8 +1218,9 @@ class BikaListingView(BrowserView):
                 replace = {},
             )
             try:
-                rs = workflow.getInfoFor(obj, 'review_state')
-                st_title = workflow.getTitleForStateOnType(rs, obj.portal_type)
+                rs = self.workflow.getInfoFor(obj, 'review_state')
+                st_title =\
+                    self.workflow.getTitleForStateOnType(rs, obj.portal_type)
                 st_title = t(PMF(st_title))
             except:
                 rs = 'active'
@@ -1227,7 +1229,7 @@ class BikaListingView(BrowserView):
                 results_dict['review_state'] = rs
             for state_var, state in states.items():
                 if not st_title:
-                    st_title = workflow.getTitleForStateOnType(
+                    st_title = self.workflow.getTitleForStateOnType(
                         state, obj.portal_type)
                 results_dict[state_var] = state
             results_dict['state_title'] = st_title
@@ -1325,14 +1327,14 @@ class BikaListingView(BrowserView):
         if not self.show_select_column:
             return []
 
-        workflow = getToolByName(self.context, 'portal_workflow')
-
+        if self.workflow is None:
+            self.workflow = getToolByName(self.context, 'portal_workflow')
         # get all transitions for all items.
         transitions = {}
         actions = []
         for obj in [i.get('obj', '') for i in self.items]:
             obj = hasattr(obj, 'getObject') and obj.getObject() or obj
-            for it in workflow.getTransitionsFor(obj):
+            for it in self.workflow.getTransitionsFor(obj):
                 transitions[it['id']] = it
 
         # the list is restricted to and ordered by these transitions.

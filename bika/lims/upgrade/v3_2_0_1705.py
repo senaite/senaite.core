@@ -36,6 +36,9 @@ def upgrade(tool):
     # Add SearchableText index to analysis requests catalog
     ut.addIndex(
         CATALOG_ANALYSIS_REQUEST_LISTING, 'SearchableText', 'ZCTextIndex')
+    # For reference samples
+    ut.addColumn(CATALOG_ANALYSIS_LISTING, 'getParentUID')
+    ut.addColumn(CATALOG_ANALYSIS_LISTING, 'getDateSampled')
 
     # Reindexing bika_catalog_analysisrequest_listing in order to obtain the
     # correct getDateXXXs
