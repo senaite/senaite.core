@@ -47,31 +47,6 @@ class ReferenceAnalysis(AbstractAnalysis):
     def getSupplierUID(self):
         return self.aq_parent.aq_parent.UID()
 
-    def getNumberOfVerifications(self):
-        verificators = self.getVerificators()
-        if not verificators:
-            return 0
-        return len(verificators.split(','))
-
-    def addVerificator(self, username):
-        verificators = self.getVerificators()
-        if not verificators:
-            self.setVerificators(username)
-        else:
-            self.setVerificators(verificators + "," + username)
-
-    def deleteLastVerificator(self):
-        verificators = self.getVerificators().split(',')
-        del verificators[-1]
-        self.setVerificators(",".join(verificators))
-
-    def wasVerifiedByUser(self, username):
-        verificators = self.getVerificators().split(',')
-        return username in verificators
-
-    def getLastVerificator(self):
-        return self.getVerificators().split(',')[-1]
-
     @deprecated("You should use the Reference Analysis title directly.")
     def Title(self):
         """Return the Service ID as title
