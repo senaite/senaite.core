@@ -586,7 +586,7 @@ class BikaListingView(BrowserView):
                 # We cannot sort for a column that doesn't exist!
                 msg = "{}: sort_on is '{}', not a valid column".format(
                     self, self.sort_on)
-                logger.error(msg)
+                logger.warning(msg)
                 self.sort_on = None
 
         if self.manual_sort_on:
@@ -597,7 +597,7 @@ class BikaListingView(BrowserView):
                 # We cannot sort for a column that doesn't exist!
                 msg = "{}: manual_sort_on is '{}', not a valid column".format(
                     self, self.manual_sort_on)
-                logger.error(msg)
+                logger.warning(msg)
                 self.manual_sort_on = None
 
         if self.sort_on or self.manual_sort_on:
@@ -680,6 +680,11 @@ class BikaListingView(BrowserView):
                     continue
                 ##logger.info("Or: %s=%s"%(index, value))
                 if idx.meta_type in('ZCTextIndex', 'FieldIndex'):
+                    # For SearchableText index, we search for any value
+                    # starting with keyword. Unfortunately for ZCTextIndexes
+                    # regex cannot start with special character like '*'
+                    if idx.meta_type == 'ZCTextIndex':
+                        value += '*'
                     self.Or.append(MatchRegexp(index, value))
                     self.expand_all_categories = True
                     # https://github.com/bikalabs/Bika-LIMS/issues/1069

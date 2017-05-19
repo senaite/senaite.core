@@ -190,8 +190,8 @@
               </tal:tick>
             </div>
             <tal:stickers repeat="sticker view/items">
-            <tal:sticker define="partid python:sticker[2].getId() if sticker else None;"
-                         condition="python:not partid or partid not in view.rendered_items">
+            <tal:sticker define="item_id python:sticker[2].getId() if sticker else None;"
+                         condition="python:not item_id or item_id not in view.rendered_items">
             <div class='sticker'
                  tal:content='structure python:view.renderItem()'></div>
             </tal:sticker>

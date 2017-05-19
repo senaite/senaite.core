@@ -38,6 +38,7 @@ def BikaSetupModifiedEventHandler(instance, event):
     mp(AddClient, roles, 1)
     mp(EditClient, roles, 1)
     # Set permissions at object level
+    # TODO-performance: We are allways reindexing all clients
     for obj in portal.clients.objectValues():
         mp = obj.manage_permission
         mp(AddClient, roles, 0)

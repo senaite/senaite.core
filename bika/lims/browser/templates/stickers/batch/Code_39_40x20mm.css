@@ -1,0 +1,36 @@
+/* 40x20mm sticker */
+.sticker {
+    font-family: Helvetica, Arial;
+    font-size:7pt;
+    /*
+    Total width:  38mm + 2x1mm (padding) = 40mm
+    Total height: 18mm + 2x1mm (padding) = 20mm
+    */
+    padding:1mm;
+    width: 38mm; min-width:38mm; max-width:38mm;
+    height: 20mm; min-height:20mm; max-height:20mm;
+}
+.sticker .worksheet-info table{
+    border-collapse:collapse;
+    margin: 1px 1px 1px 1px;
+    width:100%;
+}
+.sticker .worksheet-info table td {
+    border:none;
+}
+.barcode {
+    margin:0 auto;
+}
+.align-right {
+    text-align:right;
+}
+font-family: Helvetica, Arial;
+font-size:7pt;
+/* Total width: 1.5mm + 38mm + 1.5mm + 1.5mm + 38mm + 1.5mm = 82mm */
+width: 82mm;
+min-width:82mm;
+max-width:82mm;
+/* Total height: 1.5mm + 18mm + 1.5mm = 21mm */
+height:21mm;
+min-height:21mm;
+max-height:21mm;

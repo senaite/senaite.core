@@ -2943,7 +2943,7 @@ class AnalysisRequest(BaseFolder):
         """
         ans = [an.getObject() for an in self.getAnalyses()]
         depts = [an.getService().getDepartment() for an in ans if
-                 an.getService().getDepartment()]
+                 an.getService()]
         return set(depts)
 
     # TODO-performance: This function is very time consuming because
@@ -3437,5 +3437,73 @@ class AnalysisRequest(BaseFolder):
         if self.bika_setup.getNotifyOnRejection():
             # Notify the Client about the Rejection.
             notify_rejection(self)
+
+    def SearchableText(self):
+        """
+        Override searchable text logic based on the requirements.
+
+        This method constructs a text blob which contains all full-text
+        searchable text for this content item.
+        https://docs.plone.org/develop/plone/searching_and_indexing/indexing.html#full-text-searching
+        """
+
+        # Speed up string concatenation ops by using a buffer
+        entries = []
+
+        # plain text fields we index from ourself,
+        # a list of accessor methods of the class
+        plain_text_fields = ("getId", )
+
+        def read(accessor):
+            """
+            Call a class accessor method to give a value for certain Archetypes
+            field.
+            """
+            try:
+                value = accessor()
+            except:
+                message = \
+                    "Error getting the accessor parameter"\
+                    " in SearchableText from the Analysis Request Object {}"\
+                    .format(self.getId())
+                logger.error(message)
+                value = ""
+
+            if value is None:
+                value = ""
+
+            return value
+
+        # Concatenate plain text fields as they are
+        for f in plain_text_fields:
+            accessor = getattr(self, f)
+            value = read(accessor)
+            entries.append(value)
+
+        # Adding HTML Fields to SearchableText can be uncommented if necessary
+        # transforms = getToolByName(self, 'portal_transforms')
+        #
+        # # Run HTML valued fields through text/plain conversion
+        # for f in html_fields:
+        #     accessor = getattr(self, f)
+        #     value = read(accessor)
+        #
+        #     if value != "":
+        #         stream = transforms.convertTo('text/plain', value, mimetype='text/html')
+        #         value = stream.getData()
+        #
+        #     entries.append(value)
+
+        # Plone accessor methods assume utf-8
+        def convertToUTF8(text):
+            if type(text) == unicode:
+                return text.encode("utf-8")
+            return text
+
+        entries = [convertToUTF8(entry) for entry in entries]
+
+        # Concatenate all strings to one text blob
+        return " ".join(entries)
+
 
 atapi.registerType(AnalysisRequest, PROJECTNAME)

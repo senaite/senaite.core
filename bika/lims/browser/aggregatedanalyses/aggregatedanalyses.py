@@ -32,7 +32,7 @@ class AggregatedAnalysesView(AnalysesView):
     """
 
     def __init__(self, context, request, **kwargs):
-        super(AggregatedAnalysesView, self).__init__(context, request)
+        AnalysesView.__init__(self, context, request)
         self.title = _("Analyses pending")
         self.show_select_all_checkbox = False
         self.show_categories = False
@@ -123,7 +123,7 @@ class AggregatedAnalysesView(AnalysesView):
         """
         # The isItemAllowed function from the base class AnalysesView already
         # takes into account filtering by department
-        allowed = super(AnalysesView, self).isItemAllowed(obj)
+        allowed = AnalysesView.isItemAllowed(self, obj)
         if not allowed:
             return False
 
@@ -139,7 +139,7 @@ class AggregatedAnalysesView(AnalysesView):
         """
         In this case obj should be a brain
         """
-        item = super(AnalysesView, self).folderitem(obj, item, index)
+        item = AnalysesView.folderitem(self, obj, item, index)
         if not item:
             return None
 

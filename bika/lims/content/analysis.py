@@ -1015,7 +1015,7 @@ class Analysis(BaseContent):
 
     def getAllowedMethodsAsTuples(self):
         """
-        This works a a metadata column.
+        This works as a metadata column.
         Returns the allowed methods for this analysis. If manual
         entry of results is set, only returns the methods set
         manually. Otherwise (if Instrument Entry Of Results is set)
@@ -1029,9 +1029,9 @@ class Analysis(BaseContent):
         result = []
         # manual entry of results is set, only returns the methods set manually
         if service.getInstrumentEntryOfResults():
-            result = [
-                (ins.getRawMethod(), ins.getMethod().Title()) for ins in
-                service.getInstruments() if ins.getMethod()]
+            for ins in service.getInstruments():
+                for method in ins.getMethods():
+                    result.append((method.UID(), method.Title()))
         # Otherwise (if Instrument Entry Of Results is set)
         # returns the methods assigned to the instruments allowed for
         # this Analysis
