@@ -257,9 +257,9 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     @security.public
     def getUncertainty(self, result=None):
         """Returns the uncertainty for this analysis and result.
-        Returns the value from Schema's Uncertainty field if the Service has 
-        the option 'Allow manual uncertainty'. Otherwise, do a callback to 
-        getDefaultUncertainty(). Returns None if no result specified and the 
+        Returns the value from Schema's Uncertainty field if the Service has
+        the option 'Allow manual uncertainty'. Otherwise, do a callback to
+        getDefaultUncertainty(). Returns None if no result specified and the
         current result for this analysis is below or above detections limits.
         """
         uncertainty = self.getField('Uncertainty').get(self)
@@ -278,8 +278,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def setUncertainty(self, unc):
-        """Sets the uncertainty for this analysis. If the result is a 
-        Detection Limit or the value is below LDL or upper UDL, sets the 
+        """Sets the uncertainty for this analysis. If the result is a
+        Detection Limit or the value is below LDL or upper UDL, sets the
         uncertainty value to 0
         """
         # Uncertainty calculation on DL
@@ -292,12 +292,12 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def setDetectionLimitOperand(self, value):
-        """Sets the detection limit operand for this analysis, so the result 
-        will be interpreted as a detection limit. The value will only be set 
-        if the Service has 'DetectionLimitSelector' field set to True, 
-        otherwise, the detection limit operand will be set to None. See 
-        LIMS-1775 for further information about the relation amongst 
-        'DetectionLimitSelector' and 'AllowManualDetectionLimit'. 
+        """Sets the detection limit operand for this analysis, so the result
+        will be interpreted as a detection limit. The value will only be set
+        if the Service has 'DetectionLimitSelector' field set to True,
+        otherwise, the detection limit operand will be set to None. See
+        LIMS-1775 for further information about the relation amongst
+        'DetectionLimitSelector' and 'AllowManualDetectionLimit'.
         https://jira.bikalabs.com/browse/LIMS-1775
         """
         md = self.getDetectionLimitSelector()
@@ -307,9 +307,9 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     # Method getLowerDetectionLimit overrides method of class BaseAnalysis
     @security.public
     def getLowerDetectionLimit(self):
-        """Returns the Lower Detection Limit (LDL) that applies to this 
-        analysis in particular. If no value set or the analysis service 
-        doesn't allow manual input of detection limits, returns the value set 
+        """Returns the Lower Detection Limit (LDL) that applies to this
+        analysis in particular. If no value set or the analysis service
+        doesn't allow manual input of detection limits, returns the value set
         by default in the Analysis Service
         """
         operand = self.getDetectionLimitOperand()
@@ -328,9 +328,9 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     # Method getUpperDetectionLimit overrides method of class BaseAnalysis
     @security.public
     def getUpperDetectionLimit(self):
-        """Returns the Upper Detection Limit (UDL) that applies to this 
-        analysis in particular. If no value set or the analysis service 
-        doesn't allow manual input of detection limits, returns the value set 
+        """Returns the Upper Detection Limit (UDL) that applies to this
+        analysis in particular. If no value set or the analysis service
+        doesn't allow manual input of detection limits, returns the value set
         by default in the Analysis Service
         """
         operand = self.getDetectionLimitOperand()
@@ -348,7 +348,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def isBelowLowerDetectionLimit(self):
-        """Returns True if the result is below the Lower Detection Limit or 
+        """Returns True if the result is below the Lower Detection Limit or
         if Lower Detection Limit has been manually set
         """
         dl = self.getDetectionLimitOperand()
@@ -368,7 +368,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def isAboveUpperDetectionLimit(self):
-        """Returns True if the result is above the Upper Detection Limit or 
+        """Returns True if the result is above the Upper Detection Limit or
         if Upper Detection Limit has been manually set
         """
         dl = self.getDetectionLimitOperand()
@@ -388,16 +388,16 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def getDetectionLimits(self):
-        """Returns a two-value array with the limits of detection (LDL and 
-        UDL) that applies to this analysis in particular. If no value set or 
-        the analysis service doesn't allow manual input of detection limits, 
+        """Returns a two-value array with the limits of detection (LDL and
+        UDL) that applies to this analysis in particular. If no value set or
+        the analysis service doesn't allow manual input of detection limits,
         returns the value set by default in the Analysis Service
         """
         return [self.getLowerDetectionLimit(), self.getUpperDetectionLimit()]
 
     @security.public
     def isLowerDetectionLimit(self):
-        """Returns True if the result for this analysis represents a Lower 
+        """Returns True if the result for this analysis represents a Lower
         Detection Limit. Otherwise, returns False
         """
         if self.isBelowLowerDetectionLimit():
@@ -406,7 +406,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def isUpperDetectionLimit(self):
-        """Returns True if the result for this analysis represents an Upper 
+        """Returns True if the result for this analysis represents an Upper
         Detection Limit. Otherwise, returns False
         """
         if self.isAboveUpperDetectionLimit():
@@ -495,10 +495,10 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def getAnalysisSpecs(self, specification=None):
-        """Retrieves the analysis specs to be applied to this analysis. 
-        Allowed values for specification= 'client', 'lab', None If 
-        specification is None, client specification gets priority from lab 
-        specification. If no specification available for this analysis, 
+        """Retrieves the analysis specs to be applied to this analysis.
+        Allowed values for specification= 'client', 'lab', None If
+        specification is None, client specification gets priority from lab
+        specification. If no specification available for this analysis,
         returns None
         """
 
@@ -534,11 +534,11 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def getResultsRange(self, specification=None):
-        """Returns the valid results range for this analysis, a dictionary 
-        with the following keys: 'keyword', 'uid', 'min', 'max ', 'error', 
-        'hidemin', 'hidemax', 'rangecomment' Allowed values for 
-        specification='ar', 'client', 'lab', None If specification is None, 
-        the following is the priority to get the results range: AR > Client > 
+        """Returns the valid results range for this analysis, a dictionary
+        with the following keys: 'keyword', 'uid', 'min', 'max ', 'error',
+        'hidemin', 'hidemax', 'rangecomment' Allowed values for
+        specification='ar', 'client', 'lab', None If specification is None,
+        the following is the priority to get the results range: AR > Client >
         Lab If no specification available for this analysis, returns {}
         """
         rr = {}
@@ -568,7 +568,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def calculateResult(self, override=False, cascade=False):
-        """Calculates the result for the current analysis if it depends of 
+        """Calculates the result for the current analysis if it depends of
         other analysis/interim fields. Otherwise, do nothing
         """
         if self.getResult() and override is False:
@@ -657,7 +657,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def getPrice(self):
-        """The function obtains the analysis' price without VAT and without 
+        """The function obtains the analysis' price without VAT and without
         member discount
         :return: the price (without VAT or Member Discount) in decimal format
         """
@@ -692,10 +692,11 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def isInstrumentValid(self):
-        """Checks if the instrument selected for this analysis is valid. 
-        Returns false if an out-of-date or uncalibrated instrument is 
-        assigned. Returns true if the Analysis has no instrument assigned or 
-        is valid.
+        """Checks if the instrument selected for this analysis is valid.
+        Returns false if an out-of-date or uncalibrated instrument is
+        assigned.
+        :return: True if the Analysis has no instrument assigned or is valid
+        :rtype: bool
         """
         if self.getInstrument():
             return self.getInstrument().isValid()
@@ -703,66 +704,79 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def isInstrumentAllowed(self, instrument):
-        """Checks if the specified instrument can be set for this analysis, 
-        according to the Method and Analysis Service. If the Analysis Service 
-        hasn't set 'Allows instrument entry' of results, returns always 
-        False. Otherwise, checks if the method assigned is supported by the 
-        instrument specified. Returns false, If the analysis hasn't any 
-        method assigned. NP: The methods allowed for selection are defined at 
-        Analysis Service level. instrument param can be either an uid or an 
-        object
+        """Checks if the specified instrument can be set for this analysis,
+        either if the instrument was assigned directly (by using "Allows
+        instrument entry of results") or indirectly via Method ("Allows manual
+        entry of results") in Analysis Service Edit view.
+        Param instrument can be either an uid or an object
+        :param instrument: string,Instrument
+        :return: True if the assignment of the passed in instrument is allowed
+        :rtype: bool
         """
         if isinstance(instrument, str):
             uid = instrument
         else:
             uid = instrument.UID()
 
-        return uid in self.getAllowedInstruments()
+        return uid in self.getAllowedInstrumentUIDs()
 
     @security.public
     def isMethodAllowed(self, method):
-        """Checks if the analysis can follow the method specified. Looks for 
-        manually selected methods when AllowManualEntry is set and 
-        instruments methods when AllowInstrumentResultsEntry is set. method 
-        param can be either a uid or an object
+        """Checks if the analysis can follow the method specified, either if
+        the method was assigned directly (by using "Allows manual entry of
+        results") or indirectly via Instrument ("Allows instrument entry of
+        results") in Analysis Service Edit view.
+        Param method can be either a uid or an object
+        :param method: string,Method
+        :return: True if the analysis can follow the method specified
+        :rtype: bool
         """
         if isinstance(method, str):
             uid = method
         else:
             uid = method.UID()
 
-        return uid in self.getAllowedMethods()
+        return uid in self.getAllowedMethodUIDs()
 
     @security.public
     def getAllowedMethods(self):
-        """Returns the allowed methods for this analysis. If manual entry of 
-        results is set, only returns the methods set manually. Otherwise (if 
-        Instrument Entry Of Results is set) returns the methods assigned to 
-        the instruments allowed for this Analysis
+        """Returns the allowed methods for this analysis, either if the method
+        was assigned directly (by using "Allows manual entry of results") or
+        indirectly via Instrument ("Allows instrument entry of results") in
+        Analysis Service Edit View.
+        :return: A list with the methods allowed for this analysis
+        :rtype: list of Methods
         """
         service = self.getAnalysisService()
         if not service:
             return []
 
         methods = []
+        if self.getManualEntryOfResults():
+            methods = service.getMethods()
         if self.getInstrumentEntryOfResults():
             for instrument in service.getInstruments():
                 methods.extend(instrument.getMethods())
-        else:
-            # Get only the methods set manually
-            methods = service.getMethods()
+
         return list(set(methods))
 
     @security.public
     def getAllowedMethodUIDs(self):
-        """Used to populate getAllowedMethodUIDs metadata
+        """Used to populate getAllowedMethodUIDs metadata. Delegates to
+        method getAllowedMethods() for the retrieval of the methods allowed.
+        :return: A list with the UIDs of the methods allowed for this analysis
+        :rtype: list of strings
         """
         return [m.UID() for m in self.getAllowedMethods()]
 
     @security.public
     def getAllowedInstruments(self):
-        """Returns the allowed instruments for this Analysis Service. Gets the 
-        instruments assigned to the allowed methods.
+        """Returns the allowed instruments for this analysis, either if the
+        instrument was assigned directly (by using "Allows instrument entry of
+        results") or indirectly via Method (by using "Allows manual entry of
+        results") in Analysis Service edit view.
+        :return: A list of instruments allowed for this Analysis
+        :rtype: list of instruments
         """
         service = self.getAnalysisService()
         if not service:
@@ -771,43 +785,37 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         instruments = []
         if self.getInstrumentEntryOfResults():
             instruments = service.getInstruments()
-        elif self.getManualEntryOfResults():
+        if self.getManualEntryOfResults():
             for meth in self.getAllowedMethods():
                 instruments += meth.getInstruments()
+
         return list(set(instruments))
 
     @security.public
     def getAllowedInstrumentUIDs(self):
-        """Used to populate getAllowedInstrumentUIDs metadata
+        """Used to populate getAllowedInstrumentUIDs metadata. Delegates to
+        getAllowedInstruments() for the retrieval of the instruments allowed.
+        :return: List of instruments' UIDs allowed for this analysis
+        :rtype: list of strings
         """
         return [i.UID() for i in self.getAllowedInstruments()]
 
     @security.public
-    def getDefaultMethod(self):
-        """Returns the default method for this Analysis according to its 
-        current instrument. If the Analysis hasn't set yet an Instrument, 
-        looks to the Service
-        """
-        instr = self.getInstrument() \
-            if self.getInstrument() else self.getDefaultInstrument()
-        return instr.getMethod() if instr else None
-
-    @security.public
     def getExponentialFormatPrecision(self, result=None):
-        """ Returns the precision for the Analysis Service and result 
-        provided. Results with a precision value above this exponential 
+        """ Returns the precision for the Analysis Service and result
+        provided. Results with a precision value above this exponential
         format precision should be formatted as scientific notation.
 
-        If the Calculate Precision according to Uncertainty is not set, 
-        the method will return the exponential precision value set in the 
-        Schema. Otherwise, will calculate the precision value according to 
+        If the Calculate Precision according to Uncertainty is not set,
+        the method will return the exponential precision value set in the
+        Schema. Otherwise, will calculate the precision value according to
         the Uncertainty and the result.
 
-        If Calculate Precision from the Uncertainty is set but no result 
-        provided neither uncertainty values are set, returns the fixed 
+        If Calculate Precision from the Uncertainty is set but no result
+        provided neither uncertainty values are set, returns the fixed
         exponential precision.
 
-        Will return positive values if the result is below 0 and will return 
+        Will return positive values if the result is below 0 and will return
         0 or positive values if the result is above 0.
 
         Given an analysis service with fixed exponential format
@@ -821,9 +829,9 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
         For further details, visit https://jira.bikalabs.com/browse/LIMS-1334
 
-        :param result: if provided and "Calculate Precision according to the  
-        Uncertainty" is set, the result will be used to retrieve the 
-        uncertainty from which the precision must be calculated. Otherwise, 
+        :param result: if provided and "Calculate Precision according to the
+        Uncertainty" is set, the result will be used to retrieve the
+        uncertainty from which the precision must be calculated. Otherwise,
         the fixed-precision will be used.
         :returns: the precision
         """
@@ -978,8 +986,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def getAnalyst(self):
-        """Returns the identifier of the assigned analyst. If there is no  
-        analyst assigned, and this analysis is attached to a worksheet, 
+        """Returns the identifier of the assigned analyst. If there is no
+        analyst assigned, and this analysis is attached to a worksheet,
         retrieves the analyst assigned to the parent worksheet
         """
         field = self.getField('Analyst')
@@ -1178,7 +1186,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     @security.public
     def getWorksheetUID(self):
         """This method is used to populate catalog values
-        Returns WS UID if this analysis is assigned to a worksheet, or None. 
+        Returns WS UID if this analysis is assigned to a worksheet, or None.
         """
         worksheet = self.getBackReferences("WorksheetAnalysis")
         if worksheet and len(worksheet) > 1:
@@ -1203,7 +1211,11 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def getInstrumentValid(self):
-        """Used to populate catalog values.
+        """Used to populate catalog values. Delegates to isInstrumentValid()
+        Returns false if an out-of-date or uncalibrated instrument is
+        assigned.
+        :return: True if the Analysis has no instrument assigned or is valid
+        :rtype: bool
         """
         return self.isInstrumentValid()
 
@@ -1303,8 +1315,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def guard_verify_transition(self):
-        """Checks if the verify transition can be performed to the current 
-        Analysis by the current user depending on the user roles, as well as 
+        """Checks if the verify transition can be performed to the current
+        Analysis by the current user depending on the user roles, as well as
         the status of the analysis
         :return: Boolean
         """
