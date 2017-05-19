@@ -45,10 +45,6 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
         analysis = self.aq_parent
         return analysis.getSample()
 
-
-
-
-
     @security.public
     def workflow_script_submit(self):
         if skip(self, "attach"):
