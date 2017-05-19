@@ -56,21 +56,6 @@ class ReferenceAnalysis(AbstractAnalysis):
         s = s and s.Title() or ''
         return safe_unicode(s).encode('utf-8')
 
-    def getWorksheetUID(self):
-        """
-        This is an index
-        """
-        worksheet = self.getBackReferences("WorksheetAnalysis")
-        if worksheet and len(worksheet) > 1:
-            logger.error(
-                "Reference analysis %s is assigned to more than one worksheet."
-                % self.getId())
-            return worksheet[0].UID()
-        elif worksheet:
-            return worksheet[0].UID()
-        else:
-            return ''
-
     def getDefaultUncertainty(self, result=None):
         """ Calls self.Service.getUncertainty with either the provided
             result value or self.Result
