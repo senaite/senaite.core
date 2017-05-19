@@ -197,7 +197,7 @@ def BaseAnalysisRefactoring(portal):
             logger.info('Migrating %s analyses on %s' % (len(ans), srv))
         for an in ans:
             # retain analysis.ServiceUID
-            an.setServiceUID(srv.UID())
+            an.setAnalysisService(srv)
             # Migrate refs to UIDReferenceField
             touidref(an, an, 'AnalysisInstrument', 'Instrument')
             touidref(an, an, 'AnalysisMethod', 'Method')
