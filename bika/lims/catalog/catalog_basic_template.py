@@ -24,6 +24,11 @@ BASE_CATALOG_INDEXES = {
     # Necessary to avoid reindexing whole catalog when we need to
     # reindex only one object. ExtendedPathIndex also could be used.
     'path': 'PathIndex',
+    # This index allows to use the Plone's searchbox. Define a mthod with this
+    # name in the contect type to rears for. The method will construct a text
+    # blob which contains all full-text searchable text for this content item.
+    # https://docs.plone.org/develop/plone/searching_and_indexing/indexing.html#full-text-searching
+    'SearchableText': 'ZCTextIndex',
 }
 BASE_CATALOG_COLUMNS = [
     'UID',

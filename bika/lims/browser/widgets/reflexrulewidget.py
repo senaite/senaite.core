@@ -372,7 +372,7 @@ class ReflexRuleWidget(RecordsWidget):
                 # method and the ones with a method shared with the
                 # analysis service.
                 bsc = getToolByName(self, 'bika_setup_catalog')
-                service_methods_uid = analysiservice.getAvailableMethodsUIDs()
+                service_methods_uid = analysiservice.getAvailableMethodUIDs()
                 query_dict = {
                     'portal_type': 'WorksheetTemplate',
                     'inactive_state': 'active',

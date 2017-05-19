@@ -7,6 +7,8 @@ from Acquisition import aq_parent
 
 from Products.ZCatalog.interfaces import ICatalogBrain
 from bika.lims import logger
+from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from plone.api.portal import get_tool
@@ -29,6 +31,8 @@ def upgrade(tool):
 
     logger.info('Upgrading {0}: {1} -> {2}'.format(product, ufrom, version))
 
+    UpdateIndexesAndMetadata(portal)
+
     BaseAnalysisRefactoring(portal)
 
     # Refresh affected catalogs
@@ -36,6 +40,63 @@ def upgrade(tool):
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
+
+
+def UpdateIndexesAndMetadata(portal):
+    ut = UpgradeUtils(portal)
+
+    # Add SearchableText index to analysis requests catalog
+    ut.addIndex(
+        CATALOG_ANALYSIS_REQUEST_LISTING, 'SearchableText', 'ZCTextIndex')
+
+    # Reindexing bika_catalog_analysisrequest_listing in order to obtain the
+    # correct getDateXXXs
+    ut.addIndexAndColumn(
+        CATALOG_ANALYSIS_REQUEST_LISTING, 'getDateVerified', 'DateIndex')
+    if CATALOG_ANALYSIS_REQUEST_LISTING not in ut.refreshcatalog:
+        ut.refreshcatalog.append(CATALOG_ANALYSIS_REQUEST_LISTING)
+
+    # Reindexing bika_analysis_catalog in order to fix busted date indexes
+    ut.addIndexAndColumn(
+        CATALOG_ANALYSIS_LISTING, 'getDueDate', 'DateIndex')
+    if CATALOG_ANALYSIS_LISTING not in ut.refreshcatalog:
+        ut.refreshcatalog.append(CATALOG_ANALYSIS_LISTING)
+
+    # Unify naming and cleanup of Method/Instrument indexes
+    ut.delColumn(CATALOG_ANALYSIS_LISTING, 'getAllowedInstrumentsUIDs')
+    ut.delColumn(CATALOG_ANALYSIS_LISTING, 'getAllowedMethodsUIDs')
+    ut.addColumn(CATALOG_ANALYSIS_LISTING, 'getAllowedInstrumentUIDs')
+    ut.addColumn(CATALOG_ANALYSIS_LISTING, 'getAllowedMethodUIDs')
+    ut.addIndex('bika_setup_catalog', 'getAvailableMethodUIDs', 'KeywordIndex')
+    ut.delColumn(CATALOG_ANALYSIS_LISTING, 'getAllowedMethodsAsTuples')
+
+    # Added by myself and pau independently
+    ut.addColumn(CATALOG_ANALYSIS_LISTING, 'getNumberOfVerifications')
+
+    # Renamed/refactored
+    ut.delColumn(CATALOG_ANALYSIS_LISTING, 'getResultOptionsFromService')
+    ut.addColumn(CATALOG_ANALYSIS_LISTING, 'getResultOptions')
+
+    # Renamed/refactored
+    ut.delColumn(CATALOG_ANALYSIS_LISTING, 'getResultsRangeNoSpecs')
+    ut.addColumn(CATALOG_ANALYSIS_LISTING, 'getResultsRange')
+
+    # these were kind of useless
+    ut.delColumn(CATALOG_ANALYSIS_LISTING, 'getServiceDefaultInstrumentTitle')
+    ut.delColumn(CATALOG_ANALYSIS_LISTING, 'getServiceDefaultInstrumentUID')
+    ut.delColumn(CATALOG_ANALYSIS_LISTING, 'getServiceDefaultInstrumentURL')
+
+    # to replace a backreference for AnalysisSamplePartition
+    ut.addIndex(CATALOG_ANALYSIS_LISTING, 'getSamplePartitionUID', 'FieldIndex')
+
+    # replaced by title of analysis, same as service title
+    ut.delIndexAndColumn(CATALOG_ANALYSIS_LISTING, 'getServiceTitle')
+    ut.delIndexAndColumn('bika_catalog', 'getServiceTitle')
+    ut.delIndexAndColumn('bika_setup_catalog', 'getServiceTitle')
+
+    # factored out
+    ut.delIndexAndColumn('bika_catalog', 'getAnalysisCategory')
+
 
 def BaseAnalysisRefactoring(portal):
     """The relationship between AnalysisService and the various types of
@@ -103,60 +164,11 @@ def BaseAnalysisRefactoring(portal):
         Instrument                (UIDReferenceField)
 
     """
-    ut = UpgradeUtils(portal)
     at = get_tool('archetype_tool')
 
     # Attachment indexing in portal_catalog is expensive and not used.
     logger.info('Removing Attachment portal_type from portal_catalog.')
     at.setCatalogsByType('Attachment', [])
-
-    # Miscellaneous index and column updates
-    # getServiceDefaultInstrument* were not being used.
-    ut.delColumn('bika_analysis_catalog', 'getServiceDefaultInstrumentTitle')
-    ut.delColumn('bika_analysis_catalog', 'getServiceDefaultInstrumentUID')
-    ut.delColumn('bika_analysis_catalog', 'getServiceDefaultInstrumentURL')
-    #
-    ut.addColumn('bika_analysis_catalog', 'getNumberOfVerifications')
-    # xxx
-    ut.addColumn('bika_analysis_catalog', 'getAllowedInstrumentUIDs')
-    # getAllowedMethodsAsTuples was used once; no negative impace from replacing
-    # it's usage with the actual vocabulary instead of indexing the value.
-    ut.delColumn('bika_analysis_catalog', 'getAllowedMethodsAsTuples')
-    # getResultOptionsFromService is an alias for getResultOptions
-    ut.delColumn('bika_analysis_catalog', 'getResultOptionsFromService')
-    ut.addColumn('bika_analysis_catalog', 'getResultOptions')
-    # getResultsRangeNoSpecs is an alias for getResultsRange
-    ut.delColumn('bika_analysis_catalog', 'getResultsRangeNoSpecs')
-    ut.addColumn('bika_analysis_catalog', 'getResultsRange')
-    # Analysis Titles are identical to Service titles.
-    ut.delIndexAndColumn('bika_analysis_catalog', 'getServiceTitle')
-    ut.delIndexAndColumn('bika_setup_catalog', 'getServiceTitle')
-    ut.delIndexAndColumn('bika_catalog', 'getServiceTitle')
-    # This was not being used at all.
-    ut.delIndexAndColumn('bika_catalog', 'getAnalysisCategory')
-
-    # The following relations were used somewhere in the code for
-    # backreferences and are refactored to use regular catalog searches on
-    # either new or existing indexes (this is definitely going to be cheaper
-    # than AT References):
-    # - AnalysisServiceMethods
-    #   Updated ReflexRuleValidator to use getAvailableMethodsUIDs index on AS.
-    ut.addIndex('bika_setup_catalog', 'getAvailableMethodsUIDs', 'KeywordIndex')
-    # - AnalysisServiceCalculation
-    #   This was only referenced in a needless JSONReadExtender for ASes, which
-    #   I removed.
-    # - AnalysisAttachment
-    # - DuplicateAnalysisAttachment
-    #   These were used for cleaning up after attachment deletion But
-    #   UIDReferenceField handles this on it's own, so I removed that code.
-    #   Also used for generating attachment titles, ridiculous.
-    # - AnalysisSamplePartition
-    #   This is used quite a lot; I replaced it with a bika_analysis_catalog
-    #   index getSamplePartitionUID, and fixed samplepartition.getAnalyses().
-    ut.addIndex('bika_analysis_catalog', 'getSamplePartitionUID', 'FieldIndex')
-    # - DuplicateAnalysisAnalysis
-    #   It was used to remove Duplicates when an Analysis was unassigned from
-    #   a worksheet.  So I replaced it with a simple loop.
 
     # - XXX CAMPBELL OriginalAnalysisReflectedAnalysis
 

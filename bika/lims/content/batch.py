@@ -256,15 +256,16 @@ class Batch(ATFolder):
         return ""
 
     def getAnalysisService(self):
-        analyses = []
+        analyses = set()
         for ar in self.getAnalysisRequests():
-            analyses += list(ar.getAnalyses(full_objects=True))
+            for an in ar.getAnalyses():
+                analyses.add(an)
         value = []
         for analysis in analyses:
-            val = analysis.Title()
+            val = analysis.Title
             if val not in value:
                 value.append(val)
-        return value
+        return list(value)
 
     def getAnalysts(self):
         analyses = []

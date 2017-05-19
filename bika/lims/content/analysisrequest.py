@@ -1847,13 +1847,11 @@ class AnalysisRequest(BaseFolder):
         return value
 
     def getAnalysisService(self):
-        analyses = self.getAnalyses(full_objects=True)
-        value = []
-        for analysis in analyses:
-            val = analysis.Title()
-            if val not in value:
-                value.append(val)
-        return value
+        proxies = self.getAnalyses(full_objects=False)
+        value = set()
+        for proxy in proxies:
+            value.add(proxy.Title)
+        return list(value)
 
     def getAnalysts(self):
         proxies = self.getAnalyses(full_objects=True)
@@ -2906,16 +2904,19 @@ class AnalysisRequest(BaseFolder):
         return DisplayList(prep_workflows)
 
     def getDepartments(self):
-        """ Returns a set with the departments assigned to the Analyses
-            from this Analysis Request
+        """Returns a list of the departments assigned to the Analyses
+        from this Analysis Request
         """
-        ans = self.getAnalyses(full_objects=True)
-        depts = [an.getDepartment() for an in ans if an.getDepartment()]
-        return set(depts)
+        bsc = api.portal.get_tool('bika_setup_catalog')
+        dept_uids = [b.getDepartmentUID for b in self.getAnalyses()]
+        brains = bsc(portal_type='Department', UID=dept_uids)
+        depts = [b.getObject() for b in brains]
+        return list(set(depts))
 
-    # TODO-performance: This function is very time consuming because
-    # we are getting all the analysis objects, and services.
     def getDepartmentUIDs(self):
+        """Return a list of the UIDs of departments assigned to the Analyses
+        from this Analysis Request.
+        """
         return [dept.UID() for dept in self.getDepartments()]
 
     def getResultsInterpretationByDepartment(self, department=None):
@@ -3404,5 +3405,73 @@ class AnalysisRequest(BaseFolder):
         if self.bika_setup.getNotifyOnRejection():
             # Notify the Client about the Rejection.
             notify_rejection(self)
+
+    def SearchableText(self):
+        """
+        Override searchable text logic based on the requirements.
+
+        This method constructs a text blob which contains all full-text
+        searchable text for this content item.
+        https://docs.plone.org/develop/plone/searching_and_indexing/indexing.html#full-text-searching
+        """
+
+        # Speed up string concatenation ops by using a buffer
+        entries = []
+
+        # plain text fields we index from ourself,
+        # a list of accessor methods of the class
+        plain_text_fields = ("getId", )
+
+        def read(accessor):
+            """
+            Call a class accessor method to give a value for certain Archetypes
+            field.
+            """
+            try:
+                value = accessor()
+            except:
+                message = \
+                    "Error getting the accessor parameter"\
+                    " in SearchableText from the Analysis Request Object {}"\
+                    .format(self.getId())
+                logger.error(message)
+                value = ""
+
+            if value is None:
+                value = ""
+
+            return value
+
+        # Concatenate plain text fields as they are
+        for f in plain_text_fields:
+            accessor = getattr(self, f)
+            value = read(accessor)
+            entries.append(value)
+
+        # Adding HTML Fields to SearchableText can be uncommented if necessary
+        # transforms = getToolByName(self, 'portal_transforms')
+        #
+        # # Run HTML valued fields through text/plain conversion
+        # for f in html_fields:
+        #     accessor = getattr(self, f)
+        #     value = read(accessor)
+        #
+        #     if value != "":
+        #         stream = transforms.convertTo('text/plain', value, mimetype='text/html')
+        #         value = stream.getData()
+        #
+        #     entries.append(value)
+
+        # Plone accessor methods assume utf-8
+        def convertToUTF8(text):
+            if type(text) == unicode:
+                return text.encode("utf-8")
+            return text
+
+        entries = [convertToUTF8(entry) for entry in entries]
+
+        # Concatenate all strings to one text blob
+        return " ".join(entries)
+
 
 atapi.registerType(AnalysisRequest, PROJECTNAME)

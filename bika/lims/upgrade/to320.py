@@ -373,7 +373,7 @@ def reflex_rules(portal):
     addIndexAndColumn(pc, 'Analyst', 'FieldIndex')
 
     bsc = getToolByName(portal, 'bika_setup_catalog')
-    addIndex(bsc, 'getAvailableMethodsUIDs', 'KeywordIndex')
+    addIndex(bsc, 'getAvailableMethodUIDs', 'KeywordIndex')
     addIndex(bsc, 'getMethodUID', 'FieldIndex')
 
     bac = getToolByName(portal, 'bika_analysis_catalog')

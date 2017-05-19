@@ -677,7 +677,6 @@ class BikaGenerator:
 
         addIndex(bsc, 'getAccredited', 'FieldIndex')
         addIndex(bsc, 'getAnalyst', 'FieldIndex')
-        addIndex(bsc, 'getAvailableMethodsUIDs', 'KeywordIndex')
         addIndex(bsc, 'getBlank', 'FieldIndex')
         addIndex(bsc, 'getCalculationTitle', 'FieldIndex')
         addIndex(bsc, 'getCalculationUID', 'FieldIndex')
@@ -701,7 +700,7 @@ class BikaGenerator:
         addIndex(bsc, 'getManagerPhone', 'FieldIndex')
         addIndex(bsc, 'getMaxTimeAllowed', 'FieldIndex')
         addIndex(bsc, 'getMethodID', 'FieldIndex')
-        addIndex(bsc, 'getAvailableMethodsUIDs', 'KeywordIndex')
+        addIndex(bsc, 'getAvailableMethodUIDs', 'KeywordIndex')
         addIndex(bsc, 'getModel', 'FieldIndex')
         addIndex(bsc, 'getName', 'FieldIndex')
         addIndex(bsc, 'getPointOfCapture', 'FieldIndex')

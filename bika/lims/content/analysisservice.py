@@ -428,7 +428,7 @@ class AnalysisService(AbstractBaseAnalysis):
         return methods
 
     @security.public
-    def getAvailableMethodsUIDs(self):
+    def getAvailableMethodUIDs(self):
         """ Returns the UIDs of the available method.
         """
         return [m.UID() for m in self.getAvailableMethods()]

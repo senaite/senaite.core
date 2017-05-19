@@ -1156,7 +1156,7 @@ class ReflexRuleValidator:
         method = instance.getMethod()
         bsc = get_tool('bika_setup_catalog')
         query = {'portal_type': 'AnalysisService',
-                 'getAvailableMethodsUIDs': method.UID()}
+                 'getAvailableMethodUIDs': method.UID()}
         method_ans_uids = [b.UID for b in bsc(query)]
         rules = instance.getReflexRules()
         error = ''

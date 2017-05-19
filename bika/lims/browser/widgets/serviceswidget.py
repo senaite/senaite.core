@@ -52,7 +52,7 @@ class ServicesView(BikaListingView):
         if hasattr(self.context, 'getRestrictToMethod') and\
                 getattr(self.context, 'getMethodUID')():
             self.method_filter = {
-                'getAvailableMethodsUIDs': self.context.getMethodUID()}
+                'getAvailableMethodUIDs': self.context.getMethodUID()}
         self.do_cats = self.context.bika_setup.getCategoriseAnalysisServices()
         if self.do_cats:
             self.show_categories = True
