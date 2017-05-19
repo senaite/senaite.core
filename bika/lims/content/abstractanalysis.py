@@ -494,6 +494,18 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             self.getField('Uncertainty').set(self, None)
 
     @security.public
+    def getSample(self):
+        raise NotImplementedError("getSample is not implemented.")
+
+    @security.public
+    def getSampleUID(self):
+        """Instances must implement getSample
+        """
+        sample = self.getSample()
+        if sample:
+            return sample.UID()
+
+    @security.public
     def getAnalysisSpecs(self, specification=None):
         """Retrieves the analysis specs to be applied to this analysis.
         Allowed values for specification= 'client', 'lab', None If

@@ -100,23 +100,20 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
     displayContentsTab = False
     schema = schema
 
-    def getSample(self):
-        raise NotImplementedError("getSample is not implemented.")
-
     @security.public
-    def getSampleUID(self):
-        """Instances must implement getSample
+    def getRequest(self):
+        """Returns the Analysis Request this analysis belongs to.
+        Delegates to self.aq_parent
         """
-        sample = self.getSample()
-        if sample:
-            return sample.UID()
+        ar = self.aq_parent
+        return ar
 
     @security.public
     def getRequestID(self):
         """Used to populate catalog values.
         Returns the ID of the parent analysis request.
         """
-        ar = self.aq_parent
+        ar = self.getRequest()
         if ar:
             return ar.getId()
 
@@ -125,7 +122,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         """Used to populate catalog values.
         Returns the Title of the client for this analysis' AR.
         """
-        client = self.aq_parent.getClient()
+        client = self.getRequest().getClient()
         if client:
             return client.Title()
 
@@ -134,7 +131,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         """Used to populate catalog values.
         Returns the UID of the client for this analysis' AR.
         """
-        client = self.aq_parent.getClient()
+        client = self.getRequest().getClient()
         if client:
             return client.UID()
 
@@ -143,7 +140,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         """This method is used to populate catalog values
         Returns the URL of the client for this analysis' AR.
         """
-        client = self.aq_parent.getClient()
+        client = self.getRequest().getClient()
         if client:
             return client.absolute_url_path()
 
@@ -152,7 +149,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         """Used to populate catalog values.
         Returns the ClientOrderNumber of the associated AR
         """
-        return self.aq_parent.getClientOrderNumber()
+        return self.getRequest().getClientOrderNumber()
 
     @security.public
     def getDateReceived(self):
@@ -223,19 +220,19 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
     def getAnalysisRequestTitle(self):
         """This is a catalog metadata column
         """
-        return self.aq_parent.Title()
+        return self.getRequest().Title()
 
     @security.public
     def getAnalysisRequestUID(self):
         """This method is used to populate catalog values
         """
-        return self.aq_parent.UID()
+        return self.getRequest().UID()
 
     @security.public
     def getAnalysisRequestURL(self):
         """This is a catalog metadata column
         """
-        return self.aq_parent.absolute_url_path()
+        return self.getRequest().absolute_url_path()
 
     @security.public
     def getSampleTypeUID(self):
@@ -260,11 +257,11 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
 
     @security.public
     def addReflexRuleActionsTriggered(self, text):
-        """This function adds a new item to the string field 
-        ReflexRuleActionsTriggered. From the field: Reflex rule triggered 
-        actions from which the current analysis is responsible of. Separated 
+        """This function adds a new item to the string field
+        ReflexRuleActionsTriggered. From the field: Reflex rule triggered
+        actions from which the current analysis is responsible of. Separated
         by '|'
-        :param text: is a str object with the format '<UID>.<rulename>' -> 
+        :param text: is a str object with the format '<UID>.<rulename>' ->
         '123354.1'
         """
         old = self.getReflexRuleActionsTriggered()
