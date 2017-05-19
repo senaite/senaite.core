@@ -167,6 +167,12 @@ def BaseAnalysisRefactoring(portal):
         Attachment                (UIDReferenceField)
         Instrument                (UIDReferenceField)
 
+    Method -> Calculation (UIDReferenceField)
+    Calculation -> DependentServices (UIDReferenceField)
+    Instrument -> Method (UIDReferenceField)
+    Worksheet -> WorksheetTemplate (UIDReferenceField)
+    AnalysisRequest -> Priority (UIDReferenceField)
+    AnalysisSpec -> SampleType (UIDReferenceField)
     """
     at = get_tool('archetype_tool')
 
