@@ -694,6 +694,8 @@ Remarks = TextField(
 schema = BikaSchema.copy() + Schema((
     ShortTitle,
     SortKey,
+    CommercialID,
+    ProtocolID,
     ScientificName,
     Unit,
     Precision,
@@ -727,8 +729,6 @@ schema = BikaSchema.copy() + Schema((
     Hidden,
     SelfVerification,
     NumberOfRequiredVerifications,
-    CommercialID,
-    ProtocolID,
     Remarks
 ))
 
@@ -741,13 +741,9 @@ schema['title'].schemata = 'Description'
 schema['title'].validators = ()
 # Update the validation layer after change the validator in runtime
 schema['title']._validationLayer()
-schema.moveField('ShortTitle', after='title')
-schema.moveField('SortKey', after='ShortTitle')
-schema.moveField('CommercialID', after='SortKey')
-schema.moveField('ProtocolID', after='CommercialID')
 
 
-class AbstractBaseAnalysis(BaseContent):  # XXX BaseContent?  is really needed?
+class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
     security = ClassSecurityInfo()
     schema = schema
     displayContentsTab = False
