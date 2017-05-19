@@ -1676,6 +1676,7 @@ class Analysis(BaseContent):
                 # instructions if the result has the expected result.
                 doReflexRuleAction(self, action_row)
 
+
     def after_submit_transition_event(self):
         """
         Method triggered after a 'submit' transition for the current analysis
@@ -1705,8 +1706,8 @@ class Analysis(BaseContent):
             if skip(dependent, 'submit', peek=True):
                 continue
 
-            # TODO: All below and inside this loop should be moved to a
-            #   guard_submit_transition inside analysis
+            # TODO Workflow. All below and inside this loop should be moved to
+            # a guard_submit_transition inside analysis
 
             # If this dependent has already been submitted, omit
             if dependent.isSubmitted():

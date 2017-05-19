@@ -87,21 +87,21 @@ def BeforeTransitionEventHandler(instance, event):
     logger.debug(msg)
 
     key = 'before_{0}_transition_event'.format(event.transition.id)
-    method = getattr(instance, key, False)
-    if not method:
+    before_event = getattr(instance, key, False)
+    if not before_event:
         # TODO: this conditional is only for backwards compatibility, to be
         # removed when all workflow_before_* methods in contents are replaced
-        # by the more explicity signature 'before_*_transition_event_handler'
+        # by the more explicity signature 'before_*_transition_event'
         key = 'workflow_before_' + event.transition.id
-        method = getattr(instance, key, False)
+        before_event = getattr(instance, key, False)
 
-    if not method:
+    if not before_event:
         return
 
     msg = "Calling BeforeTransitionEvent function '{0}' from {1}".format(
         key, clazzname)
     logger.debug(msg)
-    method()
+    before_event()
 
 
 def AfterTransitionEventHandler(instance, event):
@@ -140,21 +140,21 @@ def AfterTransitionEventHandler(instance, event):
     instance.reindexObject()
 
     key = 'after_{0}_transition_event'.format(event.transition.id)
-    method = getattr(instance, key, False)
-    if not method:
-        # TODO: this conditional is only for backwards compatibility, to be
-        # removed when all workflow_script_* methods in contents are replaced
-        # by the more explicity signature 'after_*_transition_event_handler'
+    after_event = getattr(instance, key, False)
+    if not afterevent:
+        # TODO Workflow. this conditional is only for backwards compatibility,
+        # to be removed when all workflow_script_* methods in contents are
+        # replaced by the more explicity signature 'after_*_transition_event'
         key = 'workflow_script_' + event.transition.id
-        method = getattr(instance, key, False)
+        after_event = getattr(instance, key, False)
 
-    if not method:
+    if not afterevent:
         return
 
     msg = "Calling AfterTransitionEvent function '{0}' from {1}".format(
         key, clazzname)
     logger.debug(msg)
-    method()
+    after_event()
 
 def get_workflow_actions(obj):
     """ Compile a list of possible workflow transitions for this object
