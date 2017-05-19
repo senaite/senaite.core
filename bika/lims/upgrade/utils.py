@@ -85,7 +85,7 @@ class UpgradeUtils(object):
             return
         try:
             cat.delColumn(column)
-            logger.info('Deleted column {} from {}.'.format(column, cat.id))
+            logger.info('Deleted column {} from {}'.format(column, cat.id))
             transaction.commit()
         except:
             logger.error(

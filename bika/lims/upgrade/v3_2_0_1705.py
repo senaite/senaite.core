@@ -14,6 +14,7 @@ from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from plone.api.portal import get_tool
 
+
 product = 'bika.lims'
 version = '3.2.0.1705'
 
@@ -36,11 +37,13 @@ def upgrade(tool):
 
     BaseAnalysisRefactoring(portal)
 
-    # Ensure that the reference catalog is refreshed
-    ut.refreshcatalog.append(REFERENCE_CATALOG)
-
     # Refresh affected catalogs
     ut.refreshCatalogs()
+
+    # Clear and rebuild the reference catalog
+    logger.info("Rebuilding reference_catalog")
+    rc = get_tool(REFERENCE_CATALOG)
+    rc.manage_rebuildCatalog()
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
