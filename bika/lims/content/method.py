@@ -4,21 +4,15 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from AccessControl import ClassSecurityInfo
-from Products.CMFCore.permissions import ModifyPortalContent, View
-from Products.CMFCore.utils import getToolByName
+
 from Products.Archetypes.public import *
-from Products.Archetypes.references import HoldingReference
-from Products.ATExtensions.ateapi import RecordsField as RecordsField
-from bika.lims.browser.fields import HistoryAwareReferenceField, \
-    UIDReferenceField
-from bika.lims.browser.widgets import RecordsWidget
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.config import PROJECTNAME
-import sys
+from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IMethod
-from bika.lims.utils import to_utf8
+from bika.lims.utils import t
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((

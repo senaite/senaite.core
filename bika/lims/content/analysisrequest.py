@@ -6,51 +6,47 @@
 """The request for analysis by a client. It contains analysis instances.
 """
 import logging
+import sys
+from AccessControl import ClassSecurityInfo
+from decimal import Decimal
 from operator import methodcaller
 
-from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
-from plone import api
-
-# noinspection PyUnresolvedReferences
 from Products.ATExtensions.field import RecordsField
-from plone.indexer import indexer
 from Products.Archetypes import atapi
+from Products.Archetypes.Widget import RichWidget
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
-from Products.Archetypes.Widget import RichWidget
 from Products.CMFCore import permissions
 from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
 from Products.CMFPlone.utils import _createObjectByType
+from Products.CMFPlone.utils import safe_unicode
+from bika.lims import bikaMessageFactory as _
+from bika.lims import deprecated
+from bika.lims import logger
 from bika.lims.browser.fields import ARAnalysesField, UIDReferenceField
-from bika.lims.config import PROJECTNAME
-from bika.lims.permissions import *
-from bika.lims.permissions import Verify as VerifyPermission
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IAnalysisRequest, ISamplePrepWorkflow
-from bika.lims.browser.fields import HistoryAwareReferenceField
+from bika.lims.browser.fields import DateTimeField
 from bika.lims.browser.widgets import DateTimeWidget, DecimalWidget
 from bika.lims.browser.widgets import ReferenceWidget
-from bika.lims.browser.widgets import SelectionWidget
 from bika.lims.browser.widgets import RejectionWidget
-from bika.lims.workflow import skip, isBasicTransitionAllowed, getTransitionDate
-from bika.lims.workflow import getTransitionUsers
-from bika.lims.workflow import doActionFor
-from decimal import Decimal
-from zope.interface import implements
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import getUsers, dicts_to_dict
-from bika.lims.utils.analysisrequest import notify_rejection
-from bika.lims.utils import user_fullname
-from bika.lims.utils import user_email
-from bika.lims import logger
-from bika.lims.browser.fields import DateTimeField
+from bika.lims.browser.widgets import SelectionWidget
 from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
-from bika.lims import deprecated
-import sys
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IAnalysisRequest, ISamplePrepWorkflow
+from bika.lims.permissions import *
+from bika.lims.permissions import Verify as VerifyPermission
+from bika.lims.utils import dicts_to_dict, getUsers
+from bika.lims.utils import user_email
+from bika.lims.utils import user_fullname
+from bika.lims.utils.analysisrequest import notify_rejection
+from bika.lims.workflow import doActionFor
+from bika.lims.workflow import getTransitionDate, isBasicTransitionAllowed, skip
+from bika.lims.workflow import getTransitionUsers
+from plone import api
+from zope.interface import implements
 
 try:
     from zope.component.hooks import getSite

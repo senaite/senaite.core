@@ -3,38 +3,36 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from plone import api
+import re
+import sys
 from AccessControl import ClassSecurityInfo
-from bika.lims import bikaMessageFactory as _
-from bika.lims.config import *
-from bika.lims.idserver import renameAfterCreation
-from bika.lims.utils import t, tmpID, changeWorkflowState
-from bika.lims.utils import to_utf8 as _c
-from bika.lims.browser.fields import HistoryAwareReferenceField, \
-    UIDReferenceField
-from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IWorksheet
-from bika.lims.permissions import EditWorksheet, ManageWorksheets
-from bika.lims.permissions import Verify as VerifyPermission
-from bika.lims.workflow import doActionFor
-from bika.lims.workflow import skip
-from bika.lims import deprecated
-from bika.lims import logger
-from DateTime import DateTime
 from operator import itemgetter
-from plone.indexer import indexer
+
+from DateTime import DateTime
+from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
+from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
-from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
-from Products.ATExtensions.ateapi import RecordsField
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode, _createObjectByType
+from Products.CMFPlone.utils import _createObjectByType, safe_unicode
+from bika.lims import bikaMessageFactory as _
+from bika.lims import deprecated
+from bika.lims import logger
+from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.config import *
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.idserver import renameAfterCreation
+from bika.lims.interfaces import IWorksheet
+from bika.lims.permissions import EditWorksheet, ManageWorksheets
+from bika.lims.permissions import Verify as VerifyPermission
+from bika.lims.utils import changeWorkflowState, tmpID
+from bika.lims.utils import to_utf8 as _c
+from bika.lims.workflow import doActionFor
+from bika.lims.workflow import skip
+from plone import api
 from zope.interface import implements
-import re
-import sys
-
 
 schema = BikaSchema.copy() + Schema((
     UIDReferenceField(

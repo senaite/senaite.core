@@ -267,6 +267,11 @@ def BaseAnalysisRefactoring(portal):
         ar = brain.getObject()
         touidref(ar, ar, 'AnalysisRequestPriority', 'Priority')
 
+    brains = bc(portal_type='AnalysisSpec')
+    for brain in brains:
+        spec = brain.getObject()
+        touidref(spec, spec, 'AnalysisSpecSampleType', 'SampleType')
+
 def touidref(src, dst, src_relation, fieldname):
     """Convert an archetypes reference in src/src_relation to a UIDReference 
     in dst/fieldname.
