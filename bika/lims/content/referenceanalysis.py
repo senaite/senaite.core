@@ -44,149 +44,46 @@ class ReferenceAnalysis(AbstractAnalysis):
     displayContentsTab = False
     schema = schema
 
-    def getSupplierUID(self):
-        return self.aq_parent.aq_parent.UID()
-
-    @deprecated("You should use the Reference Analysis title directly.")
-    def Title(self):
-        """Return the Service ID as title
-        Titles of analyses are always the same as the title of the service.
+    def getSupplier(self):
+        """ Returns the Supplier of the ReferenceSample this ReferenceAnalysis
+        refers to
         """
-        s = self.getService()
-        s = s and s.Title() or ''
-        return safe_unicode(s).encode('utf-8')
+        return self.getSample().aq_parent
+
+    def getSupplierUID(self):
+        return self.getSupplier().UID()
 
     def getSample(self):
-        """ Conform to Analysis
+        """ Returns the ReferenceSample this ReferenceAnalysis refers to
+        Delegates to self.aq_parent
         """
         return self.aq_parent
 
-    security.declarePublic('setResult')
-
-    def setResult(self, value, **kw):
+    @security.public
+    def setResult(self, value):
         # Always update ResultCapture date when this field is modified
         self.setResultCaptureDate(DateTime())
-        self.getField('Result').set(self, value, **kw)
-
-    security.declarePublic('current_date')
-
-    @staticmethod
-    def current_date():
-        """ return current date """
-        return DateTime()
+        val = str(value).strip()
+        self.getField('Result').set(self, val)
 
     def getExpiryDate(self):
         """It is used as a metacolumn.
         Returns the expiration date from the reference sample.
         """
-        return self.aq_parent.getExpiryDate()
+        return self.getSample().getExpiryDate()
 
     def getReferenceResults(self):
         """
         It is used as metacolumn
         """
-        return self.aq_parent.getReferenceResults()
+        return self.getSample().getReferenceResults()
 
-    def isVerifiable(self):
+    def getDependencies(self):
+        """It doesn't make sense for a ReferenceAnalysis to use
+        dependencies, since them are only used in calculations for
+        routine analyses
         """
-        Checks it the current analysis can be verified. This is, its not a
-        cancelled analysis and has no dependenant analyses not yet verified
-        :returns: True or False
-        """
-        # Check if the analysis is active
-        workflow = getToolByName(self, "portal_workflow")
-        objstate = workflow.getInfoFor(self, 'cancellation_state', 'active')
-        if objstate == "cancelled":
-            return False
-
-        # Check if the analysis state is to_be_verified
-        review_state = workflow.getInfoFor(self, "review_state")
-        if review_state != 'to_be_verified':
-            return False
-
-        # All checks passsed
-        return True
-
-    def isUserAllowedToVerify(self, member):
-        """
-        Checks if the specified user has enough privileges to verify the
-        current analysis. Apart of roles, the function also checks if the
-        option IsSelfVerificationEnabled is set to true at Service or
-        Bika Setup levels and validates if according to this value, together
-        with the user roles, the analysis can be verified. Note that this
-        function only returns if the user can verify the analysis, but not if
-        the analysis is ready to be verified (see isVerifiable)
-        :member: user to be tested
-        :returns: true or false
-        """
-        # Check if the user has "Bika: Verify" privileges
-        username = member.getUserName()
-        allowed = has_permission(VerifyPermission, username=username)
-        if not allowed:
-            return False
-
-        # Check if the user who submited the result is the same as the current
-        workflow = getToolByName(self, "portal_workflow")
-        user_id = member.getUser().getId()
-        self_submitted = False
-        try:
-            review_history = workflow.getInfoFor(self, "review_history")
-            review_history = self.reverseList(review_history)
-            for event in review_history:
-                if event.get("action") == "submit":
-                    self_submitted = event.get("actor") == user_id
-                    break
-        except WorkflowException:
-            # https://jira.bikalabs.com/browse/LIMS-2037;
-            # Sometimes the workflow history is inexplicably missing!
-            # Let's assume the user that submitted the result is not the same
-            # as the current logged user
-            self_submitted = False
-
-        # The submitter and the user must be different unless the analysis has
-        # the option SelfVerificationEnabled set to true
-        selfverification = self.getService().isSelfVerificationEnabled()
-        if self_submitted and not selfverification:
-            return False
-
-        # Checking verifiability depending on multi-verification type of
-        # bika_setup
-        if self.bika_setup.getNumberOfRequiredVerifications() > 1:
-            mv_type = self.bika_setup.getTypeOfmultiVerification()
-            # If user verified before and self_multi_disabled, then return False
-            if mv_type == 'self_multi_disabled' and self.wasVerifiedByUser(
-                    username):
-                return False
-
-            # If user is the last verificator and consecutively
-            # multi-verification
-            # is disabled, then return False
-            # Comparing was added just to check if this method is called
-            # before/after
-            # verification
-            elif mv_type == 'self_multi_not_cons' and username == \
-                    self.getLastVerificator() and \
-                            self.getNumberOfVerifications() < \
-                            self.getNumberOfRequiredVerifications():
-                return False
-
-        # All checks pass
-        return True
-
-    def guard_verify_transition(self):
-        """
-        Checks if the verify transition can be performed to the current
-        Analysis by the current user depending on the user roles, as
-        well as the status of the analysis
-        :returns: true or false
-        """
-        mtool = getToolByName(self, "portal_membership")
-        # Check if the analysis is in a "verifiable" state
-        if self.isVerifiable():
-            # Check if the user can verify the analysis
-            member = mtool.getAuthenticatedMember()
-            return self.isUserAllowedToVerify(member)
-        return False
+        return []
 
     def workflow_script_submit(self):
         if skip(self, "submit"):
