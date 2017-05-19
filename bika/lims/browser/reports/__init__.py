@@ -19,6 +19,7 @@ from bika.lims.interfaces import IProductivityReport
 from bika.lims.interfaces import IQualityControlReport
 from bika.lims.interfaces import IAdministrationReport
 from DateTime import DateTime
+from plone.api.portal import get_tool
 from plone.app.layout.globals.interfaces import IViewView
 from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
@@ -389,9 +390,11 @@ class ReferenceAnalysisQC_Services(BrowserView):
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         # get Sample from request
-        sample = self.request.form.get('SampleUID', '')
-        sample = self.reference_catalog.lookupObject(sample)
-        if sample:
+        sample_uid = self.request.form.get('SampleUID', '')
+        uc = get_tool('uid_catalog')
+        brains = uc(UID=sample_uid)
+        if brains:
+            sample = brains[0].getObject()
             # get ReferenceSamples for this supplier
             analyses = self.bika_analysis_catalog(
                 portal_type='ReferenceAnalysis',
