@@ -25,7 +25,7 @@ from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from Products.CMFPlone.utils import _createObjectByType
-from bika.lims.browser.fields import ARAnalysesField
+from bika.lims.browser.fields import ARAnalysesField, UIDReferenceField
 from bika.lims.config import PROJECTNAME
 from bika.lims.permissions import *
 from bika.lims.permissions import Verify as VerifyPermission
@@ -1474,13 +1474,6 @@ schema = BikaSchema.copy() + Schema((
         default='',
         widget=ComputedWidget(visible=False,),
     ),
-
-    ComputedField(
-        'Priority',
-        searchable=True,
-        expression="here.getPriority().getSortKey() if here.getPriority() else ''",
-        widget=ComputedWidget(visible=False),
-    ),
     ComputedField(
         'CreatorFullName',
         expression="here._getCreatorFullName()",
@@ -1657,14 +1650,9 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
         ),
     ),
-    HistoryAwareReferenceField(
+    UIDReferenceField(
         'Priority',
         allowed_types=('ARPriority',),
-        referenceClass=HoldingReference,
-        relationship='AnalysisRequestPriority',
-        mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
         widget=ReferenceWidget(
             label=_("Priority"),
             size=10,

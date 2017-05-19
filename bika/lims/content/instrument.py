@@ -13,7 +13,8 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
-from bika.lims.browser.fields import HistoryAwareReferenceField
+from bika.lims.browser.fields import HistoryAwareReferenceField, \
+    UIDReferenceField
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.config import PROJECTNAME
@@ -79,10 +80,10 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         )
     ),
 
-    HistoryAwareReferenceField('Method',
+    UIDReferenceField(
+        'Method',
         vocabulary='_getAvailableMethods',
         allowed_types=('Method',),
-        relationship='InstrumentMethod',
         required=0,
         widget=SelectionWidget(
             format='select',

@@ -240,6 +240,32 @@ def BaseAnalysisRefactoring(portal):
             # Then scoop the rest of the fields out of service
             copy_field_values(srv, an)
 
+    # Removing some more HistoryAwareReferenceFields
+    brains = bsc(portal_type='Method')
+    for brain in brains:
+        method = brain.getObject()
+        touidref(method, method, 'MethodCalculation', 'Calculation')
+
+    brains = bsc(portal_type='Calculation')
+    for brain in brains:
+        calc = brain.getObject()
+        touidref(calc, calc, 'CalculationAnalysisService', 'DependentServices')
+
+    brains = bsc(portal_type='Instrument')
+    for brain in brains:
+        instrument = brain.getObject()
+        touidref(instrument, instrument, 'InstrumentMethod', 'Method')
+
+    bc = get_tool('bika_catalog')
+    brains = bc(portal_type='Worksheet')
+    for brain in brains:
+        ws = brain.getObject()
+        touidref(ws, ws, 'WorksheetAnalysisTemplate', 'WorksheetTemplate')
+
+    brains = bc(portal_type='AnalysisRequest')
+    for brain in brains:
+        ar = brain.getObject()
+        touidref(ar, ar, 'AnalysisRequestPriority', 'Priority')
 
 def touidref(src, dst, src_relation, fieldname):
     """Convert an archetypes reference in src/src_relation to a UIDReference 

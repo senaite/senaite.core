@@ -9,7 +9,8 @@ from Products.CMFCore.utils import getToolByName
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
 from Products.ATExtensions.ateapi import RecordsField as RecordsField
-from bika.lims.browser.fields import HistoryAwareReferenceField
+from bika.lims.browser.fields import HistoryAwareReferenceField, \
+    UIDReferenceField
 from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import PROJECTNAME
@@ -97,21 +98,17 @@ schema = BikaSchema.copy() + Schema((
 
     # Calculations associated to this method. The analyses services
     # with this method assigned will use the calculation selected here.
-    HistoryAwareReferenceField('Calculation',
-        required = 0,
-        vocabulary_display_path_bound = sys.maxint,
-        vocabulary = '_getCalculations',
-        allowed_types = ('Calculation',),
-        relationship = 'MethodCalculation',
-        referenceClass = HoldingReference,
-        widget = ReferenceWidget(
-            checkbox_bound = 0,
+    UIDReferenceField(
+        'Calculation',
+        vocabulary='_getCalculations',
+        allowed_types=('Calculation',),
+        widget=ReferenceWidget(
+            checkbox_bound=0,
             label=_("Calculation"),
-            description =_("If required, select a calculation for the "
-                           "The analysis services linked to this "
-                           "method. Calculations can be configured "
-                           "under the calculations item in the LIMS "
-                           "set-up"),
+            description=_(
+                "If required, select a calculation for the The analysis "
+                "services linked to this method. Calculations can be "
+                "configured under the calculations item in the LIMS set-up"),
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
         )

@@ -7,7 +7,8 @@ from AccessControl import ClassSecurityInfo
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
-from bika.lims.browser.fields import HistoryAwareReferenceField
+from bika.lims.browser.fields import HistoryAwareReferenceField, \
+    UIDReferenceField
 from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget
 from bika.lims.config import PROJECTNAME
@@ -43,19 +44,10 @@ schema = BikaSchema.copy() + Schema((
                 "corresponding fields on the sheet."),
         )
     ),
-    HistoryAwareReferenceField('DependentServices',
-        schemata='Calculation',
-        required=1,
+    UIDReferenceField(
+        'DependentServices',
         multiValued=1,
-        vocabulary_display_path_bound=sys.maxsize,
         allowed_types=('AnalysisService',),
-        relationship='CalculationAnalysisService',
-        referenceClass=HoldingReference,
-        widget=ReferenceWidget(
-            checkbox_bound=0,
-            visible=False,
-            label=_("Dependent Analyses"),
-        ),
     ),
     TextField('Formula',
         schemata='Calculation',

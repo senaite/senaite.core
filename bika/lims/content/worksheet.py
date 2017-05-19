@@ -10,7 +10,8 @@ from bika.lims.config import *
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.utils import t, tmpID, changeWorkflowState
 from bika.lims.utils import to_utf8 as _c
-from bika.lims.browser.fields import HistoryAwareReferenceField
+from bika.lims.browser.fields import HistoryAwareReferenceField, \
+    UIDReferenceField
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IWorksheet
@@ -36,9 +37,9 @@ import sys
 
 
 schema = BikaSchema.copy() + Schema((
-    HistoryAwareReferenceField('WorksheetTemplate',
+    UIDReferenceField(
+        'WorksheetTemplate',
         allowed_types=('WorksheetTemplate',),
-        relationship='WorksheetAnalysisTemplate',
     ),
     RecordsField('Layout',
         required=1,
