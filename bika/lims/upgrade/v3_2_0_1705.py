@@ -5,6 +5,7 @@
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 
+from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.ZCatalog.interfaces import ICatalogBrain
 from bika.lims import logger
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
@@ -34,6 +35,9 @@ def upgrade(tool):
     UpdateIndexesAndMetadata(portal)
 
     BaseAnalysisRefactoring(portal)
+
+    # Ensure that the reference catalog is refreshed
+    ut.refreshcatalog.append(REFERENCE_CATALOG)
 
     # Refresh affected catalogs
     ut.refreshCatalogs()
