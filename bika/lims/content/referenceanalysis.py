@@ -56,30 +56,6 @@ class ReferenceAnalysis(AbstractAnalysis):
         s = s and s.Title() or ''
         return safe_unicode(s).encode('utf-8')
 
-    def getDefaultUncertainty(self, result=None):
-        """ Calls self.Service.getUncertainty with either the provided
-            result value or self.Result
-        """
-        return self.getService().getUncertainty(
-            result and result or self.getResult())
-
-    def getUncertainty(self, result=None):
-        """ Returns the uncertainty for this analysis and result.
-            Returns the value from Schema's Uncertainty field if the
-            Service has the option 'Allow manual uncertainty'. Otherwise,
-            do a callback to getDefaultUncertainty()
-        """
-        serv = self.getService()
-        schu = self.Schema().getField('Uncertainty').get(self)
-        if schu and serv.getAllowManualUncertainty():
-            try:
-                schu = float(schu)
-                return schu
-            except ValueError:
-                # if uncertainty is not a number, return default value
-                return self.getDefaultUncertainty(result)
-        return self.getDefaultUncertainty(result)
-
     def getSample(self):
         """ Conform to Analysis
         """
