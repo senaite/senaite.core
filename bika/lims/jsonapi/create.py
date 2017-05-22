@@ -194,6 +194,7 @@ class Create(object):
             if _renameAfterCreation:
                 renameAfterCreation(obj)
             ret['obj_id'] = obj.getId()
+            ret['obj_uid'] = obj.UID()
             used_fields = set_fields_from_request(obj, request)
             for field in used_fields:
                 self.used(field)
