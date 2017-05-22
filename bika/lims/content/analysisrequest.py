@@ -2938,13 +2938,13 @@ class AnalysisRequest(BaseFolder):
         return DisplayList(prep_workflows)
 
     def getDepartments(self):
-        """ Returns a set with the departments assigned to the Analyses
-            from this Analysis Request
+        """Returns the list of departments associated to this Analysis Request
+        :returns: list of Department objects, without duplicates
         """
-        ans = [an.getObject() for an in self.getAnalyses()]
-        depts = [an.getService().getDepartment() for an in ans if
-                 an.getService()]
-        return set(depts)
+        ans = [brain.getObject() for brain in self.getAnalyses()]
+        servs = [an.getService() for an in ans if an.getService()]
+        depts = [ser.getDepartment() for ser in servs if ser.getDepartment()]
+        return list(set(depts))
 
     # TODO-performance: This function is very time consuming because
     # we are getting all the analysis objects, and services.
