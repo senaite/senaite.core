@@ -417,7 +417,7 @@ class ReferenceSamplesView(BikaListingView):
                 expirydate = DT2dt(exdate).replace(tzinfo=None)
                 if (datetime.today() > expirydate):
                     # Trigger expiration
-                    workflow.doActionFor(obj, 'expire')
+                    self.workflow.doActionFor(obj, 'expire')
                     item['review_state'] = 'expired'
                     item['obj'] = obj
 
