@@ -4,28 +4,26 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from AccessControl import ClassSecurityInfo
+from datetime import date
+
 from Products.ATContentTypes.content import schemata
 from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes.atapi import *
-from Products.Archetypes.references import HoldingReference
-from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from bika.lims.browser.fields import HistoryAwareReferenceField
+from bika.lims import logger
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema, BikaFolderSchema
+from bika.lims.config import QCANALYSIS_TYPES
+from bika.lims.content.bikaschema import BikaFolderSchema, BikaSchema
 from bika.lims.interfaces import IInstrument
+from bika.lims.utils import t
 from bika.lims.utils import to_utf8
 from plone.app.folder.folder import ATFolder
 from zope.interface import implements
-from datetime import date
-from DateTime import DateTime
-from bika.lims.config import QCANALYSIS_TYPES
-from bika.lims import logger
 
 schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
 
@@ -79,10 +77,10 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         )
     ),
 
-    HistoryAwareReferenceField('Method',
+    UIDReferenceField(
+        'Method',
         vocabulary='_getAvailableMethods',
         allowed_types=('Method',),
-        relationship='InstrumentMethod',
         required=0,
         widget=SelectionWidget(
             format='select',

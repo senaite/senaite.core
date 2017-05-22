@@ -52,7 +52,7 @@ class ServicesView(BikaListingView):
         if hasattr(self.context, 'getRestrictToMethod') and\
                 getattr(self.context, 'getMethodUID')():
             self.method_filter = {
-                'getAvailableMethodsUIDs': self.context.getMethodUID()}
+                'getAvailableMethodUIDs': self.context.getMethodUID()}
         self.do_cats = self.context.bika_setup.getCategoriseAnalysisServices()
         if self.do_cats:
             self.show_categories = True
@@ -145,7 +145,7 @@ class ServicesWidget(TypesWidget):
 
     security = ClassSecurityInfo()
 
-    security.declarePublic('getServices')
+    security.declarePublic('Services')
     def Services(self, field, show_select_column=True):
         """ Prints a bika listing with categorized services.
             field contains the archetypes field with a list of services in it

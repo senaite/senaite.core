@@ -125,7 +125,7 @@ class Report(BrowserView):
             dataitem = {'value': analysis.getCategoryTitle()}
             dataline.append(dataitem)
 
-            dataitem = {'value': analysis.getServiceTitle()}
+            dataitem = {'value': analysis.Title()}
             dataline.append(dataitem)
 
             dataitem = {'value': self.ulocalized_time(analysis.getDateReceived())}

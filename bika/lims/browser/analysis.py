@@ -17,6 +17,7 @@ from bika.lims.utils import to_utf8
 from bika.lims.utils import dicts_to_dict
 import json
 import plone
+from zExceptions import Forbidden
 from zope.component import adapts, getAdapters
 from zope.interface import implements
 
@@ -191,9 +192,9 @@ class JSONReadExtender(object):
 
     def analysis_specification(self):
         ar = self.context.aq_parent
-        rr = dicts_to_dict(ar.getResultsRange(),'keyword')
+        rr = dicts_to_dict(ar.getResultsRange(), 'keyword')
 
-        return rr[self.context.getService().getKeyword()]
+        return rr[self.context.getKeyword()]
 
     def __call__(self, request, data):
         self.request = request

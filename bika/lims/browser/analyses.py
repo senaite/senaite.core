@@ -5,13 +5,11 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from plone import api
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
 from bika.lims.utils import t, dicts_to_dict, format_supsub
 from bika.lims.utils.analysis import format_uncertainty
-from bika.lims.browser import BrowserView
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import QCANALYSIS_TYPES
 from bika.lims.interfaces import IResultOutOfRange
@@ -19,21 +17,15 @@ from bika.lims.permissions import *
 from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.utils import isActive
 from bika.lims.utils import getUsers
-from bika.lims.utils import to_utf8
 from bika.lims.utils import formatDecimalMark
 from DateTime import DateTime
 from operator import itemgetter
 from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.CMFCore.utils import getToolByName
-from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.ZCatalog.interfaces import ICatalogBrain
-from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims.utils.analysis import format_numeric_result
-from zope.interface import implements
-from zope.interface import Interface
 from zope.component import getAdapters
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
-
+from plone.api.portal import get_tool
+from plone.api.user import has_permission
 import json
 
 
@@ -67,10 +59,10 @@ class AnalysesView(BikaListingView):
         self.interim_fields = {}
         self.interim_columns = {}
         self.specs = {}
-        self.bsc = getToolByName(context, 'bika_setup_catalog')
-        self.portal = getToolByName(context, 'portal_url').getPortalObject()
+        self.bsc = get_tool('bika_setup_catalog')
+        self.portal = get_tool('portal_url').getPortalObject()
         self.portal_url = self.portal.absolute_url()
-        self.rc = getToolByName(context, REFERENCE_CATALOG)
+        self.rc = get_tool(REFERENCE_CATALOG)
         # Initializing the deximal mark variable
         self.dmk = ''
         request.set('disable_plone.rightcolumn', 1)
@@ -88,7 +80,7 @@ class AnalysesView(BikaListingView):
                 'toggle': False},
             'Service': {
                 'title': _('Analysis'),
-                'attr': 'getServiceTitle',
+                'attr': 'Title',
                 'sortable': False},
             'Partition': {
                 'title': _("Partition"),
@@ -187,13 +179,15 @@ class AnalysesView(BikaListingView):
         """
         if ICatalogBrain.providedBy(analysis):
             # It is a brain
-            if analysis.getResultsRangeNoSpecs and not\
-                    isinstance(analysis.getResultsRangeNoSpecs, list):
-                return analysis.getResultsRangeNoSpecs
-            if analysis.getResultsRangeNoSpecs and\
-                    isinstance(analysis.getResultsRangeNoSpecs, list):
+            if not 'getResultsRange' in dir(analysis):
+                pass
+            if analysis.getResultsRange and not\
+                    isinstance(analysis.getResultsRange, list):
+                return analysis.getResultsRange
+            if analysis.getResultsRange and\
+                    isinstance(analysis.getResultsRange, list):
                 rr = dicts_to_dict(
-                    analysis.getResultsRangeNoSpecs, 'keyword')
+                    analysis.getResultsRange, 'keyword')
                 return rr.get(analysis.getKeyword, None)
             if analysis.getReferenceResults:
                 rr = dicts_to_dict(analysis.getReferenceResults, 'uid')
@@ -213,7 +207,7 @@ class AnalysesView(BikaListingView):
         if hasattr(analysis.aq_parent, 'getReferenceResults'):
             rr = dicts_to_dict(analysis.aq_parent.getReferenceResults(), 'uid')
             return rr.get(analysis.UID(), None)
-        keyword = analysis.getService().getKeyword()
+        keyword = analysis.getKeyword()
         uid = analysis.UID()
         return {
             'keyword': keyword, 'uid': uid, 'min': '',
@@ -280,31 +274,29 @@ class AnalysesView(BikaListingView):
         ret = []
         if analysis:
             # This function returns  a list of tuples as [(UID,Title),(),...]
-            methods = analysis.getAllowedMethodsAsTuples
-            methods = methods if methods else []
-            for uid, title in methods:
-                ret.append({'ResultValue': uid,
-                            'ResultText': title})
+            uids = analysis.getAllowedMethodUIDs
+            # inactive_state is not specified below, because it is not relevant.
+            # If the analysis was created with some method, that is the method
+            # we want to permit the user select.
+            brains = self.bsc(portal_type='Method', UID=uids)
         else:
             # All active methods
             brains = self.bsc(portal_type='Method', inactive_state='active')
-            for brain in brains:
-                ret.append({'ResultValue': brain.UID,
-                            'ResultText': brain.title})
+        for brain in brains:
+            ret.append({'ResultValue': brain.UID,
+                        'ResultText': brain.Title})
         if not ret:
             ret = [{'ResultValue': '',
                     'ResultText': _('None')}]
         return ret
 
-    def get_instruments_vocabulary(self, analysis = None):
-        """
-        Returns a vocabulary with the valid and active instruments available
+    def get_instruments_vocabulary(self, analysis_brain):
+        """Returns a vocabulary with the valid and active instruments available
         for the analysis passed in.
         If the analysis is None, the function returns all the active and
         valid instruments registered in the system.
         If the option "Allow instrument entry of results" for the Analysis
-        Service associated to the analysis is disabled, the function returns
-        an empty vocabulary.
+        is disabled, the function returns an empty vocabulary.
         If the analysis passed in is a Reference Analysis (Blank or Control),
         the voculabury, the invalid instruments will be included in the
         vocabulary too.
@@ -317,32 +309,34 @@ class AnalysesView(BikaListingView):
         :type analysis: bika.lims.content.analysis.Analysis
                         bika.lims.content.referenceAnalysis.ReferenceAnalysis
         :returns: A vocabulary with the instruments for the analysis
-        :rtype: A list of dicts
+        :rtype: A list of dicts: [{'ResultValue':UID, 'ResultText':Title}]
         """
         ret = []
-        instruments = []
-        if ICatalogBrain.providedBy(analysis):
-            analysis = analysis.getObject()
-        if analysis:
-            service = analysis.getService()
-            if service.getInstrumentEntryOfResults() == False:
-                return []
+        if not analysis_brain or not analysis_brain.getInstrumentEntryOfResults:
+            return []
 
-            method = analysis.getMethod() \
-                    if hasattr(analysis, 'getMethod') else None
-            instruments = method.getInstruments() if method \
-                          else analysis.getService().getInstruments()
+        bsc = get_tool('bika_setup_catalog')
 
+        m_uid = analysis_brain.getMethodUID
+        method = None
+        if m_uid:
+            # inactive_state is not specified below, because it is not relevant.
+            # If the analysis was created with some method, that is the method
+            # we want to permit the user select.
+            brains = bsc(portal_type='Method', UID=m_uid)
+            method = brains[0].getObject() if brains else None
+        if method:
+            instruments = method.getInstruments()
         else:
-            # All active instruments
-            brains = self.bsc(portal_type='Instrument', inactive_state='active')
-            instruments = [brain.getObject() for brain in brains]
+            i_uids = analysis_brain.getAllowedInstrumentUIDs
+            brains = bsc(
+                portal_type='Instrument', UID=i_uids, inactive_state='active')
+            instruments = [b.getObject() for b in brains]
 
         for ins in instruments:
-            if analysis \
-                and analysis.portal_type in ['ReferenceAnalysis',
-                                             'DuplicateAnalysis'] \
-                and not ins.isOutOfDate():
+            if analysis_brain.portal_type in [
+                'ReferenceAnalysis', 'DuplicateAnalysis'] \
+                    and not ins.isOutOfDate():
                 # Add the 'invalid', but in-date instrument
                 ret.append({'ResultValue': ins.UID(),
                             'ResultText': ins.Title()})
@@ -471,12 +465,11 @@ class AnalysesView(BikaListingView):
             item['st_uid'] = obj.getSampleTypeUID
 
         if checkPermission(ManageBika, self.context):
-            latest = self.rc.lookupObject(obj.getServiceUID).version_id
-            item['Service'] = obj.getServiceTitle
+            item['Service'] = obj.Title
             item['class']['Service'] = "service_title"
 
         # choices defined on Service apply to result fields.
-        choices = obj.getResultOptionsFromService
+        choices = obj.getResultOptions
         if choices:
             item['choices']['Result'] = choices
         # Editing Field Results is possible while in Sample Due.
@@ -523,8 +516,7 @@ class AnalysesView(BikaListingView):
 
         # TODO: Only the labmanager should be able to change the method
         can_set_method = can_edit_analysis \
-            and item['review_state'] in allowed_method_states\
-            and obj.getCanMethodBeChanged
+            and item['review_state'] in allowed_method_states
 
         # Display the methods selector if the AS has at least one
         # method assigned
@@ -538,14 +530,16 @@ class AnalysesView(BikaListingView):
                 item['choices']['Method'] = voc
                 item['allow_edit'].append('Method')
                 self.show_methodinstr_columns = True
-            elif method:
-                # This should never happen
-                # The analysis has set a method, but its parent
-                # service hasn't any method available O_o
-                item['Method'] = obj.getMethodTitle
-                item['replace']['Method'] = "<a href='%s'>%s</a>" % \
-                    (obj.getMethodURL, obj.getMethodTitle)
-                self.show_methodinstr_columns = True
+            else:
+                method = obj.getMethodUID
+                if method:
+                    # This should never happen
+                    # The analysis has set a method, but its parent
+                    # service hasn't any method available O_o
+                    item['Method'] = obj.getMethodTitle
+                    item['replace']['Method'] = "<a href='%s'>%s</a>" % \
+                        (obj.getMethodURL, obj.getMethodTitle)
+                    self.show_methodinstr_columns = True
         elif obj.getMethodUID:
             # Edition not allowed, but method set
             item['Method'] = obj.getMethodTitle
@@ -566,41 +560,37 @@ class AnalysesView(BikaListingView):
         item['Instrument'] = ''
         item['replace']['Instrument'] = ''
         if obj.getInstrumentEntryOfResults:
-            instrumentUID = None
-
-            # If the analysis has an instrument already assigned, use it
-            if obj.getInstrumentUID:
-                instrumentUID = obj.getInstrumentUID
-            # Otherwise, use the Service's default instrument
-            else:
-                instrumentUID = obj.getServiceDefaultInstrumentUID
+            instrument_uid = obj.getInstrumentUID
+            uc = get_tool('uid_catalog')
+            brains = uc(UID=instrument_uid)
+            instrument = brains[0].getObject() if brains else None
 
             if can_set_instrument:
                 # Edition allowed
                 voc = self.get_instruments_vocabulary(obj)
                 if voc:
                     # The service has at least one instrument available
-                    item['Instrument'] = instrumentUID
+                    item['Instrument'] = instrument.UID() if instrument else ''
                     item['choices']['Instrument'] = voc
                     item['allow_edit'].append('Instrument')
                     self.show_methodinstr_columns = True
 
-                elif instrumentUID:
+                elif instrument:
                     # This should never happen
                     # The analysis has an instrument set, but the
                     # service hasn't any available instrument
-                    item['Instrument'] = obj.getServiceDefaultInstrumentTitle
-                    item['replace']['Instrument'] = "<a href='%s'>%s</a>" % \
-                        (obj.getServiceDefaultInstrumentURL,
-                            obj.getServiceDefaultInstrumentTitle)
+                    item['Instrument'] = instrument.Title()
+                    item['replace']['Instrument'] = \
+                        "<a href='%s'>%s</a>" % (instrument.absolute_url(),
+                                                 instrument.Title())
                     self.show_methodinstr_columns = True
 
-            elif instrumentUID:
+            elif instrument:
                 # Edition not allowed, but instrument set
-                item['Instrument'] = obj.getServiceDefaultInstrumentTitle
-                item['replace']['Instrument'] = "<a href='%s'>%s</a>" % \
-                    (obj.getServiceDefaultInstrumentURL,
-                        obj.getServiceDefaultInstrumentTitle)
+                item['Instrument'] = instrument.Title()
+                item['replace']['Instrument'] = \
+                    "<a href='%s'>%s</a>" % (instrument.absolute_url(),
+                                             instrument.Title())
                 self.show_methodinstr_columns = True
 
         else:
@@ -608,8 +598,7 @@ class AnalysesView(BikaListingView):
             item['Instrument'] = _('Manual')
             msgtitle = t(_(
                 "Instrument entry of results not allowed for ${service}",
-                mapping={"service": safe_unicode(
-                    obj.getServiceDefaultInstrumentTitle)},
+                mapping={"service": obj.Title},
             ))
             item['replace']['Instrument'] = \
                 '<a href="#" title="%s">%s</a>' % (msgtitle, t(_('Manual')))
@@ -656,7 +645,6 @@ class AnalysesView(BikaListingView):
         # permission, otherwise just put an icon in Result column.
         if can_view_result:
             full_obj = full_obj if full_obj else obj.getObject()
-            service = full_obj.getService()
             item['Result'] = result
             scinot = self.context.bika_setup.getScientificNotationResults()
             item['formatted_result'] =\
@@ -668,7 +656,7 @@ class AnalysesView(BikaListingView):
             fu = format_uncertainty(
                 full_obj, result, decimalmark=self.dmk, sciformat=int(scinot))
             fu = fu if fu else ''
-            if can_edit_analysis and service.getAllowManualUncertainty():
+            if can_edit_analysis and full_obj.getAllowManualUncertainty():
                 unc = full_obj.getUncertainty(result)
                 item['allow_edit'].append('Uncertainty')
                 item['Uncertainty'] = unc if unc else ''
@@ -688,8 +676,8 @@ class AnalysesView(BikaListingView):
             # https://jira.bikalabs.com/browse/LIMS-1775
             if can_edit_analysis and \
                 hasattr(full_obj, 'getDetectionLimitOperand') and \
-                hasattr(service, 'getDetectionLimitSelector') and \
-                    service.getDetectionLimitSelector():
+                hasattr(full_obj, 'getDetectionLimitSelector') and \
+                    full_obj.getDetectionLimitSelector():
                 isldl = full_obj.isBelowLowerDetectionLimit()
                 isudl = full_obj.isAboveUpperDetectionLimit()
                 dlval = ''
@@ -702,10 +690,9 @@ class AnalysesView(BikaListingView):
                     {'ResultValue': '>', 'ResultText': '>'}]
                 item['choices']['DetectionLimit'] = choices
                 self.columns['DetectionLimit']['toggle'] = True
-                srv = full_obj.getService()
-                defdls = {'min': srv.getLowerDetectionLimit(),
-                          'max': srv.getUpperDetectionLimit(),
-                          'manual': srv.getAllowManualDetectionLimit()}
+                defdls = {'min': full_obj.getLowerDetectionLimit(),
+                          'max': full_obj.getUpperDetectionLimit(),
+                          'manual': full_obj.getAllowManualDetectionLimit()}
                 defin =\
                     '<input type="hidden" id="DefaultDLS.%s" value=\'%s\'/>'
                 defin = defin % (full_obj.UID(), json.dumps(defdls))
@@ -730,12 +717,12 @@ class AnalysesView(BikaListingView):
                     dls['above_udl'] = full_obj.isBelowLowerDetectionLimit()
                     dls['is_ldl'] = full_obj.isLowerDetectionLimit()
                     dls['is_udl'] = full_obj.isUpperDetectionLimit()
-                    dls['default_ldl'] = service.getLowerDetectionLimit()
-                    dls['default_udl'] = service.getUpperDetectionLimit()
+                    dls['default_ldl'] = full_obj.getLowerDetectionLimit()
+                    dls['default_udl'] = full_obj.getUpperDetectionLimit()
                     dls['manual_allowed'] =\
-                        service.getAllowManualDetectionLimit()
+                        full_obj.getAllowManualDetectionLimit()
                     dls['dlselect_allowed'] =\
-                        service.getDetectionLimitSelector()
+                        full_obj.getDetectionLimitSelector()
                 dlsin =\
                     '<input type="hidden" id="AnalysisDLS.%s" value=\'%s\'/>'
                 dlsin = dlsin % (full_obj.UID(), json.dumps(dls))
@@ -820,7 +807,7 @@ class AnalysesView(BikaListingView):
             username = self.member.getUserName()
             user_id = self.member.getUser().getId()
             # Check if the user has "Bika: Verify" privileges
-            verify_permission = api.user.has_permission(
+            verify_permission = has_permission(
                 VerifyPermission,
                 username=username)
             isUserAllowedToVerify = True
@@ -898,7 +885,7 @@ class AnalysesView(BikaListingView):
     def folderitems(self):
         # Check if mtool has been initialized
         self.mtool = self.mtool if self.mtool\
-            else getToolByName(self.context, 'portal_membership')
+            else get_tool('portal_membership')
         # Getting the current user
         self.member = self.member if self.member\
             else self.mtool.getAuthenticatedMember()
@@ -910,7 +897,7 @@ class AnalysesView(BikaListingView):
         self.analysis_categories_order = dict([
             (b.Title, "{:04}".format(a)) for a, b in
             enumerate(analysis_categories)])
-        workflow = getToolByName(self.context, 'portal_workflow')
+        workflow = get_tool('portal_workflow')
         # Can the user edit?
         if not self.allow_edit:
             can_edit_analyses = False
@@ -985,7 +972,7 @@ class AnalysesView(BikaListingView):
             # look through all items
             # if the item's Service supports ReportDryMatter, add getResultDM().
             for item in items:
-                if item['obj'].getService().getReportDryMatter():
+                if item['obj'].getReportDryMatter():
                     item['ResultDM'] = item['obj'].getResultDM()
                 else:
                     item['ResultDM'] = ''
@@ -1077,11 +1064,11 @@ class QCAnalysesView(AnalysesView):
         elif obj.portal_type == 'DuplicateAnalysis':
             antype = QCANALYSIS_TYPES.getValue('d')
             imgtype = "<img title='%s' src='%s/++resource++bika.lims.images/duplicate.png'/>&nbsp;" % (antype, self.context.absolute_url())
-            item['sortcode'] = '%s_%s' % (obj.getSample().id, obj.getService().getKeyword())
+            item['sortcode'] = '%s_%s' % (obj.getSample().id, obj.getKeyword())
 
         item['before']['Service'] = imgtype
         item['sortcode'] = '%s_%s' % (obj.getReferenceAnalysesGroupID(),
-                                          obj.getService().getKeyword())
+                                          obj.getKeyword())
         return item
 
     def folderitems(self):

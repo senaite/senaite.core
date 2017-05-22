@@ -69,7 +69,7 @@ class ServicesView(BikaListingView):
     def folderitems(self):
         ws_services = []
         for analysis in self.context.getAnalyses():
-            service_uid = analysis.getService().UID()
+            service_uid = analysis.getServiceUID()
             if service_uid not in ws_services:
                 ws_services.append(service_uid)
         self.categories = []

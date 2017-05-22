@@ -7,8 +7,11 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
+from bika.lims.browser.analysisrequest.reject import \
+    AnalysisRequestRejectPdfView, AnalysisRequestRejectEmailView
 from bika.lims.idserver import renameAfterCreation
-from bika.lims.interfaces import ISample, IAnalysisService, IAnalysis
+from bika.lims.interfaces import ISample, IAnalysisService, IAnalysis, \
+    IRoutineAnalysis
 from bika.lims.utils import tmpID
 from bika.lims.utils import to_utf8
 from bika.lims.utils import encode_header
@@ -18,6 +21,7 @@ from bika.lims.utils.sample import create_sample
 from bika.lims.utils.samplepartition import create_samplepartition
 from Products.CMFCore.WorkflowCore import WorkflowException
 from bika.lims.workflow import doActionFor
+from copy import deepcopy
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.Utils import formataddr
@@ -55,10 +59,9 @@ def create_analysisrequest(context, request, values, analyses=None,
 
     # Gather neccesary tools
     workflow = getToolByName(context, 'portal_workflow')
-    bc = getToolByName(context, 'bika_catalog')
     # It's necessary to modify these and we don't want to pollute the
     # parent's data
-    values = values.copy()
+    values = deepcopy(values)
     # Create new sample or locate the existing for secondary AR
     if not values.get('Sample', False):
         secondary = False
@@ -106,7 +109,7 @@ def create_analysisrequest(context, request, values, analyses=None,
 
     # Set the state of analyses we created.
     for analysis in analyses:
-        revers = analysis.getService().getNumberOfRequiredVerifications()
+        revers = analysis.getNumberOfRequiredVerifications()
         analysis.setNumberOfRequiredVerifications(revers)
         doActionFor(analysis, 'sample_due')
         analysis_state = workflow.getInfoFor(analysis, 'review_state')
@@ -177,11 +180,11 @@ def get_sample_from_values(context, values):
         if brains:
             sample = brains[0].getObject()
         else:
-            raise RuntimeError(
-                "create_analysisrequest: invalid sample value provided. values=%s" % values)
+            raise RuntimeError("create_analysisrequest: invalid sample "
+                               "value provided. values=%s" % values)
     if not sample:
-        raise RuntimeError(
-            "create_analysisrequest: invalid sample value provided. values=%s" % values)
+        raise RuntimeError("create_analysisrequest: invalid sample "
+                           "value provided. values=%s" % values)
     return sample
 
 
@@ -253,13 +256,12 @@ def _resolve_items_to_service_uids(items):
             continue
 
         # Analysis objects (shortcut for eg copying analyses from other AR)
-        if IAnalysis.providedBy(item):
-            uid = item.getService().UID()
-            service_uids.append(uid)
+        if IRoutineAnalysis.providedBy(item):
+            service_uids.append(item.getServiceUID())
             continue
 
         # An object UID already there?
-        if (item in service_uids):
+        if item in service_uids:
             continue
 
         # Maybe object UID.
@@ -304,7 +306,6 @@ def notify_rejection(analysisrequest):
 
     # This is the template to render for the pdf that will be either attached
     # to the email and attached the the Analysis Request for further access
-    from bika.lims.browser.analysisrequest.reject import AnalysisRequestRejectPdfView
     tpl = AnalysisRequestRejectPdfView(analysisrequest, analysisrequest.REQUEST)
     html = tpl.template()
     html = safe_unicode(html).encode('utf-8')
@@ -314,7 +315,8 @@ def notify_rejection(analysisrequest):
     if pdf:
         # Attach the pdf to the Analysis Request
         attid = analysisrequest.aq_parent.generateUniqueId('Attachment')
-        att = _createObjectByType("Attachment", analysisrequest.aq_parent, tmpID())
+        att = _createObjectByType(
+            "Attachment", analysisrequest.aq_parent, attid)
         att.setAttachmentFile(open(pdf_fn))
         # Awkward workaround to rename the file
         attf = att.getAttachmentFile()
@@ -323,14 +325,14 @@ def notify_rejection(analysisrequest):
         att.unmarkCreationFlag()
         renameAfterCreation(att)
         atts = analysisrequest.getAttachment() + [att] if \
-                analysisrequest.getAttachment() else [att]
+            analysisrequest.getAttachment() else [att]
         atts = [a.UID() for a in atts]
         analysisrequest.setAttachment(atts)
         os.remove(pdf_fn)
 
     # This is the message for the email's body
-    from bika.lims.browser.analysisrequest.reject import AnalysisRequestRejectEmailView
-    tpl = AnalysisRequestRejectEmailView(analysisrequest, analysisrequest.REQUEST)
+    tpl = AnalysisRequestRejectEmailView(
+        analysisrequest, analysisrequest.REQUEST)
     html = tpl.template()
     html = safe_unicode(html).encode('utf-8')
 
@@ -361,6 +363,7 @@ def notify_rejection(analysisrequest):
         host = getToolByName(analysisrequest, 'MailHost')
         host.send(mime_msg.as_string(), immediate=True)
     except:
-        pass
+        logger.warning(
+            "Email with subject %s was not sent (SMTP connection error)" % mailsubject)
 
     return True

@@ -70,12 +70,6 @@ class IRoutineAnalysis(Interface):
     Rejections, etc.
     """
 
-
-class IAnalysisSpec(Interface):
-
-    """Analysis Specs"""
-
-
 class IDuplicateAnalysis(Interface):
 
     """DuplicateAnalysis"""
@@ -84,6 +78,17 @@ class IDuplicateAnalysis(Interface):
 class IReferenceAnalysis(Interface):
 
     """Reference Analyses """
+
+
+class IRejectAnalysis(Interface):
+    """This adapter distinguishes normal analyses from Duplicates, References,
+    Rejections, etc.
+    """
+
+
+class IAnalysisSpec(Interface):
+
+    """Analysis Specs"""
 
 
 class IReportFolder(Interface):

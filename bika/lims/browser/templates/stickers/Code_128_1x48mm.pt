@@ -33,8 +33,8 @@
     preservation      python:part.getPreservation() and part.getPreservation().Title() or '';
     container         python:part.getContainer() and part.getContainer().Title() or '';
     date_sampled      python:sample.getDateSampled() and sample.getDateSampled().Date();
-    analyses          python:part.getBackReferences('AnalysisSamplePartition');
-    field_analyses    python:[analysis for analysis in analyses if analysis.getService().getPointOfCapture()=='field'];
+    analyses          python:part.getAnalyses();
+    field_analyses    python:[analysis for analysis in analyses if analysis.getPointOfCapture()=='field'];
     show_partitions   python:context.bika_setup.getShowPartitions();
     smart_id          python:part.getId() if show_partitions else sample.getId();
     hazardous         python:sample.getSampleType().getHazardous();">

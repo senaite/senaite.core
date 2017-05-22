@@ -78,19 +78,18 @@ class bika_ar_export(UniqueObject, SimpleItem):
                 analyses[service]['DM'] = analysis.getResultDM() or None
                 analyses[service]['attach'] = analysis.getAttachment() or []
                 if not services.has_key(service):
-                    service_obj = analysis.getService()
-                    category = service_obj.getCategoryTitle()
-                    category_uid = service_obj.getCategoryUID()
+                    category = analysis.getCategoryTitle()
+                    category_uid = analysis.getCategoryUID()
 
                     if not categories.has_key(category):
                         categories[category] = []
                     categories[category].append(service)
                     services[service] = {}
-                    services[service]['unit'] = service_obj.getUnit()
-                    services[service]['DM'] = service_obj.getReportDryMatter()
+                    services[service]['unit'] = analysis.getUnit()
+                    services[service]['DM'] = analysis.getReportDryMatter()
                     services[service]['DMOn'] = False
                     if allow_analysis_attach:
-                        if service_obj.getAttachmentOption() == 'n':
+                        if analysis.getAttachmentOption() == 'n':
                             services[service]['attach'] = False
                         else:
                             services[service]['attach'] = True

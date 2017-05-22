@@ -49,7 +49,6 @@ class TestAnalysisRequestRetract(BikaFunctionalTestCase):
         wf.doActionFor(ar, 'receive')
 
         # Cheking if everything is going OK
-        #import pdb; pdb.set_trace()
         self.assertEquals(ar.portal_workflow.getInfoFor(ar, 'review_state'),
                                                         'sample_received')
         for analysis in ar.getAnalyses(full_objects=True):

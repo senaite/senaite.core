@@ -6,7 +6,6 @@
 from AccessControl import getSecurityManager
 from Acquisition import aq_inner
 from bika.lims import logger
-from bika.lims.interfaces import IRoutineAnalysis
 from bika.lims.subscribers import doActionFor
 from bika.lims.subscribers import skip
 from bika.lims.utils import changeWorkflowState
@@ -21,12 +20,6 @@ from zope.interface import alsoProvides
 
 
 def ObjectInitializedEventHandler(instance, event):
-
-    # This is the easiest place to assign IRoutineAnalysis,
-    # since other anlaysis types subclass Analysis.
-    # (noLongerProvides cannot un-provide interfaces on the class itself)
-    if instance.portal_type == 'Analysis':
-        alsoProvides(instance, IRoutineAnalysis)
 
     wf_tool = getToolByName(instance, 'portal_workflow')
 
@@ -54,8 +47,6 @@ def ObjectInitializedEventHandler(instance, event):
         # TODO workflow: analysis request can be 'assigned'?
         wf_tool.doActionFor(ar, 'unassign')
         skip(ar, 'unassign', unskip=True)
-
-    instance.updateDueDate()
 
     return
 

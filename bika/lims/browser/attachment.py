@@ -28,11 +28,5 @@ class ajaxDeleteAnalysisAttachment():
         if not attachment:
             return "%s does not exist" % attachment_uid
         attachment = attachment[0].getObject()
-        for analysis in attachment.getBackReferences("AnalysisAttachment"):
-            analysis.setAttachment([r for r in analysis.getAttachment()
-                                    if r.UID() != attachment.UID()])
-        for analysis in attachment.getBackReferences("DuplicateAnalysisAttachment"):
-            analysis.setAttachment([r for r in analysis.getAttachment()
-                                    if r.UID() != attachment.UID()])
         attachment.aq_parent.manage_delObjects(ids=[attachment.getId(),])
         return "success"

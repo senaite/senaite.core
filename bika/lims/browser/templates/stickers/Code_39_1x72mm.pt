@@ -40,8 +40,8 @@
     DateSampled       python:sample.getDateSampled() and sample.getDateSampled().Date();
     Composite         python:sample.getComposite();
     AdHoc             python:sample.getAdHoc();
-    analyses          python:part.getBackReferences('AnalysisSamplePartition');
-    field_analyses    python:[analysis for analysis in analyses if analysis.getService().getPointOfCapture()=='field'];
+    analyses          python:part.getAnalyses();
+    field_analyses    python:[analysis for analysis in analyses if analysis.getPointOfCapture()=='field'];
     smart_id          python:part.getId() if show_partitions else sample.getId();
     hazardous         python:sample.getSampleType().getHazardous();">
 
@@ -90,7 +90,7 @@
             </tr>
             <tal:block repeat="analysis python:field_analyses">
             <tr>
-                <td colspan="4" tal:content="python:analysis.getService().Title()"/>
+                <td colspan="4" tal:content="python:analysis.Title()"/>
             </tr>
             </tal:block>
             <tr>

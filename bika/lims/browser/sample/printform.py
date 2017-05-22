@@ -311,12 +311,11 @@ class SamplesPrint(BrowserView):
                 # of the partition row.
                 numpartans = len(partans)
                 # Getting the points of capture if needed
-                labpoc = [an for an in partans if an.getService().getPointOfCapture() == 'field']
+                labpoc = [an for an in partans if an.getPointOfCapture() == 'field']
                 labans = True if labans or len(labpoc) > 0 else labans
                 labpoc = [partans[0]] if len(labpoc) == 0 else labpoc
                 # for each analyses, build the structure
                 for analysis in labpoc:
-                    service = analysis.getService()
                     row = {
                         'sample_id': {
                             'hidden': True if arcell else False,
@@ -351,11 +350,8 @@ class SamplesPrint(BrowserView):
                             'value': container,
                             },
                         'analyses': {
-                            'title':
-                                service.title,
-                            'units':
-                                service.getUnit() if
-                                service.getPointOfCapture() == 'field' else '',
+                            'title': analysis.Title(),
+                            'units': analysis.getUnit(),
                         },
                         'temp': {
                             'hidden': True if arcell else False,

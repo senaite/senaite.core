@@ -6,51 +6,47 @@
 """The request for analysis by a client. It contains analysis instances.
 """
 import logging
+import sys
+from AccessControl import ClassSecurityInfo
+from decimal import Decimal
 from operator import methodcaller
 
-from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
-from plone import api
-
-# noinspection PyUnresolvedReferences
 from Products.ATExtensions.field import RecordsField
-from plone.indexer import indexer
 from Products.Archetypes import atapi
+from Products.Archetypes.Widget import RichWidget
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
-from Products.Archetypes.Widget import RichWidget
 from Products.CMFCore import permissions
 from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
 from Products.CMFPlone.utils import _createObjectByType
-from bika.lims.browser.fields import ARAnalysesField
-from bika.lims.config import PROJECTNAME
-from bika.lims.permissions import *
-from bika.lims.permissions import Verify as VerifyPermission
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IAnalysisRequest, ISamplePrepWorkflow
-from bika.lims.browser.fields import HistoryAwareReferenceField
+from Products.CMFPlone.utils import safe_unicode
+from bika.lims import bikaMessageFactory as _
+from bika.lims import deprecated
+from bika.lims import logger
+from bika.lims.browser.fields import ARAnalysesField, UIDReferenceField
+from bika.lims.browser.fields import DateTimeField
 from bika.lims.browser.widgets import DateTimeWidget, DecimalWidget
 from bika.lims.browser.widgets import ReferenceWidget
-from bika.lims.browser.widgets import SelectionWidget
 from bika.lims.browser.widgets import RejectionWidget
-from bika.lims.workflow import skip, isBasicTransitionAllowed, getTransitionDate
-from bika.lims.workflow import getTransitionUsers
-from bika.lims.workflow import doActionFor
-from decimal import Decimal
-from zope.interface import implements
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import getUsers, dicts_to_dict
-from bika.lims.utils.analysisrequest import notify_rejection
-from bika.lims.utils import user_fullname
-from bika.lims.utils import user_email
-from bika.lims import logger
-from bika.lims.browser.fields import DateTimeField
+from bika.lims.browser.widgets import SelectionWidget
 from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
-from bika.lims import deprecated
-import sys
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IAnalysisRequest, ISamplePrepWorkflow
+from bika.lims.permissions import *
+from bika.lims.permissions import Verify as VerifyPermission
+from bika.lims.utils import dicts_to_dict, getUsers
+from bika.lims.utils import user_email
+from bika.lims.utils import user_fullname
+from bika.lims.utils.analysisrequest import notify_rejection
+from bika.lims.workflow import doActionFor
+from bika.lims.workflow import getTransitionDate, isBasicTransitionAllowed, skip
+from bika.lims.workflow import getTransitionUsers
+from plone import api
+from zope.interface import implements
 
 try:
     from zope.component.hooks import getSite
@@ -1474,13 +1470,6 @@ schema = BikaSchema.copy() + Schema((
         default='',
         widget=ComputedWidget(visible=False,),
     ),
-
-    ComputedField(
-        'Priority',
-        searchable=True,
-        expression="here.getPriority().getSortKey() if here.getPriority() else ''",
-        widget=ComputedWidget(visible=False),
-    ),
     ComputedField(
         'CreatorFullName',
         expression="here._getCreatorFullName()",
@@ -1657,14 +1646,9 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
         ),
     ),
-    HistoryAwareReferenceField(
+    UIDReferenceField(
         'Priority',
         allowed_types=('ARPriority',),
-        referenceClass=HoldingReference,
-        relationship='AnalysisRequestPriority',
-        mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
         widget=ReferenceWidget(
             label=_("Priority"),
             size=10,
@@ -1846,34 +1830,12 @@ class AnalysisRequest(BaseFolder):
         """
         return value
 
-    # TODO-performance: Don't get the whole object"
-    def getAnalysisCategory(self):
-        proxies = self.getAnalyses(full_objects=True)
-        value = []
-        for proxy in proxies:
-            val = proxy.getCategoryTitle()
-            if val not in value:
-                value.append(val)
-        return value
-
-    # TODO-performance: Don't get the whole object"
-    def getAnalysisCategoryIDs(self):
-        proxies = self.getAnalyses(full_objects=True)
-        value = []
-        for proxy in proxies:
-            val = proxy.getService().getCategory().id
-            if val not in value:
-                value.append(val)
-        return value
-
     def getAnalysisService(self):
-        proxies = self.getAnalyses(full_objects=True)
-        value = []
+        proxies = self.getAnalyses(full_objects=False)
+        value = set()
         for proxy in proxies:
-            val = proxy.getServiceTitle()
-            if val not in value:
-                value.append(val)
-        return value
+            value.add(proxy.Title)
+        return list(value)
 
     def getAnalysts(self):
         proxies = self.getAnalyses(full_objects=True)
@@ -2007,14 +1969,8 @@ class AnalysisRequest(BaseFolder):
             review_state = workflow.getInfoFor(analysis, 'review_state', '')
             if review_state == 'published':
                 continue
-            service = analysis.getService()
             # This situation can be met during analysis request creation
-            if service is None:
-                logger.warning(
-                    "No service for analysis '{}'".format(analysis.getId()))
-                calculation = None
-            else:
-                calculation = service.getCalculation()
+            calculation = analysis.getCalculation()
             if not calculation or (
                     calculation and not calculation.getDependentServices()):
                 resultdate = analysis.getResultCaptureDate()
@@ -2114,11 +2070,8 @@ class AnalysisRequest(BaseFolder):
         for profile in analysis_profiles:
             for analysis_service in profile.getService():
                 for analysis in analyses:
-                    if analysis_service.getKeyword() == analysis.getService(
-
-                    ).getKeyword() and \
-                                    analysis.getService().getKeyword() not in \
-                                    to_be_billed:
+                    if analysis_service.getKeyword() == analysis.getKeyword() \
+                            and analysis.getKeyword() not in to_be_billed:
                         analyses.remove(analysis)
         return analyses, analysis_profiles
 
@@ -2148,9 +2101,7 @@ class AnalysisRequest(BaseFolder):
         for profile in analysis_profiles:
             for analysis_service in profile.getService():
                 for analysis in analyses:
-                    if analysis_service.getKeyword() == analysis.getService(
-
-                    ).getKeyword():
+                    if analysis_service.getKeyword() == analysis.getKeyword():
                         analyses.remove(analysis)
                         profile_analyses.append(analysis)
         return analyses, analysis_profiles, profile_analyses
@@ -2479,8 +2430,7 @@ class AnalysisRequest(BaseFolder):
             review_state = workflow.getInfoFor(analysis, 'review_state')
             if review_state == 'not_requested':
                 continue
-            service = analysis.getService()
-            category_name = service.getCategoryTitle()
+            category_name = analysis.getCategoryTitle()
             if category_name not in cats:
                 cats[category_name] = {}
             cats[category_name][analysis.Title()] = analysis
@@ -2938,17 +2888,19 @@ class AnalysisRequest(BaseFolder):
         return DisplayList(prep_workflows)
 
     def getDepartments(self):
-        """Returns the list of departments associated to this Analysis Request
-        :returns: list of Department objects, without duplicates
+        """Returns a list of the departments assigned to the Analyses
+        from this Analysis Request
         """
-        ans = [brain.getObject() for brain in self.getAnalyses()]
-        servs = [an.getService() for an in ans if an.getService()]
-        depts = [ser.getDepartment() for ser in servs if ser.getDepartment()]
+        bsc = api.portal.get_tool('bika_setup_catalog')
+        dept_uids = [b.getDepartmentUID for b in self.getAnalyses()]
+        brains = bsc(portal_type='Department', UID=dept_uids)
+        depts = [b.getObject() for b in brains]
         return list(set(depts))
 
-    # TODO-performance: This function is very time consuming because
-    # we are getting all the analysis objects, and services.
     def getDepartmentUIDs(self):
+        """Return a list of the UIDs of departments assigned to the Analyses
+        from this Analysis Request.
+        """
         return [dept.UID() for dept in self.getDepartments()]
 
     def getResultsInterpretationByDepartment(self, department=None):

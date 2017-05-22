@@ -343,7 +343,7 @@ class AnalysisRequestPublishView(BrowserView):
 
             # Group by department too
             anobj = an['obj']
-            dept = anobj.getService().getDepartment() if anobj.getService() else None
+            dept = anobj.getDepartment()
             if dept:
                 dept = dept.UID()
                 dep = data['department_analyses'].get(dept, {})
@@ -568,8 +568,8 @@ class AnalysisRequestPublishView(BrowserView):
 
             # Omit hidden analyses?
             if not showhidden:
-                serv = an.getService()
-                asets = ar.getAnalysisServiceSettings(serv.UID())
+                service_uid = an.getServiceUID()
+                asets = ar.getAnalysisServiceSettings(service_uid)
                 if asets.get('hidden'):
                     # Hide analysis
                     continue
@@ -603,19 +603,18 @@ class AnalysisRequestPublishView(BrowserView):
             return self._cache['_analysis_data'][analysis.UID()]
 
         keyword = analysis.getKeyword()
-        service = analysis.getService()
         andict = {'obj': analysis,
                   'id': analysis.id,
                   'title': analysis.Title(),
                   'keyword': keyword,
-                  'scientific_name': service.getScientificName(),
-                  'accredited': service.getAccredited(),
-                  'point_of_capture': to_utf8(POINTS_OF_CAPTURE.getValue(service.getPointOfCapture())),
-                  'category': to_utf8(service.getCategoryTitle()),
+                  'scientific_name': analysis.getScientificName(),
+                  'accredited': analysis.getAccredited(),
+                  'point_of_capture': to_utf8(POINTS_OF_CAPTURE.getValue(analysis.getPointOfCapture())),
+                  'category': to_utf8(analysis.getCategoryTitle()),
                   'result': analysis.getResult(),
                   'isnumber': isnumber(analysis.getResult()),
-                  'unit': to_utf8(service.getUnit()),
-                  'formatted_unit': format_supsub(to_utf8(service.getUnit())),
+                  'unit': to_utf8(analysis.getUnit()),
+                  'formatted_unit': format_supsub(to_utf8(analysis.getUnit())),
                   'capture_date': analysis.getResultCaptureDate(),
                   'request_id': analysis.aq_parent.getId(),
                   'formatted_result': '',
@@ -1092,24 +1091,26 @@ class AnalysisRequestPublishView(BrowserView):
         for ar in ars:
             ans = [an.getObject() for an in ar.getAnalyses()]
             for an in ans:
-                service = an.getService()
-                cat = service.getCategoryTitle()
+                cat = analysis.getCategoryTitle()
+                an_title = analysis.Title()
                 if cat not in analyses:
                     analyses[cat] = {
-                        service.title: {
-                            'service': service,
-                            'accredited': service.getAccredited(),
+                        an_title: {
+                            # The report should not mind receiving 'analysis'
+                            # here - service fields are all inside!
+                            'service': analysis,
+                            'accredited': analysis.getAccredited(),
                             'ars': {ar.id: an.getFormattedResult()}
                         }
                     }
-                elif service.title not in analyses[cat]:
-                    analyses[cat][service.title] = {
-                        'service': service,
-                        'accredited': service.getAccredited(),
+                elif an_title not in analyses[cat]:
+                    analyses[cat][an_title] = {
+                        'service': analysis,
+                        'accredited': analysis.getAccredited(),
                         'ars': {ar.id: an.getFormattedResult()}
                     }
                 else:
-                    d = analyses[cat][service.title]
+                    d = analyses[cat][an_title]
                     d['ars'][ar.id] = an.getFormattedResult()
-                    analyses[cat][service.title]=d
+                    analyses[cat][an_title]=d
         return analyses

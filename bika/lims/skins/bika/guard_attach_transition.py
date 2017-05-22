@@ -27,8 +27,7 @@ if context.portal_type in ("Analysis",
                            "ReferenceAnalysis",
                            "DuplicateAnalysis"):
     if not context.getAttachment():
-        service = context.getService()
-        if service.getAttachmentOption() == 'r':
+        if context.getAttachmentOption() == 'r':
             return False
 
 # only Analysis objects need their dependencies checked
@@ -38,8 +37,7 @@ if context.portal_type in ("Analysis",
 #     dependencies = context.getDependencies()
 #     if dependencies:
 #         interim_fields = False
-#         service = context.getService()
-#         calculation = service.getCalculation()
+#         calculation = context.getCalculation()
 #         if calculation:
 #             interim_fields = calculation.getInterimFields()
 #         for dep in dependencies:

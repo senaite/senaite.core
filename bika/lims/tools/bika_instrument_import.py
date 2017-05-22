@@ -82,7 +82,7 @@ class bika_instrument_import(UniqueObject, SimpleItem):
                 these_analyses = ws.getPosAnalyses(pos)
                 ws_analyses = {}
                 for analysis in these_analyses:
-                    ws_analyses[analysis.getService().getId()] = analysis
+                    ws_analyses[analysis.id] = analysis
                 these_service_ids = ws_analyses.keys()
             else:          # Analysis Request
                 r = self.portal_catalog(portal_type = 'AnalysisRequest',

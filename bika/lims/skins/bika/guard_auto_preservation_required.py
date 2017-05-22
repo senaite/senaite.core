@@ -67,7 +67,7 @@ elif context.portal_type == 'AnalysisRequest':
 
 elif context.portal_type == 'SamplePartition':
 
-    analyses = context.getBackReferences('AnalysisSamplePartition')
+    analyses = context.getAnalyses()
     if not analyses:
         # AR is being created - AR Add will transition us.
         return None

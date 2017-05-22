@@ -3,42 +3,41 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from plone import api
+import re
+import sys
 from AccessControl import ClassSecurityInfo
-from bika.lims import bikaMessageFactory as _
-from bika.lims.config import *
-from bika.lims.idserver import renameAfterCreation
-from bika.lims.utils import t, tmpID, changeWorkflowState
-from bika.lims.utils import to_utf8 as _c
-from bika.lims.browser.fields import HistoryAwareReferenceField
-from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IWorksheet
-from bika.lims.permissions import EditWorksheet, ManageWorksheets
-from bika.lims.permissions import Verify as VerifyPermission
-from bika.lims.workflow import doActionFor
-from bika.lims.workflow import skip
-from bika.lims import deprecated
-from bika.lims import logger
-from DateTime import DateTime
 from operator import itemgetter
-from plone.indexer import indexer
+
+from DateTime import DateTime
+from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
+from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
-from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
-from Products.ATExtensions.ateapi import RecordsField
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode, _createObjectByType
+from Products.CMFPlone.utils import _createObjectByType, safe_unicode
+from bika.lims import bikaMessageFactory as _
+from bika.lims import deprecated
+from bika.lims import logger
+from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.config import *
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.idserver import renameAfterCreation
+from bika.lims.interfaces import IWorksheet
+from bika.lims.permissions import EditWorksheet, ManageWorksheets
+from bika.lims.permissions import Verify as VerifyPermission
+from bika.lims.utils import changeWorkflowState, tmpID
+from bika.lims.utils import to_utf8 as _c
+from bika.lims.workflow import doActionFor
+from bika.lims.workflow import skip
+from plone import api
 from zope.interface import implements
-import re
-import sys
-
 
 schema = BikaSchema.copy() + Schema((
-    HistoryAwareReferenceField('WorksheetTemplate',
+    UIDReferenceField(
+        'WorksheetTemplate',
         allowed_types=('WorksheetTemplate',),
-        relationship='WorksheetAnalysisTemplate',
     ),
     RecordsField('Layout',
         required=1,
@@ -172,10 +171,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if not instr and method and analysis.isMethodAllowed(method):
             # Set the method
             analysis.setMethod(method)
-        if analysis.getMethod():
-            # The analysis method can't be changed when the analysis belongs
-            # to a worksheet and that worksheet has a method.
-            analysis.setCanMethodBeChanged(False)
         self.setAnalyses(analyses + [analysis, ])
 
         # if our parent has a position, use that one.
@@ -206,7 +201,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             dmk = dms.getKeyword()
             deps = analysis.getDependents()
             # if dry matter service in my dependents:
-            if dmk in [a.getService().getKeyword() for a in deps]:
+            if dmk in [a.getKeyword() for a in deps]:
                 # get dry matter analysis from AR
                 dma = analysis.aq_parent.getAnalyses(getKeyword=dmk,
                                                      full_objects=True)[0]
@@ -404,12 +399,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             processed.append(analysis.UID())
 
             # services with dependents don't belong in duplicates
-            service = analysis.getService()
-            calc = service.getCalculation()
+            calc = analysis.getCalculation()
             if calc and calc.getDependentServices():
                 continue
-            service = analysis.getService()
-            _id = self._findUniqueId(service.getKeyword())
+            _id = self._findUniqueId(analysis.getKeyword())
             duplicate = _createObjectByType("DuplicateAnalysis", self, _id)
             duplicate.setAnalysis(analysis)
 
@@ -631,11 +624,11 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         return ''
 
     def getWorksheetServices(self):
-        """ get list of analysis services present on this worksheet
+        """get list of analysis services present on this worksheet
         """
         services = []
         for analysis in self.getAnalyses():
-            service = analysis.getService()
+            service = analysis.getAnalysisService()
             if service not in services:
                 services.append(service)
         return services
@@ -776,13 +769,14 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             # the WS manage results view will display the an's default
             # method and its instruments displaying, only the instruments
             # for the default method in the picklist.
-            meth = instrument.getMethods()[0] if instrument.getMethods() \
-                    else None
+            instr_methods = instrument.getMethods()
+            meth = instr_methods[0] if instr_methods else None
             if meth and an.isMethodAllowed(meth):
-                an.setMethod(meth)
-            success = an.setInstrument(instrument)
-            if success is True:
-                total += 1
+                if an.getMethod() not in instr_methods:
+                    an.setMethod(meth)
+
+            an.setInstrument(instrument)
+            total += 1
 
         self.getField('Instrument').set(self, instrument)
         return total
@@ -804,7 +798,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             success = False
             if an.isMethodAllowed(method):
                 success = an.setMethod(method)
-                an.setCanMethodBeChanged(False)
             if success is True:
                 total += 1
 
@@ -1113,7 +1106,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             # - Create a new reference analysis in the new worksheet
             # - Transition the original analysis to 'rejected' state
             if analysis.portal_type == 'ReferenceAnalysis':
-                service_uid = analysis.getService().UID()
+                service_uid = analysis.getServiceUID()
                 reference = analysis.aq_parent
                 reference_type = analysis.getReferenceType()
                 new_analysis_uid = reference.addReferenceAnalysis(service_uid,
@@ -1139,7 +1132,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             if analysis.portal_type == 'DuplicateAnalysis':
                 src_analysis = analysis.getAnalysis()
                 ar = src_analysis.aq_parent
-                service = src_analysis.getService()
                 duplicate_id = new_ws.generateUniqueId('DuplicateAnalysis')
                 new_duplicate = _createObjectByType('DuplicateAnalysis',
                                                     new_ws, duplicate_id)

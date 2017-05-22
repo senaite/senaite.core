@@ -75,8 +75,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
     def calculate(self, uid=None):
         analysis = self.analyses[uid]
         form_result = self.current_results[uid]['result']
-        service = analysis.getService()
-        calculation = service.getCalculation()
+        calculation = analysis.getCalculation()
         if analysis.portal_type == 'ReferenceAnalysis':
             deps = {}
         else:
@@ -135,7 +134,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
                 if analysisvalues['result']=='':
                     unsatisfied = True
                     break;
-                key = analysisvalues.get('keyword',dependency.getService().getKeyword())
+                key = analysisvalues.get('keyword',dependency.getKeyword())
 
                 # Analysis result
                 # All result mappings must be float, or they are ignored.
@@ -177,7 +176,7 @@ class ajaxCalculateAnalysisEntry(BrowserView):
 
                     # all interims are ServiceKeyword.InterimKeyword
                     if i_uid in deps:
-                        key = "%s.%s" % (deps[i_uid].getService().getKeyword(),
+                        key = "%s.%s" % (deps[i_uid].getKeyword(),
                                          i['keyword'])
                         mapping[key] = i['value']
                     # this analysis' interims get extra reference
@@ -282,13 +281,13 @@ class ajaxCalculateAnalysisEntry(BrowserView):
         # if parent is not an AR, it's never going to be calculable
         dm = hasattr(analysis.aq_parent, 'getReportDryMatter') and \
             analysis.aq_parent.getReportDryMatter() and \
-            analysis.getService().getReportDryMatter()
+            analysis.getReportDryMatter()
         if dm:
             dry_service = self.context.bika_setup.getDryMatterService()
             # get the UID of the DryMatter Analysis from our parent AR
             dry_analysis = [a for a in
                             analysis.aq_parent.getAnalyses(full_objects=True)
-                            if a.getService().UID() == dry_service.UID()]
+                            if a.getServiceUID() == dry_service.UID()]
             if dry_analysis:
                 dry_analysis = dry_analysis[0]
                 dry_uid = dry_analysis.UID()

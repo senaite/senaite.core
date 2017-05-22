@@ -100,12 +100,11 @@ class PublishView(BrowserView):
             datecreated = ar.created()
             datalines = []
             for analysis in ar.getAnalyses(full_objects=True):
-                service = analysis.getService()
-                method = service.getMethod()
+                method = analysis.getMethod()
                 sample = ar.getSample()
                 result = analysis.getResult()
                 formatted_result = format_numeric_result(analysis, result)
-                datalines.append({_("Analysis Service"): analysis.getService().Title(),
+                datalines.append({_("Analysis Service"): analysis.Title(),
                                   _("Method"): method and method.Title() or "",
                                   _("Result"): formatted_result,
                                   _("Analyst"): self.user_fullname(analysis.getAnalyst()),

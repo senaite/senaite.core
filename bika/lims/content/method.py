@@ -4,20 +4,15 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from AccessControl import ClassSecurityInfo
-from Products.CMFCore.permissions import ModifyPortalContent, View
-from Products.CMFCore.utils import getToolByName
+
 from Products.Archetypes.public import *
-from Products.Archetypes.references import HoldingReference
-from Products.ATExtensions.ateapi import RecordsField as RecordsField
-from bika.lims.browser.fields import HistoryAwareReferenceField
-from bika.lims.browser.widgets import RecordsWidget
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.config import PROJECTNAME
-import sys
+from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
+from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IMethod
-from bika.lims.utils import to_utf8
+from bika.lims.utils import t
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
@@ -97,21 +92,17 @@ schema = BikaSchema.copy() + Schema((
 
     # Calculations associated to this method. The analyses services
     # with this method assigned will use the calculation selected here.
-    HistoryAwareReferenceField('Calculation',
-        required = 0,
-        vocabulary_display_path_bound = sys.maxint,
-        vocabulary = '_getCalculations',
-        allowed_types = ('Calculation',),
-        relationship = 'MethodCalculation',
-        referenceClass = HoldingReference,
-        widget = ReferenceWidget(
-            checkbox_bound = 0,
+    UIDReferenceField(
+        'Calculation',
+        vocabulary='_getCalculations',
+        allowed_types=('Calculation',),
+        widget=ReferenceWidget(
+            checkbox_bound=0,
             label=_("Calculation"),
-            description =_("If required, select a calculation for the "
-                           "The analysis services linked to this "
-                           "method. Calculations can be configured "
-                           "under the calculations item in the LIMS "
-                           "set-up"),
+            description=_(
+                "If required, select a calculation for the The analysis "
+                "services linked to this method. Calculations can be "
+                "configured under the calculations item in the LIMS set-up"),
             catalog_name='bika_setup_catalog',
             base_query={'inactive_state': 'active'},
         )

@@ -17,6 +17,7 @@ from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.ATContentTypes.utils import DT2dt, dt2DT
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
+from plone.api.portal import get_tool
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
@@ -80,21 +81,22 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
         """ Return the Sample ID as title """
         return safe_unicode(self.getId()).encode('utf-8')
 
-    security.declarePublic('getAnalyses')
-
+    @security.public
     def getAnalyses(self):
-        """ return list of titles of analyses linked to this sample Partition """
-        analyses = sorted(self.getBackReferences("AnalysisSamplePartition"))
+        """Returns a list of analyses linked to this sample Partition
+        TODO: Refactor to only return full objects if requested!
+        """
+        bac = get_tool('bika_analysis_catalog')
+        brains = bac(portal_type='Analysis', getSamplePartitionUID=self.UID())
+        analyses = [b.getObject() for b in brains]
         return analyses
 
-    security.declarePublic('current_date')
-
+    @security.public
     def current_date(self):
         """ return current date """
         return DateTime()
 
-    security.declarePublic('disposal_date')
-
+    @security.public
     def disposal_date(self):
         """ return disposal date """
 
@@ -122,7 +124,7 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
         workflow = getToolByName(self, 'portal_workflow')
         sample = self.aq_parent
         # Transition our analyses
-        analyses = self.getBackReferences('AnalysisSamplePartition')
+        analyses = self.getAnalyses()
         if analyses:
             for analysis in analyses:
                 doActionFor(analysis, "preserve")
@@ -149,7 +151,7 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
         sample = self.aq_parent
         workflow = getToolByName(self, 'portal_workflow')
         # Transition our analyses
-        analyses = self.getBackReferences('AnalysisSamplePartition')
+        analyses = self.getAnalyses()
         for analysis in analyses:
             doActionFor(analysis, "sample")
         # if all our siblings are now up to date, promote sample and ARs.
@@ -172,7 +174,7 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
         sample = self.aq_parent
         workflow = getToolByName(self, 'portal_workflow')
         # Transition our analyses
-        analyses = self.getBackReferences('AnalysisSamplePartition')
+        analyses = self.getAnalyses()
         for analysis in analyses:
             doActionFor(analysis, "to_be_preserved")
         # if all our siblings are now up to date, promote sample and ARs.
@@ -194,7 +196,7 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
         sample = self.aq_parent
         workflow = getToolByName(self, 'portal_workflow')
         # Transition our analyses
-        analyses = self.getBackReferences('AnalysisSamplePartition')
+        analyses = self.getAnalyses()
         for analysis in analyses:
             doActionFor(analysis, "sample_due")
         # if all our siblings are now up to date, promote sample and ARs.
@@ -220,7 +222,7 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
         self.setDateReceived(DateTime())
         self.reindexObject(idxs=["getDateReceived", ])
         # Transition our analyses
-        analyses = self.getBackReferences('AnalysisSamplePartition')
+        analyses = self.getAnalyses()
         for analysis in analyses:
             doActionFor(analysis, "receive")
         # if all sibling partitions are received, promote sample

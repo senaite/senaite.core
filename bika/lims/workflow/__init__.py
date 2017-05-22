@@ -142,14 +142,14 @@ def AfterTransitionEventHandler(instance, event):
 
     key = 'after_{0}_transition_event'.format(event.transition.id)
     after_event = getattr(instance, key, False)
-    if not afterevent:
+    if not after_event:
         # TODO Workflow. this conditional is only for backwards compatibility,
         # to be removed when all workflow_script_* methods in contents are
         # replaced by the more explicity signature 'after_*_transition_event'
         key = 'workflow_script_' + event.transition.id
         after_event = getattr(instance, key, False)
 
-    if not afterevent:
+    if not after_event:
         return
 
     msg = "Calling AfterTransitionEvent function '{0}' from {1}".format(

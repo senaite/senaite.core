@@ -18,10 +18,8 @@ function AnalysisServiceEditView() {
     var instr_fd   = $('#archetypes-fieldname-Instrument');
     var instr_sel  = $('#archetypes-fieldname-Instrument #Instrument');
     var defcalc_chk= $('#archetypes-fieldname-UseDefaultCalculation #UseDefaultCalculation');
-    var calc_fd    = $('#archetypes-fieldname-_Calculation');
-    var calc_sel   = $('#archetypes-fieldname-_Calculation #_Calculation');
-    var acalc_fd   = $('#archetypes-fieldname-DeferredCalculation');
-    var acalc_sel  = $('#archetypes-fieldname-DeferredCalculation #DeferredCalculation');
+    var calc_fd    = $('#archetypes-fieldname-Calculation');
+    var calc_sel   = $('#archetypes-fieldname-Calculation #Calculation');
     var interim_fd = $("#archetypes-fieldname-InterimFields");
     var interim_rw = $("#archetypes-fieldname-InterimFields tr.records_row_InterimFields");
     var ldsel_chk  = $('#archetypes-fieldname-DetectionLimitSelector #DetectionLimitSelector');

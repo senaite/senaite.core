@@ -3,9 +3,9 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from Products.CMFCore.utils import getToolByName
 from Products.CMFCore import permissions
 from bika.lims.permissions import ManageSupplyOrders, ManageLoginDetails
+from plone.api.portal import get_tool
 
 
 def ObjectModifiedEventHandler(obj, event):
@@ -15,19 +15,10 @@ def ObjectModifiedEventHandler(obj, event):
         return
 
     if obj.portal_type == 'Calculation':
-        pr = getToolByName(obj, 'portal_repository')
-        uc = getToolByName(obj, 'uid_catalog')
+        pr = get_tool('portal_repository')
+        uc = get_tool('uid_catalog')
         obj = uc(UID=obj.UID())[0].getObject()
         version_id = obj.version_id if hasattr(obj, 'version_id') else 0
-
-        backrefs = obj.getBackReferences('AnalysisServiceCalculation')
-        for i, target in enumerate(backrefs):
-            target = uc(UID=target.UID())[0].getObject()
-            pr.save(obj=target, comment="Calculation updated to version %s" %
-                (version_id + 1,))
-            reference_versions = getattr(target, 'reference_versions', {})
-            reference_versions[obj.UID()] = version_id + 1
-            target.reference_versions = reference_versions
 
         backrefs = obj.getBackReferences('MethodCalculation')
         for i, target in enumerate(backrefs):
@@ -57,14 +48,20 @@ def ObjectModifiedEventHandler(obj, event):
         if contact_username:
             contact_email = obj.Schema()['EmailAddress'].get(obj)
             contact_fullname = obj.Schema()['Fullname'].get(obj)
-            mt = getToolByName(obj, 'portal_membership')
+            mt = get_tool('portal_membership')
             member = mt.getMemberById(contact_username)
             if member:
-                properties = {'username':contact_username,
+                properties = {'username': contact_username,
                               'email': contact_email,
                               'fullname': contact_fullname}
                 member.setMemberProperties(properties)
 
     elif obj.portal_type == 'AnalysisCategory':
-        for analysis in obj.getBackReferences('AnalysisServiceAnalysisCategory'):
-            analysis.reindexObject(idxs=["getCategoryTitle", "getCategoryUID", ])
+        # If the analysis category's Title is modified, we must
+        # re-index all services and analyses that refer to this title.
+        for i in [['Analysis', 'bika_analysis_catalog'],
+                  ['AnalysisService', 'bika_setup_catalog']]:
+            cat = get_tool(i[1])
+            brains = cat(portal_type=i[0], getCategoryUID=obj.UID())
+            for brain in brains:
+                brain.getObject().reindexObject(idxs=['getCategoryTitle'])

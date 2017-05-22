@@ -429,9 +429,9 @@ class InstrumentReferenceAnalysesView(AnalysesView):
             elif obj.portal_type == 'DuplicateAnalysis':
                 antype = QCANALYSIS_TYPES.getValue('d')
                 imgtype = "<img title='%s' src='%s/++resource++bika.lims.images/duplicate.png'/>&nbsp;" % (antype, self.context.absolute_url())
-                items[i]['sortcode'] = '%s_%s' % (obj.getSample().id, obj.getService().getKeyword())
+                items[i]['sortcode'] = '%s_%s' % (obj.getSample().id, obj.getKeyword())
             else:
-                items[i]['sortcode'] = '%s_%s' % (obj.getSample().id, obj.getService().getKeyword())
+                items[i]['sortcode'] = '%s_%s' % (obj.getSample().id, obj.getKeyword())
 
             items[i]['before']['Service'] = imgtype
 

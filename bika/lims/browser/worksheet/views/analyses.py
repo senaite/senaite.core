@@ -17,8 +17,14 @@ class AnalysesView(BaseView):
     """
     def __init__(self, context, request):
         BaseView.__init__(self, context, request)
+        self.context = context
+        self.request = request
+        self.analyst = None
+        self.instrument = None
         self.contentFilter = {
-                        'getWorksheetUID': context.UID(), }
+            'portal_type': 'Analysis',
+            'getWorksheetUID': context.UID(),
+        }
         self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
         self.allow_edit = True
         self.show_categories = False
@@ -91,13 +97,12 @@ class AnalysesView(BaseView):
             highest_position = max(highest_position, pos)
             items[x]['Pos'] = pos
             items[x]['colspan'] = {'Pos':1}
-            service = obj.getService()
-            method = service.getMethod()
-            items[x]['Service'] = service.Title()
+            method = obj.getMethod()
+            items[x]['Service'] = obj.Title()
             items[x]['Priority'] = ''
             #items[x]['Method'] = method and method.Title() or ''
             items[x]['class']['Service'] = 'service_title'
-            items[x]['Category'] = service.getCategory() and service.getCategory().Title() or ''
+            items[x]['Category'] = obj.getCategoryTitle()
             if obj.portal_type == "ReferenceAnalysis":
                 items[x]['DueDate'] = self.ulocalized_time(obj.aq_parent.getExpiryDate(), long_format=0)
             else:
