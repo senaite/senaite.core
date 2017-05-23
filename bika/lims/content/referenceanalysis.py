@@ -468,6 +468,65 @@ class ReferenceAnalysis(BaseContent):
         """
         return self.aq_parent.getReferenceResults()
 
+    def getInstrumentEntryOfResults(self):
+        """
+        It is a metacolumn.
+        Returns the same value as the service.
+        """
+        service = self.getService()
+        if not service:
+            return None
+        return service.getInstrumentEntryOfResults()
+
+    def getInstrumentUID(self):
+        """
+        It is a metacolumn.
+        Returns the same value as the service.
+        """
+        instrument = self.getInstrument()
+        if not instrument:
+            return None
+        return instrument.UID()
+
+    def getServiceDefaultInstrumentUID(self):
+        """
+        It is used as a metacolumn.
+        Returns the default service's instrument UID
+        """
+        service = self.getService()
+        if not service:
+            return None
+        ins = service.getInstrument()
+        if ins:
+            return ins.UID()
+        return ''
+
+    def getServiceDefaultInstrumentTitle(self):
+        """
+        It is used as a metacolumn.
+        Returns the default service's instrument UID
+        """
+        service = self.getService()
+        if not service:
+            return None
+        ins = service.getInstrument()
+        if ins:
+            return ins.Title()
+        return ''
+
+    def getServiceDefaultInstrumentURL(self):
+        """
+        It is used as a metacolumn.
+        Returns the default service's instrument UID
+        """
+        service = self.getService()
+        if not service:
+            return None
+        ins = service.getInstrument()
+        if ins:
+            return ins.absolute_url_path()
+        return ''
+
     def isVerifiable(self):
         """
         Checks it the current analysis can be verified. This is, its not a
