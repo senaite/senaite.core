@@ -181,13 +181,6 @@ class InvoiceView(BrowserView):
                 return analysis
         return None
 
-    def getPriorityIcon(self):
-        priority = self.context.getPriority()
-        if priority:
-            icon = priority.getBigIcon()
-            if icon:
-                return '/'.join(icon.getPhysicalPath())
-
     def getPreferredCurrencyAbreviation(self):
         return self.context.bika_setup.getCurrency()
 

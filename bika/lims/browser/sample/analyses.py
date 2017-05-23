@@ -28,20 +28,7 @@ class SampleAnalysesView(AnalysesView):
             'attr': 'getParentTitle',
             'replace_url': 'getParentURL',
             'sortable': False}
-        self.columns['Priority'] = {'title': _("Priority"),
-                                   'sortable':False}
-        # Add Request and Priority columns
+        # Add Request columns
         pos = self.review_states[0]['columns'].index('Service') + 1
         self.review_states[0]['columns'].insert(pos, 'Request')
         pos += 1
-        self.review_states[0]['columns'].insert(pos, 'Priority')
-
-    def folderitem(self, obj, item, index):
-        """
-        :obj: a brain
-        """
-        # Call the folderitem method from the base class
-        item = AnalysesView.folderitem(self, obj, item, index)
-        # TODO this space is required for it to work
-        item['replace']['Priority'] = ' '
-        return item

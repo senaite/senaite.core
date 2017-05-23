@@ -1375,14 +1375,6 @@ class BikaListingView(BrowserView):
             actions[a]['title'] = t(PMF(actions[a]['id'] + "_transition_title"))
         return actions
 
-    def getPriorityIcon(self):
-        if hasattr(self.context, 'getPriority'):
-            priority = self.context.getPriority()
-            if priority:
-                icon = priority.getBigIcon()
-                if icon:
-                    return '/'.join(icon.getPhysicalPath())
-
     def tabindex(self):
         i = 0
         while True:

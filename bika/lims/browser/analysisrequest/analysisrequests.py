@@ -142,12 +142,6 @@ class AnalysisRequestsView(BikaListingView):
                 'title': _('Sampling Deviation'),
                 'sortable': False,
                 'toggle': False},
-            'Priority': {
-                'title': _('Priority'),
-                'toggle': True,
-                # TODO: This will change to 'True' once we have finished with
-                # the new priority type.
-                'sortable': False, },
             # 'AdHoc': {'title': _('Ad-Hoc'),
             #           'toggle': False},
             'SamplingDate': {
@@ -239,7 +233,6 @@ class AnalysisRequestsView(BikaListingView):
                         'getSamplePointTitle',
                         'getStorageLocation',
                         'SamplingDeviation',
-                        'Priority',
                         # 'AdHoc',
                         'SamplingDate',
                         'getDateSampled',
@@ -283,7 +276,6 @@ class AnalysisRequestsView(BikaListingView):
                         'getSamplePointTitle',
                         'getStorageLocation',
                         'SamplingDeviation',
-                        'Priority',
                         # 'AdHoc',
                         'getAnalysesNum',
                         'getDateVerified',
@@ -318,7 +310,6 @@ class AnalysisRequestsView(BikaListingView):
                         'getSamplePointTitle',
                         'getStorageLocation',
                         'SamplingDeviation',
-                        'Priority',
                         # 'AdHoc',
                         'getAnalysesNum',
                         'getDateVerified',
@@ -355,7 +346,6 @@ class AnalysisRequestsView(BikaListingView):
                         'getSamplePointTitle',
                         'getStorageLocation',
                         'SamplingDeviation',
-                        'Priority',
                         # 'AdHoc',
                         'getAnalysesNum',
                         'getDateVerified',
@@ -396,7 +386,6 @@ class AnalysisRequestsView(BikaListingView):
                         'getSamplePointTitle',
                         'getStorageLocation',
                         'SamplingDeviation',
-                        'Priority',
                         # 'AdHoc',
                         'getAnalysesNum',
                         'getDateVerified',
@@ -429,7 +418,6 @@ class AnalysisRequestsView(BikaListingView):
                         'getSamplePointTitle',
                         'getStorageLocation',
                         'SamplingDeviation',
-                        'Priority',
                         # 'AdHoc',
                         'getDateSampled',
                         'getSampler',
@@ -468,7 +456,6 @@ class AnalysisRequestsView(BikaListingView):
                         'getSamplePointTitle',
                         'getStorageLocation',
                         'SamplingDeviation',
-                        'Priority',
                         # 'AdHoc',
                         'getDateSampled',
                         'getSampler',
@@ -505,7 +492,6 @@ class AnalysisRequestsView(BikaListingView):
                         'getSamplePointTitle',
                         'getStorageLocation',
                         'SamplingDeviation',
-                        'Priority',
                         # 'AdHoc',
                         'getDateSampled',
                         'getSampler',
@@ -540,7 +526,6 @@ class AnalysisRequestsView(BikaListingView):
                         'getSamplePointTitle',
                         'getStorageLocation',
                         'SamplingDeviation',
-                        'Priority',
                         # 'AdHoc',
                         'getDateSampled',
                         'getSampler',
@@ -587,7 +572,6 @@ class AnalysisRequestsView(BikaListingView):
                         'getSamplePointTitle',
                         'getStorageLocation',
                         'SamplingDeviation',
-                        'Priority',
                         # 'AdHoc',
                         'getDateSampled',
                         'getSampler',
@@ -624,7 +608,6 @@ class AnalysisRequestsView(BikaListingView):
                         'getSamplePointTitle',
                         'getStorageLocation',
                         'SamplingDeviation',
-                        'Priority',
                         # 'AdHoc',
                         'getDateSampled',
                         'getSampler',
@@ -671,7 +654,6 @@ class AnalysisRequestsView(BikaListingView):
                         'getSamplePointTitle',
                         'getStorageLocation',
                         'SamplingDeviation',
-                        'Priority',
                         # 'AdHoc',
                         'getDateSampled',
                         'getSampler',
@@ -719,7 +701,6 @@ class AnalysisRequestsView(BikaListingView):
                         'getSamplePointTitle',
                         'getStorageLocation',
                         'SamplingDeviation',
-                        'Priority',
                         # 'AdHoc',
                         'SamplingDate',
                         'getDateSampled',
@@ -756,7 +737,6 @@ class AnalysisRequestsView(BikaListingView):
                         'getSamplePointTitle',
                         'getStorageLocation',
                         'SamplingDeviation',
-                        'Priority',
                         # 'AdHoc',
                         'getDateSampled',
                         'getSampler',
@@ -875,7 +855,6 @@ class AnalysisRequestsView(BikaListingView):
                     (self.portal_url, t(_("Republished after last print")))
             item['after']['Printed'] = print_icon
         item['SamplingDeviation'] = obj.getSamplingDeviationTitle
-        item['Priority'] = obj.getPriority
 
         item['getStorageLocation'] = obj.getStorageLocationTitle
 

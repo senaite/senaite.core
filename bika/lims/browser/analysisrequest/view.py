@@ -471,10 +471,3 @@ class AnalysisRequestViewView(BrowserView):
                 'value': anchor
             }
         return custom
-
-    def getPriorityIcon(self):
-        priority = self.context.getPriority()
-        if priority:
-            icon = priority.getBigIcon()
-            if icon:
-                return '/'.join(icon.getPhysicalPath())

@@ -1215,21 +1215,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             analysis.setAnalyst(analyst)
         self.Schema().getField('Analyst').set(self, analyst)
 
-    security.declarePublic('getPriority')
-    def getPriority(self):
-        """ get highest priority from all analyses
-        """
-        analyses = self.getAnalyses()
-        priorities = []
-        for analysis in analyses:
-            if not hasattr(analysis, 'getPriority'):
-                continue
-            if analysis.getPriority():
-                priorities.append(analysis.getPriority())
-        priorities = sorted(priorities, key = itemgetter('sortKey'))
-        if priorities:
-            return priorities[-1]
-
     def getAnalysesUIDs(self):
         """
         Returns the analyses UIDs from the analyses assigned to this worksheet

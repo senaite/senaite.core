@@ -8,7 +8,8 @@ from Acquisition import aq_parent
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.ZCatalog.interfaces import ICatalogBrain
 from bika.lims import logger
-from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.catalog import CATALOG_ANALYSIS_LISTING, \
+    CATALOG_WORKSHEET_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
@@ -36,6 +37,10 @@ def upgrade(tool):
     UpdateIndexesAndMetadata(portal, ut)
 
     BaseAnalysisRefactoring(portal)
+
+    # Throw out ARPriorities (the types have been removed, but the objects
+    # themselves remain as p[ersistent broken)
+    portal.bika_setup.manage_delObjects(['bika_arpriorities'])
 
     # Refresh affected catalogs
     ut.refreshCatalogs()
@@ -102,6 +107,11 @@ def UpdateIndexesAndMetadata(portal, ut):
 
     # factored out
     ut.delIndexAndColumn('bika_catalog', 'getAnalysisCategory')
+
+    # Removed ARPriority completely
+    ut.delColumn(CATALOG_ANALYSIS_LISTING, 'getPriority')
+    ut.delColumn(CATALOG_ANALYSIS_REQUEST_LISTING, 'getPriority')
+    ut.delIndex(CATALOG_WORKSHEET_LISTING, 'getPriority')
 
 
 def BaseAnalysisRefactoring(portal):
@@ -269,11 +279,6 @@ def BaseAnalysisRefactoring(portal):
     for brain in brains:
         ws = brain.getObject()
         touidref(ws, ws, 'WorksheetAnalysisTemplate', 'WorksheetTemplate')
-
-    brains = bc(portal_type='AnalysisRequest')
-    for brain in brains:
-        ar = brain.getObject()
-        touidref(ar, ar, 'AnalysisRequestPriority', 'Priority')
 
     brains = bc(portal_type='AnalysisSpec')
     for brain in brains:

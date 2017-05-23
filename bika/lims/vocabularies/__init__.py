@@ -395,13 +395,6 @@ AnalysisRequestWorkflowStateVocabularyFactory = \
     AnalysisRequestWorkflowStateVocabulary()
 
 
-class ARPrioritiesVocabulary(BikaContentVocabulary):
-    def __init__(self):
-        BikaContentVocabulary.__init__(self,
-                                       ['bika_setup/bika_arpriorities', ],
-                                       ['ARPriority', ])
-
-
 def getTemplates(bikalims_path, restype, filter_by_type=False):
     """ Returns an array with the Templates available in the Bika LIMS path
         specified plus the templates from the resources directory specified and

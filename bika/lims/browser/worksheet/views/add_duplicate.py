@@ -66,10 +66,3 @@ class AddDuplicateView(BrowserView):
         else:
             available_positions = []
         return available_positions
-
-    def getPriorityIcon(self):
-        priority = self.context.getPriority()
-        if priority:
-            icon = priority.getBigIcon()
-            if icon:
-                return '/'.join(icon.getPhysicalPath())
