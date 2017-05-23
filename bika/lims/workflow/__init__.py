@@ -210,11 +210,11 @@ def isTransitionAllowed(instance, transition_id, active_only=True):
     :returns: True if transition can be performed
     :rtype: bool
     """
-    if active_only and not BasicTransitionAllowed(instance):
+    if active_only and not isBasicTransitionAllowed(instance):
         return False
     wftool = getToolByName(instance, "portal_workflow")
     transitions = wftool.getTransitionsFor(instance)
-    trans = [trans for trans in transitions if trans.id == transition_id]
+    trans = [trans for trans in transitions if trans['id'] == transition_id]
     return len(trans) >= 1
 
 def wasTransitionPerformed(instance, transition_id):
@@ -232,11 +232,11 @@ def getReviewHistory(instance):
     :returns: the list of historic events as dicts
     """
     review_history = []
-    workflow = getToolByName(obj, 'portal_workflow')
+    workflow = getToolByName(instance, 'portal_workflow')
     try:
         # https://jira.bikalabs.com/browse/LIMS-2242:
         # Sometimes the workflow history is inexplicably missing!
-        review_history = list(workflow.getInfoFor(obj, 'review_history'))
+        review_history = list(workflow.getInfoFor(instance, 'review_history'))
     except WorkflowException:
         logger.error(
             "workflow history is inexplicably missing."
