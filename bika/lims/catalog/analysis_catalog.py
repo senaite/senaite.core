@@ -59,6 +59,7 @@ _columns_list = [
     'getParentURL',
     'getAnalysisRequestURL',
     'getParentTitle',
+    'getParentUID',
     'getClientTitle',
     'getClientURL',
     'getAnalysisRequestTitle',
@@ -72,6 +73,7 @@ _columns_list = [
     'getRemarks',
     'getRetested',
     'getExpiryDate',
+    'getDateSampled',
     'getDueDate',
     'getReferenceResults',
     # Used in duplicated analysis objects

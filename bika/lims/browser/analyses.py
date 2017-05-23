@@ -762,7 +762,7 @@ class AnalysesView(BikaListingView):
         resultdate = obj.getDateSampled \
             if obj.portal_type == 'ReferenceAnalysis' \
             else obj.getResultCaptureDate
-        duedate = obj.aq_parent.getExpiryDate \
+        duedate = obj.getExpiryDate \
             if obj.portal_type == 'ReferenceAnalysis' \
             else obj.getDueDate
         item['replace']['DueDate'] = \

@@ -5,16 +5,15 @@
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 
-from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.CMFCore.utils import getToolByName
 from Products.ZCatalog.interfaces import ICatalogBrain
 from bika.lims import logger
-from bika.lims.catalog import CATALOG_ANALYSIS_LISTING, \
-    CATALOG_WORKSHEET_LISTING
+from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
+from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from plone.api.portal import get_tool
-
 
 product = 'bika.lims'
 version = '3.2.0.1705'
@@ -38,17 +37,28 @@ def upgrade(tool):
 
     BaseAnalysisRefactoring(portal)
 
+    # Remove versionable types
+    logger.info("Removing versionable types...")
+    portal_repository = getToolByName(portal, 'portal_repository')
+    non_versionable = ['AnalysisSpec',
+                       'ARPriority',
+                       'Method',
+                       'SamplePoint',
+                       'SampleType',
+                       'StorageLocation',
+                       'WorksheetTemplate',
+                       ]
+    versionable = list(portal_repository.getVersionableContentTypes())
+    vers = [ver for ver in versionable if ver not in non_versionable]
+    portal_repository.setVersionableContentTypes(vers)
+    logger.info("Versionable types updated: {0}".format(', '.join(vers)))
+
     # Throw out ARPriorities (the types have been removed, but the objects
-    # themselves remain as p[ersistent broken)
+    # themselves remain as persistent broken)
     portal.bika_setup.manage_delObjects(['bika_arpriorities'])
 
     # Refresh affected catalogs
     ut.refreshCatalogs()
-
-    # Clear and rebuild the reference catalog
-    logger.info("Rebuilding reference_catalog")
-    rc = get_tool(REFERENCE_CATALOG)
-    rc.manage_rebuildCatalog()
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -56,9 +66,15 @@ def upgrade(tool):
 
 def UpdateIndexesAndMetadata(portal, ut):
 
+    # Add getId column to bika_catalog
+    ut.addColumn(CATALOG_ANALYSIS_LISTING, 'getNumberOfVerifications')
+
     # Add SearchableText index to analysis requests catalog
     ut.addIndex(
         CATALOG_ANALYSIS_REQUEST_LISTING, 'SearchableText', 'ZCTextIndex')
+    # For reference samples
+    ut.addColumn(CATALOG_ANALYSIS_LISTING, 'getParentUID')
+    ut.addColumn(CATALOG_ANALYSIS_LISTING, 'getDateSampled')
 
     # Reindexing bika_catalog_analysisrequest_listing in order to obtain the
     # correct getDateXXXs
@@ -80,9 +96,6 @@ def UpdateIndexesAndMetadata(portal, ut):
     ut.addColumn(CATALOG_ANALYSIS_LISTING, 'getAllowedMethodUIDs')
     ut.addIndex('bika_setup_catalog', 'getAvailableMethodUIDs', 'KeywordIndex')
     ut.delColumn(CATALOG_ANALYSIS_LISTING, 'getAllowedMethodsAsTuples')
-
-    # Added by myself and pau independently
-    ut.addColumn(CATALOG_ANALYSIS_LISTING, 'getNumberOfVerifications')
 
     # Renamed/refactored
     ut.delColumn(CATALOG_ANALYSIS_LISTING, 'getResultOptionsFromService')
@@ -284,6 +297,7 @@ def BaseAnalysisRefactoring(portal):
     for brain in brains:
         spec = brain.getObject()
         touidref(spec, spec, 'AnalysisSpecSampleType', 'SampleType')
+
 
 def touidref(src, dst, src_relation, fieldname):
     """Convert an archetypes reference in src/src_relation to a UIDReference
