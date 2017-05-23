@@ -3,7 +3,6 @@
  <property
     name="title">Contains workflow definitions for your portal</property>
  <object name="bika_analysis_workflow" meta_type="Workflow"/>
- <object name="bika_analysis_workflow" meta_type="Workflow"/>
  <object name="bika_ar_workflow" meta_type="Workflow"/>
  <object name="bika_arimport_workflow" meta_type="Workflow"/>
  <object name="bika_batch_workflow" meta_type="Workflow"/>

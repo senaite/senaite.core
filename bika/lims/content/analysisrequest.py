@@ -3181,11 +3181,6 @@ class AnalysisRequest(BaseFolder):
         if not skip(sample, "preserve", peek=True):
             workflow.doActionFor(sample, "preserve")
 
-    def workflow_script_submit(self):
-        if skip(self, "submit"):
-            return
-        self.reindexObject(idxs=["review_state",  'getObjectWorkflowStates', ])
-
     def workflow_script_sampling_workflow(self):
         if skip(self, "sampling_workflow"):
             return

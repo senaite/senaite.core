@@ -20,6 +20,7 @@ from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.subscribers import skip
 from bika.lims.utils.analysis import get_significant_digits
+from bika.lims.workflow import doActionFor
 from plone.app.blob.field import BlobField
 from zope.interface import implements
 from plone.api.user import has_permission
@@ -85,34 +86,32 @@ class ReferenceAnalysis(AbstractAnalysis):
         """
         return []
 
+    @security.public
+    @deprecated('05-2017. Use after_submit_transition_event instead')
     def workflow_script_submit(self):
-        if skip(self, "submit"):
-            return
-        workflow = getToolByName(self, "portal_workflow")
-        # If all analyses on the worksheet have been submitted,
-        # then submit the worksheet.
-        ws = self.getBackReferences('WorksheetAnalysis')
-        ws = ws[0]
-        # if the worksheet analyst is not assigned, the worksheet can't  be
-        # transitioned.
-        if ws.getAnalyst() and not skip(ws, "submit", peek=True):
-            all_submitted = True
-            for a in ws.getAnalyses():
-                if workflow.getInfoFor(a, 'review_state') in \
-                        ('sample_due', 'sample_received', 'assigned',):
-                    all_submitted = False
-                    break
-            if all_submitted:
-                workflow.doActionFor(ws, 'submit')
-        # If no problem with attachments, do 'attach' action.
-        can_attach = True
-        if not self.getAttachment():
-            service = self.getService()
-            if service.getAttachmentOption() == 'r':
-                can_attach = False
-        if can_attach:
-            workflow.doActionFor(self, 'attach')
-        self.reindexObject()
+        self.after_submit_transition_event()
+
+    @security.public
+    def after_submit_transition_event(self):
+        """Method triggered after a 'submit' transition for the current
+        ReferenceAnalysis is performed.
+        By default, the "submit" action for transitions the RefAnalysis to the
+        "attachment_due" state. If attachment is not required, the Reference
+        Analysis is transitioned to 'to_be_verified' state (via 'attach').
+        If all the analyses that belong to the same worksheet are in a suitable
+        state, the 'submit' transition to the worksheet is triggered too.
+        This function is called automatically by
+        bika.lims.workflow.AfterTransitionEventHandler
+        """
+        # By default, the 'submit' action transitions the ReferenceAnalysis to
+        # the 'attachment_due'. Since doActionFor already checks for the guards
+        # in this case (guard_attach_transition), try always the transition to
+        # 'to_be_verified' via 'attach' action
+        # doActionFor will check the
+        doActionFor(self, attach)
+
+        # Delegate the transition of Worksheet to base class AbstractAnalysis
+        super(AbstractRoutineAnalysis, self).after_submit_transition_event()
 
     def workflow_script_attach(self):
         if skip(self, "attach"):

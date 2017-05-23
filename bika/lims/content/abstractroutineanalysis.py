@@ -11,6 +11,7 @@ from Products.Archetypes.Field import BooleanField, FixedPointField, \
     StringField
 from Products.Archetypes.Schema import Schema
 from bika.lims import bikaMessageFactory as _, logger
+from bika.lims import deprecated
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DecimalWidget
 from bika.lims.content.abstractanalysis import AbstractAnalysis
@@ -18,6 +19,11 @@ from bika.lims.content.abstractanalysis import schema
 from bika.lims.interfaces import IAnalysis, IRoutineAnalysis, \
     ISamplePrepWorkflow
 from bika.lims.workflow import getTransitionDate
+from bika.lims.workflow import doActionFor
+from bika.lims.workflow import isBasicTransitionAllowed
+from bika.lims.workflow import isTransitionAllowed
+from bika.lims.workflow import wasTransitionPerformed
+from bika.lims.workflow import skip
 from plone.api.portal import get_tool
 from zope.interface import implements
 
@@ -266,3 +272,101 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         """
         old = self.getReflexRuleActionsTriggered()
         self.setReflexRuleActionsTriggered(old + text + '|')
+
+    @security.public
+    def _reflex_rule_process(self, wf_action):
+        """This function does all the reflex rule process.
+        :param wf_action: is a string containing the workflow action triggered
+        """
+        workflow = get_tool('portal_workflow')
+        # Check out if the analysis has any reflex rule bound to it.
+        # First we have get the analysis' method because the Reflex Rule
+        # objects are related to a method.
+        a_method = self.getMethod()
+        # After getting the analysis' method we have to get all Reflex Rules
+        # related to that method.
+        if a_method:
+            all_rrs = a_method.getBackReferences('ReflexRuleMethod')
+            # Once we have all the Reflex Rules with the same method as the
+            # analysis has, it is time to get the rules that are bound to the
+            # same analysis service that is using the analysis.
+            for rule in all_rrs:
+                state = workflow.getInfoFor(rule, 'inactive_state')
+                if state == 'inactive':
+                    continue
+                # Getting the rules to be done from the reflex rule taking
+                # in consideration the analysis service, the result and
+                # the state change
+                action_row = rule.getActionReflexRules(self, wf_action)
+                # Once we have the rules, the system has to execute its
+                # instructions if the result has the expected result.
+                doReflexRuleAction(self, action_row)
+
+    @security.public
+    @deprecated('05-2017. Use after_submit_transition_event instead')
+    def workflow_script_submit(self):
+        self.after_submit_transition_event()
+
+    @security.public
+    def after_submit_transition_event(self):
+        """
+        Method triggered after a 'submit' transition for the current analysis
+        is performed. Responsible of triggering cascade actions such as
+        transitioning dependent analyses, transitioning worksheets, etc
+        depending on the current analysis and other analyses that belong to the
+        same Analysis Request or Worksheet.
+        This function is called automatically by
+        bika.lims.workfow.AfterTransitionEventHandler
+        """
+        # The analyses that depends on this analysis to calculate their results
+        # must be transitioned too, otherwise the user will be forced to submit
+        # them individually. Note that the automatic transition of dependents
+        # must only take place if all their dependencies have been submitted
+        # already.
+        for dependent in self.getDependents():
+            # If this submit transition has already been done for this
+            # dependent analysis within the current request, continue.
+            if skip(dependent, 'submit', peek=True):
+                continue
+
+            # TODO Workflow. All below and inside this loop should be moved to
+            # a guard_submit_transition inside analysis
+
+            # If this dependent has already been submitted, omit
+            if dependent.getSubmittedBy():
+                continue
+
+            # The dependent cannot be transitioned if doesn't have result
+            if not dependent.getResult():
+                continue
+
+            # If the calculation associated to the dependent analysis requires
+            # the manual introduction of interim fields, do not transition the
+            # dependent automatically, force the user to do it manually.
+            service = dependent.getService()
+            calculation = service.getCalculation()
+            if calculation and calculation.getInterimFields():
+                continue
+
+            # All dependencies from this dependent analysis are ok?
+            deps = dependent.getDependencies()
+            dsub = [dep for dep in deps if wasTransitionPerformed(sp, 'submit')]
+            if len(deps) == len(dsub):
+                # The statuses of all dependencies of this dependent are ok
+                # (at least, all of them have been submitted already)
+                doActionFor(dependent, 'submit')
+
+        # Do all the reflex rules process
+        self._reflex_rule_process('submit')
+
+        # If all analyses from the Analysis Request to which this Analysis
+        # belongs have been submitted, then promote the action to the parent
+        # Analysis Request
+        ar = self.getRequest()
+        ans = [an.getObject() for an in ar.getAnalyses()]
+        anssub = [an for an in ans if wasTransitionPerformed(an, 'submit')]
+        if len(ans) == len(anssub):
+            doActionFor(ar, 'submit')
+
+        # Delegate the transition of Worksheet to base class AbstractAnalysis
+        super(AbstractRoutineAnalysis, self).after_submit_transition_event()

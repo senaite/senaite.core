@@ -30,6 +30,7 @@ from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.utils import changeWorkflowState, tmpID
 from bika.lims.utils import to_utf8 as _c
 from bika.lims.workflow import doActionFor
+from bika.lims.workflow import getCurrentState
 from bika.lims.workflow import skip
 from plone import api
 from zope.interface import implements
@@ -919,30 +920,31 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             states[w.state_var] = state
         return states
 
+    @deprecated('05-2017. Use after_submit_transition_event instead')
     def workflow_script_submit(self):
-        # Don't cascade. Shouldn't be submitting WSs directly for now,
-        # except edge cases where all analyses are already submitted,
-        # but self was held back until an analyst was assigned.
-        workflow = getToolByName(self, 'portal_workflow')
-        self.reindexObject(idxs=["review_state", ])
-        can_attach = True
-        for a in self.getAnalyses():
-            if workflow.getInfoFor(a, 'review_state') in \
-               ('to_be_sampled', 'to_be_preserved', 'sample_due',
-                'sample_received', 'attachment_due', 'assigned',):
-                # Note: referenceanalyses and duplicateanalyses can still
-                # have review_state = "assigned".
-                can_attach = False
-                break
-        if can_attach:
-            doActionFor(self, 'attach')
+        self.after_submit_transition_event()
 
-    def workflow_script_attach(self):
-        if skip(self, "attach"):
-            return
-        self.reindexObject(idxs=["review_state", ])
-        # Don't cascade. Shouldn't be attaching WSs for now (if ever).
-        return
+    def after_submit_transition_event(self):
+        """Method triggered after a 'submit' transition for the current
+        Worksheet is performed.
+        By default, the "submit" action transitions the worksheet to the
+        "attachment_due" state. If there are no analyses in attachment_due,
+        retransitions the worksheet to 'to_be_verified' state (via 'attach').
+        This function is called automatically by
+        bika.lims.workflow.AfterTransitionEventHandler
+        """
+        # Submitting a Worksheet must never transition the analyses.
+        # In fact, a worksheet can only be transitioned to "to_be_verified" if
+        # all the analyses that contain have been submitted manually after
+        # the results input
+        # TODO Workflow - This should be moved to a guard_attach_transition
+        #      and run doActionFor(self, 'attach') directly, without checks.
+        for analysis in self.getAnalyses():
+            if getCurrentState(analysis) == 'attachment_due':
+                # This analysis needs an attachment, so this Worksheet cannot
+                # be transitioned to to_be_verified state
+                return
+        doActionFor(self, 'attach')
 
     def workflow_script_retract(self):
         if skip(self, "retract"):

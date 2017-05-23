@@ -46,36 +46,6 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
         return analysis.getSample()
 
     @security.public
-    def workflow_script_submit(self):
-        if skip(self, "attach"):
-            return
-        workflow = get_tool('portal_workflow')
-        self.reindexObject(idxs=["review_state", ])
-        # If all analyses on the worksheet have been submitted,
-        # then submit the worksheet.
-        ws = self.getBackReferences('WorksheetAnalysis')
-        ws = ws[0]
-        # if the worksheet analyst is not assigned, the worksheet can't  be
-        # transitioned.
-        if ws.getAnalyst() and not skip(ws, "submit", peek=True):
-            all_submitted = True
-            for a in ws.getAnalyses():
-                state = workflow.getInfoFor(a, 'review_state')
-                if state in ('to_be_sampled', 'to_be_preserved', 'sample_due',
-                             'sample_received', 'assigned'):
-                    all_submitted = False
-                    break
-            if all_submitted:
-                workflow.doActionFor(ws, 'submit')
-        # If no problem with attachments, do 'attach' action.
-        can_attach = True
-        if not self.getAttachment():
-            if self.getAttachmentOption() == 'r':
-                can_attach = False
-        if can_attach:
-            workflow.doActionFor(self, 'attach')
-
-    @security.public
     def workflow_script_attach(self):
         if skip(self, "attach"):
             return
