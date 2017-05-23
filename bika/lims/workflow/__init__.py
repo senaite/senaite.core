@@ -200,24 +200,32 @@ def isBasicTransitionAllowed(context, permission=None):
     return True
 
 def isTransitionAllowed(instance, transition_id):
+    """Checks if the object can perform the transition passed in.
+    Apart from the current state, it also checks if the guards meet the
+    conditions (as per workflowtool.getTransitionsFor)
+    :returns: True if transition can be performed
+    :rtype: bool
+    """
     wftool = getToolByName(instance, "portal_workflow")
     transitions = wftool.getTransitionsFor(instance)
     trans = [trans for trans in transitions if trans.id == transition_id]
     return len(trans) >= 1
 
-def getCurrentState(obj, stateflowid='review_state'):
-    """ The current state of the object for the state flow id specified
-        Return empty if there's no workflow state for the object and flow id
+def wasTransitionPerformed(instance, transition_id):
+    """Checks if the transition has already been performed to the object
+    Instance's workflow history is checked.
     """
-    wf = getToolByName(obj, 'portal_workflow')
-    return wf.getInfoFor(obj, stateflowid, '')
+    review_history = getReviewHistory(instance)
+    for event in review_history:
+        if event['action'] == transition_id:
+            return True
+    return False
 
-
-def getTransitionDate(obj, action_id, not_as_string=False):
+def getReviewHistory(instance):
+    """Returns the review history for the instance in reverse order
+    :returns: the list of historic events as dicts
     """
-    Returns date of action for object. Sometimes we need this date in Datetime
-    format and that's why added not_as_string param.
-    """
+    review_history = []
     workflow = getToolByName(obj, 'portal_workflow')
     try:
         # https://jira.bikalabs.com/browse/LIMS-2242:
@@ -227,9 +235,23 @@ def getTransitionDate(obj, action_id, not_as_string=False):
         logger.error(
             "workflow history is inexplicably missing."
             " https://jira.bikalabs.com/browse/LIMS-2242")
-        return None
     # invert the list, so we always see the most recent matching event
     review_history.reverse()
+    return review_history
+
+def getCurrentState(obj, stateflowid='review_state'):
+    """ The current state of the object for the state flow id specified
+        Return empty if there's no workflow state for the object and flow id
+    """
+    wf = getToolByName(obj, 'portal_workflow')
+    return wf.getInfoFor(obj, stateflowid, '')
+
+def getTransitionDate(obj, action_id, not_as_string=False):
+    """
+    Returns date of action for object. Sometimes we need this date in Datetime
+    format and that's why added not_as_string param.
+    """
+    review_history = getReviewHistory(obj)
     for event in review_history:
         if event['action'] == action_id:
             if not_as_string:
