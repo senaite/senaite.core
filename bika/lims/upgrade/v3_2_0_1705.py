@@ -9,6 +9,8 @@ from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
+from bika.lims.config import VERSIONABLE_TYPES
+from Products.CMFCore.utils import getToolByName
 import traceback
 import sys
 import transaction
@@ -30,6 +32,21 @@ def upgrade(tool):
         return True
 
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ufrom, version))
+
+    # Remove versionable types
+    logger.info("Removing versionable types...")
+    portal_repository = getToolByName(portal, 'portal_repository')
+    non_versionable = ['AnalysisSpec',
+                       'ARPriority',
+                       'Method',
+                       'SamplePoint',
+                       'SampleType',
+                       'StorageLocation',
+                       'WorksheetTemplate',]
+    versionable = list(portal_repository.getVersionableContentTypes())
+    vers = [ver for ver in versionable if ver not in non_versionable]
+    portal_repository.setVersionableContentTypes(vers)
+    logger.info("Versionable types updated: {0}".format(', '.join(vers)))
 
     # Add getId column to bika_catalog
     ut.addColumn(CATALOG_ANALYSIS_LISTING, 'getNumberOfVerifications')
