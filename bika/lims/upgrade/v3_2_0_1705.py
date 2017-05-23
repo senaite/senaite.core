@@ -33,7 +33,7 @@ def upgrade(tool):
 
     logger.info('Upgrading {0}: {1} -> {2}'.format(product, ufrom, version))
 
-    UpdateIndexesAndMetadata(portal)
+    UpdateIndexesAndMetadata(portal, ut)
 
     BaseAnalysisRefactoring(portal)
 
@@ -49,8 +49,7 @@ def upgrade(tool):
     return True
 
 
-def UpdateIndexesAndMetadata(portal):
-    ut = UpgradeUtils(portal)
+def UpdateIndexesAndMetadata(portal, ut):
 
     # Add SearchableText index to analysis requests catalog
     ut.addIndex(
@@ -111,7 +110,7 @@ def UpdateIndexesAndMetadata(portal):
 def BaseAnalysisRefactoring(portal):
     """The relationship between AnalysisService and the various types of
     Analysis has been refactored.  The class heirarchy now looks like this:
-    
+
     - AbstractBaseAnalysis(BaseObject)
         Fields and methods common to to AnalysisService and all types of
         analysis
@@ -123,7 +122,7 @@ def BaseAnalysisRefactoring(portal):
     - ReferenceAnalysis(AbstractAnalysis)
     - DuplicateAnalysis(AbstractRoutineAnalysis)
     - Analysis(AbstractRoutineAnalysis)
-        In the final schema for Analysis objects, the following fields are 
+        In the final schema for Analysis objects, the following fields are
         removed to be replaced by accessor methods on the class:
             - Service
             - ClientUID
@@ -137,8 +136,8 @@ def BaseAnalysisRefactoring(portal):
             - DateSampled
             - InstrumentValid
 
-    Many ReferenceFields and HistoryAwareReferenceFields were migrated to 
-    UIDReferenceField which uses simple StringFields to store the UIDs. After 
+    Many ReferenceFields and HistoryAwareReferenceFields were migrated to
+    UIDReferenceField which uses simple StringFields to store the UIDs. After
     refactoring, the following references exist
 
     BaseAnalysis
@@ -285,7 +284,7 @@ def BaseAnalysisRefactoring(portal):
         touidref(spec, spec, 'AnalysisSpecSampleType', 'SampleType')
 
 def touidref(src, dst, src_relation, fieldname):
-    """Convert an archetypes reference in src/src_relation to a UIDReference 
+    """Convert an archetypes reference in src/src_relation to a UIDReference
     in dst/fieldname.
     """
     refs = src.getRefs(relationship=src_relation)
