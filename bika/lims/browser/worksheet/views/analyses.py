@@ -104,7 +104,7 @@ class AnalysesView(BaseView):
                 items[x]['DueDate'] = self.ulocalized_time(obj.getDueDate())
 
             items[x]['Order'] = ''
-            instrument = obj.getInstrument()
+            # instrument = obj.getInstrument()
             #items[x]['Instrument'] = instrument and instrument.Title() or ''
 
             new_items.append(item)

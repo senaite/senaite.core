@@ -1,8 +1,12 @@
 
 from Products.CMFCore.utils import getToolByName
+from Products.ZCatalog.ProgressHandler import ZLogHandler
 from bika.lims import logger
 from bika.lims.catalog.catalog_utilities import addZCTextIndex
-
+# Interesting page for logging indexing process and others:
+# https://github.com/plone/Products.ZCatalog/tree/master/src/Products/ZCatalog
+# and
+# https://github.com/plone/Products.CMFPlone/blob/master/Products/CMFPlone/CatalogTool.py
 import traceback
 import sys
 import transaction
@@ -10,10 +14,11 @@ import transaction
 
 class UpgradeUtils(object):
 
-    def __init__(self, portal):
+    def __init__(self, portal, pgthreshold=100):
         self.portal = portal
         self.reindexcatalog = {}
         self.refreshcatalog = []
+        self.pgthreshold = pgthreshold
 
     def getInstalledVersion(self, product):
         qi = self.portal.portal_quickinstaller
@@ -137,24 +142,62 @@ class UpgradeUtils(object):
             raise
 
     def refreshCatalogs(self):
-        cats = self.refreshcatalog + self.reindexcatalog.keys()
-        cats = list(set(cats))
-        for catalogid in cats:
+        """
+        It reindexes the modified catalogs but, while cleanAndRebuildCatalogs
+        recatalogs all objects in the database, this method only reindexes over
+        the already cataloged objects.
+
+        If a metacolumn is added it refreshes the catalog, if only a new index
+        is added, it reindexes only those new indexes.
+        """
+        to_refresh = self.refreshcatalog[:]
+        to_reindex = self.reindexcatalog.keys()
+        to_reindex = to_reindex[:]
+        done = []
+        # Start reindexing the catalogs with new columns
+        for catalog_to_refresh in to_refresh:
             try:
-                catalog = getToolByName(self.portal, catalogid)
-                catalog.refreshCatalog()
-                logger.info('Catalog {0} refreshed'.format(catalogid))
+                logger.info(
+                    'Catalog {0} refreshing started'.format(catalog_to_refresh))
+                catalog = getToolByName(self.portal, catalog_to_refresh)
+                handler = ZLogHandler(self.pgthreshold)
+                catalog.refreshCatalog(pghandler=handler)
+                logger.info('Catalog {0} refreshed'.format(catalog_to_refresh))
                 transaction.commit()
             except:
-                logger.error('Unable to refresh catalog {0}'.format(catalogid))
+                logger.error(
+                    'Unable to refresh catalog {0}'.format(catalog_to_refresh))
                 raise
+            done.append(catalog_to_refresh)
+        # Now the catalogs which only need reindxing
+        for catalog_to_reindex in to_reindex:
+            if catalog_to_reindex in done:
+                continue
+            try:
+                logger.info(
+                    'Catalog {0} reindexing started'.format(catalog_to_reindex))
+                catalog = getToolByName(
+                    self.portal, catalog_to_reindex)
+                indexes = self.reindexcatalog[catalog_to_reindex]
+                handler = ZLogHandler(self.pgthreshold)
+                catalog.reindexIndex(indexes, None, pghandler=handler)
+                logger.info('Catalog {0} reindexed'.format(catalog_to_reindex))
+                transaction.commit()
+            except:
+                logger.error(
+                    'Unable to reindex catalog {0}'
+                    .format(catalog_to_reindex))
+                raise
+            done.append(catalog_to_reindex)
 
     def cleanAndRebuildCatalogs(self):
         cats = self.refreshcatalog + self.reindexcatalog.keys()
         for catid in cats:
             try:
                 catalog = getToolByName(self.portal, catid)
-                catalog.clearFindAndRebuild()
+                # manage_catalogRebuild does the same as clearFindAndRebuild
+                # but it alse loggs cpu and time.
+                catalog.manage_catalogRebuild()
                 logger.info('Catalog {0} cleaned and rebuilt'.format(catid))
                 transaction.commit()
             except:
