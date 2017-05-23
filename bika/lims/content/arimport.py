@@ -175,7 +175,6 @@ SampleData = DataGridField(
              'SampleType',  # not a schema field!
              'ContainerType',  # not a schema field!
              'ReportDryMatter',
-             'Priority',
              'Analyses',  # not a schema field!
              'Profiles'  # not a schema field!
              ),
@@ -194,8 +193,6 @@ SampleData = DataGridField(
             'ContainerType': SelectColumn(
                 'Container', vocabulary='Vocabulary_ContainerType'),
             'ReportDryMatter': CheckboxColumn('Dry'),
-            'Priority': SelectColumn(
-                'Priority', vocabulary='Vocabulary_Priority'),
             'Analyses': LinesColumn('Analyses'),
             'Profiles': LinesColumn('Profiles'),
         }
@@ -975,11 +972,6 @@ class ARImport(BaseFolder):
         vocabulary = CatalogVocabulary(self)
         vocabulary.catalog = 'bika_setup_catalog'
         return vocabulary(allow_blank=True, portal_type='ContainerType')
-
-    def Vocabulary_Priority(self):
-        vocabulary = CatalogVocabulary(self)
-        vocabulary.catalog = 'bika_setup_catalog'
-        return vocabulary(allow_blank=True, portal_type='ARPriority')
 
     def error(self, msg):
         errors = list(self.getErrors())

@@ -1646,48 +1646,6 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
         ),
     ),
-    UIDReferenceField(
-        'Priority',
-        allowed_types=('ARPriority',),
-        widget=ReferenceWidget(
-            label=_("Priority"),
-            size=10,
-            render_own_label=True,
-            visible={
-                'edit': 'visible',
-                'view': 'visible',
-                'add': 'edit',
-                'header_table': 'visible',
-                'sample_registered':
-                    {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
-                'to_be_sampled': {'view': 'visible', 'edit': 'visible'},
-                'scheduled_sampling': {'view': 'visible', 'edit': 'visible'},
-                'sampled': {'view': 'visible', 'edit': 'visible'},
-                'to_be_preserved': {'view': 'visible', 'edit': 'visible'},
-                'sample_due': {'view': 'visible', 'edit': 'visible'},
-                'sample_prep': {'view': 'visible', 'edit': 'invisible'},
-                'sample_received': {'view': 'visible', 'edit': 'visible'},
-                'attachment_due': {'view': 'visible', 'edit': 'visible'},
-                'to_be_verified': {'view': 'visible', 'edit': 'visible'},
-                'verified': {'view': 'visible', 'edit': 'visible'},
-                'published': {'view': 'visible', 'edit': 'invisible'},
-                'invalid': {'view': 'visible', 'edit': 'invisible'},
-            },
-            catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
-            colModel=[
-                {'columnName': 'Title', 'width': '30',
-                 'label': _('Title'), 'align': 'left'},
-                {'columnName': 'Description', 'width': '70',
-                 'label': _('Description'), 'align': 'left'},
-                {'columnName': 'sortKey', 'hidden': True},
-                {'columnName': 'UID', 'hidden': True},
-            ],
-            sidx='sortKey',
-            sord='asc',
-            showOn=True,
-        ),
-    ),
 
     # For comments or results interpretation
     # Old one, to be removed because of the incorporation of
@@ -1871,22 +1829,6 @@ class AnalysisRequest(BaseFolder):
                 return settings.getMemberDiscount()
             else:
                 return "0.00"
-
-    def setDefaultPriority(self):
-        """ compute default priority """
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        priorities = bsc(
-            portal_type='ARPriority',
-        )
-        for brain in priorities:
-            obj = brain.getObject()
-            if obj.getIsDefault():
-                self.setPriority(obj)
-                return
-
-        # priority is not a required field.  No default means...
-        logging.info('Priority: no default priority found')
-        return
 
     security.declareProtected(View, 'getResponsible')
 

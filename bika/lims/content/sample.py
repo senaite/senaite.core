@@ -634,14 +634,6 @@ schema = BikaSchema.copy() + Schema((
                      },
         ),
     ),
-    ###ComputedField('Priority',
-    ###    expression = 'context.getPriority() or None',
-    ###    widget = ComputedWidget(
-    ###        visible={'edit': 'visible',
-    ###                 'view': 'visible'},
-    ###        render_own_label=False,
-    ###    ),
-    ###),
 ))
 
 

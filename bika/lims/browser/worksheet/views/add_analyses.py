@@ -61,10 +61,6 @@ class AddAnalysesView(BikaListingView):
                 'attr': 'getRequestID',
                 'replace_url': 'getAnalysisRequestURL',
                 'index': 'getRequestID'},
-            'Priority': {
-                'title': _('Priority'),
-                'sortable': False,
-                'index': 'Priority'},
             'CategoryTitle': {
                 'title': _('Category'),
                 'attr': 'getCategoryTitle',
@@ -88,7 +84,6 @@ class AddAnalysesView(BikaListingView):
              'columns':['Client',
                         'getClientOrderNumber',
                         'getRequestID',
-                        'Priority',
                         'CategoryTitle',
                         'Title',
                         'getDateReceived',
@@ -197,7 +192,6 @@ class AddAnalysesView(BikaListingView):
             ' src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
                 (self.context.absolute_url(),
                  t(_("Late Analysis")))
-        item['Priority'] = ''
         if self.hideclientlink:
             del item['replace']['Client']
         return item

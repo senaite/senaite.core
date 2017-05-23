@@ -1517,7 +1517,6 @@ class Analysis_Services(WorksheetImporter):
             department = self.get_object(bsc, 'Department', row.get('Department_title'))
             container = self.get_object(bsc, 'Container', row.get('Container_title'))
             preservation = self.get_object(bsc, 'Preservation', row.get('Preservation_title'))
-            priority = self.get_object(bsc, 'ARPriority', row.get('Priority_title'))
 
             # Analysis Service - Method considerations:
             # One Analysis Service can have 0 or n Methods associated (field
@@ -1615,7 +1614,6 @@ class Analysis_Services(WorksheetImporter):
                 Separate=self.to_bool(row.get('Separate', False)),
                 Container=container,
                 Preservation=preservation,
-                Priority=priority,
                 CommercialID=row.get('CommercialID', ''),
                 ProtocolID=row.get('ProtocolID', '')
             )
@@ -2268,30 +2266,3 @@ class Invoice_Batches(WorksheetImporter):
                 BatchEndDate=row['end'],
             )
             renameAfterCreation(obj)
-
-
-class AR_Priorities(WorksheetImporter):
-
-    def Import(self):
-        folder = self.context.bika_setup.bika_arpriorities
-        for row in self.get_rows(3):
-            if row['title']:
-                obj = _createObjectByType("ARPriority", folder, tmpID())
-                obj.edit(title=row['title'],
-                         description=row.get('description', ''),
-                         pricePremium=row.get('pricePremium', 0),
-                         sortKey=row.get('sortKey', 0),
-                         isDefault=row.get('isDefault', 0) == 1,
-                         )
-                small_icon_name = row.get('smallIcon', None)
-                if small_icon_name:
-                    small_icon = self.get_file_data(small_icon_name)
-                    if small_icon:
-                        obj.setSmallIcon(small_icon)
-                big_icon_name = row.get('bigIcon', None)
-                if big_icon_name:
-                    big_icon = self.get_file_data(big_icon_name)
-                    if big_icon:
-                        obj.setBigIcon(big_icon)
-                obj.unmarkCreationFlag()
-                renameAfterCreation(obj)

@@ -43,7 +43,6 @@ class TestBarcodeEntry(BikaFunctionalTestCase):
         container = self.addthing(bs.bika_containers, 'Container', title='Bottle', capacity="10ml")
         sampletype = self.addthing(bs.bika_sampletypes, 'SampleType', title='Water', Prefix='H2O')
         samplepoint = self.addthing(bs.bika_samplepoints, 'SamplePoint', title='Toilet')
-        priority = self.addthing(bs.bika_arpriorities, 'ARPriority', title='Normal', sortKey=1)
         service = self.addthing(bs.bika_analysisservices, 'AnalysisService', title='Ecoli', Keyword="ECO")
         batch = self.addthing(self.portal.batches, 'Batch', title='B1')
         # Create Sample with single partition

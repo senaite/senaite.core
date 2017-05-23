@@ -42,12 +42,6 @@
       name="CCEmails"
     />
 
-    <adapter
-      name="ar_priority_icons"
-      for="bika.lims.interfaces.IAnalysisRequest"
-      factory="bika.lims.adapters.priorityicons.PriorityIcons"
-    />
-
     <!-- main site/analysisrequests view -->
     <browser:page
       for="bika.lims.interfaces.IAnalysisRequestsFolder"

@@ -17,8 +17,7 @@ from bika.lims.utils import t, tmpID
 from bika.lims import logger
 from bika.lims.config import *
 from bika.lims.permissions import *
-from bika.lims.interfaces \
-        import IHaveNoBreadCrumbs, IARImportFolder, IARPriorities
+from bika.lims.interfaces import IHaveNoBreadCrumbs, IARImportFolder
 from zope.event import notify
 from zope.interface import alsoProvides
 from Products.CMFEditions.Permissions import ApplyVersionControl
@@ -77,7 +76,6 @@ class BikaGenerator:
         bika_setup = portal._getOb('bika_setup')
         for obj_id in ('bika_analysiscategories',
                        'bika_analysisservices',
-                       'bika_arpriorities',
                        'bika_attachmenttypes',
                        'bika_batchlabels',
                        'bika_calculations',
@@ -235,7 +233,6 @@ class BikaGenerator:
 
         mp(DispatchOrder, ['Manager', 'LabManager', 'LabClerk'], 1)
         mp(ManageARImport, ['Manager', 'LabManager', 'LabClerk'], 1)
-        mp(ManageARPriority, ['Manager', 'LabManager', 'LabClerk'], 1)
         mp(ManageAnalysisRequests, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'RegulatoryInspector', 'SamplingCoordinator'], 1)
         mp(ManageBika, ['Manager', 'LabManager'], 1)
         mp(ManageClients, ['Manager', 'LabManager', 'LabClerk'], 1)
@@ -570,7 +567,6 @@ class BikaGenerator:
         addIndex(bc, 'getSampleUID', 'FieldIndex')
         addIndex(bc, 'getSamplingDate', 'DateIndex')
         addIndex(bc, 'getWorksheetTemplateTitle', 'FieldIndex')
-        addIndex(bc, 'Priority', 'FieldIndex')
         addIndex(bc, 'BatchUID', 'FieldIndex')
         addColumn(bc, 'path')
         addColumn(bc, 'UID')
@@ -650,7 +646,6 @@ class BikaGenerator:
         at.setCatalogsByType('Unit', ['bika_setup_catalog', ])
         at.setCatalogsByType('WorksheetTemplate', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('BatchLabel', ['bika_setup_catalog', ])
-        at.setCatalogsByType('ARPriority', ['bika_setup_catalog', ])
 
         addIndex(bsc, 'path', 'ExtendedPathIndex', ('getPhysicalPath'))
         addIndex(bsc, 'allowedRolesAndUsers', 'KeywordIndex')

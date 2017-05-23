@@ -660,14 +660,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return True
 
     @security.public
-    def getPriority(self):
-        """get priority from AR
-        """
-        # this analysis could be in a worksheet or instrument, careful
-        if hasattr(self.aq_parent, 'getPriority'):
-            return self.aq_parent.getPriority()
-
-    @security.public
     def getPrice(self):
         """The function obtains the analysis' price without VAT and without
         member discount
@@ -679,10 +671,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             price = self.getBulkPrice()
         else:
             price = self.getPrice()
-        priority = self.getPriority()
-        if priority and priority.getPricePremium() > 0:
-            price = Decimal(price) + \
-                    (Decimal(price) * Decimal(priority.getPricePremium()) / 100)
         return price
 
     @security.public

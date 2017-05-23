@@ -71,7 +71,6 @@ _columns_list = [
     'getSamplePointTitle',
     'getStorageLocationUID',
     'getStorageLocationTitle',
-    'getPriority',
     'getSamplingDate',
     'getDateSampled',
     'getDateReceived',

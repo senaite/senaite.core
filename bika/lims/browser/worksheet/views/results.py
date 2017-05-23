@@ -212,13 +212,6 @@ class ManageResultsView(BrowserView):
             message = "%s: %s" % (message, (', '.join(invalid)))
             self.context.plone_utils.addPortalMessage(message, 'warn')
 
-    def getPriorityIcon(self):
-        priority = self.context.getPriority()
-        if priority:
-            icon = priority.getBigIcon()
-            if icon:
-                return '/'.join(icon.getPhysicalPath())
-
     def _getAnalyses(self):
         """
         This function returns a list with the analyses related to the worksheet

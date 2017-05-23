@@ -68,7 +68,6 @@ Add an AR
     SelectDate                        css=#ar_0_SamplingDate       @{time}[2]
     Select From Dropdown              css=#ar_0_SampleType         Water
     Select from dropdown              css=#ar_0_Contact            Rita
-    Select from dropdown              css=#ar_0_Priority           High
     Click Element                     xpath=//th[@id='cat_lab_Metals']
     Select Checkbox                   xpath=//input[@title='Calcium' and @name='ar.0.Analyses:list:ignore_empty:record']
     Set Selenium Timeout              30

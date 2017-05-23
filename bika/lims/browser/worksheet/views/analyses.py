@@ -33,7 +33,6 @@ class AnalysesView(BaseView):
             'Pos': {'title': _('Position')},
             'DueDate': {'title': _('Due Date')},
             'Service': {'title': _('Analysis')},
-            'getPriority': {'title': _('Priority')},
             'Method': {'title': _('Method')},
             'DetectionLimit': {
                 'title': _('DL'),
@@ -50,7 +49,6 @@ class AnalysesView(BaseView):
             'Attachments': {'title': _('Attachments')},
             'Instrument': {'title': _('Instrument')},
             'state_title': {'title': _('State')},
-            'Priority': { 'title': _('Priority'), 'index': 'Priority'},
         }
         self.review_states = [
             {'id':'default',
@@ -62,7 +60,6 @@ class AnalysesView(BaseView):
                              {'id':'unassign'}],
              'columns':['Pos',
                         'Service',
-                        'Priority',
                         'Method',
                         'Instrument',
                         'DetectionLimit',
@@ -99,7 +96,6 @@ class AnalysesView(BaseView):
             items[x]['colspan'] = {'Pos':1}
             method = obj.getMethod()
             items[x]['Service'] = obj.Title()
-            items[x]['Priority'] = ''
             #items[x]['Method'] = method and method.Title() or ''
             items[x]['class']['Service'] = 'service_title'
             items[x]['Category'] = obj.getCategoryTitle()
@@ -286,7 +282,6 @@ class AnalysesView(BaseView):
             pos_text += "</table>"
 
             items[x]['replace']['Pos'] = pos_text
-            items[x]['getPriority'] = '' #Icon get added by adapter
 
         for k,v in self.columns.items():
             self.columns[k]['sortable'] = False

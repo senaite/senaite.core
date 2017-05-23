@@ -56,7 +56,6 @@ _columns_list = [
     'getRequestID',
     'getReferenceAnalysesGroupID',
     'getResultCaptureDate',
-    'getPriority',
     'getParentURL',
     'getAnalysisRequestURL',
     'getParentTitle',
