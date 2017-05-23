@@ -10,6 +10,7 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from bika.lims import bikaMessageFactory as _, logger
 from bika.lims.utils import t, getUsers
 from Products.ATExtensions.field import RecordsField
+from bika.lims import deprecated
 from bika.lims.browser.widgets.datetimewidget import DateTimeWidget
 from bika.lims.browser.widgets import RejectionWidget
 from bika.lims.config import PROJECTNAME
@@ -17,7 +18,9 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import ISample, ISamplePrepWorkflow
 from bika.lims.permissions import SampleSample
 from bika.lims.permissions import ScheduleSampling
-from bika.lims.workflow import doActionFor, isBasicTransitionAllowed
+from bika.lims.workflow import doActionFor
+from bika.lims.workflow import isBasicTransitionAllowed
+from bika.lims.workflow import isTransitionAllowed
 from bika.lims.workflow import skip
 from DateTime import DateTime
 from Products.Archetypes import atapi
@@ -848,16 +851,26 @@ class Sample(BaseFolder, HistoryAwareMixin):
             prep_workflows.append([workflow_id, workflow.title])
         return DisplayList(prep_workflows)
 
+    @deprecated('05-2017. Use after_receive_transition_event instead')
     def workflow_script_receive(self):
-        workflow = getToolByName(self, 'portal_workflow')
+        self.after_receive_transition_event()
+
+    @security.public
+    def after_receive_transition_event(self):
+        """Method triggered after a 'receive' transition for the current
+        Sample is performed. Stores value for "Date Received" field and also
+        triggers the 'receive' transition for depedendent objects, such as
+        Sample Partitions and Analysis Requests.
+        This function is called automatically by
+        bika.lims.workflow.AfterTransitionEventHandler
+        """
         self.setDateReceived(DateTime())
-        self.reindexObject(idxs=["review_state", "getDateReceived"])
-        # Receive all self partitions that are still 'sample_due'
-        parts = self.objectValues('SamplePartition')
-        sample_due = [sp for sp in parts
-                      if workflow.getInfoFor(sp, 'review_state') == 'sample_due']
-        for sp in sample_due:
-            workflow.doActionFor(sp, 'receive')
+        self.reindexObject(idxs=["getDateReceived", ])
+
+        # Receive all self partitions
+        for part in self.objectValues('SamplePartition'):
+            doActionFor(part, 'receive')
+
         # when a self is received, all associated
         # AnalysisRequests are also transitioned
         for ar in self.getAnalysisRequests():
@@ -984,10 +997,6 @@ class Sample(BaseFolder, HistoryAwareMixin):
             doActionFor(ar, 'schedule_sampling')
 
     def guard_receive_transition(self):
-        """Prevent the receive transition from being available if object
-        is cancelled
-        """
-        # Can't do anything to the object if it's cancelled
         return isBasicTransitionAllowed(self)
 
     def guard_sample_prep_transition(self):

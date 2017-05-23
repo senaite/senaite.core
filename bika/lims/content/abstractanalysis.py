@@ -31,6 +31,9 @@ from bika.lims.utils import changeWorkflowState, formatDecimalMark
 from bika.lims.utils import drop_trailing_zeros_decimal
 from bika.lims.utils.analysis import create_analysis, format_numeric_result
 from bika.lims.utils.analysis import get_significant_digits
+from bika.lims.workflow import doActionFor
+from bika.lims.workflow import isBasicTransitionAllowed
+from bika.lims.workflow import isTransitionAllowed
 from bika.lims.workflow import skip
 from plone.api.portal import get_tool
 from plone.api.user import has_permission
@@ -1284,11 +1287,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def guard_receive_transition(self):
-        workflow = get_tool("portal_workflow")
-        state = workflow.getInfoFor(self, "cancellation_state", "active")
-        if state == "cancelled":
-            return False
-        return True
+        return isBasicTransitionAllowed(self)
 
     @security.public
     def guard_publish_transition(self):
@@ -1353,17 +1352,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             return True
         return False
 
-    @security.public
-    def workflow_script_receive(self):
-        if skip(self, "receive"):
-            return
-        workflow = get_tool("portal_workflow")
-        state = workflow.getInfoFor(self, 'cancellation_state', 'active')
-        if state == "cancelled":
-            return False
-        self.reindexObject()
-
-    @deprecated('Flagged in 17.04. Use after_submit_transition_event instead')
+    @deprecated('05-2017. Use after_submit_transition_event instead')
     def workflow_script_submit(self):
         self.after_submit_transition_event()
 

@@ -4,11 +4,13 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from AccessControl import ClassSecurityInfo
+from bika.lims import deprecated
 from bika.lims.browser.fields import DurationField
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import ISamplePartition, ISamplePrepWorkflow
 from bika.lims.workflow import doActionFor
+from bika.lims.workflow import wasTransitionPerformed
 from bika.lims.workflow import skip
 from DateTime import DateTime
 from datetime import timedelta
@@ -213,24 +215,34 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
                 for ar in sample.getAnalysisRequests():
                     doActionFor(ar, "sample_due")
 
+    @deprecated('05-2017. Use after_receive_transition_event instead')
     def workflow_script_receive(self):
-        if skip(self, "receive"):
-            return
-        sample = self.aq_parent
-        workflow = getToolByName(self, 'portal_workflow')
-        sample_state = workflow.getInfoFor(sample, 'review_state')
+        self.after_receive_transition_event()
+
+    @security.public
+    def after_receive_transition_event(self):
+        """Method triggered after a 'receive' transition for the current Sample
+        Partition is performed. Stores value for "Date Received" field and also
+        triggers the 'receive' transition for depedendent objects, such as
+        Analyses associated to this Sample Partition. If all Sample Partitions
+        that belongs to the same sample as the current Sample Partition have
+        been transitioned to the "received" state, promotes to Sample
+        This function is called automatically by
+        bika.lims.workflow.AfterTransitionEventHandler
+        """
         self.setDateReceived(DateTime())
         self.reindexObject(idxs=["getDateReceived", ])
+
         # Transition our analyses
-        analyses = self.getAnalyses()
-        for analysis in analyses:
+        for analysis in self.getAnalyses():
             doActionFor(analysis, "receive")
-        # if all sibling partitions are received, promote sample
-        if not skip(sample, "receive", peek=True):
-            due = [sp for sp in sample.objectValues("SamplePartition")
-                   if workflow.getInfoFor(sp, 'review_state') == 'sample_due']
-            if sample_state == 'sample_due' and not due:
-                doActionFor(sample, 'receive')
+
+        # If all sibling partitions are received, promote sample
+        sample = self.aq_parent
+        parts = sample.objectValues("SamplePartition")
+        recep = [sp for sp in parts if wasTransitionPerformed(sp, 'receive')]
+        if len(parts) == len(recep):
+            doActionFor(sample, "receive")
 
     def workflow_script_reinstate(self):
         if skip(self, "reinstate"):

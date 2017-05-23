@@ -43,8 +43,11 @@ from bika.lims.utils import user_email
 from bika.lims.utils import user_fullname
 from bika.lims.utils.analysisrequest import notify_rejection
 from bika.lims.workflow import doActionFor
-from bika.lims.workflow import getTransitionDate, isBasicTransitionAllowed, skip
+from bika.lims.workflow import getTransitionDate
 from bika.lims.workflow import getTransitionUsers
+from bika.lims.workflow import isBasicTransitionAllowed
+from bika.lims.workflow import isTransitionAllowed
+from bika.lims.workflow import skip
 from plone import api
 from zope.interface import implements
 
@@ -3123,9 +3126,6 @@ class AnalysisRequest(BaseFolder):
         return True
 
     def guard_receive_transition(self):
-        """Prevent the receive transition from being available if object
-        is cancelled
-        """
         return isBasicTransitionAllowed(self)
 
     def guard_sample_prep_transition(self):
@@ -3149,26 +3149,27 @@ class AnalysisRequest(BaseFolder):
             return True
         return False
 
+    @deprecated('05-2017. Use after_receive_transition_event instead')
     def workflow_script_receive(self):
-        if skip(self, "receive"):
-            return
-        workflow = getToolByName(self, 'portal_workflow')
-        # noinspection PyCallingNonCallable
+        self.after_receive_transition_event()
+
+    def after_receive_transition_event(self):
+        """Method triggered after a 'receive' transition for the current
+        Analysis Request is performed. Responsible of triggering cascade
+        actions such as transitioning the container (sample), as well as
+        associated analyses.
+        This function is called automatically by
+        bika.lims.workflow.AfterTransitionEventHandler
+        """
         self.setDateReceived(DateTime())
-        self.reindexObject(idxs=[
-            "review_state", 'getObjectWorkflowStates', "getDateReceived",
-            "getReceivedBy", ])
+        self.reindexObject(idxs=["getDateReceived", ])
+
         # receive the AR's sample
+        # Do note that the 'receive' transition for Sample already transitions
+        # all the analyses associated to all the sample partitions, so there
+        # is no need to transition the analyses here again
         sample = self.getSample()
-        if not skip(sample, 'receive', peek=True):
-            # unless this is a secondary AR
-            if workflow.getInfoFor(sample, 'review_state') == 'sample_due':
-                workflow.doActionFor(sample, 'receive')
-        # receive all analyses in this AR.
-        analyses = self.getAnalyses(review_state='sample_due')
-        for analysis in analyses:
-            if not skip(analysis, 'receive'):
-                workflow.doActionFor(analysis.getObject(), 'receive')
+        doActionFor(sample, 'receive')
 
     def workflow_script_preserve(self):
         if skip(self, "preserve"):
