@@ -49,12 +49,14 @@ def skip(instance, action, peek=False, unskip=False):
                 instance.REQUEST["workflow_skiplist"].append(skipkey)
 
 
-def doActionFor(instance, action_id):
+def doActionFor(instance, action_id, active_only=True):
     """Performs the transition (action_id) to the instance.
 
     The transition will only be triggered if the current state of the object
     allows the action_id passed in (delegate to isTransitionAllowed) and the
-    instance hasn't been flagged as to be skipped previously
+    instance hasn't been flagged as to be skipped previously.
+    If active_only is set to True, the instance will only be transitioned if
+    it's current state is active (not cancelled nor inactive)
 
     :param instance: Object to be transitioned
     :param action_id: transition id
@@ -65,7 +67,7 @@ def doActionFor(instance, action_id):
     message = ''
     workflow = getToolByName(instance, "portal_workflow")
     if not skip(instance, action_id, peek=True) \
-        and isTransitionAllowed(instance, action_id):
+        and isTransitionAllowed(instance, action_id, active_only):
         try:
             workflow.doActionFor(instance, action_id)
             actionperformed = True
@@ -199,13 +201,17 @@ def isBasicTransitionAllowed(context, permission=None):
         return False
     return True
 
-def isTransitionAllowed(instance, transition_id):
+def isTransitionAllowed(instance, transition_id, active_only=True):
     """Checks if the object can perform the transition passed in.
+    If active_only is set to true, the function will always return false if the
+    object's current state is inactive or cancelled.
     Apart from the current state, it also checks if the guards meet the
     conditions (as per workflowtool.getTransitionsFor)
     :returns: True if transition can be performed
     :rtype: bool
     """
+    if active_only and not BasicTransitionAllowed(instance):
+        return False
     wftool = getToolByName(instance, "portal_workflow")
     transitions = wftool.getTransitionsFor(instance)
     trans = [trans for trans in transitions if trans.id == transition_id]
