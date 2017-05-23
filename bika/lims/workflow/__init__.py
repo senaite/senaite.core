@@ -50,16 +50,27 @@ def skip(instance, action, peek=False, unskip=False):
 
 
 def doActionFor(instance, action_id):
+    """Performs the transition (action_id) to the instance.
+
+    The transition will only be triggered if the current state of the object
+    allows the action_id passed in (delegate to isTransitionAllowed) and the
+    instance hasn't been flagged as to be skipped previously
+
+    :param instance: Object to be transitioned
+    :param action_id: transition id
+    :returns: true if the transition has been performed and message
+    :rtype: list
+    """
     actionperformed = False
     message = ''
     workflow = getToolByName(instance, "portal_workflow")
-    if not skip(instance, action_id, peek=True):
+    if not skip(instance, action_id, peek=True) \
+        and isTransitionAllowed(instance, action_id):
         try:
             workflow.doActionFor(instance, action_id)
             actionperformed = True
         except WorkflowException as e:
             message = str(e)
-            pass
     return actionperformed, message
 
 
