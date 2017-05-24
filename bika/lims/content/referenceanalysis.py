@@ -5,25 +5,20 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 from AccessControl import ClassSecurityInfo
+
 from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
-from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
-from bika.lims import logger, deprecated
-from bika.lims.browser.fields import UIDReferenceField
+from bika.lims import deprecated
 from bika.lims.config import PROJECTNAME, STD_TYPES
 from bika.lims.content.abstractanalysis import AbstractAnalysis
 from bika.lims.content.abstractanalysis import schema
 from bika.lims.interfaces import IReferenceAnalysis
-from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.subscribers import skip
-from bika.lims.utils.analysis import get_significant_digits
 from bika.lims.workflow import doActionFor
 from plone.app.blob.field import BlobField
 from zope.interface import implements
-from plone.api.user import has_permission
 
 schema = schema.copy() + Schema((
     StringField(
