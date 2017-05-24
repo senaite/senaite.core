@@ -3,39 +3,35 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
-from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget, RecordsField
+from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.Archetypes.public import *
-from Products.CMFCore.permissions import ListFolderContents, View
+from Products.Archetypes.public import Schema
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
-    FileField('AttachmentFile',
-        widget = FileWidget(
+    atapi.FileField('AttachmentFile',
+        widget = atapi.FileWidget(
             label=_("Attachment"),
         ),
     ),
-    ReferenceField('AttachmentType',
+    atapi.ReferenceField('AttachmentType',
         required = 0,
         allowed_types = ('AttachmentType',),
         relationship = 'AttachmentAttachmentType',
-        widget = ReferenceWidget(
+        widget = atapi.ReferenceWidget(
             label=_("Attachment Type"),
         ),
     ),
-    StringField('AttachmentKeys',
+    atapi.StringField('AttachmentKeys',
         searchable = True,
-        widget = StringWidget(
+        widget = atapi.StringWidget(
             label=_("Attachment Keys"),
         ),
     ),
@@ -53,7 +49,7 @@ schema['id'].required = False
 schema['title'].required = False
 
 
-class Attachment(BaseFolder):
+class Attachment(atapi.BaseFolder):
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
