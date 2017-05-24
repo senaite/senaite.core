@@ -15,7 +15,6 @@ from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
 from plone.api.portal import get_tool
 
-
 product = 'bika.lims'
 version = '3.2.0.1705'
 
@@ -34,14 +33,11 @@ def upgrade(tool):
 
     logger.info('Upgrading {0}: {1} -> {2}'.format(product, ufrom, version))
 
-    UpdateIndexesAndMetadata(portal, ut)
+    UpdateIndexesAndMetadata(ut)
 
-    BaseAnalysisRefactoring(portal)
+    BaseAnalysisRefactoring()
 
-    # Throw out ARPriorities (the types have been removed, but the objects
-    # themselves remain as persistent broken)
-    if 'bika_arpriorities' in portal.bika_setup:
-        portal.bika_setup.manage_delObjects(['bika_arpriorities'])
+    RemoveARPriorities(portal)
 
     # Refresh affected catalogs
     ut.refreshCatalogs()
@@ -51,12 +47,16 @@ def upgrade(tool):
     rc = get_tool(REFERENCE_CATALOG)
     rc.manage_rebuildCatalog()
 
+    # I want to be sure that bika_arpriorities are really removed.
+    logger.info("Doing a clearFindAndRebuild on bika_setup_catalog")
+    bsc = get_tool('bika_setup_catalog')
+    bsc.clearFindAndRebuild()
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
 
-def UpdateIndexesAndMetadata(portal, ut):
-
+def UpdateIndexesAndMetadata(ut):
     # Add SearchableText index to analysis requests catalog
     ut.addIndex(
         CATALOG_ANALYSIS_REQUEST_LISTING, 'SearchableText', 'ZCTextIndex')
@@ -118,7 +118,7 @@ def UpdateIndexesAndMetadata(portal, ut):
     ut.delIndex(CATALOG_WORKSHEET_LISTING, 'getPriority')
 
 
-def BaseAnalysisRefactoring(portal):
+def BaseAnalysisRefactoring():
     """The relationship between AnalysisService and the various types of
     Analysis has been refactored.  The class heirarchy now looks like this:
 
@@ -183,12 +183,12 @@ def BaseAnalysisRefactoring(portal):
         Attachment                (UIDReferenceField)
         Instrument                (UIDReferenceField)
 
-    Method -> Calculation (UIDReferenceField)
-    Calculation -> DependentServices (UIDReferenceField)
-    Instrument -> Method (UIDReferenceField)
-    Worksheet -> WorksheetTemplate (UIDReferenceField)
-    AnalysisRequest -> Priority (UIDReferenceField)
-    AnalysisSpec -> SampleType (UIDReferenceField)
+    Method            -> Calculation         (UIDReferenceField)
+    Calculation       -> DependentServices   (UIDReferenceField)
+    Instrument        -> Method              (UIDReferenceField)
+    Worksheet         -> WorksheetTemplate   (UIDReferenceField)
+    AnalysisRequest   -> Priority            (UIDReferenceField)
+    AnalysisSpec      -> SampleType          (UIDReferenceField)
     """
     at = get_tool('archetype_tool')
 
@@ -196,7 +196,7 @@ def BaseAnalysisRefactoring(portal):
     logger.info('Removing Attachment portal_type from portal_catalog.')
     at.setCatalogsByType('Attachment', [])
 
-    # - XXX CAMPBELL OriginalAnalysisReflectedAnalysis
+    # XXX CAMPBELL PAU I need some help with OriginalAnalysisReflectedAnalysis.
 
     # I'm using the backreferences below for discovering objects to migrate.
     # This will work, because reference_catalog has not been rebuilt yet.
@@ -204,8 +204,8 @@ def BaseAnalysisRefactoring(portal):
     # Analysis Services ========================================================
     bsc = get_tool('bika_setup_catalog')
     brains = bsc(portal_type='AnalysisService')
-    for brain in brains:
-        srv = brain.getObject()
+    for srv_brain in brains:
+        srv = srv_brain.getObject()
         logger.info('Migrating Analysis Service schema for %s' % srv.Title())
         touidref(srv, srv, 'AnalysisServiceInstrument', 'Instrument')
         touidref(srv, srv, 'AnalysisServiceInstruments', 'Instruments')
@@ -217,77 +217,139 @@ def BaseAnalysisRefactoring(portal):
         touidref(srv, srv, 'AnalysisServicePreservation', 'Preservation')
         touidref(srv, srv, 'AnalysisServiceContainer', 'Container')
 
-        # Analyses =============================================================
         ans = srv.getBRefs(relationship='AnalysisAnalysisService')
         if ans:
             logger.info('Migrating %s analyses on %s' % (len(ans), srv))
         for an in ans:
-            # retain analysis.ServiceUID
+            # Duplicate Analyses
+            # ==================
+            dups = an.getBRefs(relationship='DuplicateAnalysisAnalysis')
+            if dups:
+                logger.info('%s has %s duplicates' % (an, len(dups)))
+            # Convert the field values
+            for dup in dups:
+                # retain analysis Service in a newly named UIDReferenceField
+                an.setAnalysisService(srv)
+                touidref(dup, dup, 'DuplicateAnalysisAnalysis', 'Analysis')
+                touidref(dup, dup, 'DuplicateAnalysisAttachment', 'Attachment')
+                touidref(dup, dup, 'AnalysisInstrument', 'Instrument')
+                # Copy field values from service to duplicate
+                copy_field_values(srv, dup)
+                # And throw out left-over AT Reference objects
+                import pdb;
+                pdb.set_trace();
+                pass
+                del_at_refs(dup, ['DuplicateAnalysisAnalysis',
+                                  'DuplicateAnalysisAttachment',
+                                  'AnalysisInstrument'])
+
+            # Routine Analyses
+            # ================
+            # retain analysis Service in a newly named UIDReferenceField
             an.setAnalysisService(srv)
+            an.setCategory(srv.getCategory())
+            an.setDepartment(srv.getDepartment())
             # Migrate refs to UIDReferenceField
             touidref(an, an, 'AnalysisInstrument', 'Instrument')
             touidref(an, an, 'AnalysisMethod', 'Method')
-            an.setCategory(srv.getCategory())
-            an.setDepartment(srv.getDepartment())
             touidref(an, an, 'AnalysisAttachment', 'Attachment')
             touidref(an, an, 'AnalysisSamplePartition', 'SamplePartition')
             touidref(an, an, 'OriginalAnalysisReflectedAnalysis',
                      'OriginalReflexedAnalysis')
             touidref(an, an, 'AnalysisReflectedAnalysis', 'ReflexAnalysisOf')
+            # Copy field values from service to analysis
+            copy_field_values(srv, an)
+            # After migrating duplicates, remove analysis at_references
+            del_at_refs(an, ['AnalysisInstrument',
+                             'AnalysisMethod',
+                             'AnalysisAttachment',
+                             'AnalysisSamplePartition',
+                             'OriginalAnalysisReflectedAnalysis',
+                             'AnalysisReflectedAnalysis',
+                             'AnalysisAnalysisService',
+                             'AnalysisAnalysisPartition'])
 
-            # Duplicates of this analysis:
-            # ==================================================================
-            dups = an.getBRefs(relationship='DuplicateAnalysisAnalysis')
-            if dups:
-                logger.info('%s has %s duplicates' % (an, len(dups)))
-            for dup in dups:
-                dup.setServiceUID(srv.UID())
-                touidref(dup, dup, 'DuplicateAnalysisAnalysis', 'Analysis')
-                touidref(dup, dup, 'DuplicateAnalysisAttachment', 'Attachment')
-                touidref(dup, dup, 'AnalysisInstrument', 'Instrument')
-                # Then scoop the rest of the fields out of service
-                copy_field_values(srv, dup)
         # Reference Analyses
-        # =============================================================
+        # ==================
         ans = srv.getBRefs(relationship='ReferenceAnalysisAnalysisService')
         if ans:
             logger.info('Migrating %s references on %s' % (len(ans), srv))
-        for an in ans:
-            # retain analysis.ServiceUID
-            an.setServiceUID(srv.UID())
-            touidref(an, an, 'ReferenceAnalysisAnalysisService', 'Service')
-            touidref(an, an, 'ReferenceAnalysisAttachment', 'Attachment')
-            touidref(an, an, 'AnalysisInstrument', 'Instrument')
-            touidref(an, an, 'AnalysisMethod', 'Method')
-            # Then scoop the rest of the fields out of service
-            copy_field_values(srv, an)
+        for ran in ans:
+            # retain analysis Service in a newly named UIDReferenceField
+            ran.setAnalysisService(srv)
+            touidref(ran, ran, 'ReferenceAnalysisAnalysisService', 'Service')
+            touidref(ran, ran, 'ReferenceAnalysisAttachment', 'Attachment')
+            touidref(ran, ran, 'AnalysisInstrument', 'Instrument')
+            touidref(ran, ran, 'AnalysisMethod', 'Method')
+            # Copy field values from service into reference analysis
+            copy_field_values(srv, ran)
+            # Then remove vestigial at_references
+            del_at_refs(ran, ['ReferenceAnalysisAnalysisService',
+                              'ReferenceAnalysisAttachment',
+                              'AnalysisInstrument',
+                              'AnalysisMethod'])
+
+        # Finally walk through the service' at_references and delete the
+        # ones we don't use anymore.
+        import pdb;pdb.set_trace();pass
+        del_at_refs(srv, ['AnalysisServiceAnalysisCategory',
+                          'AnalysisServiceDepartment',
+                          'AnalysisServiceInstruments',
+                          'AnalysisServiceInstruments',
+                          'AnalysisServiceInstrument',
+                          'AnalysisServiceMethods',
+                          'AnalysisServiceMethod'])
 
     # Removing some more HistoryAwareReferenceFields
     brains = bsc(portal_type='Method')
     for brain in brains:
         method = brain.getObject()
         touidref(method, method, 'MethodCalculation', 'Calculation')
+        del_at_refs(method, 'MethodCalculation')
 
     brains = bsc(portal_type='Calculation')
     for brain in brains:
         calc = brain.getObject()
         touidref(calc, calc, 'CalculationAnalysisService', 'DependentServices')
+        del_at_refs(calc, 'CalculationAnalysisService')
 
     brains = bsc(portal_type='Instrument')
     for brain in brains:
         instrument = brain.getObject()
         touidref(instrument, instrument, 'InstrumentMethod', 'Method')
+        del_at_refs(instrument, 'InstrumentMethod')
 
     bc = get_tool('bika_catalog')
     brains = bc(portal_type='Worksheet')
     for brain in brains:
         ws = brain.getObject()
         touidref(ws, ws, 'WorksheetAnalysisTemplate', 'WorksheetTemplate')
+        del_at_refs(ws, 'WorksheetAnalysisTemplate')
 
     brains = bc(portal_type='AnalysisSpec')
     for brain in brains:
         spec = brain.getObject()
         touidref(spec, spec, 'AnalysisSpecSampleType', 'SampleType')
+        del_at_refs(spec, 'AnalysisSpecSampleType')
+
+
+def RemoveARPriorities(portal):
+    # Throw out ARPriorities.  The types have been removed, but the objects
+    # themselves remain as persistent broken objects, and at_references.
+    logger.info('Removing bika_setup.bika_arpriorities and all children')
+    if 'bika_arpriorities' in portal.bika_setup:
+        folder = portal.bika_setup.bika_arpriorities
+        ids = folder.objectIds()
+        folder.manage_delObjects(ids)
+        portal.bika_setup.manage_delObjects(['bika_arpriorities'])
+    portal.bika_setup.reindexObject()
+
+    # Remove left-over at_references from AnalysisRequest to ARPriority
+    catalog = get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
+    for brain in catalog(portal_type='AnalysisRequest'):
+        obj = brain.getObject()
+        del_at_refs(obj, ['AnalysisRequestPriority'])
+
 
 def touidref(src, dst, src_relation, fieldname):
     """Convert an archetypes reference in src/src_relation to a UIDReference
@@ -355,3 +417,18 @@ def get_uid(value):
         raise RuntimeError('Searching for %s/%s returned multiple objects.' %
                            (value.portal_type, value.Title()))
     return brains[0].UID
+
+
+def del_at_refs(instance, relations):
+    # Remove this relation from at_references
+    refs = instance.at_references.objectValues()
+    titles = [ref.relationship for ref in refs]
+    rm_ids = [ref.id for ref in refs if ref.relationship in relations]
+    rm_titles = [ref.relationship for ref in refs if ref.relationship in relations]
+    remaining = [title for title in titles if title not in rm_titles]
+    logger.info("%s: found %s refs.  remaining: %s" % (
+        instance, len(refs), remaining))
+    if rm_ids:
+        logger.info("removing {} references from {}".format(
+            len(rm_ids), instance))
+        instance.at_references.manage_delObjects(rm_ids)
