@@ -42,15 +42,10 @@ def upgrade(tool):
     # Refresh affected catalogs
     ut.refreshCatalogs()
 
-    # Clear and rebuild the reference catalog
-    logger.info("Rebuilding reference_catalog")
-    rc = get_tool(REFERENCE_CATALOG)
-    rc.manage_rebuildCatalog()
-
     # I want to be sure that bika_arpriorities are really removed.
-    logger.info("Doing a clearFindAndRebuild on bika_setup_catalog")
-    bsc = get_tool('bika_setup_catalog')
-    bsc.clearFindAndRebuild()
+    # logger.info("Doing a clearFindAndRebuild on bika_setup_catalog")
+    # bsc = get_tool('bika_setup_catalog')
+    # bsc.clearFindAndRebuild()
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -235,13 +230,6 @@ def BaseAnalysisRefactoring():
                 touidref(dup, dup, 'AnalysisInstrument', 'Instrument')
                 # Copy field values from service to duplicate
                 copy_field_values(srv, dup)
-                # And throw out left-over AT Reference objects
-                import pdb;
-                pdb.set_trace();
-                pass
-                del_at_refs(dup, ['DuplicateAnalysisAnalysis',
-                                  'DuplicateAnalysisAttachment',
-                                  'AnalysisInstrument'])
 
             # Routine Analyses
             # ================
@@ -259,15 +247,6 @@ def BaseAnalysisRefactoring():
             touidref(an, an, 'AnalysisReflectedAnalysis', 'ReflexAnalysisOf')
             # Copy field values from service to analysis
             copy_field_values(srv, an)
-            # After migrating duplicates, remove analysis at_references
-            del_at_refs(an, ['AnalysisInstrument',
-                             'AnalysisMethod',
-                             'AnalysisAttachment',
-                             'AnalysisSamplePartition',
-                             'OriginalAnalysisReflectedAnalysis',
-                             'AnalysisReflectedAnalysis',
-                             'AnalysisAnalysisService',
-                             'AnalysisAnalysisPartition'])
 
         # Reference Analyses
         # ==================
@@ -283,60 +262,73 @@ def BaseAnalysisRefactoring():
             touidref(ran, ran, 'AnalysisMethod', 'Method')
             # Copy field values from service into reference analysis
             copy_field_values(srv, ran)
-            # Then remove vestigial at_references
-            del_at_refs(ran, ['ReferenceAnalysisAnalysisService',
-                              'ReferenceAnalysisAttachment',
-                              'AnalysisInstrument',
-                              'AnalysisMethod'])
-
-        # Finally walk through the service' at_references and delete the
-        # ones we don't use anymore.
-        import pdb;pdb.set_trace();pass
-        del_at_refs(srv, ['AnalysisServiceAnalysisCategory',
-                          'AnalysisServiceDepartment',
-                          'AnalysisServiceInstruments',
-                          'AnalysisServiceInstruments',
-                          'AnalysisServiceInstrument',
-                          'AnalysisServiceMethods',
-                          'AnalysisServiceMethod'])
 
     # Removing some more HistoryAwareReferenceFields
     brains = bsc(portal_type='Method')
     for brain in brains:
         method = brain.getObject()
         touidref(method, method, 'MethodCalculation', 'Calculation')
-        del_at_refs(method, 'MethodCalculation')
 
     brains = bsc(portal_type='Calculation')
     for brain in brains:
         calc = brain.getObject()
         touidref(calc, calc, 'CalculationAnalysisService', 'DependentServices')
-        del_at_refs(calc, 'CalculationAnalysisService')
 
     brains = bsc(portal_type='Instrument')
     for brain in brains:
         instrument = brain.getObject()
         touidref(instrument, instrument, 'InstrumentMethod', 'Method')
-        del_at_refs(instrument, 'InstrumentMethod')
 
     bc = get_tool('bika_catalog')
     brains = bc(portal_type='Worksheet')
     for brain in brains:
         ws = brain.getObject()
         touidref(ws, ws, 'WorksheetAnalysisTemplate', 'WorksheetTemplate')
-        del_at_refs(ws, 'WorksheetAnalysisTemplate')
 
     brains = bc(portal_type='AnalysisSpec')
     for brain in brains:
         spec = brain.getObject()
         touidref(spec, spec, 'AnalysisSpecSampleType', 'SampleType')
-        del_at_refs(spec, 'AnalysisSpecSampleType')
 
+    for rel in ['AnalysisInstrument',
+                 'AnalysisMethod',
+                 'AnalysisAttachment',
+                 'AnalysisSamplePartition',
+                 'OriginalAnalysisReflectedAnalysis',
+                 'AnalysisReflectedAnalysis',
+                 'AnalysisAnalysisService',
+                 'AnalysisAnalysisPartition',
+                 'ReferenceAnalysisAnalysisService',
+                 'ReferenceAnalysisAttachment',
+                 'AnalysisInstrument',
+                 'AnalysisMethod',
+                 'AnalysisServiceAnalysisCategory',
+                 'AnalysisServiceDepartment',
+                 'AnalysisServiceInstruments',
+                 'AnalysisServiceInstruments',
+                 'AnalysisServiceInstrument',
+                 'AnalysisServiceMethods',
+                 'AnalysisServiceMethod',
+                 'DuplicateAnalysisAnalysis',
+                 'DuplicateAnalysisAttachment',
+                 'AnalysisInstrument',
+                 'MethodCalculation',
+                 'CalculationAnalysisService',
+                 'InstrumentMethod',
+                 'WorksheetAnalysisTemplate',
+                 'AnalysisSpecSampleType',
+                 'AnalysisRequestPriority']:
+        del_at_refs(rel)
+
+    # Clear and rebuild the reference catalog
+    logger.info("Rebuilding reference_catalog")
+    rc = get_tool(REFERENCE_CATALOG)
+    rc.manage_rebuildCatalog()
 
 def RemoveARPriorities(portal):
     # Throw out ARPriorities.  The types have been removed, but the objects
     # themselves remain as persistent broken objects, and at_references.
-    logger.info('Removing bika_setup.bika_arpriorities and all children')
+    logger.info('Removing bika_setup.bika_arpriorities')
     if 'bika_arpriorities' in portal.bika_setup:
         folder = portal.bika_setup.bika_arpriorities
         ids = folder.objectIds()
@@ -344,31 +336,26 @@ def RemoveARPriorities(portal):
         portal.bika_setup.manage_delObjects(['bika_arpriorities'])
     portal.bika_setup.reindexObject()
 
-    # Remove left-over at_references from AnalysisRequest to ARPriority
-    catalog = get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
-    for brain in catalog(portal_type='AnalysisRequest'):
-        obj = brain.getObject()
-        del_at_refs(obj, ['AnalysisRequestPriority'])
-
-
 def touidref(src, dst, src_relation, fieldname):
     """Convert an archetypes reference in src/src_relation to a UIDReference
     in dst/fieldname.
     """
+    field = dst.getField(fieldname)
     refs = src.getRefs(relationship=src_relation)
     if len(refs) == 1:
         value = get_uid(refs[0])
     elif len(refs) > 1:
         value = filter(lambda x: x, [get_uid(ref) for ref in refs])
     else:
+        value = field.get(src)
+    if not value:
         value = ''
-    field = dst.getField(fieldname)
     if not field:
         raise Exception('Cannot find field %s/%s' % (fieldname, src))
     if field.required and not value:
-        raise Exception('Required field %s/%s has no value' % (src, fieldname))
+        raise Exception(
+            'Required field %s/%s has no value' % (src, fieldname))
     field.set(src, value)
-
 
 def copy_field_values(src, dst):
     # These fields are not copied between objects.
@@ -387,7 +374,6 @@ def copy_field_values(src, dst):
         value = field.get(src)
         if value:
             dst_schema[fieldname].set(dst, value)
-
 
 def get_uid(value):
     """Takes a brain or object and returns a valid UID.
@@ -410,25 +396,25 @@ def get_uid(value):
     if not brains:
         # Cannot find UID
         raise RuntimeError('The UID for %s/%s cannot be discovered in the '
-                           'uid_catalog or in the portal_archivist history!' %
+                           'uid_catalog or in the portal_archivist '
+                           'history!' %
                            (value.portal_type, value.Title()))
     if len(brains) > 1:
         # Found multiple objects, this is a failure
-        raise RuntimeError('Searching for %s/%s returned multiple objects.' %
-                           (value.portal_type, value.Title()))
+        raise RuntimeError(
+            'Searching for %s/%s returned multiple objects.' %
+            (value.portal_type, value.Title()))
     return brains[0].UID
 
-
-def del_at_refs(instance, relations):
+def del_at_refs(rel):
     # Remove this relation from at_references
-    refs = instance.at_references.objectValues()
-    titles = [ref.relationship for ref in refs]
-    rm_ids = [ref.id for ref in refs if ref.relationship in relations]
-    rm_titles = [ref.relationship for ref in refs if ref.relationship in relations]
-    remaining = [title for title in titles if title not in rm_titles]
-    logger.info("%s: found %s refs.  remaining: %s" % (
-        instance, len(refs), remaining))
-    if rm_ids:
-        logger.info("removing {} references from {}".format(
-            len(rm_ids), instance))
-        instance.at_references.manage_delObjects(rm_ids)
+    rc = get_tool(REFERENCE_CATALOG)
+    refs = rc(relationship=rel)
+    removed = False
+    if refs:
+        logger.info("Removing %s refs for %s"%(len(refs), rel))
+        for ref in refs:
+            obj = ref.getObject()
+            obj.aq_parent.at_references.manage_delObjects(obj.getId())
+            removed = True
+    return removed
