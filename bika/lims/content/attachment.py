@@ -20,12 +20,6 @@ from bika.lims.utils import t
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
-    ComputedField('RequestID',
-        expression = 'here.getRequestID()',
-        widget = ComputedWidget(
-            visible = True,
-        ),
-    ),
     FileField('AttachmentFile',
         widget = FileWidget(
             label=_("Attachment"),
@@ -52,23 +46,12 @@ schema = BikaSchema.copy() + Schema((
             label=_("Date Loaded"),
         ),
     ),
-    ComputedField('AttachmentTypeUID',
-        expression="context.getAttachmentType().UID() if context.getAttachmentType() else ''",
-        widget = ComputedWidget(
-            visible = False,
-        ),
-    ),
-    ComputedField('ClientUID',
-        expression = 'here.aq_parent.UID()',
-        widget = ComputedWidget(
-            visible = False,
-        ),
-    ),
 ),
 )
 
 schema['id'].required = False
 schema['title'].required = False
+
 
 class Attachment(BaseFolder):
     security = ClassSecurityInfo()
@@ -124,6 +107,16 @@ class Attachment(BaseFolder):
             return ar.getRequestID()
         else:
             return None
+
+    def getAttachmentTypeUID(self):
+        attachment_type = self.getAttachmentType()
+        if attachment_type:
+            return attachment_type.UID()
+        else:
+            return ''
+
+    def getClientUID(self):
+        return self.aq_parent.UID()
 
     def getAnalysis(self):
         """ Return the analysis to which this is linked """
