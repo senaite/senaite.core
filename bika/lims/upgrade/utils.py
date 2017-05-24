@@ -58,7 +58,6 @@ class UpgradeUtils(object):
         self.addColumn(catalog, index)
 
     def reindexAndRefresh(self):
-        self.reindexCatalogs()
         self.refreshCatalogs()
 
     def _getCatalog(self, catalog):
