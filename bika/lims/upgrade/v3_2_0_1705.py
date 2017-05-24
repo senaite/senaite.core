@@ -39,8 +39,9 @@ def upgrade(tool):
     BaseAnalysisRefactoring(portal)
 
     # Throw out ARPriorities (the types have been removed, but the objects
-    # themselves remain as p[ersistent broken)
-    portal.bika_setup.manage_delObjects(['bika_arpriorities'])
+    # themselves remain as persistent broken)
+    if 'bika_arpriorities' in portal.bika_setup:
+        portal.bika_setup.manage_delObjects(['bika_arpriorities'])
 
     # Refresh affected catalogs
     ut.refreshCatalogs()
