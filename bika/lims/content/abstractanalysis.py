@@ -421,32 +421,13 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     def getDependents(self):
         """Return a list of analyses who depend on us to calculate their result
         """
-        dependents = []
-        ar = self.aq_parent
-        for sibling in ar.getAnalyses(full_objects=True):
-            if sibling == self:
-                continue
-            calculation = sibling.getCalculation()
-            if not calculation:
-                continue
-            depservices = calculation.getDependentServices()
-            dep_keywords = [x.getKeyword() for x in depservices]
-            if self.getKeyword() in dep_keywords:
-                dependents.append(sibling)
-        return dependents
+        raise NotImplementedError("getDependents is not implemented.")
 
     @security.public
     def getDependencies(self):
         """Return a list of analyses who we depend on to calculate our result.
         """
-        siblings = self.aq_parent.getAnalyses(full_objects=True)
-        calculation = self.getCalculation()
-        if not calculation:
-            return []
-        dep_services = [d.UID() for d in calculation.getDependentServices()]
-        dep_analyses = [a for a in siblings if
-                        a.getServiceUID() in dep_services]
-        return dep_analyses
+        raise NotImplementedError("getDependencies is not implemented.")
 
     @security.public
     def setResult(self, value):
@@ -511,70 +492,11 @@ class AbstractAnalysis(AbstractBaseAnalysis):
 
     @security.public
     def getAnalysisSpecs(self, specification=None):
-        """Retrieves the analysis specs to be applied to this analysis.
-        Allowed values for specification= 'client', 'lab', None If
-        specification is None, client specification gets priority from lab
-        specification. If no specification available for this analysis,
-        returns None
-        """
-
-        sample = self.getSample()
-        sampletype = sample.getSampleType()
-        sampletype_uid = sampletype and sampletype.UID() or ''
-        bsc = get_tool('bika_setup_catalog')
-
-        # retrieves the desired specs if None specs defined
-        if not specification:
-            proxies = bsc(portal_type='AnalysisSpec',
-                          getClientUID=self.getClientUID(),
-                          getSampleTypeUID=sampletype_uid)
-
-            if len(proxies) == 0:
-                # No client specs available, retrieve lab specs
-                proxies = bsc(portal_type='AnalysisSpec',
-                              getSampleTypeUID=sampletype_uid)
-        else:
-            specuid = specification == "client" and self.getClientUID() or \
-                      self.bika_setup.bika_analysisspecs.UID()
-            proxies = bsc(portal_type='AnalysisSpec',
-                          getSampleTypeUID=sampletype_uid,
-                          getClientUID=specuid)
-
-        outspecs = None
-        for spec in (p.getObject() for p in proxies):
-            if self.getKeyword() in spec.getResultsRangeDict():
-                outspecs = spec
-                break
-
-        return outspecs
+        raise NotImplementedError("getAnalysisSpecs is not implemented.")
 
     @security.public
     def getResultsRange(self, specification=None):
-        """Returns the valid results range for this analysis, a dictionary
-        with the following keys: 'keyword', 'uid', 'min', 'max ', 'error',
-        'hidemin', 'hidemax', 'rangecomment' Allowed values for
-        specification='ar', 'client', 'lab', None If specification is None,
-        the following is the priority to get the results range: AR > Client >
-        Lab If no specification available for this analysis, returns {}
-        """
-        rr = {}
-        an = self
-
-        if specification == 'ar' or specification is None:
-            if an.aq_parent and an.aq_parent.portal_type == 'AnalysisRequest':
-                rr = an.aq_parent.getResultsRange()
-                rr = [r for r in rr if r.get('keyword', '') == an.getKeyword()]
-                rr = rr[0] if rr and len(rr) > 0 else {}
-                if rr:
-                    rr['uid'] = self.UID()
-        if not rr:
-            # Let's try to retrieve the specs from client and/or lab
-            specs = an.getAnalysisSpecs(specification)
-            rr = specs.getResultsRangeDict() if specs else {}
-            rr = rr.get(an.getKeyword(), {}) if rr else {}
-            if rr:
-                rr['uid'] = self.UID()
-        return rr
+        raise NotImplementedError("getResultsRange is not implemented.")
 
     @security.public
     def getResultsRangeNoSpecs(self):
@@ -1110,12 +1032,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return states
 
     @security.public
-    def getBatchUID(self):
-        """This method is used to populate catalog values
-        """
-        return self.aq_parent.getBatchUID()
-
-    @security.public
     def getSampleConditionUID(self):
         """This method is used to populate catalog values
         """
@@ -1123,12 +1039,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         if sample_cond:
             return sample_cond.UID()
         return ''
-
-    @security.public
-    def getAnalysisRequestPrintStatus(self):
-        """This method is used to populate catalog values
-        """
-        return self.aq_parent.getPrinted()
 
     @security.public
     def getSubmittedBy(self):
@@ -1165,42 +1075,53 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             return ''
 
     @security.public
-    def getDueDate(self):
-        """Used to populate getDueDate index and metadata.
-        This very simply returns the expiry date of the parent reference sample.
-        """
-        ref_sample = self.aq_parent
-        expiry_date = ref_sample.getExpiryDate()
-        return expiry_date
-
-    @security.public
     def getParentUID(self):
         """This method is used to populate catalog values
         This function returns the analysis' parent UID
         """
-        return self.aq_parent.UID()
+        parent = self.aq_parent
+        if parent:
+            return parent.UID()
 
     @security.public
     def getParentURL(self):
         """This method is used to populate catalog values
         This function returns the analysis' parent URL
         """
-        return self.aq_parent.absolute_url_path()
+        parent = self.aq_parent
+        if parent:
+            return parent.absolute_url_path()
+
+    @security.public
+    def getParentTitle(self):
+        """This method is used to populate catalog values
+        This function returns the analysis' parent Title
+        """
+        parent = self.aq_parent
+        if parent:
+            return parent.Title()
 
     @security.public
     def getWorksheetUID(self):
         """This method is used to populate catalog values
         Returns WS UID if this analysis is assigned to a worksheet, or None.
         """
+        worksheet = self.getWorksheet()
+        if worksheet:
+            return worksheet.UID()
+
+    @security.public
+    def getWorksheet(self):
+        """Returns the Worksheet to which this analysis belongs to, or None
+        """
         worksheet = self.getBackReferences("WorksheetAnalysis")
-        if worksheet and len(worksheet) > 1:
+        if not worksheet:
+            return None
+        if len(worksheet) > 1:
             logger.error(
                 "Analysis %s is assigned to more than one worksheet."
                 % self.getId())
-            return worksheet[0].UID()
-        elif worksheet:
-            return worksheet[0].UID()
-        return ''
+        return worksheet[0]
 
     def getExpiryDate(self):
         """It is used as a metacolumn.

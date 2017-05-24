@@ -5,6 +5,7 @@
 
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import Schema, registerType
+from Products.Archetypes.public import StringField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.abstractroutineanalysis import AbstractRoutineAnalysis
@@ -21,8 +22,14 @@ Analysis = UIDReferenceField(
     allowed_types=('Analysis', 'ReferenceAnalysis'),
 )
 
+# TODO Analysis - Duplicates shouldn't have this attribute, only ReferenceAns
+ReferenceAnalysesGroupID = StringField(
+    'ReferenceAnalysesGroupID',
+)
+
 schema = schema.copy() + Schema((
     Analysis,
+    ReferenceAnalysesGroupID,
 ))
 
 
@@ -31,6 +38,14 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
+
+    @security.public
+    def getRequest(self):
+        """Returns the Analysis Request of the original analysis.
+        """
+        analysis = self.getAnalysis()
+        if analysis:
+            return analysis.getRequest()
 
     @security.public
     def getAnalysisPortalType(self):
@@ -42,8 +57,30 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
 
     @security.public
     def getSample(self):
-        analysis = self.aq_parent
-        return analysis.getSample()
+        """Returns the Sample of the original analysis.
+        """
+        analysis = self.getAnalysis()
+        if analysis:
+            return analysis.getSample()
+
+    @security.public
+    def getWorksheet(self):
+        return self.aq_parent
+
+    @security.public
+    def getSiblings(self):
+        """Returns the list of duplicate analyses that share the same Request
+        and are included in the same Worksheet as the current. The current
+        duplicate is excluded from the list
+        """
+        worksheet = self.getWorksheet()
+        requestuid = self.getRequestUID()
+        if not requestuid or not worksheet:
+            return []
+        analyses = worksheet.getAnalyses()
+        siblings = [an for an in analyses if an.getRequestUID() == requestuid]
+        siblings = [an for an in analyses if an.UID() != self.UID()]
+        return siblings
 
     @security.public
     def workflow_script_attach(self):

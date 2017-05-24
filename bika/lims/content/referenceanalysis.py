@@ -45,20 +45,36 @@ class ReferenceAnalysis(AbstractAnalysis):
     displayContentsTab = False
     schema = schema
 
+    @security.public
     def getSupplier(self):
         """ Returns the Supplier of the ReferenceSample this ReferenceAnalysis
         refers to
         """
-        return self.getSample().aq_parent
+        sample = self.getSample()
+        if sample:
+            return sample.aq_parent
 
+    @security.public
     def getSupplierUID(self):
-        return self.getSupplier().UID()
+        supplier = self.getSupplier()
+        if supplier:
+            return supplier.UID()
 
+    @security.public
     def getSample(self):
         """ Returns the ReferenceSample this ReferenceAnalysis refers to
         Delegates to self.aq_parent
         """
         return self.aq_parent
+
+    @security.public
+    def getDueDate(self):
+        """Used to populate getDueDate index and metadata.
+        This very simply returns the expiry date of the parent reference sample.
+        """
+        sample = self.getSample()
+        if sample:
+            return sample.getExpiryDate()
 
     @security.public
     def setResult(self, value):

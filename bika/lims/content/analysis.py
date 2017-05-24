@@ -31,4 +31,16 @@ class Analysis(AbstractRoutineAnalysis):
             sample = ar.getSample()
             return sample
 
+    @security.public
+    def getSiblings(self):
+        """Returns the list of analyses of the Analysis Request to which this
+        analysis belongs to, but with the current analysis excluded
+        """
+        siblings = []
+        request = self.getRequest()
+        if request:
+            ans = request.getAnalyses(full_objects=True)
+            siblings = [an for an in ans if an.UID() != self.UID()]
+        return siblings
+
 registerType(Analysis, PROJECTNAME)

@@ -23,7 +23,7 @@ def ObjectInitializedEventHandler(instance, event):
 
     wf_tool = getToolByName(instance, 'portal_workflow')
 
-    ar = instance.aq_parent
+    ar = instance.getRequest()
     ar_state = wf_tool.getInfoFor(ar, 'review_state')
     ar_ws_state = wf_tool.getInfoFor(ar, 'worksheetanalysis_review_state')
 
@@ -55,7 +55,7 @@ def ObjectRemovedEventHandler(instance, event):
     # May need to promote the AR's review_state
     # if all other analyses are at a higher state than this one was.
     workflow = getToolByName(instance, 'portal_workflow')
-    ar = instance.aq_parent
+    ar = instance.getRequest()
     can_submit = True
     can_attach = True
     can_verify = True

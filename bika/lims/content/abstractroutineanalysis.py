@@ -124,38 +124,54 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
             return ar.getId()
 
     @security.public
+    def getRequestUID(self):
+        """Returns the UID of the parent analysis request.
+        """
+        ar = self.getRequest()
+        if ar:
+            return ar.UID()
+
+    @security.public
     def getClientTitle(self):
         """Used to populate catalog values.
         Returns the Title of the client for this analysis' AR.
         """
-        client = self.getRequest().getClient()
-        if client:
-            return client.Title()
+        request = self.getRequest()
+        if request:
+            client = request.getClient()
+            if client:
+                return client.Title()
 
     @security.public
     def getClientUID(self):
         """Used to populate catalog values.
         Returns the UID of the client for this analysis' AR.
         """
-        client = self.getRequest().getClient()
-        if client:
-            return client.UID()
+        request = self.getRequest()
+        if request:
+            client = request.getClient()
+            if client:
+                return client.UID()
 
     @security.public
     def getClientURL(self):
         """This method is used to populate catalog values
         Returns the URL of the client for this analysis' AR.
         """
-        client = self.getRequest().getClient()
-        if client:
-            return client.absolute_url_path()
+        request = self.getRequest()
+        if request:
+            client = request.getClient()
+            if client:
+                return client.absolute_url_path()
 
     @security.public
     def getClientOrderNumber(self):
         """Used to populate catalog values.
         Returns the ClientOrderNumber of the associated AR
         """
-        return self.getRequest().getClientOrderNumber()
+        request = self.getRequest()
+        if request:
+            return request.getClientOrderNumber()
 
     @security.public
     def getDateReceived(self):
@@ -165,7 +181,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         """
         sample = self.getSample()
         if sample:
-            getTransitionDate(self, 'receive')
+            return getTransitionDate(self, 'receive')
 
     @security.public
     def getDateSampled(self):
@@ -173,7 +189,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         """
         sample = self.getSample()
         if sample:
-            getTransitionDate(self, 'sample')
+            return getTransitionDate(self, 'sample')
 
     @security.public
     def getSamplePartitionUID(self):
@@ -226,19 +242,25 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
     def getAnalysisRequestTitle(self):
         """This is a catalog metadata column
         """
-        return self.getRequest().Title()
+        request = self.getRequest()
+        if request:
+            return request.Title()
 
     @security.public
     def getAnalysisRequestUID(self):
         """This method is used to populate catalog values
         """
-        return self.getRequest().UID()
+        request = self.getRequest()
+        if request:
+            return request.UID()
 
     @security.public
     def getAnalysisRequestURL(self):
         """This is a catalog metadata column
         """
-        return self.getRequest().absolute_url_path()
+        request = self.getRequest()
+        if request:
+            return request.absolute_url_path()
 
     @security.public
     def getSampleTypeUID(self):
@@ -249,6 +271,131 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
             sampletype = sample.getSampleType()
             if sampletype:
                 return sampletype.UID()
+
+    @security.public
+    def getBatchUID(self):
+        """This method is used to populate catalog values
+        """
+        request = self.getRequest()
+        if request:
+            return request.getBatchUID()
+
+    @security.public
+    def getAnalysisRequestPrintStatus(self):
+        """This method is used to populate catalog values
+        """
+        request = self.getRequest()
+        if request:
+            return request.getPrinted()
+
+    @security.public
+    def getAnalysisSpecs(self, specification=None):
+        """Retrieves the analysis specs to be applied to this analysis.
+        Allowed values for specification= 'client', 'lab', None If
+        specification is None, client specification gets priority from lab
+        specification. If no specification available for this analysis,
+        returns None
+        """
+        sample = self.getSample()
+        client_uid = self.getClientUID()
+        if not sample or not client_uid:
+            return None
+
+        sampletype = sample.getSampleType()
+        sampletype_uid = sampletype and sampletype.UID() or ''
+        bsc = get_tool('bika_setup_catalog')
+
+        # retrieves the desired specs if None specs defined
+        if not specification:
+            proxies = bsc(portal_type='AnalysisSpec',
+                          getClientUID=client_uid,
+                          getSampleTypeUID=sampletype_uid)
+
+            if len(proxies) == 0:
+                # No client specs available, retrieve lab specs
+                proxies = bsc(portal_type='AnalysisSpec',
+                              getSampleTypeUID=sampletype_uid)
+        else:
+            specuid = self.bika_setup.bika_analysisspecs.UID()
+            if specification == 'client':
+                specuid = client_uid
+            proxies = bsc(portal_type='AnalysisSpec',
+                          getSampleTypeUID=sampletype_uid,
+                          getClientUID=specuid)
+
+        outspecs = None
+        for spec in (p.getObject() for p in proxies):
+            if self.getKeyword() in spec.getResultsRangeDict():
+                outspecs = spec
+                break
+
+        return outspecs
+
+    @security.public
+    def getResultsRange(self, specification=None):
+        """Returns the valid results range for this analysis, a dictionary
+        with the following keys: 'keyword', 'uid', 'min', 'max ', 'error',
+        'hidemin', 'hidemax', 'rangecomment' Allowed values for
+        specification='ar', 'client', 'lab', None If specification is None,
+        the following is the priority to get the results range: AR > Client >
+        Lab If no specification available for this analysis, returns {}
+        """
+        rr = {}
+        an = self
+
+        if specification == 'ar' or specification is None:
+            request = self.getRequest()
+            if an.aq_parent and an.aq_parent.portal_type == 'AnalysisRequest':
+                rr = an.aq_parent.getResultsRange()
+                rr = [r for r in rr if r.get('keyword', '') == an.getKeyword()]
+                rr = rr[0] if rr and len(rr) > 0 else {}
+                if rr:
+                    rr['uid'] = self.UID()
+        if not rr:
+            # Let's try to retrieve the specs from client and/or lab
+            specs = an.getAnalysisSpecs(specification)
+            rr = specs.getResultsRangeDict() if specs else {}
+            rr = rr.get(an.getKeyword(), {}) if rr else {}
+            if rr:
+                rr['uid'] = self.UID()
+        return rr
+
+
+    @security.public
+    def getSiblings(self):
+        """Return the siblings analyses, using the parent to which the current
+        analysis belongs to as the source"""
+        raise NotImplementedError("getSiblings is not implemented.")
+
+    @security.public
+    def getDependents(self):
+        """Return of siblings who depend on us to calculate their result
+        """
+        dependents = []
+        for sibling in self.getSiblings():
+            calculation = sibling.getCalculation()
+            if not calculation:
+                continue
+            depservices = calculation.getDependentServices()
+            dep_keywords = [dep.getKeyword() for dep in depservices]
+            if self.getKeyword() in dep_keywords:
+                dependents.append(sibling)
+        return dependents
+
+    @security.public
+    def getDependencies(self):
+        """Return a list of siblings who we depend on to calculate our result.
+        """
+        calc  = self.getCalculation()
+        if not calc:
+            return []
+
+        dependencies = []
+        for sibling in self.getSiblings():
+            deps = [dep.UID() for dep in sibling.getDependents()]
+            if self.UID() in deps:
+                dependencies.append(sibling)
+        return dependencies
 
     @security.public
     def setReflexAnalysisOf(self, analysis):

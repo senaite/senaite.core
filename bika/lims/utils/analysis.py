@@ -104,6 +104,7 @@ def create_analysis(context, source, **kwargs):
         analysis.setAnalysisService(source)
     else:
         analysis.setAnalysisService(source.getAnalysisService())
+
     analysis.unmarkCreationFlag()
     zope.event.notify(ObjectInitializedEvent(analysis))
     init_sampling_workflow(analysis)
