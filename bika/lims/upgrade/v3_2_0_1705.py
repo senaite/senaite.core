@@ -13,6 +13,11 @@ from bika.lims.catalog import CATALOG_ANALYSIS_LISTING, \
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
+from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
+import traceback
+import sys
+import transaction
 from plone.api.portal import get_tool
 
 product = 'bika.lims'
@@ -39,6 +44,8 @@ def upgrade(tool):
 
     RemoveARPriorities(portal)
 
+    RemoveVersionableTypes()
+
     # Refresh affected catalogs
     ut.refreshCatalogs()
 
@@ -50,8 +57,26 @@ def upgrade(tool):
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
+def removeVersionableTypes():
+    # Remove versionable types
+    logger.info("Removing versionable types...")
+    portal_repository = get_tool('portal_repository')
+    non_versionable = ['AnalysisSpec',
+                       'ARPriority',
+                       'Method',
+                       'SamplePoint',
+                       'SampleType',
+                       'StorageLocation',
+                       'WorksheetTemplate',]
+    versionable = list(portal_repository.getVersionableContentTypes())
+    vers = [ver for ver in versionable if ver not in non_versionable]
+    portal_repository.setVersionableContentTypes(vers)
+    logger.info("Versionable types updated: {0}".format(', '.join(vers)))
 
 def UpdateIndexesAndMetadata(ut):
+
+    # Add getId column to bika_catalog
+    ut.addColumn(CATALOG_ANALYSIS_LISTING, 'getNumberOfVerifications')
     # Add SearchableText index to analysis requests catalog
     ut.addIndex(
         CATALOG_ANALYSIS_REQUEST_LISTING, 'SearchableText', 'ZCTextIndex')
