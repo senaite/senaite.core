@@ -186,7 +186,7 @@ class AnalysisRequestViewView(BrowserView):
             an_atts = analysis.getAttachment()
             for att in an_atts:
                 file_obj = att.getAttachmentFile()
-                fsize = file_obj.getSize() if file_obj else 0
+                fsize = file_obj.get_size() if file_obj else 0
                 if fsize < 1024:
                     fsize = '%s b' % fsize
                 else:
