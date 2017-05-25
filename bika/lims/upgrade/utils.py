@@ -79,7 +79,6 @@ class UpgradeUtils(object):
         cat.delIndex(index)
         logger.info('Deleted index {0} from catalog {1}'.format(
                     index, cat.id))
-        transaction.commit()
 
     def delColumn(self, catalog, column):
         cat = self._getCatalog(catalog)
@@ -88,7 +87,6 @@ class UpgradeUtils(object):
         cat.delColumn(column)
         logger.info('Deleted column {0} from catalog {1} deleted.'.format(
                     column, cat.id))
-        transaction.commit()
 
     def addIndex(self, catalog, index, indextype):
         cat = self._getCatalog(catalog)
