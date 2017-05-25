@@ -99,9 +99,9 @@ def BeforeTransitionEventHandler(instance, event):
         return
 
     clazzname = instance.__class__.__name__
-    msg = "Starting transtion {0} for object {1} with id {2}".format(
+    msg = "Starting transition {0} for object {1} with id {2}".format(
         event.transition.id,  clazzname, instance.getId())
-    logger.debug(msg)
+    logger.info(msg)
 
     key = 'before_{0}_transition_event'.format(event.transition.id)
     before_event = getattr(instance, key, False)
@@ -117,7 +117,7 @@ def BeforeTransitionEventHandler(instance, event):
 
     msg = "Calling BeforeTransitionEvent function '{0}' from {1}".format(
         key, clazzname)
-    logger.debug(msg)
+    logger.info(msg)
     before_event()
 
 
@@ -149,7 +149,7 @@ def AfterTransitionEventHandler(instance, event):
     clazzname = instance.__class__.__name__
     msg = "Transition {0} performed for object {1} with id {2}".format(
         event.transition.id,  clazzname, instance.getId())
-    logger.debug(msg)
+    logger.info(msg)
 
     # Because at this point, the object has been transitioned already, but
     # further actions are probably needed still, so be sure is reindexed
@@ -170,7 +170,7 @@ def AfterTransitionEventHandler(instance, event):
 
     msg = "Calling AfterTransitionEvent function '{0}' from {1}".format(
         key, clazzname)
-    logger.debug(msg)
+    logger.info(msg)
     after_event()
 
 def get_workflow_actions(obj):

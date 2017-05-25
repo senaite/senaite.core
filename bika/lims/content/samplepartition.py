@@ -122,19 +122,68 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
         dis_date = DateSampled and dt2DT(DT2dt(DateSampled) + td) or None
         return dis_date
 
-    def guard_auto_preservation_required(self):
-        """ Allow or disallow transition depending on partition state.
-        If returns True, the object will transition to to_be_preserved
-        If returns False, the object will transition to sample_due
-        Returning a value other than True or False will leave the object in
-        the current state (sampled)
+    def _cascade_promote_transition(self, actionid, targetstate):
+        """ Performs the transition for the actionid passed in to its children
+        (Analuyses). If all sibling partitions are in the targe state, promotes
+        the transition to its parent Sample
         """
-        analyses = self.getAnalyses()
-        if not analyses:
-            # No transition
-            return None
+        # Transition our analyses
+        for analysis in self.getAnalyses():
+            doActionFor(analysis, actionid)
 
+        # If all sibling partitions are received, promote Sample. Sample
+        # transition will, in turn, transition the Analysis Requests
+        sample = self.aq_parent
+        parts = sample.objectValues("SamplePartition")
+        recep = [sp for sp in parts if wasTransitionPerformed(sp, targetstate)]
+        if len(parts) == len(recep):
+            doActionFor(sample, actionid)
+
+    @security.public
+    def after_sample_transition_event(self):
+        """Method triggered after a 'sample' transition for the current
+        SamplePartition is performed. Triggers the 'sample' transition for
+        depedendent objects, such as Analyses
+        This function is called automatically by
+        bika.lims.workflow.AfterTransitionEventHandler
+        """
+        self._cascade_promote_transition('sample', 'sample')
+
+    @security.public
+    def after_sample_due_transition_event(self):
+        """Method triggered after a 'sample_due' transition for the current
+        SamplePartition is performed. Triggers the 'sample_due' transition for
+        depedendent objects, such as Analyses
+        This function is called automatically by
+        bika.lims.workflow.AfterTransitionEventHandler
+        """
+        self._cascade_promote_transition('sample_due', 'sample_due')
+
+    @security.public
+    def after_receive_transition_event(self):
+        """Method triggered after a 'receive' transition for the current Sample
+        Partition is performed. Stores value for "Date Received" field and also
+        triggers the 'receive' transition for depedendent objects, such as
+        Analyses associated to this Sample Partition. If all Sample Partitions
+        that belongs to the same sample as the current Sample Partition have
+        been transitioned to the "received" state, promotes to Sample
+        This function is called automatically by
+        bika.lims.workflow.AfterTransitionEventHandler
+        """
+        self.setDateReceived(DateTime())
+        self.reindexObject(idxs=["getDateReceived", ])
+        self._cascade_promote_transition('receive', 'receive')
+
+    def guard_auto_preservation_required(self):
+        """ Returns True if this Sample Partition needs to be preserved
+        Returns false if no analyses have been assigned yet, or the Sample
+        Partition has Preservation and Container objects assigned with the
+        PrePreserved option set for the latter.
+        """
         if not self.getPreservation():
+            return False
+
+        if not self.getAnalyses():
             return False
 
         container = self.getContainer()
@@ -168,29 +217,6 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
         self.setDateExpired(DateTime())
         self.reindexObject(idxs=["review_state", "getDateExpired", ])
 
-    def workflow_script_sample(self):
-        if skip(self, "sample"):
-            return
-        sample = self.aq_parent
-        workflow = getToolByName(self, 'portal_workflow')
-        # Transition our analyses
-        analyses = self.getAnalyses()
-        for analysis in analyses:
-            doActionFor(analysis, "sample")
-        # if all our siblings are now up to date, promote sample and ARs.
-        parts = sample.objectValues("SamplePartition")
-        if parts:
-            lower_states = ['to_be_sampled', ]
-            escalate = True
-            for part in parts:
-                pstate = workflow.getInfoFor(part, 'review_state')
-                if pstate in lower_states:
-                    escalate = False
-            if escalate:
-                doActionFor(sample, "sample")
-                for ar in sample.getAnalysisRequests():
-                    doActionFor(ar, "sample")
-
     def workflow_script_to_be_preserved(self):
         if skip(self, "to_be_preserved"):
             return
@@ -212,58 +238,6 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
                 doActionFor(sample, "to_be_preserved")
                 for ar in sample.getAnalysisRequests():
                     doActionFor(ar, "to_be_preserved")
-
-    def workflow_script_sample_due(self):
-        if skip(self, "sample_due"):
-            return
-        sample = self.aq_parent
-        workflow = getToolByName(self, 'portal_workflow')
-        # Transition our analyses
-        analyses = self.getAnalyses()
-        for analysis in analyses:
-            doActionFor(analysis, "sample_due")
-        # if all our siblings are now up to date, promote sample and ARs.
-        parts = sample.objectValues("SamplePartition")
-        if parts:
-            lower_states = ['to_be_preserved', ]
-            escalate = True
-            for part in parts:
-                pstate = workflow.getInfoFor(part, 'review_state')
-                if pstate in lower_states:
-                    escalate = False
-            if escalate:
-                doActionFor(sample, "sample_due")
-                for ar in sample.getAnalysisRequests():
-                    doActionFor(ar, "sample_due")
-
-    @deprecated('05-2017. Use after_receive_transition_event instead')
-    def workflow_script_receive(self):
-        self.after_receive_transition_event()
-
-    @security.public
-    def after_receive_transition_event(self):
-        """Method triggered after a 'receive' transition for the current Sample
-        Partition is performed. Stores value for "Date Received" field and also
-        triggers the 'receive' transition for depedendent objects, such as
-        Analyses associated to this Sample Partition. If all Sample Partitions
-        that belongs to the same sample as the current Sample Partition have
-        been transitioned to the "received" state, promotes to Sample
-        This function is called automatically by
-        bika.lims.workflow.AfterTransitionEventHandler
-        """
-        self.setDateReceived(DateTime())
-        self.reindexObject(idxs=["getDateReceived", ])
-
-        # Transition our analyses
-        for analysis in self.getAnalyses():
-            doActionFor(analysis, "receive")
-
-        # If all sibling partitions are received, promote sample
-        sample = self.aq_parent
-        parts = sample.objectValues("SamplePartition")
-        recep = [sp for sp in parts if wasTransitionPerformed(sp, 'receive')]
-        if len(parts) == len(recep):
-            doActionFor(sample, "receive")
 
     def workflow_script_reinstate(self):
         if skip(self, "reinstate"):

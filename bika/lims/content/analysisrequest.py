@@ -3089,13 +3089,12 @@ class AnalysisRequest(BaseFolder):
         return not notallowed
 
     def guard_auto_preservation_required(self):
-        """ Allow or disallow transition depending on parent's Sample
+        """ Returns True if the Sample from this AR needs to be preserved
+        Returns false if the Analysis Request has no Sample assigned yet
+        Delegates to Sample's guard_auto_preservation_required
         """
         sample = self.getSample()
-        if not sample:
-            # AR is being created - AR Add will transition us
-            return None
-        return sample.guard_auto_preservation_required()
+        return sample and sample.guard_auto_preservation_required()
 
     def guard_verify_transition(self):
         """
@@ -3158,10 +3157,6 @@ class AnalysisRequest(BaseFolder):
             return True
         return False
 
-    @deprecated('05-2017. Use after_receive_transition_event instead')
-    def workflow_script_receive(self):
-        self.after_receive_transition_event()
-
     def after_receive_transition_event(self):
         """Method triggered after a 'receive' transition for the current
         Analysis Request is performed. Responsible of triggering cascade
@@ -3217,33 +3212,15 @@ class AnalysisRequest(BaseFolder):
         # Don't cascade. Shouldn't be attaching ARs for now (if ever).
         return
 
-    def workflow_script_sample(self):
-        # no skip check here: the sampling workflow UI is odd
-        # if skip(self, "sample"):
-        #     return
-        # transition our sample
-        workflow = getToolByName(self, 'portal_workflow')
+    @security.public
+    def after_sample_transition_event(self):
+        """Method triggered after a 'sample' transition for the current
+        AR is performed. Promotes sample transition to parent's sample
+        bika.lims.workflow.AfterTransitionEventHandler
+        """
         sample = self.getSample()
-        self.reindexObject(idxs=[
-            "review_state", 'getObjectWorkflowStates', 'getDateSampled',
-            'getSampler', 'getSamplerFullName', 'getSamplerEmail'])
-        if not skip(sample, "sample", peek=True):
-            workflow.doActionFor(sample, "sample")
-
-    # def workflow_script_to_be_preserved(self):
-    #     if skip(self, "to_be_preserved"):
-    #         return
-    #     pass
-
-    # def workflow_script_sample_due(self):
-    #     if skip(self, "sample_due"):
-    #         return
-    #     pass
-
-    # def workflow_script_retract(self):
-    #     if skip(self, "retract"):
-    #         return
-    #     pass
+        if sample:
+            doActionFor(sample, 'sample')
 
     def workflow_script_verify(self):
         if skip(self, "verify"):

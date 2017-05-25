@@ -451,17 +451,13 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
 
     @security.public
     def guard_auto_preservation_required(self):
-        """ Allow or disallow transition depending on parent's Sample Partition
+        """Returns if the Sample Partition to which this Analysis belongs needs
+        to be prepreserved, so the Analysis. If the analysis has no Sample
+        Partition assigned, returns False.
+        Delegates to Sample Partitions's guard_auto_preservation_required
         """
         part = self.getSamplePartition()
-        if not part:
-            return None
-        return part.guard_auto_preservation_required()
-
-    @security.public
-    @deprecated('05-2017. Use after_submit_transition_event instead')
-    def workflow_script_submit(self):
-        self.after_submit_transition_event()
+        return part and part.guard_auto_preservation_required()
 
     @security.public
     def after_submit_transition_event(self):

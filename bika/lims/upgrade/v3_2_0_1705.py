@@ -50,6 +50,10 @@ def upgrade(tool):
     rc = get_tool(REFERENCE_CATALOG)
     rc.manage_rebuildCatalog()
 
+    # Re-run workflow-csv
+    setup = portal.portal_setup
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'workflow-csv')
+
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
