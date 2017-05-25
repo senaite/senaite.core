@@ -9,6 +9,7 @@ from DateTime import DateTime
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import Schema
+from plone.app.blob.field import FileField
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims.content.bikaschema import BikaSchema
@@ -16,7 +17,8 @@ from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 
 schema = BikaSchema.copy() + Schema((
-    atapi.FileField('AttachmentFile',
+    # It comes from blob
+    FileField('AttachmentFile',
         widget = atapi.FileWidget(
             label=_("Attachment"),
         ),

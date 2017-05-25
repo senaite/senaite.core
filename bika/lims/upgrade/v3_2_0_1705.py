@@ -11,6 +11,7 @@ from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.config import VERSIONABLE_TYPES
 from Products.CMFCore.utils import getToolByName
+from bika.lims.upgrade.utils import migrate_to_blob
 import traceback
 import sys
 import transaction
@@ -32,7 +33,8 @@ def upgrade(tool):
         return True
 
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ufrom, version))
-
+    # Migrating ataip.FileField to blob.FileField
+    migareteFileFields(portal)
     # Remove versionable types
     logger.info("Removing versionable types...")
     portal_repository = getToolByName(portal, 'portal_repository')
@@ -61,11 +63,25 @@ def upgrade(tool):
     # correct getDateXXXs
     ut.addIndexAndColumn(
         CATALOG_ANALYSIS_REQUEST_LISTING, 'getDateVerified', 'DateIndex')
-    if CATALOG_ANALYSIS_REQUEST_LISTING not in ut.refreshcatalog:
-        ut.refreshcatalog.append(CATALOG_ANALYSIS_REQUEST_LISTING)
+    # if CATALOG_ANALYSIS_REQUEST_LISTING not in ut.refreshcatalog:
+    #     ut.refreshcatalog.append(CATALOG_ANALYSIS_REQUEST_LISTING)
 
     # Refresh affected catalogs
     ut.refreshCatalogs()
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
+
+
+def migareteFileFields(portal):
+    """
+    This function walks over all attachment types and migrates their FileField
+    fields.
+    """
+    logger.info("Starting migration of FileField fields from Attachment.")
+    # Migarte only works for portal_catalog
+    migrate_to_blob(
+        portal,
+        portal_type='Attachment',
+        remove_old_value=True)
+    logger.info("Finished migration of FileField fields from Attachment.")
