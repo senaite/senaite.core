@@ -60,14 +60,11 @@ except ImportError:
 
 
 schema = BikaSchema.copy() + Schema((
-    ReferenceField(
+    UIDReferenceField(
         'Contact',
         required=1,
         default_method='getContactUIDForUser',
-        vocabulary_display_path_bound=sys.maxsize,
         allowed_types=('Contact',),
-        referenceClass=HoldingReference,
-        relationship='AnalysisRequestContact',
         mode="rw",
         read_permission=permissions.View,
         write_permission=EditARContact,

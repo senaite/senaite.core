@@ -38,12 +38,6 @@ schema = BikaSchema.copy() + Schema((
     BooleanField('Separate',
         default=False
     ),
-    ReferenceField('Analyses',
-        allowed_types=('Analysis',),
-        relationship='SamplePartitionAnalysis',
-        required=0,
-        multiValued=1,
-    ),
     DateTimeField('DatePreserved',
     ),
     StringField('Preserver',

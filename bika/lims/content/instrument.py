@@ -194,12 +194,11 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
 
     # References to all analyses performed with this instrument.
     # Includes regular analyses, QC analyes and Calibration tests.
-    ReferenceField('Analyses',
+    UIDReferenceField('Analyses',
         required = 0,
         multiValued = 1,
         allowed_types = ('ReferenceAnalysis', 'DuplicateAnalysis',
                          'Analysis'),
-        relationship = 'InstrumentAnalyses',
         widget = ReferenceWidget(
             visible = False,
         ),

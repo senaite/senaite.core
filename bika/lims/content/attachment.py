@@ -13,6 +13,7 @@ from Products.Archetypes.public import *
 from Products.CMFCore.permissions import ListFolderContents, View
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
@@ -31,10 +32,9 @@ schema = BikaSchema.copy() + Schema((
             label=_("Attachment"),
         ),
     ),
-    ReferenceField('AttachmentType',
+    UIDReferenceField('AttachmentType',
         required = 0,
         allowed_types = ('AttachmentType',),
-        relationship = 'AttachmentAttachmentType',
         widget = ReferenceWidget(
             label=_("Attachment Type"),
         ),

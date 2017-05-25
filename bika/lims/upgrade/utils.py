@@ -132,6 +132,9 @@ class UpgradeUtils(object):
             logger.info('Added column {0} to catalog {1}'.format(
                 column, cat.id))
             if cat.id not in self.refreshcatalog:
+                logger.info("{} to refresh because col {} added".format(
+                    catalog, column
+                ))
                 self.refreshcatalog.append(cat.id)
             transaction.commit()
         except:
