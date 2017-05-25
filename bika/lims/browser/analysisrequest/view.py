@@ -163,8 +163,10 @@ class AnalysisRequestViewView(BrowserView):
         ar_atts = self.context.getAttachment()
         analyses = self.context.getAnalyses(full_objects = True)
         for att in ar_atts:
-            file = att.getAttachmentFile()
-            fsize = file.getSize() if file else 0
+            file_obj = att.getAttachmentFile()
+            fsize = file_obj.get_size() if file_obj else 0
+            if isinstance(fsize, tuple):
+                fsize = 0
             if fsize < 1024:
                 fsize = '%s b' % fsize
             else:
@@ -173,8 +175,8 @@ class AnalysisRequestViewView(BrowserView):
                 'keywords': att.getAttachmentKeys(),
                 'analysis': '',
                 'size': fsize,
-                'name': file.filename,
-                'Icon': file.icon,
+                'name': file_obj.filename,
+                'Icon': file_obj.icon,
                 'type': att.getAttachmentType().Title() if att.getAttachmentType() else '',
                 'absolute_url': att.absolute_url(),
                 'UID': att.UID(),
@@ -183,8 +185,8 @@ class AnalysisRequestViewView(BrowserView):
         for analysis in analyses:
             an_atts = analysis.getAttachment()
             for att in an_atts:
-                file = att.getAttachmentFile()
-                fsize = file.getSize() if file else 0
+                file_obj = att.getAttachmentFile()
+                fsize = file_obj.getSize() if file_obj else 0
                 if fsize < 1024:
                     fsize = '%s b' % fsize
                 else:
@@ -193,8 +195,8 @@ class AnalysisRequestViewView(BrowserView):
                     'keywords': att.getAttachmentKeys(),
                     'analysis': analysis.Title(),
                     'size': fsize,
-                    'name': file.filename,
-                    'Icon': file.icon,
+                    'name': file_obj.filename,
+                    'Icon': file_obj.icon,
                     'type': att.getAttachmentType().Title() if att.getAttachmentType() else '',
                     'absolute_url': att.absolute_url(),
                     'UID': att.UID(),
