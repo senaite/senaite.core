@@ -7,7 +7,7 @@
 
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.BaseObject import BaseObject
-from Products.Archetypes.Field import ObjectField, Field
+from Products.Archetypes.Field import Field, StringField
 from Products.ZCatalog.interfaces import ICatalogBrain
 from bika.lims import logger
 from bika.lims.interfaces.field import IUIDReferenceField
@@ -39,7 +39,7 @@ def is_at_content(brain_or_object):
     return isinstance(brain_or_object, BaseObject)
 
 
-class UIDReferenceField(ObjectField):
+class UIDReferenceField(StringField):
     """A field that stores References as UID values.
     """
     _properties = Field._properties.copy()
@@ -53,7 +53,7 @@ class UIDReferenceField(ObjectField):
 
     security = ClassSecurityInfo()
 
-    @security.private
+    @security.public
     def get_object(self, instance, value):
         """Resolve a UID to an object.
         """
@@ -69,7 +69,7 @@ class UIDReferenceField(ObjectField):
             logger.error("%s.%s: Resolving UIDReference failed for %s (drop)" %
                          instance, self.getName(), value)
 
-    @security.private
+    @security.public
     def get_uid(self, instance, value):
         """Takes a brain or object (or UID), and returns a UID.
         """
@@ -86,11 +86,11 @@ class UIDReferenceField(ObjectField):
                                      (instance, self.getName(), value))
         return ret
 
-    @security.private
+    @security.public
     def get(self, instance, **kwargs):
         """Grab the stored value, and resolve object(s) from UID catalog.
         """
-        value = ObjectField.get(self, instance, **kwargs)
+        value = StringField.get(self, instance, **kwargs)
         if self.multiValued:
             ret = filter(
                 lambda x: x, [self.get_object(instance, uid) for uid in value])
@@ -98,7 +98,7 @@ class UIDReferenceField(ObjectField):
             ret = self.get_object(instance, value)
         return ret
 
-    @security.private
+    @security.public
     def set(self, instance, value, **kwargs):
         """Accepts a UID, brain, or an object (or a list of any of these),
         and stores a UID or list of UIDS.
@@ -109,4 +109,4 @@ class UIDReferenceField(ObjectField):
             ret = [self.get_uid(instance, val) for val in value]
         else:
             ret = self.get_uid(instance, value)
-        ObjectField.set(self, instance, ret, **kwargs)
+        StringField.set(self, instance, ret, **kwargs)
