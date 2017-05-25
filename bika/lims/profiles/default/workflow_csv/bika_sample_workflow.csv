@@ -61,7 +61,7 @@ BIKA: Schedule Sampling,N,N,Y,N,N,N,N,N,N,N,N,N,Y
 Id:,sampled,,,,,,,,,,,,
 Title:,Sampled,,,,,,,,,,,,
 Description:,,,,,,,,,,,,,
-Transitions,"auto_preservation_required, auto_no_preservation_required, to_be_preserved, sample_due, reject",,,,,,,,,,,,
+Transitions,"to_be_preserved, sample_due, reject",,,,,,,,,,,,
 Permissions,Acquire,Anonymous,Manager,Owner,Reader,Editor,Contributor,Analyst,LabClerk,LabManager,Preserver,Sampler,SamplingCoordinator
 BIKA: Cancel and reinstate,N,N,Y,Y,N,N,N,N,Y,Y,N,N,N
 BIKA: Edit Field Results,N,N,Y,N,N,N,N,N,Y,Y,N,Y,Y
@@ -175,22 +175,6 @@ BIKA: Receive Sample,N,N,N,N,N,N,N,N,N,N,N,N,N
 View,N,N,Y,Y,N,N,N,Y,Y,Y,N,Y,N
 Modify portal content,N,N,Y,Y,N,N,N,Y,Y,Y,N,N,N
 BIKA: Schedule Sampling,N,N,N,N,N,N,N,N,N,N,N,N,N
-,,,,,,,,,,,,,
-[Transition],,,,,,,,,,,,,
-Id:,auto_no_preservation_required,,,,,,,,,,,,
-Title:,,,,,,,,,,,,,
-Description:,auto_no_preservation_required,,,,,,,,,,,,
-Target state:,sample_due,,,,,,,,,,,,
-Trigger:,Automatic,,,,,,,,,,,,
-Guard expression:,python:not here.guard_auto_preservation_required(),,,,,,,,,,,,
-,,,,,,,,,,,,,
-[Transition],,,,,,,,,,,,,
-Id:,auto_preservation_required,,,,,,,,,,,,
-Title:,,,,,,,,,,,,,
-Description:,auto_preservation_required,,,,,,,,,,,,
-Target state:,to_be_preserved,,,,,,,,,,,,
-Trigger:,Automatic,,,,,,,,,,,,
-Guard expression:,python:here.guard_auto_preservation_required(),,,,,,,,,,,,
 ,,,,,,,,,,,,,
 [Transition],,,,,,,,,,,,,
 Id:,dispose,,,,,,,,,,,,
