@@ -43,4 +43,5 @@ class Analysis(AbstractRoutineAnalysis):
             siblings = [an for an in ans if an.UID() != self.UID()]
         return siblings
 
+
 registerType(Analysis, PROJECTNAME)

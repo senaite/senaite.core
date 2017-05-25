@@ -3088,6 +3088,15 @@ class AnalysisRequest(BaseFolder):
                       if not a.isUserAllowedToVerify(member)]
         return not notallowed
 
+    def guard_auto_preservation_required(self):
+        """ Allow or disallow transition depending on parent's Sample
+        """
+        sample = self.getSample()
+        if not sample:
+            # AR is being created - AR Add will transition us
+            return None
+        return sample.guard_auto_preservation_required()
+
     def guard_verify_transition(self):
         """
         Checks if the verify transition can be performed to the current

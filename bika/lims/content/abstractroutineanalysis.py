@@ -450,6 +450,15 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
                 doReflexRuleAction(self, action_row)
 
     @security.public
+    def guard_auto_preservation_required(self):
+        """ Allow or disallow transition depending on parent's Sample Partition
+        """
+        part = self.getSamplePartition()
+        if not part:
+            return None
+        return part.guard_auto_preservation_required()
+
+    @security.public
     @deprecated('05-2017. Use after_submit_transition_event instead')
     def workflow_script_submit(self):
         self.after_submit_transition_event()

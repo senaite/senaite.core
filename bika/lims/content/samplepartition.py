@@ -122,6 +122,27 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
         dis_date = DateSampled and dt2DT(DT2dt(DateSampled) + td) or None
         return dis_date
 
+    def guard_auto_preservation_required(self):
+        """ Allow or disallow transition depending on partition state.
+        If returns True, the object will transition to to_be_preserved
+        If returns False, the object will transition to sample_due
+        Returning a value other than True or False will leave the object in
+        the current state (sampled)
+        """
+        analyses = self.getAnalyses()
+        if not analyses:
+            # No transition
+            return None
+
+        if not self.getPreservation():
+            return False
+
+        container = self.getContainer()
+        if container and container.getPrePreserved():
+            return False
+
+        return True
+
     def workflow_script_preserve(self):
         workflow = getToolByName(self, 'portal_workflow')
         sample = self.aq_parent

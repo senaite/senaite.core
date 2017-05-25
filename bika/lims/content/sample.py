@@ -868,6 +868,9 @@ class Sample(BaseFolder, HistoryAwareMixin):
         self.reindexObject(idxs=["getDateReceived", ])
 
         # Receive all self partitions
+        # Note that the 'receive' transition for SamplePartition already
+        # transitions all the analyses associated to that Sample partition, so
+        # there is no need to transition all the analyses from Sample here.
         for part in self.objectValues('SamplePartition'):
             doActionFor(part, 'receive')
 
@@ -899,21 +902,37 @@ class Sample(BaseFolder, HistoryAwareMixin):
         self.setDateDisposed(DateTime())
         self.reindexObject(idxs=["review_state", "getDateDisposed", ])
 
+    @deprecated('05-2017. Use after_sample_transition_event instead')
     def workflow_script_sample(self):
-        if skip(self, "sample"):
-            return
+        self.after_sample_transition_event(self)
+
+    @security.public
+    def after_sample_transition_event(self):
+        """Method triggered after a 'sample' transition for the current
+        Sample is performed. Stores value for "Date Received" field and also
+        triggers the 'receive' transition for depedendent objects, such as
+        Sample Partitions and Analysis Requests.
+        This function is called automatically by
+        bika.lims.workflow.AfterTransitionEventHandler
+        """
         workflow = getToolByName(self, 'portal_workflow')
         parts = self.objectValues('SamplePartition')
-        # This action can happen in the Sample UI.  So we transition all
-        # partitions that are still 'to_be_sampled'
-        tbs = [sp for sp in parts
-               if workflow.getInfoFor(sp, 'review_state') == 'to_be_sampled']
-        for sp in tbs:
-            doActionFor(sp, "sample")
-        # All associated AnalysisRequests are also transitioned
+
+        # Mark all self partitions as sampled
+        for part in self.objectValues('SamplePartition'):
+            doActionFor(part, 'sample')
+
+        # Sample all self partitions
+        # Note that the 'receive' transition for SamplePartition already
+        # transitions all the analyses associated to that Sample partition, so
+        # there is no need to transition all the analyses from Sample here.
+        for part in self.objectValues('SamplePartition'):
+            doActionFor(part, 'sample')
+
+        # when a self is sampled, all associated
+        # AnalysisRequests are also transitioned
         for ar in self.getAnalysisRequests():
             doActionFor(ar, "sample")
-            ar.reindexObject()
 
     def workflow_script_to_be_preserved(self):
         if skip(self, "to_be_preserved"):
@@ -995,6 +1014,23 @@ class Sample(BaseFolder, HistoryAwareMixin):
         ars = self.getAnalysisRequests()
         for ar in ars:
             doActionFor(ar, 'schedule_sampling')
+
+    def guard_auto_preservation_required(self):
+        """ Allow or disallow transition depending on partitions states
+        If returns True, the object will transition to to_be_preserved
+        If returns False, the object will transition to sample_due
+        Returning a value other than True or False will leave the object in
+        the current state (sampled)
+        """
+        parts = self.objectValues('SamplePartition')
+        if not parts:
+            return None
+
+        # Return False if none of this sample's partitions require preservation
+        for part in self.objectValues('SamplePartition'):
+            if part.guard_auto_preservation_required():
+                return True
+        return False
 
     def guard_receive_transition(self):
         return isBasicTransitionAllowed(self)

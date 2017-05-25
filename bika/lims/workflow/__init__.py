@@ -49,7 +49,7 @@ def skip(instance, action, peek=False, unskip=False):
                 instance.REQUEST["workflow_skiplist"].append(skipkey)
 
 
-def doActionFor(instance, action_id, active_only=True):
+def doActionFor(instance, action_id, active_only=True, allowed_transition=True):
     """Performs the transition (action_id) to the instance.
 
     The transition will only be triggered if the current state of the object
@@ -60,6 +60,8 @@ def doActionFor(instance, action_id, active_only=True):
 
     :param instance: Object to be transitioned
     :param action_id: transition id
+    :param active_only: True if transition must apply to active objects
+    :param allowed_transition: True for a allowed transition check
     :returns: true if the transition has been performed and message
     :rtype: list
     """
@@ -67,7 +69,8 @@ def doActionFor(instance, action_id, active_only=True):
     message = ''
     workflow = getToolByName(instance, "portal_workflow")
     if not skip(instance, action_id, peek=True) \
-        and isTransitionAllowed(instance, action_id, active_only):
+        and (not allowed_transition \
+             or isTransitionAllowed(instance, action_id, active_only)):
         try:
             workflow.doActionFor(instance, action_id)
             actionperformed = True
