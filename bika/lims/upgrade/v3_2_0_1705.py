@@ -5,15 +5,16 @@
 from Acquisition import aq_inner
 from Acquisition import aq_parent
 
-from Products.Archetypes.BaseContent import BaseContent
+from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.ZCatalog.interfaces import ICatalogBrain
 from bika.lims import logger
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
-from bika.lims.upgrade import stub, upgradestep
+from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
+from bika.lims.utils import formatDateQuery
 from plone.api.portal import get_tool
 
 product = 'bika.lims'
@@ -34,31 +35,43 @@ def upgrade(tool):
 
     logger.info('Upgrading {0}: {1} -> {2}'.format(product, ufrom, version))
 
+    setup = portal.portal_setup
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'controlpanel')
+
+    RemoveARPriorities(portal)
+
     UpdateIndexesAndMetadata(ut)
 
     BaseAnalysisRefactoring()
 
-    RemoveARPriorities(portal)
-
     RemoveVersionableTypes()
+
+    FixBrokenActionExpressions()
 
     # Refresh affected catalogs
     ut.refreshCatalogs()
-
-    # logger.info("Rebuilding reference_catalog")
-    # rc = get_tool(REFERENCE_CATALOG)
-    # rc.manage_rebuildCatalog()
-
-    # I want to be sure that bika_arpriorities are really removed.
-    bsc = get_tool('bika_setup_catalog')
-    bsc.clearFindAndRebuild()
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
 
+def FixBrokenActionExpressions():
+    """These are fixed in the xml, but I'm fixing them manually here.
+    """
+    pt = get_tool('portal_types')
+    for t in pt:
+        actions = t.listActions() if hasattr(t, 'listActions') else []
+        for a in actions:
+            expr = a.getActionExpression()
+            if 'object/aq_parent/absolute_url' in expr:
+                # This is from Campbell 2012 and makes problems.
+                logger.info("%s.setActioExpression('string:${object_url}')")
+                a.setActionExpression('string:${object_url}')
+
+
 def RemoveVersionableTypes():
-    # Remove versionable types
+    # Remove versionable typesa
     logger.info("Removing versionable types...")
     portal_repository = get_tool('portal_repository')
     non_versionable = ['AnalysisSpec',
@@ -75,6 +88,11 @@ def RemoveVersionableTypes():
 
 
 def UpdateIndexesAndMetadata(ut):
+    # Removed ARPriority completely
+    ut.delColumn(CATALOG_ANALYSIS_LISTING, 'getPriority')
+    ut.delColumn(CATALOG_ANALYSIS_REQUEST_LISTING, 'getPriority')
+    ut.delIndex(CATALOG_WORKSHEET_LISTING, 'getPriority')
+
     # Add getId column to bika_catalog
     ut.addColumn(CATALOG_ANALYSIS_LISTING, 'getNumberOfVerifications')
     # Add SearchableText index to analysis requests catalog
@@ -88,14 +106,10 @@ def UpdateIndexesAndMetadata(ut):
     # correct getDateXXXs
     ut.addIndexAndColumn(
         CATALOG_ANALYSIS_REQUEST_LISTING, 'getDateVerified', 'DateIndex')
-    if CATALOG_ANALYSIS_REQUEST_LISTING not in ut.refreshcatalog:
-        ut.refreshcatalog.append(CATALOG_ANALYSIS_REQUEST_LISTING)
 
     # Reindexing bika_analysis_catalog in order to fix busted date indexes
     ut.addIndexAndColumn(
         CATALOG_ANALYSIS_LISTING, 'getDueDate', 'DateIndex')
-    if CATALOG_ANALYSIS_LISTING not in ut.refreshcatalog:
-        ut.refreshcatalog.append(CATALOG_ANALYSIS_LISTING)
 
     # Unify naming and cleanup of Method/Instrument indexes
     ut.delColumn(CATALOG_ANALYSIS_LISTING, 'getAllowedInstrumentsUIDs')
@@ -132,10 +146,28 @@ def UpdateIndexesAndMetadata(ut):
     # factored out
     ut.delIndexAndColumn('bika_catalog', 'getAnalysisCategory')
 
-    # Removed ARPriority completely
-    ut.delColumn(CATALOG_ANALYSIS_LISTING, 'getPriority')
-    ut.delColumn(CATALOG_ANALYSIS_REQUEST_LISTING, 'getPriority')
-    ut.delIndex(CATALOG_WORKSHEET_LISTING, 'getPriority')
+    # Try to avoid refreshing these two if not required.  We can tell because
+    # using a None in a date index used as a sort_on key, causes these objects
+    # not to be returned at all.
+    query = {'query': [DateTime('1999/01/01 00:00'),
+                       DateTime('2024/01/01 23:59')],
+             'range': 'min:max'}
+
+    cat = get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
+    brains = cat(portal_type='AnalysisRequest', review_state='verified')
+    filtered = cat(portal_type='AnalysisRequest', review_state='verified',
+                   getDateVerified=query)
+    if len(filtered) != len(brains) \
+            and CATALOG_ANALYSIS_REQUEST_LISTING not in ut.refreshcatalog:
+        ut.refreshcatalog.append(CATALOG_ANALYSIS_REQUEST_LISTING)
+
+    cat = get_tool(CATALOG_ANALYSIS_LISTING)
+    brains = cat(portal_type='Analysis', review_state='verified')
+    filtered = cat(portal_type='Analysis', review_state='verified',
+                   getDueDate=query)
+    if len(filtered) != len(brains) \
+            and CATALOG_ANALYSIS_LISTING not in ut.refreshcatalog:
+        ut.refreshcatalog.append(CATALOG_ANALYSIS_LISTING)
 
 
 def BaseAnalysisRefactoring():
@@ -251,7 +283,7 @@ def BaseAnalysisRefactoring():
             # Copy field values from service to analysis
             copy_field_values(srv, an)
 
-            # Duplidate Analyses
+            # Duplicate Analyses
             # ==================
             dups = an.getBRefs(relationship='DuplicateAnalysisAnalysis')
             if dups:
@@ -362,18 +394,19 @@ def BaseAnalysisRefactoring():
 
 
 def RemoveARPriorities(portal):
-    # Throw out ARPriorities.  The types have been removed, but the objects
-    # themselves remain as persistent broken objects, and at_references.
+    # Throw out persistent broken bika_arpriorities.
     logger.info('Removing bika_setup.bika_arpriorities')
-    # Replace PersistentBroken ARPriority things with BaseContent
-    stub('bika.lims.content.arpriority.ARPriority', 'ARPriority', BaseContent)
-    stub('bika.lims.controlpanel.bika_arpriorities', 'ARPriorities',
-         BaseContent)
+    bs = get_tool('bika_setup')
+    pc = get_tool('portal_catalog')
 
     if 'bika_arpriorities' in portal.bika_setup:
-        portal.bika_setup.manage_delObjects(['bika_arpriorities'])
-    logger.info('Reindexing bika_setup object')
-    portal.bika_setup.reindexObject()
+        uid = pc(portal_type='ARPriorities').UID
+        if uid:
+            pc.unCatalogObject(uid)
+        bs.manage_delObjects(['bika_arpriorities'])
+
+    cpl = get_tool('portal_controlpanel')
+    cpl.unregisterConfiglet('bika_arpriorities')
 
 
 def touidref(src, dst, src_relation, fieldname):
