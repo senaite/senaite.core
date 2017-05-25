@@ -102,7 +102,7 @@ def create_analysisrequest(context, request, values, analyses=None,
         # Only 'sample_due' and 'sample_recieved' samples can be selected
         # for secondary analyses
         doActionFor(ar, 'sampled')
-        doActionFor(ar, 'sample_due')
+        doActionFor(ar, 'sample_due', allowed_transition=False)
         sample_state = workflow.getInfoFor(sample, 'review_state')
         if sample_state not in skip_receive:
             doActionFor(ar, 'receive')
@@ -111,7 +111,7 @@ def create_analysisrequest(context, request, values, analyses=None,
     for analysis in analyses:
         revers = analysis.getNumberOfRequiredVerifications()
         analysis.setNumberOfRequiredVerifications(revers)
-        doActionFor(analysis, 'sample_due')
+        doActionFor(analysis, 'sample_due', allowed_transition=False)
         analysis_state = workflow.getInfoFor(analysis, 'review_state')
         if analysis_state not in skip_receive:
             doActionFor(analysis, 'receive')
@@ -148,9 +148,9 @@ def create_analysisrequest(context, request, values, analyses=None,
                 else:
                     sample_due.append(p)
             for p in to_be_preserved:
-                doActionFor(p, 'to_be_preserved')
+                doActionFor(p, 'to_be_preserved', allowed_transition=False)
             for p in sample_due:
-                doActionFor(p, 'sample_due')
+                doActionFor(p, 'sample_due', allowed_transition=False)
             doActionFor(sample, lowest_state)
             doActionFor(ar, lowest_state)
 
@@ -160,7 +160,7 @@ def create_analysisrequest(context, request, values, analyses=None,
                 part = p['object']
                 state = workflow.getInfoFor(part, 'review_state')
                 if state == 'to_be_preserved':
-                    workflow.doActionFor(part, 'preserve')
+                    doActionFor(part, 'preserve', allowed_transition=False)
     # Once the ar is fully created, check if there are rejection reasons
     reject_field = values.get('RejectionReasons', '')
     if reject_field and reject_field.get('checkbox', False):

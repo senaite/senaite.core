@@ -49,7 +49,7 @@ def skip(instance, action, peek=False, unskip=False):
                 instance.REQUEST["workflow_skiplist"].append(skipkey)
 
 
-def doActionFor(instance, action_id, active_only=True):
+def doActionFor(instance, action_id, active_only=True, allowed_transition=True):
     """Performs the transition (action_id) to the instance.
 
     The transition will only be triggered if the current state of the object
@@ -60,6 +60,8 @@ def doActionFor(instance, action_id, active_only=True):
 
     :param instance: Object to be transitioned
     :param action_id: transition id
+    :param active_only: True if transition must apply to active objects
+    :param allowed_transition: True for a allowed transition check
     :returns: true if the transition has been performed and message
     :rtype: list
     """
@@ -67,7 +69,8 @@ def doActionFor(instance, action_id, active_only=True):
     message = ''
     workflow = getToolByName(instance, "portal_workflow")
     if not skip(instance, action_id, peek=True) \
-        and isTransitionAllowed(instance, action_id, active_only):
+        and (not allowed_transition \
+             or isTransitionAllowed(instance, action_id, active_only)):
         try:
             workflow.doActionFor(instance, action_id)
             actionperformed = True
@@ -96,9 +99,9 @@ def BeforeTransitionEventHandler(instance, event):
         return
 
     clazzname = instance.__class__.__name__
-    msg = "Starting transtion {0} for object {1} with id {2}".format(
+    msg = "Starting transition {0} for object {1} with id {2}".format(
         event.transition.id,  clazzname, instance.getId())
-    logger.debug(msg)
+    logger.info(msg)
 
     key = 'before_{0}_transition_event'.format(event.transition.id)
     before_event = getattr(instance, key, False)
@@ -114,7 +117,7 @@ def BeforeTransitionEventHandler(instance, event):
 
     msg = "Calling BeforeTransitionEvent function '{0}' from {1}".format(
         key, clazzname)
-    logger.debug(msg)
+    logger.info(msg)
     before_event()
 
 
@@ -146,7 +149,7 @@ def AfterTransitionEventHandler(instance, event):
     clazzname = instance.__class__.__name__
     msg = "Transition {0} performed for object {1} with id {2}".format(
         event.transition.id,  clazzname, instance.getId())
-    logger.debug(msg)
+    logger.info(msg)
 
     # Because at this point, the object has been transitioned already, but
     # further actions are probably needed still, so be sure is reindexed
@@ -167,7 +170,7 @@ def AfterTransitionEventHandler(instance, event):
 
     msg = "Calling AfterTransitionEvent function '{0}' from {1}".format(
         key, clazzname)
-    logger.debug(msg)
+    logger.info(msg)
     after_event()
 
 def get_workflow_actions(obj):

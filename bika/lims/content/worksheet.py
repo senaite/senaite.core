@@ -920,10 +920,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             states[w.state_var] = state
         return states
 
-    @deprecated('05-2017. Use after_submit_transition_event instead')
-    def workflow_script_submit(self):
-        self.after_submit_transition_event()
-
     def after_submit_transition_event(self):
         """Method triggered after a 'submit' transition for the current
         Worksheet is performed.

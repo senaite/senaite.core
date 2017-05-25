@@ -157,11 +157,6 @@ class ReferenceAnalysis(AbstractAnalysis):
         return []
 
     @security.public
-    @deprecated('05-2017. Use after_submit_transition_event instead')
-    def workflow_script_submit(self):
-        self.after_submit_transition_event()
-
-    @security.public
     def after_submit_transition_event(self):
         """Method triggered after a 'submit' transition for the current
         ReferenceAnalysis is performed.

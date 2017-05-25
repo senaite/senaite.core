@@ -851,9 +851,41 @@ class Sample(BaseFolder, HistoryAwareMixin):
             prep_workflows.append([workflow_id, workflow.title])
         return DisplayList(prep_workflows)
 
-    @deprecated('05-2017. Use after_receive_transition_event instead')
-    def workflow_script_receive(self):
-        self.after_receive_transition_event()
+    def _cascade_transition(self, actionid):
+        """ Performs the transition for the actionid passed in to its children
+        (Analysis Requests and Sample Partitions)
+        """
+        # Sample all self partitions
+        # Note the transition for SamplePartition already transitions all the
+        # analyses associated to that Sample partition, so there is no need to
+        # transition all the analyses from Sample here.
+        for part in self.objectValues('SamplePartition'):
+            doActionFor(part, actionid)
+
+        # when a self is sampled, all associated
+        # AnalysisRequests are also transitioned
+        for ar in self.getAnalysisRequests():
+            doActionFor(ar, actionid)
+
+    @security.public
+    def after_sample_transition_event(self):
+        """Method triggered after a 'sample' transition for the current
+        Sample is performed. Triggers the 'sample' transition for depedendent
+        objects, such as Sample Partitions and Analysis Requests.
+        This function is called automatically by
+        bika.lims.workflow.AfterTransitionEventHandler
+        """
+        self._cascade_transition('sample')
+
+    @security.public
+    def after_sample_due_transition_event(self):
+        """Method triggered after a 'sample_due' transition for the current
+        Sample is performed. Triggers the 'sample_due' transition for
+        depedendent objects, such as Sample Partitions and Analysis Requests.
+        This function is called automatically by
+        bika.lims.workflow.AfterTransitionEventHandler
+        """
+        self._cascade_transition('sample_due')
 
     @security.public
     def after_receive_transition_event(self):
@@ -866,15 +898,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
         """
         self.setDateReceived(DateTime())
         self.reindexObject(idxs=["getDateReceived", ])
-
-        # Receive all self partitions
-        for part in self.objectValues('SamplePartition'):
-            doActionFor(part, 'receive')
-
-        # when a self is received, all associated
-        # AnalysisRequests are also transitioned
-        for ar in self.getAnalysisRequests():
-            doActionFor(ar, "receive")
+        self._cascade_transition('receive')
 
     def workflow_script_preserve(self):
         """This action can happen in the Sample UI, so we transition all
@@ -899,22 +923,6 @@ class Sample(BaseFolder, HistoryAwareMixin):
         self.setDateDisposed(DateTime())
         self.reindexObject(idxs=["review_state", "getDateDisposed", ])
 
-    def workflow_script_sample(self):
-        if skip(self, "sample"):
-            return
-        workflow = getToolByName(self, 'portal_workflow')
-        parts = self.objectValues('SamplePartition')
-        # This action can happen in the Sample UI.  So we transition all
-        # partitions that are still 'to_be_sampled'
-        tbs = [sp for sp in parts
-               if workflow.getInfoFor(sp, 'review_state') == 'to_be_sampled']
-        for sp in tbs:
-            doActionFor(sp, "sample")
-        # All associated AnalysisRequests are also transitioned
-        for ar in self.getAnalysisRequests():
-            doActionFor(ar, "sample")
-            ar.reindexObject()
-
     def workflow_script_to_be_preserved(self):
         if skip(self, "to_be_preserved"):
             return
@@ -930,13 +938,6 @@ class Sample(BaseFolder, HistoryAwareMixin):
             doActionFor(ar, "to_be_preserved")
             ar.reindexObject()
 
-    def workflow_script_sample_due(self):
-        if skip(self, "sample_due"):
-            return
-        # All associated AnalysisRequests are also transitioned
-        for ar in self.getAnalysisRequests():
-            doActionFor(ar, "sample_due")
-            ar.reindexObject()
 
     def workflow_script_reinstate(self):
         if skip(self, "reinstate"):
@@ -995,6 +996,16 @@ class Sample(BaseFolder, HistoryAwareMixin):
         ars = self.getAnalysisRequests()
         for ar in ars:
             doActionFor(ar, 'schedule_sampling')
+
+    def guard_auto_preservation_required(self):
+        """ Returns True if this Sample needs to be preserved
+        Delegates to SamplePartitions' guard_auto_preservation_required
+        """
+        # Return False if none of this sample's partitions require preservation
+        for part in self.objectValues('SamplePartition'):
+            if part.guard_auto_preservation_required():
+                return True
+        return False
 
     def guard_receive_transition(self):
         return isBasicTransitionAllowed(self)
