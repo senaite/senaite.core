@@ -80,7 +80,7 @@ class BikaCustomQueryWalker(CustomQueryWalker):
         for brain in brains:
             if counter % 100 == 0:
                 logger.info(
-                    'Progress: {} objects has been migrated out of {}'
+                    'Progress: {} objects have been migrated out of {}'
                     .format(counter, obj_num_total))
             try:
                 obj = brain.getObject()
@@ -104,7 +104,7 @@ class BikaCustomQueryWalker(CustomQueryWalker):
             counter += 1
             if obj_num_total == counter:
                 logger.info(
-                    'Progress: {} objects has been migrated out of {}'
+                    'Progress: {} objects have been migrated out of {}'
                     .format(counter, obj_num_total))
 
 

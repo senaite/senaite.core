@@ -7,6 +7,7 @@ from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from Products.Archetypes.public import *
+from plone.app.blob.field import FileField as BlobFileField
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from bika.lims.browser.widgets import DateTimeWidget, ReferenceWidget
@@ -118,7 +119,7 @@ schema = BikaSchema.copy() + Schema((
         ),
     ),
 
-    FileField('Document',
+    BlobFileField('Document',
         widget = FileWidget(
             label=_("Report upload"),
             description=_("Load the certificate document here"),

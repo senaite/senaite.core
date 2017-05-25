@@ -78,10 +78,24 @@ def migareteFileFields(portal):
     This function walks over all attachment types and migrates their FileField
     fields.
     """
-    logger.info("Starting migration of FileField fields from Attachment.")
-    # Migarte only works for portal_catalog
-    migrate_to_blob(
-        portal,
-        portal_type='Attachment',
-        remove_old_value=True)
-    logger.info("Finished migration of FileField fields from Attachment.")
+    portal_types = [
+        "Attachment",
+        "ARImport",
+        "Instrument",
+        "InstrumentCertification",
+        "Method",
+        "Multifile",
+        "Report",
+        "SamplePoint"]
+    for portal_type in portal_types:
+        logger.info(
+            "Starting migration of FileField fields from {}."
+            .format(portal_type))
+        # Do the migration
+        migrate_to_blob(
+            portal,
+            portal_type=portal_type,
+            remove_old_value=True)
+        logger.info(
+            "Finished migration of FileField fields from {}."
+            .format(portal_type))
