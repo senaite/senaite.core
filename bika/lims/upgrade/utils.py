@@ -76,72 +76,48 @@ class UpgradeUtils(object):
         cat = self._getCatalog(catalog)
         if index not in cat.indexes():
             return
-        try:
-            cat.delIndex(index)
-            logger.info('Deleted index {0} from catalog {1}'.format(
-                        index, cat.id))
-            transaction.commit()
-        except:
-            logger.error(
-                'Unable to delete index {0} from catalog {1}'.format(
+        cat.delIndex(index)
+        logger.info('Deleted index {0} from catalog {1}'.format(
                     index, cat.id))
-            raise
+        transaction.commit()
 
     def delColumn(self, catalog, column):
         cat = self._getCatalog(catalog)
         if column not in cat.schema():
             return
-        try:
-            cat.delColumn(column)
-            logger.info('Deleted column {0} from catalog {1} deleted.'.format(
-                        column, cat.id))
-            transaction.commit()
-        except:
-            logger.error(
-                'Unable to delete column {0} from catalog {1}'.format(
+        cat.delColumn(column)
+        logger.info('Deleted column {0} from catalog {1} deleted.'.format(
                     column, cat.id))
-            raise
+        transaction.commit()
 
     def addIndex(self, catalog, index, indextype):
         cat = self._getCatalog(catalog)
         if index in cat.indexes():
             return
-        try:
-            if indextype == 'ZCTextIndex':
-                addZCTextIndex(cat, index)
-            else:
-                cat.addIndex(index, indextype)
-            logger.info('Catalog index %s added.' % index)
-            indexes = self.reindexcatalog.get(cat.id, [])
-            indexes.append(index)
-            indexes = list(set(indexes))
-            self.reindexcatalog[cat.id] = indexes
-            transaction.commit()
-        except:
-            logger.error(
-                'Unable to add index {0} to catalog {1}'.format(
-                    index, cat.id))
-            raise
+        if indextype == 'ZCTextIndex':
+            addZCTextIndex(cat, index)
+        else:
+            cat.addIndex(index, indextype)
+        logger.info('Catalog index %s added.' % index)
+        indexes = self.reindexcatalog.get(cat.id, [])
+        indexes.append(index)
+        indexes = list(set(indexes))
+        self.reindexcatalog[cat.id] = indexes
+        transaction.commit()
 
     def addColumn(self, catalog, column):
         cat = self._getCatalog(catalog)
         if column in cat.schema():
             return
-        try:
-            cat.addColumn(column)
-            logger.info('Added column {0} to catalog {1}'.format(
-                column, cat.id))
-            if cat.id not in self.refreshcatalog:
-                logger.info("{} to refresh because col {} added".format(
-                    catalog, column
-                ))
-                self.refreshcatalog.append(cat.id)
-            transaction.commit()
-        except:
-            logger.error(
-                'Unable to add column {0} to catalog {1}'.format(
-                    column, cat.id))
-            raise
+        cat.addColumn(column)
+        logger.info('Added column {0} to catalog {1}'.format(
+            column, cat.id))
+        if cat.id not in self.refreshcatalog:
+            logger.info("{} to refresh because col {} added".format(
+                catalog, column
+            ))
+            self.refreshcatalog.append(cat.id)
+        transaction.commit()
 
     def refreshCatalogs(self):
         """
@@ -158,51 +134,35 @@ class UpgradeUtils(object):
         done = []
         # Start reindexing the catalogs with new columns
         for catalog_to_refresh in to_refresh:
-            try:
-                logger.info(
-                    'Catalog {0} refreshing started'.format(catalog_to_refresh))
-                catalog = getToolByName(self.portal, catalog_to_refresh)
-                handler = ZLogHandler(self.pgthreshold)
-                catalog.refreshCatalog(pghandler=handler)
-                logger.info('Catalog {0} refreshed'.format(catalog_to_refresh))
-                transaction.commit()
-            except:
-                logger.error(
-                    'Unable to refresh catalog {0}'.format(catalog_to_refresh))
-                raise
+            logger.info(
+                'Catalog {0} refreshing started'.format(catalog_to_refresh))
+            catalog = getToolByName(self.portal, catalog_to_refresh)
+            handler = ZLogHandler(self.pgthreshold)
+            catalog.refreshCatalog(pghandler=handler)
+            logger.info('Catalog {0} refreshed'.format(catalog_to_refresh))
+            transaction.commit()
             done.append(catalog_to_refresh)
         # Now the catalogs which only need reindxing
         for catalog_to_reindex in to_reindex:
             if catalog_to_reindex in done:
                 continue
-            try:
-                logger.info(
-                    'Catalog {0} reindexing started'.format(catalog_to_reindex))
-                catalog = getToolByName(
-                    self.portal, catalog_to_reindex)
-                indexes = self.reindexcatalog[catalog_to_reindex]
-                handler = ZLogHandler(self.pgthreshold)
-                catalog.reindexIndex(indexes, None, pghandler=handler)
-                logger.info('Catalog {0} reindexed'.format(catalog_to_reindex))
-                transaction.commit()
-            except:
-                logger.error(
-                    'Unable to reindex catalog {0}'
-                    .format(catalog_to_reindex))
-                raise
+            logger.info(
+                'Catalog {0} reindexing started'.format(catalog_to_reindex))
+            catalog = getToolByName(
+                self.portal, catalog_to_reindex)
+            indexes = self.reindexcatalog[catalog_to_reindex]
+            handler = ZLogHandler(self.pgthreshold)
+            catalog.reindexIndex(indexes, None, pghandler=handler)
+            logger.info('Catalog {0} reindexed'.format(catalog_to_reindex))
+            transaction.commit()
             done.append(catalog_to_reindex)
 
     def cleanAndRebuildCatalogs(self):
         cats = self.refreshcatalog + self.reindexcatalog.keys()
         for catid in cats:
-            try:
-                catalog = getToolByName(self.portal, catid)
-                # manage_catalogRebuild does the same as clearFindAndRebuild
-                # but it alse loggs cpu and time.
-                catalog.manage_catalogRebuild()
-                logger.info('Catalog {0} cleaned and rebuilt'.format(catid))
-                transaction.commit()
-            except:
-                logger.error('Unable to clean and rebuild catalog {0}'.format(
-                            catid))
-                raise
+            catalog = getToolByName(self.portal, catid)
+            # manage_catalogRebuild does the same as clearFindAndRebuild
+            # but it alse loggs cpu and time.
+            catalog.manage_catalogRebuild()
+            logger.info('Catalog {0} cleaned and rebuilt'.format(catid))
+            transaction.commit()
