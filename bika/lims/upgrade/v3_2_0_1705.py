@@ -63,8 +63,8 @@ def upgrade(tool):
     # correct getDateXXXs
     ut.addIndexAndColumn(
         CATALOG_ANALYSIS_REQUEST_LISTING, 'getDateVerified', 'DateIndex')
-    # if CATALOG_ANALYSIS_REQUEST_LISTING not in ut.refreshcatalog:
-    #     ut.refreshcatalog.append(CATALOG_ANALYSIS_REQUEST_LISTING)
+    if CATALOG_ANALYSIS_REQUEST_LISTING not in ut.refreshcatalog:
+        ut.refreshcatalog.append(CATALOG_ANALYSIS_REQUEST_LISTING)
 
     # Refresh affected catalogs
     ut.refreshCatalogs()
