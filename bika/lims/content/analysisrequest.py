@@ -3178,69 +3178,35 @@ class AnalysisRequest(BaseFolder):
     def workflow_script_verify(self):
         events.after_verify(self)
 
+    @deprecated('[1705] Use events.after_publish from '
+                'bika.lims.workflow.anaysisrequest')
+    @security.public
     def workflow_script_publish(self):
-        if skip(self, "publish"):
-            return
-        self.reindexObject(idxs=[
-            "review_state", 'getObjectWorkflowStates', "getDatePublished"])
-        if "publish all analyses" not in self.REQUEST['workflow_skiplist']:
-            # publish all analyses in this AR. (except not requested ones)
-            analyses = self.getAnalyses(review_state='verified')
-            for analysis in analyses:
-                doActionFor(analysis.getObject(), "publish")
+        events.after_publish(self)
 
+    @deprecated('[1705] Use events.after_reinstate from '
+                'bika.lims.workflow.anaysisrequest')
+    @security.public
     def workflow_script_reinstate(self):
-        if skip(self, "reinstate"):
-            return
-        self.reindexObject(idxs=[
-            "cancellation_state", 'getObjectWorkflowStates' ])
-        # activate all analyses in this AR.
-        analyses = self.getAnalyses(cancellation_state='cancelled')
-        for analysis in analyses:
-            doActionFor(analysis.getObject(), 'reinstate')
+        events.after_reinstate(self)
 
+    @deprecated('[1705] Use events.after_cancel from '
+                'bika.lims.workflow.anaysisrequest')
+    @security.public
     def workflow_script_cancel(self):
-        if skip(self, "cancel"):
-            return
-        self.reindexObject(idxs=[
-            "cancellation_state", 'getObjectWorkflowStates'])
-        # deactivate all analyses in this AR.
-        analyses = self.getAnalyses(cancellation_state='active')
-        for analysis in analyses:
-            doActionFor(analysis.getObject(), 'cancel')
+        events.after_cancel(self)
 
+    @deprecated('[1705] Use events.after_schedule_sampling from '
+                'bika.lims.workflow.anaysisrequest')
+    @security.public
     def workflow_script_schedule_sampling(self):
-        """
-        This function runs all the needed process for that action
-        """
-        workflow = getToolByName(self, 'portal_workflow')
-        sample = self.getSample()
-        self.reindexObject(idxs=[
-            'review_state', "getSamplingDate", 'getObjectWorkflowStates',
-            'getSamplingDate'])
-        # We have to set the defined sampling date and sampler and
-        # produce a transition in it
-        if workflow.getInfoFor(sample, 'review_state') == \
-                'to_be_sampled':
-            # transact the related sample
-            doActionFor(sample, 'schedule_sampling')
+        events.after_schedule_sampling(self)
 
+    @deprecated('[1705] Use events.after_reject from '
+                'bika.lims.workflow.anaysisrequest')
+    @security.public
     def workflow_script_reject(self):
-        workflow = getToolByName(self, 'portal_workflow')
-        sample = self.getSample()
-        self.reindexObject(idxs=[
-            "review_state", 'getObjectWorkflowStates'])
-        if workflow.getInfoFor(sample, 'review_state') != 'rejected':
-            # Setting the rejection reasons in sample
-            sample.setRejectionReasons(self.getRejectionReasons())
-            workflow.doActionFor(sample, "reject")
-        # deactivate all analyses in this AR.
-        analyses = self.getAnalyses()
-        for analysis in analyses:
-            doActionFor(analysis.getObject(), 'reject')
-        if self.bika_setup.getNotifyOnRejection():
-            # Notify the Client about the Rejection.
-            notify_rejection(self)
+        events.after_reject(self)
 
     def SearchableText(self):
         """

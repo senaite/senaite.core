@@ -1,18 +1,20 @@
 from Products.CMFCore.utils import getToolByName
 
 from bika.lims import logger
+from bika.lims.utils.analysisrequest import notify_rejection
 from bika.lims.workflow import doActionFor
+from bika.lims.workflow import getCurrentState
 from bika.lims.workflow import isBasicTransitionAllowed
 
 
-def _promote_transition(obj, transaction_id):
-    """ Promotes the transition passed in to the object's parent
+def _promote_transition(obj, transition_id):
+    """Promotes the transition passed in to the object's parent
     :param obj: Analysis Request for which the transition has to be promoted
-    :param transaction_id: Unique id of the transaction
+    :param transition_id: Unique id of the transition
     """
     sample = obj.getSample()
     if sample:
-        doActionFor(sample, transaction_id)
+        doActionFor(sample, transition_id)
 
 
 def after_no_sampling_workflow(obj):
@@ -62,6 +64,18 @@ def after_preserve(obj):
     _promote_transition(obj, 'preserve')
 
 
+def after_schedule_sampling(obj):
+    """Method triggered after a 'schedule_sampling' transition for the Analysis
+    Request passed in is performed. Promotes the same transition to parent's
+    Sample.
+    This function is called automatically by
+    bika.lims.workflow.AfterTransitionEventHandler
+    :param obj: Analysis Request affected by the transition
+    :type obj: AnalysisRequest
+    """
+    _promote_transition(obj, 'schedule_sampling')
+
+
 def after_sample(obj):
     """Method triggered after a 'sample' transition for the Analysis Request
     passed in is performed. Promotes sample transition to parent's sample
@@ -93,6 +107,33 @@ def after_receive(obj):
     _promote_transition(obj, 'receive')
 
 
+def after_reject(obj):
+    """Method triggered after a 'reject' transition for the Analysis Request
+    passed in is performed. Transitions and sets the rejection reasons to the
+    parent Sample. Also transitions the analyses assigned to the AR
+    bika.lims.workflow.AfterTransitionEventHandler
+    :param obj: Analysis Request affected by the transition
+    :type obj: AnalysisRequest
+    """
+    sample = obj.getSample()
+    if not sample:
+        return
+
+    if getCurrentState(sample) != 'rejected':
+        reasons = obj.getRejectionReasons()
+        sample.setRejectionReasons(reasons)
+        doActionFor(sample, 'reject')
+
+    # Deactivate all analyses from this Analysis Request
+    ans = obj.getAnalyses(full_objects=True)
+    for analysis in ans:
+        doActionFor(analysis, 'reject')
+
+    if obj.bika_setup.getNotifyOnRejection():
+        # Notify the Client about the Rejection.
+        notify_rejection(obj)
+
+
 def after_attach(obj):
     """Method triggered after an 'attach' transition for the Analysis Request
     passed in is performed.
@@ -114,9 +155,58 @@ def after_verify(obj):
     :param obj: Analysis Request affected by the transition
     :type obj: AnalysisRequest
     """
-    # Verify all analyses from this Analysis Request
-    for analysis in analyses:
+    # TODO Workflow, Verify - REQUEST thing inside event?
+    if "verify all analyses" in obj.REQUEST['workflow_skiplist']:
+        return
+
+    # Verify all analyses from this Analysis Request, except not requested
+    ans = obj.getAnalyses(full_objects=True, review_state='to_be_verified')
+    for analysis in ans:
         success, message = doActionFor(analysis, 'verify')
         if not success:
             # If failed, delete last verificator
             analysis.deleteLastVerificator()
+
+
+def after_publish(obj):
+    """Method triggered after an 'publish' transition for the Analysis Request
+    passed in is performed.
+    This function is called automatically by
+    bika.lims.workflow.AfterTransitionEventHandler
+    :param obj: Analysis Request affected by the transition
+    :type obj: AnalysisRequest
+    """
+    # TODO Workflow, Publish - REQUEST thing inside event?
+    if "publish all analyses" in obj.REQUEST['workflow_skiplist']:
+        return
+
+    # Verify all analyses from this Analysis Request, except not requested
+    ans = obj.getAnalyses(full_objects=True, review_state='verified')
+    for analysis in ans:
+        doActionFor(analysis, 'publish')
+
+
+def after_reinstate(obj):
+    """Method triggered after a 'reinstate' transition for the Analysis Request
+    passed in is performed. Activates all analyses contained in the object.
+    This function is called automatically by
+    bika.lims.workflow.AfterTransitionEventHandler
+    :param obj: Analysis Request affected by the transition
+    :type obj: AnalysisRequest
+    """
+    ans = obj.getAnalyses(full_objects=True, cancellation_state='cancelled')
+    for analysis in ans:
+        doActionFor(analysis, 'reinstate')
+
+
+def after_cancel(obj):
+    """Method triggered after a 'cancel' transition for the Analysis Request
+    passed in is performed. Deactivates all analyses contained in the object.
+    This function is called automatically by
+    bika.lims.workflow.AfterTransitionEventHandler
+    :param obj: Analysis Request affected by the transition
+    :type obj: AnalysisRequest
+    """
+    ans = obj.getAnalyses(full_objects=True, cancellation_state='active')
+    for analysis in ans:
+        doActionFor(analysis, 'cancel')
