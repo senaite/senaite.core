@@ -123,7 +123,7 @@ class LabContact(Contact):
         return self.portal_membership.getMemberById(
             self.getUsername()) is not None
 
-    @deprecated('[1612] Use getDepartments intead")
+    @deprecated('[1612] Use getDepartments instead')
     def getDepartment(self):
         """
         This function is a mirror for getDepartments to maintain the
