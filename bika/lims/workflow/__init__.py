@@ -68,16 +68,48 @@ def doActionFor(instance, action_id, active_only=True, allowed_transition=True):
     actionperformed = False
     message = ''
     workflow = getToolByName(instance, "portal_workflow")
-    if not skip(instance, action_id, peek=True) \
-        and (not allowed_transition \
-             or isTransitionAllowed(instance, action_id, active_only)):
-        try:
-            workflow.doActionFor(instance, action_id)
-            actionperformed = True
-        except WorkflowException as e:
-            message = str(e)
+
+    skipaction = skip(instance, action_id, peek=True)
+    if skipaction:
+        clazzname = instance.__class__.__name__
+        msg = "Skipping transition '{0}': {1} '{2}'".format(action_id,
+                clazzname, instance.getId())
+        logger.info(msg)
+        return actionperformed, message
+
+    if allowed_transition:
+        allowed = isTransitionAllowed(instance, action_id, active_only)
+        if not allowed:
+            _debugTransitionsFor(instance)
+            transitions = workflow.getTransitionsFor(instance)
+            transitions = [trans['id'] for trans in transitions]
+            transitions = ', '.join(transitions)
+            currstate = getCurrentState(instance)
+            clazzname = instance.__class__.__name__
+            msg = "Transition '{0}' not allowed: {1} '{2}' ({3}). " \
+                  "Available transitions: {4}".format(action_id, clazzname,
+                        instance.getId(), currstate, transitions)
+            logger.warn(msg)
+            #_debugTransitionsFor(instance)
+            return actionperformed, message
+    try:
+        workflow.doActionFor(instance, action_id)
+        actionperformed = True
+    except WorkflowException as e:
+        message = str(e)
+        logger.error(message)
     return actionperformed, message
 
+def doActionsFor(instance, actions):
+    """Performs a set of transitions to the instance passed in
+    """
+    startpoint = False
+    prevevents = getReviewHistoryActionsList(instance)
+    for action in actions:
+        if not startpoint and action in prevevents:
+            continue
+        startpoint = True
+        doActionFor(instance, action)
 
 def BeforeTransitionEventHandler(instance, event):
     """ This event is executed before each transition and delegates further
@@ -99,8 +131,9 @@ def BeforeTransitionEventHandler(instance, event):
         return
 
     clazzname = instance.__class__.__name__
-    msg = "Starting transition {0} for object {1} with id {2}".format(
-        event.transition.id,  clazzname, instance.getId())
+    currstate = getCurrentState(instance)
+    msg = "Transition '{0}' started: {1} '{2}' ({3})".format(
+        event.transition.id,  clazzname, instance.getId(), currstate)
     logger.info(msg)
 
     key = 'before_{0}_transition_event'.format(event.transition.id)
@@ -115,8 +148,7 @@ def BeforeTransitionEventHandler(instance, event):
     if not before_event:
         return
 
-    msg = "Calling BeforeTransitionEvent function '{0}' from {1}".format(
-        key, clazzname)
+    msg = "BeforeTransition: '{0}.{1}'".format(clazzname, key)
     logger.info(msg)
     before_event()
 
@@ -147,8 +179,9 @@ def AfterTransitionEventHandler(instance, event):
         return
 
     clazzname = instance.__class__.__name__
-    msg = "Transition {0} performed for object {1} with id {2}".format(
-        event.transition.id,  clazzname, instance.getId())
+    currstate = getCurrentState(instance)
+    msg = "Transition '{0}' finished: '{1}' '{2}' ({3})".format(
+        event.transition.id,  clazzname, instance.getId(), currstate)
     logger.info(msg)
 
     # Because at this point, the object has been transitioned already, but
@@ -168,8 +201,7 @@ def AfterTransitionEventHandler(instance, event):
     if not after_event:
         return
 
-    msg = "Calling AfterTransitionEvent function '{0}' from {1}".format(
-        key, clazzname)
+    msg = "AfterTransition: '{0}.{1}'".format(clazzname, key)
     logger.info(msg)
     after_event()
 
@@ -217,8 +249,8 @@ def isTransitionAllowed(instance, transition_id, active_only=True):
         return False
     wftool = getToolByName(instance, "portal_workflow")
     transitions = wftool.getTransitionsFor(instance)
-    trans = [trans for trans in transitions if trans['id'] == transition_id]
-    return len(trans) >= 1
+    trans = [trans['id'] for trans in transitions]
+    return transition_id in trans
 
 def wasTransitionPerformed(instance, transition_id):
     """Checks if the transition has already been performed to the object
@@ -229,6 +261,14 @@ def wasTransitionPerformed(instance, transition_id):
         if event['action'] == transition_id:
             return True
     return False
+
+def getReviewHistoryActionsList(instance):
+    """Returns a list with the actions performed for the instance, from oldest
+    to newest"""
+    review_history = getReviewHistory()
+    review_history.reverse()
+    actions = [event['action'] for event in review_history]
+    return actions
 
 def getReviewHistory(instance):
     """Returns the review history for the instance in reverse order

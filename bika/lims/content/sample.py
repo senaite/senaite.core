@@ -868,6 +868,28 @@ class Sample(BaseFolder, HistoryAwareMixin):
             doActionFor(ar, actionid)
 
     @security.public
+    def after_no_sampling_workflow_transition_event(self):
+        """Method triggered after a 'no_sampling_workflow' transition for the
+        current Sample is performed. Triggers the 'no_sampling_workflow'
+        transition for depedendent objects, such as Sample Partitions and
+        Analysis Requests.
+        This function is called automatically by
+        bika.lims.workflow.AfterTransitionEventHandler
+        """
+        self._cascade_transition('no_sampling_workflow')
+
+    @security.public
+    def after_sampling_workflow_transition_event(self):
+        """Method triggered after a 'sampling_workflow' transition for the
+        current Sample is performed. Triggers the 'sampling_workflow'
+        transition for depedendent objects, such as Sample Partitions and
+        Analysis Requests.
+        This function is called automatically by
+        bika.lims.workflow.AfterTransitionEventHandler
+        """
+        self._cascade_transition('sampling_workflow')
+
+    @security.public
     def after_sample_transition_event(self):
         """Method triggered after a 'sample' transition for the current
         Sample is performed. Triggers the 'sample' transition for depedendent
@@ -997,13 +1019,13 @@ class Sample(BaseFolder, HistoryAwareMixin):
         for ar in ars:
             doActionFor(ar, 'schedule_sampling')
 
-    def guard_auto_preservation_required(self):
+    def guard_to_be_preserved(self):
         """ Returns True if this Sample needs to be preserved
-        Delegates to SamplePartitions' guard_auto_preservation_required
+        Delegates to SamplePartitions' guard_to_be_preserved
         """
         # Return False if none of this sample's partitions require preservation
         for part in self.objectValues('SamplePartition'):
-            if part.guard_auto_preservation_required():
+            if part.guard_to_be_preserved():
                 return True
         return False
 

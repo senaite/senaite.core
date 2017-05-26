@@ -21,6 +21,9 @@ from bika.lims.utils.sample import create_sample
 from bika.lims.utils.samplepartition import create_samplepartition
 from Products.CMFCore.WorkflowCore import WorkflowException
 from bika.lims.workflow import doActionFor
+from bika.lims.workflow import doActionsFor
+from bika.lims.workflow import isTransitionAllowed
+from bika.lims.workflow import getReviewHistoryActionsList
 from copy import deepcopy
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -56,21 +59,17 @@ def create_analysisrequest(context, request, values, analyses=None,
         Allow different prices to be set for analyses.  If not set, prices
         are read from the associated analysis service.
     """
-
-    # Gather neccesary tools
-    workflow = getToolByName(context, 'portal_workflow')
-    # It's necessary to modify these and we don't want to pollute the
-    # parent's data
+    # Don't pollute the dict param passed in
     values = deepcopy(values)
+
     # Create new sample or locate the existing for secondary AR
+    secondary = False
+    sample = None
     if not values.get('Sample', False):
-        secondary = False
-        workflow_enabled = context.bika_setup.getSamplingWorkflowEnabled()
         sample = create_sample(context, request, values)
     else:
-        secondary = True
         sample = get_sample_from_values(context, values)
-        workflow_enabled = sample.getSamplingWorkflowEnabled()
+        secondary = True
 
     # Create the Analysis Request
     ar = _createObjectByType('AnalysisRequest', context, tmpID())
@@ -79,12 +78,7 @@ def create_analysisrequest(context, request, values, analyses=None,
     ar.setSample(sample)
     values['Sample'] = sample
     ar.processForm(REQUEST=request, values=values)
-    # Object has been renamed
     ar.edit(RequestID=ar.getId())
-
-    # Set initial AR state
-    action = '{0}sampling_workflow'.format('' if workflow_enabled else 'no_')
-    workflow.doActionFor(ar, action)
 
     # Set analysis request analyses. 'Analyses' param are analyses services
     analyses = analyses if analyses else []
@@ -94,50 +88,50 @@ def create_analysisrequest(context, request, values, analyses=None,
     # analyses with specs and prices. This function, even it is called 'set',
     # deletes the old analyses, so eventually we obtain the desired analyses.
     ar.setAnalyses(service_uids, prices=prices, specs=specifications)
-    # Gettin the ar objects
     analyses = ar.getAnalyses(full_objects=True)
-    # Continue to set the state of the AR
-    skip_receive = ['to_be_sampled', 'sample_due', 'sampled', 'to_be_preserved']
+
+    # Create sample partitions
+    if not partitions:
+        partitions = [{'services': service_uids}]
+    for n, partition in enumerate(partitions):
+        # Calculate partition id
+        partition_prefix = sample.getId() + "-P"
+        partition_id = '%s%s' % (partition_prefix, n + 1)
+        partition['part_id'] = partition_id
+        # Point to or create sample partition
+        if partition_id in sample.objectIds():
+            partition['object'] = sample[partition_id]
+        else:
+            partition['object'] = create_samplepartition(
+                sample,
+                partition,
+                analyses
+            )
+
+    # At this point, we have a fully created AR, with a Sample, Partitions and
+    # Analyses, but the state of all them is the initial ("sample_registered").
+    # We can now transition the whole thing (instead of doing it manually for
+    # each object we created). After and Before transitions will take care of
+    # cascading and promoting the transitions in all the objects "associated"
+    # to this Analysis Request.
+    sampling_workflow_enabled = sample.getSamplingWorkflowEnabled()
+    action = 'no_sampling_workflow'
+    if sampling_workflow_enabled:
+        action = 'sampling_workflow'
+    # Transition the Analysis Request and related objects to "sampled" (if
+    # sampling workflow not enabled) or to "to_be_sampled" statuses.
+    doActionFor(ar, action)
+
     if secondary:
-        # Only 'sample_due' and 'sample_recieved' samples can be selected
-        # for secondary analyses
-        doActionFor(ar, 'sampled')
-        doActionFor(ar, 'sample_due', allowed_transition=False)
-        sample_state = workflow.getInfoFor(sample, 'review_state')
-        if sample_state not in skip_receive:
-            doActionFor(ar, 'receive')
+        # If secondary AR, then we need to manually transition the AR (and its
+        # children) to fit with the Sample Partition's current state
+        sampleactions = getReviewHistoryActionsList(sample)
+        doActionsFor(ar, action)
 
-    # Set the state of analyses we created.
-    for analysis in analyses:
-        revers = analysis.getNumberOfRequiredVerifications()
-        analysis.setNumberOfRequiredVerifications(revers)
-        doActionFor(analysis, 'sample_due', allowed_transition=False)
-        analysis_state = workflow.getInfoFor(analysis, 'review_state')
-        if analysis_state not in skip_receive:
-            doActionFor(analysis, 'receive')
-
-    if not secondary:
-        # Create sample partitions
-        if not partitions:
-            partitions = [{'services': service_uids}]
-        for n, partition in enumerate(partitions):
-            # Calculate partition id
-            partition_prefix = sample.getId() + "-P"
-            partition_id = '%s%s' % (partition_prefix, n + 1)
-            partition['part_id'] = partition_id
-            # Point to or create sample partition
-            if partition_id in sample.objectIds():
-                partition['object'] = sample[partition_id]
-            else:
-                partition['object'] = create_samplepartition(
-                    sample,
-                    partition,
-                    analyses
-                )
-        # If Preservation is required for some partitions,
-        # and the SamplingWorkflow is disabled, we need
-        # to transition to to_be_preserved manually.
-        if not workflow_enabled:
+    else:
+        # If Preservation is required for some partitions, and the SamplingWorkflow
+        # is disabled, we need to transition to to_be_preserved manually.
+        if not sampling_workflow_enabled:
             to_be_preserved = []
             sample_due = []
             lowest_state = 'sample_due'
@@ -148,11 +142,10 @@ def create_analysisrequest(context, request, values, analyses=None,
                 else:
                     sample_due.append(p)
             for p in to_be_preserved:
-                doActionFor(p, 'to_be_preserved', allowed_transition=False)
+                doActionFor(p, 'to_be_preserved')
             for p in sample_due:
-                doActionFor(p, 'sample_due', allowed_transition=False)
+                doActionFor(p, 'sample_due')
             doActionFor(sample, lowest_state)
-            doActionFor(ar, lowest_state)
 
         # Transition pre-preserved partitions
         for p in partitions:
@@ -160,12 +153,13 @@ def create_analysisrequest(context, request, values, analyses=None,
                 part = p['object']
                 state = workflow.getInfoFor(part, 'review_state')
                 if state == 'to_be_preserved':
-                    doActionFor(part, 'preserve', allowed_transition=False)
-    # Once the ar is fully created, check if there are rejection reasons
-    reject_field = values.get('RejectionReasons', '')
-    if reject_field and reject_field.get('checkbox', False):
-        doActionFor(ar, 'reject')
-    # Return the newly created Analysis Request
+                    doActionFor(part, 'preserve')
+
+        # Once the ar is fully created, check if there are rejection reasons
+        reject_field = values.get('RejectionReasons', '')
+        if reject_field and reject_field.get('checkbox', False):
+            doActionFor(ar, 'reject')
+
     return ar
 
 

@@ -3088,13 +3088,14 @@ class AnalysisRequest(BaseFolder):
                       if not a.isUserAllowedToVerify(member)]
         return not notallowed
 
-    def guard_auto_preservation_required(self):
+    def guard_to_be_preserved(self):
         """ Returns True if the Sample from this AR needs to be preserved
-        Returns false if the Analysis Request has no Sample assigned yet
-        Delegates to Sample's guard_auto_preservation_required
+        Returns false if the Analysis Request has no Sample assigned yet or
+        does not need to be preserved
+        Delegates to Sample's guard_to_be_preserved
         """
         sample = self.getSample()
-        return sample and sample.guard_auto_preservation_required()
+        return sample and sample.guard_to_be_preserved()
 
     def guard_verify_transition(self):
         """
@@ -3157,6 +3158,38 @@ class AnalysisRequest(BaseFolder):
             return True
         return False
 
+    @security.public
+    def after_no_sampling_workflow_transition_event(self):
+        """Method triggered after a 'no_sampling_workflow' transition for the
+        current Analysis Request is performed. Performs the same transition
+        to the parent's Sample.
+        This function is called automatically by
+        bika.lims.workflow.AfterTransitionEventHandler
+        """
+        sample = self.getSample()
+        doActionFor(sample, 'no_sampling_workflow')
+
+    @security.public
+    def after_sampling_workflow_transition_event(self):
+        """Method triggered after a 'sampling_workflow' transition for the
+        current Analysis Request is performed. Performs the same transition
+        to the parent's Sample.
+        This function is called automatically by
+        bika.lims.workflow.AfterTransitionEventHandler
+        """
+        sample = self.getSample()
+        doActionFor(sample, 'sampling_workflow')
+
+    @security.public
+    def after_sample_transition_event(self):
+        """Method triggered after a 'sample' transition for the current
+        AR is performed. Promotes sample transition to parent's sample
+        bika.lims.workflow.AfterTransitionEventHandler
+        """
+        sample = self.getSample()
+        doActionFor(sample, 'sample')
+
+    @security.public
     def after_receive_transition_event(self):
         """Method triggered after a 'receive' transition for the current
         Analysis Request is performed. Responsible of triggering cascade
@@ -3185,25 +3218,6 @@ class AnalysisRequest(BaseFolder):
         if not skip(sample, "preserve", peek=True):
             workflow.doActionFor(sample, "preserve")
 
-    def workflow_script_sampling_workflow(self):
-        if skip(self, "sampling_workflow"):
-            return
-        sample = self.getSample()
-        sd = sample.getSamplingDate()
-        # noinspection PyCallingNonCallable
-        self.reindexObject()
-        if sd and sd > DateTime():
-            sample.future_dated = True
-
-    def workflow_script_no_sampling_workflow(self):
-        if skip(self, "no_sampling_workflow"):
-            return
-        sample = self.getSample()
-        sd = sample.getSamplingDate()
-        self.reindexObject()
-        # noinspection PyCallingNonCallable
-        if sd and sd > DateTime():
-            sample.future_dated = True
 
     def workflow_script_attach(self):
         if skip(self, "attach"):
@@ -3211,16 +3225,6 @@ class AnalysisRequest(BaseFolder):
         self.reindexObject(idxs=["review_state",  'getObjectWorkflowStates', ])
         # Don't cascade. Shouldn't be attaching ARs for now (if ever).
         return
-
-    @security.public
-    def after_sample_transition_event(self):
-        """Method triggered after a 'sample' transition for the current
-        AR is performed. Promotes sample transition to parent's sample
-        bika.lims.workflow.AfterTransitionEventHandler
-        """
-        sample = self.getSample()
-        if sample:
-            doActionFor(sample, 'sample')
 
     def workflow_script_verify(self):
         if skip(self, "verify"):

@@ -73,8 +73,7 @@ def create_samplepartition(context, data, analyses=[]):
     # Add analyses
     partition_services = data['services']
     analyses = [a for a in analyses if a.getServiceUID() in partition_services]
-    if analyses:
-        partition.edit(Analyses=analyses)
+
     # Set some generated values
     partition.edit(
         Container=container,
@@ -84,9 +83,6 @@ def create_samplepartition(context, data, analyses=[]):
     if analyses:
         for analysis in analyses:
             analysis.setSamplePartition(partition)
-    # Perform the appropriate workflow action
-    workflow_action = 'sampling_workflow' if workflow_enabled \
-        else 'no_sampling_workflow'
-    context.portal_workflow.doActionFor(partition, workflow_action)
+        partition.setAnalyses(analyses)
     # Return the created partition
     return partition

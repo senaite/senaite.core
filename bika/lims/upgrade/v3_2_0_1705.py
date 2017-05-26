@@ -50,10 +50,6 @@ def upgrade(tool):
     rc = get_tool(REFERENCE_CATALOG)
     rc.manage_rebuildCatalog()
 
-    # Re-run workflow-csv
-    setup = portal.portal_setup
-    setup.runImportStepFromProfile('profile-bika.lims:default', 'workflow-csv')
-
     # Remove workflow automatic transitions no longer used
     removeWorkflowsAutoTransitions(portal)
 
@@ -297,6 +293,11 @@ def BaseAnalysisRefactoring(portal):
     for brain in brains:
         spec = brain.getObject()
         touidref(spec, spec, 'AnalysisSpecSampleType', 'SampleType')
+
+    brains = bc(portal_type='SamplePartition')
+    for brain in brains:
+        part = brain.getObject()
+        touidref(part, part, 'SamplePartitionAnalysis', 'SamplePartition')
 
 def touidref(src, dst, src_relation, fieldname):
     """Convert an archetypes reference in src/src_relation to a UIDReference

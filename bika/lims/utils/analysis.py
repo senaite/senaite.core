@@ -61,29 +61,6 @@ def copy_analysis_field_values(source, analysis, **kwargs):
         if value:
             dst_schema[fieldname].set(analysis, value)
 
-
-def init_sampling_workflow(analysis):
-    """Perform the intitial analysis workflow step depending on whether
-    or not the sampling workflow is enabled.
-    """
-    bika_setup = get_tool('bika_setup')
-    wst = bika_setup.getSamplingWorkflowEnabled()
-    action = 'sampling_workflow' if wst else 'no_sampling_workflow'
-    workflow = get_tool('portal_workflow')
-    try:
-        workflow.doActionFor(analysis, action)
-        state = workflow.getInfoFor(analysis, 'review_state')
-        logger.info(
-            '%s/%s: transition %s passed. state=%s' %
-            (analysis.aq_parent.absolute_url(),
-             analysis.getId(), action, state))
-    except WorkflowException:  # XXX CAMPBELL ???
-        state = workflow.getInfoFor(analysis, 'review_state')
-        logger.info('%s/%s: transition %s failed. state=%s' %
-                    (analysis.aq_parent.absolute_url(), analysis.getId(),
-                     action, state))
-
-
 def create_analysis(context, source, **kwargs):
     """Create a new Analysis.  The source can be an Analysis Service or
     an existing Analysis, and all possible field values will be set to the
@@ -107,9 +84,7 @@ def create_analysis(context, source, **kwargs):
 
     analysis.unmarkCreationFlag()
     zope.event.notify(ObjectInitializedEvent(analysis))
-    init_sampling_workflow(analysis)
     return analysis
-
 
 def get_significant_digits(numeric_value):
     """

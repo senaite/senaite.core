@@ -5,6 +5,7 @@
 
 from AccessControl import ClassSecurityInfo
 from bika.lims import deprecated
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.fields import DurationField
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
@@ -38,9 +39,8 @@ schema = BikaSchema.copy() + Schema((
     BooleanField('Separate',
         default=False
     ),
-    ReferenceField('Analyses',
+    UIDReferenceField('Analyses',
         allowed_types=('Analysis',),
-        relationship='SamplePartitionAnalysis',
         required=0,
         multiValued=1,
     ),
@@ -84,16 +84,6 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
         return safe_unicode(self.getId()).encode('utf-8')
 
     @security.public
-    def getAnalyses(self):
-        """Returns a list of analyses linked to this sample Partition
-        TODO: Refactor to only return full objects if requested!
-        """
-        bac = get_tool('bika_analysis_catalog')
-        brains = bac(portal_type='Analysis', getSamplePartitionUID=self.UID())
-        analyses = [b.getObject() for b in brains]
-        return analyses
-
-    @security.public
     def current_date(self):
         """ return current date """
         return DateTime()
@@ -124,7 +114,7 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
 
     def _cascade_promote_transition(self, actionid, targetstate):
         """ Performs the transition for the actionid passed in to its children
-        (Analuyses). If all sibling partitions are in the targe state, promotes
+        (Analyses). If all sibling partitions are in the targe state, promotes
         the transition to its parent Sample
         """
         # Transition our analyses
@@ -140,6 +130,28 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
             doActionFor(sample, actionid)
 
     @security.public
+    def after_no_sampling_workflow_transition_event(self):
+        """Method triggered after a 'no_sampling_workflow' transition for the
+        current Sample is performed. Triggers the 'no_sampling_workflow'
+        transition for depedendent objects, such as Sample Partitions and
+        Analysis Requests.
+        This function is called automatically by
+        bika.lims.workflow.AfterTransitionEventHandler
+        """
+        self._cascade_promote_transition('no_sampling_workflow', 'sampled')
+
+    @security.public
+    def after_sampling_workflow_transition_event(self):
+        """Method triggered after a 'sampling_workflow' transition for the
+        current Sample is performed. Triggers the 'sampling_workflow'
+        transition for depedendent objects, such as Sample Partitions and
+        Analysis Requests.
+        This function is called automatically by
+        bika.lims.workflow.AfterTransitionEventHandler
+        """
+        self._cascade_promote_transition('sampling_workflow', 'to_be_sampled')
+
+    @security.public
     def after_sample_transition_event(self):
         """Method triggered after a 'sample' transition for the current
         SamplePartition is performed. Triggers the 'sample' transition for
@@ -147,7 +159,7 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
         This function is called automatically by
         bika.lims.workflow.AfterTransitionEventHandler
         """
-        self._cascade_promote_transition('sample', 'sample')
+        self._cascade_promote_transition('sample', 'sampled')
 
     @security.public
     def after_sample_due_transition_event(self):
@@ -172,9 +184,9 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
         """
         self.setDateReceived(DateTime())
         self.reindexObject(idxs=["getDateReceived", ])
-        self._cascade_promote_transition('receive', 'receive')
+        self._cascade_promote_transition('receive', 'sample_received')
 
-    def guard_auto_preservation_required(self):
+    def guard_to_be_preserved(self):
         """ Returns True if this Sample Partition needs to be preserved
         Returns false if no analyses have been assigned yet, or the Sample
         Partition has Preservation and Container objects assigned with the
