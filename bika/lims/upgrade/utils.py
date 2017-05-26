@@ -155,12 +155,15 @@ class UpgradeUtils(object):
             transaction.commit()
             done.append(catalog_to_reindex)
 
+    def cleanAndRebuildCatalog(self, catid):
+        catalog = getToolByName(self.portal, catid)
+        # manage_catalogRebuild does the same as clearFindAndRebuild
+        # but it alse loggs cpu and time.
+        catalog.manage_catalogRebuild()
+        logger.info('Catalog {0} cleaned and rebuilt'.format(catid))
+        transaction.commit()
+
     def cleanAndRebuildCatalogs(self):
         cats = self.refreshcatalog + self.reindexcatalog.keys()
         for catid in cats:
-            catalog = getToolByName(self.portal, catid)
-            # manage_catalogRebuild does the same as clearFindAndRebuild
-            # but it alse loggs cpu and time.
-            catalog.manage_catalogRebuild()
-            logger.info('Catalog {0} cleaned and rebuilt'.format(catid))
-            transaction.commit()
+            self.cleanAndRebuildCatalog(catid)

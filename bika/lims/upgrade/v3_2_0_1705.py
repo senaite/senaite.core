@@ -6,15 +6,15 @@ from Acquisition import aq_inner
 from Acquisition import aq_parent
 
 from DateTime import DateTime
+from Products.Archetypes.BaseContent import BaseContent
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.ZCatalog.interfaces import ICatalogBrain
 from bika.lims import logger
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
-from bika.lims.upgrade import upgradestep
+from bika.lims.upgrade import upgradestep, stub
 from bika.lims.upgrade.utils import UpgradeUtils
-from bika.lims.utils import formatDateQuery
 from plone.api.portal import get_tool
 
 product = 'bika.lims'
@@ -162,8 +162,8 @@ def UpdateIndexesAndMetadata(ut):
         ut.refreshcatalog.append(CATALOG_ANALYSIS_REQUEST_LISTING)
 
     cat = get_tool(CATALOG_ANALYSIS_LISTING)
-    brains = cat(portal_type='Analysis', review_state='verified')
-    filtered = cat(portal_type='Analysis', review_state='verified',
+    brains = cat(portal_type='Analysis', review_state='received')
+    filtered = cat(portal_type='Analysis', review_state='received',
                    getDueDate=query)
     if len(filtered) != len(brains) \
             and CATALOG_ANALYSIS_LISTING not in ut.refreshcatalog:
@@ -267,6 +267,11 @@ def BaseAnalysisRefactoring():
     brains = bsc(portal_type='AnalysisService')
     for srv_brain in brains:
         srv = srv_brain.getObject()
+        # migrate service refs first!
+        touidref(srv, srv, 'AnalysisServiceAnalysisCategory', 'Category')
+        touidref(srv, srv, 'AnalysisServiceDepartment', 'Department')
+        touidref(srv, srv, 'AnalysisServiceInstrument', 'Instrument')
+        touidref(srv, srv, 'AnalysisServiceMethod', 'Method')
 
         # Routine Analyses
         # ==================
@@ -276,7 +281,7 @@ def BaseAnalysisRefactoring():
                         (len(ans), srv.Title()))
         for an in ans:
             # retain analysis Service in a newly named UIDReferenceField
-            an.setAnalysisService(srv)
+            an.setAnalysisService(srv.UID())
             # Set service references as analysis reference values
             an.setCategory(srv.getCategory())
             an.setDepartment(srv.getDepartment())
@@ -398,15 +403,25 @@ def RemoveARPriorities(portal):
     logger.info('Removing bika_setup.bika_arpriorities')
     bs = get_tool('bika_setup')
     pc = get_tool('portal_catalog')
+    cpl = get_tool('portal_controlpanel')
+
+    # This lets ARPriorities load with BaseObject code since
+    # bika_arpriorities.py has been eradicated.
+    # stub('bika.lims.controlpanel.bika_arpriorities', 'ARPriorities',
+    #      BaseContent)
 
     if 'bika_arpriorities' in portal.bika_setup:
-        uid = pc(portal_type='ARPriorities').UID
-        if uid:
-            pc.unCatalogObject(uid)
+        brain = pc(portal_type='ARPriorities')[0]
+        # manually unindex object  --  pc.uncatalog_object(brain.UID())
+        indexes = pc.Indexes.keys()
+        rid = brain.getRID()
+        for name in indexes:
+            x = pc.Indexes[name]
+            if hasattr(x, 'unindex_object'):
+                x.unindex_object(rid)
+        # Then remove as normal
         bs.manage_delObjects(['bika_arpriorities'])
-
-    cpl = get_tool('portal_controlpanel')
-    cpl.unregisterConfiglet('bika_arpriorities')
+        cpl.unregisterConfiglet('bika_arpriorities')
 
 
 def touidref(src, dst, src_relation, fieldname):
