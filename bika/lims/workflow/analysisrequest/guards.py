@@ -1,4 +1,3 @@
-from AccessControl import ClassSecurityInfo
 from Products.CMFCore.utils import getToolByName
 
 from bika.lims import logger
@@ -6,7 +5,7 @@ from bika.lims.workflow import doActionFor
 from bika.lims.workflow import isBasicTransitionAllowed
 
 
-def guard_to_be_preserved(obj):
+def to_be_preserved(obj):
     """ Returns True if the Sample from this AR needs to be preserved
     Returns false if the Analysis Request has no Sample assigned yet or
     does not need to be preserved
@@ -15,7 +14,8 @@ def guard_to_be_preserved(obj):
     sample = obj.getSample()
     return sample and sample.guard_to_be_preserved()
 
-def guard_schedule_sampling_transition(obj):
+
+def schedule_sampling(obj):
     """
     Prevent the transition if:
     - if the user isn't part of the sampling coordinators group
@@ -28,19 +28,22 @@ def guard_schedule_sampling_transition(obj):
         return True
     return False
 
-def guard_receive_transition(obj):
-    logger.info("YEaaaa")
+
+def receive(obj):
     return isBasicTransitionAllowed(obj)
 
-def guard_sample_prep_transition(obj):
+
+def sample_prep(obj):
     sample = obj.getSample()
     return sample.guard_sample_prep_transition()
 
-def guard_sample_prep_complete_transition(obj):
+
+def sample_prep_complete(obj):
     sample = obj.getSample()
     return sample.guard_sample_prep_complete_transition()
 
-def guard_assign_transition(obj):
+
+def assign(obj):
     """Allow or disallow transition depending on our children's states
     """
     if not isBasicTransitionAllowed(obj):
@@ -50,6 +53,7 @@ def guard_assign_transition(obj):
     if obj.getAnalyses(worksheetanalysis_review_state='unassigned'):
         return False
     return True
+
 
 def guard_unassign_transition(obj):
     """Allow or disallow transition depending on our children's states
@@ -61,6 +65,7 @@ def guard_unassign_transition(obj):
     if not obj.getAnalyses(worksheetanalysis_review_state='assigned'):
         return True
     return False
+
 
 def guard_verify_transition(obj):
     """

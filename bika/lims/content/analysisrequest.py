@@ -48,7 +48,9 @@ from bika.lims.workflow import getTransitionUsers
 from bika.lims.workflow import isBasicTransitionAllowed
 from bika.lims.workflow import isTransitionAllowed
 from bika.lims.workflow import skip
-from bika.lims.workflow import analysisrequest as arworkflow
+from bika.lims.workflow.analysisrequest import guards
+from bika.lims.workflow.analysisrequest import events
+
 from plone import api
 from zope.interface import implements
 
@@ -3084,87 +3086,77 @@ class AnalysisRequest(BaseFolder):
                       if not a.isUserAllowedToVerify(member)]
         return not notallowed
 
-    @deprecated('[1705] Use the guard from bika.lims.workflow.analysisrequest')
+    @deprecated('[1705] Use guards.to_be_preserved from '
+                'bika.lims.workflow.analysisrequest')
+    @security.public
     def guard_to_be_preserved(self):
-        return arworkflow.guard_to_be_preserved(self)
+        return guards.to_be_preserved(self)
 
-    @deprecated('[1705] Use the guard from bika.lims.workflow.analysisrequest')
+    @deprecated('[1705] Use guards.verify_transition from '
+                'bika.lims.workflow.analysisrequest')
+    @security.public
     def guard_verify_transition(self):
-        return arworkflow.guard_verify_transition(self)
+        return guards.verify(self)
 
-    @deprecated('[1705] Use the guard from bika.lims.workflow.analysisrequest')
+    @deprecated('[1705] Use guards.unassign_transition from '
+                'bika.lims.workflow.analysisrequest')
+    @security.public
     def guard_unassign_transition(self):
-        return arworkflow.guard_unassign_transition(self)
+        return guards.unassign(self)
 
-    @deprecated('[1705] Use the guard from bika.lims.workflow.analysisrequest')
+    @deprecated('[1705] Use guards.assign_transition from '
+                'bika.lims.workflow.analysisrequest')
+    @security.public
     def guard_assign_transition(self):
-        return arworkflow.guard_assign_transition(self)
+        return guards.assign(self)
 
-    @deprecated('[1705] Use the guard from bika.lims.workflow.analysisrequest')
+    @deprecated('[1705] Use guards.receive_transition from '
+                'bika.lims.workflow.analysisrequest')
+    @security.public
     def guard_receive_transition(self):
-        return arworkflow.guard_receive_transition(self)
+        return guards.receive(self)
 
-    @deprecated('[1705] Use the guard from bika.lims.workflow.analysisrequest')
+    @deprecated('[1705] Use guards.sample_prep_transition from '
+                'bika.lims.workflow.analysisrequest')
+    @security.public
     def guard_sample_prep_transition(self):
-        return arworkflow.guard_sample_prep_transition(self)
+        return guards.sample_prep(self)
 
-    @deprecated('[1705] Use the guard from bika.lims.workflow.analysisrequest')
+    @deprecated('[1705] Use guards.sample_prep_complete_transition from '
+                'bika.lims.workflow.analysisrequest')
+    @security.public
     def guard_sample_prep_complete_transition(self):
-        return arworkflow.guard_sample_prep_complete_transition(self)
+        return guards.sample_prep_complete(self)
 
-    @deprecated('[1705] Use the guard from bika.lims.workflow.analysisrequest')
+    @deprecated('[1705] Use guards.schedule_sampling_transition from '
+                'bika.lims.workflow.analysisrequest')
+    @security.public
     def guard_schedule_sampling_transition(self):
-        return arworkflow.guard_schedule_sampling_transition(self)
+        return guards.schedule_sampling(self)
 
+    @deprecated('[1705] Use events.after_no_sampling_workflow from '
+                'bika.lims.workflow.anaysisrequest')
     @security.public
-    def after_no_sampling_workflow_transition_event(self):
-        """Method triggered after a 'no_sampling_workflow' transition for the
-        current Analysis Request is performed. Performs the same transition
-        to the parent's Sample.
-        This function is called automatically by
-        bika.lims.workflow.AfterTransitionEventHandler
-        """
-        sample = self.getSample()
-        doActionFor(sample, 'no_sampling_workflow')
+    def workflow_script_no_sampling_workflow(self):
+        events.after_no_sampling_workflow(self)
 
+    @deprecated('[1705] Use events.after_sampling_workflow from '
+                'bika.lims.workflow.anaysisrequest')
     @security.public
-    def after_sampling_workflow_transition_event(self):
-        """Method triggered after a 'sampling_workflow' transition for the
-        current Analysis Request is performed. Performs the same transition
-        to the parent's Sample.
-        This function is called automatically by
-        bika.lims.workflow.AfterTransitionEventHandler
-        """
-        sample = self.getSample()
-        doActionFor(sample, 'sampling_workflow')
+    def workflow_script_sampling_workflow(self):
+        events.after_sampling_workflow(self)
 
+    @deprecated('[1705] Use events.after_sample from '
+                'bika.lims.workflow.anaysisrequest')
     @security.public
-    def after_sample_transition_event(self):
-        """Method triggered after a 'sample' transition for the current
-        AR is performed. Promotes sample transition to parent's sample
-        bika.lims.workflow.AfterTransitionEventHandler
-        """
-        sample = self.getSample()
-        doActionFor(sample, 'sample')
+    def workflow_script_sample(self):
+        events.after_sample_event(self)
 
+    @deprecated('[1705] Use events.after_receive_event from '
+                'bika.lims.workflow.anaysisrequest')
     @security.public
-    def after_receive_transition_event(self):
-        """Method triggered after a 'receive' transition for the current
-        Analysis Request is performed. Responsible of triggering cascade
-        actions such as transitioning the container (sample), as well as
-        associated analyses.
-        This function is called automatically by
-        bika.lims.workflow.AfterTransitionEventHandler
-        """
-        self.setDateReceived(DateTime())
-        self.reindexObject(idxs=["getDateReceived", ])
-
-        # receive the AR's sample
-        # Do note that the 'receive' transition for Sample already transitions
-        # all the analyses associated to all the sample partitions, so there
-        # is no need to transition the analyses here again
-        sample = self.getSample()
-        doActionFor(sample, 'receive')
+    def workflow_script_receive(self):
+        events.after_receive_event(self)
 
     def workflow_script_preserve(self):
         if skip(self, "preserve"):
