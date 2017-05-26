@@ -805,7 +805,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         self.getField('Method').set(self, method)
         return total
 
-    @deprecated('Flagged in 17.03')
+    @deprecated('[1703] Orphan. No alternative')
     def getFolderContents(self, contentFilter):
         """
         """

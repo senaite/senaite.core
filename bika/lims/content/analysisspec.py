@@ -214,7 +214,7 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
 
         return DisplayList(sampletypes)
 
-    @deprecated('Flagged in 17.03')
+    @deprecated('[1703] Orphan. No alternative')
     def getAnalysisSpecsStr(self, keyword):
         specstr = ''
         specs = self.getResultsRangeDict()

@@ -1750,8 +1750,7 @@ class AnalysisRequest(BaseFolder):
         descr = " ".join((self.getId(), self.aq_parent.Title()))
         return safe_unicode(descr).encode('utf-8')
 
-    # TODO: This method should be deleted, it has the same use as getId
-    @deprecated('Flagged on 170328. Use getId() instead')
+    @deprecated('[1703] Use getId() instead')
     def getRequestID(self):
         """
         Another way to return the object ID. It is used as a column and index.
@@ -1760,8 +1759,7 @@ class AnalysisRequest(BaseFolder):
         """
         return self.getId()
 
-    @deprecated(
-        'Flagged on 170328. Use setId() instead, but only as a last resort')
+    @deprecated('[1703] Use setId(new_id) instad')
     def setRequestID(self, new_id):
         """
         Delegates to setId() function

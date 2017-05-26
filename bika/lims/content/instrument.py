@@ -396,8 +396,7 @@ class Instrument(ATFolder):
 
     from bika.lims import deprecated
 
-    @deprecated(comment="bika.lims.content.instrument.getMethodUID is \
-                deprecated and will be removed in Bika LIMS 3.3")
+    @deprecated('[1703] Orphan. No alternative')
     def getMethodUID(self):
         # TODO Avoid using this function. Returns first method's UID for now.
         if self.getMethods():

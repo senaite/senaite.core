@@ -232,7 +232,7 @@ class AnalysesView(BikaListingView):
         # By default, not out of range
         return False
 
-    @deprecated('Flagged in 17.03')
+    @deprecated('[1703] Orphan. No alternative')
     def getAnalysisSpecsStr(self, spec):
         """
         Generates a string representation of the specifications passed in. If

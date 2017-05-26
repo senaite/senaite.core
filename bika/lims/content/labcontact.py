@@ -28,6 +28,7 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.person import Person
 from bika.lims.content.contact import Contact
 from bika.lims.interfaces import ILabContact
+from bika.lims import deprecated
 from bika.lims import logger
 from bika.lims import bikaMessageFactory as _
 
@@ -122,11 +123,7 @@ class LabContact(Contact):
         return self.portal_membership.getMemberById(
             self.getUsername()) is not None
 
-    # TODO: Remove getDepartment
-    from bika.lims import deprecated
-    @deprecated(comment="bika.lims.contant.labcontact.getDepartment "
-                        "is deprecated and will be removed "
-                        "in Bika LIMS 3.3. Please, use getDepartments intead")
+    @deprecated('[1612] Use getDepartments intead")
     def getDepartment(self):
         """
         This function is a mirror for getDepartments to maintain the

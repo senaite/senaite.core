@@ -173,8 +173,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     displayContentsTab = False
     schema = schema
 
-    @deprecated("Currently returns the Analysis object itself.  If you really "
-                "need to get the service, use getAnalysisService instead.")
+    @deprecated('[1705] Currently returns the Analysis object itself.  If you '
+                'need to get the service, use getAnalysisService instead')
     @security.public
     def getService(self):
         return self
@@ -217,7 +217,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     def getLastVerificator(self):
         return self.getVerificators().split(',')[-1]
 
-    @deprecated("You should use the Analysis Title.")
+    @deprecated('[1705] Use Title() instead.')
     @security.public
     def getServiceTitle(self):
         """Returns the Title of the associated service. Analysis titles are
