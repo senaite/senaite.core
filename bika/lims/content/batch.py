@@ -316,7 +316,7 @@ class Batch(ATFolder):
         """ Return all the Analysis Requests objects linked to the Batch
         kargs are passed directly to the catalog.
         """
-        brains = self.getAnalysisRequestsBrains(kwargs)
+        brains = self.getAnalysisRequestsBrains(**kwargs)
         return [b.getObject() for b in brains]
 
     def isOpen(self):
