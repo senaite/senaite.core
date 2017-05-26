@@ -269,10 +269,6 @@ def BaseAnalysisRefactoring():
     """
     at = get_tool('archetype_tool')
 
-    # Attachment indexing in portal_catalog is expensive and not used.
-    logger.info('Removing Attachment portal_type from portal_catalog.')
-    at.setCatalogsByType('Attachment', [])
-
     # XXX CAMPBELL PAU I need some help with OriginalAnalysisReflectedAnalysis.
 
     # I'm using the backreferences below for discovering objects to migrate.
