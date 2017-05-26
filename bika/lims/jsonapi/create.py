@@ -270,6 +270,7 @@ class Create(object):
         if fieldname in self.unused:
             self.unused.remove(fieldname)
 
+    # TODO Workflow - Remove or delegate function to utils.analysisrequest
     def _create_ar(self, context, request):
         """Creates AnalysisRequest object, with supporting Sample, Partition
         and Analysis objects.  The client is retrieved from the obj_path

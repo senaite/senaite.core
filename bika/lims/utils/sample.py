@@ -9,16 +9,18 @@ from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
 
 
-def create_sample(context, request, values):
+def create_sample(client, request, values):
+    """Creates a sample for the passed in client
+    """
     # Retrieve the required tools
-    uc = getToolByName(context, 'uid_catalog')
+    uc = getToolByName(client, 'uid_catalog')
     # Create sample or refer to existing for secondary analysis request
     if values.get('Sample_uid', ''):
         sample = uc(UID=values['Sample'])[0].getObject()
     else:
-        sample = _createObjectByType('Sample', context, tmpID())
+        sample = _createObjectByType('Sample', client, tmpID())
         # Determine if the sampling workflow is enabled
-        workflow_enabled = context.bika_setup.getSamplingWorkflowEnabled()
+        workflow_enabled = client.bika_setup.getSamplingWorkflowEnabled()
         sample.setSamplingWorkflowEnabled(workflow_enabled)
         # Specifically set the sample type
         sample.setSampleType(values['SampleType'])

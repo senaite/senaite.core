@@ -35,14 +35,14 @@ from smtplib import SMTPServerDisconnected, SMTPRecipientsRefused
 import os
 import tempfile
 
-def create_analysisrequest(context, request, values, analyses=None,
+def create_analysisrequest(client, request, values, analyses=None,
                            partitions=None, specifications=None, prices=None):
     """This is meant for general use and should do everything necessary to
     create and initialise an AR and any other required auxilliary objects
     (Sample, SamplePartition, Analysis...)
 
-    :param context:
-        The container in which the ARs will be created.
+    :param client:
+        The container (Client) in which the ARs will be created.
     :param request:
         The current Request object.
     :param values:
@@ -66,13 +66,13 @@ def create_analysisrequest(context, request, values, analyses=None,
     secondary = False
     sample = None
     if not values.get('Sample', False):
-        sample = create_sample(context, request, values)
+        sample = create_sample(client, request, values)
     else:
-        sample = get_sample_from_values(context, values)
+        sample = get_sample_from_values(client, values)
         secondary = True
 
     # Create the Analysis Request
-    ar = _createObjectByType('AnalysisRequest', context, tmpID())
+    ar = _createObjectByType('AnalysisRequest', client, tmpID())
 
     # Set some required fields manually before processForm is called
     ar.setSample(sample)
@@ -83,7 +83,7 @@ def create_analysisrequest(context, request, values, analyses=None,
     # Set analysis request analyses. 'Analyses' param are analyses services
     analyses = analyses if analyses else []
     service_uids = get_services_uids(
-        context=context, analyses_serv=analyses, values=values)
+        context=client, analyses_serv=analyses, values=values)
     # processForm already has created the analyses, but here we create the
     # analyses with specs and prices. This function, even it is called 'set',
     # deletes the old analyses, so eventually we obtain the desired analyses.
