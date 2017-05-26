@@ -48,6 +48,7 @@ from bika.lims.workflow import getTransitionUsers
 from bika.lims.workflow import isBasicTransitionAllowed
 from bika.lims.workflow import isTransitionAllowed
 from bika.lims.workflow import skip
+from bika.lims.workflow import analysisrequest as arworkflow
 from plone import api
 from zope.interface import implements
 
@@ -3085,75 +3086,37 @@ class AnalysisRequest(BaseFolder):
                       if not a.isUserAllowedToVerify(member)]
         return not notallowed
 
+    @deprecated('[1705] Use the guard from bika.lims.workflow.analysisrequest')
     def guard_to_be_preserved(self):
-        """ Returns True if the Sample from this AR needs to be preserved
-        Returns false if the Analysis Request has no Sample assigned yet or
-        does not need to be preserved
-        Delegates to Sample's guard_to_be_preserved
-        """
-        sample = self.getSample()
-        return sample and sample.guard_to_be_preserved()
+        return arworkflow.guard_to_be_preserved(self)
 
+    @deprecated('[1705] Use the guard from bika.lims.workflow.analysisrequest')
     def guard_verify_transition(self):
-        """
-        Checks if the verify transition can be performed to the current
-        Analysis Request by the current user depending on the user roles, as
-        well as the statuses of the analyses assigned to this Analysis Request
-        :returns: true or false
-        """
-        mtool = getToolByName(self, "portal_membership")
-        # Check if the Analysis Request is in a "verifiable" state
-        if self.isVerifiable():
-            # Check if the user can verify the Analysis Request
-            member = mtool.getAuthenticatedMember()
-            return self.isUserAllowedToVerify(member)
-        return False
+        return arworkflow.guard_verify_transition(self)
 
+    @deprecated('[1705] Use the guard from bika.lims.workflow.analysisrequest')
     def guard_unassign_transition(self):
-        """Allow or disallow transition depending on our children's states
-        """
-        if not isBasicTransitionAllowed(self):
-            return False
-        if self.getAnalyses(worksheetanalysis_review_state='unassigned'):
-            return True
-        if not self.getAnalyses(worksheetanalysis_review_state='assigned'):
-            return True
-        return False
+        return arworkflow.guard_unassign_transition(self)
 
+    @deprecated('[1705] Use the guard from bika.lims.workflow.analysisrequest')
     def guard_assign_transition(self):
-        """Allow or disallow transition depending on our children's states
-        """
-        if not isBasicTransitionAllowed(self):
-            return False
-        if not self.getAnalyses(worksheetanalysis_review_state='assigned'):
-            return False
-        if self.getAnalyses(worksheetanalysis_review_state='unassigned'):
-            return False
-        return True
+        return arworkflow.guard_assign_transition(self)
 
+    @deprecated('[1705] Use the guard from bika.lims.workflow.analysisrequest')
     def guard_receive_transition(self):
-        return isBasicTransitionAllowed(self)
+        return arworkflow.guard_receive_transition(self)
 
+    @deprecated('[1705] Use the guard from bika.lims.workflow.analysisrequest')
     def guard_sample_prep_transition(self):
-        sample = self.getSample()
-        return sample.guard_sample_prep_transition()
+        return arworkflow.guard_sample_prep_transition(self)
 
+    @deprecated('[1705] Use the guard from bika.lims.workflow.analysisrequest')
     def guard_sample_prep_complete_transition(self):
-        sample = self.getSample()
-        return sample.guard_sample_prep_complete_transition()
+        return arworkflow.guard_sample_prep_complete_transition(self)
 
+    @deprecated('[1705] Use the guard from bika.lims.workflow.analysisrequest')
     def guard_schedule_sampling_transition(self):
-        """
-        Prevent the transition if:
-        - if the user isn't part of the sampling coordinators group
-          and "sampling schedule" checkbox is set in bika_setup
-        - if no date and samples have been defined
-          and "sampling schedule" checkbox is set in bika_setup
-        """
-        if self.bika_setup.getScheduleSamplingEnabled() and \
-                isBasicTransitionAllowed(self):
-            return True
-        return False
+        return arworkflow.guard_schedule_sampling_transition(self)
 
     @security.public
     def after_no_sampling_workflow_transition_event(self):
