@@ -55,7 +55,7 @@ def assign(obj):
     return True
 
 
-def guard_unassign_transition(obj):
+def unassign(obj):
     """Allow or disallow transition depending on our children's states
     """
     if not isBasicTransitionAllowed(obj):
@@ -67,7 +67,7 @@ def guard_unassign_transition(obj):
     return False
 
 
-def guard_verify_transition(obj):
+def verify(obj):
     """
     Checks if the verify transition can be performed to the current
     Analysis Request by the current user depending on the user roles, as

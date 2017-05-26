@@ -3150,13 +3150,13 @@ class AnalysisRequest(BaseFolder):
                 'bika.lims.workflow.anaysisrequest')
     @security.public
     def workflow_script_sample(self):
-        events.after_sample_event(self)
+        events.after_sample(self)
 
-    @deprecated('[1705] Use events.after_receive_event from '
+    @deprecated('[1705] Use events.after_receive from '
                 'bika.lims.workflow.anaysisrequest')
     @security.public
     def workflow_script_receive(self):
-        events.after_receive_event(self)
+        events.after_receive(self)
 
     def workflow_script_preserve(self):
         if skip(self, "preserve"):
