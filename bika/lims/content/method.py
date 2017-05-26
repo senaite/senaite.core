@@ -4,7 +4,6 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from AccessControl import ClassSecurityInfo
-
 from Products.Archetypes.public import *
 from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
@@ -13,6 +12,7 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IMethod
 from bika.lims.utils import t
+from plone.app.blob.field import FileField as BlobFileField
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
@@ -37,7 +37,7 @@ schema = BikaSchema.copy() + Schema((
             description=_("Technical description and instructions intended for analysts"),
         ),
     ),
-    FileField('MethodDocument',  # XXX Multiple Method documents please
+    BlobFileField('MethodDocument',  # XXX Multiple Method documents please
         widget = FileWidget(
             label=_("Method Document"),
             description=_("Load documents describing the method here"),

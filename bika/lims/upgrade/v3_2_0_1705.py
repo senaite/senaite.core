@@ -4,17 +4,24 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-from Products.CMFCore.utils import getToolByName
+
+from DateTime import DateTime
+from Products.Archetypes.BaseContent import BaseContent
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.ZCatalog.interfaces import ICatalogBrain
 from bika.lims import logger
-from bika.lims.catalog import CATALOG_ANALYSIS_LISTING, \
-    CATALOG_WORKSHEET_LISTING
+from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
-from bika.lims.upgrade import upgradestep
+from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
+from bika.lims.upgrade import upgradestep, stub
 from bika.lims.upgrade.utils import UpgradeUtils
 from plone.api.portal import get_tool
-
+from bika.lims.config import VERSIONABLE_TYPES
+from Products.CMFCore.utils import getToolByName
+from bika.lims.upgrade.utils import migrate_to_blob
+import traceback
+import sys
+import transaction
 
 product = 'bika.lims'
 version = '3.2.0.1705'
@@ -34,21 +41,25 @@ def upgrade(tool):
 
     logger.info('Upgrading {0}: {1} -> {2}'.format(product, ufrom, version))
 
-    UpdateIndexesAndMetadata(portal, ut)
+    setup = portal.portal_setup
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'controlpanel')
 
-    BaseAnalysisRefactoring(portal)
+    RemoveARPriorities(portal)
 
-    # Throw out ARPriorities (the types have been removed, but the objects
-    # themselves remain as p[ersistent broken)
-    portal.bika_setup.manage_delObjects(['bika_arpriorities'])
+    UpdateIndexesAndMetadata(ut)
+
+    BaseAnalysisRefactoring()
+
+    RemoveVersionableTypes()
+
+    FixBrokenActionExpressions()
+
+    # Migrating ataip.FileField to blob.FileField
+    migrateFileFields(portal)
 
     # Refresh affected catalogs
     ut.refreshCatalogs()
-
-    # Clear and rebuild the reference catalog
-    logger.info("Rebuilding reference_catalog")
-    rc = get_tool(REFERENCE_CATALOG)
-    rc.manage_rebuildCatalog()
 
     # Remove workflow automatic transitions no longer used
     removeWorkflowsAutoTransitions(portal)
@@ -60,8 +71,47 @@ def upgrade(tool):
     return True
 
 
-def UpdateIndexesAndMetadata(portal, ut):
+def FixBrokenActionExpressions():
+    """These are fixed in the xml, but I'm fixing them manually here.
+    """
+    pt = get_tool('portal_types')
+    for t in pt:
+        actions = t.listActions() if hasattr(t, 'listActions') else []
+        for a in actions:
+            expr = a.getActionExpression()
+            if 'object/aq_parent/absolute_url' in expr:
+                # This is from Campbell 2012 and makes problems.
+                logger.info("%s.setActioExpression('string:${object_url}')")
+                a.setActionExpression('string:${object_url}')
 
+
+def RemoveVersionableTypes():
+    # Remove versionable typesa
+    logger.info("Upgrading {0}: {1} -> {2}".format(product, ufrom, version))
+    # Remove versionable types
+    logger.info("Removing versionable types...")
+    portal_repository = get_tool('portal_repository')
+    non_versionable = ['AnalysisSpec',
+                       'ARPriority',
+                       'Method',
+                       'SamplePoint',
+                       'SampleType',
+                       'StorageLocation',
+                       'WorksheetTemplate', ]
+    versionable = list(portal_repository.getVersionableContentTypes())
+    vers = [ver for ver in versionable if ver not in non_versionable]
+    portal_repository.setVersionableContentTypes(vers)
+    logger.info("Versionable types updated: {0}".format(', '.join(vers)))
+
+
+def UpdateIndexesAndMetadata(ut):
+    # Removed ARPriority completely
+    ut.delColumn(CATALOG_ANALYSIS_LISTING, 'getPriority')
+    ut.delColumn(CATALOG_ANALYSIS_REQUEST_LISTING, 'getPriority')
+    ut.delIndex(CATALOG_WORKSHEET_LISTING, 'getPriority')
+
+    # Add getId column to bika_catalog
+    ut.addColumn(CATALOG_ANALYSIS_LISTING, 'getNumberOfVerifications')
     # Add SearchableText index to analysis requests catalog
     ut.addIndex(
         CATALOG_ANALYSIS_REQUEST_LISTING, 'SearchableText', 'ZCTextIndex')
@@ -73,14 +123,10 @@ def UpdateIndexesAndMetadata(portal, ut):
     # correct getDateXXXs
     ut.addIndexAndColumn(
         CATALOG_ANALYSIS_REQUEST_LISTING, 'getDateVerified', 'DateIndex')
-    if CATALOG_ANALYSIS_REQUEST_LISTING not in ut.refreshcatalog:
-        ut.refreshcatalog.append(CATALOG_ANALYSIS_REQUEST_LISTING)
 
     # Reindexing bika_analysis_catalog in order to fix busted date indexes
     ut.addIndexAndColumn(
         CATALOG_ANALYSIS_LISTING, 'getDueDate', 'DateIndex')
-    if CATALOG_ANALYSIS_LISTING not in ut.refreshcatalog:
-        ut.refreshcatalog.append(CATALOG_ANALYSIS_LISTING)
 
     # Unify naming and cleanup of Method/Instrument indexes
     ut.delColumn(CATALOG_ANALYSIS_LISTING, 'getAllowedInstrumentsUIDs')
@@ -117,13 +163,31 @@ def UpdateIndexesAndMetadata(portal, ut):
     # factored out
     ut.delIndexAndColumn('bika_catalog', 'getAnalysisCategory')
 
-    # Removed ARPriority completely
-    ut.delColumn(CATALOG_ANALYSIS_LISTING, 'getPriority')
-    ut.delColumn(CATALOG_ANALYSIS_REQUEST_LISTING, 'getPriority')
-    ut.delIndex(CATALOG_WORKSHEET_LISTING, 'getPriority')
+    # Try to avoid refreshing these two if not required.  We can tell because
+    # using a None in a date index used as a sort_on key, causes these objects
+    # not to be returned at all.
+    query = {'query': [DateTime('1999/01/01 00:00'),
+                       DateTime('2024/01/01 23:59')],
+             'range': 'min:max'}
+
+    cat = get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
+    brains = cat(portal_type='AnalysisRequest', review_state='verified')
+    filtered = cat(portal_type='AnalysisRequest', review_state='verified',
+                   getDateVerified=query)
+    if len(filtered) != len(brains) \
+            and CATALOG_ANALYSIS_REQUEST_LISTING not in ut.refreshcatalog:
+        ut.refreshcatalog.append(CATALOG_ANALYSIS_REQUEST_LISTING)
+
+    cat = get_tool(CATALOG_ANALYSIS_LISTING)
+    brains = cat(portal_type='Analysis', review_state='received')
+    filtered = cat(portal_type='Analysis', review_state='received',
+                   getDueDate=query)
+    if len(filtered) != len(brains) \
+            and CATALOG_ANALYSIS_LISTING not in ut.refreshcatalog:
+        ut.refreshcatalog.append(CATALOG_ANALYSIS_LISTING)
 
 
-def BaseAnalysisRefactoring(portal):
+def BaseAnalysisRefactoring():
     """The relationship between AnalysisService and the various types of
     Analysis has been refactored.  The class heirarchy now looks like this:
 
@@ -169,6 +233,7 @@ def BaseAnalysisRefactoring(portal):
         Container                 (UIDReferenceField)
         Instruments               (UIDReferenceField)
         Methods                   (UIDReferenceField)
+        DeferredCalculation       -> removed
     Analysis
     ========
         Calculation               (HistoryAwareReferenceField
@@ -188,12 +253,19 @@ def BaseAnalysisRefactoring(portal):
         Attachment                (UIDReferenceField)
         Instrument                (UIDReferenceField)
 
-    Method -> Calculation (UIDReferenceField)
-    Calculation -> DependentServices (UIDReferenceField)
-    Instrument -> Method (UIDReferenceField)
-    Worksheet -> WorksheetTemplate (UIDReferenceField)
-    AnalysisRequest -> Priority (UIDReferenceField)
-    AnalysisSpec -> SampleType (UIDReferenceField)
+    The following references were also migrated:
+    Method           -> Calculation        (MethodCalculation)
+    Calculation      -> DependentServices  (CalculationAnalysisService)
+    Instrument       -> Method             (InstrumentMethod)
+    Instrument       -> Analyses           (InstrumentAnalyses)
+    Worksheet        -> WorksheetTemplate  (WorksheetAnalysisTemplate)
+    AnalysisSpec     -> SampleType         (AnalysisSpecSampleType)
+    AnalysisRequest  -> Priority           (AnalysisRequestPriority)
+    AnalysisRequest  -> Contact            (AnalysisRequestContact)
+    ARReport         -> AnalysisRequest    (ReportAnalysisRequest)
+    Attachment       -> AttachmentType     (AttachmentAttachmentType)
+    SamplePartition  -> Analyses           (SamplePartitionAnalysis)
+                                            field removed, added accessor method
     """
     at = get_tool('archetype_tool')
 
@@ -201,121 +273,226 @@ def BaseAnalysisRefactoring(portal):
     logger.info('Removing Attachment portal_type from portal_catalog.')
     at.setCatalogsByType('Attachment', [])
 
-    # - XXX CAMPBELL OriginalAnalysisReflectedAnalysis
+    # XXX CAMPBELL PAU I need some help with OriginalAnalysisReflectedAnalysis.
 
     # I'm using the backreferences below for discovering objects to migrate.
     # This will work, because reference_catalog has not been rebuilt yet.
 
-    # Analysis Services ========================================================
+    # Analysis Services
+    # =================
     bsc = get_tool('bika_setup_catalog')
     brains = bsc(portal_type='AnalysisService')
-    for brain in brains:
-        srv = brain.getObject()
-        logger.info('Migrating Analysis Service schema for %s' % srv.Title())
-        touidref(srv, srv, 'AnalysisServiceInstrument', 'Instrument')
-        touidref(srv, srv, 'AnalysisServiceInstruments', 'Instruments')
-        touidref(srv, srv, 'AnalysisServiceMethod', 'Method')
-        touidref(srv, srv, 'AnalysisServiceMethods', 'Methods')
-        touidref(srv, srv, 'AnalysisServiceCalculation', 'Calculation')
+    for srv_brain in brains:
+        srv = srv_brain.getObject()
+        # migrate service refs first!
         touidref(srv, srv, 'AnalysisServiceAnalysisCategory', 'Category')
         touidref(srv, srv, 'AnalysisServiceDepartment', 'Department')
-        touidref(srv, srv, 'AnalysisServicePreservation', 'Preservation')
-        touidref(srv, srv, 'AnalysisServiceContainer', 'Container')
+        touidref(srv, srv, 'AnalysisServiceInstrument', 'Instrument')
+        touidref(srv, srv, 'AnalysisServiceMethod', 'Method')
 
-        # Analyses =============================================================
+        # Routine Analyses
+        # ==================
         ans = srv.getBRefs(relationship='AnalysisAnalysisService')
         if ans:
-            logger.info('Migrating %s analyses on %s' % (len(ans), srv))
+            logger.info('Migrating schema of %s analyses of type %s' %
+                        (len(ans), srv.Title()))
         for an in ans:
-            # retain analysis.ServiceUID
-            an.setAnalysisService(srv)
-            # Migrate refs to UIDReferenceField
-            touidref(an, an, 'AnalysisInstrument', 'Instrument')
-            touidref(an, an, 'AnalysisMethod', 'Method')
+            # retain analysis Service in a newly named UIDReferenceField
+            an.setAnalysisService(srv.UID())
+            # Set service references as analysis reference values
             an.setCategory(srv.getCategory())
             an.setDepartment(srv.getDepartment())
-            touidref(an, an, 'AnalysisAttachment', 'Attachment')
-            touidref(an, an, 'AnalysisSamplePartition', 'SamplePartition')
-            touidref(an, an, 'OriginalAnalysisReflectedAnalysis',
-                     'OriginalReflexedAnalysis')
-            touidref(an, an, 'AnalysisReflectedAnalysis', 'ReflexAnalysisOf')
-
-            # Duplicates of this analysis:
-            # ==================================================================
-            dups = an.getBRefs(relationship='DuplicateAnalysisAnalysis')
-            if dups:
-                logger.info('%s has %s duplicates' % (an, len(dups)))
-            for dup in dups:
-                dup.setServiceUID(srv.UID())
-                touidref(dup, dup, 'DuplicateAnalysisAnalysis', 'Analysis')
-                touidref(dup, dup, 'DuplicateAnalysisAttachment', 'Attachment')
-                touidref(dup, dup, 'AnalysisInstrument', 'Instrument')
-                # Then scoop the rest of the fields out of service
-                copy_field_values(srv, dup)
-        # Reference Analyses
-        # =============================================================
-        ans = srv.getBRefs(relationship='ReferenceAnalysisAnalysisService')
-        if ans:
-            logger.info('Migrating %s references on %s' % (len(ans), srv))
-        for an in ans:
-            # retain analysis.ServiceUID
-            an.setServiceUID(srv.UID())
-            touidref(an, an, 'ReferenceAnalysisAnalysisService', 'Service')
-            touidref(an, an, 'ReferenceAnalysisAttachment', 'Attachment')
-            touidref(an, an, 'AnalysisInstrument', 'Instrument')
-            touidref(an, an, 'AnalysisMethod', 'Method')
-            # Then scoop the rest of the fields out of service
+            # Copy field values from service to analysis
             copy_field_values(srv, an)
 
-    # Removing some more HistoryAwareReferenceFields
-    brains = bsc(portal_type='Method')
-    for brain in brains:
-        method = brain.getObject()
-        touidref(method, method, 'MethodCalculation', 'Calculation')
+            # Duplicate Analyses
+            # ==================
+            dups = an.getBRefs(relationship='DuplicateAnalysisAnalysis')
+            if dups:
+                logger.info('Migrating schema for %s duplicates on %s' %
+                            (len(dups), an))
+            for dup in dups:
+                # retain analysis Service in a newly named UIDReferenceField
+                dup.setAnalysisService(srv)
+                # Copy field values from the migrated analysis to the duplicate
+                copy_field_values(an, dup)
 
-    brains = bsc(portal_type='Calculation')
-    for brain in brains:
-        calc = brain.getObject()
-        touidref(calc, calc, 'CalculationAnalysisService', 'DependentServices')
+        # Reference Analyses
+        # ==================
+        ans = srv.getBRefs(relationship='ReferenceAnalysisAnalysisService')
+        if ans:
+            logger.info('Migrating schema for %s references on %s' %
+                        (len(ans), srv))
+        for ran in ans:
+            # retain analysis Service in a newly named UIDReferenceField
+            ran.setAnalysisService(srv)
+            # Copy field values from service into reference analysis
+            copy_field_values(srv, ran)
 
-    brains = bsc(portal_type='Instrument')
-    for brain in brains:
-        instrument = brain.getObject()
-        touidref(instrument, instrument, 'InstrumentMethod', 'Method')
+    # Now migrate all AT ReferenceFeld -> UIDReferenceField.
 
-    bc = get_tool('bika_catalog')
-    brains = bc(portal_type='Worksheet')
-    for brain in brains:
-        ws = brain.getObject()
-        touidref(ws, ws, 'WorksheetAnalysisTemplate', 'WorksheetTemplate')
+    # The AnalysisInstrument and AnalysisMethod relations are used in fields
+    # on routine, reference and/or duplicate analyses.  We are lucky
+    # that the fieldnames are Instrument and Method respectively in all
+    # applicable objects, so migrate_refs does not need to care about which
+    # portal_type is the target.
+    migrate_refs('AnalysisInstrument', 'Instrument')
+    migrate_refs('AnalysisMethod', 'Method')
 
-    brains = bc(portal_type='AnalysisSpec')
-    for brain in brains:
-        spec = brain.getObject()
-        touidref(spec, spec, 'AnalysisSpecSampleType', 'SampleType')
+    # The remaining reference relations are named correctly based on source
+    # and destination type:
+    migrate_refs('AnalysisAttachment', 'Attachment')
+    migrate_refs('AnalysisSamplePartition', 'SamplePartition')
+    migrate_refs('OriginalAnalysisReflectedAnalysis',
+                 'OriginalReflexedAnalysis')
+    migrate_refs('AnalysisReflectedAnalysis', 'ReflexAnalysisOf')
+    migrate_refs('DuplicateAnalysisAnalysis', 'Analysis')
+    migrate_refs('DuplicateAnalysisAttachment', 'Attachment')
+    migrate_refs('ReferenceAnalysisAnalysisService', 'Service')
+    migrate_refs('ReferenceAnalysisAttachment', 'Attachment')
+    migrate_refs('AnalysisServiceInstrument', 'Instrument')
+    migrate_refs('AnalysisServiceInstruments', 'Instruments')
+    migrate_refs('AnalysisServiceMethod', 'Method')
+    migrate_refs('AnalysisServiceMethods', 'Methods')
+    migrate_refs('AnalysisServiceCalculation', 'Calculation')
+    migrate_refs('AnalysisServiceAnalysisCategory', 'Category')
+    migrate_refs('AnalysisServiceDepartment', 'Department')
+    migrate_refs('AnalysisServicePreservation', 'Preservation')
+    migrate_refs('AnalysisServiceContainer', 'Container')
+    migrate_refs('MethodCalculation', 'Calculation')
+    migrate_refs('CalculationAnalysisService', 'DependentServices')
+    migrate_refs('InstrumentMethod', 'Method')
+    migrate_refs('InstrumentAnalyses', 'Analyses')
+    migrate_refs('WorksheetAnalysisTemplate', 'WorksheetTemplate')
+    migrate_refs('AnalysisSpecSampleType', 'SampleType')
+    migrate_refs('AnalysisRequestContact', 'Contact')
+    migrate_refs('ReportAnalysisRequest', 'AnalysisRequest')
+    migrate_refs('AttachmentAttachmentType', 'AttachmentType')
+    migrate_refs('SamplePartitionAnalysis', 'SamplePartition')
 
-    brains = bc(portal_type='SamplePartition')
-    for brain in brains:
-        part = brain.getObject()
-        touidref(part, part, 'SamplePartitionAnalysis', 'SamplePartition')
+    refs_removed = 0
+    for rel in ['AnalysisInstrument',
+                'AnalysisMethod',
+                'AnalysisAttachment',
+                'AnalysisSamplePartition',
+                'OriginalAnalysisReflectedAnalysis',
+                'AnalysisReflectedAnalysis',
+                'AnalysisAnalysisService',
+                'AnalysisAnalysisPartition',
+                'ReferenceAnalysisAnalysisService',
+                'ReferenceAnalysisAttachment',
+                'AnalysisInstrument',
+                'AnalysisMethod',
+                'AnalysisServiceAnalysisCategory',
+                'AnalysisServiceDepartment',
+                'AnalysisServiceInstruments',
+                'AnalysisServiceInstruments',
+                'AnalysisServiceInstrument',
+                'AnalysisServiceMethods',
+                'AnalysisServiceMethod',
+                'AnalysisServiceCalculation',
+                'AnalysisServiceDeferredCalculation',
+                'AnalysisServicePreservation',
+                'AnalysisServiceContainer',
+                'DuplicateAnalysisAnalysis',
+                'DuplicateAnalysisAttachment',
+                'AnalysisInstrument',
+                'MethodCalculation',
+                'CalculationAnalysisService',
+                'InstrumentMethod',
+                'InstrumentAnalyses',
+                'WorksheetAnalysisTemplate',
+                'AnalysisSpecSampleType',
+                # AnalysisRequestPriority: field is removed completely.
+                'AnalysisRequestPriority',
+                'AnalysisRequestContact',
+                'ReportAnalysisRequest',
+                'AttachmentAttachmentType',
+                # SamplePartitionAnalysis: field is removed completely.
+                'SamplePartitionAnalysis',
+                ]:
+        refs_removed += del_at_refs(rel)
+    if refs_removed:
+        logger.info("Total reference objects removed: %s" % refs_removed)
+
+
+def RemoveARPriorities(portal):
+    # Throw out persistent broken bika_arpriorities.
+    logger.info('Removing bika_setup.bika_arpriorities')
+    bs = get_tool('bika_setup')
+    pc = get_tool('portal_catalog')
+    cpl = get_tool('portal_controlpanel')
+
+    # This lets ARPriorities load with BaseObject code since
+    # bika_arpriorities.py has been eradicated.
+    # stub('bika.lims.controlpanel.bika_arpriorities', 'ARPriorities',
+    #      BaseContent)
+
+    if 'bika_arpriorities' in portal.bika_setup:
+        brain = pc(portal_type='ARPriorities')[0]
+        # manually unindex object  --  pc.uncatalog_object(brain.UID())
+        indexes = pc.Indexes.keys()
+        rid = brain.getRID()
+        for name in indexes:
+            x = pc.Indexes[name]
+            if hasattr(x, 'unindex_object'):
+                x.unindex_object(rid)
+        # Then remove as normal
+        bs.manage_delObjects(['bika_arpriorities'])
+        cpl.unregisterConfiglet('bika_arpriorities')
+
 
 def touidref(src, dst, src_relation, fieldname):
     """Convert an archetypes reference in src/src_relation to a UIDReference
     in dst/fieldname.
     """
+    field = dst.getField(fieldname)
     refs = src.getRefs(relationship=src_relation)
     if len(refs) == 1:
         value = get_uid(refs[0])
     elif len(refs) > 1:
         value = filter(lambda x: x, [get_uid(ref) for ref in refs])
     else:
+        value = field.get(src)
+    if not value:
         value = ''
-    field = dst.getField(fieldname)
     if not field:
         raise Exception('Cannot find field %s/%s' % (fieldname, src))
     if field.required and not value:
-        raise Exception('Required field %s/%s has no value' % (src, fieldname))
+        raise Exception(
+            'Required field %s/%s has no value' % (src, fieldname))
     field.set(src, value)
+
+
+def migrate_refs(rel, fieldname):
+    rc = get_tool(REFERENCE_CATALOG)
+    uc = get_tool('uid_catalog')
+    refs = rc(relationship=rel)
+    if refs:
+        logger.info('Migrating %s references of %s' % (len(refs), rel))
+    for i, ref in enumerate(refs):
+        obj = uc(UID=ref[1])[0].getObject()
+        if i and not divmod(i, 100)[1]:
+            logger.info("%s/%s %s/%s" % (i, len(refs), obj, rel))
+        touidref(obj, obj, rel, fieldname)
+
+
+def del_at_refs(rel):
+    # Remove this relation from at_references
+    rc = get_tool(REFERENCE_CATALOG)
+    refs = rc(relationship=rel)
+    removed = 0
+    size = 0
+    if refs:
+        logger.info("Found %s refs for %s" % (len(refs), rel))
+        ref_dict = {ref[0]: ref.getObject() for ref in refs}
+        for ref_id, ref_obj in ref_dict.items():
+            removed += 1
+            size += 1
+            ref_obj.aq_parent.manage_delObjects([ref_id])
+    if removed:
+        logger.info("Performed %s deletions" % removed)
+    return removed
 
 
 def copy_field_values(src, dst):
@@ -358,13 +535,38 @@ def get_uid(value):
     if not brains:
         # Cannot find UID
         raise RuntimeError('The UID for %s/%s cannot be discovered in the '
-                           'uid_catalog or in the portal_archivist history!' %
+                           'uid_catalog or in the portal_archivist '
+                           'history!' %
                            (value.portal_type, value.Title()))
     if len(brains) > 1:
         # Found multiple objects, this is a failure
-        raise RuntimeError('Searching for %s/%s returned multiple objects.' %
-                           (value.portal_type, value.Title()))
+        raise RuntimeError(
+            'Searching for %s/%s returned multiple objects.' %
+            (value.portal_type, value.Title()))
     return brains[0].UID
+
+def migrateFileFields(portal):
+    """
+    This function walks over all attachment types and migrates their FileField
+    fields.
+    """
+    portal_types = [
+        "Attachment",
+        "ARImport",
+        "Instrument",
+        "InstrumentCertification",
+        "Method",
+        "Multifile",
+        "Report",
+        "SamplePoint"]
+
+    for portal_type in portal_types:
+        logger.info("Starting migration of FileField fields from {}."
+                    .format(portal_type))
+        # Do the migration
+        migrate_to_blob(portal, portal_type=portal_type, remove_old_value=True)
+        logger.info("Finished migration of FileField fields from {}."
+                    .format(portal_type))
 
 def fixWorkflowsActBoxName(portal):
     """Walkthrough all the transitions from all workflows and sets actbox_name

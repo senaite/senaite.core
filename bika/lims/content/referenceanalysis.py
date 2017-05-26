@@ -5,25 +5,20 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 from AccessControl import ClassSecurityInfo
+
 from DateTime import DateTime
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
-from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
-from bika.lims import logger, deprecated
-from bika.lims.browser.fields import UIDReferenceField
+from bika.lims import deprecated
 from bika.lims.config import PROJECTNAME, STD_TYPES
 from bika.lims.content.abstractanalysis import AbstractAnalysis
 from bika.lims.content.abstractanalysis import schema
 from bika.lims.interfaces import IReferenceAnalysis
-from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.subscribers import skip
-from bika.lims.utils.analysis import get_significant_digits
 from bika.lims.workflow import doActionFor
 from plone.app.blob.field import BlobField
 from zope.interface import implements
-from plone.api.user import has_permission
 
 schema = schema.copy() + Schema((
     StringField(
@@ -94,6 +89,65 @@ class ReferenceAnalysis(AbstractAnalysis):
         It is used as metacolumn
         """
         return self.getSample().getReferenceResults()
+
+    def getInstrumentEntryOfResults(self):
+        """
+        It is a metacolumn.
+        Returns the same value as the service.
+        """
+        service = self.getService()
+        if not service:
+            return None
+        return service.getInstrumentEntryOfResults()
+
+    def getInstrumentUID(self):
+        """
+        It is a metacolumn.
+        Returns the same value as the service.
+        """
+        instrument = self.getInstrument()
+        if not instrument:
+            return None
+        return instrument.UID()
+
+    def getServiceDefaultInstrumentUID(self):
+        """
+        It is used as a metacolumn.
+        Returns the default service's instrument UID
+        """
+        service = self.getService()
+        if not service:
+            return None
+        ins = service.getInstrument()
+        if ins:
+            return ins.UID()
+        return ''
+
+    def getServiceDefaultInstrumentTitle(self):
+        """
+        It is used as a metacolumn.
+        Returns the default service's instrument UID
+        """
+        service = self.getService()
+        if not service:
+            return None
+        ins = service.getInstrument()
+        if ins:
+            return ins.Title()
+        return ''
+
+    def getServiceDefaultInstrumentURL(self):
+        """
+        It is used as a metacolumn.
+        Returns the default service's instrument UID
+        """
+        service = self.getService()
+        if not service:
+            return None
+        ins = service.getInstrument()
+        if ins:
+            return ins.absolute_url_path()
+        return ''
 
     def getDependencies(self):
         """It doesn't make sense for a ReferenceAnalysis to use
