@@ -54,6 +54,9 @@ def upgrade(tool):
     setup = portal.portal_setup
     setup.runImportStepFromProfile('profile-bika.lims:default', 'workflow-csv')
 
+    # Remove workflow automatic transitions no longer used
+    removeWorkflowsAutoTransitions(portal)
+
     # Fix problem with empty actbox_name in transitions
     fixWorkflowsActBoxName(portal)
 
@@ -378,3 +381,46 @@ def fixWorkflowsActBoxName(portal):
             if not transition.actbox_name:
                 transition.actbox_name = transition.id
                 logger.info('Transition actbox_name fixed: {0}'.format(transid))
+
+def removeWorkflowsAutoTransitions(portal):
+    """Remove transitions that are triggered automatically, cause since this
+    version are all managed manually: auto_preservation_required and
+    auto_no_preservation_required
+    """
+    logger.info('Removing automatic transitions no longer used...')
+    toremove = [{'id': 'auto_preservation_required',
+                 'replacement':'to_be_preserved'},
+                {'id': 'auto_no_preservation_required',
+                 'replacement':'sample_due'},]
+    wtool = getToolByName(portal, 'portal_workflow')
+    workflowids = wtool.getWorkflowIds()
+    for wfid in workflowids:
+        workflow = wtool.getWorkflowById(wfid)
+        # Walkthrough states, remove the transitions from there and be sure the
+        # replacement (manual transition) is on place
+        states = workflow.states
+        for stateid in states.objectIds():
+            state = states[stateid]
+            strans = list(state.transitions)
+            for remove in toremove:
+                if remove['id'] in strans:
+                    msg = 'Dettaching transition {0} from state {1} in {2}' \
+                          .format(remove['id'], stateid, wfid)
+                    logger.info(msg)
+                    strans.remove(remove['id'])
+                    if remove['replacement'] not in strans:
+                        msg = 'Attaching transition {0} to state {1} from {2}' \
+                              .format(remove['replacement'], stateid, wfid)
+                        logger.info(msg)
+                        strans.append(remove['replacement'])
+                    state.transitions = tuple(strans)
+
+        # Now, remove the transitions itself
+        transitions = workflow.transitions
+        transids = transitions.objectIds()
+        outtransitions = []
+        for remove in toremove:
+            if remove['id'] in transids:
+                logger.info('Removing transition {0} from {1}'.format(
+                    remove['id'], wfid))
+                workflow.transitions.deleteTransitions([remove['id']])
