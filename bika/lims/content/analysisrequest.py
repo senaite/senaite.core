@@ -3004,6 +3004,7 @@ class AnalysisRequest(BaseFolder):
         """
         return user_email(self, self.Creator())
 
+    # TODO Workflow, AnalysisRequest Move to guards.verify?
     def isVerifiable(self):
         """
         Checks it the current Analysis Request can be verified. This is, its
@@ -3063,6 +3064,7 @@ class AnalysisRequest(BaseFolder):
             states[w.state_var] = state
         return states
 
+    # TODO Workflow, AnalysisRequest Move to guards.verify?
     def isUserAllowedToVerify(self, member):
         """
         Checks if the specified user has enough privileges to verify the
@@ -3158,51 +3160,23 @@ class AnalysisRequest(BaseFolder):
     def workflow_script_receive(self):
         events.after_receive(self)
 
+    @deprecated('[1705] Use events.after_preserve from '
+                'bika.lims.workflow.anaysisrequest')
+    @security.public
     def workflow_script_preserve(self):
-        if skip(self, "preserve"):
-            return
-        workflow = getToolByName(self, 'portal_workflow')
-        self.reindexObject(idxs=["review_state",  'getObjectWorkflowStates', ])
-        # transition our sample
-        sample = self.getSample()
-        if not skip(sample, "preserve", peek=True):
-            workflow.doActionFor(sample, "preserve")
+        events.after_preserve(self)
 
-
+    @deprecated('[1705] Use events.after_attach from '
+                'bika.lims.workflow.anaysisrequest')
+    @security.public
     def workflow_script_attach(self):
-        if skip(self, "attach"):
-            return
-        self.reindexObject(idxs=["review_state",  'getObjectWorkflowStates', ])
-        # Don't cascade. Shouldn't be attaching ARs for now (if ever).
-        return
+        events.after_attach(self)
 
+    @deprecated('[1705] Use events.after_verify from '
+                'bika.lims.workflow.anaysisrequest')
+    @security.public
     def workflow_script_verify(self):
-        if skip(self, "verify"):
-            return
-        self.reindexObject(idxs=[
-            "review_state", 'getObjectWorkflowStates', "getDateVerified"])
-        if "verify all analyses" not in self.REQUEST['workflow_skiplist']:
-            # verify all analyses in this AR.
-            analyses = self.getAnalyses(review_state='to_be_verified')
-            for analysis in analyses:
-                if (hasattr(analysis, 'getNumberOfVerifications') and
-                    hasattr(analysis, 'getNumberOfRequiredVerifications')):
-                    # For the 'verify' transition to (effectively) take place,
-                    # we need to check if the required number of verifications
-                    # for the analysis is, at least, the number of verifications
-                    # performed previously +1
-                    success = True
-                    revers = analysis.getNumberOfRequiredVerifications()
-                    nmvers = analysis.getNumberOfVerifications()
-                    username=getToolByName(self,'portal_membership').getAuthenticatedMember().getUserName()
-                    analysis.addVerificator(username)
-                    if revers-nmvers <= 1:
-                        success, message = doActionFor(analysis, 'verify')
-                        if not success:
-                            # If failed, delete last verificator
-                            analysis.deleteLastVerificator()
-                else:
-                    doActionFor(analysis, 'verify')
+        events.after_verify(self)
 
     def workflow_script_publish(self):
         if skip(self, "publish"):

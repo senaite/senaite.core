@@ -3,6 +3,9 @@ from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import isBasicTransitionAllowed
+from bika.lims.workflow.analysis import guards as analysis_guards
+
+from plone.api.portal import get_tool
 
 
 def to_be_preserved(obj):
@@ -68,16 +71,22 @@ def unassign(obj):
 
 
 def verify(obj):
-    """
-    Checks if the verify transition can be performed to the current
-    Analysis Request by the current user depending on the user roles, as
-    well as the statuses of the analyses assigned to this Analysis Request
+    """Checks if the verify transition can be performed to the current
+    Analysis Request by the current user depending on the user roles, the
+    current status of the object and the number of verifications already
+    performed. Delegats to analysis.guards.verify
+    Returns True if all associated analyses can be verified.
     :returns: true or false
     """
-    mtool = getToolByName(obj, "portal_membership")
     # Check if the Analysis Request is in a "verifiable" state
     if obj.isVerifiable():
         # Check if the user can verify the Analysis Request
+        mtool = get_tool('portal_membersip')
         member = mtool.getAuthenticatedMember()
-        return obj.isUserAllowedToVerify(member)
+        if obj.isUserAllowedToVerify(member):
+            for an in obj.getAnalyses(full_objects=True):
+                if not analysis_guards.verify(an):
+                    return False
+            return True
+
     return False

@@ -36,6 +36,7 @@ from bika.lims.workflow import isBasicTransitionAllowed
 from bika.lims.workflow import isTransitionAllowed
 from bika.lims.workflow import wasTransitionPerformed
 from bika.lims.workflow import skip
+from bika.lims.workflow.analysis import guards
 from plone.api.portal import get_tool
 from plone.api.user import has_permission
 from zope.interface import implements
@@ -937,6 +938,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
             return analyst_member.getProperty('fullname')
         return ''
 
+    # TODO Workflow, Analysis - Move to analysis.guard.verify?
     @security.public
     def isVerifiable(self):
         """Checks it the current analysis can be verified. This is, its not a
@@ -965,6 +967,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         # All checks passsed
         return True
 
+    # TODO Workflow, Analysis - Move to analysis.guard.verify?
     @security.public
     def isUserAllowedToVerify(self, member):
         """
@@ -1205,20 +1208,10 @@ class AbstractAnalysis(AbstractBaseAnalysis):
                 return False
         return True
 
+    @deprecated('[1705] Use guard.verify from bika.lims.workflow.analysis')
     @security.public
     def guard_verify_transition(self):
-        """Checks if the verify transition can be performed to the current
-        Analysis by the current user depending on the user roles, as well as
-        the status of the analysis
-        :return: Boolean
-        """
-        mtool = get_tool("portal_membership")
-        # Check if the analysis is in a "verifiable" state
-        if self.isVerifiable():
-            # Check if the user can verify the analysis
-            member = mtool.getAuthenticatedMember()
-            return self.isUserAllowedToVerify(member)
-        return False
+        return guards.verify(self)
 
     @security.public
     def guard_assign_transition(self):
@@ -1365,6 +1358,8 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     def workflow_script_verify(self):
         if skip(self, "verify"):
             return
+        username=getToolByName(self,'portal_membership').getAuthenticatedMember().getUserName()
+        self.addVerificator(username)
         workflow = get_tool("portal_workflow")
         state = workflow.getInfoFor(self, 'cancellation_state', 'active')
         if state == "cancelled":
