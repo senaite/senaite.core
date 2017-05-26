@@ -16,7 +16,7 @@ def verify(obj):
     """
     revers = obj.getNumberOfRequiredVerifications()
     nmvers = obj.getNumberOfVerifications()
-    if revers-numvers <= 1:
+    if revers-nmvers <= 1:
         if obj.isVerifiable():
             # Check if the user can verify the Analysis
             mtool = get_tool('portal_membership')
