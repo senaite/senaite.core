@@ -29,6 +29,7 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.ZCatalog.interfaces import ICatalogBrain
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims.utils.analysis import format_numeric_result
+from plone.api.portal import get_tool
 from zope.interface import implements
 from zope.interface import Interface
 from zope.component import getAdapters
@@ -632,10 +633,11 @@ class AnalysesView(BikaListingView):
         # If the analysis service has the option 'attachment' enabled
         if can_add_attachment or can_view_result:
             attachments = ""
-            if obj.hasAttachment:
-                # TODO-performance: This is vey time consuming
-                full_obj = full_obj if full_obj else obj.getObject()
-                for attachment in full_obj.getAttachment():
+            if obj.getAttachmentUIDs:
+                at_uids = obj.getAttachmentUIDs
+                uc = get_tool('uid_catalog')
+                attachments = [x.getObject() for x in uc(UID=at_uids)]
+                for attachment in attachments:
                     af = attachment.getAttachmentFile()
                     icon = af.icon
                     attachments +=\
