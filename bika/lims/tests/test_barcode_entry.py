@@ -7,6 +7,7 @@ from Products.CMFPlone.utils import _createObjectByType
 from bika.lims.testing import BIKA_SIMPLE_FIXTURE
 from bika.lims.tests.base import BikaFunctionalTestCase
 from bika.lims.utils import tmpID, changeWorkflowState
+from bika.lims.workflow import doActionFor
 from plone.app.testing import login
 from plone.app.testing import TEST_USER_NAME
 from Products.CMFCore.utils import getToolByName
@@ -64,7 +65,7 @@ class TestBarcodeEntry(BikaFunctionalTestCase):
         wf = getToolByName(self.portal, 'portal_workflow')
         for ar in self.ar1, self.ar2, self.ar3:
             # Set initial AR state
-            wf.doActionFor(ar, 'no_sampling_workflow')
+            doActionFor(ar, 'no_sampling_workflow')
 
         transaction.commit()
 

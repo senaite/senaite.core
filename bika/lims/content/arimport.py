@@ -18,6 +18,7 @@ from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IARImport, IClient
 from bika.lims.utils import tmpID
 from bika.lims.vocabularies import CatalogVocabulary
+from bika.lims.workflow import doActionFor
 from collective.progressbar.events import InitialiseProgressBar
 from collective.progressbar.events import ProgressBar
 from collective.progressbar.events import ProgressState
@@ -278,6 +279,7 @@ class ARImport(BaseFolder):
         if 'validate' in trans_ids:
             workflow.doActionFor(self, 'validate')
 
+    # TODO - Workflow. Revisit AR creation (should use utils.analysisrequest)
     def workflow_script_import(self):
         """Create objects from valid ARImport
         """
@@ -306,16 +308,8 @@ class ARImport(BaseFolder):
             event.notify(ObjectInitializedEvent(sample))
             sample.at_post_create_script()
             swe = self.bika_setup.getSamplingWorkflowEnabled()
-            if swe:
-                workflow.doActionFor(sample, 'sampling_workflow')
-            else:
-                workflow.doActionFor(sample, 'no_sampling_workflow')
             part = _createObjectByType('SamplePartition', sample, 'part-1')
             part.unmarkCreationFlag()
-            if swe:
-                workflow.doActionFor(part, 'sampling_workflow')
-            else:
-                workflow.doActionFor(part, 'no_sampling_workflow')
             # Container is special... it could be a containertype.
             container = self.get_row_container(row)
             if container:
@@ -361,9 +355,9 @@ class ARImport(BaseFolder):
                 analysis.setSamplePartition(part)
             ar.at_post_create_script()
             if swe:
-                workflow.doActionFor(ar, 'sampling_workflow')
+                doActionFor(ar, 'sampling_workflow')
             else:
-                workflow.doActionFor(ar, 'no_sampling_workflow')
+                doActionFor(ar, 'no_sampling_workflow')
             progress_index = float(row_cnt) / len(gridrows) * 100
             progress = ProgressState(self.REQUEST, progress_index)
             notify(UpdateProgressEvent(progress))
