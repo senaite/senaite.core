@@ -10,8 +10,10 @@
 from AccessControl import ClassSecurityInfo
 from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes import atapi
-from Products.Archetypes.public import ReferenceField, FileField, \
-        StringField, Schema, BaseFolder
+from Products.Archetypes.public import ReferenceField
+from Products.Archetypes.public import StringField
+from Products.Archetypes.public import Schema
+from Products.Archetypes.public import BaseFolder
 from plone.app.blob.field import BlobField
 from Products.Archetypes.references import HoldingReference
 from bika.lims.config import PROJECTNAME
