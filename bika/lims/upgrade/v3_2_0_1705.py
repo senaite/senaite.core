@@ -16,6 +16,12 @@ from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.upgrade import upgradestep, stub
 from bika.lims.upgrade.utils import UpgradeUtils
 from plone.api.portal import get_tool
+from bika.lims.config import VERSIONABLE_TYPES
+from Products.CMFCore.utils import getToolByName
+from bika.lims.upgrade.utils import migrate_to_blob
+import traceback
+import sys
+import transaction
 
 product = 'bika.lims'
 version = '3.2.0.1705'
@@ -49,6 +55,9 @@ def upgrade(tool):
 
     FixBrokenActionExpressions()
 
+    # Migrating ataip.FileField to blob.FileField
+    migrateFileFields(portal)
+
     # Refresh affected catalogs
     ut.refreshCatalogs()
 
@@ -72,6 +81,8 @@ def FixBrokenActionExpressions():
 
 def RemoveVersionableTypes():
     # Remove versionable typesa
+    logger.info("Upgrading {0}: {1} -> {2}".format(product, ufrom, version))
+    # Remove versionable types
     logger.info("Removing versionable types...")
     portal_repository = get_tool('portal_repository')
     non_versionable = ['AnalysisSpec',
@@ -526,3 +537,27 @@ def get_uid(value):
             'Searching for %s/%s returned multiple objects.' %
             (value.portal_type, value.Title()))
     return brains[0].UID
+
+
+def migrateFileFields(portal):
+    """
+    This function walks over all attachment types and migrates their FileField
+    fields.
+    """
+    portal_types = [
+        "Attachment",
+        "ARImport",
+        "Instrument",
+        "InstrumentCertification",
+        "Method",
+        "Multifile",
+        "Report",
+        "SamplePoint"]
+
+    for portal_type in portal_types:
+        logger.info("Starting migration of FileField fields from {}."
+                    .format(portal_type))
+        # Do the migration
+        migrate_to_blob(portal, portal_type=portal_type, remove_old_value=True)
+        logger.info("Finished migration of FileField fields from {}."
+                    .format(portal_type))

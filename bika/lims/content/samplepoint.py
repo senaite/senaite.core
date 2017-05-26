@@ -3,25 +3,22 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
+import sys
+
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes.public import *
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
-from Products.CMFCore.permissions import View, ModifyPortalContent
+from Products.Archetypes.public import *
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims.browser import BrowserView
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.config import PROJECTNAME
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import CoordinateField
-from bika.lims.browser.widgets import CoordinateWidget
 from bika.lims.browser.fields import DurationField
+from bika.lims.browser.widgets import CoordinateWidget
 from bika.lims.browser.widgets import DurationWidget
-from bika.lims import PMF, bikaMessageFactory as _
 from bika.lims.browser.widgets.referencewidget import ReferenceWidget as brw
-from zope.interface import implements
-import json
-import plone
-import sys
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from plone.app.blob.field import FileField as BlobFileField
 
 schema = BikaSchema.copy() + Schema((
     CoordinateField('Latitude',
@@ -83,7 +80,7 @@ schema = BikaSchema.copy() + Schema((
                 "The default, unchecked, indicates 'grab' samples"),
         ),
     ),
-    FileField('AttachmentFile',
+    BlobFileField('AttachmentFile',
         widget = FileWidget(
             label=_("Attachment"),
         ),

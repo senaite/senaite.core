@@ -3,9 +3,9 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from AccessControl import ClassSecurityInfo
 from datetime import date
 
+from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
 from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes.atapi import *
@@ -22,6 +22,7 @@ from bika.lims.content.bikaschema import BikaFolderSchema, BikaSchema
 from bika.lims.interfaces import IInstrument
 from bika.lims.utils import t
 from bika.lims.utils import to_utf8
+from plone.app.blob.field import FileField as BlobFileField
 from plone.app.folder.folder import ATFolder
 from zope.interface import implements
 
@@ -297,7 +298,7 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         )
     ),
 
-    FileField('InstallationCertificate',
+    BlobFileField('InstallationCertificate',
     schemata = 'Additional info.',
     widget = FileWidget(
         label=_("Installation Certificate"),

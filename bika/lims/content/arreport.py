@@ -8,10 +8,11 @@
     who, the report recipients (and their emails) and the publication mode
 """
 from AccessControl import ClassSecurityInfo
-
 from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes import atapi
-from Products.Archetypes.public import BaseFolder, Schema, StringField
+from Products.Archetypes.public import BaseFolder
+from Products.Archetypes.public import Schema
+from Products.Archetypes.public import StringField
 from Products.Archetypes.references import HoldingReference
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import DateTimeField, UIDReferenceField
