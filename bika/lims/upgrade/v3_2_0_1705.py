@@ -4,7 +4,7 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 from Acquisition import aq_inner
 from Acquisition import aq_parent
-
+from Products.CMFCore.utils import getToolByName
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.ZCatalog.interfaces import ICatalogBrain
 from bika.lims import logger
@@ -53,6 +53,9 @@ def upgrade(tool):
     # Re-run workflow-csv
     setup = portal.portal_setup
     setup.runImportStepFromProfile('profile-bika.lims:default', 'workflow-csv')
+
+    # Fix problem with empty actbox_name in transitions
+    fixWorkflowsActBoxName(portal)
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -358,3 +361,20 @@ def get_uid(value):
         raise RuntimeError('Searching for %s/%s returned multiple objects.' %
                            (value.portal_type, value.Title()))
     return brains[0].UID
+
+def fixWorkflowsActBoxName(portal):
+    """Walkthrough all the transitions from all workflows and sets actbox_name
+    if empty. Although being valid, those transitions without actbox_name will
+    never be returned by workflowtool.getTransitionsFor, so bika's workflow
+    machinery fails"""
+    logger.info('Fixing transition actbox_names...')
+    wtool = getToolByName(portal, 'portal_workflow')
+    workflowids = wtool.getWorkflowIds()
+    for wfid in workflowids:
+        workflow = wtool.getWorkflowById(wfid)
+        transitions = workflow.transitions
+        for transid in transitions.objectIds():
+            transition = transitions[transid]
+            if not transition.actbox_name:
+                transition.actbox_name = transition.id
+                logger.info('Transition actbox_name fixed: {0}'.format(transid))
