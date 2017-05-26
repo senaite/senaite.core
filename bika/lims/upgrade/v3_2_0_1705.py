@@ -87,8 +87,6 @@ def FixBrokenActionExpressions():
 
 def RemoveVersionableTypes():
     # Remove versionable typesa
-    logger.info("Upgrading {0}: {1} -> {2}".format(product, ufrom, version))
-    # Remove versionable types
     logger.info("Removing versionable types...")
     portal_repository = get_tool('portal_repository')
     non_versionable = ['AnalysisSpec',
