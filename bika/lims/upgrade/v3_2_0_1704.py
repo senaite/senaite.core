@@ -28,6 +28,9 @@ def upgrade(tool):
 
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ufrom, version))
 
+    setup = portal.portal_setup
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'toolset')
+
     # Updating lims catalogs if there is any change in them
     logger.info("Updating catalogs if needed...")
     catalog_definitions = getCatalogDefinitions()
