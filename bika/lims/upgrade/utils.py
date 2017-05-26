@@ -74,7 +74,7 @@ class BikaCustomQueryWalker(CustomQueryWalker):
             brains = brains[:limit]
         obj_num_total = len(brains)
         logger.info(
-            '{} objects will be migrated in {}'
+            '{} objects will be migrated walking through {}'
             .format(obj_num_total, catalog.id))
         counter = 0
         for brain in brains:
