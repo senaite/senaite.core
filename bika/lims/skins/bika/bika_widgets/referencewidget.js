@@ -31,6 +31,7 @@
 		save_UID_check();
 		check_UID_check();
 		check_missing_UID();
+
 		load_addbutton_overlays();
 		load_editbutton_overlays();
 	});
@@ -199,8 +200,17 @@ function check_missing_UID(){
     and the _uid hidden field are both blanked!
     */
 	fields = $(".ArchetypesReferenceWidget").children("input.referencewidget");
-    $.each(fields, function (index, value) {
-        debugger;
+    $.each(fields, function (index, field) {
+        var uid = $(this).attr("uid");
+        var fieldName = $(this).attr("fieldName");
+        var _uidinput = $("input[name^='" + fieldName + "_uid']");
+        var _uid = $(_uidinput).val();
+        if (!uid || uid == undefined || uid == ""
+            || !_uid || _uid == undefined || _uid == ""){
+                $(field).val("");
+                $(field).attr("uid", "");
+                $(_uidinput).val("");
+            }
     })
 }
 
