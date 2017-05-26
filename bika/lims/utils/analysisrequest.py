@@ -126,7 +126,7 @@ def create_analysisrequest(client, request, values, analyses=None,
         # If secondary AR, then we need to manually transition the AR (and its
         # children) to fit with the Sample Partition's current state
         sampleactions = getReviewHistoryActionsList(sample)
-        doActionsFor(ar, action)
+        doActionsFor(ar, sampleactions)
 
     else:
         # If Preservation is required for some partitions, and the SamplingWorkflow
