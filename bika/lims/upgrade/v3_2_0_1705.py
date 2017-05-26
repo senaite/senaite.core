@@ -87,8 +87,6 @@ def FixBrokenActionExpressions():
 
 def RemoveVersionableTypes():
     # Remove versionable typesa
-    logger.info("Upgrading {0}: {1} -> {2}".format(product, ufrom, version))
-    # Remove versionable types
     logger.info("Removing versionable types...")
     portal_repository = get_tool('portal_repository')
     non_versionable = ['AnalysisSpec',
@@ -268,10 +266,6 @@ def BaseAnalysisRefactoring():
                                             field removed, added accessor method
     """
     at = get_tool('archetype_tool')
-
-    # Attachment indexing in portal_catalog is expensive and not used.
-    logger.info('Removing Attachment portal_type from portal_catalog.')
-    at.setCatalogsByType('Attachment', [])
 
     # XXX CAMPBELL PAU I need some help with OriginalAnalysisReflectedAnalysis.
 
