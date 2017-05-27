@@ -80,7 +80,6 @@ def doActionFor(instance, action_id, active_only=True, allowed_transition=True):
     if allowed_transition:
         allowed = isTransitionAllowed(instance, action_id, active_only)
         if not allowed:
-            _debugTransitionsFor(instance)
             transitions = workflow.getTransitionsFor(instance)
             transitions = [trans['id'] for trans in transitions]
             transitions = ', '.join(transitions)
@@ -88,9 +87,8 @@ def doActionFor(instance, action_id, active_only=True, allowed_transition=True):
             clazzname = instance.__class__.__name__
             msg = "Transition '{0}' not allowed: {1} '{2}' ({3}). " \
                   "Available transitions: {4}".format(action_id, clazzname,
-                        instance.getId(), currstate, transitions)
+                    instance.getId(), currstate, transitions)
             logger.warn(msg)
-            #_debugTransitionsFor(instance)
             return actionperformed, message
     try:
         workflow.doActionFor(instance, action_id)

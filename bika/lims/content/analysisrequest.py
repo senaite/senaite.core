@@ -3097,43 +3097,43 @@ class AnalysisRequest(BaseFolder):
     @deprecated('[1705] Use guards.verify from '
                 'bika.lims.workflow.analysisrequest')
     @security.public
-    def guard_verify(self):
+    def guard_verify_transition(self):
         return guards.verify(self)
 
     @deprecated('[1705] Use guards.unassign from '
                 'bika.lims.workflow.analysisrequest')
     @security.public
-    def guard_unassign(self):
+    def guard_unassign_transition(self):
         return guards.unassign(self)
 
     @deprecated('[1705] Use guards.assign from '
                 'bika.lims.workflow.analysisrequest')
     @security.public
-    def guard_assign(self):
+    def guard_assign_transition(self):
         return guards.assign(self)
 
     @deprecated('[1705] Use guards.receive from '
                 'bika.lims.workflow.analysisrequest')
     @security.public
-    def guard_receive(self):
+    def guard_receive_transition(self):
         return guards.receive(self)
 
     @deprecated('[1705] Use guards.sample_prep from '
                 'bika.lims.workflow.analysisrequest')
     @security.public
-    def guard_sample_prep(self):
+    def guard_sample_prep_transition(self):
         return guards.sample_prep(self)
 
     @deprecated('[1705] Use guards.sample_prep_complete from '
                 'bika.lims.workflow.analysisrequest')
     @security.public
-    def guard_sample_prep_complete(self):
+    def guard_sample_prep_complete_transition(self):
         return guards.sample_prep_complete(self)
 
     @deprecated('[1705] Use guards.schedule_sampling from '
                 'bika.lims.workflow.analysisrequest')
     @security.public
-    def guard_schedule_sampling(self):
+    def guard_schedule_sampling_transition(self):
         return guards.schedule_sampling(self)
 
     @deprecated('[1705] Use events.after_no_sampling_workflow from '

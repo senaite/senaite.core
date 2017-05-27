@@ -78,15 +78,10 @@ def verify(obj):
     Returns True if all associated analyses can be verified.
     :returns: true or false
     """
-    # Check if the Analysis Request is in a "verifiable" state
-    if obj.isVerifiable():
-        # Check if the user can verify the Analysis Request
-        mtool = get_tool('portal_membersip')
-        member = mtool.getAuthenticatedMember()
-        if obj.isUserAllowedToVerify(member):
-            for an in obj.getAnalyses(full_objects=True):
-                if not analysis_guards.verify(an):
-                    return False
-            return True
+    for an in obj.getAnalyses(full_objects=True):
+        if not analysis_guards.verify(an):
+            return False
 
-    return False
+    mtool = get_tool('portal_membersip')
+    member = mtool.getAuthenticatedMember()
+    return obj.isUserAllowedToVerify(member)

@@ -121,9 +121,9 @@ def after_reject(obj):
         return
 
     if getCurrentState(sample) != 'rejected':
+        doActionFor(sample, 'reject')
         reasons = obj.getRejectionReasons()
         sample.setRejectionReasons(reasons)
-        doActionFor(sample, 'reject')
 
     # Deactivate all analyses from this Analysis Request
     ans = obj.getAnalyses(full_objects=True)
