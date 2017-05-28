@@ -66,7 +66,7 @@ def after_retract(obj):
     # Retract our dependents
     dependents = obj.getDependents()
     for dependent in dependents:
-        doActionFor(dependent)
+        doActionFor(dependent, 'retract')
 
 
 @security.public
