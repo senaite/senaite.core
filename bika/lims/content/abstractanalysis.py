@@ -1155,88 +1155,61 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         attachments = self.getAttachment()
         return len(attachments) > 0
 
+    @deprecated('[1705] Use bika.lims.workflow.analysis.guards.sample')
     @security.public
     def guard_sample_transition(self):
-        workflow = get_tool("portal_workflow")
-        state = workflow.getInfoFor(self, "cancellation_state", "active")
-        if state == "cancelled":
-            return False
-        return True
+        return guards.sample(self)
 
+    @deprecated('[1705] Use bika.lims.workflow.analysis.guards.retract')
     @security.public
     def guard_retract_transition(self):
-        workflow = get_tool("portal_workflow")
-        state = workflow.getInfoFor(self, "cancellation_state", "active")
-        if state == "cancelled":
-            return False
-        return True
+        return guards.retract(self)
 
+    @deprecated('[1705] Use bika.lims.workflow.analysis.guards.sample_prep')
     @security.public
     def guard_sample_prep_transition(self):
-        sample = self.getSample()
-        return sample.guard_sample_prep_transition()
+        return guards.sample_prep(self)
 
+    @deprecated('[1705] Use guards.sample_prep_complete from '
+                'bika.lims.workflow.analysis.guards.sample_prep_complete')
     @security.public
     def guard_sample_prep_complete_transition(self):
-        sample = self.getSample()
-        return sample.guard_sample_prep_complete_transition()
+        return guards.sample_prep_complete(self)
 
+    @deprecated('[1705] Use bika.lims.workflow.analysis.guards.receive')
     @security.public
     def guard_receive_transition(self):
-        return isBasicTransitionAllowed(self)
+        return guards.receive(self)
 
+    @deprecated('[1705] Use bika.lims.workflow.analysis.guards.publish')
     @security.public
     def guard_publish_transition(self):
-        workflow = get_tool("portal_workflow")
-        state = workflow.getInfoFor(self, "cancellation_state", "active")
-        if state == "cancelled":
-            return False
-        return True
+        return guards.publish(self)
 
+    @deprecated('[1705] Use bika.lims.workflow.analysis.guards.import')
     @security.public
     def guard_import_transition(self):
-        workflow = get_tool("portal_workflow")
-        state = workflow.getInfoFor(self, "cancellation_state", "active")
-        if state == "cancelled":
-            return False
-        return True
+        return guards.import(self)
 
+    @deprecated('[1705] Use bika.lims.workflow.analysis.guards.attach')
     @security.public
     def guard_attach_transition(self):
-        if not self.getAttachment():
-            if self.getAttachmentOption() == "r":
-                return False
-        return True
+        return guards.attach(self)
 
-    @deprecated('[1705] Use guard.verify from bika.lims.workflow.analysis')
+    @deprecated('[1705] Use bika.lims.workflow.analysis.guards.verify')
     @security.public
     def guard_verify_transition(self):
         return guards.verify(self)
 
+    @deprecated('[1705] Use bika.lims.workflow.analysis.guards.assign')
     @security.public
     def guard_assign_transition(self):
-        workflow = get_tool("portal_workflow")
-        state = workflow.getInfoFor(self, 'cancellation_state', 'active')
-        if state == "cancelled":
-            return False
-        return True
+        return guards.assign(self)
 
+    @deprecated('[1705] Use bika.lims.workflow.analysis.guards.unassign')
     @security.public
     def guard_unassign_transition(self):
-        """Check permission against parent worksheet
-        """
-        workflow = get_tool("portal_workflow")
-        mtool = get_tool("portal_membership")
-        ws = self.getBackReferences("WorksheetAnalysis")
-        if not ws:
-            return False
-        ws = ws[0]
-        state = workflow.getInfoFor(ws, "cancellation_state", "")
-        if state == "cancelled":
-            return False
-        if mtool.checkPermission(Unassign, ws):
-            return True
-        return False
+        return guards.unassign(self)
 
     @security.public
     def after_submit_transition_event(self):

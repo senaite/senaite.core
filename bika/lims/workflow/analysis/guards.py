@@ -7,6 +7,69 @@ from bika.lims.workflow import isBasicTransitionAllowed
 from plone.api.portal import get_tool
 
 
+def sample(obj):
+    """ Returns true if the sample transition can be performed for the sample
+    passed in.
+    :returns: true or false
+    """
+    return isBasicTransitionAllowed(obj)
+
+def retract(obj):
+    """ Returns true if the sample transition can be performed for the sample
+    passed in.
+    :returns: true or false
+    """
+    return isBasicTransitionAllowed(obj)
+
+
+def sample_prep(obj):
+    return isBasicTransitionAllowed(obj)
+
+
+def sample_prep_complete(obj):
+    return isBasicTransitionAllowed(obj)
+
+
+def receive(obj):
+    return isBasicTransitionAllowed(obj)
+
+
+def publish(obj):
+    return isBasicTransitionAllowed(obj)
+
+
+def import(obj):
+    return isBasicTransitionAllowed(obj)
+
+
+def attach(obj):
+    if not isBasicTransitionAllowed(obj):
+        return False
+    if not obj.getAttachment():
+        return obj.getAttachmentOption() != 'r'
+    return True
+
+
+def assign(obj):
+    return isBasicTransitionAllowed(obj)
+
+
+def unassign(obj):
+    """Check permission against parent worksheet
+    """
+    mtool = get_tool("portal_membership")
+    if not isBasicTransitionAllowed(obj):
+        return False
+    ws = obj.getBackReferences("WorksheetAnalysis")
+    if not ws:
+        return False
+    ws = ws[0]
+    if isBasicTransitionAllowed(ws):
+        if mtool.checkPermissions(Unassign, ws):
+            return True
+    return False
+
+
 def verify(obj):
     """
     Checks if the verify transition can be performed to the Analysis passed in

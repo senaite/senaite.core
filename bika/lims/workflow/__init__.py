@@ -140,6 +140,7 @@ def doActionsFor(instance, actions):
         startpoint = True
         doActionFor(instance, action)
 
+
 def BeforeTransitionEventHandler(instance, event):
     """ This event is executed before each transition and delegates further
     actions to 'before_x_transition_event' function if exists in the instance
