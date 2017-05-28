@@ -73,7 +73,8 @@ def doActionFor(instance, action_id, active_only=True, allowed_transition=True):
     if skipaction:
         clazzname = instance.__class__.__name__
         msg = "Skipping transition '{0}': {1} '{2}'".format(action_id,
-                clazzname, instance.getId())
+                                                            clazzname,
+                                                            instance.getId())
         logger.info(msg)
         return actionperformed, message
 
@@ -87,8 +88,10 @@ def doActionFor(instance, action_id, active_only=True, allowed_transition=True):
             clazzname = instance.__class__.__name__
             msg = "Transition '{0}' not allowed: {1} '{2}' ({3}). " \
                   "Available transitions: {4}".format(action_id, clazzname,
-                    instance.getId(), currstate, transitions)
-            logger.warn(msg)
+                                                      instance.getId(),
+                                                      currstate, transitions)
+            logger.error(msg)
+            _logTransitionFailure(instance)
             return actionperformed, message
     try:
         workflow.doActionFor(instance, action_id)
@@ -97,6 +100,34 @@ def doActionFor(instance, action_id, active_only=True, allowed_transition=True):
         message = str(e)
         logger.error(message)
     return actionperformed, message
+
+
+def _logTransitionFailure(obj, transition_id):
+    wftool = getToolByName(obj, "portal_workflow")
+    result = {}
+    chain = wftool.getChainFor(obj)
+    for wf_id in chain:
+        wf = wftool.getWorkflowById(wf_id)
+        if wf is not None:
+            sdef = wf._getWorkflowStateOf(obj)
+            if sdef is not None:
+                for tid in sdef.transitions:
+                    if tid != transition_id:
+                        continue
+                    tdef = wf.transitions.get(tid, None)
+                    if not tdef:
+                        continue
+                    if tdef.trigger_type != 1:
+                        logger.error("  Trigger type is not manual")
+                    if not tdef.actbox_name:
+                        logger.error("  No actbox_name set")
+                    if wf._checkTransitionGuard(tdef, obj):
+                        guard = tdef.guard
+                        expr = guard.getExprText
+                        logger.error("  Guard failed: {0}".format(expr))
+                    return
+    logger.error("  Transition not found. Check the workflow definition!")
+
 
 def doActionsFor(instance, actions):
     """Performs a set of transitions to the instance passed in
