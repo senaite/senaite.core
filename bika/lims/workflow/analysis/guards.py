@@ -1,5 +1,3 @@
-from Products.CMFCore.utils import getToolByName
-
 from bika.lims import logger
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import isBasicTransitionAllowed
@@ -38,7 +36,7 @@ def publish(obj):
     return isBasicTransitionAllowed(obj)
 
 
-def import(obj):
+def import_transition(obj):
     return isBasicTransitionAllowed(obj)
 
 
