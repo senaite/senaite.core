@@ -193,25 +193,26 @@ function check_UID_check() {
 
 
 function check_missing_UID(){
-    /* This will remove the display value (the text-input value) if the
-    uid attribute OR the *_uid hidden field, have no value.
+	/* This will remove the display value (the text-input value) if the
+	uid attribute OR the *_uid hidden field, have no value.
 
-    If the display value is removed, then also verify that both the uid attr
-    and the _uid hidden field are both blanked!
-    */
-	fields = $(".ArchetypesReferenceWidget").children("input.referencewidget");
-    $.each(fields, function (index, field) {
-        var uid = $(this).attr("uid");
-        var fieldName = $(this).attr("fieldName");
-        var _uidinput = $("input[name^='" + fieldName + "_uid']");
-        var _uid = $(_uidinput).val();
-        if (!uid || uid == undefined || uid == ""
-            || !_uid || _uid == undefined || _uid == ""){
-                $(field).val("");
-                $(field).attr("uid", "");
-                $(_uidinput).val("");
-            }
-    })
+	If the display value is removed, then also verify that both the uid attr
+	and the _uid hidden field are both blanked!
+	*/
+	$.each($(".ArchetypesReferenceWidget").children("input.referencewidget"),
+		function (index, field) {
+			var uid = $(this).attr("uid");
+			var fieldName = $(this).attr("fieldName");
+			var _uidinput = $("input[name^='" + fieldName + "_uid']");
+			var _uid = $(_uidinput).val();
+			if (!uid || uid == undefined || uid == ""
+				|| !_uid || _uid == undefined || _uid == ""){
+					$(field).val("");
+					$(field).attr("uid", "");
+					$(_uidinput).val("");
+				}
+		}
+	)
 }
 
 function apply_button_overlay(button) {
