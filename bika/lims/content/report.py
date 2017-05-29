@@ -10,6 +10,7 @@ from DateTime import DateTime
 from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
+from plone.app.blob.field import FileField as BlobFileField
 from Products.CMFCore.permissions import ListFolderContents, View
 from Products.CMFCore.utils import getToolByName
 from bika.lims.content.bikaschema import BikaSchema
@@ -19,7 +20,7 @@ from bika.lims.utils import t
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((
-    FileField('ReportFile',
+    BlobFileField('ReportFile',
         widget = FileWidget(
             label=_("Report"),
         ),
@@ -35,12 +36,6 @@ schema = BikaSchema.copy() + Schema((
         relationship = 'ReportClient',
         widget = ReferenceWidget(
             label=_("Client"),
-        ),
-    ),
-    ComputedField('ClientUID',
-        expression = 'here.getClient() and here.getClient().UID()',
-        widget = ComputedWidget(
-            visible = False,
         ),
     ),
 ),
@@ -63,6 +58,12 @@ class Report(BaseFolder):
     def current_date(self):
         """ return current date """
         return DateTime()
+
+    def getClientUID(self):
+        client = self.getClient()
+        if client:
+            return client.UID()
+        return ''
 
 
 atapi.registerType(Report, PROJECTNAME)

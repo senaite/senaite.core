@@ -7,6 +7,7 @@ from AccessControl import ClassSecurityInfo
 from Products.CMFCore.permissions import ModifyPortalContent, View
 from Products.CMFCore.utils import getToolByName
 from Products.Archetypes.public import *
+from plone.app.blob.field import FileField as BlobFileField
 from Products.Archetypes.references import HoldingReference
 from Products.ATExtensions.ateapi import RecordsField as RecordsField
 from bika.lims.browser.fields import HistoryAwareReferenceField
@@ -42,7 +43,7 @@ schema = BikaSchema.copy() + Schema((
             description=_("Technical description and instructions intended for analysts"),
         ),
     ),
-    FileField('MethodDocument',  # XXX Multiple Method documents please
+    BlobFileField('MethodDocument',  # XXX Multiple Method documents please
         widget = FileWidget(
             label=_("Method Document"),
             description=_("Load documents describing the method here"),
