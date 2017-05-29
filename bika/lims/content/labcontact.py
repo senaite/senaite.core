@@ -30,7 +30,7 @@ from bika.lims.content.contact import Contact
 from bika.lims.interfaces import ILabContact
 from bika.lims import logger
 from bika.lims import bikaMessageFactory as _
-
+from bika.lims import deprecated
 
 schema = Person.schema.copy() + atapi.Schema((
     atapi.LinesField('PublicationPreference',
@@ -123,10 +123,9 @@ class LabContact(Contact):
             self.getUsername()) is not None
 
     # TODO: Remove getDepartment
-    from bika.lims import deprecated
-    @deprecated(comment="bika.lims.contant.labcontact.getDepartment "
-                        "is deprecated and will be removed "
-                        "in Bika LIMS 3.3. Please, use getDepartments intead")
+    @deprecated(comment="[161222] bika.lims.contant.labcontact.getDepartment "
+                        "is deprecated and will be removed in Bika LIMS 3.3. "
+                        "Please, use getDepartments intead")
     def getDepartment(self):
         """
         This function is a mirror for getDepartments to maintain the
