@@ -124,7 +124,6 @@ def remove_attachment_duplicates(portal, pgthreshold=1000):
     primaries = {}  # key is wsID:fn.  stores first found instance.
     # for each worksheet, get all attachments.
     dups_found = 0
-    atts = []
     for brain in brains:
         ws = brain.getObject()
         ws_id = ws.getId()
@@ -134,13 +133,12 @@ def remove_attachment_duplicates(portal, pgthreshold=1000):
             # Only process each fn once:
             fn = att.getAttachmentFile().filename
             key = "%s:%s" % (ws_id, fn)
-            if key in primaries:
-                # we are a duplicate.
-                dup_ans.append([fn, primaries[key], att, ws])
-                dups_found += 1
-                continue
-            # not a dup.  att is primary attachment for this key.
-            primaries[key] = att
+            if key not in primaries:
+                # not a dup.  att is primary attachment for this key.
+                primaries[key] = att
+            # we are a duplicate.
+            dup_ans.append([fn, primaries[key], att, ws])
+            dups_found += 1
     logger.info("Keeping {} and removing {} attachments".format(
         len(primaries), dups_found))
 
@@ -154,10 +152,11 @@ def remove_attachment_duplicates(portal, pgthreshold=1000):
             an.setAttachment(att)
         path_uid = '/'.join(dup.getPhysicalPath())
         pc.uncatalog_object(path_uid)
+        #dup.getField('AttachmentFile').set(dup, 'DELETED')
+        dup.getField('AttachmentFile').unset(dup)
         dup.aq_parent.manage_delObjects(dup.getId())
         #
         if count % pgthreshold == 0:
             logger.info("Removed {} of {} duplicate attachments...".format(
                 count, dups_found))
         count += 1
-
