@@ -93,6 +93,7 @@ def migareteFileFields(portal):
         "Method",
         "Multifile",
         "Report",
+        "ARReport",
         "SamplePoint"]
     for portal_type in portal_types:
         logger.info(
