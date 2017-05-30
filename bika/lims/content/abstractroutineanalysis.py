@@ -460,7 +460,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         return part and part.guard_to_be_preserved()
 
     @security.public
-    def after_submit_transition_event(self):
+    def workflow_script_submit(self):
         """
         Method triggered after a 'submit' transition for the current analysis
         is performed. Responsible of triggering cascade actions such as
@@ -521,4 +521,4 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
             doActionFor(ar, 'submit')
 
         # Delegate the transition of Worksheet to base class AbstractAnalysis
-        super(AbstractRoutineAnalysis, self).after_submit_transition_event()
+        super(AbstractRoutineAnalysis, self).workflow_script_submit()

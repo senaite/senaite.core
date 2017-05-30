@@ -888,7 +888,7 @@ class Sample(BaseFolder, HistoryAwareMixin):
     @deprecated('[1705] Use bika.lims.workflow.sample.events.after_expire')
     @security.public
     def workflow_script_expire(self):
-        events.aftr_expire(self)
+        events.after_expire(self)
 
     @deprecated('[1705] Use bika.lims.workflow.sample.events.after_dispose')
     @security.public

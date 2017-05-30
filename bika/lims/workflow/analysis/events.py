@@ -69,7 +69,6 @@ def after_retract(obj):
         doActionFor(dependent, 'retract')
 
 
-@security.public
 def after_verify(obj):
     # TODO Workflow Analysis - Review after_verify function
     if skip(self, "verify"):
@@ -124,7 +123,7 @@ def after_verify(obj):
                 workflow.doActionFor(ws, "verify")
     obj.reindexObject()
 
-@security.public
+
 def after_publish(obj):
     if skip(self, "publish"):
         return
@@ -152,7 +151,7 @@ def after_publish(obj):
     obj.setEarliness(earliness)
     obj.reindexObject()
 
-@security.public
+
 def after_cancel(obj):
     if skip(self, "cancel"):
         return
@@ -165,7 +164,7 @@ def after_cancel(obj):
         ws.removeAnalysis(self)
     obj.reindexObject()
 
-@security.public
+
 def after_reject(obj):
     if skip(self, "reject"):
         return
@@ -177,7 +176,7 @@ def after_reject(obj):
         ws.removeAnalysis(self)
     obj.reindexObject()
 
-@security.public
+
 def after_attach(obj):
     if skip(self, "attach"):
         return
@@ -216,7 +215,7 @@ def after_attach(obj):
                 workflow.doActionFor(ws, "attach")
     obj.reindexObject()
 
-@security.public
+
 def after_assign(obj):
     if skip(self, "assign"):
         return
@@ -249,7 +248,7 @@ def after_assign(obj):
                     "assign action failed for analysis %s" % obj.getId())
     obj.reindexObject()
 
-@security.public
+
 def after_unassign(obj):
     if skip(self, "unassign"):
         return
