@@ -13,6 +13,7 @@ from bika.lims import logger
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
+from bika.lims.catalog import getCatalogDefinitions, setup_catalogs
 from bika.lims.upgrade import upgradestep, stub
 from bika.lims.upgrade.utils import UpgradeUtils
 from plone.api.portal import get_tool
