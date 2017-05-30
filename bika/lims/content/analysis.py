@@ -1537,14 +1537,13 @@ class Analysis(BaseContent):
             return ins.absolute_url_path()
         return ''
 
-    def hasAttachment(self):
-        """
-        It is used as a metacolumn.
-        Checks if the object has attachments or not.
-        Returns a boolean.
+    def getAttachmentUIDs(self):
+        """Used to populate metadata, so that we don't need full objects of
+        analyses when working with their attachments.
         """
         attachments = self.getAttachment()
-        return len(attachments) > 0
+        uids = [att.UID() for att in attachments]
+        return uids
 
     def guard_sample_transition(self):
         workflow = getToolByName(self, "portal_workflow")
