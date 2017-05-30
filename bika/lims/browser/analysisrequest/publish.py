@@ -639,10 +639,15 @@ SKIP_FIELDNAMES = [
 
 
 class AnalysisRequestDigester:
-    """Read AR data which could be useful during publication, into a data
-    dictionary. This class should be instantiated once, and the instance used 
-    for all subsequent digestion.  This allows the instance to cache data for 
-    objects that may be read multiple times for different ARs.
+    """Read AR data which could be useful during publication, into a data 
+    dictionary. This class should be instantiated once, and the instance 
+    called for all subsequent digestion.  This allows the instance to cache 
+    data for objects that may be read multiple times for different ARs.
+
+    Passing overwrite=True when calling the instance will cause the
+    ar.Digest field to be overwritten with a new digestion.  This flag
+    is set True by default in the EndRequestHandler that is responsible for
+    automated re-building.
     
     Reads field values in a general way, to allow schema changes to be 
     represented here without modifying this code. Also include data for 
@@ -654,7 +659,11 @@ class AnalysisRequestDigester:
     
     Note: ProxyFields are not included in the reading of the schema.  If you
     want to access sample fields in the report template, you must refer
-    directly to the correct field in the Sample data dictionary.    
+    directly to the correct field in the Sample data dictionary.
+    
+    Note: ComputedFields are removed from the schema while creating the dict.
+    XXX: Add all metadata columns for the AR into the dict.
+    
     """
 
     def __init__(self):
@@ -663,7 +672,7 @@ class AnalysisRequestDigester:
         # only once in this request.
         self._cache = {}
 
-    def __call__(self, ar):
+    def __call__(self, ar, overwrite=False):
         # if AR was previously digested, use existing data
         data = ar.getDigest()
         if data:
@@ -1023,7 +1032,7 @@ class AnalysisRequestDigester:
             data['username'] = username
             bs = get_tool('bika_setup')
             brains = [x for x in bs(portal_type='LabContact')
-                 if x.getObject().getUsername() == username]
+                      if x.getObject().getUsername() == username]
             if brains:
                 contact = brains[0].getObject()
                 data.update(self._schema_dict(contact))
@@ -1069,15 +1078,6 @@ class AnalysisRequestDigester:
         return "<div class='address'>%s</div>" % addr
 
 
-def AfterTransitionEventHandler(instance, event):
-    """After a 'verify' transition on an AR, create a data dictionary
-    in ar.Digest field containing all information required for publication.
-    """
-    if event.transition and event.transition.id == 'verify':
-        digester = AnalysisRequestDigester()
-        digester(instance)
-
-
 def _verified(instance):
     """True if the 'verify' transition has ever been fired against instance.
     """
@@ -1088,10 +1088,35 @@ def _verified(instance):
             return True
 
 
-def ModifiedHandler(instance, event):
+def ARModifiedHandler(instance, event):
     """After any modification of an AR that has been verified, re-populate 
     the ar.Digest field containing all information required for publication.
     """
     if IAnalysisRequest.providedBy(instance) and _verified(instance):
         digester = AnalysisRequestDigester()
         digester(instance)
+
+
+def AnalysisAfterTransitionHandler(instance, event):
+    """After a 'verify' transition on any analysis, we must set a flag in
+    the request so that the AR is digested before the request terminates.
+    We're doing it here so that the digestion happens only once at the end
+    of the request, regardless of how many children were transitioned.
+    """
+    if event.transition and event.transition.id == 'verify':
+        request = instance.REQUEST
+        ar = instance.aq_parent()
+        ars_to_digest = set(request.get('ars_to_digest', []))
+        ars_to_digest.add(ar)
+        request['ars_to_digest'] = ars_to_digest
+
+def EndRequestHandler(instance, event):
+    """At the end of the request, we check, to see if any pre-digestion is
+    required, for any ars or analyses that were processed during the request.
+    """
+    digester = AnalysisRequestDigester()
+    request = instance.REQUEST
+    ars_to_digest = set(request.get('ars_to_digest', []))
+    if ars_to_digest:
+        for ar in ars_to_digest:
+            digester(ar, overwrite=True)
