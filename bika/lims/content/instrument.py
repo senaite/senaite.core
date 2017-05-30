@@ -12,6 +12,7 @@ from Products.Archetypes.atapi import *
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
+from bika.lims import deprecated
 from bika.lims import logger
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DateTimeWidget
@@ -394,9 +395,7 @@ class Instrument(ATFolder):
         items.sort(lambda x,y:cmp(x[1], y[1]))
         return DisplayList(items)
 
-    from bika.lims import deprecated
-
-    @deprecated('[1703] Orphan. No alternative')
+    @deprecated('[1702] Orphan. No alternative')
     def getMethodUID(self):
         # TODO Avoid using this function. Returns first method's UID for now.
         if self.getMethods():

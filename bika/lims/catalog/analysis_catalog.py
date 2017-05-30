@@ -53,6 +53,7 @@ _indexes_dict = {
 # Defining the columns for this catalog
 _columns_list = [
     'worksheetanalysis_review_state',
+    'getAttachmentUIDs',
     'getRequestID',
     'getReferenceAnalysesGroupID',
     'getResultCaptureDate',
@@ -86,7 +87,6 @@ _columns_list = [
     'getAllowedMethodUIDs',
     'getAnalyst',
     'getAnalystName',
-    'hasAttachment',
     'getNumberOfRequiredVerifications',
     'getNumberOfVerifications',
     'isSelfVerificationEnabled',

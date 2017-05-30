@@ -22,6 +22,7 @@ from DateTime import DateTime
 from operator import itemgetter
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.ZCatalog.interfaces import ICatalogBrain
+from plone.api.portal import get_tool
 from zope.component import getAdapters
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from plone.api.portal import get_tool
@@ -621,10 +622,11 @@ class AnalysesView(BikaListingView):
         # If the analysis service has the option 'attachment' enabled
         if can_add_attachment or can_view_result:
             attachments = ""
-            if obj.hasAttachment:
-                # TODO-performance: This is vey time consuming
-                full_obj = full_obj if full_obj else obj.getObject()
-                for attachment in full_obj.getAttachment():
+            if obj.getAttachmentUIDs:
+                at_uids = obj.getAttachmentUIDs
+                uc = get_tool('uid_catalog')
+                attachments = [x.getObject() for x in uc(UID=at_uids)]
+                for attachment in attachments:
                     af = attachment.getAttachmentFile()
                     icon = af.icon
                     attachments +=\

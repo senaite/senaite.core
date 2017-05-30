@@ -31,7 +31,7 @@ from bika.lims.interfaces import ILabContact
 from bika.lims import deprecated
 from bika.lims import logger
 from bika.lims import bikaMessageFactory as _
-
+from bika.lims import deprecated
 
 schema = Person.schema.copy() + atapi.Schema((
     atapi.LinesField('PublicationPreference',

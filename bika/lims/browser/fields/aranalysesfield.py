@@ -67,7 +67,7 @@ class ARAnalysesField(ObjectField):
         contentFilter = dict([(k, v) for k, v in kwargs.items()
                               if k in bac.indexes()])
         contentFilter['portal_type'] = "Analysis"
-        contentFilter['sort_on'] = "getId"
+        contentFilter['sort_on'] = "getKeyword"
         contentFilter['path'] = {'query': "/".join(instance.getPhysicalPath()),
                                  'level': 0}
         analyses = bac(contentFilter)

@@ -1148,12 +1148,13 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         return self.isInstrumentValid()
 
     @security.public
-    def hasAttachment(self):
-        """This method is used to populate catalog values
-        Checks if the object has attachments or not. Returns a boolean.
+    def getAttachmentUIDs(self):
+        """Used to populate metadata, so that we don't need full objects of
+        analyses when working with their attachments.
         """
         attachments = self.getAttachment()
-        return len(attachments) > 0
+        uids = [att.UID() for att in attachments]
+        return uids
 
     @security.public
     def remove_duplicates(self, ws):

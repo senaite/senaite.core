@@ -844,7 +844,6 @@ class AnalysisRequestPublishView(BrowserView):
             report.edit(
                 AnalysisRequest=ar.UID(),
                 Pdf=pdf_report,
-                Html=results_html,
                 Recipients=recipients
             )
             report.unmarkCreationFlag()
