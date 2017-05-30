@@ -31,8 +31,6 @@ schema = BikaSchema.copy() + Schema((
     ),
     BlobField('Pdf',
     ),
-    StringField('Html',
-    ),
     StringField('SMS',
     ),
     RecordsField('Recipients',
