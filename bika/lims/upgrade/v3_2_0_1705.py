@@ -82,8 +82,12 @@ def removeHtmlFromAR(portal):
     uc = getToolByName(portal, 'uid_catalog')
     ar_reps = uc(portal_type='ARReport')
     f_name = 'Html'
+    counter = 0
     for ar in ar_reps:
         obj = ar.getObject()
         if hasattr(obj, f_name):
             delattr(obj, f_name)
-            print 'R'
+            counter += 1
+
+    logger.info("'Html' attribute has been removed from %d ARReport objects."
+                % counter)
