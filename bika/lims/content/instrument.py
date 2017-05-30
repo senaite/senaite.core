@@ -7,6 +7,7 @@ from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
 from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes.atapi import *
+from plone.app.blob.field import FileField as BlobFileField
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
@@ -300,7 +301,7 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         )
     ),
 
-    FileField('InstallationCertificate',
+    BlobFileField('InstallationCertificate',
     schemata = 'Additional info.',
     widget = FileWidget(
         label=_("Installation Certificate"),

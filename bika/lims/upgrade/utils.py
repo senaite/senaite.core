@@ -3,6 +3,14 @@ from Products.CMFCore.utils import getToolByName
 from Products.ZCatalog.ProgressHandler import ZLogHandler
 from bika.lims import logger
 from bika.lims.catalog.catalog_utilities import addZCTextIndex
+from Products.contentmigration.walker import CustomQueryWalker
+from Products.contentmigration.migrator import BaseInlineMigrator
+from Products.contentmigration.common import HAS_LINGUA_PLONE
+from Products.Archetypes.interfaces import ISchema
+from plone.app.blob.interfaces import IBlobField
+from plone.app.blob.field import BlobWrapper
+from Acquisition import aq_base
+from transaction import savepoint
 # Interesting page for logging indexing process and others:
 # https://github.com/plone/Products.ZCatalog/tree/master/src/Products/ZCatalog
 # and
@@ -10,6 +18,171 @@ from bika.lims.catalog.catalog_utilities import addZCTextIndex
 import traceback
 import sys
 import transaction
+import logging
+
+
+LOG = logging.getLogger('contentmigration')
+
+
+def migrate_to_blob(context, portal_type, query={}, remove_old_value=True):
+    """
+    Migrates FileFields fields to blob ones for a given portal_type.
+    The wueries are done against 'portal_catalog', 'uid_catalog' and
+    'reference_catalog'
+
+    :param context: portal root object as context
+    :param query: an expression to filter the catalog by other filters than
+    the portal_type.
+    :param portal_type: The portal type name the migration is migrating *from*
+    """
+    migrator = makeMigrator(
+        context, portal_type, remove_old_value=remove_old_value)
+    walker = BikaCustomQueryWalker(context, migrator, query=query)
+    savepoint(optimistic=True)
+    walker.go()
+    return walker.getOutput()
+
+
+class BikaCustomQueryWalker(CustomQueryWalker):
+    """
+    Walker using portal_catalog and an optional custom query.
+    This class overrides the original one in order to log and inform
+    about the migration process.
+    """
+    additionalQuery = {}
+
+    def walk(self):
+        """
+        Walks around and returns all objects which needs migration
+        It does exactly the same as the original method, but add some
+        progress loggers.
+
+        :return: objects (with acquisition wrapper) that needs migration
+        :rtype: generator
+        """
+        catalog = self.catalog
+        query = self.additionalQuery.copy()
+        query['portal_type'] = self.src_portal_type
+        query['meta_type'] = self.src_meta_type
+
+        if HAS_LINGUA_PLONE and 'Language' in catalog.indexes():
+            query['Language'] = 'all'
+
+        brains = catalog(query)
+        limit = getattr(self, 'limit', False)
+        if limit:
+            brains = brains[:limit]
+        obj_num_total = len(brains)
+        logger.info(
+            '{} objects will be migrated walking through {}'
+            .format(obj_num_total, catalog.id))
+        counter = 0
+        for brain in brains:
+            if counter % 100 == 0:
+                logger.info(
+                    'Progress: {} objects have been migrated out of {}'
+                    .format(counter, obj_num_total))
+            try:
+                obj = brain.getObject()
+            except AttributeError:
+                LOG.error("Couldn't access %s" % brain.getPath())
+                continue
+
+            if self.callBefore is not None and callable(self.callBefore):
+                if self.callBefore(obj, **self.kwargs) == False:
+                    continue
+
+            try:
+                state = obj._p_changed
+            except:
+                state = 0
+            if obj is not None:
+                yield obj
+                # safe my butt
+                if state is None:
+                    obj._p_deactivate()
+            counter += 1
+            if obj_num_total == counter:
+                logger.info(
+                    'Progress: {} objects have been migrated out of {}'
+                    .format(counter, obj_num_total))
+
+
+# helper to build custom blob migrators for the given type. It is based on
+# the function defined in plone/app/blob/migrations.py with the same name.
+def makeMigrator(context, portal_type, remove_old_value=True):
+    """ generate a migrator for the given at-based portal type """
+    meta_type = portal_type
+
+    class BlobMigrator(BaseInlineMigrator):
+        """in-place migrator for archetypes based content that copies
+        file/image data from old non-blob fields to new fields with the same
+        name  provided by archetypes.schemaextender.
+
+        see `plone3 to 4 migration guide`__
+
+        .. __: https://plone.org/documentation/manual/upgrade-guide/version/upgrading-plone-3-x-to-4.0/updating-add-on-products-for-plone-4.0/use-plone.app.blob-based-blob-storage
+        """
+
+        src_portal_type = portal_type
+        src_meta_type = meta_type
+        dst_portal_type = portal_type
+        dst_meta_type = meta_type
+        fields = []
+
+        def getFields(self, obj):
+            if not self.fields:
+                # get the blob fields to migrate from the first object
+                for field in ISchema(obj).fields():
+                    if IBlobField.providedBy(field):
+                        self.fields.append(field.getName())
+            return self.fields
+
+        @property
+        def fields_map(self):
+            fields = self.getFields(None)
+            return dict([(name, None) for name in fields])
+
+        def migrate_data(self):
+            fields = self.getFields(self.obj)
+            for name in fields:
+                # access old field by not using schemaextender
+                oldfield = self.obj.schema[name]
+                is_imagefield = False
+                if hasattr(oldfield, 'removeScales'):
+                    # clean up old image scales
+                    is_imagefield = True
+                    oldfield.removeScales(self.obj)
+                value = oldfield.get(self.obj)
+
+                if not value:
+                    # no image/file data: don't copy it over to blob field
+                    # this way it's save to run migration multiple times w/o
+                    # overwriting existing data
+                    continue
+
+                if isinstance(aq_base(value), BlobWrapper):
+                    # already a blob field, no need to migrate it
+                    continue
+
+                # access new field via schemaextender
+                field = self.obj.getField(name)
+                field.getMutator(self.obj)(value)
+
+                if remove_old_value:
+                    # Remove data from old field to not end up with data
+                    # stored twice - in ZODB and blobstorage
+                    if is_imagefield:
+                        oldfield.set(self.obj, 'DELETE_IMAGE')
+                    else:
+                        oldfield.set(self.obj, 'DELETE_FILE')
+
+        def last_migrate_reindex(self):
+            # The original method checks the modification date in order to
+            # keep the old one, but we don't care about it.
+            self.obj.reindexObject()
+
+    return BlobMigrator
 
 
 class UpgradeUtils(object):

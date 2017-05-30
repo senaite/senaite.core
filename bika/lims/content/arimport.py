@@ -24,6 +24,7 @@ from collective.progressbar.events import ProgressState
 from collective.progressbar.events import UpdateProgressEvent
 from Products.Archetypes import atapi
 from Products.Archetypes.public import *
+from plone.app.blob.field import FileField as BlobFileField
 from Products.Archetypes.references import HoldingReference
 from Products.Archetypes.utils import addStatusMessage
 from Products.CMFCore.utils import getToolByName
@@ -47,7 +48,7 @@ import transaction
 
 _p = MessageFactory(u"plone")
 
-OriginalFile = FileField(
+OriginalFile = BlobFileField(
     'OriginalFile',
     widget=ComputedWidget(
         visible=False

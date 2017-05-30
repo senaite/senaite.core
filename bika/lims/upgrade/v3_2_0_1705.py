@@ -11,6 +11,7 @@ from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.config import VERSIONABLE_TYPES
 from Products.CMFCore.utils import getToolByName
+from bika.lims.upgrade.utils import migrate_to_blob
 import traceback
 import sys
 import transaction
@@ -32,7 +33,8 @@ def upgrade(tool):
         return True
 
     logger.info("Upgrading {0}: {1} -> {2}".format(product, ufrom, version))
-
+    # Migrating ataip.FileField to blob.FileField
+    migareteFileFields(portal)
     # Remove versionable types
     logger.info("Removing versionable types...")
     portal_repository = getToolByName(portal, 'portal_repository')
@@ -91,3 +93,31 @@ def removeHtmlFromAR(portal):
 
     logger.info("'Html' attribute has been removed from %d ARReport objects."
                 % counter)
+
+def migareteFileFields(portal):
+    """
+    This function walks over all attachment types and migrates their FileField
+    fields.
+    """
+    portal_types = [
+        "Attachment",
+        "ARImport",
+        "Instrument",
+        "InstrumentCertification",
+        "Method",
+        "Multifile",
+        "Report",
+        "SamplePoint"]
+    for portal_type in portal_types:
+        logger.info(
+            "Starting migration of FileField fields from {}."
+            .format(portal_type))
+        # Do the migration
+        migrate_to_blob(
+            portal,
+            portal_type=portal_type,
+            remove_old_value=True)
+        logger.info(
+            "Finished migration of FileField fields from {}."
+            .format(portal_type))
+
