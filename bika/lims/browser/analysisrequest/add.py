@@ -45,6 +45,14 @@ class AnalysisServicesView(ASV):
     def __init__(self, context, request, poc, ar_count=None, category=None):
         super(AnalysisServicesView, self).__init__(context, request)
 
+        mtool = getToolByName(self.context, 'portal_membership')
+        username = mtool.getAuthenticatedMember().getUserName()
+        lc_brain = self.context.portal_catalog(portal_type='LabContact',
+                                               getUsername=username)
+        lab_con = lc_brain[0].getObject()
+        dep_titles = [d.Title() for d in lab_con.getDepartments()]
+        self.contentFilter['getDepartmentTitle'] = dep_titles
+
         self.contentFilter['getPointOfCapture'] = poc
         self.contentFilter['inactive_state'] = 'active'
 
