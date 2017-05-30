@@ -73,12 +73,33 @@ def upgrade(tool):
     if CATALOG_ANALYSIS_REQUEST_LISTING not in ut.refreshcatalog:
         ut.refreshcatalog.append(CATALOG_ANALYSIS_REQUEST_LISTING)
 
+    # Deleting 'Html' field from ARReport objects.
+    removeHtmlFromAR(portal)
+
     # Refresh affected catalogs
     ut.refreshCatalogs()
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
 
+
+def removeHtmlFromAR(portal):
+    """
+    'Html' StringField has been deleted from ARReport Schema.
+    Now removing this attribute from old objects to save some memory.
+    """
+    uc = getToolByName(portal, 'uid_catalog')
+    ar_reps = uc(portal_type='ARReport')
+    f_name = 'Html'
+    counter = 0
+    for ar in ar_reps:
+        obj = ar.getObject()
+        if hasattr(obj, f_name):
+            delattr(obj, f_name)
+            counter += 1
+
+    logger.info("'Html' attribute has been removed from %d ARReport objects."
+                % counter)
 
 def migareteFileFields(portal):
     """
