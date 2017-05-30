@@ -1147,6 +1147,12 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """
         return self.isInstrumentValid()
 
+    @deprecated('[1705] Orphan. Use getAttachmentUIDs')
+    @security.public
+    def hasAttachment(self):
+        attachments = self.getAttachmentUIDs()
+        return len(attachments) > 0
+
     @security.public
     def getAttachmentUIDs(self):
         """Used to populate metadata, so that we don't need full objects of
