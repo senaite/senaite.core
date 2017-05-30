@@ -579,13 +579,12 @@ class AnalysisResultsImporter(Logger):
                 if an_att.getAttachmentFile().filename != \
                         attachment.getAttachmentFile().filename:
                     logger.info("Attaching %s to %s" % (an_att.UID(), analysis))
-                    attachments.append(an_att.UID())
+                    attachments.append(attachment.UID())
+                    analysis.setAttachment(attachments)
                     break
             else:
                 self.warn("Attachment %s was not linked to analysis %s" %
                           (attachment, analysis))
-            attachments.append(attachment.UID())
-            analysis.setAttachment(attachments)
 
     def get_attachment_filenames(self, ws):
         fn_attachments = {}
