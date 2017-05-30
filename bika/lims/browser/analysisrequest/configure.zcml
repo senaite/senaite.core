@@ -192,4 +192,25 @@
       layer="bika.lims.interfaces.IBikaLIMS"
     />
 
+    <subscriber
+      for="bika.lims.interfaces.IAnalysisRequest
+           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
+      handler="bika.lims.browser.analysisrequest.publish.AfterTransitionEventHandler"
+    />
+
+    <!-- Verifying an AR creates a data dictionary for publish to consume -->
+    <subscriber
+      for="bika.lims.interfaces.IAnalysisRequest
+           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
+      handler="bika.lims.browser.analysisrequest.publish.AfterTransitionEventHandler"
+    />
+
+    <!-- Modifying an AR that has been verified, updates ar.Digest -->
+    <subscriber
+      for="bika.lims.interfaces.IAnalysisRequest
+           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+      handler="bika.lims.browser.analysisrequest.publish.ModifiedHandler"
+    />
+
+
 </configure>
