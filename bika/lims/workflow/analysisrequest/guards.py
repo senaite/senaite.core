@@ -82,6 +82,6 @@ def verify(obj):
         if not analysis_guards.verify(an):
             return False
 
-    mtool = get_tool('portal_membersip')
+    mtool = get_tool('portal_membership')
     member = mtool.getAuthenticatedMember()
     return obj.isUserAllowedToVerify(member)

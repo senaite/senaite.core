@@ -16,6 +16,7 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.interfaces import IWorkflowChain
 from Products.CMFPlone.workflow import ToolWorkflowChain
+from Products.DCWorkflow.Transitions import TRIGGER_USER_ACTION
 from zope.component import adapts
 from zope.interface import implementer
 from zope.interface import implements
@@ -91,7 +92,7 @@ def doActionFor(instance, action_id, active_only=True, allowed_transition=True):
                                                       instance.getId(),
                                                       currstate, transitions)
             logger.error(msg)
-            _logTransitionFailure(instance)
+            _logTransitionFailure(instance, action_id)
             return actionperformed, message
     try:
         workflow.doActionFor(instance, action_id)
@@ -117,13 +118,13 @@ def _logTransitionFailure(obj, transition_id):
                     tdef = wf.transitions.get(tid, None)
                     if not tdef:
                         continue
-                    if tdef.trigger_type != 1:
+                    if tdef.trigger_type != TRIGGER_USER_ACTION:
                         logger.error("  Trigger type is not manual")
                     if not tdef.actbox_name:
                         logger.error("  No actbox_name set")
-                    if wf._checkTransitionGuard(tdef, obj):
+                    if not wf._checkTransitionGuard(tdef, obj):
                         guard = tdef.guard
-                        expr = guard.getExprText
+                        expr = guard.getExprText()
                         logger.error("  Guard failed: {0}".format(expr))
                     return
     logger.error("  Transition not found. Check the workflow definition!")
