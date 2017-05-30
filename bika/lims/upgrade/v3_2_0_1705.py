@@ -608,7 +608,7 @@ def remove_attachment_duplicates(portal, pgthreshold=1000):
     instrument import routine used filenames when it made them.
     """
     pc = get_tool('portal_catalog')
-    wc = get_tool(CATALOG_WORKSHEET_LISTING)
+    wc = get_tool('uid_catalog')
 
     # get all worksheets.
     brains = wc(portal_type='Worksheet')
