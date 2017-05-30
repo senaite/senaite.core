@@ -580,6 +580,10 @@ class AnalysisResultsImporter(Logger):
                         attachment.getAttachmentFile().filename:
                     logger.info("Attaching %s to %s" % (an_att.UID(), analysis))
                     attachments.append(an_att.UID())
+                    break
+            else:
+                self.warn("Attachment %s was not linked to analysis %s" %
+                          (attachment, analysis))
             attachments.append(attachment.UID())
             analysis.setAttachment(attachments)
 
