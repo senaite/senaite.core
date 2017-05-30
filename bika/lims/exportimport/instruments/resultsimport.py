@@ -372,7 +372,12 @@ class AnalysisResultsImporter(Logger):
         if len(acodes) == 0:
             self.err("Service keywords: no matches found")
 
-        searchcriteria = self.getIdSearchCriteria();
+        # Attachments will be created in any worksheet that contains
+        # analyses that are updated by this import
+        attachments = None
+        infile = self._parser.getInputFile()
+
+        searchcriteria = self.getIdSearchCriteria()
         #self.log(_("Search criterias: %s") % (', '.join(searchcriteria)))
         for objid, results in self._parser.getRawResults().iteritems():
             # Allowed more than one result for the same sample and analysis.
@@ -461,6 +466,24 @@ class AnalysisResultsImporter(Logger):
                         continue
 
                     analysis = ans[0]
+
+                    # Create attachment in worksheet linked to this analysis.
+                    # Only if this import has not already created the attachment
+                    # And only if the filename of the attachment is unique in
+                    # this worksheet.  Otherwise we will attempt to use existing
+                    # attachment.
+                    wss = analysis.getBackReferences('WorksheetAnalysis')
+                    ws = wss[0] if wss else None
+                    if ws:
+                        if ws.getId() not in attachments:
+                            fn = infile.filename
+                            fn_attachments = self.get_attachment_filenames(ws)
+                            if fn in fn_attachments:
+                                attachments[ws.getId()] = fn_attachments[fn]
+                            else:
+                                attachments[ws.getId()] = \
+                                    self.create_attachment(ws, infile)
+
                     if capturedate:
                         values['DateTime'] = capturedate
                     processed = self._process_analysis(objid, analysis, values)
@@ -483,8 +506,14 @@ class AnalysisResultsImporter(Logger):
                                     importedar.append(acode)
                                 importedars[ar.getId()] = importedar
 
-                        attachment = self.create_attachment(analysis)
-                        self.attach_attachment(analysis, attachment)
+                        if ws:
+                            self.attach_attachment(
+                                analysis, attachments[ws.getId()])
+                        else:
+                            self.warn(
+                                "Attachment cannot be linked to analysis as "
+                                "it is not assigned to a worksheet (%s)" %
+                                analysis)
 
         for arid, acodes in importedars.iteritems():
             acodesmsg = ["Analysis %s" % acod for acod in acodes]
@@ -528,22 +557,18 @@ class AnalysisResultsImporter(Logger):
             attuid = attachmentType[0].UID
         return attuid
 
-    def create_attachment(self, analysis):
+    def create_attachment(self, ws, infile):
         attuid = self.create_mime_attachmenttype()
         attachment = None
         if attuid:
-            wss = analysis.getBackReferences('WorksheetAnalysis')
-            if wss:
-                ws = wss[0]
-                attachment = _createObjectByType("Attachment", ws, tmpID())
-                logger.info("Creating %s in %s" % (attachment, ws))
-                inf = self._parser.getInputFile()
-                fn = inf.filename
-                attachment.edit(
-                    AttachmentFile=fn,
-                    AttachmentType=attuid,
-                    AttachmentKeys='Results, Automatic import')
-                attachment.setId(fn)
+            attachment = _createObjectByType("Attachment", ws, tmpID())
+            logger.info("Creating %s in %s" % (attachment, ws))
+            fn = inf.filename
+            attachment.edit(
+                AttachmentFile=fn,
+                AttachmentType=attuid,
+                AttachmentKeys='Results, Automatic import')
+            attachment.setId(fn)
         return attachment
 
     def attach_attachment(self, analysis, attachment):
@@ -557,6 +582,15 @@ class AnalysisResultsImporter(Logger):
                     attachments.append(an_att.UID())
             attachments.append(attachment.UID())
             analysis.setAttachment(attachments)
+
+    def get_attachment_filenames(self, ws):
+        fn_attachments = {}
+        for att in ws.objectValues('Attachment'):
+            fn = att.getAttachmentFile().filename
+            if fn not in fn_attachments:
+                fn_attachments[fn] = []
+            fn_attachments[fn].append(att)
+        return fn_attachments
 
     def _getObjects(self, objid, criteria, states):
         #self.log("Criteria: %s %s") % (criteria, obji))
