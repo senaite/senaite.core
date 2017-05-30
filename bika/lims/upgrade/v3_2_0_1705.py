@@ -620,10 +620,10 @@ def remove_attachment_duplicates(portal, pgthreshold=1000):
     instrument import routine used filenames when it made them.
     """
     pc = get_tool('portal_catalog')
-    wc = get_tool('uid_catalog')
+    uc = get_tool('uid_catalog')
 
     # get all worksheets.
-    brains = wc(portal_type='Worksheet')
+    brains = uc(portal_type='Worksheet')
     # list of lists.
     dup_ans = []  # [fn, primary attachment, duplicate attachment, worksheet]
     primaries = {}  # key is wsID:fn.  stores first found instance.

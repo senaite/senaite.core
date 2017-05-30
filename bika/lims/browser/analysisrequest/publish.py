@@ -25,7 +25,8 @@ from bika.lims import bikaMessageFactory as _, t
 from bika.lims import logger
 from bika.lims.browser import BrowserView, ulocalized_time
 from bika.lims.idserver import renameAfterCreation
-from bika.lims.interfaces import IAnalysisRequest, IResultOutOfRange
+from bika.lims.interfaces import IAnalysisRequest, IResultOutOfRange, \
+    IReferenceAnalysis
 from bika.lims.utils import attachPdf, createPdf, encode_header
 from bika.lims.utils import formatDecimalMark, to_utf8
 from bika.lims.utils.analysis import format_uncertainty
@@ -145,7 +146,6 @@ class AnalysisRequestPublishView(BrowserView):
         """Returns the dict for the Analysis Request specified. If no AR set,
         returns the current analysis request
         """
-
         if analysisrequest:
             return self._digester(analysisrequest)
         else:
@@ -383,7 +383,7 @@ class AnalysisRequestPublishView(BrowserView):
             for mngrid in mngrs['ids']:
                 name = mngrs['dict'][mngrid].get('name', '')
                 email = mngrs['dict'][mngrid].get('email', '')
-                if email != '':
+                if email:
                     to.append(formataddr((encode_header(name), email)))
 
             if len(to) > 0:
@@ -738,8 +738,8 @@ class AnalysisRequestDigester:
 
             # Group by department too
             anobj = an['obj']
-            dept = anobj.getService().getDepartment() \
-                if anobj.getService() else None
+            dept = anobj.getDepartment() \
+                if anobj.getAnalysisService() else None
             if dept:
                 dept = dept.UID()
                 dep = data['department_analyses'].get(dept, {})
@@ -794,7 +794,9 @@ class AnalysisRequestDigester:
         portal_type = instance.portal_type
         if uid in self._cache:
             return self._cache[uid]
-        data = {}
+        data = {
+            'obj': instance,
+        }
         fields = instance.Schema().fields()
         for fld in fields:
             fieldname = fld.getName()
@@ -919,8 +921,7 @@ class AnalysisRequestDigester:
 
             # Omit hidden analyses?
             if not showhidden:
-                serv = an.getService()
-                asets = ar.getAnalysisServiceSettings(serv.UID())
+                asets = ar.getAnalysisServiceSettings(an.getServiceUID())
                 if asets.get('hidden'):
                     # Hide analysis
                     continue
@@ -954,7 +955,9 @@ class AnalysisRequestDigester:
 
     def _analysis_data(self, analysis):
 
-        decimalmark = analysis.aq_parent.aq_parent.getDecimalMark()
+        ar = analysis.aq_parent
+        decimalmark = ar.aq_parent.getDecimalMark()
+
         andict = self._schema_dict(analysis)
 
         if analysis.portal_type == 'DuplicateAnalysis':
@@ -966,14 +969,14 @@ class AnalysisRequestDigester:
             if ws and len(ws) > 0 else None
         andict['refsample'] = analysis.getSample().id \
             if analysis.portal_type == 'Analysis' \
-            else '%s - %s' % (analysis.aq_parent.id, analysis.aq_parent.Title())
+            else '%s - %s' % (ar.id, ar.Title())
 
         # Set analysis specs or reference results, depending on the type
         # of the analysis.
-        if analysis.portal_type == 'ReferenceAnalysis':
+        if IReferenceAnalysis.providedBy(analysis):
             # We might use the reference results instead other specs
             uid = analysis.getServiceUID()
-            specs = analysis.aq_parent.getResultsRangeDict().get(uid, {})
+            specs = ar.getResultsRangeDict().get(uid, {})
 
         else:
             # The getResultsRange function already takes care about which are
