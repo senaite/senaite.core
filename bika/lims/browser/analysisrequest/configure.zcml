@@ -216,5 +216,4 @@
       handler="bika.lims.browser.analysisrequest.publish.EndRequestHandler"
     />
 
-
 </configure>

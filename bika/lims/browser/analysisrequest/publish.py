@@ -637,6 +637,15 @@ SKIP_FIELDNAMES = [
     'nextPreviousEnabled', 'constrainTypesMode', 'RestrictedCategories',
 ]
 
+# These fields cause problems for specific types
+SKIP_BY_TYPE = {
+    'LabContact': ['Department',  # deprecated, use Departments.
+                   'Departments',  # causeses circular ref; we fix manually.
+                   ],
+    'Method': ['Instrument'],  # circular
+    'Instrument': ['Method'],  # circular
+}
+
 
 class AnalysisRequestDigester:
     """Read AR data which could be useful during publication, into a data 
@@ -780,7 +789,9 @@ class AnalysisRequestDigester:
     def _schema_dict(self, instance, skip_fields=None):
         """Return a dict of all mutated field values for all schema fields.
         """
+        logger.info("_schema_dict on %s" % instance)
         uid = instance.UID()
+        portal_type = instance.portal_type
         if uid in self._cache:
             return self._cache[uid]
         data = {}
@@ -788,11 +799,10 @@ class AnalysisRequestDigester:
         for fld in fields:
             fieldname = fld.getName()
             if fieldname in SKIP_FIELDNAMES \
+                    or (fieldname in SKIP_BY_TYPE.get(portal_type, [])) \
                     or (skip_fields and fieldname in skip_fields):
                 continue
             if fld.type == 'computed':
-                logger.info("skip computed field %s.%s" %
-                            (instance.getId(), fieldname))
                 continue
             rawvalue = fld.get(instance)
             if rawvalue is True or rawvalue is False:
@@ -811,14 +821,15 @@ class AnalysisRequestDigester:
                 # Date fields get stringed to rfc8222
                 data[fieldname] = rawvalue.rfc822() if rawvalue else ''
             elif ITextField.providedBy(fld) or IStringField.providedBy(fld):
-                # Strings are returned without molestation
-                data[fieldname] = rawvalue.strip()
+                rawvalue = str(rawvalue).strip()
+                data[fieldname] = rawvalue
             elif IFileField.providedBy(fld) or IBlobField.providedBy(fld):
                 # We ignore file field values; we'll add the ones we want.
                 data[fieldname] = ''
             elif IReferenceField.providedBy(fld):
                 # mutate all reference targets into dictionaries
                 # Assume here that allowed_types excludes incompatible types.
+                logger.info("Calling _schema_dict for field %s" % fieldname)
                 data[fieldname] = [self._schema_dict(x) for x in rawvalue] \
                     if fld.multiValued else self._schema_dict(rawvalue)
                 # Include a [fieldname]Title[s] field containing the title
@@ -1109,6 +1120,7 @@ def AnalysisAfterTransitionHandler(instance, event):
         ars_to_digest = set(request.get('ars_to_digest', []))
         ars_to_digest.add(ar)
         request['ars_to_digest'] = ars_to_digest
+
 
 def EndRequestHandler(instance, event):
     """At the end of the request, we check, to see if any pre-digestion is
