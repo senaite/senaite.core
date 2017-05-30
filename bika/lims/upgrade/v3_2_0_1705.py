@@ -42,6 +42,7 @@ def upgrade(tool):
     logger.info('Upgrading {0}: {1} -> {2}'.format(product, ufrom, version))
 
     setup = portal.portal_setup
+    setup.runImportStepFromProfile('profile-bika.lims:default', 'toolset')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'controlpanel')
 
@@ -72,6 +73,12 @@ def upgrade(tool):
 
     # Refresh affected catalogs
     ut.refreshCatalogs()
+
+    # Updating catalogs from dependant add-ons (health) if there are changes
+    logger.info("Updating catalog structures from derived add-ons...")
+    catalog_definitions = getCatalogDefinitions()
+    setup_catalogs(portal, catalog_definitions)
+    logger.info("Catalogs updated")
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
