@@ -145,11 +145,10 @@ def remove_attachment_duplicates(portal, pgthreshold=1000):
     # Now.
     count = 0
     for fn, att, dup, ws in dup_ans:
-        # ans = [a for a in ws.getAnalyses() if dup.UID() in a.getAttachment()]
         ans = dup.getBackReferences()
         for an in ans:
-            an.getField('Attachment').unset(an)
-            an.setAttachment(att)
+            an_atts = [a for a in an.getAttachment() if a.UID() != dup.UID()]
+            an.setAttachment(an_atts)
         path_uid = '/'.join(dup.getPhysicalPath())
         pc.uncatalog_object(path_uid)
         #dup.getField('AttachmentFile').set(dup, 'DELETED')
