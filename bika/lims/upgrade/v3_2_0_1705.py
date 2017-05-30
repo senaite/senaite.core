@@ -19,6 +19,8 @@ from bika.lims.upgrade.utils import UpgradeUtils
 from plone.api.portal import get_tool
 from bika.lims.config import VERSIONABLE_TYPES
 from Products.CMFCore.utils import getToolByName
+from Products.DCWorkflow.Transitions import TRIGGER_USER_ACTION
+from Products.DCWorkflow.Transitions import TRIGGER_AUTOMATIC
 from bika.lims.upgrade.utils import migrate_to_blob
 import traceback
 import sys
@@ -71,6 +73,9 @@ def upgrade(tool):
 
     # Fix problem with empty actbox_name in transitions
     fixWorkflowsActBoxName(portal)
+
+    # Set all transitions to be triggered manually
+    to_manual_transitions(portal)
 
     # Refresh affected catalogs
     ut.refreshCatalogs()
@@ -680,9 +685,9 @@ def removeWorkflowsAutoTransitions(portal):
     """
     logger.info('Removing automatic transitions no longer used...')
     toremove = [{'id': 'auto_preservation_required',
-                 'replacement':'to_be_preserved'},
+                 'replacement': 'to_be_preserved'},
                 {'id': 'auto_no_preservation_required',
-                 'replacement':'sample_due'},]
+                 'replacement': 'sample_due'}, ]
     wtool = getToolByName(portal, 'portal_workflow')
     workflowids = wtool.getWorkflowIds()
     for wfid in workflowids:
@@ -715,3 +720,22 @@ def removeWorkflowsAutoTransitions(portal):
                 logger.info('Removing transition {0} from {1}'.format(
                     remove['id'], wfid))
                 workflow.transitions.deleteTransitions([remove['id']])
+
+
+def to_manual_transitions(portal):
+    """Remove transitions that are triggered automatically, cause since this
+    version are all managed manually: auto_preservation_required and
+    auto_no_preservation_required
+    """
+    logger.info('Setting auto transitions to manual...')
+    wtool = getToolByName(portal, 'portal_workflow')
+    workflowids = wtool.getWorkflowIds()
+    for wfid in workflowids:
+        workflow = wtool.getWorkflowById(wfid)
+        transitions = workflow.transitions
+        for transid in transitions.objectIds():
+            transition = transitions[transid]
+            if transition.trigger_type == TRIGGER_AUTOMATIC:
+                transition.trigger_type = TRIGGER_USER_ACTION
+                logger.info("Transition '{0}' from workflow '{1}' set to manual"
+                            .format(wfid, transid))
