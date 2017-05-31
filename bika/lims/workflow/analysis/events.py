@@ -8,6 +8,8 @@ from bika.lims.workflow import getCurrentState
 from bika.lims.workflow import isBasicTransitionAllowed
 from bika.lims.workflow import wasTransitionPerformed
 
+from plone.api.portal import get_tool
+
 
 def after_submit(obj):
     """
@@ -70,58 +72,26 @@ def after_retract(obj):
 
 
 def after_verify(obj):
-    # TODO Workflow Analysis - Review after_verify function
-    if skip(self, "verify"):
-        return
-    username=getToolByName(self,'portal_membership').getAuthenticatedMember().getUserName()
-    obj.addVerificator(username)
-    workflow = get_tool("portal_workflow")
-    state = workflow.getInfoFor(self, 'cancellation_state', 'active')
-    if state == "cancelled":
-        return False
     # Do all the reflex rules process
     obj._reflex_rule_process('verify')
+
     # If all analyses in this AR are verified escalate the action to the
     # parent AR
-    ar = obj.aq_parent
-    if not skip(ar, "verify", peek=True):
-        all_verified = True
-        for a in ar.getAnalyses():
-            if a.review_state in ("to_be_sampled", "to_be_preserved",
-                                  "sample_due", "sample_received",
-                                  "attachment_due", "to_be_verified"):
-                all_verified = False
-                break
-        if all_verified:
-            if "verify all analyses" \
-                    not in obj.REQUEST['workflow_skiplist']:
-                obj.REQUEST["workflow_skiplist"].append(
-                    "verify all analyses")
-            workflow.doActionFor(ar, "verify")
-    # If this is on a worksheet and all it's other analyses are verified,
-    # then verify the worksheet.
+    ar = obj.getRequest()
+    ans = ar.getAnalyses()
+    ansver = [an for an in ans if wasTransitionPerformed(an, 'verify')]
+    if len(ans) == len(ansver):
+        doActionFor(ar, 'verify')
+
     ws = obj.getBackReferences("WorksheetAnalysis")
     if ws:
+        # If assigned to a worksheet and all analyses within the worksheet have
+        # been submitted, then submit the worksheet
         ws = ws[0]
-        ws_state = workflow.getInfoFor(ws, "review_state")
-        if ws_state == "to_be_verified" and not skip(ws, "verify",
-                                                     peek=True):
-            all_verified = True
-            for a in ws.getAnalyses():
-                state = workflow.getInfoFor(a, "review_state")
-                if state in ("to_be_sampled", "to_be_preserved",
-                             "sample_due", "sample_received",
-                             "attachment_due", "to_be_verified",
-                             "assigned"):
-                    all_verified = False
-                    break
-            if all_verified:
-                if "verify all analyses" \
-                        not in obj.REQUEST['workflow_skiplist']:
-                    obj.REQUEST["workflow_skiplist"].append(
-                        "verify all analyses")
-                workflow.doActionFor(ws, "verify")
-    obj.reindexObject()
+        ans = ws.getAnalyses()
+        anssub = [an for an in ans if wasTransitionPerformed(an, 'verify')]
+        if len(ans) == len(anssub):
+            doActionFor(ws, 'verify')
 
 
 def after_publish(obj):

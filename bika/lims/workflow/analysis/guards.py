@@ -69,12 +69,27 @@ def unassign(obj):
 
 
 def verify(obj):
+    if not isBasicTransitionAllowed(obj):
+        return False
+
+    if obj.isVerifiable():
+        mtool = get_tool('portal_membership')
+        member = mtool.getAuthenticatedMember()
+        return obj.isUserAllowedToVerify(member)
+
+    return False
+
+# TODO Workflow Analysis - Enable and review together with bika_listing stuff
+def new_verify(obj):
     """
     Checks if the verify transition can be performed to the Analysis passed in
     by the current user depending on the user roles, the current status of the
     object and the number of verifications already performed.
     :returns: true or false
     """
+    if not isBasicTransitionAllowed(obj):
+        return False
+
     nmvers = obj.getNumberOfVerifications()
     if nmvers == 0:
         # No verification has been done yet.
