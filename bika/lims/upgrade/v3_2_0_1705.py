@@ -55,8 +55,6 @@ def upgrade(tool):
         portal, catalog_definitions, force_no_reindex=True)
     logger.info("Catalogs updated (not rebuilt or refreshed)")
 
-    print clean_and_rebuild
-
     UpdateIndexesAndMetadata(ut)
 
     # Remove duplicate attachments made by instrument imports
