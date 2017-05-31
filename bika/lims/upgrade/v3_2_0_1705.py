@@ -496,8 +496,8 @@ def touidref(src, dst, src_relation, fieldname):
     if not field:
         raise Exception('Cannot find field %s/%s' % (fieldname, src))
     if field.required and not value:
-        raise Exception(
-            'Required field %s/%s has no value' % (src, fieldname))
+        logger.error('Required %s field %s/%s has no value' % (
+            src.portal_type, src, fieldname))
     field.set(src, value)
 
 
