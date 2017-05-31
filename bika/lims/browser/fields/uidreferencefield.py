@@ -73,7 +73,9 @@ class UIDReferenceField(StringField):
     def get_uid(self, instance, value):
         """Takes a brain or object (or UID), and returns a UID.
         """
-        if not value:
+        # Empty string or list with single empty string, are commonly
+        # passed to us from form submissions
+        if not value or value == ['']:
             ret = ''
         elif is_brain(value):
             ret = value.UID
