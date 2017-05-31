@@ -12,28 +12,29 @@ from plone.api.portal import get_tool
 
 
 def after_submit(obj):
-    """
-    Method triggered after a 'submit' transition for the current analysis
-    is performed. If the current analysis belongs to a Worksheet and all
-    the analyses from this worksheet has been submitted, then promotes the
-    'submit' transition to the Worksheet.
-    The child class AbstractRegularAnalysis overrides this function and
-    do manage the logic required for regular analyses and duplicates.
+    """Method triggered after a 'submit' transition for the analysis passed in
+    is performed. Promotes the submit transition to the Worksheet to which the
+    analysis belongs to. Note that for the worksheet there is already a guard
+    that assures the transition to the worksheet will only be performed if all
+    analyses within the worksheet have already been transitioned.
     This function is called automatically by
     bika.lims.workfow.AfterTransitionEventHandler
     """
     ws = obj.getBackReferences("WorksheetAnalysis")
     if ws:
-        # If assigned to a worksheet and all analyses within the worksheet have
-        # been submitted, then submit the worksheet
-        ws = ws[0]
-        ans = ws.getAnalyses()
-        anssub = [an for an in ans if wasTransitionPerformed(an, 'submit')]
-        if len(ans) == len(anssub):
-            doActionFor(ws, 'submit')
+        doActionFor(ws, 'submit')
 
 
 def after_retract(obj):
+    """Function triggered after a 'retract' transition for the analysis passed
+    in is performed. Retracting an analysis cause its transition to 'retracted'
+    state and the creation of a new copy of the same analysis as a retest.
+    Note that retraction only affects to single Analysis and has no other
+    effect in the status of the Worksheet to which the Analysis is assigned or
+    to the Analysis Request to which belongs (transition is never proomoted)
+    This function is called automatically by
+    bika.lims.workflow.AfterTransitionEventHandler
+    """
     # TODO Workflow Analysis - review this function
     # Rename the analysis to make way for it's successor.
     # Support multiple retractions by renaming to *-0, *-1, etc
@@ -94,7 +95,8 @@ def after_verify(obj):
     # need to check here if all analyses within the WS have been transitioned
     # already
     ws = obj.getBackReferences("WorksheetAnalysis")
-    doActionFor(ws, 'verify')
+    if ws:
+        doActionFor(ws, 'verify')
 
 
 def after_publish(obj):

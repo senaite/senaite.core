@@ -6,12 +6,14 @@
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import Schema, registerType
 from Products.Archetypes.public import StringField
+from bika.lims import deprecated
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.abstractroutineanalysis import AbstractRoutineAnalysis
 from bika.lims.content.abstractroutineanalysis import schema
 from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.subscribers import skip
+from bika.lims.workflow.duplicateanalysis import events
 from plone.api.portal import get_tool
 from zope.interface import implements
 
@@ -96,73 +98,22 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
             self.getField(key).set(self, val)
         self.getField('Analysis').set(self, analysis)
 
-    @security.public
+    @deprecated('[1705] Use events.after_attach from '
+                'bika.lims.workflow.duplicateanalysis.events')
     def workflow_script_attach(self):
-        if skip(self, "attach"):
-            return
-        workflow = get_tool('portal_workflow')
-        self.reindexObject(idxs=["review_state", ])
-        # If all analyses on the worksheet have been attached,
-        # then attach the worksheet.
-        ws = self.getBackReferences('WorksheetAnalysis')
-        ws = ws[0]
-        ws_state = workflow.getInfoFor(ws, 'review_state')
-        if ws_state == 'attachment_due' and not skip(ws, "attach", peek=True):
-            can_attach = True
-            for a in ws.getAnalyses():
-                state = workflow.getInfoFor(a, 'review_state')
-                if state in ('to_be_sampled', 'to_be_preserved', 'sample_due',
-                             'sample_received', 'attachment_due', 'assigned'):
-                    can_attach = False
-                    break
-            if can_attach:
-                workflow.doActionFor(ws, 'attach')
+        events.after_attach(self)
 
+    @deprecated('[1705] Use events.after_retract from '
+                'bika.lims.workflow.duplicateanalysis.events')
     @security.public
     def workflow_script_retract(self):
-        if skip(self, "retract"):
-            return
-        workflow = get_tool('portal_workflow')
-        # Escalate action to the Worksheet.
-        ws = self.getBackReferences('WorksheetAnalysis')
-        ws = ws[0]
-        if skip(ws, "retract", peek=True):
-            if workflow.getInfoFor(ws, 'review_state') == 'open':
-                skip(ws, "retract")
-            else:
-                if "retract all analyses" \
-                        not in self.REQUEST['workflow_skiplist']:
-                    self.REQUEST["workflow_skiplist"].append(
-                        "retract all analyses")
-                workflow.doActionFor(ws, 'retract')
-        self.reindexObject()
+        events.after_retract(self)
 
+    @deprecated('[1705] Use events.after_verify from '
+                'bika.lims.workflow.duplicateanalysis.events')
     @security.public
     def workflow_script_verify(self):
-        if skip(self, "verify"):
-            return
-        workflow = get_tool('portal_workflow')
-        # If all other analyses on the worksheet are verified,
-        # then verify the worksheet.
-        ws = self.getBackReferences('WorksheetAnalysis')
-        ws = ws[0]
-        ws_state = workflow.getInfoFor(ws, 'review_state')
-        if ws_state == 'to_be_verified' and not skip(ws, "verify", peek=True):
-            all_verified = True
-            for a in ws.getAnalyses():
-                state = workflow.getInfoFor(a, 'review_state')
-                if state in ('to_be_sampled', 'to_be_preserved', 'sample_due',
-                             'sample_received', 'attachment_due', 'assigned',
-                             'to_be_verified'):
-                    all_verified = False
-                    break
-            if all_verified:
-                if "verify all analyses" \
-                        not in self.REQUEST['workflow_skiplist']:
-                    self.REQUEST["workflow_skiplist"].append(
-                        "verify all analyses")
-                workflow.doActionFor(ws, "verify")
-        self.reindexObject()
+        events.after_verify(self)
 
 
 registerType(DuplicateAnalysis, PROJECTNAME)
