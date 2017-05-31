@@ -45,6 +45,16 @@ def upgrade(tool):
     setup.runImportStepFromProfile('profile-bika.lims:default', 'typeinfo')
     setup.runImportStepFromProfile('profile-bika.lims:default', 'controlpanel')
 
+    # Updating catalogs from dependant add-ons (health) if there are changes
+    # This block copied from 1704.  Running 1704 is not advised at this point,
+    # 1705 should do the job of both.
+    logger.info("Updating catalog structures from derived add-ons...")
+    catalog_definitions = getCatalogDefinitions()
+    setup_catalogs(portal, catalog_definitions)
+    logger.info("Catalogs updated")
+
+    UpdateIndexesAndMetadata(ut)
+
     # Remove duplicate attachments made by instrument imports
     remove_attachment_duplicates()
 
@@ -57,6 +67,8 @@ def upgrade(tool):
     RemoveARPriorities(portal)
 
     UpdateIndexesAndMetadata(ut)
+    # Refresh affected catalogs
+    ut.refreshCatalogs()
 
     BaseAnalysisRefactoring()
 
@@ -81,12 +93,6 @@ def upgrade(tool):
 
     # Refresh affected catalogs
     ut.refreshCatalogs()
-
-    # Updating catalogs from dependant add-ons (health) if there are changes
-    logger.info("Updating catalog structures from derived add-ons...")
-    catalog_definitions = getCatalogDefinitions()
-    setup_catalogs(portal, catalog_definitions)
-    logger.info("Catalogs updated")
 
     logger.info("{0} upgraded to version {1}".format(product, version))
     return True
@@ -193,14 +199,6 @@ def UpdateIndexesAndMetadata(ut):
                        DateTime('2024/01/01 23:59')],
              'range': 'min:max'}
 
-    cat = get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
-    brains = cat(portal_type='AnalysisRequest', review_state='verified')
-    filtered = cat(portal_type='AnalysisRequest', review_state='verified',
-                   getDateVerified=query)
-    if len(filtered) != len(brains) \
-            and CATALOG_ANALYSIS_REQUEST_LISTING not in ut.refreshcatalog:
-        ut.refreshcatalog.append(CATALOG_ANALYSIS_REQUEST_LISTING)
-
     cat = get_tool(CATALOG_ANALYSIS_LISTING)
     brains = cat(portal_type='Analysis', review_state='received')
     filtered = cat(portal_type='Analysis', review_state='received',
@@ -208,6 +206,14 @@ def UpdateIndexesAndMetadata(ut):
     if len(filtered) != len(brains) \
             and CATALOG_ANALYSIS_LISTING not in ut.refreshcatalog:
         ut.refreshcatalog.append(CATALOG_ANALYSIS_LISTING)
+
+    cat = get_tool(CATALOG_ANALYSIS_REQUEST_LISTING)
+    brains = cat(portal_type='AnalysisRequest', review_state='verified')
+    filtered = cat(portal_type='AnalysisRequest', review_state='verified',
+                   getDateVerified=query)
+    if len(filtered) != len(brains) \
+            and CATALOG_ANALYSIS_REQUEST_LISTING not in ut.refreshcatalog:
+        ut.refreshcatalog.append(CATALOG_ANALYSIS_REQUEST_LISTING)
 
 
 def removeHtmlFromAR(portal):
