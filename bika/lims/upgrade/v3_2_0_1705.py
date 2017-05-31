@@ -55,6 +55,8 @@ def upgrade(tool):
         portal, catalog_definitions, force_no_reindex=True)
     logger.info("Catalogs updated (not rebuilt or refreshed)")
 
+    print clean_and_rebuild
+
     UpdateIndexesAndMetadata(ut)
 
     # Remove duplicate attachments made by instrument imports
@@ -90,10 +92,7 @@ def upgrade(tool):
     replace_target_states(portal)
 
     # Refresh affected catalogs
-    logger.error("FOllows: cleanAndRebuildIfNeeded ")
     _cleanAndRebuildIfNeeded(portal, clean_and_rebuild)
-
-    logger.error("FOllows: ut.refreshCatalogs ")
     ut.refreshCatalogs()
 
     logger.info("{0} upgraded to version {1}".format(product, version))
