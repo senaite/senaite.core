@@ -404,7 +404,6 @@ def BaseAnalysisRefactoring():
     migrate_refs('AnalysisRequestContact', 'Contact')
     migrate_refs('ReportAnalysisRequest', 'AnalysisRequest')
     migrate_refs('AttachmentAttachmentType', 'AttachmentType')
-    migrate_refs('SamplePartitionAnalysis', 'SamplePartition')
 
     refs_removed = 0
     for rel in ['AnalysisInstrument',
