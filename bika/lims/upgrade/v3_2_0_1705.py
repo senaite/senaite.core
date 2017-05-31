@@ -179,6 +179,10 @@ def UpdateIndexesAndMetadata(ut):
     ut.delIndexAndColumn('bika_catalog', 'getServiceTitle')
     ut.delIndexAndColumn('bika_setup_catalog', 'getServiceTitle')
 
+    # Required in a few places.  nihadness used getDeparthentTitle as a
+    # workaround which is fine, but not for long.
+    ut.delIndexAndColumn('bika_setup_catalog', 'getDepartmentUID')
+
     # factored out
     ut.delIndexAndColumn('bika_catalog', 'getAnalysisCategory')
 
