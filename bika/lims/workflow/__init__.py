@@ -68,8 +68,10 @@ def doActionFor(instance, action_id, active_only=True, allowed_transition=True):
     """
     actionperformed = False
     message = ''
-    workflow = getToolByName(instance, "portal_workflow")
+    if not instance:
+        return actionperformed, message
 
+    workflow = getToolByName(instance, "portal_workflow")
     skipaction = skip(instance, action_id, peek=True)
     if skipaction:
         clazzname = instance.__class__.__name__
@@ -261,9 +263,8 @@ def isBasicTransitionAllowed(context, permission=None):
     """
     workflow = getToolByName(context, "portal_workflow")
     mtool = getToolByName(context, "portal_membership")
-    if workflow.getInfoFor(context, "cancellation_state", "") == "cancelled" \
-            or workflow.getInfoFor(context, "inactive_state", "") == "inactive" \
-            or (permission and mtool.checkPermission(permission, context)):
+    if not isActive(context) \
+        or (permission and mtool.checkPermission(permission, context)):
         return False
     return True
 
@@ -292,6 +293,19 @@ def wasTransitionPerformed(instance, transition_id):
         if event['action'] == transition_id:
             return True
     return False
+
+
+def isActive(instance):
+    """Returns True if the object is neither in a cancelled nor inactive state
+    """
+    state = getCurrentState(instance, 'cancellation_state')
+    if state == 'cancelled':
+        return False
+    state = getCurrentState(instance, 'inactive_state')
+    if state == 'inactive':
+        return False
+    return True
+
 
 def getReviewHistoryActionsList(instance):
     """Returns a list with the actions performed for the instance, from oldest

@@ -75,23 +75,19 @@ def after_verify(obj):
     # Do all the reflex rules process
     obj._reflex_rule_process('verify')
 
-    # If all analyses in this AR are verified escalate the action to the
-    # parent AR
+    # Escalate to Analysis Request. Note that the guard for verify transition
+    # from Analysis Request will check if the AR can be transitioned, so there
+    # is no need to check here if all analyses within the AR have been
+    # transitioned already.
     ar = obj.getRequest()
-    ans = ar.getAnalyses()
-    ansver = [an for an in ans if wasTransitionPerformed(an, 'verify')]
-    if len(ans) == len(ansver):
-        doActionFor(ar, 'verify')
+    doActionFor(ar, 'verify')
 
+    # Ecalate to Worksheet. Note that the guard for verify transition from
+    # Worksheet will check if the Worksheet can be transitioned, so there is no
+    # need to check here if all analyses within the WS have been transitioned
+    # already
     ws = obj.getBackReferences("WorksheetAnalysis")
-    if ws:
-        # If assigned to a worksheet and all analyses within the worksheet have
-        # been submitted, then submit the worksheet
-        ws = ws[0]
-        ans = ws.getAnalyses()
-        anssub = [an for an in ans if wasTransitionPerformed(an, 'verify')]
-        if len(ans) == len(anssub):
-            doActionFor(ws, 'verify')
+    doActionFor(ws, 'verify')
 
 
 def after_publish(obj):
