@@ -156,17 +156,7 @@ def after_verify(obj):
     :param obj: Analysis Request affected by the transition
     :type obj: AnalysisRequest
     """
-    # TODO Workflow, Verify - REQUEST thing inside event?
-    if "verify all analyses" in obj.REQUEST['workflow_skiplist']:
-        return
-
-    # Verify all analyses from this Analysis Request, except not requested
-    ans = obj.getAnalyses(full_objects=True, review_state='to_be_verified')
-    for analysis in ans:
-        success, message = doActionFor(analysis, 'verify')
-        if not success:
-            # If failed, delete last verificator
-            analysis.deleteLastVerificator()
+    pass
 
 
 def after_publish(obj):

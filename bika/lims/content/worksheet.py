@@ -32,6 +32,8 @@ from bika.lims.utils import to_utf8 as _c
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import getCurrentState
 from bika.lims.workflow import skip
+from bika.lims.workflow.worksheet import events
+from bika.lims.workflow.worksheet import guards
 from plone import api
 from zope.interface import implements
 
@@ -189,9 +191,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                                   'container_uid': parent_uid,
                                   'analysis_uid': analysis.UID()}, ])
 
-        allowed_transitions = [t['id'] for t in workflow.getTransitionsFor(analysis)]
-        if 'assign' in allowed_transitions:
-            doActionFor(analysis, 'assign')
+        doActionFor(analysis, 'assign')
 
         # If a dependency of DryMatter service is added here, we need to
         # make sure that the dry matter analysis itself is also
@@ -221,10 +221,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         # overwrite saved context UID for event subscriber
         self.REQUEST['context_uid'] = self.UID()
-        if workflow.getInfoFor(analysis, 'worksheetanalysis_review_state') ==\
-                'assigned':
-                workflow.doActionFor(analysis, 'unassign')
-        # Note: subscriber might unassign the AR and/or promote the worksheet
+        doActionFor(analysis, 'unassign')
 
         # remove analysis from context.Analyses *after* unassign,
         # (doActionFor requires worksheet in analysis.getBackReferences)
@@ -325,7 +322,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                                      'analysis_uid': ref_analysis.UID()}])
             self.setAnalyses(
                 self.getAnalyses() + [ref_analysis, ])
-            workflow.doActionFor(ref_analysis, 'assign')
+            doActionFor(ref_analysis, 'assign')
             # Reindex the worksheet in order to update its columns
             self.reindexObject()
 
@@ -437,7 +434,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                                      'analysis_uid': duplicate.UID()}, ]
             )
             self.setAnalyses(self.getAnalyses() + [duplicate, ])
-            workflow.doActionFor(duplicate, 'assign')
+            doActionFor(duplicate, 'assign')
 
 
     def applyWorksheetTemplate(self, wst):
@@ -888,21 +885,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                       if not a.isUserAllowedToVerify(member)]
         return not notallowed
 
+    @deprecated('[1705] Use bika.lims.workflow.worksheet.guards.verify')
+    @security.public
     def guard_verify_transition(self):
-        """
-        Checks if the verify transition can be performed to the current
-        Worksheet by the current user depending on the user roles, as
-        well as the statuses of the analyses assigned to this Worksheet
-        :returns: true or false
-        """
-        mtool = getToolByName(self, "portal_membership")
-        checkPermission = mtool.checkPermission
-        # Check if the Analysis Request is in a "verifiable" state
-        if self.isVerifiable():
-            # Check if the user can verify the Analysis Request
-            member = mtool.getAuthenticatedMember()
-            return self.isUserAllowedToVerify(member)
-        return False
+        return guards.verify(self)
 
     def getObjectWorkflowStates(self):
         """
@@ -919,73 +905,20 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             states[w.state_var] = state
         return states
 
-    def after_submit_transition_event(self):
-        """Method triggered after a 'submit' transition for the current
-        Worksheet is performed.
-        By default, the "submit" action transitions the worksheet to the
-        "attachment_due" state. If there are no analyses in attachment_due,
-        retransitions the worksheet to 'to_be_verified' state (via 'attach').
-        This function is called automatically by
-        bika.lims.workflow.AfterTransitionEventHandler
-        """
-        # Submitting a Worksheet must never transition the analyses.
-        # In fact, a worksheet can only be transitioned to "to_be_verified" if
-        # all the analyses that contain have been submitted manually after
-        # the results input
-        # TODO Workflow - This should be moved to a guard_attach_transition
-        #      and run doActionFor(self, 'attach') directly, without checks.
-        for analysis in self.getAnalyses():
-            if getCurrentState(analysis) == 'attachment_due':
-                # This analysis needs an attachment, so this Worksheet cannot
-                # be transitioned to to_be_verified state
-                return
-        doActionFor(self, 'attach')
+    @deprecated('[1705] Use bika.lims.workflow.worksheet.after_submit')
+    @security.public
+    def workflow_script_submit(self):
+        events.after_submit(self)
 
+    @deprecated('[1705] Use bika.lims.workflow.worksheet.after_retract')
+    @security.public
     def workflow_script_retract(self):
-        if skip(self, "retract"):
-            return
-        workflow = getToolByName(self, 'portal_workflow')
-        self.reindexObject(idxs=["review_state", ])
-        if not "retract all analyses" in self.REQUEST['workflow_skiplist']:
-            # retract all analyses in this self.
-            # (NB: don't retract if it's verified)
-            analyses = self.getAnalyses()
-            for analysis in analyses:
-                state = workflow.getInfoFor(analysis, 'review_state', '')
-                if state not in ('attachment_due', 'to_be_verified',):
-                    continue
-                doActionFor(analysis, 'retract')
+        events.after_retract(self)
 
+    @deprecated('[1705] Use bika.lims.workflow.worksheet.after_verify')
+    @security.public
     def workflow_script_verify(self):
-        if skip(self, "verify"):
-            return
-        workflow = getToolByName(self, 'portal_workflow')
-        self.reindexObject(idxs=["review_state", ])
-        if not "verify all analyses" in self.REQUEST['workflow_skiplist']:
-            # verify all analyses in this self.
-            analyses = self.getAnalyses()
-            for analysis in analyses:
-                state = workflow.getInfoFor(analysis, 'review_state', '')
-                if state != 'to_be_verified':
-                    continue
-                if (hasattr(analysis, 'getNumberOfVerifications') and
-                    hasattr(analysis, 'getNumberOfRequiredVerifications')):
-                    # For the 'verify' transition to (effectively) take place,
-                    # we need to check if the required number of verifications
-                    # for the analysis is, at least, the number of verifications
-                    # performed previously +1
-                    success = True
-                    revers = analysis.getNumberOfRequiredVerifications()
-                    nmvers = analysis.getNumberOfVerifications()
-                    username=getToolByName(self,'portal_membership').getAuthenticatedMember().getUserName()
-                    analysis.addVerificator(username)
-                    if revers-nmvers <= 1:
-                        success, message = doActionFor(analysis, 'verify')
-                        if not success:
-                            # If failed, delete last verificator.
-                            analysis.deleteLastVerificator()
-                else:
-                    doActionFor(analysis, 'verify')
+        events.after_verify(self)
 
     def workflow_script_reject(self):
         """Copy real analyses to RejectAnalysis, with link to real

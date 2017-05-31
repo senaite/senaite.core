@@ -97,7 +97,7 @@ def verify(obj):
             continue
 
         # Maybe the analysis has been rejected or retracted?
-        dettached = ['rejected', 'retracted']
+        dettached = ['rejected', 'retracted', 'attachments_due']
         status = getCurrentState(an)
         if status in dettached:
             invalid += 1

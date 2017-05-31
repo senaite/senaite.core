@@ -77,8 +77,11 @@ def upgrade(tool):
     # Set all transitions to be triggered manually
     to_manual_transitions(portal)
 
-    # Remove unused guard expressions from transitions
+    # Remove unused guard expressions from some transitions
     remove_guard_expressions(portal)
+
+    # Replace target states from some transitions
+    replace_target_states(portal)
 
     # Refresh affected catalogs
     ut.refreshCatalogs()
@@ -743,6 +746,7 @@ def to_manual_transitions(portal):
                 logger.info("Transition '{0}' from workflow '{1}' set to manual"
                             .format(wfid, transid))
 
+
 def remove_guard_expressions(portal):
     """Remove guard expressions from some workflow statuses
     """
@@ -762,3 +766,40 @@ def remove_guard_expressions(portal):
                     transition.guard = None
                     logger.info("Guard from transition '{0}.{1}' reset to None"
                                 .format(wfid, transid))
+
+
+def replace_target_states(portal):
+    """Replace target states from some worklow statuses
+    """
+    logger.info('Replacing Target states for some workflow statuses...')
+    tochange = [
+            {'wfid': 'bika_duplicateanalysis_workflow',
+             'trid': 'submit',
+             'target': 'to_be_verified'},
+
+            {'wfid': 'bika_referenceanalysis_workflow',
+             'trid': 'submit',
+             'target': 'to_be_verified'},
+    
+            {'wfid': 'bika_worksheet_workflow',
+             'trid': 'submit',
+             'target': 'to_be_verified'}
+             ]
+    wtool = get_tool('portal_workflow')
+    workflowids = wtool.getWorkflowIds()
+    for wfid in workflowids:
+        workflow = wtool.getWorkflowById(wfid)
+        transitions = workflow.transitions
+        for transid in transitions.objectIds():
+            for item in tochange:
+                itwfid = item.get('wfid', '')
+                ittrid = item.get('trid', '')
+                ittarg = item.get('target', '')
+                if itwfid == wfid and ittrid == transid and ittarg:
+                    transition = transitions[transid]
+                    oldstate = transition.new_state_id
+                    transition.new_state_id = ittarg
+                    logger.info(
+                        "Replacing target state '{0}' from '{1}.{2}' to {3}"
+                        .format(oldstate, wfid, transid, ittarg)
+                    )
