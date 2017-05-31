@@ -72,6 +72,13 @@ def after_retract(obj):
 
 
 def after_verify(obj):
+    """
+    Method triggered after a 'verify' transition for the analysis passed in
+    is performed. Promotes the transition to the Analysis Request and to
+    Worksheet (if the analysis is assigned to any)
+    This function is called automatically by
+    bika.lims.workfow.AfterTransitionEventHandler
+    """
     # Do all the reflex rules process
     obj._reflex_rule_process('verify')
 
@@ -179,100 +186,4 @@ def after_attach(obj):
                     break
             if can_attach:
                 workflow.doActionFor(ws, "attach")
-    obj.reindexObject()
-
-
-def after_assign(obj):
-    if skip(self, "assign"):
-        return
-    workflow = get_tool("portal_workflow")
-    uc = get_tool("uid_catalog")
-    ws = uc(UID=obj.REQUEST["context_uid"])[0].getObject()
-    # retract the worksheet to 'open'
-    ws_state = workflow.getInfoFor(ws, "review_state")
-    if ws_state != "open":
-        if "workflow_skiplist" not in obj.REQUEST:
-            obj.REQUEST["workflow_skiplist"] = ["retract all analyses", ]
-        else:
-            obj.REQUEST["workflow_skiplist"].append("retract all analyses")
-        allowed_transitions = \
-            [t["id"] for t in workflow.getTransitionsFor(ws)]
-        if "retract" in allowed_transitions:
-            workflow.doActionFor(ws, "retract")
-    # If all analyses in this AR have been assigned,
-    # escalate the action to the parent AR
-    if not skip(self, "assign", peek=True):
-        if not obj.getAnalyses(
-                worksheetanalysis_review_state="unassigned"):
-            try:
-                allowed_transitions = \
-                    [t["id"] for t in workflow.getTransitionsFor(self)]
-                if "assign" in allowed_transitions:
-                    workflow.doActionFor(self, "assign")
-            except WorkflowException:
-                logger.error(
-                    "assign action failed for analysis %s" % obj.getId())
-    obj.reindexObject()
-
-
-def after_unassign(obj):
-    if skip(self, "unassign"):
-        return
-    workflow = get_tool("portal_workflow")
-    uc = get_tool("uid_catalog")
-    ws = uc(UID=obj.REQUEST["context_uid"])[0].getObject()
-    # Escalate the action to the parent AR if it is assigned
-    # Note: AR adds itself to the skiplist so we have to take it off again
-    #       to allow multiple promotions/demotions (maybe by more than
-    #       one instance).
-    state = workflow.getInfoFor(self, "worksheetanalysis_review_state")
-    if state == "assigned":
-        workflow.doActionFor(self, "unassign")
-        skip(self, "unassign", unskip=True)
-    # If it has been duplicated on the worksheet, delete the duplicates.
-    obj.remove_duplicates(ws)
-    # May need to promote the Worksheet's review_state
-    # if all other analyses are at a higher state than this one was.
-    # (or maybe retract it if there are no analyses left)
-    can_submit = True
-    can_attach = True
-    can_verify = True
-    ws_empty = True
-    for a in ws.getAnalyses():
-        ws_empty = False
-        a_state = workflow.getInfoFor(a, "review_state")
-        if a_state in ("to_be_sampled", "to_be_preserved", "assigned",
-                       "sample_due", "sample_received"):
-            can_submit = False
-        else:
-            if not ws.getAnalyst():
-                can_submit = False
-        if a_state in ("to_be_sampled", "to_be_preserved", "assigned",
-                       "sample_due", "sample_received", "attachment_due"):
-            can_attach = False
-        if a_state in ("to_be_sampled", "to_be_preserved", "assigned",
-                       "sample_due", "sample_received", "attachment_due",
-                       "to_be_verified"):
-            can_verify = False
-    if not ws_empty:
-        # Note: WS adds itself to the skiplist so we have to take it
-        # off again to allow multiple promotions (maybe by more than
-        # one instance).
-        state = workflow.getInfoFor(ws, "review_state")
-        if can_submit and state == "open":
-            workflow.doActionFor(ws, "submit")
-            skip(ws, 'unassign', unskip=True)
-        state = workflow.getInfoFor(ws, "review_state")
-        if can_attach and state == "attachment_due":
-            workflow.doActionFor(ws, "attach")
-            skip(ws, 'unassign', unskip=True)
-        state = workflow.getInfoFor(ws, "review_state")
-        if can_verify and state == "to_be_verified":
-            obj.REQUEST['workflow_skiplist'].append("verify all analyses")
-            workflow.doActionFor(ws, "verify")
-            skip(ws, 'unassign', unskip=True)
-    else:
-        if workflow.getInfoFor(ws, "review_state") != "open":
-            workflow.doActionFor(ws, "retract")
-            skip(ws, "retract", unskip=True)
     obj.reindexObject()

@@ -52,11 +52,12 @@ def sample_prep_complete(obj):
 def assign(obj):
     """Allow or disallow transition depending on our children's states
     """
+    # TODO Workflow Assign AR - To revisit. Is there any reason why we want an
+    # AR to be in an 'assigned' state?. If no, remove the transition from the
+    # workflow definition, as well as from here and from content.analysisrequest
+    return False
+
     if not isBasicTransitionAllowed(obj):
-        return False
-    if not obj.getAnalyses(worksheetanalysis_review_state='assigned'):
-        return False
-    if obj.getAnalyses(worksheetanalysis_review_state='unassigned'):
         return False
     return True
 
@@ -64,13 +65,14 @@ def assign(obj):
 def unassign(obj):
     """Allow or disallow transition depending on our children's states
     """
+    # TODO Workflow UnAssign AR - To revisit. Is there any reason why we want an
+    # AR to be in an 'assigned' state?. If no, remove the transition from the
+    # workflow definition, as well as from here and from content.analysisrequest
+    return False
+
     if not isBasicTransitionAllowed(obj):
         return False
-    if obj.getAnalyses(worksheetanalysis_review_state='unassigned'):
-        return True
-    if not obj.getAnalyses(worksheetanalysis_review_state='assigned'):
-        return True
-    return False
+    return True
 
 
 def verify(obj):

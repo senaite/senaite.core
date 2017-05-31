@@ -77,6 +77,9 @@ def upgrade(tool):
     # Set all transitions to be triggered manually
     to_manual_transitions(portal)
 
+    # Remove unused guard expressions from transitions
+    remove_guard_expressions(portal)
+
     # Refresh affected catalogs
     ut.refreshCatalogs()
 
@@ -739,3 +742,23 @@ def to_manual_transitions(portal):
                 transition.trigger_type = TRIGGER_USER_ACTION
                 logger.info("Transition '{0}' from workflow '{1}' set to manual"
                             .format(wfid, transid))
+
+def remove_guard_expressions(portal):
+    """Remove guard expressions from some workflow statuses
+    """
+    logger.info('Removing unused guard expressions...')
+    toremove = ['bika_worksheetanalysis_workflow.assign',
+                'bika_worksheetanalysis_workflow.unassign']
+    wtool = get_tool('portal_workflow')
+    workflowids = wtool.getWorkflowIds()
+    for wfid in workflowids:
+        workflow = wtool.getWorkflowById(wfid)
+        transitions = workflow.transitions
+        for transid in transitions.objectIds():
+            for torem in toremove:
+                tokens = torem.split('.')
+                if tokens[0] == wfid and tokens[1] == transid:
+                    transition = transitions[transid]
+                    transition.guard = None
+                    logger.info("Guard from transition '{0}.{1}' reset to None"
+                                .format(wfid, transid))

@@ -1265,12 +1265,18 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     def workflow_script_attach(self):
         events.after_attach(self)
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.events.after_assign')
+    @deprecated('[1705] Orphan. No alternative')
     @security.public
     def workflow_script_assign(self):
-        events.after_assign(self)
+        # TODO Workflow Assign Analysis - Seems there is no reason to add an
+        # after/before event script for assign transition. In fact, transitions
+        # assign and unassign from AR and Worksheet would eventually be removed
+        pass
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.events.after_unassign')
+    @deprecated('[1705] Orphan. No alternative')
     @security.public
     def workflow_script_unassign(self):
-        events.after_unassign(self)
+        # TODO Workflow UnAssign Analysis - Seems there is no reason to add an
+        # after/before event script for assign transition. In fact, transitions
+        # assign and unassign from AR and Worksheet would eventually be removed
+        pass
