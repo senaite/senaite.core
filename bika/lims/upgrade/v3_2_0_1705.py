@@ -16,6 +16,7 @@ from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.catalog import getCatalogDefinitions, setup_catalogs
+from bika.lims.catalog.catalog_utilities import _cleanAndRebuildIfNeeded
 from bika.lims.interfaces import IWorksheet
 from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
@@ -50,8 +51,9 @@ def upgrade(tool):
     # 1705 should do the job of both.
     logger.info("Updating catalog structures from derived add-ons...")
     catalog_definitions = getCatalogDefinitions()
-    setup_catalogs(portal, catalog_definitions)
-    logger.info("Catalogs updated")
+    clean_and_rebuild = setup_catalogs(
+        portal, catalog_definitions, force_no_reindex=True)
+    logger.info("Catalogs updated (not rebuilt or refreshed)")
 
     UpdateIndexesAndMetadata(ut)
 
@@ -65,10 +67,6 @@ def upgrade(tool):
     removeHtmlFromAR(portal)
 
     RemoveARPriorities(portal)
-
-    UpdateIndexesAndMetadata(ut)
-    # Refresh affected catalogs
-    ut.refreshCatalogs()
 
     BaseAnalysisRefactoring()
 
@@ -92,6 +90,10 @@ def upgrade(tool):
     replace_target_states(portal)
 
     # Refresh affected catalogs
+    logger.error("FOllows: cleanAndRebuildIfNeeded ")
+    _cleanAndRebuildIfNeeded(portal, clean_and_rebuild)
+
+    logger.error("FOllows: ut.refreshCatalogs ")
     ut.refreshCatalogs()
 
     logger.info("{0} upgraded to version {1}".format(product, version))
