@@ -17,11 +17,8 @@ from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.catalog import getCatalogDefinitions, setup_catalogs
 from bika.lims.interfaces import IWorksheet
-from bika.lims.upgrade import upgradestep, stub
+from bika.lims.upgrade import upgradestep
 from bika.lims.upgrade.utils import UpgradeUtils
-from plone.api.portal import get_tool
-from bika.lims.config import VERSIONABLE_TYPES
-from Products.CMFCore.utils import getToolByName
 from bika.lims.upgrade.utils import migrate_to_blob
 from plone.api.portal import get_tool
 
@@ -509,7 +506,7 @@ def migrate_refs(rel, fieldname, pgthreshold=100):
         logger.info('Migrating %s references of %s' % (len(refs), rel))
     for i, ref in enumerate(refs):
         obj = uc(UID=ref[1])[0].getObject()
-        if i and not divmod(i, 100)[1]:
+        if i and not divmod(i, pgthreshold)[1]:
             logger.info("%s/%s %s/%s" % (i, len(refs), obj, rel))
         touidref(obj, obj, rel, fieldname)
 
@@ -728,7 +725,6 @@ def removeWorkflowsAutoTransitions(portal):
         # Now, remove the transitions itself
         transitions = workflow.transitions
         transids = transitions.objectIds()
-        outtransitions = []
         for remove in toremove:
             if remove['id'] in transids:
                 logger.info('Removing transition {0} from {1}'.format(
