@@ -6,25 +6,24 @@ from Acquisition import aq_inner
 from Acquisition import aq_parent
 
 from DateTime import DateTime
-from Products.Archetypes.BaseContent import BaseContent
 from Products.Archetypes.config import REFERENCE_CATALOG
+from Products.CMFCore.utils import getToolByName
+from Products.DCWorkflow.Transitions import TRIGGER_AUTOMATIC, \
+    TRIGGER_USER_ACTION
 from Products.ZCatalog.interfaces import ICatalogBrain
 from bika.lims import logger
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_ANALYSIS_REQUEST_LISTING
 from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 from bika.lims.catalog import getCatalogDefinitions, setup_catalogs
+from bika.lims.interfaces import IWorksheet
 from bika.lims.upgrade import upgradestep, stub
 from bika.lims.upgrade.utils import UpgradeUtils
 from plone.api.portal import get_tool
 from bika.lims.config import VERSIONABLE_TYPES
 from Products.CMFCore.utils import getToolByName
-from Products.DCWorkflow.Transitions import TRIGGER_USER_ACTION
-from Products.DCWorkflow.Transitions import TRIGGER_AUTOMATIC
 from bika.lims.upgrade.utils import migrate_to_blob
-import traceback
-import sys
-import transaction
+from plone.api.portal import get_tool
 
 product = 'bika.lims'
 version = '3.2.0.1705'
@@ -50,7 +49,7 @@ def upgrade(tool):
     setup.runImportStepFromProfile('profile-bika.lims:default', 'controlpanel')
 
     # Remove duplicate attachments made by instrument imports
-    remove_attachment_duplicates(portal, pgthreshold=1000)
+    remove_attachment_duplicates()
 
     # Migrating ataip.FileField to blob.FileField
     migrateFileFields(portal)
@@ -502,7 +501,7 @@ def touidref(src, dst, src_relation, fieldname):
     field.set(src, value)
 
 
-def migrate_refs(rel, fieldname):
+def migrate_refs(rel, fieldname, pgthreshold=100):
     rc = get_tool(REFERENCE_CATALOG)
     uc = get_tool('uid_catalog')
     refs = rc(relationship=rel)
@@ -601,69 +600,78 @@ def migrateFileFields(portal):
         "SamplePoint"]
 
     for portal_type in portal_types:
-        logger.info(
-            "Starting migration of FileField fields from {}."
-                .format(portal_type))
         # Do the migration
         migrate_to_blob(
             portal,
             portal_type=portal_type,
             remove_old_value=True)
-        logger.info(
-            "Finished migration of FileField fields from {}."
-                .format(portal_type))
 
 
-def remove_attachment_duplicates(portal, pgthreshold=1000):
+def remove_attachment_duplicates():
     """Visit every worksheet attachment, and remove duplicates.
     The duplicates are filtered by filename, but that's okay because the
     instrument import routine used filenames when it made them.
     """
     pc = get_tool('portal_catalog')
-    uc = get_tool('uid_catalog')
 
     # get all worksheets.
-    brains = uc(portal_type='Worksheet')
-    # list of lists.
-    dup_ans = []  # [fn, primary attachment, duplicate attachment, worksheet]
-    primaries = {}  # key is wsID:fn.  stores first found instance.
-    # for each worksheet, get all attachments.
-    dups_found = 0
+    brains = pc(portal_type='Attachment')
+
+    # primaries contains non-duplicate attachments.  key is wsID:fn.
+    # key used for filtering duplicates; same filename permitted on
+    # separate worksheets.
+    primaries = {}  # key -> primary_attachment
+    dup_ans = {}  # key -> [dup_att,dup_att...]
+    dup_count = 0
+
     for brain in brains:
-        ws = brain.getObject()
+        att = brain.getObject()
+        if not IWorksheet.providedBy(att.aq_parent):
+            continue
+        ws = att.aq_parent
         ws_id = ws.getId()
-        # for each attachment:
-        atts = ws.objectValues('Attachment')
-        for att in atts:
-            # Only process each fn once:
-            fn = att.getAttachmentFile().filename
-            key = "%s:%s" % (ws_id, fn)
-            if key not in primaries:
-                # not a dup.  att is primary attachment for this key.
-                primaries[key] = att
-            # we are a duplicate.
-            dup_ans.append([fn, primaries[key], att, ws])
-            dups_found += 1
-    logger.info("Keeping {} and removing {} attachments".format(
-        len(primaries), dups_found))
+        filename = att.getAttachmentFile().filename
+        if not filename:
+            continue
+        key = "%s:%s" % (ws_id, filename)
+        if key not in primaries:
+            # first instance of this file on this worksheet.  Not a duplicate.
+            primaries[key] = att
+            continue
+        # we are a duplicate.
+        if key not in dup_ans:
+            dup_ans[key] = []
+        dup_ans[key].append(att)
+        dup_count += 1
+
+    if dup_ans:
+        logger.info("Found {} duplicates of {} attachments".format(
+            dup_count, len(primaries)))
 
     # Now.
-    count = 0
-    for fn, att, dup, ws in dup_ans:
-        ans = dup.getBackReferences()
-        for an in ans:
-            an_atts = [a for a in an.getAttachment() if a.UID() != dup.UID()]
-            an.setAttachment(an_atts)
-        path_uid = '/'.join(dup.getPhysicalPath())
-        pc.uncatalog_object(path_uid)
-        #dup.getField('AttachmentFile').set(dup, 'DELETED')
-        dup.getField('AttachmentFile').unset(dup)
-        dup.aq_parent.manage_delObjects(dup.getId())
-        #
-        if count % pgthreshold == 0:
-            logger.info("Removed {} of {} duplicate attachments...".format(
-                count, dups_found))
-        count += 1
+    for key, dups in dup_ans.items():
+        ws_id, filename = key.split(':')
+        logger.info("Removing {} duplicates of {} from {}".format(
+            len(dups), filename, ws_id))
+        for dup in dups:
+            ans = dup.getBackReferences()
+            for an in ans:
+                # remove the dup from analysis.Attachment field if it's there
+                an_atts = [a for a in an.getAttachment()
+                           if a.UID() != dup.UID()]
+                an.setAttachment(an_atts)
+                # manually delete references to this attachment in the Analysis
+                refs = an.at_references.objectValues()
+                for ref in refs:
+                    if ref.targetUID == dup.UID():
+                        an.at_references.manage_delObjects(ref.id)
+            # force this object out of the catalogs
+            path_uid = '/'.join(dup.getPhysicalPath())
+            pc.uncatalog_object(path_uid)
+            # Empty the file field valust just to be sure
+            dup.getField('AttachmentFile').unset(dup)
+            # Delete the attachment
+            dup.aq_parent.manage_delObjects(dup.getId())
 
 
 def fixWorkflowsActBoxName(portal):
@@ -707,12 +715,12 @@ def removeWorkflowsAutoTransitions(portal):
             for remove in toremove:
                 if remove['id'] in strans:
                     msg = 'Dettaching transition {0} from state {1} in {2}' \
-                          .format(remove['id'], stateid, wfid)
+                        .format(remove['id'], stateid, wfid)
                     logger.info(msg)
                     strans.remove(remove['id'])
                     if remove['replacement'] not in strans:
                         msg = 'Attaching transition {0} to state {1} from {2}' \
-                              .format(remove['replacement'], stateid, wfid)
+                            .format(remove['replacement'], stateid, wfid)
                         logger.info(msg)
                         strans.append(remove['replacement'])
                     state.transitions = tuple(strans)
