@@ -396,7 +396,9 @@ def BaseAnalysisRefactoring():
     migrate_refs('MethodCalculation', 'Calculation')
     migrate_refs('CalculationAnalysisService', 'DependentServices')
     migrate_refs('InstrumentMethod', 'Method')
-    migrate_refs('InstrumentAnalyses', 'Analyses')
+    # InstrumentAnalyses gets deleted.  Instruments can use the index
+    # 'getInstrumentUID' in bika_analysis_catalog for the same purposes.
+    # migrate_refs('InstrumentAnalyses', 'Analyses')
     migrate_refs('WorksheetAnalysisTemplate', 'WorksheetTemplate')
     migrate_refs('AnalysisSpecSampleType', 'SampleType')
     migrate_refs('AnalysisRequestContact', 'Contact')
