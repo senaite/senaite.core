@@ -403,8 +403,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             calc = analysis.getCalculation()
             if calc and calc.getDependentServices():
                 continue
-            _id = self._findUniqueId(analysis.getKeyword())
-            duplicate = _createObjectByType("DuplicateAnalysis", self, _id)
+            duplicate = _createObjectByType("DuplicateAnalysis", self, tmpID())
             duplicate.setAnalysis(analysis)
 
             # Set the required number of verifications
@@ -630,7 +629,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         services = []
         for analysis in self.getAnalyses():
             service = analysis.getAnalysisService()
-            if service not in services:
+            if service and service not in services:
                 services.append(service)
         return services
 

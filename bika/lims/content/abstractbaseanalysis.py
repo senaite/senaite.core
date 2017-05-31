@@ -688,7 +688,8 @@ ProtocolID = StringField(
 
 # Remarks are used in various ways by almost all objects in the system.
 Remarks = TextField(
-    'Remarks'
+    'Remarks',
+    schemata='Description'
 )
 
 schema = BikaSchema.copy() + Schema((
@@ -759,7 +760,7 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
 
     @security.public
     def getDefaultVAT(self):
-        """Return default VAT from bika_setup 
+        """Return default VAT from bika_setup
         """
         try:
             vat = self.bika_setup.getVAT()
@@ -769,7 +770,7 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
 
     @security.public
     def getVATAmount(self):
-        """Compute VAT Amount from the Price and system configured VAT 
+        """Compute VAT Amount from the Price and system configured VAT
         """
         price, vat = self.getPrice(), self.getVAT()
         return float(price) * (float(vat) / 100)
@@ -826,7 +827,7 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
 
     @security.public
     def getTotalDiscountedBulkPrice(self):
-        """Compute total discounted corporate bulk price 
+        """Compute total discounted corporate bulk price
         """
         price = self.getDiscountedCorporatePrice()
         vat = self.getVAT()
@@ -883,7 +884,7 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
 
     @security.public
     def isSelfVerificationEnabled(self):
-        """Returns if the user that submitted a result for this analysis must 
+        """Returns if the user that submitted a result for this analysis must
         also be able to verify the result
         :returns: true or false
         """
@@ -893,9 +894,9 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
 
     @security.public
     def _getSelfVerificationVocabulary(self):
-        """Returns a DisplayList with the available options for the 
+        """Returns a DisplayList with the available options for the
         self-verification list: 'system default', 'true', 'false'
-        :returns: DisplayList with the available options for the 
+        :returns: DisplayList with the available options for the
         self-verification list
         """
         bsve = self.bika_setup.getSelfVerificationEnabled()
@@ -906,7 +907,7 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
 
     @security.public
     def getNumberOfRequiredVerifications(self):
-        """Returns the number of required verifications a test for this 
+        """Returns the number of required verifications a test for this
         analysis requires before being transitioned to 'verified' state
         :returns: number of required verifications
         """
@@ -917,9 +918,9 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
 
     @security.public
     def _getNumberOfRequiredVerificationsVocabulary(self):
-        """Returns a DisplayList with the available options for the 
+        """Returns a DisplayList with the available options for the
         multi-verification list: 'system default', '1', '2', '3', '4'
-        :returns: DisplayList with the available options for the 
+        :returns: DisplayList with the available options for the
         multi-verification list
         """
         bsve = self.bika_setup.getNumberOfRequiredVerifications()

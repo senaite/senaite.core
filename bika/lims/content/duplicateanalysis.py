@@ -83,6 +83,20 @@ class DuplicateAnalysis(AbstractRoutineAnalysis):
         return siblings
 
     @security.public
+    def setAnalysis(self, analysis):
+        # Copy all the values from the schema
+        discard = ['id', ]
+        keys = analysis.Schema().keys()
+        for key in keys:
+            if key in discard:
+                continue
+            if key not in self.Schema().keys():
+                continue
+            val = analysis.getField(key).get(analysis)
+            self.getField(key).set(self, val)
+        self.getField('Analysis').set(self, analysis)
+
+    @security.public
     def workflow_script_attach(self):
         if skip(self, "attach"):
             return

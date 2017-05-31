@@ -22,7 +22,6 @@ class AnalysesView(BaseView):
         self.analyst = None
         self.instrument = None
         self.contentFilter = {
-            'portal_type': 'Analysis',
             'getWorksheetUID': context.UID(),
         }
         self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
