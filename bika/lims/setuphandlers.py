@@ -680,6 +680,7 @@ class BikaGenerator:
         addIndex(bsc, 'getCategoryUID', 'FieldIndex')
         addIndex(bsc, 'getClientUID', 'FieldIndex')
         addIndex(bsc, 'getDepartmentTitle', 'FieldIndex')
+        addIndex(bsc, 'getDepartmentUID', 'FieldIndex')
         addIndex(bsc, 'getDocumentID', 'FieldIndex')
         addIndex(bsc, 'getDuplicateVariation', 'FieldIndex')
         addIndex(bsc, 'getFormula', 'FieldIndex')
