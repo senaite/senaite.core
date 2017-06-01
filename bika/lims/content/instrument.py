@@ -729,7 +729,7 @@ class Instrument(ATFolder):
     def removeAnalysis(self, analysis):
         """ Remove a regular analysis assigned to this instrument
         """
-        targetuid = analysis.getRawInstrument()
+        targetuid = analysis.getInstrumentUID()
         if not targetuid:
             return
         if targetuid != self.UID():

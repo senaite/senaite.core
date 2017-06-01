@@ -68,6 +68,15 @@ def doActionFor(instance, action_id, active_only=True, allowed_transition=True):
     """
     actionperformed = False
     message = ''
+    if isinstance(instance, list):
+        if len(instance) > 1:
+            logger.error(
+                "doActionFor is getting an instance paramater which is a"
+                " list with more than one item inside."
+                " Instance: '{}', action_id: '{}'"
+                .format(instance, action_id)
+            )
+        instance = instance[0]
     if not instance:
         return actionperformed, message
 
