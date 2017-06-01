@@ -67,15 +67,24 @@ def read(context, request):
     if sort_order:
         contentFilter['sort_order'] = sort_order
     else:
-        sort_order = 'ascending'
         contentFilter['sort_order'] = 'ascending'
 
     include_fields = get_include_fields(request)
-    if debug_mode:
-        logger.info("contentFilter: " + str(contentFilter))
 
     # Get matching objects from catalog
     proxies = catalog(**contentFilter)
+
+    if debug_mode:
+        types = ','.join([p.portal_type for p in proxies])
+        if len(proxies) == 0:
+            logger.info("contentFilter {} returned zero objects"
+                        .format(contentFilter))
+        elif len(proxies) == 1:
+            logger.info("contentFilter {} returned {} ({})".format(
+                contentFilter, proxies[0].portal_type, proxies[0].UID))
+        else:
+            logger.info("contentFilter {} returned {} items (types: {})"
+                        .format(contentFilter, len(proxies), types))
 
     # batching items
     page_nr = int(request.get("page_nr", 0))
@@ -116,8 +125,6 @@ def read(context, request):
         last_object_nr = ret['total_objects']
     ret['last_object_nr'] = last_object_nr
 
-    if debug_mode:
-        logger.info("{0} objects returned".format(len(ret['objects'])))
     return ret
 
 
