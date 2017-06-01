@@ -622,11 +622,11 @@ class AnalysesView(BikaListingView):
         # If the analysis service has the option 'attachment' enabled
         if can_add_attachment or can_view_result:
             attachments = ""
-            if obj.getAttachmentUIDs:
-                at_uids = obj.getAttachmentUIDs
+            at_uids = obj.getAttachmentUIDs
+            if at_uids:
                 uc = get_tool('uid_catalog')
-                attachments = [x.getObject() for x in uc(UID=at_uids)]
-                for attachment in attachments:
+                attachments_objs = [x.getObject() for x in uc(UID=at_uids)]
+                for attachment in attachments_objs:
                     af = attachment.getAttachmentFile()
                     icon = af.icon
                     attachments +=\
@@ -637,7 +637,7 @@ class AnalysesView(BikaListingView):
                             (self.portal_url, icon)
                     attachments +=\
                         '<a href="%s/at_download/AttachmentFile"/>%s</a>' %\
-                            (attachment.absolute_url(), af.filename)
+                        (attachment.absolute_url(), af.filename)
                     if can_edit_analysis:
                         attachments += "<img class='deleteAttachmentButton' attachment_uid='%s' src='%s'/>" % (attachment.UID(), "++resource++bika.lims.images/delete.png")
                     attachments += "</br></span>"
