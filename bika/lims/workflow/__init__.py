@@ -73,9 +73,8 @@ def doActionFor(instance, action_id, active_only=True, allowed_transition=True):
         # from submitted form elements.
         if len(instance) > 1:
             logger.error(
-                "doActionFor is getting an instance paramater which is a"
-                " list with more than one item inside."
-                " Instance: '{}', action_id: '{}'"
+                "doActionFor is getting an instance paramater which is alist  "
+                "with more than one item. Instance: '{}', action_id: '{}'"
                 .format(instance, action_id)
             )
         instance = instance[0]
