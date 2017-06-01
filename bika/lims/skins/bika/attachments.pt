@@ -300,7 +300,7 @@
                         <tal:item
                            tal:define="
                            vocab python:here.bika_setup_catalog(portal_type='AttachmentType',inactive_state='active');
-                           sort_on python:(('Title', 'nocase', 'asc'),);
+                           sort_on python:(('title', 'nocase', 'asc'),);
                            vocab python:sequence.sort(vocab, sort_on)"
                            tal:repeat="item vocab">
                            <option

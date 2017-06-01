@@ -302,7 +302,7 @@ function setAnalysisProfile(){
 		catalog_name: "bika_setup_catalog",
 		portal_type: "AnalysisProfile",
 		UID: $("#AnalysisProfile_uid").val(),
-		sort_on: 'Title'
+		sort_on: 'title'
 	}, function(profile_data){
 		var service_uids = profile_data.objects[0].Service_uid;
 			for (var i = 0; i < service_uids.length; i++){

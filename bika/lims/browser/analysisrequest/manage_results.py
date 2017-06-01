@@ -42,7 +42,7 @@ class AnalysisRequestManageResultsView(AnalysisRequestViewView):
                     t = self.createAnalysesView(ar,
                                      self.request,
                                      getPointOfCapture=poc,
-                                     sort_on='Title',
+                                     sort_on='title',
                                      show_categories=show_cats,
                                      getAnalysisRequestUID=ar.UID())
                     t.form_id = "ar_manage_results_%s" % poc
