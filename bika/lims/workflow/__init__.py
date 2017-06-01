@@ -69,6 +69,8 @@ def doActionFor(instance, action_id, active_only=True, allowed_transition=True):
     actionperformed = False
     message = ''
     if isinstance(instance, list):
+        # This check is here because sometimes Plone creates a list
+        # from submitted form elements.
         if len(instance) > 1:
             logger.error(
                 "doActionFor is getting an instance paramater which is a"
