@@ -11,7 +11,7 @@ from bika.lims.workflow.analysis import guards as analysis_guards
 from plone.api.portal import get_tool
 
 
-def _children_are_ready(obj, transition_id, dettached_states= none):
+def _children_are_ready(obj, transition_id, dettached_states=None):
     """Returns true if the children of the object passed in (worksheet) have
     been all transitioned in accordance with the 'transition_id' passed in. If
     dettached_states is provided, children with those states are dismissed, so
