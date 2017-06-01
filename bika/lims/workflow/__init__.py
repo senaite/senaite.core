@@ -103,9 +103,13 @@ def doActionFor(instance, action_id, active_only=True, allowed_transition=True):
                   "Available transitions: {4}".format(action_id, clazzname,
                                                       instance.getId(),
                                                       currstate, transitions)
-            logger.error(msg)
+            logger.warning(msg)
             _logTransitionFailure(instance, action_id)
             return actionperformed, message
+    else:
+        logger.warning(
+            "doActionFor should never (ever) be called with allowed_transition"
+            "set to True as it avoids permission checks.")
     try:
         workflow.doActionFor(instance, action_id)
         actionperformed = True
