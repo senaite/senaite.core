@@ -61,7 +61,7 @@ def getCatalog(instance, field='UID'):
 
 def setup_catalogs(
         portal, catalogs_definition={},
-        force_reindex=False, catalogs_extension={}):
+        force_reindex=False, catalogs_extension={}, force_no_reindex=False):
     """
     Setup the given catalogs. Redefines the map between content types and
     catalogs and then checks the indexes and metacolumns, if one index/column
@@ -86,6 +86,7 @@ def setup_catalogs(
     :type catalogs_definition: dict
     :param force_reindex: Force to reindex the catalogs even if there's no need
     :type force_reindex: bool
+    :param force_no_reindex: Force reindexing NOT to happen.
     :param catalog_extensions: An extension for the primary catalogs definition
         Same dict structure as param catalogs_definition. Allows to add
         columns and indexes required by Bika-specific add-ons.
@@ -115,7 +116,9 @@ def setup_catalogs(
             # add the catalog if it has not been added before
             clean_and_rebuild.append(cat_id)
     # Reindex the catalogs which needs it
-    _cleanAndRebuildIfNeeded(portal, clean_and_rebuild)
+    if not force_no_reindex:
+        _cleanAndRebuildIfNeeded(portal, clean_and_rebuild)
+    return clean_and_rebuild
 
 def _merge_catalog_definitions(dict1, dict2):
     """

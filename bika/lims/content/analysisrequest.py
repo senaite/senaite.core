@@ -1701,6 +1701,12 @@ schema = BikaSchema.copy() + Schema((
                      'edit': 'invisible'},
         ),
     ),
+    # Here is stored pre-digested data used during publication.
+    # It is updated when the object is verified or when changes
+    # are made to verified objects.
+    StringField(
+        'Digest'
+    )
 )
 )
 

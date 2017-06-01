@@ -70,8 +70,8 @@ class BikaCustomQueryWalker(CustomQueryWalker):
         if limit:
             brains = brains[:limit]
         obj_num_total = len(brains)
-        logger.info('{} objects will be migrated walking through {}'
-                    .format(obj_num_total, catalog.id))
+        logger.info('{} {} objects will be migrated walking through {}'
+                    .format(obj_num_total, self.src_portal_type, catalog.id))
         counter = 0
         for brain in brains:
             if counter % 100 == 0:
