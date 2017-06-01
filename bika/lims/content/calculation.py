@@ -41,6 +41,9 @@ schema = BikaSchema.copy() + Schema((
         'DependentServices',
         multiValued=1,
         allowed_types=('AnalysisService',),
+        widget=ReferenceWidget(
+            visible=False,
+        ),
     ),
     TextField('Formula',
         schemata='Calculation',

@@ -49,7 +49,7 @@ def upgrade(tool):
     # Updating catalogs from dependant add-ons (health) if there are changes
     # This block copied from 1704.  Running 1704 is not advised at this point,
     # 1705 should do the job of both.
-    logger.info("Updating catalog structures from derived add-ons...")
+    logger.info("Updating catalog structures from bika.lims...")
     catalog_definitions = getCatalogDefinitions()
     clean_and_rebuild = setup_catalogs(
         portal, catalog_definitions, force_no_reindex=True)
