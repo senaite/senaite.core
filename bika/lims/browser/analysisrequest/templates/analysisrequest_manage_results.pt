@@ -33,22 +33,7 @@
 
 <metal:content-core fill-slot="content-core" tal:define="
 	tabindex view/tabindex;
-	portal context/@@plone_portal_state/portal;
-	ar_attach_allowed here/bika_setup/getARAttachmentsPermitted;
-	ar_review_state python: context.portal_workflow.getInfoFor(context, 'review_state');
-	analysis_attach_allowed here/bika_setup/getAnalysisAttachmentsPermitted;
-	attachments_allowed here/bika_setup/getAttachmentsPermitted;
-	attachments view/getAttachments;
-	delete_attachments python:True;
-	update_attachments python:True">
-
-    <div
-        tal:condition="update_attachments"
-        tal:define="ar_review_state ar_review_state">
-        <metal:block use-macro="here/attachments/macros/attachments"/>
-    </div>
-
-	<br/>
+	portal context/@@plone_portal_state/portal;">
 
     <tal:tables tal:repeat="table python:view.tables.items()" tal:condition="python:hasattr(view, 'tables')">
         <h3>

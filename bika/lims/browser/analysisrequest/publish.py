@@ -918,7 +918,10 @@ class AnalysisRequestDigester:
                 'prepublish': False,
                 'child_analysisrequest': None,
                 'parent_analysisrequest': None,
-                }
+                'resultsinterpretation':ar.getResultsInterpretation(),
+                'ar_attachments': self._get_ar_attachments(ar),
+                'an_attachments': self._get_an_attachments(ar),
+        }
 
         # Sub-objects
         excludearuids.append(ar.UID())
@@ -1010,6 +1013,78 @@ class AnalysisRequestDigester:
         data = self._set_results_interpretation(ar, data)
 
         return data
+
+    def _get_attachment_info(self, attachment):
+        attachment_file = attachment.getAttachmentFile()
+        attachment_size = attachment.get_size()
+        attachment_type = attachment.getAttachmentType()
+        attachment_mime = attachment_file.getContentType()
+
+        def get_kb_size():
+            size = attachment_size / 1024
+            if size < 1:
+                return 1
+            return size
+
+        info = {
+            "obj": attachment,
+            "uid": attachment.UID(),
+            "keywords": attachment.getAttachmentKeys(),
+            "type": attachment_type and attachment_type.Title() or "",
+            "file": attachment_file,
+            "filename": attachment_file.filename,
+            "filesize": attachment_size,
+            "size": "{} Kb".format(get_kb_size()),
+            "download": "{}/at_download/AttachmentFile".format(
+                attachment.absolute_url()),
+            "mimetype": attachment_mime,
+            "title": attachment_file.Title(),
+            "icon": attachment_file.icon,
+            "inline": "<embed src='{}/AttachmentFile' class='inline-attachment inline-attachment-{}'/>".format(
+                attachment.absolute_url(), self.getDirection()),
+            "renderoption": attachment.getReportOption(),
+        }
+        if attachment_mime.startswith("image"):
+            info["inline"] = "<img src='{}/AttachmentFile' class='inline-attachment inline-attachment-{}'/>".format(
+                attachment.absolute_url(), self.getDirection())
+        return info
+
+    def _sorted_attachments(self, ar, attachments=[]):
+        """Sorter to return the attachments in the same order as the user
+        defined in the attachments viewlet
+        """
+        inf = float("inf")
+        view = ar.restrictedTraverse("attachments_view")
+        order = view.get_attachments_order()
+
+        def att_cmp(att1, att2):
+            _n1 = att1.get('uid')
+            _n2 = att2.get('uid')
+            _i1 = _n1 in order and order.index(_n1) + 1 or inf
+            _i2 = _n2 in order and order.index(_n2) + 1 or inf
+            return cmp(_i1, _i2)
+
+        return sorted(attachments, cmp=att_cmp)
+
+    def _get_ar_attachments(self, ar):
+        attachments = []
+        for attachment in ar.getAttachment():
+            # Skip attachments which have the (i)gnore flag set
+            if attachment.getReportOption() == "i":
+                continue
+            attachments.append(self._get_attachment_info(attachment))
+
+        return self._sorted_attachments(ar, attachments)
+
+    def _get_an_attachments(self, ar):
+        attachments = []
+        for analysis in ar.getAnalyses(full_objects=True):
+            for attachment in analysis.getAttachment():
+                # Skip attachments which have the (i)gnore flag set
+                if attachment.getReportOption() == "i":
+                    continue
+                attachments.append(self._get_attachment_info(attachment))
+        return self._sorted_attachments(ar, attachments)
 
     def _batch_data(self, ar):
         data = {}

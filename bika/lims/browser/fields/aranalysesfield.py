@@ -9,9 +9,11 @@ from Products.Archetypes.public import *
 from Products.Archetypes.utils import shasattr
 from Products.CMFCore.utils import getToolByName
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
+from bika.lims.interfaces import IARAnalysesField
 from bika.lims.permissions import ViewRetractedAnalyses
 from bika.lims.utils.analysis import create_analysis
 from plone.api.portal import get_tool
+from zope.interface import implements
 
 
 class ARAnalysesField(ObjectField):
@@ -20,6 +22,7 @@ class ARAnalysesField(ObjectField):
     get() returns the list of Analyses contained inside the AnalysesRequest
     set() converts a sequence of UIDS to Analysis instances in the AR
     """
+    implements(IARAnalysesField)
 
     _properties = Field._properties.copy()
     _properties.update({
