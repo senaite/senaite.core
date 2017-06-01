@@ -75,7 +75,6 @@ def read(context, request):
     proxies = catalog(**contentFilter)
 
     if debug_mode:
-        types = ','.join([p.portal_type for p in proxies])
         if len(proxies) == 0:
             logger.info("contentFilter {} returned zero objects"
                         .format(contentFilter))
@@ -83,6 +82,7 @@ def read(context, request):
             logger.info("contentFilter {} returned {} ({})".format(
                 contentFilter, proxies[0].portal_type, proxies[0].UID))
         else:
+            types = ','.join(set([p.portal_type for p in proxies]))
             logger.info("contentFilter {} returned {} items (types: {})"
                         .format(contentFilter, len(proxies), types))
 
