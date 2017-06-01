@@ -1,14 +1,7 @@
-from Products.CMFCore.utils import getToolByName
-
-from bika.lims import logger
-from bika.lims.workflow import doActionFor
 from bika.lims.workflow import getCurrentState
 from bika.lims.workflow import isActive
 from bika.lims.workflow import isBasicTransitionAllowed
 from bika.lims.workflow import wasTransitionPerformed
-from bika.lims.workflow.analysis import guards as analysis_guards
-
-from plone.api.portal import get_tool
 
 
 def _children_are_ready(obj, transition_id, dettached_states=None):
