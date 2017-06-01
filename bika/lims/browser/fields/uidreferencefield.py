@@ -47,6 +47,7 @@ class UIDReferenceField(StringField):
         'type': 'uidreference',
         'default': '',
         'default_content_type': 'text/plain',
+        'relationship':'',
     })
 
     implements(IUIDReferenceField)
