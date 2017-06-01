@@ -1,7 +1,7 @@
 from bika.lims import logger
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import isBasicTransitionAllowed
-
+from bika.lims.permissions import Unassign
 from plone.api.portal import get_tool
 
 
@@ -63,7 +63,7 @@ def unassign(obj):
         return False
     ws = ws[0]
     if isBasicTransitionAllowed(ws):
-        if mtool.checkPermissions(Unassign, ws):
+        if mtool.checkPermission(Unassign, ws):
             return True
     return False
 
