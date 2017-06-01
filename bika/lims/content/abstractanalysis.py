@@ -187,7 +187,6 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         service = self.getAnalysisService()
         if service:
             return service.UID()
-        logger.error("Cannot get ServiceUID for %s"%self)
 
     @security.public
     def getNumberOfVerifications(self):
@@ -598,7 +597,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         if client.getBulkDiscount():
             price = self.getBulkPrice()
         else:
-            price = self.getPrice()
+            price = self.getField('Price').get(self)
         return price
 
     @security.public
