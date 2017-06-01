@@ -121,7 +121,6 @@ def doActionFor(instance, action_id, active_only=True, allowed_transition=True):
 
 def _logTransitionFailure(obj, transition_id):
     wftool = getToolByName(obj, "portal_workflow")
-    result = {}
     chain = wftool.getChainFor(obj)
     for wf_id in chain:
         wf = wftool.getWorkflowById(wf_id)
@@ -135,15 +134,15 @@ def _logTransitionFailure(obj, transition_id):
                     if not tdef:
                         continue
                     if tdef.trigger_type != TRIGGER_USER_ACTION:
-                        logger.error("  Trigger type is not manual")
+                        logger.warning("  Trigger type is not manual")
                     if not tdef.actbox_name:
-                        logger.error("  No actbox_name set")
+                        logger.warning("  No actbox_name set")
                     if not wf._checkTransitionGuard(tdef, obj):
                         guard = tdef.guard
                         expr = guard.getExprText()
-                        logger.error("  Guard failed: {0}".format(expr))
+                        logger.warning("  Guard failed: {0}".format(expr))
                     return
-    logger.error("  Transition not found. Check the workflow definition!")
+    logger.warning("Transition not found. Check the workflow definition!")
 
 
 def doActionsFor(instance, actions):
@@ -453,8 +452,8 @@ def SamplePrepWorkflowChain(ob, wftool):
     try:
         bc = getToolByName(ob, 'bika_catalog')
     except AttributeError:
-        logger.error(traceback.format_exc())
-        logger.error(
+        logger.warning(traceback.format_exc())
+        logger.warning(
             "Error getting 'bika_catalog' using 'getToolByName' with '{0}'"
             " as context.".format(ob))
         return chain
