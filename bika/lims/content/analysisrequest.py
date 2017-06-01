@@ -52,6 +52,7 @@ from bika.lims.workflow.analysisrequest import guards
 from bika.lims.workflow.analysisrequest import events
 
 from plone import api
+from plone.api.portal import get_tool
 from zope.interface import implements
 
 try:
@@ -2284,7 +2285,8 @@ class AnalysisRequest(BaseFolder):
         """ get the UID of the contact associated with the authenticated
             user
         """
-        user = self.REQUEST.AUTHENTICATED_USER
+        mt = get_tool('portal_membership')
+        user = mt.getAuthenticatedMember()
         user_id = user.getUserName()
         pc = getToolByName(self, 'portal_catalog')
         r = pc(portal_type='Contact',
