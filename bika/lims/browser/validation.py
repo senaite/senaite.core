@@ -9,7 +9,8 @@ from Products.CMFCore.utils import getToolByName
 import json
 
 
-SKIP_VALIDATION_FIELDTYPES = ('image', 'file', 'datetime', 'reference')
+SKIP_VALIDATION_FIELDTYPES = (
+    'image', 'file', 'datetime', 'reference', 'uidreference')
 
 class InlineValidationView(_IVV):
 
