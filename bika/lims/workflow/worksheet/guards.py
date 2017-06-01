@@ -11,7 +11,7 @@ from bika.lims.workflow.analysis import guards as analysis_guards
 from plone.api.portal import get_tool
 
 
-def _children_are_ready(obj, transition_id, dettached_states=[]):
+def _children_are_ready(obj, transition_id, dettached_states= none):
     """Returns true if the children of the object passed in (worksheet) have
     been all transitioned in accordance with the 'transition_id' passed in. If
     dettached_states is provided, children with those states are dismissed, so
@@ -64,7 +64,7 @@ def submit(obj):
         return False
 
     dettached = ['rejected', 'retracted', 'attachment_due']
-    return _children_are_ready('submit', dettached)
+    return _children_are_ready(obj, 'submit', dettached)
 
 
 def verify(obj):
@@ -80,4 +80,4 @@ def verify(obj):
         return False
 
     dettached = ['rejected', 'retracted', 'attachment_due']
-    return _children_are_ready('verify', dettached)
+    return _children_are_ready(obj, 'verify', dettached)
