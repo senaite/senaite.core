@@ -60,7 +60,7 @@ def submit(obj):
     guard to return True. Otherwise, always returns False.
     Note this guard depends entirely on the current status of the children.
     """
-    if not IsBasicTransitionAllowed(obj):
+    if not isBasicTransitionAllowed(obj):
         return False
 
     dettached = ['rejected', 'retracted', 'attachment_due']
@@ -76,7 +76,7 @@ def verify(obj):
     Note this guard depends entirely on the current status of the children
     :returns: true or false
     """
-    if not IsBasicTransitionAllowed(obj):
+    if not isBasicTransitionAllowed(obj):
         return False
 
     dettached = ['rejected', 'retracted', 'attachment_due']
