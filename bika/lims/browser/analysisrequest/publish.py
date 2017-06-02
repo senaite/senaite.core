@@ -34,6 +34,7 @@ from bika.lims.utils import attachPdf, createPdf, encode_header, \
 from bika.lims.utils import formatDecimalMark, to_utf8
 from bika.lims.utils.analysis import format_uncertainty
 from bika.lims.vocabularies import getARReportTemplates
+from bika.lims.workflow import wasTransitionPerformed
 from plone.api.portal import get_registry_record
 from plone.api.portal import get_tool
 from plone.api.portal import set_registry_record
@@ -637,8 +638,8 @@ class AnalysisRequestPublishView(BrowserView):
 
     def _client_address(self, client):
         client_address = client.getPostalAddress() \
-                      or client.getBillingAddress() \
-                      or client.getPhysicalAddress()
+                         or client.getBillingAddress() \
+                         or client.getPhysicalAddress()
         return self._format_address(client_address)
 
     def _format_address(self, address):
@@ -707,12 +708,14 @@ class AnalysisRequestDigester:
         self.context = ar
         self.request = ar.REQUEST
 
-        # if AR was previously digested, use existing data
-        # if not overwrite:
-        #     data = ar.getDigest()
-        #     if data:
-        #         return data
+        # if AR was previously digested, use existing data (if exists)
+        if not overwrite:
+            data = ar.getDigest()
+            logger.info("=========== using existing data")
+            if data:
+                return data
 
+        logger.info("=========== creating new data")
         # Set data to the AR schema field, and return it.
         data = self._ar_data(ar)
         ar.setDigest(data)
@@ -1358,12 +1361,11 @@ def ARModifiedHandler(instance, event):
     re-populate the ar.Digest.
     """
     if IAnalysisRequest.providedBy(instance):
-        workflow = get_tool('portal_workflow')
-        review_history = list(workflow.getInfoFor(instance, 'review_history'))
-        for event in review_history:
-            if event['action'] == 'verify':
-                digester = AnalysisRequestDigester()
-                digester(instance)
+        if wasTransitionPerformed(instance, 'verify'):
+            request = instance.REQUEST
+            ars_to_digest = set(request.get('ars_to_digest', []))
+            ars_to_digest.add(instance)
+            request['ars_to_digest'] = ars_to_digest
 
 
 def AnalysisAfterTransitionHandler(instance, event):
@@ -1373,26 +1375,20 @@ def AnalysisAfterTransitionHandler(instance, event):
     of the request, regardless of how many children were transitioned.
     """
     if event.transition and event.transition.id == 'verify':
-        import pdb;
-        pdb.set_trace();
-        pass
         request = instance.REQUEST
-        ar = instance.aq_parent()
+        ar = instance.aq_parent
         ars_to_digest = set(request.get('ars_to_digest', []))
         ars_to_digest.add(ar)
         request['ars_to_digest'] = ars_to_digest
 
 
-def EndRequestHandler(instance, event):
+def EndRequestHandler(event):
     """At the end of the request, we check, to see if any pre-digestion is
     required, for any ars or analyses that were processed during the request.
     """
-    digester = AnalysisRequestDigester()
-    request = instance.REQUEST
-    import pdb;
-    pdb.set_trace();
-    pass
+    request = event.request
     ars_to_digest = set(request.get('ars_to_digest', []))
+    digester = AnalysisRequestDigester()
     if ars_to_digest:
         for ar in ars_to_digest:
             digester(ar, overwrite=True)

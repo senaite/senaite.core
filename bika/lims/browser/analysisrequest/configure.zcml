@@ -211,8 +211,7 @@
     <!-- At the end of each request, this will check to see if any ARs are
     flagged to have their publication data pre-digested. -->
     <subscriber
-      for="bika.lims.interfaces.IAnalysisRequest
-           zope.publisher.interfaces.IEndRequestEvent"
+      for="zope.publisher.interfaces.IEndRequestEvent"
       handler="bika.lims.browser.analysisrequest.publish.EndRequestHandler"
     />
 
