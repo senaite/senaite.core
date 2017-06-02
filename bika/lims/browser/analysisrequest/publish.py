@@ -2,6 +2,7 @@
 #
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 import os
 import re
 import tempfile
@@ -21,17 +22,18 @@ from Products.Archetypes.interfaces import IDateTimeField, IFileField, \
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFPlone.utils import _createObjectByType, safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
-from bika.lims import bikaMessageFactory as _, t
+from bika.lims import POINTS_OF_CAPTURE, bikaMessageFactory as _, t
 from bika.lims import logger
 from bika.lims.browser import BrowserView, ulocalized_time
 from bika.lims.idserver import renameAfterCreation
-from bika.lims.interfaces import IAnalysisRequest, IResultOutOfRange, \
-    IReferenceAnalysis
-from bika.lims.utils import attachPdf, createPdf, encode_header
+from bika.lims.interfaces import IAnalysisRequest, IResultOutOfRange
+from bika.lims.interfaces.field import IUIDReferenceField
+from bika.lims.utils import attachPdf, createPdf, encode_header, \
+    format_supsub, \
+    isnumber
 from bika.lims.utils import formatDecimalMark, to_utf8
 from bika.lims.utils.analysis import format_uncertainty
 from bika.lims.vocabularies import getARReportTemplates
-from plone.api.portal import get
 from plone.api.portal import get_registry_record
 from plone.api.portal import get_tool
 from plone.api.portal import set_registry_record
@@ -603,22 +605,22 @@ class AnalysisRequestPublishView(BrowserView):
         for ar in ars:
             ans = [an.getObject() for an in ar.getAnalyses()]
             for an in ans:
-                cat = analysis.getCategoryTitle()
-                an_title = analysis.Title()
+                cat = an.getCategoryTitle()
+                an_title = an.Title()
                 if cat not in analyses:
                     analyses[cat] = {
                         an_title: {
-                            # The report should not mind receiving 'analysis'
+                            # The report should not mind receiving 'an'
                             # here - service fields are all inside!
-                            'service': analysis,
-                            'accredited': analysis.getAccredited(),
+                            'service': an,
+                            'accredited': an.getAccredited(),
                             'ars': {ar.id: an.getFormattedResult()}
                         }
                     }
                 elif an_title not in analyses[cat]:
                     analyses[cat][an_title] = {
-                        'service': analysis,
-                        'accredited': analysis.getAccredited(),
+                        'service': an,
+                        'accredited': an.getAccredited(),
                         'ars': {ar.id: an.getFormattedResult()}
                     }
                 else:
@@ -627,24 +629,42 @@ class AnalysisRequestPublishView(BrowserView):
                     analyses[cat][an_title] = d
         return analyses
 
+    def _lab_address(self, lab):
+        lab_address = lab.getPostalAddress() \
+                      or lab.getBillingAddress() \
+                      or lab.getPhysicalAddress()
+        return self._format_address(lab_address)
 
-# By default we don't care about these schema fields when creating
-# dictionaries from the schema of objects.
-SKIP_FIELDNAMES = [
-    'allowDiscussion', 'subject', 'location', 'contributors', 'creators',
-    'effectiveDate', 'expirationDate', 'language', 'rights', 'relatedItems',
-    'modification_date', 'immediatelyAddableTypes', 'locallyAllowedTypes',
-    'nextPreviousEnabled', 'constrainTypesMode', 'RestrictedCategories',
-]
+    def _client_address(self, client):
+        client_address = client.getPostalAddress() \
+                      or client.getBillingAddress() \
+                      or client.getPhysicalAddress()
+        return self._format_address(client_address)
 
-# These fields cause problems for specific types
-SKIP_BY_TYPE = {
-    'LabContact': ['Department',  # deprecated, use Departments.
-                   'Departments',  # causeses circular ref; we fix manually.
-                   ],
-    'Method': ['Instrument'],  # circular
-    'Instrument': ['Method'],  # circular
-}
+    def _format_address(self, address):
+        """Takes a value from an AddressField, returns a div class=address
+        with spans inside, containing the address field values.
+        """
+        addr = ''
+        if address:
+            # order of divs in output html
+            keys = ['address', 'city', 'district', 'state', 'zip', 'country']
+            addr = ''.join(["<span>%s</span>" % address.get(v) for v in keys
+                            if address.get(v, None)])
+        return "<div class='address'>%s</div>" % addr
+
+    def explode_data(self, data, padding=''):
+        out = ''
+        for k, v in data.items():
+            if type(v) is dict:
+                pad = '%s&nbsp;&nbsp;&nbsp;&nbsp;' % padding
+                exploded = self.explode_data(v, pad)
+                out = "%s<br/>%s'%s':{%s}" % (out, padding, str(k), exploded)
+            elif type(v) is list:
+                out = "%s<br/>%s'%s':[]" % (out, padding, str(k))
+            elif type(v) is str:
+                out = "%s<br/>%s'%s':''" % (out, padding, str(k))
+        return out
 
 
 class AnalysisRequestDigester:
@@ -658,13 +678,9 @@ class AnalysisRequestDigester:
     is set True by default in the EndRequestHandler that is responsible for
     automated re-building.
     
-    Reads field values in a general way, to allow schema changes to be 
-    represented here without modifying this code. Also include data for 
-    associated objects, and previous results, etc.
-    
-    This is expensive!  It should be run once when the AR is verified
-    (or when a verified AR is modified) to pre-digest the data so that
-    AnalysisRequestPublishView will run a little faster.
+    It should be run once when the AR is verified (or when a verified AR is 
+    modified) to pre-digest the data so that AnalysisRequestPublishView will 
+    run a little faster.
     
     Note: ProxyFields are not included in the reading of the schema.  If you
     want to access sample fields in the report template, you must refer
@@ -676,53 +692,241 @@ class AnalysisRequestDigester:
     """
 
     def __init__(self):
-        # I will store dictionaries here for the schema values for all
-        # objects that this instance digests. Then each object will be digested
-        # only once in this request.
-        self._cache = {}
+        # By default we don't care about these schema fields when creating
+        # dictionaries from the schemas of objects.
+        self.SKIP_FIELDNAMES = [
+            'allowDiscussion', 'subject', 'location', 'contributors',
+            'creators', 'effectiveDate', 'expirationDate', 'language', 'rights',
+            'relatedItems', 'modification_date', 'immediatelyAddableTypes',
+            'locallyAllowedTypes', 'nextPreviousEnabled', 'constrainTypesMode',
+            'RestrictedCategories', 'Digest',
+        ]
 
     def __call__(self, ar, overwrite=False):
+        # cheating
+        self.context = ar
+        self.request = ar.REQUEST
+
         # if AR was previously digested, use existing data
-        data = ar.getDigest()
-        if data:
-            return data
+        # if not overwrite:
+        #     data = ar.getDigest()
+        #     if data:
+        #         return data
 
-        # First include general schema field value handling
-        data = self._schema_dict(ar)
+        # Set data to the AR schema field, and return it.
+        data = self._ar_data(ar)
+        ar.setDigest(data)
+        return data
 
-        # Variables from workflow history
-        data['review_history'] = self._workflow_data(ar)
+    def _schema_dict(self, instance, skip_fields=None, recurse=True):
+        """Return a dict of all mutated field values for all schema fields.
+        This isn't used, as right now the digester just uses old code directly
+        for BBB purposes.  But I'm keeping it here for future use.
+        :param instance: The item who's schema will be exploded into a dict.
+        :param skip_fields: A list of fieldnames which will not be rendered.
+        :param recurse: If true, reference values will be recursed into.
+        """
+        data = {
+            'obj': instance,
+        }
 
-        # Now individual fields that require treatment
+        uid = instance.UID()
+        portal_type = instance.portal_type
 
-        data['sub_total'] = ar.getSubtotal()
-        data['vat_amount'] = ar.getVATAmount()
-        data['total_price'] = ar.getTotalPrice()
-        data['late'] = ar.getLate()
-        data['invalid'] = ar.isInvalid()
+        fields = instance.Schema().fields()
+        for fld in fields:
+            fieldname = fld.getName()
+            if fieldname in self.SKIP_FIELDNAMES \
+                    or (skip_fields and fieldname in skip_fields) \
+                    or fld.type == 'computed':
+                continue
+
+            rawvalue = fld.get(instance)
+
+            if rawvalue is True or rawvalue is False:
+                # Booleans are special; we'll str and return them.
+                data[fieldname] = str(rawvalue)
+
+            elif rawvalue is 0:
+                # Zero is special: it's false-ish, but the value is important.
+                data[fieldname] = 0
+
+            elif not rawvalue:
+                # Other falsy values can simply return an empty string.
+                data[fieldname] = ''
+
+            elif fld.type == 'analyses':
+                # AR.Analyses field is handled separately of course.
+                data[fieldname] = ''
+
+            elif IDateTimeField.providedBy(fld):
+                # Date fields get stringed to rfc8222
+                data[fieldname] = rawvalue.rfc822() if rawvalue else ''
+
+            elif IReferenceField.providedBy(fld) \
+                    or IUIDReferenceField.providedBy(fld):
+                # mutate all reference targets into dictionaries
+                # Assume here that allowed_types excludes incompatible types.
+                if recurse and fld.multiValued:
+                    v = [self._schema_dict(x, recurse=False) for x in rawvalue]
+                elif recurse and not fld.multiValued:
+                    v = self._schema_dict(rawvalue, recurse=False)
+                elif not recurse and fld.multiValued:
+                    v = [val.Title() for val in rawvalue if val]
+                else:
+                    v = rawvalue.Title() if rawvalue else ''
+                data[fieldname] = v
+
+                # Include a [fieldname]Title[s] field containing the title
+                # or titles of referenced objects.
+                if fld.multiValued:
+                    data[fieldname + "Titles"] = [x.Title() for x in rawvalue]
+                else:
+                    data[fieldname + "Title"] = rawvalue.Title()
+
+            # Text/String comes after UIDReferenceField.
+            elif ITextField.providedBy(fld) or IStringField.providedBy(fld):
+                rawvalue = str(rawvalue).strip()
+                data[fieldname] = rawvalue
+
+            # FileField comes after StringField.
+            elif IFileField.providedBy(fld) or IBlobField.providedBy(fld):
+                # We ignore file field values; we'll add the ones we want.
+                data[fieldname] = ''
+
+            elif ILinesField.providedBy(fld):
+                # LinesField turns into a single string of lines
+                data[fieldname] = "<br/>".join(rawvalue)
+
+            elif fld.type == 'record':
+                # Record returns a dictionary.
+                data[fieldname] = rawvalue
+
+            elif fld.type == 'records':
+                # Record returns a list of dictionaries.
+                data[fieldname] = rawvalue
+
+            elif fld.type == 'address':
+                # This is just a Record field
+                data[fieldname + "_formatted"] = self._format_address(rawvalue)
+                # Also include un-formatted address
+                data[fieldname] = rawvalue
+
+            elif fld.type == 'duration':
+                # Duration returns a formatted string like 1d 3h 1m.
+                data[fieldname + "_formatted"] = \
+                    ' '.join(["%s%s" % (rawvalue[key], key[0])
+                              for key in ('days', 'hours', 'minutes')])
+                # Also include unformatted duration.
+                data[fieldname] = rawvalue
+
+            else:
+                data[fieldname] = rawvalue
+
+        return data
+
+    def _format_address(self, address):
+        """Takes a value from an AddressField, returns a div class=address
+        with spans inside, containing the address field values.
+        """
+        addr = ''
+        if address:
+            # order of divs in output html
+            keys = ['address', 'city', 'district', 'state', 'zip', 'country']
+            addr = ''.join(["<span>%s</span>" % address.get(v) for v in keys
+                            if address.get(v, None)])
+        return "<div class='address'>%s</div>" % addr
+
+    def _workflow_data(self, instance):
+        """Add some workflow information for all actions performed against 
+        this instance. Only values for the last action event for any 
+        transition will be set here, previous transitions will be ignored.
+
+        The default format for review_history is a list of lists; this function
+        returns rather a dictionary of dictionaries, keyed by action_id
+        """
+        workflow = get_tool('portal_workflow')
+        history = copy(list(workflow.getInfoFor(instance, 'review_history')))
+        data = {e['action']: {
+            'actor': e['actor'],
+            'time': ulocalized_time(e['time'], long_format=True)
+        } for e in history if e['action']}
+        return data
+
+    def _ar_data(self, ar, excludearuids=None):
+        """ Creates an ar dict, accessible from the view and from each
+            specific template.
+        """
+        if not excludearuids:
+            excludearuids = []
+        bs = get_tool('bika_setup')
+        data = {'obj': ar,
+                'id': ar.getId(),
+                'client_order_num': ar.getClientOrderNumber(),
+                'client_reference': ar.getClientReference(),
+                'client_sampleid': ar.getClientSampleID(),
+                'adhoc': ar.getAdHoc(),
+                'composite': ar.getComposite(),
+                'report_drymatter': ar.getReportDryMatter(),
+                'invoice_exclude': ar.getInvoiceExclude(),
+                'date_received': ulocalized_time(ar.getDateReceived(),
+                                                 long_format=1),
+                'member_discount': ar.getMemberDiscount(),
+                'date_sampled': ulocalized_time(
+                    ar.getDateSampled(), long_format=1),
+                'date_published': ulocalized_time(DateTime(), long_format=1),
+                'invoiced': ar.getInvoiced(),
+                'late': ar.getLate(),
+                'subtotal': ar.getSubtotal(),
+                'vat_amount': ar.getVATAmount(),
+                'totalprice': ar.getTotalPrice(),
+                'invalid': ar.isInvalid(),
+                'url': ar.absolute_url(),
+                'remarks': to_utf8(ar.getRemarks()),
+                'footer': to_utf8(bs.getResultFooter()),
+                'prepublish': False,
+                'child_analysisrequest': None,
+                'parent_analysisrequest': None,
+                'resultsinterpretation': ar.getResultsInterpretation()}
+
+        # Sub-objects
+        excludearuids.append(ar.UID())
+        puid = ar.getRawParentAnalysisRequest()
+        if puid and puid not in excludearuids:
+            data['parent_analysisrequest'] = self._ar_data(
+                ar.getParentAnalysisRequest(), excludearuids)
+        cuid = ar.getRawChildAnalysisRequest()
+        if cuid and cuid not in excludearuids:
+            data['child_analysisrequest'] = self._ar_data(
+                ar.getChildAnalysisRequest(), excludearuids)
+
+        wf = get_tool('portal_workflow')
+        allowed_states = ['verified', 'published']
+        data['prepublish'] = wf.getInfoFor(ar,
+                                           'review_state') not in allowed_states
+
+        data['contact'] = self._contact_data(ar)
+        data['client'] = self._client_data(ar)
+        data['sample'] = self._sample_data(ar)
+        data['batch'] = self._batch_data(ar)
         data['specifications'] = self._specs_data(ar)
-        data['analyses'] = self._analyses_data(ar)
-        data['qcanalyses'] = self._qcanalyses_data(ar)
-
-        points_of_capture = [an['point_of_capture'] for an in data['analyses']]
-        data['points_of_capture'] = sorted(set(points_of_capture))
-
-        categories = set([an['category'] for an in data['analyses']])
-        data['categories'] = sorted(categories)
-
-        has_prevs = [an['previous_results'] for an in data['analyses']
-                     if an['previous_results']]
-        data['haspreviousresults'] = len(has_prevs) > 0
-
-        blanks = [an['reftype'] for an in data['qcanalyses']
-                  if an['reftype'] == 'b']
-        controls = [an['reftype'] for an in data['qcanalyses']
-                    if an['reftype'] == 'c']
-        duplicates = [an['reftype'] for an in data['qcanalyses']
-                      if an['reftype'] == 'd']
-        data['hasblanks'] = len(blanks) > 0
-        data['hascontrols'] = len(controls) > 0
-        data['hasduplicates'] = len(duplicates) > 0
+        data['analyses'] = self._analyses_data(ar, ['verified', 'published'])
+        data['qcanalyses'] = self._qcanalyses_data(ar,
+                                                   ['verified', 'published'])
+        data['points_of_capture'] = sorted(
+            set([an['point_of_capture'] for an in data['analyses']]))
+        data['categories'] = sorted(
+            set([an['category'] for an in data['analyses']]))
+        data['haspreviousresults'] = len(
+            [an['previous_results'] for an in data['analyses'] if
+             an['previous_results']]) > 0
+        data['hasblanks'] = len([an['reftype'] for an in data['qcanalyses'] if
+                                 an['reftype'] == 'b']) > 0
+        data['hascontrols'] = len([an['reftype'] for an in data['qcanalyses'] if
+                                   an['reftype'] == 'c']) > 0
+        data['hasduplicates'] = len(
+            [an['reftype'] for an in data['qcanalyses'] if
+             an['reftype'] == 'd']) > 0
 
         # Categorize analyses
         data['categorized_analyses'] = {}
@@ -738,8 +942,7 @@ class AnalysisRequestDigester:
 
             # Group by department too
             anobj = an['obj']
-            dept = anobj.getDepartment() \
-                if anobj.getAnalysisService() else None
+            dept = anobj.getDepartment()
             if dept:
                 dept = dept.UID()
                 dep = data['department_analyses'].get(dept, {})
@@ -767,11 +970,10 @@ class AnalysisRequestDigester:
         data['reporter'] = self._reporter_data(ar)
         data['managers'] = self._managers_data(ar)
 
-        portal = get()
-        bs = get_tool('bika_setup')
+        portal = self.context.portal_url.getPortalObject()
         data['portal'] = {'obj': portal,
                           'url': portal.absolute_url()}
-        data['laboratory'] = self._schema_dict(bs.laboratory)
+        data['laboratory'] = self._lab_data()
 
         # results interpretation
         ri = {}
@@ -782,107 +984,148 @@ class AnalysisRequestDigester:
             ri[dept.Title()] = ar.getResultsInterpretationByDepartment(dept)
         data['resultsinterpretationdepts'] = ri
 
-        # Set data to the AR schema field, and return.
-        ar.setDigest(data)
         return data
 
-    def _schema_dict(self, instance, skip_fields=None):
-        """Return a dict of all mutated field values for all schema fields.
-        """
-        logger.info("_schema_dict on %s" % instance)
-        uid = instance.UID()
-        portal_type = instance.portal_type
-        if uid in self._cache:
-            return self._cache[uid]
-        data = {
-            'obj': instance,
-        }
-        fields = instance.Schema().fields()
-        for fld in fields:
-            fieldname = fld.getName()
-            if fieldname in SKIP_FIELDNAMES \
-                    or (fieldname in SKIP_BY_TYPE.get(portal_type, [])) \
-                    or (skip_fields and fieldname in skip_fields):
-                continue
-            if fld.type == 'computed':
-                continue
-            rawvalue = fld.get(instance)
-            if rawvalue is True or rawvalue is False:
-                # Booleans are special; we'll str and return them.
-                data[fieldname] = str(rawvalue)
-            elif rawvalue is 0:
-                # Zero is special: it's false-ish, but the value is important.
-                data[fieldname] = 0
-            elif not rawvalue:
-                # Other falsy values can simply return an empty string.
-                data[fieldname] = ''
-            elif fld.type == 'analyses':
-                # AR.Analyses field is handled separately of course.
-                data[fieldname] = ''
-            elif IDateTimeField.providedBy(fld):
-                # Date fields get stringed to rfc8222
-                data[fieldname] = rawvalue.rfc822() if rawvalue else ''
-            elif ITextField.providedBy(fld) or IStringField.providedBy(fld):
-                rawvalue = str(rawvalue).strip()
-                data[fieldname] = rawvalue
-            elif IFileField.providedBy(fld) or IBlobField.providedBy(fld):
-                # We ignore file field values; we'll add the ones we want.
-                data[fieldname] = ''
-            elif IReferenceField.providedBy(fld):
-                # mutate all reference targets into dictionaries
-                # Assume here that allowed_types excludes incompatible types.
-                logger.info("Calling _schema_dict for field %s" % fieldname)
-                data[fieldname] = [self._schema_dict(x) for x in rawvalue] \
-                    if fld.multiValued else self._schema_dict(rawvalue)
-                # Include a [fieldname]Title[s] field containing the title
-                # or titles of referenced objects.
-                if fld.multiValued:
-                    data[fieldname + "Titles"] = [x.Title() for x in rawvalue]
-                else:
-                    data[fieldname + "Title"] = rawvalue.Title()
-            elif ILinesField.providedBy(fld):
-                # LinesField turns into a single string of lines
-                data[fieldname] = "<br/>".join(rawvalue)
-            elif fld.type == 'record':
-                # Record returns a dictionary.
-                data[fieldname] = rawvalue
-            elif fld.type == 'records':
-                # Record returns a list of dictionaries.
-                data[fieldname] = rawvalue
-            elif fld.type == 'address':
-                # This is just a Record field
-                data[fieldname + "_formatted"] = self._format_address(rawvalue)
-                # Also include un-formatted address
-                data[fieldname] = rawvalue
-            elif fld.type == 'duration':
-                # Duration returns a formatted string like 1d 3h 1m.
-                data[fieldname + "_formatted"] = \
-                    ' '.join(["%s%s" % (rawvalue[key], key[0])
-                              for key in ('days', 'hours', 'minutes')])
-                # Also include unformatted duration.
-                data[fieldname] = rawvalue
-            else:
-                logger.warning("Using unmutated value for field {}: {}".format(
-                    fld, rawvalue
-                ))
-                data[fieldname] = rawvalue
-        self._cache[uid] = data
+    def _batch_data(self, ar):
+        data = {}
+        batch = ar.getBatch()
+        if batch:
+            data = {'obj': batch,
+                    'id': batch.id,
+                    'url': batch.absolute_url(),
+                    'title': to_utf8(batch.Title()),
+                    'date': batch.getBatchDate(),
+                    'client_batchid': to_utf8(batch.getClientBatchID()),
+                    'remarks': to_utf8(batch.getRemarks())}
+
+            uids = batch.Schema()['BatchLabels'].getAccessor(batch)()
+            uc = get_tool('uid_catalog')
+            data['labels'] = [to_utf8(p.getObject().Title()) for p in
+                              uc(UID=uids)]
+
         return data
 
-    def _workflow_data(self, instance):
-        """Add some workflow information for all actions performed against 
-        this instance. Only values for the last action event for any 
-        transition will be set here, previous transitions will be ignored.
+    def _sample_data(self, ar):
+        data = {}
+        sample = ar.getSample()
+        if sample:
+            data = {'obj': sample,
+                    'id': sample.id,
+                    'url': sample.absolute_url(),
+                    'client_sampleid': sample.getClientSampleID(),
+                    'date_sampled': sample.getDateSampled(),
+                    'sampling_date': sample.getSamplingDate(),
+                    'sampler': self._sampler_data(sample),
+                    'date_received': sample.getDateReceived(),
+                    'composite': sample.getComposite(),
+                    'date_expired': sample.getDateExpired(),
+                    'date_disposal': sample.getDisposalDate(),
+                    'date_disposed': sample.getDateDisposed(),
+                    'adhoc': sample.getAdHoc(),
+                    'remarks': sample.getRemarks(),
+                    'sample_type': self._sample_type(sample),
+                    'sample_point': self._sample_point(sample)}
+        return data
 
-        The default format for review_history is a list of lists; this function
-        returns rather a dictionary of dictionaries, keyed by action_id
-        """
-        workflow = get_tool('portal_workflow')
-        history = copy(list(workflow.getInfoFor(instance, 'review_history')))
-        data = {e['action']: {
-            'actor': e['actor'],
-            'time': ulocalized_time(e['time'], long_format=True)
-        } for e in history if e['action']}
+    def _sampler_data(self, sample=None):
+        data = {}
+        if not sample or not sample.getSampler():
+            return data
+        sampler = sample.getSampler()
+        mtool = get_tool('portal_membership')
+        member = mtool.getMemberById(sampler)
+        if member:
+            mfullname = member.getProperty('fullname')
+            memail = member.getProperty('email')
+            mhomepage = member.getProperty('home_page')
+            pc = get_tool('portal_catalog')
+            c = pc(portal_type='Contact', getUsername=member.id)
+            c = c[0].getObject() if c else None
+            cfullname = c.getFullname() if c else None
+            cemail = c.getEmailAddress() if c else None
+            data = {'id': member.id,
+                    'fullname': to_utf8(cfullname) if cfullname else to_utf8(
+                        mfullname),
+                    'email': cemail if cemail else memail,
+                    'business_phone': c.getBusinessPhone() if c else '',
+                    'business_fax': c.getBusinessFax() if c else '',
+                    'home_phone': c.getHomePhone() if c else '',
+                    'mobile_phone': c.getMobilePhone() if c else '',
+                    'job_title': to_utf8(c.getJobTitle()) if c else '',
+                    'department': to_utf8(c.getDepartment()) if c else '',
+                    'physical_address': to_utf8(
+                        c.getPhysicalAddress()) if c else '',
+                    'postal_address': to_utf8(
+                        c.getPostalAddress()) if c else '',
+                    'home_page': to_utf8(mhomepage)}
+        return data
+
+    def _sample_type(self, sample=None):
+        data = {}
+        sampletype = sample.getSampleType() if sample else None
+        if sampletype:
+            data = {'obj': sampletype,
+                    'id': sampletype.id,
+                    'title': sampletype.Title(),
+                    'url': sampletype.absolute_url()}
+        return data
+
+    def _sample_point(self, sample=None):
+        samplepoint = sample.getSamplePoint() if sample else None
+        data = {}
+        if samplepoint:
+            data = {'obj': samplepoint,
+                    'id': samplepoint.id,
+                    'title': samplepoint.Title(),
+                    'url': samplepoint.absolute_url()}
+        return data
+
+    def _lab_address(self, lab):
+        lab_address = lab.getPostalAddress() \
+                      or lab.getBillingAddress() \
+                      or lab.getPhysicalAddress()
+        return self._format_address(lab_address)
+
+    def _lab_data(self):
+        portal = self.context.portal_url.getPortalObject()
+        lab = self.context.bika_setup.laboratory
+
+        return {'obj': lab,
+                'title': to_utf8(lab.Title()),
+                'url': to_utf8(lab.getLabURL()),
+                'address': to_utf8(self._lab_address(lab)),
+                'confidence': lab.getConfidence(),
+                'accredited': lab.getLaboratoryAccredited(),
+                'accreditation_body': to_utf8(lab.getAccreditationBody()),
+                'accreditation_logo': lab.getAccreditationBodyLogo(),
+                'logo': "%s/logo_print.png" % portal.absolute_url()}
+
+    def _contact_data(self, ar):
+        data = {}
+        contact = ar.getContact()
+        if contact:
+            data = {'obj': contact,
+                    'fullname': to_utf8(contact.getFullname()),
+                    'email': to_utf8(contact.getEmailAddress()),
+                    'pubpref': contact.getPublicationPreference()}
+        return data
+
+    def _client_address(self, client):
+        client_address = client.getPostalAddress()
+        return self._format_address(client_address)
+
+    def _client_data(self, ar):
+        data = {}
+        client = ar.aq_parent
+        if client:
+            data['obj'] = client
+            data['id'] = client.id
+            data['url'] = client.absolute_url()
+            data['name'] = to_utf8(client.getName())
+            data['phone'] = to_utf8(client.getPhone())
+            data['fax'] = to_utf8(client.getFax())
+
+            data['address'] = to_utf8(self._client_address(client))
         return data
 
     def _specs_data(self, ar):
@@ -900,24 +1143,16 @@ class AnalysisRequestDigester:
 
         return data
 
-    def _analyses_data(self, ar, contentFilter=None):
-        """Return data for analyses in the provided AR. contentFilter is 
-        passed directly to the catalog. If contentFilter is not specified,
-        or review_state is not present in the provided contentFilter,
-        then review_state=['verified', 'published'] is used.
-        """
+    def _analyses_data(self, ar, analysis_states=None):
+        if not analysis_states:
+            analysis_states = ['verified', 'published']
         analyses = []
+        dm = ar.aq_parent.getDecimalMark()
         batch = ar.getBatch()
         workflow = get_tool('portal_workflow')
-        showhidden = ar.REQUEST.form.get('hvisible', '0').lower() \
-                     in ['true', '1']
-
-        if not contentFilter:
-            contentFilter = {}
-        if 'review_state' not in contentFilter:
-            contentFilter['review_state'] = ['verified', 'published']
-
-        for an in ar.getAnalyses(full_objects=True, **contentFilter):
+        showhidden = self.isHiddenAnalysesVisible()
+        for an in ar.getAnalyses(
+                full_objects=True, review_state=analysis_states):
 
             # Omit hidden analyses?
             if not showhidden:
@@ -927,21 +1162,20 @@ class AnalysisRequestDigester:
                     continue
 
             # Build the analysis-specific dict
-            andict = self._analysis_data(an)
+            andict = self._analysis_data(an, dm)
 
             # Are there previous results for the same AS and batch?
             andict['previous'] = []
             andict['previous_results'] = ""
-            review_state = contentFilter['review_state']
             if batch:
                 keyword = an.getKeyword()
-                bars = [bar for bar in batch.getAnalysisRequests()
-                        if an.aq_parent.UID() != bar.UID()
+                bars = [bar for bar in batch.getAnalysisRequests() \
+                        if an.aq_parent.UID() != bar.UID() \
                         and keyword in bar]
                 for bar in bars:
                     pan = bar[keyword]
                     pan_state = workflow.getInfoFor(pan, 'review_state')
-                    if pan.getResult() and pan_state in review_state:
+                    if pan.getResult() and pan_state in analysis_states:
                         pandict = self._analysis_data(pan)
                         andict['previous'].append(pandict)
 
@@ -953,12 +1187,37 @@ class AnalysisRequestDigester:
             analyses.append(andict)
         return analyses
 
-    def _analysis_data(self, analysis):
+    def _analysis_data(self, analysis, decimalmark=None):
 
-        ar = analysis.aq_parent
-        decimalmark = ar.aq_parent.getDecimalMark()
-
-        andict = self._schema_dict(analysis)
+        andict = {'obj': analysis,
+                  'id': analysis.id,
+                  'title': analysis.Title(),
+                  'keyword': analysis.getKeyword(),
+                  'scientific_name': analysis.getScientificName(),
+                  'accredited': analysis.getAccredited(),
+                  'point_of_capture': to_utf8(
+                      POINTS_OF_CAPTURE.getValue(analysis.getPointOfCapture())),
+                  'category': to_utf8(analysis.getCategoryTitle()),
+                  'result': analysis.getResult(),
+                  'isnumber': isnumber(analysis.getResult()),
+                  'unit': to_utf8(analysis.getUnit()),
+                  'formatted_unit': format_supsub(to_utf8(analysis.getUnit())),
+                  'capture_date': analysis.getResultCaptureDate(),
+                  'request_id': analysis.aq_parent.getId(),
+                  'formatted_result': '',
+                  'uncertainty': analysis.getUncertainty(),
+                  'formatted_uncertainty': '',
+                  'retested': analysis.getRetested(),
+                  'remarks': to_utf8(analysis.getRemarks()),
+                  'resultdm': to_utf8(analysis.getResultDM()),
+                  'outofrange': False,
+                  'type': analysis.portal_type,
+                  'reftype': analysis.getReferenceType() \
+                      if hasattr(analysis, 'getReferenceType')
+                  else None,
+                  'worksheet': None,
+                  'specs': {},
+                  'formatted_specs': ''}
 
         if analysis.portal_type == 'DuplicateAnalysis':
             andict['reftype'] = 'd'
@@ -969,20 +1228,24 @@ class AnalysisRequestDigester:
             if ws and len(ws) > 0 else None
         andict['refsample'] = analysis.getSample().id \
             if analysis.portal_type == 'Analysis' \
-            else '%s - %s' % (ar.id, ar.Title())
+            else '%s - %s' % (analysis.aq_parent.id, analysis.aq_parent.Title())
 
-        # Set analysis specs or reference results, depending on the type
-        # of the analysis.
-        if IReferenceAnalysis.providedBy(analysis):
-            # We might use the reference results instead other specs
+        if analysis.portal_type == 'ReferenceAnalysis':
+            # The analysis is a Control or Blank. We might use the
+            # reference results instead other specs
             uid = analysis.getServiceUID()
-            specs = ar.getResultsRangeDict().get(uid, {})
+            specs = analysis.aq_parent.getResultsRangeDict().get(uid, {})
 
         else:
-            # The getResultsRange function already takes care about which are
-            #  the specs to be used: AR, client or lab.
+            # Get the specs directly from the analysis. The getResultsRange
+            # function already takes care about which are the specs to be used:
+            # AR, client or lab.
             specs = analysis.getResultsRange()
+
         andict['specs'] = specs
+        scinot = self.context.bika_setup.getScientificNotationReport()
+        fresult = analysis.getFormattedResult(
+            specs=specs, sciformat=int(scinot), decimalmark=decimalmark)
 
         # We don't use here cgi.encode because results fields must be rendered
         # using the 'structure' wildcard. The reason is that the result can be
@@ -991,13 +1254,8 @@ class AnalysisRequestDigester:
         # getFormattedResult signature is set to True, so the service will
         # already take into account LDLs and UDLs symbols '<' and '>' and escape
         # them if necessary.
-        bs = get_tool('bika_setup')
-        scinot = bs.getScientificNotationReport()
-        fresult = analysis.getFormattedResult(
-            specs=specs, sciformat=int(scinot), decimalmark=decimalmark)
-        andict['formatted_result'] = fresult
+        andict['formatted_result'] = fresult;
 
-        # Formatted specs and formatted uncertainty.
         fs = ''
         if specs.get('min', None) and specs.get('max', None):
             fs = '%s - %s' % (specs['min'], specs['max'])
@@ -1013,6 +1271,7 @@ class AnalysisRequestDigester:
         # Out of range?
         if specs:
             adapters = getAdapters((analysis,), IResultOutOfRange)
+            bsc = get_tool("bika_setup_catalog")
             for name, adapter in adapters:
                 ret = adapter(specification=specs)
                 if ret and ret['out_of_range']:
@@ -1020,36 +1279,45 @@ class AnalysisRequestDigester:
                     break
         return andict
 
-    def _qcanalyses_data(self, ar, review_states=None):
-        """Get QC Analyses data for the provided AR.  If no review_states
-        are supplied, 
-        """
+    def _qcanalyses_data(self, ar, analysis_states=None):
+        if not analysis_states:
+            analysis_states = ['verified', 'published']
         analyses = []
-        if not review_states or not type(review_states) not in (list, tuple):
-            review_states = ['verified', 'published']
-        for an in ar.getQCAnalyses(review_state=review_states):
+
+        for an in ar.getQCAnalyses(review_state=analysis_states):
+
             # Build the analysis-specific dict
             andict = self._analysis_data(an)
+
             # Are there previous results for the same AS and batch?
             andict['previous'] = []
             andict['previous_results'] = ""
+
             analyses.append(andict)
-        analyses.sort(key=itemgetter('title'))
+        analyses.sort(
+            lambda x, y: cmp(x.get('title').lower(), y.get('title').lower()))
         return analyses
 
-    def _reporter_data(self):
+    def _reporter_data(self, ar):
         data = {}
-        pm = get_tool('portal_membership')
-        member = pm.getAuthenticatedMember()
-        if member:
-            username = member.getUserName()
-            data['username'] = username
-            bs = get_tool('bika_setup')
-            brains = [x for x in bs(portal_type='LabContact')
-                      if x.getObject().getUsername() == username]
-            if brains:
-                contact = brains[0].getObject()
-                data.update(self._schema_dict(contact))
+        bsc = get_tool('bika_setup_catalog')
+        mtool = get_tool('portal_membership')
+        member = mtool.getAuthenticatedMember()
+        username = member.getUserName()
+        data['username'] = username
+        brains = [x for x in bsc(portal_type='LabContact')
+                  if x.getObject().getUsername() == username]
+        if brains:
+            contact = brains[0].getObject()
+            data['fullname'] = contact.getFullname()
+            data['email'] = contact.getEmailAddress()
+            sf = contact.getObject().getSignature()
+            if sf:
+                data['signature'] = sf.absolute_url() + "/Signature"
+        else:
+            data['signature'] = ''
+            data['fullname'] = username
+            data['email'] = ''
 
         return data
 
@@ -1057,16 +1325,16 @@ class AnalysisRequestDigester:
         managers = {'ids': [], 'dict': {}}
         departments = {}
         ar_mngrs = ar.getResponsible()
-        for mid in ar_mngrs['ids']:
-            new_depts = ar_mngrs['dict'][mid]['departments'].split(',')
-            if mid in managers['ids']:
+        for id in ar_mngrs['ids']:
+            new_depts = ar_mngrs['dict'][id]['departments'].split(',')
+            if id in managers['ids']:
                 for dept in new_depts:
-                    if dept not in departments[mid]:
-                        departments[mid].append(dept)
+                    if dept not in departments[id]:
+                        departments[id].append(dept)
             else:
-                departments[mid] = new_depts
-                managers['ids'].append(mid)
-                managers['dict'][mid] = ar_mngrs['dict'][mid]
+                departments[id] = new_depts
+                managers['ids'].append(id)
+                managers['dict'][id] = ar_mngrs['dict'][id]
 
         mngrs = departments.keys()
         for mngr in mngrs:
@@ -1079,36 +1347,23 @@ class AnalysisRequestDigester:
 
         return managers
 
-    def _format_address(self, address):
-        """Takes a value from an AddressField, returns a div class=address
-        with spans inside, containing the address field values.
+    def isHiddenAnalysesVisible(self):
+        """Returns true if hidden analyses are visible
         """
-        addr = ''
-        if address:
-            # order of divs in output html
-            keys = ['address', 'city', 'district', 'state', 'zip', 'country']
-            addr = ''.join(["<span>%s</span>" % address.get(v) for v in keys
-                            if address.get(v, None)])
-        return "<div class='address'>%s</div>" % addr
-
-
-def _verified(instance):
-    """True if the 'verify' transition has ever been fired against instance.
-    """
-    workflow = get_tool('portal_workflow')
-    review_history = list(workflow.getInfoFor(instance, 'review_history'))
-    for event in review_history:
-        if event['action'] == 'verify':
-            return True
+        return self.request.form.get('hvisible', '0').lower() in ['true', '1']
 
 
 def ARModifiedHandler(instance, event):
-    """After any modification of an AR that has been verified, re-populate 
-    the ar.Digest field containing all information required for publication.
+    """After any modification of an AR that has already been verified,
+    re-populate the ar.Digest.
     """
-    if IAnalysisRequest.providedBy(instance) and _verified(instance):
-        digester = AnalysisRequestDigester()
-        digester(instance)
+    if IAnalysisRequest.providedBy(instance):
+        workflow = get_tool('portal_workflow')
+        review_history = list(workflow.getInfoFor(instance, 'review_history'))
+        for event in review_history:
+            if event['action'] == 'verify':
+                digester = AnalysisRequestDigester()
+                digester(instance)
 
 
 def AnalysisAfterTransitionHandler(instance, event):
@@ -1118,6 +1373,9 @@ def AnalysisAfterTransitionHandler(instance, event):
     of the request, regardless of how many children were transitioned.
     """
     if event.transition and event.transition.id == 'verify':
+        import pdb;
+        pdb.set_trace();
+        pass
         request = instance.REQUEST
         ar = instance.aq_parent()
         ars_to_digest = set(request.get('ars_to_digest', []))
@@ -1131,6 +1389,9 @@ def EndRequestHandler(instance, event):
     """
     digester = AnalysisRequestDigester()
     request = instance.REQUEST
+    import pdb;
+    pdb.set_trace();
+    pass
     ars_to_digest = set(request.get('ars_to_digest', []))
     if ars_to_digest:
         for ar in ars_to_digest:
