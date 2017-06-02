@@ -23,7 +23,6 @@ from bika.lims.content.bikaschema import BikaFolderSchema, BikaSchema
 from bika.lims.interfaces import IInstrument
 from bika.lims.utils import t
 from bika.lims.utils import to_utf8
-from plone.api.portal import get_tool
 from plone.app.blob.field import FileField as BlobFileField
 from plone.app.folder.folder import ATFolder
 from zope.interface import implements
@@ -707,7 +706,7 @@ class Instrument(ATFolder):
             The rest of the analyses (regular and duplicates) will not
             be returned.
         """
-        bac = get_tool('bika_analysis_catalog')
+        bac = getToolByName(self, 'bika_analysis_catalog')
         brains = bac(portal_type='ReferenceAnalysis',
                      getInstrumentUID=self.UID())
         return [brain.getObject() for brain in brains]

@@ -52,7 +52,6 @@ from bika.lims.workflow.analysisrequest import guards
 from bika.lims.workflow.analysisrequest import events
 
 from plone import api
-from plone.api.portal import get_tool
 from zope.interface import implements
 
 try:
@@ -2285,7 +2284,7 @@ class AnalysisRequest(BaseFolder):
         """ get the UID of the contact associated with the authenticated
             user
         """
-        mt = get_tool('portal_membership')
+        mt = getToolByName(self, 'portal_membership')
         user = mt.getAuthenticatedMember()
         user_id = user.getUserName()
         pc = getToolByName(self, 'portal_catalog')
@@ -2842,7 +2841,7 @@ class AnalysisRequest(BaseFolder):
         """Returns a list of the departments assigned to the Analyses
         from this Analysis Request
         """
-        bsc = api.portal.get_tool('bika_setup_catalog')
+        bsc = getToolByName(self, 'bika_setup_catalog')
         dept_uids = [b.getDepartmentUID for b in self.getAnalyses()]
         brains = bsc(portal_type='Department', UID=dept_uids)
         depts = [b.getObject() for b in brains]

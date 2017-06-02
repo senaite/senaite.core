@@ -8,8 +8,6 @@ from bika.lims.workflow import getCurrentState
 from bika.lims.workflow import isBasicTransitionAllowed
 from bika.lims.workflow import wasTransitionPerformed
 
-from plone.api.portal import get_tool
-
 
 def after_submit(obj):
     """

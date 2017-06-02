@@ -20,6 +20,7 @@ from DateTime import DateTime
 from Products.Archetypes.interfaces import IDateTimeField, IFileField, \
     ILinesField, IReferenceField, IStringField, ITextField
 from Products.CMFCore.WorkflowCore import WorkflowException
+from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType, safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 from bika.lims import POINTS_OF_CAPTURE, bikaMessageFactory as _, t
@@ -36,7 +37,6 @@ from bika.lims.utils.analysis import format_uncertainty
 from bika.lims.vocabularies import getARReportTemplates
 from bika.lims.workflow import wasTransitionPerformed
 from plone.api.portal import get_registry_record
-from plone.api.portal import get_tool
 from plone.api.portal import set_registry_record
 from plone.app.blob.interfaces import IBlobField
 from plone.registry import Record
@@ -87,7 +87,7 @@ class AnalysisRequestPublishView(BrowserView):
         elif self.context.portal_type == 'AnalysisRequestsFolder' \
                 and self.request.get('items', ''):
             uids = self.request.get('items').split(',')
-            uc = get_tool('uid_catalog')
+            uc = getToolByName(self.context, 'uid_catalog')
             self._ars = [obj.getObject() for obj in uc(UID=uids)]
         else:
             # Do nothing
@@ -305,13 +305,13 @@ class AnalysisRequestPublishView(BrowserView):
 
     def publishFromHTML(self, aruid, results_html):
         # The AR can be published only and only if allowed
-        uc = get_tool('uid_catalog')
+        uc = getToolByName(self.context, 'uid_catalog')
         ars = uc(UID=aruid)
         if not ars or len(ars) != 1:
             return []
 
         ar = ars[0].getObject()
-        wf = get_tool('portal_workflow')
+        wf = getToolByName(self.context, 'portal_workflow')
         allowed_states = ['verified', 'published']
         # Publish/Republish allowed?
         if wf.getInfoFor(ar, 'review_state') not in allowed_states:
@@ -395,7 +395,7 @@ class AnalysisRequestPublishView(BrowserView):
                 attachPdf(mime_msg, pdf_report, ar.id)
 
                 try:
-                    host = get_tool('MailHost')
+                    host = getToolByName(self.context, 'MailHost')
                     host.send(mime_msg.as_string(), immediate=True)
                 except SMTPServerDisconnected as msg:
                     logger.warn("SMTPServerDisconnected: %s." % msg)
@@ -444,7 +444,7 @@ class AnalysisRequestPublishView(BrowserView):
                 open(tmp_fn, "wb").write(msg_string)
 
             try:
-                host = get_tool('MailHost')
+                host = getToolByName(self.context, 'MailHost')
                 host.send(msg_string, immediate=True)
             except SMTPServerDisconnected as msg:
                 logger.warn("SMTPServerDisconnected: %s." % msg)
@@ -569,7 +569,7 @@ class AnalysisRequestPublishView(BrowserView):
 
     def sorted_by_sort_key(self, category_keys):
         """Sort categories via catalog lookup on title. """
-        bsc = get_tool("bika_setup_catalog")
+        bsc = getToolByName(self.context, "bika_setup_catalog")
         analysis_categories = bsc(
             portal_type="AnalysisCategory", sort_on="sortable_title")
         sort_keys = dict([(b.Title, "{:04}".format(a))
@@ -711,11 +711,12 @@ class AnalysisRequestDigester:
         # if AR was previously digested, use existing data (if exists)
         if not overwrite:
             data = ar.getDigest()
-            logger.info("=========== using existing data")
             if data:
+                # Seems that sometimes the 'obj' is wrong in the saved data.
+                data['obj'] = ar
                 return data
 
-        logger.info("=========== creating new data")
+        logger.info("=========== creating new data for %s" % ar)
         # Set data to the AR schema field, and return it.
         data = self._ar_data(ar)
         ar.setDigest(data)
@@ -848,7 +849,7 @@ class AnalysisRequestDigester:
         The default format for review_history is a list of lists; this function
         returns rather a dictionary of dictionaries, keyed by action_id
         """
-        workflow = get_tool('portal_workflow')
+        workflow = getToolByName(self.context, 'portal_workflow')
         history = copy(list(workflow.getInfoFor(instance, 'review_history')))
         data = {e['action']: {
             'actor': e['actor'],
@@ -862,7 +863,7 @@ class AnalysisRequestDigester:
         """
         if not excludearuids:
             excludearuids = []
-        bs = get_tool('bika_setup')
+        bs = ar.bika_setup
         data = {'obj': ar,
                 'id': ar.getId(),
                 'client_order_num': ar.getClientOrderNumber(),
@@ -903,7 +904,7 @@ class AnalysisRequestDigester:
             data['child_analysisrequest'] = self._ar_data(
                 ar.getChildAnalysisRequest(), excludearuids)
 
-        wf = get_tool('portal_workflow')
+        wf = ar.portal_workflow
         allowed_states = ['verified', 'published']
         data['prepublish'] = wf.getInfoFor(ar,
                                            'review_state') not in allowed_states
@@ -1002,7 +1003,7 @@ class AnalysisRequestDigester:
                     'remarks': to_utf8(batch.getRemarks())}
 
             uids = batch.Schema()['BatchLabels'].getAccessor(batch)()
-            uc = get_tool('uid_catalog')
+            uc = getToolByName(self.context, 'uid_catalog')
             data['labels'] = [to_utf8(p.getObject().Title()) for p in
                               uc(UID=uids)]
 
@@ -1035,13 +1036,13 @@ class AnalysisRequestDigester:
         if not sample or not sample.getSampler():
             return data
         sampler = sample.getSampler()
-        mtool = get_tool('portal_membership')
+        mtool = getToolByName(self.context, 'portal_membership')
         member = mtool.getMemberById(sampler)
         if member:
             mfullname = member.getProperty('fullname')
             memail = member.getProperty('email')
             mhomepage = member.getProperty('home_page')
-            pc = get_tool('portal_catalog')
+            pc = getToolByName(self.context, 'portal_catalog')
             c = pc(portal_type='Contact', getUsername=member.id)
             c = c[0].getObject() if c else None
             cfullname = c.getFullname() if c else None
@@ -1090,7 +1091,7 @@ class AnalysisRequestDigester:
         return self._format_address(lab_address)
 
     def _lab_data(self):
-        portal = self.context.portal_url.getPortalObject()
+        portal = getToolByName(ar, 'portal_url').getPortalObject()
         lab = self.context.bika_setup.laboratory
 
         return {'obj': lab,
@@ -1152,7 +1153,7 @@ class AnalysisRequestDigester:
         analyses = []
         dm = ar.aq_parent.getDecimalMark()
         batch = ar.getBatch()
-        workflow = get_tool('portal_workflow')
+        workflow = getToolByName(self.context, 'portal_workflow')
         showhidden = self.isHiddenAnalysesVisible()
         for an in ar.getAnalyses(
                 full_objects=True, review_state=analysis_states):
@@ -1227,7 +1228,7 @@ class AnalysisRequestDigester:
 
         ws = analysis.getBackReferences('WorksheetAnalysis')
         andict['worksheet'] = ws[0].id if ws and len(ws) > 0 else None
-        andict['worksheet_url'] = ws[0].absolute_url \
+        andict['worksheet_url'] = ws[0].absolute_url() \
             if ws and len(ws) > 0 else None
         andict['refsample'] = analysis.getSample().id \
             if analysis.portal_type == 'Analysis' \
@@ -1274,7 +1275,7 @@ class AnalysisRequestDigester:
         # Out of range?
         if specs:
             adapters = getAdapters((analysis,), IResultOutOfRange)
-            bsc = get_tool("bika_setup_catalog")
+            bsc = getToolByName(self.context, "bika_setup_catalog")
             for name, adapter in adapters:
                 ret = adapter(specification=specs)
                 if ret and ret['out_of_range']:
@@ -1303,8 +1304,8 @@ class AnalysisRequestDigester:
 
     def _reporter_data(self, ar):
         data = {}
-        bsc = get_tool('bika_setup_catalog')
-        mtool = get_tool('portal_membership')
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
+        mtool = getToolByName(self.context, 'portal_membership')
         member = mtool.getAuthenticatedMember()
         username = member.getUserName()
         data['username'] = username

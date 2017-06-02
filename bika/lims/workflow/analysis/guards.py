@@ -1,8 +1,8 @@
+from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import isBasicTransitionAllowed
 from bika.lims.permissions import Unassign
-from plone.api.portal import get_tool
 
 
 def sample(obj):
@@ -55,7 +55,7 @@ def assign(obj):
 def unassign(obj):
     """Check permission against parent worksheet
     """
-    mtool = get_tool("portal_membership")
+    mtool = getToolByName(obj, "portal_membership")
     if not isBasicTransitionAllowed(obj):
         return False
     ws = obj.getBackReferences("WorksheetAnalysis")
@@ -73,7 +73,7 @@ def verify(obj):
         return False
 
     if obj.isVerifiable():
-        mtool = get_tool('portal_membership')
+        mtool = getToolByName(obj, 'portal_membership')
         member = mtool.getAuthenticatedMember()
         return obj.isUserAllowedToVerify(member)
 
@@ -106,7 +106,7 @@ def new_verify(obj):
         # be transitioned to the definitive "verified" state (otherwise will
         # remain in "to_be_verified" until all remmaining verifications - 1 are
         # performed
-        mtool = get_tool('portal_membership')
+        mtool = getToolByName(obj, 'portal_membership')
         member = mtool.getAuthenticatedMember()
         return obj.isUserAllowedToVerify(member)
 

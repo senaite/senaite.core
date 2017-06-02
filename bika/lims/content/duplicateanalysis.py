@@ -14,7 +14,6 @@ from bika.lims.content.abstractroutineanalysis import schema
 from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.subscribers import skip
 from bika.lims.workflow.duplicateanalysis import events
-from plone.api.portal import get_tool
 from zope.interface import implements
 
 # A reference back to the original analysis from which this one was duplicated.

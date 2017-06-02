@@ -14,6 +14,7 @@ from Products.Archetypes.Schema import Schema
 from Products.Archetypes.Widget import BooleanWidget, DecimalWidget, \
     IntegerWidget, SelectionWidget, StringWidget
 from Products.Archetypes.utils import DisplayList, IntDisplayList
+from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import DurationField, InterimFieldsField, \
     UIDReferenceField
@@ -23,7 +24,6 @@ from bika.lims.browser.widgets.referencewidget import ReferenceWidget
 from bika.lims.config import ATTACHMENT_OPTIONS, SERVICE_POINT_OF_CAPTURE
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.utils import to_utf8 as _c
-from plone.api.portal import get_tool
 
 # Anywhere that there just isn't space for unpredictably long names,
 # this value will be used instead.  It's set on the AnalysisService,
@@ -839,7 +839,7 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
     def getAnalysisCategories(self):
         """A vocabulary listing available (and activated) categories.
         """
-        bsc = get_tool('bika_setup_catalog')
+        bsc = getToolByName(self, 'bika_setup_catalog')
         cats = bsc(portal_type='AnalysisCategory', inactive_state='active')
         items = [(o.UID, o.Title) for o in cats]
         o = self.getCategory()
@@ -852,7 +852,7 @@ class AbstractBaseAnalysis(BaseContent):  # TODO BaseContent?  is really needed?
     def getDepartments(self):
         """A vocabulary listing available (and activated) departments.
         """
-        bsc = get_tool('bika_setup_catalog')
+        bsc = getToolByName(self, 'bika_setup_catalog')
         items = [('', '')] + [(o.UID, o.Title) for o in
                               bsc(portal_type='Department',
                                   inactive_state='active')]

@@ -8,6 +8,8 @@
 import re
 
 from Acquisition import aq_base
+
+from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
@@ -71,7 +73,7 @@ class ContactLoginDetailsView(BrowserView):
             out.update(dict(ps.propertyItems()))
 
         portal = api.portal.get()
-        mtool = api.portal.get_tool(name='portal_membership')
+        mtool = getToolByName(self.context, 'portal_membership')
 
         out["id"] = userid
         out["portrait"] = mtool.getPersonalPortrait(id=userid)

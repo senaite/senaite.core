@@ -4,7 +4,7 @@
 #
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
-
+from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
@@ -22,10 +22,8 @@ from DateTime import DateTime
 from operator import itemgetter
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.ZCatalog.interfaces import ICatalogBrain
-from plone.api.portal import get_tool
 from zope.component import getAdapters
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
-from plone.api.portal import get_tool
 from plone.api.user import has_permission
 import json
 
@@ -37,9 +35,8 @@ class AnalysesView(BikaListingView):
     """
 
     def __init__(self, context, request, **kwargs):
-        super(AnalysesView, self).__init__(
-            context,
-            request,
+        BikaListingView.__init__(
+            self, context, request,
             show_categories=context.bika_setup.getCategoriseAnalysisServices(),
             expand_all_categories=True)
         self.catalog = CATALOG_ANALYSIS_LISTING
@@ -60,10 +57,10 @@ class AnalysesView(BikaListingView):
         self.interim_fields = {}
         self.interim_columns = {}
         self.specs = {}
-        self.bsc = get_tool('bika_setup_catalog')
-        self.portal = get_tool('portal_url').getPortalObject()
+        self.bsc = getToolByName(context, 'bika_setup_catalog')
+        self.portal = getToolByName(context, 'portal_url').getPortalObject()
         self.portal_url = self.portal.absolute_url()
-        self.rc = get_tool(REFERENCE_CATALOG)
+        self.rc = getToolByName(context, REFERENCE_CATALOG)
         # Initializing the deximal mark variable
         self.dmk = ''
         request.set('disable_plone.rightcolumn', 1)
@@ -121,9 +118,11 @@ class AnalysesView(BikaListingView):
                 'title': _('+-'),
                 'sortable': False},
             'retested': {
-                'title': "<img title='%s' src='%s/++resource++bika.lims.images/retested.png'/>"%\
-                    (t(_('Retested')), self.portal_url),
-                'type':'boolean',
+                'title': "<img title='%s' "
+                         "src='%s/++resource++bika.lims.images/retested.png"
+                         "'/>" % \
+                         (t(_('Retested')), self.portal_url),
+                'type': 'boolean',
                 'sortable': False},
             'Attachments': {
                 'title': _('Attachments'),
@@ -131,16 +130,16 @@ class AnalysesView(BikaListingView):
             'CaptureDate': {
                 'title': _('Captured'),
                 'index': 'getResultCaptureDate',
-                'sortable':False},
+                'sortable': False},
             'DueDate': {
                 'title': _('Due Date'),
                 'index': 'getDueDate',
-                'sortable':False},
+                'sortable': False},
         }
 
         self.review_states = [
             {'id': 'default',
-             'title':  _('All'),
+             'title': _('All'),
              'contentFilter': {},
              'columns': ['Service',
                          'Partition',
@@ -182,10 +181,10 @@ class AnalysesView(BikaListingView):
             # It is a brain
             if not 'getResultsRange' in dir(analysis):
                 pass
-            if analysis.getResultsRange and not\
+            if analysis.getResultsRange and not \
                     isinstance(analysis.getResultsRange, list):
                 return analysis.getResultsRange
-            if analysis.getResultsRange and\
+            if analysis.getResultsRange and \
                     isinstance(analysis.getResultsRange, list):
                 rr = dicts_to_dict(
                     analysis.getResultsRange, 'keyword')
@@ -226,7 +225,7 @@ class AnalysesView(BikaListingView):
         if not spec or (not spec.get('min') and not spec.get('max')):
             return False
         # The analysis has specs defined, evaluate if is out of range
-        adapters = getAdapters((analysis, ), IResultOutOfRange)
+        adapters = getAdapters((analysis,), IResultOutOfRange)
         for name, adapter in adapters:
             if adapter(specification=spec):
                 return True
@@ -316,7 +315,7 @@ class AnalysesView(BikaListingView):
         if not analysis_brain or not analysis_brain.getInstrumentEntryOfResults:
             return []
 
-        bsc = get_tool('bika_setup_catalog')
+        bsc = getToolByName(self.context, 'bika_setup_catalog')
 
         m_uid = analysis_brain.getMethodUID
         method = None
@@ -458,9 +457,9 @@ class AnalysesView(BikaListingView):
             item['st_uid'] = obj.getParentUID
             item['table_row_class'] = ' '.join([tblrowclass, 'qc-analysis'])
         elif obj.portal_type == 'DuplicateAnalysis' and \
-                obj.getAnalysisPortalType == 'ReferenceAnalysis':
+                        obj.getAnalysisPortalType == 'ReferenceAnalysis':
             item['st_uid'] = obj.getParentUID
-            item['table_row_class'] =\
+            item['table_row_class'] = \
                 ' '.join([tblrowclass, 'qc-analysis'])
         else:
             item['st_uid'] = obj.getSampleTypeUID
@@ -493,13 +492,14 @@ class AnalysesView(BikaListingView):
             'sample_registered',
             'sampled',
             'assigned']
-        can_edit_analysis = can_edit_analysis and\
-            obj.review_state in allowed_method_states
+        can_edit_analysis = can_edit_analysis and \
+                            obj.review_state in allowed_method_states
         # Prevent from being edited if the instrument assigned
         # is not valid (out-of-date or uncalibrated), except if
         # the analysis is a QC with assigned status
-        can_edit_analysis = can_edit_analysis and\
-            (obj.isInstrumentValid or (obj.portal_type == 'ReferenceAnalysis'))
+        can_edit_analysis = can_edit_analysis and \
+                            (obj.isInstrumentValid or (
+                                obj.portal_type == 'ReferenceAnalysis'))
         if can_edit_analysis:
             item['allow_edit'].extend([
                 'Analyst',
@@ -512,12 +512,12 @@ class AnalysesView(BikaListingView):
             # if there isn't a calculation then result must be re-testable,
             # and if there are interim fields, they too must be re-testable.
             if not item.get('calculation') or \
-               (item['calculation'] and self.interim_fields[obj.UID]):
+                    (item['calculation'] and self.interim_fields[obj.UID]):
                 item['allow_edit'].append('retested')
 
         # TODO: Only the labmanager should be able to change the method
         can_set_method = can_edit_analysis \
-            and item['review_state'] in allowed_method_states
+                         and item['review_state'] in allowed_method_states
 
         # Display the methods selector if the AS has at least one
         # method assigned
@@ -539,13 +539,14 @@ class AnalysesView(BikaListingView):
                     # service hasn't any method available O_o
                     item['Method'] = obj.getMethodTitle
                     item['replace']['Method'] = "<a href='%s'>%s</a>" % \
-                        (obj.getMethodURL, obj.getMethodTitle)
+                                                (obj.getMethodURL,
+                                                 obj.getMethodTitle)
                     self.show_methodinstr_columns = True
         elif obj.getMethodUID:
             # Edition not allowed, but method set
             item['Method'] = obj.getMethodTitle
             item['replace']['Method'] = "<a href='%s'>%s</a>" % \
-                (obj.getMethodURL, obj.getMethodTitle)
+                                        (obj.getMethodURL, obj.getMethodTitle)
             self.show_methodinstr_columns = True
 
         # TODO: Instrument selector dynamic behavior in worksheet Results
@@ -555,14 +556,14 @@ class AnalysesView(BikaListingView):
         # can_set_instrument = service.getInstrumentEntryOfResults() and
         # getSecurityManager().checkPermission(SetAnalysisInstrument, obj)
         can_set_instrument = obj.getInstrumentEntryOfResults \
-            and can_edit_analysis \
-            and item['review_state'] in allowed_method_states
+                             and can_edit_analysis \
+                             and item['review_state'] in allowed_method_states
 
         item['Instrument'] = ''
         item['replace']['Instrument'] = ''
         if obj.getInstrumentEntryOfResults:
             instrument_uid = obj.getInstrumentUID
-            uc = get_tool('uid_catalog')
+            uc = getToolByName(self.context, 'uid_catalog')
             brains = uc(UID=instrument_uid)
             instrument = brains[0].getObject() if brains else None
 
@@ -624,22 +625,25 @@ class AnalysesView(BikaListingView):
             attachments = ""
             at_uids = obj.getAttachmentUIDs
             if at_uids:
-                uc = get_tool('uid_catalog')
+                uc = getToolByName(self.context, 'uid_catalog')
                 attachments_objs = [x.getObject() for x in uc(UID=at_uids)]
                 for attachment in attachments_objs:
                     af = attachment.getAttachmentFile()
                     icon = af.icon
-                    attachments +=\
-                        "<span class='attachment' attachment_uid='%s'>" %\
+                    attachments += \
+                        "<span class='attachment' attachment_uid='%s'>" % \
                         (attachment.UID())
                     if icon:
                         attachments += "<img src='%s/%s'/>" % \
-                            (self.portal_url, icon)
-                    attachments +=\
-                        '<a href="%s/at_download/AttachmentFile"/>%s</a>' %\
+                                       (self.portal_url, icon)
+                    attachments += \
+                        '<a href="%s/at_download/AttachmentFile"/>%s</a>' % \
                         (attachment.absolute_url(), af.filename)
                     if can_edit_analysis:
-                        attachments += "<img class='deleteAttachmentButton' attachment_uid='%s' src='%s'/>" % (attachment.UID(), "++resource++bika.lims.images/delete.png")
+                        attachments += "<img class='deleteAttachmentButton' " \
+                                       "attachment_uid='%s' src='%s'/>" % (
+                                           attachment.UID(),
+                                           "++resource++bika.lims.images/delete.png")
                     attachments += "</br></span>"
             item['replace']['Attachments'] = attachments[:-12] + "</span>"
         # TODO-performance: This part gets the full object...
@@ -649,7 +653,7 @@ class AnalysesView(BikaListingView):
             full_obj = full_obj if full_obj else obj.getObject()
             item['Result'] = result
             scinot = self.context.bika_setup.getScientificNotationResults()
-            item['formatted_result'] =\
+            item['formatted_result'] = \
                 full_obj.getFormattedResult(
                     sciformat=int(scinot), decimalmark=self.dmk)
 
@@ -663,12 +667,18 @@ class AnalysesView(BikaListingView):
                 item['allow_edit'].append('Uncertainty')
                 item['Uncertainty'] = unc if unc else ''
                 item['before']['Uncertainty'] = '&plusmn;&nbsp;'
-                item['after']['Uncertainty'] = '<em class="discreet" style="white-space:nowrap;"> %s</em>' % item['Unit']
+                item['after'][
+                    'Uncertainty'] = '<em class="discreet" ' \
+                                     'style="white-space:nowrap;"> %s</em>' % \
+                                     item['Unit']
                 item['structure'] = False
             elif fu:
                 item['Uncertainty'] = fu
                 item['before']['Uncertainty'] = '&plusmn;&nbsp;'
-                item['after']['Uncertainty'] = '<em class="discreet" style="white-space:nowrap;"> %s</em>' % item['Unit']
+                item['after'][
+                    'Uncertainty'] = '<em class="discreet" ' \
+                                     'style="white-space:nowrap;"> %s</em>' % \
+                                     item['Unit']
                 item['structure'] = True
 
             # LIMS-1700. Allow manual input of Detection Limits
@@ -677,8 +687,8 @@ class AnalysesView(BikaListingView):
             # https://jira.bikalabs.com/browse/LIMS-1700
             # https://jira.bikalabs.com/browse/LIMS-1775
             if can_edit_analysis and \
-                hasattr(full_obj, 'getDetectionLimitOperand') and \
-                hasattr(full_obj, 'getDetectionLimitSelector') and \
+                    hasattr(full_obj, 'getDetectionLimitOperand') and \
+                    hasattr(full_obj, 'getDetectionLimitSelector') and \
                     full_obj.getDetectionLimitSelector():
                 isldl = full_obj.isBelowLowerDetectionLimit()
                 isudl = full_obj.isAboveUpperDetectionLimit()
@@ -695,7 +705,7 @@ class AnalysesView(BikaListingView):
                 defdls = {'min': full_obj.getLowerDetectionLimit(),
                           'max': full_obj.getUpperDetectionLimit(),
                           'manual': full_obj.getAllowManualDetectionLimit()}
-                defin =\
+                defin = \
                     '<input type="hidden" id="DefaultDLS.%s" value=\'%s\'/>'
                 defin = defin % (full_obj.UID(), json.dumps(defdls))
                 item['after']['DetectionLimit'] = defin
@@ -721,11 +731,11 @@ class AnalysesView(BikaListingView):
                     dls['is_udl'] = full_obj.isUpperDetectionLimit()
                     dls['default_ldl'] = full_obj.getLowerDetectionLimit()
                     dls['default_udl'] = full_obj.getUpperDetectionLimit()
-                    dls['manual_allowed'] =\
+                    dls['manual_allowed'] = \
                         full_obj.getAllowManualDetectionLimit()
-                    dls['dlselect_allowed'] =\
+                    dls['dlselect_allowed'] = \
                         full_obj.getDetectionLimitSelector()
-                dlsin =\
+                dlsin = \
                     '<input type="hidden" id="AnalysisDLS.%s" value=\'%s\'/>'
                 dlsin = dlsin % (full_obj.UID(), json.dumps(dls))
                 item['after']['Result'] = dlsin
@@ -755,7 +765,8 @@ class AnalysesView(BikaListingView):
         item['Specification'] = rngstr
         # Add this analysis' interim fields to the interim_columns list
         for f in self.interim_fields[obj.UID]:
-            if f['keyword'] not in self.interim_columns and not f.get('hidden', False):
+            if f['keyword'] not in self.interim_columns and not f.get('hidden',
+                                                                      False):
                 self.interim_columns[f['keyword']] = f['title']
             # and to the item itself
             item[f['keyword']] = f
@@ -775,11 +786,13 @@ class AnalysesView(BikaListingView):
                                         'sample_due',
                                         'published']:
             if (resultdate and resultdate > duedate) \
-                or (not resultdate and DateTime() > duedate):
-                item['replace']['DueDate'] = '%s <img width="16" height="16" src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
-                    (self.ulocalized_time(duedate, long_format=1),
-                     self.portal_url,
-                     t(_("Late Analysis")))
+                    or (not resultdate and DateTime() > duedate):
+                item['replace'][
+                    'DueDate'] = '%s <img width="16" height="16" ' \
+                                 'src="%s/++resource++bika.lims.images/late.png" title="%s"/>' % \
+                                 (self.ulocalized_time(duedate, long_format=1),
+                                  self.portal_url,
+                                  t(_("Late Analysis")))
 
         after_icons = []
         submitter = obj.getSubmittedBy
@@ -793,11 +806,11 @@ class AnalysesView(BikaListingView):
                 # Get the number of verifications already done:
                 done = obj.getNumberOfVerifications
                 pending = numverifications - done
-                ratio = float(done)/float(numverifications) \
+                ratio = float(done) / float(numverifications) \
                     if done > 0 else 0
                 scale = '' if ratio < 0.25 else '25' \
-                        if ratio < 0.50 else '50' \
-                        if ratio < 0.75 else '75'
+                    if ratio < 0.50 else '50' \
+                    if ratio < 0.75 else '75'
                 anchor = "<a href='#' title='%s &#13;%s %s' " \
                          "class='multi-verification scale-%s'>%s/%s</a>"
                 anchor = anchor % (t(_("Multi-verification required")),
@@ -826,15 +839,16 @@ class AnalysesView(BikaListingView):
             if isUserAllowedToVerify and numverifications > 1:
                 # If user verified before and self_multi_disabled, then
                 # return False
-                if self.mv_type == 'self_multi_disabled' and\
-                        username in obj.getVerificators.split(','):
+                if self.mv_type == 'self_multi_disabled' and \
+                                username in obj.getVerificators.split(','):
                     isUserAllowedToVerify = False
                 # If user is the last verificator and consecutively
                 # multi-verification is disabled, then return False
                 # Comparing was added just to check if this method is called
                 # before/after verification
-                elif self.mv_type == 'self_multi_not_cons' and\
-                        username == obj.getLastVerificator and pending > 0:
+                elif self.mv_type == 'self_multi_not_cons' and \
+                                username == obj.getLastVerificator and \
+                                pending > 0:
                     isUserAllowedToVerify = False
             if verify_permission and not isUserAllowedToVerify:
                 after_icons.append(
@@ -843,14 +857,14 @@ class AnalysesView(BikaListingView):
                     (t(_(
                         "Cannot verify, submitted or"
                         " verified by current user before")))
-                    )
+                )
             elif verify_permission and isUserAllowedToVerify:
                 if submitter == user_id:
                     after_icons.append(
                         "<img src='++resource++bika.lims.images/warning.png'"
                         " title='%s'/>" %
                         (t(_("Can verify, but submitted by current user")))
-                        )
+                    )
         # If analysis Submitted and Verified by the same person, then warning
         # icon will appear.
         if submitter and submitter in obj.getVerificators.split(','):
@@ -858,20 +872,23 @@ class AnalysesView(BikaListingView):
                 "<img src='++resource++bika.lims.images/warning.png'"
                 " title='%s'/>" %
                 (t(_("Submited and verified by the same user- " + submitter)))
-                )
+            )
         # add icon for assigned analyses in AR views
         if self.context.portal_type == 'AnalysisRequest':
             if obj.portal_type in ['ReferenceAnalysis',
                                    'DuplicateAnalysis'] or \
-               obj.worksheetanalysis_review_state == 'assigned':
+                            obj.worksheetanalysis_review_state == 'assigned':
                 full_obj = full_obj if full_obj else obj.getObject()
                 br = full_obj.getBackReferences('WorksheetAnalysis')
                 if len(br) > 0:
                     ws = br[0]
-                    after_icons.append("<a href='%s'><img src='++resource++bika.lims.images/worksheet.png' title='%s'/></a>" %
-                    (ws.absolute_url(),
-                     t(_("Assigned to: ${worksheet_id}",
-                         mapping={'worksheet_id': safe_unicode(ws.id)}))))
+                    after_icons.append(
+                        "<a href='%s'><img "
+                        "src='++resource++bika.lims.images/worksheet.png' "
+                        "title='%s'/></a>" %
+                        (ws.absolute_url(),
+                         t(_("Assigned to: ${worksheet_id}",
+                             mapping={'worksheet_id': safe_unicode(ws.id)}))))
         item['after']['state_title'] = '&nbsp;'.join(after_icons)
         after_icons = []
         if obj.getIsReflexAnalysis:
@@ -886,10 +903,10 @@ class AnalysesView(BikaListingView):
 
     def folderitems(self):
         # Check if mtool has been initialized
-        self.mtool = self.mtool if self.mtool\
-            else get_tool('portal_membership')
+        self.mtool = self.mtool if self.mtool \
+            else getToolByName(self.context, 'portal_membership')
         # Getting the current user
-        self.member = self.member if self.member\
+        self.member = self.member if self.member \
             else self.mtool.getAuthenticatedMember()
         # Getting analysis categories
         analysis_categories = self.bsc(
@@ -899,7 +916,6 @@ class AnalysesView(BikaListingView):
         self.analysis_categories_order = dict([
             (b.Title, "{:04}".format(a)) for a, b in
             enumerate(analysis_categories)])
-        workflow = get_tool('portal_workflow')
         # Can the user edit?
         if not self.allow_edit:
             can_edit_analyses = False
@@ -919,8 +935,6 @@ class AnalysesView(BikaListingView):
         self.show_methodinstr_columns = False
         # Gettin all the items
         items = super(AnalysesView, self).folderitems(classic=False)
-        # Getting the methods
-        methods = self.get_methods_vocabulary()
 
         self.dmk = self.context.bika_setup.getResultsDecimalMark()
 
@@ -948,16 +962,18 @@ class AnalysesView(BikaListingView):
             for state in self.review_states:
                 # InterimFields are displayed in review_state
                 # They are anyway available through View.columns though.
-                # In case of hidden fields, the calcs.py should check calcs/services
+                # In case of hidden fields, the calcs.py should check
+                # calcs/services
                 # for additional InterimFields!!
                 pos = 'Result' in state['columns'] and \
-                    state['columns'].index('Result') or len(state['columns'])
+                      state['columns'].index('Result') or len(state['columns'])
                 for col_id in interim_keys:
                     if col_id not in state['columns']:
                         state['columns'].insert(pos, col_id)
                 # retested column is added after Result.
                 pos = 'Result' in state['columns'] and \
-                    state['columns'].index('Uncertainty') + 1 or len(state['columns'])
+                      state['columns'].index('Uncertainty') + 1 or len(
+                    state['columns'])
                 state['columns'].insert(pos, 'retested')
                 new_states.append(state)
             self.review_states = new_states
@@ -968,8 +984,8 @@ class AnalysesView(BikaListingView):
         # The Dry Matter column is never enabled for reference sample contexts
         # and refers to getReportDryMatter in ARs.
         if items and \
-            (hasattr(self.context, 'getReportDryMatter') and \
-             self.context.getReportDryMatter()):
+                (hasattr(self.context, 'getReportDryMatter') and \
+                         self.context.getReportDryMatter()):
 
             # look through all items
             # if the item's Service supports ReportDryMatter, add getResultDM().
@@ -985,13 +1001,15 @@ class AnalysesView(BikaListingView):
             new_states = []
             for state in self.review_states:
                 pos = 'Result' in state['columns'] and \
-                    state['columns'].index('Uncertainty') + 1 or len(state['columns'])
+                      state['columns'].index('Uncertainty') + 1 or len(
+                    state['columns'])
                 state['columns'].insert(pos, 'ResultDM')
                 new_states.append(state)
             self.review_states = new_states
 
         if self.show_categories:
-            self.categories = map(lambda x: x[0], sorted(self.categories, key=lambda x: x[1]))
+            self.categories = map(lambda x: x[0],
+                                  sorted(self.categories, key=lambda x: x[1]))
         else:
             self.categories.sort()
 
@@ -1019,10 +1037,11 @@ class QCAnalysesView(AnalysesView):
 
     def __init__(self, context, request, **kwargs):
         AnalysesView.__init__(self, context, request, **kwargs)
-        self.columns['getReferenceAnalysesGroupID'] = {'title': _('QC Sample ID'),
-                                                       'sortable': False}
+        self.columns['getReferenceAnalysesGroupID'] = {
+            'title': _('QC Sample ID'),
+            'sortable': False}
         self.columns['Worksheet'] = {'title': _('Worksheet'),
-                                                'sortable': False}
+                                     'sortable': False}
         self.review_states[0]['columns'] = ['Service',
                                             'Worksheet',
                                             'getReferenceAnalysesGroupID',
@@ -1053,28 +1072,39 @@ class QCAnalysesView(AnalysesView):
         wsid = wss[0].id if wss and len(wss) > 0 else ''
         wshref = wss[0].absolute_url() if wss and len(wss) > 0 else None
         if wshref:
-            item['replace']['Worksheet'] = "<a href='%s'>%s</a>" % (wshref, wsid)
+            item['replace']['Worksheet'] = "<a href='%s'>%s</a>" % (
+                wshref, wsid)
 
         imgtype = ""
         if obj.portal_type == 'ReferenceAnalysis':
             antype = QCANALYSIS_TYPES.getValue(obj.getReferenceType())
             if obj.getReferenceType() == 'c':
-                imgtype = "<img title='%s' src='%s/++resource++bika.lims.images/control.png'/>&nbsp;" % (antype, self.context.absolute_url())
+                imgtype = "<img title='%s' " \
+                          "src='%s/++resource++bika.lims.images/control.png" \
+                          "'/>&nbsp;" % (
+                              antype, self.context.absolute_url())
             if obj.getReferenceType() == 'b':
-                imgtype = "<img title='%s' src='%s/++resource++bika.lims.images/blank.png'/>&nbsp;" % (antype, self.context.absolute_url())
-            item['replace']['Partition'] = "<a href='%s'>%s</a>" % (obj.aq_parent.absolute_url(), obj.aq_parent.id)
+                imgtype = "<img title='%s' " \
+                          "src='%s/++resource++bika.lims.images/blank.png" \
+                          "'/>&nbsp;" % (
+                              antype, self.context.absolute_url())
+            item['replace']['Partition'] = "<a href='%s'>%s</a>" % (
+                obj.aq_parent.absolute_url(), obj.aq_parent.id)
         elif obj.portal_type == 'DuplicateAnalysis':
             antype = QCANALYSIS_TYPES.getValue('d')
-            imgtype = "<img title='%s' src='%s/++resource++bika.lims.images/duplicate.png'/>&nbsp;" % (antype, self.context.absolute_url())
+            imgtype = "<img title='%s' " \
+                      "src='%s/++resource++bika.lims.images/duplicate.png" \
+                      "'/>&nbsp;" % (
+                          antype, self.context.absolute_url())
             item['sortcode'] = '%s_%s' % (obj.getSample().id, obj.getKeyword())
 
         item['before']['Service'] = imgtype
         item['sortcode'] = '%s_%s' % (obj.getReferenceAnalysesGroupID(),
-                                          obj.getKeyword())
+                                      obj.getKeyword())
         return item
 
     def folderitems(self):
         items = AnalysesView.folderitems(self)
         # Sort items
-        items = sorted(items, key = itemgetter('sortcode'))
+        items = sorted(items, key=itemgetter('sortcode'))
         return items

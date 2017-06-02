@@ -16,6 +16,7 @@ from Products.Archetypes.Field import BooleanField, DateTimeField, \
 from Products.Archetypes.Schema import Schema
 from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.WorkflowCore import WorkflowException
+from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _, deprecated
 from bika.lims import logger
 from bika.lims.browser.fields import HistoryAwareReferenceField
@@ -38,7 +39,6 @@ from bika.lims.workflow import wasTransitionPerformed
 from bika.lims.workflow import skip
 from bika.lims.workflow.analysis import events
 from bika.lims.workflow.analysis import guards
-from plone.api.portal import get_tool
 from plone.api.user import has_permission
 from zope.interface import implements
 
@@ -931,7 +931,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     def getAnalystName(self):
         """Returns the name of the currently assigned analyst
         """
-        mtool = get_tool('portal_membership')
+        mtool = getToolByName(self, 'portal_membership')
         analyst = self.getAnalyst().strip()
         analyst_member = mtool.getMemberById(analyst)
         if analyst_member:
@@ -946,7 +946,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         :return: True or False
         """
         # Check if the analysis is active
-        workflow = get_tool("portal_workflow")
+        workflow = getToolByName(self, "portal_workflow")
         objstate = workflow.getInfoFor(self, 'cancellation_state', 'active')
         if objstate == "cancelled":
             return False
@@ -1027,7 +1027,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         value.
         :return: {'review_state':'active',...}
         """
-        workflow = get_tool('portal_workflow')
+        workflow = getToolByName(self, 'portal_workflow')
         states = {}
         for w in workflow.getWorkflowsFor(self):
             state = w._getWorkflowStateOf(self).id
@@ -1050,7 +1050,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         state of the current analysis is "to_be_verified" or "verified"
         :return: the user_id of the user who did the last submission of result
         """
-        workflow = get_tool("portal_workflow")
+        workflow = getToolByName(self, "portal_workflow")
         try:
             review_history = workflow.getInfoFor(self, "review_history")
             review_history = self.reverseList(review_history)
@@ -1066,7 +1066,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """Returns the time the result was submitted.
         :return: a DateTime object.
         """
-        workflow = get_tool("portal_workflow")
+        workflow = getToolByName(self, "portal_workflow")
         try:
             review_history = workflow.getInfoFor(self, "review_history")
             review_history = self.reverseList(review_history)
