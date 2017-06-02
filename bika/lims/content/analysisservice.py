@@ -429,9 +429,21 @@ class AnalysisService(AbstractBaseAnalysis):
 
     @security.public
     def getAvailableMethodUIDs(self):
-        """ Returns the UIDs of the available method.
+        """
+        Returns the UIDs of the available methods. it is used as a
+        vocabulary to fill the selection list of 'Methods' field.
         """
         return [m.UID() for m in self.getAvailableMethods()]
+
+    @security.public
+    def getMethodUIDs(self):
+        """
+        Returns the UIDs of the assigned methods to this analysis service.
+        This method returns the selected methods in the 'Method' field.
+        If you want to obtain the available methods to assign to the service,
+        use getAvailableMethodUIDs.
+        """
+        return [m.UID() for m in self.getMethods()]
 
     @security.public
     def getAvailableInstruments(self):

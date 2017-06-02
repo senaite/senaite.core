@@ -91,13 +91,6 @@ schema = BikaSchema.copy() + Schema((
             visible = False,
         ),
     ),
-    ComputedField(
-        'MethodUID',
-        expression="context.getRestrictToMethod() and context.getRestrictToMethod().UID() or ''",
-        widget=ComputedWidget(
-            visible=False,
-        ),
-    ),
 ))
 
 schema['title'].schemata = 'Description'
@@ -137,6 +130,12 @@ class WorksheetTemplate(BaseContent):
             items.append((o.UID(), o.Title()))
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
+
+    def getMethodUID(self):
+        method = self.getRestrictToMethod()
+        if method:
+            return method.UID()
+        return ''
 
     def _getMethodsVoc(self):
         """

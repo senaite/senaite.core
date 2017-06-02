@@ -9,7 +9,7 @@ from zope.schema.vocabulary import SimpleTerm
 from bika.lims.utils import getUsers
 from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.browser.widgets.reflexrulewidget_description import description
-
+from plone.api.portal import get_tool
 import json
 
 try:
@@ -362,16 +362,22 @@ class ReflexRuleWidget(RecordsWidget):
         methods = [obj.getObject() for obj in pc(
                     portal_type='Method',
                     inactive_state='active')]
+        bsc = getToolByName(self, 'bika_setup_catalog')
         for method in methods:
             # Get the analysis services related to each method
-            br = method.getBackReferences('AnalysisServiceMethods')
+            an_servs_brains = bsc(
+                portal_type='AnalysisService',
+                getMethodUIDs={
+                    "query": method.UID(),
+                    "operator": "or"
+                })
             analysiservices = {}
-            for analysiservice in br:
+            for analysiservice in an_servs_brains:
+                analysiservice = analysiservice.getObject()
                 # Getting the worksheet templates that could be used with the
                 # analysis, those worksheet templates are the ones without
                 # method and the ones with a method shared with the
                 # analysis service.
-                bsc = getToolByName(self, 'bika_setup_catalog')
                 service_methods_uid = analysiservice.getAvailableMethodUIDs()
                 query_dict = {
                     'portal_type': 'WorksheetTemplate',
@@ -384,7 +390,7 @@ class ReflexRuleWidget(RecordsWidget):
                 }
                 wst_brains = bsc(query_dict)
                 analysiservices[analysiservice.UID()] = {
-                    'as_id': analysiservice.id,
+                    'as_id': analysiservice.getId(),
                     'as_title': analysiservice.Title(),
                     'resultoptions':
                         analysiservice.getResultOptions()
@@ -395,20 +401,22 @@ class ReflexRuleWidget(RecordsWidget):
                 }
             # Make the json dict
             relations[method.UID()] = {
-                'method_id': method.id,
+                'method_id': method.getId(),
                 'method_tile': method.Title(),
                 'analysisservices': analysiservices,
                 'as_keys': analysiservices.keys(),
             }
         # Get the data saved in the object
+        reflex_rule = self.aq_parent.aq_inner
+        saved_method = reflex_rule.getMethod()
         relations['saved_actions'] = {
-            'method_uid': self.aq_parent.getMethod().UID() if
-            self.aq_parent.getMethod() else '',
-            'method_id': self.aq_parent.getMethod().id if
-            self.aq_parent.getMethod() else '',
-            'method_tile': self.aq_parent.getMethod().Title() if
-            self.aq_parent.getMethod() else '',
-            'rules': self.aq_parent.getReflexRules(),
+            'method_uid': saved_method.UID() if
+            saved_method else '',
+            'method_id': saved_method.getId() if
+            saved_method else '',
+            'method_tile': saved_method.Title() if
+            saved_method else '',
+            'rules': reflex_rule.getReflexRules(),
             }
         return json.dumps(relations)
 
@@ -493,7 +501,7 @@ class ReflexRuleWidget(RecordsWidget):
         - cond_row_idx: it is used to know the position numeber of the
         condition inside the list.
         """
-        rules_list = self.aq_parent.getReflexRules()
+        rules_list = self.aq_parent.aq_inner.getReflexRules()
         if len(rules_list) > idx:
             value = rules_list[idx].get(element, '')
             if element == 'actions' and value == '':
@@ -560,6 +568,7 @@ class ReflexRuleWidget(RecordsWidget):
         """
         analysts = getUsers(self, ['Manager', 'LabManager', 'Analyst'])
         return analysts.sortedByKey()
+
 
 registerWidget(
     ReflexRuleWidget,
