@@ -734,9 +734,6 @@ class AnalysisRequestDigester:
             'obj': instance,
         }
 
-        uid = instance.UID()
-        portal_type = instance.portal_type
-
         fields = instance.Schema().fields()
         for fld in fields:
             fieldname = fld.getName()
@@ -1091,7 +1088,7 @@ class AnalysisRequestDigester:
         return self._format_address(lab_address)
 
     def _lab_data(self):
-        portal = getToolByName(ar, 'portal_url').getPortalObject()
+        portal = getToolByName(self.context, 'portal_url').getPortalObject()
         lab = self.context.bika_setup.laboratory
 
         return {'obj': lab,
@@ -1173,8 +1170,8 @@ class AnalysisRequestDigester:
             andict['previous_results'] = ""
             if batch:
                 keyword = an.getKeyword()
-                bars = [bar for bar in batch.getAnalysisRequests() \
-                        if an.aq_parent.UID() != bar.UID() \
+                bars = [bar for bar in batch.getAnalysisRequests()
+                        if an.aq_parent.UID() != bar.UID()
                         and keyword in bar]
                 for bar in bars:
                     pan = bar[keyword]
@@ -1217,8 +1214,8 @@ class AnalysisRequestDigester:
                   'outofrange': False,
                   'type': analysis.portal_type,
                   'reftype': analysis.getReferenceType() \
-                      if hasattr(analysis, 'getReferenceType')
-                  else None,
+                      if hasattr(analysis, 'getReferenceType') \
+                      else None,
                   'worksheet': None,
                   'specs': {},
                   'formatted_specs': ''}
@@ -1258,7 +1255,7 @@ class AnalysisRequestDigester:
         # getFormattedResult signature is set to True, so the service will
         # already take into account LDLs and UDLs symbols '<' and '>' and escape
         # them if necessary.
-        andict['formatted_result'] = fresult;
+        andict['formatted_result'] = fresult
 
         fs = ''
         if specs.get('min', None) and specs.get('max', None):
@@ -1275,7 +1272,6 @@ class AnalysisRequestDigester:
         # Out of range?
         if specs:
             adapters = getAdapters((analysis,), IResultOutOfRange)
-            bsc = getToolByName(self.context, "bika_setup_catalog")
             for name, adapter in adapters:
                 ret = adapter(specification=specs)
                 if ret and ret['out_of_range']:
