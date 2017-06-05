@@ -8,8 +8,6 @@ from bika.lims.workflow import isBasicTransitionAllowed
 from bika.lims.workflow import wasTransitionPerformed
 from bika.lims.workflow.analysis import guards as analysis_guards
 
-from plone.api.portal import get_tool
-
 
 def to_be_preserved(obj):
     """ Returns True if the Sample from this AR needs to be preserved

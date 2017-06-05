@@ -12,6 +12,7 @@ import types
 from AccessControl import ClassSecurityInfo
 
 from Products.Archetypes import atapi
+from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from Products.Archetypes.utils import DisplayList
 
@@ -108,7 +109,7 @@ class Contact(Person):
     def isActive(self):
         """Checks if the Contact is active
         """
-        wftool = api.portal.get_tool("portal_workflow")
+        wftool = getToolByName(self, "portal_workflow")
         status = wftool.getStatusOf("bika_inactive_workflow", self)
         if status and status.get("inactive_state") in ACTIVE_STATES:
             logger.debug("Contact '{}' is active".format(self.Title()))

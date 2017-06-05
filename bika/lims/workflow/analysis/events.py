@@ -8,8 +8,6 @@ from bika.lims.workflow import getCurrentState
 from bika.lims.workflow import isBasicTransitionAllowed
 from bika.lims.workflow import wasTransitionPerformed
 
-from plone.api.portal import get_tool
-
 
 def after_submit(obj):
     """Method triggered after a 'submit' transition for the analysis passed in
@@ -102,7 +100,7 @@ def after_verify(obj):
 def after_publish(obj):
     if skip(self, "publish"):
         return
-    workflow = get_tool("portal_workflow")
+    workflow = getToolByName(obj, "portal_workflow")
     state = workflow.getInfoFor(self, 'cancellation_state', 'active')
     if state == "cancelled":
         return False
@@ -130,7 +128,7 @@ def after_publish(obj):
 def after_cancel(obj):
     if skip(self, "cancel"):
         return
-    workflow = get_tool("portal_workflow")
+    workflow = getToolByName(obj, "portal_workflow")
     # If it is assigned to a worksheet, unassign it.
     state = workflow.getInfoFor(self, 'worksheetanalysis_review_state')
     if state == 'assigned':
@@ -143,7 +141,7 @@ def after_cancel(obj):
 def after_reject(obj):
     if skip(self, "reject"):
         return
-    workflow = get_tool("portal_workflow")
+    workflow = getToolByName(obj, "portal_workflow")
     # If it is assigned to a worksheet, unassign it.
     state = workflow.getInfoFor(self, 'worksheetanalysis_review_state')
     if state == 'assigned':
@@ -155,7 +153,7 @@ def after_reject(obj):
 def after_attach(obj):
     if skip(self, "attach"):
         return
-    workflow = get_tool("portal_workflow")
+    workflow = getToolByName(obj, "portal_workflow")
     # If all analyses in this AR have been attached escalate the action
     # to the parent AR
     ar = obj.aq_parent

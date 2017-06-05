@@ -4,8 +4,6 @@ from bika.lims import logger
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import isBasicTransitionAllowed
 
-from plone.api.portal import get_tool
-
 
 def schedule_sampling(obj):
     """
@@ -46,7 +44,7 @@ def sample_prep_complete(obj):
       can get stuck in "sample_prep" forever.
 
     """
-    wftool = get_tool('portal_workflow')
+    wftool = getToolByName(obj, 'portal_workflow')
     try:
         # get sampleprep workflow object.
         sp_wf_name = obj.getPreparationWorkflow()

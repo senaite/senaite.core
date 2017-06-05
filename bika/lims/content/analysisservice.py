@@ -24,7 +24,6 @@ from bika.lims.content.abstractbaseanalysis import schema
 from bika.lims.interfaces import IAnalysisService, IHaveIdentifiers
 from bika.lims.utils import to_utf8 as _c
 from magnitude import mg
-from plone.api.portal import get_tool
 from plone.indexer import indexer
 from zope.interface import implements
 
@@ -465,7 +464,7 @@ class AnalysisService(AbstractBaseAnalysis):
             Used to fill the Methods MultiSelectionWidget when 'Allow
             Instrument Entry of Results is not selected'.
         """
-        bsc = get_tool('bika_setup_catalog')
+        bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(i.UID, i.Title)
                  for i in bsc(portal_type='Method',
                               inactive_state='active')
@@ -480,7 +479,7 @@ class AnalysisService(AbstractBaseAnalysis):
             registered in Bika-Setup. Only active Calculations are
             fetched. Used to fill the Calculation field
         """
-        bsc = get_tool('bika_setup_catalog')
+        bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(i.UID, i.Title)
                  for i in bsc(portal_type='Calculation',
                               inactive_state='active')]
@@ -494,7 +493,7 @@ class AnalysisService(AbstractBaseAnalysis):
             registered in Bika-Setup. Only active Instruments are
             fetched. Used to fill the Instruments MultiSelectionWidget
         """
-        bsc = get_tool('bika_setup_catalog')
+        bsc = getToolByName(self, 'bika_setup_catalog')
         items = [(i.UID, i.Title)
                  for i in bsc(portal_type='Instrument',
                               inactive_state='active')]

@@ -20,7 +20,6 @@ from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.ATContentTypes.utils import DT2dt, dt2DT
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from plone.api.portal import get_tool
 from zope.interface import implements
 
 schema = BikaSchema.copy() + Schema((

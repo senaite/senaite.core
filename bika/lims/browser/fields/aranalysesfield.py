@@ -7,6 +7,7 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.Registry import registerField
 from Products.Archetypes.public import *
 from Products.Archetypes.utils import shasattr
+from Products.CMFCore.utils import getToolByName
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.permissions import ViewRetractedAnalyses
 from bika.lims.utils.analysis import create_analysis
@@ -59,11 +60,11 @@ class ARAnalysesField(ObjectField):
             retracted = kwargs['retracted']
             del kwargs['retracted']
         else:
-            mtool = get_tool('portal_membership')
+            mtool = getToolByName(instance, 'portal_membership')
             retracted = mtool.checkPermission(ViewRetractedAnalyses,
                                               instance)
 
-        bac = get_tool(CATALOG_ANALYSIS_LISTING)
+        bac = getToolByName(instance, CATALOG_ANALYSIS_LISTING)
         contentFilter = dict([(k, v) for k, v in kwargs.items()
                               if k in bac.indexes()])
         contentFilter['portal_type'] = "Analysis"
@@ -112,8 +113,8 @@ class ARAnalysesField(ObjectField):
 
         assert type(service_uids) in (list, tuple)
 
-        bsc = get_tool('bika_setup_catalog')
-        workflow = get_tool('portal_workflow')
+        bsc = getToolByName(instance, 'bika_setup_catalog')
+        workflow = getToolByName(instance, 'portal_workflow')
 
         # one can only edit Analyses up to a certain state.
         ar_state = workflow.getInfoFor(instance, 'review_state', '')
@@ -207,8 +208,7 @@ class ARAnalysesField(ObjectField):
 
     security.declarePublic('Services')
 
-    @staticmethod
-    def Services():
+    def Services(self):
         """ Return analysis services
         """
         bsc = get_tool('bika_setup_catalog')

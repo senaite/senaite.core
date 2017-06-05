@@ -10,6 +10,7 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.Field import BooleanField, FixedPointField, \
     StringField
 from Products.Archetypes.Schema import Schema
+from Products.CMFCore.utils import getToolByName
 from bika.lims import bikaMessageFactory as _, logger
 from bika.lims import deprecated
 from bika.lims.browser.fields import UIDReferenceField
@@ -24,7 +25,6 @@ from bika.lims.workflow import isBasicTransitionAllowed
 from bika.lims.workflow import isTransitionAllowed
 from bika.lims.workflow import wasTransitionPerformed
 from bika.lims.workflow import skip
-from plone.api.portal import get_tool
 from zope.interface import implements
 
 # The physical sample partition linked to the Analysis.
@@ -226,7 +226,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         """
         maxtime = self.getMaxTimeAllowed()
         if not maxtime:
-            maxtime = get_tool('bika_setup').getDefaultTurnaroundTime()
+            maxtime = getToolByName(self, 'bika_setup').getDefaultTurnaroundTime()
         max_days = float(maxtime.get('days', 0)) + (
             (float(maxtime.get('hours', 0)) * 3600 +
              float(maxtime.get('minutes', 0)) * 60)
@@ -303,7 +303,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
 
         sampletype = sample.getSampleType()
         sampletype_uid = sampletype and sampletype.UID() or ''
-        bsc = get_tool('bika_setup_catalog')
+        bsc = getToolByName(self, 'bika_setup_catalog')
 
         # retrieves the desired specs if None specs defined
         if not specification:
@@ -435,7 +435,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         """This function does all the reflex rule process.
         :param wf_action: is a string containing the workflow action triggered
         """
-        workflow = get_tool('portal_workflow')
+        workflow = getToolByName(self, 'portal_workflow')
         # Check out if the analysis has any reflex rule bound to it.
         # First we have get the analysis' method because the Reflex Rule
         # objects are related to a method.

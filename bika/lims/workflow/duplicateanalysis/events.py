@@ -9,8 +9,6 @@ from bika.lims.workflow import isBasicTransitionAllowed
 from bika.lims.workflow import wasTransitionPerformed
 from bika.lims.workflow.analysis import events as analysis_events
 
-from plone.api.portal import get_tool
-
 
 def after_submit(obj):
     """Method triggered after a 'submit' transition for the duplicate analysis

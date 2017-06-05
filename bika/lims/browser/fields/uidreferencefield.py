@@ -8,6 +8,7 @@
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.BaseObject import BaseObject
 from Products.Archetypes.Field import Field, StringField
+from Products.CMFCore.utils import getToolByName
 from Products.ZCatalog.interfaces import ICatalogBrain
 from bika.lims import logger
 from bika.lims.interfaces.field import IUIDReferenceField
@@ -19,10 +20,10 @@ class ReferenceException(Exception):
     pass
 
 
-def is_uid(value):
+def is_uid(context, value):
     """Checks that the string passed is a valid UID of an existing object
     """
-    uc = get_tool('uid_catalog')
+    uc = getToolByName(context, 'uid_catalog')
     brains = uc(UID=value)
     return brains and True or False
 
@@ -63,7 +64,13 @@ class UIDReferenceField(StringField):
         elif is_at_content(value):
             return value
         else:
-            uc = get_tool('uid_catalog')
+            try:
+                uc = getToolByName(instance, 'uid_catalog')
+            except AttributeError:
+                # Sometimes an object doesn't have an acquisition chain,
+                # in these cases we just hope that get_tool's call to
+                # getSite doesn't fuck up.
+                uc = get_tool('uid_catalog')
             brains = uc(UID=value)
             if brains:
                 return brains[0].getObject()
@@ -82,7 +89,7 @@ class UIDReferenceField(StringField):
             ret = value.UID
         elif is_at_content(value):
             ret = value.UID()
-        elif is_uid(value):
+        elif is_uid(instance, value):
             ret = value
         else:
             raise ReferenceException("%s.%s: Cannot resolve UID for %s" %
@@ -122,7 +129,7 @@ class UIDReferenceField(StringField):
                     logger.warning(
                         "Found values '\'{}\'' for singleValued field {}.{}. "
                         "Using only the first value in the list.".format(
-                            '\',\''.join(values),
+                            '\',\''.join(value),
                             instance.absolute_url(),
                             self.getName()))
                     value = value[1]
