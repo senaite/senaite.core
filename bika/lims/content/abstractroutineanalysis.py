@@ -421,6 +421,16 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         self.setReflexRuleActionsTriggered(old + text + '|')
 
     @security.public
+    def getOriginalReflexedAnalysisUID(self):
+        """
+        Returns the uid of the original reflexed analysis.
+        """
+        original = self.getOriginalReflexedAnalysis()
+        if original:
+            return original.UID()
+        return ''
+
+    @security.private
     def _reflex_rule_process(self, wf_action):
         """This function does all the reflex rule process.
         :param wf_action: is a string containing the workflow action triggered

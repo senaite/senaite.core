@@ -20,6 +20,7 @@ _types_list = ['Worksheet', ]
 _indexes_dict = {
     'getAnalyst': 'FieldIndex',
     'getWorksheetTemplate': 'FieldIndex',
+    'getAnalysesUIDs': 'KeywordIndex',
 }
 # Defining the columns for this catalog
 _columns_list = [

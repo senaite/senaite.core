@@ -89,6 +89,9 @@ def upgrade(tool):
     # Replace target states from some transitions
     replace_target_states(portal)
 
+    # Adding two indexes in order to delete getBackreference in reflex rules
+    reflex_rules(portal)
+
     # Refresh affected catalogs
     _cleanAndRebuildIfNeeded(portal, clean_and_rebuild)
     ut.refreshCatalogs()
@@ -794,7 +797,7 @@ def replace_target_states(portal):
             {'wfid': 'bika_referenceanalysis_workflow',
              'trid': 'submit',
              'target': 'to_be_verified'},
-    
+
             {'wfid': 'bika_worksheet_workflow',
              'trid': 'submit',
              'target': 'to_be_verified'}
@@ -817,3 +820,13 @@ def replace_target_states(portal):
                         "Replacing target state '{0}' from '{1}.{2}' to {3}"
                         .format(oldstate, wfid, transid, ittarg)
                     )
+
+
+def reflex_rules(portal):
+    """Adding two indexes.
+    """
+    ut.addIndex(
+        CATALOG_WORKSHEET_LISTING, 'getAnalysesUIDs', 'KeywordIndex')
+    ut.addIndex(
+        CATALOG_ANALYSIS_LISTING, 'getOriginalReflexedAnalysisUID', 'UUIDIndex'
+        )
