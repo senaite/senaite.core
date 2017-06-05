@@ -129,6 +129,10 @@ def RemoveVersionableTypes():
 
 
 def UpdateIndexesAndMetadata(ut):
+
+    # Add getDepartmentUIDs to CATALOG_WORKSHEET_LISTING
+    ut.addIndexAndColumn(CATALOG_WORKSHEET_LISTING, 'getDepartmentUIDs')
+
     # Removed ARPriority completely
     ut.delColumn(CATALOG_ANALYSIS_LISTING, 'getPriority')
     ut.delColumn(CATALOG_ANALYSIS_REQUEST_LISTING, 'getPriority')
@@ -794,7 +798,7 @@ def replace_target_states(portal):
             {'wfid': 'bika_referenceanalysis_workflow',
              'trid': 'submit',
              'target': 'to_be_verified'},
-    
+
             {'wfid': 'bika_worksheet_workflow',
              'trid': 'submit',
              'target': 'to_be_verified'}
