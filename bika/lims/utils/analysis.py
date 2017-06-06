@@ -17,7 +17,6 @@ from bika.lims import bikaMessageFactory as _, logger
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import formatDecimalMark
-from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 
 
 def duplicateAnalysis(analysis):

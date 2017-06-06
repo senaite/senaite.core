@@ -39,6 +39,7 @@ from bika.lims.workflow import wasTransitionPerformed
 from bika.lims.workflow import skip
 from bika.lims.workflow.analysis import events
 from bika.lims.workflow.analysis import guards
+from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 from plone.api.user import has_permission
 from zope.interface import implements
 
