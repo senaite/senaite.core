@@ -8,7 +8,6 @@ from bika.lims.workflow import doActionFor
 from bika.lims.workflow import getCurrentState
 from bika.lims.workflow import isBasicTransitionAllowed
 from bika.lims.workflow import wasTransitionPerformed
-from bika.lims.utils.analysis import get_back_worksheet
 
 
 def after_submit(obj):
@@ -20,7 +19,7 @@ def after_submit(obj):
     This function is called automatically by
     bika.lims.workfow.AfterTransitionEventHandler
     """
-    ws = get_back_worksheet(obj)
+    ws = obj.getWorksheet()
     if ws:
         doActionFor(ws, 'submit')
 
@@ -55,7 +54,7 @@ def after_retract(obj):
         analysis, "bika_analysis_workflow", "sample_received")
 
     # Assign the new analysis to this same worksheet, if any.
-    ws = get_back_worksheet(obj)
+    ws = obj.getWorksheet()
     if ws:
         ws.addAnalysis(analysis)
     analysis.reindexObject()
@@ -93,7 +92,7 @@ def after_verify(obj):
     # Worksheet will check if the Worksheet can be transitioned, so there is no
     # need to check here if all analyses within the WS have been transitioned
     # already
-    ws = get_back_worksheet(obj)
+    ws = obj.getWorksheet()
     if ws:
         doActionFor(ws, 'verify')
 
@@ -133,7 +132,7 @@ def after_cancel(obj):
     # If it is assigned to a worksheet, unassign it.
     state = workflow.getInfoFor(self, 'worksheetanalysis_review_state')
     if state == 'assigned':
-        ws = get_back_worksheet(obj)
+        ws = obj.getWorksheet()
         skip(self, "cancel", unskip=True)
         ws.removeAnalysis(self)
     obj.reindexObject()
@@ -146,7 +145,7 @@ def after_reject(obj):
     # If it is assigned to a worksheet, unassign it.
     state = workflow.getInfoFor(self, 'worksheetanalysis_review_state')
     if state == 'assigned':
-        ws = get_back_worksheet(obj)
+        ws = obj.getWorksheet()
         ws.removeAnalysis(self)
     obj.reindexObject()
 

@@ -23,7 +23,6 @@ from bika.lims import logger
 from bika.lims.workflow import doActionFor
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
-from bika.lims.utils.analysis import get_back_worksheet
 import sys
 
 schema = BikaSchema.copy() + Schema((
@@ -458,7 +457,7 @@ def doWorksheetLogic(base, action, analysis):
         # 'repeat' actions takes advantatge of the 'retract' workflow action.
         # the retract process assigns the new analysis to the same worksheet
         # as the base analysis, so we need to desassign it now.
-        ws = get_back_worksheet(analysis)
+        ws = analysis.getWorksheet()
         if ws:
             ws.removeAnalysis(analysis)
         # If worksheet found and option 2
@@ -474,7 +473,7 @@ def doWorksheetLogic(base, action, analysis):
             # Getting the original analysis to which the rule applies
             previous_analysis = analysis.getReflexAnalysisOf()
             # Getting the worksheet of the analysis
-            prev_ws = get_back_worksheet(previous_analysis)
+            prev_ws = previous_analysis.getWorksheet()
             # Getting the analyst from the worksheet
             prev_analyst = prev_ws.getAnalyst() if prev_ws else ''
             # If the previous analysis belongs to a worksheet:
@@ -492,7 +491,7 @@ def doWorksheetLogic(base, action, analysis):
 
     elif otherWS == 'current':
         # Getting the base's worksheet
-        ws = get_back_worksheet(base)
+        ws = base.getWorksheet()
         if ws:
             # If the old analysis belongs to a worksheet, add the new
             # one to it
@@ -501,7 +500,7 @@ def doWorksheetLogic(base, action, analysis):
     # the analysis.
     # If option 4 selected, no worksheet will be assigned to the analysis
     elif otherWS == 'no_ws':
-        ws = get_back_worksheet(analysis)
+        ws = analysis.getWorksheet()
         if ws:
             ws.removeAnalysis(analysis)
 

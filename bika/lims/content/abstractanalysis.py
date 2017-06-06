@@ -1117,14 +1117,21 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     def getWorksheet(self):
         """Returns the Worksheet to which this analysis belongs to, or None
         """
-        worksheet = self.getBackReferences("WorksheetAnalysis")
+        worksheet_catalog = getToolByName(self, CATALOG_WORKSHEET_LISTING)
+        worksheet = worksheet_catalog(
+            getAnalysesUIDs={
+                "query": self.UID(),
+                "operator": "or"
+            }
+        )
         if not worksheet:
             return None
         if len(worksheet) > 1:
             logger.error(
                 "Analysis %s is assigned to more than one worksheet."
                 % self.getId())
-        return worksheet[0]
+        worksheet = worksheet[0].getObject()
+        return worksheet
 
     def getExpiryDate(self):
         """It is used as a metacolumn.
