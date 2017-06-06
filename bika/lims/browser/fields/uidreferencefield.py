@@ -48,7 +48,7 @@ class UIDReferenceField(StringField):
         'type': 'uidreference',
         'default': '',
         'default_content_type': 'text/plain',
-        'relationship':'',
+        'relationship': '',
     })
 
     implements(IUIDReferenceField)
@@ -106,6 +106,19 @@ class UIDReferenceField(StringField):
                 lambda x: x, [self.get_object(instance, uid) for uid in value])
         else:
             ret = self.get_object(instance, value)
+        return ret
+
+    @security.public
+    def getRaw(self, instance, aslist=False, **kwargs):
+        """Grab the stored value, and return it directly as UIDs.
+        """
+        value = StringField.get(self, instance, **kwargs)
+        if self.multiValued:
+            ret = value
+        else:
+            ret = self.get_object(instance, value)
+            if aslist:
+                ret = [ret]
         return ret
 
     @security.public
