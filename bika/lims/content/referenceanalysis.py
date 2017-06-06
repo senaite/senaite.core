@@ -92,7 +92,14 @@ class ReferenceAnalysis(AbstractAnalysis):
 
     @security.public
     def getResultsRange(self):
-        return self.getSample().getResultsRangeDict()
+        sample = self.getSample()
+        if sample:
+            return sample.getResultsRangeDict()
+
+    def getAnalysisSpecs(self, specification=None):
+        specs = self.getResultsRange()
+        if specs and self.getKeyword() in specs:
+            return specs
 
     def getInstrumentUID(self):
         """
@@ -150,8 +157,9 @@ class ReferenceAnalysis(AbstractAnalysis):
         """
         return []
 
+    @deprecated('[1705] Use bika.lims.workflow.analysis.events.after_submit')
     @security.public
-    def after_submit_transition_event(self):
+    def workflow_script_submit(self):
         """Method triggered after a 'submit' transition for the current
         ReferenceAnalysis is performed.
         By default, the "submit" action for transitions the RefAnalysis to the
@@ -167,10 +175,10 @@ class ReferenceAnalysis(AbstractAnalysis):
         # in this case (guard_attach_transition), try always the transition to
         # 'to_be_verified' via 'attach' action
         # doActionFor will check the
-        doActionFor(self, attach)
+        doActionFor(self, 'attach')
 
         # Delegate the transition of Worksheet to base class AbstractAnalysis
-        super(AbstractRoutineAnalysis, self).after_submit_transition_event()
+        AbstractAnalysis.workflow_script_submit(self)
 
     def workflow_script_attach(self):
         if skip(self, "attach"):
