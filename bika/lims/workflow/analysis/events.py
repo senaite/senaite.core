@@ -8,6 +8,7 @@ from bika.lims.workflow import doActionFor
 from bika.lims.workflow import getCurrentState
 from bika.lims.workflow import isBasicTransitionAllowed
 from bika.lims.workflow import wasTransitionPerformed
+from bika.lims.utils.analysis import get_back_worksheet
 
 
 def after_submit(obj):
@@ -19,7 +20,7 @@ def after_submit(obj):
     This function is called automatically by
     bika.lims.workfow.AfterTransitionEventHandler
     """
-    ws = obj.getBackReferences("WorksheetAnalysis")
+    ws = get_back_worksheet(obj)
     if ws:
         doActionFor(ws, 'submit')
 
@@ -54,9 +55,8 @@ def after_retract(obj):
         analysis, "bika_analysis_workflow", "sample_received")
 
     # Assign the new analysis to this same worksheet, if any.
-    ws = obj.getBackReferences("WorksheetAnalysis")
+    ws = get_back_worksheet(obj)
     if ws:
-        ws = ws[0]
         ws.addAnalysis(analysis)
     analysis.reindexObject()
 
@@ -93,7 +93,7 @@ def after_verify(obj):
     # Worksheet will check if the Worksheet can be transitioned, so there is no
     # need to check here if all analyses within the WS have been transitioned
     # already
-    ws = obj.getBackReferences("WorksheetAnalysis")
+    ws = get_back_worksheet(obj)
     if ws:
         doActionFor(ws, 'verify')
 
@@ -133,7 +133,7 @@ def after_cancel(obj):
     # If it is assigned to a worksheet, unassign it.
     state = workflow.getInfoFor(self, 'worksheetanalysis_review_state')
     if state == 'assigned':
-        ws = obj.getBackReferences("WorksheetAnalysis")[0]
+        ws = get_back_worksheet(obj)
         skip(self, "cancel", unskip=True)
         ws.removeAnalysis(self)
     obj.reindexObject()
@@ -146,7 +146,7 @@ def after_reject(obj):
     # If it is assigned to a worksheet, unassign it.
     state = workflow.getInfoFor(self, 'worksheetanalysis_review_state')
     if state == 'assigned':
-        ws = obj.getBackReferences("WorksheetAnalysis")[0]
+        ws = get_back_worksheet(obj)
         ws.removeAnalysis(self)
     obj.reindexObject()
 
@@ -173,7 +173,6 @@ def after_attach(obj):
     # been attached, then attach the worksheet.
     ws = obj.getBackReferences('WorksheetAnalysis')
     if ws:
-        ws = ws[0]
         ws_state = workflow.getInfoFor(ws, "review_state")
         if ws_state == "attachment_due" \
                 and not skip(ws, "attach", peek=True):

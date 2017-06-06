@@ -23,6 +23,7 @@ from bika.lims import logger
 from bika.lims.workflow import doActionFor
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
+from bika.lims.utils.analysis import get_back_worksheet
 import sys
 
 schema = BikaSchema.copy() + Schema((
@@ -92,7 +93,6 @@ class ReflexRule(BaseContent):
             rules for.
         :ans_cond: the local id with the target derivative reflex rule id.
         """
-        import pdb; pdb.set_trace()
         # Getting the first reflexed analysis from the chain
         first_reflexed = analysis.getOriginalReflexedAnalysis()
         # Getting all reflexed analysis created due to this first analysis
@@ -300,7 +300,6 @@ def doActionToAnalysis(base, action):
     workflow = getToolByName(base, "portal_workflow")
     state = workflow.getInfoFor(base, 'review_state')
     action_rule_name = ''
-    import pdb; pdb.set_trace()
     if action.get('action', '') == 'repeat' and state != 'retracted':
         # Repeat an analysis consist on cancel it and then create a new
         # analysis with the same analysis service used for the canceled
@@ -459,14 +458,8 @@ def doWorksheetLogic(base, action, analysis):
         # 'repeat' actions takes advantatge of the 'retract' workflow action.
         # the retract process assigns the new analysis to the same worksheet
         # as the base analysis, so we need to desassign it now.
-        ws_brain = worksheet_catalog(
-            getAnalysesUIDs={
-                "query": analysis.UID(),
-                "operator": "or"
-            }
-        )
-        if ws_brain:
-            ws = ws_brain[0].getObject()
+        ws = get_back_worksheet(analysis)
+        if ws:
             ws.removeAnalysis(analysis)
         # If worksheet found and option 2
         if len(wss) > 0 and otherWS == 'to_another':
@@ -481,14 +474,9 @@ def doWorksheetLogic(base, action, analysis):
             # Getting the original analysis to which the rule applies
             previous_analysis = analysis.getReflexAnalysisOf()
             # Getting the worksheet of the analysis
-            prev_ws = worksheet_catalog(
-                getAnalysesUIDs={
-                    "query": previous_analysis.UID(),
-                    "operator": "or"
-                }
-            )
+            prev_ws = get_back_worksheet(previous_analysis)
             # Getting the analyst from the worksheet
-            prev_analyst = prev_ws[0].getgetAnalyst() if prev_ws else ''
+            prev_analyst = prev_ws.getAnalyst() if prev_ws else ''
             # If the previous analysis belongs to a worksheet:
             if prev_analyst:
                 ws = _createWorksheet(base, worksheettemplate, prev_analyst)
@@ -504,28 +492,18 @@ def doWorksheetLogic(base, action, analysis):
 
     elif otherWS == 'current':
         # Getting the base's worksheet
-        wss = worksheet_catalog(
-            getAnalysesUIDs={
-                "query": base.UID(),
-                "operator": "or"
-            }
-        )
-        if len(wss) > 0:
+        ws = get_back_worksheet(base)
+        if ws:
             # If the old analysis belongs to a worksheet, add the new
             # one to it
-            wss[0].addAnalysis(analysis)
+            ws.addAnalysis(analysis)
     # If option 1 selected and no ws found, no worksheet will be assigned to
     # the analysis.
     # If option 4 selected, no worksheet will be assigned to the analysis
     elif otherWS == 'no_ws':
-        ws = worksheet_catalog(
-            getAnalysesUIDs={
-                "query": analysis.UID(),
-                "operator": "or"
-            }
-        )
+        ws = get_back_worksheet(analysis)
         if ws:
-            ws[0].removeAnalysis(analysis)
+            ws.removeAnalysis(analysis)
 
 
 def doReflexRuleAction(base, action_row):

@@ -17,6 +17,29 @@ from bika.lims import bikaMessageFactory as _, logger
 from bika.lims.interfaces import IAnalysisService
 from bika.lims.utils import changeWorkflowState
 from bika.lims.utils import formatDecimalMark
+from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
+
+
+def get_back_worksheet(analysis):
+    """
+    This function gets back the worksheet which the analysis has
+    been assgined to.
+    :param analysis: A single Analysis Content object
+    :type analysis: bika.lims.content.analysis.Analysis
+                    bika.lims.content.referenceanalysis.ReferenceAnalysis
+    :returns: The worksheet related to that analysis or None
+    :rtype: Worksheet object/None
+    """
+    worksheet_catalog = getToolByName(analysis, CATALOG_WORKSHEET_LISTING)
+    ws = worksheet_catalog(
+        getAnalysesUIDs={
+            "query": analysis.UID(),
+            "operator": "or"
+        }
+    )
+    if ws:
+        return ws[0].getObject()
+    return None
 
 
 def duplicateAnalysis(analysis):
