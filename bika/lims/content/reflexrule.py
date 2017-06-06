@@ -296,6 +296,7 @@ def doActionToAnalysis(base, action):
     workflow = getToolByName(base, "portal_workflow")
     state = workflow.getInfoFor(base, 'review_state')
     action_rule_name = ''
+    import pdb; pdb.set_trace()
     if action.get('action', '') == 'repeat' and state != 'retracted':
         # Repeat an analysis consist on cancel it and then create a new
         # analysis with the same analysis service used for the canceled
@@ -316,7 +317,6 @@ def doActionToAnalysis(base, action):
         result_value = action['setresultdiscrete'] if \
             action.get('setresultdiscrete', '') else action['setresultvalue']
         if target_analysis == 'original':
-            import pdb; pdb.set_trace()
             original = base.getOriginalReflexedAnalysis()
             analysis = original
             original.setResult(result_value)
@@ -537,4 +537,10 @@ def doReflexRuleAction(base, action_row):
         analysis = doActionToAnalysis(base, action)
         # Working with the worksheetlogic
         doWorksheetLogic(base, action, analysis)
+        # Reindexing both objects in order to fill its metacolumns with
+        # the changes.
+        # TODO: Sometimes, objects are reindexed. Could it be that they
+        # are reindexed in some workflow step that some of them don't do?
+        base.reindexObject()
+        analysis.reindexObject()
     return True
