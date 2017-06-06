@@ -33,8 +33,6 @@ function AnalysisServiceEditView() {
      */
     that.load = function() {
 
-        debugger;
-
         // LIMS-1775 Allow to select LDL or UDL defaults in results with readonly mode
         // https://jira.bikalabs.com/browse/LIMS-1775
         $(ldsel_chk).change(function() {
@@ -159,6 +157,10 @@ function AnalysisServiceEditView() {
         // $(".portaltype-analysisservice [name^='PartitionSetup.container']").trigger("selected");
 
         // initial setup - hide Interim widget if no Calc is selected
+// This is commented because javascript halts execution in this block.
+// I think it's because this code fucks around with non-visible elements.
+// So the same question as always: How did this ever work, and how do
+// we replace it now.
 //        if($(".portaltype-analysisservice #Calculation").val() === ""){
 //            $("#InterimFields_more").click(); // blank last row
 //            var rows = $("tr.records_row_InterimFields"); // Clear the rest
