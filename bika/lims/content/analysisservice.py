@@ -259,31 +259,6 @@ PartitionSetup = PartitionSetupField(
     )
 )
 
-# Manually configured calculation to be used for analyses derived from this
-# service.  This field is used if UseDefaultCalculation is set to false.
-# The default calculation is the one linked to the default method
-# Behavior controlled by js depending on UseDefaultCalculation:
-# - If UseDefaultCalculation is set to False, show this field
-# - If UseDefaultCalculation is set to True, show this field
-# See browser/js/bika.lims.analysisservice.edit.js
-Calculation = UIDReferenceField(
-    'Calculation',
-    schemata="Method",
-    required=0,
-    vocabulary='_getAvailableCalculationsDisplayList',
-    allowed_types=('Calculation',),
-    widget=SelectionWidget(
-        format='select',
-        label=_("Default Calculation"),
-        description=_("Default calculation to be used from the "
-                      "default Method selected. The Calculation "
-                      "for a method can be assigned in the Method "
-                      "edit view."),
-        catalog_name='bika_setup_catalog',
-        base_query={'inactive_state': 'active'}
-    )
-)
-
 # Allow/Disallow to set the calculation manually
 # Behavior controlled by javascript depending on Instruments field:
 # - If no instruments available, hide and uncheck
@@ -365,11 +340,22 @@ schema = schema.copy() + Schema((
     Preservation,
     Container,
     PartitionSetup,
-    UseDefaultCalculation,
-    Calculation,
     Methods,
     Instruments,
+    UseDefaultCalculation,
 ))
+
+# Re-order some fields from AbstractBaseAnalysis schema.
+# Adding them to the Schema(()) above does not work.
+schema.moveField('ManualEntryOfResults', after='PartitionSetup')
+schema.moveField('Methods', after='ManualEntryOfResults')
+schema.moveField('InstrumentEntryOfResults', after='Methods')
+schema.moveField('Instruments', after='InstrumentEntryOfResults')
+schema.moveField('Instrument', after='Instruments')
+schema.moveField('Method', after='Instrument')
+schema.moveField('Calculation', after='UseDefaultCalculation')
+schema.moveField('DuplicateVariation', after='Calculation')
+schema.moveField('Accredited', after='Calculation')
 
 
 class AnalysisService(AbstractBaseAnalysis):
