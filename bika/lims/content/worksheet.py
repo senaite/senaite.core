@@ -211,6 +211,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                     self.addAnalysis(dma)
         # Reindex the worksheet in order to update its columns
         self.reindexObject()
+        analysis.reindexObject(idxs=['getWorksheetUID',])
 
     security.declareProtected(EditWorksheet, 'removeAnalysis')
 

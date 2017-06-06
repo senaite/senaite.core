@@ -67,10 +67,12 @@ class ReflexRule(BaseContent):
     schema = schema
     _at_rename_after_creation = True
 
+    @security.private
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
+    @security.private
     def _getAvailableMethodsDisplayList(self):
         """ Returns a DisplayList with the available Methods
             registered in Bika-Setup. Only active Methods are fetched.
@@ -81,6 +83,7 @@ class ReflexRule(BaseContent):
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
+    @security.private
     def _fetch_analysis_for_local_id(self, analysis, ans_cond):
         """
         This function returns an analysis when the derivative IDs conditions
@@ -89,7 +92,6 @@ class ReflexRule(BaseContent):
             rules for.
         :ans_cond: the local id with the target derivative reflex rule id.
         """
-        import pdb; pdb.set_trace()
         # Getting the first reflexed analysis from the chain
         first_reflexed = analysis.getOriginalReflexedAnalysis()
         # Getting all reflexed analysis created due to this first analysis
@@ -104,6 +106,7 @@ class ReflexRule(BaseContent):
                 return derivative
         return None
 
+    @security.private
     def _areConditionsMet(self, action_set, analysis, forceuid=False):
         """
         This function returns a boolean as True if the conditions in the
@@ -262,7 +265,7 @@ class ReflexRule(BaseContent):
         self.analyses_catalog = getToolByName(self, CATALOG_ANALYSIS_LISTING)
         # Getting the action sets, those that contain action rows
         action_sets = self.getReflexRules()
-        l = []
+        rules_list = []
         condition = False
         for action_set in action_sets:
             # Validate the trigger
@@ -278,8 +281,8 @@ class ReflexRule(BaseContent):
                         # action later.
                         act['rulenumber'] = action_set.get('rulenumber', '0')
                         act['rulename'] = self.Title()
-                        l.append(act)
-        return l
+                        rules_list.append(act)
+        return rules_list
 
 atapi.registerType(ReflexRule, PROJECTNAME)
 
@@ -296,7 +299,6 @@ def doActionToAnalysis(base, action):
     workflow = getToolByName(base, "portal_workflow")
     state = workflow.getInfoFor(base, 'review_state')
     action_rule_name = ''
-    import pdb; pdb.set_trace()
     if action.get('action', '') == 'repeat' and state != 'retracted':
         # Repeat an analysis consist on cancel it and then create a new
         # analysis with the same analysis service used for the canceled
@@ -455,14 +457,8 @@ def doWorksheetLogic(base, action, analysis):
         # 'repeat' actions takes advantatge of the 'retract' workflow action.
         # the retract process assigns the new analysis to the same worksheet
         # as the base analysis, so we need to desassign it now.
-        ws_brain = worksheet_catalog(
-            getAnalysesUIDs={
-                "query": analysis.UID(),
-                "operator": "or"
-            }
-        )
-        if ws_brain:
-            ws = ws_brain[0].getObject()
+        ws = analysis.getWorksheet()
+        if ws:
             ws.removeAnalysis(analysis)
         # If worksheet found and option 2
         if len(wss) > 0 and otherWS == 'to_another':
@@ -477,14 +473,9 @@ def doWorksheetLogic(base, action, analysis):
             # Getting the original analysis to which the rule applies
             previous_analysis = analysis.getReflexAnalysisOf()
             # Getting the worksheet of the analysis
-            prev_ws = worksheet_catalog(
-                getAnalysesUIDs={
-                    "query": previous_analysis.UID(),
-                    "operator": "or"
-                }
-            )
+            prev_ws = previous_analysis.getWorksheet()
             # Getting the analyst from the worksheet
-            prev_analyst = prev_ws[0].getgetAnalyst() if prev_ws else ''
+            prev_analyst = prev_ws.getAnalyst() if prev_ws else ''
             # If the previous analysis belongs to a worksheet:
             if prev_analyst:
                 ws = _createWorksheet(base, worksheettemplate, prev_analyst)
@@ -500,28 +491,18 @@ def doWorksheetLogic(base, action, analysis):
 
     elif otherWS == 'current':
         # Getting the base's worksheet
-        wss = worksheet_catalog(
-            getAnalysesUIDs={
-                "query": base.UID(),
-                "operator": "or"
-            }
-        )
-        if len(wss) > 0:
+        ws = base.getWorksheet()
+        if ws:
             # If the old analysis belongs to a worksheet, add the new
             # one to it
-            wss[0].addAnalysis(analysis)
+            ws.addAnalysis(analysis)
     # If option 1 selected and no ws found, no worksheet will be assigned to
     # the analysis.
     # If option 4 selected, no worksheet will be assigned to the analysis
     elif otherWS == 'no_ws':
-        ws = worksheet_catalog(
-            getAnalysesUIDs={
-                "query": analysis.UID(),
-                "operator": "or"
-            }
-        )
+        ws = analysis.getWorksheet()
         if ws:
-            ws[0].removeAnalysis(analysis)
+            ws.removeAnalysis(analysis)
 
 
 def doReflexRuleAction(base, action_row):
