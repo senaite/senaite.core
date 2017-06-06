@@ -90,15 +90,9 @@ class ReferenceAnalysis(AbstractAnalysis):
         """
         return self.getSample().getReferenceResults()
 
-    def getInstrumentEntryOfResults(self):
-        """
-        It is a metacolumn.
-        Returns the same value as the service.
-        """
-        service = self.getService()
-        if not service:
-            return None
-        return service.getInstrumentEntryOfResults()
+    @security.public
+    def getResultsRange(self):
+        return self.getSample().getResultsRangeDict()
 
     def getInstrumentUID(self):
         """
