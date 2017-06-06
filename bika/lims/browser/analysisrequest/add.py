@@ -3,6 +3,7 @@ import plone
 import datetime
 from datetime import date
 from bika.lims import bikaMessageFactory as _
+from bika.lims import deprecated
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.browser.analysisrequest import AnalysisRequestViewView
@@ -44,15 +45,6 @@ class AnalysisServicesView(ASV):
 
     def __init__(self, context, request, poc, ar_count=None, category=None):
         super(AnalysisServicesView, self).__init__(context, request)
-
-        # Don't display ASes if they don't belong to one of User's Departments
-        mtool = getToolByName(self.context, 'portal_membership')
-        username = mtool.getAuthenticatedMember().getUserName()
-        lc_brain = self.context.portal_catalog(portal_type='LabContact',
-                                               getUsername=username)
-        lab_con = lc_brain[0].getObject()
-        dep_titles = [d.Title() for d in lab_con.getDepartments()]
-        self.contentFilter['getDepartmentTitle'] = dep_titles
 
         self.contentFilter['getPointOfCapture'] = poc
         self.contentFilter['inactive_state'] = 'active'
@@ -513,7 +505,6 @@ class ajaxAnalysisRequestSubmit():
             return json.dumps({'success': message})
 
 
-from bika.lims import deprecated
 @deprecated(comment="[160525] bika.lims.browser.analysisrequest.add."
                     "create_analysisrequest is deprecated and will be removed "
                     "in Bika LIMS 3.3", replacement=crar)

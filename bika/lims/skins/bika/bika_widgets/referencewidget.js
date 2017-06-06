@@ -201,8 +201,10 @@ function check_missing_UID(){
 	*/
 	$.each($(".ArchetypesReferenceWidget").children("input.referencewidget"),
 		function (index, field) {
+			var fieldName = $(this).attr("name");
+			// uid attr of text input
 			var uid = $(this).attr("uid");
-			var fieldName = $(this).attr("fieldName");
+			// uid hidden field for multivalued (actually all) reference widgets
 			var _uidinput = $("input[name^='" + fieldName + "_uid']");
 			var _uid = $(_uidinput).val();
 			if (!uid || uid == undefined || uid == ""

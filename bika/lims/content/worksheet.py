@@ -3,42 +3,44 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from plone import api
+import re
+import sys
 from AccessControl import ClassSecurityInfo
-from bika.lims import bikaMessageFactory as _
-from bika.lims.config import *
-from bika.lims.idserver import renameAfterCreation
-from bika.lims.utils import t, tmpID, changeWorkflowState
-from bika.lims.utils import to_utf8 as _c
-from bika.lims.browser.fields import HistoryAwareReferenceField
-from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IWorksheet
-from bika.lims.permissions import EditWorksheet, ManageWorksheets
-from bika.lims.permissions import Verify as VerifyPermission
-from bika.lims.workflow import doActionFor
-from bika.lims.workflow import skip
-from bika.lims import deprecated
-from bika.lims import logger
-from DateTime import DateTime
 from operator import itemgetter
-from plone.indexer import indexer
+
+from DateTime import DateTime
+from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
+from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
-from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
-from Products.ATExtensions.ateapi import RecordsField
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode, _createObjectByType
+from Products.CMFPlone.utils import _createObjectByType, safe_unicode
+from bika.lims import bikaMessageFactory as _
+from bika.lims import deprecated
+from bika.lims import logger
+from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.config import *
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.idserver import renameAfterCreation
+from bika.lims.interfaces import IWorksheet
+from bika.lims.permissions import EditWorksheet, ManageWorksheets
+from bika.lims.permissions import Verify as VerifyPermission
+from bika.lims.utils import changeWorkflowState, tmpID
+from bika.lims.utils import to_utf8 as _c
+from bika.lims.workflow import doActionFor
+from bika.lims.workflow import getCurrentState
+from bika.lims.workflow import skip
+from bika.lims.workflow.worksheet import events
+from bika.lims.workflow.worksheet import guards
+from plone import api
 from zope.interface import implements
-import re
-import sys
-
 
 schema = BikaSchema.copy() + Schema((
-    HistoryAwareReferenceField('WorksheetTemplate',
+    UIDReferenceField(
+        'WorksheetTemplate',
         allowed_types=('WorksheetTemplate',),
-        relationship='WorksheetAnalysisTemplate',
     ),
     RecordsField('Layout',
         required=1,
@@ -172,10 +174,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if not instr and method and analysis.isMethodAllowed(method):
             # Set the method
             analysis.setMethod(method)
-        if analysis.getMethod():
-            # The analysis method can't be changed when the analysis belongs
-            # to a worksheet and that worksheet has a method.
-            analysis.setCanMethodBeChanged(False)
         self.setAnalyses(analyses + [analysis, ])
 
         # if our parent has a position, use that one.
@@ -193,9 +191,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                                   'container_uid': parent_uid,
                                   'analysis_uid': analysis.UID()}, ])
 
-        allowed_transitions = [t['id'] for t in workflow.getTransitionsFor(analysis)]
-        if 'assign' in allowed_transitions:
-            workflow.doActionFor(analysis, 'assign')
+        doActionFor(analysis, 'assign')
 
         # If a dependency of DryMatter service is added here, we need to
         # make sure that the dry matter analysis itself is also
@@ -206,7 +202,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             dmk = dms.getKeyword()
             deps = analysis.getDependents()
             # if dry matter service in my dependents:
-            if dmk in [a.getService().getKeyword() for a in deps]:
+            if dmk in [a.getKeyword() for a in deps]:
                 # get dry matter analysis from AR
                 dma = analysis.aq_parent.getAnalyses(getKeyword=dmk,
                                                      full_objects=True)[0]
@@ -225,10 +221,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
 
         # overwrite saved context UID for event subscriber
         self.REQUEST['context_uid'] = self.UID()
-        if workflow.getInfoFor(analysis, 'worksheetanalysis_review_state') ==\
-                'assigned':
-                workflow.doActionFor(analysis, 'unassign')
-        # Note: subscriber might unassign the AR and/or promote the worksheet
+        doActionFor(analysis, 'unassign')
 
         # remove analysis from context.Analyses *after* unassign,
         # (doActionFor requires worksheet in analysis.getBackReferences)
@@ -329,7 +322,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                                      'analysis_uid': ref_analysis.UID()}])
             self.setAnalyses(
                 self.getAnalyses() + [ref_analysis, ])
-            workflow.doActionFor(ref_analysis, 'assign')
+            doActionFor(ref_analysis, 'assign')
             # Reindex the worksheet in order to update its columns
             self.reindexObject()
 
@@ -404,13 +397,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             processed.append(analysis.UID())
 
             # services with dependents don't belong in duplicates
-            service = analysis.getService()
-            calc = service.getCalculation()
+            calc = analysis.getCalculation()
             if calc and calc.getDependentServices():
                 continue
-            service = analysis.getService()
-            _id = self._findUniqueId(service.getKeyword())
-            duplicate = _createObjectByType("DuplicateAnalysis", self, _id)
+            duplicate = _createObjectByType("DuplicateAnalysis", self, tmpID())
             duplicate.setAnalysis(analysis)
 
             # Set the required number of verifications
@@ -444,7 +434,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                                      'analysis_uid': duplicate.UID()}, ]
             )
             self.setAnalyses(self.getAnalyses() + [duplicate, ])
-            workflow.doActionFor(duplicate, 'assign')
+            doActionFor(duplicate, 'assign')
 
 
     def applyWorksheetTemplate(self, wst):
@@ -631,12 +621,12 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         return ''
 
     def getWorksheetServices(self):
-        """ get list of analysis services present on this worksheet
+        """get list of analysis services present on this worksheet
         """
         services = []
         for analysis in self.getAnalyses():
-            service = analysis.getService()
-            if service not in services:
+            service = analysis.getAnalysisService()
+            if service and service not in services:
                 services.append(service)
         return services
 
@@ -776,13 +766,14 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             # the WS manage results view will display the an's default
             # method and its instruments displaying, only the instruments
             # for the default method in the picklist.
-            meth = instrument.getMethods()[0] if instrument.getMethods() \
-                    else None
+            instr_methods = instrument.getMethods()
+            meth = instr_methods[0] if instr_methods else None
             if meth and an.isMethodAllowed(meth):
-                an.setMethod(meth)
-            success = an.setInstrument(instrument)
-            if success is True:
-                total += 1
+                if an.getMethod() not in instr_methods:
+                    an.setMethod(meth)
+
+            an.setInstrument(instrument)
+            total += 1
 
         self.getField('Instrument').set(self, instrument)
         return total
@@ -804,14 +795,13 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             success = False
             if an.isMethodAllowed(method):
                 success = an.setMethod(method)
-                an.setCanMethodBeChanged(False)
             if success is True:
                 total += 1
 
         self.getField('Method').set(self, method)
         return total
 
-    @deprecated('Flagged in 17.03')
+    @deprecated('[1703] Orphan. No alternative')
     def getFolderContents(self, contentFilter):
         """
         """
@@ -895,21 +885,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                       if not a.isUserAllowedToVerify(member)]
         return not notallowed
 
+    @deprecated('[1705] Use bika.lims.workflow.worksheet.guards.verify')
+    @security.public
     def guard_verify_transition(self):
-        """
-        Checks if the verify transition can be performed to the current
-        Worksheet by the current user depending on the user roles, as
-        well as the statuses of the analyses assigned to this Worksheet
-        :returns: true or false
-        """
-        mtool = getToolByName(self, "portal_membership")
-        checkPermission = mtool.checkPermission
-        # Check if the Analysis Request is in a "verifiable" state
-        if self.isVerifiable():
-            # Check if the user can verify the Analysis Request
-            member = mtool.getAuthenticatedMember()
-            return self.isUserAllowedToVerify(member)
-        return False
+        return guards.verify(self)
 
     def getObjectWorkflowStates(self):
         """
@@ -926,76 +905,20 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             states[w.state_var] = state
         return states
 
+    @deprecated('[1705] Use bika.lims.workflow.worksheet.after_submit')
+    @security.public
     def workflow_script_submit(self):
-        # Don't cascade. Shouldn't be submitting WSs directly for now,
-        # except edge cases where all analyses are already submitted,
-        # but self was held back until an analyst was assigned.
-        workflow = getToolByName(self, 'portal_workflow')
-        self.reindexObject(idxs=["review_state", ])
-        can_attach = True
-        for a in self.getAnalyses():
-            if workflow.getInfoFor(a, 'review_state') in \
-               ('to_be_sampled', 'to_be_preserved', 'sample_due',
-                'sample_received', 'attachment_due', 'assigned',):
-                # Note: referenceanalyses and duplicateanalyses can still
-                # have review_state = "assigned".
-                can_attach = False
-                break
-        if can_attach:
-            doActionFor(self, 'attach')
+        events.after_submit(self)
 
-    def workflow_script_attach(self):
-        if skip(self, "attach"):
-            return
-        self.reindexObject(idxs=["review_state", ])
-        # Don't cascade. Shouldn't be attaching WSs for now (if ever).
-        return
-
+    @deprecated('[1705] Use bika.lims.workflow.worksheet.after_retract')
+    @security.public
     def workflow_script_retract(self):
-        if skip(self, "retract"):
-            return
-        workflow = getToolByName(self, 'portal_workflow')
-        self.reindexObject(idxs=["review_state", ])
-        if not "retract all analyses" in self.REQUEST['workflow_skiplist']:
-            # retract all analyses in this self.
-            # (NB: don't retract if it's verified)
-            analyses = self.getAnalyses()
-            for analysis in analyses:
-                state = workflow.getInfoFor(analysis, 'review_state', '')
-                if state not in ('attachment_due', 'to_be_verified',):
-                    continue
-                doActionFor(analysis, 'retract')
+        events.after_retract(self)
 
+    @deprecated('[1705] Use bika.lims.workflow.worksheet.after_verify')
+    @security.public
     def workflow_script_verify(self):
-        if skip(self, "verify"):
-            return
-        workflow = getToolByName(self, 'portal_workflow')
-        self.reindexObject(idxs=["review_state", ])
-        if not "verify all analyses" in self.REQUEST['workflow_skiplist']:
-            # verify all analyses in this self.
-            analyses = self.getAnalyses()
-            for analysis in analyses:
-                state = workflow.getInfoFor(analysis, 'review_state', '')
-                if state != 'to_be_verified':
-                    continue
-                if (hasattr(analysis, 'getNumberOfVerifications') and
-                    hasattr(analysis, 'getNumberOfRequiredVerifications')):
-                    # For the 'verify' transition to (effectively) take place,
-                    # we need to check if the required number of verifications
-                    # for the analysis is, at least, the number of verifications
-                    # performed previously +1
-                    success = True
-                    revers = analysis.getNumberOfRequiredVerifications()
-                    nmvers = analysis.getNumberOfVerifications()
-                    username=getToolByName(self,'portal_membership').getAuthenticatedMember().getUserName()
-                    analysis.addVerificator(username)
-                    if revers-nmvers <= 1:
-                        success, message = doActionFor(analysis, 'verify')
-                        if not success:
-                            # If failed, delete last verificator.
-                            analysis.deleteLastVerificator()
-                else:
-                    doActionFor(analysis, 'verify')
+        events.after_verify(self)
 
     def workflow_script_reject(self):
         """Copy real analyses to RejectAnalysis, with link to real
@@ -1113,7 +1036,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             # - Create a new reference analysis in the new worksheet
             # - Transition the original analysis to 'rejected' state
             if analysis.portal_type == 'ReferenceAnalysis':
-                service_uid = analysis.getService().UID()
+                service_uid = analysis.getServiceUID()
                 reference = analysis.aq_parent
                 reference_type = analysis.getReferenceType()
                 new_analysis_uid = reference.addReferenceAnalysis(service_uid,
@@ -1139,7 +1062,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             if analysis.portal_type == 'DuplicateAnalysis':
                 src_analysis = analysis.getAnalysis()
                 ar = src_analysis.aq_parent
-                service = src_analysis.getService()
                 duplicate_id = new_ws.generateUniqueId('DuplicateAnalysis')
                 new_duplicate = _createObjectByType('DuplicateAnalysis',
                                                     new_ws, duplicate_id)
@@ -1222,21 +1144,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         for analysis in self.getAnalyses():
             analysis.setAnalyst(analyst)
         self.Schema().getField('Analyst').set(self, analyst)
-
-    security.declarePublic('getPriority')
-    def getPriority(self):
-        """ get highest priority from all analyses
-        """
-        analyses = self.getAnalyses()
-        priorities = []
-        for analysis in analyses:
-            if not hasattr(analysis, 'getPriority'):
-                continue
-            if analysis.getPriority():
-                priorities.append(analysis.getPriority())
-        priorities = sorted(priorities, key = itemgetter('sortKey'))
-        if priorities:
-            return priorities[-1]
 
     def getAnalysesUIDs(self):
         """

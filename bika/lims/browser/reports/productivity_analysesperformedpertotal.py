@@ -57,7 +57,7 @@ class Report(BrowserView):
         for analysis in analyses:
             analysis = analysis.getObject()
             ankeyword = analysis.getKeyword()
-            antitle = analysis.getServiceTitle()
+            antitle = analysis.Title()
             daterequested = analysis.created()
 
             group = ''

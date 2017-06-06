@@ -34,6 +34,11 @@ class ProductivityView(BrowserView):
     implements(IViewView)
     template = ViewPageTemplateFile("templates/productivity.pt")
 
+    def __init__(self, context, request):
+        BrowserView.__init__(self, context, request)
+        self.context = context
+        self.request = request
+
     def __call__(self):
         self.selection_macros = SelectionMacrosView(self.context, self.request)
         self.icon = self.portal_url + "/++resource++bika.lims.images/report_big.png"
@@ -55,6 +60,11 @@ class QualityControlView(BrowserView):
     """
     implements(IViewView)
     template = ViewPageTemplateFile("templates/qualitycontrol.pt")
+
+    def __init__(self, context, request):
+        BrowserView.__init__(self, context, request)
+        self.context = context
+        self.request = request
 
     def __call__(self):
         self.selection_macros = SelectionMacrosView(self.context, self.request)
@@ -78,6 +88,11 @@ class AdministrationView(BrowserView):
     """
     implements(IViewView)
     template = ViewPageTemplateFile("templates/administration.pt")
+
+    def __init__(self, context, request):
+        BrowserView.__init__(self, context, request)
+        self.context = context
+        self.request = request
 
     def __call__(self):
         self.selection_macros = SelectionMacrosView(self.context, self.request)
@@ -208,6 +223,11 @@ class SubmitForm(BrowserView):
     # default and errors use this template:
     template = ViewPageTemplateFile("templates/productivity.pt")
 
+    def __init__(self, context, request):
+        BrowserView.__init__(self, context, request)
+        self.context = context
+        self.request = request
+
     def __call__(self):
         """Create and render selected report
         """
@@ -330,6 +350,12 @@ class SubmitForm(BrowserView):
 
 
 class ReferenceAnalysisQC_Samples(BrowserView):
+
+    def __init__(self, context, request):
+        BrowserView.__init__(self, context, request)
+        self.context = context
+        self.request = request
+
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         # get Supplier from request
@@ -354,24 +380,29 @@ class ReferenceAnalysisQC_Samples(BrowserView):
 
 
 class ReferenceAnalysisQC_Services(BrowserView):
+
+    def __init__(self, context, request):
+        BrowserView.__init__(self, context, request)
+
     def __call__(self):
         plone.protect.CheckAuthenticator(self.request)
         # get Sample from request
-        sample = self.request.form.get('ReferenceSampleUID', '')
-        sample = self.reference_catalog.lookupObject(sample)
-        if sample:
+        sample_uid = self.request.form.get('SampleUID', '')
+        uc = getToolByName(self.context, 'uid_catalog')
+        brains = uc(UID=sample_uid)
+        if brains:
+            sample = brains[0].getObject()
             # get ReferenceSamples for this supplier
-            analyses = self.bika_analysis_catalog(portal_type='ReferenceAnalysis',
-                                                  path={"query": "/".join(
-                                                      sample.getPhysicalPath()),
-                                                        "level": 0})
+            analyses = self.bika_analysis_catalog(
+                portal_type='ReferenceAnalysis',
+                path={"query": "/".join(sample.getPhysicalPath()), "level": 0})
             ret = {}
             for analysis in analyses:
-                service = analysis.getObject().getService()
-                if service.UID() in ret:
-                    ret[service.UID()]['analyses'].append(analysis.UID)
+                if analysis.getServiceUID in ret:
+                    ret[analysis.getServiceUID]['analyses'].append(analysis.UID)
                 else:
-                    ret[service.UID()] = {'title': service.Title(),
-                                          'analyses': [analysis.UID, ]}
+                    ret[analysis.getServiceUID] = {
+                        'title': analysis.Title,
+                        'analyses': [analysis.UID]}
             ret = [[k, v['title'], v['analyses']] for k, v in ret.items()]
             return json.dumps(ret)

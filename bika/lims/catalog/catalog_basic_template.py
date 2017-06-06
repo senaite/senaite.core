@@ -7,6 +7,7 @@
 BASE_CATALOG_INDEXES = {
     # Returns the catalog id
     'id': 'FieldIndex',
+    'title': 'FieldIndex',
     # Return the object id
     'getId': 'FieldIndex',
     'portal_type': 'FieldIndex',

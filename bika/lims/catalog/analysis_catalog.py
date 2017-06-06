@@ -2,6 +2,7 @@
 #
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
+
 from zope.interface import implements
 from App.class_init import InitializeClass
 from bika.lims.catalog.bika_catalog_tool import BikaCatalogTool
@@ -9,6 +10,10 @@ from bika.lims.interfaces import IBikaAnalysisCatalog
 from bika.lims.catalog.catalog_basic_template import BASE_CATALOG_INDEXES
 from bika.lims.catalog.catalog_basic_template import BASE_CATALOG_COLUMNS
 
+# To prevent unnecessary complexity, the accessor methods are duplicated in
+# each of the analysis content-types.  When adding or removing indexes and
+# columns in this catalog, you will need to verify/add/remove accessors
+# or schema fields for all affected types in content/*analysis.py.
 
 # Using a variable to avoid plain strings in code
 CATALOG_ANALYSIS_LISTING = 'bika_analysis_catalog'
@@ -32,6 +37,7 @@ _indexes_dict = {
     'getServiceUID': 'FieldIndex',
     'getCategoryUID': 'FieldIndex',
     'getPointOfCapture': 'FieldIndex',
+    'getSamplePartitionUID': 'FieldIndex',
     'getSampleUID': 'FieldIndex',
     'getSampleTypeUID': 'FieldIndex',
     'getSamplePointUID': 'FieldIndex',
@@ -43,6 +49,7 @@ _indexes_dict = {
     'getSampleConditionUID': 'FieldIndex',
     'getAnalysisRequestPrintStatus': 'FieldIndex',
     'getWorksheetUID': 'FieldIndex',
+    'getOriginalReflexedAnalysisUID': 'UUIDIndex',
 }
 # Defining the columns for this catalog
 _columns_list = [
@@ -51,7 +58,6 @@ _columns_list = [
     'getRequestID',
     'getReferenceAnalysesGroupID',
     'getResultCaptureDate',
-    'getPriority',
     'getParentURL',
     'getAnalysisRequestURL',
     'getParentTitle',
@@ -59,7 +65,6 @@ _columns_list = [
     'getClientTitle',
     'getClientURL',
     'getAnalysisRequestTitle',
-    'getAllowedMethodsAsTuples',
     'getResult',
     'getCalculation',
     'getUnit',
@@ -76,12 +81,11 @@ _columns_list = [
     # Used in duplicated analysis objects
     'getAnalysisPortalType',
     'isInstrumentValid',
-    'getCanMethodBeChanged',
     # Columns from method
     'getMethodUID',
     'getMethodTitle',
     'getMethodURL',
-    'getInstrumentUID',
+    'getAllowedMethodUIDs',
     'getAnalyst',
     'getAnalystName',
     'getNumberOfRequiredVerifications',
@@ -93,15 +97,13 @@ _columns_list = [
     'getIsReflexAnalysis',
     # TODO-performance: All that comes from services could be
     # defined as a service metacolumn instead of an analysis one
-    'getServiceTitle',
-    'getResultOptionsFromService',
+    'getResultOptions',
     'getServiceUID',
     'getDepartmentUID',
     'getInstrumentEntryOfResults',
-    'getServiceDefaultInstrumentUID',
-    'getServiceDefaultInstrumentTitle',
-    'getServiceDefaultInstrumentURL',
-    'getResultsRangeNoSpecs',
+    'getAllowedInstrumentUIDs',
+    'getInstrumentUID',
+    'getResultsRange',
     'getSampleTypeUID',
     'getClientOrderNumber',
     'getDateReceived',
@@ -138,3 +140,7 @@ class BikaAnalysisCatalog(BikaCatalogTool):
 
 
 InitializeClass(BikaAnalysisCatalog)
+
+
+"""
+"""

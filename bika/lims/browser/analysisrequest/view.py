@@ -314,10 +314,9 @@ class AnalysisRequestViewView(BrowserView):
         for analysis in bac(portal_type="Analysis",
                            getRequestID=self.context.RequestID):
             analysis = analysis.getObject()
-            service = analysis.getService()
-            res.append([service.getPointOfCapture(),
-                        service.getCategoryUID(),
-                        service.UID()])
+            res.append([analysis.getPointOfCapture(),
+                        analysis.getCategoryUID(),
+                        analysis.getServiceUID()])
         return res
 
     def getRestrictedCategories(self):
@@ -393,8 +392,7 @@ class AnalysisRequestViewView(BrowserView):
         for analysis in self.context.getAnalyses(full_objects=True):
             if analysis.review_state == 'not_requested':
                 continue
-            service = analysis.getService()
-            category_name = service.getCategoryTitle()
+            category_name = analysis.getCategoryTitle()
             if not category_name in cats:
                 cats[category_name] = {}
             cats[category_name][analysis.Title()] = analysis
@@ -475,10 +473,3 @@ class AnalysisRequestViewView(BrowserView):
                 'value': anchor
             }
         return custom
-
-    def getPriorityIcon(self):
-        priority = self.context.getPriority()
-        if priority:
-            icon = priority.getBigIcon()
-            if icon:
-                return '/'.join(icon.getPhysicalPath())

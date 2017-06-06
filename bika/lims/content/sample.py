@@ -10,6 +10,7 @@ from Products.CMFCore.WorkflowCore import WorkflowException
 from bika.lims import bikaMessageFactory as _, logger
 from bika.lims.utils import t, getUsers
 from Products.ATExtensions.field import RecordsField
+from bika.lims import deprecated
 from bika.lims.browser.widgets.datetimewidget import DateTimeWidget
 from bika.lims.browser.widgets import RejectionWidget
 from bika.lims.config import PROJECTNAME
@@ -17,8 +18,12 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import ISample, ISamplePrepWorkflow
 from bika.lims.permissions import SampleSample
 from bika.lims.permissions import ScheduleSampling
-from bika.lims.workflow import doActionFor, isBasicTransitionAllowed
+from bika.lims.workflow import doActionFor
+from bika.lims.workflow import isBasicTransitionAllowed
+from bika.lims.workflow import isTransitionAllowed
 from bika.lims.workflow import skip
+from bika.lims.workflow.sample import guards
+from bika.lims.workflow.sample import events
 from DateTime import DateTime
 from Products.Archetypes import atapi
 from Products.Archetypes.config import REFERENCE_CATALOG
@@ -634,14 +639,6 @@ schema = BikaSchema.copy() + Schema((
                      },
         ),
     ),
-    ###ComputedField('Priority',
-    ###    expression = 'context.getPriority() or None',
-    ###    widget = ComputedWidget(
-    ###        visible={'edit': 'visible',
-    ###                 'view': 'visible'},
-    ###        render_own_label=False,
-    ###    ),
-    ###),
 ))
 
 
@@ -688,24 +685,13 @@ class Sample(BaseFolder, HistoryAwareMixin):
     def getProfilesTitle(self):
         return ""
 
-    def getAnalysisCategory(self):
-        analyses = []
-        for ar in self.getAnalysisRequests():
-            analyses += list(ar.getAnalyses(full_objects=True))
-        value = []
-        for analysis in analyses:
-            val = analysis.getCategoryTitle()
-            if val not in value:
-                value.append(val)
-        return value
-
     def getAnalysisService(self):
         analyses = []
         for ar in self.getAnalysisRequests():
             analyses += list(ar.getAnalyses(full_objects=True))
         value = []
         for analysis in analyses:
-            val = analysis.getServiceTitle()
+            val = analysis.Title()
             if val not in value:
                 value.append(val)
         return value
@@ -867,206 +853,101 @@ class Sample(BaseFolder, HistoryAwareMixin):
             prep_workflows.append([workflow_id, workflow.title])
         return DisplayList(prep_workflows)
 
-    def workflow_script_receive(self):
-        workflow = getToolByName(self, 'portal_workflow')
-        self.setDateReceived(DateTime())
-        self.reindexObject(idxs=["review_state", "getDateReceived"])
-        # Receive all self partitions that are still 'sample_due'
-        parts = self.objectValues('SamplePartition')
-        sample_due = [sp for sp in parts
-                      if workflow.getInfoFor(sp, 'review_state') == 'sample_due']
-        for sp in sample_due:
-            workflow.doActionFor(sp, 'receive')
-        # when a self is received, all associated
-        # AnalysisRequests are also transitioned
-        for ar in self.getAnalysisRequests():
-            doActionFor(ar, "receive")
+    @deprecated('[1705] Use events.after_no_sampling_workflow from '
+                'bika.lims.workflow.sample')
+    @security.public
+    def workflow_script_no_sampling_workflow(self):
+        events.after_no_sampling_workflow(self)
 
-    def workflow_script_preserve(self):
-        """This action can happen in the Sample UI, so we transition all
-        self partitions that are still 'to_be_preserved'
-        """
-        workflow = getToolByName(self, 'portal_workflow')
-        parts = self.objectValues("SamplePartition")
-        tbs = [sp for sp in parts
-               if workflow.getInfoFor(sp, 'review_state') == 'to_be_preserved']
-        for sp in tbs:
-            doActionFor(sp, "preserve")
-        # All associated AnalysisRequests are also transitioned
-        for ar in self.getAnalysisRequests():
-            doActionFor(ar, "preserve")
-            ar.reindexObject()
+    @deprecated('[1705] Use events.after_sampling_workflow from '
+                'bika.lims.workflow.sample')
+    @security.public
+    def workflow_script_sampling_workflow(self):
+        events.after_sampling_workflow(self)
 
-    def workflow_script_expire(self):
-        self.setDateExpired(DateTime())
-        self.reindexObject(idxs=["review_state", "getDateExpired", ])
-
-    def workflow_script_dispose(self):
-        self.setDateDisposed(DateTime())
-        self.reindexObject(idxs=["review_state", "getDateDisposed", ])
-
+    @deprecated('[1705] Use bika.lims.workflow.sample.events.after_sample')
+    @security.public
     def workflow_script_sample(self):
-        if skip(self, "sample"):
-            return
-        workflow = getToolByName(self, 'portal_workflow')
-        parts = self.objectValues('SamplePartition')
-        # This action can happen in the Sample UI.  So we transition all
-        # partitions that are still 'to_be_sampled'
-        tbs = [sp for sp in parts
-               if workflow.getInfoFor(sp, 'review_state') == 'to_be_sampled']
-        for sp in tbs:
-            doActionFor(sp, "sample")
-        # All associated AnalysisRequests are also transitioned
-        for ar in self.getAnalysisRequests():
-            doActionFor(ar, "sample")
-            ar.reindexObject()
+        events.after_sample(self)
 
-    def workflow_script_to_be_preserved(self):
-        if skip(self, "to_be_preserved"):
-            return
-        workflow = getToolByName(self, 'portal_workflow')
-        parts = self.objectValues('SamplePartition')
-        # Transition our children
-        tbs = [sp for sp in parts
-               if workflow.getInfoFor(sp, 'review_state') == 'to_be_preserved']
-        for sp in tbs:
-            doActionFor(sp, "to_be_preserved")
-        # All associated AnalysisRequests are also transitioned
-        for ar in self.getAnalysisRequests():
-            doActionFor(ar, "to_be_preserved")
-            ar.reindexObject()
-
+    @deprecated('[1705] Use bika.lims.workflow.sample.events.after_sample_due')
+    @security.public
     def workflow_script_sample_due(self):
-        if skip(self, "sample_due"):
-            return
-        # All associated AnalysisRequests are also transitioned
-        for ar in self.getAnalysisRequests():
-            doActionFor(ar, "sample_due")
-            ar.reindexObject()
+        events.after_sample_due(self)
 
+    @deprecated('[1705] Use bika.lims.workflow.sample.events.after_receive')
+    @security.public
+    def workflow_script_receive(self):
+        events.after_receive(self)
+
+    @deprecated('[1705] Use bika.lims.workflow.sample.events.after_preserve')
+    @security.public
+    def workflow_script_preserve(self):
+        events.after_preserve(self)
+
+    @deprecated('[1705] Use bika.lims.workflow.sample.events.after_expire')
+    @security.public
+    def workflow_script_expire(self):
+        events.after_expire(self)
+
+    @deprecated('[1705] Use bika.lims.workflow.sample.events.after_dispose')
+    @security.public
+    def workflow_script_dispose(self):
+        events.after_dispose(self)
+
+    @deprecated('[1705] Use events.after_to_be_preserved from '
+                'bika.lims.workflow.sample')
+    @security.public
+    def workflow_script_to_be_preserved(self):
+        events.after_to_be_preserved(self)
+
+    @deprecated('[1705] Use bika.lims.workflow.sample.events.after_reinstate')
+    @security.public
     def workflow_script_reinstate(self):
-        if skip(self, "reinstate"):
-            return
-        workflow = getToolByName(self, 'portal_workflow')
-        parts = self.objectValues('SamplePartition')
-        self.reindexObject(idxs=["cancellation_state", ])
-        # Re-instate all self partitions
-        for sp in [sp for sp in parts
-                   if workflow.getInfoFor(sp, 'cancellation_state') == 'cancelled']:
-            workflow.doActionFor(sp, 'reinstate')
-        # reinstate all ARs for this self.
-        ars = self.getAnalysisRequests()
-        for ar in ars:
-            if not skip(ar, "reinstate", peek=True):
-                ar_state = workflow.getInfoFor(ar, 'cancellation_state')
-                if ar_state == 'cancelled':
-                    workflow.doActionFor(ar, 'reinstate')
+        events.after_reinstate(self)
 
+    @deprecated('[1705] Use bika.lims.workflow.sample.events.after_cancel')
+    @security.public
     def workflow_script_cancel(self):
-        if skip(self, "cancel"):
-            return
-        workflow = getToolByName(self, 'portal_workflow')
-        parts = self.objectValues('SamplePartition')
-        self.reindexObject(idxs=["cancellation_state", ])
-        # Cancel all partitions
-        for sp in [sp for sp in parts
-                   if workflow.getInfoFor(sp, 'cancellation_state') == 'active']:
-            workflow.doActionFor(sp, 'cancel')
-        # cancel all ARs for this self.
-        ars = self.getAnalysisRequests()
-        for ar in ars:
-            if not skip(ar, "cancel", peek=True):
-                ar_state = workflow.getInfoFor(ar, 'cancellation_state')
-                if ar_state == 'active':
-                    workflow.doActionFor(ar, 'cancel')
+        events.after_cancel(self)
 
+    @deprecated('[1705] Use bika.lims.workflow.sample.events.after_reject')
+    @security.public
     def workflow_script_reject(self):
-        workflow = getToolByName(self, 'portal_workflow')
-        for ar in self.getAnalysisRequests():
-            if workflow.getInfoFor(ar, 'review_state') != 'rejected':
-                # Setting the rejection reasons in ar
-                ar.setRejectionReasons(self.getRejectionReasons())
-                workflow.doActionFor(ar, "reject")
-        parts = self.objectValues('SamplePartition')
-        for part in parts:
-            if workflow.getInfoFor(part, 'review_state') != 'rejected':
-                workflow.doActionFor(part, "reject")
+        events.after_reject(self)
 
+    @deprecated('[1705] Use events.after_schedule_sampling from '
+                'bika.lims.workflow.sample')
+    @security.public
     def workflow_script_schedule_sampling(self):
-        """
-        This function runs all the needed process for that action
-        """
-        workflow = getToolByName(self, 'portal_workflow')
-        # transact the related analysis requests
-        ars = self.getAnalysisRequests()
-        for ar in ars:
-            doActionFor(ar, 'schedule_sampling')
+        events.after_schedule_sampling(self)
 
+    @deprecated('[1705] Use guards.to_be_preserved from '
+                'bika.lims.workflow.sample')
+    @security.public
+    def guard_to_be_preserved(self):
+        return guards.to_be_preserved(self)
+
+    @deprecated('[1705] Use bika.lims.workflow.sample.guards.receive')
+    @security.public
     def guard_receive_transition(self):
-        """Prevent the receive transition from being available if object
-        is cancelled
-        """
-        # Can't do anything to the object if it's cancelled
-        return isBasicTransitionAllowed(self)
+        return guards.receive(self)
 
+    @deprecated('[1705] Use bika.lims.workflow.sample.guards.sample_prep')
+    @security.public
     def guard_sample_prep_transition(self):
-        """Allow the sampleprep automatic transition to fire.
-        """
-        if not isBasicTransitionAllowed(self):
-            return False
-        if self.getPreparationWorkflow():
-            return True
-        return False
+        return guards.sample_prep(self)
 
+    @deprecated('[1705] Use guards.sample_prep_complete from '
+                'bika.lims.workflow.sample')
+    @security.public
     def guard_sample_prep_complete_transition(self):
-        """ This relies on user created workflow.  This function must
-        defend against user errors.
+        return guards.sample_prep_complete(self)
 
-        AR and Analysis guards refer to this one.
-
-        - If error is encountered, do not permit object to proceed.  Break
-          this rule carelessly and you may see recursive automatic workflows.
-
-        - If sampleprep workflow is badly configured, primary review_state
-          can get stuck in "sample_prep" forever.
-
-        """
-        wftool = getToolByName(self, 'portal_workflow')
-
-        try:
-            # get sampleprep workflow object.
-            sp_wf_name = self.getPreparationWorkflow()
-            sp_wf = wftool.getWorkflowById(sp_wf_name)
-            # get sampleprep_review state.
-            sp_review_state = wftool.getInfoFor(self, 'sampleprep_review_state')
-            assert sp_review_state
-        except WorkflowException as e:
-            logger.warn("guard_sample_prep_complete_transition: "
-                        "WorkflowException %s" % e)
-            return False
-        except AssertionError:
-            logger.warn("'%s': cannot get 'sampleprep_review_state'" %
-                        sampleprep_wf_name)
-            return False
-
-        # get state from workflow - error = allow transition
-        # get possible exit transitions for state: error = allow transition
-        transitions = sp_wf
-        if len(transitions) > 0:
-            return False
-        return True
-
+    @deprecated('[1705] Use guards.schedule_sampling from '
+                'bika.lims.workflow.sample')
+    @security.public
     def guard_schedule_sampling_transition(self):
-        """
-        Prevent the transition if:
-        - if the user isn't part of the sampling coordinators group
-          and "sampling schedule" checkbox is set in bika_setup
-        - if no date and samples have been defined
-          and "sampling schedule" checkbox is set in bika_setup
-        """
-        if self.bika_setup.getScheduleSamplingEnabled() and\
-                isBasicTransitionAllowed(self):
-            return True
-        return False
+        return guards.schedule_sampling(self)
 
 atapi.registerType(Sample, PROJECTNAME)

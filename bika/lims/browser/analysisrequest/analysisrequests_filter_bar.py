@@ -83,14 +83,12 @@ class AnalysisRequestsBikaListingFilterBar(BikaListingFilterBar):
         """
         dbar = self.get_filter_bar_dict()
         keys = dbar.keys()
-        final_decision = 'True'
         item_obj = None
         for key in keys:
             if key == 'analysis_name' and dbar.get(key, '') != '':
                 item_obj = item.getObject() if not item_obj else item_obj
-                uids = [
-                    analysis.getService().UID() for analysis in
-                    item_obj.getAnalyses(full_objects=True)]
+                uids = [analysis.getServiceUID for analysis in
+                        item_obj.getAnalyses(full_objects=False)]
                 if dbar.get(key, '') not in uids:
                     return False
         return True

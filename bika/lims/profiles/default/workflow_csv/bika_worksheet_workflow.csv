@@ -80,7 +80,7 @@ Modify portal content,N,N,Y,N,N,N,N,N,N,N
 Id:,submit,,,,,,,,,
 Title:,Submit for verification,,,,,,,,,
 Description:,Submit for verification,,,,,,,,,
-Target state:,attachment_due,,,,,,,,,
+Target state:,to_be_verified,,,,,,,,,
 URL:,,,,,,,,,,
 Trigger:,User,,,,,,,,,
 Guard expression:,python:here.guard_submit_transition(),,,,,,,,,

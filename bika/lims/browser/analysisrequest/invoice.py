@@ -101,8 +101,7 @@ class InvoiceView(BrowserView):
         all_analyses, all_profiles, analyses_from_profiles = context.getServicesAndProfiles()
         # Relating category with solo analysis
         for analysis in all_analyses:
-            service = analysis.getService()
-            categoryName = service.getCategory().Title()
+            categoryName = analysis.getCategoryTitle()
             # Find the category
             try:
                 category = (
@@ -178,16 +177,9 @@ class InvoiceView(BrowserView):
         :analyses: a list of analyses
         """
         for analysis in analyses:
-            if service_keyword == analysis.getService().getKeyword():
+            if service_keyword == analysis.getKeyword():
                 return analysis
-        return 0
-
-    def getPriorityIcon(self):
-        priority = self.context.getPriority()
-        if priority:
-            icon = priority.getBigIcon()
-            if icon:
-                return '/'.join(icon.getPhysicalPath())
+        return None
 
     def getPreferredCurrencyAbreviation(self):
         return self.context.bika_setup.getCurrency()

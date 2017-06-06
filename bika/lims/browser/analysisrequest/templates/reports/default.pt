@@ -225,7 +225,7 @@
             <tr>
                 <td tal:attributes="colspan python:6 if hasprevresults else 5">
                     <div class='category_comments'
-                         tal:define="category python:categanalyses[poc][cat][0]['obj'].getService().getCategory();
+                         tal:define="category python:categanalyses[poc][cat][0]['obj'].getCategory();
                                      catcomm  python:category.getComments() if hasattr(category, 'getComments') else '';"
                          tal:condition="catcomm"
                          tal:content="catcomm"></div>

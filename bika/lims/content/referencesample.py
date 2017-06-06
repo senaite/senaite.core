@@ -321,27 +321,24 @@ class ReferenceSample(BaseFolder):
         Reference, with the type passed in and associates the newly
         created object to the Analysis Service passed in.
 
-        :param service_uid: The UID of the Analysis Service to be
-            associated to the newly created Reference Analysis
+        :param service_uid: The UID of the Analysis Service to be associated 
+        to the newly created Reference Analysis
         :type service_uid: A string
-        :param reference_type: type of ReferenceAnalysis, where 'b' is
-            is Blank and 'c' is Control
+        :param reference_type: type of ReferenceAnalysis, where 'b' is is  
+        Blank and 'c' is Control
         :type reference_type: A String
         :returns: the UID of the newly created Reference Analysis
-        :rtype: A string
+        :rtype: string
         """
         rc = getToolByName(self, REFERENCE_CATALOG)
         service = rc.lookupObject(service_uid)
         calc = service.getCalculation()
         interim_fields = calc.getInterimFields() if calc else None
         interim_fields = interim_fields if interim_fields else []
-
-        analysis = _createObjectByType("ReferenceAnalysis",
-                                        self,
-                                        id=tmpID(),
-                                        Service=service,
-                                        ReferenceType=reference_type,
-                                        InterimFields=interim_fields)
+        analysis = _createObjectByType("ReferenceAnalysis", self, id=tmpID())
+        analysis.setAnalysisService(service_uid)
+        analysis.setReferenceType(reference_type)
+        analysis.setInterimFields(interim_fields)
         analysis.unmarkCreationFlag()
         renameAfterCreation(analysis)
         return analysis.UID()

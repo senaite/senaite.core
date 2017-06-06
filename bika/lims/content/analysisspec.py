@@ -6,45 +6,32 @@
 """Analysis result range specifications for a client
 """
 from AccessControl import ClassSecurityInfo
-from AccessControl.Permissions import delete_objects
-from Products.ATContentTypes.content import schemata
+
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.ATExtensions.field.records import RecordsField
 from Products.Archetypes import atapi
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
-from Products.Archetypes.references import HoldingReference
-from Products.Archetypes.utils import shasattr
-from Products.CMFCore import permissions
-from Products.CMFCore.WorkflowCore import WorkflowException
-from Products.CMFCore.permissions import ListFolderContents, View
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
+from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
-from bika.lims import PMF, bikaMessageFactory as _
-from bika.lims.browser.fields import HistoryAwareReferenceField
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import AnalysisSpecificationWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IAnalysisSpec
-from types import ListType, TupleType
-from zope.interface import implements
 from zope.i18n import translate
-import sys
-import time
+from zope.interface import implements
 
 schema = Schema((
-    HistoryAwareReferenceField('SampleType',
-        # schemata = 'Description',
-        # required = 1,
-        vocabulary = "getSampleTypes",
-        vocabulary_display_path_bound = sys.maxint,
-        allowed_types = ('SampleType',),
-        relationship = 'AnalysisSpecSampleType',
-        referenceClass = HoldingReference,
-        widget = ReferenceWidget(
-            checkbox_bound = 0,
-            label = _("Sample Type"),
+    UIDReferenceField(
+        'SampleType',
+        vocabulary="getSampleTypes",
+        allowed_types=('SampleType',),
+        widget=ReferenceWidget(
+            checkbox_bound=0,
+            label=_("Sample Type"),
         ),
     ),
     ComputedField('SampleTypeTitle',
@@ -227,7 +214,7 @@ class AnalysisSpec(BaseFolder, HistoryAwareMixin):
 
         return DisplayList(sampletypes)
 
-    @deprecated('Flagged in 17.03')
+    @deprecated('[1703] Orphan. No alternative')
     def getAnalysisSpecsStr(self, keyword):
         specstr = ''
         specs = self.getResultsRangeDict()

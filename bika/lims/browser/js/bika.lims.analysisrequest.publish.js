@@ -11,10 +11,12 @@ function AnalysisRequestPublishView() {
     var default_margins = [20, 20, 30, 20];
     var papersize = {
         'A4': {
+                size: 'A4',
                 dimensions: [210, 297],
                 margins:    [20, 20, 30, 20] },
 
         'letter': {
+                size: 'letter',
                 dimensions: [216, 279],
                 margins:    [20, 20, 30, 20] },
     };
@@ -25,10 +27,17 @@ function AnalysisRequestPublishView() {
     that.load = function() {
 
         // The report will be loaded dynamically by reloadReport()
-        $('#report').html('').hide();
-
+        //$('#report').html('').hide();
         // Load the report
-        reloadReport();
+        //reloadReport();
+
+        // This replaces the above lines, prevents reloadReport
+        // from taking new data from the server and re-rendering on
+        // first load.
+        load_barcodes();
+        load_layout();
+        window.bika.lims.RangeGraph.load();
+        convert_svgs();
 
         // Store referrer in cookie in case it is lost due to a page reload
         var cookiename = "ar.publish.view.referrer";
@@ -52,6 +61,19 @@ function AnalysisRequestPublishView() {
         });
 
         $('#sel_format').change(function(e) {
+            reloadReport();
+        });
+
+        $('#landscape').click(function(e) {
+            // get the checkbox value
+            var landscape = $('#landscape').is(':checked') ? 1 : 0;
+            $('body').toggleClass("landscape", landscape);
+
+            // reverse the dimensions of all layouts
+            for (var key in papersize) {
+                papersize[key]["dimensions"].reverse();
+            }
+
             reloadReport();
         });
 
@@ -82,7 +104,7 @@ function AnalysisRequestPublishView() {
                 var repstyle = $('#report-style').clone().wrap('<div>').parent().html();
                 repstyle += $('#layout-style').clone().wrap('<div>').parent().html();
                 repstyle += $('#layout-print').clone().wrap('<div>').parent().html();
-                // We want this sincronously because we don't want to
+                // We want this syncronously because we don't want to
                 // flood WeasyPrint
                 $.ajax({
                     url: url,
@@ -187,6 +209,8 @@ function AnalysisRequestPublishView() {
         var template = $('#sel_format').val();
         var qcvisible = $('#qcvisible').is(':checked') ? '1' : '0';
         var hvisible = $('#hvisible').is(':checked') ? '1' : '0';
+        var landscape = $('#landscape').is(':checked') ? '1' : '0';
+
         if ($('#report:visible').length > 0) {
             $('#report').fadeTo('fast', 0.4);
         }
@@ -196,7 +220,8 @@ function AnalysisRequestPublishView() {
             async: true,
             data: { "template": template,
                     "qcvisible": qcvisible,
-                    "hvisible": hvisible}
+                    "hvisible": hvisible,
+                    "landscape": landscape}
         })
         .always(function(data) {
             var htmldata = data;
@@ -222,9 +247,13 @@ function AnalysisRequestPublishView() {
     function load_layout() {
         // Set page layout (DIN-A4, US-letter, etc.)
         var currentlayout = $('#sel_layout').val();
+
+        var orientation = $('#landscape').is(':checked') ? 'landscape' : 'portrait';
+
         // Dimensions. All expressed in mm
         var dim = {
             size:         papersize[currentlayout].size,
+            orientation:  orientation,
             outerWidth:   papersize[currentlayout].dimensions[0],
             outerHeight:  papersize[currentlayout].dimensions[1],
             marginTop:    papersize[currentlayout].margins[0],
@@ -241,9 +270,10 @@ function AnalysisRequestPublishView() {
         $('#margin-left').val(dim.marginLeft);
 
         var layout_style =
-            '@page { size:  ' + dim.size + ' !important;' +
+            '@page { size:  ' + dim.size + ' ' + orientation + ' !important;' +
             '        width:  ' + dim.width + 'mm !important;' +
-            '        margin: 0mm '+dim.marginRight+'mm 0mm '+dim.marginLeft+'mm !important;';
+            '        margin: 0mm '+dim.marginRight+'mm 0mm '+dim.marginLeft+'mm !important;' +
+            '}';
         $('#layout-style').html(layout_style);
         $('#ar_publish_container').css({'width':dim.width + 'mm', 'padding': '0mm '+dim.marginRight + 'mm 0mm '+dim.marginLeft +'mm '});
         $('#ar_publish_header').css('margin', '0mm -'+dim.marginRight + 'mm 0mm -' +dim.marginLeft+'mm');

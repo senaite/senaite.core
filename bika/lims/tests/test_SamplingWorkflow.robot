@@ -149,7 +149,6 @@ Add an AR
     SelectDate                        css=#ar_0_SamplingDate       @{time}[2]
     Select From Dropdown              css=#ar_0_SampleType         Water
     Select from dropdown              css=#ar_0_Contact            Rita
-    Select from dropdown              css=#ar_0_Priority           High
     Click Element                     xpath=//th[@id='cat_field_Water Chemistry']
     Select Checkbox                   xpath=//input[@title='Temperature' and @name='ar.0.Analyses:list:ignore_empty:record']
     Click Element                     xpath=//th[@id='cat_lab_Water Chemistry']

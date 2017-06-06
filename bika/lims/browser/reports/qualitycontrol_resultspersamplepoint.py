@@ -34,10 +34,9 @@ class Report(BrowserView):
         return rr.get(analysis.getKeyword(), None)
 
     def ResultOutOfRange(self, analysis):
-        """ Template wants to know, is this analysis out of range?
-        We scan IResultOutOfRange adapters, and return True if any IAnalysis
-        adapters trigger a result.
-        """
+        """Template wants to know, is this analysis out of range? We scan 
+        IResultOutOfRange adapters, and return True if any IAnalysis adapters 
+        trigger a result. """
         adapters = getAdapters((analysis, ), IResultOutOfRange)
         spec = self.get_analysis_spec(analysis)
         for name, adapter in adapters:
@@ -130,9 +129,8 @@ class Report(BrowserView):
             result = analysis.getResult()
             client = analysis.aq_parent.aq_parent
             uid = analysis.UID()
-            service = analysis.getService()
-            keyword = service.getKeyword()
-            service_title = "%s (%s)" % (service.Title(), keyword)
+            keyword = analysis.getKeyword()
+            service_title = "%s (%s)" % (analysis.Title(), keyword)
             result_in_range = self.ResultOutOfRange(analysis)
 
             if service_title not in analyses.keys():
@@ -143,7 +141,9 @@ class Report(BrowserView):
                 # XXX Unfloatable analysis results should be indicated
                 continue
             analyses[service_title].append({
-                'service': service,
+                # The report should not mind taking 'analysis' in place of
+                # 'service' - the service field values are placed in analysis.
+                'service': analysis,
                 'obj': analysis,
                 'Request ID': analysis.aq_parent.getId(),
                 'Analyst': analysis.getAnalyst(),
@@ -152,7 +152,7 @@ class Report(BrowserView):
                 'Captured': analysis.getResultCaptureDate(),
                 'Uncertainty': analysis.getUncertainty(),
                 'result_in_range': result_in_range,
-                'Unit': service.getUnit(),
+                'Unit': analysis.getUnit(),
                 'Keyword': keyword,
                 'icons': '',
             })

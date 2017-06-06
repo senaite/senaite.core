@@ -1,989 +1,989 @@
 3.2.0 (unreleased)
 ------------------
-- Allow multi-approval (multi-verification) of results
-HEALTH-568: TaqMan 96 Interface not working well
-HEALTH-567: Nuclicens Interface not working well
-HEALTH-360: Enforce State (Province) and District if Zimbabwe is selected
-HEALTH-364: Added country/province/district columns to client listing table
-LIMS-2477: Reference Analysis has no dependencies; remove guard that assumes it does
-LIMS-2465: Not possible to translate Bika Listing Table Workflow Action Buttons
-LIMS-1391: Add configurable identifier types (CAS# for AnalysisService)
-LIMS-2466: Central Instrument Location Management
-LIMS-2357: Custom Landing Page and Link to switch between the Front Page and Dashboard
-LIMS-2341: Cleanup and format default Multi-AR COA
-LIMS-2455: Contact/Login Linkage Behavior
-LIMS-2456: Restrict duplicate slots in worksheet templates to routine analyses only.
-LIMS-2447: getDatePublished index not indexed correctly at time of AR publication
-LIMS-2404: AR list in batches permitted sampling without Sampler and Sampling date provided
-LIMS-2380: ARs are created in correct order (order of columns in ar-create form)
-LIMS-2394: Calculation failure in worksheets. TDS Calc misfires again.
-LIMS-2391: Use source analysis's sample ID in duplicate analysis IDs
-LIMS-2351: Field analyses without results do not prevent Samples from being received
-LIMS-2366: Workflow. AR stays in Received state with all Analyses in To be Verifie
-LIMS-2384: ARImport: Workflow state of imported ARs and their Analyses not synchronised.
-LIMS-2369: Workflow. Sampler and Date Sampled should be compulsory
-LIMS-2355: Unable to view dormant/active filters in some bika_setup pages
-LIMS-2344: Fix some UI javascript failures when viewing ARs
-LIMS-2319: AR Add: Deleting a selected CC Contact corrupts the UID of reference widgets
-LIMS-2325: Allow SampleTypes to be linked with Client Sample Points
-LIMS-2324: WS export to the LaChat Quick Chem FIA
-LIMS-2298: Add filter in Clients list
-LIMS-2299: Add ui for editing ar_count in all analysisrequest lists
-LIMS-2268: Instrument Interface. Vista Pro Simultaneous ICP, bi-directional CSV
-LIMS-2261: Cannot create analysis request
-LIMS-1562: Using a Sample Round. Basic form and printed form
-LIMS-2266: Crating partitions through Add form, doesn't create partitions.
-HEALTH-394: Sample sticker layout. 2 new sticker layouts, 2 stickers per row
-LIMS-2032: AS Methods initialise with 1st available Instrument (loading setup data)
-LIMS-2014: I can only select a Default Method for an AS if Manual results capture is on
-LIMS-2181: An analysis is not stopped from using an invalid instrument
-HEALTH-310: Implemented Nuclisens EasyQ instrument importer
-HEALTH-319: Instrument. Roche Cobas Taqman 96
-LIMS-2091: Table Column Display options Everywhere
-LIMS-2207: Indentation in analysisrequests.py
-LIMS-2208: WinescanCSVParser class instance variable misspelling
-LIMS-1832: New Results Template, COA. Multiple ARs in columns
-LIMS-2148: Unable to sort Bika Listing tables
-LIMS-1774: Shiny graphs for result ranges
-- Replacement of pagination by 'Show more' in tables makes the app faster
-- Add Bika LIMS TAL report reference in reports preview
-- Simplify instrument interface creation for basic CSV files
-- Scheduled sampling functionality added
-LIMS-2257: Scheduled sampling
-LIMS-2255: Switch to Chameleon (five.pt) for rendering TAL templates
-- Additional "Printed" workflow for Analysis Requests once Published
-- Add buttons to export lists to CSV and XML formats
-- System-wide filter by department
-- Allow to assign a lab contact to more than one department
-- Multi-verification of analyses, with different verification types
-- Add option to allow multi-approval (multi-verification) of results
-- Added Analyses section in the Dashboard
-- Add option to allow labman to self-verify analysis results
-- Replacement of pagination by 'Show more' in tables makes the app faster
-- Add Bika LIMS TAL report reference in reports preview
-- Simplify instrument interface creation for basic CSV files
-- Pinned CairoSVG to 1.0.20 (support for Python 2 removed in later versions)
+- allow multi-approval (multi-verification) of results
+health-568: taqman 96 interface not working well
+health-567: nuclicens interface not working well
+health-360: enforce state (province) and district if zimbabwe is selected
+health-364: added country/province/district columns to client listing table
+lims-2477: reference analysis has no dependencies; remove guard that assumes it does
+lims-2465: not possible to translate bika listing table workflow action buttons
+lims-1391: add configurable identifier types (cas# for analysisservice)
+lims-2466: central instrument location management
+lims-2357: custom landing page and link to switch between the front page and dashboard
+lims-2341: cleanup and format default multi-ar coa
+lims-2455: contact/login linkage behavior
+lims-2456: restrict duplicate slots in worksheet templates to routine analyses only.
+lims-2447: getdatepublished index not indexed correctly at time of ar publication
+lims-2404: ar list in batches permitted sampling without sampler and sampling date provided
+lims-2380: ars are created in correct order (order of columns in ar-create form)
+lims-2394: calculation failure in worksheets. tds calc misfires again.
+lims-2391: use source analysis's sample id in duplicate analysis ids
+lims-2351: field analyses without results do not prevent samples from being received
+lims-2366: workflow. ar stays in received state with all analyses in to be verifie
+lims-2384: arimport: workflow state of imported ars and their analyses not synchronised.
+lims-2369: workflow. sampler and date sampled should be compulsory
+lims-2355: unable to view dormant/active filters in some bika_setup pages
+lims-2344: fix some ui javascript failures when viewing ars
+lims-2319: ar add: deleting a selected cc contact corrupts the uid of reference widgets
+lims-2325: allow sampletypes to be linked with client sample points
+lims-2324: ws export to the lachat quick chem fia
+lims-2298: add filter in clients list
+lims-2299: add ui for editing ar_count in all analysisrequest lists
+lims-2268: instrument interface. vista pro simultaneous icp, bi-directional csv
+lims-2261: cannot create analysis request
+lims-1562: using a sample round. basic form and printed form
+lims-2266: crating partitions through add form, doesn't create partitions.
+health-394: sample sticker layout. 2 new sticker layouts, 2 stickers per row
+lims-2032: as methods initialise with 1st available instrument (loading setup data)
+lims-2014: i can only select a default method for an as if manual results capture is on
+lims-2181: an analysis is not stopped from using an invalid instrument
+health-310: implemented nuclisens easyq instrument importer
+health-319: instrument. roche cobas taqman 96
+lims-2091: table column display options everywhere
+lims-2207: indentation in analysisrequests.py
+lims-2208: winescancsvparser class instance variable misspelling
+lims-1832: new results template, coa. multiple ars in columns
+lims-2148: unable to sort bika listing tables
+lims-1774: shiny graphs for result ranges
+- replacement of pagination by 'show more' in tables makes the app faster
+- add bika lims tal report reference in reports preview
+- simplify instrument interface creation for basic csv files
+- scheduled sampling functionality added
+lims-2257: scheduled sampling
+lims-2255: switch to chameleon (five.pt) for rendering tal templates
+- additional "printed" workflow for analysis requests once published
+- add buttons to export lists to csv and xml formats
+- system-wide filter by department
+- allow to assign a lab contact to more than one department
+- multi-verification of analyses, with different verification types
+- add option to allow multi-approval (multi-verification) of results
+- added analyses section in the dashboard
+- add option to allow labman to self-verify analysis results
+- replacement of pagination by 'show more' in tables makes the app faster
+- add bika lims tal report reference in reports preview
+- simplify instrument interface creation for basic csv files
+- pinned cairosvg to 1.0.20 (support for python 2 removed in later versions)
 
-3.1.x Long Term Support (LTS)
+3.1.x long term support (lts)
 -----------------------------
-HEALTH-498: Sampling Date accepting dates in the future
+health-498: sampling date accepting dates in the future
 3.1.11 (2016-04-22)
 -----------------------------
-LIMS-2181: An analysis is not stopped from using an invalid instrument
+lims-2181: an analysis is not stopped from using an invalid instrument
 3.1.12 (unreleased)
 3.1.12 (2016-12-15)
 -----------------------------
-HEALTH-569 Bar code printing not working on sample registration
-- Pinned CairoSVG to 1.0.20 (support for Python 2 removed in later versions)
+health-569 bar code printing not working on sample registration
+- pinned cairosvg to 1.0.20 (support for python 2 removed in later versions)
 
 3.1.11 (2016-04-22)
 -----------------------------
-LIMS-2252: Partitions not submitted when creating AR if the form is submitted before partitions are calculated
-LIMS-2223: Saving a recordswidget as hidden fails
-LIMS-2225: Formatted results not displayed properly in Worksheet's transposed layout
-LIMS-2001: Duplicate for one analysis only
-LIMS-1809: Typos. Perdiod an missing spaces
-LIMS-2221: Decimal mark doesn't work in Sci Notation
-LIMS-2219: Using a SciNotation diferent from 'aE+b / aE-b' throws an error
-LIMS-2220: Raw display of exponential notations in results manage views
-LIMS-2216: Results below LDL are not displayed in reports
-LIMS-2217: Specifications are not set in analyses on Analysis Request creation
-LIMS-2218: Result is replaced by min or max specs when "<Min" or ">Max" fields are used
-LIMS-2215: Decimal mark not working
-LIMS-2203: 'Comma' as decimal mark doesnt work
-LIMS-2212: Sampling round- Sampling round templates show all system analysis request templates
-LIMS-2209: error in manage analyises
-LIMS-1917: Inconsistencies related to significant digits in uncertainties
-LIMS-2015: Column spacing on Client look-up
-LIMS-1807: Validation for Start Date - End date relationship while creating invoices and price lists
-LIMS-1991: Sort Order for Analysis Categories and Services
-LIMS-1521: Date verified column for AR lists
-LIMS-2194: Error when submitting a result
-LIMS-2169: Cannot start instance
-WINE-125: Client users receive unauthorized when viewing some published ARs
+lims-2252: partitions not submitted when creating ar if the form is submitted before partitions are calculated
+lims-2223: saving a recordswidget as hidden fails
+lims-2225: formatted results not displayed properly in worksheet's transposed layout
+lims-2001: duplicate for one analysis only
+lims-1809: typos. perdiod an missing spaces
+lims-2221: decimal mark doesn't work in sci notation
+lims-2219: using a scinotation diferent from 'ae+b / ae-b' throws an error
+lims-2220: raw display of exponential notations in results manage views
+lims-2216: results below ldl are not displayed in reports
+lims-2217: specifications are not set in analyses on analysis request creation
+lims-2218: result is replaced by min or max specs when "<min" or ">max" fields are used
+lims-2215: decimal mark not working
+lims-2203: 'comma' as decimal mark doesnt work
+lims-2212: sampling round- sampling round templates show all system analysis request templates
+lims-2209: error in manage analyises
+lims-1917: inconsistencies related to significant digits in uncertainties
+lims-2015: column spacing on client look-up
+lims-1807: validation for start date - end date relationship while creating invoices and price lists
+lims-1991: sort order for analysis categories and services
+lims-1521: date verified column for ar lists
+lims-2194: error when submitting a result
+lims-2169: cannot start instance
+wine-125: client users receive unauthorized when viewing some published ars
 
 3.1.10 (2016-01-13)
 -------------------
-- Updated Plone to 4.3.7
-- Dashboard: replace multi-bar charts by stacked-bar charts
-LIMS-2177: template_set error when no template has been selected
-HEALTH-410: AR Create. Auto-complete Contact field if only 1
-LIMS-2175: "NaN" is shown automatically for result fields that have AS with "LDL" enabled and then an error is shown after submitting a result
-LIMS-1917: Inconsistencies related to significant digits in uncertainties
-LIMS-2143: Statements vs Invoices
-LIMS-1989: Retracting a published AR fails if one or more ASs has been retracted before publishing
-LIMS-2071: Can't generate Invoice Batch/Monthly Statements
-WINE-71: Instrument. BBK WS export to FIA fails
-WINE-72: Instrument. BBK WineScan Auto Import fails
-WINE-58: Instrument. BBK FIAStar import fails
-WINE-76: WineScan FT120 Import warnings incorrect?
-LIMS-1906: Spaces should be stripped out of the keywords coming from the Instrument
-LIMS-2117: Analysis Categories don't expand on Analysis Specification creation
-LIMS-1933: Regression: Selecting secondary AR in client batches, fails.
-LIMS-2075: Ensure hiding of pricing information when disabled in site-setup
-LIMS-2081: AR Batch Import WorkflowException after edit
-LIMS-2106: Attribute error when creating AR inside batch with no client.
-LIMS-2080: Correctly interpret default (empty) values in ARImport CSV file
-LIMS-2115: Error rises when saving a Calculation
-LIMS-2116: JSONAPI throws an UnicodeDecodeError
-LIMS-2114: AR Import with Profiles, no Analyses are created
-LIMS-2132: Reference Analyses got the same ID
-LIMS-2133: Once in a while, specs var is going empty in results reports
-LIMS-2136: Site Error on AR Verification
-LIMS-2121: Fix possible Horiba ICP csv handling errors
-LIMS-2042: Improving Horiba ICP to avoid Element Symbols as keywords
-LIMS-2123: Analysis Categories don't expand in Worksheet Templates
-LIMS-1993: Existing Sample look-up for AR Create in Batch does not work
-LIMS-2124: QR missing on sticker preview
-LIMS-2147: Add ARImport schema fields when creating ARs
-LIMS-409: ShowPrices setting was getting ignored in some contexts
-LIMS-2062: Cancelled ARs no longer appear in analysisrequest folder listings
-LIMS-2076: Cancelled batches appear in listing views
-LIMS-2154: Hide inactive ARs from BatchBook view
-LIMS-2134: Inactive services appear in AR Create
-LIMS-2139: WS Blank and Control Selection renderes whole page
-LIMS-2156: Ignore blank index values when calculating ReferenceAnalysesGroupID
-LIMS-2157: Cancelled ARs appear in AR listing inside Batches
-LIMS-2042: Horiba ICP: Missing 'DefaultResult' for imported rows
-LIMS-2030: Assign ARs in alphabetical ID order to WS
-LIMS-2167: Cannot assign a QC analysis to an invalid instrument
-LIMS-2067: Prevent initial method/instrument query for each analysis
-WINE-82: Ignore invalid entry in Sample field during AR creation
-LIMS-1717: Workflow transitions in edit context do not take effect
-WINE-111: Do not attempt formatting of 'nan' analysis result values
-WINE-114: Some users cannot view published ARs (unauthorised)
-WINE-122: Transposed worksheet layout failed while rendering empty slots
-LIMS-2149: Missing analyses can cause error accessing worksheet
-LIMS-1521: Date verified column for AR lists
-LIMS-2015: Column spacing on Client look-up
-LIMS-1807: Validation for Start Date - End Date relationship
+- updated plone to 4.3.7
+- dashboard: replace multi-bar charts by stacked-bar charts
+lims-2177: template_set error when no template has been selected
+health-410: ar create. auto-complete contact field if only 1
+lims-2175: "nan" is shown automatically for result fields that have as with "ldl" enabled and then an error is shown after submitting a result
+lims-1917: inconsistencies related to significant digits in uncertainties
+lims-2143: statements vs invoices
+lims-1989: retracting a published ar fails if one or more ass has been retracted before publishing
+lims-2071: can't generate invoice batch/monthly statements
+wine-71: instrument. bbk ws export to fia fails
+wine-72: instrument. bbk winescan auto import fails
+wine-58: instrument. bbk fiastar import fails
+wine-76: winescan ft120 import warnings incorrect?
+lims-1906: spaces should be stripped out of the keywords coming from the instrument
+lims-2117: analysis categories don't expand on analysis specification creation
+lims-1933: regression: selecting secondary ar in client batches, fails.
+lims-2075: ensure hiding of pricing information when disabled in site-setup
+lims-2081: ar batch import workflowexception after edit
+lims-2106: attribute error when creating ar inside batch with no client.
+lims-2080: correctly interpret default (empty) values in arimport csv file
+lims-2115: error rises when saving a calculation
+lims-2116: jsonapi throws an unicodedecodeerror
+lims-2114: ar import with profiles, no analyses are created
+lims-2132: reference analyses got the same id
+lims-2133: once in a while, specs var is going empty in results reports
+lims-2136: site error on ar verification
+lims-2121: fix possible horiba icp csv handling errors
+lims-2042: improving horiba icp to avoid element symbols as keywords
+lims-2123: analysis categories don't expand in worksheet templates
+lims-1993: existing sample look-up for ar create in batch does not work
+lims-2124: qr missing on sticker preview
+lims-2147: add arimport schema fields when creating ars
+lims-409: showprices setting was getting ignored in some contexts
+lims-2062: cancelled ars no longer appear in analysisrequest folder listings
+lims-2076: cancelled batches appear in listing views
+lims-2154: hide inactive ars from batchbook view
+lims-2134: inactive services appear in ar create
+lims-2139: ws blank and control selection renderes whole page
+lims-2156: ignore blank index values when calculating referenceanalysesgroupid
+lims-2157: cancelled ars appear in ar listing inside batches
+lims-2042: horiba icp: missing 'defaultresult' for imported rows
+lims-2030: assign ars in alphabetical id order to ws
+lims-2167: cannot assign a qc analysis to an invalid instrument
+lims-2067: prevent initial method/instrument query for each analysis
+wine-82: ignore invalid entry in sample field during ar creation
+lims-1717: workflow transitions in edit context do not take effect
+wine-111: do not attempt formatting of 'nan' analysis result values
+wine-114: some users cannot view published ars (unauthorised)
+wine-122: transposed worksheet layout failed while rendering empty slots
+lims-2149: missing analyses can cause error accessing worksheet
+lims-1521: date verified column for ar lists
+lims-2015: column spacing on client look-up
+lims-1807: validation for start date - end date relationship
 
 3.1.9 (2015-10-8)
 ------------------
-LIMS-2068: LIMS-2068 Urgent. Analysis Catgories don't expand
-LIMS-1875: Able to deactivate instruments and reference samples without logging in
-LIMS-2049: Displaying lists doesn't work as expected in 319
-LIMS-1908: Navigation tree order
-LIMS-1543: Add "Security Seal Intact Y/N" checkbox for partition container
-LIMS-1544: Add "File attachment" field on Sample Point
-LIMS-1949: Enviromental conditions
-LIMS-1549: Sampling Round Templates privileges and permissions
-LIMS-1564: Cancelling a Sampling Round
-LIMS-2020: Add Sampling Round - Department not available for selection
-LIMS-1545: Add "Composite Y/N" checkbox on AR Template
-LIMS-1547: AR Templates tab inside Sampling Round Template
-LIMS-1561: Editing a Sampling Round
-LIMS-1558: Creating Sampling Rounds
-LIMS-1965: Modified default navtree order for new installations
-LIMS-1987: AR Invoice tab should not be shown if pricing is toggled off
-LIMS-1523: Site Error when transitioning AR from 'Manage Analyses' or 'Log' tab
-LIMS-1970: Analyses with AR Specifications not displayed properly in AR Add form
-LIMS-1969: AR Add error when "Categorise analysis services" is disabled
-LIMS-1397: Fix Client Title accessor to prevent catalog error when data is imported
-LIMS-1996: On new system with no instrument data is difficult to get going.
-LIMS-2005: Click on Validations tab of Instruments it give error
-LIMS-1806: Instrument Interface. AQ2. Seal Analytical - Error
-LIMS-2002: Error creating Analysis Requests from batch.
-LIMS-1996: On new system with no instrument data it is difficult to get going. The warnings could be confusing
-LIMS-1312: Transposed Worksheet view, ARs in columns
-LIMS-1760: Customised AR Import spreadsheets (refactored, support importing to Batch)
-LIMS-1548: Client-specific Sampling Round Templates
-LIMS-1546: Sampling Round Template Creation and Edit view
-LIMS-1944: Prevent concurrent form submissions from clobbering each other's results
-LIMS-1930: AssertionError: Having an orphan size, higher than batch size is undefined
-LIMS-1959: Not possible to create an AR
-LIMS-1956: Error upgrading to 319
-LIMS-1934: Hyperlinks in invoices
-LIMS-1943: Stickers preview and custom stickers templates support
-LIMS-1855: Small Sticker layout. QR-code capabilities
-LIMS-1627: Pricing per Analysis Profile
-HEALTH-279: AS IDs to be near top of page. Columns in AS list
-LIMS-1625: Instrument tab titles and headers do not correspond
-LIMS-1924: Instrument tab very miss-titled. Internal Calibration Tests
-LIMS-1922: Instrument out of date typo and improvement
-HEALTH-175: Supplier does not resolve on Instrument view page
-LIMS-1887: uniquefield validator doesn't work properly
-LIMS-1869: Not possible to create an Analysis Request
-LIMS-1867: Auto-header, auto-footer and auto-pagination in results reports
-LIMS-1743: Reports: ISO (A4) or ANSI (letter) pdf report size
-LIMS-1695: Invoice export function missing
-LIMS-1812: Use asynchronous requests for expanding categories in listings
-LIMS-1811: Refactor AR Add form Javascript, and related code.
-LIMS-1818: Instrument Interface. Eltra CS-2000
-LIMS-1817: Instrument Interface. Rigaku Supermini XRF
-- New System Dashboard for LabManagers and Admins
+lims-2068: lims-2068 urgent. analysis catgories don't expand
+lims-1875: able to deactivate instruments and reference samples without logging in
+lims-2049: displaying lists doesn't work as expected in 319
+lims-1908: navigation tree order
+lims-1543: add "security seal intact y/n" checkbox for partition container
+lims-1544: add "file attachment" field on sample point
+lims-1949: enviromental conditions
+lims-1549: sampling round templates privileges and permissions
+lims-1564: cancelling a sampling round
+lims-2020: add sampling round - department not available for selection
+lims-1545: add "composite y/n" checkbox on ar template
+lims-1547: ar templates tab inside sampling round template
+lims-1561: editing a sampling round
+lims-1558: creating sampling rounds
+lims-1965: modified default navtree order for new installations
+lims-1987: ar invoice tab should not be shown if pricing is toggled off
+lims-1523: site error when transitioning ar from 'manage analyses' or 'log' tab
+lims-1970: analyses with ar specifications not displayed properly in ar add form
+lims-1969: ar add error when "categorise analysis services" is disabled
+lims-1397: fix client title accessor to prevent catalog error when data is imported
+lims-1996: on new system with no instrument data is difficult to get going.
+lims-2005: click on validations tab of instruments it give error
+lims-1806: instrument interface. aq2. seal analytical - error
+lims-2002: error creating analysis requests from batch.
+lims-1996: on new system with no instrument data it is difficult to get going. the warnings could be confusing
+lims-1312: transposed worksheet view, ars in columns
+lims-1760: customised ar import spreadsheets (refactored, support importing to batch)
+lims-1548: client-specific sampling round templates
+lims-1546: sampling round template creation and edit view
+lims-1944: prevent concurrent form submissions from clobbering each other's results
+lims-1930: assertionerror: having an orphan size, higher than batch size is undefined
+lims-1959: not possible to create an ar
+lims-1956: error upgrading to 319
+lims-1934: hyperlinks in invoices
+lims-1943: stickers preview and custom stickers templates support
+lims-1855: small sticker layout. qr-code capabilities
+lims-1627: pricing per analysis profile
+health-279: as ids to be near top of page. columns in as list
+lims-1625: instrument tab titles and headers do not correspond
+lims-1924: instrument tab very miss-titled. internal calibration tests
+lims-1922: instrument out of date typo and improvement
+health-175: supplier does not resolve on instrument view page
+lims-1887: uniquefield validator doesn't work properly
+lims-1869: not possible to create an analysis request
+lims-1867: auto-header, auto-footer and auto-pagination in results reports
+lims-1743: reports: iso (a4) or ansi (letter) pdf report size
+lims-1695: invoice export function missing
+lims-1812: use asynchronous requests for expanding categories in listings
+lims-1811: refactor ar add form javascript, and related code.
+lims-1818: instrument interface. eltra cs-2000
+lims-1817: instrument interface. rigaku supermini xrf
+- new system dashboard for labmanagers and admins
 
 3.1.8.3 (2015-10-01)
 --------------------
-LIMS-1755: PDF writer should be using a world-writeable tmp location
-LIMS-2041: Resolve ${analysis_keyword) in instrument import alert.
-LIMS-2041: Resolve translation syntax error in instrument import alert
-LIMS-1933: Secondary Sample selection in Client Batches does not locate samples
+lims-1755: pdf writer should be using a world-writeable tmp location
+lims-2041: resolve ${analysis_keyword) in instrument import alert.
+lims-2041: resolve translation syntax error in instrument import alert
+lims-1933: secondary sample selection in client batches does not locate samples
 
 3.1.8.2 (2015-09-27)
 --------------------
-LIMS-1996: On new system with no instrument data is difficult to get going.
-LIMS-1760: Customised AR Import spreadsheets (refactored, support importing to Batch)
-LIMS-1930: AssertionError: Having an orphan size, higher than batch size is undefined
-LIMS-1818: Instrument Interface. Eltra CS-2000
-LIMS-1817: Instrument Interface. Rigaku Supermini XRF
-LIMS-2037: Gracefully anticipate missing analysis workflow history
-LIMS-2035: Prevent Weasyprint flooding due to asyncronous publish
+lims-1996: on new system with no instrument data is difficult to get going.
+lims-1760: customised ar import spreadsheets (refactored, support importing to batch)
+lims-1930: assertionerror: having an orphan size, higher than batch size is undefined
+lims-1818: instrument interface. eltra cs-2000
+lims-1817: instrument interface. rigaku supermini xrf
+lims-2037: gracefully anticipate missing analysis workflow history
+lims-2035: prevent weasyprint flooding due to asyncronous publish
 
 3.1.8.1 (2015-06-23)
 --------------------
-LIMS-1806: Instrument Interface. AQ2. Seal Analytical - Error
-LIMS-1760: Customised AR Import spreadsheets (refactored, support importing to Batch)
-Fix portlets.xml for Plone 4.3.6 compatibility
+lims-1806: instrument interface. aq2. seal analytical - error
+lims-1760: customised ar import spreadsheets (refactored, support importing to batch)
+fix portlets.xml for plone 4.3.6 compatibility
 
 3.1.8 (2015-06-03)
 ------------------
-LIMS-1923: Typo InstrumentCalibration
-HEALTH-287: Hyperlink in Instrument messages
-LIMS-1929: Translation error on Instrument Document page
-LIMS-1928 Asset Number on Instruments' Certificate tab should use Instrument's default
-LIMS-1929: Translation error on Instrument Document page
-LIMS-1773: Instrument. Thermo Fisher ELISA Spectrophotometer
-LIMS-1697: Error updating bika.lims 317 to 318 via quickinstaller
-LIMS-1820: QC Graphs DateTime's X-Axis not well sorted
-LIMS-280 : System IDs starting from a specific value
-LIMS-1819: Bika LIMS in footer, not Bika Lab Systems
-LIMS-1808: Uncertainty calculation on DL
-LIMS-1522: Site Error adding display columns to sorted AR list
-LIMS-1705: Invoices. Currency unit overcooked
-LIMS-1806: Instrument Interface. AQ2. Seal Analytical
-LIMS-1770: FIAStar import 'no header'
-LIMS-1771: Instrument. Scil Vet abc Plus
-LIMS-1772: Instrument. VetScan VS2
-LIMS-1507: Bika must notify why is not possible to publish an AR
-LIMS-1805: Instrument Interface. Horiba JY ICP
-LIMS-1710: UnicodeEncode error while creating an Invoice from AR view
-WINE-44: Sample stickers uses Partition ID only if ShowPartitions option is enabled
-LIMS-1634: AR Import fields (ClientRef, ClientSid) not importing correctly
-LIMS-1474: Disposed date is not shown in Sample View
-LIMS-1779: Results report new fields and improvements
-LIMS-1775: Allow to select LDL or UDL defaults in results with readonly mode
-LIMS-1769: Allow to use LDL and UDL in calculations.
-LIMS-1700: Lower and Upper Detection Limits (LDL/UDL). Allow manual input
-LIMS-1379: Allow manual uncertainty value input
-LIMS-1324: Allow to hide analyses in results reports
-LIMS-1754: Easy install for LIMS' add-ons was not possible
-LIMS-1741: Fixed unwanted overlay when trying to save supply order
-LIMS-1748: Error in adding supply order when a product has no price
-LIMS-1745: Retracted analyses in duplicates
-LIMS-1629: Pdf reports should split analysis results in different pages according to the lab department
-Some new ID Generator's features, as the possibility of select the separator type
-LIMS-1738: Regression. 'NoneType' object has no attribute 'getResultsRangeDict'
-LIMS-1739: Error with results interpretation field of an AR lacking departments
-LIMS-1740: Error when trying to view any Sample
-LIMS-1724: Fixed missing start and end dates on reports
-LIMS-1628: There should be a results interpretation field per lab department
-LIMS-1737: Error when adding pricelists of lab products with no volume and unit
-LIMS-1696: Decimal mark conversion is not working with "<0,002" results type
-LIMS-1729: Analysis Specification Not applying to Sample when Selected
-LIMS-1507: Do not cause exception on SMTPServerDisconnect when publishing AR results.
+lims-1923: typo instrumentcalibration
+health-287: hyperlink in instrument messages
+lims-1929: translation error on instrument document page
+lims-1928 asset number on instruments' certificate tab should use instrument's default
+lims-1929: translation error on instrument document page
+lims-1773: instrument. thermo fisher elisa spectrophotometer
+lims-1697: error updating bika.lims 317 to 318 via quickinstaller
+lims-1820: qc graphs datetime's x-axis not well sorted
+lims-280 : system ids starting from a specific value
+lims-1819: bika lims in footer, not bika lab systems
+lims-1808: uncertainty calculation on dl
+lims-1522: site error adding display columns to sorted ar list
+lims-1705: invoices. currency unit overcooked
+lims-1806: instrument interface. aq2. seal analytical
+lims-1770: fiastar import 'no header'
+lims-1771: instrument. scil vet abc plus
+lims-1772: instrument. vetscan vs2
+lims-1507: bika must notify why is not possible to publish an ar
+lims-1805: instrument interface. horiba jy icp
+lims-1710: unicodeencode error while creating an invoice from ar view
+wine-44: sample stickers uses partition id only if showpartitions option is enabled
+lims-1634: ar import fields (clientref, clientsid) not importing correctly
+lims-1474: disposed date is not shown in sample view
+lims-1779: results report new fields and improvements
+lims-1775: allow to select ldl or udl defaults in results with readonly mode
+lims-1769: allow to use ldl and udl in calculations.
+lims-1700: lower and upper detection limits (ldl/udl). allow manual input
+lims-1379: allow manual uncertainty value input
+lims-1324: allow to hide analyses in results reports
+lims-1754: easy install for lims' add-ons was not possible
+lims-1741: fixed unwanted overlay when trying to save supply order
+lims-1748: error in adding supply order when a product has no price
+lims-1745: retracted analyses in duplicates
+lims-1629: pdf reports should split analysis results in different pages according to the lab department
+some new id generator's features, as the possibility of select the separator type
+lims-1738: regression. 'nonetype' object has no attribute 'getresultsrangedict'
+lims-1739: error with results interpretation field of an ar lacking departments
+lims-1740: error when trying to view any sample
+lims-1724: fixed missing start and end dates on reports
+lims-1628: there should be a results interpretation field per lab department
+lims-1737: error when adding pricelists of lab products with no volume and unit
+lims-1696: decimal mark conversion is not working with "<0,002" results type
+lims-1729: analysis specification not applying to sample when selected
+lims-1507: do not cause exception on smtpserverdisconnect when publishing ar results.
 
 
 3.1.7 (2015-02-26)
 ------------------
-LIMS-1693: Error trying to save a new AR
-LIMS-1570: Instrument interface: Roche Cobas Taqman 48
-LIMS-1520: Allow to invalidate verified ARs
-LIMS-1690: Typo. Instrument page
-LIMS-1688: After AR invalidation, ARs list throws an error
-LIMS-1569: Instrument interface: Beckman Coulter Access 2
-LIMS-1689: Error while creating a new invoice batch
-LIMS-1266: Sampling date format error
-LIMS-1365: Batch search parameters on Work sheets/Work sheets insides Batches
-LIMS-1428: After receiving a sample with Sampling Workflow enable is not possible to input results
-LIMS-1540: When accent characters are used in a "Sample Type" name, it is not possible to create a new AR
-LIMS-1617: Error with bin/test
-LIMS-1571: Instrument interface: Sysmex XS-1000i
-LIMS-1574: Fixed AR and Analysis attachments
-LIMS-1670: Fixed windows incompatibility in TAL (referencewidget.pt)
-LIMS-1594: Added option to select landing page for clients in configuration registry
-LIMS-1594: Re-ordered tabs on Client home page
-LIMS-1520: Allow to invalidate verified ARs
-LIMS-1539: Printable Worksheets. In both AR by row or column orientations
-LIMS-1199: Worksheet totals in WS lists
-LIMS-257: Set Blank and Warning icons in Reference Sample main view
-LIMS-1636: Batch Sample View crash
-LIMS-1524: Invalidate email does not have variables populated
-LIMS-1572: Instrument interface: Sysmex XS-500i
-LIMS-1575: Thermo Arena 20XT
-LIMS-1423: Save details when AR workflow action kicked off
-LIMS-1624: Import default test.xlsx fails
-LIMS-1614: Error when selecting Analysis Administration Tab after receiving a sample with Sampling Workflow enabled
-LIMS-1605: Tescan TIMA interface
-LIMS-1604: BioDrop uLite interface
-LIMS-1603: Life Technologies Qubit interface
-LIMS-1517: Storage field tag untranslated?
-LIMS-1518: Storage Location table
-LIMS-1527: CC Contact on AR view (edit) offers all contacts in system
-LIMS-1536: Add button [Add], to alow quickly addings in referencewidget
-LIMS-1587: Better support for extension of custom sample labels
-LIMS-1622: Version Check does not correctly check cache
-LIMS-1623: Implement bika-frontpage as a BrowserView
+lims-1693: error trying to save a new ar
+lims-1570: instrument interface: roche cobas taqman 48
+lims-1520: allow to invalidate verified ars
+lims-1690: typo. instrument page
+lims-1688: after ar invalidation, ars list throws an error
+lims-1569: instrument interface: beckman coulter access 2
+lims-1689: error while creating a new invoice batch
+lims-1266: sampling date format error
+lims-1365: batch search parameters on work sheets/work sheets insides batches
+lims-1428: after receiving a sample with sampling workflow enable is not possible to input results
+lims-1540: when accent characters are used in a "sample type" name, it is not possible to create a new ar
+lims-1617: error with bin/test
+lims-1571: instrument interface: sysmex xs-1000i
+lims-1574: fixed ar and analysis attachments
+lims-1670: fixed windows incompatibility in tal (referencewidget.pt)
+lims-1594: added option to select landing page for clients in configuration registry
+lims-1594: re-ordered tabs on client home page
+lims-1520: allow to invalidate verified ars
+lims-1539: printable worksheets. in both ar by row or column orientations
+lims-1199: worksheet totals in ws lists
+lims-257: set blank and warning icons in reference sample main view
+lims-1636: batch sample view crash
+lims-1524: invalidate email does not have variables populated
+lims-1572: instrument interface: sysmex xs-500i
+lims-1575: thermo arena 20xt
+lims-1423: save details when ar workflow action kicked off
+lims-1624: import default test.xlsx fails
+lims-1614: error when selecting analysis administration tab after receiving a sample with sampling workflow enabled
+lims-1605: tescan tima interface
+lims-1604: biodrop ulite interface
+lims-1603: life technologies qubit interface
+lims-1517: storage field tag untranslated?
+lims-1518: storage location table
+lims-1527: cc contact on ar view (edit) offers all contacts in system
+lims-1536: add button [add], to alow quickly addings in referencewidget
+lims-1587: better support for extension of custom sample labels
+lims-1622: version check does not correctly check cache
+lims-1623: implement bika-frontpage as a browserview
 
 
 3.1.6 (2014-12-17)
 ------------------
-LIMS-1530: Scrambled Analysis Category order in Published Results
-LIMS-1529: Error while inserting an AR with container-based partitioning is required
-LIMS-1460: Additional field in AR for comments or results interpretation
-LIMS-1441: An error message related to partitions unit is shown when selecting analysis during AR creation
-LIMS-1470: AS Setup. File attachment field tag is missing
-LIMS-1422: Results doesn't display yes/no once verified but 1 or 0
-LIMS-1486: Typos in instrument messages
-LIMS-1498: Published Results not Showing for Logged Clients
-LIMS-1445: Scientific names should be written in italics in published reports
-LIMS-1389: Units in results publishing should allow super(sub)script format, for example in cm2 or m3
-LIMS-1500: Alere Pima's Instrument Interfice
-LIMS-1457: Exponential notation in published AR pdf should be formatted like a×10^b instead of ae^+b
-LIMS-1334: Calculate result precision from Uncertainty value
-LIMS-1446: After retracting a published AR the Sample gets cancelled
-LIMS-1390: More workflow for Batches
-LIMS-1378: Bulking up Batches
-LIMS-1479: new-version and upgrade-steps should be python viewlets
-LIMS-1362: File attachment uploads to Batches
-LIMS-1404: New Batch attributes (and their integration with existing ones on Batch views)
-LIMS-1467: Sample Point Lookup doesn't work on AR modify
-LIMS-1363: Batches per Client
-LIMS-1405: New Sample and AR attributes
-LIMS-1085: Allow Clients to add Attachments to ARs
-LIMS-1444: In AR published report accredited analysis services are not marked as accredited
-LIMS-1443: In published reports the publishing date is not shown in the pdf
-LIMS-1420: Status filter is not kept after moving to next page
-LIMS-1442: Sample Type is not filtred by Sample Point
-LIMS-1448: Reports: when you click on "Analysis turnaround time" displays others
-LIMS-1440: Error when trying to publish with analysis from different categories
-LIMS-1459: Error when checking instrument validity in manage_results
-LIMS-1430: Create an AR from batch allows you to introduce a non existent Client and Contacts don't work properly
+lims-1530: scrambled analysis category order in published results
+lims-1529: error while inserting an ar with container-based partitioning is required
+lims-1460: additional field in ar for comments or results interpretation
+lims-1441: an error message related to partitions unit is shown when selecting analysis during ar creation
+lims-1470: as setup. file attachment field tag is missing
+lims-1422: results doesn't display yes/no once verified but 1 or 0
+lims-1486: typos in instrument messages
+lims-1498: published results not showing for logged clients
+lims-1445: scientific names should be written in italics in published reports
+lims-1389: units in results publishing should allow super(sub)script format, for example in cm2 or m3
+lims-1500: alere pima's instrument interfice
+lims-1457: exponential notation in published ar pdf should be formatted like a×10^b instead of ae^+b
+lims-1334: calculate result precision from uncertainty value
+lims-1446: after retracting a published ar the sample gets cancelled
+lims-1390: more workflow for batches
+lims-1378: bulking up batches
+lims-1479: new-version and upgrade-steps should be python viewlets
+lims-1362: file attachment uploads to batches
+lims-1404: new batch attributes (and their integration with existing ones on batch views)
+lims-1467: sample point lookup doesn't work on ar modify
+lims-1363: batches per client
+lims-1405: new sample and ar attributes
+lims-1085: allow clients to add attachments to ars
+lims-1444: in ar published report accredited analysis services are not marked as accredited
+lims-1443: in published reports the publishing date is not shown in the pdf
+lims-1420: status filter is not kept after moving to next page
+lims-1442: sample type is not filtred by sample point
+lims-1448: reports: when you click on "analysis turnaround time" displays others
+lims-1440: error when trying to publish with analysis from different categories
+lims-1459: error when checking instrument validity in manage_results
+lims-1430: create an ar from batch allows you to introduce a non existent client and contacts don't work properly
 
-- After modifying analysis Category, reindex category name and UID for all subordinate analyses
-- Setup data import improvements and fixes
-- Simplify installation with a custom Plone overview and add site
+- after modifying analysis category, reindex category name and uid for all subordinate analyses
+- setup data import improvements and fixes
+- simplify installation with a custom plone overview and add site
 
 
 3.1.5 (2014-10-06)
 ------------------
 
-LIMS-1082: Report Barcode. Was images for pdf/print reports etc
-LIMS-1159: reapply fix for samplepoint visibility
-LIMS-1325: WSTemplate loading incompatible reference analyses
-LIMS-1333: Batch label replace with standard Plone keyword widget
-LIMS-1335: Reference Definitions don't sort alphabetically on WS Template lay-outs
-LIMS-1345: Analysis profiles don't sort
-LIMS-1347: Analysis/AR background colour to be different to for Receive and To be Sampled
-LIMS-1360: Number of analyses in ARs folder view
-LIMS-1374: Auto label printing does not happen for an AR drop-down receive
-LIMS-1377: Error when trying to publish after updating branch hotfix/next or develop
-LIMS-1378: Add AR/Sample default fields to Batch
-LIMS-1395: front page issue tracker url
-LIMS-1402: If no date is chosen, it will never expire." not been accomplished
-LIMS-1416: If a sample point has a default sample type the field is not pulled automatically during AR template creation
-LIMS-1425: Verify Workflow (bika_listing) recursion
+lims-1082: report barcode. was images for pdf/print reports etc
+lims-1159: reapply fix for samplepoint visibility
+lims-1325: wstemplate loading incompatible reference analyses
+lims-1333: batch label replace with standard plone keyword widget
+lims-1335: reference definitions don't sort alphabetically on ws template lay-outs
+lims-1345: analysis profiles don't sort
+lims-1347: analysis/ar background colour to be different to for receive and to be sampled
+lims-1360: number of analyses in ars folder view
+lims-1374: auto label printing does not happen for an ar drop-down receive
+lims-1377: error when trying to publish after updating branch hotfix/next or develop
+lims-1378: add ar/sample default fields to batch
+lims-1395: front page issue tracker url
+lims-1402: if no date is chosen, it will never expire." not been accomplished
+lims-1416: if a sample point has a default sample type the field is not pulled automatically during ar template creation
+lims-1425: verify workflow (bika_listing) recursion
 
-- added 'getusers' method to JSON API
-- Added 'remove' method to JSON API
-- Added AR 'Copy to new' action in more contexts
-- Added basic handling of custom Sample Preparation Workflows
-- Added decimal mark configuration for result reports
-- Added help info regards to new templates creation
-- Added IAcquireFieldDefaults - acquire field defaults through acquisition
-- Added IATWidgetVisibility - runtime show/hide of AT edit/view widgets
-- Added watermark on invalid reports
-- Added watermark on provisional reports
-- Alert panel when upgrades are available
-- All relevant specification ranges are persisted when copying ARs or adding analyses
-- Allow comma entry in numbers for e.g. German users
-- Bika LIMS javascripts refactoring and optimization
-- Fix ZeroDivisionError in variation calculation for DuplicateAnalysis
-- Fixed spreadsheet load errors in Windows.
-- Fixed template rendering errors in Windows
-- JSONAPI update: always use field mutator if available
-- JSONAPI: Added 'remove' and 'getusers' methods.
-- Refactored ARSpecs, and added ResultsRange field to the AR
-
-3.1.4.1 (2014-07-24)
---------------------
-
-3.1.4 release was broken, simple ARs could not be created.
-
-
+- added 'getusers' method to json api
+- added 'remove' method to json api
+- added ar 'copy to new' action in more contexts
+- added basic handling of custom sample preparation workflows
+- added decimal mark configuration for result reports
+- added help info regards to new templates creation
+- added iacquirefielddefaults - acquire field defaults through acquisition
+- added iatwidgetvisibility - runtime show/hide of at edit/view widgets
+- added watermark on invalid reports
+- added watermark on provisional reports
+- alert panel when upgrades are available
+- all relevant specification ranges are persisted when copying ars or adding analyses
+- allow comma entry in numbers for e.g. german users
+- bika lims javascripts refactoring and optimization
+- fix zerodivisionerror in variation calculation for duplicateanalysis
+- fixed spreadsheet load errors in windows.
+- fixed template rendering errors in windows
+- jsonapi update: always use field mutator if available
+- jsonapi: added 'remove' and 'getusers' methods.
+- refactored arspecs, and added resultsrange field to the ar
 
 3.1.4.1 (2014-07-24)
 --------------------
 
-3.1.4 release was broken, simple ARs could not be created.
+3.1.4 release was broken, simple ars could not be created.
 
-LIMS-1339: Published reports should use "±" symbol instead of "+/-"
-LIMS-1327: Instrument from worksheet
-LIMS-1328: Instrument calibration test graphs do not work on multiple samples
-LIMS-1347: Analysis/AR background colour to be different to for Receive and To be Sampled
-LIMS-1353: Analyses don't sort in Attachment look-up
 
-Preview for Results reports
-    - Single/Multi-AR preview
-    - Allows to cancel the pre-publish/publish process
-    - Allows to make visible/invisible the QC analyses
-    - Allows to add new custom-made templates
-    - JS machinery allowed for pdf reporting
+
+3.1.4.1 (2014-07-24)
+--------------------
+
+3.1.4 release was broken, simple ars could not be created.
+
+lims-1339: published reports should use "±" symbol instead of "+/-"
+lims-1327: instrument from worksheet
+lims-1328: instrument calibration test graphs do not work on multiple samples
+lims-1347: analysis/ar background colour to be different to for receive and to be sampled
+lims-1353: analyses don't sort in attachment look-up
+
+preview for results reports
+    - single/multi-ar preview
+    - allows to cancel the pre-publish/publish process
+    - allows to make visible/invisible the qc analyses
+    - allows to add new custom-made templates
+    - js machinery allowed for pdf reporting
 
 3.1.4 (2014-07-23)
 ------------------
 
-LIMS-113: Allow percentage value for AS uncertainty
-LIMS-1087: Prevent listing of empty categories
-LIMS-1203: Fix Batch-AnalysisRequests query
-LIMS-1207: LIMS-113 Allow percentage value for AS uncertainty
-LIMS-1221: use folder icon for ARImports in nav
-LIMS-1240: fix permissions for "Copy To New" in AR lists
-LIMS-1330: handle duplicate of reference analysis
-LIMS-1340: soft-cache validator results
-LIMS-1343: Prevent sudden death if no version information is available
-LIMS-1352: SamplingWorkflow not saved to sample
-LIMS-334: Add Service/ExponentialFormatPrecision
-LIMS-334: Added ExponentialFormatThreshold setting
-LIMS-334: Allow exponential notation entry in numeric fields
-LIMS-334: Exponent Format used for analysis Result
-LIMS-334: Remove duplicate getFormattedResult code
-LIMS-83: Update Method->calculation reference version when Calculation changes
+lims-113: allow percentage value for as uncertainty
+lims-1087: prevent listing of empty categories
+lims-1203: fix batch-analysisrequests query
+lims-1207: lims-113 allow percentage value for as uncertainty
+lims-1221: use folder icon for arimports in nav
+lims-1240: fix permissions for "copy to new" in ar lists
+lims-1330: handle duplicate of reference analysis
+lims-1340: soft-cache validator results
+lims-1343: prevent sudden death if no version information is available
+lims-1352: samplingworkflow not saved to sample
+lims-334: add service/exponentialformatprecision
+lims-334: added exponentialformatthreshold setting
+lims-334: allow exponential notation entry in numeric fields
+lims-334: exponent format used for analysis result
+lims-334: remove duplicate getformattedresult code
+lims-83: update method->calculation reference version when calculation changes
 
-- Formula statements can be written on multiple lines for clarity.
+- formula statements can be written on multiple lines for clarity.
 
-- Replace kss-bbb ajax-spinner with a quieter one
+- replace kss-bbb ajax-spinner with a quieter one
 
 - bika.lims.utils.log logs location url correctly
 
 3.1.3 (2014-07-17)
 ------------------
 
-Missing fixes from 3.1.2
+missing fixes from 3.1.2
 
-LIMS-671: Preferred/Restricted client categories
-LIMS-1251: Supply order permission error
-LIMS-1272: Currency in Price Lists
-LIMS-1310: Broken AnalysisProfile selector in AR Add form.
+lims-671: preferred/restricted client categories
+lims-1251: supply order permission error
+lims-1272: currency in price lists
+lims-1310: broken analysisprofile selector in ar add form.
 
 3.1.2 (2014-07-15)
 ------------------
 
-LIMS-1292: UI fix Retracted ARs workfow: Warning msg on "full" retract.
-LIMS.1287: UI fix Report parameter formatting
-LIMS-1230: UI fix Livesearch's box
-LIMS-1257: UI fix Long titles in Analysis Profiles, Sample Points, etc.
-LIMS-1214: UI fix More columns
-LIMS-1199: UI fix Worksheet listing: better columns
-LIMS-1303: jsi18n strings must be added to bika-manual.pot.  i18ndude cannot find.
-LIMS-1310: Filter SamplePoints by client in AR Template Edit View
-LIMS-1256: Client objects included in AR-Add filters for Sample Point etc.
-LIMS-1290: Allows Analyst to retract analyses, without giving extra permissions.
-LIMS-1218: Slightly nicer monkey patch for translating content object ID's and titles.
-LIMS-1070: Accreditation text can be customised in bika_setup
-LIMS-1245: off-by-one in part indicators in ar_add
-LIMS-1240: Hide "copy to new" from Analyst users
+lims-1292: ui fix retracted ars workfow: warning msg on "full" retract.
+lims.1287: ui fix report parameter formatting
+lims-1230: ui fix livesearch's box
+lims-1257: ui fix long titles in analysis profiles, sample points, etc.
+lims-1214: ui fix more columns
+lims-1199: ui fix worksheet listing: better columns
+lims-1303: jsi18n strings must be added to bika-manual.pot.  i18ndude cannot find.
+lims-1310: filter samplepoints by client in ar template edit view
+lims-1256: client objects included in ar-add filters for sample point etc.
+lims-1290: allows analyst to retract analyses, without giving extra permissions.
+lims-1218: slightly nicer monkey patch for translating content object id's and titles.
+lims-1070: accreditation text can be customised in bika_setup
+lims-1245: off-by-one in part indicators in ar_add
+lims-1240: hide "copy to new" from analyst users
 
-LIMS-1059: Added worksheet rejection workflow
-    RejectAnalysis (Analysis subclass (has IAnalysis!)) workflow transition.
-    Does not retract individual Analysis objects - instead, forces their state
-        back to "Received", and assigns them onto newly created WS.
-    Sets attributes on src and dst worksheets:
-        WS instance rejected worksheet attribute: .replaced_by = UID
-        WS instance replacement worksheet attribute: .replaces_rejected_worksheet:UID
+lims-1059: added worksheet rejection workflow
+    rejectanalysis (analysis subclass (has ianalysis!)) workflow transition.
+    does not retract individual analysis objects - instead, forces their state
+        back to "received", and assigns them onto newly created ws.
+    sets attributes on src and dst worksheets:
+        ws instance rejected worksheet attribute: .replaced_by = uid
+        ws instance replacement worksheet attribute: .replaces_rejected_worksheet:uid
 
-Fixed some i18n and encoding snags, and updated translations.
+fixed some i18n and encoding snags, and updated translations.
 
 3.1.1 (2014-06-29)
 ------------------
 
-Some bugs which only appear while running Windows, have been fixed.
+some bugs which only appear while running windows, have been fixed.
 
-LIMS-1281: Fix Restricted and Default categories in ar_add
-LIMS-1275: Fix lax Aalyst permissions
-LIMS-1301: jsonapi can set ReferenceField=""
-LIMS-1221: Icon for ARImports folder in Navigation
-LIMS-1252: AR Published Results Signature Block formatting
-LIMS-1297: Update frontpage
+lims-1281: fix restricted and default categories in ar_add
+lims-1275: fix lax aalyst permissions
+lims-1301: jsonapi can set referencefield=""
+lims-1221: icon for arimports folder in navigation
+lims-1252: ar published results signature block formatting
+lims-1297: update frontpage
 
 
 3.1 (2014-06-23)
 ----------------
 
-- Product and Analysis specifications per AR
-- Incorrect published results invalidation workflow
-- Improved re-testing workflow
-- Adjustment factors on worksheets
-- Using '< n' and '> n' results values
-- Sample Storage locations
-- Sample Categories
-- Analysis Prioritisation
-- Bulk AR creation from file
-- Results reports inclusion of relevant QC results
-- Supply Inventory and Orders
-- JSON interface
-- Management Reports export to CSV
-- Enhancements to AR Batching
-- Enhancements to Results Reports
+- product and analysis specifications per ar
+- incorrect published results invalidation workflow
+- improved re-testing workflow
+- adjustment factors on worksheets
+- using '< n' and '> n' results values
+- sample storage locations
+- sample categories
+- analysis prioritisation
+- bulk ar creation from file
+- results reports inclusion of relevant qc results
+- supply inventory and orders
+- json interface
+- management reports export to csv
+- enhancements to ar batching
+- enhancements to results reports
 
-- Instrument management module
+- instrument management module
 
-    Calibration certificates, maintenance, Instrument QC
-    Method, Instrument and Analysis integrity
+    calibration certificates, maintenance, instrument qc
+    method, instrument and analysis integrity
 
-- Instrument interfaces
+- instrument interfaces
 
-     Agilent MS 'Masshunter Quant'
-     Thermo Gallery
-     Foss Winescan FT 120, Auto
+     agilent ms 'masshunter quant'
+     thermo gallery
+     foss winescan ft 120, auto
 
-- Invoices
+- invoices
 
-   Per AR, Analysis per Invoice line.
-   Per Supply Order, inventory item per Invoice line
-   Invoices by email
-   Invoice 'batches' for selected time period, ARs aand Orders per Invoice line
-   Invoice batch export to accounts systems
-   Price lists. Analysis Services and Supplies
+   per ar, analysis per invoice line.
+   per supply order, inventory item per invoice line
+   invoices by email
+   invoice 'batches' for selected time period, ars aand orders per invoice line
+   invoice batch export to accounts systems
+   price lists. analysis services and supplies
 
 3.1.3036 (2014-05-30)
 ---------------------
 
-Added two checboxes in BikaSetup > Security:
-- Allow access to worksheets only to assigned analysts (Y/N)
-- Only lab managers can create and amange new worksheets (Y/N)
+added two checboxes in bikasetup > security:
+- allow access to worksheets only to assigned analysts (y/n)
+- only lab managers can create and amange new worksheets (y/n)
 
-** IMPORTANT NOTES **
-The 3036 upgrade sets the above options to true by default, so after
-being upgraded, only the labmanagers will be able to manage WS and the
+** important notes **
+the 3036 upgrade sets the above options to true by default, so after
+being upgraded, only the labmanagers will be able to manage ws and the
 analysts will only have access to the worksheets to which they are
-assigned. These defaults can be changed in BikaSetup > Security.
+assigned. these defaults can be changed in bikasetup > security.
 
 3.0 (2014-03-15)
 ----------------
 
-- Fix some out-dated dependencies that prevented the app from loading.
+- fix some out-dated dependencies that prevented the app from loading.
 
-- Development of the current bika 3.0 code has slowed, and our efforts have been focused on
+- development of the current bika 3.0 code has slowed, and our efforts have been focused on
 the 3.01a branch for some time.
 
 3.0rc3.5.1 (2013-10-25)
 -----------------------
 
-Fix CSS AR Publication error
+fix css ar publication error
 
 3.0rc3.5.1 (2013-10-25)
 -----------------------
 
-Fix error displaying client sample views
+fix error displaying client sample views
 
 3.0rc3.5 (2013-10-24)
 ---------------------
 
-Requires Plone 4.3.  For information on upgrading Plone, visit
+requires plone 4.3.  for information on upgrading plone, visit
 http://plone.org/documentation/manual/upgrade-guide
 
-- Fix a serious error saving Analysis results.
-- Improve upgrade handling in genericsetup profile
-- Fix errors in setupdata loader
-- Force UTF-8 encoding of usernames (imported client contacts can now login)
-- Removed outdated test setup data
-- Handle duplicate request values in bika_listing
-- ID server handles changes in ID schemes without error
-- Remove folder-full-view from front-page view
-- Updated workflow and permissions to prevent some silly errors
-- Add robot tests
-- Add default robots.txt
+- fix a serious error saving analysis results.
+- improve upgrade handling in genericsetup profile
+- fix errors in setupdata loader
+- force utf-8 encoding of usernames (imported client contacts can now login)
+- removed outdated test setup data
+- handle duplicate request values in bika_listing
+- id server handles changes in id schemes without error
+- remove folder-full-view from front-page view
+- updated workflow and permissions to prevent some silly errors
+- add robot tests
+- add default robots.txt
 
 3.0rc3.2 (2013-06-28)
 ---------------------
 
-- Fix site-error displaying upgraded instruments
-- Fix spinner (KSS is not always enabled)
-- Add extra save button in ar_add
-- Label Printing: "Return to list" uses browser history
-- Bold worksheet position indicators
-- Remove version.txt (use only setup.py for version)
+- fix site-error displaying upgraded instruments
+- fix spinner (kss is not always enabled)
+- add extra save button in ar_add
+- label printing: "return to list" uses browser history
+- bold worksheet position indicators
+- remove version.txt (use only setup.py for version)
 
 3.0rc3.1 (2013-06-27)
 ---------------------
 
-- Fix permission name in upgrade step
+- fix permission name in upgrade step
 
 3.0rc3 (2013-06-25)
 -------------------
 
-- Many instrument management improvements! (Merge branch 'imm')
-- Removed ReferenceManufacturer (use of generic Manufacturer instead)
-- Removed ReferenceSupplier (use Supplier instead)
-- Improve service/calculation interim field widgets
-  Allows service to include custom fields (without calculation selected)
-- Fix services display table categorisation in Analysis Specification views
-- Stop focusing the search gadget input when page load completes. (revert)
-- Limit access to Import tab (BIKA: Manage Bika)
-- New permission: "BIKA: Import Instrument Results"
-- New permission: "BIKA: Manage Login Details" - edit contact login details
-- Some late changes to better handle the updates to ID creation
-- Plone 4.3 compatibility (incomplete)
-- Use Collections as a base for Queries (incomplete)
-- Many many bugfixes.
+- many instrument management improvements! (merge branch 'imm')
+- removed referencemanufacturer (use of generic manufacturer instead)
+- removed referencesupplier (use supplier instead)
+- improve service/calculation interim field widgets
+  allows service to include custom fields (without calculation selected)
+- fix services display table categorisation in analysis specification views
+- stop focusing the search gadget input when page load completes. (revert)
+- limit access to import tab (bika: manage bika)
+- new permission: "bika: import instrument results"
+- new permission: "bika: manage login details" - edit contact login details
+- some late changes to better handle the updates to id creation
+- plone 4.3 compatibility (incomplete)
+- use collections as a base for queries (incomplete)
+- many many bugfixes.
 
 3.0rc2.3 (2013-01-29)
 -------------------
 
-- Fix bad HTML
+- fix bad html
 
 3.0rc2.2 (2013-01-28)
 -------------------
 
-- Fix an error during AR Publish
+- fix an error during ar publish
 
 3.0rc2.1 (2013-01-21)
 -------------------
 
-- Fix bad HTML
-- Pin collective.js.jqueryui version to 1.8.16.9
+- fix bad html
+- pin collective.js.jqueryui version to 1.8.16.9
 
 3.0rc2 (2013-01-21)
 -------------------
 
-- Updated all translations and added Brazilian Portuguese
-- RecordsWidget: subfield_types include "date"
-- RecordsWidget: Automatic combogrid lookups
-- Added all bika types to Search and Live Search
-- Transition SamplePartition IDs to new format (SampleType-000?-P?
-- Always handle non-ASCII characters: UTF-8 encoding everywhere
-- Accept un-floatable (text) results for analyses
-- Hidden InterimFields in Calculations
-- Added InterimFields on AnalysisServices for overriding Calculation Interimfields.
-- Disable KSS inline-validation
-- Categorized analyses in AR views
-- Added remarks for individual analyses
-- Improved Javascript i18n handling
-- Improved default permissions
-- New reports
-    - Added 'Analysis summary per department' (merge of 'Analyses lab department weekly' and 'Analyses request summary by date range'
-    - Added 'Analyses performed as % of total' report
-    - Added Analyses per lab department report
-    - Added 'Samples received vs. samples reported' report
-    - Added Daily Samples Received report
-- Many many bugfixes.
+- updated all translations and added brazilian portuguese
+- recordswidget: subfield_types include "date"
+- recordswidget: automatic combogrid lookups
+- added all bika types to search and live search
+- transition samplepartition ids to new format (sampletype-000?-p?
+- always handle non-ascii characters: utf-8 encoding everywhere
+- accept un-floatable (text) results for analyses
+- hidden interimfields in calculations
+- added interimfields on analysisservices for overriding calculation interimfields.
+- disable kss inline-validation
+- categorized analyses in ar views
+- added remarks for individual analyses
+- improved javascript i18n handling
+- improved default permissions
+- new reports
+    - added 'analysis summary per department' (merge of 'analyses lab department weekly' and 'analyses request summary by date range'
+    - added 'analyses performed as % of total' report
+    - added analyses per lab department report
+    - added 'samples received vs. samples reported' report
+    - added daily samples received report
+- many many bugfixes.
 
 3.0rc1 (2012-10-01)
 -------------------
 
 
-- Removed Bika Health data from released egg
-- Remove remarks from portal_factory screens
-- Add Month/Year selectors to default datetime widget
-- ClientFolder default sorting.
-- Date formats for jquery datepicker
-- Don't overwrite the Title specified in @@plone-addsite
-- Bug fixes
+- removed bika health data from released egg
+- remove remarks from portal_factory screens
+- add month/year selectors to default datetime widget
+- clientfolder default sorting.
+- date formats for jquery datepicker
+- don't overwrite the title specified in @@plone-addsite
+- bug fixes
 
 3.0rc1 (2012-09-25)
 -------------------
 
-### Changes
+### changes
 
-- Requires Python 2.7 (Plone 4.2)
-- Add GNUPlot dependency
-- Added client sample points
-- Added Sampling Deviation selections
-- Added Ad-Hoc sample flag
-- Added Sample Matrices (Sampletype categorisation)
-- Added custom ResultsFooter field in bika setup
-- Added PDF Attachments to published results
-- Electronic signature included in Results and Reports
-- Login details form to create users for LabContacts
-- Sampling workflow is disabled by default
-- Methods are versioned by default
-- Methods are publicly accessible by default
-- Queries WIP
-- Reports WIP
-- Modified label layouts for easier customisation
-- Cleaned print styles
-- Use plonelocales for handling Date/Time formats
-- SMS and Fax setup items are disabled by default
+- requires python 2.7 (plone 4.2)
+- add gnuplot dependency
+- added client sample points
+- added sampling deviation selections
+- added ad-hoc sample flag
+- added sample matrices (sampletype categorisation)
+- added custom resultsfooter field in bika setup
+- added pdf attachments to published results
+- electronic signature included in results and reports
+- login details form to create users for labcontacts
+- sampling workflow is disabled by default
+- methods are versioned by default
+- methods are publicly accessible by default
+- queries wip
+- reports wip
+- modified label layouts for easier customisation
+- cleaned print styles
+- use plonelocales for handling date/time formats
+- sms and fax setup items are disabled by default
 
 2012-06-21
 ----------
 
-- Partitioning & Preservation automation
-- Reports
-- Sample point & types relations in UI
-- AR template enhancements
-- Sample and AR layout improvements
-- Labels
-- Configuration logs
-- Faster indexing
-- JavaScript optimisation
-- Better IE compatibility
-- Set-up worksheet improvements
-- Updated translations
-- Workflow tweaks
-- Tweaks to Icons, Views & Lists
+- partitioning & preservation automation
+- reports
+- sample point & types relations in ui
+- ar template enhancements
+- sample and ar layout improvements
+- labels
+- configuration logs
+- faster indexing
+- javascript optimisation
+- better ie compatibility
+- set-up worksheet improvements
+- updated translations
+- workflow tweaks
+- tweaks to icons, views & lists
 
 2012-04-23
 ----------
 
-- Optional sampling and preservation workflows and roles.
-- Sample partitioning.
-- AR templates - Sample point & Sample type restrictions.
-- Reports - framework only. 'Analysis per service' shows what is planned.
-- Improved i18n handling, and updated strings from Transifex.
-- Numerous performance enhancements
-- Analysis Service & Method associations.
-- An improved Analysis Service pop-up window.
-- Sample Type and Sample Point relationship.
-- Currency selection from zope locales
-- Combined AR View and Edit tabs.
-- Re-factored AR 'Add/Remove Analyses' screen
-- Store the date of capture for analysis results
-- Append only remarks fields on more objects.
+- optional sampling and preservation workflows and roles.
+- sample partitioning.
+- ar templates - sample point & sample type restrictions.
+- reports - framework only. 'analysis per service' shows what is planned.
+- improved i18n handling, and updated strings from transifex.
+- numerous performance enhancements
+- analysis service & method associations.
+- an improved analysis service pop-up window.
+- sample type and sample point relationship.
+- currency selection from zope locales
+- combined ar view and edit tabs.
+- re-factored ar 'add/remove analyses' screen
+- store the date of capture for analysis results
+- append only remarks fields on more objects.
 
 2012-01-23
 ----------
 
- - Made Bika compatible with Plone 4.1
- - Sampler and Preserver roles, users and permissions
- - Sampling and Preservation workflows
- - Inactive and Cancellation Workflows
- - Pre-preserved Containers
- - Automatic versioning for some bika_setup types
- - Analyst and Instrument on Worksheet templates
- - XLSX setup data loader
- - Sample disposal date based on date sampled, not date received.
- - Internal ID Server by default
+ - made bika compatible with plone 4.1
+ - sampler and preserver roles, users and permissions
+ - sampling and preservation workflows
+ - inactive and cancellation workflows
+ - pre-preserved containers
+ - automatic versioning for some bika_setup types
+ - analyst and instrument on worksheet templates
+ - xlsx setup data loader
+ - sample disposal date based on date sampled, not date received.
+ - internal id server by default
  - user defined calculations and interim fields
- - Dry Matter results option does not appear until enabled in Site Setup
- - Accreditation portlet disabled until enabled in Site Setup
- - BikaListingView
- - New icons
+ - dry matter results option does not appear until enabled in site setup
+ - accreditation portlet disabled until enabled in site setup
+ - bikalistingview
+ - new icons
  - (mostly) usable at 800x600
- - Column display toggles
- - Future dated samples and ARs
- - Accreditation template: i18n in locales/manual.pot/accreditation_*
+ - column display toggles
+ - future dated samples and ars
+ - accreditation template: i18n in locales/manual.pot/accreditation_*
  - intermediate workflow state for analyses requiring attachments
- - Labmanager has Site Administrator role (not Manager)
- - 'Indeterminate' results
+ - labmanager has site administrator role (not manager)
+ - 'indeterminate' results
  - use portal_factory everywhere
  - working test suite
  - static resource directories
- - Merged BikaMembers types
- - CoordinateField/Widget
- - DurationField/Widget
- - CustomRecordsWidget
+ - merged bikamembers types
+ - coordinatefield/widget
+ - durationfield/widget
+ - customrecordswidget
 
-2.3.3 Bug fix release
+2.3.3 bug fix release
 ---------------------
 
- - Inclusion of BikaMembers 0.0.3. No changes to bika code, version bumped
-   to facilitate release of new BikaMembers version.
+ - inclusion of bikamembers 0.0.3. no changes to bika code, version bumped
+   to facilitate release of new bikamembers version.
 
 2.3
 ---
 
- - Analysis categories introduced
- - Analysis service result restrictions - specification of possible results
- - Allow site and client specification of email and fax subject line content
- - Additional instrument/export formats:
-   WinescanFT120, WinescanAuto, FIAStar and Bartelt's data-collector
- - Export worksheet analyses to instruments
- - PDF as a result output option
- - SMS result output option
- - Result publication options synchronized and signatures added to emails
- - Email batching of query results conforms to result mailing
- - IDServer batching of unique id request
- - Optmization of worksheet searching on selection criteria
- - Extract tab added with extract for analysis services or profiles
- - Batch update of analysis service prices
- - German translation module added
- - Added a light query form which excludes analysis category and service
- - Batch size setting in analysis request lists
- - BikaMembers replaces UpfrontContacts
- - ATSchemaEditor removed
- - Significant performance improvements
+ - analysis categories introduced
+ - analysis service result restrictions - specification of possible results
+ - allow site and client specification of email and fax subject line content
+ - additional instrument/export formats:
+   winescanft120, winescanauto, fiastar and bartelt's data-collector
+ - export worksheet analyses to instruments
+ - pdf as a result output option
+ - sms result output option
+ - result publication options synchronized and signatures added to emails
+ - email batching of query results conforms to result mailing
+ - idserver batching of unique id request
+ - optmization of worksheet searching on selection criteria
+ - extract tab added with extract for analysis services or profiles
+ - batch update of analysis service prices
+ - german translation module added
+ - added a light query form which excludes analysis category and service
+ - batch size setting in analysis request lists
+ - bikamembers replaces upfrontcontacts
+ - atschemaeditor removed
+ - significant performance improvements
 
- - Resolve client action conflicts
- - Sampled date validation
- - Drymatter formatting on output corrected
- - Correct default none workflows
- - Review portlet optimization
- - Pricelist prints blank for analysis service with price not defined
+ - resolve client action conflicts
+ - sampled date validation
+ - drymatter formatting on output corrected
+ - correct default none workflows
+ - review portlet optimization
+ - pricelist prints blank for analysis service with price not defined
 
 2.2
 ---
 
- - Attachments permitted on analysis requests and analyses
- - Worksheet resequencing, and sort order for worksheet analysis selection
- - Worksheet deletion only available for open worksheets
- - Portlet to provide export of analysis services and analysis profiles
- - Requirement for unique analysis service names, analysis service keywords,
+ - attachments permitted on analysis requests and analyses
+ - worksheet resequencing, and sort order for worksheet analysis selection
+ - worksheet deletion only available for open worksheets
+ - portlet to provide export of analysis services and analysis profiles
+ - requirement for unique analysis service names, analysis service keywords,
  - instrument import keywords and analysis profile keywords enforced.
- - Report headings and formats standardized accross different reports
- - AR import alternative layout provided with selection, including profiles
- - Progress bar introduced for long running processes
+ - report headings and formats standardized accross different reports
+ - ar import alternative layout provided with selection, including profiles
+ - progress bar introduced for long running processes
 
 2.1.1
 -----
 
- - Disposal Date for Samples and Retention Period per Sample Type added.
- - Various new search criteria added.
- - Standard Manufacturers introduced.
- - Labels for Standard Samples introduced.
- - "Print" and "Email" facilities introduced for lists of Standard Samples and Standard Stocks.
- - "Duplicate" facility for Analysis Services introduced.
- - Addresses added to top of emailed query results.
- - Labels for Samples and Analysis Requests changed.
- - Analysis Services can have multiple Methods.
- - Change log introduced for Methods.
- - Methods added to left navigation bar.
- - List of Methods included in pop-up for Analyses.
- - Documents may be uploaded for Methods.
+ - disposal date for samples and retention period per sample type added.
+ - various new search criteria added.
+ - standard manufacturers introduced.
+ - labels for standard samples introduced.
+ - "print" and "email" facilities introduced for lists of standard samples and standard stocks.
+ - "duplicate" facility for analysis services introduced.
+ - addresses added to top of emailed query results.
+ - labels for samples and analysis requests changed.
+ - analysis services can have multiple methods.
+ - change log introduced for methods.
+ - methods added to left navigation bar.
+ - list of methods included in pop-up for analyses.
+ - documents may be uploaded for methods.
 
 2.1
 ---
 
- - Sample object and workflow introduced
- - Results specifications, lab and per client
- - Analysis profiles
- - Worksheet template engine
- - Interface to Bika Calendar
- - Import of analysisrequests from csv file
- -  Export of results to csv file
- - Print as publication option
- - Lab Departments, lab contacts, and department manager introduced
- - Quality Control calculations. Control, blank and duplicate analyses.
- - QC graphs, normal distribution, trends and duplicate variation
- - Various analysis calculations allowed. Described by Calculation Type
- - Dependant Calcs introduced. Where an analysis result is calculated from
- -  other analyses: e.g. AnalysisX = AnalysisY - Analysis Z
- - Dry matter result reporting. Results are reported on sample as received,
+ - sample object and workflow introduced
+ - results specifications, lab and per client
+ - analysis profiles
+ - worksheet template engine
+ - interface to bika calendar
+ - import of analysisrequests from csv file
+ -  export of results to csv file
+ - print as publication option
+ - lab departments, lab contacts, and department manager introduced
+ - quality control calculations. control, blank and duplicate analyses.
+ - qc graphs, normal distribution, trends and duplicate variation
+ - various analysis calculations allowed. described by calculation type
+ - dependant calcs introduced. where an analysis result is calculated from
+ -  other analyses: e.g. analysisx = analysisy - analysis z
+ - dry matter result reporting. results are reported on sample as received,
  -  and also as dry matter result on dried sample
- - Re-publication, Pre publication of individual results and per Client
- - Many reports including Turn around, analyses repeated and out of spec
+ - re-publication, pre publication of individual results and per client
+ - many reports including turn around, analyses repeated and out of spec
 
 1.2.1
 -----
 
 
- - Removed invoice line item descriptions from core code to allow skin
+ - removed invoice line item descriptions from core code to allow skin
    integration
- - Create dummy titration values for analyses imported from instrument
- - More language translations
+ - create dummy titration values for analyses imported from instrument
+ - more language translations
 
 1.2.0
 -----
 
- - Statements renamed to Invoices
- - Jobcards renamed to Worksheets
- - New identification fields added to analysis request
- - Client Reference, Sample Type and Sample Point
- - Welcome page introduced
- - Late analyses list linked from late analyses portlet
- - Icon changes
- - Accreditation body logo and details added to laboratory info
- - Accreditation logo, disclaimers added throughout web site
- - Laboratory confidence level value data driven from laboratory info
- - Analyses methods provided as pop-up where analyses are listed
- - Titration factors and titration volumes added to analyses and worksheets
- - Measure of uncertainties introduced per analysis and intercept
- - Two new specialist roles created - verifier and publisher
- - Sample test data load script - load_sample_data.py
- - Implement generic instrument data import tool
- - Login portlet added
- - Modifications required to support interlab
-   Permit analysis parent (sample) to be in 'released' state.
-   Reference SampleID on AnalysisRequest-
+ - statements renamed to invoices
+ - jobcards renamed to worksheets
+ - new identification fields added to analysis request
+ - client reference, sample type and sample point
+ - welcome page introduced
+ - late analyses list linked from late analyses portlet
+ - icon changes
+ - accreditation body logo and details added to laboratory info
+ - accreditation logo, disclaimers added throughout web site
+ - laboratory confidence level value data driven from laboratory info
+ - analyses methods provided as pop-up where analyses are listed
+ - titration factors and titration volumes added to analyses and worksheets
+ - measure of uncertainties introduced per analysis and intercept
+ - two new specialist roles created - verifier and publisher
+ - sample test data load script - load_sample_data.py
+ - implement generic instrument data import tool
+ - login portlet added
+ - modifications required to support interlab
+   permit analysis parent (sample) to be in 'released' state.
+   reference sampleid on analysisrequest-
 
- - 1566324: Logged in page redirected to welcome page.
- - 1573299: LiveSearch - Added permissions to InvoiceLineItem.
- - 1573083: Status Drop Down - Invoicing
- - 1551957: Contacts not visible to other contacts. Correct local owner role
+ - 1566324: logged in page redirected to welcome page.
+ - 1573299: livesearch - added permissions to invoicelineitem.
+ - 1573083: status drop down - invoicing
+ - 1551957: contacts not visible to other contacts. correct local owner role
  - 1566334: position of 'add new ar' button changed to conform to other forms
  - 1532008: query results sort order most recent first
- - 1532770: Order default listing correction
- - 1558458: Member discount data driven in messages on AR forms
- - 1538354: SubTotal and VAT calculation on edit AR
- - 1532796: AR edit - allow change of contact
+ - 1532770: order default listing correction
+ - 1558458: member discount data driven in messages on ar forms
+ - 1538354: subtotal and vat calculation on edit ar
+ - 1532796: ar edit - allow change of contact
 
 1.1.3
 -----
 
- This is a bug fix release. Migration from older versions has also
+ this is a bug fix release. migration from older versions has also
  been improved greatly.
 
- Please note that AnalysisRequest now has a custom mutator that
- expects the title of the Cultivar, not the UID. This will impact
+ please note that analysisrequest now has a custom mutator that
+ expects the title of the cultivar, not the uid. this will impact
  anybode that customised the *analysisrequed_add.cpy* controller
  script and the *validate_analysisrequest_add_form.vpy* validation
  script.
 
 
- - 1423182: IndexError on surfing to LIMS pages without being logged on
- - 1423238: Orders - Dispatch date
- - 1429992: AR edit tab - Cultivar uneditable
- - 1429996: Cultivar names to allow numbers
- - 1429999: Late analysis alert - 'More...' URL
- - 1430002: Sample due alerts - 'More...' URL
- - 1433787: Security - Clients
- - 1434100: Search - Index & Attribute errors
- - 1418473: Updated start-id-server.bat for Win2K & Win XP
+ - 1423182: indexerror on surfing to lims pages without being logged on
+ - 1423238: orders - dispatch date
+ - 1429992: ar edit tab - cultivar uneditable
+ - 1429996: cultivar names to allow numbers
+ - 1429999: late analysis alert - 'more...' url
+ - 1430002: sample due alerts - 'more...' url
+ - 1433787: security - clients
+ - 1434100: search - index & attribute errors
+ - 1418473: updated start-id-server.bat for win2k & win xp
 
 1.1.2
 -----
 
- - 1423205: Show logs to labmanager set-up
- - 1291750: Added default ID prefixes for Order and Statement
- - 1424589: Late analysis alert to be calulated on date received
+ - 1423205: show logs to labmanager set-up
+ - 1291750: added default id prefixes for order and statement
+ - 1424589: late analysis alert to be calulated on date received
 
 1.1.1
 -----
 
 
- - Updated portlets with Plone 2.1 style definition list markup
+ - updated portlets with plone 2.1 style definition list markup
 
- - 1423179: Clients must not see JobCard links on Analysis Requests
- - 1423182: IndexError on surfing to LIMS pages without being logged on
- - 1423188: Site map - Clients should not have access to ...
- - 1423191: Link rot - 'logged in' page
- - 1423193: Groups folder should not be shown
- - 1423194: No 'More...' if there are less than 5
- - 1423204: AR view - Missing tabs and status drop down
- - 1423209: Schema Editor - Drop Down List Issue (Select)
- - 1423234: Late Analysis alert shows for anonymous visitors
- - 1423363: Report Analysis Totals
- - 1423386: Email publication error
+ - 1423179: clients must not see jobcard links on analysis requests
+ - 1423182: indexerror on surfing to lims pages without being logged on
+ - 1423188: site map - clients should not have access to ...
+ - 1423191: link rot - 'logged in' page
+ - 1423193: groups folder should not be shown
+ - 1423194: no 'more...' if there are less than 5
+ - 1423204: ar view - missing tabs and status drop down
+ - 1423209: schema editor - drop down list issue (select)
+ - 1423234: late analysis alert shows for anonymous visitors
+ - 1423363: report analysis totals
+ - 1423386: email publication error
 
 1.1.0
 -----
 
- - Made Bika compatibable with Plone 2.1
- - Added Spanish translation contributed by Luis Espinoza
- - Added Italian translation contributed by Pierpaolo Baldan
- - Added Dutch translation contributed by Joris Goudriaan
- - Added Portugese translation contributed by Nuno R. Pinhão
- - The schemas of Client, Contact, AnalysisRequest and Order can be
-   edited in the through-the-web schema editor, ATSchemaEditorNG.
- - The maximum time allowed for the publication of results can now be
-   set per analysis service. The portlet
+ - made bika compatibable with plone 2.1
+ - added spanish translation contributed by luis espinoza
+ - added italian translation contributed by pierpaolo baldan
+ - added dutch translation contributed by joris goudriaan
+ - added portugese translation contributed by nuno r. pinhão
+ - the schemas of client, contact, analysisrequest and order can be
+   edited in the through-the-web schema editor, atschemaeditorng.
+ - the maximum time allowed for the publication of results can now be
+   set per analysis service. the portlet
    'skins/bika/portlet_late_analysis.pt' has been added to alert lab
    users when analyses are late.
- - Analyses on an AnalysisRequest have a reference to a Jobcard,
-   rendered as a hyperlink on the AnalysisRequest view.
- - A bug has been fixed where 'not_requested' analyses were checked
-   on the AnalysisRequest edit form.
- - Enabled 'changed_state' folder button globally and disabled on
-   AnalysisRequest and Jobcard.
+ - analyses on an analysisrequest have a reference to a jobcard,
+   rendered as a hyperlink on the analysisrequest view.
+ - a bug has been fixed where 'not_requested' analyses were checked
+   on the analysisrequest edit form.
+ - enabled 'changed_state' folder button globally and disabled on
+   analysisrequest and jobcard.
 
 1.0.1
 -----
 
- - Updated 'skins/bika/date_components_support.py' with latest
-   version of script in Plone 2.0.5
- - Modified access to transitions in workflow scripts, normal
-   attribute access seems to guarded since Zope 2.7.5.
- - Added CHANGES.txt and README.txt
- - Added windows batch script for ID server
+ - updated 'skins/bika/date_components_support.py' with latest
+   version of script in plone 2.0.5
+ - modified access to transitions in workflow scripts, normal
+   attribute access seems to guarded since zope 2.7.5.
+ - added changes.txt and readme.txt
+ - added windows batch script for id server
    (scripts/start-id-server.bat)

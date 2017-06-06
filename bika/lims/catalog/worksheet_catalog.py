@@ -18,9 +18,9 @@ CATALOG_WORKSHEET_LISTING = 'bika_catalog_worksheet_listing'
 _types_list = ['Worksheet', ]
 # Defining the indexes for this catalog
 _indexes_dict = {
-    'getPriority': 'FieldIndex',
     'getAnalyst': 'FieldIndex',
     'getWorksheetTemplate': 'FieldIndex',
+    'getAnalysesUIDs': 'KeywordIndex',
 }
 # Defining the columns for this catalog
 _columns_list = [

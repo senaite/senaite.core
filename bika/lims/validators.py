@@ -1153,9 +1153,10 @@ class ReflexRuleValidator:
         # request = kwargs.get('REQUEST', {})
         # form = request.get('form', {})
         method = instance.getMethod()
-        method_ans_uids = [
-            ans.UID() for ans in
-            method.getBackReferences('AnalysisServiceMethods')]
+        bsc = getToolByName(instance, 'bika_setup_catalog')
+        query = {'portal_type': 'AnalysisService',
+                 'getAvailableMethodUIDs': method.UID()}
+        method_ans_uids = [b.UID for b in bsc(query)]
         rules = instance.getReflexRules()
         error = ''
         pc = getToolByName(instance, 'portal_catalog')
@@ -1170,6 +1171,7 @@ class ReflexRuleValidator:
             else:
                 error += as_brain['title'] + ' '
         if error:
+            translate = getToolByName(instance, 'translation_service').translate
             msg = _("The following analysis services don't belong to the"
                     "current method: " + error)
             return to_utf8(translate(msg))

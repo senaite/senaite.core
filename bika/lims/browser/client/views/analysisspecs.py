@@ -104,8 +104,8 @@ class SetSpecsToLabDefaults(BrowserView):
                  getClientUID=self.context.bika_setup.bika_analysisspecs.UID())
         ls = [s.getObject() for s in ls]
         for labspec in ls:
-            clientspec = _createObjectByType("AnalysisSpec", self.context,
-                                             tmpID())
+            clientspec = _createObjectByType(
+                "AnalysisSpec", self.context, tmpID())
             clientspec.processForm()
             clientspec.edit(
                 SampleType=labspec.getSampleType(),

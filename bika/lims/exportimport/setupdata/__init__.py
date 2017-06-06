@@ -13,6 +13,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
+from bika.lims.utils.analysis import create_analysis
 from zope.interface import implements
 from pkg_resources import resource_filename
 import datetime
@@ -772,7 +773,9 @@ class Instruments(WorksheetImporter):
             obj.setInstrumentType(instrumenttype)
             obj.setManufacturer(manufacturer)
             obj.setSupplier(supplier)
-            obj.setMethod([method])
+            if method:
+                obj.setMethods([method])
+                obj.setMethod(method)
 
             # Attaching the instrument's photo
             if row.get('Photo', None):
@@ -1516,7 +1519,6 @@ class Analysis_Services(WorksheetImporter):
             department = self.get_object(bsc, 'Department', row.get('Department_title'))
             container = self.get_object(bsc, 'Container', row.get('Container_title'))
             preservation = self.get_object(bsc, 'Preservation', row.get('Preservation_title'))
-            priority = self.get_object(bsc, 'ARPriority', row.get('Priority_title'))
 
             # Analysis Service - Method considerations:
             # One Analysis Service can have 0 or n Methods associated (field
@@ -1614,7 +1616,6 @@ class Analysis_Services(WorksheetImporter):
                 Separate=self.to_bool(row.get('Separate', False)),
                 Container=container,
                 Preservation=preservation,
-                Priority=priority,
                 CommercialID=row.get('CommercialID', ''),
                 ProtocolID=row.get('ProtocolID', '')
             )
@@ -2156,30 +2157,25 @@ class Analysis_Requests(WorksheetImporter):
             service = bsc(portal_type='AnalysisService',
                           title=row['AnalysisService_title'])[0].getObject()
             # analyses are keyed/named by keyword
-            keyword = service.getKeyword()
             ar = bc(portal_type='AnalysisRequest', id=row['AnalysisRequest_id'])[0].getObject()
-            obj = _createObjectByType("Analysis", ar, keyword)
-            MTA = {
-                'days': int(row['MaxTimeAllowed_days'] and row['MaxTimeAllowed_days'] or 0),
-                'hours': int(row['MaxTimeAllowed_hours'] and row['MaxTimeAllowed_hours'] or 0),
-                'minutes': int(row['MaxTimeAllowed_minutes'] and row['MaxTimeAllowed_minutes'] or 0),
-            }
-            obj.edit(
-                Calculation=service.getCalculation(),
+            obj = create_analysis(
+                ar, service,
                 Result=row['Result'],
                 ResultCaptureDate=row['ResultCaptureDate'],
                 ResultDM=row['ResultDM'],
                 Analyst=row['Analyst'],
                 Instrument=row['Instrument'],
                 Retested=self.to_bool(row['Retested']),
-                MaxTimeAllowed=MTA,
+                MaxTimeAllowed={
+                    'days': int(row.get('MaxTimeAllowed_days', 0)),
+                    'hours': int(row.get('MaxTimeAllowed_hours', 0)),
+                    'minutes': int(row.get('MaxTimeAllowed_minutes', 0)),
+                },
                 ReportDryMatter=self.to_bool(row['ReportDryMatter']),
-                Service=service,
-                )
-            obj.updateDueDate()
+            )
+
             part = sample.objectValues()[0].UID()
             obj.setSamplePartition(part)
-            obj.setService(service.UID())
             analyses = ar.objectValues('Analyses')
             analyses = list(analyses)
             analyses.append(obj)
@@ -2272,30 +2268,3 @@ class Invoice_Batches(WorksheetImporter):
                 BatchEndDate=row['end'],
             )
             renameAfterCreation(obj)
-
-
-class AR_Priorities(WorksheetImporter):
-
-    def Import(self):
-        folder = self.context.bika_setup.bika_arpriorities
-        for row in self.get_rows(3):
-            if row['title']:
-                obj = _createObjectByType("ARPriority", folder, tmpID())
-                obj.edit(title=row['title'],
-                         description=row.get('description', ''),
-                         pricePremium=row.get('pricePremium', 0),
-                         sortKey=row.get('sortKey', 0),
-                         isDefault=row.get('isDefault', 0) == 1,
-                         )
-                small_icon_name = row.get('smallIcon', None)
-                if small_icon_name:
-                    small_icon = self.get_file_data(small_icon_name)
-                    if small_icon:
-                        obj.setSmallIcon(small_icon)
-                big_icon_name = row.get('bigIcon', None)
-                if big_icon_name:
-                    big_icon = self.get_file_data(big_icon_name)
-                    if big_icon:
-                        obj.setBigIcon(big_icon)
-                obj.unmarkCreationFlag()
-                renameAfterCreation(obj)

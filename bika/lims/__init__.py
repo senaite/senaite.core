@@ -55,7 +55,6 @@ def initialize(context):
     from content.analysisservice import AnalysisService
     from content.analysisspec import AnalysisSpec
     from content.arimport import ARImport
-    from content.arpriority import ARPriority
     from content.analysisprofile import AnalysisProfile
     from content.arreport import ARReport
     from content.artemplate import ARTemplate
@@ -132,7 +131,6 @@ def initialize(context):
     from controlpanel.bika_analysisspecs import AnalysisSpecs
     from controlpanel.bika_analysisprofiles import AnalysisProfiles
     from controlpanel.bika_artemplates import ARTemplates
-    from controlpanel.bika_arpriorities import ARPriorities
     from controlpanel.bika_attachmenttypes import AttachmentTypes
     from controlpanel.bika_batchlabels import BatchLabels
     from controlpanel.bika_calculations import Calculations

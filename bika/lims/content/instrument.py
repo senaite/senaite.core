@@ -3,30 +3,29 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
+from datetime import date
+
 from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
 from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes.atapi import *
-from plone.app.blob.field import FileField as BlobFileField
-from Products.Archetypes.references import HoldingReference
-from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from bika.lims.browser.fields import HistoryAwareReferenceField
+from bika.lims import deprecated
+from bika.lims import logger
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import RecordsWidget
 from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema, BikaFolderSchema
+from bika.lims.config import QCANALYSIS_TYPES
+from bika.lims.content.bikaschema import BikaFolderSchema, BikaSchema
 from bika.lims.interfaces import IInstrument
+from bika.lims.utils import t
 from bika.lims.utils import to_utf8
+from plone.app.blob.field import FileField as BlobFileField
 from plone.app.folder.folder import ATFolder
 from zope.interface import implements
-from datetime import date
-from DateTime import DateTime
-from bika.lims.config import QCANALYSIS_TYPES
-from bika.lims import logger
 
 schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
 
@@ -80,10 +79,10 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
         )
     ),
 
-    HistoryAwareReferenceField('Method',
+    UIDReferenceField(
+        'Method',
         vocabulary='_getAvailableMethods',
         allowed_types=('Method',),
-        relationship='InstrumentMethod',
         required=0,
         widget=SelectionWidget(
             format='select',
@@ -197,12 +196,11 @@ schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
 
     # References to all analyses performed with this instrument.
     # Includes regular analyses, QC analyes and Calibration tests.
-    ReferenceField('Analyses',
+    UIDReferenceField('Analyses',
         required = 0,
         multiValued = 1,
         allowed_types = ('ReferenceAnalysis', 'DuplicateAnalysis',
                          'Analysis'),
-        relationship = 'InstrumentAnalyses',
         widget = ReferenceWidget(
             visible = False,
         ),
@@ -397,10 +395,7 @@ class Instrument(ATFolder):
         items.sort(lambda x,y:cmp(x[1], y[1]))
         return DisplayList(items)
 
-    from bika.lims import deprecated
-
-    @deprecated(comment="[170214] bika.lims.content.instrument.getMethodUID "
-                        "is deprecated and will be removed in Bika LIMS 3.3")
+    @deprecated('[1702] Orphan. No alternative')
     def getMethodUID(self):
         # TODO Avoid using this function. Returns first method's UID for now.
         if self.getMethods():
@@ -711,8 +706,10 @@ class Instrument(ATFolder):
             The rest of the analyses (regular and duplicates) will not
             be returned.
         """
-        return [analysis for analysis in self.getAnalyses() \
-                if analysis.portal_type=='ReferenceAnalysis']
+        bac = getToolByName(self, 'bika_analysis_catalog')
+        brains = bac(portal_type='ReferenceAnalysis',
+                     getInstrumentUID=self.UID())
+        return [brain.getObject() for brain in brains]
 
     def addAnalysis(self, analysis):
         """ Add regular analysis (included WS QCs) to this instrument
@@ -731,7 +728,7 @@ class Instrument(ATFolder):
     def removeAnalysis(self, analysis):
         """ Remove a regular analysis assigned to this instrument
         """
-        targetuid = analysis.getRawInstrument()
+        targetuid = analysis.getInstrumentUID()
         if not targetuid:
             return
         if targetuid != self.UID():
@@ -791,8 +788,6 @@ class Instrument(ATFolder):
                 # Instrument, we apply the assign state
                 wf.doActionFor(ref_analysis, 'assign')
             addedanalyses.append(ref_analysis)
-
-        self.setAnalyses(self.getAnalyses() + addedanalyses)
 
         # Initialize LatestReferenceAnalyses cache
         self.cleanReferenceAnalysesCache()

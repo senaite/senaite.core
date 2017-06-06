@@ -70,12 +70,6 @@ class IRoutineAnalysis(Interface):
     Rejections, etc.
     """
 
-
-class IAnalysisSpec(Interface):
-
-    """Analysis Specs"""
-
-
 class IDuplicateAnalysis(Interface):
 
     """DuplicateAnalysis"""
@@ -84,6 +78,17 @@ class IDuplicateAnalysis(Interface):
 class IReferenceAnalysis(Interface):
 
     """Reference Analyses """
+
+
+class IRejectAnalysis(Interface):
+    """This adapter distinguishes normal analyses from Duplicates, References,
+    Rejections, etc.
+    """
+
+
+class IAnalysisSpec(Interface):
+
+    """Analysis Specs"""
 
 
 class IReportFolder(Interface):
@@ -651,14 +656,6 @@ class IAdministrationReport(Interface):
              an instance of this class will be used to create the report
     }
     """
-
-class IARPriorities(Interface):
-
-    "Marker interface for a folder that lists ARPriority's"
-
-class IARPriority(Interface):
-
-    "Marker interface for an ARPriority"
 
 class IHeaderTableFieldRenderer(Interface):
     """

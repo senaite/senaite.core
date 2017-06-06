@@ -35,9 +35,9 @@
   <include package=".search" />
   <include package=".subscribers" />
   <include package=".vocabularies" />
+  <include package=".workflow" />
 
   <include file="profiles.zcml" />
-  <include file="workflow.zcml" />
 
   <i18n:registerTranslations directory="locales" />
 

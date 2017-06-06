@@ -167,20 +167,19 @@ class ManageResultsView(BrowserView):
             if wf.getInfoFor(analysis, 'review_state') not in allowed_states:
                 continue
 
-            service = analysis.getService()
-            if service.getKeyword() in outdict.keys():
+            if analysis.getKeyword() in outdict.keys():
                 continue
 
-            calculation = service.getCalculation()
+            calculation = analysis.getCalculation()
             if not calculation:
                 continue
 
-            andict = {'analysis': service.Title(),
-                      'keyword': service.getKeyword(),
+            andict = {'analysis': analysis.Title(),
+                      'keyword': analysis.getKeyword(),
                       'interims': {}}
 
             # Analysis Service interim defaults
-            for field in service.getInterimFields():
+            for field in analysis.getInterimFields():
                 if field.get('wide', False):
                     andict['interims'][field['keyword']] = field
 
@@ -191,7 +190,7 @@ class ManageResultsView(BrowserView):
                     andict['interims'][field['keyword']] = field
 
             if andict['interims']:
-                outdict[service.getKeyword()] = andict
+                outdict[analysis.getKeyword()] = andict
         return outdict
 
     def checkInstrumentsValidity(self):
@@ -212,13 +211,6 @@ class ManageResultsView(BrowserView):
             message = _("Some analyses use out-of-date or uncalibrated instruments. Results edition not allowed")
             message = "%s: %s" % (message, (', '.join(invalid)))
             self.context.plone_utils.addPortalMessage(message, 'warn')
-
-    def getPriorityIcon(self):
-        priority = self.context.getPriority()
-        if priority:
-            icon = priority.getBigIcon()
-            if icon:
-                return '/'.join(icon.getPhysicalPath())
 
     def _getAnalyses(self):
         """
@@ -242,7 +234,7 @@ class ManageResultsView(BrowserView):
         if not self.context.bika_setup.getAllowDepartmentFiltering():
             return True
         # Gettin the department from analysis service
-        serv_dep = obj.getService().getDepartment()
+        serv_dep = obj.getDepartment()
         result = True
         if serv_dep:
             # Getting the cookie value

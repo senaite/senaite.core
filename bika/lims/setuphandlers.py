@@ -17,8 +17,7 @@ from bika.lims.utils import t, tmpID
 from bika.lims import logger
 from bika.lims.config import *
 from bika.lims.permissions import *
-from bika.lims.interfaces \
-        import IHaveNoBreadCrumbs, IARImportFolder, IARPriorities
+from bika.lims.interfaces import IHaveNoBreadCrumbs, IARImportFolder
 from zope.event import notify
 from zope.interface import alsoProvides
 from Products.CMFEditions.Permissions import ApplyVersionControl
@@ -77,7 +76,6 @@ class BikaGenerator:
         bika_setup = portal._getOb('bika_setup')
         for obj_id in ('bika_analysiscategories',
                        'bika_analysisservices',
-                       'bika_arpriorities',
                        'bika_attachmenttypes',
                        'bika_batchlabels',
                        'bika_calculations',
@@ -235,7 +233,6 @@ class BikaGenerator:
 
         mp(DispatchOrder, ['Manager', 'LabManager', 'LabClerk'], 1)
         mp(ManageARImport, ['Manager', 'LabManager', 'LabClerk'], 1)
-        mp(ManageARPriority, ['Manager', 'LabManager', 'LabClerk'], 1)
         mp(ManageAnalysisRequests, ['Manager', 'LabManager', 'LabClerk', 'Analyst', 'Sampler', 'Preserver', 'Owner', 'RegulatoryInspector', 'SamplingCoordinator'], 1)
         mp(ManageBika, ['Manager', 'LabManager'], 1)
         mp(ManageClients, ['Manager', 'LabManager', 'LabClerk'], 1)
@@ -536,7 +533,6 @@ class BikaGenerator:
         addIndex(bc, 'Identifiers', 'KeywordIndex')
 
         addIndex(bc, 'getDepartmentUIDs', 'KeywordIndex')
-        addIndex(bc, 'getAnalysisCategory', 'KeywordIndex')
         addIndex(bc, 'getAnalysisService', 'KeywordIndex')
         addIndex(bc, 'getAnalyst', 'FieldIndex')
         addIndex(bc, 'getAnalysts', 'KeywordIndex')
@@ -570,9 +566,7 @@ class BikaGenerator:
         addIndex(bc, 'getSampleTypeUID', 'FieldIndex')
         addIndex(bc, 'getSampleUID', 'FieldIndex')
         addIndex(bc, 'getSamplingDate', 'DateIndex')
-        addIndex(bc, 'getServiceTitle', 'FieldIndex')
         addIndex(bc, 'getWorksheetTemplateTitle', 'FieldIndex')
-        addIndex(bc, 'Priority', 'FieldIndex')
         addIndex(bc, 'BatchUID', 'FieldIndex')
         addColumn(bc, 'path')
         addColumn(bc, 'UID')
@@ -598,7 +592,6 @@ class BikaGenerator:
         addColumn(bc, 'getClientTitle')
         addColumn(bc, 'getSamplePointTitle')
         addColumn(bc, 'getSampleTypeTitle')
-        addColumn(bc, 'getAnalysisCategory')
         addColumn(bc, 'getAnalysisService')
         addColumn(bc, 'getDatePublished')
         addColumn(bc, 'getDateReceived')
@@ -638,6 +631,7 @@ class BikaGenerator:
         at.setCatalogsByType('Method', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('Multifile', ['bika_setup_catalog'])
         at.setCatalogsByType('AttachmentType', ['bika_setup_catalog', ])
+        at.setCatalogsByType('Attachment', [])
         at.setCatalogsByType('Calculation', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('AnalysisProfile', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('ARTemplate', ['bika_setup_catalog', 'portal_catalog'])
@@ -652,7 +646,6 @@ class BikaGenerator:
         at.setCatalogsByType('Unit', ['bika_setup_catalog', ])
         at.setCatalogsByType('WorksheetTemplate', ['bika_setup_catalog', 'portal_catalog'])
         at.setCatalogsByType('BatchLabel', ['bika_setup_catalog', ])
-        at.setCatalogsByType('ARPriority', ['bika_setup_catalog', ])
 
         addIndex(bsc, 'path', 'ExtendedPathIndex', ('getPhysicalPath'))
         addIndex(bsc, 'allowedRolesAndUsers', 'KeywordIndex')
@@ -679,9 +672,6 @@ class BikaGenerator:
 
         addIndex(bsc, 'getAccredited', 'FieldIndex')
         addIndex(bsc, 'getAnalyst', 'FieldIndex')
-        addIndex(bsc, 'getInstrumentType', 'FieldIndex')
-        addIndex(bsc, 'getInstrumentTypeName', 'FieldIndex')
-        addIndex(bsc, 'getInstrumentLocationName', 'FieldIndex')
         addIndex(bsc, 'getBlank', 'FieldIndex')
         addIndex(bsc, 'getCalculationTitle', 'FieldIndex')
         addIndex(bsc, 'getCalculationUID', 'FieldIndex')
@@ -690,16 +680,23 @@ class BikaGenerator:
         addIndex(bsc, 'getCategoryUID', 'FieldIndex')
         addIndex(bsc, 'getClientUID', 'FieldIndex')
         addIndex(bsc, 'getDepartmentTitle', 'FieldIndex')
+        addIndex(bsc, 'getDepartmentUID', 'FieldIndex')
+        addIndex(bsc, 'getDocumentID', 'FieldIndex')
         addIndex(bsc, 'getDuplicateVariation', 'FieldIndex')
         addIndex(bsc, 'getFormula', 'FieldIndex')
         addIndex(bsc, 'getFullname', 'FieldIndex')
         addIndex(bsc, 'getHazardous', 'FieldIndex')
+        addIndex(bsc, 'getInstrumentLocationName', 'FieldIndex')
         addIndex(bsc, 'getInstrumentTitle', 'FieldIndex')
+        addIndex(bsc, 'getInstrumentType', 'FieldIndex')
+        addIndex(bsc, 'getInstrumentTypeName', 'FieldIndex')
         addIndex(bsc, 'getKeyword', 'FieldIndex')
+        addIndex(bsc, 'getManagerEmail', 'FieldIndex')
         addIndex(bsc, 'getManagerName', 'FieldIndex')
         addIndex(bsc, 'getManagerPhone', 'FieldIndex')
-        addIndex(bsc, 'getManagerEmail', 'FieldIndex')
         addIndex(bsc, 'getMaxTimeAllowed', 'FieldIndex')
+        addIndex(bsc, 'getMethodID', 'FieldIndex')
+        addIndex(bsc, 'getAvailableMethodUIDs', 'KeywordIndex')
         addIndex(bsc, 'getModel', 'FieldIndex')
         addIndex(bsc, 'getName', 'FieldIndex')
         addIndex(bsc, 'getPointOfCapture', 'FieldIndex')
@@ -708,17 +705,13 @@ class BikaGenerator:
         addIndex(bsc, 'getSamplePointUID', 'FieldIndex')
         addIndex(bsc, 'getSampleTypeTitle', 'KeywordIndex')
         addIndex(bsc, 'getSampleTypeUID', 'FieldIndex')
-        addIndex(bsc, 'getServiceTitle', 'FieldIndex')
         addIndex(bsc, 'getServiceUID', 'FieldIndex')
+        addIndex(bsc, 'getServiceUIDs', 'KeywordIndex')
         addIndex(bsc, 'getTotalPrice', 'FieldIndex')
         addIndex(bsc, 'getUnit', 'FieldIndex')
         addIndex(bsc, 'getVATAmount', 'FieldIndex')
         addIndex(bsc, 'getVolume', 'FieldIndex')
         addIndex(bsc, 'sortKey', 'FieldIndex')
-        addIndex(bsc, 'getMethodID', 'FieldIndex')
-        addIndex(bsc, 'getDocumentID', 'FieldIndex')
-        addIndex(bsc, 'getAvailableMethodsUIDs', 'KeywordIndex')
-        addIndex(bsc, 'getMethodUIDs', 'KeywordIndex')
 
         addColumn(bsc, 'path')
         addColumn(bsc, 'UID')
@@ -768,7 +761,6 @@ class BikaGenerator:
         addColumn(bsc, 'getSamplePointUID')
         addColumn(bsc, 'getSampleTypeTitle')
         addColumn(bsc, 'getSampleTypeUID')
-        addColumn(bsc, 'getServiceTitle')
         addColumn(bsc, 'getServiceUID')
         addColumn(bsc, 'getTotalPrice')
         addColumn(bsc, 'getUnit')

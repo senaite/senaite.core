@@ -31,12 +31,12 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.browser import BrowserView
 from bika.lims.interfaces import IFieldIcons
-from bika.lims.subscribers import doActionFor
-from bika.lims.subscribers import skip
 from bika.lims.utils import isActive, getHiddenAttributesForClass
 from bika.lims.utils import t, format_supsub
 from bika.lims.utils import to_utf8
 from bika.lims.utils import getFromString
+from bika.lims.workflow import doActionFor
+from bika.lims.workflow import skip
 from plone.app.content.browser import tableview
 from plone.app.content.browser.foldercontents import FolderContentsView, FolderContentsTable
 from plone.app.content.browser.interfaces import IFolderContentsView
@@ -210,6 +210,7 @@ class WorkflowAction:
         workflow = getToolByName(self.context, 'portal_workflow')
         # transition selected items from the bika_listing/Table.
         for item in items:
+            # TODO Workflow - Remove skips here and review code
             # the only actions allowed on inactive/cancelled
             # items are "reinstate" and "activate"
             if not isActive(item) and action not in ('reinstate', 'activate'):
@@ -236,11 +237,7 @@ class WorkflowAction:
                             if not success:
                                 # If failed, delete last verificator.
                                 item.deleteLastVerificator()
-                        # If no transition done, but a verificator added, we
-                        # have to reindex the object in order to update the
-                        # metadata columns
-                        else:
-                            item.reindexObject()
+                        item.reindexObject()
                     else:
                         success, message = doActionFor(item, action)
                     if success:
@@ -1376,14 +1373,6 @@ class BikaListingView(BrowserView):
         for a,action in enumerate(actions):
             actions[a]['title'] = t(PMF(actions[a]['id'] + "_transition_title"))
         return actions
-
-    def getPriorityIcon(self):
-        if hasattr(self.context, 'getPriority'):
-            priority = self.context.getPriority()
-            if priority:
-                icon = priority.getBigIcon()
-                if icon:
-                    return '/'.join(icon.getPhysicalPath())
 
     def tabindex(self):
         i = 0

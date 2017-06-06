@@ -42,12 +42,6 @@
       name="CCEmails"
     />
 
-    <adapter
-      name="ar_priority_icons"
-      for="bika.lims.interfaces.IAnalysisRequest"
-      factory="bika.lims.adapters.priorityicons.PriorityIcons"
-    />
-
     <!-- main site/analysisrequests view -->
     <browser:page
       for="bika.lims.interfaces.IAnalysisRequestsFolder"
@@ -196,6 +190,29 @@
       class="bika.lims.browser.analysisrequest.publish.AnalysisRequestPublishView"
       permission="bika.lims.ManageAnalysisRequests"
       layer="bika.lims.interfaces.IBikaLIMS"
+    />
+
+    <!-- Verifying any Analysis will cause a digestion of the parent AR to
+    be triggered at the end of the request -->
+    <subscriber
+      for="bika.lims.interfaces.IAnalysis
+           Products.DCWorkflow.interfaces.IAfterTransitionEvent"
+      handler="bika.lims.browser.analysisrequest.publish.AnalysisAfterTransitionHandler"
+    />
+
+    <!-- Modifying an AR that has been verified causes a digestion to be
+    triggered at the end of this request. -->
+    <subscriber
+      for="bika.lims.interfaces.IAnalysisRequest
+           zope.lifecycleevent.interfaces.IObjectModifiedEvent"
+      handler="bika.lims.browser.analysisrequest.publish.ARModifiedHandler"
+    />
+
+    <!-- At the end of each request, this will check to see if any ARs are
+    flagged to have their publication data pre-digested. -->
+    <subscriber
+      for="zope.publisher.interfaces.IEndRequestEvent"
+      handler="bika.lims.browser.analysisrequest.publish.EndRequestHandler"
     />
 
 </configure>

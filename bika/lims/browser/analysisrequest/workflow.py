@@ -76,7 +76,8 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         if nr_existing > nr_parts:
             for i in range(nr_existing - nr_parts):
                 part = sample['%s%s' % (part_prefix, nr_existing - i)]
-                for a in part.getBackReferences("AnalysisSamplePartition"):
+                analyses = part.getAnalyses()
+                for a in analyses:
                     a.setSamplePartition(None)
                 sample.manage_delObjects(['%s%s' % (part_prefix, nr_existing - i), ])
         # modify part container/preservation
@@ -181,7 +182,6 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
                     ar.REQUEST['workflow_skiplist'].remove("retract all analyses")
                     ar_state = workflow.getInfoFor(ar, 'review_state')
                 # Then we need to forward new analyses state
-                analysis.updateDueDate()
                 changeWorkflowState(analysis, 'bika_analysis_workflow', ar_state)
 
         message = PMF("Changes saved.")
@@ -608,7 +608,6 @@ class AnalysisRequestWorkflowAction(WorkflowAction):
         newar.setSamplePoint(ar.getSamplePoint())
         newar.setStorageLocation(ar.getStorageLocation())
         newar.setSamplingDeviation(ar.getSamplingDeviation())
-        newar.setPriority(ar.getPriority())
         newar.setSampleCondition(ar.getSampleCondition())
         newar.setSample(ar.getSample())
         newar.setClientOrderNumber(ar.getClientOrderNumber())

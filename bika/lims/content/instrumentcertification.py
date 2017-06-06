@@ -4,16 +4,13 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from AccessControl import ClassSecurityInfo
-from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from Products.Archetypes.public import *
-from plone.app.blob.field import FileField as BlobFileField
 from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
 from bika.lims.browser.widgets import DateTimeWidget, ReferenceWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
-from Products.CMFCore import permissions
+from plone.app.blob.field import FileField as BlobFileField
 
 schema = BikaSchema.copy() + Schema((
 

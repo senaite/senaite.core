@@ -3,18 +3,18 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from Products.Archetypes import atapi
 from AccessControl import ClassSecurityInfo
-from DateTime import DateTime
-from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
+from Products.Archetypes import atapi
 from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.Archetypes.public import Schema
-from plone.app.blob.field import FileField
+from Products.Archetypes.public import Schema, ReferenceWidget, DateTimeField
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.browser.widgets import DateTimeWidget
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from plone.app.blob.field import FileField
 
 schema = BikaSchema.copy() + Schema((
     # It comes from blob
@@ -23,11 +23,10 @@ schema = BikaSchema.copy() + Schema((
             label=_("Attachment"),
         ),
     ),
-    atapi.ReferenceField('AttachmentType',
+    UIDReferenceField('AttachmentType',
         required = 0,
         allowed_types = ('AttachmentType',),
-        relationship = 'AttachmentAttachmentType',
-        widget = atapi.ReferenceWidget(
+        widget = ReferenceWidget(
             label=_("Attachment Type"),
         ),
     ),
@@ -64,18 +63,6 @@ class Attachment(atapi.BaseFolder):
     def Title(self):
         """ Return the Id """
         return safe_unicode(self.getId()).encode('utf-8')
-
-    def getTextTitle(self):
-        """ Return the request and possibly analayis title as title """
-        requestid = self.getRequestID()
-        if requestid:
-            analysis = self.getAnalysis()
-            if analysis:
-                return '%s - %s' % (requestid, analysis.Title())
-            else:
-                return requestid
-        else:
-            return None
 
     def getRequest(self):
         """ Return the AR to which this is linked """
@@ -145,11 +132,6 @@ class Attachment(atapi.BaseFolder):
                 parent = tool.lookupObject(reference.sourceUID)
         workflow = getToolByName(self, 'portal_workflow')
         return workflow.getInfoFor(parent, 'review_state', '')
-
-    security.declarePublic('current_date')
-    def current_date(self):
-        """ return current date """
-        return DateTime()
 
 
 atapi.registerType(Attachment, PROJECTNAME)

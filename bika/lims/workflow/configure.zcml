@@ -29,12 +29,12 @@
       for="bika.lims.interfaces.ISamplePrepWorkflow
            Products.CMFCore.interfaces.IWorkflowTool"
       provides="Products.CMFPlone.interfaces.IWorkflowChain"
-      factory=".workflow.SamplePrepWorkflowChain"/>
+      factory="bika.lims.workflow.SamplePrepWorkflowChain"/>
 
     <subscriber
       for="bika.lims.interfaces.ISamplePrepWorkflow
            Products.DCWorkflow.interfaces.IAfterTransitionEvent"
-      handler=".workflow.SamplePrepTransitionEventHandler"
+      handler="bika.lims.workflow.SamplePrepTransitionEventHandler"
     />
 
 </configure>

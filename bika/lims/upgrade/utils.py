@@ -1,4 +1,3 @@
-
 from Products.CMFCore.utils import getToolByName
 from Products.ZCatalog.ProgressHandler import ZLogHandler
 from bika.lims import logger
@@ -14,19 +13,18 @@ from transaction import savepoint
 # Interesting page for logging indexing process and others:
 # https://github.com/plone/Products.ZCatalog/tree/master/src/Products/ZCatalog
 # and
-# https://github.com/plone/Products.CMFPlone/blob/master/Products/CMFPlone/CatalogTool.py
+# https://github.com/plone/Products.CMFPlone/blob/master/Products/CMFPlone
+# /CatalogTool.py
 import traceback
 import sys
 import transaction
 import logging
 
-
 LOG = logging.getLogger('contentmigration')
 
 
 def migrate_to_blob(context, portal_type, query={}, remove_old_value=True):
-    """
-    Migrates FileFields fields to blob ones for a given portal_type.
+    """Migrates FileFields fields to blob ones for a given portal_type.
     The wueries are done against 'portal_catalog', 'uid_catalog' and
     'reference_catalog'
 
@@ -44,8 +42,7 @@ def migrate_to_blob(context, portal_type, query={}, remove_old_value=True):
 
 
 class BikaCustomQueryWalker(CustomQueryWalker):
-    """
-    Walker using portal_catalog and an optional custom query.
+    """Walker using portal_catalog and an optional custom query.
     This class overrides the original one in order to log and inform
     about the migration process.
     """
@@ -73,15 +70,13 @@ class BikaCustomQueryWalker(CustomQueryWalker):
         if limit:
             brains = brains[:limit]
         obj_num_total = len(brains)
-        logger.info(
-            '{} objects will be migrated walking through {}'
-            .format(obj_num_total, catalog.id))
+        logger.info('{} {} objects will be migrated walking through {}'
+                    .format(obj_num_total, self.src_portal_type, catalog.id))
         counter = 0
         for brain in brains:
             if counter % 100 == 0:
-                logger.info(
-                    'Progress: {} objects have been migrated out of {}'
-                    .format(counter, obj_num_total))
+                logger.info('Progress: {} objects have been migrated out of {}'
+                            .format(counter, obj_num_total))
             try:
                 obj = brain.getObject()
             except AttributeError:
@@ -89,7 +84,7 @@ class BikaCustomQueryWalker(CustomQueryWalker):
                 continue
 
             if self.callBefore is not None and callable(self.callBefore):
-                if self.callBefore(obj, **self.kwargs) == False:
+                if not self.callBefore(obj, **self.kwargs):
                     continue
 
             try:
@@ -105,7 +100,7 @@ class BikaCustomQueryWalker(CustomQueryWalker):
             if obj_num_total == counter:
                 logger.info(
                     'Progress: {} objects have been migrated out of {}'
-                    .format(counter, obj_num_total))
+                        .format(counter, obj_num_total))
 
 
 # helper to build custom blob migrators for the given type. It is based on
@@ -121,7 +116,9 @@ def makeMigrator(context, portal_type, remove_old_value=True):
 
         see `plone3 to 4 migration guide`__
 
-        .. __: https://plone.org/documentation/manual/upgrade-guide/version/upgrading-plone-3-x-to-4.0/updating-add-on-products-for-plone-4.0/use-plone.app.blob-based-blob-storage
+        .. __: https://plone.org/documentation/manual/upgrade-guide/version
+        /upgrading-plone-3-x-to-4.0/updating-add-on-products-for-plone-4.0
+        /use-plone.app.blob-based-blob-storage
         """
 
         src_portal_type = portal_type
@@ -186,7 +183,6 @@ def makeMigrator(context, portal_type, remove_old_value=True):
 
 
 class UpgradeUtils(object):
-
     def __init__(self, portal, pgthreshold=100):
         self.portal = portal
         self.reindexcatalog = {}
@@ -224,10 +220,10 @@ class UpgradeUtils(object):
             rev = rev[:2]
 
         return '{0}.{1}.{2}.{3}'.format(
-                '{:02d}'.format(int(major)),
-                '{:02d}'.format(int(minor)),
-                '{:02d}'.format(int(rev)),
-                '{:04d}'.format(int(patch)))
+            '{:02d}'.format(int(major)),
+            '{:02d}'.format(int(minor)),
+            '{:02d}'.format(int(rev)),
+            '{:04d}'.format(int(patch)))
 
     def delIndexAndColumn(self, catalog, index):
         self.delIndex(catalog, index)
@@ -238,7 +234,6 @@ class UpgradeUtils(object):
         self.addColumn(catalog, index)
 
     def reindexAndRefresh(self):
-        self.reindexCatalogs()
         self.refreshCatalogs()
 
     def _getCatalog(self, catalog):
@@ -250,69 +245,46 @@ class UpgradeUtils(object):
         cat = self._getCatalog(catalog)
         if index not in cat.indexes():
             return
-        try:
-            cat.delIndex(index)
-            logger.info('Deleted index {0} from catalog {1}'.format(
-                        index, cat.id))
-            transaction.commit()
-        except:
-            logger.error(
-                'Unable to delete index {0} from catalog {1}'.format(
-                    index, cat.id))
-            raise
+        cat.delIndex(index)
+        logger.info('Deleted index {0} from catalog {1}'.format(
+            index, cat.id))
 
     def delColumn(self, catalog, column):
         cat = self._getCatalog(catalog)
         if column not in cat.schema():
             return
-        try:
-            cat.delColumn(column)
-            logger.info('Deleted column {0} from catalog {1} deleted.'.format(
-                        column, cat.id))
-            transaction.commit()
-        except:
-            logger.error(
-                'Unable to delete column {0} from catalog {1}'.format(
-                    column, cat.id))
-            raise
+        cat.delColumn(column)
+        logger.info('Deleted column {0} from catalog {1} deleted.'.format(
+            column, cat.id))
 
     def addIndex(self, catalog, index, indextype):
         cat = self._getCatalog(catalog)
         if index in cat.indexes():
             return
-        try:
-            if indextype == 'ZCTextIndex':
-                addZCTextIndex(cat, index)
-            else:
-                cat.addIndex(index, indextype)
-            logger.info('Catalog index %s added.' % index)
-            indexes = self.reindexcatalog.get(cat.id, [])
-            indexes.append(index)
-            indexes = list(set(indexes))
-            self.reindexcatalog[cat.id] = indexes
-            transaction.commit()
-        except:
-            logger.error(
-                'Unable to add index {0} to catalog {1}'.format(
-                    index, cat.id))
-            raise
+        if indextype == 'ZCTextIndex':
+            addZCTextIndex(cat, index)
+        else:
+            cat.addIndex(index, indextype)
+        logger.info('Catalog index %s added.' % index)
+        indexes = self.reindexcatalog.get(cat.id, [])
+        indexes.append(index)
+        indexes = list(set(indexes))
+        self.reindexcatalog[cat.id] = indexes
+        transaction.commit()
 
     def addColumn(self, catalog, column):
         cat = self._getCatalog(catalog)
         if column in cat.schema():
             return
-        try:
-            cat.addColumn(column)
-            logger.info('Added column {0} to catalog {1}'.format(
-                column, cat.id))
-            if cat.id not in self.refreshcatalog:
-                self.refreshcatalog.append(cat.id)
-            transaction.commit()
-        except:
-            logger.error(
-                'Unable to add column {0} to catalog {1}'.format(
-                    column, cat.id))
-            raise
+        cat.addColumn(column)
+        logger.info('Added column {0} to catalog {1}'.format(
+            column, cat.id))
+        if cat.id not in self.refreshcatalog:
+            logger.info("{} to refresh because col {} added".format(
+                catalog, column
+            ))
+            self.refreshcatalog.append(cat.id)
+        transaction.commit()
 
     def refreshCatalogs(self):
         """
@@ -329,51 +301,38 @@ class UpgradeUtils(object):
         done = []
         # Start reindexing the catalogs with new columns
         for catalog_to_refresh in to_refresh:
-            try:
-                logger.info(
-                    'Catalog {0} refreshing started'.format(catalog_to_refresh))
-                catalog = getToolByName(self.portal, catalog_to_refresh)
-                handler = ZLogHandler(self.pgthreshold)
-                catalog.refreshCatalog(pghandler=handler)
-                logger.info('Catalog {0} refreshed'.format(catalog_to_refresh))
-                transaction.commit()
-            except:
-                logger.error(
-                    'Unable to refresh catalog {0}'.format(catalog_to_refresh))
-                raise
+            logger.info(
+                'Catalog {0} refreshing started'.format(catalog_to_refresh))
+            catalog = getToolByName(self.portal, catalog_to_refresh)
+            handler = ZLogHandler(self.pgthreshold)
+            catalog.refreshCatalog(pghandler=handler)
+            logger.info('Catalog {0} refreshed'.format(catalog_to_refresh))
+            transaction.commit()
             done.append(catalog_to_refresh)
         # Now the catalogs which only need reindxing
         for catalog_to_reindex in to_reindex:
             if catalog_to_reindex in done:
                 continue
-            try:
-                logger.info(
-                    'Catalog {0} reindexing started'.format(catalog_to_reindex))
-                catalog = getToolByName(
-                    self.portal, catalog_to_reindex)
-                indexes = self.reindexcatalog[catalog_to_reindex]
-                handler = ZLogHandler(self.pgthreshold)
-                catalog.reindexIndex(indexes, None, pghandler=handler)
-                logger.info('Catalog {0} reindexed'.format(catalog_to_reindex))
-                transaction.commit()
-            except:
-                logger.error(
-                    'Unable to reindex catalog {0}'
-                    .format(catalog_to_reindex))
-                raise
+            logger.info(
+                'Catalog {0} reindexing started'.format(catalog_to_reindex))
+            catalog = getToolByName(
+                self.portal, catalog_to_reindex)
+            indexes = self.reindexcatalog[catalog_to_reindex]
+            handler = ZLogHandler(self.pgthreshold)
+            catalog.reindexIndex(indexes, None, pghandler=handler)
+            logger.info('Catalog {0} reindexed'.format(catalog_to_reindex))
+            transaction.commit()
             done.append(catalog_to_reindex)
+
+    def cleanAndRebuildCatalog(self, catid):
+        catalog = getToolByName(self.portal, catid)
+        # manage_catalogRebuild does the same as clearFindAndRebuild
+        # but it alse loggs cpu and time.
+        catalog.manage_catalogRebuild()
+        logger.info('Catalog {0} cleaned and rebuilt'.format(catid))
+        transaction.commit()
 
     def cleanAndRebuildCatalogs(self):
         cats = self.refreshcatalog + self.reindexcatalog.keys()
         for catid in cats:
-            try:
-                catalog = getToolByName(self.portal, catid)
-                # manage_catalogRebuild does the same as clearFindAndRebuild
-                # but it alse loggs cpu and time.
-                catalog.manage_catalogRebuild()
-                logger.info('Catalog {0} cleaned and rebuilt'.format(catid))
-                transaction.commit()
-            except:
-                logger.error('Unable to clean and rebuild catalog {0}'.format(
-                            catid))
-                raise
+            self.cleanAndRebuildCatalog(catid)

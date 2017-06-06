@@ -17,8 +17,13 @@ class AnalysesView(BaseView):
     """
     def __init__(self, context, request):
         BaseView.__init__(self, context, request)
+        self.context = context
+        self.request = request
+        self.analyst = None
+        self.instrument = None
         self.contentFilter = {
-                        'getWorksheetUID': context.UID(), }
+            'getWorksheetUID': context.UID(),
+        }
         self.icon = self.portal_url + "/++resource++bika.lims.images/worksheet_big.png"
         self.allow_edit = True
         self.show_categories = False
@@ -27,7 +32,6 @@ class AnalysesView(BaseView):
             'Pos': {'title': _('Position')},
             'DueDate': {'title': _('Due Date')},
             'Service': {'title': _('Analysis')},
-            'getPriority': {'title': _('Priority')},
             'Method': {'title': _('Method')},
             'DetectionLimit': {
                 'title': _('DL'),
@@ -44,7 +48,6 @@ class AnalysesView(BaseView):
             'Attachments': {'title': _('Attachments')},
             'Instrument': {'title': _('Instrument')},
             'state_title': {'title': _('State')},
-            'Priority': { 'title': _('Priority'), 'index': 'Priority'},
         }
         self.review_states = [
             {'id':'default',
@@ -56,7 +59,6 @@ class AnalysesView(BaseView):
                              {'id':'unassign'}],
              'columns':['Pos',
                         'Service',
-                        'Priority',
                         'Method',
                         'Instrument',
                         'DetectionLimit',
@@ -91,13 +93,11 @@ class AnalysesView(BaseView):
             highest_position = max(highest_position, pos)
             items[x]['Pos'] = pos
             items[x]['colspan'] = {'Pos':1}
-            service = obj.getService()
-            method = service.getMethod()
-            items[x]['Service'] = service.Title()
-            items[x]['Priority'] = ''
+            method = obj.getMethod()
+            items[x]['Service'] = obj.Title()
             #items[x]['Method'] = method and method.Title() or ''
             items[x]['class']['Service'] = 'service_title'
-            items[x]['Category'] = service.getCategory() and service.getCategory().Title() or ''
+            items[x]['Category'] = obj.getCategoryTitle()
             if obj.portal_type == "ReferenceAnalysis":
                 items[x]['DueDate'] = self.ulocalized_time(obj.aq_parent.getExpiryDate(), long_format=0)
             else:
@@ -281,7 +281,6 @@ class AnalysesView(BaseView):
             pos_text += "</table>"
 
             items[x]['replace']['Pos'] = pos_text
-            items[x]['getPriority'] = '' #Icon get added by adapter
 
         for k,v in self.columns.items():
             self.columns[k]['sortable'] = False

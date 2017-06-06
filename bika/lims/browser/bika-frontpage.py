@@ -4,7 +4,7 @@
 #
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
-
+from Products.CMFCore.utils import getToolByName
 from Products.Five.browser.pagetemplatefile import ViewPageTemplateFile
 
 from plone import api as ploneapi
@@ -20,7 +20,7 @@ class FrontPageView(BrowserView):
     def __call__(self):
         self.set_versions()
         self.icon = self.portal_url + "/++resource++bika.lims.images/chevron_big.png"
-        bika_setup = ploneapi.portal.get_tool("bika_setup")
+        bika_setup = getToolByName(self.context, "bika_setup")
         landingpage = bika_setup.getLandingPage()
 
         # Anonymous Users get either redirected to the std. bika-frontpage or
@@ -63,7 +63,7 @@ class FrontPageView(BrowserView):
     def is_dashboard_enabled(self):
         """Checks if the dashboard is enabled
         """
-        bika_setup = ploneapi.portal.get_tool("bika_setup")
+        bika_setup = getToolByName(self.context, "bika_setup")
         return bika_setup.getDashboardByDefault()
 
     def is_anonymous_user(self):
@@ -84,7 +84,7 @@ class FrontPageView(BrowserView):
         """
         self.versions = {}
         self.upgrades = {}
-        qi = ploneapi.portal.get_tool("portal_quickinstaller")
+        qi = getToolByName(self.context, "portal_quickinstaller")
         for key in qi.keys():
             info = qi.upgradeInfo('bika.lims')
             self.versions[key] = qi.getProductVersion(key)

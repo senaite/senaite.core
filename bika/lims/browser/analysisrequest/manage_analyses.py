@@ -63,10 +63,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
                        'type': 'boolean', },
             'Price': {'title': _('Price'),
                       'sortable': False, },
-            'Priority': {'title': _('Priority'),
-                         'sortable': False,
-                         'index': 'Priority',
-                         'toggle': True },
             'Partition': {'title': _('Partition'),
                           'sortable': False, },
             'min': {'title': _('Min')},
@@ -78,7 +74,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
         ShowPrices = self.context.bika_setup.getShowPrices()
         if ShowPrices:
             columns.append('Price')
-            columns.append('Priority')
         ShowPartitions = self.context.bika_setup.getShowPartitions()
         if ShowPartitions:
             columns.append('Partition')
@@ -224,7 +219,6 @@ class AnalysisRequestAnalysesView(BikaListingView):
             items[x]['before']['Price'] = symbol
             items[x]['Price'] = obj.getPrice()
             items[x]['class']['Price'] = 'nowrap'
-            items[x]['Priority'] = ''
 
             if items[x]['selected']:
                 items[x]['allow_edit'] = ['Partition', 'min', 'max', 'error']
@@ -240,20 +234,16 @@ class AnalysisRequestAnalysesView(BikaListingView):
                 part = part and part or obj
                 items[x]['Partition'] = part.Title()
                 spec = self.get_spec_from_ar(self.context,
-                                             analysis.getService().getKeyword())
+                                             analysis.getKeyword())
                 items[x]["min"] = spec.get("min",'')
                 items[x]["max"] = spec.get("max",'')
                 items[x]["error"] = spec.get("error",'')
-                # Add priority premium
                 items[x]['Price'] = analysis.getPrice()
-                priority = analysis.getPriority()
-                items[x]['Priority'] = priority and priority.Title() or ''
             else:
                 items[x]['Partition'] = ''
                 items[x]["min"] = ''
                 items[x]["max"] = ''
                 items[x]["error"] = ''
-                items[x]["Priority"] = ''
 
             after_icons = ''
             if obj.getAccredited():

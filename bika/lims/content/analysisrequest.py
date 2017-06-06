@@ -6,51 +6,53 @@
 """The request for analysis by a client. It contains analysis instances.
 """
 import logging
+import sys
+from AccessControl import ClassSecurityInfo
+from decimal import Decimal
 from operator import methodcaller
 
-from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
-from plone import api
-
-# noinspection PyUnresolvedReferences
 from Products.ATExtensions.field import RecordsField
-from plone.indexer import indexer
 from Products.Archetypes import atapi
+from Products.Archetypes.Widget import RichWidget
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
-from Products.Archetypes.Widget import RichWidget
 from Products.CMFCore import permissions
 from Products.CMFCore.permissions import View
 from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
 from Products.CMFPlone.utils import _createObjectByType
-from bika.lims.browser.fields import ARAnalysesField
-from bika.lims.config import PROJECTNAME
-from bika.lims.permissions import *
-from bika.lims.permissions import Verify as VerifyPermission
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IAnalysisRequest, ISamplePrepWorkflow
-from bika.lims.browser.fields import HistoryAwareReferenceField
+from Products.CMFPlone.utils import safe_unicode
+from bika.lims import bikaMessageFactory as _
+from bika.lims import deprecated
+from bika.lims import logger
+from bika.lims.browser.fields import ARAnalysesField, UIDReferenceField
+from bika.lims.browser.fields import DateTimeField
 from bika.lims.browser.widgets import DateTimeWidget, DecimalWidget
 from bika.lims.browser.widgets import ReferenceWidget
-from bika.lims.browser.widgets import SelectionWidget
 from bika.lims.browser.widgets import RejectionWidget
-from bika.lims.workflow import skip, isBasicTransitionAllowed, getTransitionDate
-from bika.lims.workflow import getTransitionUsers
-from bika.lims.workflow import doActionFor
-from decimal import Decimal
-from zope.interface import implements
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import getUsers, dicts_to_dict
-from bika.lims.utils.analysisrequest import notify_rejection
-from bika.lims.utils import user_fullname
-from bika.lims.utils import user_email
-from bika.lims import logger
-from bika.lims.browser.fields import DateTimeField
+from bika.lims.browser.widgets import SelectionWidget
 from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
-from bika.lims import deprecated
-import sys
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IAnalysisRequest, ISamplePrepWorkflow
+from bika.lims.permissions import *
+from bika.lims.permissions import Verify as VerifyPermission
+from bika.lims.utils import dicts_to_dict, getUsers
+from bika.lims.utils import user_email
+from bika.lims.utils import user_fullname
+from bika.lims.utils.analysisrequest import notify_rejection
+from bika.lims.workflow import doActionFor
+from bika.lims.workflow import getTransitionDate
+from bika.lims.workflow import getTransitionUsers
+from bika.lims.workflow import isBasicTransitionAllowed
+from bika.lims.workflow import isTransitionAllowed
+from bika.lims.workflow import skip
+from bika.lims.workflow.analysisrequest import guards
+from bika.lims.workflow.analysisrequest import events
+
+from plone import api
+from zope.interface import implements
 
 try:
     from zope.component.hooks import getSite
@@ -61,14 +63,11 @@ except ImportError:
 
 
 schema = BikaSchema.copy() + Schema((
-    ReferenceField(
+    UIDReferenceField(
         'Contact',
         required=1,
         default_method='getContactUIDForUser',
-        vocabulary_display_path_bound=sys.maxsize,
         allowed_types=('Contact',),
-        referenceClass=HoldingReference,
-        relationship='AnalysisRequestContact',
         mode="rw",
         read_permission=permissions.View,
         write_permission=EditARContact,
@@ -1474,13 +1473,6 @@ schema = BikaSchema.copy() + Schema((
         default='',
         widget=ComputedWidget(visible=False,),
     ),
-
-    ComputedField(
-        'Priority',
-        searchable=True,
-        expression="here.getPriority().getSortKey() if here.getPriority() else ''",
-        widget=ComputedWidget(visible=False),
-    ),
     ComputedField(
         'CreatorFullName',
         expression="here._getCreatorFullName()",
@@ -1657,53 +1649,6 @@ schema = BikaSchema.copy() + Schema((
             render_own_label=True,
         ),
     ),
-    HistoryAwareReferenceField(
-        'Priority',
-        allowed_types=('ARPriority',),
-        referenceClass=HoldingReference,
-        relationship='AnalysisRequestPriority',
-        mode="rw",
-        read_permission=permissions.View,
-        write_permission=permissions.ModifyPortalContent,
-        widget=ReferenceWidget(
-            label=_("Priority"),
-            size=10,
-            render_own_label=True,
-            visible={
-                'edit': 'visible',
-                'view': 'visible',
-                'add': 'edit',
-                'header_table': 'visible',
-                'sample_registered':
-                    {'view': 'visible', 'edit': 'visible', 'add': 'edit'},
-                'to_be_sampled': {'view': 'visible', 'edit': 'visible'},
-                'scheduled_sampling': {'view': 'visible', 'edit': 'visible'},
-                'sampled': {'view': 'visible', 'edit': 'visible'},
-                'to_be_preserved': {'view': 'visible', 'edit': 'visible'},
-                'sample_due': {'view': 'visible', 'edit': 'visible'},
-                'sample_prep': {'view': 'visible', 'edit': 'invisible'},
-                'sample_received': {'view': 'visible', 'edit': 'visible'},
-                'attachment_due': {'view': 'visible', 'edit': 'visible'},
-                'to_be_verified': {'view': 'visible', 'edit': 'visible'},
-                'verified': {'view': 'visible', 'edit': 'visible'},
-                'published': {'view': 'visible', 'edit': 'invisible'},
-                'invalid': {'view': 'visible', 'edit': 'invisible'},
-            },
-            catalog_name='bika_setup_catalog',
-            base_query={'inactive_state': 'active'},
-            colModel=[
-                {'columnName': 'Title', 'width': '30',
-                 'label': _('Title'), 'align': 'left'},
-                {'columnName': 'Description', 'width': '70',
-                 'label': _('Description'), 'align': 'left'},
-                {'columnName': 'sortKey', 'hidden': True},
-                {'columnName': 'UID', 'hidden': True},
-            ],
-            sidx='sortKey',
-            sord='asc',
-            showOn=True,
-        ),
-    ),
 
     # For comments or results interpretation
     # Old one, to be removed because of the incorporation of
@@ -1756,6 +1701,12 @@ schema = BikaSchema.copy() + Schema((
                      'edit': 'invisible'},
         ),
     ),
+    # Here is stored pre-digested data used during publication.
+    # It is updated when the object is verified or when changes
+    # are made to verified objects.
+    StringField(
+        'Digest'
+    )
 )
 )
 
@@ -1807,8 +1758,7 @@ class AnalysisRequest(BaseFolder):
         descr = " ".join((self.getId(), self.aq_parent.Title()))
         return safe_unicode(descr).encode('utf-8')
 
-    # TODO: This method should be deleted, it has the same use as getId
-    @deprecated('Flagged on 170328. Use getId() instead')
+    @deprecated('[1703] Use getId() instead')
     def getRequestID(self):
         """
         Another way to return the object ID. It is used as a column and index.
@@ -1817,8 +1767,7 @@ class AnalysisRequest(BaseFolder):
         """
         return self.getId()
 
-    @deprecated(
-        'Flagged on 170328. Use setId() instead, but only as a last resort')
+    @deprecated('[1703] Use setId(new_id) instad')
     def setRequestID(self, new_id):
         """
         Delegates to setId() function
@@ -1846,34 +1795,12 @@ class AnalysisRequest(BaseFolder):
         """
         return value
 
-    # TODO-performance: Don't get the whole object"
-    def getAnalysisCategory(self):
-        proxies = self.getAnalyses(full_objects=True)
-        value = []
-        for proxy in proxies:
-            val = proxy.getCategoryTitle()
-            if val not in value:
-                value.append(val)
-        return value
-
-    # TODO-performance: Don't get the whole object"
-    def getAnalysisCategoryIDs(self):
-        proxies = self.getAnalyses(full_objects=True)
-        value = []
-        for proxy in proxies:
-            val = proxy.getService().getCategory().id
-            if val not in value:
-                value.append(val)
-        return value
-
     def getAnalysisService(self):
-        proxies = self.getAnalyses(full_objects=True)
-        value = []
+        proxies = self.getAnalyses(full_objects=False)
+        value = set()
         for proxy in proxies:
-            val = proxy.getServiceTitle()
-            if val not in value:
-                value.append(val)
-        return value
+            value.add(proxy.Title)
+        return list(value)
 
     def getAnalysts(self):
         proxies = self.getAnalyses(full_objects=True)
@@ -1909,22 +1836,6 @@ class AnalysisRequest(BaseFolder):
                 return settings.getMemberDiscount()
             else:
                 return "0.00"
-
-    def setDefaultPriority(self):
-        """ compute default priority """
-        bsc = getToolByName(self, 'bika_setup_catalog')
-        priorities = bsc(
-            portal_type='ARPriority',
-        )
-        for brain in priorities:
-            obj = brain.getObject()
-            if obj.getIsDefault():
-                self.setPriority(obj)
-                return
-
-        # priority is not a required field.  No default means...
-        logging.info('Priority: no default priority found')
-        return
 
     security.declareProtected(View, 'getResponsible')
 
@@ -2007,14 +1918,8 @@ class AnalysisRequest(BaseFolder):
             review_state = workflow.getInfoFor(analysis, 'review_state', '')
             if review_state == 'published':
                 continue
-            service = analysis.getService()
             # This situation can be met during analysis request creation
-            if service is None:
-                logger.warning(
-                    "No service for analysis '{}'".format(analysis.getId()))
-                calculation = None
-            else:
-                calculation = service.getCalculation()
+            calculation = analysis.getCalculation()
             if not calculation or (
                     calculation and not calculation.getDependentServices()):
                 resultdate = analysis.getResultCaptureDate()
@@ -2114,11 +2019,8 @@ class AnalysisRequest(BaseFolder):
         for profile in analysis_profiles:
             for analysis_service in profile.getService():
                 for analysis in analyses:
-                    if analysis_service.getKeyword() == analysis.getService(
-
-                    ).getKeyword() and \
-                                    analysis.getService().getKeyword() not in \
-                                    to_be_billed:
+                    if analysis_service.getKeyword() == analysis.getKeyword() \
+                            and analysis.getKeyword() not in to_be_billed:
                         analyses.remove(analysis)
         return analyses, analysis_profiles
 
@@ -2148,9 +2050,7 @@ class AnalysisRequest(BaseFolder):
         for profile in analysis_profiles:
             for analysis_service in profile.getService():
                 for analysis in analyses:
-                    if analysis_service.getKeyword() == analysis.getService(
-
-                    ).getKeyword():
+                    if analysis_service.getKeyword() == analysis.getKeyword():
                         analyses.remove(analysis)
                         profile_analyses.append(analysis)
         return analyses, analysis_profiles, profile_analyses
@@ -2384,7 +2284,8 @@ class AnalysisRequest(BaseFolder):
         """ get the UID of the contact associated with the authenticated
             user
         """
-        user = self.REQUEST.AUTHENTICATED_USER
+        mt = getToolByName(self, 'portal_membership')
+        user = mt.getAuthenticatedMember()
         user_id = user.getUserName()
         pc = getToolByName(self, 'portal_catalog')
         r = pc(portal_type='Contact',
@@ -2479,8 +2380,7 @@ class AnalysisRequest(BaseFolder):
             review_state = workflow.getInfoFor(analysis, 'review_state')
             if review_state == 'not_requested':
                 continue
-            service = analysis.getService()
-            category_name = service.getCategoryTitle()
+            category_name = analysis.getCategoryTitle()
             if category_name not in cats:
                 cats[category_name] = {}
             cats[category_name][analysis.Title()] = analysis
@@ -2938,17 +2838,19 @@ class AnalysisRequest(BaseFolder):
         return DisplayList(prep_workflows)
 
     def getDepartments(self):
-        """ Returns a set with the departments assigned to the Analyses
-            from this Analysis Request
+        """Returns a list of the departments assigned to the Analyses
+        from this Analysis Request
         """
-        ans = [an.getObject() for an in self.getAnalyses()]
-        depts = [an.getService().getDepartment() for an in ans if
-                 an.getService()]
-        return set(depts)
+        bsc = getToolByName(self, 'bika_setup_catalog')
+        dept_uids = [b.getDepartmentUID for b in self.getAnalyses()]
+        brains = bsc(portal_type='Department', UID=dept_uids)
+        depts = [b.getObject() for b in brains]
+        return list(set(depts))
 
-    # TODO-performance: This function is very time consuming because
-    # we are getting all the analysis objects, and services.
     def getDepartmentUIDs(self):
+        """Return a list of the UIDs of departments assigned to the Analyses
+        from this Analysis Request.
+        """
         return [dept.UID() for dept in self.getDepartments()]
 
     def getResultsInterpretationByDepartment(self, department=None):
@@ -3109,6 +3011,7 @@ class AnalysisRequest(BaseFolder):
         """
         return user_email(self, self.Creator())
 
+    # TODO Workflow, AnalysisRequest Move to guards.verify?
     def isVerifiable(self):
         """
         Checks it the current Analysis Request can be verified. This is, its
@@ -3168,6 +3071,7 @@ class AnalysisRequest(BaseFolder):
             states[w.state_var] = state
         return states
 
+    # TODO Workflow, AnalysisRequest Move to guards.verify?
     def isUserAllowedToVerify(self, member):
         """
         Checks if the specified user has enough privileges to verify the
@@ -3191,252 +3095,125 @@ class AnalysisRequest(BaseFolder):
                       if not a.isUserAllowedToVerify(member)]
         return not notallowed
 
+    @deprecated('[1705] Use guards.to_be_preserved from '
+                'bika.lims.workflow.analysisrequest')
+    @security.public
+    def guard_to_be_preserved(self):
+        return guards.to_be_preserved(self)
+
+    @deprecated('[1705] Use guards.verify from '
+                'bika.lims.workflow.analysisrequest')
+    @security.public
     def guard_verify_transition(self):
-        """
-        Checks if the verify transition can be performed to the current
-        Analysis Request by the current user depending on the user roles, as
-        well as the statuses of the analyses assigned to this Analysis Request
-        :returns: true or false
-        """
-        mtool = getToolByName(self, "portal_membership")
-        # Check if the Analysis Request is in a "verifiable" state
-        if self.isVerifiable():
-            # Check if the user can verify the Analysis Request
-            member = mtool.getAuthenticatedMember()
-            return self.isUserAllowedToVerify(member)
-        return False
+        return guards.verify(self)
 
+    @deprecated('[1705] Use guards.unassign from '
+                'bika.lims.workflow.analysisrequest')
+    @security.public
     def guard_unassign_transition(self):
-        """Allow or disallow transition depending on our children's states
-        """
-        if not isBasicTransitionAllowed(self):
-            return False
-        if self.getAnalyses(worksheetanalysis_review_state='unassigned'):
-            return True
-        if not self.getAnalyses(worksheetanalysis_review_state='assigned'):
-            return True
-        return False
+        return guards.unassign(self)
 
+    @deprecated('[1705] Use guards.assign from '
+                'bika.lims.workflow.analysisrequest')
+    @security.public
     def guard_assign_transition(self):
-        """Allow or disallow transition depending on our children's states
-        """
-        if not isBasicTransitionAllowed(self):
-            return False
-        if not self.getAnalyses(worksheetanalysis_review_state='assigned'):
-            return False
-        if self.getAnalyses(worksheetanalysis_review_state='unassigned'):
-            return False
-        return True
+        return guards.assign(self)
 
+    @deprecated('[1705] Use guards.receive from '
+                'bika.lims.workflow.analysisrequest')
+    @security.public
     def guard_receive_transition(self):
-        """Prevent the receive transition from being available if object
-        is cancelled
-        """
-        return isBasicTransitionAllowed(self)
+        return guards.receive(self)
 
+    @deprecated('[1705] Use guards.sample_prep from '
+                'bika.lims.workflow.analysisrequest')
+    @security.public
     def guard_sample_prep_transition(self):
-        sample = self.getSample()
-        return sample.guard_sample_prep_transition()
+        return guards.sample_prep(self)
 
+    @deprecated('[1705] Use guards.sample_prep_complete from '
+                'bika.lims.workflow.analysisrequest')
+    @security.public
     def guard_sample_prep_complete_transition(self):
-        sample = self.getSample()
-        return sample.guard_sample_prep_complete_transition()
+        return guards.sample_prep_complete(self)
 
+    @deprecated('[1705] Use guards.schedule_sampling from '
+                'bika.lims.workflow.analysisrequest')
+    @security.public
     def guard_schedule_sampling_transition(self):
-        """
-        Prevent the transition if:
-        - if the user isn't part of the sampling coordinators group
-          and "sampling schedule" checkbox is set in bika_setup
-        - if no date and samples have been defined
-          and "sampling schedule" checkbox is set in bika_setup
-        """
-        if self.bika_setup.getScheduleSamplingEnabled() and \
-                isBasicTransitionAllowed(self):
-            return True
-        return False
+        return guards.schedule_sampling(self)
 
-    def workflow_script_receive(self):
-        if skip(self, "receive"):
-            return
-        workflow = getToolByName(self, 'portal_workflow')
-        # noinspection PyCallingNonCallable
-        self.setDateReceived(DateTime())
-        self.reindexObject(idxs=[
-            "review_state", 'getObjectWorkflowStates', "getDateReceived",
-            "getReceivedBy", ])
-        # receive the AR's sample
-        sample = self.getSample()
-        if not skip(sample, 'receive', peek=True):
-            # unless this is a secondary AR
-            if workflow.getInfoFor(sample, 'review_state') == 'sample_due':
-                workflow.doActionFor(sample, 'receive')
-        # receive all analyses in this AR.
-        analyses = self.getAnalyses(review_state='sample_due')
-        for analysis in analyses:
-            if not skip(analysis, 'receive'):
-                workflow.doActionFor(analysis.getObject(), 'receive')
-
-    def workflow_script_preserve(self):
-        if skip(self, "preserve"):
-            return
-        workflow = getToolByName(self, 'portal_workflow')
-        self.reindexObject(idxs=["review_state",  'getObjectWorkflowStates', ])
-        # transition our sample
-        sample = self.getSample()
-        if not skip(sample, "preserve", peek=True):
-            workflow.doActionFor(sample, "preserve")
-
-    def workflow_script_submit(self):
-        if skip(self, "submit"):
-            return
-        self.reindexObject(idxs=["review_state",  'getObjectWorkflowStates', ])
-
-    def workflow_script_sampling_workflow(self):
-        if skip(self, "sampling_workflow"):
-            return
-        sample = self.getSample()
-        sd = sample.getSamplingDate()
-        # noinspection PyCallingNonCallable
-        self.reindexObject()
-        if sd and sd > DateTime():
-            sample.future_dated = True
-
+    @deprecated('[1705] Use events.after_no_sampling_workflow from '
+                'bika.lims.workflow.anaysisrequest')
+    @security.public
     def workflow_script_no_sampling_workflow(self):
-        if skip(self, "no_sampling_workflow"):
-            return
-        sample = self.getSample()
-        sd = sample.getSamplingDate()
-        self.reindexObject()
-        # noinspection PyCallingNonCallable
-        if sd and sd > DateTime():
-            sample.future_dated = True
+        events.after_no_sampling_workflow(self)
 
-    def workflow_script_attach(self):
-        if skip(self, "attach"):
-            return
-        self.reindexObject(idxs=["review_state",  'getObjectWorkflowStates', ])
-        # Don't cascade. Shouldn't be attaching ARs for now (if ever).
-        return
+    @deprecated('[1705] Use events.after_sampling_workflow from '
+                'bika.lims.workflow.anaysisrequest')
+    @security.public
+    def workflow_script_sampling_workflow(self):
+        events.after_sampling_workflow(self)
 
+    @deprecated('[1705] Use events.after_sample from '
+                'bika.lims.workflow.anaysisrequest')
+    @security.public
     def workflow_script_sample(self):
-        # no skip check here: the sampling workflow UI is odd
-        # if skip(self, "sample"):
-        #     return
-        # transition our sample
-        workflow = getToolByName(self, 'portal_workflow')
-        sample = self.getSample()
-        self.reindexObject(idxs=[
-            "review_state", 'getObjectWorkflowStates', 'getDateSampled',
-            'getSampler', 'getSamplerFullName', 'getSamplerEmail'])
-        if not skip(sample, "sample", peek=True):
-            workflow.doActionFor(sample, "sample")
+        events.after_sample(self)
 
-    # def workflow_script_to_be_preserved(self):
-    #     if skip(self, "to_be_preserved"):
-    #         return
-    #     pass
+    @deprecated('[1705] Use events.after_receive from '
+                'bika.lims.workflow.anaysisrequest')
+    @security.public
+    def workflow_script_receive(self):
+        events.after_receive(self)
 
-    # def workflow_script_sample_due(self):
-    #     if skip(self, "sample_due"):
-    #         return
-    #     pass
+    @deprecated('[1705] Use events.after_preserve from '
+                'bika.lims.workflow.anaysisrequest')
+    @security.public
+    def workflow_script_preserve(self):
+        events.after_preserve(self)
 
-    # def workflow_script_retract(self):
-    #     if skip(self, "retract"):
-    #         return
-    #     pass
+    @deprecated('[1705] Use events.after_attach from '
+                'bika.lims.workflow.anaysisrequest')
+    @security.public
+    def workflow_script_attach(self):
+        events.after_attach(self)
 
+    @deprecated('[1705] Use events.after_verify from '
+                'bika.lims.workflow.anaysisrequest')
+    @security.public
     def workflow_script_verify(self):
-        if skip(self, "verify"):
-            return
-        self.reindexObject(idxs=[
-            "review_state", 'getObjectWorkflowStates', "getDateVerified"])
-        if "verify all analyses" not in self.REQUEST['workflow_skiplist']:
-            # verify all analyses in this AR.
-            analyses = self.getAnalyses(review_state='to_be_verified')
-            for analysis in analyses:
-                if (hasattr(analysis, 'getNumberOfVerifications') and
-                    hasattr(analysis, 'getNumberOfRequiredVerifications')):
-                    # For the 'verify' transition to (effectively) take place,
-                    # we need to check if the required number of verifications
-                    # for the analysis is, at least, the number of verifications
-                    # performed previously +1
-                    success = True
-                    revers = analysis.getNumberOfRequiredVerifications()
-                    nmvers = analysis.getNumberOfVerifications()
-                    username=getToolByName(self,'portal_membership').getAuthenticatedMember().getUserName()
-                    analysis.addVerificator(username)
-                    if revers-nmvers <= 1:
-                        success, message = doActionFor(analysis, 'verify')
-                        if not success:
-                            # If failed, delete last verificator
-                            analysis.deleteLastVerificator()
-                else:
-                    doActionFor(analysis, 'verify')
+        events.after_verify(self)
 
+    @deprecated('[1705] Use events.after_publish from '
+                'bika.lims.workflow.anaysisrequest')
+    @security.public
     def workflow_script_publish(self):
-        if skip(self, "publish"):
-            return
-        self.reindexObject(idxs=[
-            "review_state", 'getObjectWorkflowStates', "getDatePublished"])
-        if "publish all analyses" not in self.REQUEST['workflow_skiplist']:
-            # publish all analyses in this AR. (except not requested ones)
-            analyses = self.getAnalyses(review_state='verified')
-            for analysis in analyses:
-                doActionFor(analysis.getObject(), "publish")
+        events.after_publish(self)
 
+    @deprecated('[1705] Use events.after_reinstate from '
+                'bika.lims.workflow.anaysisrequest')
+    @security.public
     def workflow_script_reinstate(self):
-        if skip(self, "reinstate"):
-            return
-        self.reindexObject(idxs=[
-            "cancellation_state", 'getObjectWorkflowStates' ])
-        # activate all analyses in this AR.
-        analyses = self.getAnalyses(cancellation_state='cancelled')
-        for analysis in analyses:
-            doActionFor(analysis.getObject(), 'reinstate')
+        events.after_reinstate(self)
 
+    @deprecated('[1705] Use events.after_cancel from '
+                'bika.lims.workflow.anaysisrequest')
+    @security.public
     def workflow_script_cancel(self):
-        if skip(self, "cancel"):
-            return
-        self.reindexObject(idxs=[
-            "cancellation_state", 'getObjectWorkflowStates'])
-        # deactivate all analyses in this AR.
-        analyses = self.getAnalyses(cancellation_state='active')
-        for analysis in analyses:
-            doActionFor(analysis.getObject(), 'cancel')
+        events.after_cancel(self)
 
+    @deprecated('[1705] Use events.after_schedule_sampling from '
+                'bika.lims.workflow.anaysisrequest')
+    @security.public
     def workflow_script_schedule_sampling(self):
-        """
-        This function runs all the needed process for that action
-        """
-        workflow = getToolByName(self, 'portal_workflow')
-        sample = self.getSample()
-        self.reindexObject(idxs=[
-            'review_state', "getSamplingDate", 'getObjectWorkflowStates',
-            'getSamplingDate'])
-        # We have to set the defined sampling date and sampler and
-        # produce a transition in it
-        if workflow.getInfoFor(sample, 'review_state') == \
-                'to_be_sampled':
-            # transact the related sample
-            doActionFor(sample, 'schedule_sampling')
+        events.after_schedule_sampling(self)
 
+    @deprecated('[1705] Use events.after_reject from '
+                'bika.lims.workflow.anaysisrequest')
+    @security.public
     def workflow_script_reject(self):
-        workflow = getToolByName(self, 'portal_workflow')
-        sample = self.getSample()
-        self.reindexObject(idxs=[
-            "review_state", 'getObjectWorkflowStates'])
-        if workflow.getInfoFor(sample, 'review_state') != 'rejected':
-            # Setting the rejection reasons in sample
-            sample.setRejectionReasons(self.getRejectionReasons())
-            workflow.doActionFor(sample, "reject")
-        # deactivate all analyses in this AR.
-        analyses = self.getAnalyses()
-        for analysis in analyses:
-            doActionFor(analysis.getObject(), 'reject')
-        if self.bika_setup.getNotifyOnRejection():
-            # Notify the Client about the Rejection.
-            notify_rejection(self)
+        events.after_reject(self)
 
     def SearchableText(self):
         """

@@ -72,6 +72,8 @@ class calculate_partitions(object):
         if not _services:
             raise BadRequest("services are not present in request")
         for uid in _services:
+            if not uid:
+                continue
             try:
                 services.append(uc(UID=uid)[0].getObject())
             except:

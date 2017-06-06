@@ -24,11 +24,11 @@ function ReportFolderView() {
                     {"SupplierUID":val,
                     "_authenticator": $("input[name='_authenticator']").val()},
                     function(data){
-                        $("#ReferenceSampleUID").empty().append("<option value=''></option>");
+                        $("#SampleUID").empty().append("<option value=''></option>");
                         if(data){
                             for(var i=0;i<data.length;i++){
                                 var sample = data[i];
-                                $("#ReferenceSampleUID").append("<option value='"+sample[0]+"'>"+sample[1]+"</option>");
+                                $("#SampleUID").append("<option value='"+sample[0]+"'>"+sample[1]+"</option>");
                             }
                         }
                     }
@@ -36,10 +36,10 @@ function ReportFolderView() {
         });
 
         // AJAX: Set ReferenceServices dropdown when ReferenceSample is selected
-        $("#ReferenceSampleUID").change(function(){
+        $("#SampleUID").change(function(){
             var val = $(this).val();
             $.getJSON("referenceanalysisqc_services",
-                    {"ReferenceSampleUID":val,
+                    {"SampleUID":val,
                     "_authenticator": $("input[name='_authenticator']").val()},
                     function(data){
                         $("#ReferenceServiceUID").empty().append("<option value=''></option>");

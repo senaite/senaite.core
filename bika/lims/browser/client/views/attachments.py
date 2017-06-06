@@ -30,7 +30,7 @@ class ClientAttachmentsView(BikaListingView):
         self.description = ""
 
         self.columns = {
-            'getTextTitle': {'title': _('Request ID')},
+            'Title': {'title': _('Request ID')},
             'AttachmentFile': {'title': _('File')},
             'AttachmentType': {'title': _('Attachment Type')},
             'ContentType': {'title': _('Content Type')},
@@ -41,7 +41,7 @@ class ClientAttachmentsView(BikaListingView):
             {'id': 'default',
              'title': 'All',
              'contentFilter': {},
-             'columns': ['getTextTitle',
+             'columns': ['Title',
                          'AttachmentFile',
                          'AttachmentType',
                          'ContentType',
@@ -68,8 +68,8 @@ class ClientAttachmentsView(BikaListingView):
         item['FileSize'] = '%sKb' % (file.get_size() / 1024)
         item['DateLoaded'] = obj.getDateLoaded()
 
-        item['replace']['getTextTitle'] = \
-            "<a href='%s'>%s</a>" % (obj_url, item['getTextTitle'])
+        item['replace']['Title'] = \
+            "<a href='%s'>%s</a>" % (obj_url, item['Title'])
 
         item['replace']['AttachmentFile'] = \
             "<a href='%s/at_download/AttachmentFile'>%s</a>" % \

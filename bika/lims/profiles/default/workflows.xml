@@ -3,7 +3,6 @@
  <property
     name="title">Contains workflow definitions for your portal</property>
  <object name="bika_analysis_workflow" meta_type="Workflow"/>
- <object name="bika_analysis_workflow" meta_type="Workflow"/>
  <object name="bika_ar_workflow" meta_type="Workflow"/>
  <object name="bika_arimport_workflow" meta_type="Workflow"/>
  <object name="bika_batch_workflow" meta_type="Workflow"/>
@@ -36,11 +35,6 @@
    <bound-workflow workflow_id="bika_cancellation_workflow"/>
   </type>
 
-  <type type_id="ARPriorities"/>
-  <type type_id="ARPriority">
-   <bound-workflow workflow_id="bika_one_state_workflow"/>
-   <bound-workflow workflow_id="bika_inactive_workflow"/>
-  </type>
  <type type_id="AnalysisProfiles"/>
  <type type_id="AnalysisProfile">
    <bound-workflow workflow_id="bika_one_state_workflow"/>

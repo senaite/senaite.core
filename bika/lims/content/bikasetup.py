@@ -513,9 +513,22 @@ schema = BikaFolderSchema.copy() + Schema((
         widget=DurationWidget(
             label=_("Default sample retention period"),
             description=_(
-                "The number of days before a sample expires and cannot be analysed "
-                "any more. This setting can be overwritten per individual sample type "
-                "in the sample types setup"),
+                "The number of days before a sample expires and cannot be "
+                "analysed any more. This setting can be overwritten per "
+                "individual sample type in the sample types setup"),
+        )
+    ),
+    DurationField(
+        'DefaultTurnaroundTime',
+        schemata="Analyses",
+        required=1,
+        default={"days": 5, "hours": 0, "minutes": 0},
+        widget=DurationWidget(
+            label=_("Default turnaround time for analyses."),
+            description=_(
+                "This is the default maximum time allowed for performing "
+                "analyses.  It is only used for analyses where the analysis "
+                "service does not specify a turnaround time."),
         )
     ),
     StringField(
