@@ -16,6 +16,7 @@ from smtplib import SMTPAuthenticationError
 from smtplib import SMTPRecipientsRefused, SMTPServerDisconnected
 
 import App
+import transaction
 from DateTime import DateTime
 from Products.Archetypes.interfaces import IDateTimeField, IFileField, \
     ILinesField, IReferenceField, IStringField, ITextField
@@ -717,6 +718,7 @@ class AnalysisRequestDigester:
                 return data
 
         logger.info("=========== creating new data for %s" % ar)
+        import pdb;pdb.set_trace();pass
         # Set data to the AR schema field, and return it.
         data = self._ar_data(ar)
         ar.setDigest(data)
@@ -1389,3 +1391,6 @@ def EndRequestHandler(event):
     if ars_to_digest:
         for ar in ars_to_digest:
             digester(ar, overwrite=True)
+    # If this commit() is not here, then the data does not appear to be
+    # saved.  IEndRequest happens outside the transaction?
+    transaction.commit()
