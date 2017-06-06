@@ -132,6 +132,11 @@ def RemoveVersionableTypes():
 
 
 def UpdateIndexesAndMetadata(ut):
+
+    # Add getDepartmentUIDs to CATALOG_WORKSHEET_LISTING
+    ut.addIndexAndColumn(
+        CATALOG_WORKSHEET_LISTING, 'getDepartmentUIDs', 'KeywordIndex')
+
     # Removed ARPriority completely
     ut.delColumn(CATALOG_ANALYSIS_LISTING, 'getPriority')
     ut.delColumn(CATALOG_ANALYSIS_REQUEST_LISTING, 'getPriority')
