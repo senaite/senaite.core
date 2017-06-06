@@ -3,6 +3,7 @@ from DateTime import DateTime
 
 from bika.lims import logger
 from bika.lims.utils import changeWorkflowState
+from bika.lims.utils.analysis import create_analysis
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import getCurrentState
 from bika.lims.workflow import isBasicTransitionAllowed

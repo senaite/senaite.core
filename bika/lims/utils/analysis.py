@@ -58,7 +58,14 @@ def copy_analysis_field_values(source, analysis, **kwargs):
             continue
         value = kwargs.get(fieldname, field.get(source))
         if value:
-            dst_schema[fieldname].set(analysis, value)
+            # Campbell's mental note:never ever use '.set()' directly to a
+            # field. If you can't use the setter, then use the mutator in order
+            # to give the value. We have realized that in some cases using
+            # 'set' when the value is a string, it saves the value
+            # as unicode instead of plain string.
+            mutator_name = analysis.getField(fieldname).mutator
+            mutator = getattr(analysis, mutator_name)
+            mutator(value)
 
 def create_analysis(context, source, **kwargs):
     """Create a new Analysis.  The source can be an Analysis Service or

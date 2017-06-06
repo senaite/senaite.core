@@ -18,7 +18,6 @@ from bika.lims.utils import isnumber
 from bika.lims.utils import getUsers
 from bika.lims.utils import tmpID
 from bika.lims.utils.analysis import duplicateAnalysis
-from bika.lims.utils import changeWorkflowState
 from bika.lims.idserver import renameAfterCreation
 from bika.lims import logger
 from bika.lims.workflow import doActionFor
@@ -326,21 +325,17 @@ def doActionToAnalysis(base, action):
             analysis = duplicateAnalysis(base)
             analysis.setResult(result_value)
             doActionFor(analysis, 'submit')
-            #changeWorkflowState(analysis,
-            #                    "bika_analysis_workflow", "to_be_verified")
     else:
         logger.error(
             "Not known Reflex Rule action %s." % (action.get('action', '')))
         return 0
     analysis.setReflexRuleAction(action.get('action', ''))
     analysis.setIsReflexAnalysis(True)
-    import pdb; pdb.set_trace()
     analysis.setReflexAnalysisOf(base)
     analysis.setReflexRuleActionsTriggered(
         base.getReflexRuleActionsTriggered()
     )
     # Setting the original reflected analysis
-    import pdb; pdb.set_trace()
     if base.getOriginalReflexedAnalysis():
         analysis.setOriginalReflexedAnalysis(
             base.getOriginalReflexedAnalysis())
@@ -353,12 +348,12 @@ def doActionToAnalysis(base, action):
     rule_name = action.get('rulename', '')
     base_remark = "Reflex rule number %s of '%s' applied at %s." % \
         (rule_num, rule_name, time)
-    base_remark = base.getRemarks() + base_remark + '<br/> '
+    base_remark = base.getRemarks() + base_remark + '||'
     base.setRemarks(base_remark)
     # Setting the remarks to new analysis
     analysis_remark = "%s due to reflex rule number %s of '%s' at %s" % \
         (action_rule_name, rule_num, rule_name, time)
-    analysis_remark = analysis.getRemarks() + analysis_remark + '<br/> '
+    analysis_remark = analysis.getRemarks() + analysis_remark + '||'
     analysis.setRemarks(analysis_remark)
     return analysis
 
@@ -466,8 +461,8 @@ def doWorksheetLogic(base, action, analysis):
                 "operator": "or"
             }
         )
-        if ws:
-            ws = ws[0].getObject()
+        if ws_brain:
+            ws = ws_brain[0].getObject()
             ws.removeAnalysis(analysis)
         # If worksheet found and option 2
         if len(wss) > 0 and otherWS == 'to_another':

@@ -90,7 +90,7 @@ def upgrade(tool):
     replace_target_states(portal)
 
     # Adding two indexes in order to delete getBackreference in reflex rules
-    reflex_rules(portal)
+    reflex_rules(ut)
 
     # Refresh affected catalogs
     _cleanAndRebuildIfNeeded(portal, clean_and_rebuild)
@@ -822,7 +822,7 @@ def replace_target_states(portal):
                     )
 
 
-def reflex_rules(portal):
+def reflex_rules(ut):
     """Adding two indexes.
     """
     ut.addIndex(

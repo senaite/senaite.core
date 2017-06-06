@@ -26,6 +26,7 @@ from bika.lims.workflow import isTransitionAllowed
 from bika.lims.workflow import wasTransitionPerformed
 from bika.lims.workflow import skip
 from zope.interface import implements
+from bika.lims.content.reflexrule import doReflexRuleAction
 
 # The physical sample partition linked to the Analysis.
 SamplePartition = UIDReferenceField(
