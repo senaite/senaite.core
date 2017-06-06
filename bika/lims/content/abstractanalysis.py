@@ -39,7 +39,6 @@ from bika.lims.workflow import wasTransitionPerformed
 from bika.lims.workflow import skip
 from bika.lims.workflow.analysis import events
 from bika.lims.workflow.analysis import guards
-from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
 from plone.api.user import has_permission
 from zope.interface import implements
 
@@ -1118,21 +1117,14 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     def getWorksheet(self):
         """Returns the Worksheet to which this analysis belongs to, or None
         """
-        worksheet_catalog = getToolByName(self, CATALOG_WORKSHEET_LISTING)
-        worksheet = worksheet_catalog(
-            getAnalysesUIDs={
-                "query": self.UID(),
-                "operator": "or"
-            }
-        )
+        worksheet = self.getBackReferences('WorksheetAnalysis')
         if not worksheet:
             return None
         if len(worksheet) > 1:
             logger.error(
                 "Analysis %s is assigned to more than one worksheet."
                 % self.getId())
-        worksheet = worksheet[0].getObject()
-        return worksheet
+        return worksheet[0]
 
     def getExpiryDate(self):
         """It is used as a metacolumn.
