@@ -67,10 +67,12 @@ class ReflexRule(BaseContent):
     schema = schema
     _at_rename_after_creation = True
 
+    @security.private
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
+    @security.private
     def _getAvailableMethodsDisplayList(self):
         """ Returns a DisplayList with the available Methods
             registered in Bika-Setup. Only active Methods are fetched.
@@ -81,6 +83,7 @@ class ReflexRule(BaseContent):
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
+    @security.private
     def _fetch_analysis_for_local_id(self, analysis, ans_cond):
         """
         This function returns an analysis when the derivative IDs conditions
@@ -104,6 +107,7 @@ class ReflexRule(BaseContent):
                 return derivative
         return None
 
+    @security.private
     def _areConditionsMet(self, action_set, analysis, forceuid=False):
         """
         This function returns a boolean as True if the conditions in the
@@ -262,7 +266,7 @@ class ReflexRule(BaseContent):
         self.analyses_catalog = getToolByName(self, CATALOG_ANALYSIS_LISTING)
         # Getting the action sets, those that contain action rows
         action_sets = self.getReflexRules()
-        l = []
+        rules_list = []
         condition = False
         for action_set in action_sets:
             # Validate the trigger
@@ -278,8 +282,8 @@ class ReflexRule(BaseContent):
                         # action later.
                         act['rulenumber'] = action_set.get('rulenumber', '0')
                         act['rulename'] = self.Title()
-                        l.append(act)
-        return l
+                        rules_list.append(act)
+        return rules_list
 
 atapi.registerType(ReflexRule, PROJECTNAME)
 
