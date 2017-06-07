@@ -31,6 +31,7 @@ class SampleCondition(BaseFolder):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
+
 registerType(SampleCondition, PROJECTNAME)
 
 

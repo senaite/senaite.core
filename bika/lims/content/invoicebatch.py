@@ -19,22 +19,27 @@ from bika.lims.workflow import isBasicTransitionAllowed, getTransitionDate
 from zope.container.contained import ContainerModifiedEvent
 from zope.interface import implements
 
+BatchStartDate = DateTimeField(
+    'BatchStartDate',
+    required=1,
+    default_method='current_date',
+    widget=CalendarWidget(
+        label=_("Start Date")
+    )
+)
+BatchEndDate = DateTimeField(
+    'BatchEndDate',
+    required=1,
+    default_method='current_date',
+    validators=('invoicebatch_EndDate_validator',),
+    widget=CalendarWidget(
+        label=_("End Date")
+    )
+)
+
 schema = BikaSchema.copy() + Schema((
-    DateTimeField('BatchStartDate',
-                  required=1,
-                  default_method='current_date',
-                  widget=CalendarWidget(
-                      label=_("Start Date"),
-                  ),
-                  ),
-    DateTimeField('BatchEndDate',
-                  required=1,
-                  default_method='current_date',
-                  validators=('invoicebatch_EndDate_validator',),
-                  widget=CalendarWidget(
-                      label=_("End Date"),
-                  ),
-                  ),
+    BatchStartDate,
+    BatchEndDate
 ),
 )
 
@@ -53,14 +58,6 @@ class InvoiceBatch(BaseFolder):
 
     def invoices(self):
         return self.objectValues('Invoice')
-
-    # security.declareProtected(PostInvoiceBatch, 'post')
-    # def post(self, REQUEST = None):
-    #     """ Post invoices
-    #     """
-    #     map (lambda e: e._post(), self.invoices())
-    #     if REQUEST:
-    #         REQUEST.RESPONSE.redirect('invoicebatch_invoices')
 
     security.declareProtected(ManageInvoices, 'createInvoice')
 

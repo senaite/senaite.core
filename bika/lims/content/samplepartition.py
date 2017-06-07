@@ -3,61 +3,82 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
+from datetime import timedelta
+
 from AccessControl import ClassSecurityInfo
-from bika.lims import deprecated
-from bika.lims.browser.fields import UIDReferenceField
+from DateTime import DateTime
+from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
+from Products.ATContentTypes.utils import DT2dt, dt2DT
+from Products.Archetypes.public import *
+from Products.CMFCore.utils import getToolByName
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims.browser.fields import DurationField
+from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import ISamplePartition, ISamplePrepWorkflow
 from bika.lims.workflow import doActionFor
-from bika.lims.workflow import wasTransitionPerformed
 from bika.lims.workflow import skip
-from DateTime import DateTime
-from datetime import timedelta
-from Products.Archetypes.public import *
-from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
-from Products.ATContentTypes.utils import DT2dt, dt2DT
-from Products.CMFCore.utils import getToolByName
-from Products.CMFPlone.utils import safe_unicode
+from bika.lims.workflow import wasTransitionPerformed
 from zope.interface import implements
 
+Container = ReferenceField(
+    'Container',
+    allowed_types=('Container',),
+    relationship='SamplePartitionContainer',
+    required=1,
+    multiValued=0
+)
+
+Preservation = ReferenceField(
+    'Preservation',
+    allowed_types=('Preservation',),
+    relationship='SamplePartitionPreservation',
+    required=0,
+    multiValued=0
+)
+
+Separate = BooleanField(
+    'Separate',
+    default=False
+)
+
+Analyses = UIDReferenceField(
+    'Analyses',
+    allowed_types=('Analysis',),
+    required=0,
+    multiValued=1
+)
+
+DatePreserved = DateTimeField('DatePreserved')
+
+Preserver = StringField(
+    'Preserver',
+    searchable=True
+)
+
+RetentionPeriod = DurationField(
+    'RetentionPeriod',
+)
+
+DisposalDate = ComputedField(
+    'DisposalDate',
+    expression='context.disposal_date()',
+    widget=ComputedWidget(
+        visible=False
+    )
+)
+
 schema = BikaSchema.copy() + Schema((
-    ReferenceField('Container',
-        allowed_types=('Container',),
-        relationship='SamplePartitionContainer',
-        required=1,
-        multiValued=0,
-    ),
-    ReferenceField('Preservation',
-        allowed_types=('Preservation',),
-        relationship='SamplePartitionPreservation',
-        required=0,
-        multiValued=0,
-    ),
-    BooleanField('Separate',
-        default=False
-    ),
-    UIDReferenceField('Analyses',
-        allowed_types=('Analysis',),
-        required=0,
-        multiValued=1,
-    ),
-    DateTimeField('DatePreserved',
-    ),
-    StringField('Preserver',
-        searchable=True
-    ),
-    DurationField('RetentionPeriod',
-    ),
-    ComputedField('DisposalDate',
-        expression = 'context.disposal_date()',
-        widget = ComputedWidget(
-            visible=False,
-        ),
-    ),
-)
-)
+    Container,
+    Preservation,
+    Separate,
+    Analyses,
+    DatePreserved,
+    Preserver,
+    RetentionPeriod,
+    DisposalDate
+))
 
 schema['title'].required = False
 
@@ -260,7 +281,9 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
         # if all sibling partitions are active, activate sample
         if not skip(sample, "reinstate", peek=True):
             cancelled = [sp for sp in sample.objectValues("SamplePartition")
-                         if workflow.getInfoFor(sp, 'cancellation_state') == 'cancelled']
+                         if workflow.getInfoFor(sp,
+                                                'cancellation_state') ==
+                         'cancelled']
             if sample_c_state == 'cancelled' and not cancelled:
                 workflow.doActionFor(sample, 'reinstate')
 
@@ -274,7 +297,8 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
         # if all sibling partitions are cancelled, cancel sample
         if not skip(sample, "cancel", peek=True):
             active = [sp for sp in sample.objectValues("SamplePartition")
-                      if workflow.getInfoFor(sp, 'cancellation_state') == 'active']
+                      if
+                      workflow.getInfoFor(sp, 'cancellation_state') == 'active']
             if sample_c_state == 'active' and not active:
                 workflow.doActionFor(sample, 'cancel')
 
@@ -285,8 +309,10 @@ class SamplePartition(BaseContent, HistoryAwareMixin):
         sample_r_state = workflow.getInfoFor(sample, 'review_state')
         # if all sibling partitions are cancelled, cancel sample
         not_rejected = [sp for sp in sample.objectValues("SamplePartition")
-                  if workflow.getInfoFor(sp, 'review_state') != 'rejected']
+                        if
+                        workflow.getInfoFor(sp, 'review_state') != 'rejected']
         if sample_r_state != 'rejected':
             workflow.doActionFor(sample, 'reject')
+
 
 registerType(SamplePartition, PROJECTNAME)

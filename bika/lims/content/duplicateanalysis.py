@@ -12,7 +12,6 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.abstractroutineanalysis import AbstractRoutineAnalysis
 from bika.lims.content.abstractroutineanalysis import schema
 from bika.lims.interfaces import IDuplicateAnalysis
-from bika.lims.subscribers import skip
 from bika.lims.workflow.duplicateanalysis import events
 from zope.interface import implements
 

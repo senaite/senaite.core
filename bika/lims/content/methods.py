@@ -3,24 +3,19 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
-from Products.Archetypes.ArchetypeTool import registerType
-from Products.CMFCore import permissions
 from Products.CMFCore.utils import getToolByName
-from bika.lims.browser import BrowserView
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IMethods
-from plone.app.layout.globals.interfaces import IViewView
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from bika.lims.content.bikaschema import BikaFolderSchema
 from bika.lims.permissions import AddMethod
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
+from plone.app.layout.globals.interfaces import IViewView
 from zope.interface.declarations import implements
+
 
 class MethodsView(BikaListingView):
     implements(IFolderContentsView, IViewView)
@@ -32,7 +27,8 @@ class MethodsView(BikaListingView):
                               'sort_on': 'sortable_title'}
         self.context_actions = {}
         self.title = self.context.translate(_("Methods"))
-        self.icon = self.portal_url + "/++resource++bika.lims.images/method_big.png"
+        self.icon = "{}/++resource++bika.lims.images/method_big.png".format(
+            self.portal_url)
         self.description = ""
         self.show_sort_column = False
         self.show_select_row = False
@@ -46,43 +42,41 @@ class MethodsView(BikaListingView):
                             'index': 'description',
                             'toggle': True},
             'Instrument': {'title': _('Instrument'),
-                             'toggle': True},
+                           'toggle': True},
             'Calculation': {'title': _('Calculation'),
-                             'toggle': True},
+                            'toggle': True},
             'ManualEntry': {'title': _('Manual entry'),
-                             'toggle': True},
+                            'toggle': True},
         }
 
         self.review_states = [
-            {'id':'default',
+            {'id': 'default',
              'title': _('Active'),
              'contentFilter': {'inactive_state': 'active'},
-             'transitions': [{'id':'deactivate'}, ],
-             'columns': ['Title', 
-                         'Description', 
+             'transitions': [{'id': 'deactivate'}, ],
+             'columns': ['Title',
+                         'Description',
                          'Instrument',
                          'Calculation',
                          'ManualEntry']},
-            {'id':'inactive',
+            {'id': 'inactive',
              'title': _('Dormant'),
              'contentFilter': {'inactive_state': 'inactive'},
-             'transitions': [{'id':'activate'}, ],
-             'columns': ['Title', 
-                         'Description', 
+             'transitions': [{'id': 'activate'}, ],
+             'columns': ['Title',
+                         'Description',
                          'Instrument',
                          'Calculation',
                          'ManualEntry']},
-            {'id':'all',
+            {'id': 'all',
              'title': _('All'),
-             'contentFilter':{},
-             'columns': ['Title', 
-                         'Description', 
+             'contentFilter': {},
+             'columns': ['Title',
+                         'Description',
                          'Instrument',
                          'Calculation',
                          'ManualEntry']},
         ]
-
-
 
     def __call__(self):
         mtool = getToolByName(self.context, 'portal_membership')
@@ -97,45 +91,59 @@ class MethodsView(BikaListingView):
 
         items = BikaListingView.folderitems(self)
         for x in range(len(items)):
-            if not items[x].has_key('obj'): continue
+            if 'obj' not in items[x]:
+                continue
             obj = items[x]['obj']
-            items[x]['replace']['Title'] = "<a href='%s'>%s</a>" % \
-                 (items[x]['url'], items[x]['Title'])
-            
+            items[x]['replace']['Title'] = \
+                "<a href='%s'>%s</a>" % (items[x]['url'], items[x]['Title'])
+
             if obj.getInstruments():
                 if len(obj.getInstruments()) > 1:
                     InstrumentLine = str()
                     urlStr = str()
                     for token in obj.getInstruments():
                         InstrumentLine += token.Title() + ", "
-                        urlStr += "<a href='%s'>%s</a>" % (token.absolute_url(),token.Title())
+                        urlStr += "<a href='%s'>%s</a>" % (
+                            token.absolute_url(),
+                            token.Title())
                     items[x]['replace']['Instrument'] = urlStr
 
                 else:
                     items[x]['Instrument'] = obj.getInstruments()[0].Title()
-                    items[x]['replace']['Instrument'] = "<a href='%s'>%s</a>" % \
-                        (obj.getInstruments()[0].absolute_url(), items[x]['Instrument'])
+                    items[x]['replace']['Instrument'] = \
+                        "<a href='%s'>%s</a>" % (
+                            obj.getInstruments()[0].absolute_url(),
+                            items[x]['Instrument'])
             else:
                 items[x]['Instrument'] = ''
 
             if obj.getCalculation():
                 items[x]['Calculation'] = obj.getCalculation().Title()
-                items[x]['replace']['Calculation'] = "<a href='%s'>%s</a>" % \
-                    (obj.getCalculation().absolute_url(), items[x]['Calculation'])
+                items[x]['replace']['Calculation'] = \
+                    "<a href='%s'>%s</a>" % (
+                        obj.getCalculation().absolute_url(),
+                        items[x]['Calculation'])
             else:
                 items[x]['Calculation'] = ''
-            
-            img_url = '<img src="'+self.portal_url+'/++resource++bika.lims.images/ok.png"/>'
+
+            img_url = '<img src="{}/++resource++bika.lims.images/ok.png"/>' \
+                .format(self.portal_url)
+
             items[x]['ManualEntry'] = obj.isManualEntryOfResults()
-            items[x]['replace']['ManualEntry'] = img_url if obj.isManualEntryOfResults() else ' '
+            items[x]['replace']['ManualEntry'] = \
+                img_url if obj.isManualEntryOfResults() else ' '
 
         return items
 
+
 schema = ATFolderSchema.copy()
+
+
 class Methods(ATFolder):
     implements(IMethods)
     displayContentsTab = False
     schema = schema
 
-schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
+
+schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
 atapi.registerType(Methods, PROJECTNAME)

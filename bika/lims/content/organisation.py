@@ -4,118 +4,141 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from AccessControl import ClassSecurityInfo
-from Products.ATExtensions.ateapi import RecordWidget
 from Products.Archetypes.public import *
-from bika.lims.config import PROJECTNAME
 from Products.CMFCore import permissions as CMFCorePermissions
-from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims.content.bikaschema import BikaSchema, BikaFolderSchema
-from archetypes.referencebrowserwidget import ReferenceBrowserWidget
-from plone.app.folder.folder import ATFolder
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import AddressField
 from bika.lims.browser.widgets import AddressWidget
-from bika.lims import PMF, bikaMessageFactory as _
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaFolderSchema, BikaSchema
+from plone.app.folder.folder import ATFolder
+
+Name = StringField(
+    'Name',
+    required=1,
+    searchable=True,
+    validators=('uniquefieldvalidator',),
+    widget=StringWidget(
+        label=_("Name")
+    )
+)
+TaxNumber = StringField(
+    'TaxNumber',
+    widget=StringWidget(
+        label=_("VAT number")
+    )
+)
+Phone = StringField(
+    'Phone',
+    widget=StringWidget(
+        label=_("Phone")
+    )
+)
+Fax = StringField(
+    'Fax',
+    widget=StringWidget(
+        label=_("Fax")
+    )
+)
+EmailAddress = StringField(
+    'EmailAddress',
+    schemata='Address',
+    widget=StringWidget(
+        label=_("Email Address"),
+    ),
+    validators=('isEmail',)
+)
+PhysicalAddress = AddressField(
+    'PhysicalAddress',
+    schemata='Address',
+    widget=AddressWidget(
+        label=_("Physical address"),
+    ),
+    subfield_validators={
+        'country': 'inline_field_validator',
+        'state': 'inline_field_validator',
+        'district': 'inline_field_validator',
+    },
+    inline_field_validator="validate_address"
+)
+PostalAddress = AddressField(
+    'PostalAddress',
+    schemata='Address',
+    widget=AddressWidget(
+        label=_("Postal address"),
+    ),
+    subfield_validators={
+        'country': 'inline_field_validator',
+        'state': 'inline_field_validator',
+        'district': 'inline_field_validator',
+    },
+    inline_field_validator="validate_address"
+)
+BillingAddress = AddressField(
+    'BillingAddress',
+    schemata='Address',
+    widget=AddressWidget(
+        label=_("Billing address"),
+    ),
+    subfield_validators={
+        'country': 'inline_field_validator',
+        'state': 'inline_field_validator',
+        'district': 'inline_field_validator',
+    },
+    inline_field_validator="validate_address"
+)
+AccountType = StringField(
+    'AccountType',
+    schemata='Bank details',
+    widget=StringWidget(
+        label=_("Account Type")
+    )
+)
+AccountName = StringField(
+    'AccountName',
+    schemata='Bank details',
+    widget=StringWidget(
+        label=_("Account Name")
+    )
+)
+AccountNumber = StringField(
+    'AccountNumber',
+    schemata='Bank details',
+    widget=StringWidget(
+        label=_("Account Number")
+    )
+)
+BankName = StringField(
+    'BankName',
+    schemata='Bank details',
+    widget=StringWidget(
+        label=_("Bank name")
+    )
+)
+BankBranch = StringField(
+    'BankBranch',
+    schemata='Bank details',
+    widget=StringWidget(
+        label=_("Bank branch")
+    )
+)
 
 schema = BikaFolderSchema.copy() + BikaSchema.copy() + ManagedSchema((
-    StringField('Name',
-        required = 1,
-        searchable = True,
-        validators = ('uniquefieldvalidator',),
-        widget = StringWidget(
-            label=_("Name"),
-        ),
-    ),
-    StringField('TaxNumber',
-        widget = StringWidget(
-            label=_("VAT number"),
-        ),
-    ),
-    StringField('Phone',
-        widget = StringWidget(
-            label=_("Phone"),
-        ),
-    ),
-    StringField('Fax',
-        widget = StringWidget(
-            label=_("Fax"),
-        ),
-    ),
-    StringField('EmailAddress',
-        schemata = 'Address',
-        widget = StringWidget(
-            label=_("Email Address"),
-        ),
-        validators = ('isEmail',)
-    ),
-    AddressField('PhysicalAddress',
-        schemata = 'Address',
-        widget = AddressWidget(
-           label=_("Physical address"),
-        ),
-        subfield_validators = {
-            'country': 'inline_field_validator',
-            'state': 'inline_field_validator',
-            'district': 'inline_field_validator',
-        },
-        inline_field_validator="validate_address",
-    ),
-    AddressField('PostalAddress',
-        schemata = 'Address',
-        widget = AddressWidget(
-           label=_("Postal address"),
-        ),
-        subfield_validators = {
-            'country': 'inline_field_validator',
-            'state': 'inline_field_validator',
-            'district': 'inline_field_validator',
-        },
-        inline_field_validator="validate_address",
-    ),
-    AddressField('BillingAddress',
-        schemata = 'Address',
-        widget = AddressWidget(
-           label=_("Billing address"),
-        ),
-        subfield_validators = {
-            'country': 'inline_field_validator',
-            'state': 'inline_field_validator',
-            'district': 'inline_field_validator',
-        },
-        inline_field_validator="validate_address",
-    ),
-    StringField('AccountType',
-        schemata = 'Bank details',
-        widget = StringWidget(
-            label=_("Account Type"),
-        ),
-    ),
-    StringField('AccountName',
-        schemata = 'Bank details',
-        widget = StringWidget(
-            label=_("Account Name"),
-        ),
-    ),
-    StringField('AccountNumber',
-        schemata = 'Bank details',
-        widget = StringWidget(
-            label=_("Account Number"),
-        ),
-    ),
-    StringField('BankName',
-        schemata = 'Bank details',
-        widget = StringWidget(
-            label=_("Bank name"),
-        ),
-    ),
-    StringField('BankBranch',
-        schemata = 'Bank details',
-        widget = StringWidget(
-            label=_("Bank branch"),
-        ),
-    ),
-),
-)
+    Name,
+    TaxNumber,
+    Phone,
+    Fax,
+    EmailAddress,
+    PhysicalAddress,
+    PostalAddress,
+    BillingAddress,
+    AccountType,
+    AccountName,
+    AccountNumber,
+    BankName,
+    BankBranch
+))
 
 IdField = schema['id']
 IdField.widget.visible = {'edit': 'visible', 'view': 'invisible'}
@@ -125,12 +148,14 @@ TitleField = schema['title']
 TitleField.required = 0
 TitleField.widget.visible = {'edit': 'hidden', 'view': 'invisible'}
 
+
 class Organisation(ATFolder):
     security = ClassSecurityInfo()
     displayContentsTab = False
     schema = schema
 
     security.declareProtected(CMFCorePermissions.View, 'getSchema')
+
     def getSchema(self):
         return self.schema
 
@@ -140,24 +165,26 @@ class Organisation(ATFolder):
         field = field and field.get(self) or ''
         return safe_unicode(field).encode('utf-8')
 
-    def setTitle(self, value):
-        return self.setName(value)
+    def setTitle(self, value, **kwargs):
+        return self.setName(value, **kwargs)
 
     def getPossibleAddresses(self):
         return ['PhysicalAddress', 'PostalAddress', 'BillingAddress']
 
     def getPrintAddress(self):
-        address_lines = []
+        postal = self.getPostalAddress()
+        physical = self.getPhysicalAddress()
+        billing = self.getBillingAddress()
+
         use_address = None
-        if self.getPostalAddress().has_key('city') \
-        and self.getPostalAddress()['city']:
-            use_address = self.getPostalAddress()
-        elif self.getPhysicalAddress().has_key('city') \
-        and self.getPhysicalAddress()['city']:
-                use_address = self.getPhysicalAddress()
-        elif self.getBillingAddress().has_key('city') \
-        and self.getBillingAddress()['city']:
-            use_address = self.getBillingAddress()
+        if postal.get('city', False):
+            use_address = postal
+        elif physical.get('city', False):
+            use_address = physical
+        elif billing.get('city', False):
+            use_address = billing
+
+        address_lines = []
         if use_address:
             if use_address['address']:
                 address_lines.append(use_address['address'])
@@ -177,7 +204,7 @@ class Organisation(ATFolder):
             if statecountry_line:
                 address_lines.append(statecountry_line)
 
-
         return address_lines
+
 
 registerType(Organisation, PROJECTNAME)

@@ -7,10 +7,8 @@
 from AccessControl import ClassSecurityInfo
 
 from DateTime import DateTime
-from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
 from Products.CMFCore.utils import getToolByName
-from bika.lims import deprecated
 from bika.lims.config import PROJECTNAME, STD_TYPES
 from bika.lims.content.abstractanalysis import AbstractAnalysis
 from bika.lims.content.abstractanalysis import schema
@@ -20,17 +18,14 @@ from bika.lims.workflow import doActionFor
 from plone.app.blob.field import BlobField
 from zope.interface import implements
 
+ReferenceType = StringField('ReferenceType', vocabulary=STD_TYPES)
+RetractedAnalysesPdfReport = BlobField('RetractedAnalysesPdfReport')
+ReferenceAnalysesGroupID = StringField('ReferenceAnalysesGroupID')
+
 schema = schema.copy() + Schema((
-    StringField(
-        'ReferenceType',
-        vocabulary=STD_TYPES,
-    ),
-    BlobField(
-        'RetractedAnalysesPdfReport',
-    ),
-    StringField(
-        'ReferenceAnalysesGroupID',
-    )
+    ReferenceType,
+    RetractedAnalysesPdfReport,
+    ReferenceAnalysesGroupID
 ))
 
 
@@ -64,8 +59,8 @@ class ReferenceAnalysis(AbstractAnalysis):
 
     @security.public
     def getDueDate(self):
-        """Used to populate getDueDate index and metadata.
-        This very simply returns the expiry date of the parent reference sample.
+        """Used to populate getDueDate index and metadata. This very simply 
+        returns the expiry date of the parent reference sample.
         """
         sample = self.getSample()
         if sample:
@@ -85,15 +80,12 @@ class ReferenceAnalysis(AbstractAnalysis):
         return self.getSample().getExpiryDate()
 
     def getReferenceResults(self):
-        """
-        It is used as metacolumn
+        """It is used as metacolumn
         """
         return self.getSample().getReferenceResults()
 
     def getInstrumentEntryOfResults(self):
-        """
-        It is a metacolumn.
-        Returns the same value as the service.
+        """It is a metacolumn. Returns the same value as the service.
         """
         service = self.getService()
         if not service:
@@ -101,9 +93,7 @@ class ReferenceAnalysis(AbstractAnalysis):
         return service.getInstrumentEntryOfResults()
 
     def getInstrumentUID(self):
-        """
-        It is a metacolumn.
-        Returns the same value as the service.
+        """ It is a metacolumn. Returns the same value as the service.
         """
         instrument = self.getInstrument()
         if not instrument:
@@ -111,9 +101,8 @@ class ReferenceAnalysis(AbstractAnalysis):
         return instrument.UID()
 
     def getServiceDefaultInstrumentUID(self):
-        """
-        It is used as a metacolumn.
-        Returns the default service's instrument UID
+        """ It is used as a metacolumn. Returns the default service's 
+        instrument UID
         """
         service = self.getService()
         if not service:
@@ -124,9 +113,8 @@ class ReferenceAnalysis(AbstractAnalysis):
         return ''
 
     def getServiceDefaultInstrumentTitle(self):
-        """
-        It is used as a metacolumn.
-        Returns the default service's instrument UID
+        """ It is used as a metacolumn. Returns the default service's 
+        instrument UID
         """
         service = self.getService()
         if not service:
@@ -137,9 +125,8 @@ class ReferenceAnalysis(AbstractAnalysis):
         return ''
 
     def getServiceDefaultInstrumentURL(self):
-        """
-        It is used as a metacolumn.
-        Returns the default service's instrument UID
+        """ It is used as a metacolumn. Returns the default service's 
+        instrument UID
         """
         service = self.getService()
         if not service:
@@ -173,10 +160,10 @@ class ReferenceAnalysis(AbstractAnalysis):
         # in this case (guard_attach_transition), try always the transition to
         # 'to_be_verified' via 'attach' action
         # doActionFor will check the
-        doActionFor(self, attach)
+        doActionFor(self, 'attach')
 
         # Delegate the transition of Worksheet to base class AbstractAnalysis
-        super(AbstractRoutineAnalysis, self).after_submit_transition_event()
+        super(AbstractAnalysis, self).after_submit_transition_event()
 
     def workflow_script_attach(self):
         if skip(self, "attach"):
@@ -243,5 +230,6 @@ class ReferenceAnalysis(AbstractAnalysis):
                             "verify all analyses")
                     workflow.doActionFor(ws, "verify")
         self.reindexObject()
+
 
 registerType(ReferenceAnalysis, PROJECTNAME)

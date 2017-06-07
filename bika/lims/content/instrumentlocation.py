@@ -1,16 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from zope.interface import implements
-
 from AccessControl import ClassSecurityInfo
-
-from Products.Archetypes.public import BaseContent
 from Products.Archetypes import atapi
-
-from bika.lims.content.bikaschema import BikaSchema
+from Products.Archetypes.public import BaseContent
 from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IInstrumentLocation
-
+from zope.interface import implements
 
 schema = BikaSchema.copy()
 
@@ -31,5 +27,6 @@ class InstrumentLocation(BaseContent):
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
+
 
 atapi.registerType(InstrumentLocation, PROJECTNAME)

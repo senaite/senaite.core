@@ -4,10 +4,8 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 import re
-import sys
-from AccessControl import ClassSecurityInfo
-from operator import itemgetter
 
+from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.ATExtensions.ateapi import RecordsField
@@ -30,72 +28,87 @@ from bika.lims.permissions import Verify as VerifyPermission
 from bika.lims.utils import changeWorkflowState, tmpID
 from bika.lims.utils import to_utf8 as _c
 from bika.lims.workflow import doActionFor
-from bika.lims.workflow import getCurrentState
 from bika.lims.workflow import skip
 from bika.lims.workflow.worksheet import events
 from bika.lims.workflow.worksheet import guards
-from plone import api
+from plone.api.user import has_permission
 from zope.interface import implements
 
-schema = BikaSchema.copy() + Schema((
-    UIDReferenceField(
-        'WorksheetTemplate',
-        allowed_types=('WorksheetTemplate',),
-    ),
-    RecordsField('Layout',
-        required=1,
-        subfields=('position', 'type', 'container_uid', 'analysis_uid'),
-        subfield_types={'position': 'int'},
-    ),
-    # all layout info lives in Layout; Analyses is used for back references.
-    ReferenceField('Analyses',
-        required=1,
-        multiValued=1,
-        allowed_types=('Analysis', 'DuplicateAnalysis', 'ReferenceAnalysis', 'RejectAnalysis'),
-        relationship = 'WorksheetAnalysis',
-    ),
-    StringField('Analyst',
-        searchable = True,
-    ),
-    ReferenceField(
-        'Method',
-        required=0,
-        vocabulary_display_path_bound=sys.maxint,
-        vocabulary='_getMethodsVoc',
-        allowed_types=('Method',),
-        relationship='WorksheetMethod',
-        referenceClass=HoldingReference,
-        widget=SelectionWidget(
-            format='select',
-            label=_("Method"),
-            visible=False,
-        ),
-    ),
-    # TODO Remove. Instruments must be assigned directly to each analysis.
-    ReferenceField('Instrument',
-        required = 0,
-        allowed_types = ('Instrument',),
-        vocabulary = '_getInstrumentsVoc',
-        relationship = 'WorksheetInstrument',
-        referenceClass = HoldingReference,
-    ),
-    TextField('Remarks',
-        searchable = True,
-        default_content_type = 'text/plain',
-        allowed_content_types= ('text/plain', ),
-        default_output_type="text/plain",
-        widget = TextAreaWidget(
-            macro="bika_widgets/remarks",
-            label=_("Remarks"),
-            append_only=True,
-        ),
-    ),
-    StringField('ResultsLayout',
-        default = '1',
-        vocabulary = WORKSHEET_LAYOUT_OPTIONS,
-    ),
-),
+WorksheetTemplate = UIDReferenceField(
+    'WorksheetTemplate',
+    allowed_types=('WorksheetTemplate',)
 )
+Layout = RecordsField(
+    'Layout',
+    required=1,
+    subfields=('position', 'type', 'container_uid', 'analysis_uid'),
+    subfield_types={'position': 'int'}
+)
+# all layout info lives in Layout; Analyses is used for back references.
+Analyses = ReferenceField(
+    'Analyses',
+    required=1,
+    multiValued=1,
+    allowed_types=(
+        'Analysis', 'DuplicateAnalysis', 'ReferenceAnalysis',
+        'RejectAnalysis'),
+    relationship='WorksheetAnalysis'
+)
+Analyst = StringField(
+    'Analyst',
+    searchable=True
+)
+Method = ReferenceField(
+    'Method',
+    required=0,
+    vocabulary_display_path_bound=sys.maxint,
+    vocabulary='_getMethodsVoc',
+    allowed_types=('Method',),
+    relationship='WorksheetMethod',
+    referenceClass=HoldingReference,
+    widget=SelectionWidget(
+        format='select',
+        label=_("Method"),
+        visible=False
+    )
+)
+# TODO Remove. Instruments must be assigned directly to each analysis.
+Instrument = ReferenceField(
+    'Instrument',
+    required=0,
+    allowed_types=('Instrument',),
+    vocabulary='_getInstrumentsVoc',
+    relationship='WorksheetInstrument',
+    referenceClass=HoldingReference
+)
+Remarks = TextField(
+    'Remarks',
+    searchable=True,
+    default_content_type='text/plain',
+    allowed_content_types=('text/plain',),
+    default_output_type="text/plain",
+    widget=TextAreaWidget(
+        macro="bika_widgets/remarks",
+        label=_("Remarks"),
+        append_only=True
+    )
+)
+ResultsLayout = StringField(
+    'ResultsLayout',
+    default='1',
+    vocabulary=WORKSHEET_LAYOUT_OPTIONS
+)
+
+schema = BikaSchema.copy() + Schema((
+    WorksheetTemplate,
+    Layout,
+    Analyses,
+    Analyst,
+    Method,
+    Instrument,
+    Remarks,
+    ResultsLayout
+))
 
 schema['id'].required = 0
 schema['id'].widget.visible = False
@@ -877,7 +890,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """
         # Check if the user has "Bika: Verify" privileges
         username = member.getUserName()
-        allowed = api.user.has_permission(VerifyPermission, username=username)
+        allowed = has_permission(VerifyPermission, username=username)
         if not allowed:
             return False
         # Check if the user is allowed to verify all the contained analyses

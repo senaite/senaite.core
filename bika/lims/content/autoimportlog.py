@@ -3,32 +3,36 @@
 # Copyright 2011-2017 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from zope.interface import implements
+from DateTime import DateTime
 from Products.Archetypes import atapi
 from Products.Archetypes.public import BaseContent
-from bika.lims.content.bikaschema import BikaSchema
 from Products.Archetypes.references import HoldingReference
-from bika.lims import bikaMessageFactory as _
-from bika.lims import config
-from DateTime import DateTime
 from Products.CMFCore.utils import getToolByName
+from bika.lims import config
+from bika.lims.content.bikaschema import BikaSchema
 
+# Results File that system wanted to import
+ImportedFile = atapi.StringField('ImportedFile', default='')
+
+Instrument = atapi.ReferenceField(
+    'Instrument',
+    allowed_types=('Instrument',),
+    referenceClass=HoldingReference,
+    relationship='InstrumentImportLogs'
+)
+
+Interface = atapi.StringField('Interface', default='')
+
+Results = atapi.StringField('Results', default='')
+
+LogTime = atapi.DateTimeField('LogTime', default=DateTime())
 
 schema = BikaSchema.copy() + atapi.Schema((
-    # Results File that system wanted to import
-    atapi.StringField('ImportedFile', default=''),
-
-    atapi.ReferenceField('Instrument',
-                         allowed_types=('Instrument',),
-                         referenceClass=HoldingReference,
-                         relationship='InstrumentImportLogs',
-                         ),
-
-    atapi.StringField('Interface', default=''),
-
-    atapi.StringField('Results', default=''),
-
-    atapi.DateTimeField('LogTime', default=DateTime()),
+    ImportedFile,
+    Instrument,
+    Interface,
+    Results,
+    LogTime
 ))
 
 schema['title'].widget.visible = False

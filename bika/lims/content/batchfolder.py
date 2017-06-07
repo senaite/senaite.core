@@ -3,22 +3,15 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from bika.lims.utils import isActive
 """BatchFolder contains AR Batches.
 """
+from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
-from Products.Archetypes.utils import DisplayList
-from Products.CMFCore import permissions
-from Products.CMFCore.utils import getToolByName
 from bika.lims.config import PROJECTNAME
-from AccessControl import ClassSecurityInfo
 from bika.lims.interfaces import IBatchFolder, IHaveNoBreadCrumbs
 from plone.app.folder import folder
 from zope.interface import implements
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-import json
 
 schema = folder.ATFolderSchema.copy()
 
@@ -28,6 +21,7 @@ class BatchFolder(folder.ATFolder):
     schema = schema
     displayContentsTab = False
     security = ClassSecurityInfo()
+
 
 schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
 

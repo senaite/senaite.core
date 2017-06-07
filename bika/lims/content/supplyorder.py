@@ -3,115 +3,127 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-import sys
-
-from Products.Archetypes.public import *
+from decimal import Decimal
 
 from AccessControl import ClassSecurityInfo
+from DateTime import DateTime
+from Products.Archetypes import atapi
+from Products.Archetypes.public import *
+from Products.Archetypes.references import HoldingReference
+from Products.CMFCore.permissions import View
+from Products.CMFPlone.interfaces import IConstrainTypes
+from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import ReferenceWidget as BikaReferenceWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import ISupplyOrder
-from bika.lims.utils import t
-from DateTime import DateTime
 from persistent.mapping import PersistentMapping
-from decimal import Decimal
-from Products.Archetypes import atapi
-from Products.Archetypes.references import HoldingReference
-from Products.CMFCore.permissions import View
-from Products.CMFPlone.interfaces import IConstrainTypes
-from Products.CMFPlone.utils import safe_unicode
 from zope.component import getAdapter
 from zope.interface import implements
 
-
-schema = BikaSchema.copy() + Schema((
-    ReferenceField(
-      'Contact',
-      required=1,
-      vocabulary_display_path_bound=sys.maxsize,
-      allowed_types=('Contact',),
-      referenceClass=HoldingReference,
-      relationship='SupplyOrderContact',
-      widget=BikaReferenceWidget(
+Contact = ReferenceField(
+    'Contact',
+    required=1,
+    vocabulary_display_path_bound=sys.maxsize,
+    allowed_types=('Contact',),
+    referenceClass=HoldingReference,
+    relationship='SupplyOrderContact',
+    widget=BikaReferenceWidget(
         render_own_label=True,
         showOn=True,
         colModel=[
-          {'columnName': 'UID', 'hidden': True},
-          {'columnName': 'Fullname', 'width': '50', 'label': _('Name')},
-          {'columnName': 'EmailAddress', 'width': '50', 'label': _('Email Address')},
-        ],
-      ),
-    ),
-    StringField('OrderNumber',
-                required=1,
-                searchable=True,
-                widget=StringWidget(
-                    label=_("Order Number"),
-                    ),
-                ),
-    ReferenceField('Invoice',
-                   vocabulary_display_path_bound=sys.maxsize,
-                   allowed_types=('Invoice',),
-                   referenceClass=HoldingReference,
-                   relationship='OrderInvoice',
-                   ),
-    DateTimeField(
-      'OrderDate',
-      required=1,
-      default_method='current_date',
-      widget=DateTimeWidget(
+            {'columnName': 'UID', 'hidden': True},
+            {'columnName': 'Fullname', 'width': '50', 'label': _('Name')},
+            {'columnName': 'EmailAddress', 'width': '50',
+             'label': _('Email Address')},
+        ]
+    )
+)
+OrderNumber = StringField(
+    'OrderNumber',
+    required=1,
+    searchable=True,
+    widget=StringWidget(
+        label=_("Order Number")
+    )
+)
+Invoice = ReferenceField(
+    'Invoice',
+    vocabulary_display_path_bound=sys.maxsize,
+    allowed_types=('Invoice',),
+    referenceClass=HoldingReference,
+    relationship='OrderInvoice'
+)
+OrderDate = DateTimeField(
+    'OrderDate',
+    required=1,
+    default_method='current_date',
+    widget=DateTimeWidget(
         label=_("Order Date"),
         size=12,
         render_own_label=True,
         visible={
-          'edit': 'visible',
-          'view': 'visible',
-          'add': 'visible',
-          'secondary': 'invisible'
-        },
-      ),
-    ),
-    DateTimeField('DateDispatched',
-                  widget=DateTimeWidget(
-                      label=_("Date Dispatched"),
-                      ),
-                  ),
-    TextField('Remarks',
-        searchable=True,
-        default_content_type='text/plain',
-        allowed_content_types=('text/plain', ),
-        default_output_type="text/plain",
-        widget = TextAreaWidget(
-            macro="bika_widgets/remarks",
-            label=_("Remarks"),
-            append_only=True,
-        ),
-    ),
-    ComputedField('ClientUID',
-                  expression = 'here.aq_parent.UID()',
-                  widget = ComputedWidget(
-                      visible=False,
-                      ),
-                  ),
-    ComputedField('ProductUID',
-                  expression = 'context.getProductUIDs()',
-                  widget = ComputedWidget(
-                      visible=False,
-                      ),
-                  ),
-),
+            'edit': 'visible',
+            'view': 'visible',
+            'add': 'visible',
+            'secondary': 'invisible'
+        }
+    )
+)
+DateDispatched = DateTimeField(
+    'DateDispatched',
+    widget=DateTimeWidget(
+        label=_("Date Dispatched")
+    )
+)
+Remarks = TextField(
+    'Remarks',
+    searchable=True,
+    default_content_type='text/plain',
+    allowed_content_types=('text/plain',),
+    default_output_type="text/plain",
+    widget=TextAreaWidget(
+        macro="bika_widgets/remarks",
+        label=_("Remarks"),
+        append_only=True
+    )
+)
+ClientUID = ComputedField(
+    'ClientUID',
+    expression='here.aq_parent.UID()',
+    widget=ComputedWidget(
+        visible=False
+    )
+)
+ProductUID = ComputedField(
+    'ProductUID',
+    expression='context.getProductUIDs()',
+    widget=ComputedWidget(
+        visible=False
+    )
 )
 
+schema = BikaSchema.copy() + Schema((
+    Contact,
+    OrderNumber,
+    Invoice,
+    OrderDate,
+    DateDispatched,
+    Remarks,
+    ClientUID,
+    ProductUID
+))
+
 schema['title'].required = False
+
 
 class SupplyOrderLineItem(PersistentMapping):
     pass
 
-class SupplyOrder(BaseFolder):
 
+class SupplyOrder(BaseFolder):
     implements(ISupplyOrder, IConstrainTypes)
 
     security = ClassSecurityInfo()
@@ -172,7 +184,8 @@ class SupplyOrder(BaseFolder):
         """ Compute Subtotal """
         if self.supplyorder_lineitems:
             return sum(
-                [(Decimal(obj['Quantity']) * Decimal(obj['Price'])) for obj in self.supplyorder_lineitems])
+                [(Decimal(obj['Quantity']) * Decimal(obj['Price'])) for obj in
+                 self.supplyorder_lineitems])
         return 0
 
     security.declareProtected(View, 'getVATAmount')
@@ -188,8 +201,8 @@ class SupplyOrder(BaseFolder):
         total = 0
         for lineitem in self.supplyorder_lineitems:
             total += Decimal(lineitem['Quantity']) * \
-                     Decimal(lineitem['Price']) *  \
-                     ((Decimal(lineitem['VAT']) /100) + 1)
+                     Decimal(lineitem['Price']) * \
+                     ((Decimal(lineitem['VAT']) / 100) + 1)
         return total
 
     def workflow_script_dispatch(self):

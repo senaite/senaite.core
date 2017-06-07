@@ -21,31 +21,46 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from plone.app.blob.field import BlobField
 
+AnalysisRequest = UIDReferenceField(
+    'AnalysisRequest',
+    allowed_types=('AnalysisRequest',),
+    referenceClass=HoldingReference,
+    required=1
+)
+
+Pdf = BlobField(
+    'Pdf',
+)
+
+SMS = StringField(
+    'SMS',
+)
+
+Recipients = RecordsField(
+    'Recipients',
+    type='recipients',
+    subfields=(
+        'UID', 'Username', 'Fullname', 'EmailAddress',
+        'PublicationModes'),
+)
+
+DatePrinted = DateTimeField(
+    'DatePrinted',
+    mode="rw",
+    widget=DateTimeWidget(
+        label=_("Date Printed"),
+        visible={'edit': 'visible',
+                 'view': 'visible'
+                 }
+    )
+)
+
 schema = BikaSchema.copy() + Schema((
-    UIDReferenceField('AnalysisRequest',
-       allowed_types=('AnalysisRequest',),
-       referenceClass=HoldingReference,
-       required=1,
-    ),
-    BlobField('Pdf',
-    ),
-    StringField('SMS',
-    ),
-    RecordsField('Recipients',
-        type='recipients',
-        subfields=('UID', 'Username', 'Fullname', 'EmailAddress',
-                   'PublicationModes'),
-    ),
-    DateTimeField(
-        'DatePrinted',
-        mode="rw",
-        widget=DateTimeWidget(
-            label = _("Date Printed"),
-            visible={'edit': 'visible',
-                     'view': 'visible'
-                     }
-        ),
-    ),
+    AnalysisRequest,
+    Pdf,
+    SMS,
+    Recipients,
+    DatePrinted
 ))
 
 schema['id'].required = False
@@ -58,8 +73,10 @@ class ARReport(BaseFolder):
     schema = schema
 
     _at_rename_after_creation = True
+
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
+
 
 atapi.registerType(ARReport, PROJECTNAME)

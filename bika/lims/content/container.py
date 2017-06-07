@@ -86,26 +86,6 @@ class Container(BaseContent):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    def getJSCapacity(self, **kw):
-        """Try convert the Capacity to 'ml' or 'g' so that JS has an
-        easier time working with it.  If conversion fails, return raw value.
-        """
-        default = self.Schema()['Capacity'].get(self)
-        try:
-            mgdefault = default.split(' ', 1)
-            mgdefault = mg(float(mgdefault[0]), mgdefault[1])
-        except:
-            mgdefault = mg(0, 'ml')
-        try:
-            return str(mgdefault.ounit('ml'))
-        except:
-            pass
-        try:
-            return str(mgdefault.ounit('g'))
-        except:
-            pass
-        return str(default)
-
     def getContainerTypes(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
         items = [('','')] + [(o.UID, o.Title) for o in

@@ -10,55 +10,59 @@
 import types
 
 from AccessControl import ClassSecurityInfo
-
 from Products.Archetypes import atapi
+from Products.Archetypes.utils import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from Products.Archetypes.utils import DisplayList
-
+from bika.lims import bikaMessageFactory as _
+from bika.lims import logger
+from bika.lims.config import ManageClients
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.person import Person
+from bika.lims.interfaces import IContact
+from bika.lims.utils import isActive
 from plone import api
 from zope.interface import implements
 
-from bika.lims.utils import isActive
-from bika.lims.interfaces import IContact
-from bika.lims.content.person import Person
-from bika.lims.config import PROJECTNAME
-from bika.lims.config import ManageClients
-from bika.lims import logger
-from bika.lims import bikaMessageFactory as _
-
 ACTIVE_STATES = ["active"]
 
+PublicationPreference = atapi.LinesField(
+    'PublicationPreference',
+    vocabulary_factory='bika.lims.vocabularies.CustomPubPrefVocabularyFactory',
+    schemata='Publication preference',
+    widget=atapi.MultiSelectionWidget(
+        label=_("Publication preference"),
+    )
+)
+AttachmentsPermitted = atapi.BooleanField(
+    'AttachmentsPermitted',
+    default=False,
+    schemata='Publication preference',
+    widget=atapi.BooleanWidget(
+        label=_("Results attachments permitted"),
+        description=_(
+            "File attachments to results, e.g. microscope photos, will be "
+            "included in emails to recipients if this option is enabled")
+    )
+)
+CCContact = atapi.ReferenceField(
+    'CCContact',
+    schemata='Publication preference',
+    vocabulary='getContacts',
+    multiValued=1,
+    allowed_types=('Contact',),
+    relationship='ContactContact',
+    widget=atapi.ReferenceWidget(
+        checkbox_bound=0,
+        label=_("Contacts to CC"),
+    )
+)
 
 schema = Person.schema.copy() + atapi.Schema((
-    atapi.LinesField('PublicationPreference',
-                     vocabulary_factory='bika.lims.vocabularies.CustomPubPrefVocabularyFactory',
-                     schemata='Publication preference',
-                     widget=atapi.MultiSelectionWidget(
-                         label=_("Publication preference"),
-                     )),
-    atapi.BooleanField('AttachmentsPermitted',
-                       default=False,
-                       schemata='Publication preference',
-                       widget=atapi.BooleanWidget(
-                           label=_("Results attachments permitted"),
-                           description=_(
-                               "File attachments to results, e.g. microscope "
-                               "photos, will be included in emails to recipients "
-                               "if this option is enabled")
-                       )),
-    atapi.ReferenceField('CCContact',
-                         schemata='Publication preference',
-                         vocabulary='getContacts',
-                         multiValued=1,
-                         allowed_types=('Contact',),
-                         relationship='ContactContact',
-                         widget=atapi.ReferenceWidget(
-                             checkbox_bound=0,
-                             label=_("Contacts to CC"),
-                         )),
+    PublicationPreference,
+    AttachmentsPermitted,
+    CCContact
 ))
-
 
 schema['JobTitle'].schemata = 'default'
 schema['Department'].schemata = 'default'
@@ -85,8 +89,7 @@ class Contact(Person):
 
         # Check if the User is linked already
         pc = api.portal.get_tool("portal_catalog")
-        contacts = pc(portal_type=cls.portal_type,
-                      getUsername=username)
+        contacts = pc(portal_type=cls.portal_type, getUsername=username)
 
         # No Contact assigned to this username
         if len(contacts) == 0:
@@ -118,6 +121,7 @@ class Contact(Person):
         return False
 
     security.declareProtected(ManageClients, 'getUser')
+
     def getUser(self):
         """Returns the linked Plone User or None
         """
@@ -128,6 +132,7 @@ class Contact(Person):
         return user
 
     security.declareProtected(ManageClients, 'getUser')
+
     def setUser(self, user_or_username):
         """Link the user to the Contact
 
@@ -154,6 +159,7 @@ class Contact(Person):
         return self._linkUser(user)
 
     security.declareProtected(ManageClients, 'unlinkUser')
+
     def unlinkUser(self, delete=False):
         """Unlink the user to the Contact
 
@@ -179,6 +185,7 @@ class Contact(Person):
         return False
 
     security.declareProtected(ManageClients, 'hasUser')
+
     def hasUser(self):
         """Check if Contact has a linked a System User
         """
@@ -206,6 +213,7 @@ class Contact(Person):
         renameAfterCreation(self)
 
     security.declarePrivate('_linkUser')
+
     def _linkUser(self, user):
         """Set the UID of the current Contact in the User properties and update
         all relevant own properties.
@@ -217,13 +225,15 @@ class Contact(Person):
 
         # User is linked to another contact (fix in UI)
         if contact and contact.UID() != self.UID():
-            raise ValueError("User '{}' is already linked to Contact '{}'".format(
-                username, contact.Title()))
+            raise ValueError(
+                "User '{}' is already linked to Contact '{}'".format(
+                    username, contact.Title()))
 
         # User is linked to multiple other contacts (fix in Data)
         if isinstance(contact, list):
-            raise ValueError("User '{}' is linked to multiple Contacts: '{}'".format(
-                username, ",".join(map(lambda x: x.Title(), contact)))) 
+            raise ValueError(
+                "User '{}' is linked to multiple Contacts: '{}'".format(
+                    username, ",".join(map(lambda x: x.Title(), contact))))
 
         # XXX: Does it make sense to "remember" the UID as a User property?
         tool = user.getTool()
@@ -249,6 +259,7 @@ class Contact(Person):
         return True
 
     security.declarePrivate('_unlinkUser')
+
     def _unlinkUser(self):
         """Remove the UID of the current Contact in the User properties and
         update all relevant own properties.
@@ -263,7 +274,8 @@ class Contact(Person):
 
         # Unset the UID from the User Property
         user.setMemberProperties({KEY: ""})
-        logger.info("Unlinked Contact UID from User {}".format(user.getProperty(KEY, "")))
+        logger.info("Unlinked Contact UID from User {}".format(
+            user.getProperty(KEY, "")))
         # Unset the Username
         self.setUsername(None)
         # Unset the Email
@@ -273,5 +285,6 @@ class Contact(Person):
         self.reindexObject()
 
         return True
+
 
 atapi.registerType(Contact, PROJECTNAME)

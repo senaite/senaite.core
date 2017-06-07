@@ -3,7 +3,7 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-import sys
+from sys import maxint
 
 from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
@@ -20,74 +20,105 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from plone.app.blob.field import FileField as BlobFileField
 
+Latitude = CoordinateField(
+    'Latitude',
+    schemata='Location',
+    widget=CoordinateWidget(
+        label=_("Latitude"),
+        description=_(
+            "Enter the Sample Point's latitude in degrees 0-90, minutes 0-59, "
+            "seconds 0-59 and N/S indicator")
+    )
+)
+
+Longitude = CoordinateField(
+    'Longitude',
+    schemata='Location',
+    widget=CoordinateWidget(
+        label=_("Longitude"),
+        description=_(
+            "Enter the Sample Point's longitude in degrees 0-180, minutes "
+            "0-59, seconds 0-59 and E/W indicator")
+    )
+)
+
+Elevation = StringField(
+    'Elevation',
+    schemata='Location',
+    widget=StringWidget(
+        label=_("Elevation"),
+        description=_("The height or depth at which the sample has to be taken")
+    )
+)
+
+SamplingFrequency = DurationField(
+    'SamplingFrequency',
+    vocabulary_display_path_bound=maxint,
+    widget=DurationWidget(
+        label=_("Sampling Frequency"),
+        description=_(
+            "If a sample is taken periodically at this sample point, "
+            "enter frequency here, e.g. weekly")
+    )
+)
+
+SampleTypes = ReferenceField(
+    'SampleTypes',
+    required=0,
+    multiValued=1,
+    allowed_types=('SampleType',),
+    vocabulary='SampleTypesVocabulary',
+    relationship='SamplePointSampleType',
+    widget=brw(
+        label=_("Sample Types"),
+        description=_("The list of sample types that can be collected "
+                      "at this sample point.  If no sample types are "
+                      "selected, then all sample types are available.")
+    )
+)
+
+SampleTypeTitle = ComputedField(
+    'SampleTypeTitle',
+    expression="[o.Title() for o in context.getSampleTypes()]",
+    widget=ComputedWidget(
+        visible=False,
+    )
+),
+Composite = BooleanField(
+    'Composite',
+    default=False,
+    widget=BooleanWidget(
+        label=_("Composite"),
+        description=_(
+            "Check this box if the samples taken at this point are 'composite' "
+            "and put together from more than one sub sample, e.g. several "
+            "surface "
+            "samples from a dam mixed together to be a representative sample "
+            "for the dam. "
+            "The default, unchecked, indicates 'grab' samples")
+    )
+)
+
+AttachmentFile = BlobFileField(
+    'AttachmentFile',
+    widget=FileWidget(
+        label=_("Attachment")
+    )
+)
+
 schema = BikaSchema.copy() + Schema((
-    CoordinateField('Latitude',
-        schemata = 'Location',
-        widget=CoordinateWidget(
-            label=_("Latitude"),
-            description=_("Enter the Sample Point's latitude in degrees 0-90, minutes 0-59, seconds 0-59 and N/S indicator"),
-        ),
-    ),
-    CoordinateField('Longitude',
-        schemata = 'Location',
-        widget=CoordinateWidget(
-            label=_("Longitude"),
-            description=_("Enter the Sample Point's longitude in degrees 0-180, minutes 0-59, seconds 0-59 and E/W indicator"),
-        ),
-    ),
-    StringField('Elevation',
-        schemata = 'Location',
-        widget=StringWidget(
-            label=_("Elevation"),
-            description=_("The height or depth at which the sample has to be taken"),
-        ),
-    ),
-    DurationField('SamplingFrequency',
-        vocabulary_display_path_bound=sys.maxint,
-        widget=DurationWidget(
-            label=_("Sampling Frequency"),
-            description=_("If a sample is taken periodically at this sample point, enter frequency here, e.g. weekly"),
-        ),
-    ),
-    ReferenceField('SampleTypes',
-        required = 0,
-        multiValued = 1,
-        allowed_types = ('SampleType',),
-        vocabulary = 'SampleTypesVocabulary',
-        relationship = 'SamplePointSampleType',
-        widget = brw(
-            label=_("Sample Types"),
-            description =_("The list of sample types that can be collected "
-                           "at this sample point.  If no sample types are "
-                           "selected, then all sample types are available."),
-        ),
-    ),
-    ComputedField(
-        'SampleTypeTitle',
-        expression="[o.Title() for o in context.getSampleTypes()]",
-        widget = ComputedWidget(
-            visible=False,
-        )
-    ),
-    BooleanField('Composite',
-        default=False,
-        widget=BooleanWidget(
-            label=_("Composite"),
-            description =_(
-                "Check this box if the samples taken at this point are 'composite' "
-                "and put together from more than one sub sample, e.g. several surface "
-                "samples from a dam mixed together to be a representative sample for the dam. "
-                "The default, unchecked, indicates 'grab' samples"),
-        ),
-    ),
-    BlobFileField('AttachmentFile',
-        widget = FileWidget(
-            label=_("Attachment"),
-        ),
-    ),
+    Latitude,
+    Longitude,
+    Elevation,
+    SamplingFrequency,
+    SampleTypes,
+    SampleTypeTitle,
+    Composite,
+    AttachmentFile
 ))
 schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
+
 
 class SamplePoint(BaseContent, HistoryAwareMixin):
     security = ClassSecurityInfo()
@@ -95,6 +126,7 @@ class SamplePoint(BaseContent, HistoryAwareMixin):
     schema = schema
 
     _at_rename_after_creation = True
+
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
@@ -114,16 +146,16 @@ class SamplePoint(BaseContent, HistoryAwareMixin):
         bsc = getToolByName(self, 'bika_setup_catalog')
         ## convert value to objects
         if value and type(value) == str:
-            value = [bsc(UID=value)[0].getObject(),]
+            value = [bsc(UID=value)[0].getObject(), ]
         elif value and type(value) in (list, tuple) and type(value[0]) == str:
             value = [bsc(UID=uid)[0].getObject() for uid in value if uid]
         if not type(value) in (list, tuple):
-            value = [value,]
+            value = [value, ]
         ## Find all SampleTypes that were removed
         existing = self.Schema()['SampleTypes'].get(self)
         removed = existing and [s for s in existing if s not in value] or []
         added = value and [s for s in value if s not in existing] or []
-        ret = self.Schema()['SampleTypes'].set(self, value)
+        ret = self.Schema()['SampleTypes'].set(self, value, **kw)
 
         # finally be sure that we aren't trying to set None values here.
         removed = [x for x in removed if x]
@@ -136,29 +168,31 @@ class SamplePoint(BaseContent, HistoryAwareMixin):
                 st.setSamplePoints(samplepoints)
 
         for st in added:
-            st.setSamplePoints(list(st.getSamplePoints()) + [self,])
+            st.setSamplePoints(list(st.getSamplePoints()) + [self, ])
 
         return ret
 
     def getSampleTypes(self, **kw):
-        return self.Schema()['SampleTypes'].get(self)
+        return self.Schema()['SampleTypes'].get(self, **kw)
 
     def getClientUID(self):
         return self.aq_parent.UID()
 
+
 registerType(SamplePoint, PROJECTNAME)
+
 
 def SamplePoints(self, instance=None, allow_blank=True, lab_only=True):
     instance = instance or self
     bsc = getToolByName(instance, 'bika_setup_catalog')
     items = []
     contentFilter = {
-        'portal_type'  : 'SamplePoint',
-        'inactive_state'  :'active',
-        'sort_on' : 'sortable_title'}
+        'portal_type': 'SamplePoint',
+        'inactive_state': 'active',
+        'sort_on': 'sortable_title'}
     if lab_only:
         lab_path = instance.bika_setup.bika_samplepoints.getPhysicalPath()
-        contentFilter['path'] = {"query": "/".join(lab_path), "level" : 0 }
+        contentFilter['path'] = {"query": "/".join(lab_path), "level": 0}
     for sp in bsc(contentFilter):
         sp = sp.getObject()
         if sp.aq_parent.portal_type == 'Client':
@@ -166,5 +200,5 @@ def SamplePoints(self, instance=None, allow_blank=True, lab_only=True):
         else:
             sp_title = sp.Title()
         items.append((sp.UID(), sp_title))
-    items = allow_blank and [['','']] + list(items) or list(items)
+    items = allow_blank and [['', '']] + list(items) or list(items)
     return DisplayList(items)
