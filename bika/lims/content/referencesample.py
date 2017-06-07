@@ -321,10 +321,10 @@ class ReferenceSample(BaseFolder):
         Reference, with the type passed in and associates the newly
         created object to the Analysis Service passed in.
 
-        :param service_uid: The UID of the Analysis Service to be associated 
+        :param service_uid: The UID of the Analysis Service to be associated
         to the newly created Reference Analysis
         :type service_uid: A string
-        :param reference_type: type of ReferenceAnalysis, where 'b' is is  
+        :param reference_type: type of ReferenceAnalysis, where 'b' is is
         Blank and 'c' is Control
         :type reference_type: A String
         :returns: the UID of the newly created Reference Analysis
@@ -336,6 +336,26 @@ class ReferenceSample(BaseFolder):
         interim_fields = calc.getInterimFields() if calc else None
         interim_fields = interim_fields if interim_fields else []
         analysis = _createObjectByType("ReferenceAnalysis", self, id=tmpID())
+        # Copy all the values from the schema
+        # TODO Add Service as a param in ReferenceAnalysis constructor and do
+        #      this logic there instead of here
+        discard = ['id', ]
+        keys = service.Schema().keys()
+        for key in keys:
+            if key in discard:
+                continue
+            if key not in analysis.Schema().keys():
+                continue
+            val = service.getField(key).get(service)
+            # Campbell's mental note:never ever use '.set()' directly to a
+            # field. If you can't use the setter, then use the mutator in order
+            # to give the value. We have realized that in some cases using
+            # 'set' when the value is a string, it saves the value
+            # as unicode instead of plain string.
+            # analysis.getField(key).set(analysis, val)
+            mutator_name = analysis.getField(key).mutator
+            mutator = getattr(analysis, mutator_name)
+            mutator(val)
         analysis.setAnalysisService(service_uid)
         analysis.setReferenceType(reference_type)
         analysis.setInterimFields(interim_fields)

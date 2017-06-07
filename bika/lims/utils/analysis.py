@@ -392,6 +392,7 @@ def get_method_instrument_constraints(context, uids):
         s_mentry = analysis.getManualEntryOfResults()
         s_ientry = analysis.getInstrumentEntryOfResults()
         s_instrums = allowed_instruments if s_ientry else []
+        s_instrums = [instr.UID() for instr in s_instrums]
         a_dinstrum = analysis.getInstrument() if s_ientry else None
         s_methods = analysis.getAllowedMethods()
         s_dmethod = analysis.getMethod()
