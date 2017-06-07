@@ -9,6 +9,7 @@ from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
 from Products.Archetypes.public import *
 from Products.CMFCore.utils import getToolByName
+from bika.lims import deprecated, logger
 from bika.lims.config import PROJECTNAME, STD_TYPES
 from bika.lims.content.abstractanalysis import AbstractAnalysis
 from bika.lims.content.abstractanalysis import schema
@@ -85,7 +86,12 @@ class ReferenceAnalysis(AbstractAnalysis):
         return self.getSample().getReferenceResults()
 
     @security.public
-    def getResultsRange(self):
+    def getResultsRange(self, specification=None):
+        # specification is required by the signature of the base class,
+        # but has no meaning in this context.
+        if specification:
+            logger.error("specification is an invalid argument to "
+                         "ReferenceAnalysis.getResultsRange.")
         sample = self.getSample()
         if sample:
             return sample.getResultsRangeDict()
