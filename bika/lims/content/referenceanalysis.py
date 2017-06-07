@@ -92,6 +92,17 @@ class ReferenceAnalysis(AbstractAnalysis):
             return None
         return service.getInstrumentEntryOfResults()
 
+    @security.public
+    def getResultsRange(self):
+        sample = self.getSample()
+        if sample:
+            return sample.getResultsRangeDict()
+
+    def getAnalysisSpecs(self, specification=None):
+        specs = self.getResultsRange()
+        if specs and self.getKeyword() in specs:
+            return specs
+
     def getInstrumentUID(self):
         """ It is a metacolumn. Returns the same value as the service.
         """
@@ -143,8 +154,9 @@ class ReferenceAnalysis(AbstractAnalysis):
         """
         return []
 
+    @deprecated('[1705] Use bika.lims.workflow.analysis.events.after_submit')
     @security.public
-    def after_submit_transition_event(self):
+    def workflow_script_submit(self):
         """Method triggered after a 'submit' transition for the current
         ReferenceAnalysis is performed.
         By default, the "submit" action for transitions the RefAnalysis to the
@@ -163,7 +175,7 @@ class ReferenceAnalysis(AbstractAnalysis):
         doActionFor(self, 'attach')
 
         # Delegate the transition of Worksheet to base class AbstractAnalysis
-        super(AbstractAnalysis, self).after_submit_transition_event()
+        AbstractAnalysis.workflow_script_submit(self)
 
     def workflow_script_attach(self):
         if skip(self, "attach"):

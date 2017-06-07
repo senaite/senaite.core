@@ -1117,7 +1117,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
     def getWorksheet(self):
         """Returns the Worksheet to which this analysis belongs to, or None
         """
-        worksheet = self.getBackReferences("WorksheetAnalysis")
+        worksheet = self.getBackReferences('WorksheetAnalysis')
         if not worksheet:
             return None
         if len(worksheet) > 1:
