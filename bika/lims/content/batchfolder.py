@@ -9,10 +9,10 @@ from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from bika.lims.config import PROJECTNAME
+from bika.lims.content.schema.batchfolder import schema
 from bika.lims.interfaces import IBatchFolder, IHaveNoBreadCrumbs
 from plone.app.folder import folder
 from zope.interface import implements
-from bika.lims.content.schema.batchfolder import schema
 
 
 class BatchFolder(folder.ATFolder):
