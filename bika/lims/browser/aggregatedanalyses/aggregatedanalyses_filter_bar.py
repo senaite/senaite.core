@@ -4,7 +4,7 @@
 #
 # Copyright 2011-2017 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
-
+import json
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.sample.samples_filter_bar\
     import SamplesBikaListingFilterBar
@@ -29,6 +29,12 @@ class AggregatedanalysesBikaListingFilterBar(SamplesBikaListingFilterBar):
             'label': _('Date result submitted'),
             'type': 'date_range',
         })
+        fields_dict.append({
+            'name': 'batch',
+            'label': _('Batch'),
+            'type': 'autocomplete_text',
+            'voc': json.dumps(self.getCasesVoc()),
+        })
         return fields_dict
 
     def get_filter_bar_queryaddition(self):
@@ -41,6 +47,8 @@ class AggregatedanalysesBikaListingFilterBar(SamplesBikaListingFilterBar):
         filter_dict = self.get_filter_bar_dict()
         query_dict =\
             SamplesBikaListingFilterBar.get_filter_bar_queryaddition(self)
+        # Batch filter
+        query_dict = self.createQueryForBatch(filter_dict, query_dict)
         # Sample condition filter
         if filter_dict.get('sample_condition', ''):
             query_dict['getSampleConditionUID'] =\

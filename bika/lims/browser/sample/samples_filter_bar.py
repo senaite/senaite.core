@@ -4,7 +4,6 @@
 #
 # Copyright 2011-2017 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
-import json
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.bika_listing_filter_bar import BikaListingFilterBar
 
@@ -38,11 +37,6 @@ class SamplesBikaListingFilterBar(BikaListingFilterBar):
             'type': 'select',
             'voc': self.getSampleTypesVoc(),
         }, {
-            'name': 'batch',
-            'label': _('Batch'),
-            'type': 'autocomplete_text',
-            'voc': json.dumps(self.getCasesVoc()),
-        }, {
             'name': 'date_received',
             'label': _('Date received'),
             'type': 'date_range',
@@ -62,8 +56,6 @@ class SamplesBikaListingFilterBar(BikaListingFilterBar):
         # Date received filter
         query_dict = self.createQueryForDateRange(
             filter_dict, query_dict, 'date_received', 'getDateReceived')
-        # Batch filter
-        query_dict = self.createQueryForBatch(filter_dict, query_dict)
         # Sample type filter
         if filter_dict.get('sample_type', ''):
             query_dict['getSampleTypeUID'] = filter_dict.get('sample_type', '')

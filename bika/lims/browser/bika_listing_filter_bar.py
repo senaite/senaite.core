@@ -163,7 +163,7 @@ class BikaListingFilterBar(BrowserView):
             date_range_query = {
                 'query':
                 (date_0 + ' 00:00', date_1 + ' 23:59'), 'range': 'min:max'}
-            query_dict['getDateReceived'] = date_range_query
+            query_dict[cat_index] = date_range_query
         return query_dict
 
     def createQueryForBatch(self, filter_dict, query_dict):
