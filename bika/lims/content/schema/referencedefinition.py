@@ -8,8 +8,8 @@ from Products.Archetypes.Widget import BooleanWidget
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import ReferenceResultsField
 from bika.lims.browser.widgets import ReferenceResultsWidget
-from bika.lims.content.schema.bikaschema import BikaSchema
 from bika.lims.content.schema import Storage
+from bika.lims.content.schema.bikaschema import BikaSchema
 
 ReferenceResults = ReferenceResultsField(
     'ReferenceResults',

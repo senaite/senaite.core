@@ -9,9 +9,9 @@ from Products.Archetypes.Widget import BooleanWidget, FileWidget, \
     MultiSelectionWidget, ReferenceWidget, StringWidget, TextAreaWidget
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
+from bika.lims.content.schema import Storage
 from bika.lims.content.schema.bikaschema import BikaSchema
 from plone.app.blob.field import FileField as BlobFileField
-from bika.lims.content.schema import Storage
 
 # Method ID should be unique, specified on MethodSchemaModifier
 MethodID = StringField(

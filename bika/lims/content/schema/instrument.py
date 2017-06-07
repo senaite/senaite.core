@@ -4,19 +4,19 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from Products.ATExtensions.ateapi import RecordsField
-from Products.Archetypes.Field import ReferenceField, StringField, BooleanField, \
-    TextField, ComputedField, DateTimeField
+from Products.Archetypes.Field import BooleanField, ComputedField, \
+    DateTimeField, ReferenceField, StringField, TextField
 from Products.Archetypes.Schema import Schema
-from Products.Archetypes.Widget import StringWidget, ReferenceWidget, \
-    BooleanWidget, TextAreaWidget, MultiSelectionWidget, ComputedWidget, \
-    FileWidget, ImageWidget
+from Products.Archetypes.Widget import BooleanWidget, ComputedWidget, \
+    FileWidget, ImageWidget, MultiSelectionWidget, ReferenceWidget, \
+    StringWidget, TextAreaWidget
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DateTimeWidget, SelectionWidget
 from bika.lims.browser.widgets import RecordsWidget
+from bika.lims.content.schema import Storage
 from bika.lims.content.schema.bikaschema import BikaFolderSchema, BikaSchema
 from plone.app.blob.field import FileField as BlobFileField, ImageField
-from bika.lims.content.schema import Storage
 
 InstrumentType = ReferenceField(
     'InstrumentType',

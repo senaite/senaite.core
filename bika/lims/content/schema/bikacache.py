@@ -4,9 +4,8 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from Products.Archetypes import atapi
-from bika.lims.content.schema.bikaschema import BikaSchema
 from bika.lims.content.schema import Storage
-
+from bika.lims.content.schema.bikaschema import BikaSchema
 
 # 'Key' field is name of the Cache object, must be Unique
 Key = atapi.StringField(

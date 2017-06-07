@@ -8,8 +8,8 @@ from Products.Archetypes.Widget import ComputedWidget, StringWidget
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import AddressField
 from bika.lims.browser.widgets import AddressWidget
-from bika.lims.content.schema.bikaschema import BikaSchema
 from bika.lims.content.schema import Storage
+from bika.lims.content.schema.bikaschema import BikaSchema
 
 Salutation = StringField(
     'Salutation',

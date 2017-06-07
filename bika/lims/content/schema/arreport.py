@@ -10,9 +10,9 @@ from Products.Archetypes.references import HoldingReference
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import DateTimeField, UIDReferenceField
 from bika.lims.browser.widgets import DateTimeWidget
+from bika.lims.content.schema import Storage
 from bika.lims.content.schema.bikaschema import BikaSchema
 from plone.app.blob.field import BlobField
-from bika.lims.content.schema import Storage
 
 AnalysisRequest = UIDReferenceField(
     'AnalysisRequest',

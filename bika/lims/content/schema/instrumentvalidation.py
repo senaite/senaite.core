@@ -8,8 +8,8 @@ from Products.Archetypes.Widget import StringWidget, TextAreaWidget
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import DateTimeField
 from bika.lims.browser.widgets import DateTimeWidget, ReferenceWidget
-from bika.lims.content.schema.bikaschema import BikaSchema
 from bika.lims.content.schema import Storage
+from bika.lims.content.schema.bikaschema import BikaSchema
 
 DateIssued = DateTimeField(
     'DateIssued',

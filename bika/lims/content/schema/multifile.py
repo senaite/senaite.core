@@ -5,9 +5,9 @@
 
 from Products.Archetypes import atapi
 from bika.lims import bikaMessageFactory as _
+from bika.lims.content.schema import Storage
 from bika.lims.content.schema.bikaschema import BikaSchema
 from plone.app.blob.field import FileField
-from bika.lims.content.schema import Storage
 
 DocumentID = atapi.StringField(
     'DocumentID',

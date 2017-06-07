@@ -11,8 +11,8 @@ from Products.Archetypes.Widget import BooleanWidget, ComputedWidget, \
     DecimalWidget, StringWidget, TextAreaWidget
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.widgets import AnalysisProfileAnalysesWidget
-from bika.lims.content.schema.bikaschema import BikaSchema
 from bika.lims.content.schema import Storage
+from bika.lims.content.schema.bikaschema import BikaSchema
 
 ProfileKey = StringField(
     'ProfileKey',

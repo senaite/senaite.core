@@ -8,8 +8,8 @@ from Products.Archetypes.Schema import Schema
 from Products.Archetypes.Widget import ComputedWidget
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.fields import UIDReferenceField
-from bika.lims.content.schema.bikaschema import BikaSchema
 from bika.lims.content.schema import Storage
+from bika.lims.content.schema.bikaschema import BikaSchema
 
 Container = ReferenceField(
     'Container',

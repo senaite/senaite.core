@@ -4,10 +4,10 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 from sys import maxint
 
-from Products.Archetypes.Field import ReferenceField, StringField, LinesField
+from Products.Archetypes.Field import LinesField, ReferenceField, StringField
 from Products.Archetypes.Schema import Schema
-from Products.Archetypes.Widget import ComputedWidget, StringWidget, \
-    ReferenceWidget, LinesWidget
+from Products.Archetypes.Widget import ComputedWidget, LinesWidget, \
+    ReferenceWidget, StringWidget
 from Products.Archetypes.references import HoldingReference
 from Products.DataGridField import CheckboxColumn
 from Products.DataGridField import Column
@@ -18,10 +18,10 @@ from Products.DataGridField import LinesColumn
 from Products.DataGridField import SelectColumn
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.widgets import ReferenceWidget as bReferenceWidget
+from bika.lims.content.schema import Storage
 from bika.lims.content.schema.bikaschema import BikaSchema
 from plone.app.blob.field import FileField as BlobFileField
 from zope.i18nmessageid import MessageFactory
-from bika.lims.content.schema import Storage
 
 _p = MessageFactory(u"plone")
 

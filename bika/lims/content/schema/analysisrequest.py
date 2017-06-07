@@ -21,9 +21,9 @@ from bika.lims.browser.widgets import ReferenceWidget
 from bika.lims.browser.widgets import RejectionWidget
 from bika.lims.browser.widgets import SelectionWidget
 from bika.lims.browser.widgets import SelectionWidget as BikaSelectionWidget
+from bika.lims.content.schema import Storage
 from bika.lims.content.schema.bikaschema import BikaSchema
 from bika.lims.permissions import EditARContact, SampleSample, ScheduleSampling
-from bika.lims.content.schema import Storage
 
 Contact = UIDReferenceField(
     'Contact',
