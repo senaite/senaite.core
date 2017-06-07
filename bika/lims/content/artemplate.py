@@ -21,6 +21,7 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import IARTemplate
 from zope.interface import implements
+from sys import maxint
 
 # SamplePoint and SampleType references are managed with
 # accessors and mutators below to get/set a string value
@@ -28,7 +29,7 @@ from zope.interface import implements
 # Form autocomplete widgets can then work with the Titles.
 SamplePoint = ReferenceField(
     'SamplePoint',
-    vocabulary_display_path_bound=sys.maxint,
+    vocabulary_display_path_bound=maxint,
     allowed_types=('SamplePoint',),
     relationship='ARTemplateSamplePoint',
     referenceClass=HoldingReference,
@@ -58,7 +59,7 @@ ComputedField(
 
 SampleType = ReferenceField(
     'SampleType',
-    vocabulary_display_path_bound=sys.maxint,
+    vocabulary_display_path_bound=maxint,
     allowed_types=('SampleType',),
     relationship='ARTemplateSampleType',
     referenceClass=HoldingReference,

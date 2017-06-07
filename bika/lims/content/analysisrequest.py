@@ -7,6 +7,7 @@
 """
 from decimal import Decimal
 from operator import methodcaller
+from sys import maxsize
 
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
@@ -102,7 +103,7 @@ Contact = UIDReferenceField(
 CCContact = ReferenceField(
     'CCContact',
     multiValued=1,
-    vocabulary_display_path_bound=sys.maxsize,
+    vocabulary_display_path_bound=maxsize,
     allowed_types=('Contact',),
     referenceClass=HoldingReference,
     relationship='AnalysisRequestCCContact',
@@ -226,7 +227,7 @@ Client = ReferenceField(
 
 Sample = ReferenceField(
     'Sample',
-    vocabulary_display_path_bound=sys.maxsize,
+    vocabulary_display_path_bound=maxsize,
     allowed_types=('Sample',),
     referenceClass=HoldingReference,
     relationship='AnalysisRequestSample',
@@ -463,7 +464,7 @@ Profiles = ReferenceField(
     multiValued=1,
     allowed_types=('AnalysisProfile',),
     referenceClass=HoldingReference,
-    vocabulary_display_path_bound=sys.maxsize,
+    vocabulary_display_path_bound=maxsize,
     relationship='AnalysisRequestAnalysisProfiles',
     mode="rw",
     read_permission=permissions.View,
@@ -1313,7 +1314,7 @@ Attachment = ReferenceField(
 
 Invoice = ReferenceField(
     'Invoice',
-    vocabulary_display_path_bound=sys.maxsize,
+    vocabulary_display_path_bound=maxsize,
     allowed_types=('Invoice',),
     referenceClass=HoldingReference,
     relationship='AnalysisRequestInvoice',

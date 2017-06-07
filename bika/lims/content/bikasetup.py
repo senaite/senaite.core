@@ -105,6 +105,7 @@ PasswordLifetime = IntegerField(
             "password expiry")
     )
 )
+
 AutoLogOff = IntegerField(
     'AutoLogOff',
     schemata="Security",
@@ -117,6 +118,7 @@ AutoLogOff = IntegerField(
             "0 disables automatic log-off")
     )
 )
+
 AllowClerksToEditClients = BooleanField(
     'AllowClerksToEditClients',
     schemata="Security",
@@ -125,6 +127,7 @@ AllowClerksToEditClients = BooleanField(
         label=_("Allow Lab Clerks to create and edit clients")
     )
 )
+
 RestrictWorksheetUsersAccess = BooleanField(
     'RestrictWorksheetUsersAccess',
     schemata="Security",
@@ -135,6 +138,7 @@ RestrictWorksheetUsersAccess = BooleanField(
             "If unchecked, analysts will have access to all worksheets.")
     )
 )
+
 RestrictWorksheetManagement = BooleanField(
     'RestrictWorksheetManagement',
     schemata="Security",
@@ -148,6 +152,7 @@ RestrictWorksheetManagement = BooleanField(
             "be checked and readonly.")
     )
 )
+
 ShowNewReleasesInfo = BooleanField(
     'ShowNewReleasesInfo',
     schemata="Security",
@@ -156,6 +161,7 @@ ShowNewReleasesInfo = BooleanField(
         label=_("Display an alert on new releases of Bika LIMS")
     )
 )
+
 ShowPrices = BooleanField(
     'ShowPrices',
     schemata="Accounting",
@@ -164,6 +170,7 @@ ShowPrices = BooleanField(
         label=_("Include and display pricing information")
     )
 )
+
 Currency = StringField(
     'Currency',
     schemata="Accounting",
@@ -177,6 +184,7 @@ Currency = StringField(
         format='select'
     )
 )
+
 DefaultCountry = StringField(
     'DefaultCountry',
     schemata="Accounting",
@@ -189,6 +197,7 @@ DefaultCountry = StringField(
         format='select'
     )
 )
+
 MemberDiscount = FixedPointField(
     'MemberDiscount',
     schemata="Accounting",
@@ -201,6 +210,7 @@ MemberDiscount = FixedPointField(
             "or associates deserving of this discount")
     )
 )
+
 VAT = FixedPointField(
     'VAT',
     schemata="Accounting",
@@ -212,6 +222,7 @@ VAT = FixedPointField(
             "system wide but can be overwrittem on individual items")
     )
 )
+
 DecimalMark = StringField(
     'DecimalMark',
     schemata="Results Reports",
@@ -223,6 +234,7 @@ DecimalMark = StringField(
         format='select'
     )
 )
+
 ScientificNotationReport = StringField(
     'ScientificNotationReport',
     schemata="Results Reports",
@@ -234,6 +246,7 @@ ScientificNotationReport = StringField(
         format='select'
     )
 )
+
 MinimumResults = IntegerField(
     'MinimumResults',
     schemata="Results Reports",
@@ -247,6 +260,7 @@ MinimumResults = IntegerField(
             "will be calculated and plotted")
     )
 )
+
 IncludePreviousFromBatch = BooleanField(
     'IncludePreviousFromBatch',
     schemata="Results Reports",
@@ -258,6 +272,7 @@ IncludePreviousFromBatch = BooleanField(
             "Analysis Requests, they will be displayed in the report.")
     )
 )
+
 BatchEmail = IntegerField(
     'BatchEmail',
     schemata="Results Reports",
@@ -271,6 +286,7 @@ BatchEmail = IntegerField(
             "clients who prefer fewer results per email")
     )
 )
+
 ResultFooter = TextField(
     'ResultFooter',
     schemata="Results Reports",
@@ -284,6 +300,7 @@ ResultFooter = TextField(
         append_only=False,
     )
 )
+
 PrintingWorkflowEnabled = BooleanField(
     'PrintingWorkflowEnabled',
     schemata="Results Reports",
@@ -296,6 +313,7 @@ PrintingWorkflowEnabled = BooleanField(
             "Disabled by default.")
     )
 )
+
 SamplingWorkflowEnabled = BooleanField(
     'SamplingWorkflowEnabled',
     schemata="Analyses",
@@ -306,6 +324,7 @@ SamplingWorkflowEnabled = BooleanField(
             "Select this to activate the sample collection workflow steps.")
     )
 )
+
 ScheduleSamplingEnabled = BooleanField(
     'ScheduleSamplingEnabled',
     schemata="Analyses",
@@ -317,6 +336,7 @@ ScheduleSamplingEnabled = BooleanField(
             "sampling. This functionality only takes effect when 'Sampling "
             "workflow' is active"))
 )
+
 ShowPartitions = BooleanField(
     'ShowPartitions',
     schemata="Analyses",
@@ -326,6 +346,7 @@ ShowPartitions = BooleanField(
         description=_("Turn this on if you want to work with sample partitions")
     )
 )
+
 CategoriseAnalysisServices = BooleanField(
     'CategoriseAnalysisServices',
     schemata="Analyses",
@@ -337,6 +358,7 @@ CategoriseAnalysisServices = BooleanField(
             "when the list is long")
     )
 )
+
 EnableARSpecs = BooleanField(
     'EnableARSpecs',
     schemata="Analyses",
@@ -348,6 +370,7 @@ EnableARSpecs = BooleanField(
             "Analysis Request."),
     )
 )
+
 DefaultARSpecs = StringField(
     'DefaultARSpecs',
     schemata="Analyses",
@@ -362,6 +385,7 @@ DefaultARSpecs = StringField(
         format='select'
     )
 )
+
 ExponentialFormatThreshold = IntegerField(
     'ExponentialFormatThreshold',
     schemata="Analyses",
@@ -376,6 +400,7 @@ ExponentialFormatThreshold = IntegerField(
             "individual Analysis Services.")
     )
 )
+
 EnableAnalysisRemarks = BooleanField(
     'EnableAnalysisRemarks',
     schemata="Analyses",
@@ -387,6 +412,7 @@ EnableAnalysisRemarks = BooleanField(
             "analysis in results entry view")
     )
 )
+
 SelfVerificationEnabled = BooleanField(
     'SelfVerificationEnabled',
     schemata="Analyses",
@@ -402,6 +428,7 @@ SelfVerificationEnabled = BooleanField(
             "default, disabled."),
     )
 )
+
 NumberOfRequiredVerifications = IntegerField(
     'NumberOfRequiredVerifications',
     schemata="Analyses",
@@ -416,23 +443,22 @@ NumberOfRequiredVerifications = IntegerField(
         format="select",
     )
 )
-TypeOfmultiVerification = StringField('TypeOfmultiVerification',
-                                      schemata="Analyses",
-                                      default='self_multi_enabled',
-                                      vocabulary=MULTI_VERIFICATION_TYPE,
-                                      widget=SelectionWidget(
-                                          label=_("Multi Verification type"),
-                                          description=_(
-                                              "Choose type of multiple "
-                                              "verification for the same "
-                                              "user.This setting can "
-                                              "enable/disable "
-                                              "verifying/consecutively "
-                                              "verifyingmore than once for "
-                                              "the same user."),
-                                          format='select',
-                                      )
-                                      ),
+
+TypeOfmultiVerification = StringField(
+    'TypeOfmultiVerification',
+    schemata="Analyses",
+    default='self_multi_enabled',
+    vocabulary=MULTI_VERIFICATION_TYPE,
+    widget=SelectionWidget(
+        label=_("Multi Verification type"),
+        description=_(
+            "Choose type of multiple verification for the same user.This "
+            "setting can enable/disable verifying/consecutively verifyingmore "
+            "than once for the same user."),
+        format='select',
+    )
+)
+
 DryMatterService = ReferenceField(
     'DryMatterService',
     schemata="Analyses",
@@ -447,6 +473,7 @@ DryMatterService = ReferenceField(
         description=_("The analysis to be used for determining dry matter.")
     )
 )
+
 ARImportOption = LinesField(
     'ARImportOption',
     schemata="Analyses",
@@ -460,6 +487,7 @@ ARImportOption = LinesField(
             "keywords are used to select multiple analysis services together")
     )
 )
+
 ARAttachmentOption = StringField(
     'ARAttachmentOption',
     schemata="Analyses",
@@ -473,6 +501,7 @@ ARAttachmentOption = StringField(
             "attachments are required, permitted or not per analysis request")
     )
 )
+
 AnalysisAttachmentOption = StringField(
     'AnalysisAttachmentOption',
     schemata="Analyses",
@@ -487,6 +516,7 @@ AnalysisAttachmentOption = StringField(
             "configuration")
     )
 )
+
 DefaultSampleLifetime = DurationField(
     'DefaultSampleLifetime',
     schemata="Analyses",
@@ -500,6 +530,7 @@ DefaultSampleLifetime = DurationField(
             "individual sample type in the sample types setup")
     )
 )
+
 DefaultTurnaroundTime = DurationField(
     'DefaultTurnaroundTime',
     schemata="Analyses",
@@ -513,6 +544,7 @@ DefaultTurnaroundTime = DurationField(
             "service does not specify a turnaround time.")
     )
 )
+
 ResultsDecimalMark = StringField(
     'ResultsDecimalMark',
     schemata="Analyses",
@@ -524,6 +556,7 @@ ResultsDecimalMark = StringField(
         format='select'
     )
 )
+
 ScientificNotationResults = StringField(
     'ScientificNotationResults',
     schemata="Analyses",
@@ -535,6 +568,7 @@ ScientificNotationResults = StringField(
         format='select'
     )
 )
+
 AutoImportInterval = IntegerField(
     'AutoImportInterval',
     schemata="Analyses",
@@ -547,6 +581,7 @@ AutoImportInterval = IntegerField(
             "value (Minutes). Any value below 10, will disable Auto-Importing.")
     )
 )
+
 WorksheetLayout = StringField(
     'WorksheetLayout',
     schemata="Analyses",
@@ -562,6 +597,7 @@ WorksheetLayout = StringField(
         format='select'
     )
 )
+
 DashboardByDefault = BooleanField(
     'DashboardByDefault',
     schemata="Analyses",
@@ -572,6 +608,7 @@ DashboardByDefault = BooleanField(
             "Select this to activate the dashboard as a default front page.")
     )
 )
+
 LandingPage = ReferenceField(
     'LandingPage',
     schemata="Analyses",
@@ -593,6 +630,7 @@ LandingPage = ReferenceField(
         base_query={'review_state': 'published'},
     )
 )
+
 AutoPrintStickers = StringField(
     'AutoPrintStickers',
     schemata="Stickers",
@@ -607,6 +645,7 @@ AutoPrintStickers = StringField(
             "Select 'None' to disable automatic printing")
     )
 )
+
 AutoStickerTemplate = StringField(
     'AutoStickerTemplate',
     schemata="Stickers",
@@ -619,6 +658,7 @@ AutoStickerTemplate = StringField(
             "enabled")
     )
 )
+
 SmallStickerTemplate = StringField(
     'SmallStickerTemplate',
     schemata="Stickers",
@@ -632,6 +672,7 @@ SmallStickerTemplate = StringField(
             "default")
     )
 )
+
 LargeStickerTemplate = StringField(
     'LargeStickerTemplate',
     schemata="Stickers",
@@ -645,6 +686,7 @@ LargeStickerTemplate = StringField(
             "default")
     )
 )
+
 Prefixes = PrefixesField(
     'Prefixes',
     schemata="ID Server",
@@ -689,6 +731,7 @@ Prefixes = PrefixesField(
         allowDelete=False
     )
 )
+
 YearInPrefix = BooleanField(
     'YearInPrefix',
     schemata="ID Server",
@@ -698,6 +741,7 @@ YearInPrefix = BooleanField(
         description=_("Adds a two-digit year after the ID prefix")
     )
 )
+
 SampleIDPadding = IntegerField(
     'SampleIDPadding',
     schemata="ID Server",
@@ -708,6 +752,7 @@ SampleIDPadding = IntegerField(
         description=_("The length of the zero-padding for Sample IDs")
     )
 )
+
 SampleIDSequenceStart = IntegerField(
     'SampleIDSequenceStart',
     schemata="ID Server",
@@ -721,6 +766,7 @@ SampleIDSequenceStart = IntegerField(
             "resultant gap between IDs cannot be filled.")
     )
 )
+
 ARIDPadding = IntegerField(
     'ARIDPadding',
     schemata="ID Server",
@@ -732,6 +778,7 @@ ARIDPadding = IntegerField(
             "The length of the zero-padding for the AR number in AR IDs")
     )
 )
+
 ExternalIDServer = BooleanField(
     'ExternalIDServer',
     schemata="ID Server",
@@ -743,6 +790,7 @@ ExternalIDServer = BooleanField(
             "configurable separately in each Bika site")
     )
 )
+
 IDServerURL = StringField(
     'IDServerURL',
     schemata="ID Server",
@@ -751,6 +799,7 @@ IDServerURL = StringField(
         description=_("The full URL: http://URL/path:port")
     )
 )
+
 RejectionReasons = RecordsField(
     'RejectionReasons',
     schemata="Analyses",
@@ -762,6 +811,7 @@ RejectionReasons = RecordsField(
                       "these objects.")
     )
 )
+
 NotifyOnRejection = BooleanField(
     'NotifyOnRejection',
     schemata="Analyses",
@@ -773,6 +823,7 @@ NotifyOnRejection = BooleanField(
                       "Request is rejected.")
     )
 )
+
 AllowDepartmentFiltering = BooleanField(
     'AllowDepartmentFiltering',
     schemata="Analyses",
@@ -786,6 +837,7 @@ AllowDepartmentFiltering = BooleanField(
                       "will be displayed too. By default, disabled.")
     )
 )
+
 DisplayAdvancedFilterBarForAnalysisRequests = BooleanField(
     'DisplayAdvancedFilterBarForAnalysisRequests',
     schemata="Analyses",
@@ -800,6 +852,7 @@ DisplayAdvancedFilterBarForAnalysisRequests = BooleanField(
             "Warning: This may affect the listing performance."),
     )
 )
+
 DisplayAdvancedFilterBarForSamples = BooleanField(
     'DisplayAdvancedFilterBarForSamples',
     schemata="Analyses",
@@ -813,6 +866,7 @@ DisplayAdvancedFilterBarForSamples = BooleanField(
             "Warning: This may affect the listing performance."),
     )
 )
+
 DisplayAdvancedFilterBarForAnalyses = BooleanField(
     'DisplayAdvancedFilterBarForAnalyses',
     schemata="Analyses",

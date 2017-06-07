@@ -208,6 +208,14 @@ InheritedObjectsUI = InheritedObjectsUIField(
 )
 
 schema = BikaFolderSchema.copy() + Schema((
+    BatchID,
+    Client,
+    ClientBatchID,
+    BatchDate,
+    BatchLabels,
+    Remarks,
+    InheritedObjects,
+    InheritedObjectsUI
 ))
 
 schema['title'].required = False

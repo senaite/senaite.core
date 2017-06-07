@@ -83,7 +83,8 @@ SampleTypeTitle = ComputedField(
     widget=ComputedWidget(
         visible=False,
     )
-),
+)
+
 Composite = BooleanField(
     'Composite',
     default=False,

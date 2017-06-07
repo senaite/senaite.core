@@ -12,17 +12,16 @@ from bika.lims.fields import *
 from bika.lims.interfaces import ISubGroup
 from zope.interface import implements
 
-SortKey = ExtStringField(
-    'SortKey',
-    widget=StringWidget(
-        label=_("Sort Key"),
-        description=_("Subgroups are sorted with this key in group views")
-    )
-)
-
 schema = BikaSchema.copy() + Schema((
-    SortKey
+    ExtStringField(
+        'SortKey',
+        widget=StringWidget(
+            label=_("Sort Key"),
+            description=_("Subgroups are sorted with this key in group views")
+        )
+    ),
 ))
+
 schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 

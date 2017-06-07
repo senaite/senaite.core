@@ -67,7 +67,6 @@ SortKey = FloatField(
 schema = BikaSchema.copy() + Schema((
     Comments,
     Department,
-    DepartmentTitle,
     SortKey,
 ))
 
