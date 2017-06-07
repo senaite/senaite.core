@@ -6,99 +6,18 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from AccessControl import ClassSecurityInfo
-
-from Products.Archetypes.Field import BooleanField, FixedPointField, \
-    StringField
-from Products.Archetypes.Schema import Schema
 from Products.CMFCore.utils import getToolByName
-from bika.lims import bikaMessageFactory as _, logger
-from bika.lims import deprecated
-from bika.lims.browser.fields import UIDReferenceField
-from bika.lims.browser.widgets import DecimalWidget
 from bika.lims.content.abstractanalysis import AbstractAnalysis
-from bika.lims.content.abstractanalysis import schema
+from bika.lims.content.abstractroutine import schema
+from bika.lims.content.reflexrule import doReflexRuleAction
+from bika.lims.content.schema.abstractroutineanalysis import schema
 from bika.lims.interfaces import IAnalysis, IRoutineAnalysis, \
     ISamplePrepWorkflow
-from bika.lims.workflow import getTransitionDate
 from bika.lims.workflow import doActionFor
-from bika.lims.workflow import isBasicTransitionAllowed
-from bika.lims.workflow import isTransitionAllowed
-from bika.lims.workflow import wasTransitionPerformed
+from bika.lims.workflow import getTransitionDate
 from bika.lims.workflow import skip
+from bika.lims.workflow import wasTransitionPerformed
 from zope.interface import implements
-from bika.lims.content.reflexrule import doReflexRuleAction
-
-# The physical sample partition linked to the Analysis.
-SamplePartition = UIDReferenceField(
-    'SamplePartition',
-    required=0,
-    allowed_types=('SamplePartition',)
-)
-
-# True if the analysis is created by a reflex rule
-IsReflexAnalysis = BooleanField(
-    'IsReflexAnalysis',
-    default=False,
-    required=0
-)
-
-# This field contains the original analysis which was reflected
-OriginalReflexedAnalysis = UIDReferenceField(
-    'OriginalReflexedAnalysis',
-    required=0,
-    allowed_types=('Analysis',)
-)
-
-# This field contains the analysis which has been reflected following
-# a reflex rule
-ReflexAnalysisOf = UIDReferenceField(
-    'ReflexAnalysisOf',
-    required=0,
-    allowed_types=('Analysis',)
-)
-
-# Which is the Reflex Rule action that has created this analysis
-ReflexRuleAction = StringField(
-    'ReflexRuleAction',
-    required=0,
-    default=0
-)
-
-# Which is the 'local_id' inside the reflex rule
-ReflexRuleLocalID = StringField(
-    'ReflexRuleLocalID',
-    required=0,
-    default=0
-)
-
-# Reflex rule triggered actions which the current analysis is responsible for.
-# Separated by '|'
-ReflexRuleActionsTriggered = StringField(
-    'ReflexRuleActionsTriggered',
-    required=0,
-    default=''
-)
-
-# The actual uncertainty for this analysis' result, populated when the result
-# is submitted.
-Uncertainty = FixedPointField(
-    'Uncertainty',
-    precision=10,
-    widget=DecimalWidget(
-        label=_("Uncertainty")
-    )
-)
-
-schema = schema.copy() + Schema((
-    IsReflexAnalysis,
-    OriginalReflexedAnalysis,
-    ReflexAnalysisOf,
-    ReflexRuleAction,
-    ReflexRuleActionsTriggered,
-    ReflexRuleLocalID,
-    SamplePartition,
-    Uncertainty,
-))
 
 
 class AbstractRoutineAnalysis(AbstractAnalysis):
@@ -227,7 +146,8 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         """
         maxtime = self.getMaxTimeAllowed()
         if not maxtime:
-            maxtime = getToolByName(self, 'bika_setup').getDefaultTurnaroundTime()
+            maxtime = getToolByName(self,
+                                    'bika_setup').getDefaultTurnaroundTime()
         max_days = float(maxtime.get('days', 0)) + (
             (float(maxtime.get('hours', 0)) * 3600 +
              float(maxtime.get('minutes', 0)) * 60)
@@ -361,7 +281,6 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
                 rr['uid'] = self.UID()
         return rr
 
-
     @security.public
     def getSiblings(self):
         """Return the siblings analyses, using the parent to which the current
@@ -387,7 +306,7 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
     def getDependencies(self):
         """Return a list of siblings who we depend on to calculate our result.
         """
-        calc  = self.getCalculation()
+        calc = self.getCalculation()
         if not calc:
             return []
 

@@ -12,8 +12,7 @@ from bika.lims.config import PROJECTNAME
 from bika.lims.interfaces import IBatchFolder, IHaveNoBreadCrumbs
 from plone.app.folder import folder
 from zope.interface import implements
-
-schema = folder.ATFolderSchema.copy()
+from bika.lims.content.schema.batchfolder import schema
 
 
 class BatchFolder(folder.ATFolder):

@@ -4,7 +4,6 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 import csv
-import sys
 
 import transaction
 from AccessControl import ClassSecurityInfo
@@ -12,24 +11,15 @@ from DateTime.DateTime import DateTime
 from Products.Archetypes import atapi
 from Products.Archetypes.event import ObjectInitializedEvent
 from Products.Archetypes.public import *
-from Products.Archetypes.references import HoldingReference
 from Products.Archetypes.utils import addStatusMessage
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType
-from Products.DataGridField import CheckboxColumn
-from Products.DataGridField import Column
-from Products.DataGridField import DataGridField
-from Products.DataGridField import DataGridWidget
-from Products.DataGridField import DateColumn
-from Products.DataGridField import LinesColumn
-from Products.DataGridField import SelectColumn
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser import ulocalized_time
-from bika.lims.browser.widgets import ReferenceWidget as bReferenceWidget
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.analysisrequest import schema as ar_schema
-from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.sample import schema as sample_schema
+from bika.lims.content.schema.arimport import schema
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IARImport, IClient
 from bika.lims.utils import tmpID
@@ -39,192 +29,12 @@ from collective.progressbar.events import InitialiseProgressBar
 from collective.progressbar.events import ProgressBar
 from collective.progressbar.events import ProgressState
 from collective.progressbar.events import UpdateProgressEvent
-from plone.app.blob.field import FileField as BlobFileField
 from zope import event
 from zope.event import notify
 from zope.i18nmessageid import MessageFactory
 from zope.interface import implements
 
 _p = MessageFactory(u"plone")
-
-OriginalFile = BlobFileField(
-    'OriginalFile',
-    widget=ComputedWidget(
-        visible=False
-    ),
-)
-
-Filename = StringField(
-    'Filename',
-    widget=StringWidget(
-        label=_('Original Filename'),
-        visible=True
-    ),
-)
-
-NrSamples = StringField(
-    'NrSamples',
-    widget=StringWidget(
-        label=_('Number of samples'),
-        visible=True
-    ),
-)
-
-ClientName = StringField(
-    'ClientName',
-    searchable=True,
-    widget=StringWidget(
-        label=_("Client Name"),
-    ),
-)
-
-ClientID = StringField(
-    'ClientID',
-    searchable=True,
-    widget=StringWidget(
-        label=_('Client ID'),
-    ),
-)
-
-ClientOrderNumber = StringField(
-    'ClientOrderNumber',
-    searchable=True,
-    widget=StringWidget(
-        label=_('Client Order Number'),
-    ),
-)
-
-ClientReference = StringField(
-    'ClientReference',
-    searchable=True,
-    widget=StringWidget(
-        label=_('Client Reference'),
-    ),
-)
-
-Contact = ReferenceField(
-    'Contact',
-    allowed_types=('Contact',),
-    relationship='ARImportContact',
-    default_method='getContactUIDForUser',
-    referenceClass=HoldingReference,
-    vocabulary_display_path_bound=sys.maxint,
-    widget=ReferenceWidget(
-        label=_('Primary Contact'),
-        size=20,
-        visible=True,
-        base_query={'inactive_state': 'active'},
-        showOn=True,
-        popup_width='300px',
-        colModel=[{'columnName': 'UID', 'hidden': True},
-                  {'columnName': 'Fullname', 'width': '100',
-                   'label': _('Name')}],
-    ),
-)
-
-Batch = ReferenceField(
-    'Batch',
-    allowed_types=('Batch',),
-    relationship='ARImportBatch',
-    widget=bReferenceWidget(
-        label=_('Batch'),
-        visible=True,
-        catalog_name='bika_catalog',
-        base_query={'review_state': 'open', 'cancellation_state': 'active'},
-        showOn=True,
-    ),
-)
-
-CCContacts = DataGridField(
-    'CCContacts',
-    allow_insert=False,
-    allow_delete=False,
-    allow_reorder=False,
-    allow_empty_rows=False,
-    columns=('CCNamesReport',
-             'CCEmailsReport',
-             'CCNamesInvoice',
-             'CCEmailsInvoice'),
-    default=[{'CCNamesReport': [],
-              'CCEmailsReport': [],
-              'CCNamesInvoice': [],
-              'CCEmailsInvoice': []
-              }],
-    widget=DataGridWidget(
-        columns={
-            'CCNamesReport': LinesColumn('Report CC Contacts'),
-            'CCEmailsReport': LinesColumn('Report CC Emails'),
-            'CCNamesInvoice': LinesColumn('Invoice CC Contacts'),
-            'CCEmailsInvoice': LinesColumn('Invoice CC Emails')
-        }
-    )
-)
-
-SampleData = DataGridField(
-    'SampleData',
-    allow_insert=True,
-    allow_delete=True,
-    allow_reorder=False,
-    allow_empty_rows=False,
-    allow_oddeven=True,
-    columns=('ClientSampleID',
-             'SamplingDate',
-             'DateSampled',
-             'SamplePoint',
-             'SampleMatrix',
-             'SampleType',  # not a schema field!
-             'ContainerType',  # not a schema field!
-             'ReportDryMatter',
-             'Analyses',  # not a schema field!
-             'Profiles'  # not a schema field!
-             ),
-    widget=DataGridWidget(
-        label=_('Samples'),
-        columns={
-            'ClientSampleID': Column('Sample ID'),
-            'SamplingDate': DateColumn('Sampling Date'),
-            'DateSampled': DateColumn('Date Sampled'),
-            'SamplePoint': SelectColumn(
-                'Sample Point', vocabulary='Vocabulary_SamplePoint'),
-            'SampleMatrix': SelectColumn(
-                'Sample Matrix', vocabulary='Vocabulary_SampleMatrix'),
-            'SampleType': SelectColumn(
-                'Sample Type', vocabulary='Vocabulary_SampleType'),
-            'ContainerType': SelectColumn(
-                'Container', vocabulary='Vocabulary_ContainerType'),
-            'ReportDryMatter': CheckboxColumn('Dry'),
-            'Analyses': LinesColumn('Analyses'),
-            'Profiles': LinesColumn('Profiles'),
-        }
-    )
-)
-
-Errors = LinesField(
-    'Errors',
-    widget=LinesWidget(
-        label=_('Errors'),
-        rows=10,
-    )
-)
-
-schema = BikaSchema.copy() + Schema((
-    OriginalFile,
-    Filename,
-    NrSamples,
-    ClientName,
-    ClientID,
-    ClientOrderNumber,
-    ClientReference,
-    Contact,
-    CCContacts,
-    Batch,
-    SampleData,
-    Errors,
-))
-
-schema['title'].validators = ()
-# Update the validation layer after change the validator in runtime
-schema['title']._validationLayer()
 
 
 class ARImport(BaseFolder):
@@ -313,7 +123,8 @@ class ARImport(BaseFolder):
             if container:
                 if container.portal_type == 'ContainerType':
                     containers = container.getContainers()
-                # XXX And so we must calculate the best container for this partition
+                # XXX And so we must calculate the best container for this
+                # partition
                 part.edit(Container=containers[0])
 
             # Profiles are titles, profile keys, or UIDS: convert them to UIDs.
@@ -422,7 +233,7 @@ class ARImport(BaseFolder):
         if contact:
             self.schema['Contact'].set(self, contact)
         else:
-            self.error("Specified contact '%s' does not exist; using '%s'"%
+            self.error("Specified contact '%s' does not exist; using '%s'" %
                        (v, contacts[0].Title()))
             self.schema['Contact'].set(self, contacts[0])
         del (headers['Contact'])
@@ -928,7 +739,8 @@ class ARImport(BaseFolder):
                 brains[0].getObject()
             brains = bsc(portal_type='ContainerType', UID=row['Container'])
             if brains:
-                # XXX Cheating.  The calculation of capacity vs. volume  is not done.
+                # XXX Cheating.  The calculation of capacity vs. volume  is
+                # not done.
                 return brains[0].getObject()
         return None
 

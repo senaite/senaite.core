@@ -4,14 +4,9 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes import atapi
 from Products.Archetypes.public import BaseContent
 from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.content.schema.instrumentlocation import schema
 from bika.lims.interfaces import IInstrumentLocation
 from zope.interface import implements
-
-schema = BikaSchema.copy()
-
-schema['description'].schemata = 'default'
-schema['description'].widget.visible = True
 
 
 class InstrumentLocation(BaseContent):

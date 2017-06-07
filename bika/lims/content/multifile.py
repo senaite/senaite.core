@@ -5,68 +5,10 @@
 
 from Products.Archetypes import atapi
 from Products.Archetypes.public import BaseContent
-from bika.lims import bikaMessageFactory as _
 from bika.lims import config
-from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.content.schema.multifile import schema
 from bika.lims.interfaces import IMultifile
-from plone.app.blob.field import FileField
 from zope.interface import implements
-
-DocumentID = atapi.StringField(
-    'DocumentID',
-    required=1,
-    validators=('uniquefieldvalidator',),
-    widget=atapi.StringWidget(
-        label=_("Document ID")
-    )
-)
-
-File = FileField(
-    'File',
-    required=1,
-    widget=atapi.FileWidget(
-        label=_("Document"),
-        description=_("File upload ")
-    )
-)
-
-DocumentVersion = atapi.StringField(
-    'DocumentVersion',
-    widget=atapi.StringWidget(
-        label=_("Document Version")
-    )
-)
-
-DocumentLocation = atapi.StringField(
-    'DocumentLocation',
-    widget=atapi.StringWidget(
-        label=_("Document Location"),
-        description=_("Location where the document set is shelved")
-    )
-)
-
-DocumentType = atapi.StringField(
-    'DocumentType',
-    required=1,
-    widget=atapi.StringWidget(
-        label=_("Document Type"),
-        description=_(
-            "Type of document (e.g. user manual, instrument specifications, "
-            "image, ...)")
-    )
-)
-
-schema = BikaSchema.copy() + atapi.Schema((
-    DocumentID,
-    File,
-    DocumentVersion,
-    DocumentLocation,
-    DocumentType
-))
-
-TitleField = schema['title']
-TitleField.required = 0
-TitleField.widget.visible = False
 
 
 class Multifile(BaseContent):

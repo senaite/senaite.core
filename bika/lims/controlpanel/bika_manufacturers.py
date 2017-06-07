@@ -15,7 +15,7 @@ from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from plone.app.layout.globals.interfaces import IViewView
-from bika.lims.content.bikaschema import BikaFolderSchema
+from bika.lims.content.schema.bikaschema import BikaFolderSchema
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from bika.lims.interfaces import IManufacturers

@@ -1,29 +1,11 @@
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes import listTypes
-from Products.Archetypes.Field import LinesField
-from Products.Archetypes.Schema import Schema
-from Products.Archetypes.Widget import PicklistWidget
 from Products.Archetypes.public import BaseContent
 from Products.Archetypes.public import registerType
 from Products.CMFCore.utils import getToolByName
-from bika.lims import PROJECTNAME, bikaMessageFactory as _
-from bika.lims.content.bikaschema import BikaSchema
+from bika.lims import PROJECTNAME
+from bika.lims.content.schema.identifiertype import schema
 from bika.lims.interfaces import IHaveIdentifiers
-
-PortalTypes = LinesField(
-    'PortalTypes',
-    vocabulary='getPortalTypes',
-    widget=PicklistWidget(
-        label=_("Portal Types"),
-        description=_("Select the types that this ID is used to identify."),
-    ),
-)
-
-schema = BikaSchema.copy() + Schema((
-    PortalTypes,
-))
-schema['description'].widget.visible = True
-schema['description'].schemata = 'default'
 
 
 class IdentifierType(BaseContent):

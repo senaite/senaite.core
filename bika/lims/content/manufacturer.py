@@ -6,14 +6,9 @@
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
 from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.content.schema.manufacturer import schema
 from bika.lims.interfaces import IManufacturer
 from zope.interface import implements
-
-schema = BikaSchema.copy()
-
-schema['description'].schemata = 'default'
-schema['description'].widget.visible = True
 
 
 class Manufacturer(BaseContent):

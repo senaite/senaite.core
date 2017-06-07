@@ -6,11 +6,10 @@
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
 from bika.lims.config import PROJECTNAME
+from bika.lims.content.schema.reportfolder import schema
 from bika.lims.interfaces import IHaveNoBreadCrumbs, IReportFolder
-from plone.app.folder.folder import ATFolder, ATFolderSchema
+from plone.app.folder.folder import ATFolder
 from zope.interface import implements
-
-schema = ATFolderSchema.copy()
 
 
 class ReportFolder(ATFolder):

@@ -7,11 +7,7 @@ from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import BaseContent
 from Products.Archetypes.public import registerType
 from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
-
-schema = BikaSchema.copy()
-schema['description'].widget.visible = False
-schema['description'].schemata = 'default'
+from bika.lims.content.schema.batchlabel import schema
 
 
 class BatchLabel(BaseContent):

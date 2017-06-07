@@ -14,62 +14,17 @@ from Products.Archetypes import atapi
 from Products.Archetypes.utils import DisplayList
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims import bikaMessageFactory as _
 from bika.lims import logger
 from bika.lims.config import ManageClients
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.person import Person
+from bika.lims.content.schema.contact import schema
 from bika.lims.interfaces import IContact
 from bika.lims.utils import isActive
 from plone import api
 from zope.interface import implements
 
 ACTIVE_STATES = ["active"]
-
-PublicationPreference = atapi.LinesField(
-    'PublicationPreference',
-    vocabulary_factory='bika.lims.vocabularies.CustomPubPrefVocabularyFactory',
-    schemata='Publication preference',
-    widget=atapi.MultiSelectionWidget(
-        label=_("Publication preference"),
-    )
-)
-AttachmentsPermitted = atapi.BooleanField(
-    'AttachmentsPermitted',
-    default=False,
-    schemata='Publication preference',
-    widget=atapi.BooleanWidget(
-        label=_("Results attachments permitted"),
-        description=_(
-            "File attachments to results, e.g. microscope photos, will be "
-            "included in emails to recipients if this option is enabled")
-    )
-)
-CCContact = atapi.ReferenceField(
-    'CCContact',
-    schemata='Publication preference',
-    vocabulary='getContacts',
-    multiValued=1,
-    allowed_types=('Contact',),
-    relationship='ContactContact',
-    widget=atapi.ReferenceWidget(
-        checkbox_bound=0,
-        label=_("Contacts to CC"),
-    )
-)
-
-schema = Person.schema.copy() + atapi.Schema((
-    PublicationPreference,
-    AttachmentsPermitted,
-    CCContact
-))
-
-schema['JobTitle'].schemata = 'default'
-schema['Department'].schemata = 'default'
-# Don't make title required - it will be computed from the Person's Fullname
-schema['title'].required = 0
-schema['title'].widget.visible = False
-schema.moveField('CCContact', before='AttachmentsPermitted')
 
 
 class Contact(Person):

@@ -7,80 +7,12 @@ from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
 from Products.Archetypes.public import *
 from Products.CMFCore import permissions
-from bika.lims import bikaMessageFactory as _
-from bika.lims.config import PRICELIST_TYPES, PROJECTNAME
-from bika.lims.content.bikaschema import BikaFolderSchema
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.schema.pricelist import schema
 from bika.lims.interfaces import IPricelist
 from persistent.mapping import PersistentMapping
 from plone.app.folder import folder
 from zope.interface import implements
-
-Type = StringField(
-    'Type',
-    required=1,
-    vocabulary=PRICELIST_TYPES,
-    widget=SelectionWidget(
-        format='select',
-        label=_("Pricelist for")
-    )
-)
-BulkDiscount = BooleanField(
-    'BulkDiscount',
-    default=False,
-    widget=SelectionWidget(
-        label=_("Bulk discount applies")
-    )
-)
-BulkPrice = FixedPointField(
-    'BulkPrice',
-    widget=DecimalWidget(
-        label=_("Discount %"),
-        description=_("Enter discount percentage value")
-    )
-)
-Descriptions = BooleanField(
-    'Descriptions',
-    default=False,
-    widget=BooleanWidget(
-        label=_("Include descriptions"),
-        description=_("Select if the descriptions should be included")
-    )
-)
-Remarks = TextField(
-    'Remarks',
-    searchable=True,
-    default_content_type='text/plain',
-    allowed_content_types=('text/plain',),
-    default_output_type="text/plain",
-    widget=TextAreaWidget(
-        macro="bika_widgets/remarks",
-        label=_("Remarks"),
-        append_only=True
-    )
-)
-
-schema = BikaFolderSchema.copy() + Schema((
-    Type,
-    BulkDiscount,
-    BulkPrice,
-    Descriptions,
-    Remarks
-))
-
-Field = schema['title']
-Field.required = 1
-Field.widget.visible = True
-
-Field = schema['effectiveDate']
-Field.schemata = 'default'
-Field.required = 0  # "If no date is selected the item will be published
-# immediately."
-Field.widget.visible = True
-
-Field = schema['expirationDate']
-Field.schemata = 'default'
-Field.required = 0  # "If no date is chosen, it will never expire."
-Field.widget.visible = True
 
 
 def apply_discount(price=None, discount=None):

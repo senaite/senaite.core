@@ -14,6 +14,7 @@ from bika.lims.permissions import AddMethod
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from plone.app.layout.globals.interfaces import IViewView
+from bika.lims.content.schema.methods import schema
 from zope.interface.declarations import implements
 
 
@@ -134,9 +135,6 @@ class MethodsView(BikaListingView):
                 img_url if obj.isManualEntryOfResults() else ' '
 
         return items
-
-
-schema = ATFolderSchema.copy()
 
 
 class Methods(ATFolder):

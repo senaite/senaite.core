@@ -9,40 +9,9 @@ from operator import itemgetter
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
 from Products.CMFCore.utils import getToolByName
-from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.fields import DurationField
-from bika.lims.browser.widgets import DurationWidget
-from bika.lims.config import PRESERVATION_CATEGORIES, PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.schema.preservation import schema
 from plone.protect import CheckAuthenticator
-
-Category = StringField(
-    'Category',
-    default='lab',
-    vocabulary=PRESERVATION_CATEGORIES,
-    widget=SelectionWidget(
-        format='flex',
-        label=_("Preservation Category")
-    )
-)
-RetentionPeriod = DurationField(
-    'RetentionPeriod',
-    widget=DurationWidget(
-        label=_("Retention Period"),
-        description=_(
-            'Once preserved, the sample must be disposed of within this time '
-            'period.  If not specified, the sample type retention period will '
-            'be used.')
-    )
-)
-
-schema = BikaSchema.copy() + Schema((
-    Category,
-    RetentionPeriod
-))
-
-schema['description'].widget.visible = True
-schema['description'].schemata = 'default'
 
 
 class Preservation(BaseContent):

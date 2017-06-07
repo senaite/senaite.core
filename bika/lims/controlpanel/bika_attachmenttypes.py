@@ -13,7 +13,7 @@ from bika.lims.browser.bika_listing import BikaListingView
 from bika.lims.config import PROJECTNAME
 from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
-from bika.lims.content.bikaschema import BikaFolderSchema
+from bika.lims.content.schema.bikaschema import BikaFolderSchema
 from plone.app.layout.globals.interfaces import IViewView
 from bika.lims.interfaces import IAttachmentTypes
 from plone.app.content.browser.interfaces import IFolderContentsView

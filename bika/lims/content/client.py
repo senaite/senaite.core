@@ -5,150 +5,18 @@
 
 """Client - the main organisational entity in bika.
 """
-import sys
 
 from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims import bikaMessageFactory as _
 from bika.lims.config import *
 from bika.lims.content.organisation import Organisation
+from bika.lims.content.schema.organisation import schema
 from bika.lims.interfaces import IClient
 from bika.lims.workflow import InactiveState, StateFlow, getCurrentState
 from zope.interface import implements
-
-ClientID = atapi.StringField(
-    'ClientID',
-    required=1,
-    searchable=True,
-    validators=('uniquefieldvalidator', 'standard_id_validator'),
-    widget=atapi.StringWidget(
-        label=_("Client ID")
-    )
-)
-BulkDiscount = atapi.BooleanField(
-    'BulkDiscount',
-    default=False,
-    write_permission=ManageClients,
-    widget=atapi.BooleanWidget(
-        label=_("Bulk discount applies")
-    )
-)
-MemberDiscountApplies = atapi.BooleanField(
-    'MemberDiscountApplies',
-    default=False,
-    write_permission=ManageClients,
-    widget=atapi.BooleanWidget(
-        label=_("Member discount applies")
-    )
-)
-CCEmails = atapi.StringField(
-    'CCEmails',
-    schemata='Preferences',
-    mode="rw",
-    widget=atapi.StringWidget(
-        label=_("CC Emails"),
-        description=_("Default Emails to CC all published ARs for this client"),
-        visible={
-            'edit': 'visible',
-            'view': 'visible',
-        }
-    )
-)
-EmailSubject = atapi.LinesField(
-    'EmailSubject',
-    schemata='Preferences',
-    default=['ar', ],
-    vocabulary=EMAIL_SUBJECT_OPTIONS,
-    widget=atapi.MultiSelectionWidget(
-        description=_("Items to be included in email subject lines"),
-        label=_("Email subject line")
-    )
-)
-DefaultCategories = atapi.ReferenceField(
-    'DefaultCategories',
-    schemata='Preferences',
-    required=0,
-    multiValued=1,
-    vocabulary='getAnalysisCategories',
-    vocabulary_display_path_bound=sys.maxint,
-    allowed_types=('AnalysisCategory',),
-    relationship='ClientDefaultCategories',
-    widget=atapi.ReferenceWidget(
-        checkbox_bound=0,
-        label=_("Default categories"),
-        description=_("Always expand the selected categories in client views")
-    )
-)
-RestrictedCategories = atapi.ReferenceField(
-    'RestrictedCategories',
-    schemata='Preferences',
-    required=0,
-    multiValued=1,
-    vocabulary='getAnalysisCategories',
-    validators=('restrictedcategoriesvalidator',),
-    vocabulary_display_path_bound=sys.maxint,
-    allowed_types=('AnalysisCategory',),
-    relationship='ClientRestrictedCategories',
-    widget=atapi.ReferenceWidget(
-        checkbox_bound=0,
-        label=_("Restrict categories"),
-        description=_("Show only selected categories in client views")
-    )
-)
-DefaultARSpecs = atapi.StringField(
-    'DefaultARSpecs',
-    schemata="Preferences",
-    default='ar_specs',
-    vocabulary=DEFAULT_AR_SPECS,
-    widget=atapi.SelectionWidget(
-        label=_("Default AR Specifications"),
-        description=_("DefaultARSpecs_description"),
-        format='select',
-    )
-)
-DefaultDecimalMark = atapi.BooleanField(
-    'DefaultDecimalMark',
-    schemata="Preferences",
-    default=True,
-    widget=atapi.BooleanWidget(
-        label=_("Default decimal mark"),
-        description=_("The decimal mark selected in Bika Setup will be used."),
-    )
-)
-DecimalMark = atapi.StringField(
-    'DecimalMark',
-    schemata="Preferences",
-    vocabulary=DECIMAL_MARKS,
-    default=".",
-    widget=atapi.SelectionWidget(
-        label=_("Custom decimal mark"),
-        description=_("Decimal mark to use in the reports from this Client."),
-        format='select',
-    )
-)
-
-schema = Organisation.schema.copy() + atapi.Schema((
-    ClientID,
-    BulkDiscount,
-    MemberDiscountApplies,
-    CCEmails,
-    EmailSubject,
-    DefaultCategories,
-    RestrictedCategories,
-    DefaultARSpecs,
-    DefaultDecimalMark,
-    DecimalMark
-))
-
-schema['AccountNumber'].write_permission = ManageClients
-schema['title'].widget.visible = False
-schema['description'].widget.visible = False
-schema['EmailAddress'].schemata = 'default'
-
-schema.moveField('ClientID', after='Name')
 
 
 class Client(Organisation):

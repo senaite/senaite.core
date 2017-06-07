@@ -11,162 +11,22 @@ from decimal import Decimal
 
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
-from Products.Archetypes.Field import BooleanField, DateTimeField, \
-    FixedPointField, IntegerField, StringField
-from Products.Archetypes.Schema import Schema
-from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.WorkflowCore import WorkflowException
 from Products.CMFCore.utils import getToolByName
-from bika.lims import bikaMessageFactory as _, deprecated
+from bika.lims import deprecated
 from bika.lims import logger
-from bika.lims.browser.fields import HistoryAwareReferenceField
-from bika.lims.browser.fields import UIDReferenceField
-from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.content.abstractbaseanalysis import AbstractBaseAnalysis
-from bika.lims.content.abstractbaseanalysis import schema
-from bika.lims.content.reflexrule import doReflexRuleAction
-from bika.lims.interfaces import ISamplePrepWorkflow, IDuplicateAnalysis
-from bika.lims.permissions import *
+from bika.lims.content.schema.abstractanalysis import schema
+from bika.lims.interfaces import IDuplicateAnalysis, ISamplePrepWorkflow
 from bika.lims.permissions import Verify as VerifyPermission
-from bika.lims.utils import changeWorkflowState, formatDecimalMark
 from bika.lims.utils import drop_trailing_zeros_decimal
-from bika.lims.utils.analysis import create_analysis, format_numeric_result
+from bika.lims.utils import formatDecimalMark
+from bika.lims.utils.analysis import format_numeric_result
 from bika.lims.utils.analysis import get_significant_digits
-from bika.lims.workflow import doActionFor
-from bika.lims.workflow import isBasicTransitionAllowed
-from bika.lims.workflow import isTransitionAllowed
-from bika.lims.workflow import wasTransitionPerformed
-from bika.lims.workflow import skip
 from bika.lims.workflow.analysis import events
 from bika.lims.workflow.analysis import guards
 from plone.api.user import has_permission
 from zope.interface import implements
-
-# A link directly to the AnalysisService object used to create the analysis
-AnalysisService = UIDReferenceField(
-    'AnalysisService'
-)
-
-# Overrides the AbstractBaseAnalysis. Analyses have a versioned link to the
-# calculation as it was when created.
-Calculation = HistoryAwareReferenceField(
-    'Calculation',
-    allowed_types=('Calculation',),
-    relationship='AnalysisCalculation',
-    referenceClass=HoldingReference
-)
-
-# Attachments which are added manually in the UI, or automatically when
-# results are imported from a file supplied by an instrument.
-Attachment = UIDReferenceField(
-    'Attachment',
-    multiValued=1,
-    allowed_types=('Attachment',)
-)
-
-# The final result of the analysis is stored here.  The field contains a
-# String value, but the result itself is required to be numeric.  If
-# a non-numeric result is needed, ResultOptions can be used.
-Result = StringField(
-    'Result'
-)
-
-# When the result is changed, this value is updated to the current time.
-# Only the most recent result capture date is recorded here and used to
-# populate catalog values, however the workflow review_history can be
-# used to get all dates of result capture
-ResultCaptureDate = DateTimeField(
-    'ResultCaptureDate'
-)
-
-# If ReportDryMatter is True in the AnalysisService, the adjusted result
-# is stored here.
-ResultDM = StringField(
-    'ResultDM'
-)
-
-# If the analysis has previously been retracted, this flag is set True
-# to indicate that this is a re-test.
-Retested = BooleanField(
-    'Retested',
-    default=False
-)
-
-# When the AR is published, the date of publication is recorded here.
-# It's used to populate catalog values.
-DateAnalysisPublished = DateTimeField(
-    'DateAnalysisPublished',
-    widget=DateTimeWidget(
-        label=_("Date Published")
-    )
-)
-
-# If the result is outside of the detection limits of the method or instrument,
-# the operand (< or >) is stored here.  For routine analyses this is taken
-# from the Result, if the result entered explicitly startswith "<" or ">"
-DetectionLimitOperand = StringField(
-    'DetectionLimitOperand'
-)
-
-# This is used to calculate turnaround time reports.
-# The value is set when the Analysis is published.
-Duration = IntegerField(
-    'Duration',
-)
-
-# This is used to calculate turnaround time reports. The value is set when the
-# Analysis is published.
-Earliness = IntegerField(
-    'Earliness',
-)
-
-# The ID of the logged in user who submitted the result for this Analysis.
-Analyst = StringField(
-    'Analyst'
-)
-
-# The actual uncertainty for this analysis' result, populated from the ranges
-# specified in the analysis service when the result is submitted.
-Uncertainty = FixedPointField(
-    'Uncertainty',
-    precision=10,
-)
-
-# transitioned to a 'verified' state. This value is set automatically
-# when the analysis is created, based on the value set for the property
-# NumberOfRequiredVerifications from the Analysis Service
-NumberOfRequiredVerifications = IntegerField(
-    'NumberOfRequiredVerifications',
-    default=1
-)
-
-# This field keeps the user_ids of members who verified this analysis.
-# After each verification, user_id will be added end of this string
-# seperated by comma- ',' .
-Verificators = StringField(
-    'Verificators',
-    default=''
-)
-
-schema = schema.copy() + Schema((
-    AnalysisService,
-    Analyst,
-    Attachment,
-    # Calculation overrides AbstractBaseClass
-    Calculation,
-    DateAnalysisPublished,
-    DetectionLimitOperand,
-    Duration,
-    Earliness,
-    # NumberOfRequiredVerifications overrides AbstractBaseClass
-    NumberOfRequiredVerifications,
-    Result,
-    ResultCaptureDate,
-    ResultDM,
-    Retested,
-    Uncertainty,
-    Verificators
-))
 
 
 class AbstractAnalysis(AbstractBaseAnalysis):
@@ -269,7 +129,7 @@ class AbstractAnalysis(AbstractBaseAnalysis):
         """
         uncertainty = self.getField('Uncertainty').get(self)
         if result is None and (self.isAboveUpperDetectionLimit() or
-                               self.isBelowLowerDetectionLimit()):
+                                   self.isBelowLowerDetectionLimit()):
             return None
 
         if uncertainty and self.getAllowManualUncertainty() is True:

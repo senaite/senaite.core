@@ -4,79 +4,12 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from AccessControl import ClassSecurityInfo
-from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes import atapi
 from Products.Archetypes.public import *
 from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.widgets import ScheduleInputWidget
 from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
-
-Instrument = ReferenceField(
-    'Instrument',
-    allowed_types=('Instrument',),
-    relationship='InstrumentScheduledTaskInstrument',
-    widget=StringWidget(
-        visible=False
-    )
-)
-
-InstrumentUID = ComputedField(
-    'InstrumentUID',
-    expression='context.getInstrument() and context.getInstrument().UID() or '
-               'None',
-    widget=ComputedWidget(
-        visible=False
-    )
-)
-
-Type = StringField(
-    'Type',
-    vocabulary="getTaskTypes",
-    widget=ReferenceWidget(
-        checkbox_bound=0,
-        label=_("Task type", "Type")
-    )
-)
-
-ScheduleCriteria = RecordsField(
-    'ScheduleCriteria',
-    required=1,
-    type='schedulecriteria',
-    widget=ScheduleInputWidget(
-        label=_("Criteria")
-    )
-)
-
-Considerations = TextField(
-    'Considerations',
-    default_content_type='text/plain',
-    allowed_content_types=('text/plain',),
-    default_output_type="text/plain",
-    widget=TextAreaWidget(
-        label=_("Considerations"),
-        description=_("Remarks to take into account before performing the task")
-    )
-)
-
-schema = BikaSchema.copy() + Schema((
-    Instrument,
-    InstrumentUID,
-    Type,
-    ScheduleCriteria,
-    Considerations
-))
-
-IdField = schema['id']
-schema['description'].required = False
-schema['description'].widget.visible = True
-schema['description'].schemata = 'default'
-schema.moveField('description', before='Considerations')
-
-# Title is not needed to be unique
-schema['title'].validators = ()
-schema['title']._validationLayer()
+from bika.lims.content.schema.instrumentscheduledtask import schema
 
 
 class InstrumentScheduledTask(BaseFolder):
