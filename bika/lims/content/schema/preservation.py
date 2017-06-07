@@ -8,8 +8,8 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import DurationField
 from bika.lims.browser.widgets import DurationWidget, SelectionWidget
 from bika.lims.config import PRESERVATION_CATEGORIES
-from bika.lims.content.schema.bikaschema import BikaSchema
 from bika.lims.content.schema import Storage
+from bika.lims.content.schema.bikaschema import BikaSchema
 
 Category = StringField(
     'Category',

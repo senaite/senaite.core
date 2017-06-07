@@ -7,8 +7,8 @@ from DateTime import DateTime
 from Products.Archetypes.Field import DateTimeField, ReferenceField, StringField
 from Products.Archetypes.Schema import Schema
 from Products.Archetypes.references import HoldingReference
-from bika.lims.content.schema.bikaschema import BikaSchema
 from bika.lims.content.schema import Storage
+from bika.lims.content.schema.bikaschema import BikaSchema
 
 # Results File that system wanted to import
 ImportedFile = StringField('ImportedFile', default='')

@@ -11,8 +11,8 @@ from Products.Archetypes.Widget import ComputedWidget, ReferenceWidget, \
     StringWidget, TextAreaWidget
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.widgets import ScheduleInputWidget
-from bika.lims.content.schema.bikaschema import BikaSchema
 from bika.lims.content.schema import Storage
+from bika.lims.content.schema.bikaschema import BikaSchema
 
 Instrument = ReferenceField(
     'Instrument',

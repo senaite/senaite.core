@@ -8,8 +8,8 @@ from Products.Archetypes.Schema import Schema
 from Products.Archetypes.Widget import CalendarWidget
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import DateTimeField
-from bika.lims.content.schema.bikaschema import BikaSchema
 from bika.lims.content.schema import Storage
+from bika.lims.content.schema.bikaschema import BikaSchema
 
 BatchStartDate = DateTimeField(
     'BatchStartDate',

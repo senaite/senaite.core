@@ -13,8 +13,8 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import HistoryAwareReferenceField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DateTimeWidget
-from bika.lims.content.abstractbaseanalysis import schema
 from bika.lims.content.schema import Storage
+from bika.lims.content.schema.abstractbaseanalysis import schema
 
 # A link directly to the AnalysisService object used to create the analysis
 AnalysisService = UIDReferenceField(

@@ -10,8 +10,8 @@ from Products.Archetypes.public import SelectionWidget
 from Products.Archetypes.references import HoldingReference
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import ReflexRuleField
-from bika.lims.content.schema.bikaschema import BikaSchema
 from bika.lims.content.schema import Storage
+from bika.lims.content.schema.bikaschema import BikaSchema
 
 # Methods associated to the Reflex rule
 # In the first place the user has to choose from a drop-down list the

@@ -8,8 +8,8 @@ from Products.Archetypes.Field import StringField
 from Products.Archetypes.Schema import Schema
 from bika.lims.config import STD_TYPES
 from bika.lims.content.abstractanalysis import schema
-from plone.app.blob.field import BlobField
 from bika.lims.content.schema import Storage
+from plone.app.blob.field import BlobField
 
 ReferenceType = StringField(
     'ReferenceType',

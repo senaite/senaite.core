@@ -16,9 +16,9 @@ from bika.lims.browser.fields import DurationField
 from bika.lims.browser.widgets import CoordinateWidget
 from bika.lims.browser.widgets import DurationWidget
 from bika.lims.browser.widgets.referencewidget import ReferenceWidget as brw
+from bika.lims.content.schema import Storage
 from bika.lims.content.schema.bikaschema import BikaSchema
 from plone.app.blob.field import FileField as BlobFileField
-from bika.lims.content.schema import Storage
 
 Latitude = CoordinateField(
     'Latitude',

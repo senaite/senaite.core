@@ -8,9 +8,9 @@ from Products.Archetypes.Widget import FileWidget, ReferenceWidget, StringWidget
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DateTimeWidget
+from bika.lims.content.schema import Storage
 from bika.lims.content.schema.bikaschema import BikaSchema
 from plone.app.blob.field import FileField
-from bika.lims.content.schema import Storage
 
 # It comes from blob
 AttachmentFile = FileField(

@@ -12,8 +12,8 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.config import DECIMAL_MARKS, DEFAULT_AR_SPECS, \
     EMAIL_SUBJECT_OPTIONS
 from bika.lims.content.organisation import Organisation
-from bika.lims.permissions import ManageClients
 from bika.lims.content.schema import Storage
+from bika.lims.permissions import ManageClients
 
 ClientID = atapi.StringField(
     'ClientID',

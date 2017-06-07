@@ -11,8 +11,8 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.widgets import IntegerWidget
 from bika.lims.config import ManageBika
 from bika.lims.content.organisation import Organisation
-from plone.app.blob.field import ImageField
 from bika.lims.content.schema import Storage
+from plone.app.blob.field import ImageField
 
 LabURL = StringField(
     'LabURL',

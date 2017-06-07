@@ -11,8 +11,8 @@ from Products.Archetypes.Widget import ComputedWidget
 from Products.Archetypes.references import HoldingReference
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.widgets import ReferenceWidget
-from bika.lims.content.schema.bikaschema import BikaSchema
 from bika.lims.content.schema import Storage
+from bika.lims.content.schema.bikaschema import BikaSchema
 
 Manager = ReferenceField(
     'Manager',

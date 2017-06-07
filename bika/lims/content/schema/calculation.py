@@ -10,8 +10,8 @@ from bika.lims.browser.fields import InterimFieldsField
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import RecordsWidget as BikaRecordsWidget, \
     ReferenceWidget
-from bika.lims.content.schema.bikaschema import BikaSchema
 from bika.lims.content.schema import Storage
+from bika.lims.content.schema.bikaschema import BikaSchema
 
 InterimFields = InterimFieldsField(
     'InterimFields',

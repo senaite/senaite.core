@@ -14,8 +14,8 @@ from bika.lims.browser.fields.inheritedobjectsuifield import \
 from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.browser.widgets import RecordsWidget as bikaRecordsWidget
 from bika.lims.browser.widgets import ReferenceWidget
-from bika.lims.content.schema.bikaschema import BikaFolderSchema
 from bika.lims.content.schema import Storage
+from bika.lims.content.schema.bikaschema import BikaFolderSchema
 
 BatchID = StringField(
     'BatchID',

@@ -11,8 +11,8 @@ from Products.Archetypes.Widget import DecimalWidget, ReferenceWidget, \
     TextAreaWidget
 from Products.Archetypes.references import HoldingReference
 from bika.lims import bikaMessageFactory as _
-from bika.lims.content.schema.bikaschema import BikaSchema
 from bika.lims.content.schema import Storage
+from bika.lims.content.schema.bikaschema import BikaSchema
 
 Comments = TextField(
     'Comments',

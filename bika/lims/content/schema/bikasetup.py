@@ -29,8 +29,8 @@ from bika.lims.config import DEFAULT_AR_SPECS
 from bika.lims.config import MULTI_VERIFICATION_TYPE
 from bika.lims.config import SCINOTATION_OPTIONS
 from bika.lims.config import WORKSHEET_LAYOUT_OPTIONS
-from bika.lims.content.schema.bikaschema import BikaFolderSchema
 from bika.lims.content.schema import Storage
+from bika.lims.content.schema.bikaschema import BikaFolderSchema
 
 STICKER_AUTO_OPTIONS = DisplayList((
     ('None', _('None')),

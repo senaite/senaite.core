@@ -3,9 +3,6 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-"""Analysis result range specifications for a client
-"""
-
 from Products.ATExtensions.field.records import RecordsField
 from Products.Archetypes.Field import ComputedField
 from Products.Archetypes.Schema import Schema
@@ -14,8 +11,8 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import AnalysisSpecificationWidget, \
     ReferenceWidget
-from bika.lims.content.schema.bikaschema import BikaSchema
 from bika.lims.content.schema import Storage
+from bika.lims.content.schema.bikaschema import BikaSchema
 
 SampleType = UIDReferenceField(
     'SampleType',
