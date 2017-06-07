@@ -10,11 +10,10 @@ from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from bika.lims.config import PROJECTNAME
+from bika.lims.content.schema.samplesfolder import schema
 from bika.lims.interfaces import IHaveNoBreadCrumbs, ISamplesFolder
 from plone.app.folder import folder
 from zope.interface import implements
-
-schema = folder.ATFolderSchema.copy()
 
 
 class SamplesFolder(folder.ATFolder):

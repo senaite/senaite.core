@@ -6,16 +6,12 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes.public import Schema, registerType
+from Products.Archetypes.public import registerType
 from bika.lims import PROJECTNAME
 from bika.lims.content.abstractroutineanalysis import AbstractRoutineAnalysis
-from bika.lims.content.abstractroutineanalysis import schema
+from bika.lims.content.schema.analysis import schema
 from bika.lims.interfaces import IRoutineAnalysis, ISamplePrepWorkflow
 from zope.interface import implements
-
-schema = schema.copy() + Schema((
-
-))
 
 
 class Analysis(AbstractRoutineAnalysis):

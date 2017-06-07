@@ -5,29 +5,16 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 from AccessControl import ClassSecurityInfo
-
 from DateTime import DateTime
 from Products.Archetypes.public import *
 from Products.CMFCore.utils import getToolByName
-from bika.lims import deprecated, logger
-from bika.lims.config import PROJECTNAME, STD_TYPES
+from bika.lims.config import PROJECTNAME
 from bika.lims.content.abstractanalysis import AbstractAnalysis
-from bika.lims.content.abstractanalysis import schema
+from bika.lims.content.schema.referenceanalysis import schema
 from bika.lims.interfaces import IReferenceAnalysis
 from bika.lims.subscribers import skip
 from bika.lims.workflow import doActionFor
-from plone.app.blob.field import BlobField
 from zope.interface import implements
-
-ReferenceType = StringField('ReferenceType', vocabulary=STD_TYPES)
-RetractedAnalysesPdfReport = BlobField('RetractedAnalysesPdfReport')
-ReferenceAnalysesGroupID = StringField('ReferenceAnalysesGroupID')
-
-schema = schema.copy() + Schema((
-    ReferenceType,
-    RetractedAnalysesPdfReport,
-    ReferenceAnalysesGroupID
-))
 
 
 class ReferenceAnalysis(AbstractAnalysis):
@@ -85,21 +72,13 @@ class ReferenceAnalysis(AbstractAnalysis):
         """
         return self.getSample().getReferenceResults()
 
-    @security.public
-    def getResultsRange(self, specification=None):
-        # specification is required by the signature of the base class,
-        # but has no meaning in this context.
-        if specification:
-            logger.error("specification is an invalid argument to "
-                         "ReferenceAnalysis.getResultsRange.")
-        sample = self.getSample()
-        if sample:
-            return sample.getResultsRangeDict()
-
-    def getAnalysisSpecs(self, specification=None):
-        specs = self.getResultsRange()
-        if specs and self.getKeyword() in specs:
-            return specs
+    def getInstrumentEntryOfResults(self):
+        """It is a metacolumn. Returns the same value as the service.
+        """
+        service = self.getService()
+        if not service:
+            return None
+        return service.getInstrumentEntryOfResults()
 
     def getInstrumentUID(self):
         """ It is a metacolumn. Returns the same value as the service.
@@ -152,9 +131,8 @@ class ReferenceAnalysis(AbstractAnalysis):
         """
         return []
 
-    @deprecated('[1705] Use bika.lims.workflow.analysis.events.after_submit')
     @security.public
-    def workflow_script_submit(self):
+    def after_submit_transition_event(self):
         """Method triggered after a 'submit' transition for the current
         ReferenceAnalysis is performed.
         By default, the "submit" action for transitions the RefAnalysis to the
@@ -173,7 +151,7 @@ class ReferenceAnalysis(AbstractAnalysis):
         doActionFor(self, 'attach')
 
         # Delegate the transition of Worksheet to base class AbstractAnalysis
-        AbstractAnalysis.workflow_script_submit(self)
+        super(AbstractAnalysis, self).after_submit_transition_event()
 
     def workflow_script_attach(self):
         if skip(self, "attach"):

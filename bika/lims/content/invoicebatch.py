@@ -9,42 +9,14 @@ from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
 from Products.Archetypes.public import *
 from Products.CMFPlone.utils import _createObjectByType
-from bika.lims import bikaMessageFactory as _
 from bika.lims.config import ManageInvoices, PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.content.invoice import InvoiceLineItem
+from bika.lims.content.schema.invoicebatch import schema
 from bika.lims.interfaces import IInvoiceBatch
 from bika.lims.utils import get_invoice_item_description
-from bika.lims.workflow import isBasicTransitionAllowed, getTransitionDate
+from bika.lims.workflow import getTransitionDate, isBasicTransitionAllowed
 from zope.container.contained import ContainerModifiedEvent
 from zope.interface import implements
-
-BatchStartDate = DateTimeField(
-    'BatchStartDate',
-    required=1,
-    default_method='current_date',
-    widget=CalendarWidget(
-        label=_("Start Date")
-    )
-)
-BatchEndDate = DateTimeField(
-    'BatchEndDate',
-    required=1,
-    default_method='current_date',
-    validators=('invoicebatch_EndDate_validator',),
-    widget=CalendarWidget(
-        label=_("End Date")
-    )
-)
-
-schema = BikaSchema.copy() + Schema((
-    BatchStartDate,
-    BatchEndDate
-),
-)
-
-# noinspection PyCallingNonCallable
-schema['title'].default = DateTime().strftime('%b %Y')
 
 
 class InvoiceBatch(BaseFolder):

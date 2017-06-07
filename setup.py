@@ -73,6 +73,7 @@ setup(name='bika.lims',
           'z3c.jbot',
           'plone.resource',
           'CairoSVG==1.0.20',
+          'psycopg2',
       ],
       extras_require={
           'test': [

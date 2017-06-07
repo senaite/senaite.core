@@ -12,75 +12,13 @@ from Products.ATContentTypes.utils import DT2dt, dt2DT
 from Products.Archetypes.public import *
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims.browser.fields import DurationField
-from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.content.schema.samplepartition import schema
 from bika.lims.interfaces import ISamplePartition, ISamplePrepWorkflow
 from bika.lims.workflow import doActionFor
 from bika.lims.workflow import skip
 from bika.lims.workflow import wasTransitionPerformed
 from zope.interface import implements
-
-Container = ReferenceField(
-    'Container',
-    allowed_types=('Container',),
-    relationship='SamplePartitionContainer',
-    required=1,
-    multiValued=0
-)
-
-Preservation = ReferenceField(
-    'Preservation',
-    allowed_types=('Preservation',),
-    relationship='SamplePartitionPreservation',
-    required=0,
-    multiValued=0
-)
-
-Separate = BooleanField(
-    'Separate',
-    default=False
-)
-
-Analyses = UIDReferenceField(
-    'Analyses',
-    allowed_types=('Analysis',),
-    required=0,
-    multiValued=1
-)
-
-DatePreserved = DateTimeField('DatePreserved')
-
-Preserver = StringField(
-    'Preserver',
-    searchable=True
-)
-
-RetentionPeriod = DurationField(
-    'RetentionPeriod',
-)
-
-DisposalDate = ComputedField(
-    'DisposalDate',
-    expression='context.disposal_date()',
-    widget=ComputedWidget(
-        visible=False
-    )
-)
-
-schema = BikaSchema.copy() + Schema((
-    Container,
-    Preservation,
-    Separate,
-    Analyses,
-    DatePreserved,
-    Preserver,
-    RetentionPeriod,
-    DisposalDate
-))
-
-schema['title'].required = False
 
 
 class SamplePartition(BaseContent, HistoryAwareMixin):

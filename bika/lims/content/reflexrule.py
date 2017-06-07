@@ -1,59 +1,23 @@
-from AccessControl import ClassSecurityInfo
-from Products.CMFCore.utils import getToolByName
-from Products.Archetypes.public import Schema
-from Products.Archetypes.public import BaseContent
-from Products.Archetypes import atapi
-from Products.Archetypes.references import HoldingReference
-from Products.Archetypes.public import SelectionWidget
-from Products.Archetypes.public import DisplayList
-from Products.Archetypes.public import ReferenceField
-from zope.interface import implements
 from datetime import datetime
-from bika.lims.config import PROJECTNAME
-from bika.lims import bikaMessageFactory as _
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IReflexRule
-from bika.lims.browser.fields import ReflexRuleField
-from bika.lims.utils import isnumber
-from bika.lims.utils import getUsers
-from bika.lims.utils import tmpID
-from bika.lims.utils.analysis import duplicateAnalysis
-from bika.lims.idserver import renameAfterCreation
+
+from AccessControl import ClassSecurityInfo
+from Products.Archetypes import atapi
+from Products.Archetypes.public import BaseContent
+from Products.Archetypes.public import DisplayList
+from Products.CMFCore.utils import getToolByName
 from bika.lims import logger
-from bika.lims.workflow import doActionFor
 from bika.lims.catalog import CATALOG_ANALYSIS_LISTING
 from bika.lims.catalog import CATALOG_WORKSHEET_LISTING
-import sys
-
-schema = BikaSchema.copy() + Schema((
-    # Methods associated to the Reflex rule
-    # In the first place the user has to choose from a drop-down list the
-    # method which the rules for the analysis service will be bind to. After
-    # selecting the method, the system will display another list in order to
-    # choose the analysis service to add the rules when using the selected
-    # method.
-    ReferenceField(
-        'Method',
-        required=1,
-        multiValued=0,
-        vocabulary_display_path_bound=sys.maxint,
-        vocabulary='_getAvailableMethodsDisplayList',
-        allowed_types=('Method',),
-        relationship='ReflexRuleMethod',
-        referenceClass=HoldingReference,
-        widget=SelectionWidget(
-            label=_("Methods"),
-            format='select',
-            description=_(
-                "Select the method which the rules for the analysis "
-                "service will be bound to."),
-        )
-    ),
-    ReflexRuleField('ReflexRules',),
-))
-schema['description'].widget.visible = True
-schema['description'].widget.label = _("Description")
-schema['description'].widget.description = _("")
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.schema.reflexrule import schema
+from bika.lims.idserver import renameAfterCreation
+from bika.lims.interfaces import IReflexRule
+from bika.lims.utils import getUsers
+from bika.lims.utils import isnumber
+from bika.lims.utils import tmpID
+from bika.lims.utils.analysis import duplicateAnalysis
+from bika.lims.workflow import doActionFor
+from zope.interface import implements
 
 
 class ReflexRule(BaseContent):
@@ -67,12 +31,10 @@ class ReflexRule(BaseContent):
     schema = schema
     _at_rename_after_creation = True
 
-    @security.private
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
 
-    @security.private
     def _getAvailableMethodsDisplayList(self):
         """ Returns a DisplayList with the available Methods
             registered in Bika-Setup. Only active Methods are fetched.
@@ -83,7 +45,6 @@ class ReflexRule(BaseContent):
         items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(list(items))
 
-    @security.private
     def _fetch_analysis_for_local_id(self, analysis, ans_cond):
         """
         This function returns an analysis when the derivative IDs conditions
@@ -92,6 +53,8 @@ class ReflexRule(BaseContent):
             rules for.
         :ans_cond: the local id with the target derivative reflex rule id.
         """
+        import pdb;
+        pdb.set_trace()
         # Getting the first reflexed analysis from the chain
         first_reflexed = analysis.getOriginalReflexedAnalysis()
         # Getting all reflexed analysis created due to this first analysis
@@ -106,7 +69,6 @@ class ReflexRule(BaseContent):
                 return derivative
         return None
 
-    @security.private
     def _areConditionsMet(self, action_set, analysis, forceuid=False):
         """
         This function returns a boolean as True if the conditions in the
@@ -146,7 +108,8 @@ class ReflexRule(BaseContent):
         eval_str = ''
         # Getting the analysis local id or its uid instead
         alocalid = analysis.getReflexRuleLocalID() if \
-            analysis.getIsReflexAnalysis() and not forceuid else analysis.getServiceUID()
+            analysis.getIsReflexAnalysis() and not forceuid else \
+            analysis.getServiceUID()
         # Getting the local ids (or analysis service uid) from the condition
         # with the same local id (or analysis service uid) as the analysis
         # attribute
@@ -178,7 +141,7 @@ class ReflexRule(BaseContent):
         # action_set. (e.g analsys.local_id =='dup-2', but this action has been
         # ran by the analysis with local_id=='dup-1', so we do not have to
         # run it again)
-        if rr_actions_triggered in\
+        if rr_actions_triggered in \
                 analysis.getReflexRuleActionsTriggered().split('|'):
             return False
         # Check that rules are not repited: lets supose that some conditions
@@ -186,7 +149,7 @@ class ReflexRule(BaseContent):
         # duplicate action. Now we have analysis-1 and analysis1-dup. If the
         # same conditions are met while submitting/verifying analysis1-dup, the
         # duplicated shouldn't trigger the reflex action again.
-        if forceuid and analysis.IsReflexAnalysis and rr_actions_triggered in\
+        if forceuid and analysis.IsReflexAnalysis and rr_actions_triggered in \
                 analysis.getReflexRuleActionsTriggered().split('|'):
             return False
         # To save the analysis related in the same action_set
@@ -225,19 +188,19 @@ class ReflexRule(BaseContent):
                 exp_val = (
                     condition.get('range0', ''),
                     condition.get('range1', '')
-                    )
+                )
             and_or = condition.get('and_or', '')
             service_uid = curranalysis.getServiceUID()
 
             # Resolve the conditions
             resolution = \
-                ans_uid_cond == service_uid and\
+                ans_uid_cond == service_uid and \
                 ((isnumber(result) and isinstance(exp_val, str) and
-                    exp_val == result) or
-                    (isnumber(result) and len(exp_val) == 2 and
-                        isnumber(exp_val[0]) and isnumber(exp_val[1]) and
-                        float(exp_val[0]) <= float(result) and
-                        float(result) <= float(exp_val[1])))
+                  exp_val == result) or
+                 (isnumber(result) and len(exp_val) == 2 and
+                  isnumber(exp_val[0]) and isnumber(exp_val[1]) and
+                  float(exp_val[0]) <= float(result) and
+                  float(result) <= float(exp_val[1])))
             # Build a string and then use eval()
             if and_or == 'no':
                 eval_str += str(resolution)
@@ -265,7 +228,7 @@ class ReflexRule(BaseContent):
         self.analyses_catalog = getToolByName(self, CATALOG_ANALYSIS_LISTING)
         # Getting the action sets, those that contain action rows
         action_sets = self.getReflexRules()
-        rules_list = []
+        l = []
         condition = False
         for action_set in action_sets:
             # Validate the trigger
@@ -281,8 +244,9 @@ class ReflexRule(BaseContent):
                         # action later.
                         act['rulenumber'] = action_set.get('rulenumber', '0')
                         act['rulename'] = self.Title()
-                        rules_list.append(act)
-        return rules_list
+                        l.append(act)
+        return l
+
 
 atapi.registerType(ReflexRule, PROJECTNAME)
 
@@ -299,6 +263,8 @@ def doActionToAnalysis(base, action):
     workflow = getToolByName(base, "portal_workflow")
     state = workflow.getInfoFor(base, 'review_state')
     action_rule_name = ''
+    import pdb;
+    pdb.set_trace()
     if action.get('action', '') == 'repeat' and state != 'retracted':
         # Repeat an analysis consist on cancel it and then create a new
         # analysis with the same analysis service used for the canceled
@@ -349,12 +315,12 @@ def doActionToAnalysis(base, action):
     rule_num = action.get('rulenumber', 0)
     rule_name = action.get('rulename', '')
     base_remark = "Reflex rule number %s of '%s' applied at %s." % \
-        (rule_num, rule_name, time)
+                  (rule_num, rule_name, time)
     base_remark = base.getRemarks() + base_remark + '||'
     base.setRemarks(base_remark)
     # Setting the remarks to new analysis
     analysis_remark = "%s due to reflex rule number %s of '%s' at %s" % \
-        (action_rule_name, rule_num, rule_name, time)
+                      (action_rule_name, rule_num, rule_name, time)
     analysis_remark = analysis.getRemarks() + analysis_remark + '||'
     analysis.setRemarks(analysis_remark)
     return analysis
@@ -366,7 +332,7 @@ def _createWorksheet(base, worksheettemplate, analyst):
     variable. If there isn't an analyst definet, the system will puck up the
     the first one obtained in a query.
     """
-    if not(analyst):
+    if not (analyst):
         # Get any analyst
         analyst = getUsers(base, ['Manager', 'LabManager', 'Analyst'])[1]
     folder = base.bika_setup.worksheets
@@ -377,7 +343,7 @@ def _createWorksheet(base, worksheettemplate, analyst):
     ws.edit(
         Number=new_ws_id,
         Analyst=analyst,
-        )
+    )
     if worksheettemplate:
         ws.setWorksheetTemplate(worksheettemplate)
     return ws
@@ -457,8 +423,14 @@ def doWorksheetLogic(base, action, analysis):
         # 'repeat' actions takes advantatge of the 'retract' workflow action.
         # the retract process assigns the new analysis to the same worksheet
         # as the base analysis, so we need to desassign it now.
-        ws = analysis.getWorksheet()
-        if ws:
+        ws_brain = worksheet_catalog(
+            getAnalysesUIDs={
+                "query": analysis.UID(),
+                "operator": "or"
+            }
+        )
+        if ws_brain:
+            ws = ws_brain[0].getObject()
             ws.removeAnalysis(analysis)
         # If worksheet found and option 2
         if len(wss) > 0 and otherWS == 'to_another':
@@ -473,9 +445,14 @@ def doWorksheetLogic(base, action, analysis):
             # Getting the original analysis to which the rule applies
             previous_analysis = analysis.getReflexAnalysisOf()
             # Getting the worksheet of the analysis
-            prev_ws = previous_analysis.getWorksheet()
+            prev_ws = worksheet_catalog(
+                getAnalysesUIDs={
+                    "query": previous_analysis.UID(),
+                    "operator": "or"
+                }
+            )
             # Getting the analyst from the worksheet
-            prev_analyst = prev_ws.getAnalyst() if prev_ws else ''
+            prev_analyst = prev_ws[0].getgetAnalyst() if prev_ws else ''
             # If the previous analysis belongs to a worksheet:
             if prev_analyst:
                 ws = _createWorksheet(base, worksheettemplate, prev_analyst)
@@ -491,18 +468,28 @@ def doWorksheetLogic(base, action, analysis):
 
     elif otherWS == 'current':
         # Getting the base's worksheet
-        ws = base.getWorksheet()
-        if ws:
+        wss = worksheet_catalog(
+            getAnalysesUIDs={
+                "query": base.UID(),
+                "operator": "or"
+            }
+        )
+        if len(wss) > 0:
             # If the old analysis belongs to a worksheet, add the new
             # one to it
-            ws.addAnalysis(analysis)
+            wss[0].addAnalysis(analysis)
     # If option 1 selected and no ws found, no worksheet will be assigned to
     # the analysis.
     # If option 4 selected, no worksheet will be assigned to the analysis
     elif otherWS == 'no_ws':
-        ws = analysis.getWorksheet()
+        ws = worksheet_catalog(
+            getAnalysesUIDs={
+                "query": analysis.UID(),
+                "operator": "or"
+            }
+        )
         if ws:
-            ws.removeAnalysis(analysis)
+            ws[0].removeAnalysis(analysis)
 
 
 def doReflexRuleAction(base, action_row):

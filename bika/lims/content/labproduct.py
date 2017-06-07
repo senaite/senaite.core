@@ -7,70 +7,8 @@ from decimal import Decimal
 
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
-from bika.lims import bikaMessageFactory as _
 from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
-
-Volume = StringField(
-    'Volume',
-    widget=StringWidget(
-        label=_("Volume")
-    )
-)
-
-Unit = StringField(
-    'Unit',
-    widget=StringWidget(
-        label=_("Unit")
-    )
-)
-
-VAT = FixedPointField(
-    'VAT',
-    default_method='getDefaultVAT',
-    widget=DecimalWidget(
-        label=_("VAT %"),
-        description=_("Enter percentage value eg. 14.0")
-    )
-)
-
-Price = FixedPointField(
-    'Price',
-    required=1,
-    widget=DecimalWidget(
-        label=_("Price excluding VAT")
-    )
-)
-
-VATAmount = ComputedField(
-    'VATAmount',
-    expression='context.getVATAmount()',
-    widget=ComputedWidget(
-        label=_("VAT"),
-        visible={'edit': 'hidden', }
-    )
-)
-
-TotalPrice = ComputedField(
-    'TotalPrice',
-    expression='context.getTotalPrice()',
-    widget=ComputedWidget(
-        label=_("Total price"),
-        visible={'edit': 'hidden'}
-    )
-)
-
-schema = BikaSchema.copy() + Schema((
-    Volume,
-    Unit,
-    VAT,
-    Price,
-    VATAmount,
-    TotalPrice
-))
-
-schema['description'].schemata = 'default'
-schema['description'].widget.visible = True
+from bika.lims.content.schema.labproduct import schema
 
 
 class LabProduct(BaseContent):

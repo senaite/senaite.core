@@ -8,19 +8,16 @@ import re
 from AccessControl import ClassSecurityInfo
 from DateTime import DateTime
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
-from Products.ATExtensions.ateapi import RecordsField
 from Products.Archetypes.config import REFERENCE_CATALOG
 from Products.Archetypes.public import *
-from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import _createObjectByType, safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims import deprecated
 from bika.lims import logger
-from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.config import *
 from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.content.schema.worksheet import schema
 from bika.lims.idserver import renameAfterCreation
 from bika.lims.interfaces import IWorksheet
 from bika.lims.permissions import EditWorksheet, ManageWorksheets
@@ -33,88 +30,6 @@ from bika.lims.workflow.worksheet import events
 from bika.lims.workflow.worksheet import guards
 from plone.api.user import has_permission
 from zope.interface import implements
-from sys import maxsize
-
-WorksheetTemplate = UIDReferenceField(
-    'WorksheetTemplate',
-    allowed_types=('WorksheetTemplate',)
-)
-Layout = RecordsField(
-    'Layout',
-    required=1,
-    subfields=('position', 'type', 'container_uid', 'analysis_uid'),
-    subfield_types={'position': 'int'}
-)
-# all layout info lives in Layout; Analyses is used for back references.
-Analyses = ReferenceField(
-    'Analyses',
-    required=1,
-    multiValued=1,
-    allowed_types=(
-        'Analysis', 'DuplicateAnalysis', 'ReferenceAnalysis',
-        'RejectAnalysis'),
-    relationship='WorksheetAnalysis'
-)
-Analyst = StringField(
-    'Analyst',
-    searchable=True
-)
-Method = ReferenceField(
-    'Method',
-    required=0,
-    vocabulary_display_path_bound=maxsize,
-    vocabulary='_getMethodsVoc',
-    allowed_types=('Method',),
-    relationship='WorksheetMethod',
-    referenceClass=HoldingReference,
-    widget=SelectionWidget(
-        format='select',
-        label=_("Method"),
-        visible=False
-    )
-)
-# TODO Remove. Instruments must be assigned directly to each analysis.
-Instrument = ReferenceField(
-    'Instrument',
-    required=0,
-    allowed_types=('Instrument',),
-    vocabulary='_getInstrumentsVoc',
-    relationship='WorksheetInstrument',
-    referenceClass=HoldingReference
-)
-Remarks = TextField(
-    'Remarks',
-    searchable=True,
-    default_content_type='text/plain',
-    allowed_content_types=('text/plain',),
-    default_output_type="text/plain",
-    widget=TextAreaWidget(
-        macro="bika_widgets/remarks",
-        label=_("Remarks"),
-        append_only=True
-    )
-)
-ResultsLayout = StringField(
-    'ResultsLayout',
-    default='1',
-    vocabulary=WORKSHEET_LAYOUT_OPTIONS
-)
-
-schema = BikaSchema.copy() + Schema((
-    WorksheetTemplate,
-    Layout,
-    Analyses,
-    Analyst,
-    Method,
-    Instrument,
-    Remarks,
-    ResultsLayout
-))
-
-schema['id'].required = 0
-schema['id'].widget.visible = False
-schema['title'].required = 0
-schema['title'].widget.visible = {'edit': 'hidden', 'view': 'invisible'}
 
 
 class Worksheet(BaseFolder, HistoryAwareMixin):
@@ -191,13 +106,15 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         self.setAnalyses(analyses + [analysis, ])
 
         # if our parent has a position, use that one.
-        if analysis.aq_parent.UID() in [slot['container_uid'] for slot in layout]:
+        if analysis.aq_parent.UID() in [slot['container_uid'] for slot in
+                                        layout]:
             position = [int(slot['position']) for slot in layout if
                         slot['container_uid'] == analysis.aq_parent.UID()][0]
         else:
             # prefer supplied position parameter
             if not position:
-                used_positions = [0, ] + [int(slot['position']) for slot in layout]
+                used_positions = [0, ] + [int(slot['position']) for slot in
+                                          layout]
                 position = [pos for pos in range(1, max(used_positions) + 2)
                             if pos not in used_positions][0]
         self.setLayout(layout + [{'position': position,
@@ -349,15 +266,16 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """
         bac = getToolByName(reference, 'bika_analysis_catalog')
         ids = bac.Indexes['getReferenceAnalysesGroupID'].uniqueValues()
-        prefix = reference.id+"-"
-        rr = re.compile("^"+prefix+"[\d+]+$")
+        prefix = reference.id + "-"
+        rr = re.compile("^" + prefix + "[\d+]+$")
         ids = [int(i.split(prefix)[1]) for i in ids if i and rr.match(i)]
         ids.sort()
         _id = ids[-1] if ids else 0
-        suffix = str(_id+1).zfill(int(3))
+        suffix = str(_id + 1).zfill(int(3))
         return '%s%s' % (prefix, suffix)
 
     security.declareProtected(EditWorksheet, 'addDuplicateAnalyses')
+
     def addDuplicateAnalyses(self, src_slot, dest_slot):
         """ add duplicate analyses to worksheet
         """
@@ -383,9 +301,10 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         src_analyses = [rc.lookupObject(slot['analysis_uid'])
                         for slot in layout if
                         int(slot['position']) == int(src_slot)]
-        dest_analyses = [rc.lookupObject(slot['analysis_uid']).getAnalysis().UID()
-                        for slot in layout if
-                        int(slot['position']) == int(dest_slot)]
+        dest_analyses = [
+            rc.lookupObject(slot['analysis_uid']).getAnalysis().UID()
+            for slot in layout if
+            int(slot['position']) == int(dest_slot)]
 
         refgid = None
         processed = []
@@ -451,7 +370,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             self.setAnalyses(self.getAnalyses() + [duplicate, ])
             doActionFor(duplicate, 'assign')
 
-
     def applyWorksheetTemplate(self, wst):
         """ Add analyses to worksheet according to wst's layout.
             Will not overwrite slots which are filled already.
@@ -476,16 +394,17 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                        getServiceUID=wst_service_uids,
                        review_state='sample_received',
                        worksheetanalysis_review_state='unassigned',
-                       cancellation_state = 'active',
+                       cancellation_state='active',
                        sort_on='getDueDate')
 
         # ar_analyses is used to group analyses by AR.
         ar_analyses = {}
-        instr = self.getInstrument() if self.getInstrument() else wst.getInstrument()
+        instr = self.getInstrument() if self.getInstrument() else \
+            wst.getInstrument()
         method = wst.getRestrictToMethod()
         for brain in analyses:
             analysis = brain.getObject()
-            if (instr and analysis.isInstrumentAllowed(instr) is False) or\
+            if (instr and analysis.isInstrumentAllowed(instr) is False) or \
                     (method and analysis.isMethodAllowed(method) is False):
                 # Exclude those analyses for which the ws selected
                 # instrument or method is not allowed
@@ -534,16 +453,18 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                     specs = reference.getResultsRangeDict()
                     for service_uid in wst_service_uids:
                         if service_uid in specs:
-                            references[reference_uid]['services'].append(service_uid)
+                            references[reference_uid]['services'].append(
+                                service_uid)
                             references[reference_uid]['count'] += 1
-                    if references[reference_uid]['count'] == len(wst_service_uids):
+                    if references[reference_uid]['count'] == len(
+                            wst_service_uids):
                         complete_reference_found = True
                         break
                 if complete_reference_found:
                     supported_uids = wst_service_uids
                     self.addReferences(int(row['pos']),
-                                     reference,
-                                     supported_uids)
+                                       reference,
+                                       supported_uids)
                 else:
                     # find the most complete reference sample instead
                     reference_keys = references.keys()
@@ -555,11 +476,12 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                             reference = key
                     if reference:
                         reference = rc.lookupObject(reference)
-                        supported_uids = [s.UID() for s in reference.getServices()
+                        supported_uids = [s.UID() for s in
+                                          reference.getServices()
                                           if s.UID() in wst_service_uids]
                         self.addReferences(int(row['pos']),
-                                         reference,
-                                         supported_uids)
+                                           reference,
+                                           supported_uids)
 
         # fill duplicate positions
         layout = self.getLayout()
@@ -771,7 +693,7 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """
         analyses = [an for an in self.getAnalyses()
                     if (not an.getInstrument() or override_analyses)
-                        and an.isInstrumentAllowed(instrument)]
+                    and an.isInstrumentAllowed(instrument)]
         total = 0
         for an in analyses:
             # An analysis can be done using differents Methods.
@@ -963,18 +885,20 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                              'rights',
                              'creation_date',
                              'modification_date',
-                             'Layout',    # ws
+                             'Layout',  # ws
                              'Analyses',  # ws
-            ]
+                             ]
             fields = src.Schema().fields()
             for field in fields:
                 fieldname = field.getName()
                 if fieldname in ignore_fields:
                     continue
-                getter = getattr(src, 'get'+fieldname,
-                                 src.Schema().getField(fieldname).getAccessor(src))
-                setter = getattr(dst, 'set'+fieldname,
-                                 dst.Schema().getField(fieldname).getMutator(dst))
+                getter = getattr(src, 'get' + fieldname,
+                                 src.Schema().getField(fieldname).getAccessor(
+                                     src))
+                setter = getattr(dst, 'set' + fieldname,
+                                 dst.Schema().getField(fieldname).getMutator(
+                                     dst))
                 if getter is None or setter is None:
                     # ComputedField
                     continue
@@ -993,8 +917,8 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         new_ws_id = renameAfterCreation(new_ws)
         copy_src_fields_to_dst(self, new_ws)
         new_ws.edit(
-            Number = new_ws_id,
-            Remarks = self.getRemarks()
+            Number=new_ws_id,
+            Remarks=self.getRemarks()
         )
 
         # Objects are being created inside other contexts, but we want their
@@ -1015,9 +939,9 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
             if review_state in ['published', 'verified', 'retracted']:
                 old_ws_analyses.append(analysis.UID())
                 old_layout.append({'position': position,
-                                   'type':'a',
-                                   'analysis_uid':analysis.UID(),
-                                   'container_uid':analysis.aq_parent.UID()})
+                                   'type': 'a',
+                                   'analysis_uid': analysis.UID(),
+                                   'container_uid': analysis.aq_parent.UID()})
                 continue
             # Normal analyses:
             # - Create matching RejectAnalysis inside old WS
@@ -1032,21 +956,21 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 reject.setAnalysis(analysis)
                 reject.reindexObject()
                 analysis.edit(
-                    Result = None,
-                    Retested = True,
+                    Result=None,
+                    Retested=True,
                 )
                 analysis.reindexObject()
                 position = analysis_positions[analysis.UID()]
                 old_ws_analyses.append(reject.UID())
                 old_layout.append({'position': position,
-                                   'type':'r',
-                                   'analysis_uid':reject.UID(),
-                                   'container_uid':self.UID()})
+                                   'type': 'r',
+                                   'analysis_uid': reject.UID(),
+                                   'container_uid': self.UID()})
                 new_ws_analyses.append(analysis.UID())
                 new_layout.append({'position': position,
-                                   'type':'a',
-                                   'analysis_uid':analysis.UID(),
-                                   'container_uid':analysis.aq_parent.UID()})
+                                   'type': 'a',
+                                   'analysis_uid': analysis.UID(),
+                                   'container_uid': analysis.aq_parent.UID()})
             # Reference analyses
             # - Create a new reference analysis in the new worksheet
             # - Transition the original analysis to 'rejected' state
@@ -1059,16 +983,17 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 position = analysis_positions[analysis.UID()]
                 old_ws_analyses.append(analysis.UID())
                 old_layout.append({'position': position,
-                                   'type':reference_type,
-                                   'analysis_uid':analysis.UID(),
-                                   'container_uid':reference.UID()})
+                                   'type': reference_type,
+                                   'analysis_uid': analysis.UID(),
+                                   'container_uid': reference.UID()})
                 new_ws_analyses.append(new_analysis_uid)
                 new_layout.append({'position': position,
-                                   'type':reference_type,
-                                   'analysis_uid':new_analysis_uid,
-                                   'container_uid':reference.UID()})
+                                   'type': reference_type,
+                                   'analysis_uid': new_analysis_uid,
+                                   'container_uid': reference.UID()})
                 workflow.doActionFor(analysis, 'reject')
-                new_reference = reference.uid_catalog(UID=new_analysis_uid)[0].getObject()
+                new_reference = reference.uid_catalog(UID=new_analysis_uid)[
+                    0].getObject()
                 workflow.doActionFor(new_reference, 'assign')
                 analysis.reindexObject()
             # Duplicate analyses
@@ -1087,14 +1012,14 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
                 position = analysis_positions[analysis.UID()]
                 old_ws_analyses.append(analysis.UID())
                 old_layout.append({'position': position,
-                                   'type':'d',
-                                   'analysis_uid':analysis.UID(),
-                                   'container_uid':self.UID()})
+                                   'type': 'd',
+                                   'analysis_uid': analysis.UID(),
+                                   'container_uid': self.UID()})
                 new_ws_analyses.append(new_duplicate.UID())
                 new_layout.append({'position': position,
-                                   'type':'d',
-                                   'analysis_uid':new_duplicate.UID(),
-                                   'container_uid':new_ws.UID()})
+                                   'type': 'd',
+                                   'analysis_uid': new_duplicate.UID(),
+                                   'container_uid': new_ws.UID()})
                 workflow.doActionFor(analysis, 'reject')
                 analysis.reindexObject()
 
@@ -1104,12 +1029,12 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         for analysis in new_ws.getAnalyses():
             review_state = workflow.getInfoFor(analysis, 'review_state', '')
             if review_state == 'to_be_verified':
-                changeWorkflowState(analysis, "bika_analysis_workflow", "sample_received")
+                changeWorkflowState(analysis, "bika_analysis_workflow",
+                                    "sample_received")
         self.REQUEST['context_uid'] = self.UID()
         self.setLayout(old_layout)
         self.setAnalyses(old_ws_analyses)
         self.replaced_by = new_ws.UID()
-
 
     def checkUserManage(self):
         """ Checks if the current user has granted access to this worksheet
@@ -1147,15 +1072,15 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         if analyst != _c(member.getId()):
             roles = member.getRoles()
             restrict = 'Manager' not in roles \
-                    and 'LabManager' not in roles \
-                    and 'LabClerk' not in roles \
-                    and 'RegulatoryInspector' not in roles \
-                    and self.bika_setup.getRestrictWorksheetUsersAccess()
+                       and 'LabManager' not in roles \
+                       and 'LabClerk' not in roles \
+                       and 'RegulatoryInspector' not in roles \
+                       and self.bika_setup.getRestrictWorksheetUsersAccess()
             allowed = not restrict
 
         return allowed
 
-    def setAnalyst(self,analyst):
+    def setAnalyst(self, analyst):
         for analysis in self.getAnalyses():
             analysis.setAnalyst(analyst)
         self.Schema().getField('Analyst').set(self, analyst)
@@ -1180,5 +1105,6 @@ class Worksheet(BaseFolder, HistoryAwareMixin):
         """
         analyses = self.getAnalyses()
         return list(set([an.getDepartmentUID() for an in analyses]))
+
 
 registerType(Worksheet, PROJECTNAME)

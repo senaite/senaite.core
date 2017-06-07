@@ -6,59 +6,10 @@
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes import atapi
 from Products.Archetypes.config import REFERENCE_CATALOG
-from Products.Archetypes.public import DateTimeField, ReferenceWidget, Schema
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.fields import UIDReferenceField
-from bika.lims.browser.widgets import DateTimeWidget
 from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
-from plone.app.blob.field import FileField
-
-# It comes from blob
-AttachmentFile = FileField(
-    'AttachmentFile',
-    widget=atapi.FileWidget(
-        label=_("Attachment")
-    )
-)
-
-AttachmentType = UIDReferenceField(
-    'AttachmentType',
-    required=0,
-    allowed_types=('AttachmentType',),
-    widget=ReferenceWidget(
-        label=_("Attachment Type")
-    )
-)
-
-AttachmentKeys = atapi.StringField(
-    'AttachmentKeys',
-    searchable=True,
-    widget=atapi.StringWidget(
-        label=_("Attachment Keys")
-    )
-)
-
-DateLoaded = DateTimeField(
-    'DateLoaded',
-    required=1,
-    default_method='current_date',
-    widget=DateTimeWidget(
-        label=_("Date Loaded")
-    )
-)
-
-schema = BikaSchema.copy() + Schema((
-    AttachmentFile,
-    AttachmentType,
-    AttachmentKeys,
-    DateLoaded
-))
-
-schema['id'].required = False
-schema['title'].required = False
+from bika.lims.content.schema.attachment import schema
 
 
 class Attachment(atapi.BaseFolder):

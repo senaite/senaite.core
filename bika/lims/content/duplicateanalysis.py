@@ -4,33 +4,14 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from AccessControl import ClassSecurityInfo
-from Products.Archetypes.public import Schema, registerType
-from Products.Archetypes.public import StringField
+from Products.Archetypes.public import registerType
 from bika.lims import deprecated
-from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.abstractroutineanalysis import AbstractRoutineAnalysis
-from bika.lims.content.abstractroutineanalysis import schema
+from bika.lims.content.schema.duplicateanalysis import schema
 from bika.lims.interfaces import IDuplicateAnalysis
 from bika.lims.workflow.duplicateanalysis import events
 from zope.interface import implements
-
-# A reference back to the original analysis from which this one was duplicated.
-Analysis = UIDReferenceField(
-    'Analysis',
-    required=1,
-    allowed_types=('Analysis', 'ReferenceAnalysis'),
-)
-
-# TODO Analysis - Duplicates shouldn't have this attribute, only ReferenceAns
-ReferenceAnalysesGroupID = StringField(
-    'ReferenceAnalysesGroupID',
-)
-
-schema = schema.copy() + Schema((
-    Analysis,
-    ReferenceAnalysesGroupID,
-))
 
 
 class DuplicateAnalysis(AbstractRoutineAnalysis):

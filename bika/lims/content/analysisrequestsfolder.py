@@ -10,11 +10,11 @@ from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from bika.lims.config import PROJECTNAME
+from bika.lims.content.schema.analysisrequestsfolder import schema
 from bika.lims.interfaces import IAnalysisRequestsFolder, IHaveNoBreadCrumbs
 from plone.app.folder import folder
 from zope.interface import implements
 
-schema = folder.ATFolderSchema.copy()
 
 class AnalysisRequestsFolder(folder.ATFolder):
     implements(IAnalysisRequestsFolder, IHaveNoBreadCrumbs)
@@ -22,6 +22,7 @@ class AnalysisRequestsFolder(folder.ATFolder):
     displayContentsTab = False
     security = ClassSecurityInfo()
 
-schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
+
+schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
 
 atapi.registerType(AnalysisRequestsFolder, PROJECTNAME)

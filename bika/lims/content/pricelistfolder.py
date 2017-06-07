@@ -8,17 +8,11 @@
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import *
 from bika.lims import PROJECTNAME
-from bika.lims.content.bikaschema import BikaFolderSchema
+from bika.lims.content.schema.pricelistfolder import schema
 from bika.lims.interfaces import IHaveNoBreadCrumbs
 from bika.lims.interfaces import IPricelistFolder
 from plone.app.folder import folder
 from zope.interface import implements
-
-schema = BikaFolderSchema.copy()
-IdField = schema['id']
-IdField.widget.visible = {'edit': 'hidden', 'view': 'invisible'}
-TitleField = schema['title']
-TitleField.widget.visible = {'edit': 'hidden', 'view': 'invisible'}
 
 
 class PricelistFolder(folder.ATFolder):

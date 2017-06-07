@@ -6,18 +6,10 @@
 from AccessControl.SecurityInfo import ClassSecurityInfo
 from Products.Archetypes.public import BaseFolder
 from Products.Archetypes.public import DisplayList
-from Products.Archetypes.public import Schema
 from Products.Archetypes.public import registerType
 from Products.CMFCore.utils import getToolByName
 from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
-
-schema = BikaSchema.copy() + Schema((
-
-))
-
-schema['description'].schemata = 'default'
-schema['description'].widget.visible = True
+from bika.lims.content.schema.samplecondition import schema
 
 
 class SampleCondition(BaseFolder):

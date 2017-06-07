@@ -9,13 +9,10 @@ from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from bika.lims.config import PROJECTNAME
+from bika.lims.content.schema.clientfolder import schema
 from bika.lims.interfaces import IClientFolder, IHaveNoBreadCrumbs
 from plone.app.folder import folder
 from zope.interface import implements
-
-schema = folder.ATFolderSchema.copy()
-schema['id'].widget.visible = {'edit': 'hidden', 'view': 'invisible'}
-schema['title'].widget.visible = {'edit': 'hidden', 'view': 'invisible'}
 
 
 class ClientFolder(folder.ATFolder):
@@ -23,6 +20,7 @@ class ClientFolder(folder.ATFolder):
     displayContentsTab = False
     schema = schema
     security = ClassSecurityInfo()
+
 
 schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
 

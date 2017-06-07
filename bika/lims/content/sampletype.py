@@ -6,127 +6,12 @@
 from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.Archetypes.public import *
-from Products.Archetypes.references import HoldingReference
 from Products.CMFCore.utils import getToolByName
 from Products.CMFPlone.utils import safe_unicode
-from bika.lims import bikaMessageFactory as _
-from bika.lims.browser.fields import DurationField
-from bika.lims.browser.widgets import DurationWidget
-from bika.lims.browser.widgets.referencewidget import ReferenceWidget as brw
 from bika.lims.config import PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.content.schema.sampletype import schema
 from bika.lims.interfaces import ISampleType
 from zope.interface import implements
-
-RetentionPeriod = DurationField(
-    'RetentionPeriod',
-    required=1,
-    default_method='getDefaultLifetime',
-    widget=DurationWidget(
-        label=_("Retention Period"),
-        description=_(
-            "The period for which un-preserved samples of this type "
-            "can be kept before "
-            "they expire and cannot be analysed any further")
-    )
-)
-
-Hazardous = BooleanField(
-    'Hazardous',
-    default=False,
-    widget=BooleanWidget(
-        label=_("Hazardous"),
-        description=_(
-            "Samples of this type should be treated as hazardous")
-    )
-)
-
-SampleMatrix = ReferenceField(
-    'SampleMatrix',
-    required=0,
-    allowed_types=('SampleMatrix',),
-    vocabulary='SampleMatricesVocabulary',
-    relationship='SampleTypeSampleMatrix',
-    referenceClass=HoldingReference,
-    widget=ReferenceWidget(
-        checkbox_bound=0,
-        label=_("Sample Matrix")
-    )
-)
-
-Prefix = StringField(
-    'Prefix',
-    required=True,
-    widget=StringWidget(
-        label=_("Sample Type Prefix")
-    )
-)
-
-MinimumVolume = StringField(
-    'MinimumVolume',
-    required=1,
-    widget=StringWidget(
-        label=_("Minimum Volume"),
-        description=_(
-            "The minimum sample volume required for analysis eg. '10 "
-            "ml' or '1 kg'.")
-    )
-)
-
-ContainerType = ReferenceField(
-    'ContainerType',
-    required=0,
-    allowed_types=('ContainerType',),
-    vocabulary='ContainerTypesVocabulary',
-    relationship='SampleTypeContainerType',
-    widget=ReferenceWidget(
-        checkbox_bound=0,
-        label=_("Default Container Type"),
-        description=_(
-            "The default container type. New sample partitions "
-            "are automatically assigned a container of this "
-            "type, unless it has been specified in more details "
-            "per analysis service")
-    )
-)
-
-SamplePoints = ReferenceField(
-    'SamplePoints',
-    required=0,
-    multiValued=1,
-    allowed_types=('SamplePoint',),
-    vocabulary='SamplePointsVocabulary',
-    relationship='SampleTypeSamplePoint',
-    widget=brw(
-        label=_("Sample Points"),
-        description=_(
-            "The list of sample points from which this sample "
-            "type can be collected.  If no sample points are "
-            "selected, then all sample points are available.")
-    )
-)
-
-SamplePointTitle = ComputedField(
-    'SamplePointTitle',
-    expression="[o.Title() for o in context.getSamplePoints()]",
-    widget=ComputedWidget(
-        visibile=False,
-    )
-)
-
-schema = BikaSchema.copy() + Schema((
-    RetentionPeriod,
-    Hazardous,
-    SampleMatrix,
-    Prefix,
-    MinimumVolume,
-    ContainerType,
-    SamplePoints,
-    SamplePointTitle
-))
-
-schema['description'].schemata = 'default'
-schema['description'].widget.visible = True
 
 
 class SampleType(BaseContent, HistoryAwareMixin):

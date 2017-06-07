@@ -18,7 +18,7 @@ from bika.lims import bikaMessageFactory as _
 from bika.lims.utils import t
 from Products.Archetypes import PloneMessageFactory as _p
 from bika.lims.interfaces import IStorageLocations
-from bika.lims.content.bikaschema import BikaFolderSchema
+from bika.lims.content.schema.bikaschema import BikaFolderSchema
 from plone.app.content.browser.interfaces import IFolderContentsView
 from plone.app.folder.folder import ATFolder, ATFolderSchema
 from zope.interface.declarations import implements
