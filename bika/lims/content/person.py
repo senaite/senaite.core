@@ -3,159 +3,214 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from webdav.common import rfc1123_date
 from AccessControl import ClassSecurityInfo
+from Products.Archetypes.public import *
 from Products.CMFCore import permissions as CMFCorePermissions
 from Products.CMFCore.utils import getToolByName
-from Products.Archetypes.public import *
-from bika.lims.content.bikaschema import BikaSchema
-from Products.ATExtensions.ateapi import RecordWidget
-from bika.lims.browser.widgets import AddressWidget
-from archetypes.referencebrowserwidget import ReferenceBrowserWidget
-from bika.lims.config import GENDERS, PROJECTNAME
+from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import AddressField
-from bika.lims import PMF, bikaMessageFactory as _
+from bika.lims.browser.widgets import AddressWidget
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+
+Salutation = StringField(
+    'Salutation',
+    widget=StringWidget(
+        label=_("Salutation",
+                "Title"),
+        description=_("Greeting title eg. Mr, Mrs, Dr")
+    )
+)
+
+Firstname = StringField(
+    'Firstname',
+    required=1,
+    widget=StringWidget(
+        label=_("Firstname")
+    )
+)
+
+Middleinitial = StringField(
+    'Middleinitial',
+    required=0,
+    widget=StringWidget(
+        label=_("Middle initial")
+    )
+)
+
+Middlename = StringField(
+    'Middlename',
+    required=0,
+    widget=StringWidget(
+        label=_("Middle name")
+    )
+)
+
+Surname = StringField(
+    'Surname',
+    required=1,
+    widget=StringWidget(
+        label=_("Surname")
+    )
+)
+
+Fullname = ComputedField(
+    'Fullname',
+    expression='context.getFullname()',
+    searchable=1,
+    widget=ComputedWidget(
+        label=_("Full Name"),
+        visible={'edit': 'invisible', 'view': 'invisible'}
+    )
+)
+
+Username = StringField(
+    'Username',
+    widget=StringWidget(
+        visible=False
+    )
+)
+
+EmailAddress = StringField(
+    'EmailAddress',
+    schemata='Email Telephone Fax',
+    searchable=1,
+    widget=StringWidget(
+        label=_("Email Address")
+    )
+)
+
+BusinessPhone = StringField(
+    'BusinessPhone',
+    schemata='Email Telephone Fax',
+    widget=StringWidget(
+        label=_("Phone (business)")
+    )
+)
+
+BusinessFax = StringField(
+    'BusinessFax',
+    schemata='Email Telephone Fax',
+    widget=StringWidget(
+        label=_("Fax (business)")
+    )
+)
+
+HomePhone = StringField(
+    'HomePhone',
+    schemata='Email Telephone Fax',
+    widget=StringWidget(
+        label=_("Phone (home)")
+    )
+)
+
+MobilePhone = StringField(
+    'MobilePhone',
+    schemata='Email Telephone Fax',
+    widget=StringWidget(
+        label=_("Phone (mobile)")
+    )
+)
+
+JobTitle = StringField(
+    'JobTitle',
+    widget=StringWidget(
+        label=_("Job title")
+    )
+)
+
+Department = StringField(
+    'Department',
+    widget=StringWidget(
+        label=_("Department")
+    )
+)
+
+PhysicalAddress = AddressField(
+    'PhysicalAddress',
+    schemata='Address',
+    widget=AddressWidget(
+        label=_("Physical address")
+    )
+)
+
+City = ComputedField(
+    'City',
+    expression='context.getPhysicalAddress().get("city")',
+    searchable=1,
+    widget=ComputedWidget(
+        visible=False
+    )
+)
+
+District = ComputedField(
+    'District',
+    expression='context.getPhysicalAddress().get("district")',
+    searchable=1,
+    widget=ComputedWidget(
+        visible=False
+    )
+)
+
+PostalCode = ComputedField(
+    'PostalCode',
+    expression='context.getPhysicalAddress().get("postalCode")',
+    searchable=1,
+    widget=ComputedWidget(
+        visible=False
+    )
+)
+
+Country = ComputedField(
+    'Country',
+    expression='context.getPhysicalAddress().get("country")',
+    searchable=1,
+    widget=ComputedWidget(
+        visible=False
+    )
+)
+
+PostalAddress = AddressField(
+    'PostalAddress',
+    schemata='Address',
+    widget=AddressWidget(
+        label=_("Postal address")
+    )
+)
+
+ObjectWorkflowStates = ComputedField(
+    'ObjectWorkflowStates',
+    expression='context.getObjectWorkflowStates()',
+    searchable=1,
+    widget=ComputedWidget(
+        visible=False
+    )
+)
 
 schema = BikaSchema.copy() + Schema((
-    StringField('Salutation',
-        widget = StringWidget(
-            label = _("Salutation",
-                      "Title"),
-            description=_("Greeting title eg. Mr, Mrs, Dr"),
-        ),
-    ),
-    StringField('Firstname',
-        required = 1,
-        widget = StringWidget(
-            label=_("Firstname"),
-        ),
-    ),
-    StringField('Middleinitial',
-        required = 0,
-        widget = StringWidget(
-            label=_("Middle initial"),
-        ),
-    ),
-    StringField('Middlename',
-        required = 0,
-        widget = StringWidget(
-            label=_("Middle name"),
-        ),
-    ),
-    StringField('Surname',
-        required = 1,
-        widget = StringWidget(
-            label=_("Surname"),
-        ),
-    ),
-    ComputedField('Fullname',
-        expression = 'context.getFullname()',
-        searchable = 1,
-        widget = ComputedWidget(
-            label=_("Full Name"),
-            visible = {'edit': 'invisible', 'view': 'invisible'},
-        ),
-    ),
-    StringField('Username',
-        widget = StringWidget(
-            visible = False
-        ),
-    ),
-    StringField('EmailAddress',
-        schemata = 'Email Telephone Fax',
-        searchable = 1,
-        widget = StringWidget(
-            label=_("Email Address"),
-        ),
-    ),
-    StringField('BusinessPhone',
-        schemata = 'Email Telephone Fax',
-        widget = StringWidget(
-            label=_("Phone (business)"),
-        ),
-    ),
-    StringField('BusinessFax',
-        schemata = 'Email Telephone Fax',
-        widget = StringWidget(
-            label=_("Fax (business)"),
-        ),
-    ),
-    StringField('HomePhone',
-        schemata = 'Email Telephone Fax',
-        widget = StringWidget(
-            label=_("Phone (home)"),
-        ),
-    ),
-    StringField('MobilePhone',
-        schemata = 'Email Telephone Fax',
-        widget = StringWidget(
-            label=_("Phone (mobile)"),
-        ),
-    ),
-    StringField('JobTitle',
-        widget = StringWidget(
-            label=_("Job title"),
-        ),
-    ),
-    StringField('Department',
-        widget = StringWidget(
-            label=_("Department"),
-        ),
-    ),
-    AddressField('PhysicalAddress',
-        schemata = 'Address',
-        widget = AddressWidget(
-           label=_("Physical address"),
-        ),
-    ),
-    ComputedField(
-        'City',
-        expression='context.getPhysicalAddress().get("city")',
-        searchable=1,
-        widget=ComputedWidget(
-            visible=False
-        ),
-    ),
-    ComputedField(
-        'District',
-        expression='context.getPhysicalAddress().get("district")',
-        searchable=1,
-        widget=ComputedWidget(
-            visible=False
-        ),
-    ),
-    ComputedField(
-        'PostalCode',
-        expression='context.getPhysicalAddress().get("postalCode")',
-        searchable=1,
-        widget=ComputedWidget(
-            visible=False
-        ),
-    ),
-    ComputedField(
-        'Country',
-        expression='context.getPhysicalAddress().get("country")',
-        searchable=1,
-        widget=ComputedWidget(
-            visible=False
-        ),
-    ),
-    AddressField('PostalAddress',
-        schemata = 'Address',
-        widget = AddressWidget(
-           label=_("Postal address"),
-        ),
-    ),
-    ComputedField(
-        'ObjectWorkflowStates',
-        expression='context.getObjectWorkflowStates()',
-        searchable=1,
-        widget=ComputedWidget(
-            visible=False
-        ),
-    ),
-),
-)
+    Salutation,
+    Firstname,
+    Middleinitial,
+    Middlename,
+    Surname,
+    Fullname,
+    Username,
+    EmailAddress,
+    BusinessPhone,
+    BusinessFax,
+    HomePhone,
+    MobilePhone,
+    JobTitle,
+    Department,
+    PhysicalAddress,
+    City,
+    District,
+    PostalCode,
+    Country,
+    PostalAddress,
+    ObjectWorkflowStates
+))
+
 
 class Person(BaseFolder):
     security = ClassSecurityInfo()
@@ -163,6 +218,7 @@ class Person(BaseFolder):
     schema = schema
 
     security.declareProtected(CMFCorePermissions.View, 'getSchema')
+
     def getSchema(self):
         return self.schema
 
@@ -178,18 +234,21 @@ class Person(BaseFolder):
         fullname = ''
         if fn or sn:
             if mi and md:
-                fullname = '%s %s %s %s' % (self.getFirstname(),
-                                        self.getMiddleinitial(),
-                                        self.getMiddlename(),
-                                        self.getSurname())
+                fullname = '%s %s %s %s' % (
+                    self.getFirstname(),
+                    self.getMiddleinitial(),
+                    self.getMiddlename(),
+                    self.getSurname())
             elif mi:
-                fullname = '%s %s %s' % (self.getFirstname(),
-                                        self.getMiddleinitial(),
-                                        self.getSurname())
+                fullname = '%s %s %s' % (
+                    self.getFirstname(),
+                    self.getMiddleinitial(),
+                    self.getSurname())
             elif md:
-                fullname = '%s %s %s' % (self.getFirstname(),
-                                        self.getMiddlename(),
-                                        self.getSurname())
+                fullname = '%s %s %s' % (
+                    self.getFirstname(),
+                    self.getMiddlename(),
+                    self.getSurname())
             else:
                 fullname = '%s %s' % (self.getFirstname(), self.getSurname())
         return fullname.strip()
@@ -200,7 +259,6 @@ class Person(BaseFolder):
         mi = self.getMiddleinitial()
         md = self.getMiddlename()
         sn = self.getSurname()
-        fullname = ''
         if fn and sn:
             fullname = '%s, %s' % (self.getSurname(), self.getFirstname())
         elif fn or sn:
@@ -211,7 +269,7 @@ class Person(BaseFolder):
         if fullname != '':
             if mi and md:
                 fullname = '%s %s %s' % (fullname, self.getMiddleinitial(),
-                                            self.getMiddlename())
+                                         self.getMiddlename())
             elif mi:
                 fullname = '%s %s' % (fullname, self.getMiddleinitial())
             elif md:
@@ -222,15 +280,16 @@ class Person(BaseFolder):
     Title = getFullname
 
     security.declareProtected(CMFCorePermissions.ManagePortal, 'hasUser')
+
     def hasUser(self):
-        """ check if contact has user """
+        """Check if contact has user
+         """
         return self.portal_membership.getMemberById(
             self.getUsername()) is not None
 
     def getObjectWorkflowStates(self):
-        """
-        Returns a dictionary with the workflow id as key and workflow state as
-        value.
+        """Returns a dictionary with the workflow id as key and workflow 
+        state as value.
         :returns: {'review_state':'active',...}
         """
         workflow = getToolByName(self, 'portal_workflow')
@@ -240,26 +299,5 @@ class Person(BaseFolder):
             states[w.state_var] = state
         return states
 
-    ### Removed these accessors to prevent confusion when LDAP is used
-    # def getEmailAddress(self, **kw):
-    #     """ Return the email address stored in member data if the
-    #         person is a Plone user, else return the one stored on the
-    #         person.
-    #     """
-    #     member = self.portal_membership.getMemberById(self.getUsername())
-    #     if member:
-    #         return member.getProperty('email')
-    #     else:
-    #         return self.Schema()['EmailAddress'].get(self)
-    # def setEmailAddress(self, value, **kw):
-    #     """ Set email in member data if the person is a Plone user, else
-    #         store it on the Person instance.
-    #     """
-    #     self.Schema()['EmailAddress'].set(self, value, **kw)
-    #     username = self.getUsername()
-    #     if username:
-    #         member = self.portal_membership.getMemberById(username)
-    #         if member:
-    #             member.setMemberProperties({'email': value})
 
 registerType(Person, PROJECTNAME)

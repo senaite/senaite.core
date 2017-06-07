@@ -27,286 +27,348 @@ from plone.app.blob.field import FileField as BlobFileField
 from plone.app.folder.folder import ATFolder
 from zope.interface import implements
 
-schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
+InstrumentType = ReferenceField(
+    'InstrumentType',
+    vocabulary='getInstrumentTypes',
+    allowed_types=('InstrumentType',),
+    relationship='InstrumentInstrumentType',
+    required=1,
+    widget=SelectionWidget(
+        format='select',
+        label=_('Instrument type'),
+        visible={'view': 'invisible', 'edit': 'visible'}
+    )
+)
 
-    ReferenceField('InstrumentType',
-        vocabulary='getInstrumentTypes',
-        allowed_types=('InstrumentType',),
-        relationship='InstrumentInstrumentType',
-        required=1,
-        widget=SelectionWidget(
-            format='select',
-            label=_("Instrument type"),
-            visible={'view': 'invisible', 'edit': 'visible'}
-        ),
-    ),
-
-    ReferenceField('Manufacturer',
-        vocabulary='getManufacturers',
-        allowed_types=('Manufacturer',),
-        relationship='InstrumentManufacturer',
-        required=1,
-        widget=SelectionWidget(
-            format='select',
-            label=_("Manufacturer"),
-            visible={'view': 'invisible', 'edit': 'visible'}
-        ),
-    ),
-
-    ReferenceField('Supplier',
-        vocabulary='getSuppliers',
-        allowed_types=('Supplier',),
-        relationship='InstrumentSupplier',
-        required=1,
-        widget=SelectionWidget(
-            format='select',
-            label=_("Supplier"),
-            visible={'view': 'invisible', 'edit': 'visible'}
-        ),
-    ),
-
-    StringField('Model',
-        widget = StringWidget(
-            label=_("Model"),
-            description=_("The instrument's model number"),
-        )
-    ),
-
-    StringField('SerialNo',
-        widget = StringWidget(
-            label=_("Serial No"),
-            description=_("The serial number that uniquely identifies the instrument"),
-        )
-    ),
-
-    UIDReferenceField(
-        'Method',
-        vocabulary='_getAvailableMethods',
-        allowed_types=('Method',),
-        required=0,
-        widget=SelectionWidget(
-            format='select',
-            label=_("Method"),
-            visible=False,
-        ),
-    ),
-
-    ReferenceField('Methods',
-        vocabulary='_getAvailableMethods',
-        allowed_types=('Method',),
-        relationship='InstrumentMethods',
-        required=0,
-        multiValued=1,
-        widget=ReferenceWidget(
-            checkbox_bound=0,
-            format='select',
-            label=_("Methods"),
-        ),
-    ),
-
-    BooleanField('DisposeUntilNextCalibrationTest',
-        default = False,
-        widget = BooleanWidget(
-            label=_("De-activate until next calibration test"),
-            description=_("If checked, the instrument will be unavailable until the next valid "
-                          "calibration was performed. This checkbox will automatically be unchecked."),
-        ),
-    ),
-
-    # Procedures
-    TextField('InlabCalibrationProcedure',
-        schemata = 'Procedures',
-        default_content_type = 'text/plain',
-        allowed_content_types= ('text/plain', ),
-        default_output_type="text/plain",
-        widget = TextAreaWidget(
-            label=_("In-lab calibration procedure"),
-            description=_("Instructions for in-lab regular calibration routines intended for analysts"),
-        ),
-    ),
-    TextField('PreventiveMaintenanceProcedure',
-        schemata = 'Procedures',
-        default_content_type = 'text/plain',
-        allowed_content_types= ('text/plain', ),
-        default_output_type="text/plain",
-        widget = TextAreaWidget(
-            label=_("Preventive maintenance procedure"),
-            description=_("Instructions for regular preventive and maintenance routines intended for analysts"),
-        ),
-    ),
-
-    StringField('DataInterface',
-        vocabulary = "getExportDataInterfacesList",
-        widget = SelectionWidget(
-            checkbox_bound = 0,
-            label=_("Data Interface"),
-            description=_("Select an Export interface for this instrument."),
-            format='select',
-            default='',
-            visible = True,
-        ),
-    ),
-
-    StringField('ImportDataInterface',
-        vocabulary = "getImportDataInterfacesList",
-        multiValued=1,
-        widget = MultiSelectionWidget(
-            checkbox_bound = 0,
-            label=_("Import Data Interface"),
-            description=_("Select an Import interface for this instrument."),
-            format='select',
-            default='',
-            visible = True,
-        ),
-    ),
-
-    RecordsField(
-        'ResultFilesFolder',
-        subfields=('InterfaceName', 'Folder'),
-        subfield_labels={'InterfaceName': _('Interface Code'),
-                         'Folder': _('Folder that results will be saved')},
-        subfield_readonly={'InterfaceName': True,
-                           'Folder': False},
-        widget=RecordsWidget(
-            label=_("Result files folders"),
-            description=_("For each interface of this instrument, \
-                          you can define a folder where \
-                          the system should look for the results files while \
-                          automatically importing results. Having a folder \
-                          for each Instrument and inside that folder creating \
-                          different folders for each of its Interfaces \
-                          can be a good approach. You can use Interface codes \
-                          to be sure that folder names are unique."),
-            visible=True,
-        ),
-    ),
-
-    RecordsField('DataInterfaceOptions',
-        type = 'interfaceoptions',
-        subfields = ('Key','Value'),
-        required_subfields = ('Key','Value'),
-        subfield_labels = {'OptionValue': _('Key'),
-                           'OptionText': _('Value'),},
-        widget = RecordsWidget(
-            label=_("Data Interface Options"),
-            description=_("Use this field to pass arbitrary parameters to the export/import modules."),
-            visible = False,
-        ),
-    ),
-
-    # References to all analyses performed with this instrument.
-    # Includes regular analyses, QC analyes and Calibration tests.
-    UIDReferenceField('Analyses',
-        required = 0,
-        multiValued = 1,
-        allowed_types = ('ReferenceAnalysis', 'DuplicateAnalysis',
-                         'Analysis'),
-        widget = ReferenceWidget(
-            visible = False,
-        ),
-    ),
-
-    # Private method. Use getLatestReferenceAnalyses() instead.
-    # See getLatestReferenceAnalyses() method for further info.
-    ReferenceField('_LatestReferenceAnalyses',
-        required = 0,
-        multiValued = 1,
-        allowed_types = ('ReferenceAnalysis'),
-        relationship = 'InstrumentLatestReferenceAnalyses',
-        widget = ReferenceWidget(
-            visible = False,
-        ),
-    ),
-
-    ComputedField('Valid',
-        expression = "'1' if context.isValid() else '0'",
-        widget = ComputedWidget(
-            visible = False,
-        ),
-    ),
-    #Needed since InstrumentType is sorted by its own object, not by its name.
-    ComputedField('InstrumentTypeName',
-        expression = 'here.getInstrumentType().Title() if here.getInstrumentType() else ""',
-        widget = ComputedWidget(
-            label=_('Instrument Type'),
-            visible=True,
-         ),
-    ),
-
-    ComputedField('InstrumentLocationName',
-        expression = 'here.getInstrumentLocation().Title() if here.getInstrumentLocation() else ""',
-        widget = ComputedWidget(
-            label=_("Instrument Location"),
-            label_msgid="instrument_location",
-            description=_("The room and location where the instrument is installed"),
-            description_msgid="help_instrument_location",
-            visible=True,
-         ),
-    ),
-
-    ComputedField('ManufacturerName',
-        expression = 'here.getManufacturer().Title() if here.getManufacturer() else ""',
-        widget = ComputedWidget(
+Manufacturer = ReferenceField(
+    'Manufacturer',
+    vocabulary='getManufacturers',
+    allowed_types=('Manufacturer',),
+    relationship='InstrumentManufacturer',
+    required=1,
+    widget=SelectionWidget(
+        format='select',
         label=_('Manufacturer'),
-            visible=True,
-         ),
-    ),
+        visible={'view': 'invisible', 'edit': 'visible'}
+    )
+)
 
-    ComputedField('SupplierName',
-        expression = 'here.getSupplier().Title() if here.getSupplier() else ""',
-        widget = ComputedWidget(
+Supplier = ReferenceField(
+    'Supplier',
+    vocabulary='getSuppliers',
+    allowed_types=('Supplier',),
+    relationship='InstrumentSupplier',
+    required=1,
+    widget=SelectionWidget(
+        format='select',
         label=_('Supplier'),
-            visible=True,
-         ),
-    ),
+        visible={'view': 'invisible', 'edit': 'visible'}
+    )
+)
 
-    StringField('AssetNumber',
-        widget = StringWidget(
-            label=_("Asset Number"),
-            description=_("The instrument's ID in the lab's asset register"),
-        )
-    ),
+Model = StringField(
+    'Model',
+    widget=StringWidget(
+        label=_('Model'),
+        description=_("The instrument's model number")
+    )
+)
 
-    ReferenceField('InstrumentLocation',
-        schemata = 'Additional info.',
-        vocabulary='getInstrumentLocations',
-        allowed_types=('InstrumentLocation', ),
-        relationship='InstrumentInstrumentLocation',
-        required=0,
-        widget=SelectionWidget(
-            format='select',
-            label=_("Instrument Location"),
-            label_msgid="instrument_location",
-            description=_("The room and location where the instrument is installed"),
-            description_msgid="help_instrument_location",
-            visible={'view': 'invisible', 'edit': 'visible'}
-        )
-    ),
+SerialNo = StringField(
+    'SerialNo',
+    widget=StringWidget(
+        label=_('Serial No'),
+        description=_(
+            'The serial number that uniquely identifies the instrument')
+    )
+)
 
-    ImageField('Photo',
-        schemata='Additional info.',
-        widget=ImageWidget(
-            label=_("Photo image file"),
-            description=_("Photo of the instrument"),
-        ),
-    ),
+Method = UIDReferenceField(
+    'Method',
+    vocabulary='_getAvailableMethods',
+    allowed_types=('Method',),
+    required=0,
+    widget=SelectionWidget(
+        format='select',
+        label=_('Method'),
+        visible=False
+    )
+)
 
-    DateTimeField('InstallationDate',
-    schemata = 'Additional info.',
-    widget = DateTimeWidget(
-        label=_("InstallationDate"),
-        description=_("The date the instrument was installed"),
-        )
-    ),
+Methods = ReferenceField(
+    'Methods',
+    vocabulary='_getAvailableMethods',
+    allowed_types=('Method',),
+    relationship='InstrumentMethods',
+    required=0,
+    multiValued=1,
+    widget=ReferenceWidget(
+        checkbox_bound=0,
+        format='select',
+        label=_('Methods')
+    )
+)
 
-    BlobFileField('InstallationCertificate',
-    schemata = 'Additional info.',
-    widget = FileWidget(
-        label=_("Installation Certificate"),
-        description=_("Installation certificate upload"),
-        )
-    ),
+DisposeUntilNextCalibrationTest = BooleanField(
+    'DisposeUntilNextCalibrationTest',
+    default=False,
+    widget=BooleanWidget(
+        label=_('De-activate until next calibration test'),
+        description=_(
+            'If checked, the instrument will be unavailable until the next '
+            'valid calibration was performed. This checkbox will '
+            'automatically be unchecked.')
+    )
+)
 
+# Procedures
+InlabCalibrationProcedure = TextField(
+    'InlabCalibrationProcedure',
+    schemata='Procedures',
+    default_content_type='text/plain',
+    allowed_content_types=('text/plain',),
+    default_output_type='text/plain',
+    widget=TextAreaWidget(
+        label=_('In-lab calibration procedure'),
+        description=_(
+            'Instructions for in-lab regular calibration routines intended '
+            'for analysts')
+    )
+)
+
+PreventiveMaintenanceProcedure = TextField(
+    'PreventiveMaintenanceProcedure',
+    schemata='Procedures',
+    default_content_type='text/plain',
+    allowed_content_types=('text/plain',),
+    default_output_type='text/plain',
+    widget=TextAreaWidget(
+        label=_('Preventive maintenance procedure'),
+        description=_(
+            'Instructions for regular preventive and maintenance routines '
+            'intended for analysts')
+    )
+)
+
+DataInterface = StringField(
+    'DataInterface',
+    vocabulary='getExportDataInterfacesList',
+    widget=SelectionWidget(
+        checkbox_bound=0,
+        label=_('Data Interface'),
+        description=_('Select an Export interface for this instrument.'),
+        format='select',
+        default='',
+        visible=True
+    )
+)
+
+ImportDataInterface = StringField(
+    'ImportDataInterface',
+    vocabulary='getImportDataInterfacesList',
+    multiValued=1,
+    widget=MultiSelectionWidget(
+        checkbox_bound=0,
+        label=_('Import Data Interface'),
+        description=_('Select an Import interface for this instrument.'),
+        format='select',
+        default='',
+        visible=True
+    )
+)
+
+ResultFilesFolder = RecordsField(
+    'ResultFilesFolder',
+    subfields=('InterfaceName', 'Folder'),
+    subfield_labels={'InterfaceName': _('Interface Code'),
+                     'Folder': _('Folder that results will be saved')},
+    subfield_readonly={'InterfaceName': True, 'Folder': False},
+    widget=RecordsWidget(
+        label=_('Result files folders'),
+        description=_(
+            'For each interface of this instrument,; you can define a folder '
+            'where; the system should look for the results files while; '
+            'automatically importing results. Having a folder for each '
+            'Instrument and inside that folder creating; different folders '
+            'for each of its Interfaces; can be a good approach. You can use '
+            'Interface codes; to be sure that folder names are unique.'),
+        visible=True
+    )
+)
+
+DataInterfaceOptions = RecordsField(
+    'DataInterfaceOptions',
+    type='interfaceoptions',
+    subfields=('Key', 'Value'),
+    required_subfields=('Key', 'Value'),
+    subfield_labels={'OptionValue': _('Key'),
+                     'OptionText': _('Value'), },
+    widget=RecordsWidget(
+        label=_("Data Interface Options"),
+        description=_(
+            "Use this field to pass arbitrary parameters to the export/import "
+            "modules."),
+        visible=False
+    )
+)
+
+# References to all analyses performed with this instrument.
+# Includes regular analyses, QC analyes and Calibration tests.
+Analyses = UIDReferenceField(
+    'Analyses',
+    required=0,
+    multiValued=1,
+    allowed_types=('ReferenceAnalysis', 'DuplicateAnalysis', 'Analysis'),
+    widget=ReferenceWidget(
+        visible=False
+    )
+)
+
+# Private method. Use getLatestReferenceAnalyses() instead.
+# See getLatestReferenceAnalyses() method for further info.
+_LatestReferenceAnalyses = ReferenceField(
+    '_LatestReferenceAnalyses',
+    required=0,
+    multiValued=1,
+    allowed_types=('ReferenceAnalysis',),
+    relationship='InstrumentLatestReferenceAnalyses',
+    widget=ReferenceWidget(
+        visible=False
+    )
+)
+
+Valid = ComputedField(
+    'Valid',
+    expression="'1' if context.isValid() else '0'",
+    widget=ComputedWidget(
+        visible=False
+    )
+)
+# Needed since InstrumentType is sorted by its own object, not by its name.
+InstrumentTypeName = ComputedField(
+    'InstrumentTypeName',
+    expression="context.getInstrumentType().Title() "
+               "if context.getInstrumentType() else ''",
+    widget=ComputedWidget(
+        label=_('Instrument Type'),
+        visible=True
+    )
+)
+
+InstrumentLocationName = ComputedField(
+    'InstrumentLocationName',
+    expression="context.getInstrumentLocation().Title() "
+               "if context.getInstrumentLocation() else ''",
+    widget=ComputedWidget(
+        label=_('Instrument Location'),
+        label_msgid='instrument_location',
+        description=_(
+            'The room and location where the instrument is installed'),
+        description_msgid='help_instrument_location',
+        visible=True
+    )
+)
+
+ManufacturerName = ComputedField(
+    'ManufacturerName',
+    expression="context.getManufacturer().Title() "
+               "if context.getManufacturer() else ''",
+    widget=ComputedWidget(
+        label=_('Manufacturer'),
+        visible=True
+    )
+)
+
+SupplierName = ComputedField(
+    'SupplierName',
+    expression='context.getSupplier().Title() '
+               'if context.getSupplier() else ""',
+    widget=ComputedWidget(
+        label=_('Supplier'),
+        visible=True
+    )
+)
+
+AssetNumber = StringField(
+    'AssetNumber',
+    widget=StringWidget(
+        label=_('Asset Number'),
+        description=_("The instrument's ID in the lab's asset register")
+    )
+)
+
+InstrumentLocation = ReferenceField(
+    'InstrumentLocation',
+    schemata='Additional info.',
+    vocabulary='getInstrumentLocations',
+    allowed_types=('InstrumentLocation',),
+    relationship='InstrumentInstrumentLocation',
+    required=0,
+    widget=SelectionWidget(
+        format='select',
+        label=_('Instrument Location'),
+        label_msgid='instrument_location',
+        description=_(
+            'The room and location where the instrument is installed'),
+        description_msgid='help_instrument_location',
+        visible={'view': 'invisible', 'edit': 'visible'}
+    )
+)
+
+Photo = ImageField(
+    'Photo',
+    schemata='Additional info.',
+    widget=ImageWidget(
+        label=_('Photo image file'),
+        description=_('Photo of the instrument')
+    )
+)
+
+InstallationDate = DateTimeField(
+    'InstallationDate',
+    schemata='Additional info.',
+    widget=DateTimeWidget(
+        label=_('InstallationDate'),
+        description=_('The date the instrument was installed')
+    )
+)
+
+InstallationCertificate = BlobFileField(
+    'InstallationCertificate',
+    schemata='Additional info.',
+    widget=FileWidget(
+        label=_('Installation Certificate'),
+        description=_('Installation certificate upload')
+    )
+)
+
+schema = BikaFolderSchema.copy() + BikaSchema.copy() + Schema((
+    InstrumentType,
+    Manufacturer,
+    Supplier,
+    Model,
+    SerialNo,
+    Method,
+    Methods,
+    DisposeUntilNextCalibrationTest,
+    InlabCalibrationProcedure,
+    PreventiveMaintenanceProcedure,
+    DataInterface,
+    ImportDataInterface,
+    ResultFilesFolder,
+    DataInterfaceOptions,
+    Analyses,
+    _LatestReferenceAnalyses,
+    Valid,
+    InstrumentTypeName,
+    InstrumentLocationName,
+    ManufacturerName,
+    SupplierName,
+    AssetNumber,
+    InstrumentLocation,
+    Photo,
+    InstallationDate,
+    InstallationCertificate
 ))
 
 schema.moveField('AssetNumber', before='description')
@@ -317,6 +379,8 @@ schema.moveField('InstrumentTypeName', before='ManufacturerName')
 schema['description'].widget.visible = True
 schema['description'].schemata = 'default'
 
+
+# noinspection PyUnusedLocal
 def getDataInterfaces(context, export_only=False):
     """ Return the current list of data interfaces
     """
@@ -332,6 +396,8 @@ def getDataInterfaces(context, export_only=False):
     exims.insert(0, ('', t(_('None'))))
     return DisplayList(exims)
 
+
+# noinspection PyUnusedLocal
 def getImportDataInterfaces(context, import_only=False):
     """ Return the current list of import data interfaces
     """
@@ -347,16 +413,21 @@ def getImportDataInterfaces(context, import_only=False):
     exims.insert(0, ('', t(_('None'))))
     return DisplayList(exims)
 
+
+# noinspection PyUnusedLocal
 def getMaintenanceTypes(context):
     types = [('preventive', 'Preventive'),
              ('repair', 'Repair'),
              ('enhance', 'Enhancement')]
-    return DisplayList(types);
+    return DisplayList(types)
 
+
+# noinspection PyUnusedLocal
 def getCalibrationAgents(context):
     agents = [('analyst', 'Analyst'),
-             ('maintainer', 'Maintainer')]
-    return DisplayList(agents);
+              ('maintainer', 'Maintainer')]
+    return DisplayList(agents)
+
 
 class Instrument(ATFolder):
     implements(IInstrument)
@@ -365,6 +436,7 @@ class Instrument(ATFolder):
     schema = schema
 
     _at_rename_after_creation = True
+
     def _renameAfterCreation(self, check_auto_id=False):
         from bika.lims.idserver import renameAfterCreation
         renameAfterCreation(self)
@@ -389,10 +461,9 @@ class Instrument(ATFolder):
 
     def getManufacturers(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [(c.UID, c.Title) \
-                for c in bsc(portal_type='Manufacturer',
-                             inactive_state = 'active')]
-        items.sort(lambda x,y:cmp(x[1], y[1]))
+        manufacturers = bsc(portal_type='Manufacturer', inactive_state='active')
+        items = [(c.UID, c.Title) for c in manufacturers]
+        items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(items)
 
     @deprecated('[1702] Orphan. No alternative')
@@ -400,8 +471,6 @@ class Instrument(ATFolder):
         # TODO Avoid using this function. Returns first method's UID for now.
         if self.getMethods():
             return self.getMethods()[0].UID()
-        else:
-            return ''
 
     def getMethodUIDs(self):
         uids = []
@@ -411,10 +480,9 @@ class Instrument(ATFolder):
 
     def getSuppliers(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [(c.UID, c.getName) \
-                for c in bsc(portal_type='Supplier',
-                             inactive_state = 'active')]
-        items.sort(lambda x,y:cmp(x[1], y[1]))
+        suppliers = bsc(portal_type='Supplier', inactive_state='active')
+        items = [(c.UID, c.getName) for c in suppliers]
+        items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(items)
 
     def _getAvailableMethods(self):
@@ -423,26 +491,24 @@ class Instrument(ATFolder):
             instrument can only be used in one method.
         """
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [(c.UID, c.Title)
-                 for c in bsc(portal_type='Method',
-                              inactive_state='active')]
+        methods = bsc(portal_type='Method', inactive_state='active')
+        items = [(c.UID, c.Title) for c in methods]
         items.sort(lambda x, y: cmp(x[1], y[1]))
         items.insert(0, ('', t(_('None'))))
         return DisplayList(items)
 
     def getInstrumentTypes(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [(c.UID, c.Title) \
-                for c in bsc(portal_type='InstrumentType',
-                             inactive_state = 'active')]
-        items.sort(lambda x,y:cmp(x[1], y[1]))
+        instruments = bsc(portal_type='InstrumentType', inactive_state='active')
+        items = [(c.UID, c.Title) for c in instruments]
+        items.sort(lambda x, y: cmp(x[1], y[1]))
         return DisplayList(items)
 
     def getInstrumentLocations(self):
         bsc = getToolByName(self, 'bika_setup_catalog')
-        items = [(c.UID, c.Title) \
-                 for c in bsc(portal_type='InstrumentLocation',
-                              inactive_state = 'active')]
+        locations = bsc(portal_type='InstrumentLocation',
+                        inactive_state='active')
+        items = [(c.UID, c.Title) for c in locations]
         items.sort(lambda x, y: cmp(x[1], y[1]))
         items.insert(0, ('', t(_('None'))))
         return DisplayList(items)
@@ -474,19 +540,21 @@ class Instrument(ATFolder):
                 continue
             validfrom = validfrom.asdatetime().date()
             validto = validto.asdatetime().date()
-            if (today >= validfrom and today <= validto):
+            if today >= validfrom and today <= validto:
                 certs.append(c)
         return certs
 
     def isValid(self):
-        """ Returns if the current instrument is not out for verification, calibration,
+        """ Returns if the current instrument is not out for verification, 
+        calibration,
         out-of-date regards to its certificates and if the latest QC succeed
         """
-        return self.isOutOfDate() == False \
-                and self.isQCValid() == True \
-                and self.getDisposeUntilNextCalibrationTest() == False \
-                and self.isValidationInProgress() == False \
-                and self.isCalibrationInProgress() == False
+        if self.isOutOfDate() is False \
+                and self.isQCValid() is True \
+                and self.getDisposeUntilNextCalibrationTest() is False \
+                and self.isValidationInProgress() is False \
+                and self.isCalibrationInProgress() is False:
+            return True
 
     def getLatestReferenceAnalyses(self):
         """ Returns a list with the latest Reference analyses performed
@@ -538,7 +606,7 @@ class Instrument(ATFolder):
                 # All QC Samples must have specs for its own AS
                 continue
 
-            specs = rr[uid];
+            specs = rr[uid]
             try:
                 smin = float(specs.get('min', 0))
                 smax = float(specs.get('max', 0))
@@ -546,11 +614,11 @@ class Instrument(ATFolder):
                 target = float(specs.get('result', 0))
                 result = float(last.getResult())
                 error_amount = ((target / 100) * error) if target > 0 else 0
-                upper  = smax + error_amount
+                upper = smax + error_amount
                 lower = smin - error_amount
                 if result < lower or result > upper:
                     return False
-            except:
+            except (ValueError, TypeError):
                 # This should never happen.
                 # All Reference Analysis Results and QC Samples specs
                 # must be floatable
@@ -565,7 +633,7 @@ class Instrument(ATFolder):
         cert = self.getLatestValidCertification()
         today = date.today()
         if cert and cert.getValidTo():
-            validto = cert.getValidTo().asdatetime().date();
+            validto = cert.getValidTo().asdatetime().date()
             if validto > today:
                 return False
         return True
@@ -598,19 +666,19 @@ class Instrument(ATFolder):
         """ Returns the current instrument's data expiration certificate
         """
         cert = self.getLatestValidCertification()
-        if cert == None:
+        if not cert:
             return ''
-        date = cert.getValidTo()
-        return date
+        d = cert.getValidTo()
+        return d
 
     def getWeeksToExpire(self):
         """ Returns the amount of weeks untils it's certification expire
         """
         cert = self.getLatestValidCertification()
-        if cert == None:
+        if not cert:
             return ''
-        date = cert.getValidTo().asdatetime().date();
-        return date - date.today()
+        d = cert.getValidTo().asdatetime().date()
+        return d - d.today()
 
     def getLatestValidCertification(self):
         """ Returns the latest valid certification. If no latest valid
@@ -627,8 +695,8 @@ class Instrument(ATFolder):
             validfrom = validfrom.asdatetime().date()
             validto = validto.asdatetime().date()
             if not cert \
-                or validto > lastto \
-                or (validto == lastto and validfrom > lastfrom):
+                    or validto > lastto \
+                    or (validto == lastto and validfrom > lastfrom):
                 cert = c
                 lastfrom = validfrom
                 lastto = validto
@@ -649,8 +717,8 @@ class Instrument(ATFolder):
             validfrom = validfrom.asdatetime().date()
             validto = validto.asdatetime().date()
             if not validation \
-                or validto > lastto \
-                or (validto == lastto and validfrom > lastfrom):
+                    or validto > lastto \
+                    or (validto == lastto and validfrom > lastfrom):
                 validation = v
                 lastfrom = validfrom
                 lastto = validto
@@ -671,8 +739,8 @@ class Instrument(ATFolder):
             validfrom = validfrom.asdatetime().date()
             validto = validto.asdatetime().date()
             if not calibration \
-                or validto > lastto \
-                or (validto == lastto and validfrom > lastfrom):
+                    or validto > lastto \
+                    or (validto == lastto and validfrom > lastfrom):
                 calibration = c
                 lastfrom = validfrom
                 lastto = validto
@@ -692,10 +760,12 @@ class Instrument(ATFolder):
 
     def getSchedule(self):
         return self.objectValues('InstrumentScheduledTask')
-#        pc = getToolByName(self, 'portal_catalog')
-#        uid = self.context.UID()
-#        return [p.getObject() for p in pc(portal_type='InstrumentScheduleTask',
-#                                          getInstrumentUID=uid)]
+
+    #        pc = getToolByName(self, 'portal_catalog')
+    #        uid = self.context.UID()
+    #        return [p.getObject() for p in pc(
+    # portal_type='InstrumentScheduleTask',
+    #                                          getInstrumentUID=uid)]
 
     def getReferenceAnalyses(self):
         """ Returns an array with the subset of Controls and Blanks
@@ -749,7 +819,6 @@ class Instrument(ATFolder):
         bsc = getToolByName(self, 'bika_setup_catalog')
         bac = getToolByName(self, 'bika_analysis_catalog')
         ref_type = reference.getBlank() and 'b' or 'c'
-        ref_uid = reference.UID()
         postfix = 1
         for refa in reference.getReferenceAnalyses():
             grid = refa.getReferenceAnalysesGroupID()
@@ -757,18 +826,20 @@ class Instrument(ATFolder):
                 cand = int(grid.split('-')[2])
                 if cand >= postfix:
                     postfix = cand + 1
-            except:
+            except (ValueError, TypeError):
                 pass
         postfix = str(postfix).zfill(int(3))
         refgid = 'I%s-%s' % (reference.id, postfix)
         for service_uid in service_uids:
             # services with dependents don't belong in references
-            service = bsc(portal_type='AnalysisService', UID=service_uid)[0].getObject()
+            brains = bsc(portal_type='AnalysisService', UID=service_uid)
+            service = brains[0].getObject()
             calc = service.getCalculation()
             if calc and calc.getDependentServices():
                 continue
             ref_uid = reference.addReferenceAnalysis(service_uid, ref_type)
-            ref_analysis = bac(portal_type='ReferenceAnalysis', UID=ref_uid)[0].getObject()
+            brains = bac(portal_type='ReferenceAnalysis', UID=ref_uid)
+            ref_analysis = brains[0].getObject()
 
             # Set ReferenceAnalysesGroupID (same id for the analyses from
             # the same Reference Sample and same Worksheet)
@@ -777,7 +848,6 @@ class Instrument(ATFolder):
             ref_analysis.reindexObject()
 
             # copy the interimfields
-            calculation = service.getCalculation()
             if calc:
                 ref_analysis.setInterimFields(calc.getInterimFields())
 
@@ -793,11 +863,12 @@ class Instrument(ATFolder):
         self.cleanReferenceAnalysesCache()
 
         # Set DisposeUntilNextCalibrationTest to False
-        if (len(addedanalyses) > 0):
+        if len(addedanalyses) > 0:
             self.getField('DisposeUntilNextCalibrationTest').set(self, False)
 
         return addedanalyses
 
+    # noinspection PyUnusedLocal
     def getAnalysesToRetract(self, allanalyses=True, outofdate=False):
         """ If the instrument is not valid due to fail on latest QC
             Tests or a Calibration Test, returns the validation-pending
@@ -831,6 +902,7 @@ class Instrument(ATFolder):
             logger.warn("Some Interfaces weren't added...")
         self.Schema().getField('ImportDataInterface').set(self, new_values)
 
-schemata.finalizeATCTSchema(schema, folderish = True, moveDiscussion = False)
+
+schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
 
 registerType(Instrument, PROJECTNAME)

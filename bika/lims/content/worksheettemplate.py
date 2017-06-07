@@ -4,11 +4,9 @@
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
 from AccessControl import ClassSecurityInfo
-from Acquisition import aq_base, aq_inner
 from Products.ATExtensions.field.records import RecordsField
 from Products.Archetypes.public import *
 from Products.Archetypes.references import HoldingReference
-from Products.CMFCore.permissions import View, ModifyPortalContent
 from Products.CMFCore.utils import getToolByName
 from bika.lims.browser.widgets import ServicesWidget
 from bika.lims.browser.widgets import WorksheetTemplateLayoutWidget
@@ -18,79 +16,95 @@ from bika.lims import PMF, bikaMessageFactory as _
 from zope.interface import implements
 import sys
 
+Layout = RecordsField(
+    'Layout',
+    schemata='Layout',
+    required=1,
+    type='templateposition',
+    subfields=('pos', 'type', 'blank_ref', 'control_ref', 'dup'),
+    required_subfields=('pos', 'type'),
+    subfield_labels={'pos': _('Position'),
+                     'type': _('Analysis Type'),
+                     'blank_ref': _('Reference'),
+                     'control_ref': _('Reference'),
+                     'dup': _('Duplicate Of')},
+    widget=WorksheetTemplateLayoutWidget(
+        label=_("Worksheet Layout"),
+        description=_(
+            "Specify the size of the Worksheet, e.g. corresponding to a "
+            "specific instrument's tray size. Then select an Analysis 'type' "
+            "per Worksheet position. Where QC samples are selected, "
+            "also select which Reference Sample should be used. If a "
+            "duplicate analysis is selected, indicate which sample position "
+            "it should be a duplicate of")
+    )
+)
+
+Service = ReferenceField(
+    'Service',
+    schemata='Analyses',
+    required=0,
+    multiValued=1,
+    allowed_types=('AnalysisService',),
+    relationship='WorksheetTemplateAnalysisService',
+    referenceClass=HoldingReference,
+    widget=ServicesWidget(
+        label=_("Analysis Service"),
+        description=_(
+            "Select which Analyses should be included on the Worksheet")
+    )
+)
+
+RestrictToMethod = ReferenceField(
+    'RestrictToMethod',
+    schemata="Description",
+    required=0,
+    vocabulary_display_path_bound=sys.maxint,
+    vocabulary='_getMethodsVoc',
+    allowed_types=('Method',),
+    relationship='WorksheetTemplateMethod',
+    referenceClass=HoldingReference,
+    widget=SelectionWidget(
+        format='select',
+        label=_("Method"),
+        description=_(
+            "Restrict the available analysis services and instrumentsto those "
+            "with the selected method. In order to apply this change to the "
+            "services list, you should save the change first.")
+    )
+)
+
+Instrument = ReferenceField(
+    'Instrument',
+    schemata="Description",
+    required=0,
+    vocabulary_display_path_bound=sys.maxint,
+    vocabulary='getInstruments',
+    allowed_types=('Instrument',),
+    relationship='WorksheetTemplateInstrument',
+    referenceClass=HoldingReference,
+    widget=ReferenceWidget(
+        checkbox_bound=0,
+        label=_("Instrument"),
+        description=_("Select the preferred instrument")
+    )
+)
+
+InstrumentTitle = ComputedField(
+    'InstrumentTitle',
+    expression="context.getInstrument().Title() "
+               "if context.getInstrument() else ''",
+    widget=ComputedWidget(
+        visible=False
+    )
+)
+
 schema = BikaSchema.copy() + Schema((
-    RecordsField('Layout',
-        schemata = 'Layout',
-        required = 1,
-        type = 'templateposition',
-        subfields = ('pos', 'type', 'blank_ref', 'control_ref', 'dup'),
-        required_subfields = ('pos', 'type'),
-        subfield_labels = {'pos': _('Position'),
-                           'type': _('Analysis Type'),
-                           'blank_ref': _('Reference'),
-                           'control_ref': _('Reference'),
-                           'dup': _('Duplicate Of')},
-        widget = WorksheetTemplateLayoutWidget(
-            label=_("Worksheet Layout"),
-            description =_(
-                "Specify the size of the Worksheet, e.g. corresponding to a "
-                "specific instrument's tray size. Then select an Analysis 'type' "
-                "per Worksheet position. Where QC samples are selected, also select "
-                "which Reference Sample should be used. If a duplicate analysis is "
-                "selected, indicate which sample position it should be a duplicate of"),
-        )
-    ),
-    ReferenceField('Service',
-        schemata = 'Analyses',
-        required = 0,
-        multiValued = 1,
-        allowed_types = ('AnalysisService',),
-        relationship = 'WorksheetTemplateAnalysisService',
-        referenceClass = HoldingReference,
-        widget = ServicesWidget(
-            label=_("Analysis Service"),
-            description=_("Select which Analyses should be included on the Worksheet"),
-        )
-    ),
-    ReferenceField(
-        'RestrictToMethod',
-        schemata="Description",
-        required=0,
-        vocabulary_display_path_bound=sys.maxint,
-        vocabulary='_getMethodsVoc',
-        allowed_types=('Method',),
-        relationship='WorksheetTemplateMethod',
-        referenceClass=HoldingReference,
-        widget = SelectionWidget(
-            format='select',
-            label=_("Method"),
-            description=_(
-                "Restrict the available analysis services and instruments"
-                "to those with the selected method."
-                " In order to apply this change to the services list, you "
-                "should save the change first."),
-        ),
-    ),
-    ReferenceField('Instrument',
-        schemata = "Description",
-        required = 0,
-        vocabulary_display_path_bound = sys.maxint,
-        vocabulary = 'getInstruments',
-        allowed_types = ('Instrument',),
-        relationship = 'WorksheetTemplateInstrument',
-        referenceClass = HoldingReference,
-        widget = ReferenceWidget(
-            checkbox_bound = 0,
-            label=_("Instrument"),
-            description=_("Select the preferred instrument"),
-        ),
-    ),
-    ComputedField('InstrumentTitle',
-        expression = "context.getInstrument() and context.getInstrument().Title() or ''",
-        widget = ComputedWidget(
-            visible = False,
-        ),
-    ),
+    Layout,
+    Service,
+    RestrictToMethod,
+    Instrument,
+    InstrumentTitle
 ))
 
 schema['title'].schemata = 'Description'

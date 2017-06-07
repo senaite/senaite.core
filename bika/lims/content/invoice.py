@@ -3,94 +3,115 @@
 # Copyright 2011-2016 by it's authors.
 # Some rights reserved. See LICENSE.txt, AUTHORS.txt.
 
-from AccessControl import ClassSecurityInfo
-from bika.lims import bikaMessageFactory as _
-from bika.lims.utils import t
-from bika.lims.config import ManageInvoices, ManageBika, PROJECTNAME
-from bika.lims.content.bikaschema import BikaSchema
-from bika.lims.interfaces import IInvoice
-from DateTime import DateTime
+import sys
 from decimal import Decimal
-from persistent.mapping import PersistentMapping
+
+from AccessControl import ClassSecurityInfo
+from DateTime import DateTime
 from Products.Archetypes.public import *
-from Products.ATExtensions.ateapi import DateTimeField, DateTimeWidget
 from Products.CMFCore.permissions import View
 from Products.CMFPlone.utils import safe_unicode
+from bika.lims import bikaMessageFactory as _
+from bika.lims.browser.fields import DateTimeField
+from bika.lims.browser.widgets import DateTimeWidget
+from bika.lims.config import PROJECTNAME
+from bika.lims.content.bikaschema import BikaSchema
+from bika.lims.interfaces import IInvoice
+from persistent.mapping import PersistentMapping
 from zope.interface import implements
-import sys
+
+Client = ReferenceField(
+    'Client',
+    required=1,
+    vocabulary_display_path_bound=sys.maxsize,
+    allowed_types=('Client',),
+    relationship='ClientInvoice'
+)
+AnalysisRequest = ReferenceField(
+    'AnalysisRequest',
+    required=1,
+    vocabulary_display_path_bound=sys.maxsize,
+    allowed_types=('AnalysisRequest',),
+    relationship='AnalysisRequestInvoice'
+)
+SupplyOrder = ReferenceField(
+    'SupplyOrder',
+    required=1,
+    vocabulary_display_path_bound=sys.maxsize,
+    allowed_types=('SupplyOrder',),
+    relationship='SupplyOrderInvoice'
+)
+InvoiceDate = DateTimeField(
+    'InvoiceDate',
+    required=1,
+    default_method='current_date',
+    widget=DateTimeWidget(
+        label=_("Date")
+    )
+)
+Remarks = TextField(
+    'Remarks',
+    searchable=True,
+    default_content_type='text/plain',
+    allowed_content_types=('text/plain',),
+    default_output_type="text/plain",
+    widget=TextAreaWidget(
+        macro="bika_widgets/remarks",
+        label=_("Remarks"),
+        append_only=True
+    )
+)
+Subtotal = ComputedField(
+    'Subtotal',
+    expression='context.getSubtotal()',
+    widget=ComputedWidget(
+        label=_("Subtotal"),
+        visible=False
+    )
+)
+VATAmount = ComputedField(
+    'VATAmount',
+    expression='context.getVATAmount()',
+    widget=ComputedWidget(
+        label=_("VAT Total"),
+        visible=False
+    )
+)
+Total = ComputedField(
+    'Total',
+    expression='context.getTotal()',
+    widget=ComputedWidget(
+        label=_("Total"),
+        visible=False
+    )
+)
+ClientUID = ComputedField(
+    'ClientUID',
+    expression="context.getClient().UID() if context.getClient() else ''",
+    widget=ComputedWidget(
+        visible=False
+    )
+)
+InvoiceSearchableText = ComputedField(
+    'InvoiceSearchableText',
+    expression='context.getInvoiceSearchableText()',
+    widget=ComputedWidget(
+        visible=False
+    )
+)
 
 schema = BikaSchema.copy() + Schema((
-    ReferenceField('Client',
-        required=1,
-        vocabulary_display_path_bound=sys.maxsize,
-        allowed_types=('Client',),
-        relationship='ClientInvoice',
-    ),
-    ReferenceField('AnalysisRequest',
-        required=1,
-        vocabulary_display_path_bound=sys.maxsize,
-        allowed_types=('AnalysisRequest',),
-        relationship='AnalysisRequestInvoice',
-    ),
-    ReferenceField('SupplyOrder',
-        required=1,
-        vocabulary_display_path_bound=sys.maxsize,
-        allowed_types=('SupplyOrder',),
-        relationship='SupplyOrderInvoice',
-    ),
-    DateTimeField('InvoiceDate',
-        required=1,
-        default_method='current_date',
-        widget=DateTimeWidget(
-            label=_("Date"),
-        ),
-    ),
-    TextField('Remarks',
-        searchable=True,
-        default_content_type='text/plain',
-        allowed_content_types=('text/plain', ),
-        default_output_type="text/plain",
-        widget=TextAreaWidget(
-            macro="bika_widgets/remarks",
-            label=_("Remarks"),
-            append_only=True,
-        ),
-    ),
-    ComputedField('Subtotal',
-        expression='context.getSubtotal()',
-        widget=ComputedWidget(
-            label=_("Subtotal"),
-            visible=False,
-        ),
-    ),
-    ComputedField('VATAmount',
-        expression='context.getVATAmount()',
-        widget=ComputedWidget(
-            label=_("VAT Total"),
-            visible=False,
-        ),
-    ),
-    ComputedField('Total',
-        expression='context.getTotal()',
-        widget=ComputedWidget(
-            label=_("Total"),
-            visible=False,
-        ),
-    ),
-    ComputedField('ClientUID',
-        expression='here.getClient() and here.getClient().UID()',
-        widget=ComputedWidget(
-            visible=False,
-        ),
-    ),
-    ComputedField('InvoiceSearchableText',
-        expression='here.getInvoiceSearchableText()',
-        widget=ComputedWidget(
-            visible=False,
-        ),
-    ),
-),
-)
+    Client,
+    AnalysisRequest,
+    SupplyOrder,
+    InvoiceDate,
+    Remarks,
+    Subtotal,
+    VATAmount,
+    Total,
+    ClientUID,
+    InvoiceSearchableText
+))
 
 TitleField = schema['title']
 TitleField.required = 0
@@ -144,7 +165,6 @@ class Invoice(BaseFolder):
             s = s + item['ItemDescription']
         return s
 
-    # XXX workflow script
     def workflow_script_dispatch(self):
         """ dispatch order """
         self.setDateDispatched(DateTime())
@@ -154,5 +174,6 @@ class Invoice(BaseFolder):
     def current_date(self):
         """ return current date """
         return DateTime()
+
 
 registerType(Invoice, PROJECTNAME)

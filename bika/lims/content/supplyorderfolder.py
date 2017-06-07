@@ -5,11 +5,11 @@
 
 """Supply Order Folder contains Supply Orders
 """
+from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.content import schemata
 from Products.Archetypes import atapi
 from bika.lims.config import PROJECTNAME
-from AccessControl import ClassSecurityInfo
-from bika.lims.interfaces import ISupplyOrderFolder, IHaveNoBreadCrumbs
+from bika.lims.interfaces import IHaveNoBreadCrumbs, ISupplyOrderFolder
 from plone.app.folder import folder
 from zope.interface import implements
 
@@ -21,6 +21,7 @@ class SupplyOrderFolder(folder.ATFolder):
     schema = schema
     displayContentsTab = False
     security = ClassSecurityInfo()
+
 
 schemata.finalizeATCTSchema(schema, folderish=True, moveDiscussion=False)
 

@@ -5,19 +5,21 @@
 
 from AccessControl import ClassSecurityInfo
 from Products.Archetypes.public import ReferenceField, Schema, registerType
-from bika.lims.content.analysis import Analysis
 from bika.lims.config import PROJECTNAME
+from bika.lims.content.analysis import Analysis
 from bika.lims.content.analysis import schema as analysis_schema
 from bika.lims.interfaces import IRejectAnalysis
 from zope.interface import implements
 
+# The analysis that was originally rejected
+AnalysisField = ReferenceField(
+    'Analysis',
+    allowed_types=('Analysis',),
+    relationship='RejectAnalysisAnalysis'
+)
+
 schema = analysis_schema + Schema((
-    # The analysis that was originally rejected
-    ReferenceField(
-        'Analysis',
-        allowed_types=('Analysis',),
-        relationship='RejectAnalysisAnalysis',
-    ),
+    AnalysisField
 ))
 
 

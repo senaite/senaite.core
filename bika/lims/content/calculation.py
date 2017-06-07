@@ -5,9 +5,9 @@
 
 import math
 import re
-from AccessControl import ClassSecurityInfo
 
 import transaction
+from AccessControl import ClassSecurityInfo
 from Products.ATContentTypes.lib.historyaware import HistoryAwareMixin
 from Products.Archetypes.public import *
 from Products.CMFCore.WorkflowCore import WorkflowException
@@ -22,50 +22,57 @@ from bika.lims.content.bikaschema import BikaSchema
 from bika.lims.interfaces import ICalculation
 from zope.interface import implements
 
+InterimFields = InterimFieldsField(
+    'InterimFields',
+    schemata='Calculation',
+    widget=BikaRecordsWidget(
+        label=_("Calculation Interim Fields"),
+        description=_(
+            "Define interim fields such as vessel mass, dilution factors, "
+            "should your calculation require them. The field title specified "
+            "here will be used as column headers and field descriptors where "
+            "the interim fields are displayed. If 'Apply wide' is enabled the "
+            "field ill be shown in a selection box on the top of the "
+            "worksheet, allowing to apply a specific value to all the "
+            "corresponding fields on the sheet.")
+    )
+)
+
+DependentServices = UIDReferenceField(
+    'DependentServices',
+    multiValued=1,
+    allowed_types=('AnalysisService',),
+    widget=ReferenceWidget(
+        visible=False
+    )
+)
+
+Formula = TextField(
+    'Formula',
+    schemata='Calculation',
+    validators=('formulavalidator',),
+    default_content_type='text/plain',
+    allowable_content_types=('text/plain',),
+    widget=TextAreaWidget(
+        label=_("Calculation Formula"),
+        description=_(
+            "calculation_formula_description",
+            "<p>The formula you type here will be dynamically calculated when "
+            "an analysis using this calculation is displayed.</p><p>To enter "
+            "a Calculation, use standard maths operators,  + - * / ( ), "
+            "and all keywords available, both from other Analysis Services "
+            "and the Interim Fields specified here, as variables. Enclose "
+            "them in square brackets [ ].</p><p>E.g, the calculation for "
+            "Total Hardness, the total of Calcium (ppm) and Magnesium (ppm) "
+            "ions in water, is entered as [Ca] + [Mg], where Ca and MG are the "
+            "keywords for those two Analysis Services.</p>")
+    )
+)
+
 schema = BikaSchema.copy() + Schema((
-    InterimFieldsField('InterimFields',
-        schemata='Calculation',
-        widget=BikaRecordsWidget(
-            label=_("Calculation Interim Fields"),
-            description=_(
-                "Define interim fields such as vessel mass, dilution factors, "
-                "should your calculation require them. The field title specified "
-                "here will be used as column headers and field descriptors where "
-                "the interim fields are displayed. If 'Apply wide' is enabled "
-                "the field ill be shown in a selection box on the top of the "
-                "worksheet, allowing to apply a specific value to all the "
-                "corresponding fields on the sheet."),
-        )
-    ),
-    UIDReferenceField(
-        'DependentServices',
-        multiValued=1,
-        allowed_types=('AnalysisService',),
-        widget=ReferenceWidget(
-            visible=False,
-        ),
-    ),
-    TextField('Formula',
-        schemata='Calculation',
-        validators=('formulavalidator',),
-        default_content_type='text/plain',
-        allowable_content_types=('text/plain',),
-        widget = TextAreaWidget(
-            label=_("Calculation Formula"),
-            description=_(
-                "calculation_formula_description",
-                "<p>The formula you type here will be dynamically calculated "
-                "when an analysis using this calculation is displayed.</p>"
-                "<p>To enter a Calculation, use standard maths operators,  "
-                "+ - * / ( ), and all keywords available, both from other "
-                "Analysis Services and the Interim Fields specified here, "
-                "as variables. Enclose them in square brackets [ ].</p>"
-                "<p>E.g, the calculation for Total Hardness, the total of "
-                "Calcium (ppm) and Magnesium (ppm) ions in water, is entered "
-                "as [Ca] + [Mg], where Ca and MG are the keywords for those "
-                "two Analysis Services.</p>"),
-            )
-    ),
+    InterimFields,
+    DependentServices,
+    Formula
 ))
 
 schema['title'].widget.visible = True
