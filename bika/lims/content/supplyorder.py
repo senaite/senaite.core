@@ -22,11 +22,12 @@ from bika.lims.interfaces import ISupplyOrder
 from persistent.mapping import PersistentMapping
 from zope.component import getAdapter
 from zope.interface import implements
+from sys import maxsize
 
 Contact = ReferenceField(
     'Contact',
     required=1,
-    vocabulary_display_path_bound=sys.maxsize,
+    vocabulary_display_path_bound=maxsize,
     allowed_types=('Contact',),
     referenceClass=HoldingReference,
     relationship='SupplyOrderContact',
@@ -51,7 +52,7 @@ OrderNumber = StringField(
 )
 Invoice = ReferenceField(
     'Invoice',
-    vocabulary_display_path_bound=sys.maxsize,
+    vocabulary_display_path_bound=maxsize,
     allowed_types=('Invoice',),
     referenceClass=HoldingReference,
     relationship='OrderInvoice'

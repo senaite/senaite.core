@@ -11,15 +11,13 @@ from bika.lims.content.analysis import schema as analysis_schema
 from bika.lims.interfaces import IRejectAnalysis
 from zope.interface import implements
 
-# The analysis that was originally rejected
-AnalysisField = ReferenceField(
-    'Analysis',
-    allowed_types=('Analysis',),
-    relationship='RejectAnalysisAnalysis'
-)
 
-schema = analysis_schema + Schema((
-    AnalysisField
+schema = analysis_schema.copy() + Schema((
+    ReferenceField(
+        'Analysis',
+        allowed_types=('Analysis',),
+        relationship='RejectAnalysisAnalysis'
+    ),
 ))
 
 

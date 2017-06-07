@@ -33,6 +33,7 @@ from bika.lims.workflow.worksheet import events
 from bika.lims.workflow.worksheet import guards
 from plone.api.user import has_permission
 from zope.interface import implements
+from sys import maxsize
 
 WorksheetTemplate = UIDReferenceField(
     'WorksheetTemplate',
@@ -61,7 +62,7 @@ Analyst = StringField(
 Method = ReferenceField(
     'Method',
     required=0,
-    vocabulary_display_path_bound=sys.maxint,
+    vocabulary_display_path_bound=maxsize,
     vocabulary='_getMethodsVoc',
     allowed_types=('Method',),
     relationship='WorksheetMethod',

@@ -64,11 +64,12 @@ Department = ReferenceField(
 
 DepartmentTitle = ComputedField(
     'DepartmentTitle',
-    expression="context.getDepartment() and context.getDepartment().Title() "
-               "or ''",
+    expression="context.getDepartment().Title() "
+               "if context.getDepartment() else ''",
     widget=ComputedWidget(
         visible=False,
-    )),
+    )
+)
 
 Departments = ReferenceField(
     'Departments',

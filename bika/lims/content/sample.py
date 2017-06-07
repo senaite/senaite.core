@@ -35,6 +35,7 @@ from bika.lims.utils import to_unicode
 from bika.lims.workflow.sample import events
 from bika.lims.workflow.sample import guards
 from zope.interface import implements
+from sys import maxsize
 
 SampleID = StringField(
     'SampleID',
@@ -105,7 +106,7 @@ ClientSampleID = StringField(
 
 LinkedSample = ReferenceField(
     'LinkedSample',
-    vocabulary_display_path_bound=sys.maxsize,
+    vocabulary_display_path_bound=maxsize,
     multiValue=1,
     allowed_types=('Sample',),
     relationship='SampleSample',
@@ -121,7 +122,7 @@ LinkedSample = ReferenceField(
 SampleType = ReferenceField(
     'SampleType',
     required=1,
-    vocabulary_display_path_bound=sys.maxsize,
+    vocabulary_display_path_bound=maxsize,
     allowed_types=('SampleType',),
     relationship='SampleSampleType',
     referenceClass=HoldingReference,
@@ -162,7 +163,7 @@ SampleTypeTitle = ComputedField(
 
 SamplePoint = ReferenceField(
     'SamplePoint',
-    vocabulary_display_path_bound=sys.maxsize,
+    vocabulary_display_path_bound=maxsize,
     allowed_types=('SamplePoint',),
     relationship='SampleSamplePoint',
     referenceClass=HoldingReference,
@@ -379,7 +380,7 @@ PreparationWorkflow = StringField(
 
 SamplingDeviation = ReferenceField(
     'SamplingDeviation',
-    vocabulary_display_path_bound=sys.maxsize,
+    vocabulary_display_path_bound=maxsize,
     allowed_types=('SamplingDeviation',),
     relationship='SampleSamplingDeviation',
     referenceClass=HoldingReference,
@@ -411,7 +412,7 @@ SamplingDeviation = ReferenceField(
 
 SampleCondition = ReferenceField(
     'SampleCondition',
-    vocabulary_display_path_bound=sys.maxsize,
+    vocabulary_display_path_bound=maxsize,
     allowed_types=('SampleCondition',),
     relationship='SampleSampleCondition',
     referenceClass=HoldingReference,
@@ -550,9 +551,10 @@ Composite = BooleanField(
                  'disposed': {'view': 'visible', 'edit': 'invisible'},
                  'rejected': {'view': 'visible', 'edit': 'invisible'},
                  },
-        render_own_label=True,
-    ),
-),
+        render_own_label=True
+    )
+)
+
 DateExpired = DateTimeField(
     'DateExpired',
     mode='rw',
@@ -652,9 +654,10 @@ AdHoc = BooleanField(
                  'disposed': {'view': 'visible', 'edit': 'invisible'},
                  'rejected': {'view': 'visible', 'edit': 'invisible'},
                  },
-        render_own_label=True,
-    ),
-),
+        render_own_label=True
+    )
+)
+
 Remarks = TextField(
     'Remarks',
     default_content_type='text/x-web-intelligent',
