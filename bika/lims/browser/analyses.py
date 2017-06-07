@@ -334,7 +334,7 @@ class AnalysesView(BikaListingView):
             instruments = [b.getObject() for b in brains]
 
         for ins in instruments:
-            if analysis_brain.portal_type in [
+            if analysis_brain.meta_type in [
                 'ReferenceAnalysis', 'DuplicateAnalysis'] \
                     and not ins.isOutOfDate():
                 # Add the 'invalid', but in-date instrument
@@ -442,7 +442,7 @@ class AnalysesView(BikaListingView):
         item['result_captured'] = self.ulocalized_time(
             obj.getResultCaptureDate, long_format=0)
         item['calculation'] = obj.getCalculation and True or False
-        if obj.portal_type == "ReferenceAnalysis":
+        if obj.meta_type == "ReferenceAnalysis":
             item['DueDate'] = self.ulocalized_time(
                 obj.getExpiryDate, long_format=0)
         else:
@@ -453,10 +453,10 @@ class AnalysesView(BikaListingView):
             cd, long_format=1) or ''
         tblrowclass = item.get('table_row_class', '')
 
-        if obj.portal_type == 'ReferenceAnalysis':
+        if obj.meta_type == 'ReferenceAnalysis':
             item['st_uid'] = obj.getParentUID
             item['table_row_class'] = ' '.join([tblrowclass, 'qc-analysis'])
-        elif obj.portal_type == 'DuplicateAnalysis' and \
+        elif obj.meta_type == 'DuplicateAnalysis' and \
                         obj.getAnalysisPortalType == 'ReferenceAnalysis':
             item['st_uid'] = obj.getParentUID
             item['table_row_class'] = \
@@ -494,12 +494,23 @@ class AnalysesView(BikaListingView):
             'assigned']
         can_edit_analysis = can_edit_analysis and \
                             obj.review_state in allowed_method_states
+        # TODO: Getting the instrument object until we define the correct
+        # metacolumns for instrument brains.
+        instrument_uid = obj.getInstrumentUID
+        instrument = None
+        if self.bsc is None:
+            self.bsc = getToolByName(self.context, 'bika_setup_catalog')
+        instrument_brain = self.bsc(UID=instrument_uid)
+        isInstrumentValid = True
+        if instrument_brain:
+            instrument = instrument_brain[0].getObject()
+            isInstrumentValid = instrument.isValid()
         # Prevent from being edited if the instrument assigned
         # is not valid (out-of-date or uncalibrated), except if
         # the analysis is a QC with assigned status
-        can_edit_analysis = can_edit_analysis and \
-                            (obj.isInstrumentValid or (
-                                obj.portal_type == 'ReferenceAnalysis'))
+        can_edit_analysis =\
+            can_edit_analysis and \
+            (isInstrumentValid or obj.meta_type == 'ReferenceAnalysis')
         if can_edit_analysis:
             item['allow_edit'].extend([
                 'Analyst',
@@ -562,11 +573,6 @@ class AnalysesView(BikaListingView):
         item['Instrument'] = ''
         item['replace']['Instrument'] = ''
         if obj.getInstrumentEntryOfResults:
-            instrument_uid = obj.getInstrumentUID
-            uc = getToolByName(self.context, 'uid_catalog')
-            brains = uc(UID=instrument_uid)
-            instrument = brains[0].getObject() if brains else None
-
             if can_set_instrument:
                 # Edition allowed
                 voc = self.get_instruments_vocabulary(obj)
@@ -773,10 +779,10 @@ class AnalysesView(BikaListingView):
             item['class'][f['keyword']] = 'interim'
         # check if this analysis is late/overdue
         resultdate = obj.getDateSampled \
-            if obj.portal_type == 'ReferenceAnalysis' \
+            if obj.meta_type == 'ReferenceAnalysis' \
             else obj.getResultCaptureDate
         duedate = obj.getExpiryDate \
-            if obj.portal_type == 'ReferenceAnalysis' \
+            if obj.meta_type == 'ReferenceAnalysis' \
             else obj.getDueDate
         item['replace']['DueDate'] = \
             self.ulocalized_time(duedate, long_format=1)
@@ -874,8 +880,8 @@ class AnalysesView(BikaListingView):
                 (t(_("Submited and verified by the same user- " + submitter)))
             )
         # add icon for assigned analyses in AR views
-        if self.context.portal_type == 'AnalysisRequest':
-            if obj.portal_type in ['ReferenceAnalysis',
+        if self.context.meta_type == 'AnalysisRequest':
+            if obj.meta_type in ['ReferenceAnalysis',
                                    'DuplicateAnalysis'] or \
                             obj.worksheetanalysis_review_state == 'assigned':
                 full_obj = full_obj if full_obj else obj.getObject()
@@ -1061,7 +1067,8 @@ class QCAnalysesView(AnalysesView):
         self.icon = self.portal_url + \
                     "/++resource++bika.lims.images/referencesample.png"
 
-    # TODO-performance: Do not use object
+    # TODO-performance: Do not use object. Using brain, use meta_type in
+    # order to get the object's type
     def folderitem(self, obj, item, index):
         """
         obj should be a brain

@@ -715,13 +715,13 @@ class Instrument(ATFolder):
         """ Add regular analysis (included WS QCs) to this instrument
             If the analysis has
         """
-        targetuid = analysis.getRawInstrument()
+        targetuid = analysis.getInstrumentUID()
         if not targetuid:
             return
         if targetuid != self.UID():
             raise Exception("Invalid instrument")
-        ans = self.getRawAnalyses() if self.getRawAnalyses() else []
-        ans.append(analysis.UID())
+        ans = self.getAnalyses() if self.getAnalyses() else []
+        ans.append(analysis)
         self.setAnalyses(ans)
         self.cleanReferenceAnalysesCache()
 
@@ -734,7 +734,7 @@ class Instrument(ATFolder):
         if targetuid != self.UID():
             raise Exception("Invalid instrument")
         uid = analysis.UID()
-        ans = [a for a in self.getRawAnalyses() if a != uid]
+        ans = [a for a in self.getAnalyses() if a.UID() != uid]
         self.setAnalyses(ans)
         self.cleanReferenceAnalysesCache()
 
@@ -820,7 +820,7 @@ class Instrument(ATFolder):
         prox = bac(portal_type=['Analysis', 'DuplicateAnalysis'],
                    review_state='to_be_verified')
         ans = [p.getObject() for p in prox]
-        return [a for a in ans if a.getRawInstrument() == self.UID()]
+        return [a for a in ans if a.getInstrumentUID() == self.UID()]
 
     def setImportDataInterface(self, values):
         """ Return the current list of import data interfaces

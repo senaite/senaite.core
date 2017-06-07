@@ -347,7 +347,15 @@ class ReferenceSample(BaseFolder):
             if key not in analysis.Schema().keys():
                 continue
             val = service.getField(key).get(service)
-            analysis.getField(key).set(analysis, val)
+            # Campbell's mental note:never ever use '.set()' directly to a
+            # field. If you can't use the setter, then use the mutator in order
+            # to give the value. We have realized that in some cases using
+            # 'set' when the value is a string, it saves the value
+            # as unicode instead of plain string.
+            # analysis.getField(key).set(analysis, val)
+            mutator_name = analysis.getField(key).mutator
+            mutator = getattr(analysis, mutator_name)
+            mutator(val)
         analysis.setAnalysisService(service_uid)
         analysis.setReferenceType(reference_type)
         analysis.setInterimFields(interim_fields)
