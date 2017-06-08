@@ -822,6 +822,16 @@ schema = BikaFolderSchema.copy() + Schema((
                 "Warning: This may affect the listing performance."),
         ),
     ),
+    IntegerField(
+        'DefaultNumberOfARsToAdd',
+        schemata="Analyses",
+        required=0,
+        default=4,
+        widget=IntegerWidget(
+            label=_("Default count of AR to add."),
+            description=_("Default value of the 'AR count' when users click 'ADD' button to create new Analysis Requests"),
+        )
+    ),
 ))
 
 schema['title'].validators = ()
