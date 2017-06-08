@@ -8,6 +8,7 @@ from bika.lims.workflow import doActionFor
 from bika.lims.workflow import getCurrentState
 from bika.lims.workflow import isBasicTransitionAllowed
 from bika.lims.workflow import wasTransitionPerformed
+from bika.lims.workflow import skip
 
 
 def after_submit(obj):
@@ -98,10 +99,10 @@ def after_verify(obj):
 
 
 def after_publish(obj):
-    if skip(self, "publish"):
+    if skip(obj, "publish"):
         return
     workflow = getToolByName(obj, "portal_workflow")
-    state = workflow.getInfoFor(self, 'cancellation_state', 'active')
+    state = workflow.getInfoFor(obj, 'cancellation_state', 'active')
     if state == "cancelled":
         return False
     endtime = DateTime()
@@ -126,32 +127,32 @@ def after_publish(obj):
 
 
 def after_cancel(obj):
-    if skip(self, "cancel"):
+    if skip(obj, "cancel"):
         return
     workflow = getToolByName(obj, "portal_workflow")
     # If it is assigned to a worksheet, unassign it.
-    state = workflow.getInfoFor(self, 'worksheetanalysis_review_state')
+    state = workflow.getInfoFor(obj, 'worksheetanalysis_review_state')
     if state == 'assigned':
         ws = obj.getWorksheet()
-        skip(self, "cancel", unskip=True)
-        ws.removeAnalysis(self)
+        skip(obj, "cancel", unskip=True)
+        ws.removeAnalysis(obj)
     obj.reindexObject()
 
 
 def after_reject(obj):
-    if skip(self, "reject"):
+    if skip(obj, "reject"):
         return
     workflow = getToolByName(obj, "portal_workflow")
     # If it is assigned to a worksheet, unassign it.
-    state = workflow.getInfoFor(self, 'worksheetanalysis_review_state')
+    state = workflow.getInfoFor(obj, 'worksheetanalysis_review_state')
     if state == 'assigned':
         ws = obj.getWorksheet()
-        ws.removeAnalysis(self)
+        ws.removeAnalysis(obj)
     obj.reindexObject()
 
 
 def after_attach(obj):
-    if skip(self, "attach"):
+    if skip(obj, "attach"):
         return
     workflow = getToolByName(obj, "portal_workflow")
     # If all analyses in this AR have been attached escalate the action
