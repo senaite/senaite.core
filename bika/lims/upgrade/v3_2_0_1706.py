@@ -47,7 +47,7 @@ def change_UUIDIndex(ut):
     per value, so there's a 1:1 mapping from value to document id. An error
     is logged if a different document id is indexed for an already taken value.
 
-    Some UUIDIndexes need to be migarted to FieldIndexes because more than one
+    Some UUIDIndexes need to be migrated to FieldIndexes because more than one
     field could contain the same UID, for instance
     getOriginalReflexedAnalysisUID field.
     """
