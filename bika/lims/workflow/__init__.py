@@ -328,6 +328,7 @@ def getReviewHistoryActionsList(instance):
     actions = [event['action'] for event in review_history]
     return actions
 
+
 def getReviewHistory(instance):
     """Returns the review history for the instance in reverse order
     :returns: the list of historic events as dicts
@@ -346,6 +347,7 @@ def getReviewHistory(instance):
     review_history.reverse()
     return review_history
 
+
 def getCurrentState(obj, stateflowid='review_state'):
     """ The current state of the object for the state flow id specified
         Return empty if there's no workflow state for the object and flow id
@@ -353,15 +355,16 @@ def getCurrentState(obj, stateflowid='review_state'):
     wf = getToolByName(obj, 'portal_workflow')
     return wf.getInfoFor(obj, stateflowid, '')
 
-def getTransitionDate(obj, action_id, not_as_string=False):
+
+def getTransitionDate(obj, action_id, return_as_datetime=False):
     """
     Returns date of action for object. Sometimes we need this date in Datetime
-    format and that's why added not_as_string param.
+    format and that's why added return_as_datetime param.
     """
     review_history = getReviewHistory(obj)
     for event in review_history:
         if event['action'] == action_id:
-            if not_as_string:
+            if return_as_datetime:
                 return event['time']
             value = ulocalized_time(event['time'], long_format=True,
                                     time_only=False, context=obj)

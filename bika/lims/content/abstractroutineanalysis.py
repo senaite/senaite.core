@@ -180,17 +180,14 @@ class AbstractRoutineAnalysis(AbstractAnalysis):
         Returns the date on which the "receive" transition was invoked on this
         analysis' Sample.
         """
-        sample = self.getSample()
-        if sample:
-            return getTransitionDate(self, 'receive')
+        return getTransitionDate(self, 'receive', return_as_datetime=True)
 
     @security.public
     def getDateSampled(self):
         """Used to populate catalog values.
+        Only has value when sampling_workflow is active.
         """
-        sample = self.getSample()
-        if sample:
-            return getTransitionDate(self, 'sample')
+        return getTransitionDate(self, 'sample', return_as_datetime=True)
 
     @security.public
     def getSamplePartitionUID(self):

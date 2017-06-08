@@ -2556,7 +2556,7 @@ class AnalysisRequest(BaseFolder):
         """
         Returns the transition date from the Analysis Request object
         """
-        return getTransitionDate(self, 'publish', not_as_string=True)
+        return getTransitionDate(self, 'publish', return_as_datetime=True)
 
     security.declarePublic('setSamplePoint')
 
@@ -2985,7 +2985,7 @@ class AnalysisRequest(BaseFolder):
         """
         Returns the date of verification as a DateTime object.
         """
-        return getTransitionDate(self, 'verify', not_as_string=True)
+        return getTransitionDate(self, 'verify', return_as_datetime=True)
 
     def _getCreatorFullName(self):
         """
