@@ -1080,3 +1080,6 @@ class AnalysisRequestsView(BikaListingView):
             AnalysisRequestsBikaListingFilterBar(
                 context=self.context, request=self.request)
         return self._advfilterbar
+
+    def getDefaultAddCount(self):
+        return self.context.bika_setup.getDefaultNumberOfARsToAdd()
