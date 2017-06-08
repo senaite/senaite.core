@@ -457,14 +457,14 @@ class AnalysisRequestPublishView(BrowserView):
         return [ar]
 
     def publish(self):
-        """Publish the AR report/s. Generates a results pdf file associated 
-        to each AR, sends an email with the report to the lab manager and 
-        sends a notification (usually an email with the PDF attached) to the 
-        AR's contact and CCs. Transitions each published AR to statuses 
-        'published', 'prepublished' or 'republished'. Returns a list with the 
+        """Publish the AR report/s. Generates a results pdf file associated
+        to each AR, sends an email with the report to the lab manager and
+        sends a notification (usually an email with the PDF attached) to the
+        AR's contact and CCs. Transitions each published AR to statuses
+        'published', 'prepublished' or 'republished'. Returns a list with the
         AR identifiers that have been published/prepublished/republished
-        (only those 'verified', 'published' or at least have one 'verified' 
-        result). 
+        (only those 'verified', 'published' or at least have one 'verified'
+        result).
         """
         if len(self._ars) > 1:
             published_ars = []
@@ -670,27 +670,27 @@ class AnalysisRequestPublishView(BrowserView):
 
 
 class AnalysisRequestDigester:
-    """Read AR data which could be useful during publication, into a data 
-    dictionary. This class should be instantiated once, and the instance 
-    called for all subsequent digestion.  This allows the instance to cache 
+    """Read AR data which could be useful during publication, into a data
+    dictionary. This class should be instantiated once, and the instance
+    called for all subsequent digestion.  This allows the instance to cache
     data for objects that may be read multiple times for different ARs.
 
     Passing overwrite=True when calling the instance will cause the
     ar.Digest field to be overwritten with a new digestion.  This flag
     is set True by default in the EndRequestHandler that is responsible for
     automated re-building.
-    
-    It should be run once when the AR is verified (or when a verified AR is 
-    modified) to pre-digest the data so that AnalysisRequestPublishView will 
+
+    It should be run once when the AR is verified (or when a verified AR is
+    modified) to pre-digest the data so that AnalysisRequestPublishView will
     run a little faster.
-    
+
     Note: ProxyFields are not included in the reading of the schema.  If you
     want to access sample fields in the report template, you must refer
     directly to the correct field in the Sample data dictionary.
-    
+
     Note: ComputedFields are removed from the schema while creating the dict.
     XXX: Add all metadata columns for the AR into the dict.
-    
+
     """
 
     def __init__(self):
@@ -718,7 +718,7 @@ class AnalysisRequestDigester:
                 return data
 
         logger.info("=========== creating new data for %s" % ar)
-        import pdb;pdb.set_trace();pass
+
         # Set data to the AR schema field, and return it.
         data = self._ar_data(ar)
         ar.setDigest(data)
@@ -841,8 +841,8 @@ class AnalysisRequestDigester:
         return "<div class='address'>%s</div>" % addr
 
     def _workflow_data(self, instance):
-        """Add some workflow information for all actions performed against 
-        this instance. Only values for the last action event for any 
+        """Add some workflow information for all actions performed against
+        this instance. Only values for the last action event for any
         transition will be set here, previous transitions will be ignored.
 
         The default format for review_history is a list of lists; this function

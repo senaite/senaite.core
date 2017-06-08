@@ -77,7 +77,7 @@ window.bika.lims.controllers =  {
     // Clients
     ".portaltype-client.template-base_edit":
         ['ClientEditView'],
-        
+
     "div.overlay #client-base-edit":
         ['ClientOverlayHandler'],
 
@@ -147,7 +147,7 @@ window.bika.lims.controllers =  {
 	".analysisrequest_add_by_col": ['AnalysisRequestAddByCol'],
 
     "#ar_publish_container":
-        ['AnalysisRequestPublishView', 'RangeGraph'],
+        ['RangeGraph', 'AnalysisRequestPublishView'],
 
     // Samples PrintView
      "#preview_container.samples_print_preview":
