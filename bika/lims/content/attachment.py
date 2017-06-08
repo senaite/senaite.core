@@ -12,6 +12,7 @@ from Products.CMFPlone.utils import safe_unicode
 from bika.lims import bikaMessageFactory as _
 from bika.lims.browser.fields import UIDReferenceField
 from bika.lims.browser.widgets import DateTimeWidget
+from DateTime import DateTime
 from bika.lims.config import PROJECTNAME
 from bika.lims.content.bikaschema import BikaSchema
 from plone.app.blob.field import FileField
@@ -63,6 +64,10 @@ class Attachment(atapi.BaseFolder):
     def Title(self):
         """ Return the Id """
         return safe_unicode(self.getId()).encode('utf-8')
+
+    def current_date(self):
+        """ return current date """
+        return DateTime()
 
     def getRequest(self):
         """ Return the AR to which this is linked """
